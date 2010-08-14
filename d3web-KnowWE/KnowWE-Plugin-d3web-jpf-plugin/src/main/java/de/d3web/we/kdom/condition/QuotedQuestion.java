@@ -5,7 +5,7 @@ import de.d3web.we.kdom.basic.QuotedType;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 
 public class QuotedQuestion extends DefaultAbstractKnowWEObjectType {
-	
+
 	@Override
 	protected void init() {
 		this.childrenTypes.add(new QuotedType(new SimpleQuestionType()));

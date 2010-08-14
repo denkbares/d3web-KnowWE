@@ -4,7 +4,7 @@ import java.util.Map;
 
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class ParseAllButton extends AbstractTagHandler{
+public class ParseAllButton extends AbstractTagHandler {
 
 	public ParseAllButton() {
 		super("parseallbutton");

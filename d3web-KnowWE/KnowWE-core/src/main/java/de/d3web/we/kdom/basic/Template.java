@@ -15,13 +15,12 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @see TemplateGenerationAction
  * 
  * @author Johannes Dienst
- *
+ * 
  */
 public class Template extends AbstractXMLObjectType {
 
 	private static Template instance;
-	
-	
+
 	public Template() {
 		super("Template");
 		this.customRenderer = new PreRenderer();
@@ -31,11 +30,10 @@ public class Template extends AbstractXMLObjectType {
 	 * @return
 	 */
 	public static KnowWEObjectType getInstance() {
-		if (instance == null)
-			instance = new Template();
+		if (instance == null) instance = new Template();
 		return instance;
 	}
-	
+
 	private class PreRenderer extends KnowWEDomRenderer {
 
 		@Override
@@ -45,7 +43,7 @@ public class Template extends AbstractXMLObjectType {
 			string.append("{{{");
 			DelegateRenderer.getInstance().render(article, sec, user, string);
 			string.append("}}}");
-			
-		}		
+
+		}
 	}
 }

@@ -64,8 +64,7 @@ public abstract class KDOMReportMessage {
 	 */
 	public static void storeSingleError(KnowWEArticle article,
 			Section<? extends KnowWEObjectType> s, Class<?> source, KDOMError msg) {
-		if (msg != null)
-			storeMessages(article, s, source,  Arrays.asList((KDOMReportMessage) msg));
+		if (msg != null) storeMessages(article, s, source, Arrays.asList((KDOMReportMessage) msg));
 	}
 
 	/**
@@ -74,8 +73,7 @@ public abstract class KDOMReportMessage {
 	 */
 	public static void storeSingleWarning(KnowWEArticle article,
 			Section<? extends KnowWEObjectType> s, Class<?> source, KDOMWarning msg) {
-		if (msg != null)
-			storeMessages(article, s, source,  Arrays.asList((KDOMReportMessage) msg));
+		if (msg != null) storeMessages(article, s, source, Arrays.asList((KDOMReportMessage) msg));
 	}
 
 	/**
@@ -84,8 +82,7 @@ public abstract class KDOMReportMessage {
 	 */
 	public static void storeSingleNotice(KnowWEArticle article,
 			Section<? extends KnowWEObjectType> s, Class<?> source, KDOMNotice msg) {
-		if (msg != null)
-			storeMessages(article, s, source,  Arrays.asList((KDOMReportMessage) msg));
+		if (msg != null) storeMessages(article, s, source, Arrays.asList((KDOMReportMessage) msg));
 	}
 
 	/**

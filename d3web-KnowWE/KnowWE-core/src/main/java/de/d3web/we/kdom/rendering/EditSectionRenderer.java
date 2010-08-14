@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.rendering;
@@ -33,12 +33,14 @@ import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
- * <p>The <code>EditSectionRenderer</code> renders the content of a section
- * depending on the edit flag state. If the edit flag is set for the current section,
- * the section will be wrapped into an HTML textarea which allows the user to
- * edit the content of the section. The text of the HTML textarea is the original
- * text of the section. So be carefully when editing the lines.</p>
- *
+ * <p>
+ * The <code>EditSectionRenderer</code> renders the content of a section
+ * depending on the edit flag state. If the edit flag is set for the current
+ * section, the section will be wrapped into an HTML textarea which allows the
+ * user to edit the content of the section. The text of the HTML textarea is the
+ * original text of the section. So be carefully when editing the lines.
+ * </p>
+ * 
  * @author smark
  * @since 2009/10/18
  */
@@ -65,7 +67,7 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 			return;
 		}
 
-		boolean isEditable = sec.hasQuickEditModeSet( user.getUsername() );
+		boolean isEditable = sec.hasQuickEditModeSet(user.getUsername());
 		// Specifies whether the whole content is rendered in one line or not
 		boolean isInline = isInline(sec);
 		boolean highlight = false;
@@ -78,20 +80,20 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 			string.append(KnowWEUtils.maskHTML("</td><td style=\"vertical-align: top; padding: 0px\">"));
 		}
 		String highlightKDOMID = urlParameterMap.get("highlight");
-		if(highlightKDOMID != null) {
-			if(highlightKDOMID.equals(sec.getID())) {
+		if (highlightKDOMID != null) {
+			if (highlightKDOMID.equals(sec.getID())) {
 				highlight = true;
 			}
 		}
 
 		String editKDOMID = urlParameterMap.get("edit");
-		if(editKDOMID != null) {
-			if(editKDOMID.equals(sec.getID())) {
+		if (editKDOMID != null) {
+			if (editKDOMID.equals(sec.getID())) {
 				isEditable = true;
 			}
 		}
 
-		if(highlight && !isEditable) {
+		if (highlight && !isEditable) {
 			string.append(KnowWEUtils.maskHTML("<div class=\"searchword\">"));
 		}
 		string.append(KnowWEUtils.maskHTML("<a name=\"" + sec.getID() + "\"></a>"));
@@ -102,7 +104,7 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 					+ sec.getObjectType().getName() + " Section", sec.getID(), isEditable, user,
 					isInline)));
 		}
-		if ( isEditable ) {
+		if (isEditable) {
 			// Setting pre-Environment to avoid textarea content being rendered
 			// by JSPWiki if page was refreshed (while QuickEdit being opened).
 			// But only if there is no other one around it.
@@ -118,20 +120,21 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 					+ sec.getID()
 					+ "/default-edit-area\" style=\"width:100%; height:"
 					+ this.getHeight(str, isInline) + "px;\">"));
-			string.append( str );
+			string.append(str);
 			string.append(KnowWEUtils.maskHTML("</textarea></div>"));
 			if (preNeeded) {
 				string.append("}}}");
 			}
-			string.append( KnowWEUtils.maskHTML( "<div class=\"default-edit-handle\"></div>" ));
-		} else {
+			string.append(KnowWEUtils.maskHTML("<div class=\"default-edit-handle\"></div>"));
+		}
+		else {
 			// here the normal rendered content of the subtree is appended
 			// for technical reasons this string is already assembled at the
 			// beginning of this method
 			string.append(subTreeContent);
 		}
 		string.append(KnowWEUtils.maskHTML("</div>"));
-		if(highlight && !isEditable) {
+		if (highlight && !isEditable) {
 			string.append(KnowWEUtils.maskHTML("</div>"));
 		}
 		// Close the Inline-table which was opened in front of the Markup.
@@ -154,17 +157,24 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 		final ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle(user);
 		b.append("<div " + getQuickEditDivAttributes() + ">");
 		if (!isEditable) {
-			b.append("<img src=\"KnowWEExtension/images/pencil.png\" width=\"10\" title=\"" + tooltip + "\" class=\"quickedit default pointer\" rel=\"{id : '" + id + "'}\" name=\"" + id + "_pencil\"/><br />");
+			b.append("<img src=\"KnowWEExtension/images/pencil.png\" width=\"10\" title=\""
+					+ tooltip + "\" class=\"quickedit default pointer\" rel=\"{id : '" + id
+					+ "'}\" name=\"" + id + "_pencil\"/><br />");
 		}
-		if( isEditable ){
+		if (isEditable) {
 			// Accept Button
 			b.append("<input class=\"pointer\" rel=\"{id : '"
-					+ id + "'}\" style=\"padding:0 0 0 0; width: 25px; height: 25px; background: #FFF url(KnowWEExtension/images/msg_checkmark.png) no-repeat; border: none; vertical-align:top;\" name=\""
+					+ id
+					+ "'}\" style=\"padding:0 0 0 0; width: 25px; height: 25px; background: #FFF url(KnowWEExtension/images/msg_checkmark.png) no-repeat; border: none; vertical-align:top;\" name=\""
 					+ id + "_accept\" type=\"submit\" value=\"\" title=\""
 					+ rb.getString("KnowWE.TableContentRenderer.accept") + "\">");
 			if (!isInline) b.append("<br/>");
 			// Cancel Button
-			b.append("<img class=\"quickedit default pointer\" rel=\"{id : '" + id + "'}\" width=\"25\" title=\"" + rb.getString("KnowWE.TableContentRenderer.cancel") + "\" src=\"KnowWEExtension/images/msg_cross.png\" name=\"" + id + "_cancel\"/>");
+			b.append("<img class=\"quickedit default pointer\" rel=\"{id : '" + id
+					+ "'}\" width=\"25\" title=\""
+					+ rb.getString("KnowWE.TableContentRenderer.cancel")
+					+ "\" src=\"KnowWEExtension/images/msg_cross.png\" name=\"" + id
+					+ "_cancel\"/>");
 		}
 		b.append("</div>");
 		return b.toString();
@@ -185,7 +195,7 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 		int additionallines = 5;
 		if (isInline) additionallines = 0;
 		int linebreaks = str.split("\n|\f").length;
-		int lineHeight = 18; //px
+		int lineHeight = 18; // px
 		return (linebreaks + additionallines) * lineHeight;
 	}
 

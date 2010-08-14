@@ -12,34 +12,34 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class ShowTimeEventsForConceptTagHandler extends AbstractTagHandler {
 
-    public ShowTimeEventsForConceptTagHandler() {
-	super("eventsForConcept");
-    }
-
-    @Override
-    public String render(String topic, KnowWEUserContext user,
-	    Map<String, String> values, String web) {
-	String concept = topic;
-	String givenConcept = values.get("concept");
-	if (givenConcept != null) {
-	    concept = givenConcept;
+	public ShowTimeEventsForConceptTagHandler() {
+		super("eventsForConcept");
 	}
 
-	List<TimeEvent> events = TimeEventSPARQLUtils
-		.findTimeEventsInvolvingConcept(concept);
-	Collections.sort(events);
+	@Override
+	public String render(String topic, KnowWEUserContext user,
+			Map<String, String> values, String web) {
+		String concept = topic;
+		String givenConcept = values.get("concept");
+		if (givenConcept != null) {
+			concept = givenConcept;
+		}
 
-	StringBuffer result = new StringBuffer();
-	result.append("<div class=\"panel\">");
-	result.append("<h3> Ereignisse für \"" + concept + "\":</h3><div>");
+		List<TimeEvent> events = TimeEventSPARQLUtils
+				.findTimeEventsInvolvingConcept(concept);
+		Collections.sort(events);
 
-	if (events != null) {
-	    for (TimeEvent timeEvent : events) {
-		result.append(TimeLineEventRenderer.renderToHTML(timeEvent,
-			false));
-	    }
+		StringBuffer result = new StringBuffer();
+		result.append("<div class=\"panel\">");
+		result.append("<h3> Ereignisse für \"" + concept + "\":</h3><div>");
+
+		if (events != null) {
+			for (TimeEvent timeEvent : events) {
+				result.append(TimeLineEventRenderer.renderToHTML(timeEvent,
+						false));
+			}
+		}
+		result.append("</div></div>");
+		return result.toString();
 	}
-	result.append("</div></div>");
-	return result.toString();
-    }
 }

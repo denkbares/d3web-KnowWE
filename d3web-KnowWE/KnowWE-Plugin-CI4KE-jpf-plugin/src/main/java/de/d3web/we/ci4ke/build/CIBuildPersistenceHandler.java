@@ -65,7 +65,7 @@ public class CIBuildPersistenceHandler {
 	 */
 	private static SimpleDateFormat DATE_FORMAT =
 			new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-	
+
 	private String dashboardID;
 
 	/**
@@ -266,10 +266,7 @@ public class CIBuildPersistenceHandler {
 		return nodeCount;
 	}
 
-
-	
 	// ------------ RENDERING ----------------
-	
 
 	/**
 	 * Renders out a list of the newest builds in descending order
@@ -303,7 +300,7 @@ public class CIBuildPersistenceHandler {
 
 				// TODO Check for null
 				String buildNr = e.getAttributeValue("nr");
-				
+
 				sb.append("<tr><td>");
 				// starting with a nice image...
 				s = e.getAttributeValue("result");

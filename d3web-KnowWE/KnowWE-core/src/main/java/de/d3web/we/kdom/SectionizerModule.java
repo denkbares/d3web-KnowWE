@@ -22,7 +22,6 @@ package de.d3web.we.kdom;
 
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
-
 public interface SectionizerModule {
 
 	public Section<?> createSection(KnowWEArticle article,

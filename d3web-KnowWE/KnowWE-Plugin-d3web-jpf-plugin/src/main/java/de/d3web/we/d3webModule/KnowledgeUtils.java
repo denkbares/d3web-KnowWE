@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.d3webModule;
@@ -45,23 +45,23 @@ import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.report.Message;
 
 public class KnowledgeUtils {
-	
-	
-	public static String[] QTYPES = {"num", "oc", "mc", "jn", "yn", "date"};
-	
+
+	public static String[] QTYPES = {
+			"num", "oc", "mc", "jn", "yn", "date" };
+
 	public static String getQuestionTypeFromDeclaration(String declaration) {
-		for(String type : QTYPES) {
-			if(declaration.contains("["+type+"]")) {
+		for (String type : QTYPES) {
+			if (declaration.contains("[" + type + "]")) {
 				return type;
 			}
 		}
 		return null;
-		
+
 	}
-	
+
 	public static String getQuestionNameFromDeclaration(String declaration) {
 		String type = getQuestionTypeFromDeclaration(declaration);
-		String name = declaration.replaceAll("\\["+type+"\\]", "");
+		String name = declaration.replaceAll("\\[" + type + "\\]", "");
 		name = name.replaceAll("__", "");
 		return name.trim();
 	}
@@ -70,8 +70,7 @@ public class KnowledgeUtils {
 			String question, String answer, String solution, String value,
 			int line, int column, boolean lazy, String kdomid, CellKnowledgeBuilder ckb) {
 		List<Message> errors = new ArrayList<Message>();
-		if (answer != null)
-			answer = answer.trim();
+		if (answer != null) answer = answer.trim();
 		boolean typedef = false;
 		String type = "";
 		if (question.endsWith("]")) {
@@ -90,7 +89,8 @@ public class KnowledgeUtils {
 							question));
 			return errors;
 
-		} else {
+		}
+		else {
 			if (!D3webQuestionFactory.checkType(currentquestion, type)) {
 				errors.add(MessageKnOfficeGenerator.createTypeMismatchWarning(
 						kdomid, line, column, "", currentquestion.getName(),
@@ -108,23 +108,27 @@ public class KnowledgeUtils {
 		if (currentquestion instanceof QuestionNum) {
 			QuestionNum qnum = (QuestionNum) currentquestion;
 			cond = tryBuildCondNum(answer, line, column, kdomid, errors, qnum);
-			if(cond == null) return errors;
-		} else if (currentquestion instanceof QuestionYN) {
+			if (cond == null) return errors;
+		}
+		else if (currentquestion instanceof QuestionYN) {
 			QuestionYN qyn = (QuestionYN) currentquestion;
 			Choice ac;
 			if (answer == null || answer.equalsIgnoreCase("ja")
 					|| answer.equalsIgnoreCase("yes")) {
 				ac = qyn.yes;
-			} else if (answer.equalsIgnoreCase("nein")
+			}
+			else if (answer.equalsIgnoreCase("nein")
 					|| answer.equalsIgnoreCase("no")) {
 				ac = qyn.no;
-			} else {
+			}
+			else {
 				errors.add(MessageKnOfficeGenerator.createAnswerNotYNException(
 						kdomid, line, column, "", answer));
 				return errors;
 			}
 			cond = new CondEqual(qyn, new ChoiceValue(ac));
-		} else if (currentquestion instanceof QuestionChoice) {
+		}
+		else if (currentquestion instanceof QuestionChoice) {
 			QuestionChoice qc = (QuestionChoice) currentquestion;
 			Choice currentanswer = idom.findAnswerChoice(qc, answer);
 			if (currentanswer == null) {
@@ -135,7 +139,8 @@ public class KnowledgeUtils {
 			}
 
 			cond = new CondEqual(qc, new ChoiceValue(currentanswer));
-		} else {
+		}
+		else {
 			cond = null;
 			errors.add(MessageKnOfficeGenerator
 					.createQuestionTypeNotSupportetException(kdomid, line,
@@ -159,23 +164,28 @@ public class KnowledgeUtils {
 				s = answer.substring(2).trim();
 				Double d = Double.parseDouble(s);
 				cond = new CondNumLessEqual(qnum, d);
-			} else if (answer.startsWith("<")) {
+			}
+			else if (answer.startsWith("<")) {
 				s = answer.substring(1).trim();
 				Double d = Double.parseDouble(s);
 				cond = new CondNumLess(qnum, d);
-			} else if (answer.startsWith("=")) {
+			}
+			else if (answer.startsWith("=")) {
 				s = answer.substring(1).trim();
 				Double d = Double.parseDouble(s);
 				cond = new CondNumEqual(qnum, d);
-			} else if (answer.startsWith(">=")) {
+			}
+			else if (answer.startsWith(">=")) {
 				s = answer.substring(2).trim();
 				Double d = Double.parseDouble(s);
 				cond = new CondNumGreaterEqual(qnum, d);
-			} else if (answer.startsWith(">")) {
+			}
+			else if (answer.startsWith(">")) {
 				s = answer.substring(1).trim();
 				Double d = Double.parseDouble(s);
 				cond = new CondNumGreater(qnum, d);
-			} else if (answer.startsWith("[")) {
+			}
+			else if (answer.startsWith("[")) {
 				s = answer.substring(1, answer.length() - 1).trim();
 				int i = s.lastIndexOf(' ');
 				Double d1 = null;
@@ -183,24 +193,27 @@ public class KnowledgeUtils {
 				try {
 					d1 = Double.parseDouble(s.substring(0, i));
 					d2 = Double.parseDouble(s.substring(i + 1));
-				} catch (NumberFormatException e) {
+				}
+				catch (NumberFormatException e) {
 					errors.add(MessageKnOfficeGenerator
 							.createAnswerNotNumericException(kdomid, line,
 									column, "", s));
 				}
 				cond = new CondNumIn(qnum, d1, d2);
-			} else {
+			}
+			else {
 				cond = null;
 				errors.add(MessageKnOfficeGenerator
 						.createAnswerNotNumericException(kdomid, line, column,
 								"", answer));
 			}
-		} catch (NumberFormatException e) {
+		}
+		catch (NumberFormatException e) {
 			errors.add(MessageKnOfficeGenerator
 					.createAnswerNotNumericException(kdomid, line,
 							column, "", s));
 		}
 		return cond;
 	}
-		
+
 }

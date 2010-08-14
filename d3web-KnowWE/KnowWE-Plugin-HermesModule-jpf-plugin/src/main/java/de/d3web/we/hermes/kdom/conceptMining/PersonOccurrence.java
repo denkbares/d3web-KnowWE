@@ -4,21 +4,19 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 
 public class PersonOccurrence extends DefaultAbstractKnowWEObjectType {
 
-    @Override
-    public void init() {
-	this.setCustomRenderer(new ConceptOccurrenceRenderer());
-	this.sectionFinder = new PersonFinder();
-    }
+	@Override
+	public void init() {
+		this.setCustomRenderer(new ConceptOccurrenceRenderer());
+		this.sectionFinder = new PersonFinder();
+	}
 }
-
-
 
 class PersonFinder extends ConceptFinder {
 
-    private static String[] classes = { "Person" };
+	private static String[] classes = { "Person" };
 
-    @Override
-    protected String[] getClassNames() {
-	return classes;
-    }
+	@Override
+	protected String[] getClassNames() {
+		return classes;
+	}
 }

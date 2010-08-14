@@ -20,7 +20,6 @@ public class SourceListReader extends WISECReader {
 	public static String SHEETNAME = "Source";
 	public Map<String, String> criteria = new LinkedHashMap<String, String>();
 
-	
 	public SourceListReader(Workbook workbook) {
 		super(workbook);
 	}
@@ -30,17 +29,16 @@ public class SourceListReader extends WISECReader {
 		final int HEADER_ROW = 0;
 		Sheet sheet = workbook.getSheet(SHEETNAME);
 		List<String> headers = retrieveHeaderNames(sheet.getRow(HEADER_ROW));
-		for (int row = HEADER_ROW+1; row < sheet.getRows(); row++) {
+		for (int row = HEADER_ROW + 1; row < sheet.getRows(); row++) {
 			SourceList upperList = new SourceList();
 			for (int col = 0; col < sheet.getRow(row).length; col++) {
 				String attribute = headers.get(col);
-				String value     = sheet.getCell(col, row).getContents();
+				String value = sheet.getCell(col, row).getContents();
 				upperList.add(attribute, value);
 			}
 			model.add(upperList);
 		}
-		
-	}
 
+	}
 
 }

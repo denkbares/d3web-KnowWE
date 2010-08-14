@@ -37,12 +37,12 @@ public class SessionValuesViewHandler extends AbstractTagHandler {
 	public SessionValuesViewHandler() {
 		super("sessionvalues");
 	}
-	
+
 	@Override
 	public String getExampleString() {
 		return "[{KnowWEPlugin sessionValues}]";
 	}
-	
+
 	@Override
 	public String getDescription(KnowWEUserContext user) {
 		return D3webModule.getKwikiBundle_d3web(user).getString("KnowWE.SessionValues.description");
@@ -62,8 +62,8 @@ public class SessionValuesViewHandler extends AbstractTagHandler {
 				+ "'/>"
 				+ "<div id='sessionvalues-result'>"
 				+ "No values set in this article's d3web-Session."
-			    + "</div>"
-			  + "</div></div>";
+				+ "</div>"
+				+ "</div></div>";
 	}
-	
+
 }

@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.d3web.we.kdom.solutionTree;
 
@@ -48,7 +48,6 @@ import de.d3web.we.terminology.D3webSubtreeHandler;
  * 
  */
 public class SolutionDashTreeElementContent extends DashTreeElementContent implements KnowWETermMarker {
-	
 
 	// private static String STORE_KEY_SOLUTION = "solution-object";
 
@@ -63,28 +62,27 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 
 	/**
 	 * @author Jochen
-	 *
+	 * 
 	 *         This handler establishes sub-solution-relations defined by the
 	 *         solutionDashTree in the knowledge base i.e., if a solution is a
 	 *         dashTree-child of another solution we add it as child in the
 	 *         knowledge base
-	 *
+	 * 
 	 */
 	class CreateSubSolutionRelationHandler extends D3webSubtreeHandler<SolutionDashTreeElementContent> {
 
 		@Override
 		public boolean needsToCreate(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
-			return super.needsToCreate(article, s) 
+			return super.needsToCreate(article, s)
 					|| DashTreeUtils.isChangeInAncestorSubtree(article, s, 1);
 		}
-		
-		
+
 		@Override
 		public void destroy(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
-			//will be destroyed by SolutionDefinition#destroy()
+			// will be destroyed by SolutionDefinition#destroy()
 
 		}
-		
+
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
 			Section<? extends DashTreeElementContent> fatherSolutionContent = DashTreeUtils.getFatherDashTreeElementContent(

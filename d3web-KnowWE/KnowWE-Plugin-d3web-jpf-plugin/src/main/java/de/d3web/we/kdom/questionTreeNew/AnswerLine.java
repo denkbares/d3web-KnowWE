@@ -1,25 +1,24 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.questionTreeNew;
-
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,7 +49,7 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
  * before)
  * 
  * @author Jochen
- *
+ * 
  */
 public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 
@@ -79,19 +78,17 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 		aid.setSectionFinder(new AllTextFinderTrimmed());
 		this.childrenTypes.add(aid);
 	}
-	
-	
-	
+
 	/**
 	 * Allows for the definition of abstract-flagged questions Syntax is:
 	 * "<abstract>" or "<abstrakt>"
-	 *
+	 * 
 	 * The subtreehandler creates the corresponding
 	 * ABSTRACTION_QUESTION-property in the knoweldge base
-	 *
-	 *
+	 * 
+	 * 
 	 * @author Jochen
-	 *
+	 * 
 	 */
 	static class InitFlag extends DefaultAbstractKnowWEObjectType {
 
@@ -110,33 +107,33 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 
 					Section<? extends QuestionDefinition> qdef = aDef.get().getQuestionSection(
 							aDef);
-						
+
 					if (qdef != null) {
 
-						
 						Question question = qdef.get().getTermObject(article, qdef);
-						
+
 						String answerName = aDef.get().getTermObject(article, aDef).getName();
-						
+
 						Object p = question.getProperties().getProperty(Property.INIT);
-						
-						if(p == null) {
+
+						if (p == null) {
 							question.getProperties().setProperty(Property.INIT, answerName);
-						} else {
-							if(p instanceof String) {
-								String newValue = ((String)p).concat(";"+answerName);
+						}
+						else {
+							if (p instanceof String) {
+								String newValue = ((String) p).concat(";" + answerName);
 								question.getProperties().setProperty(Property.INIT, newValue);
 							}
-					
+
 						}
 						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
 								D3webModule.getKwikiBundle_d3web()
-								.getString("KnowWE.questiontree.abstractquestion")));
+										.getString("KnowWE.questiontree.abstractquestion")));
 
 					}
 					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
 							D3webModule.getKwikiBundle_d3web()
-							.getString("KnowWE.questiontree.abstractflag"),
+									.getString("KnowWE.questiontree.abstractflag"),
 							this.getClass()));
 				}
 			});

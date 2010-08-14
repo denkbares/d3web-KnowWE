@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.d3web.we.hermes.maps;
 
@@ -35,6 +35,7 @@ import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType {
+
 	private static final String START_TAG = "<<ORT:";
 	private static final String END_TAG = ">>";
 
@@ -48,7 +49,7 @@ public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType {
 	}
 
 	private class LocationDefinitionTypeOWLSubTreeHandler extends
-	OwlSubtreeHandler<LocationDefinitionType> {
+			OwlSubtreeHandler<LocationDefinitionType> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<LocationDefinitionType> s) {
@@ -76,22 +77,22 @@ public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType {
 		}
 		String[] splittedSecText = sectionText.split(";");
 
-		//  location name omitted
-		if(splittedSecText.length == 2) {
+		// location name omitted
+		if (splittedSecText.length == 2) {
 			locationName = section.getTitle();
 			try {
 				latitude = Double.parseDouble(splittedSecText[0]);
 				longitude = Double.parseDouble(splittedSecText[1]);
-				}
-				catch (NumberFormatException e) {
-					return null;
-				}
+			}
+			catch (NumberFormatException e) {
+				return null;
+			}
 		}
 		if (splittedSecText.length > 2 && splittedSecText.length < 5) {
 			locationName = splittedSecText[0].trim();
 			try {
-			latitude = Double.parseDouble(splittedSecText[1]);
-			longitude = Double.parseDouble(splittedSecText[2]);
+				latitude = Double.parseDouble(splittedSecText[1]);
+				longitude = Double.parseDouble(splittedSecText[2]);
 			}
 			catch (NumberFormatException e) {
 				return null;

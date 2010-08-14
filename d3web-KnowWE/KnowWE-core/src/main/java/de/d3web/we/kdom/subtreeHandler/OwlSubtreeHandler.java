@@ -13,13 +13,11 @@ import de.d3web.we.kdom.Section;
 
 /**
  * @author kazamatzuri
- * @param <T>
- *            This class just implements the destroy-handler for owl-generating
- *            SubtreeHandlers. It should be used as superclass for all
- *            owl-generating (i.e. those that call
- *            SemanticCore.addstatemnts(...)) SubtreeHandlers to facilitate the
- *            incremental build of Articles
- *
+ * @param <T> This class just implements the destroy-handler for owl-generating
+ *        SubtreeHandlers. It should be used as superclass for all
+ *        owl-generating (i.e. those that call SemanticCore.addstatemnts(...))
+ *        SubtreeHandlers to facilitate the incremental build of Articles
+ * 
  */
 public abstract class OwlSubtreeHandler<T extends KnowWEObjectType> extends
 		SubtreeHandler<T> {
@@ -49,12 +47,10 @@ public abstract class OwlSubtreeHandler<T extends KnowWEObjectType> extends
 			// in owlim-lib
 
 			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
-			"exception in owlim catched: \n" +
+					"exception in owlim catched: \n" +
 							" java.lang.ArrayIndexOutOfBoundsException2" +
 							"com.ontotext.trree.owlim_ext.c.do(Unknown Source)" +
 							"com.ontotext.trree.owlim_ext.c$2.remove(Unknown Source)");
-
-
 
 			// java.lang.ArrayIndexOutOfBoundsException2
 			// com.ontotext.trree.owlim_ext.c.do(Unknown Source)

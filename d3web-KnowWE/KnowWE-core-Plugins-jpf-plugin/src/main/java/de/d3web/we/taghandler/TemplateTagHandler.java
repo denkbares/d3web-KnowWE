@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.d3web.we.taghandler;
 
@@ -35,24 +35,22 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * @author Johannes Dienst
- *
- * Used to Generate WikiPages out of a TemplateType
- * {@link TemplateType}
- * {@link TemplateGenerationAction}
+ * 
+ *         Used to Generate WikiPages out of a TemplateType {@link TemplateType}
+ *         {@link TemplateGenerationAction}
  */
-public class TemplateTagHandler extends AbstractTagHandler{
-
+public class TemplateTagHandler extends AbstractTagHandler {
 
 	public TemplateTagHandler() {
 		super("copytemplate");
 	}
-	
+
 	@Override
 	public String getDescription(KnowWEUserContext user) {
 		return KnowWEEnvironment.getInstance().getKwikiBundle(user).
 				getString("KnowWE.TemplateTagHandler.description");
 	}
-	
+
 	@Override
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
@@ -101,11 +99,12 @@ public class TemplateTagHandler extends AbstractTagHandler{
 								+ i + "\"}'/>");
 
 				html.append("</div> \n"); // \n only to avoid hmtl-code being
-											// cut by JspWiki (String.length >
-											// 10000)
+				// cut by JspWiki (String.length >
+				// 10000)
 
 			}
-		} else {
+		}
+		else {
 			html.append("<div>");
 			html.append("<p class='info box'>"
 					+ rb.getString("KnowWE.TemplateTagHandler.noTemplate")
@@ -136,13 +135,12 @@ public class TemplateTagHandler extends AbstractTagHandler{
 	@SuppressWarnings("unchecked")
 	public static List<Section<Template>> getTemplateTypes(KnowWEArticle article) {
 		ArrayList<Section<? extends KnowWEObjectType>> found =
-			new ArrayList<Section<? extends KnowWEObjectType>>();
+				new ArrayList<Section<? extends KnowWEObjectType>>();
 		article.getSection().getAllNodesPreOrder(found);
-//		article.getSection().findSuccessorsOfType(TemplateType.class, found);
+		// article.getSection().findSuccessorsOfType(TemplateType.class, found);
 		ArrayList<Section<Template>> cleaned = new ArrayList<Section<Template>>();
 		for (Section<? extends KnowWEObjectType> s : found) {
-			if (s.getObjectType() instanceof Template)
-				cleaned.add((Section<Template>)s);
+			if (s.getObjectType() instanceof Template) cleaned.add((Section<Template>) s);
 		}
 		return cleaned;
 	}

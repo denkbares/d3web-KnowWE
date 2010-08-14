@@ -28,8 +28,8 @@ public class BulletType extends DefaultAbstractKnowWEObjectType {
 				index++;
 				c = text.charAt(index);
 			}
-			 ArrayList<SectionFinderResult> resultRegex = new ArrayList<SectionFinderResult>();
-		    resultRegex.add(new SectionFinderResult(0, index));
+			ArrayList<SectionFinderResult> resultRegex = new ArrayList<SectionFinderResult>();
+			resultRegex.add(new SectionFinderResult(0, index));
 			return resultRegex;
 		}
 

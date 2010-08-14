@@ -1,135 +1,145 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.knowledgeExporter.xlsWritersOld;
-//package de.d3web.knowledgeExporter.xlsWriters;
+
+// package de.d3web.knowledgeExporter.xlsWriters;
 //
-//import java.io.File;
-//import java.util.Collection;
-//import java.util.Comparator;
-//import java.util.ResourceBundle;
-//import java.util.SortedSet;
-//import java.util.TreeSet;
+// import java.io.File;
+// import java.util.Collection;
+// import java.util.Comparator;
+// import java.util.ResourceBundle;
+// import java.util.SortedSet;
+// import java.util.TreeSet;
 //
-//import org.apache.poi.hssf.usermodel.HSSFSheet;
-//import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+// import org.apache.poi.hssf.usermodel.HSSFSheet;
+// import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 //
-//import de.d3web.caserepository.CaseObject;
-//import de.d3web.caserepository.sax.CaseObjectListCreator;
-//import de.d3web.kernel.domainModel.KnowledgeBase;
-//import de.d3web.kernel.supportknowledge.DCElement;
-//import de.d3web.knowledgeExporter.KnowledgeManager;
+// import de.d3web.caserepository.CaseObject;
+// import de.d3web.caserepository.sax.CaseObjectListCreator;
+// import de.d3web.kernel.domainModel.KnowledgeBase;
+// import de.d3web.kernel.supportknowledge.DCElement;
+// import de.d3web.knowledgeExporter.KnowledgeManager;
 //
-//public class CasesWriter extends XlsKnowledgeWriter {
+// public class CasesWriter extends XlsKnowledgeWriter {
 //	
-//    /**
-//     * Vergleicht die Cases anhand der alphabetischen Reihenfolge ihrer Titel
-//     */
-//    private final class CaseLexicalComparator implements Comparator<CaseObject> {
-//		public int compare(CaseObject o1, CaseObject o2) {
-//			return o1.getDCMarkup().getContent(DCElement.TITLE)
-//			.compareTo(o2.getDCMarkup().getContent(DCElement.TITLE));
-//		}
-//    }
+// /**
+// * Vergleicht die Cases anhand der alphabetischen Reihenfolge ihrer Titel
+// */
+// private final class CaseLexicalComparator implements Comparator<CaseObject> {
+// public int compare(CaseObject o1, CaseObject o2) {
+// return o1.getDCMarkup().getContent(DCElement.TITLE)
+// .compareTo(o2.getDCMarkup().getContent(DCElement.TITLE));
+// }
+// }
 //	
-//	private File caseRepFile;
-//	private boolean externalCaseRep, caseManagement, seperateDiagnoses, splitMCQuestions;
-//	private int unnamedCaseCounter = 0;
-//	private ResourceBundle resourceBundle;
+// private File caseRepFile;
+// private boolean externalCaseRep, caseManagement, seperateDiagnoses,
+// splitMCQuestions;
+// private int unnamedCaseCounter = 0;
+// private ResourceBundle resourceBundle;
 //
-//	private CasesWriter(KnowledgeBase kb, KnowledgeManager m, HSSFWorkbook wb, File caseRepFile,
-//			boolean externalCaseRep, boolean caseManagement,
-//			boolean seperateDiagnoses, boolean splitMCQuestions) {
-//		super(kb, m, wb);
-//		resourceBundle = manager.getResourceBundle();
-//		this.caseRepFile = caseRepFile;
-//		this.externalCaseRep = (caseRepFile == null) ? false : externalCaseRep;
-//		this.caseManagement = caseManagement;
-//		this.seperateDiagnoses = seperateDiagnoses;
-//		this.splitMCQuestions = splitMCQuestions;
-//	}
+// private CasesWriter(KnowledgeBase kb, KnowledgeManager m, HSSFWorkbook wb,
+// File caseRepFile,
+// boolean externalCaseRep, boolean caseManagement,
+// boolean seperateDiagnoses, boolean splitMCQuestions) {
+// super(kb, m, wb);
+// resourceBundle = manager.getResourceBundle();
+// this.caseRepFile = caseRepFile;
+// this.externalCaseRep = (caseRepFile == null) ? false : externalCaseRep;
+// this.caseManagement = caseManagement;
+// this.seperateDiagnoses = seperateDiagnoses;
+// this.splitMCQuestions = splitMCQuestions;
+// }
 //	
-//	public static CasesWriter makeWriter(KnowledgeManager m, File caseRepFile,
-//			boolean externalCaseRep, boolean caseManagement,
-//			boolean seperateDiagnoses, boolean splitMCQuestions) {
-//		HSSFWorkbook wb = new HSSFWorkbook();
-//		m.createStyles(wb);
+// public static CasesWriter makeWriter(KnowledgeManager m, File caseRepFile,
+// boolean externalCaseRep, boolean caseManagement,
+// boolean seperateDiagnoses, boolean splitMCQuestions) {
+// HSSFWorkbook wb = new HSSFWorkbook();
+// m.createStyles(wb);
 //
-//		return new CasesWriter(m.getKB(), m, wb, caseRepFile, externalCaseRep,
-//				caseManagement, seperateDiagnoses, splitMCQuestions);
-//	}
+// return new CasesWriter(m.getKB(), m, wb, caseRepFile, externalCaseRep,
+// caseManagement, seperateDiagnoses, splitMCQuestions);
+// }
 //	
-//	public CaseObject prepareCase(CaseObject co) {
-//		String title = co.getDCMarkup().getContent(DCElement.TITLE);
-//		if (title == null || title.equals("")) {
-//			String id = co.getDCMarkup().getContent(DCElement.IDENTIFIER);
-//			co.getDCMarkup().setContent(DCElement.TITLE, "Unnamed Case ("+id+")");
-//			//co.getDCMarkup().setContent(DCElement.TITLE, "Unnamed Case "+unnamedCaseCounter++);
-//		}
+// public CaseObject prepareCase(CaseObject co) {
+// String title = co.getDCMarkup().getContent(DCElement.TITLE);
+// if (title == null || title.equals("")) {
+// String id = co.getDCMarkup().getContent(DCElement.IDENTIFIER);
+// co.getDCMarkup().setContent(DCElement.TITLE, "Unnamed Case ("+id+")");
+// //co.getDCMarkup().setContent(DCElement.TITLE,
+// "Unnamed Case "+unnamedCaseCounter++);
+// }
 //		
-//		return co;
-//	}
+// return co;
+// }
 //	
-//	@Override
-//	protected void makeSheets() {
+// @Override
+// protected void makeSheets() {
 //        
-//        /* 
-//         * case fetching & automatical alphabetical ordering
-//         */
+// /*
+// * case fetching & automatical alphabetical ordering
+// */
 //		
-//        SortedSet<CaseObject> cases = new TreeSet<CaseObject>(new CaseLexicalComparator());
+// SortedSet<CaseObject> cases = new TreeSet<CaseObject>(new
+// CaseLexicalComparator());
 //        
-//        if (externalCaseRep) {
-//	        CaseObjectListCreator c = new CaseObjectListCreator();
-//	        Collection caseColl =  c.createCaseObjectList(caseRepFile, kb);
+// if (externalCaseRep) {
+// CaseObjectListCreator c = new CaseObjectListCreator();
+// Collection caseColl = c.createCaseObjectList(caseRepFile, kb);
 //	        
-//	        for (Object co : caseColl) cases.add(prepareCase((CaseObject)co));
-//        }
+// for (Object co : caseColl) cases.add(prepareCase((CaseObject)co));
+// }
 //        
-//        if (caseManagement) {
-//        	for (Object co : kb.getDefaultCaseRepository()) {
-//    			cases.add(prepareCase((CaseObject)co));
-//    		}
-//        }
+// if (caseManagement) {
+// for (Object co : kb.getDefaultCaseRepository()) {
+// cases.add(prepareCase((CaseObject)co));
+// }
+// }
 //        
-//        //insert code here to spread cases over multiple sheets
+// //insert code here to spread cases over multiple sheets
 //        
 //        
-//        /*
-//         * sheet generation
-//         */
-//        if (seperateDiagnoses) {
-//			HSSFSheet answerSheet = wb.createSheet(resourceBundle.getString("answers"));
-//			HSSFSheet diagnoseSheet = wb.createSheet(resourceBundle.getString("diagnoses"));
-//			new CasesTableSheetRenderer(kb, answerSheet, manager, cases, true, false, splitMCQuestions).renderSheetFormated();
-//			new CasesTableSheetRenderer(kb, diagnoseSheet, manager, cases, false, true, splitMCQuestions).renderSheetFormated();
-//			answerSheet.createFreezePane(1,1);
-//			diagnoseSheet.createFreezePane(1,1);
-//        } else {
-//			HSSFSheet sheet = wb.createSheet(resourceBundle.getString("writer.cases"));
-//			new CasesTableSheetRenderer(kb, sheet, manager, cases, true, true, splitMCQuestions).renderSheetFormated();
-//			sheet.createFreezePane(1,1);
-//        }
+// /*
+// * sheet generation
+// */
+// if (seperateDiagnoses) {
+// HSSFSheet answerSheet = wb.createSheet(resourceBundle.getString("answers"));
+// HSSFSheet diagnoseSheet =
+// wb.createSheet(resourceBundle.getString("diagnoses"));
+// new CasesTableSheetRenderer(kb, answerSheet, manager, cases, true, false,
+// splitMCQuestions).renderSheetFormated();
+// new CasesTableSheetRenderer(kb, diagnoseSheet, manager, cases, false, true,
+// splitMCQuestions).renderSheetFormated();
+// answerSheet.createFreezePane(1,1);
+// diagnoseSheet.createFreezePane(1,1);
+// } else {
+// HSSFSheet sheet = wb.createSheet(resourceBundle.getString("writer.cases"));
+// new CasesTableSheetRenderer(kb, sheet, manager, cases, true, true,
+// splitMCQuestions).renderSheetFormated();
+// sheet.createFreezePane(1,1);
+// }
 //        
-//        HSSFSheet metaSheet = wb.createSheet(resourceBundle.getString("writer.metadata"));
-//        new CasesMetaSheetRenderer(kb,metaSheet,manager,cases).renderSheetFormated();
-//		metaSheet.createFreezePane(1,1);
-//	}
-//}
+// HSSFSheet metaSheet =
+// wb.createSheet(resourceBundle.getString("writer.metadata"));
+// new CasesMetaSheetRenderer(kb,metaSheet,manager,cases).renderSheetFormated();
+// metaSheet.createFreezePane(1,1);
+// }
+// }

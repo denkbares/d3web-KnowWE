@@ -12,12 +12,13 @@ import java.util.List;
 import jxl.Cell;
 
 public class ConverterUtils {
+
 	/**
 	 * Removes "0" after comma, when available.
 	 */
 	public static String toShoppedString(String doubleValue) {
 		if (doubleValue.endsWith(".0")) {
-			doubleValue = doubleValue.substring(0, doubleValue.length()-2);
+			doubleValue = doubleValue.substring(0, doubleValue.length() - 2);
 		}
 		return doubleValue;
 	}
@@ -30,7 +31,7 @@ public class ConverterUtils {
 		Writer w = new BufferedWriter(
 				new OutputStreamWriter(new FileOutputStream(filename), "UTF8"));
 		// Writer w = new FileWriter(new File(filename));
-		w.append(headerText+ "\n");
+		w.append(headerText + "\n");
 		return w;
 	}
 
@@ -121,5 +122,5 @@ public class ConverterUtils {
 			return "";
 		}
 	}
-	
+
 }

@@ -97,9 +97,9 @@ public class GroovyCITestSubtreeHandler extends SubtreeHandler<GroovyCITestType>
 		GroovyShell shell = new GroovyShell(cc);
 
 		String groovycode = PREPEND + DefaultMarkupType.getContent(s);
-		
+
 		CITest test = (CITest) shell.parse(groovycode);
-		CIConfig ciconfig = new CIConfig("","Main","Main","",null);
+		CIConfig ciconfig = new CIConfig("", "Main", "Main", "", null);
 		test.init(ciconfig);
 		test.call();
 	}

@@ -22,7 +22,7 @@ import de.d3web.we.taghandler.TemplateTagHandler;
  * 
  * 
  * @author Johannes Dienst
- *
+ * 
  */
 public class TemplateGenerationAction extends AbstractAction {
 
@@ -48,7 +48,7 @@ public class TemplateGenerationAction extends AbstractAction {
 						.write(
 								"<p class='error box'>"
 										+ rb.getString(
-										  "KnowWE.TemplateTagHandler.generatingError")
+												"KnowWE.TemplateTagHandler.generatingError")
 										+ "</p>");
 				return;
 			}
@@ -61,7 +61,7 @@ public class TemplateGenerationAction extends AbstractAction {
 						.write(
 								"<p class='error box'>"
 										+ rb.getString(
-										  "KnowWE.TemplateTagHandler.alreadyExists")
+												"KnowWE.TemplateTagHandler.alreadyExists")
 										+ "</p>");
 				return;
 			}
@@ -83,7 +83,8 @@ public class TemplateGenerationAction extends AbstractAction {
 									+ "</p>");
 			return;
 
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			Logger.getLogger(this.getClass().getName()).severe(
 					"Problem generating page from template:" + e.getMessage());
 		}

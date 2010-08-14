@@ -9,23 +9,27 @@ import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.utils.KnowWEObjectTypeSet;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 
-public class ScoringListContentType extends XMLContent{
+public class ScoringListContentType extends XMLContent {
 
 	@Override
 	protected void init() {
 		this.childrenTypes.add(new BulletListItemLine());
 		this.setCustomRenderer(new EditSectionRenderer());
-		
-		KnowWEObjectTypeSet set = new KnowWEObjectTypeSet(); 
+
+		KnowWEObjectTypeSet set = new KnowWEObjectTypeSet();
 		KnowWEObjectTypeUtils.getAllChildrenTypesRecursive(this, set);
 		KnowWEObjectType contentType = set.getInstanceOf(BulletContentType.class);
-		
-		
-		if(contentType instanceof AbstractKnowWEObjectType) { // damn, not nice. maybe we need some interface changes one day
-			((AbstractKnowWEObjectType)contentType).addSubtreeHandler(new CreateScoresHandler());
-			((AbstractKnowWEObjectType)contentType).setCustomRenderer(new ValueRenderer());
+
+		if (contentType instanceof AbstractKnowWEObjectType) { // damn, not
+																// nice. maybe
+																// we need some
+																// interface
+																// changes one
+																// day
+			((AbstractKnowWEObjectType) contentType).addSubtreeHandler(new CreateScoresHandler());
+			((AbstractKnowWEObjectType) contentType).setCustomRenderer(new ValueRenderer());
 		}
-		
+
 	}
 
 }

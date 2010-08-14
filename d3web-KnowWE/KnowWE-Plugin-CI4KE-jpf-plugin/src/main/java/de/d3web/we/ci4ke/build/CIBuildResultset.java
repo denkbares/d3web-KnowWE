@@ -167,10 +167,9 @@ public final class CIBuildResultset {
 			this.modifiedArticles.add(modified);
 		}
 	}
-	
+
 	public List<ModifiedArticleWrapper> getModifiedArticles() {
 		return Collections.unmodifiableList(this.modifiedArticles);
 	}
-
 
 }

@@ -12,8 +12,9 @@ import de.d3web.we.kdom.KnowWEArticle;
 /**
  * @author Jochen
  * 
- * This action allows to append any String to the article source of an article
- *
+ *         This action allows to append any String to the article source of an
+ *         article
+ * 
  */
 public class AppendToPageContentAction extends DeprecatedAbstractKnowWEAction {
 
@@ -24,8 +25,9 @@ public class AppendToPageContentAction extends DeprecatedAbstractKnowWEAction {
 		String appendText = parameterMap.get(KnowWEAttributes.TEXT);
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 		KnowWEArticle art = mgr.getArticle(name);
-		
-		// replaces old article content with old article content + text to append
+
+		// replaces old article content with old article content + text to
+		// append
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(art.getSection().getID(), art.getSection().getOriginalText() + appendText);
 		return mgr.replaceKDOMNodes(parameterMap, name, nodesMap);

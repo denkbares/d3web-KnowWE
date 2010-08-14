@@ -81,27 +81,33 @@ public class TimeEventSPARQLUtils {
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL,
 					SparqlDelegateRenderer.addNamespaces(querystring));
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			// return e.getMessage();
-		} catch (MalformedQueryException e) {
+		}
+		catch (MalformedQueryException e) {
 			// return e.getMessage();
 		}
 		try {
 			if (query instanceof TupleQuery) {
 				TupleQueryResult result = ((TupleQuery) query).evaluate();
 				return result;
-			} else if (query instanceof GraphQuery) {
+			}
+			else if (query instanceof GraphQuery) {
 				// GraphQueryResult result = ((GraphQuery) query).evaluate();
 				// return "graphquery ouput implementation: TODO";
-			} else if (query instanceof BooleanQuery) {
+			}
+			else if (query instanceof BooleanQuery) {
 				// boolean result = ((BooleanQuery) query).evaluate();
 				// return result + "";
 			}
-		} catch (QueryEvaluationException e) {
+		}
+		catch (QueryEvaluationException e) {
 			// return
 			// kwikiBundle.getString("KnowWE.owl.query.evalualtion.error")
 			// + ":" + e.getMessage();
-		} finally {
+		}
+		finally {
 
 		}
 		return null;
@@ -151,7 +157,8 @@ public class TimeEventSPARQLUtils {
 					String aSource = sourceBinding.getValue().stringValue();
 					try {
 						aSource = URLDecoder.decode(aSource, "UTF-8");
-					} catch (UnsupportedEncodingException e) {
+					}
+					catch (UnsupportedEncodingException e) {
 						e.printStackTrace();
 					}
 					if (aSource != null) {
@@ -166,7 +173,8 @@ public class TimeEventSPARQLUtils {
 					desc = URLDecoder.decode(desc, "UTF-8");
 					topic = URLDecoder.decode(topic, "UTF-8");
 					kdomid = URLDecoder.decode(kdomid, "UTF-8");
-				} catch (UnsupportedEncodingException e) {
+				}
+				catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -177,7 +185,8 @@ public class TimeEventSPARQLUtils {
 
 				try {
 					parseInt = Integer.parseInt(imp);
-				} catch (NumberFormatException e) {
+				}
+				catch (NumberFormatException e) {
 					// TODO
 				}
 				List<String> resultSources = new ArrayList<String>();
@@ -187,7 +196,8 @@ public class TimeEventSPARQLUtils {
 						time, kdomid, topic));
 
 			}
-		} catch (QueryEvaluationException e) {
+		}
+		catch (QueryEvaluationException e) {
 			// return
 			// kwikiBundle.getString("KnowWE.owl.query.evalualtion.error")
 			// + ":" + e.getMessage();
@@ -225,8 +235,7 @@ public class TimeEventSPARQLUtils {
 	private static Collection<? extends Placemark> buildPlacemarksForTopic(
 			TupleQueryResult result) {
 		List<Placemark> placemarks = new ArrayList<Placemark>();
-		if (result == null)
-			return placemarks;
+		if (result == null) return placemarks;
 		try {
 			while (result.hasNext()) {
 
@@ -241,7 +250,8 @@ public class TimeEventSPARQLUtils {
 					loc = URLDecoder.decode(loc, "UTF-8");
 					latString = URLDecoder.decode(latString, "UTF-8");
 					longString = URLDecoder.decode(longString, "UTF-8");
-				} catch (UnsupportedEncodingException e) {
+				}
+				catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				}
 				loc = removeNamespace(loc);
@@ -253,7 +263,8 @@ public class TimeEventSPARQLUtils {
 				placemarks.add(new Placemark(loc, latitude, longitude, ""));
 
 			}
-		} catch (QueryEvaluationException e) {
+		}
+		catch (QueryEvaluationException e) {
 			return null;
 		}
 		return placemarks;
@@ -286,7 +297,8 @@ public class TimeEventSPARQLUtils {
 					desc = URLDecoder.decode(desc, "UTF-8");
 					latString = URLDecoder.decode(latString, "UTF-8");
 					longString = URLDecoder.decode(longString, "UTF-8");
-				} catch (UnsupportedEncodingException e) {
+				}
+				catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -298,7 +310,8 @@ public class TimeEventSPARQLUtils {
 				placemarks.add(new Placemark(title, latitude, longitude, desc));
 
 			}
-		} catch (QueryEvaluationException e) {
+		}
+		catch (QueryEvaluationException e) {
 			// return
 			// kwikiBundle.getString("KnowWE.owl.query.evalualtion.error")
 			// + ":" + e.getMessage();

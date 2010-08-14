@@ -94,7 +94,7 @@ public class ListSubstancesD3SubtreeHandler extends D3webSubtreeHandler<ListSubs
 						// new String[] {
 						// "included", "excluded" });
 						addGlobalQuestion(sgn, web, kbm);
-//						createListRule(kbm, listID, sgnQ);
+						// createListRule(kbm, listID, sgnQ);
 					}
 					else {
 						failed = true;
@@ -129,23 +129,24 @@ public class ListSubstancesD3SubtreeHandler extends D3webSubtreeHandler<ListSubs
 	/*
 	 * Replaced by OWL + SPARQL => {@link WISECFindingSetEventListener}!
 	 */
-//	private void createListRule(KnowledgeBaseManagement kbm, String listID,
-//			QuestionOC sgnQuestion) {
-//
-//		// Create condition
-//		Choice includedAnswer = kbm.findChoice(sgnQuestion,
-//				"included");
-//		CondEqual condition = new CondEqual(sgnQuestion, new ChoiceValue(includedAnswer));
-//
-//		// Get abstract List-Question
-//		QuestionChoice listQuestion = (QuestionChoice) kbm.findQuestion(listID);
-//		Choice activeAnswer = kbm.findChoice(listQuestion, "active");
-//
-//		// Create Rule
-//		RuleFactory.createSetValueRule(kbm.createRuleID(), listQuestion,
-//				new Object[] { activeAnswer }, condition);
-//
-//	}
+	// private void createListRule(KnowledgeBaseManagement kbm, String listID,
+	// QuestionOC sgnQuestion) {
+	//
+	// // Create condition
+	// Choice includedAnswer = kbm.findChoice(sgnQuestion,
+	// "included");
+	// CondEqual condition = new CondEqual(sgnQuestion, new
+	// ChoiceValue(includedAnswer));
+	//
+	// // Get abstract List-Question
+	// QuestionChoice listQuestion = (QuestionChoice) kbm.findQuestion(listID);
+	// Choice activeAnswer = kbm.findChoice(listQuestion, "active");
+	//
+	// // Create Rule
+	// RuleFactory.createSetValueRule(kbm.createRuleID(), listQuestion,
+	// new Object[] { activeAnswer }, condition);
+	//
+	// }
 
 	private void createD3Objects(String tableContent,
 			KnowledgeBaseManagement kbm, String listID, String web) {
@@ -176,7 +177,7 @@ public class ListSubstancesD3SubtreeHandler extends D3webSubtreeHandler<ListSubs
 				// new String[] {
 				// "included", "excluded" });
 				addGlobalQuestion(sgn, web, kbm);
-//				createListRule(kbm, listID, sgnQ);
+				// createListRule(kbm, listID, sgnQ);
 			}
 		}
 	}

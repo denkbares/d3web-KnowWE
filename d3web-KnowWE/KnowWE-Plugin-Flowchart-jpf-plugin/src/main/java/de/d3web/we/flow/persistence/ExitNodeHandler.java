@@ -26,34 +26,30 @@ import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 /**
  * @author Reinhard Hatko
  * @created 10.08.10
- *
+ * 
  */
 public class ExitNodeHandler extends AbstractNodeHandler {
-
 
 	public ExitNodeHandler() {
 		super(ExitType.getInstance(), null);
 	}
 
-
 	public boolean canCreateNode(KnowWEArticle article,
 			KnowledgeBaseManagement kbm, Section nodeSection) {
-		
+
 		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
-		
+
 		return nodeInfo != null;
 	}
 
-
 	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm,
 			Section nodeSection, Section flowSection, String id, List<Message> errors) {
-		
+
 		String flowName = AbstractXMLObjectType.getAttributeMapFor(flowSection).get("name");
-		
+
 		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
-		
+
 		String endNodeName = FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
-		
 
 		ActionSetValue action = FlowFactory.getInstance().createSetValueAction();
 
@@ -72,21 +68,20 @@ public class ExitNodeHandler extends AbstractNodeHandler {
 		}
 
 		if (answer == null) {
-			 errors.add(new Message("No startnode  '" + flowName +
-			 "' not found in terminology of flow '" + flowName +"'."));
+			errors.add(new Message("No startnode  '" + flowName +
+					"' not found in terminology of flow '" + flowName + "'."));
 			return null;
 		}
 
-		//HOTFIX
+		// HOTFIX
 		List<ChoiceValue> values = new LinkedList<ChoiceValue>();
 		values.add(new ChoiceValue(answer));
-	
+
 		action.setValue(new MultipleChoiceValue(values));
 		//
-		
+
 		return FlowFactory.getInstance().createEndNode(id, endNodeName, action);
-		
-		
+
 	}
 
 }

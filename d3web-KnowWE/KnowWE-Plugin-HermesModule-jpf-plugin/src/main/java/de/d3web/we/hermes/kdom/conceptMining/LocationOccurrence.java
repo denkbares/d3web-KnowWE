@@ -13,8 +13,6 @@ public class LocationOccurrence extends DefaultAbstractKnowWEObjectType {
 
 }
 
-
-
 class LocationFinder extends ConceptFinder {
 
 	private static String[] classes = { "Location" };

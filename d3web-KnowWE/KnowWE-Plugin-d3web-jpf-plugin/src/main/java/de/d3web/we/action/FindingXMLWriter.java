@@ -125,9 +125,9 @@ public class FindingXMLWriter {
 		String questionID = theQuestion.getId();
 		sb.append(
 				"<Question ID='"
-				+ questionID
-				+ "' type='"
-				+ type + "'");
+						+ questionID
+						+ "' type='"
+						+ type + "'");
 		sb.append(">\n");
 		String text = "";
 		try {

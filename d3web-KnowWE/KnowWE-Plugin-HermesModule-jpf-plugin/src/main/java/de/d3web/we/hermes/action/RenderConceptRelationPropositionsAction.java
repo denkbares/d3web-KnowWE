@@ -8,7 +8,8 @@ public class RenderConceptRelationPropositionsAction extends DeprecatedAbstractK
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
 
-		String[] rels = { "bla", "blubb", "concept mismatch", "dont ask agein" };
+		String[] rels = {
+				"bla", "blubb", "concept mismatch", "dont ask agein" };
 
 		StringBuffer buffy = new StringBuffer();
 
@@ -28,7 +29,6 @@ public class RenderConceptRelationPropositionsAction extends DeprecatedAbstractK
 					+ string + "' " + "rel=\"{url: '" + rqst
 					+ "'}\" ");
 
-			
 			buffy.append("class='semano_oc'");
 			buffy.append(">" + string + "<br />");
 

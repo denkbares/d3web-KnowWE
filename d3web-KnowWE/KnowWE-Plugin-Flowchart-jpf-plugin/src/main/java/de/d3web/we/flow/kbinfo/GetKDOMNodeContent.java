@@ -12,21 +12,19 @@ import de.d3web.we.core.KnowWEEnvironment;
 
 /**
  * @author Reinhard Hatko
- *
- * Created: 18.06.2010
+ * 
+ *         Created: 18.06.2010
  */
 public class GetKDOMNodeContent extends AbstractAction {
 
 	public void execute(ActionContext context) throws IOException {
-		
+
 		String web = context.getParameter(KnowWEAttributes.WEB);
 		String nodeID = context.getParameter(KnowWEAttributes.TARGET);
 		String name = context.getParameter(KnowWEAttributes.TOPIC);
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
-		
+
 		context.getWriter().write(mgr.findNode(nodeID).getOriginalText());
-		
-		
 
 	}
 

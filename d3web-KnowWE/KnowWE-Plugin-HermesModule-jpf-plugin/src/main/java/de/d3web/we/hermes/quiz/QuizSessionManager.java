@@ -23,7 +23,7 @@ public class QuizSessionManager {
 
 	public void stopSession(String user) {
 		QuizSession s = sessions.get(user);
-		if(s != null) {
+		if (s != null) {
 			s.setStopped(true);
 		}
 	}

@@ -10,10 +10,8 @@ public class Strings {
 	 * specify all types of objects, they will be printed as
 	 * {@link String#valueOf(Object)} would do.
 	 * 
-	 * @param separator
-	 *            the separating text in between the concatenated strings
-	 * @param strings
-	 *            the strings to be concatenated
+	 * @param separator the separating text in between the concatenated strings
+	 * @param strings the strings to be concatenated
 	 * @return the resulting concatenation
 	 */
 	public static String concat(String separator, Object[] strings) {
@@ -33,10 +31,8 @@ public class Strings {
 	 * specify all types of objects, they will be printed as
 	 * {@link String#valueOf(Object)} would do.
 	 * 
-	 * @param separator
-	 *            the separating text in between the concatenated strings
-	 * @param strings
-	 *            the strings to be concatenated
+	 * @param separator the separating text in between the concatenated strings
+	 * @param strings the strings to be concatenated
 	 * @return the resulting concatenation
 	 */
 	public static String concat(String separator, Collection<?> strings) {

@@ -6,6 +6,7 @@ import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
 
 public class D3WebOWLVokab {
+
 	private static String basens = "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#";
 	public static Object FINDING;
 	public static URI HASFINDING;
@@ -41,6 +42,6 @@ public class D3WebOWLVokab {
 		HASCONJUNCTS = factory.createURI(basens, "hasConjuncts");
 		HASWEIGHT = factory.createURI(basens, "hasWeight");
 		EXPLAINS = factory.createURI(basens, "Explains");
-		ISRATEDBY= factory.createURI(basens, "isRatedBy");
+		ISRATEDBY = factory.createURI(basens, "isRatedBy");
 	}
 }

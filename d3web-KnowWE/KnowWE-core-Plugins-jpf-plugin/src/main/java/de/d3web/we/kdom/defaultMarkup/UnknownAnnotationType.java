@@ -16,16 +16,17 @@ public class UnknownAnnotationType extends DefaultAbstractKnowWEObjectType {
 
 	private final static String SECTION_REGEXP =
 				// prefix (declare the parameter)
-	"^\\p{Blank}*(@(\\w++)\\p{Blank}*[:=]?\\p{Blank}*" +
-				// content (any reluctant matched)
-			"\\p{Space}*([^\\p{Space}:=].*?))\\p{Space}*" +
-						// suffix: terminate-tag or end-of-input or declare next parameter
-			"(?:(?:^\\p{Blank}*%\\p{Blank}*$)" +
-			"|" +
-			"(?:\\z)" +
-			"|" +
-			"(?:^\\p{Blank}*@\\w+))";
-	
+				"^\\p{Blank}*(@(\\w++)\\p{Blank}*[:=]?\\p{Blank}*" +
+						// content (any reluctant matched)
+						"\\p{Space}*([^\\p{Space}:=].*?))\\p{Space}*" +
+						// suffix: terminate-tag or end-of-input or declare next
+						// parameter
+						"(?:(?:^\\p{Blank}*%\\p{Blank}*$)" +
+						"|" +
+						"(?:\\z)" +
+						"|" +
+						"(?:^\\p{Blank}*@\\w+))";
+
 	private final static Pattern PATTERN = Pattern.compile(SECTION_REGEXP, FLAGS);
 
 	public UnknownAnnotationType() {

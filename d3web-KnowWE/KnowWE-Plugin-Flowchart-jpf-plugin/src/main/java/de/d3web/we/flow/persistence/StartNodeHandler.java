@@ -19,35 +19,31 @@ import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 /**
  * @author Reinhard Hatko
  * @created 10.08.10
- *
+ * 
  */
 public class StartNodeHandler extends AbstractNodeHandler {
-
 
 	public StartNodeHandler() {
 		super(StartType.getInstance(), null);
 	}
 
-
 	public boolean canCreateNode(KnowWEArticle article,
 			KnowledgeBaseManagement kbm, Section nodeSection) {
-		
+
 		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
-		
+
 		return nodeInfo != null;
-		
+
 	}
 
-
 	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section nodeSection, Section flowSection, String id, List<Message> errors) {
-		
+
 		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
-		
+
 		String name = FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
-		
 
 		return FlowFactory.getInstance().createStartNode(id, name);
-		
+
 	}
 
 }

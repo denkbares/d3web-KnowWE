@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.kopic.renderer;
@@ -47,9 +47,9 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * Highlights the Rules in Kopic-Sections according to the Session.
- *
+ * 
  * @author Johannes Dienst
- *
+ * 
  */
 public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 
@@ -57,12 +57,11 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 
 	/**
 	 * Singleton.
-	 *
+	 * 
 	 * @return
 	 */
 	public static RuleConditionHighlightingRenderer getInstance() {
-		if (instance == null)
-			instance = new RuleConditionHighlightingRenderer();
+		if (instance == null) instance = new RuleConditionHighlightingRenderer();
 		return instance;
 	}
 
@@ -151,7 +150,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 	 * RuleCondition everything has to be done here. TODO: A ConditionLine
 	 * should only contain RuleCondition. So a special Renderer only for this
 	 * section can be written.
-	 *
+	 * 
 	 * @param sec
 	 * @param rc
 	 * @param session
@@ -200,7 +199,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 
 	/**
 	 * Renders the Condition with highlighting.
-	 *
+	 * 
 	 * @param sec
 	 * @param rc
 	 * @param session
@@ -233,8 +232,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 			FontColorBackgroundRenderer.getRenderer(FontColorRenderer.COLOR5,
 					null).render(article, sec, user, buffi);
 		}
-		if (braced)
-			buffi.append(")");
+		if (braced) buffi.append(")");
 
 		return buffi.toString();
 	}

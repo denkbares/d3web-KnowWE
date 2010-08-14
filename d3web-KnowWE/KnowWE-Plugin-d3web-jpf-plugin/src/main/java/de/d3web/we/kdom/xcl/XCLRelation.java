@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.xcl;
@@ -61,7 +61,7 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 		this.addSubtreeHandler(new XCLRelationOWLSubTreeHandler());
 	}
 
-	private class XCLRelationOWLSubTreeHandler extends OwlSubtreeHandler{
+	private class XCLRelationOWLSubTreeHandler extends OwlSubtreeHandler {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
@@ -75,7 +75,7 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 				URI solutionuri = ((DefaultSubjectContext) ContextManager
 						.getInstance().getContext(s, DefaultSubjectContext.CID))
 						.getSolutionURI();
-				io.addStatement(uo.getHelper().createStatement(solutionuri,D3WebOWLVokab.ISRATEDBY
+				io.addStatement(uo.getHelper().createStatement(solutionuri, D3WebOWLVokab.ISRATEDBY
 						, explainsdings));
 				uo.getHelper().attachTextOrigin(explainsdings, s, io);
 
@@ -85,7 +85,8 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 				for (Section current : children) {
 					if (current.getObjectType() instanceof ComplexFinding
 							|| current.getObjectType() instanceof Finding) {
-						IntermediateOwlObject tempio= (IntermediateOwlObject) KnowWEUtils.getStoredObject(current, OwlHelper.IOO);
+						IntermediateOwlObject tempio = (IntermediateOwlObject) KnowWEUtils.getStoredObject(
+								current, OwlHelper.IOO);
 						for (URI curi : tempio.getLiterals()) {
 							Statement state = uo.getHelper().createStatement(
 									explainsdings,
@@ -94,22 +95,24 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 							tempio.removeLiteral(curi);
 						}
 						io.merge(tempio);
-					} else if (current.getObjectType() instanceof XCLRelationWeight) {				
+					}
+					else if (current.getObjectType() instanceof XCLRelationWeight) {
 						io.addStatement(uo.getHelper().createStatement(
 								explainsdings,
 								D3WebOWLVokab.HASWEIGHT,
-								uo.getHelper().createLiteral(current.getOriginalText())));					
+								uo.getHelper().createLiteral(current.getOriginalText())));
 
 					}
 
 				}
-			} catch (RepositoryException e) {
+			}
+			catch (RepositoryException e) {
 				msgs.add(new SimpleMessageError(e.getMessage()));
 			}
 			SemanticCoreDelegator.getInstance().addStatements(io, s);
 			return msgs;
 
 		}
-		
+
 	}
 }

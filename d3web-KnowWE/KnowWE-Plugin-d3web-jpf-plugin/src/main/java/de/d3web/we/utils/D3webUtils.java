@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.utils;
@@ -47,8 +47,8 @@ import de.d3web.xcl.XCLRelationType;
 public class D3webUtils {
 
 	public static de.d3web.core.knowledge.terminology.Question getQuestion(KnowledgeServiceSession kss, String qid) {
-		if(kss instanceof D3webKnowledgeServiceSession) {
-			D3webKnowledgeServiceSession session = ((D3webKnowledgeServiceSession)kss);
+		if (kss instanceof D3webKnowledgeServiceSession) {
+			D3webKnowledgeServiceSession session = ((D3webKnowledgeServiceSession) kss);
 			KnowledgeBase kb = session.getBaseManagement().getKnowledgeBase();
 			return session.getBaseManagement().findQuestion(qid);
 
@@ -56,35 +56,35 @@ public class D3webUtils {
 
 		return null;
 	}
-	
+
 	static ArrayList<String> possibleScorePoints;
-	
+
 	public static List<String> getPossibleScores() {
-		if(possibleScorePoints == null) {
-		
+		if (possibleScorePoints == null) {
+
 			possibleScorePoints = new ArrayList<String>();
-			
-		String n = "N";
-		String p = "P";
-		for (int i = 1; i <= 7; i++) {
-			possibleScorePoints.add(n + i);
-			possibleScorePoints.add(p + i);
-		}
-		possibleScorePoints.add("P5x");
-		possibleScorePoints.add("N5x");
-		possibleScorePoints.add("!");
-		possibleScorePoints.add("?");
-		possibleScorePoints.add("excluded");
-		possibleScorePoints.add("established");
-		possibleScorePoints.add("suggested");
+
+			String n = "N";
+			String p = "P";
+			for (int i = 1; i <= 7; i++) {
+				possibleScorePoints.add(n + i);
+				possibleScorePoints.add(p + i);
+			}
+			possibleScorePoints.add("P5x");
+			possibleScorePoints.add("N5x");
+			possibleScorePoints.add("!");
+			possibleScorePoints.add("?");
+			possibleScorePoints.add("excluded");
+			possibleScorePoints.add("established");
+			possibleScorePoints.add("suggested");
 		}
 		return possibleScorePoints;
 	}
 
 	/**
-	 *
+	 * 
 	 * Adds a MMInfo DCMarkup to the NamedObject
-	 *
+	 * 
 	 * @param o
 	 * @param title
 	 * @param subject
@@ -93,10 +93,8 @@ public class D3webUtils {
 	 */
 	public static void addMMInfo(NamedObject o, String title, String subject,
 			String content, String language) {
-		if (o == null)
-			return;
-		if (content == null)
-			return;
+		if (o == null) return;
+		if (content == null) return;
 
 		if (content.startsWith("\"") && content.endsWith("\"")
 				&& content.length() > 1) {
@@ -108,8 +106,7 @@ public class D3webUtils {
 		dcm.setContent(DCElement.TITLE, title);
 		dcm.setContent(DCElement.SUBJECT, subject);
 		dcm.setContent(DCElement.SOURCE, o.getId());
-		if (language != null)
-			dcm.setContent(DCElement.LANGUAGE, language);
+		if (language != null) dcm.setContent(DCElement.LANGUAGE, language);
 		MMInfoObject mmi = new MMInfoObject(dcm, content);
 		if (o.getProperties().getProperty(Property.MMINFO) == null) {
 			mmis = new MMInfoStorage();
@@ -133,7 +130,6 @@ public class D3webUtils {
 	// }
 	// return null;
 	// }
-
 
 	/**
 	 * Gets the Session Object.
@@ -188,10 +184,9 @@ public class D3webUtils {
 		return sessions;
 	}
 
-
 	/**
 	 * Gets the RelationType from Relation
-	 *
+	 * 
 	 * @param rel
 	 * @return
 	 */
@@ -225,29 +220,27 @@ public class D3webUtils {
 		Score score = null;
 		List<Score> allScores = Score.getAllScores();
 		for (Score sc : allScores) {
-			if(sc.getSymbol().equals(argument)) {
+			if (sc.getSymbol().equals(argument)) {
 				score = sc;
 				break;
 			}
 		}
-		if(argument.equals("!")) {
-			score =  Score.P7;
-		}
-		if(argument.equals("?")) {
-			score = Score.P5;
-		}
-		if(argument.equals("excluded")) {
-			score = Score.N7;
-		}
-		if(argument.equals("established")) {
+		if (argument.equals("!")) {
 			score = Score.P7;
 		}
-		if(argument.equals("suggested")) {
+		if (argument.equals("?")) {
 			score = Score.P5;
 		}
-		
-	
-		
+		if (argument.equals("excluded")) {
+			score = Score.N7;
+		}
+		if (argument.equals("established")) {
+			score = Score.P7;
+		}
+		if (argument.equals("suggested")) {
+			score = Score.P5;
+		}
+
 		return score;
 	}
 

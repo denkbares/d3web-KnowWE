@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.sparql;
@@ -48,6 +48,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public final class SparqlDelegateRenderer extends
 		KnowWEDomRenderer<SparqlContent> {
+
 	private ResourceBundle rb;
 	private static SparqlDelegateRenderer instance;
 	private HashMap<String, SparqlRenderer> renderers;
@@ -84,8 +85,7 @@ public final class SparqlDelegateRenderer extends
 	}
 
 	public static synchronized SparqlDelegateRenderer getInstance() {
-		if (instance == null)
-			instance = new SparqlDelegateRenderer();
+		if (instance == null) instance = new SparqlDelegateRenderer();
 		return instance;
 	}
 
@@ -134,7 +134,8 @@ public final class SparqlDelegateRenderer extends
 						+ res;
 			}
 			string.append(res);
-		} else {
+		}
+		else {
 			if (debug) {
 				res = KnowWEUtils.maskHTML(querystring + "<hr /><br />\n")
 						+ res;
@@ -144,8 +145,7 @@ public final class SparqlDelegateRenderer extends
 	}
 
 	public static String addNamespaces(String newns) {
-		if (newns == null)
-			newns = "";
+		if (newns == null) newns = "";
 		String rawquery = newns.trim();
 		String querystring = SemanticCoreDelegator.getInstance()
 				.getSparqlNamespaceShorts()
@@ -171,9 +171,11 @@ public final class SparqlDelegateRenderer extends
 		Query query = null;
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL, querystring);
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			return e.getMessage();
-		} catch (MalformedQueryException e) {
+		}
+		catch (MalformedQueryException e) {
 			return e.getMessage();
 		}
 		try {
@@ -182,7 +184,8 @@ public final class SparqlDelegateRenderer extends
 				String erg = "";
 				try {
 					erg = currentrenderer.render(result, params);
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 
 					erg = e.getMessage();
 					for (StackTraceElement cur : e.getStackTrace()) {
@@ -191,17 +194,21 @@ public final class SparqlDelegateRenderer extends
 				}
 
 				return erg;
-			} else if (query instanceof GraphQuery) {
+			}
+			else if (query instanceof GraphQuery) {
 				// GraphQueryResult result = ((GraphQuery) query).evaluate();
 				return "graphquery ouput implementation: TODO";
-			} else if (query instanceof BooleanQuery) {
+			}
+			else if (query instanceof BooleanQuery) {
 				boolean result = ((BooleanQuery) query).evaluate();
 				return result + "";
 			}
-		} catch (QueryEvaluationException e) {
+		}
+		catch (QueryEvaluationException e) {
 			return rb.getString("KnowWE.owl.query.evalualtion.error") + ":"
 					+ e.getMessage();
-		} finally {
+		}
+		finally {
 
 		}
 		return null;

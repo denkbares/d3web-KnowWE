@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.KnOfficeParser.table;
@@ -60,7 +60,7 @@ public class XCLRelationBuilder implements CellKnowledgeBuilder {
 	public Message add(IDObjectManagement idom, int line, int column,
 			String file, Condition cond, String text, Solution diag,
 			boolean errorOccured) {
-		
+
 		if (!createUncompleteFindings) {
 			if (errorOccured) {
 				System.out.println(text);
@@ -68,7 +68,7 @@ public class XCLRelationBuilder implements CellKnowledgeBuilder {
 			}
 		}
 		String s;
-		if (text!=null) {
+		if (text != null) {
 			try {
 				s = properties.getString(text);
 			}
@@ -78,25 +78,30 @@ public class XCLRelationBuilder implements CellKnowledgeBuilder {
 			catch (ClassCastException e) {
 				s = text;
 			}
-		} else {
+		}
+		else {
 			s = text;
 		}
 		String relationID;
-		
+
 		if (s.equals("--")) {
 			relationID = XCLModel.insertXCLRelation(idom.getKnowledgeBase(), cond, diag,
 					XCLRelationType.contradicted, file);
-		} else if (s.equals("!")) {
+		}
+		else if (s.equals("!")) {
 			relationID = XCLModel.insertXCLRelation(idom.getKnowledgeBase(), cond, diag,
 					XCLRelationType.requires, file);
-		} else if (s.equals("++")) {
+		}
+		else if (s.equals("++")) {
 			relationID = XCLModel.insertXCLRelation(idom.getKnowledgeBase(), cond, diag,
 					XCLRelationType.sufficiently, file);
-		} else {
+		}
+		else {
 			Double value;
 			try {
 				value = Double.parseDouble(s);
-			} catch (NumberFormatException e) {
+			}
+			catch (NumberFormatException e) {
 				return MessageKnOfficeGenerator.createNoValidWeightException(
 						file, line, column, "", text);
 			}
@@ -104,7 +109,7 @@ public class XCLRelationBuilder implements CellKnowledgeBuilder {
 					XCLRelationType.explains, value, file);
 
 		}
-		return new Message("relID:"+relationID);
+		return new Message("relID:" + relationID);
 	}
 
 }

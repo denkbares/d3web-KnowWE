@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.flow.testcase;
@@ -37,12 +37,11 @@ import de.d3web.we.kdom.table.TableCell;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableHeaderLine;
 
-
 /**
  * @author Florian Ziegler
  */
 public class TestcaseUtils {
-	
+
 	/**
 	 * @param s the current Section (Cell)
 	 * @return the alternatives for the current Cell
@@ -53,7 +52,6 @@ public class TestcaseUtils {
 				s.getWeb(), s.getTitle());
 		List<Question> questions = knowledgeService.getBase().getQuestions();
 		List<Solution> solutions = knowledgeService.getBase().getSolutions();
-
 
 		if (s.getObjectType() instanceof TestcaseTableColHeaderCellContent) {
 			return null;
@@ -70,10 +68,10 @@ public class TestcaseUtils {
 
 		return null;
 	}
-	
-	
+
 	/**
 	 * returns possible questions for the LineHeader
+	 * 
 	 * @param s the current Section (Cell)
 	 * @param questions all questions of the knowledgeBase
 	 * @return question alternatives
@@ -81,11 +79,11 @@ public class TestcaseUtils {
 	public static String[] getHeaderAlternatives(Section<?> s, List<Question> questions, List<Solution> solutions) {
 
 		List<String> temp = new ArrayList<String>();
-		
+
 		for (Question q : questions) {
 			temp.add("" + q);
 		}
-		
+
 		temp.add("[:;:]");
 		for (Solution sol : solutions) {
 			if (!("" + sol).equals("P000")) {
@@ -95,18 +93,17 @@ public class TestcaseUtils {
 
 		return temp.toArray(new String[temp.size()]);
 	}
-	
-	
+
 	/**
-	 * returns possible answer for a Cell regarding its
-	 * LineHeader
+	 * returns possible answer for a Cell regarding its LineHeader
+	 * 
 	 * @param s the current Section (Cell)
 	 * @param questions all questions of the knowledgeBase
 	 * @return answer alternatives
 	 */
 	public static String[] getSimpleTableCellAlternatives(Section<?> s,
 			List<Question> questions, List<Solution> solutions) {
-		
+
 		if (questions == null) {
 			return null;
 		}
@@ -193,4 +190,3 @@ public class TestcaseUtils {
 		return headerText;
 	}
 }
-

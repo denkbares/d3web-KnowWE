@@ -70,16 +70,16 @@ import de.d3web.we.terminology.D3webSubtreeHandler;
 /**
  * 
  * 
- * @author Reinhard Hatko 
+ * @author Reinhard Hatko
  * @created on: 12.10.2009
  */
 public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
-	
+
 	private final static List<NodeHandler> HANDLERS;
-	
+
 	static {
 		HANDLERS = new ArrayList<NodeHandler>();
-		
+
 		HANDLERS.add(new StartNodeHandler());
 		HANDLERS.add(new ExitNodeHandler());
 		HANDLERS.add(new DiagnosisNodeHandler());
@@ -88,25 +88,24 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 		HANDLERS.add(new QuestionNodeHandler());
 		HANDLERS.add(new SnapshotNodeHandler());
 	}
-	
 
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
-		
+
 		KnowledgeBaseManagement kbm = getKBM(article);
 
 		if (kbm == null) {
 			return null;
 		}
-		
+
 		Map<String, String> attributeMap = AbstractXMLObjectType.getAttributeMapFor(s);
 		String name = attributeMap.get("name");
 		String id = attributeMap.get("fcid");
-		
+
 		if (name == null || name.equals("")) name = "unnamed";
 
 		List<Message> errors = new ArrayList<Message>();
-		
+
 		List<INode> nodes = createNodes(article, name, s, errors);
 
 		List<IEdge> edges = createEdges(article, s, nodes, errors);
@@ -116,38 +115,39 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 		DiaFluxUtils.addFlow(flow, kbm.getKnowledgeBase(), article.getTitle());
 
 		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
-		
+
 		for (final Message message : errors) {
 			msgs.add(new KDOMWarning() {
+
 				public String getVerbalization() {
 					return message.getMessageText();
 				}
 			});
 		}
-		
+
 		return msgs;
 	}
 
 	private List<IEdge> createEdges(KnowWEArticle article, Section flowSection, List<INode> nodes, List<Message> errors) {
 		List<IEdge> result = new ArrayList<IEdge>();
-		
+
 		List<Section> edgeSections = new ArrayList<Section>();
 		Section flowcontent = ((AbstractXMLObjectType) flowSection.getObjectType()).getContentChild(flowSection);
 		flowcontent.findSuccessorsOfType(EdgeType.class, edgeSections);
-		
 
 		for (Section section : edgeSections) {
 
 			String id = AbstractXMLObjectType.getAttributeMapFor(section).get("fcid");
-			Section content = (Section) section.getChildren().get(1); 
+			Section content = (Section) section.getChildren().get(1);
 
 			String sourceID = getXMLContentText(content.findChildOfType(OriginType.class));
 
 			INode source = getNodeByID(sourceID, nodes);
 
 			if (source == null) {
-				String messageText = "No source node found with id " + sourceID + " in edge " + id + ".";
-				
+				String messageText = "No source node found with id " + sourceID + " in edge " + id
+						+ ".";
+
 				errors.add(new Message(messageText));
 				continue;
 			}
@@ -157,7 +157,8 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 			INode target = getNodeByID(targetID, nodes);
 
 			if (target == null) {
-				String messageText = "No target node found with id " + targetID + " in edge " + id + ".";
+				String messageText = "No target node found with id " + targetID + " in edge " + id
+						+ ".";
 				errors.add(new Message(messageText));
 				continue;
 			}
@@ -172,11 +173,13 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 				if (condition == null) {
 					condition = ConditionTrue.INSTANCE;
 
-					errors.add(new Message("Could not parse condition: " + getXMLContentText(guardSection)));
+					errors.add(new Message("Could not parse condition: "
+							+ getXMLContentText(guardSection)));
 
 				}
 
-			} else {
+			}
+			else {
 				condition = ConditionTrue.INSTANCE;
 			}
 
@@ -238,38 +241,41 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 		return null;
 	}
 
-
 	private List<INode> createNodes(KnowWEArticle article, String flowName, Section flowSection, List<Message> errors) {
 
 		List<INode> result = new ArrayList<INode>();
 		List<Section> nodeSections = new ArrayList<Section>();
 		Section flowcontent = ((AbstractXMLObjectType) flowSection.getObjectType()).getContentChild(flowSection);
 		flowcontent.findSuccessorsOfType(NodeType.class, nodeSections);
-		
+
 		KnowledgeBaseManagement kbm = getKBM(article);
-		
+
 		for (Section nodeSection : nodeSections) {
 
 			String id = AbstractXMLObjectType.getAttributeMapFor(nodeSection).get("fcid");
 
 			NodeHandler handler = findNodeHandler(article, kbm, nodeSection);
-			
+
 			if (handler == null) {
 				errors.add(new Message("No NodeHandler found for: " + nodeSection.getOriginalText()));
 				continue;
-			} else {// handler can in general handle NodeType
+			}
+			else {// handler can in general handle NodeType
 				INode node = handler.createNode(article, kbm, nodeSection, flowSection, id, errors);
-				
-				if (node != null) { 
+
+				if (node != null) {
 					result.add(node);
-				} else { //handler could not generate a node for the supplied section
+				}
+				else { // handler could not generate a node for the supplied
+						// section
 					Section<KnowWEObjectType> nodeInfo = nodeSection.findSuccessor(handler.getObjectType().getClass());
 					String text = getXMLContentText(nodeInfo);
-					errors.add(new Message("NodeHandler " + handler.getClass().getSimpleName() + " could not create node for: " + text));
-					result.add(FlowFactory.getInstance().createCommentNode(id, "Surrogate for node of type " ));
+					errors.add(new Message("NodeHandler " + handler.getClass().getSimpleName()
+							+ " could not create node for: " + text));
+					result.add(FlowFactory.getInstance().createCommentNode(id,
+							"Surrogate for node of type "));
 				}
-				
-				
+
 			}
 
 		}
@@ -279,266 +285,276 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 
 	private NodeHandler findNodeHandler(KnowWEArticle article,
 			KnowledgeBaseManagement kbm, Section nodeSection) {
-		
+
 		for (NodeHandler handler : HANDLERS) {
-			if (handler.canCreateNode(article, kbm, nodeSection))
-				return handler;
+			if (handler.canCreateNode(article, kbm, nodeSection)) return handler;
 		}
-		
+
 		return null;
 	}
-	
-//	
-//	private List<INode> createNodes(KnowWEArticle article, String flowName, List<Section> nodeSections, List<Message> errors) {
-//		
-//		List<INode> result = new ArrayList<INode>();
-//		
-//		for (Section section : nodeSections) {
-//			
-//			Section nodeContent = (Section) section.getChildren().get(1); 
-//			// Section
-//			// of
-//			// NodeContentType
-//			
-//			// get the important info
-//			List<Section> children = nodeContent.getChildren(new SectionFilter() {
-//				
-//				public boolean accept(Section section) {
-//					return section.getObjectType() != PositionType.getInstance()
-//					&& section.getObjectType() != PlainText.getInstance();
-//				}
-//			});
-//			
-//			// Assert.assertEquals(section +
-//			// " has the wrong number of children.",1, children.size());
-//			
-//			if (children.size() != 1) continue;
-//			
-//			Section nodeinfo = children.get(0);
-//			
-//			String id = AbstractXMLObjectType.getAttributeMapFor(section).get("fcid");
-//			
-//			if (nodeinfo.getObjectType() == StartType.getInstance()) {
-//				result.add(createStartNode(id, nodeinfo, errors));
-//			} else if (nodeinfo.getObjectType() == ExitType.getInstance()) {
-//				result.add(createEndNode(
-//						article, id, flowName, nodeinfo, errors));
-//			} else if (nodeinfo.getObjectType() == ActionType.getInstance()) {
-//				result.add(createActionNode(
-//						article, id, nodeinfo, errors));
-//			} else if (nodeinfo.getObjectType() == CommentType.getInstance()) {
-//				result.add(createCommentNode(
-//						article, id, nodeinfo, errors));
-//			} else if (nodeinfo.getObjectType() == SnapshotType.getInstance()) {
-//				result.add(createSnapshotNode(
-//						article, id, nodeinfo, errors));
-//			}
-//			else {
-//				errors.add(new Message("Unknown node type: " + nodeinfo.getObjectType()));
-//			}
-//			
-//		}
-//		
-//		return result;
-//	}
-	
 
-//	private INode createSnapshotNode(KnowWEArticle article, String id,
-//			Section nodeinfo, List<Message> errors) {
-//		
-////		SnapshotAction action = new SnapshotAction();
-//		
-////		return FlowFactory.getInstance().createNode(id, action);
-//		return new SnapshotNode(id);
-//	}
+	//	
+	// private List<INode> createNodes(KnowWEArticle article, String flowName,
+	// List<Section> nodeSections, List<Message> errors) {
+	//		
+	// List<INode> result = new ArrayList<INode>();
+	//		
+	// for (Section section : nodeSections) {
+	//			
+	// Section nodeContent = (Section) section.getChildren().get(1);
+	// // Section
+	// // of
+	// // NodeContentType
+	//			
+	// // get the important info
+	// List<Section> children = nodeContent.getChildren(new SectionFilter() {
+	//				
+	// public boolean accept(Section section) {
+	// return section.getObjectType() != PositionType.getInstance()
+	// && section.getObjectType() != PlainText.getInstance();
+	// }
+	// });
+	//			
+	// // Assert.assertEquals(section +
+	// // " has the wrong number of children.",1, children.size());
+	//			
+	// if (children.size() != 1) continue;
+	//			
+	// Section nodeinfo = children.get(0);
+	//			
+	// String id =
+	// AbstractXMLObjectType.getAttributeMapFor(section).get("fcid");
+	//			
+	// if (nodeinfo.getObjectType() == StartType.getInstance()) {
+	// result.add(createStartNode(id, nodeinfo, errors));
+	// } else if (nodeinfo.getObjectType() == ExitType.getInstance()) {
+	// result.add(createEndNode(
+	// article, id, flowName, nodeinfo, errors));
+	// } else if (nodeinfo.getObjectType() == ActionType.getInstance()) {
+	// result.add(createActionNode(
+	// article, id, nodeinfo, errors));
+	// } else if (nodeinfo.getObjectType() == CommentType.getInstance()) {
+	// result.add(createCommentNode(
+	// article, id, nodeinfo, errors));
+	// } else if (nodeinfo.getObjectType() == SnapshotType.getInstance()) {
+	// result.add(createSnapshotNode(
+	// article, id, nodeinfo, errors));
+	// }
+	// else {
+	// errors.add(new Message("Unknown node type: " +
+	// nodeinfo.getObjectType()));
+	// }
+	//			
+	// }
+	//		
+	// return result;
+	// }
 
-//	private INode createCommentNode(KnowWEArticle article, String id,
-//			Section nodeinfo, List<Message> errors) {
-//
-//		PSAction action = NoopAction.INSTANCE;
-//
-//		INode node = FlowFactory.getInstance().createActionNode(id, action);
-//		String string = getXMLContentText(nodeinfo);
-//		
-//		node.setName("Comment: " + string);
-//		
-//		
-//		return node;
-//	}
+	// private INode createSnapshotNode(KnowWEArticle article, String id,
+	// Section nodeinfo, List<Message> errors) {
+	//		
+	// // SnapshotAction action = new SnapshotAction();
+	//		
+	// // return FlowFactory.getInstance().createNode(id, action);
+	// return new SnapshotNode(id);
+	// }
 
-//	private INode createActionNode(KnowWEArticle article, String id, Section section, List<Message> errors) {
-//
-//		PSAction action = NoopAction.INSTANCE;
-//		String string = getXMLContentText(section);
-//		if (string.startsWith("ERFRAGE") || string.startsWith("INSTANT")) {
-//			action = createQAindicationAction(article, section, string, errors);
-//		}
-//		else if (string.contains("=")) {
-//			action = createHeuristicScoreAction(article, section, string, errors);
-//		}
-//		else if (string.startsWith("CALL[")) {
-//			action = createCallFlowAction(article, section, string, errors);
-//		}
-//		else action = NoopAction.INSTANCE;
-//
-//		INode node = FlowFactory.getInstance().createActionNode(id, action);
-//		node.setName(string);
-//		return node;
-//
-//	}
+	// private INode createCommentNode(KnowWEArticle article, String id,
+	// Section nodeinfo, List<Message> errors) {
+	//
+	// PSAction action = NoopAction.INSTANCE;
+	//
+	// INode node = FlowFactory.getInstance().createActionNode(id, action);
+	// String string = getXMLContentText(nodeinfo);
+	//		
+	// node.setName("Comment: " + string);
+	//		
+	//		
+	// return node;
+	// }
 
-//	private PSAction createCallFlowAction(KnowWEArticle article, Section section, String string, List<Message> errors) {
-//		
-//		int nodenameStart = string.indexOf('(');
-//		int nodenameEnd = string.indexOf(')');
-//
-//		String flowName = string.substring(5, nodenameStart);
-//		String nodeName = string.substring(nodenameStart + 1, nodenameEnd);
-//
-//		return new ComposedNodeAction(flowName, nodeName);
-//		
-// //old version using terminology	
-//		KnowledgeBaseManagement kbm = getKBM(article);
-//
-//		QContainer container = kbm.findQContainer(flowName + "_Questionnaire");
-//
-//		if (container == null) {
-//			errors.add(new Message("Terminology not found for flow'" + flowName + "'"));
-//			return NoopAction.INSTANCE;
-//		}
-//
-//		QuestionMC question = null;
-//
-//		for (TerminologyObject child : container.getChildren()) {
-//
-//			if (child.getName().equals(
-//					flowName + "_" + FlowchartTerminologySubTreeHandler.STARTNODES_QUESTION_NAME)) question = (QuestionMC) child;
-//		}
-//
-//		if (question == null) {
-//			errors.add(new Message("No startnode question found for flow '" + flowName + "'."));
-//			return NoopAction.INSTANCE;
-//		}
-//
-//		ActionSetValue action = FlowFactory.getInstance().createSetValueAction();
-//
-//		action.setQuestion(question);
-//
-//		Choice answer = null;
-//		for (Choice child : question.getAllAlternatives()) {
-//			if (child.getName().equals(nodeName)) answer = child;
-//
-//		}
-//
-//		if (answer == null) {
-//			errors.add(new Message("Startnode  '" + nodeName
-//					+ "' not found in terminology of flow '" + flowName + "'."));
-//			return NoopAction.INSTANCE;
-//		}
-//
-//	//TODO: HOTFIX	
-//			List<ChoiceValue> values = new LinkedList<ChoiceValue>();
-//			values.add(new ChoiceValue(answer));
-//		
-//			action.setValue(new MultipleChoiceValue(values));
-////
-//		return action;
-//	}
+	// private INode createActionNode(KnowWEArticle article, String id, Section
+	// section, List<Message> errors) {
+	//
+	// PSAction action = NoopAction.INSTANCE;
+	// String string = getXMLContentText(section);
+	// if (string.startsWith("ERFRAGE") || string.startsWith("INSTANT")) {
+	// action = createQAindicationAction(article, section, string, errors);
+	// }
+	// else if (string.contains("=")) {
+	// action = createHeuristicScoreAction(article, section, string, errors);
+	// }
+	// else if (string.startsWith("CALL[")) {
+	// action = createCallFlowAction(article, section, string, errors);
+	// }
+	// else action = NoopAction.INSTANCE;
+	//
+	// INode node = FlowFactory.getInstance().createActionNode(id, action);
+	// node.setName(string);
+	// return node;
+	//
+	// }
 
-//	private PSAction createHeuristicScoreAction(KnowWEArticle article, Section section,
-//			String string, List<Message> errors) {
-//
-//		String[] split = string.split("=");
-//		String solution = split[0].trim();
-//		String score = split[1].trim();
-//
-//
-//		ActionHeuristicPS action = new ActionHeuristicPS();
-//
-//		if (solution.startsWith("\"")) // remove "
-//			solution = solution.substring(1, solution.length() - 1);
-//
-//		KnowledgeBaseManagement kbm = getKBM(article);
-//		Solution diagnosis = kbm.findSolution(solution);
-//
-//		if (diagnosis == null) {
-//			errors.add(new Message("Diagnosis not found: " + solution));
-//		}
-//
-//		action.setSolution(diagnosis);
-//
-//		if (score.contains("P7")) action.setScore(Score.P7);
-//		else action.setScore(Score.N7);
-//
-//		return action;
-//	}
+	// private PSAction createCallFlowAction(KnowWEArticle article, Section
+	// section, String string, List<Message> errors) {
+	//		
+	// int nodenameStart = string.indexOf('(');
+	// int nodenameEnd = string.indexOf(')');
+	//
+	// String flowName = string.substring(5, nodenameStart);
+	// String nodeName = string.substring(nodenameStart + 1, nodenameEnd);
+	//
+	// return new ComposedNodeAction(flowName, nodeName);
+	//		
+	// //old version using terminology
+	// KnowledgeBaseManagement kbm = getKBM(article);
+	//
+	// QContainer container = kbm.findQContainer(flowName + "_Questionnaire");
+	//
+	// if (container == null) {
+	// errors.add(new Message("Terminology not found for flow'" + flowName +
+	// "'"));
+	// return NoopAction.INSTANCE;
+	// }
+	//
+	// QuestionMC question = null;
+	//
+	// for (TerminologyObject child : container.getChildren()) {
+	//
+	// if (child.getName().equals(
+	// flowName + "_" +
+	// FlowchartTerminologySubTreeHandler.STARTNODES_QUESTION_NAME)) question =
+	// (QuestionMC) child;
+	// }
+	//
+	// if (question == null) {
+	// errors.add(new Message("No startnode question found for flow '" +
+	// flowName + "'."));
+	// return NoopAction.INSTANCE;
+	// }
+	//
+	// ActionSetValue action = FlowFactory.getInstance().createSetValueAction();
+	//
+	// action.setQuestion(question);
+	//
+	// Choice answer = null;
+	// for (Choice child : question.getAllAlternatives()) {
+	// if (child.getName().equals(nodeName)) answer = child;
+	//
+	// }
+	//
+	// if (answer == null) {
+	// errors.add(new Message("Startnode  '" + nodeName
+	// + "' not found in terminology of flow '" + flowName + "'."));
+	// return NoopAction.INSTANCE;
+	// }
+	//
+	// //TODO: HOTFIX
+	// List<ChoiceValue> values = new LinkedList<ChoiceValue>();
+	// values.add(new ChoiceValue(answer));
+	//		
+	// action.setValue(new MultipleChoiceValue(values));
+	// //
+	// return action;
+	// }
 
-//	private PSAction createQAindicationAction(KnowWEArticle article, Section section, String string, List<Message> errors) {
-//		String name = string.substring(8, string.length() - 1);
-//		KnowledgeBaseManagement kbm = getKBM(article);
-//		QASet findQuestion = kbm.findQuestion(name);
-//
-//		if (findQuestion == null) findQuestion = kbm.findQContainer(name);
-//
-//		if (findQuestion == null) {
-//			errors.add(new Message("Question not found: " + name));
-//			return NoopAction.INSTANCE;
-//		}
-//
-//		List<QASet> qasets = new ArrayList<QASet>();
-//
-//		qasets.add(findQuestion);
-//
-//
-//		ActionIndication action = new ActionIndication();
-//
-//		action.setQASets(qasets);
-//
-//		return action;
-//	}
+	// private PSAction createHeuristicScoreAction(KnowWEArticle article,
+	// Section section,
+	// String string, List<Message> errors) {
+	//
+	// String[] split = string.split("=");
+	// String solution = split[0].trim();
+	// String score = split[1].trim();
+	//
+	//
+	// ActionHeuristicPS action = new ActionHeuristicPS();
+	//
+	// if (solution.startsWith("\"")) // remove "
+	// solution = solution.substring(1, solution.length() - 1);
+	//
+	// KnowledgeBaseManagement kbm = getKBM(article);
+	// Solution diagnosis = kbm.findSolution(solution);
+	//
+	// if (diagnosis == null) {
+	// errors.add(new Message("Diagnosis not found: " + solution));
+	// }
+	//
+	// action.setSolution(diagnosis);
+	//
+	// if (score.contains("P7")) action.setScore(Score.P7);
+	// else action.setScore(Score.N7);
+	//
+	// return action;
+	// }
 
-//	private INode createEndNode(KnowWEArticle article, String id, String flowName, Section section, List<Message> errors) {
-//		String name = ((Section) section.getChildren().get(1)).getOriginalText();
-//
-//		ActionSetValue action = FlowFactory.getInstance().createSetValueAction();
-//
-//		QuestionMC question = (QuestionMC) getKBM(article).findQuestion(
-//				flowName + "_" + FlowchartTerminologySubTreeHandler.EXITNODES_QUESTION_NAME);
-//
-//		action.setQuestion(question);
-//
-//		Choice answer = null;
-//		for (Choice child : question.getAllAlternatives()) {
-//			if (child.getName().equals(name)) {
-//				answer = child;
-//				break;
-//			}
-//
-//		}
-//
-//		if (answer == null) {
-//			 errors.add(new Message("No startnode  '" + flowName +
-//			 "' not found in terminology of flow '" + flowName +"'."));
-//			return null;
-//		}
-//
-//		//HOTFIX
-//		List<ChoiceValue> values = new LinkedList<ChoiceValue>();
-//		values.add(new ChoiceValue(answer));
-//	
-//		action.setValue(new MultipleChoiceValue(values));
-//		//
-//		
-//		return FlowFactory.getInstance().createEndNode(id, name, action);
-//	}
+	// private PSAction createQAindicationAction(KnowWEArticle article, Section
+	// section, String string, List<Message> errors) {
+	// String name = string.substring(8, string.length() - 1);
+	// KnowledgeBaseManagement kbm = getKBM(article);
+	// QASet findQuestion = kbm.findQuestion(name);
+	//
+	// if (findQuestion == null) findQuestion = kbm.findQContainer(name);
+	//
+	// if (findQuestion == null) {
+	// errors.add(new Message("Question not found: " + name));
+	// return NoopAction.INSTANCE;
+	// }
+	//
+	// List<QASet> qasets = new ArrayList<QASet>();
+	//
+	// qasets.add(findQuestion);
+	//
+	//
+	// ActionIndication action = new ActionIndication();
+	//
+	// action.setQASets(qasets);
+	//
+	// return action;
+	// }
 
-//	private INode createStartNode(String id, Section section, List<Message> errors) {
-//		String name = ((Section) section.getChildren().get(1)).getOriginalText();
-//
-//		return FlowFactory.getInstance().createStartNode(id, name);
-//
-//	}
+	// private INode createEndNode(KnowWEArticle article, String id, String
+	// flowName, Section section, List<Message> errors) {
+	// String name = ((Section) section.getChildren().get(1)).getOriginalText();
+	//
+	// ActionSetValue action = FlowFactory.getInstance().createSetValueAction();
+	//
+	// QuestionMC question = (QuestionMC) getKBM(article).findQuestion(
+	// flowName + "_" +
+	// FlowchartTerminologySubTreeHandler.EXITNODES_QUESTION_NAME);
+	//
+	// action.setQuestion(question);
+	//
+	// Choice answer = null;
+	// for (Choice child : question.getAllAlternatives()) {
+	// if (child.getName().equals(name)) {
+	// answer = child;
+	// break;
+	// }
+	//
+	// }
+	//
+	// if (answer == null) {
+	// errors.add(new Message("No startnode  '" + flowName +
+	// "' not found in terminology of flow '" + flowName +"'."));
+	// return null;
+	// }
+	//
+	// //HOTFIX
+	// List<ChoiceValue> values = new LinkedList<ChoiceValue>();
+	// values.add(new ChoiceValue(answer));
+	//	
+	// action.setValue(new MultipleChoiceValue(values));
+	// //
+	//		
+	// return FlowFactory.getInstance().createEndNode(id, name, action);
+	// }
 
-
+	// private INode createStartNode(String id, Section section, List<Message>
+	// errors) {
+	// String name = ((Section) section.getChildren().get(1)).getOriginalText();
+	//
+	// return FlowFactory.getInstance().createStartNode(id, name);
+	//
+	// }
 
 }

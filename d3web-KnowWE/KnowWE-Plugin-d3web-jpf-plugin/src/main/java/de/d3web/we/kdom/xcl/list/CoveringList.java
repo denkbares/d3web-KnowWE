@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.xcl.list;
@@ -76,13 +76,13 @@ import de.d3web.xcl.inference.PSMethodXCL;
 
 /**
  * @author Jochen
- *
+ * 
  *         A covering-list markup parser
- *
+ * 
  *         In the first line the solution is defined @see ListSolutionType The
  *         rest of the content is split by ',' (komas) and the content inbetween
  *         is taken as CoveringRelations
- *
+ * 
  */
 public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
@@ -122,22 +122,23 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 		public CoveringRelation() {
 
 			this.setSectionFinder(new ConditionalSectionFinder(new AllTextFinderTrimSpaces()) {
-				
+
 				// hack to allow for comment after last relation
 				// TODO: find better way
 				@Override
 				protected boolean condition(String text, Section<?> father) {
-					// if starts as a comment and there is no next line, there is CoveringRelation in it
+					// if starts as a comment and there is no next line, there
+					// is CoveringRelation in it
 					if (text.trim().startsWith("//") && !(text.contains("\n"))) {
 						return false;
 					}
 					return true;
 				}
 			});
-			
+
 			this.addSubtreeHandler(Priority.LOW, new CreateXCLRelationHandler());
 			this.setCustomRenderer(new CoveringRelationRenderer());
-			
+
 			// here also a comment might occur:
 			AnonymousType relationComment = new AnonymousType("comment");
 			relationComment.setSectionFinder(new RegexSectionFinder("[\\t ]*"
@@ -161,13 +162,12 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 			this.addChildType(cond);
 		}
 
-
 		/**
 		 * @author Jochen
-		 *
+		 * 
 		 *         this handler translates the parsed covering-relation-KDOM to
 		 *         the d3web knowledge base
-		 *
+		 * 
 		 */
 		class CreateXCLRelationHandler extends D3webSubtreeHandler<CoveringRelation> {
 
@@ -179,11 +179,11 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 			@Override
 			public boolean needsToCreate(KnowWEArticle article, Section<CoveringRelation> s) {
-				
-				//TODO: handle this case...
+
+				// TODO: handle this case...
 				Section<SolutionDefinition> solutionDef = getCorrespondingSolutionDef(article, s);
-				if(solutionDef == null) return false;
-				
+				if (solutionDef == null) return false;
+
 				return super.needsToCreate(article, s)
 						|| !solutionDef.isReusedBy(article.getTitle())
 						|| s.isOrHasSuccessorNotReusedBy(article.getTitle());
@@ -191,7 +191,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 			/*
 			 * (non-Javadoc)
-			 *
+			 * 
 			 * @see
 			 * de.d3web.we.kdom.subtreeHandler.SubtreeHandler#create(de.d3web
 			 * .we.kdom.KnowWEArticle, de.d3web.we.kdom.Section)
@@ -210,7 +210,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 				if (s.hasErrorInSubtree()) {
 					return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
 							D3webModule.getKwikiBundle_d3web()
-							.getString("KnowWE.xcllist.relationfail")));
+									.getString("KnowWE.xcllist.relationfail")));
 				}
 
 				Section<SolutionDefinition> solutionDef = getCorrespondingSolutionDef(article, s);
@@ -230,7 +230,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 							if (condition == null) {
 								return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
 										D3webModule.getKwikiBundle_d3web()
-										.getString("KnowWE.xcllist.conditionerror")));
+												.getString("KnowWE.xcllist.conditionerror")));
 							}
 
 							// check the weight/relation type in square brackets
@@ -263,7 +263,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 											getKBM(article).getKnowledgeBase(),
 											condition,
 											solution, type, w, null);
-							
+
 							// set KDOMID here used in {@link KBRenderer}
 							relation.setKdmomID(s.getID());
 
@@ -277,13 +277,12 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 									+ type.toString() + " " + wString));
 							return result;
 
-
 						}
 					}
 				}
 				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
 						D3webModule.getKwikiBundle_d3web()
-						.getString("KnowWE.xcllist.relationfail")));
+								.getString("KnowWE.xcllist.relationfail")));
 			}
 
 			@Override
@@ -327,25 +326,23 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 		}
 	}
-	
+
 	/**
 	 * @author Johannes Dienst
 	 * 
-	 * 			Highlights XCLRelations.
-	 * 			Answer Right: Green
-	 * 			Answer wrong: Red
-	 * 			Answer unknown: No Highlighting
+	 *         Highlights XCLRelations. Answer Right: Green Answer wrong: Red
+	 *         Answer unknown: No Highlighting
 	 * 
 	 */
 	class CoveringRelationRenderer extends KnowWEDomRenderer<CoveringRelation> {
 
 		@Override
 		public void render(KnowWEArticle article, Section<CoveringRelation> sec, KnowWEUserContext user, StringBuilder string) {
-			
+
 			// wrapper for highlighting
 			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID()
 					+ "' class = 'XCLRelationInList'>"));
-			
+
 			XCLRelation relation = (XCLRelation) KnowWEUtils.getStoredObject(sec
 					.getArticle().getWeb(), sec.getTitle(), sec.getID(),
 					CoveringListContent.KBID_KEY);
@@ -356,17 +353,18 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 			}
 
 			Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
-			
+
 			if (session != null) {
 				// eval the Relation to find the right Rendering
 				try {
 					boolean fulfilled = relation.eval(session);
 					// Highlight Relation
 					this.renderRelation(article, sec, user, fulfilled, string, true);
-					//close the wrapper
+					// close the wrapper
 					string.append(KnowWEUtils.maskHTML("</span>"));
 					return;
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					// Call the XCLRelationMarkerHighlightingRenderer
 					// without any additional info
 					// string.append(this.renderRelationChildren(sec, user,
@@ -377,11 +375,11 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 			this.renderRelation(article, sec, user, false, string, false);
 			// close the wrapper
 			string.append(KnowWEUtils.maskHTML("</span>"));
-		}		
+		}
 
 		/***
-		 * Replaces the SpecialDelegateRenderer functionality to enable highlighting
-		 * of Relations without their RelationWeights.
+		 * Replaces the SpecialDelegateRenderer functionality to enable
+		 * highlighting of Relations without their RelationWeights.
 		 * 
 		 * @param sec
 		 * @param user
@@ -406,7 +404,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 				string.append(KnowWEUtils.maskHTML(buffi.toString()));
 				return;
 			}
-			
+
 			// b true: Color green
 			if (fulfilled) {
 				// Iterate over children of the relation.
@@ -416,7 +414,8 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 							fulfilled, user, "#33FF33"));
 				}
 
-			} else {
+			}
+			else {
 				// b false: Color red
 				List<Section<?>> children = sec.getChildren();
 				for (Section<?> s : children) {
@@ -427,7 +426,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 			}
 			string.append(KnowWEUtils.maskHTML(buffi.toString()));
 		}
-		
+
 		/**
 		 * Renders the children of a CoveringRelation.
 		 * 
@@ -445,20 +444,23 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 			KnowWEObjectType type = sec.getObjectType();
 
 			if (type instanceof XCLRelationWeight) { // renders contradiction in
-														// red if fulfilled
+				// red if fulfilled
 
 				if (fulfilled && sec.getOriginalText().trim().equals("[--]")) {
 					FontColorBackgroundRenderer.getRenderer(
 							FontColorRenderer.COLOR2, null).render(article,
 							sec, user, buffi);
-				} else {
+				}
+				else {
 					type.getRenderer().render(article, sec, user, buffi);
 				}
 
-			} else if (type instanceof CompositeCondition) {
+			}
+			else if (type instanceof CompositeCondition) {
 				FontColorBackgroundRenderer.getRenderer(null, color).render(
 						article, sec, user, buffi);
-			} else {
+			}
+			else {
 				type.getRenderer().render(article, sec, user, buffi);
 			}
 

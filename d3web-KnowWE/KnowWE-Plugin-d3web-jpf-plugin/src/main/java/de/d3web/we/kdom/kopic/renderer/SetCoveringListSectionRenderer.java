@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.kopic.renderer;
@@ -33,18 +33,19 @@ import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class SetCoveringListSectionRenderer extends KnowWEDomRenderer {
-	
+
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
-		
-		//string.append("%%collapsebox-closed \n");
-		
-//		String title = "";
-//		if(sec.getObjectType() instanceof AbstractXMLObjectType) {
-//			title = ((AbstractXMLObjectType)sec.getObjectType()).getXMLTagName()+" ";
-//		}
 
-		//string.append("! " +title + " \n");
+		// string.append("%%collapsebox-closed \n");
+
+		// String title = "";
+		// if(sec.getObjectType() instanceof AbstractXMLObjectType) {
+		// title =
+		// ((AbstractXMLObjectType)sec.getObjectType()).getXMLTagName()+" ";
+		// }
+
+		// string.append("! " +title + " \n");
 		if (sec.getObjectType() instanceof AbstractKnowWEObjectType) {
 			KnowWEObjectType type = sec.getObjectType();
 			Collection<Message> messages = AbstractKnowWEObjectType
@@ -52,37 +53,36 @@ public class SetCoveringListSectionRenderer extends KnowWEDomRenderer {
 			if (messages != null && !messages.isEmpty()) {
 				string.append("{{{");
 				for (Message m : messages) {
-					string.append(m.getMessageType()+": "+m.getMessageText()+" Line: "+m.getLineNo()+KnowWEUtils.maskHTML("<br>"));
-					if(m.getMessageType().equals(Message.ERROR)) {
+					string.append(m.getMessageType() + ": " + m.getMessageText() + " Line: "
+							+ m.getLineNo() + KnowWEUtils.maskHTML("<br>"));
+					if (m.getMessageType().equals(Message.ERROR)) {
 						insertErrorRenderer(sec, m, user.getUsername());
 					}
 				}
 				string.append("}}}");
 			}
 		}
-		
 
 		// string.append(KnowWEUtils.maskHTML(
 		// "<div id=\"" + sec.getID()
 		// + "\"><pre class=\"ReRenderSectionMarker\" id=\"" + sec.getID()
 		// + "-pre\" rel=\"{id:'" + sec.getID() + "'}\">"));
-		
+
 		StringBuilder b = new StringBuilder();
 		DelegateRenderer.getInstance().render(article, sec, user, b);
 		string.append("{{{" + b.toString() + "}}}");
-		
 
 		// string.append(KnowWEUtils.maskHTML("</pre></div>"));
-		
-		//string.append("/%\n");
+
+		// string.append("/%\n");
 	}
-		
+
 	protected void insertErrorRenderer(Section sec, Message m, String user) {
 		String text = m.getLine();
-		if(text == null || text.length() == 0) return;
+		if (text == null || text.length() == 0) return;
 		Section errorSec = sec.findSmallestNodeContaining(text);
 		((AbstractKnowWEObjectType) errorSec.getObjectType()).setCustomRenderer(ErrorRenderer.getInstance());
-		
+
 	}
 
 }

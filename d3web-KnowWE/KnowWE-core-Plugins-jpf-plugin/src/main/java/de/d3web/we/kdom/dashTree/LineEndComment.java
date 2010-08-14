@@ -20,10 +20,10 @@ public class LineEndComment extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * @author Jochen
-	 *
-	 * this LineEndCommentFinder assumes that single text 
-	 * lines are given to the sectionfinder 
-	 *
+	 * 
+	 *         this LineEndCommentFinder assumes that single text lines are
+	 *         given to the sectionfinder
+	 * 
 	 */
 	static class LineEndCommentFinder extends SectionFinder {
 
@@ -31,10 +31,11 @@ public class LineEndComment extends DefaultAbstractKnowWEObjectType {
 		public List<SectionFinderResult> lookForSections(String text,
 				Section father, KnowWEObjectType type) {
 
-			//looks for an unquoted occurrence of '//' and cuts off from this point 
+			// looks for an unquoted occurrence of '//' and cuts off from this
+			// point
 			int start = SplitUtility.indexOfUnquoted(text, "//");
 			if (start != -1) {
-				//if found return section from start to the end of the line
+				// if found return section from start to the end of the line
 				return SectionFinderResult
 						.createSingleItemList(new SectionFinderResult(start,
 								text.length()));

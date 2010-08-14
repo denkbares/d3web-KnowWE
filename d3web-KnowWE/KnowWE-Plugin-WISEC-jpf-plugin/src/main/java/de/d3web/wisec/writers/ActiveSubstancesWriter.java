@@ -14,18 +14,17 @@ public class ActiveSubstancesWriter extends WISECWriter {
 		super(model, outputDirectory);
 	}
 
-	
 	@Override
 	public void write() throws IOException {
-		Writer writer = ConverterUtils.createWriter(this.outputDirectory+FILENAME +".txt");
+		Writer writer = ConverterUtils.createWriter(this.outputDirectory + FILENAME + ".txt");
 		writeBreadcrumb(writer);
 
-		StringBuffer b = new StringBuffer(); 
+		StringBuffer b = new StringBuffer();
 		b.append("!!! Active Substances\n\n");
-		
+
 		// open the zebra and the sortable table
 		b.append("%%zebra-table\n%%sortable\n");
-		
+
 		// write the data
 		b.append("|| CAS_No || EC_no || IUPAC_name || Chemical_name  \n");
 		// List<Substance> sortedSubstances = sortSubstances();
@@ -37,12 +36,12 @@ public class ActiveSubstancesWriter extends WISECWriter {
 					+ ConverterUtils.asString(model.getChemNamesFor(substanceName)) + "\n");
 			// + " | " + model.usesInLists(substance) + "\n");
 		}
-		
+
 		writer.write(b.toString());
 		// close the zebra and the sortable table
 		writer.append("/%\n/%\n");
 		writer.close();
-		
+
 	}
 
 	@Override
@@ -51,6 +50,5 @@ public class ActiveSubstancesWriter extends WISECWriter {
 		writer.write(" > [List of Substances|" + AllSubstancesWriter.FILENAME + "] > "
 				+ "Active Substances\n\n");
 	}
-
 
 }

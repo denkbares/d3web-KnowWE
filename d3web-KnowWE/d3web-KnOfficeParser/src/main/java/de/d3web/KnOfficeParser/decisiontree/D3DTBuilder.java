@@ -186,7 +186,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 				else {
 					answer = getAnswer(name, null);
 				}
-				
+
 			}
 			else if (currentQuestion instanceof QuestionMC) {
 				if (ref != null) {
@@ -208,8 +208,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			if (idlink != null) {
 				descriptionlinks.add(new Tripel<String, Object, Message>(
 						idlink, answer, MessageKnOfficeGenerator
-						.createDescriptionTextNotFoundError(file, line,
-						linetext, idlink)));
+								.createDescriptionTextNotFoundError(file, line,
+										linetext, idlink)));
 			}
 			// answer is the default answer
 			if (def) {
@@ -275,18 +275,18 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		else {
 			qcontainertolink
 					.add(new Tripel<String, Condition, Message>(name,
-					cond, MessageKnOfficeGenerator
-					.createQuestionClassNotFoundException(file,
-					line, linetext, name)));
+							cond, MessageKnOfficeGenerator
+									.createQuestionClassNotFoundException(file,
+											line, linetext, name)));
 			if ((ref != null) || (syn != null) || (def)) {
 				errors.add(MessageKnOfficeGenerator
 						.createTooManyPropertiesOnQuestionLinkWarning(file,
-						line, linetext));
+								line, linetext));
 			}
 			if (idlink != null) {
 				errors.add(MessageKnOfficeGenerator
 						.createNoDescriptionsAtQuestionClassWarning(file, line,
-						linetext));
+								linetext));
 			}
 		}
 	}
@@ -306,27 +306,24 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		}
 		return c;
 	}
-	
 
 	private Choice getAnswer(String name, String ref) {
-		
+
 		QuestionChoice questionChoice = (QuestionChoice) currentQuestion;
-		
-		//Test, if answer is already created, ref is ignored in this case
+
+		// Test, if answer is already created, ref is ignored in this case
 		for (Choice choice : questionChoice.getAllAlternatives()) {
-			if (choice.getName().equals(name))
-				return choice;
+			if (choice.getName().equals(name)) return choice;
 		}
-		
-		//No answer found, create new one
+
+		// No answer found, create new one
 		if (ref == null) {
 			ref = idom
 					.findNewIDForAnswerChoice(questionChoice);
 		}
-		
-		
+
 		Choice answer = AnswerFactory.createAnswerChoice(ref, name);
-		
+
 		questionChoice.addAlternative(answer);
 		return answer;
 	}
@@ -406,7 +403,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 					if (d == null) {
 						errors.add(MessageKnOfficeGenerator
 								.createNaNAtFeatureDerivationError(file, line,
-								linetext, value));
+										linetext, value));
 						continue;
 					}
 					FormulaNumber num = new FormulaNumber(d);
@@ -433,14 +430,14 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 				if (idlink != null) {
 					descriptionlinks.add(new Tripel<String, Object, Message>(
 							idlink, q, MessageKnOfficeGenerator
-							.createDescriptionTextNotFoundError(file,
-							line, linetext, idlink)));
+									.createDescriptionTextNotFoundError(file,
+											line, linetext, idlink)));
 				}
 				if ((link != null) || (linkdes != null)) {
 					errors
 							.add(MessageKnOfficeGenerator
-							.createNotUsedDescriptionsAtFeatureDerivationWarning(
-							file, line, linetext));
+									.createNotUsedDescriptionsAtFeatureDerivationWarning(
+											file, line, linetext));
 				}
 			}
 			// Diagnoseherleitung
@@ -449,19 +446,19 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 				if (diag == null) {
 					errors.add(MessageKnOfficeGenerator
 							.createSolutionNotFoundException(file, line,
-							linetext, name));
+									linetext, name));
 					continue;
 				}
 				else if (set) {
 					errors.add(MessageKnOfficeGenerator
 							.createSetOnlyAllowedAtFeatureDerivationWarning(
-							file, line, linetext));
+									file, line, linetext));
 				}
 				Score score = Scorefinder.getScore(value);
 				if (score == null) {
 					errors.add(MessageKnOfficeGenerator
 							.createScoreDoesntExistError(file, line, linetext,
-							value));
+									value));
 					return;
 				}
 				RuleFactory.createHeuristicPSRule(newRuleID, diag, score, cond);
@@ -471,8 +468,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 				if (idlink != null) {
 					descriptionlinks.add(new Tripel<String, Object, Message>(
 							idlink, diag, MessageKnOfficeGenerator
-							.createDescriptionTextNotFoundError(file,
-							line, linetext, idlink)));
+									.createDescriptionTextNotFoundError(file,
+											line, linetext, idlink)));
 				}
 				// Condition falls Frageklassenindikationen als Kinder
 				// existieren
@@ -645,8 +642,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		if (idlink != null) {
 			descriptionlinks.add(new Tripel<String, Object, Message>(idlink,
 					currentQuestion, MessageKnOfficeGenerator
-					.createDescriptionTextNotFoundError(file, line,
-					linetext, idlink)));
+							.createDescriptionTextNotFoundError(file, line,
+									linetext, idlink)));
 		}
 		if (attributes != null && values != null) {
 			// TODO setzen der Dialogannotationen
@@ -808,8 +805,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		if (currentQuestion == null) {
 			errors
 					.add(MessageKnOfficeGenerator
-					.createQuestionNotFoundException(file, line,
-					linetext, name));
+							.createQuestionNotFoundException(file, line,
+									linetext, name));
 			return;
 		}
 		if (dashes == 1) {

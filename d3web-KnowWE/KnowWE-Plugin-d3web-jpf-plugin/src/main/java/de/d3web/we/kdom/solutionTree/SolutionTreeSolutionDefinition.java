@@ -25,7 +25,6 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.SolutionDefinition;
 
-
 public class SolutionTreeSolutionDefinition extends SolutionDefinition {
 
 	@Override

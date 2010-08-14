@@ -1,6 +1,5 @@
 package benchmarks;
 
-
 public class SolutionsModule extends KnowledgeModule {
 
 	@Override

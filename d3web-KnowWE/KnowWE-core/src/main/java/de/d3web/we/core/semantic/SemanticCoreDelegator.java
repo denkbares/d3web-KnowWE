@@ -1,18 +1,19 @@
 package de.d3web.we.core.semantic;
+
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -43,15 +44,16 @@ public class SemanticCoreDelegator implements ISemanticCore {
 	private static ISemanticCore me;
 	private static ISemanticCore impl;
 
-	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.core.ISemanticCore#clone()
 	 */
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
 	}
-	
+
 	@Override
 	public void addNamespace(String sh, String ns) {
 		impl.addNamespace(sh, ns);
@@ -59,22 +61,22 @@ public class SemanticCoreDelegator implements ISemanticCore {
 
 	@Override
 	public void addStatements(IntermediateOwlObject inputio, Section sec) {
-impl.addStatements(inputio, sec);
+		impl.addStatements(inputio, sec);
 
 	}
 
 	@Override
 	public void addStaticStatements(IntermediateOwlObject inputio, Section sec) {
-impl.addStaticStatements(inputio, sec);
+		impl.addStaticStatements(inputio, sec);
 
 	}
-	
-	private SemanticCoreDelegator(){
-		
+
+	private SemanticCoreDelegator() {
+
 	}
-	
+
 	/**
-	 *
+	 * 
 	 * @return an instance, you're in trouble if it hasn't been initialized
 	 */
 	public static ISemanticCore getInstance() {
@@ -91,25 +93,25 @@ impl.addStaticStatements(inputio, sec);
 	@Override
 	public boolean booleanQuery(BooleanQuery query)
 			throws QueryEvaluationException {
-		
+
 		return impl.booleanQuery(query);
 	}
 
 	@Override
 	public boolean booleanQuery(String inquery) {
-		
+
 		return impl.booleanQuery(inquery);
 	}
 
 	@Override
 	public void clearContext(Section sec) {
-impl.clearContext(sec);
+		impl.clearContext(sec);
 
 	}
 
 	@Override
 	public void clearContext(KnowWEArticle art) {
-impl.clearContext(art);
+		impl.clearContext(art);
 
 	}
 
@@ -121,7 +123,7 @@ impl.clearContext(art);
 
 	@Override
 	public Resource getContext(Section sec) {
- 
+
 		return impl.getContext(sec);
 	}
 
@@ -146,13 +148,13 @@ impl.clearContext(art);
 	@Override
 	public List<Statement> getSectionStatementsRecursive(
 			Section<? extends KnowWEObjectType> s) {
-	
+
 		return impl.getSectionStatementsRecursive(s);
 	}
 
 	@Override
 	public HashMap<String, String> getSettings() {
-		
+
 		return impl.getSettings();
 	}
 
@@ -164,7 +166,7 @@ impl.clearContext(art);
 
 	@Override
 	public List<Statement> getTopicStatements(String topic) {
-	
+
 		return impl.getTopicStatements(topic);
 	}
 
@@ -189,7 +191,7 @@ impl.clearContext(art);
 
 	@Override
 	public void removeFile(String filename) {
-impl.removeFile(filename);
+		impl.removeFile(filename);
 
 	}
 
@@ -209,24 +211,24 @@ impl.removeFile(filename);
 
 	@Override
 	public void writeDump(OutputStream stream) {
-	impl.writeDump(stream);
+		impl.writeDump(stream);
 
 	}
 
 	public static void initImpl(KnowWEEnvironment wiki) {
-		if (impl!=null){
+		if (impl != null) {
 			impl.init(wiki);
 		}
 	}
 
 	public static void setImpl(ISemanticCore cur) {
-		impl=cur;
-		
+		impl = cur;
+
 	}
 
 	@Override
 	public void init(KnowWEEnvironment wiki) {
-		impl.init(wiki);		
+		impl.init(wiki);
 	}
 
 }

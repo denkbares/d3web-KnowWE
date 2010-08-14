@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.action;
@@ -65,15 +65,18 @@ public class SetQuickEditFlagAction extends DeprecatedAbstractKnowWEAction {
 			if (existsPageLock) {
 				if (lockedByCurrentUser) {
 					connector.undoPageLocked(topic);
-				} else {
+				}
+				else {
 					return getMessage(topic);
 				}
-			} else {
+			}
+			else {
 				connector.setPageLocked(topic, user);
 			}
 			UserSettingsManager.getInstance().setQuickEditFlag(nodeID, user, topic, inPre);
-			String result = this.rerenderKDOMElement(web, topic, new KnowWEUserContextImpl(user, parameterMap),nodeID);
-			
+			String result = this.rerenderKDOMElement(web, topic, new KnowWEUserContextImpl(user,
+					parameterMap), nodeID);
+
 			// Pushing the result through the JSPWiki rendering pipeline when QE
 			// is being closed and QE isn't within a pre-environment
 			if (!UserSettingsManager.getInstance().hasQuickEditFlagSet(nodeID, user, topic)
@@ -83,7 +86,8 @@ public class SetQuickEditFlagAction extends DeprecatedAbstractKnowWEAction {
 						result, parameterMap);
 			}
 			return "@replace@" + KnowWEUtils.unmaskHTML(result);
-		} else {
+		}
+		else {
 			return getMessage(topic);
 		}
 	}
@@ -102,8 +106,8 @@ public class SetQuickEditFlagAction extends DeprecatedAbstractKnowWEAction {
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 		KnowWEArticle article = mgr.getArticle(topic);
 
-		if (article == null)
-			return "<p class=\"error box\"> " + rb.getString("KnowWE.qedit.noarticle") + " </p>";
+		if (article == null) return "<p class=\"error box\"> "
+				+ rb.getString("KnowWE.qedit.noarticle") + " </p>";
 
 		Section root = article.getSection();
 		Section secWithNodeID = getSectionFromCurrentID(nodeID, root);
@@ -113,8 +117,9 @@ public class SetQuickEditFlagAction extends DeprecatedAbstractKnowWEAction {
 			StringBuilder b = new StringBuilder();
 			if (renderer != null) {
 				renderer.render(article, secWithNodeID, user, b);
-			} else {
-				
+			}
+			else {
+
 				DelegateRenderer.getInstance().render(article, secWithNodeID, user, b);
 			}
 			String result = b.toString();
@@ -133,15 +138,13 @@ public class SetQuickEditFlagAction extends DeprecatedAbstractKnowWEAction {
 	 * @param found
 	 */
 	private Section getSectionFromCurrentID(String nodeID, Section root) {
-		if (root.getID().equals(nodeID))
-			return root;
+		if (root.getID().equals(nodeID)) return root;
 
 		Section found = null;
 		List<Section> children = root.getChildren();
 		for (Section section : children) {
 			found = getSectionFromCurrentID(nodeID, section);
-			if (found != null)
-				return found;
+			if (found != null) return found;
 		}
 		return found;
 	}

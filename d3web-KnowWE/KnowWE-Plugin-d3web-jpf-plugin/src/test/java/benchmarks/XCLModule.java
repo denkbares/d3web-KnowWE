@@ -1,12 +1,10 @@
 package benchmarks;
 
-
 public class XCLModule extends KnowledgeModule {
 
 	@Override
 	public String generateModuleText(int size, int depth) {
 		StringBuilder text = new StringBuilder();
-
 
 		for (int i = 0; i < size; i++) {
 

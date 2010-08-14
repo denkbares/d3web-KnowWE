@@ -15,36 +15,37 @@ public class ContentType extends DefaultAbstractKnowWEObjectType {
 					// content (any reluctant matched), as group with whitespace
 					// characters
 					"(\\p{Space}*?(.*?)\\p{Space}*)" +
-			// suffix: terminate-tag or end-of-input or declare next parameter
-			"(?:(?:^\\p{Blank}*/?%\\p{Blank}*$)" +
-			"|" +
-			"(?:\\z)" +
-			"|" +
-			"(?:\\p{Space}+@\\w+))";
+					// suffix: terminate-tag or end-of-input or declare next
+					// parameter
+					"(?:(?:^\\p{Blank}*/?%\\p{Blank}*$)" +
+					"|" +
+					"(?:\\z)" +
+					"|" +
+					"(?:\\p{Space}+@\\w+))";
 
 	private final DefaultMarkup markup;
-	
+
 	public ContentType(DefaultMarkup markup) {
 		this.markup = markup;
 		Pattern pattern = getContentPattern(this.markup.getName());
 		this.setSectionFinder(new RegexSectionFinder(pattern, 1));
 		Collections.addAll(this.childrenTypes, this.markup.getTypes());
 	}
-	
+
 	/**
 	 * Return the name of the content type section.
 	 */
 	@Override
 	public String getName() {
-		return this.markup.getName()+"@content";
+		return this.markup.getName() + "@content";
 	}
 
 	/**
 	 * Returns the pattern to match the default block of a default mark-up
 	 * section.
 	 * 
-	 * @param markupName
-	 *            the name of the parent section (opened by "%%&lt;markupName&gt;")
+	 * @param markupName the name of the parent section (opened by
+	 *        "%%&lt;markupName&gt;")
 	 * @return the pattern to match the default block of the section
 	 */
 	public static Pattern getContentPattern(String markupName) {

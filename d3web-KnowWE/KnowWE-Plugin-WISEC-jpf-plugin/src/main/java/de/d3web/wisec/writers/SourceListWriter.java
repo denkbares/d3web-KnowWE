@@ -21,7 +21,7 @@ public class SourceListWriter extends WISECWriter {
 
 	private static String[] OVERVIEW_ATTR = new String[] {
 			"ID", "Name" };
-	
+
 	public SourceListWriter(WISECModel model, String outputDirectory) {
 		super(model, outputDirectory);
 	}
@@ -31,10 +31,11 @@ public class SourceListWriter extends WISECWriter {
 		int counter = 0;
 		for (SourceList list : model.sourceLists) {
 			counter++;
-			list.filename = filePraefix +counter;
+			list.filename = filePraefix + counter;
 			listID2fileName.put(list.getId(), list.filename);
-			Writer writer = ConverterUtils.createWriter(this.outputDirectory+list.filename+".txt");
-			write(list,writer);
+			Writer writer = ConverterUtils.createWriter(this.outputDirectory + list.filename
+					+ ".txt");
+			write(list, writer);
 			writer.close();
 		}
 	}
@@ -43,16 +44,15 @@ public class SourceListWriter extends WISECWriter {
 		writeBreadcrumb(w, list);
 
 		w.write("!!! " + list.getName() + "\n\n");
-		
 
 		// w.write("!! Attributes \n\n");
-		for (String attribute: list.getAttributes()) {
+		for (String attribute : list.getAttributes()) {
 			String value = list.get(attribute);
-			if (value != null && value.length() >0) { 
+			if (value != null && value.length() > 0) {
 				w.write("|| " + attribute + " | " + ConverterUtils.clean(value) + " \n");
 			}
 		}
-		
+
 		Collection<String> lists = model.getListsWithSource(list.getId());
 		if (!lists.isEmpty()) {
 			w.write("!! Lists\n\n");
@@ -69,7 +69,8 @@ public class SourceListWriter extends WISECWriter {
 				SubstanceList substancelist = model.getListWithName(listname);
 				if (substancelist != null && substancelist.getId() != null
 						&& !substancelist.getId().isEmpty()) {
-					String line = SubstanceListsOverviewWriter.generateOverviewLineFor(substancelist,
+					String line = SubstanceListsOverviewWriter.generateOverviewLineFor(
+							substancelist,
 							OVERVIEW_ATTR)
 							+ " | " + substancelist.substances.size()
 							+ "\n";
@@ -92,7 +93,6 @@ public class SourceListWriter extends WISECWriter {
 				"] > " + list.getName());
 		writer.append("\n\n");
 	}
-
 
 	public static String getWikiFilename(String idOfList) {
 		return listID2fileName.get(idOfList);

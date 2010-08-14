@@ -11,19 +11,23 @@ import de.d3web.we.module.PageAppendHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class PageLoggerHandler implements PageAppendHandler {
+
 	public boolean log = true;
-	
+
 	@Override
 	public String getDataToAppend(String topic, String web,
 			KnowWEUserContext user) {
 		if (log) {
 			try {
-				BufferedWriter buffy = new BufferedWriter(new FileWriter(KnowWEEnvironment.getInstance().getKnowWEExtensionPath()+"/tmp/Pagelogger.log",true));
+				BufferedWriter buffy = new BufferedWriter(new FileWriter(
+						KnowWEEnvironment.getInstance().getKnowWEExtensionPath()
+								+ "/tmp/Pagelogger.log", true));
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String uhrzeit = sdf.format(new Date(System.currentTimeMillis()));
-				buffy.append(uhrzeit+";"+user.getUsername()+";"+user.getPage()+"\n");
+				buffy.append(uhrzeit + ";" + user.getUsername() + ";" + user.getPage() + "\n");
 				buffy.close();
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				e.printStackTrace();
 			}
 		}

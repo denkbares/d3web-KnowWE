@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.action;
@@ -33,7 +33,7 @@ import de.d3web.we.d3webModule.D3webModule;
 public class DPSDialogsAction extends DeprecatedAbstractKnowWEAction {
 
 	private String iconURL;
-	
+
 	public DPSDialogsAction() {
 		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
 		String path = "KnowWEExtension/";
@@ -41,7 +41,7 @@ public class DPSDialogsAction extends DeprecatedAbstractKnowWEAction {
 	}
 
 	@Override
-	public String perform(KnowWEParameterMap map){
+	public String perform(KnowWEParameterMap map) {
 		StringBuffer sb = new StringBuffer();
 		Broker broker = D3webModule.getBroker(map);
 		List<Dialog> history = broker.getDialogControl().getHistory();
@@ -49,11 +49,10 @@ public class DPSDialogsAction extends DeprecatedAbstractKnowWEAction {
 		List<Dialog> indicated = broker.getDialogControl().getIndicatedDialogs();
 
 		boolean painted = false;
-		
-		
+
 		if (!instant.isEmpty()) {
-			if(painted) {
-				sb.append("<hr/>");	
+			if (painted) {
+				sb.append("<hr/>");
 				painted = false;
 			}
 			sb.append("<div>");
@@ -61,10 +60,10 @@ public class DPSDialogsAction extends DeprecatedAbstractKnowWEAction {
 			sb.append("</div>");
 			painted = true;
 		}
-		
+
 		if (!indicated.isEmpty()) {
-			if(painted) {
-				sb.append("<hr/>");	
+			if (painted) {
+				sb.append("<hr/>");
 				painted = false;
 			}
 			sb.append("<div>");
@@ -72,10 +71,10 @@ public class DPSDialogsAction extends DeprecatedAbstractKnowWEAction {
 			sb.append("</div>");
 			painted = true;
 		}
-		
+
 		if (!history.isEmpty()) {
-			if(painted) {
-				sb.append("<hr/>");	
+			if (painted) {
+				sb.append("<hr/>");
 				painted = false;
 			}
 			sb.append("<div>");
@@ -83,7 +82,7 @@ public class DPSDialogsAction extends DeprecatedAbstractKnowWEAction {
 			sb.append("</div>");
 			painted = true;
 		}
-	return sb.toString();
+		return sb.toString();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -94,18 +93,19 @@ public class DPSDialogsAction extends DeprecatedAbstractKnowWEAction {
 		String web = map.getWeb();
 		sb.append("<ul>");
 		for (Dialog each : list) {
-			String link = "KnowWE.jsp?renderer=KWiki_dialog&action=KWiki_requestDialog&KWikisessionid="+each.getDialog().getNamespace()+"&KWikiUser="+user+"&KWikiWeb="+web;
+			String link = "KnowWE.jsp?renderer=KWiki_dialog&action=KWiki_requestDialog&KWikisessionid="
+					+ each.getDialog().getNamespace() + "&KWikiUser=" + user + "&KWikiWeb=" + web;
 
 			sb.append("<li>");
 			sb.append("<div class='" + getColor(each) + "'>");
-			sb.append("<a href=\""+link+"\" target='"+KnowWEAttributes.KNOWWE_DIALOG+"' ");
+			sb.append("<a href=\"" + link + "\" target='" + KnowWEAttributes.KNOWWE_DIALOG + "' ");
 			sb.append(" title=\"");
 			String comment = "";
-			if(each.getComment() != null) {
+			if (each.getComment() != null) {
 				comment = "\n" + each.getComment();
 			}
 			String reason = rb.getString("KnowWE.user");
-			if(each.getReason() != null) {
+			if (each.getReason() != null) {
 				reason = each.getReason().getNamespace();
 			}
 			sb.append(rb.getString("KnowWE.dialog.indicatedBy") + " " + reason + comment);
@@ -117,10 +117,16 @@ public class DPSDialogsAction extends DeprecatedAbstractKnowWEAction {
 			sb.append("/> ");
 			sb.append(each.getDialog().getNamespace().replaceAll("\\.\\.", ".. "));
 			sb.append("</a>");
-			if(each.isActive()) {
+			if (each.isActive()) {
 				sb.append(" ");
-					sb.append("<a href='javascript:void(0)' onclick='kwiki_call(\"KnowWE.jsp?action=KWiki_noDelegate&KWikiNamespace="+ URLEncoder.encode(each.getDialog().getNamespace()/*, "UTF-8"*/)+"&KWikiUser="+user+"&KWikiWeb="+web+"\")'>");
-				
+				sb.append("<a href='javascript:void(0)' onclick='kwiki_call(\"KnowWE.jsp?action=KWiki_noDelegate&KWikiNamespace="
+						+ URLEncoder.encode(each.getDialog().getNamespace()/*
+																			 * ,
+																			 * "UTF-8"
+																			 */)
+						+ "&KWikiUser="
+						+ user + "&KWikiWeb=" + web + "\")'>");
+
 				sb.append("<img border='0' style='margin-left:1px;margin-right:1px' src=\"");
 				sb.append(iconURL);
 				sb.append("cross.png");
@@ -138,11 +144,13 @@ public class DPSDialogsAction extends DeprecatedAbstractKnowWEAction {
 	}
 
 	private String getColor(Dialog each) {
-		if(each.isActive()) {
+		if (each.isActive()) {
 			return "bg-green";
-		} else if(each.isCancelled()) {
+		}
+		else if (each.isCancelled()) {
 			return "bg-red";
-		} else if(each.isFinished()) {
+		}
+		else if (each.isFinished()) {
 			return "bg-blue";
 		}
 		return "";

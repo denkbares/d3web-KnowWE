@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.action;
@@ -69,8 +69,8 @@ public class SCListEditorRenderer extends DeprecatedAbstractKnowWEAction {
 
 		DPSEnvironment dpse = D3webModule.getDPSE(map);
 		String namespace = map.get(KnowWEAttributes.SEMANO_NAMESPACE);
-//		String type = map.get(KnowWEAttributes.SEMANO_TERM_TYPE);
-//		String user = map.get(KnowWEAttributes.USER);
+		// String type = map.get(KnowWEAttributes.SEMANO_TERM_TYPE);
+		// String user = map.get(KnowWEAttributes.USER);
 
 		KnowledgeBase base = ((D3webKnowledgeService) (dpse
 				.getService(namespace))).getBase();
@@ -135,21 +135,21 @@ public class SCListEditorRenderer extends DeprecatedAbstractKnowWEAction {
 		text = text.replaceAll(">", "&gt;");
 		return text;
 	}
-//	FL: commented out, cause it was never used
-//	private IdentifiableInstance getII(DPSEnvironment dpse, String namespace,
-//			Term term) {
-//		IdentifiableInstance ii = null;
-//		List<IdentifiableInstance> iis = dpse.getTerminologyServer()
-//				.getBroker().getAlignedIdentifiableInstances(term,
-//						TerminologyAlignmentLinkFilter.getInstance());
-//		if (iis != null && !iis.isEmpty()) {
-//			for (IdentifiableInstance instance : iis) {
-//				if (instance.getNamespace().equals(namespace)) {
-//					ii = instance;
-//				}
-//			}
-//		}
-//		return ii;
-//	}
+	// FL: commented out, cause it was never used
+	// private IdentifiableInstance getII(DPSEnvironment dpse, String namespace,
+	// Term term) {
+	// IdentifiableInstance ii = null;
+	// List<IdentifiableInstance> iis = dpse.getTerminologyServer()
+	// .getBroker().getAlignedIdentifiableInstances(term,
+	// TerminologyAlignmentLinkFilter.getInstance());
+	// if (iis != null && !iis.isEmpty()) {
+	// for (IdentifiableInstance instance : iis) {
+	// if (instance.getNamespace().equals(namespace)) {
+	// ii = instance;
+	// }
+	// }
+	// }
+	// return ii;
+	// }
 
 }

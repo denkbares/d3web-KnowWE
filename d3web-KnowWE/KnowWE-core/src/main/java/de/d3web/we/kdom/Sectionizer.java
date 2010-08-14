@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom;
@@ -52,8 +52,7 @@ public class Sectionizer {
 	 * @return
 	 */
 	public static synchronized Sectionizer getInstance() {
-		if (instance == null)
-			instance = new Sectionizer();
+		if (instance == null) instance = new Sectionizer();
 		return instance;
 	}
 
@@ -121,20 +120,13 @@ public class Sectionizer {
 	 * 
 	 * When list is done, UndefinedSections are made PlainText-nodes
 	 * 
-	 * @param text
-	 *            The text to be searched for type occurrences
-	 * @param allowedTypes
-	 *            The types that are searched for, priority ordered
-	 * @param father
-	 *            Father-node section
-	 * @param topic
-	 *            topic name
-	 * @param mgn
-	 *            Knowledgebase
-	 * @param report
-	 *            ParseReport
-	 * @param idgen
-	 *            IDGenerator to generate unique IDs for new nodes
+	 * @param text The text to be searched for type occurrences
+	 * @param allowedTypes The types that are searched for, priority ordered
+	 * @param father Father-node section
+	 * @param topic topic name
+	 * @param mgn Knowledgebase
+	 * @param report ParseReport
+	 * @param idgen IDGenerator to generate unique IDs for new nodes
 	 */
 	@SuppressWarnings("unchecked")
 	public void splitToSections(String text,
@@ -201,10 +193,10 @@ public class Sectionizer {
 				Collections.sort(results);
 				validateNonOverlaps(results, secText, ob);
 
-
 				List<Section<?>> findings = new ArrayList<Section<?>>();
 				for (SectionFinderResult result : results) {
-					// here the actual Section objects will be 'created' possibly using incremental parse-moduls
+					// here the actual Section objects will be 'created'
+					// possibly using incremental parse-moduls
 					Section s = createSection(article, ob, father, thisSection, secText, result);
 					if (s != null) {
 						s.startPosFromTmp = new PairOfInts(result.getStart(),
@@ -235,13 +227,11 @@ public class Sectionizer {
 						Section<?> start = new UndefinedSection(secText.substring(
 								0, positionOfFirstFinding.getFirst()), thisSection
 										.getOffSetFromFatherText(), article);
-						if (start.getOriginalText().length() > 0)
-							newSections.add(start);
+						if (start.getOriginalText().length() > 0) newSections.add(start);
 						for (int i = 0; i < findings.size(); i++) {
 							PairOfInts position = findings.get(i).startPosFromTmp;
 							Section<?> nextNewSection = findings.get(i);
-							if (nextNewSection.getOriginalText().length() > 0)
-								newSections.add(nextNewSection);
+							if (nextNewSection.getOriginalText().length() > 0) newSections.add(nextNewSection);
 							Section<?> afterSection;
 
 							// there will be another section => make a new
@@ -264,8 +254,7 @@ public class Sectionizer {
 										thisSection.getOffSetFromFatherText()
 												+ second, article);
 							}
-							if (afterSection.getOriginalText().length() > 0)
-								newSections.add(afterSection);
+							if (afterSection.getOriginalText().length() > 0) newSections.add(afterSection);
 						}
 					}
 					sectionList.remove(thisSection);
@@ -289,7 +278,6 @@ public class Sectionizer {
 
 		Section<?> s = null;
 		if (result != null) {
-
 
 			for (SectionizerModule sModule : sectionizerModules) {
 				s = sModule.createSection(article, ob, father, thisSection, secText, result);
@@ -325,13 +313,8 @@ public class Sectionizer {
 		return false;
 	}
 
-
-
-
-
 	private void validateNonOverlaps(List<SectionFinderResult> results, String text, KnowWEObjectType type) {
-		if (results == null)
-			return;
+		if (results == null) return;
 		int lastValue = 0;
 		int i = 0;
 		int invalid = -1;

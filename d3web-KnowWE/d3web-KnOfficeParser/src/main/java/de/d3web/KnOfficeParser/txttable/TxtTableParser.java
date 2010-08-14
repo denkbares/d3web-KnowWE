@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.KnOfficeParser.txttable;
@@ -49,8 +49,7 @@ public class TxtTableParser {
 		List<TxtTableParserResult> cells = new ArrayList<TxtTableParserResult>();
 		List<TxtTableParserResult> separators = getCellSeparators(input);
 
-		if (separators.size() < 2)
-			return cells;
+		if (separators.size() < 2) return cells;
 
 		for (int i = 1; i < separators.size(); i++) {
 			TxtTableParserResult left = separators.get(i - 1);
@@ -68,7 +67,8 @@ public class TxtTableParser {
 		}
 		if ((sepPos - 1 - i) % 2 == 0) {
 			return false;
-		} else {
+		}
+		else {
 			return true;
 		}
 	}
@@ -95,7 +95,8 @@ public class TxtTableParser {
 		for (i = b.length() - 1; i >= 0; i--) {
 			if (b.charAt(i) == ESCAPE_SYMBOL) {
 				sequence++;
-			} else if (sequence > 0) {
+			}
+			else if (sequence > 0) {
 				b.delete(i + 1, i + 1 + sequence - (sequence / 2));
 				sequence = 0;
 			}

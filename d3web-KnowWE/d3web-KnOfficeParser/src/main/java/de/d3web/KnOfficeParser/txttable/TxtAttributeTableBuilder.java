@@ -75,7 +75,7 @@ public class TxtAttributeTableBuilder extends TxtTableBuilder implements KnOffic
 			if (cells.size() != requiredCellCount) {
 				messages.add(MessageKnOfficeGenerator.createErrorMSG("wrongCellCount", null, line,
 						lineText, new Object[] {
-						requiredCellCount, cells.size() }));
+								requiredCellCount, cells.size() }));
 			}
 			else {
 				boolean lineOk = true;
@@ -177,7 +177,7 @@ public class TxtAttributeTableBuilder extends TxtTableBuilder implements KnOffic
 							messages.add(MessageKnOfficeGenerator.createErrorMSG(
 									"invalidLanguageSyntax", null, line,
 									lineText, new Object[] {
-									"lang::(de|en)", dcMatcher.group(1) }));
+											"lang::(de|en)", dcMatcher.group(1) }));
 						}
 					}
 					if (lineOk) {
@@ -189,7 +189,7 @@ public class TxtAttributeTableBuilder extends TxtTableBuilder implements KnOffic
 					messages.add(MessageKnOfficeGenerator.createErrorMSG("invalidDCSyntax", null,
 							line,
 							lineText, new Object[] {
-							"[lang::(de|en)] titleOfElement", dcElementString }));
+									"[lang::(de|en)] titleOfElement", dcElementString }));
 					lineOk = false;
 				}
 

@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.xcl;
@@ -53,7 +53,6 @@ import de.d3web.we.utils.Patterns;
 
 public class XCLHead extends DefaultAbstractKnowWEObjectType {
 
-	
 	@Override
 	protected void init() {
 		this.sectionFinder = new XCLHeadSectionFinder();
@@ -63,67 +62,63 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(new LineBreak());
 		this.addSubtreeHandler(new XCLHeadSubtreeHandler());
 		this.addSubtreeHandler(new XCLHeadOWLSubTreeHandler());
-		
+
 	}
-	
-	
+
 	private class XCLHeadSubtreeHandler extends D3webSubtreeHandler {
-		
 
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
-			
+
 			Section father = s.getFather();
-			
+
 			if (!father.getObjectType().getClass().equals(XCList.class)) {
 				Logging.getInstance().log(Level.WARNING, "Expected different fathertype: XCList");
 				return null;
 			}
-			
+
 			String string = s.getOriginalText().trim();
-			
+
 			if (string.startsWith("\"")) {
 				string = string.substring(1, string.length() - 1);
 			}
-			
+
 			DefaultSubjectContext context = new DefaultSubjectContext(string);
 			ContextManager.getInstance().attachContext(father, context);
-			
+
 			return null;
-			
+
 		}
-		
+
 	}
-	
-	
-	
+
 	public class XCLHeadSectionFinder extends SectionFinder {
-		
+
 		private final Pattern pattern;
-		
+
 		public XCLHeadSectionFinder() {
 			pattern = Pattern.compile("^[\\t ]*(" + Patterns.D3IDENTIFIER + ")[\\t ]*\\{");
 		}
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
-			if(text.length() == 0) 
-				return null;
-			
+			if (text.length() == 0) return null;
+
 			Matcher matcher = pattern.matcher(text);
-			
+
 			if (matcher.lookingAt()) {
 				List<SectionFinderResult> result = new ArrayList<SectionFinderResult>(1);
 				result.add(new SectionFinderResult(matcher.start(1), matcher.end(1)));
-				
+
 				return result;
-			} else {
+			}
+			else {
 				return null;
 			}
-				
+
 		}
 	}
 
-	private class XCLHeadOWLSubTreeHandler extends OwlSubtreeHandler{
+	private class XCLHeadOWLSubTreeHandler extends OwlSubtreeHandler {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section section) {
@@ -138,7 +133,8 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 					URI solutionuri = uo.getHelper().createlocalURI(solution);
 					io.addStatement(uo.getHelper().createStatement(solutionuri,
 							RDF.TYPE, OwlHelper.SOLUTION));
-				} catch (RepositoryException e) {
+				}
+				catch (RepositoryException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -146,12 +142,7 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 			SemanticCoreDelegator.getInstance().addStatements(io, section);
 			return null;
 		}
-	
-		
+
 	}
-	
-	
-
-
 
 }

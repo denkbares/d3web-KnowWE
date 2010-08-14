@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.tirex.core.extractionStrategies;
@@ -35,9 +35,9 @@ import de.d3web.tirex.core.TiRexSettings;
  * @date 02/2008
  */
 public abstract class AbstractExtractionStrategy implements ExtractionStrategy {
+
 	/**
-	 * @param toMatch
-	 *            An IDObject (Question or Answer)
+	 * @param toMatch An IDObject (Question or Answer)
 	 * @return The text that the Question or Answer contains.
 	 */
 	public static String extractQuestionOrAnswerText(IDObject toMatch) {
@@ -48,12 +48,12 @@ public abstract class AbstractExtractionStrategy implements ExtractionStrategy {
 		String qaText = null;
 		if (toMatch instanceof NamedObject) {
 			qaText = ((NamedObject) toMatch).getName();
-		} else if (toMatch instanceof Choice) {
+		}
+		else if (toMatch instanceof Choice) {
 			qaText = ((Choice) toMatch).getName();
 		}
 
-		if (qaText == null)
-			return null;
+		if (qaText == null) return null;
 
 		qaText = qaText.replaceAll("[*][ ]*", "");
 		qaText = qaText.replaceAll(" [(]+.*[)]+", "");
@@ -63,7 +63,7 @@ public abstract class AbstractExtractionStrategy implements ExtractionStrategy {
 	}
 
 	public OriginalMatchAndStrategy extract(IDObject toMatch, String knowledge) {
-		//knowledge = knowledge.replaceFirst("[*][ ]*", "");
+		// knowledge = knowledge.replaceFirst("[*][ ]*", "");
 		knowledge = knowledge.replaceAll("\r", "");
 
 		OriginalMatchAndStrategy result = extractKnowledge(toMatch, knowledge);
@@ -80,10 +80,8 @@ public abstract class AbstractExtractionStrategy implements ExtractionStrategy {
 			IDObject toMatch, String knowledge);
 
 	/**
-	 * @param s1
-	 *            First String
-	 * @param s2
-	 *            Second String
+	 * @param s1 First String
+	 * @param s2 Second String
 	 * @return True, if the ratio of the lengths of s1 and s2 is greater than a
 	 *         set value.
 	 */

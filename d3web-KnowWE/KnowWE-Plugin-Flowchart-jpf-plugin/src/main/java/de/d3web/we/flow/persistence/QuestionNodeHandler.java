@@ -24,36 +24,32 @@ import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 /**
  * @author Reinhard Hatko
  * @created 10.08.10
- *
+ * 
  */
 public class QuestionNodeHandler extends AbstractNodeHandler {
-
 
 	public QuestionNodeHandler() {
 		super(ActionType.getInstance(), "KnOffice");
 	}
 
-
 	public boolean canCreateNode(KnowWEArticle article,
 			KnowledgeBaseManagement kbm, Section nodeSection) {
-		
-		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
-		
-		if (nodeInfo == null)
-			return false;
-		
-		String actionString = FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
-		
-		return actionString.startsWith("ERFRAGE") || actionString.startsWith("INSTANT");
-		
-	}
 
+		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
+
+		if (nodeInfo == null) return false;
+
+		String actionString = FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
+
+		return actionString.startsWith("ERFRAGE") || actionString.startsWith("INSTANT");
+
+	}
 
 	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section nodeSection, Section flowSection, String id, List<Message> errors) {
 
 		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
 		String actionString = FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
-		
+
 		String name = actionString.substring(8, actionString.length() - 1);
 		QASet findQuestion = kbm.findQuestion(name);
 
@@ -70,18 +66,14 @@ public class QuestionNodeHandler extends AbstractNodeHandler {
 
 		qasets.add(findQuestion);
 
-		ActionIndication action; 
-		if (actionString.startsWith("ERFRAGE"))
-			action = new ActionIndication();
-		else 
-			action = new ActionInstantIndication();
+		ActionIndication action;
+		if (actionString.startsWith("ERFRAGE")) action = new ActionIndication();
+		else action = new ActionInstantIndication();
 
 		action.setQASets(qasets);
 
-		
-		
 		return FlowFactory.getInstance().createActionNode(id, action);
-		
+
 	}
 
 }

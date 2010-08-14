@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.semanticAnnotation;
@@ -58,10 +58,8 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 		Section<AnnotatedString> astring = sec
 				.findSuccessor(AnnotatedString.class);
 		String text = "";
-		if (astring != null)
-			text = "''" + astring.getOriginalText() + "''";
-		else
-			text = "<b>" + object + "</b>";
+		if (astring != null) text = "''" + astring.getOriginalText() + "''";
+		else text = "<b>" + object + "</b>";
 		Section<SemanticAnnotationContent> content = sec
 				.findSuccessor(SemanticAnnotationContent.class);
 		Section<SemanticAnnotationPropertyName> propSection = sec
@@ -79,7 +77,8 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 		if (subjectSection != null
 				&& subjectSection.getOriginalText().trim().length() > 0) {
 			subject = subjectSection.getOriginalText();
-		} else {
+		}
+		else {
 
 			Context context = ContextManager.getInstance().getContext(sec,
 					DefaultSubjectContext.CID);
@@ -99,12 +98,14 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 							try {
 								title = URLDecoder.decode(title, "UTF-8");
 								subject = title;
-							} catch (UnsupportedEncodingException e) {
+							}
+							catch (UnsupportedEncodingException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						}
-					} catch (QueryEvaluationException e) {
+					}
+					catch (QueryEvaluationException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}

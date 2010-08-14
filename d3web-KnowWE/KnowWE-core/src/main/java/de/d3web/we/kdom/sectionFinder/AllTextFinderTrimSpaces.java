@@ -7,19 +7,17 @@ import de.d3web.we.kdom.Section;
 
 /**
  * @author Jochen
- *
- *
+ * 
+ * 
  *         The normal trim() operation of Strings also cuts of line breaks. This
  *         SectionFinder only cuts off real space characters
- *
- *
+ * 
+ * 
  */
 public class AllTextFinderTrimSpaces extends SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
-
-
 
 		int leadingSpaces = 0;
 		while (text.charAt(leadingSpaces) == ' ') {

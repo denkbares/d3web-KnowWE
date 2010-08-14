@@ -56,8 +56,7 @@ public class SearchTerminologyHandler {
 	public Collection<SearchTerm> expandSearchTermForRecommendation(SearchTerm t) {
 
 		String query = t.getTerm();
-		
-		
+
 		List<SearchTerm> generalSystemTerms = new ArrayList<SearchTerm>();
 
 		// terms.add(new SearchTerm("apfel", 2));
@@ -136,16 +135,17 @@ public class SearchTerminologyHandler {
 		for (SearchTerm term : generalSystemTerms) {
 			if (term.getTerm().equals(query)) {
 				exactMatch = term;
-				filtered.addAll(expandSearchTermForRecommendationByProviders( term));
-			} else if (term.getTerm().contains(query)) {
+				filtered.addAll(expandSearchTermForRecommendationByProviders(term));
+			}
+			else if (term.getTerm().contains(query)) {
 				filtered.add(term);
 			}
 		}
 
-//		if (exactMatch != null) {
-//			filtered.addAll(OWLSibblingClassExpander.getInstance()
-//					.expandSearchTerm(exactMatch));
-//		}
+		// if (exactMatch != null) {
+		// filtered.addAll(OWLSibblingClassExpander.getInstance()
+		// .expandSearchTerm(exactMatch));
+		// }
 
 		maxTerms -= filtered.size();
 
@@ -163,24 +163,21 @@ public class SearchTerminologyHandler {
 				}
 			}
 			similarities.remove(minTerm);
-			if (minTerm != null)
-				filtered.add(minTerm);
+			if (minTerm != null) filtered.add(minTerm);
 		}
-		
-		if(filtered.size() > 25) {
+
+		if (filtered.size() > 25) {
 			Set<SearchTerm> cutResultList = new HashSet<SearchTerm>();
 			int cntLimit = 0;
 			for (SearchTerm searchTerm : filtered) {
 				cntLimit++;
-				if( cntLimit > 25) break;
+				if (cntLimit > 25) break;
 				cutResultList.add(searchTerm);
 			}
-			
+
 			filtered = cutResultList;
-			
+
 		}
-		
-		
 
 		return filtered;
 	}
@@ -199,7 +196,7 @@ public class SearchTerminologyHandler {
 		}
 		return result;
 	}
-	
+
 	private Collection<SearchTerm> expandSearchTermForSearchByProviders(
 			SearchTerm term) {
 		Set<SearchTerm> result = new HashSet<SearchTerm>();
@@ -220,15 +217,14 @@ public class SearchTerminologyHandler {
 	 * Auto-completion for KnowWE search: Proposes search terms for (beginning)
 	 * user inputs
 	 * 
-	 * @param typedString
-	 *            - The input of the user in the search box.
+	 * @param typedString - The input of the user in the search box.
 	 * @return A list of suggestions the user might search for.
 	 */
 	public List<String> getCompletionSuggestions(String typedString) {
 
 		List<SearchTerm> generalSystemTerms = new ArrayList<SearchTerm>();
 		List<String> filtered = new ArrayList<String>();
-		
+
 		Collection<KnowWESearchProvider> providers = MultiSearchEngine.getInstance().getSearchProvider().values();
 		if (providers != null) {
 			for (KnowWESearchProvider knowWESearchProvider : providers) {
@@ -239,7 +235,7 @@ public class SearchTerminologyHandler {
 				}
 			}
 		}
-		//filter the search result according to the typed string
+		// filter the search result according to the typed string
 		if (typedString != null && typedString.length() > 0) {
 			for (SearchTerm term : generalSystemTerms) {
 				if (term.getTerm().contains(typedString)) {

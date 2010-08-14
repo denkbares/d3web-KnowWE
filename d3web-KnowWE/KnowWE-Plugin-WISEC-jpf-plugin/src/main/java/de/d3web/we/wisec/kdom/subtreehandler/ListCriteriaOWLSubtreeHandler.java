@@ -61,15 +61,11 @@ public class ListCriteriaOWLSubtreeHandler extends OwlSubtreeHandler<ListCriteri
 	 * Creates OWL Statements by traversing the KDOM and extracting the
 	 * necessary information from it.
 	 * 
-	 * @param section
-	 *            the current section
-	 * @param ioo
-	 *            the already created IntermediateOwlObject which stores the
-	 *            statements
-	 * @param ns
-	 *            the WISEC Namespace
-	 * @param listID
-	 *            the ID of the list
+	 * @param section the current section
+	 * @param ioo the already created IntermediateOwlObject which stores the
+	 *        statements
+	 * @param ns the WISEC Namespace
+	 * @param listID the ID of the list
 	 */
 	private void createOWLUsingKDom(Section<ListCriteriaType> section,
 			IntermediateOwlObject ioo, String ns, String listID) {
@@ -89,14 +85,12 @@ public class ListCriteriaOWLSubtreeHandler extends OwlSubtreeHandler<ListCriteri
 
 				// Create OWL from cell content
 				if (contents.size() == 2
-						&& !contents.get(1).getOriginalText().matches("\\s*"))
-					createCharacteristicStatement(
+						&& !contents.get(1).getOriginalText().matches("\\s*")) createCharacteristicStatement(
 							ioo,
 													ns,
 													listID,
 													contents.get(0).getOriginalText().trim(),
-													contents.get(1).getOriginalText().trim()
-													);
+													contents.get(1).getOriginalText().trim());
 			}
 		}
 		else {
@@ -110,15 +104,11 @@ public class ListCriteriaOWLSubtreeHandler extends OwlSubtreeHandler<ListCriteri
 	/**
 	 * Creates OWL Statements <b>without</b> traversing the KDOM
 	 * 
-	 * @param tableContent
-	 *            the Content of the Table
-	 * @param ioo
-	 *            the already created IntermediateOwlObject which stores the
-	 *            statements
-	 * @param ns
-	 *            the WISEC Namespace
-	 * @param listID
-	 *            the ID of the list
+	 * @param tableContent the Content of the Table
+	 * @param ioo the already created IntermediateOwlObject which stores the
+	 *        statements
+	 * @param ns the WISEC Namespace
+	 * @param listID the ID of the list
 	 */
 	private void createOWL(String tableContent, IntermediateOwlObject ioo,
 			String ns, String listID) {
@@ -132,8 +122,8 @@ public class ListCriteriaOWLSubtreeHandler extends OwlSubtreeHandler<ListCriteri
 		Pattern cellPattern = Pattern.compile("\\s*\\|+\\s*");
 		String[] cells = cellPattern.split(tableContent);
 		for (int i = 1; i < cells.length - 1; i += 2) {
-			if (!cells[i + 1].equals(""))
-				createCharacteristicStatement(ioo, ns, listID, cells[i].trim(),
+			if (!cells[i + 1].equals("")) createCharacteristicStatement(ioo, ns, listID,
+					cells[i].trim(),
 						cells[i + 1].trim());
 		}
 	}
@@ -168,9 +158,9 @@ public class ListCriteriaOWLSubtreeHandler extends OwlSubtreeHandler<ListCriteri
 				upperlistID);
 		try {
 			if (source != null && prop != null && object != null) {
-			Statement stmt = SemanticCoreDelegator.getInstance().getUpper().getHelper().createStatement(
-					source, prop, object);
-			ioo.addStatement(stmt);
+				Statement stmt = SemanticCoreDelegator.getInstance().getUpper().getHelper().createStatement(
+						source, prop, object);
+				ioo.addStatement(stmt);
 			}
 		}
 		catch (RepositoryException e) {

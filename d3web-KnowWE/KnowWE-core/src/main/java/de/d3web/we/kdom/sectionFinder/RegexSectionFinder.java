@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.sectionFinder;
@@ -70,11 +70,11 @@ public class RegexSectionFinder extends SectionFinder {
 		 * 
 		 * There the end of the "#foo:"-Block will be detected due to the
 		 * beginning of the "#goo:"-Block. Therefore "#" may be in the
-		 * expression to match the "#foo:"-Block. Nevertheless, the next matching
-		 * must start after "#foo: bla" and NOT after ""#foo: bla #".
+		 * expression to match the "#foo:"-Block. Nevertheless, the next
+		 * matching must start after "#foo: bla" and NOT after ""#foo: bla #".
 		 * 
-		 * Behavior is identical for "this.group == 0". It is also identical for the
-		 * existing instances with "this.group > 0".
+		 * Behavior is identical for "this.group == 0". It is also identical for
+		 * the existing instances with "this.group > 0".
 		 */
 		int index = 0;
 		while (m.find(index)) {
@@ -82,7 +82,7 @@ public class RegexSectionFinder extends SectionFinder {
 			int next = m.end(group);
 			// avoid endless iterations with "wrong" expressions
 			if (next <= index) break;
-			// detect if we reached the end, 
+			// detect if we reached the end,
 			// otherwise we get an IndexOutOfBoundsException from "m.find(...)"
 			if (next >= text.length()) break;
 			index = next;

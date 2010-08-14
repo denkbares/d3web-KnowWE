@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.core;
@@ -26,25 +26,24 @@ import java.util.List;
 import de.d3web.we.kdom.KnowWEArticle;
 
 public class KnowWEDomParseReport {
-	
+
 	private KnowWEArticle article;
 	private List<KnowWEParseResult> reports;
-	
+
 	private String html = null;
-	
+
 	public KnowWEDomParseReport(KnowWEArticle a) {
 		reports = new ArrayList<KnowWEParseResult>();
 		this.article = a;
 	}
-	
+
 	public String getShortStatus() {
 		return null;
 	}
 
-
 	public void addReport(KnowWEParseResult r) {
 		reports.add(r);
-		
+
 	}
 
 	public KnowWEArticle getArticle() {
@@ -56,12 +55,12 @@ public class KnowWEDomParseReport {
 	}
 
 	public boolean hasErrors() {
-		//TODO : implement or remove
+		// TODO : implement or remove
 		return false;
 	}
-	
+
 	public String getHTML() {
-		if(html == null) {
+		if (html == null) {
 			html = "TODO: implement";
 		}
 		return html;

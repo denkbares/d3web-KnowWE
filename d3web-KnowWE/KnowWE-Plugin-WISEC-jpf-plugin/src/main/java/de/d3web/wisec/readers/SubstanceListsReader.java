@@ -22,9 +22,9 @@ public class SubstanceListsReader extends WISECReader {
 	// private static final String LISTS = "Lists";
 
 	private static final int HEADER_ROW = 0;
-	
+
 	private WISECModel model;
-	
+
 	public SubstanceListsReader(Workbook workbook) {
 		super(workbook);
 	}
@@ -42,16 +42,16 @@ public class SubstanceListsReader extends WISECReader {
 					counter++;
 				}
 			}
-		}		
+		}
 	}
-	
+
 	private SubstanceList readSubstanceList(String listID) {
 		Sheet sheet = workbook.getSheet(listID);
 		if (sheet == null) {
 			System.err.println("Substance list *** " + listID + "*** not found.");
 			return null;
 		}
-		
+
 		SubstanceList list = model.getSubstanceListWithID(listID);
 
 		list.substanceAttributes = ConverterUtils.rowToStringArray(sheet.getRow(HEADER_ROW));
@@ -70,7 +70,6 @@ public class SubstanceListsReader extends WISECReader {
 		return list;
 	}
 
-	
 	private List<String> computeListIDs(WISECModel model) {
 		List<String> sheetNames = new ArrayList<String>();
 		for (SubstanceList list : model.substanceLists) {

@@ -31,7 +31,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * [{KnowWEPlugin Flowchart}]
- *
+ * 
  * @author Florian Ziegler
  */
 public class FlowchartTagHandler extends AbstractTagHandler {
@@ -145,7 +145,6 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 
 		}
 
-
 		builder.append("<br/>");
 
 		return builder.toString();
@@ -155,15 +154,13 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 
 		String preview = FlowchartUtils.extractPreview(section);
 
-		if (session == null)
-			return preview;
+		if (session == null) return preview;
 
 		String flowID = AbstractXMLObjectType.getAttributeMapFor(section).get("fcid");
 
 		CaseObjectSource flowSet = DiaFluxUtils.getFlowSet(session);
 
 		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) session.getCaseObject(flowSet);
-
 
 		for (IPath path : caseObject.getPathes()) {
 
@@ -187,7 +184,7 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 
 			INode node = pathEntry.getNode();
 
-			//TODO
+			// TODO
 			if (!node.getFlow().getId().equals(flowID)) return preview;
 
 			String nodeId = node.getID();

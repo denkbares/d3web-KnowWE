@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.d3web.we.kdom.rulesNew.ruleAction;
 
@@ -38,15 +38,15 @@ import de.d3web.we.utils.D3webUtils;
 
 /**
  * @author Johannes Dienst
- *
+ * 
  */
 public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssignment> {
 
 	private List<String> possibleScorePoints = new ArrayList<String>();
 
 	public SolutionValueAssignment() {
-		//possibleScorePoints = D3webUtils.getPossibleScores();
-		
+		// possibleScorePoints = D3webUtils.getPossibleScores();
+
 		this.sectionFinder = new DiagnosisRuleActionSectionFinder(possibleScorePoints);
 		ScorePoint scorePoint = new ScorePoint();
 		Equals equ = new Equals();
@@ -70,8 +70,7 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 		possibleScorePoints.add("excluded");
 		possibleScorePoints.add("established");
 		possibleScorePoints.add("suggested");
-		
-		
+
 		scorePoint.setSectionFinder(new OneOfStringEnumUnquotedFinder(
 				possibleScorePoints.toArray(new String[possibleScorePoints.size()])));
 	}
@@ -99,19 +98,19 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 
 				int start = 0;
 				int end = text.length();
-				while (text.charAt(end-1) == ' ' || text.charAt(end-1) == '"') {
+				while (text.charAt(end - 1) == ' ' || text.charAt(end - 1) == '"') {
 					end--;
-					if (start >= end-1) return null;
+					if (start >= end - 1) return null;
 				}
 				text = text.substring(start, end);
 				String[] textArr = text.split(" ");
 
-				String searchMe = textArr[textArr.length-1];
+				String searchMe = textArr[textArr.length - 1];
 
 				if (possibleScorePoints.contains(searchMe)) {
 					while (text.charAt(start) == ' ' || text.charAt(start) == '"') {
 						start++;
-						if (start >= end-1) return null;
+						if (start >= end - 1) return null;
 					}
 					List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 					result.add(new SectionFinderResult(start, end));
@@ -125,7 +124,6 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 	}
 
 	class ScorePoint extends DefaultAbstractKnowWEObjectType {
-
 
 	}
 

@@ -85,7 +85,6 @@ public class TaggingManglerTest extends TestCase {
 		tm = TaggingMangler.getInstance();
 		sc = SemanticCoreDelegator.getInstance();
 	}
-	
 
 	/**
 	 * Test method for {@link de.d3web.we.core.semantic.TaggingMangler#clone()}.
@@ -137,15 +136,17 @@ public class TaggingManglerTest extends TestCase {
 				KnowWEEnvironment.DEFAULT_WEB);
 		am.saveUpdatedArticle(article1);
 		tm.addTag("AddTag", "tagtest", params);
-		//remember: article* are not the current articles anymore, changes to the articles by the TaggingMangler do not backpropagate to those variables
-		String keyorig = article1.getSection().getID().hashCode()+"";
+		// remember: article* are not the current articles anymore, changes to
+		// the articles by the TaggingMangler do not backpropagate to those
+		// variables
+		String keyorig = article1.getSection().getID().hashCode() + "";
 		assertEquals("<tags>tagtest</tags>", am.getArticle("AddTag")
 				.getSection().getOriginalText());
 		ArrayList<String> tags = tm.getPageTags("AddTag");
 		assertEquals(1, tags.size());
 		assertEquals("tagtest", tags.get(0));
 		// remove statements from triplestore
-		assertEquals(keyorig, article1.getSection().getID().hashCode()+"");
+		assertEquals(keyorig, article1.getSection().getID().hashCode() + "");
 		sc.clearContext(am.getArticle("AddTag"));
 		tags = tm.getPageTags("AddTag");
 		// make sure it is gone
@@ -169,7 +170,8 @@ public class TaggingManglerTest extends TestCase {
 
 	/**
 	 * Test method for
-	 * {@link de.d3web.we.core.semantic.TaggingMangler#getPages(java.lang.String)}.
+	 * {@link de.d3web.we.core.semantic.TaggingMangler#getPages(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testGetPages() {
@@ -189,7 +191,9 @@ public class TaggingManglerTest extends TestCase {
 		tm.addTag("Tag2", "live", params);
 		tm.addTag("Tag3", "tod", params);
 		tm.addTag("Tag4", "live", params);
-		//remember: article* are not the current articles anymore, changes to the articles by the TaggingMangler do not backpropagate to those variables
+		// remember: article* are not the current articles anymore, changes to
+		// the articles by the TaggingMangler do not backpropagate to those
+		// variables
 		ArrayList<String> pages = tm.getPages("live");
 		assertNotNull(pages);
 		assertEquals(3, pages.size());
@@ -205,7 +209,8 @@ public class TaggingManglerTest extends TestCase {
 
 	/**
 	 * Test method for
-	 * {@link de.d3web.we.core.semantic.TaggingMangler#getPageTags(java.lang.String)}.
+	 * {@link de.d3web.we.core.semantic.TaggingMangler#getPageTags(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testGetPageTags() {
@@ -215,7 +220,9 @@ public class TaggingManglerTest extends TestCase {
 		tm.addTag("Tag", "tick", params);
 		tm.addTag("Tag", "trick", params);
 		tm.addTag("Tag", "track", params);
-		//remember: article* are not the current articles anymore, changes to the articles by the TaggingMangler do not backpropagate to those variables
+		// remember: article* are not the current articles anymore, changes to
+		// the articles by the TaggingMangler do not backpropagate to those
+		// variables
 		ArrayList<String> tags = tm.getPageTags("Tag");
 		assertTrue(tags.contains("tick"));
 		assertTrue(tags.contains("trick"));
@@ -224,7 +231,8 @@ public class TaggingManglerTest extends TestCase {
 	}
 
 	/**
-	 * Test method for {@link de.d3web.we.core.semantic.TaggingMangler#getAllTags()}.
+	 * Test method for
+	 * {@link de.d3web.we.core.semantic.TaggingMangler#getAllTags()}.
 	 */
 	@Test
 	public void testGetAllTags() {
@@ -240,7 +248,9 @@ public class TaggingManglerTest extends TestCase {
 		tm.addTag("Tag1", "tag", params);
 		tm.addTag("Tag2", "leben", params);
 		tm.addTag("Tag3", "tod", params);
-		//remember: article* are not the current articles anymore, changes to the articles by the TaggingMangler do not backpropagate to those variables
+		// remember: article* are not the current articles anymore, changes to
+		// the articles by the TaggingMangler do not backpropagate to those
+		// variables
 		ArrayList<String> tags = tm.getAllTags();
 		assertNotNull(tags);
 		assertTrue(tags.contains("tag"));
@@ -270,14 +280,16 @@ public class TaggingManglerTest extends TestCase {
 		tm.addTag("Tag2", "leben", params);
 		tm.addTag("Tag3", "tod", params);
 		tm.addTag("Tag3", "leben", params);
-		//remember: article* are not the current articles anymore, changes to the articles by the TaggingMangler do not backpropagate to those variables
+		// remember: article* are not the current articles anymore, changes to
+		// the articles by the TaggingMangler do not backpropagate to those
+		// variables
 		HashMap<String, Integer> tags = tm.getCloudList(10, 20);
 		assertEquals(Integer.valueOf(20), tags.get("leben"));
 		assertEquals(Integer.valueOf(10), tags.get("tod"));
 		am.deleteArticle(am.getArticle("Tag1"));
 		am.deleteArticle(am.getArticle("Tag2"));
 		am.deleteArticle(am.getArticle("Tag3"));
-		
+
 	}
 
 	/**
@@ -286,10 +298,10 @@ public class TaggingManglerTest extends TestCase {
 	 */
 	@Test
 	public void testGetCloudList2() {
-		//clear out the articles from the previous tests
-		Iterator<KnowWEArticle> ait=am.getArticleIterator();
-		while (ait.hasNext()){
-			KnowWEArticle art=ait.next();
+		// clear out the articles from the previous tests
+		Iterator<KnowWEArticle> ait = am.getArticleIterator();
+		while (ait.hasNext()) {
+			KnowWEArticle art = ait.next();
 			am.deleteArticle(art);
 		}
 		KnowWEArticle article1 = new KnowWEArticle("", "Tag1", type,
@@ -304,7 +316,9 @@ public class TaggingManglerTest extends TestCase {
 		tm.addTag("Tag1", "tag", params);
 		tm.addTag("Tag2", "leben", params);
 		tm.addTag("Tag3", "tod", params);
-		//remember: article* are not the current articles anymore, changes to the articles by the TaggingMangler do not backpropagate to those variables
+		// remember: article* are not the current articles anymore, changes to
+		// the articles by the TaggingMangler do not backpropagate to those
+		// variables
 		HashMap<String, Integer> tags = tm.getCloudList(10, 20);
 		assertEquals(Integer.valueOf(15), tags.get("leben"));
 		assertEquals(Integer.valueOf(15), tags.get("tod"));
@@ -331,7 +345,8 @@ public class TaggingManglerTest extends TestCase {
 
 	/**
 	 * Test method for
-	 * {@link de.d3web.we.core.semantic.TaggingMangler#searchPages(java.lang.String)}.
+	 * {@link de.d3web.we.core.semantic.TaggingMangler#searchPages(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSearchPages() {
@@ -348,7 +363,9 @@ public class TaggingManglerTest extends TestCase {
 		tm.addTag("Tag2", "leben", params);
 		tm.addTag("Tag3", "tod", params);
 		tm.addTag("Tag3", "leben", params);
-		//remember: article* are not the current articles anymore, changes to the articles by the TaggingMangler do not backpropagate to those variables
+		// remember: article* are not the current articles anymore, changes to
+		// the articles by the TaggingMangler do not backpropagate to those
+		// variables
 		ArrayList<GenericSearchResult> pages = tm.searchPages("leben");
 		assertEquals(2, pages.size());
 		GenericSearchResult a = pages.get(0);

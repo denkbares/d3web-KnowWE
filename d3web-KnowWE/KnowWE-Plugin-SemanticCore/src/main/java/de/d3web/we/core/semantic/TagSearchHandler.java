@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.core.semantic;
@@ -28,7 +28,9 @@ import de.d3web.we.taghandler.AbstractTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class TagSearchHandler extends AbstractTagHandler {
+
 	private ResourceBundle rb;
+
 	public TagSearchHandler() {
 		super("tagsearch");
 
@@ -38,10 +40,13 @@ public class TagSearchHandler extends AbstractTagHandler {
 		// FIXME refactor TagSearch page somewhere else
 		String form = "<form action=\""
 				+ baseurl
-				+ "Wiki.jsp"+ "?page=TagSearch\" "
+				+ "Wiki.jsp"
+				+ "?page=TagSearch\" "
 				+ "class=\"wikiform\" "
 				+ "id=\"searchform2\" name=\"searchform2\" accept-charset=\"UTF-8\">"
-				+ "<p>" + "<input type=\"hidden\" name=\"page\" id=\"page\" value=\"TagSearch\" />"+
+				+ "<p>"
+				+ "<input type=\"hidden\" name=\"page\" id=\"page\" value=\"TagSearch\" />"
+				+
 						"<input type=\"text\" name=\"query\" id=\"tagquery\" value=\"\" size=\"32\" />"
 				+ "<input type=\"submit\" name=\"ok\" id=\"ok\" value=\"Find!\" />"
 				+ "<input type=\"submit\" name=\"go\" id=\"go\" value=\"Go!\" />"
@@ -62,7 +67,7 @@ public class TagSearchHandler extends AbstractTagHandler {
 		rb = KnowWEEnvironment.getInstance()
 				.getKwikiBundle(user);
 		String baseurl = KnowWEEnvironment.getInstance().getWikiConnector()
-		.getBaseUrl();
+				.getBaseUrl();
 
 		String querystring = null;
 		Map<String, String> par = user.getUrlParameterMap();
@@ -73,10 +78,11 @@ public class TagSearchHandler extends AbstractTagHandler {
 			}
 		}
 		StringBuffer html = new StringBuffer();
-		html.append("<script type=\"text/javascript\" src=\""+baseurl+"KnowWEExtension/scripts/tagsearch.js\"></script>");
+		html.append("<script type=\"text/javascript\" src=\"" + baseurl
+				+ "KnowWEExtension/scripts/tagsearch.js\"></script>");
 		html.append("<div class=\"panel\"><h3>"
 				+ rb.getString("KnowWE.TagSearch.headline") + ": "
-				+ (querystring==null?"none":querystring) + "</h3>");
+				+ (querystring == null ? "none" : querystring) + "</h3>");
 		html.append(getForm(baseurl));
 		html.append("<div id=\"searchResult2\" >");
 		html.append(TaggingMangler.getInstance().getResultPanel(querystring));
@@ -86,6 +92,5 @@ public class TagSearchHandler extends AbstractTagHandler {
 		return html.toString();
 
 	}
-
 
 }

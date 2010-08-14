@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.contexts;
@@ -38,6 +38,7 @@ import de.d3web.we.utils.KnowWEUtils;
  * 
  */
 public class ContextManager {
+
 	private static ContextManager me;
 	private Map<String, ArticleContextMap> contextmap;
 
@@ -45,19 +46,22 @@ public class ContextManager {
 		contextmap = new HashMap<String, ArticleContextMap>();
 
 	}
-	
+
 	public void attachContextForClass(Section section, Context c) {
-		Object o = KnowWEUtils.getStoredObject(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(), section.getID(), c.getClass().getName());
-		if(o != null && (o instanceof Set)) {
-			Set<Context> contextSet = ((Set<Context>)o);
+		Object o = KnowWEUtils.getStoredObject(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(),
+				section.getID(), c.getClass().getName());
+		if (o != null && (o instanceof Set)) {
+			Set<Context> contextSet = ((Set<Context>) o);
 			contextSet.add(c);
-		}else {
+		}
+		else {
 			Set<Context> contextSet = new HashSet<Context>();
 			contextSet.add(c);
-			KnowWEUtils.storeSectionInfo(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(), section.getID(), c.getClass().getName(), contextSet);
+			KnowWEUtils.storeSectionInfo(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(),
+					section.getID(), c.getClass().getName(), contextSet);
 
 		}
-	
+
 	}
 
 	/**
@@ -67,31 +71,32 @@ public class ContextManager {
 	 * @param context
 	 */
 	public void attachContext(Section section, Context context) {
-		
-		KnowWEUtils.storeSectionInfo(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(), section.getID(), context.getCID(), context);
 
-//		String title = section.getArticle().getTitle();
-//		ArticleContextMap art = contextmap.get(title);
-//		if (art == null) {
-//			art = new ArticleContextMap();
-//			contextmap.put(title, art);
-//		}
-//		Map<String, Context> contextsForSection = art
-//				.getContextMapForSection(section);
-//
-//		if (contextsForSection == null) {
-//			contextsForSection = new HashMap<String, Context>();
-//			contextsForSection.put(context.getCID(), context);
-//
-//			contextmap.get(title).put(section,
-//					contextsForSection);
-//		} else {
-//			contextsForSection.put(context.getCID(), context);
-//		}
+		KnowWEUtils.storeSectionInfo(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(),
+				section.getID(), context.getCID(), context);
+
+		// String title = section.getArticle().getTitle();
+		// ArticleContextMap art = contextmap.get(title);
+		// if (art == null) {
+		// art = new ArticleContextMap();
+		// contextmap.put(title, art);
+		// }
+		// Map<String, Context> contextsForSection = art
+		// .getContextMapForSection(section);
+		//
+		// if (contextsForSection == null) {
+		// contextsForSection = new HashMap<String, Context>();
+		// contextsForSection.put(context.getCID(), context);
+		//
+		// contextmap.get(title).put(section,
+		// contextsForSection);
+		// } else {
+		// contextsForSection.put(context.getCID(), context);
+		// }
 	}
 
 	/**
-	 * To remove  contexts of one article (objects free for GC)
+	 * To remove contexts of one article (objects free for GC)
 	 * 
 	 * @param article
 	 */
@@ -106,16 +111,16 @@ public class ContextManager {
 	 * @param section
 	 * @return
 	 */
-//	public Set<String> getContexts(Section section) {
-//		Set<String> contextlist = new HashSet<String>();
-//		contextlist.addAll(contextmap.get(section.getArticle().getTitle())
-//				.getContextMapForSection(section).keySet());
-//		if (section.getFather() != null) {
-//			contextlist.addAll(contextmap.get(section.getArticle().getTitle())
-//					.get(section.getFather()).keySet());
-//		}
-//		return contextlist;
-//	}
+	// public Set<String> getContexts(Section section) {
+	// Set<String> contextlist = new HashSet<String>();
+	// contextlist.addAll(contextmap.get(section.getArticle().getTitle())
+	// .getContextMapForSection(section).keySet());
+	// if (section.getFather() != null) {
+	// contextlist.addAll(contextmap.get(section.getArticle().getTitle())
+	// .get(section.getFather()).keySet());
+	// }
+	// return contextlist;
+	// }
 
 	/**
 	 * returns a contextmanagerinstance
@@ -140,11 +145,11 @@ public class ContextManager {
 	public Context getContextForClass(Section section, Class<? extends Context> c) {
 		return getContext(section, c.getName());
 	}
-	
+
 	public Context getContext(Section section, String contextid) {
 		return getContext(section, section, contextid);
 	}
-	
+
 	/**
 	 * returns a context of a section. looks for inherited contexts too
 	 * 
@@ -153,42 +158,44 @@ public class ContextManager {
 	 * @return
 	 */
 	public Context getContext(Section section, Section originalSection, String contextid) {
-		Object o = KnowWEUtils.getStoredObject(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(), section.getID(), contextid);
-		if(o instanceof Context) {
-			if(((Context)o).isValidForSection(section)) {
-				return (Context)o;
+		Object o = KnowWEUtils.getStoredObject(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(),
+				section.getID(), contextid);
+		if (o instanceof Context) {
+			if (((Context) o).isValidForSection(section)) {
+				return (Context) o;
 			}
 			return null;
 		}
-		if(o instanceof Set) {
-			Set<Context> contextSet = ((Set<Context>)o);
+		if (o instanceof Set) {
+			Set<Context> contextSet = ((Set<Context>) o);
 			for (Context context : contextSet) {
-				if(context.isValidForSection(originalSection)) return context;
+				if (context.isValidForSection(originalSection)) return context;
 			}
 			return null;
 		}
 		else {
-			if(section.getFather() != null) {
-				return  getContext(section.getFather(), originalSection, contextid);
-			}else {
+			if (section.getFather() != null) {
+				return getContext(section.getFather(), originalSection, contextid);
+			}
+			else {
 				return null;
 			}
 		}
-//		Context erg = null;
-//		ArticleContextMap artMap = contextmap.get(section.getArticle()
-//				.getTitle());
-//		if (artMap != null) {
-//			erg = artMap.get(section) != null ? artMap.get(section).get(
-//					contextid) : null;
-//		}
-//		return erg != null ? erg : section.getFather() != null ? getContext(
-//				section.getFather(), contextid) : null;
+		// Context erg = null;
+		// ArticleContextMap artMap = contextmap.get(section.getArticle()
+		// .getTitle());
+		// if (artMap != null) {
+		// erg = artMap.get(section) != null ? artMap.get(section).get(
+		// contextid) : null;
+		// }
+		// return erg != null ? erg : section.getFather() != null ? getContext(
+		// section.getFather(), contextid) : null;
 	}
 
 	class ArticleContextMap {
-		
+
 		private HashMap<Section, Map<String, Context>> artContextMap;
-		
+
 		public Map<Section, Map<String, Context>> getContextmap() {
 			return artContextMap;
 		}

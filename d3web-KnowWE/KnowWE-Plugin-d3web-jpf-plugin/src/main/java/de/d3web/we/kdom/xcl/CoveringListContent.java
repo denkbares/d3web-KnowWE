@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -87,7 +87,7 @@ public class CoveringListContent extends XMLContent {
 
 		/**
 		 * Analyses a given XCList and writes it to the KnowledgeBase.
-		 *
+		 * 
 		 * @param kbm
 		 * @param currentweb
 		 * @param XCLList
@@ -164,7 +164,7 @@ public class CoveringListContent extends XMLContent {
 
 		/**
 		 * Inserts Relation into currentModel
-		 *
+		 * 
 		 * @param currentRels
 		 * @param kbm
 		 * @param currentdiag
@@ -192,11 +192,9 @@ public class CoveringListContent extends XMLContent {
 
 		}
 
-
-
 		/**
 		 * Gets the weight from a Relation. If it has none it returns 1.0.
-		 *
+		 * 
 		 * @param rel
 		 * @return
 		 */
@@ -218,7 +216,7 @@ public class CoveringListContent extends XMLContent {
 
 		/**
 		 * Gets all XCLRelations from a given XCLBody
-		 *
+		 * 
 		 * @param section
 		 * @return
 		 */
@@ -242,7 +240,7 @@ public class CoveringListContent extends XMLContent {
 
 		/**
 		 * Gets XCLHead, XCLBody and XCLTail from a given XCList type.
-		 *
+		 * 
 		 * @param children
 		 * @return
 		 */

@@ -172,7 +172,7 @@ public class GroupInfoWriter extends WISECWriter {
 			b.append("** " + SubstanceInfoWriter.asWikiMarkup(cas) + "\n");
 		}
 		b.append("\n");
-		
+
 		// CHEMICAL NAMES
 		Collection<String> chemNames = getChemNamesFor(cas_nos);
 		b.append("* Chemical names: ");

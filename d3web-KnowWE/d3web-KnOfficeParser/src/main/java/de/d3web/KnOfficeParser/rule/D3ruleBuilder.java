@@ -172,7 +172,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		}
 		else if (rule.type == ruletype.supress) {
 			newRule = RuleFactory.createSuppressAnswerRule(newRuleID,
-					(QuestionChoice) rule.question, new Choice[]{rule.answers}, rule.ifcond,
+					(QuestionChoice) rule.question, new Choice[] { rule.answers }, rule.ifcond,
 					rule.exceptcond);
 		}
 		else if (rule.type == ruletype.setvalue) {
@@ -398,12 +398,13 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 										linetext, s, qc.getName()));
 					}
 				}
-				if (alist.size() >= 2){
-					
-					errors.add(new Message("Rule expects to suppress exactly 1 answer on question " + qc.getName()));
+				if (alist.size() >= 2) {
+
+					errors.add(new Message("Rule expects to suppress exactly 1 answer on question "
+							+ qc.getName()));
 					return;
 				}
-				
+
 				if (!alist.isEmpty()) {
 					Condition ifcond;
 					Condition exceptcond;
@@ -417,7 +418,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 						exceptcond = null;
 					}
 					if (ifcond == null) return;
-					
+
 					addRule(new MyRule(ruletype.supress, qc, ifcond,
 							exceptcond, alist.get(0), null, null));
 				}
@@ -609,7 +610,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			}
 			else {
 				addRule(new MyRule(ruletype.setvalue, currentquestion, ifcond,
-						exceptcond, a , null, null));
+						exceptcond, a, null, null));
 			}
 		}
 	}

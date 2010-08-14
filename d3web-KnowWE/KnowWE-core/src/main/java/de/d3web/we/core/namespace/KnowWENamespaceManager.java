@@ -45,7 +45,7 @@ public class KnowWENamespaceManager {
 			changedNamespaces.add(namespace);
 		}
 	}
-	
+
 	public boolean unregisterNamespaceDefinition(Section<?> s) {
 		for (String namespace : s.getNamespaces()) {
 			LinkedList<Section<?>> namespaceList = namespaceDefinitionsMap.get(namespace);
@@ -128,7 +128,7 @@ public class KnowWENamespaceManager {
 
 	public void updateNamespaceIncludes(KnowWEArticle article) {
 		List<String> articlesToRevise = new ArrayList<String>();
-		
+
 		for (HashSet<Section<? extends NamespaceInclude>> includesSet : namespaceIncludesMap.values()) {
 			for (Section<? extends NamespaceInclude> nsInclude : includesSet) {
 				if (changedNamespaces.contains(nsInclude.get().getNamespaceToInclude(nsInclude))
@@ -138,7 +138,7 @@ public class KnowWENamespaceManager {
 				}
 			}
 		}
-		
+
 		changedNamespaces.clear();
 
 		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
@@ -154,6 +154,5 @@ public class KnowWENamespaceManager {
 			env.getArticleManager(web).saveUpdatedArticle(newArt);
 		}
 	}
-
 
 }

@@ -82,15 +82,16 @@ public class KnOfficeUploadManager {
 							"decisiontable.xls");
 					try {
 						fileItem.write(file);
-					} catch (Exception e) {
+					}
+					catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 
 					return "feature under construction";
-//					ExceltoTextParser parser = new ExceltoTextParser(file);
-//					String data = parser.parse();
-//					kopicWriter.appendDecisionTable(data);
+					// ExceltoTextParser parser = new ExceltoTextParser(file);
+					// String data = parser.parse();
+					// kopicWriter.appendDecisionTable(data);
 				}
 			}
 			if (fileItem.getFieldName().equals(ImportKnOfficeHandler.KEY_OWL)) {
@@ -104,17 +105,18 @@ public class KnOfficeUploadManager {
 					File fpath = new File(path, "owlincludes");
 
 					try {
-						if (!fpath.exists())
-							fpath.mkdirs();
+						if (!fpath.exists()) fpath.mkdirs();
 
 						if (!file.exists()) {
 							file.createNewFile();
-						} else {
+						}
+						else {
 							file.delete();
 							file.createNewFile();
 						}
 						fileItem.write(file);
-					} catch (Exception e) {
+					}
+					catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -145,14 +147,15 @@ public class KnOfficeUploadManager {
 							"scoretable.xls");
 					try {
 						fileItem.write(file);
-					} catch (Exception e) {
+					}
+					catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					return "feature under construction";
-//					ExceltoTextParser parser = new ExceltoTextParser(file);
-//					String data = parser.parse();
-//					kopicWriter.appendScoreTable(data);
+					// ExceltoTextParser parser = new ExceltoTextParser(file);
+					// String data = parser.parse();
+					// kopicWriter.appendScoreTable(data);
 				}
 
 			}
@@ -167,14 +170,15 @@ public class KnOfficeUploadManager {
 							"coveringtable.xls");
 					try {
 						fileItem.write(file);
-					} catch (Exception e) {
+					}
+					catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					return "feature under construction";
-//					ExceltoTextParser parser = new ExceltoTextParser(file);
-//					String data = parser.parse();
-//					kopicWriter.appendCoveringTable(data);
+					// ExceltoTextParser parser = new ExceltoTextParser(file);
+					// String data = parser.parse();
+					// kopicWriter.appendCoveringTable(data);
 				}
 
 			}
@@ -203,7 +207,8 @@ public class KnOfficeUploadManager {
 					File file = new File(f.toString(), name);
 					try {
 						fileItem.write(file);
-					} catch (Exception e) {
+					}
+					catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -219,7 +224,8 @@ public class KnOfficeUploadManager {
 		if (exists) {
 			KnowWEEnvironment.getInstance().getWikiConnector()
 					.appendContentToPage(pagename, kopicText);
-		} else {
+		}
+		else {
 			KnowWEEnvironment.getInstance().getWikiConnector().createWikiPage(
 					pagename, kopicText, "KnOfficeUpload");
 		}

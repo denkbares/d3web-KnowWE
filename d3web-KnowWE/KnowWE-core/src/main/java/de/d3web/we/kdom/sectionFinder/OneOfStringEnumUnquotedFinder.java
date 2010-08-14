@@ -11,7 +11,7 @@ import de.d3web.we.kdom.Section;
  * occurrences of these Strings and creates Sections from it.
  * 
  * @author Jochen
- *
+ * 
  */
 public class OneOfStringEnumUnquotedFinder extends SectionFinder {
 

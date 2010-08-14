@@ -29,6 +29,7 @@ import org.openrdf.rio.helpers.StatementCollector;
 import com.ontotext.trree.owlim_ext.TripleSourceImpl;
 
 public class RepositoryFactory {
+
 	private EvaluationStrategyImpl Evaluator;
 	private RepositoryManager man;
 	private static RepositoryFactory me;

@@ -39,7 +39,6 @@ public class MapType extends AbstractXMLObjectType {
 		return childrenTypes;
 	}
 
-
 	private class MapTypeOWLSubTreeHandler extends OwlSubtreeHandler {
 
 		@Override
@@ -91,13 +90,15 @@ public class MapType extends AbstractXMLObjectType {
 			slist.add(helper.createStatement(conceptURI, helper
 					.createlocalURI("hasLongitude"), longitude));
 			ioo.addAllStatements(slist);
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			e.printStackTrace();
 		}
 
 	}
 
 	private class MapRenderer extends KnowWEDomRenderer<MapType> {
+
 		@Override
 		public void render(KnowWEArticle article, Section<MapType> sec,
 				KnowWEUserContext user, StringBuilder string) {

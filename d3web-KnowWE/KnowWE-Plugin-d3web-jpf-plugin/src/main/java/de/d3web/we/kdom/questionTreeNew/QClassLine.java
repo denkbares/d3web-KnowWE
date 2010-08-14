@@ -1,24 +1,23 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.d3web.we.kdom.questionTreeNew;
-
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,7 +46,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 
 		this.childrenTypes.add(new QuestionTreeQuestionnaireDefinition());
 		this.addSubtreeHandler(new CreateSubQuestionnaireRelationHandler());
-		
+
 	}
 
 	static class QuestionTreeQuestionnaireDefinition extends QuestionnaireDefinition {
@@ -67,43 +66,44 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 		}
 
 	}
-	
+
 	/**
 	 * @author Jochen
-	 *
-	 *         This handler establishes sub-questionnaire-relations defined by the
-	 *         questionTree in the knowledge base i.e., if a questionnaire is a
-	 *         dashTree-child of another questionnaire we add it as child in the
-	 *         knowledge base
-	 *
+	 * 
+	 *         This handler establishes sub-questionnaire-relations defined by
+	 *         the questionTree in the knowledge base i.e., if a questionnaire
+	 *         is a dashTree-child of another questionnaire we add it as child
+	 *         in the knowledge base
+	 * 
 	 */
 	static class CreateSubQuestionnaireRelationHandler extends D3webSubtreeHandler<QClassLine> {
 
 		@Override
 		public boolean needsToCreate(KnowWEArticle article, Section<QClassLine> s) {
-			return super.needsToCreate(article, s) 
+			return super.needsToCreate(article, s)
 					|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
-		
-		
+
 		@Override
 		public void destroy(KnowWEArticle article, Section<QClassLine> s) {
-			//will be destroyed by QuestionniareDefinition#destroy()
+			// will be destroyed by QuestionniareDefinition#destroy()
 
 		}
-		
+
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QClassLine> s) {
 			Section<? extends DashTreeElementContent> fatherContent = DashTreeUtils.getFatherDashTreeElementContent(
 					s);
 			Section<QuestionnaireDefinition> localQuestionniareDef = s.findSuccessor(QuestionnaireDefinition.class);
-			QContainer localQuestionnaire = localQuestionniareDef.get().getTermObject(article, localQuestionniareDef);
+			QContainer localQuestionnaire = localQuestionniareDef.get().getTermObject(article,
+					localQuestionniareDef);
 
 			if (fatherContent != null && localQuestionnaire != null) {
 
 				Section<QuestionnaireDefinition> questionniareDef = fatherContent.findSuccessor(QuestionnaireDefinition.class);
 				if (questionniareDef != null) {
-					QContainer superQuasetionniare = questionniareDef.get().getTermObject(article, questionniareDef);
+					QContainer superQuasetionniare = questionniareDef.get().getTermObject(article,
+							questionniareDef);
 					// here the actual taxonomic relation is established
 					superQuasetionniare.addChild(localQuestionnaire);
 					return Arrays.asList((KDOMReportMessage) new RelationCreatedMessage(
@@ -143,6 +143,5 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 			}
 		};
 	}
-
 
 }

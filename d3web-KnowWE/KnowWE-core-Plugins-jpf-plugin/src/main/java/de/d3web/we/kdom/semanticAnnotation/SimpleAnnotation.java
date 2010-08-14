@@ -1,28 +1,27 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 /**
  * 
  */
 package de.d3web.we.kdom.semanticAnnotation;
-
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -61,11 +60,12 @@ public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType {
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			UpperOntology uo = UpperOntology.getInstance();
-			
-			String annos="";
+
+			String annos = "";
 			try {
 				annos = URLEncoder.encode(s.getOriginalText().trim(), "UTF-8");
-			} catch (UnsupportedEncodingException e1) {
+			}
+			catch (UnsupportedEncodingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
@@ -80,11 +80,13 @@ public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType {
 				}
 				try {
 					anno = uo.getHelper().createURI(ens, list[1]);
-				} catch (IllegalArgumentException e) {
+				}
+				catch (IllegalArgumentException e) {
 					io.setValidPropFlag(false);
 					io.setBadAttribute(ns);
 				}
-			} else {
+			}
+			else {
 				anno = uo.getHelper().createlocalURI(annos);
 			}
 			if (anno != null) {
@@ -95,7 +97,5 @@ public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType {
 		}
 
 	}
-
-	
 
 }

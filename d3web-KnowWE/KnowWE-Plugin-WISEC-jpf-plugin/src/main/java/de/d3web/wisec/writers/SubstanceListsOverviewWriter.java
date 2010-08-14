@@ -15,14 +15,14 @@ import de.d3web.wisec.model.WISECModel;
 public class SubstanceListsOverviewWriter extends WISECWriter {
 
 	public static final String FILENAME = WISECExcelConverter.FILE_PRAEFIX + "AllSubstanceLists";
-	
+
 	public final static String[] LIST_ATTRIBUTES = new String[] {
 			"Source_ID", "ID", "Name", "Criteria_Code", "List_allocation", "Number_of_substances",
 			"CMR", "Persistence", "Bioakumulation_Potential", "Aqua_Tox", "PBT", "vPvB", "EDC",
 			"Multiple_Tox", "LRT", "Climatic_Change", "drinking_water", " surface_water", "sea",
 			"groundwater", "Risk_related", "Exposure", "compartment", "Market_Volume",
 			"Wide_d_use", "Political", "SVHC_regulated", "Regulated", "ecological_concerns" };
-	
+
 	public final static String[] CRITERIA_ATTRIBUTES = new String[] {
 			"CMR", "Persistence", "Bioakumulation_Potential", "Aqua_Tox", "PBT", "vPvB", "EDC",
 			"Multiple_Tox", "LRT", "Climatic_Change", "drinking_water", " surface_water", "sea",
@@ -32,20 +32,21 @@ public class SubstanceListsOverviewWriter extends WISECWriter {
 	public final static String[] WRITEABLE_ATTR = new String[] {
 			"Source_ID", "Source_Name", "ID", "Name", "Author", "Country"
 	};
-	
+
 	public SubstanceListsOverviewWriter(WISECModel model, String outputDirectory) {
 		super(model, outputDirectory);
 	}
 
 	@Override
 	public void write() throws IOException {
-		Writer writer = ConverterUtils.createWriter(this.outputDirectory+FILENAME+".txt");
+		Writer writer = ConverterUtils.createWriter(this.outputDirectory + FILENAME + ".txt");
 		writeBreadcrumb(writer);
 		writeHeader(writer);
 
 		List<SubstanceList> sortedSubstances = new ArrayList<SubstanceList>(
 				model.getSubstanceLists());
 		Collections.sort(sortedSubstances, new Comparator<SubstanceList>() {
+
 			@Override
 			public int compare(SubstanceList o1, SubstanceList o2) {
 				return o1.getId().compareTo(o2.getId());
@@ -59,7 +60,7 @@ public class SubstanceListsOverviewWriter extends WISECWriter {
 
 		}
 		writer.append(buffy.toString());
-		
+
 		writeFooter(writer);
 		writer.close();
 
@@ -83,7 +84,6 @@ public class SubstanceListsOverviewWriter extends WISECWriter {
 		writer.append(" > Index of Lists\n\n");
 	}
 
-	
 	public static String generateOverviewLineFor(SubstanceList list, String[] listAttr) {
 		if (listAttr == null) {
 			listAttr = LIST_ATTRIBUTES;
@@ -93,9 +93,9 @@ public class SubstanceListsOverviewWriter extends WISECWriter {
 		for (String attribute : listAttr) {
 			if (attribute.equalsIgnoreCase("Name")) {
 				buffy.append("| [" + clean(list.getName()) + " | " + filename + "] "); // Name
-																					// of
-																					// the
-																					// List
+				// of
+				// the
+				// List
 			}
 			else {
 				String value = list.info.get(attribute);
@@ -129,7 +129,6 @@ public class SubstanceListsOverviewWriter extends WISECWriter {
 		return ConverterUtils.clean(string);
 	}
 
-	
 	private void writeFooter(Writer writer) throws IOException {
 		// close the zebra and the sortable table
 		writer.append("/%\n/%\n");

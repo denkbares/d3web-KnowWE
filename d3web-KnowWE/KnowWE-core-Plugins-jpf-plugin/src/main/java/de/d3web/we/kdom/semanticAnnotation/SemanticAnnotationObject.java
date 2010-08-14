@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 /**
@@ -99,17 +99,20 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 					if (erronousproperty) {
 						badprop = tempio.getBadAttribute();
 					}
-				} else if (cur.getObjectType().getClass().equals(
+				}
+				else if (cur.getObjectType().getClass().equals(
 						SemanticAnnotationSubject.class)) {
 					String subj = cur.getOriginalText().trim();
 					soluri = uo.getHelper().createlocalURI(subj);
-				} else if (cur.getObjectType().getClass().equals(
+				}
+				else if (cur.getObjectType().getClass().equals(
 						SimpleAnnotation.class)) {
 					IntermediateOwlObject tempio = (IntermediateOwlObject) KnowWEUtils
 							.getStoredObject(cur, OwlHelper.IOO);
 					if (tempio.getValidPropFlag()) {
 						stringa = tempio.getLiterals().get(0);
-					} else {
+					}
+					else {
 						badprop = tempio.getBadAttribute();
 					}
 				}
@@ -120,7 +123,8 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 			if (erronousproperty) {
 				io.setBadAttribute(badprop);
 				io.setValidPropFlag(false);
-			} else if (prop != null) {
+			}
+			else if (prop != null) {
 				validprop = PropertyManager.getInstance().isValid(prop);
 				io.setBadAttribute(prop.getLocalName());
 			}
@@ -146,21 +150,24 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 						io.merge(uo.getHelper().createStatementSrc(soluri,
 								prop, stringa, s.getFather().getFather(),
 								OwlHelper.ANNOTATION));
-					} else if (PropertyManager.getInstance().isRDF(prop)) {
+					}
+					else if (PropertyManager.getInstance().isRDF(prop)) {
 						stmnt = uo.getHelper().createStatement(soluri, prop,
 								stringa);
 						io.addStatement(stmnt);
 						io.merge(uo.getHelper().createStatementSrc(soluri,
 								prop, stringa, s.getFather().getFather(),
 								OwlHelper.ANNOTATION));
-					} else if (PropertyManager.getInstance().isNary(prop)) {
+					}
+					else if (PropertyManager.getInstance().isNary(prop)) {
 						IntermediateOwlObject tempio = UpperOntology
 								.getInstance().getHelper()
 								.createAnnotationProperty(soluri, prop,
 										stringa, s.getFather().getFather());
 						io.merge(tempio);
 
-					} else {
+					}
+					else {
 						stmnt = uo.getHelper().createStatement(soluri, prop,
 								stringa);
 						io.addStatement(stmnt);
@@ -169,15 +176,14 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 								OwlHelper.ANNOTATION));
 					}
 
-				} catch (RepositoryException e) {
+				}
+				catch (RepositoryException e) {
 					msgs.add(new SimpleMessageError(e.getMessage()));
 				}
 			}
 			SemanticCoreDelegator.getInstance().addStatements(io, s);
 			return msgs;
 		}
-			
-
 
 	}
 

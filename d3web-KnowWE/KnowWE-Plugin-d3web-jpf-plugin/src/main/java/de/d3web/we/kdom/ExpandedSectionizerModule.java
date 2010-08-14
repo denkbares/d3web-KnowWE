@@ -2,7 +2,6 @@ package de.d3web.we.kdom;
 
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
-
 public class ExpandedSectionizerModule implements SectionizerModule {
 
 	@Override

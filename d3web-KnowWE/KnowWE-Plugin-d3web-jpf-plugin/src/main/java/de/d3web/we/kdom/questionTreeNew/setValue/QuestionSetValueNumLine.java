@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.questionTreeNew.setValue;
@@ -66,7 +66,8 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 				int open = SplitUtility.indexOfUnquoted(text, (OPEN));
 				if (open == -1) return false;
 
-				int close = SplitUtility.findIndexOfClosingBracket(text, open, OPEN.charAt(0), CLOSE.charAt(0));
+				int close = SplitUtility.findIndexOfClosingBracket(text, open, OPEN.charAt(0),
+						CLOSE.charAt(0));
 
 				if (close == -1) return false;
 
@@ -139,10 +140,10 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public boolean needsToCreate(KnowWEArticle article, Section<QuestionReference> s) {
-			return super.needsToCreate(article, s) 
+			return super.needsToCreate(article, s)
 					|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
-		
+
 		@Override
 		public boolean needsToDestroy(KnowWEArticle article, Section<QuestionReference> s) {
 			return super.needsToDestroy(article, s)
@@ -155,10 +156,9 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 					SETVALUE_ARGUMENT);
 			if (kbr != null) kbr.remove();
 		}
-		
+
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionReference> s) {
-			
 
 			Question q = s.get().getTermObject(article, s);
 
@@ -167,24 +167,23 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 			if (q != null) {
 				String newRuleID = getKBM(article).createRuleID();
 
-						Condition cond = QuestionDashTreeUtils.createCondition(article,
+				Condition cond = QuestionDashTreeUtils.createCondition(article,
 								DashTreeUtils.getAncestorDashTreeElements(s));
 
-						Double d = Double.parseDouble(argument);
-						ActionAddValue action = new ActionAddValue();
-						action.setQuestion(q);
-						action.setValue(d);
+				Double d = Double.parseDouble(argument);
+				ActionAddValue action = new ActionAddValue();
+				action.setQuestion(q);
+				action.setValue(d);
 
-						Rule r = RuleFactory.createRule(newRuleID, action, cond, null, null);
-						if (r != null) {
-							KnowWEUtils.storeSectionInfo(article, s, SETVALUE_ARGUMENT, r);
-							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+				Rule r = RuleFactory.createRule(newRuleID, action, cond, null, null);
+				if (r != null) {
+					KnowWEUtils.storeSectionInfo(article, s, SETVALUE_ARGUMENT, r);
+					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
 									r.getClass() + " : "
 											+ r.getId()));
-						}
+				}
 
-					}
-
+			}
 
 			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
 					Rule.class.getSimpleName()));
@@ -206,6 +205,5 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 		}
 
 	}
-
 
 }

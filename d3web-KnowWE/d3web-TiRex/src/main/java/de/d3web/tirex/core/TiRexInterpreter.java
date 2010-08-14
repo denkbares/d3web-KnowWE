@@ -323,9 +323,9 @@ public class TiRexInterpreter {
 						// answer.toString());
 						if ((answer.getMatch()).equals(question.getMatch())
 								|| (answer.getMatch()).contains(question
-								.getMatch())
+										.getMatch())
 								|| (question.getMatch()).contains(answer
-								.getMatch())) {
+										.getMatch())) {
 							if (question.getRating() > answer.getRating()) {
 								resultSet.add(new QuestionAndAnswerWithRating(
 										question, null));

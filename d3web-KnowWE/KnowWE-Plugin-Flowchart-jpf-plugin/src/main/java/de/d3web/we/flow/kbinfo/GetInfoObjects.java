@@ -229,12 +229,12 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		buffer.append(" type='");
 		buffer.append(
 				(object instanceof QuestionYN) ? "bool" :
-				(object instanceof QuestionOC) ? "oc" :
-				(object instanceof QuestionMC) ? "mc" :
-				(object instanceof QuestionDate) ? "date" :
-				(object instanceof QuestionNum) ? "num" :
-				(object instanceof QuestionText) ? "text" :
-				"???"
+						(object instanceof QuestionOC) ? "oc" :
+								(object instanceof QuestionMC) ? "mc" :
+										(object instanceof QuestionDate) ? "date" :
+												(object instanceof QuestionNum) ? "num" :
+														(object instanceof QuestionText) ? "text" :
+																"???"
 				);
 		buffer.append("'");
 		buffer.append(">\n");

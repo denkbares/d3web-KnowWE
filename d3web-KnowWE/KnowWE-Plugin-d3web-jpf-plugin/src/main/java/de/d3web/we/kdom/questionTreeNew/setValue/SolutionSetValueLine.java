@@ -1,20 +1,20 @@
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.d3web.we.kdom.questionTreeNew.setValue;
 
@@ -54,7 +54,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 /**
  * 
  * @author Jochen
- * @created 21.07.2010 
+ * @created 21.07.2010
  */
 public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
@@ -64,13 +64,13 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	protected void init() {
-		this.sectionFinder = new SolutionSetValueFinder(); 
+		this.sectionFinder = new SolutionSetValueFinder();
 		AnonymousType argumentType = createArgumentType();
 		this.childrenTypes.add(argumentType);
 		this.childrenTypes.add(createObjectRefTypeBefore(argumentType));
 
 	}
-	
+
 	class SolutionSetValueFinder extends ConditionalSectionFinder {
 
 		public SolutionSetValueFinder() {
@@ -80,24 +80,25 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 		@Override
 		protected boolean condition(String text, Section<?> father) {
 			int open = SplitUtility.indexOfUnquoted(text, (OPEN));
-			if(open == -1) return false;
-			
-			int close = SplitUtility.findIndexOfClosingBracket(text, open, OPEN.charAt(0), CLOSE.charAt(0));
-			
-			if(close == -1) return false;
-			
-			String content = text.substring(open+1, close).trim();
-			
+			if (open == -1) return false;
+
+			int close = SplitUtility.findIndexOfClosingBracket(text, open, OPEN.charAt(0),
+					CLOSE.charAt(0));
+
+			if (close == -1) return false;
+
+			String content = text.substring(open + 1, close).trim();
+
 			List<String> scores = D3webUtils.getPossibleScores();
 			for (String string : scores) {
-				if(content.equals(string)) {
+				if (content.equals(string)) {
 					return true;
 				}
 			}
-			
+
 			return false;
 		}
-		
+
 	}
 
 	private KnowWEObjectType createObjectRefTypeBefore(
@@ -145,13 +146,13 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 	}
 
 	static class CreateScoringRuleHandler extends D3webSubtreeHandler<SolutionReference> {
-		
+
 		@Override
 		public boolean needsToCreate(KnowWEArticle article, Section<SolutionReference> s) {
-			return super.needsToCreate(article, s) 
+			return super.needsToCreate(article, s)
 					|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
-		
+
 		@Override
 		public boolean needsToDestroy(KnowWEArticle article, Section<SolutionReference> s) {
 			return super.needsToDestroy(article, s)
@@ -172,10 +173,10 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 			String argument = getArgumentString(s);
 
-			if( sol != null) {
+			if (sol != null) {
 				Score score = D3webUtils.getScoreForString(argument);
-				
-				if(score != null) {
+
+				if (score != null) {
 					String newRuleID = getKBM(article).createRuleID();
 
 					Condition cond = QuestionDashTreeUtils.createCondition(article,
@@ -184,13 +185,15 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 					Rule r = RuleFactory.createHeuristicPSRule(newRuleID, sol, score, cond);
 					if (r != null) {
 						KnowWEUtils.storeSectionInfo(article, s, SETVALUE_ARGUMENT, r);
-						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(r.getClass()
-								+ " : " + r.getId()));
+						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+								r.getClass()
+										+ " : " + r.getId()));
 					}
 				}
 			}
 
-			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(Rule.class.getSimpleName()));
+			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+					Rule.class.getSimpleName()));
 
 		}
 
@@ -210,5 +213,4 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	
 }

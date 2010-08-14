@@ -183,7 +183,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 					if (question == null) {
 						errors.add(MessageKnOfficeGenerator
 								.createTypeRecognitionError(file, line,
-								linetext, qname, type));
+										linetext, qname, type));
 						condstack.push(null);
 						return;
 					}
@@ -201,7 +201,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 			else {
 				errors.add(MessageKnOfficeGenerator
 						.createQuestionNotFoundException(file, line, linetext,
-						qname));
+								qname));
 				condstack.push(null);
 				return;
 			}
@@ -253,7 +253,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 				else {
 					errors.add(MessageKnOfficeGenerator
 							.createAnswerNotFoundException(file, line,
-							linetext, value, qc.getName()));
+									linetext, value, qc.getName()));
 					c = null;
 				}
 			}
@@ -288,7 +288,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 					if (question == null) {
 						errors.add(MessageKnOfficeGenerator
 								.createTypeRecognitionError(file, line,
-								linetext, qname, type));
+										linetext, qname, type));
 						condstack.push(null);
 						return;
 					}
@@ -301,7 +301,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 			else {
 				errors.add(MessageKnOfficeGenerator
 						.createQuestionNotFoundException(file, line, linetext,
-						qname));
+								qname));
 				condstack.push(null);
 				return;
 			}
@@ -336,7 +336,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 				if (q == null) {
 					errors.add(MessageKnOfficeGenerator
 							.createTypeRecognitionError(file, line,
-							linetext, name, type));
+									linetext, name, type));
 					condstack.push(null);
 					return;
 				}
@@ -352,7 +352,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 			// if q not exists, create an error
 			errors.add(MessageKnOfficeGenerator
 					.createQuestionNotFoundException(file, line, linetext,
-					name));
+							name));
 		}
 		else {
 			if (!D3webQuestionFactory.checkType(q, type)) {

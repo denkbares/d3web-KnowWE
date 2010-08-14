@@ -7,27 +7,26 @@ import de.d3web.wisec.converter.WISECExcelConverter;
 import de.d3web.wisec.model.WISECModel;
 
 public class OverviewWriter extends WISECWriter {
-	public static final String FILENANE = WISECExcelConverter.FILE_PRAEFIX+"WISEC.txt";
+
+	public static final String FILENANE = WISECExcelConverter.FILE_PRAEFIX + "WISEC.txt";
 	private static final String ALL_SUBSTANCES = WISECExcelConverter.FILE_PRAEFIX + "AllSubstances";
 	private static final String ALL_SUBSTANCE_LISTS = WISECExcelConverter.FILE_PRAEFIX
 			+ "AllSubstanceLists";
-	
+
 	public OverviewWriter(WISECModel model, String outputDirectory) {
 		super(model, outputDirectory);
 	}
 
 	@Override
 	public void write() throws IOException {
-		Writer writer = ConverterUtils.createWriter(this.outputDirectory+FILENANE);
+		Writer writer = ConverterUtils.createWriter(this.outputDirectory + FILENANE);
 		writer.write("!!! WISEC Overview\n\n");
 		writeGeneralSettings(writer);
-//		writeSubstanceListOverview(writer);
+		// writeSubstanceListOverview(writer);
 		writer.close();
-		
-//		writeAllSubstances();
+
+		// writeAllSubstances();
 	}
-
-
 
 	private void writeGeneralSettings(Writer writer) throws IOException {
 		writer.write("* [List of all sources | " + WISECExcelConverter.FILE_PRAEFIX
@@ -38,9 +37,7 @@ public class OverviewWriter extends WISECWriter {
 				+ model.activeSubstances.size() + " active of " + model.substances.size()
 				+ " substances)\n");
 		writer.write("\n\n");
-		
+
 	}
-
-
 
 }

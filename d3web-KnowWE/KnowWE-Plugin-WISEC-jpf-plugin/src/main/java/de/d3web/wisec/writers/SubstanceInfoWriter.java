@@ -87,7 +87,7 @@ public class SubstanceInfoWriter extends WISECWriter {
 			b.append("|| " + criteria + " ");
 		}
 		b.append("\n");
-		
+
 		// write the content of the table
 		for (SubstanceList substanceList : lists) {
 			SourceList sourceList = model.getSourceListForID(substanceList.info.get("Source_ID"));
@@ -103,7 +103,7 @@ public class SubstanceInfoWriter extends WISECWriter {
 		}
 		b.append("/%\n/%\n");
 	}
-	
+
 	public static List<String> criteriaContainedInAtLeastOneList(Collection<SubstanceList> lists) {
 		List<String> criteria = new ArrayList<String>();
 		for (String crit : SubstanceListsOverviewWriter.CRITERIA_ATTRIBUTES) {
@@ -113,7 +113,6 @@ public class SubstanceInfoWriter extends WISECWriter {
 		}
 		return criteria;
 	}
-	
 
 	private static boolean isInOneList(String crit, Collection<SubstanceList> lists) {
 		for (SubstanceList substanceList : lists) {
@@ -136,7 +135,7 @@ public class SubstanceInfoWriter extends WISECWriter {
 		if (!includedGroups.isEmpty()) {
 			b.append("* Groups: " + ConverterUtils.asStringNoBraces(includedGroups) + "\n\n");
 		}
-		
+
 	}
 
 	private void writeCriteriaScoring(String substance, StringBuffer b) {
@@ -179,7 +178,6 @@ public class SubstanceInfoWriter extends WISECWriter {
 		}
 
 	}
-
 
 	private void writeCASReferences(String substance, StringBuffer b) {
 		b.append("* Chemical names: ");
@@ -226,7 +224,5 @@ public class SubstanceInfoWriter extends WISECWriter {
 		return "[ " + ConverterUtils.clean(substanceName) + " | "
 				+ SubstanceInfoWriter.getWikiFileNameFor(substanceName) + "]";
 	}
-
-
 
 }

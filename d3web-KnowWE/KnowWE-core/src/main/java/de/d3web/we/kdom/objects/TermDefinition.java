@@ -70,5 +70,4 @@ public abstract class TermDefinition<TermObject>
 		KnowWEUtils.storeSectionInfo(article, s, key, q);
 	}
 
-
 }

@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.core;
@@ -43,9 +43,9 @@ public class KnowWEParameterMap extends HashMap<String, String> {
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 	private KnowWEUserContext wikiContext;
-	
+
 	public KnowWEParameterMap(KnowWEUserContext wikiContext,
-			HttpServletRequest rq, HttpServletResponse rp, 
+			HttpServletRequest rq, HttpServletResponse rp,
 			ServletContext c, KnowWEEnvironment e) {
 		if (rq != null) {
 			this.session = rq.getSession();
@@ -54,21 +54,22 @@ public class KnowWEParameterMap extends HashMap<String, String> {
 		this.request = rq;
 		this.response = rp;
 		this.context = c;
-        
+
 		Enumeration<String> paramNames = rq.getParameterNames();
 		if ((paramNames != null)) {
 			while ((paramNames.hasMoreElements())) {
 				String name = paramNames.nextElement();
-				
+
 				String value = "";
 				try {
-					value = URLDecoder.decode( rq.getParameter(name) ,"UTF-8");
-				} catch (UnsupportedEncodingException e1) {
+					value = URLDecoder.decode(rq.getParameter(name), "UTF-8");
+				}
+				catch (UnsupportedEncodingException e1) {
 					value = rq.getParameter(name);
 				}
 				this.put(name, value);
 			}
-		} 
+		}
 		handlePostData();
 	}
 
@@ -95,7 +96,7 @@ public class KnowWEParameterMap extends HashMap<String, String> {
 
 	public String getTopic() {
 		String page = this.get(KnowWEAttributes.TOPIC);
-		if(page == null) {
+		if (page == null) {
 			page = this.get("page");
 		}
 		return page;
@@ -104,7 +105,7 @@ public class KnowWEParameterMap extends HashMap<String, String> {
 	public HttpServletRequest getRequest() {
 		return request;
 	}
-	
+
 	public HttpServletResponse getResponse() {
 		return response;
 	}
@@ -112,30 +113,32 @@ public class KnowWEParameterMap extends HashMap<String, String> {
 	public KnowWEUserContext getWikiContext() {
 		return this.wikiContext;
 	}
-	
+
 	private void handlePostData() {
 		try {
 			String str;
 			StringBuilder post = new StringBuilder();
-			
-			BufferedReader input = new BufferedReader(new InputStreamReader( request.getInputStream() ));
-			
-			while((str = input.readLine()) != null) {
-			    post.append( str + "\n" );
-			}
-			
-			input.close();
-			int pos = post.indexOf("=");
-			if( pos != -1 ) {
-				String key, value;
-				
-				key = post.substring(0, pos);
-			    value = post.substring(pos + 1);
-			    this.put(key, value);
+
+			BufferedReader input = new BufferedReader(new InputStreamReader(
+					request.getInputStream()));
+
+			while ((str = input.readLine()) != null) {
+				post.append(str + "\n");
 			}
 
-		} catch (IOException e) {
-			//no or wrong post data do nothing
-		}		
-	}	
+			input.close();
+			int pos = post.indexOf("=");
+			if (pos != -1) {
+				String key, value;
+
+				key = post.substring(0, pos);
+				value = post.substring(pos + 1);
+				this.put(key, value);
+			}
+
+		}
+		catch (IOException e) {
+			// no or wrong post data do nothing
+		}
+	}
 }

@@ -17,12 +17,14 @@ import de.d3web.we.kdom.SectionizerModule;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 import de.d3web.we.module.PageAppendHandler;
 import de.d3web.we.taghandler.TagHandler;
+
 /**
  * Provides utilities methods for Plugins used in KnowWE
- *
+ * 
  * @author Jochen Reutelshöfer, Volker Belli & Markus Friedrich (denkbares GmbH)
  */
 public class Plugins {
+
 	public static final String SCOPE_ROOT = "root";
 	public static final String SCOPE_GLOBAL = "global";
 	public static final String EXTENDED_PLUGIN_ID = "KnowWEExtensionPoints";
@@ -33,29 +35,32 @@ public class Plugins {
 	public static final String EXTENDED_POINT_PageAppendHandler = "PageAppendHandler";
 	public static final String EXTENDED_POINT_Instantiation = "Instantiation";
 	public static final String EXTENDED_POINT_SectionizerModule = "SectionizerModule";
-	public static final String EXTENDED_POINT_SemanticCore="SemanticCoreImpl";
+	public static final String EXTENDED_POINT_SemanticCore = "SemanticCoreImpl";
+
 	/**
-	 * Returns all plugged Instantiations
-	 * These are used to initialize plugins.
+	 * Returns all plugged Instantiations These are used to initialize plugins.
+	 * 
 	 * @return List of all Instantiations
 	 */
 	public static List<Instantiation> getInstantiations() {
-		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_Instantiation);
+		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_Instantiation);
 		List<Instantiation> ret = new ArrayList<Instantiation>();
-		for (Extension e: extensions) {
+		for (Extension e : extensions) {
 			ret.add((Instantiation) e.getSingleton());
 		}
 		return ret;
 	}
-	
+
 	/**
-	 * Returns a list of all plugged actions. Actions can be executed from the web. Usually
-	 * be clicking on pregenerated links on the wiki pages.
+	 * Returns a list of all plugged actions. Actions can be executed from the
+	 * web. Usually be clicking on pregenerated links on the wiki pages.
 	 */
 	public static List<Action> getKnowWEAction() {
-		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_KnowWEAction);
+		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_KnowWEAction);
 		List<Action> ret = new ArrayList<Action>();
-		for (Extension e: extensions) {
+		for (Extension e : extensions) {
 			ret.add((Action) e.getSingleton());
 		}
 		return ret;
@@ -63,12 +68,14 @@ public class Plugins {
 
 	/**
 	 * Returns a list of all plugged KnowledgeRepresentationHandlers
+	 * 
 	 * @return List of KnowledgeRepresentationHandlers
 	 */
 	public static List<KnowledgeRepresentationHandler> getKnowledgeRepresentationHandlers() {
-		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_KnowledgeRepresentationHandler);
+		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_KnowledgeRepresentationHandler);
 		List<KnowledgeRepresentationHandler> ret = new ArrayList<KnowledgeRepresentationHandler>();
-		for (Extension e: extensions) {
+		for (Extension e : extensions) {
 			ret.add((KnowledgeRepresentationHandler) e.getNewInstance());
 		}
 		return ret;
@@ -76,6 +83,7 @@ public class Plugins {
 
 	/**
 	 * Returns a List of all KnowWEObjectTypes
+	 * 
 	 * @return List of KnowWEObjectTypes
 	 */
 	public static List<KnowWEObjectType> getRootTypes() {
@@ -104,9 +112,10 @@ public class Plugins {
 	 * @return a List of KnowWEObjectTypes
 	 */
 	public static List<KnowWEObjectType> getKnowWEObjectTypes(String scope) {
-		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_KnowWEObjectType);
+		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_KnowWEObjectType);
 		List<KnowWEObjectType> ret = new ArrayList<KnowWEObjectType>();
-		for (Extension e: extensions) {
+		for (Extension e : extensions) {
 			if (e.getParameter("scope").equals(scope)) {
 				ret.add((KnowWEObjectType) e.getSingleton());
 			}
@@ -136,9 +145,10 @@ public class Plugins {
 	 * @return List of TagHandlers
 	 */
 	public static List<TagHandler> getTagHandlers() {
-		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_TagHandler);
+		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_TagHandler);
 		List<TagHandler> ret = new ArrayList<TagHandler>();
-		for (Extension e: extensions) {
+		for (Extension e : extensions) {
 			ret.add((TagHandler) e.getSingleton());
 		}
 		return ret;
@@ -150,13 +160,15 @@ public class Plugins {
 	 * @return List of SemanticCores
 	 */
 	public static List<ISemanticCore> getSemanticCoreImpl() {
-		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_SemanticCore);
+		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_SemanticCore);
 		List<ISemanticCore> ret = new ArrayList<ISemanticCore>();
-		for (Extension e: extensions) {
+		for (Extension e : extensions) {
 			ret.add((ISemanticCore) e.getSingleton());
 		}
 		return ret;
 	}
+
 	/**
 	 * Returns a list of all plugged PageAppendHandlers.
 	 * 
@@ -167,9 +179,10 @@ public class Plugins {
 	 * @return List of PageAppendHandlers
 	 */
 	public static List<PageAppendHandler> getPageAppendHandlers() {
-		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_PageAppendHandler);
+		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_PageAppendHandler);
 		List<PageAppendHandler> ret = new ArrayList<PageAppendHandler>();
-		for (Extension e: extensions) {
+		for (Extension e : extensions) {
 			ret.add((PageAppendHandler) e.getSingleton());
 		}
 		return ret;
@@ -180,19 +193,22 @@ public class Plugins {
 	 */
 	public static void initJS() {
 		HashSet<String> files = new HashSet<String>();
-		getStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_PageAppendHandler));
-		getStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_KnowWEObjectType));
-		getStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_TagHandler));
-		for (String s: files) {
+		getStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_PageAppendHandler));
+		getStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_KnowWEObjectType));
+		getStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_TagHandler));
+		for (String s : files) {
 			KnowWERessourceLoader.getInstance().add(s, KnowWERessourceLoader.RESOURCE_SCRIPT);
 		}
 	}
 
 	private static void getStripts(HashSet<String> files, Extension[] extensions) {
-		for (Extension e: extensions) {
+		for (Extension e : extensions) {
 			List<String> scripts = e.getParameters("script");
-			if (scripts!=null) {
-				for (String s: scripts) {
+			if (scripts != null) {
+				for (String s : scripts) {
 					files.add(s);
 				}
 			}

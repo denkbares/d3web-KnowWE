@@ -1,25 +1,24 @@
 package de.d3web.we.core.semantic;
+
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-
-
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -66,7 +65,7 @@ import de.d3web.we.wikiConnector.KnowWEWikiConnector;
  * triplestore. SemanticCore manages namespaces, queries and the addition of
  * statementes. It is a singleton which is initialised at boottime (of KnowWE)
  * See also: {@link UpperOntology} {@link TaggingMangler}
- *
+ * 
  * @author FHaupt
  * @created Mar 25, 2010
  */
@@ -79,7 +78,7 @@ public class SemanticCore implements ISemanticCore {
 	private HashMap<String, Resource> contextmap;
 	private HashMap<String, String> settings;
 	private HashMap<String, WeakHashMap<Section, List<Statement>>> statementcache;
-	private HashMap<String,List<Statement>> semsettings;
+	private HashMap<String, List<Statement>> semsettings;
 	private HashMap<String, String> namespaces;
 	private HashMap<String, String> defaultnamespaces;
 
@@ -89,7 +88,7 @@ public class SemanticCore implements ISemanticCore {
 		me = this;
 		contextmap = new HashMap<String, Resource>();
 		statementcache = new HashMap<String, WeakHashMap<Section, List<Statement>>>();
-		semsettings=new HashMap<String, List<Statement>>();
+		semsettings = new HashMap<String, List<Statement>>();
 		String path = ke.getKnowWEExtensionPath();
 		settingsbundle = ResourceBundle.getBundle("semanticdefaults");
 		settings = new HashMap<String, String>();
@@ -107,7 +106,8 @@ public class SemanticCore implements ISemanticCore {
 		defaultnamespaces = new HashMap<String, String>();
 		try {
 			uo.setLocaleNS(knowWEEnvironment.getWikiConnector().getBaseUrl());
-		} catch (RepositoryException e1) {
+		}
+		catch (RepositoryException e1) {
 			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
 					e1.getMessage());
 			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
@@ -123,8 +123,11 @@ public class SemanticCore implements ISemanticCore {
 		defaultnamespaces.put("xsd", "http://www.w3.org/2001/XMLSchema#");
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.we.core.ISemanticCore#addNamespace(java.lang.String, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.d3web.we.core.ISemanticCore#addNamespace(java.lang.String,
+	 * java.lang.String)
 	 */
 	public void addNamespace(String sh, String ns) {
 		namespaces.put(sh, ns);
@@ -132,8 +135,7 @@ public class SemanticCore implements ISemanticCore {
 
 	private void readIncludings() {
 		File[] files = getImportList();
-		if (files == null)
-			return;
+		if (files == null) return;
 		for (File f : files) {
 			uo.loadOwlFile(f);
 		}
@@ -152,14 +154,16 @@ public class SemanticCore implements ISemanticCore {
 			}
 			output += "[{KnowWEPlugin OwlImport}]";
 			wiki.createWikiPage("SemanticSettings", output, "semanticcore");
-		} else {
+		}
+		else {
 			for (String piece : settingspage.split(System
 					.getProperty("line.separator"))) {
 				if (piece.contains("=")) {
 					String[] s = piece.split("=");
 					try {
 						settings.put(s[0].trim(), s[1].trim());
-					} catch (IndexOutOfBoundsException e) {
+					}
+					catch (IndexOutOfBoundsException e) {
 						Logger.getLogger(this.getClass().getName()).log(
 								Level.WARNING, e.getMessage());
 					}
@@ -205,7 +209,6 @@ public class SemanticCore implements ISemanticCore {
 					.createlocalProperty(props);
 			List<Statement> allStatements = io.getAllStatements();
 
-
 			semsettings.put("SemanticSettings", allStatements);
 
 			try {
@@ -220,14 +223,17 @@ public class SemanticCore implements ISemanticCore {
 				}
 
 				con.commit();
-			} catch (RepositoryException e) {
+			}
+			catch (RepositoryException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} while (!pm.isValid(props));
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.core.ISemanticCore#getSettings()
 	 */
 	public HashMap<String, String> getSettings() {
@@ -235,7 +241,7 @@ public class SemanticCore implements ISemanticCore {
 	}
 
 	/**
-	 *
+	 * 
 	 * @return an instance, you're in trouble if it hasn't been initialized
 	 */
 	public static synchronized ISemanticCore getInstance() {
@@ -249,7 +255,9 @@ public class SemanticCore implements ISemanticCore {
 		return me;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.core.ISemanticCore#clone()
 	 */
 	@Override
@@ -257,15 +265,21 @@ public class SemanticCore implements ISemanticCore {
 		throw new CloneNotSupportedException();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.core.ISemanticCore#getUpper()
 	 */
 	public UpperOntology getUpper() {
 		return uo;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.we.core.ISemanticCore#addStatements(de.d3web.we.core.semantic.IntermediateOwlObject, de.d3web.we.kdom.Section)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.d3web.we.core.ISemanticCore#addStatements(de.d3web.we.core.semantic
+	 * .IntermediateOwlObject, de.d3web.we.kdom.Section)
 	 */
 	public void addStatements(IntermediateOwlObject inputio, Section sec) {
 
@@ -297,13 +311,16 @@ public class SemanticCore implements ISemanticCore {
 			Section<? extends KnowWEObjectType> sec) {
 		WeakHashMap<Section, List<Statement>> temp = statementcache.get(sec
 				.getArticle().getTitle());
-		if (temp != null)
-			return temp.get(sec);
+		if (temp != null) return temp.get(sec);
 		return new ArrayList<Statement>();
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.we.core.ISemanticCore#addStaticStatements(de.d3web.we.core.semantic.IntermediateOwlObject, de.d3web.we.kdom.Section)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.d3web.we.core.ISemanticCore#addStaticStatements(de.d3web.we.core.semantic
+	 * .IntermediateOwlObject, de.d3web.we.kdom.Section)
 	 */
 	public void addStaticStatements(IntermediateOwlObject inputio, Section sec) {
 		RepositoryConnection con = uo.getConnection();
@@ -312,14 +329,17 @@ public class SemanticCore implements ISemanticCore {
 			// con.setAutoCommit(false);
 			List<Statement> allStatements = inputio.getAllStatements();
 			con.add(allStatements);
-			//con.commit();
-		} catch (RepositoryException e) {
+			// con.commit();
+		}
+		catch (RepositoryException e) {
 			Logging.getInstance().severe(e.getMessage());
 		}
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.core.ISemanticCore#getContext(de.d3web.we.kdom.Section)
 	 */
 	public Resource getContext(Section sec) {
@@ -333,31 +353,43 @@ public class SemanticCore implements ISemanticCore {
 		return contextmap.get(name);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.we.core.ISemanticCore#tupleQuery(org.openrdf.query.TupleQuery)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.d3web.we.core.ISemanticCore#tupleQuery(org.openrdf.query.TupleQuery)
 	 */
 	public TupleQueryResult tupleQuery(TupleQuery query)
 			throws QueryEvaluationException {
 		return query.evaluate();
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.we.core.ISemanticCore#graphQuery(org.openrdf.query.GraphQuery)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.d3web.we.core.ISemanticCore#graphQuery(org.openrdf.query.GraphQuery)
 	 */
 	public GraphQueryResult graphQuery(GraphQuery query)
 			throws QueryEvaluationException {
 		return query.evaluate();
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.we.core.ISemanticCore#booleanQuery(org.openrdf.query.BooleanQuery)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.d3web.we.core.ISemanticCore#booleanQuery(org.openrdf.query.BooleanQuery
+	 * )
 	 */
 	public boolean booleanQuery(BooleanQuery query)
 			throws QueryEvaluationException {
 		return query.evaluate();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.core.ISemanticCore#getTopicStatements(java.lang.String)
 	 */
 	public List<Statement> getTopicStatements(String topic) {
@@ -367,8 +399,12 @@ public class SemanticCore implements ISemanticCore {
 		return getSectionStatementsRecursive(rootsection);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.we.core.ISemanticCore#getSectionStatementsRecursive(de.d3web.we.kdom.Section)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.d3web.we.core.ISemanticCore#getSectionStatementsRecursive(de.d3web
+	 * .we.kdom.Section)
 	 */
 	public List<Statement> getSectionStatementsRecursive(
 			Section<? extends KnowWEObjectType> s) {
@@ -389,7 +425,9 @@ public class SemanticCore implements ISemanticCore {
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.core.ISemanticCore#getImportList()
 	 */
 	public File[] getImportList() {
@@ -410,7 +448,9 @@ public class SemanticCore implements ISemanticCore {
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.core.ISemanticCore#removeFile(java.lang.String)
 	 */
 	public void removeFile(String filename) {
@@ -433,14 +473,18 @@ public class SemanticCore implements ISemanticCore {
 		try {
 			con.clear(key);
 			// con.commit();
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.we.core.ISemanticCore#clearContext(de.d3web.we.kdom.Section)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.d3web.we.core.ISemanticCore#clearContext(de.d3web.we.kdom.Section)
 	 */
 	public void clearContext(Section sec) {
 		// RepositoryConnection con = uo.getConnection();
@@ -490,9 +534,9 @@ public class SemanticCore implements ISemanticCore {
 
 	/**
 	 * Belongs to the hack that should fix the non-returning remove-operation
-	 *
+	 * 
 	 * @author Jochen
-	 *
+	 * 
 	 */
 	class StatementRemover implements Runnable {
 
@@ -527,8 +571,12 @@ public class SemanticCore implements ISemanticCore {
 
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.we.core.ISemanticCore#clearContext(de.d3web.we.kdom.KnowWEArticle)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.d3web.we.core.ISemanticCore#clearContext(de.d3web.we.kdom.KnowWEArticle
+	 * )
 	 */
 	public void clearContext(KnowWEArticle art) {
 		WeakHashMap<Section, List<Statement>> temp = statementcache.get(art
@@ -539,7 +587,8 @@ public class SemanticCore implements ISemanticCore {
 				try {
 					con.remove(cur.getValue());
 					con.commit();
-				} catch (RepositoryException e) {
+				}
+				catch (RepositoryException e) {
 					e.printStackTrace();
 				}
 			}
@@ -548,7 +597,9 @@ public class SemanticCore implements ISemanticCore {
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.core.ISemanticCore#getSparqlNamespaceShorts()
 	 */
 	public String getSparqlNamespaceShorts() {
@@ -566,8 +617,11 @@ public class SemanticCore implements ISemanticCore {
 		return buffy.toString();
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.we.core.ISemanticCore#simpleQueryToList(java.lang.String, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.d3web.we.core.ISemanticCore#simpleQueryToList(java.lang.String,
+	 * java.lang.String)
 	 */
 	public ArrayList<String> simpleQueryToList(String inquery,
 			String targetbinding) {
@@ -578,19 +632,21 @@ public class SemanticCore implements ISemanticCore {
 		Query query = null;
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL, querystring);
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
 					e.getMessage());
-		} catch (MalformedQueryException e) {
+		}
+		catch (MalformedQueryException e) {
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
 					e.getMessage());
 		}
 		TupleQueryResult result = null;
-		if (query == null)
-			return resultlist;
+		if (query == null) return resultlist;
 		try {
 			result = ((TupleQuery) query).evaluate();
-		} catch (QueryEvaluationException e) {
+		}
+		catch (QueryEvaluationException e) {
 			e.printStackTrace();
 		}
 
@@ -599,14 +655,13 @@ public class SemanticCore implements ISemanticCore {
 				while (result.hasNext()) {
 					BindingSet b = result.next();
 					Binding binding = b.getBinding(targetbinding);
-					if (binding == null)
-						continue;
+					if (binding == null) continue;
 					String tag = binding.toString();
-					if (tag.split("#").length == 2)
-						tag = tag.split("#")[1];
+					if (tag.split("#").length == 2) tag = tag.split("#")[1];
 					try {
 						tag = URLDecoder.decode(tag, "UTF-8");
-					} catch (UnsupportedEncodingException e) {
+					}
+					catch (UnsupportedEncodingException e) {
 						e.printStackTrace();
 					}
 					if (tag.contains("=")) {
@@ -620,12 +675,15 @@ public class SemanticCore implements ISemanticCore {
 					}
 					resultlist.add(tag.trim());
 				}
-			} catch (QueryEvaluationException e) {
+			}
+			catch (QueryEvaluationException e) {
 				return resultlist;
-			} finally {
+			}
+			finally {
 				try {
 					result.close();
-				} catch (QueryEvaluationException e) {
+				}
+				catch (QueryEvaluationException e) {
 					e.printStackTrace();
 				}
 			}
@@ -634,7 +692,9 @@ public class SemanticCore implements ISemanticCore {
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.core.ISemanticCore#booleanQuery(java.lang.String)
 	 */
 	public boolean booleanQuery(String inquery) {
@@ -644,45 +704,56 @@ public class SemanticCore implements ISemanticCore {
 		Query query = null;
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL, querystring);
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
 					e.getMessage());
-		} catch (MalformedQueryException e) {
+		}
+		catch (MalformedQueryException e) {
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
 					e.getMessage());
 		}
 
 		try {
 			return booleanQuery((BooleanQuery) query);
-		} catch (QueryEvaluationException e) {
+		}
+		catch (QueryEvaluationException e) {
 			e.printStackTrace();
 		}
 		return false;
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.core.ISemanticCore#writeDump(java.io.OutputStream)
 	 */
 	public void writeDump(OutputStream stream) {
 		uo.writeDump(stream);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.core.ISemanticCore#getDefaultNameSpaces()
 	 */
 	public HashMap<String, String> getDefaultNameSpaces() {
 		return defaultnamespaces;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.core.ISemanticCore#getNameSpaces()
 	 */
 	public HashMap<String, String> getNameSpaces() {
 		return namespaces;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.core.ISemanticCore#expandNamespace(java.lang.String)
 	 */
 	public String expandNamespace(String ns) {
@@ -702,7 +773,9 @@ public class SemanticCore implements ISemanticCore {
 		return ns;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.core.ISemanticCore#reduceNamespace(java.lang.String)
 	 */
 	public String reduceNamespace(String s) {
@@ -715,7 +788,5 @@ public class SemanticCore implements ISemanticCore {
 
 		return s;
 	}
-
-
 
 }

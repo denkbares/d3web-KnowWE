@@ -8,17 +8,19 @@ import java.util.Map;
 import de.d3web.wisec.converter.WISECExcelConverter;
 
 public class Substance {
+
 	public Map<String, String> values = new HashMap<String, String>();
-	
+
 	// enumerate all substance lists that contain this instance
 	public List<SubstanceList> usesInLists = new ArrayList<SubstanceList>();
-	
+
 	public Substance() {
 	}
-	
+
 	public void add(String attribute, String value) {
 		this.values.put(attribute, value);
 	}
+
 	public String get(String attribute) {
 		String val = this.values.get(attribute);
 		if (val == null) {
@@ -26,7 +28,7 @@ public class Substance {
 		}
 		return val;
 	}
-		
+
 	@Override
 	public String toString() {
 		return this.values.toString();
@@ -40,7 +42,7 @@ public class Substance {
 		}
 		return "NONAME";
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -52,12 +54,9 @@ public class Substance {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
 		Substance other = (Substance) obj;
 		return other.getName().equals(getName());
 	}
@@ -72,5 +71,5 @@ public class Substance {
 		return "NONAME";
 
 	}
-	
+
 }

@@ -25,7 +25,6 @@ import de.d3web.wisec.writers.SubstanceRatingListWriter;
  */
 public class WISECModel {
 
-
 	Map<String, String> substanceRatings;
 
 	// new model from here
@@ -119,7 +118,7 @@ public class WISECModel {
 		}
 		return Collections.emptySet();
 	}
-	
+
 	public void add(SubstanceList substanceList) {
 		this.substanceLists.add(substanceList);
 		updateSubstanceOccurences(substanceList);

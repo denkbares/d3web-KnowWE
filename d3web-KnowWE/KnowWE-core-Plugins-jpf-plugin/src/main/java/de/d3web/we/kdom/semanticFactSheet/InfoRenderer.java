@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 /**
@@ -43,8 +43,7 @@ public class InfoRenderer extends KnowWEDomRenderer {
 	private static InfoRenderer instance;
 
 	public static synchronized InfoRenderer getInstance() {
-		if (instance == null)
-			instance = new InfoRenderer();
+		if (instance == null) instance = new InfoRenderer();
 		return instance;
 	}
 
@@ -73,13 +72,12 @@ public class InfoRenderer extends KnowWEDomRenderer {
 			}
 		}
 
-		if (!verbose)
-			return;
+		if (!verbose) return;
 
 		String text = sec.getOriginalText();
 		if (sec.getObjectType() instanceof InfoContent) {
-			IntermediateOwlObject io = (IntermediateOwlObject) KnowWEUtils.getStoredObject(sec, OwlHelper.IOO); 
-			
+			IntermediateOwlObject io = (IntermediateOwlObject) KnowWEUtils.getStoredObject(sec,
+					OwlHelper.IOO);
 
 			if (!io.getValidPropFlag()) {
 				text = KnowWEUtils.maskHTML("<p class=\"box error\">invalid property:"
@@ -88,8 +86,7 @@ public class InfoRenderer extends KnowWEDomRenderer {
 
 			if (true) {
 				for (String cur : text.split("\r\n|\r|\n")) {
-					if (cur.trim().length() > 0)
-						string.append(cur.trim() + "\\\\");
+					if (cur.trim().length() > 0) string.append(cur.trim() + "\\\\");
 				}
 			}
 		}

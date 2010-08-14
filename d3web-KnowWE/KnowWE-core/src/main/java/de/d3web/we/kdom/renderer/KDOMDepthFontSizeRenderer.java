@@ -11,9 +11,9 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * method of tree structure visualization e.g., for logical expressions like
  * (((a and b) or (c and not(e and f)))) Note: all the nodes beeing part of this
  * tree need to get this renderer (and being delegated to).
- *
+ * 
  * @author Jochen
- *
+ * 
  */
 public class KDOMDepthFontSizeRenderer extends KnowWEDomRenderer<KnowWEObjectType> {
 

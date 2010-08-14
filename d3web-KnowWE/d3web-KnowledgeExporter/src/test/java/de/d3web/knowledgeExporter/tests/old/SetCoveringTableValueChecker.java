@@ -1,7 +1,7 @@
-//package de.d3web.knowledgeExporter.tests.old;
-///*
+// package de.d3web.knowledgeExporter.tests.old;
+// /*
 // * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
-// *                    Computer Science VI, University of Wuerzburg
+// * Computer Science VI, University of Wuerzburg
 // *
 // * This is free software; you can redistribute it and/or modify it
 // * under the terms of the GNU Lesser General Public License as
@@ -19,24 +19,24 @@
 // * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 // */
 //
-//package de.d3web.knowledgeExporter.testutils;
+// package de.d3web.knowledgeExporter.testutils;
 //
-//import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
-//import de.d3web.report.Report;
-//import de.d3web.textParser.decisionTable.DecisionTable;
-//import de.d3web.textParser.decisionTable.DecisionTableConfigReader;
-//import de.d3web.textParser.decisionTable.DecisionTableValueChecker;
+// import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+// import de.d3web.report.Report;
+// import de.d3web.textParser.decisionTable.DecisionTable;
+// import de.d3web.textParser.decisionTable.DecisionTableConfigReader;
+// import de.d3web.textParser.decisionTable.DecisionTableValueChecker;
 //
-//public class SetCoveringTableValueChecker extends DecisionTableValueChecker {
+// public class SetCoveringTableValueChecker extends DecisionTableValueChecker {
 //
 //	
-//	public SetCoveringTableValueChecker(DecisionTableConfigReader cReader,
-//			KnowledgeBaseManagement kbm) {
-//		super(cReader, kbm);
-//	}
+// public SetCoveringTableValueChecker(DecisionTableConfigReader cReader,
+// KnowledgeBaseManagement kbm) {
+// super(cReader, kbm);
+// }
 //	
-//	public Report checkValues(DecisionTable table) {
-//		return null;
-//	}
+// public Report checkValues(DecisionTable table) {
+// return null;
+// }
 //
-//}
+// }

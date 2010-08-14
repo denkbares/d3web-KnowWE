@@ -13,6 +13,7 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 public class DefaultMarkup {
 
 	public class Annotation {
+
 		private final String name;
 		private final boolean mandatory;
 		private final Pattern pattern; // optional
@@ -49,15 +50,12 @@ public class DefaultMarkup {
 		 * Checks if the content of an annotation matches the annotations
 		 * pattern.
 		 * 
-		 * @param annotationContent
-		 *            the content string to be checked
+		 * @param annotationContent the content string to be checked
 		 * @return whether the annotations pattern is matched
 		 */
 		public boolean matches(String annotationContent) {
-			if (pattern == null)
-				return true;
-			if (annotationContent == null)
-				return false;
+			if (pattern == null) return true;
+			if (annotationContent == null) return false;
 			return pattern.matcher(annotationContent).matches();
 		}
 
@@ -100,10 +98,8 @@ public class DefaultMarkup {
 	/**
 	 * Adds a new annotation to the markup with.
 	 * 
-	 * @param name
-	 *            the name of the annotation to be added
-	 * @param mandatory
-	 *            if the annotation is required for the markup
+	 * @param name the name of the annotation to be added
+	 * @param mandatory if the annotation is required for the markup
 	 */
 	public void addAnnotation(String name, boolean mandatory) {
 		this.addAnnotation(name, mandatory, (Pattern) null);
@@ -113,12 +109,9 @@ public class DefaultMarkup {
 	 * Adds a new annotation to the markup with a fixed list of possible values
 	 * (enumeration).
 	 * 
-	 * @param name
-	 *            the name of the annotation to be added
-	 * @param mandatory
-	 *            if the annotation is required for the markup
-	 * @param enumValues
-	 *            the allowed values for the annotation
+	 * @param name the name of the annotation to be added
+	 * @param mandatory if the annotation is required for the markup
+	 * @param enumValues the allowed values for the annotation
 	 */
 	public void addAnnotation(String name, boolean mandatory,
 			String... enumValues) {
@@ -132,12 +125,9 @@ public class DefaultMarkup {
 	 * Adds a new annotation to the markup with a fixed list of possible values
 	 * (enumeration).
 	 * 
-	 * @param name
-	 *            the name of the annotation to be added
-	 * @param mandatory
-	 *            if the annotation is required for the markup
-	 * @param enumValues
-	 *            the allowed values for the annotation
+	 * @param name the name of the annotation to be added
+	 * @param mandatory if the annotation is required for the markup
+	 * @param enumValues the allowed values for the annotation
 	 */
 	public void addAnnotation(String name, boolean mandatory,
 			Enum<?>... enumValues) {
@@ -151,12 +141,9 @@ public class DefaultMarkup {
 	 * Adds a new annotation to the markup with a pattern to specify the values
 	 * allowed for this annotation.
 	 * 
-	 * @param name
-	 *            the name of the annotation to be added
-	 * @param mandatory
-	 *            if the annotation is required for the markup
-	 * @param pattern
-	 *            a regular expression to check the allowed values
+	 * @param name the name of the annotation to be added
+	 * @param mandatory if the annotation is required for the markup
+	 * @param pattern a regular expression to check the allowed values
 	 */
 	public void addAnnotation(String name, boolean mandatory, Pattern pattern) {
 		// do not allow duplicates

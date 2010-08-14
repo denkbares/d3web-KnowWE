@@ -1,29 +1,29 @@
 package de.d3web.we.flow.diff;
 
 public class FlowchartNode {
-	
+
 	private String id = "";
 	private int left = -1;
 	private int top = -1;
 	private String text = "";
 	private FlowchartNodeType NodeType = FlowchartNodeType.none;
-	
+
 	public FlowchartNode(String id) {
 		this.id = id;
 	}
-	
+
 	public FlowchartNode(String id, int left, int top) {
 		this.id = id;
 		this.left = left;
 		this.top = top;
 	}
-	
+
 	public FlowchartNode(int left, int top) {
 		this.id = "temp";
 		this.left = left;
 		this.top = top;
 	}
-	
+
 	public FlowchartNode(String id, int left, int top,
 			FlowchartNodeType nodeType, String text) {
 
@@ -33,43 +33,43 @@ public class FlowchartNode {
 		this.NodeType = nodeType;
 		this.text = text;
 	}
-	
+
 	public void setLeft(int left) {
 		this.left = left;
 	}
-	
+
 	public void setTop(int top) {
 		this.top = top;
 	}
-	
+
 	public void setNodeType(FlowchartNodeType nodeType) {
 		this.NodeType = nodeType;
 	}
-	
+
 	public void setText(String text) {
 		this.text = text;
 	}
-	
+
 	public String getID() {
 		return this.id;
 	}
-	
+
 	public int getLeft() {
 		return this.left;
 	}
-	
+
 	public int getTop() {
 		return this.top;
 	}
-	
+
 	public FlowchartNodeType getNodeType() {
 		return this.NodeType;
 	}
-	
+
 	public String getText() {
 		return this.text;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "{" + this.getID() + ", " + this.getLeft() + ", "
@@ -91,34 +91,32 @@ public class FlowchartNode {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
 		FlowchartNode other = (FlowchartNode) obj;
 		if (!this.getID().equals(other.getID())) {
 			return false;
-		} else if (this.getLeft() != other.getLeft()) {
+		}
+		else if (this.getLeft() != other.getLeft()) {
 			return false;
-		} else if (this.getTop() != other.getTop()) {
+		}
+		else if (this.getTop() != other.getTop()) {
 			return false;
-		} else if (!this.getNodeType().equals(other.getNodeType())) {
+		}
+		else if (!this.getNodeType().equals(other.getNodeType())) {
 			return false;
-		} else if (!this.getText().equals(other.getText())) {
+		}
+		else if (!this.getText().equals(other.getText())) {
 			return false;
-		} 
+		}
 		return true;
 	}
-	
+
 	public boolean equalsPositionOnly(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
 		FlowchartNode other = (FlowchartNode) obj;
 		if (this.getLeft() != other.getLeft()) {
 			return false;
@@ -128,5 +126,5 @@ public class FlowchartNode {
 		}
 		return true;
 	}
-	
+
 }

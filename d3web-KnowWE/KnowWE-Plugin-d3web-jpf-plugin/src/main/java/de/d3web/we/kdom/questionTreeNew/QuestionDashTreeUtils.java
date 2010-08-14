@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.questionTreeNew;
@@ -55,6 +55,7 @@ public class QuestionDashTreeUtils {
 	 * will be returned. Such a List of DashTreeElements can be created with
 	 * <tt>DashTreeElement.getDashTreeAncestors(Section s)</tt>, if <tt>s</tt>
 	 * is the child Section of an answer in a valid DashTree.
+	 * 
 	 * @param article TODO
 	 */
 	public static Condition createCondition(
@@ -96,10 +97,10 @@ public class QuestionDashTreeUtils {
 				.findSuccessor(QuestionTreeAnswerDefinition.class);
 		Section<QuestionDefinition> qSec = grandFather.findSuccessor(QuestionDefinition.class);
 
-		if(qSec == null) {
+		if (qSec == null) {
 			return null;
 		}
-		
+
 		Question q = qSec.get().getTermObject(article, qSec);
 
 		if (answerSec != null && q instanceof QuestionChoice) {
@@ -121,12 +122,13 @@ public class QuestionDashTreeUtils {
 			}
 			else {
 				Double d = NumericCondLine.getValue(numCondSec);
-				if(d == null) return null;
+				if (d == null) return null;
 				String comp = NumericCondLine.getComparator(numCondSec);
 
 				if (d != null && comp != null) return FindingToConditionBuilder
 						.createCondNum(father.getArticle(), numCondSec, comp, d,
-						(QuestionNum) q);;
+								(QuestionNum) q);
+				;
 			}
 		}
 
@@ -142,7 +144,7 @@ public class QuestionDashTreeUtils {
 	public static boolean isChangeInRootQuestionSubtree(KnowWEArticle article, Section<?> s) {
 
 		Section<?> rootQuestionSubtree = null;
-		
+
 		Section<DashTreeElement> thisElement = s.findAncestorOfType(DashTreeElement.class);
 		if (s.get() instanceof QuestionDefinition && DashTreeUtils.getDashLevel(thisElement) == 0) {
 			rootQuestionSubtree = thisElement.findAncestorOfType(DashSubtree.class);

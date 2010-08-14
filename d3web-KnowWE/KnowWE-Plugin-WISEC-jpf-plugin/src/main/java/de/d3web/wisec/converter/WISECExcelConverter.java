@@ -35,20 +35,19 @@ import de.d3web.wisec.writers.TeamsWriter;
 import de.d3web.wisec.writers.WISECWriter;
 
 /**
- * Converts the WISEC database (provided as Excel file) into
- * a collection of KnowWE wiki articles (provided as text files).
+ * Converts the WISEC database (provided as Excel file) into a collection of
+ * KnowWE wiki articles (provided as text files).
  * 
- * Current Todos:
- * - Sonderzeichen in names of substances?
- * - no "+" preleading the rating of a substance (should be done, check!)
+ * Current Todos: - Sonderzeichen in names of substances? - no "+" preleading
+ * the rating of a substance (should be done, check!)
  * 
- * Later Todos:
- * - Semantic alignment of lists and upper lists
+ * Later Todos: - Semantic alignment of lists and upper lists
  * 
  * @author joba
- *
+ * 
  */
 public class WISECExcelConverter {
+
 	// The master database file, that is the input of all knowledge
 	public static String WISEC_FILE = "20100804_WISEC_v1.xls";
 	public final static String EXCEL_ENCODING = "cp1252";
@@ -62,32 +61,30 @@ public class WISECExcelConverter {
 	// Praefix of most of the generated files
 	public static final String FILE_PRAEFIX = "WI_";
 
-	// Name of the column that identifies the name of a substance 
+	// Name of the column that identifies the name of a substance
 	public static String SUBSTANCE_IDENTIFIER = "CAS_No";
 	// Include semantic annotations etc. in the generation process
 	public static boolean GENERATE_WITH_KNOWLEDGE = true;
 
-	// The generation of lists is limited by the maxListsToConvert threshold 
+	// The generation of lists is limited by the maxListsToConvert threshold
 	// public static final int maxListsToConvert = 10;
 	public static final int maxListsToConvert = 10000000;
-	
+
 	// Excel identifier for the numbers
 	public static final String NUMBER_KEY = "ID";
-	
-	
+
 	public static void main(String[] args) throws BiffException, IOException {
 
 		Stopwatch timer = new Stopwatch();
 		timer.start();
 		System.out.println("Conversion started: " + new Date());
-		
+
 		new WISECExcelConverter().convert();
-		
+
 		timer.stop();
 		System.out.println("Time taken: " + timer.getElapsedTime() / 60000 + "min.");
 
 	}
-
 
 	private void convert() throws BiffException, IOException {
 
@@ -97,7 +94,7 @@ public class WISECExcelConverter {
 
 		Workbook workbook = Workbook.getWorkbook(new File(workspace + WISEC_FILE), ws);
 		WISECModel model = new WISECModel();
-		
+
 		List<? extends WISECReader> readers = Arrays.asList(
 					new SourceListReader(workbook),
 					new ListsReader(workbook),
@@ -109,7 +106,6 @@ public class WISECExcelConverter {
 		for (WISECReader wisecReader : readers) {
 			wisecReader.read(model);
 		}
-		
 
 		List<? extends WISECWriter> writers = configureWriters(model,
 				wikiworkspace);
@@ -123,21 +119,21 @@ public class WISECExcelConverter {
 		List<WISECWriter> writers = new ArrayList<WISECWriter>();
 
 		writers.add(new SourceListWriter(model, outputDirectory));
-		
+
 		// The substance list writer
 		SubstanceListWriter w = new SubstanceListWriter(model, outputDirectory);
 		w.setWithKnowledge(GENERATE_WITH_KNOWLEDGE);
 		writers.add(w);
-		
+
 		writers.add(new SubstanceInfoWriter(model, outputDirectory));
-		
+
 		writers.add(new SourceListOverviewWriter(model, outputDirectory));
 
 		writers.add(new SubstanceListsOverviewWriter(model,
 				outputDirectory));
 
 		writers.add(new AllSubstancesWriter(model, outputDirectory));
-		
+
 		writers.add(new ActiveSubstancesWriter(model, outputDirectory));
 
 		writers.add(new GroupsWriter(model, outputDirectory));
@@ -150,65 +146,71 @@ public class WISECExcelConverter {
 		// outputDirectory));
 		// writers.add(new RatingOverviewWriter(model, outputDirectory));
 
-		// the overview should be the last in the list, since it uses some  
+		// the overview should be the last in the list, since it uses some
 		// information generated in previous writers
 		writers.add(new OverviewWriter(model, outputDirectory));
 		return writers;
 	}
 
-
 	private List<? extends WISECWriter> configureRatingConfigurations(WISECModel model,
 			String outputDirectory) {
 		List<WISECWriter> writers = new ArrayList<WISECWriter>();
-	
+
 		// Config: PBT Substances
 		ScoringWeightsConfiguration config1 = new ScoringWeightsConfiguration();
 		config1.setName("PBT Substances");
 		config1.setWeights(new String[] {
 				"Persistence", "3", "Bioakumulation_Potential", "3", "Aqua_Tox", "3",
 				"Multiple_Tox", "1", "EDC", "-1", "CMR", "-1",
-				"LRT", "2", "Climatic_Change", "0", "Risk_related", "0", "Political", "1", "Exposure", "2"
+				"LRT", "2", "Climatic_Change", "0", "Risk_related", "0", "Political", "1",
+				"Exposure", "2"
 			});
-		SubstanceRatingListWriter pbtSubstances = new SubstanceRatingListWriter(model, outputDirectory);
+		SubstanceRatingListWriter pbtSubstances = new SubstanceRatingListWriter(model,
+				outputDirectory);
 		pbtSubstances.setConfiguration(config1);
 		writers.add(pbtSubstances);
-		
+
 		// Config: vPvB Substances
 		ScoringWeightsConfiguration config2 = new ScoringWeightsConfiguration();
 		config2.setName("vPvB Substances");
 		config2.setWeights(new String[] {
 				"Persistence", "3", "Bioakumulation_Potential", "3", "Aqua_Tox", "0",
 				"Multiple_Tox", "0", "EDC", "-1", "CMR", "-1",
-				"LRT", "3", "Climatic_Change", "0", "Risk_related", "0", "Political", "1", "Exposure", "2"
+				"LRT", "3", "Climatic_Change", "0", "Risk_related", "0", "Political", "1",
+				"Exposure", "2"
 			});
 
 		SubstanceRatingListWriter vPvB = new SubstanceRatingListWriter(model, outputDirectory);
 		vPvB.setConfiguration(config2);
 		writers.add(vPvB);
-		
+
 		// Config: EDC Substances
 		ScoringWeightsConfiguration config3 = new ScoringWeightsConfiguration();
 		config3.setName("EDC Substances");
 		config3.setWeights(new String[] {
 				"Persistence", "0", "Bioakumulation_Potential", "0", "Aqua_Tox", "0",
 				"Multiple_Tox", "0", "EDC", "3", "CMR", "-1",
-				"LRT", "0", "Climatic_Change", "0", "Risk_related", "0", "Political", "1", "Exposure", "2"
+				"LRT", "0", "Climatic_Change", "0", "Risk_related", "0", "Political", "1",
+				"Exposure", "2"
 			});
 
-		SubstanceRatingListWriter edcSubstances = new SubstanceRatingListWriter(model, outputDirectory);
+		SubstanceRatingListWriter edcSubstances = new SubstanceRatingListWriter(model,
+				outputDirectory);
 		edcSubstances.setConfiguration(config3);
 		writers.add(edcSubstances);
-		
+
 		// Config: CMR Substances
 		ScoringWeightsConfiguration config4 = new ScoringWeightsConfiguration();
 		config4.setName("CMR Substances");
 		config4.setWeights(new String[] {
 				"Persistence", "0", "Bioakumulation_Potential", "0", "Aqua_Tox", "0",
 				"Multiple_Tox", "0", "EDC", "0", "CMR", "3",
-				"LRT", "0", "Climatic_Change", "0", "Risk_related", "0", "Political", "1", "Exposure", "2"
+				"LRT", "0", "Climatic_Change", "0", "Risk_related", "0", "Political", "1",
+				"Exposure", "2"
 			});
 
-		SubstanceRatingListWriter cmrSubstances = new SubstanceRatingListWriter(model, outputDirectory);
+		SubstanceRatingListWriter cmrSubstances = new SubstanceRatingListWriter(model,
+				outputDirectory);
 		cmrSubstances.setConfiguration(config4);
 		writers.add(cmrSubstances);
 
@@ -218,10 +220,12 @@ public class WISECExcelConverter {
 		config5.setWeights(new String[] {
 				"Persistence", "0", "Bioakumulation_Potential", "0", "Aqua_Tox", "3",
 				"Multiple_Tox", "3", "EDC", "2", "CMR", "0",
-				"LRT", "0", "Climatic_Change", "0", "Risk_related", "0", "Political", "1", "Exposure", "2"
+				"LRT", "0", "Climatic_Change", "0", "Risk_related", "0", "Political", "1",
+				"Exposure", "2"
 			});
 
-		SubstanceRatingListWriter toxicSubstances = new SubstanceRatingListWriter(model, outputDirectory);
+		SubstanceRatingListWriter toxicSubstances = new SubstanceRatingListWriter(model,
+				outputDirectory);
 		toxicSubstances.setConfiguration(config5);
 		writers.add(toxicSubstances);
 

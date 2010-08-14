@@ -15,6 +15,7 @@ public class MessageGenerator {
 
 	/**
 	 * Eigentliche Methode um Fehler zu generieren
+	 * 
 	 * @param key Schlüssel in der properties Datei
 	 * @param file Datei in der der Fehler auftrat
 	 * @param line Zeile in der der Fehler auftrat
@@ -22,16 +23,17 @@ public class MessageGenerator {
 	 * @param adds In die Fehlermeldung einzufügende Objekte
 	 * @return Fehlermeldung
 	 */
-	public Message createErrorMSG(String key, String file, int line, String linetext, Object... adds ) {
+	public Message createErrorMSG(String key, String file, int line, String linetext, Object... adds) {
 		return Message.createError(generateText(key, adds), file, line, linetext);
 	}
 
-	public Message createErrorMSG(String key, String file, int line, int column, String linetext, Object... adds ) {
+	public Message createErrorMSG(String key, String file, int line, int column, String linetext, Object... adds) {
 		return Message.createError(generateText(key, adds), file, line, column, linetext);
 	}
 
 	/**
 	 * Eigentliche Methode um Warnungen zu generieren
+	 * 
 	 * @param key Schlüssel in der properties Datei
 	 * @param file Datei in der der Fehler auftrat
 	 * @param line Zeile in der der Fehler auftrat
@@ -39,15 +41,15 @@ public class MessageGenerator {
 	 * @param adds In die Fehlermeldung einzufügende Objekte
 	 * @return Fehlermeldung
 	 */
-	public Message createWarningMSG(String key, String file, int line, String linetext, Object... adds ) {
+	public Message createWarningMSG(String key, String file, int line, String linetext, Object... adds) {
 		return Message.createWarning(generateText(key, adds), file, line, linetext);
 	}
 
-	public Message createWarningMSG(String key, String file, int line, int column, String linetext, Object... adds ) {
+	public Message createWarningMSG(String key, String file, int line, int column, String linetext, Object... adds) {
 		return Message.createWarning(generateText(key, adds), file, line, column, linetext);
 	}
 
-	public Message createNoteMSG(String key, String file, int line, String linetext, Object... adds ) {
+	public Message createNoteMSG(String key, String file, int line, String linetext, Object... adds) {
 		return Message.createNote(generateText(key, adds), file, line, linetext);
 	}
 
@@ -65,7 +67,7 @@ public class MessageGenerator {
 			result = MessageFormat.format(rb.getString(key), adds);
 		}
 		catch (Exception e) {
-			//nothing to do, an unknown error will be generated
+			// nothing to do, an unknown error will be generated
 		}
 		return result;
 	}

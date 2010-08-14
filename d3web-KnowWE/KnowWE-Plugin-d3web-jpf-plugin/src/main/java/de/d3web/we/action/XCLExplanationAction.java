@@ -223,7 +223,7 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 			Condition cond = rel.getConditionedFinding();
 			cont.append("<tr><td>"
 					+ VerbalizationManager.getInstance().verbalize(cond,
-					RenderingFormat.HTML, parameterMap) + "</td></tr>");
+							RenderingFormat.HTML, parameterMap) + "</td></tr>");
 		}
 		return cont.toString();
 	}
@@ -279,7 +279,7 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 
 			cont.append("<td class=emphasized>"
 					+ VerbalizationManager.getInstance().verbalize(cond,
-					RenderingFormat.HTML, parameterMap) + "</td></tr>");
+							RenderingFormat.HTML, parameterMap) + "</td></tr>");
 		}
 		return cont.toString();
 	}

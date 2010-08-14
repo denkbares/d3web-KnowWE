@@ -15,76 +15,87 @@ public class TimeLineEventRenderer {
 		 * 
 		 * @return the string
 		 */
-    public static String renderToHTML(TimeEvent te, boolean maskHTMLTags) {
-	// return cached result, if possible
-	// if (te.getRenderedOutput() != null) return te.getRenderedOutput();
+	public static String renderToHTML(TimeEvent te, boolean maskHTMLTags) {
+		// return cached result, if possible
+		// if (te.getRenderedOutput() != null) return te.getRenderedOutput();
 
-	String styleTag = "";
+		String styleTag = "";
 
-	if (te.getImportance() == 1) {
-	    styleTag = " style=\"color: red; ";
-	} else if (te.getImportance() == 2) {
-	    styleTag = " style=\"color: #FABE30; ";
-	} else if (te.getImportance() == 3) {
-	    styleTag = " style=\"color: green; ";
+		if (te.getImportance() == 1) {
+			styleTag = " style=\"color: red; ";
+		}
+		else if (te.getImportance() == 2) {
+			styleTag = " style=\"color: #FABE30; ";
+		}
+		else if (te.getImportance() == 3) {
+			styleTag = " style=\"color: green; ";
+		}
+
+		styleTag += " background-color: transparent;\"";
+
+		// if no renderedString is cached, render now
+		StringBuffer sb = new StringBuffer("<div class='panel'>\n");
+
+		String encodedKDOMID = te.getTextOriginNode();
+		// try {
+		// encodedKDOMID = URLEncoder.encode(te.getTextOriginNode(), "UTF-8");
+		// } catch (UnsupportedEncodingException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+
+		// +"&highlight="+encodedKDOMID
+		// +"#"+encodedKDOMID
+
+		sb
+				.append("<h3 "
+						+ styleTag
+						+ "><i>"
+						+ te.getTime().getDescription()
+						+ "</i> - "
+						+ te.getTitle()
+						+ " <a class=\"wikipage\" href=\"Wiki.jsp?page="
+						+ te.getTopic()
+						+ "&highlight="
+						+ encodedKDOMID
+						+ "#"
+						+ encodedKDOMID
+						+ "\"><img src=\"./KnowWEExtension/images/hermes/page_go.png\" alt=\"Zum Wiki\" title=\"Zum Wiki\"/></a>"
+						+ " <a class=\"wikipage\" href=\"Wiki.jsp?page="
+						+ te.getTopic()
+						+ "&edit="
+						+ encodedKDOMID
+						+ "#"
+						+ encodedKDOMID
+						+ "\"><img src=\"./KnowWEExtension/images/hermes/page_edit.png\" alt=\"Bearbeiten\" title=\"Bearbeiten\"/></a>"
+						+ "</h3>");
+
+		sb.append("\n<div>" + te.getDescription() + "<br>");
+		List<String> sources = te.getSources();
+		if (sources != null) {
+			if (sources.size() == 1) {
+				sb.append("<b>Quelle:</b><br>");
+			}
+			else if (sources.size() > 1) {
+				sb.append("<b>Quellen:</b><br> ");
+			}
+			for (String aSource : sources) {
+				sb.append(aSource + "<br>");
+			}
+		}
+		//
+		// sb.append("<br>textOrigin:" + te.getTopic() + "<br>");
+		// sb.append("<br>textOrigin:" + te.getTextOriginNode() + "<br>");
+
+		sb.append("</div>\n</div>\n");
+
+		String result = sb.toString();
+
+		if (maskHTMLTags) {
+			result = result.replaceAll(">", KnowWEEnvironment.HTML_GT);
+			result = result.replaceAll("<", KnowWEEnvironment.HTML_ST);
+			result = result.replaceAll("\"", KnowWEEnvironment.HTML_QUOTE);
+		}
+		return result;
 	}
-
-	styleTag += " background-color: transparent;\"";
-
-	// if no renderedString is cached, render now
-	StringBuffer sb = new StringBuffer("<div class='panel'>\n");
-
-	String encodedKDOMID = te.getTextOriginNode();
-//	try {
-//		encodedKDOMID = URLEncoder.encode(te.getTextOriginNode(), "UTF-8");
-//	} catch (UnsupportedEncodingException e) {
-//		// TODO Auto-generated catch block
-//		e.printStackTrace();
-//	}
-	
-	//+"&highlight="+encodedKDOMID
-	//+"#"+encodedKDOMID
-	
-	sb
-		.append("<h3 "
-			+ styleTag
-			+ "><i>"
-			+ te.getTime().getDescription()
-			+ "</i> - "
-			+ te.getTitle()
-			+ " <a class=\"wikipage\" href=\"Wiki.jsp?page="
-			+ te.getTopic()+"&highlight="+encodedKDOMID+"#"+encodedKDOMID
-			+ "\"><img src=\"./KnowWEExtension/images/hermes/page_go.png\" alt=\"Zum Wiki\" title=\"Zum Wiki\"/></a>"
-			+ " <a class=\"wikipage\" href=\"Wiki.jsp?page="
-			+ te.getTopic()+"&edit="+encodedKDOMID+"#"+encodedKDOMID
-			+ "\"><img src=\"./KnowWEExtension/images/hermes/page_edit.png\" alt=\"Bearbeiten\" title=\"Bearbeiten\"/></a>"
-			+ "</h3>");
-
-	sb.append("\n<div>" + te.getDescription() + "<br>");
-	List<String> sources = te.getSources();
-	if (sources != null) {
-	    if (sources.size() == 1) {
-		sb.append("<b>Quelle:</b><br>");
-	    } else if (sources.size() > 1) {
-		sb.append("<b>Quellen:</b><br> ");
-	    }
-	    for (String aSource : sources) {
-		sb.append(aSource + "<br>");
-	    }
-	}
-	//
-	// sb.append("<br>textOrigin:" + te.getTopic() + "<br>");
-	// sb.append("<br>textOrigin:" + te.getTextOriginNode() + "<br>");
-
-	sb.append("</div>\n</div>\n");
-
-	String result = sb.toString();
-
-	if (maskHTMLTags) {
-	    result = result.replaceAll(">", KnowWEEnvironment.HTML_GT);
-	    result = result.replaceAll("<", KnowWEEnvironment.HTML_ST);
-	    result = result.replaceAll("\"", KnowWEEnvironment.HTML_QUOTE);
-	}
-	return result;
-    }
 }

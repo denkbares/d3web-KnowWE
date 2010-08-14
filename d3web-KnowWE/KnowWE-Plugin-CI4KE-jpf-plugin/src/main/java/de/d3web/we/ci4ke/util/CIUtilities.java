@@ -318,7 +318,7 @@ public class CIUtilities {
 		if (src.length() == 0) return orig;
 
 		StringBuffer res = new StringBuffer(orig.length() + 20); // Pure
-																	// guesswork
+		// guesswork
 		int start = 0;
 		int end = 0;
 		int last = 0;

@@ -28,9 +28,10 @@ public class SemanticCoreDummy implements ISemanticCore {
 		// TODO Auto-generated method stub
 
 	}
-	
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.core.ISemanticCore#clone()
 	 */
 	@Override
@@ -175,11 +176,10 @@ public class SemanticCoreDummy implements ISemanticCore {
 
 	}
 
-
 	@Override
 	public void init(KnowWEEnvironment wiki) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

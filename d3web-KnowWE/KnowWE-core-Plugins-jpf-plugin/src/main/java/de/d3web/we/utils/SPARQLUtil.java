@@ -37,9 +37,11 @@ public class SPARQLUtil {
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL,
 					SparqlDelegateRenderer.addNamespaces(q));
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			e.printStackTrace();
-		} catch (MalformedQueryException e) {
+		}
+		catch (MalformedQueryException e) {
 			e.printStackTrace();
 		}
 		try {
@@ -47,9 +49,11 @@ public class SPARQLUtil {
 				boolean result = ((BooleanQuery) query).evaluate();
 				return Boolean.valueOf(result);
 			}
-		} catch (QueryEvaluationException e) {
+		}
+		catch (QueryEvaluationException e) {
 			e.printStackTrace();
-		} finally {
+		}
+		finally {
 
 		}
 		return false;
@@ -68,9 +72,11 @@ public class SPARQLUtil {
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL,
 					SparqlDelegateRenderer.addNamespaces(q));
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			e.printStackTrace();
-		} catch (MalformedQueryException e) {
+		}
+		catch (MalformedQueryException e) {
 			e.printStackTrace();
 		}
 		try {
@@ -78,9 +84,11 @@ public class SPARQLUtil {
 				TupleQueryResult result = ((TupleQuery) query).evaluate();
 				return result;
 			}
-		} catch (QueryEvaluationException e) {
+		}
+		catch (QueryEvaluationException e) {
 			e.printStackTrace();
-		} finally {
+		}
+		finally {
 
 		}
 		return null;
@@ -99,9 +107,11 @@ public class SPARQLUtil {
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL,
 					SparqlDelegateRenderer.addNamespaces(q));
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			e.printStackTrace();
-		} catch (MalformedQueryException e) {
+		}
+		catch (MalformedQueryException e) {
 			e.printStackTrace();
 		}
 		try {
@@ -109,9 +119,11 @@ public class SPARQLUtil {
 				TupleQueryResult result = ((TupleQuery) query).evaluate();
 				return result;
 			}
-		} catch (QueryEvaluationException e) {
+		}
+		catch (QueryEvaluationException e) {
 			e.printStackTrace();
-		} finally {
+		}
+		finally {
 
 		}
 		return null;

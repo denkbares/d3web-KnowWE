@@ -104,22 +104,24 @@ public class JSPHelper {
 		return KnowWEEnvironment.getInstance().getNodeData(parameterMap.getWeb(),
 				parameterMap.getTopic(), kdomID);
 	}
-	
+
 	public String getFlowchartID() {
 		return getFlowchartAttributeValue("fcid");
 	}
-	
+
 	public String getFlowchartWidth() {
 		return getFlowchartAttributeValue("width");
 	}
-	
+
 	public String getFlowchartHeight() {
 		return getFlowchartAttributeValue("height");
 	}
-	
+
 	private String getFlowchartAttributeValue(String attributeName) {
-		Section<FlowchartType> section = (Section<FlowchartType>) KnowWEEnvironment.getInstance().getArticle(parameterMap.getWeb(), parameterMap.getTopic()).findSection(parameterMap.get("kdomID"));
-		
+		Section<FlowchartType> section = (Section<FlowchartType>) KnowWEEnvironment.getInstance().getArticle(
+				parameterMap.getWeb(), parameterMap.getTopic()).findSection(
+				parameterMap.get("kdomID"));
+
 		return AbstractXMLObjectType.getAttributeMapFor(section).get(attributeName);
 	}
 }

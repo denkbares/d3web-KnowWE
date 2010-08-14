@@ -659,7 +659,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 				if (selection.contains("<OPTION")) {
 					text = selection.substring(
 							selection.indexOf("<OPTION") + 7, selection
-							.indexOf("</OPTION>"));
+									.indexOf("</OPTION>"));
 					text = "<DIV" + text + "</DIV>";
 				}
 
@@ -735,8 +735,8 @@ public class FlowchartDiffProvider implements DiffProvider {
 
 			String[] choiceString =
 					{
-					m_rb.getString("diff.traditional.oneline"),
-					m_rb.getString("diff.traditional.lines")
+							m_rb.getString("diff.traditional.oneline"),
+							m_rb.getString("diff.traditional.lines")
 					};
 			double[] choiceLimits = {
 					1, 2 };

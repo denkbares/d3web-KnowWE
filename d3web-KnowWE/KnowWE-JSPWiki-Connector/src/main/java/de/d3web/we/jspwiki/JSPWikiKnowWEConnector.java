@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.jspwiki;
@@ -265,8 +265,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if (pages == null)
-			return null;
+		if (pages == null) return null;
 
 		for (WikiPage wikiPage : pages) {
 			String pageContent = null;
@@ -393,8 +392,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null))
-				return null;
+			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
 		}
 		catch (NullPointerException e) {
 			return null;
@@ -414,8 +412,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null))
-				return null;
+			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
 		}
 		catch (NullPointerException e) {
 			return null;
@@ -443,8 +440,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null))
-				return null;
+			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
 		}
 		catch (NullPointerException e) {
 			return null;
@@ -466,8 +462,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null))
-				return null;
+			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
 		}
 		catch (NullPointerException e) {
 			return null;
@@ -495,8 +490,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null))
-				return null;
+			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
 		}
 		catch (NullPointerException e) {
 			return null;
@@ -554,8 +548,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	 * editing of the page is denied.
 	 * 
 	 * @param articlename
-	 * @param r
-	 *            HttpRequest
+	 * @param r HttpRequest
 	 */
 	@Override
 	public boolean userCanEditPage(String articlename, HttpServletRequest r) {
@@ -598,8 +591,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		WikiPage page = new WikiPage(engine, articlename);
 		PageLock lock = mgr.getCurrentLock(page);
 
-		if (lock == null)
-			return false;
+		if (lock == null) return false;
 
 		if (lock.getLocker().equals(user)) {
 			return true;
@@ -618,8 +610,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		WikiPage page = new WikiPage(engine, articlename);
 		PageLock lock = mgr.lockPage(page, user);
 
-		if (lock != null)
-			return true;
+		if (lock != null) return true;
 		return false;
 	}
 

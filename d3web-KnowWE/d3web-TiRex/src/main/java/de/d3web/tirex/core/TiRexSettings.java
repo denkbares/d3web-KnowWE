@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.tirex.core;
@@ -95,7 +95,8 @@ public class TiRexSettings {
 			String zeile = null;
 			try {
 				zeile = lnr.readLine();
-			} catch (IOException e) { /* StringReader should be no problem */
+			}
+			catch (IOException e) { /* StringReader should be no problem */
 			}
 			while (zeile != null) {
 				if (zeile.contains("=")) {
@@ -105,10 +106,12 @@ public class TiRexSettings {
 				}
 				try {
 					zeile = lnr.readLine();
-				} catch (IOException e) { /* StringReader should be no problem */
+				}
+				catch (IOException e) { /* StringReader should be no problem */
 				}
 			}
-		} else { // get default ressourcebundle if TiRexSettingsPage somehow
+		}
+		else { // get default ressourcebundle if TiRexSettingsPage somehow
 			// fails to load
 			ResourceBundle settingsBundle = ResourceBundle
 					.getBundle("TiRexSettings");
@@ -190,10 +193,11 @@ public class TiRexSettings {
 						new FileReader(TiRexFileReader.getInstance()
 								.getSynonymSetsFile()));
 				this.synonymsMap = createSynMap(synonymes);
-			} catch (NullPointerException e1) {
+			}
+			catch (NullPointerException e1) {
 				this.synonymsMap = new HashMap<String, Collection<String>>();
 			}
-			
+
 		}
 		return synonymsMap;
 	}
@@ -202,7 +206,8 @@ public class TiRexSettings {
 		if (synonymes == null) {
 			try {
 				this.synonymsMap = getSynonymsMap();
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				System.err.println("sysnomysmap missing");
 				e.printStackTrace();
 				synonymsMap = new HashMap<String, Collection<String>>();
@@ -216,7 +221,8 @@ public class TiRexSettings {
 				synonymsMap = new HashMap<String, Collection<String>>();
 			}
 
-		} else {
+		}
+		else {
 			this.synonymsMap = createSynMap(synonymes);
 		}
 	}
@@ -262,8 +268,8 @@ public class TiRexSettings {
 	/**
 	 * @return A Map is returned, the regexes are keys and the according
 	 *         KnOffice shape is saved as an object with its respective key
-	 * @throws IOException
-	 *             If opening or reading the regex-file file fails somehow.
+	 * @throws IOException If opening or reading the regex-file file fails
+	 *         somehow.
 	 */
 	public Map<String, String> initRegexKnofficePairs() throws IOException {
 
@@ -278,12 +284,14 @@ public class TiRexSettings {
 		if (regExp == null) {
 			try {
 				initRegexKnofficePairs();
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				System.err
 						.println("TiRexNumericalRegularExpressions.txt missing");
 				e.printStackTrace();
 			}
-		} else {
+		}
+		else {
 			this.RegExps = readRegExps(new StringReader(regExp));
 		}
 	}
@@ -296,7 +304,8 @@ public class TiRexSettings {
 		try {
 			numericalExpressions = TiRexUtilities.getInstance()
 					.getReaderAsString(bufReader);
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			System.out.println("ERROR: init KnOffice RegExps from String");
 			e.printStackTrace();
 		}

@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.knowledgeExporter;
@@ -37,24 +37,21 @@ import de.d3web.scoring.ActionHeuristicPS;
 import de.d3web.scoring.Score;
 
 public abstract class KnowledgeWriter {
-	
-	
+
 	protected ConditionVerbalizer verbalizer;
-	
+
 	protected KnowledgeManager manager;
-	
+
 	protected KnowledgeWriter(KnowledgeManager manager) {
 		this.manager = manager;
 		this.verbalizer = new ConditionVerbalizer();
 		this.verbalizer.setLocale(KnowledgeManager.getLocale());
 	}
 
-	
 	protected Solution getSolution(Rule r) {
 		ActionHeuristicPS action = (ActionHeuristicPS) r.getAction();
 		return action.getSolution();
 	}
-
 
 	protected Score getScore(Rule element) {
 		if (element.getAction() instanceof ActionHeuristicPS) {
@@ -63,7 +60,6 @@ public abstract class KnowledgeWriter {
 		}
 		return null;
 	}
-
 
 	/*
 	 * prüft ob die Regel vollständig ist, also ob keine komponenten null sind.
@@ -108,16 +104,14 @@ public abstract class KnowledgeWriter {
 
 		return true;
 	}
-	
+
 	protected String trimNum(String s) {
 		if (s.endsWith(".0")) {
 			s = s.substring(0, s.length() - 2);
 		}
 		return s;
 	}
-	
-	public abstract void writeFile(File output) throws IOException; 
-	
 
+	public abstract void writeFile(File output) throws IOException;
 
 }

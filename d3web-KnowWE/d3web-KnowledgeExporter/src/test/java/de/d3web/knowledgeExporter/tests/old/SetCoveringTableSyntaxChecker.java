@@ -1,7 +1,7 @@
-//package de.d3web.knowledgeExporter.tests.old;
-///*
+// package de.d3web.knowledgeExporter.tests.old;
+// /*
 // * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
-// *                    Computer Science VI, University of Wuerzburg
+// * Computer Science VI, University of Wuerzburg
 // *
 // * This is free software; you can redistribute it and/or modify it
 // * under the terms of the GNU Lesser General Public License as
@@ -19,33 +19,34 @@
 // * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 // */
 //
-//package de.d3web.knowledgeExporter.testutils;
+// package de.d3web.knowledgeExporter.testutils;
 //
-//import de.d3web.report.Report;
-//import de.d3web.textParser.decisionTable.DecisionTable;
-//import de.d3web.textParser.decisionTable.DecisionTableSyntaxChecker;
+// import de.d3web.report.Report;
+// import de.d3web.textParser.decisionTable.DecisionTable;
+// import de.d3web.textParser.decisionTable.DecisionTableSyntaxChecker;
 //
 //
-//public class SetCoveringTableSyntaxChecker extends DecisionTableSyntaxChecker {
+// public class SetCoveringTableSyntaxChecker extends DecisionTableSyntaxChecker
+// {
 //	
-//	public SetCoveringTableSyntaxChecker() {
-//	}
+// public SetCoveringTableSyntaxChecker() {
+// }
 //
-//	@Override
-//	protected Report checkConfigSettings(DecisionTable table) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+// @Override
+// protected Report checkConfigSettings(DecisionTable table) {
+// // TODO Auto-generated method stub
+// return null;
+// }
 //
-//	@Override
-//	protected Report checkTableSpecificProperties(DecisionTable table) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+// @Override
+// protected Report checkTableSpecificProperties(DecisionTable table) {
+// // TODO Auto-generated method stub
+// return null;
+// }
 //
-//	public Report checkSyntax(DecisionTable table) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+// public Report checkSyntax(DecisionTable table) {
+// // TODO Auto-generated method stub
+// return null;
+// }
 //
-//}
+// }

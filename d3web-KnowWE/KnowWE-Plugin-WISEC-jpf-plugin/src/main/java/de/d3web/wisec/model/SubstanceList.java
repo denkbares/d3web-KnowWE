@@ -6,7 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class SubstanceList {
 
 	public final static String[] CRITERIA_NAMES = new String[] {
@@ -14,7 +13,7 @@ public class SubstanceList {
 			"Multiple_Tox", "LRT", "Climatic_Change", "drinking_water", " surface_water", "sea",
 			"groundwater", "Risk_related", "Exposure", "compartment", "Market_Volume",
 			"Wide_d_use", "Political", "SVHC_regulated", "Regulated", "ecological_concerns" };
-	
+
 	private final String id;
 	// public String name;
 
@@ -24,13 +23,14 @@ public class SubstanceList {
 
 	public List<Substance> substances = new ArrayList<Substance>();
 	public Map<String, String> criteria = new LinkedHashMap<String, String>();
+
 	// public String filename = "";
 	// public SourceList upperList;
-	
+
 	public SubstanceList(String id) {
 		this.id = id;
 	}
-	
+
 	public String getId() {
 		if (this.id != null) {
 			return this.id;
@@ -53,16 +53,16 @@ public class SubstanceList {
 	public void add(Substance substance) {
 		this.substances.add(substance);
 	}
-	
+
 	public void addCriteria(String criteriaName, String criteriaValue) {
 		criteria.put(criteriaName, criteriaValue);
 	}
-	
+
 	public boolean hasSubstanceWithName(String name) {
 		for (Substance s : substances) {
 			if (s.getName().equals(name)) {
 				return true;
-			}	
+			}
 		}
 		return false;
 	}

@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.sparql;
@@ -44,14 +44,15 @@ public class DefaultSparqlRenderer implements SparqlRenderer {
 		return instance;
 	}
 
-	private DefaultSparqlRenderer () {
-		myID=23;
+	private DefaultSparqlRenderer() {
+		myID = 23;
 	}
+
 	private int myID;
 
 	public String render(TupleQueryResult result, Map<String, String> params) {
-//	 BindingSet bs=result.next();
-//	 bs.g
+		// BindingSet bs=result.next();
+		// bs.g
 		boolean links = false;
 		if (params.containsKey("render")) {
 			links = params.get("render").equals("links");
@@ -66,7 +67,7 @@ public class DefaultSparqlRenderer implements SparqlRenderer {
 		String output = "";
 		boolean tablemode = false;
 
-		table.append(KnowWEUtils.maskHTML("<ul>"));		
+		table.append(KnowWEUtils.maskHTML("<ul>"));
 		try {
 			while (result.hasNext()) {
 				BindingSet b = result.next();
@@ -81,8 +82,7 @@ public class DefaultSparqlRenderer implements SparqlRenderer {
 
 				for (String cur : names) {
 					String erg = b.getBinding(cur).getValue().toString();
-					if (erg.split("#").length == 2)
-						erg = erg.split("#")[1];
+					if (erg.split("#").length == 2) erg = erg.split("#")[1];
 					if (links) {
 						try {
 							if (KnowWEEnvironment.getInstance()
@@ -95,21 +95,24 @@ public class DefaultSparqlRenderer implements SparqlRenderer {
 										.maskHTML("<a href=\"Wiki.jsp?page="
 												+ erg + "\">" + erg + "</a>");
 							}
-						} catch (UnsupportedEncodingException e) {
+						}
+						catch (UnsupportedEncodingException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
 					try {
 						erg = URLDecoder.decode(erg, "UTF-8");
-					} catch (UnsupportedEncodingException e) {
+					}
+					catch (UnsupportedEncodingException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					if (tablemode) {
 						table.append(KnowWEUtils.maskHTML("<td>") + erg
 								+ KnowWEUtils.maskHTML("</td>"));
-					} else {
+					}
+					else {
 						table.append(KnowWEUtils.maskHTML("<li>") + erg
 								+ KnowWEUtils.maskHTML("</li>\n"));
 					}
@@ -120,13 +123,16 @@ public class DefaultSparqlRenderer implements SparqlRenderer {
 					table.append(KnowWEUtils.maskHTML("</tr>\n"));
 				}
 			}
-		} catch (QueryEvaluationException e) {
+		}
+		catch (QueryEvaluationException e) {
 			return rb.getString("KnowWE.owl.query.evalualtion.error") + ":"
 					+ e.getMessage();
-		} finally {
+		}
+		finally {
 			try {
 				result.close();
-			} catch (QueryEvaluationException e) {
+			}
+			catch (QueryEvaluationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -139,11 +145,13 @@ public class DefaultSparqlRenderer implements SparqlRenderer {
 		if (empty) {
 			output += rb.getString("KnowWE.owl.query.no_result");
 			return KnowWEUtils.maskHTML(output);
-		} else {
+		}
+		else {
 			if (tablemode) {
 				output += KnowWEUtils.maskHTML("<table>") + table
 						+ KnowWEUtils.maskHTML("</table>");
-			} else {
+			}
+			else {
 				output += table.toString();
 			}
 		}
@@ -152,19 +160,19 @@ public class DefaultSparqlRenderer implements SparqlRenderer {
 
 	@Override
 	public String getName() {
-		
+
 		return "default";
 	}
 
 	@Override
 	public int getID() {
-		
+
 		return myID;
 	}
 
 	@Override
 	public void setID(int id) {
-	myID=id;
-		
+		myID = id;
+
 	}
 }

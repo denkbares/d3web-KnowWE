@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.taghandler;
@@ -56,16 +56,16 @@ public class PageViewHandler extends AbstractTagHandler {
 			for (Statement cur : list) {
 				Resource subject = cur.getSubject();
 				String s = "subject of statement is null";
-				if(subject != null) {
+				if (subject != null) {
 					s = subject.stringValue();
 				}
 				String p = cur.getPredicate().stringValue();
 				Value object = cur.getObject();
 				String o = "object of statement is null";
-				if(object != null) {
+				if (object != null) {
 					o = object.stringValue();
 				}
-				 
+
 				s = SemanticCoreDelegator.getInstance().reduceNamespace(s);
 				p = SemanticCoreDelegator.getInstance().reduceNamespace(p);
 				o = SemanticCoreDelegator.getInstance().reduceNamespace(o);

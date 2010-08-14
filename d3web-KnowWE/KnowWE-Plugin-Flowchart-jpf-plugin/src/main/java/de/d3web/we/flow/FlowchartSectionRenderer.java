@@ -67,40 +67,51 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer {
 			return KnowWEUtils
 					.maskHTML(
 					"<div style='cursor: pointer;' " +
-					"onclick='window.open(\""
-					+ createEditURL(sec.getID(), topic)
-					+ "\", \""
-					+ sec.getID().replaceAll("[^\\w]", "_")
-					+ "\")'>"
-					+ "\r\n"
-					+
-										// sec.getID() contains a '/' which is not allowed. FF
-					// ignores it, IE doesnt open a new window
-					// "onclick='window.open(\""+createEditURL(sec.getId(),
-					// topic)+"\", \""+sec.getId()+"\")'>" +"\r\n" +
-					"<link rel='stylesheet' type='text/css' href='cc/kbinfo/dropdownlist.css'></link>"
-					+ "\r\n"
-					+
-					"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objectselect.css'></link>"
-					+ "\r\n"
-					+
-					"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objecttree.css'></link>"
-					+ "\r\n" +
-					"<link rel='stylesheet' type='text/css' href='cc/flow/flowchart.css'></link>"
-					+ "\r\n" +
-					"<link rel='stylesheet' type='text/css' href='cc/flow/floweditor.css'></link>"
-					+ "\r\n" +
-					"<link rel='stylesheet' type='text/css' href='cc/flow/guard.css'></link>"
-					+ "\r\n" +
-					"<link rel='stylesheet' type='text/css' href='cc/flow/node.css'></link>"
-					+ "\r\n" +
-					"<link rel='stylesheet' type='text/css' href='cc/flow/nodeeditor.css'></link>"
-					+ "\r\n" +
-					"<link rel='stylesheet' type='text/css' href='cc/flow/rule.css'></link>"
-					+ "\r\n" +
-					"<style type='text/css'>div, span, a { cursor: pointer !important; }</style>" +
-					preview +
-					"</div>");
+							"onclick='window.open(\""
+							+ createEditURL(sec.getID(), topic)
+							+ "\", \""
+							+ sec.getID().replaceAll("[^\\w]", "_")
+							+ "\")'>"
+							+ "\r\n"
+							+
+										// sec.getID() contains a '/' which is
+										// not allowed. FF
+										// ignores it, IE doesnt open a new
+										// window
+										// "onclick='window.open(\""+createEditURL(sec.getId(),
+										// topic)+"\", \""+sec.getId()+"\")'>"
+										// +"\r\n" +
+										"<link rel='stylesheet' type='text/css' href='cc/kbinfo/dropdownlist.css'></link>"
+							+ "\r\n"
+							+
+							"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objectselect.css'></link>"
+							+ "\r\n"
+							+
+							"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objecttree.css'></link>"
+							+ "\r\n"
+							+
+							"<link rel='stylesheet' type='text/css' href='cc/flow/flowchart.css'></link>"
+							+ "\r\n"
+							+
+							"<link rel='stylesheet' type='text/css' href='cc/flow/floweditor.css'></link>"
+							+ "\r\n"
+							+
+							"<link rel='stylesheet' type='text/css' href='cc/flow/guard.css'></link>"
+							+ "\r\n"
+							+
+							"<link rel='stylesheet' type='text/css' href='cc/flow/node.css'></link>"
+							+ "\r\n"
+							+
+							"<link rel='stylesheet' type='text/css' href='cc/flow/nodeeditor.css'></link>"
+							+ "\r\n"
+							+
+							"<link rel='stylesheet' type='text/css' href='cc/flow/rule.css'></link>"
+							+ "\r\n"
+							+
+							"<style type='text/css'>div, span, a { cursor: pointer !important; }</style>"
+							+
+							preview +
+							"</div>");
 		}
 		else {
 			StringBuilder buffy = new StringBuilder();

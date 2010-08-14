@@ -29,7 +29,6 @@ import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.store.SectionStore;
 
-
 public class IncrementalSectionizerModule implements SectionizerModule {
 
 	@Override

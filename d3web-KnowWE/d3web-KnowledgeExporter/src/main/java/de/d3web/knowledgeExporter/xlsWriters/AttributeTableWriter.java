@@ -116,7 +116,7 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 				if (ks instanceof Weight) {
 					qSheet.addCell(new Label(getColumn(Weight.class.getSimpleName(), qSheet),
 							row, Weight.convertValueToConstantString(((Weight) ks)
-							.getQuestionWeightValue().getValue()), getCellFormatCenter()));
+									.getQuestionWeightValue().getValue()), getCellFormatCenter()));
 				}
 				if (ks instanceof Abnormality) {
 					abn = (Abnormality) ks;

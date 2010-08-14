@@ -160,10 +160,10 @@ public class KnowWEFacade {
 
 			context.getWriter().write(
 					"<p class=\"info box\">"
-					+ KnowWEEnvironment.getInstance().getKwikiBundle(
-					context.getKnowWEParameterMap().getWikiContext()).getString(
-					"KnowWE.login.error.admin")
-					+ "</p>");
+							+ KnowWEEnvironment.getInstance().getKwikiBundle(
+									context.getKnowWEParameterMap().getWikiContext()).getString(
+									"KnowWE.login.error.admin")
+							+ "</p>");
 		}
 		else {
 			action.execute(context);

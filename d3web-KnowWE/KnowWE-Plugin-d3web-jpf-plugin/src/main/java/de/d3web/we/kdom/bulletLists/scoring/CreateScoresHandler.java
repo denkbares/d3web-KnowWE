@@ -79,8 +79,9 @@ public class CreateScoresHandler extends D3webSubtreeHandler {
 				KnowWEUtils.storeSectionInfo(
 						s.getArticle().getWeb(), article.getTitle(), s.getID(),
 						de.d3web.we.kdom.rules.Rule.KBID_KEY, rule.getId());
-				
-			} else {
+
+			}
+			else {
 				// TODO ERRORHANDLING
 			}
 		}

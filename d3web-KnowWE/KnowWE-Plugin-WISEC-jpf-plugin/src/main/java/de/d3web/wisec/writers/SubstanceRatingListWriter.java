@@ -56,7 +56,9 @@ public class SubstanceRatingListWriter extends WISECWriter {
 		b.append("\n\n");
 		b.append("!! Rating\n");
 		for (SubstanceWithRating substanceWithRating : substances) {
-			b.append("# " + SubstanceInfoWriter.asWikiMarkup(substanceWithRating.substanceName) +
+			b.append("# "
+					+ SubstanceInfoWriter.asWikiMarkup(substanceWithRating.substanceName)
+					+
 					" - "
 					+ ConverterUtils.asString(model.getChemNamesFor(substanceWithRating.substanceName))
 					+

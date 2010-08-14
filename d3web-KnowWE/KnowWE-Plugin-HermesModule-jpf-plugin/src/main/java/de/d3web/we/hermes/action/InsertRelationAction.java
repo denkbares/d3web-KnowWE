@@ -36,10 +36,11 @@ public class InsertRelationAction extends DeprecatedAbstractKnowWEAction {
 					insertion.append("::");
 					insertion.append(object);
 					insertion.append("]");
-					
-					if(!description.getOriginalText().contains(insertion.toString())) {
+
+					if (!description.getOriginalText().contains(insertion.toString())) {
 						Map<String, String> nodesMap = new HashMap<String, String>();
-						nodesMap.put(description.getID(), description.getOriginalText()+" - "+insertion.toString());
+						nodesMap.put(description.getID(), description.getOriginalText() + " - "
+								+ insertion.toString());
 						articleManager.replaceKDOMNodes(parameterMap, topic, nodesMap);
 					}
 					return "done";

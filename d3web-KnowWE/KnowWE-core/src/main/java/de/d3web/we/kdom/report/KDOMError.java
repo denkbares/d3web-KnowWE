@@ -13,7 +13,7 @@ import de.d3web.we.kdom.AbstractKnowWEObjectType;
  * 
  * 
  * @author Jochen
- *
+ * 
  */
 public abstract class KDOMError extends KDOMReportMessage {
 

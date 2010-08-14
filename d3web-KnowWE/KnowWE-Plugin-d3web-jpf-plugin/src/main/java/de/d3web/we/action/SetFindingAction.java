@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.action;
@@ -51,28 +51,33 @@ import de.d3web.we.event.EventManager;
 import de.d3web.we.event.FindingSetEvent;
 import de.d3web.we.utils.D3webUtils;
 
-
 public class SetFindingAction extends DeprecatedAbstractKnowWEAction {
 
-//	public void perform(Model model) throws Exception {
-//		Broker broker = KnowWEUtils.getBroker(model);
-//		String namespace = java.net.URLDecoder.decode((String) BasicUtils.getModelAttribute(model, KnowWEAttributes.SEMANO_NAMESPACE, String.class, true));
-//		String objectid = (String) BasicUtils.getModelAttribute(model, KnowWEAttributes.SEMANO_OBJECT_ID, String.class, true);
-//		String valueid = (String) BasicUtils.getModelAttribute(model, KnowWEAttributes.SEMANO_VALUE_ID, String.class, true);
-//		String valuenum = (String) BasicUtils.getModelAttribute(model, KnowWEAttributes.SEMANO_VALUE_NUM, String.class, true);
-//		String valueids = (String) BasicUtils.getModelAttribute(model, KnowWEAttributes.SEMANO_VALUE_IDS, String.class, true);
-//		if(namespace == null || objectid == null) {
-//			return;
-//		}
-//		Map<String,String> m = new HashMap<String,String>();
-//		m.put(KnowWEAttributes.SEMANO_NAMESPACE, namespace);
-//		m.put(KnowWEAttributes.SEMANO_OBJECT_ID, objectid);
-//		m.put(KnowWEAttributes.SEMANO_VALUE_ID, valueid);
-//		m.put(KnowWEAttributes.SEMANO_VALUE_NUM, valuenum);
-//		m.put(KnowWEAttributes.SEMANO_VALUE_IDS, valueids);
-//		perform(m);
-//		
-//	}
+	// public void perform(Model model) throws Exception {
+	// Broker broker = KnowWEUtils.getBroker(model);
+	// String namespace = java.net.URLDecoder.decode((String)
+	// BasicUtils.getModelAttribute(model, KnowWEAttributes.SEMANO_NAMESPACE,
+	// String.class, true));
+	// String objectid = (String) BasicUtils.getModelAttribute(model,
+	// KnowWEAttributes.SEMANO_OBJECT_ID, String.class, true);
+	// String valueid = (String) BasicUtils.getModelAttribute(model,
+	// KnowWEAttributes.SEMANO_VALUE_ID, String.class, true);
+	// String valuenum = (String) BasicUtils.getModelAttribute(model,
+	// KnowWEAttributes.SEMANO_VALUE_NUM, String.class, true);
+	// String valueids = (String) BasicUtils.getModelAttribute(model,
+	// KnowWEAttributes.SEMANO_VALUE_IDS, String.class, true);
+	// if(namespace == null || objectid == null) {
+	// return;
+	// }
+	// Map<String,String> m = new HashMap<String,String>();
+	// m.put(KnowWEAttributes.SEMANO_NAMESPACE, namespace);
+	// m.put(KnowWEAttributes.SEMANO_OBJECT_ID, objectid);
+	// m.put(KnowWEAttributes.SEMANO_VALUE_ID, valueid);
+	// m.put(KnowWEAttributes.SEMANO_VALUE_NUM, valuenum);
+	// m.put(KnowWEAttributes.SEMANO_VALUE_IDS, valueids);
+	// perform(m);
+	//		
+	// }
 
 	@SuppressWarnings( {
 			"unchecked", "deprecation" })
@@ -86,11 +91,11 @@ public class SetFindingAction extends DeprecatedAbstractKnowWEAction {
 		String topic = parameterMap.getTopic();
 		String user = parameterMap.get(KnowWEAttributes.USER);
 		String web = parameterMap.get(KnowWEAttributes.WEB);
-		
+
 		if (namespace == null || objectid == null) {
 			return "null";
 		}
-		
+
 		// if DPS is inactive
 		if (!ResourceBundle.getBundle("KnowWE_config").getString("dps.active").contains("true")) {
 			KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(web).getKBM(
@@ -107,7 +112,7 @@ public class SetFindingAction extends DeprecatedAbstractKnowWEAction {
 					for (String string : ids) {
 						values.add(kbm.findValue(question, string.trim()));
 					}
-				} 
+				}
 				Value singleValue = null;
 				if (valueid != null) {
 					singleValue = kbm.findValue(question, valueid);
@@ -173,7 +178,6 @@ public class SetFindingAction extends DeprecatedAbstractKnowWEAction {
 					TerminologyType.symptom, InformationType.OriginalUserInformation);
 			kss.inform(info);
 			broker.update(info);
-
 
 		}
 		return "value set";

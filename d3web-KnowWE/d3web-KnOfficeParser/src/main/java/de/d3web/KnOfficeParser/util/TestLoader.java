@@ -1,24 +1,25 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.KnOfficeParser.util;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
@@ -45,7 +46,7 @@ public class TestLoader {
 
 	public static void main(String[] args) throws IOException {
 		rb = ResourceBundle
-		.getBundle("TestLoaderConfig");
+				.getBundle("TestLoaderConfig");
 		// String path =
 		// "C:/KnowWE/workspace/KnowWE-Webapp/bin/WEB-INF/resources/webs";
 		// String path =
@@ -63,7 +64,7 @@ public class TestLoader {
 		dateString = dateString.replaceAll(":", "_");
 		writeFile(rb.getString("path_to_logs") + "TestLoader-" + dateString
 				+ ".log", log.toString() + "\n" + loader.loaded
-				+ " KBs loaded"+"\n" + loader.problems
+				+ " KBs loaded" + "\n" + loader.problems
 				+ " problems found");
 	}
 
@@ -71,29 +72,32 @@ public class TestLoader {
 		String path = rb.getString("path_to_web_kbs");
 		try {
 			URL url = new File(path).toURI().toURL();
-		} catch (MalformedURLException e) {
+		}
+		catch (MalformedURLException e) {
 			log.append("cannot open directory: " + path + "\n");
 			problems++;
 			e.printStackTrace();
 		}
 		File f = new File(path);
-		if(!f.exists()) {
+		if (!f.exists()) {
 			log.append("cannot open directory: " + path + "\n");
 			problems++;
-			
+
 		}
 		if (web.equals(allWebs)) {
 			File[] webFolders = f.listFiles();
 			for (int i = 0; i < webFolders.length; i++) {
 				loadAllKBs(webFolders[i], log);
 			}
-		} else {
-			File webFile = new File(path+"/"+web);
-			if(!webFile.exists()) {
+		}
+		else {
+			File webFile = new File(path + "/" + web);
+			if (!webFile.exists()) {
 				log.append("cannot open directory: " + webFile.toString() + "\n");
 				problems++;
-			}else {
-				loadAllKBs(webFile,log);
+			}
+			else {
+				loadAllKBs(webFile, log);
 			}
 		}
 
@@ -107,13 +111,14 @@ public class TestLoader {
 			try {
 				KnowledgeBase kb = m.load(jars[i]);
 				String id = jars[i].toString();
-				kb.setId(""+i);
+				kb.setId("" + i);
 				list.add(kb);
-				//loaded++;
+				// loaded++;
 				log.append("loaded: " + jars[i].toString() + "\n");
-			} catch (MalformedURLException e) {
+			}
+			catch (MalformedURLException e) {
 				log.append("cannot load file: " + jars[i].toString() + "\n");
-				//problems++;
+				// problems++;
 				e.printStackTrace();
 			}
 		}
@@ -126,19 +131,20 @@ public class TestLoader {
 			writer.write(fileText);
 			writer.flush();
 			writer.close();
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
-	
-	static class JarFileFilter implements FileFilter{
-		
+
+	static class JarFileFilter implements FileFilter {
+
 		public boolean accept(File f) {
 			return f.getName().endsWith(".jar");
 		}
-		
+
 	}
 
 }

@@ -8,20 +8,19 @@ import java.util.Map;
  * This class stores the information about an upper list.
  * 
  * @author joba
- *
+ * 
  */
 public class SourceList {
-
 
 	Map<String, String> attributes = new LinkedHashMap<String, String>();
 	// private final Collection<SubstanceList> children = new
 	// LinkedList<SubstanceList>();
 	public String filename = "";
-	
+
 	public void add(String attribute, String value) {
 		this.attributes.put(attribute, value);
 	}
-	
+
 	public String get(String attribute) {
 		String value = this.attributes.get(attribute);
 		if (value == null) {
@@ -31,7 +30,7 @@ public class SourceList {
 			return value;
 		}
 	}
-	
+
 	public String getName() {
 		return get("Name");
 	}
@@ -43,7 +42,7 @@ public class SourceList {
 	public Collection<String> getAttributes() {
 		return this.attributes.keySet();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

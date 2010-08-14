@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.utils;
@@ -41,7 +41,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.terminology.TerminologyHandler;
 
 public class KnowWEUtils {
-	
+
 	private static final String createMsgMapKey(Class<?> msgType) {
 		return "message_map_key_" + msgType.getName();
 	}
@@ -68,8 +68,7 @@ public class KnowWEUtils {
 	 * Please not that the link will only work if it is put into "[" ... "]"
 	 * brackets and rendered through the wiki rendering pipeline.
 	 * 
-	 * @param section
-	 *            the section to create the link for
+	 * @param section the section to create the link for
 	 * @return the created link
 	 */
 	public static String getLink(Section<?> section) {
@@ -80,8 +79,7 @@ public class KnowWEUtils {
 	 * Creates a unique anchor name for the section to link to. See method
 	 * {@link #getLink(Section)} for more details on how to use this method.
 	 * 
-	 * @param section
-	 *            the section to create the anchor for.
+	 * @param section the section to create the anchor for.
 	 * @return the unique anchor name
 	 */
 	public static String getAnchor(Section<?> section) {
@@ -90,7 +88,7 @@ public class KnowWEUtils {
 				+ section.getArticle().getTitle().replace(' ', '+') + "-"
 				+ Math.abs(section.getID().hashCode());
 	}
-	
+
 	/**
 	 * Clears all Messages for the given article, section, source and msgType.
 	 * 
@@ -103,13 +101,15 @@ public class KnowWEUtils {
 			Class<?> source, Class<MSGType> msgType) {
 		storeMessages(article, sec, source, msgType, new ArrayList<MSGType>(0));
 	}
-	
+
 	/**
-	 * Stores a single Message for the given Section and source. <p/>
+	 * Stores a single Message for the given Section and source.
+	 * <p/>
 	 * <b>ATTENTION: For this method applies the same as for the method
-	 * KnowWEUtils#storeMessages(Section, Class, Class, Collection) .
-	 * It can only be used once for the given set of parameters. If you use this method
-	 * a second time with the same parameters, the first Message gets overwritten!</b>
+	 * KnowWEUtils#storeMessages(Section, Class, Class, Collection) . It can
+	 * only be used once for the given set of parameters. If you use this method
+	 * a second time with the same parameters, the first Message gets
+	 * overwritten!</b>
 	 * 
 	 * @param article is the article you want to store the message for
 	 * @param sec is the section you want to store the message for
@@ -125,14 +125,15 @@ public class KnowWEUtils {
 			storeMessages(article, sec, source, msgType, msgList);
 		}
 	}
-	
+
 	/**
-	 * Stores the given Collection of Messages <tt>m</tt> with the type <tt>MSGType</tt>
-	 * from the Class <tt>source</tt> for the KnowWEArticle <tt>article</tt> and
-	 * the Section <tt>s</tt>. <p/>
-	 * <b>ATTENTION: This method can only be used once for each article, section,
-	 * source and msgType. If you use this Method a second time with the same parameters, the
-	 * first Collection gets overwritten!</b>
+	 * Stores the given Collection of Messages <tt>m</tt> with the type
+	 * <tt>MSGType</tt> from the Class <tt>source</tt> for the KnowWEArticle
+	 * <tt>article</tt> and the Section <tt>s</tt>.
+	 * <p/>
+	 * <b>ATTENTION: This method can only be used once for each article,
+	 * section, source and msgType. If you use this Method a second time with
+	 * the same parameters, the first Collection gets overwritten!</b>
 	 * 
 	 * @param article is the article you want to store the messages for
 	 * @param sec is the section you want to store the messages for
@@ -144,7 +145,8 @@ public class KnowWEUtils {
 	public static <MSGType> void storeMessages(KnowWEArticle article, Section<?> sec,
 			Class<?> source, Class<MSGType> msgType, Collection<MSGType> msgs) {
 		if (msgs != null) {
-			Map<String, Collection<MSGType>> msgsMap = getMessagesMapModifiable(article, sec, msgType);
+			Map<String, Collection<MSGType>> msgsMap = getMessagesMapModifiable(article, sec,
+					msgType);
 			if (msgsMap == null) {
 				msgsMap = new HashMap<String, Collection<MSGType>>();
 				KnowWEUtils.storeSectionInfo(article.getWeb(), article.getTitle(), sec.getID(),
@@ -153,14 +155,14 @@ public class KnowWEUtils {
 			msgsMap.put(source.getName(), Collections.unmodifiableCollection(msgs));
 		}
 	}
-	
+
 	/**
-	 * Returns an unmodifiable Collection containing all Messages of the KDOM subtree
-	 * with the given Section as root.
+	 * Returns an unmodifiable Collection containing all Messages of the KDOM
+	 * subtree with the given Section as root.
 	 * 
-	 * @param article is the article you want the message from (not necessarily the same
-	 * 		as <tt>sec.getArticle()</tt> because the Section could be included in another
-	 * 		article)
+	 * @param article is the article you want the message from (not necessarily
+	 *        the same as <tt>sec.getArticle()</tt> because the Section could be
+	 *        included in another article)
 	 * @param sec is the root of the KDOM subtree you want the messages from
 	 * @param msgType is the Class of the Messages you want
 	 * @return an unmodifiable Collection of Messages
@@ -170,41 +172,42 @@ public class KnowWEUtils {
 		Collection<MSGType> msgsList = new ArrayList<MSGType>();
 		List<Section<?>> nodes = new ArrayList<Section<?>>();
 		sec.getAllNodesPreOrder(nodes);
-		for (Section<?> n:nodes) {
+		for (Section<?> n : nodes) {
 			msgsList.addAll(getMessages(article, n, msgType));
 		}
 		return Collections.unmodifiableCollection(msgsList);
 	}
-	
+
 	/**
-	 * Returns an unmodifiable Collection containing all Messages of the Type <tt>MSGType</tt>.
+	 * Returns an unmodifiable Collection containing all Messages of the Type
+	 * <tt>MSGType</tt>.
 	 * 
-	 * @param article is the article you want the message from (not necessarily the same
-	 * 		as <tt>sec.getArticle()</tt> because the Section could be included in another
-	 * 		article)
+	 * @param article is the article you want the message from (not necessarily
+	 *        the same as <tt>sec.getArticle()</tt> because the Section could be
+	 *        included in another article)
 	 * @param sec is the Section you want the messages from
 	 * @param msgType is the Class of the Messages you want
 	 * @return an unmodifiable Collection of Messages
 	 */
 	public static <MSGType> Collection<MSGType> getMessages(KnowWEArticle article, Section<?> sec,
 			Class<MSGType> msgType) {
-		Map<String, Collection<MSGType>> msgsMap =  getMessagesMapModifiable(article, sec, msgType);
+		Map<String, Collection<MSGType>> msgsMap = getMessagesMapModifiable(article, sec, msgType);
 		Collection<MSGType> msgsList = new ArrayList<MSGType>();
 		if (msgsMap != null) {
-			for (Collection<MSGType> coll:msgsMap.values()) {
+			for (Collection<MSGType> coll : msgsMap.values()) {
 				msgsList.addAll(coll);
 			}
 		}
 		return Collections.unmodifiableCollection(msgsList);
 	}
-	
+
 	/**
-	 * Returns an unmodifiable Collection containing all Messages of the Type <tt>MSGType</tt>
-	 * stored for the Class <tt>source</tt>.
+	 * Returns an unmodifiable Collection containing all Messages of the Type
+	 * <tt>MSGType</tt> stored for the Class <tt>source</tt>.
 	 * 
-	 * @param article is the article you want the message from (not necessarily the same
-	 * 		as <tt>sec.getArticle()</tt> because the Section could be included in another
-	 * 		article)
+	 * @param article is the article you want the message from (not necessarily
+	 *        the same as <tt>sec.getArticle()</tt> because the Section could be
+	 *        included in another article)
 	 * @param sec is the Section you want the messages from
 	 * @param source is the Class of the source of the messages you want
 	 * @param msgType is the Class of the Messages you want
@@ -212,29 +215,31 @@ public class KnowWEUtils {
 	 */
 	public static <MSGType> Collection<MSGType> getMessages(KnowWEArticle article, Section<?> sec,
 			Class<?> source, Class<MSGType> msgType) {
-		Map<String, Collection<MSGType>> msgsMap =  getMessagesMapModifiable(article, sec, msgType);
+		Map<String, Collection<MSGType>> msgsMap = getMessagesMapModifiable(article, sec, msgType);
 		if (msgsMap != null && msgsMap.containsKey(source.getName())) {
 			return Collections.unmodifiableCollection(msgsMap.get(source.getName()));
 		}
 		return Collections.unmodifiableCollection(new ArrayList<MSGType>(0));
 	}
-	
+
 	/**
-	 * Returns the an unmodifiable Map containing all Messages of the Type <tt>MSGType</tt>.
-	 * The Collections are mapped after the String <tt>source.getName()</tt>.
+	 * Returns the an unmodifiable Map containing all Messages of the Type
+	 * <tt>MSGType</tt>. The Collections are mapped after the String
+	 * <tt>source.getName()</tt>.
 	 * 
-	 * @param article is the article you want the message from (not necessarily the same
-	 * 		as <tt>sec.getArticle()</tt> because the Section could be included in another
-	 * 		article)
+	 * @param article is the article you want the message from (not necessarily
+	 *        the same as <tt>sec.getArticle()</tt> because the Section could be
+	 *        included in another article)
 	 * @param sec is the Section you want the messages from
 	 * @param msgType is the Class of the Messages you want
-	 * @return an unmodifiable Map with the Messages, mapped after <tt>source.getName()</tt>
+	 * @return an unmodifiable Map with the Messages, mapped after
+	 *         <tt>source.getName()</tt>
 	 */
 	public static <MSGType> Map<String, Collection<MSGType>> getMessagesMap(KnowWEArticle article,
 			Section<?> sec, Class<MSGType> msgType) {
 		return Collections.unmodifiableMap(getMessagesMapModifiable(article, sec, msgType));
 	}
-	
+
 	/**
 	 * This method is private to avoid misuse (this map is modifiable).
 	 */
@@ -244,8 +249,6 @@ public class KnowWEUtils {
 		return (Map<String, Collection<MSGType>>) KnowWEUtils.getStoredObject(article.getWeb(),
 				article.getTitle(), sec.getID(), createMsgMapKey(msgType));
 	}
-
-
 
 	/**
 	 * This method is deprecated! If the Section is included in other articles,
@@ -530,13 +533,11 @@ public class KnowWEUtils {
 	/**
 	 * Escapes the given string for safely using user-input in web sites.
 	 * 
-	 * @param text
-	 *            Text to escape
+	 * @param text Text to escape
 	 * @return Sanitized text
 	 */
 	public static String html_escape(String text) {
-		if (text == null)
-			return null;
+		if (text == null) return null;
 
 		return text.replaceAll("&", "&amp;").
 				replaceAll("\"", "&quot;").
@@ -558,7 +559,7 @@ public class KnowWEUtils {
 			return URLEncoder.encode(text);
 		}
 	}
-	
+
 	/**
 	 * Performs URL decoding on the sting
 	 * 
@@ -594,6 +595,5 @@ public class KnowWEUtils {
 	// }
 	// return u;
 	// }
-	
 
 }

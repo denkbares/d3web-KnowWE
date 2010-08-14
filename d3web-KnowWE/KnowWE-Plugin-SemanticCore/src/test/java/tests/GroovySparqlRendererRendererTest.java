@@ -24,6 +24,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 import dummies.KnowWETestWikiConnector;
 
 public class GroovySparqlRendererRendererTest {
+
 	private KnowWEDomRenderer<GroovySparqlRendererContent> renderer;
 	private KnowWEEnvironment ke;
 	private KnowWEArticleManager am;

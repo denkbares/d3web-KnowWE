@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.d3web.we.kdom.rulesNew.terminalCondition;
 
@@ -121,7 +121,6 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 			// TODO some reasonable error handling here!
 			return null;
 		}
-		
 
 		if (number != null && q != null && q instanceof QuestionNum) {
 
@@ -151,25 +150,24 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 	}
 
 	class QuestionNumReference extends QuestionReference {
-		
+
 		public QuestionNumReference() {
 			super();
 			this.subtreeHandler.clear();
-			this.addSubtreeHandler(Priority.HIGH,new QuestionNumRegistrationHandler());
-			
+			this.addSubtreeHandler(Priority.HIGH, new QuestionNumRegistrationHandler());
+
 		}
 
 		class QuestionNumRegistrationHandler extends SubtreeHandler<QuestionNumReference> {
 
 			@Override
 			public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionNumReference> s) {
-				
+
 				KnowWEUtils.getTerminologyHandler(article.getWeb())
 						.registerTermReference(article, s);
 
 				Question question = s.get().getTermObject(article, s);
-				
-				
+
 				if (question == null) {
 					return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(
 							s.get().getName()
@@ -177,12 +175,12 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 				}
 
 				// check for QuestionNum
-				if(! (question instanceof QuestionNum)) {
+				if (!(question instanceof QuestionNum)) {
 					return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(
 							s.get().getName()
 									+ " QuestionNum expected:  " + s.get().getTermName(s)));
 				}
-				
+
 				return new ArrayList<KDOMReportMessage>(0);
 			}
 

@@ -1,20 +1,20 @@
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.d3web.we.kdom.rulesNew.ruleAction;
 
@@ -97,21 +97,21 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 		ActionIndication a = new ActionIndication();
 		List<QASet> qasets = new ArrayList<QASet>();
 		a.setQASets(qasets);
-		
+
 		Section<QuestionReference> questionRef = s.findSuccessor(QuestionReference.class);
 		if (questionRef != null) {
-			
+
 			Question object = questionRef.get().getTermObject(article, questionRef);
 			qasets.add(object);
 		}
-		
+
 		Section<QuestionnaireReference> questionnaireRef = s.findSuccessor(QuestionnaireReference.class);
 		if (questionnaireRef != null) {
-			
+
 			QContainer object = questionnaireRef.get().getTermObject(article, questionnaireRef);
 			qasets.add(object);
 		}
-		
+
 		return a;
 	}
 

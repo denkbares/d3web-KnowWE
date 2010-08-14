@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.decisionTree;
@@ -46,8 +46,7 @@ public class QuestionLineKDOMBuilder implements DTBuilder {
 	public void addAnswerOrQuestionLink(int dashes, String name, String ref,
 			List<String> syn, boolean def, boolean init, int line, String linetext,
 			String idlink) {
-		if (linetext == null)
-			return;
+		if (linetext == null) return;
 		String da = makeDashes(dashes);
 		ExpandedSectionFinderResult lineS = new ExpandedSectionFinderResult(da + linetext
 				+ "\r\n", new AnswerLine(), -1);
@@ -92,8 +91,7 @@ public class QuestionLineKDOMBuilder implements DTBuilder {
 	public void addDiagnosis(int dashes, List<String> diags, boolean set,
 			String value, String link, String linkdes, int line,
 			String linetext, String idlink) {
-		if (linetext == null)
-			return;
+		if (linetext == null) return;
 		String da = makeDashes(dashes);
 		ExpandedSectionFinderResult lineS = new ExpandedSectionFinderResult(da
 				+ linetext + "\r\n", new SolutionLine(), sections.size());
@@ -122,8 +120,7 @@ public class QuestionLineKDOMBuilder implements DTBuilder {
 	@Override
 	public void addNumericAnswer(int dashes, Double a, Double b, String op,
 			int line, String linetext) {
-		if (linetext == null)
-			return;
+		if (linetext == null) return;
 		String da = makeDashes(dashes);
 		ExpandedSectionFinderResult lineS = new ExpandedSectionFinderResult(da + linetext
 				+ "\r\n",
@@ -143,8 +140,7 @@ public class QuestionLineKDOMBuilder implements DTBuilder {
 			Double upperbound, String unit, List<String> syn, int line,
 			String linetext, String idlink, List<String> attributes,
 			List<String> values) {
-		if (linetext == null)
-			return;
+		if (linetext == null) return;
 
 		String da = makeDashes(dashes);
 		ExpandedSectionFinderResult lineS = new ExpandedSectionFinderResult(da
@@ -161,8 +157,7 @@ public class QuestionLineKDOMBuilder implements DTBuilder {
 	@Override
 	public void addQuestionLink(int dashes, String name, int line,
 			String linetext) {
-		if (linetext == null)
-			return;
+		if (linetext == null) return;
 		String da = makeDashes(dashes);
 		ExpandedSectionFinderResult lineS = new ExpandedSectionFinderResult(da + linetext
 				+ "\r\n",
@@ -179,8 +174,7 @@ public class QuestionLineKDOMBuilder implements DTBuilder {
 	@Override
 	public void addQuestionclass(String name, String ref, int line, String linetext,
 			List<String> attributes, List<String> values) {
-		if (linetext == null)
-			return;
+		if (linetext == null) return;
 		ExpandedSectionFinderResult lineS = new ExpandedSectionFinderResult(linetext
 				+ "\r\n",
 				new QuestionnaireLine(), sections.size() * (-1));
@@ -205,8 +199,7 @@ public class QuestionLineKDOMBuilder implements DTBuilder {
 	}
 
 	public ExpandedSectionFinderResult peek() {
-		if (sections.size() == 0)
-			return null;
+		if (sections.size() == 0) return null;
 		return sections.peek();
 	}
 

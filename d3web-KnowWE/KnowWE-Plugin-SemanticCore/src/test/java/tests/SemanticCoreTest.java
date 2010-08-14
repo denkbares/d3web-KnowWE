@@ -61,7 +61,7 @@ public class SemanticCoreTest {
 		// check that the article was parsed and the statements are in the
 		// core
 		assertTrue(SemanticCoreDelegator.getInstance().booleanQuery(hadesquery));
-		//shouldn't know anything about joe
+		// shouldn't know anything about joe
 		assertFalse(SemanticCoreDelegator.getInstance().booleanQuery(joequery));
 		// now change the article to just contain joe and no hades and make
 		// sure
@@ -147,7 +147,7 @@ public class SemanticCoreTest {
 	}
 
 	@Test
-	public void testInferencing(){
+	public void testInferencing() {
 		String hades = "[ hades type:: god ]";
 		hades += " [ god subClassOf:: entity ]";
 		String testtopic = "TestPage";
@@ -160,12 +160,13 @@ public class SemanticCoreTest {
 		// check that the article was parsed and the statements are in the
 		// core
 		assertTrue(SemanticCoreDelegator.getInstance().booleanQuery(hadesquery));
-		//check that inferencing works
+		// check that inferencing works
 		assertTrue(SemanticCoreDelegator.getInstance().booleanQuery(hadesentityquery));
-		
-		ArrayList<String> erg=SemanticCoreDelegator.getInstance().simpleQueryToList("SELECT ?x WHERE { ?x rdf:type lns:entity .}", "x");
-		//make sure that hades is returned on query for entities
+
+		ArrayList<String> erg = SemanticCoreDelegator.getInstance().simpleQueryToList(
+				"SELECT ?x WHERE { ?x rdf:type lns:entity .}", "x");
+		// make sure that hades is returned on query for entities
 		assertTrue(erg.contains("hades"));
-		
+
 	}
 }

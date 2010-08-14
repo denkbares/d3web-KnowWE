@@ -155,10 +155,10 @@ public class ListSubstancesOWLSubtreeHandler extends OwlSubtreeHandler<ListSubst
 						if (cells.length > casIndex) {
 							String substanceCAS = cells[casIndex].substring(1,
 									cells[casIndex].indexOf('|')).trim(); // get
-																			// rid
-																			// of
-																			// link
-																			// syntax
+							// rid
+							// of
+							// link
+							// syntax
 							addTypeStatement(ioo, ns, substanceCAS);
 							addOnListStatement(ioo, ns, substanceCAS, listID);
 							addHasSubstanceStatement(ioo, ns, substanceCAS, listID);
@@ -179,8 +179,7 @@ public class ListSubstancesOWLSubtreeHandler extends OwlSubtreeHandler<ListSubst
 		Pattern cellPattern = Pattern.compile("\\s*\\|{2}\\s*");
 		String[] cells = cellPattern.split(string);
 		for (int i = 0; i < cells.length; i++) {
-			if (cells[i].trim().equalsIgnoreCase("Action"))
-				return i;
+			if (cells[i].trim().equalsIgnoreCase("Action")) return i;
 		}
 		return -1;
 	}
@@ -241,8 +240,7 @@ public class ListSubstancesOWLSubtreeHandler extends OwlSubtreeHandler<ListSubst
 		Pattern cellPattern = Pattern.compile("\\s*\\|{2}\\s*");
 		String[] cells = cellPattern.split(tablehead);
 		for (int i = 0; i < cells.length; i++) {
-			if (cells[i].trim().equalsIgnoreCase(CAS_IDENTIFIER_COLUMN))
-				return i;
+			if (cells[i].trim().equalsIgnoreCase(CAS_IDENTIFIER_COLUMN)) return i;
 		}
 		return -1;
 	}
@@ -252,8 +250,7 @@ public class ListSubstancesOWLSubtreeHandler extends OwlSubtreeHandler<ListSubst
 		section.findSuccessorsOfType(TableCellContent.class, contents);
 		for (int i = 0; i < contents.size(); i++) {
 			if (contents.get(i).getOriginalText().trim().equalsIgnoreCase(
-					CAS_IDENTIFIER_COLUMN))
-					return i;
+					CAS_IDENTIFIER_COLUMN)) return i;
 		}
 		Logging.getInstance().warning("CAS_No row was not found!");
 		return -1;

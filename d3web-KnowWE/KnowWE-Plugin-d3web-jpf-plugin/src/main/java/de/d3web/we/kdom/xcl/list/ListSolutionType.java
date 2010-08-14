@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.xcl.list;
@@ -45,17 +45,18 @@ import de.d3web.xcl.inference.PSMethodXCL;
 
 /**
  * @author Jochen
- *
+ * 
  *         A type for the head of a covering-list defining the solution that is
  *         described by that list. The solution is created from the term found.
  *         Further, a covering-model is created.
- *
- *
+ * 
+ * 
  */
 public class ListSolutionType extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
 
 	public ListSolutionType() {
-		ConstraintSectionFinder solutionFinder =  new ConstraintSectionFinder(new NonEmptyLineSectionFinder());
+		ConstraintSectionFinder solutionFinder = new ConstraintSectionFinder(
+				new NonEmptyLineSectionFinder());
 		solutionFinder.addConstraint(ExactlyOneFindingConstraint.getInstance());
 		this.setSectionFinder(solutionFinder);
 
@@ -75,10 +76,10 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType implements
 
 	/**
 	 * @author Jochen
-	 *
+	 * 
 	 *         This handler creates the solution in the KB and also a
 	 *         covering-model
-	 *
+	 * 
 	 */
 	class XCLModelCreator extends D3webSubtreeHandler<ListSolutionType> {
 
@@ -116,12 +117,11 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType implements
 		 * reads out the respective annotations for suggestedThreshold,
 		 * establishedThreshold and minSupport and sets them in the XCLModel if
 		 * existing
-		 *
+		 * 
 		 * @param defaultMarkupType
 		 * @param m
 		 */
 		private void setThresholdsAndMinSupport(Section<DefaultMarkupType> defaultMarkupType, XCLModel m) {
-
 
 			// handle ESTABLISHED_THRESHOLD
 			Section<? extends AnnotationType> estaAnnoSection = DefaultMarkupType.getAnnotationSection(

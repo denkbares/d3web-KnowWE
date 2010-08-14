@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.persistence;
@@ -46,45 +46,50 @@ public class PersistenceUtils {
 		writer.writeStartElement("IdentifiableInstance");
 		writer.writeAttribute("Namespace", ii.getNamespace());
 		writer.writeAttribute("ID", ii.getObjectId());
-		if(ii.getValue() instanceof NumericalIdentity) {
+		if (ii.getValue() instanceof NumericalIdentity) {
 			writer.writeAttribute("ClassValue", NumericalIdentity.class.getName());
-		} else if(ii.getValue() instanceof SolutionIdentity) {
+		}
+		else if (ii.getValue() instanceof SolutionIdentity) {
 			writer.writeAttribute("ClassValue", SolutionIdentity.class.getName());
-		} else {
+		}
+		else {
 			writer.writeAttribute("Value", String.valueOf(ii.getValue()));
 		}
 		writer.writeEndElement();
 	}
-	
+
 	public static IdentifiableInstance getII(XMLStreamReader parser) {
 		String localName = parser.getAttributeLocalName(2);
 		String valueString = parser.getAttributeValue(2);
 		Object value = null;
-		if(localName.equals("ClassValue")) {
+		if (localName.equals("ClassValue")) {
 			try {
 				value = Class.forName(valueString).newInstance();
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				// well, bad luck...
 			}
-		} else {
+		}
+		else {
 			value = valueString;
 		}
-		if(value == null || value.equals("null") || value.equals("")) {
+		if (value == null || value.equals("null") || value.equals("")) {
 			value = null;
 		}
-		IdentifiableInstance result = new IdentifiableInstance(parser.getAttributeValue(0), parser.getAttributeValue(1), value);
+		IdentifiableInstance result = new IdentifiableInstance(parser.getAttributeValue(0),
+				parser.getAttributeValue(1), value);
 		return result;
 	}
-	
+
 	public static void writeTermXML(XMLStreamWriter writer, Term term, boolean withInfos, boolean withEndTag) throws XMLStreamException {
 		writer.writeCharacters("\n");
 		writer.writeStartElement("Term");
 		writer.writeCharacters("\n");
 		writeTermInfoMap(writer, term, withInfos);
 		writer.writeCharacters("\n");
-		if(withEndTag) writer.writeEndElement();
+		if (withEndTag) writer.writeEndElement();
 	}
-	
+
 	public static Term getExistingTerm(XMLStreamReader parser, TerminologyServer ts, TerminologyType termType) throws XMLStreamException, ClassNotFoundException {
 		// Term tag already parsed
 		Term term = new Term(termType);
@@ -92,15 +97,16 @@ public class PersistenceUtils {
 		parseTermInfoMap(parser, term);
 		parser.nextTag();
 		for (GlobalTerminology gt : ts.getGlobalTerminologies()) {
-			Term newTerm = gt.getTerm((String) term.getInfo(TermInfoType.TERM_NAME), term.getInfo(TermInfoType.TERM_VALUE));
-			if(newTerm != null) {
+			Term newTerm = gt.getTerm((String) term.getInfo(TermInfoType.TERM_NAME),
+					term.getInfo(TermInfoType.TERM_VALUE));
+			if (newTerm != null) {
 				return newTerm;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public static Term getTerm(XMLStreamReader parser, boolean tree, TerminologyType termType) throws XMLStreamException, ClassNotFoundException {
 		// Term tag already parsed
 		Term term = new Term(termType);
@@ -109,14 +115,14 @@ public class PersistenceUtils {
 		if (!tree) parser.nextTag();
 		return term;
 	}
-		
-	
+
 	public static void parseAlignmentProperties(XMLStreamReader parser, Alignment alignment) throws XMLStreamException {
 		int event = parser.nextTag();
 		event = parser.nextTag();
-		if(event == XMLStreamConstants.START_ELEMENT && parser.getLocalName().equals("AlignmentProperties")) {
-			while((parser.nextTag()) == XMLStreamConstants.START_ELEMENT) { 
-				if(parser.getLocalName().equals("Property")) {
+		if (event == XMLStreamConstants.START_ELEMENT
+				&& parser.getLocalName().equals("AlignmentProperties")) {
+			while ((parser.nextTag()) == XMLStreamConstants.START_ELEMENT) {
+				if (parser.getLocalName().equals("Property")) {
 					String key = parser.getAttributeValue(0);
 					Boolean value = Boolean.valueOf(parser.getAttributeValue(1));
 					alignment.setProperty(key, value);
@@ -124,7 +130,7 @@ public class PersistenceUtils {
 			}
 		}
 	}
-	
+
 	public static void writeAlignmentProperties(XMLStreamWriter writer, Alignment alignment) throws XMLStreamException {
 		writer.writeStartElement("AlignmentProperties");
 		writer.writeCharacters("\n");
@@ -138,12 +144,11 @@ public class PersistenceUtils {
 		}
 		writer.writeEndElement();
 	}
-	
-	
+
 	public static void parseTermInfoMap(XMLStreamReader parser, Term term) throws XMLStreamException, ClassNotFoundException {
 		// TermInfos already parsed
-		while((parser.nextTag()) == XMLStreamConstants.START_ELEMENT) { 
-			if(parser.getLocalName().equals("TermInfo")) {
+		while ((parser.nextTag()) == XMLStreamConstants.START_ELEMENT) {
+			if (parser.getLocalName().equals("TermInfo")) {
 				TermInfoType type = TermInfoType.getType(parser.getAttributeValue(0));
 				Class objClass = Class.forName(parser.getAttributeValue(1));
 				String objString = parser.getElementText();
@@ -151,17 +156,20 @@ public class PersistenceUtils {
 			}
 		}
 	}
-	
+
 	private static Object getValue(Class objClass, String objString) {
-		if(TerminologyType.class.isAssignableFrom(objClass)) {
+		if (TerminologyType.class.isAssignableFrom(objClass)) {
 			return TerminologyType.getType(objString);
-		} else if(objClass.equals(NumericalIdentity.class)) {
+		}
+		else if (objClass.equals(NumericalIdentity.class)) {
 			return new NumericalIdentity();
-		} else if(objClass.equals(SolutionIdentity.class)) {
+		}
+		else if (objClass.equals(SolutionIdentity.class)) {
 			return new SolutionIdentity();
-		} else if(objClass.equals(String.class)) {
+		}
+		else if (objClass.equals(String.class)) {
 			return objString;
-		} 
+		}
 		return null;
 	}
 
@@ -169,7 +177,8 @@ public class PersistenceUtils {
 		writer.writeStartElement("TermInfos");
 		writer.writeCharacters("\n");
 		for (TermInfoType eachType : term.getTermInfos().keySet()) {
-			if(complete || eachType.equals(TermInfoType.TERM_NAME) || eachType.equals(TermInfoType.TERM_VALUE)) {
+			if (complete || eachType.equals(TermInfoType.TERM_NAME)
+					|| eachType.equals(TermInfoType.TERM_VALUE)) {
 				Object obj = term.getTermInfos().get(eachType);
 				writer.writeStartElement("TermInfo");
 				writer.writeAttribute("TermInfoType", eachType.getName());
@@ -181,21 +190,21 @@ public class PersistenceUtils {
 		}
 		writer.writeEndElement();
 	}
-	
+
 	public static AbstractAlignType getType(String attributeValue) {
-		if(attributeValue.equals(NumericalIdentityAlignType.getInstance().toString())) {
+		if (attributeValue.equals(NumericalIdentityAlignType.getInstance().toString())) {
 			return NumericalIdentityAlignType.getInstance();
 		}
-		if(attributeValue.equals(IdentityAlignType.getInstance().toString())) {
+		if (attributeValue.equals(IdentityAlignType.getInstance().toString())) {
 			return IdentityAlignType.getInstance();
 		}
-		if(attributeValue.equals(SolutionIdentityAlignType.getInstance().toString())) {
+		if (attributeValue.equals(SolutionIdentityAlignType.getInstance().toString())) {
 			return SolutionIdentityAlignType.getInstance();
 		}
-		if(attributeValue.equals(NoAlignType.getInstance().toString())) {
+		if (attributeValue.equals(NoAlignType.getInstance().toString())) {
 			return NoAlignType.getInstance();
 		}
 		return null;
 	}
-	
+
 }

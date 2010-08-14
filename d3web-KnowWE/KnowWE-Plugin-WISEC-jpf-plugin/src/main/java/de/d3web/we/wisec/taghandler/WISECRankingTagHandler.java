@@ -63,12 +63,12 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 	public WISECRankingTagHandler() {
 		super("wisec-ranking");
 	}
-	
+
 	@Override
 	public String getExampleString() {
 		return "[{KnowWEPlugin wisec-ranking, wisec-substances=8, P=3, B=1, Risk_related=2, ... , printinfo=true }]";
 	}
-	
+
 	@Override
 	public String getDescription(KnowWEUserContext user) {
 		// TODO: This should probably moved to a resource bundle
@@ -94,7 +94,7 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 			catch (NumberFormatException e) {
 				return "Weight for criteria \"" + criteria.name() + "\" is not valid!";
 			}
-			
+
 			// process the current criteria with the extracted weight
 			if (weight != 0) {
 				try {
@@ -106,7 +106,7 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 				}
 			}
 		}
-		
+
 		// try to get the maximum number of displayed substances
 		double numberSubstances = 10;
 		try {
@@ -266,7 +266,7 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 			result.append("\n");
 		}
 
-// result.append("\n<table class='wikitable' border='1'>");
+		// result.append("\n<table class='wikitable' border='1'>");
 		// result.append("\n<tr><th>Substance</th><th>Score");
 		// result.append(printinfo ? "*</th>" : "</th></tr>");
 		// double limit = numberSubstances < sortedSubstances.size()
@@ -336,18 +336,17 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 
 		private final String substance;
 		private double score = 0;
-		
+
 		public RatedSubstance(String substance) {
-			if (substance == null)
-				throw new IllegalArgumentException();
-			
+			if (substance == null) throw new IllegalArgumentException();
+
 			this.substance = substance;
 		}
-		
+
 		public double getScore() {
 			return score;
 		}
-		
+
 		public void addValue(double value) {
 			this.score += value;
 		}
@@ -364,12 +363,12 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 			if (this.score > o.score) return -1;
 			return this.substance.compareTo(o.substance);
 		}
-		
+
 		@Override
 		public String toString() {
 			return substance + " (" + score + ")";
 		}
 
 	}
-	
+
 }

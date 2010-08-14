@@ -57,7 +57,6 @@ public class QuestionRefLine extends DefaultAbstractKnowWEObjectType {
 
 		// this.addSubtreeHandler(new CreateIndicationHandler());
 
-
 	}
 
 	// /**

@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.rulesNew;
@@ -62,10 +62,10 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * @author Jochen
- *
+ * 
  *         A type for the content of the RuleMarkup-block. It allocates all the
  *         text tries to create Rules from the content
- *
+ * 
  */
 public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 
@@ -106,13 +106,13 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		this.addChildType(rule);
 
 	}
-	
+
 	/**
 	 * @author Jochen
-	 *
+	 * 
 	 *         This handler compiles a parsed rule into the d3web knowledge base
 	 *         (if it doesn't have errors)
-	 *
+	 * 
 	 */
 	class RuleCompiler extends D3webSubtreeHandler<ConditionActionRuleContent> {
 
@@ -136,16 +136,16 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 			Condition d3Cond = KDOMConditionFactory.createCondition(article, cond);
 
 			Section<D3webRuleAction> action = s.findSuccessor(D3webRuleAction.class);
-			if(action == null) {
+			if (action == null) {
 				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
 						D3webModule.getKwikiBundle_d3web().
-						getString("KnowWE.rulesNew.notcreated")+" : no valid action found"
-				));
+								getString("KnowWE.rulesNew.notcreated")
+								+ " : no valid action found"
+						));
 			}
 
 			PSAction d3action = action.get().getAction(article, action);
-			
-			
+
 			if (d3action != null && d3Cond != null) {
 				Rule r = RuleFactory.createRule(mgn.createRuleID(), d3action, d3Cond,
 						null, null);
@@ -159,8 +159,8 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 			// should not happen
 			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
 					D3webModule.getKwikiBundle_d3web().
-					getString("KnowWE.rulesNew.notcreated")
-			));
+							getString("KnowWE.rulesNew.notcreated")
+					));
 		}
 
 		@Override
@@ -179,11 +179,11 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		}
 
 	}
-	
+
 	/**
 	 * @author Johannes Dienst
 	 * 
-	 *			Highlights Rules according to state.
+	 *         Highlights Rules according to state.
 	 * 
 	 */
 	class RuleHighlightingRenderer extends KnowWEDomRenderer<ConditionActionRuleContent> {
@@ -221,7 +221,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 
 		/**
 		 * Renders the Rule with highlighting.
-		 *
+		 * 
 		 * @param sec
 		 * @param rc
 		 * @param session
@@ -263,5 +263,3 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 
 	}
 }
-
-

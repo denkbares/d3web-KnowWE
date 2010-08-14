@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.questionTreeNew;
@@ -79,6 +79,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 		// every line containing [...] (unquoted) is recognized as QuestionLine
 		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
+
 			@Override
 			protected boolean condition(String text, Section<?> father) {
 				return SplitUtility.containsUnquoted(text, "[")
@@ -107,9 +108,9 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * A QuestionDef type to define questions in the questiontree
-	 *
+	 * 
 	 * @author Jochen
-	 *
+	 * 
 	 */
 	static class QuestionTreeQuestionDefinition extends QuestionDefinition {
 
@@ -230,15 +231,16 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	/**
 	 * A type allowing for the definition of numerical ranges/boundaries for
 	 * numerical questions
-	 *
+	 * 
 	 * example:
-	 *
+	 * 
 	 * - height [num] (100 220)
-	 *
+	 * 
 	 * @author Jochen
-	 *
+	 * 
 	 */
 	static class NumBounds extends DefaultAbstractKnowWEObjectType {
+
 		public static final char BOUNDS_OPEN = '(';
 		public static final char BOUNDS_CLOSE = ')';
 
@@ -250,7 +252,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 				/**
 				 * creates the bound-property for a bound-definition
-				 *
+				 * 
 				 * @param article
 				 * @param s
 				 * @return
@@ -264,7 +266,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 						// if the numbers cannot be found throw error
 						return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
 								D3webModule.getKwikiBundle_d3web()
-								.getString("KnowWE.questiontree.incorrectinterval"),
+										.getString("KnowWE.questiontree.incorrectinterval"),
 								this.getClass()));
 					}
 
@@ -278,7 +280,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 							// if not numerical question throw error
 							return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
 									D3webModule.getKwikiBundle_d3web()
-									.getString("KnowWE.questiontree.onlyfornumerical"),
+											.getString("KnowWE.questiontree.onlyfornumerical"),
 									this.getClass()));
 						}
 						try {
@@ -292,19 +294,19 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 									interval);
 							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
 									D3webModule.getKwikiBundle_d3web()
-									.getString("KnowWE.questiontree.setnumerical")));
+											.getString("KnowWE.questiontree.setnumerical")));
 						}
 						catch (IntervalException e) {
 							return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
 									D3webModule.getKwikiBundle_d3web()
-									.getString("KnowWE.questiontree.invalidinterval"),
+											.getString("KnowWE.questiontree.invalidinterval"),
 									this.getClass()));
 						}
 
 					}
 					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
 							D3webModule.getKwikiBundle_d3web()
-							.getString("KnowWE.questiontree.numerical"),
+									.getString("KnowWE.questiontree.numerical"),
 							this.getClass()));
 				}
 			});
@@ -313,7 +315,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		/**
 		 * returns the lower bound of the interval as Double if correctly
 		 * defined
-		 *
+		 * 
 		 * @param s
 		 * @return
 		 */
@@ -340,7 +342,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		/**
 		 * returns the upper bound of the interval as Double if correctly
 		 * defined
-		 *
+		 * 
 		 * @param s
 		 * @return
 		 */
@@ -368,12 +370,12 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	/**
 	 * A type that allows for the definition of units for numerical questions by
 	 * embracing it with '{' and '}'
-	 *
+	 * 
 	 * The subtreehandler creates the corresponding property for the
 	 * question-object in the knowledge base
-	 *
+	 * 
 	 * @author Jochen
-	 *
+	 * 
 	 */
 	static class NumUnit extends DefaultAbstractKnowWEObjectType {
 
@@ -394,7 +396,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 				/**
 				 * creates the unit-property for a unit-definition
-				 *
+				 * 
 				 * @param article
 				 * @param s
 				 * @return
@@ -410,19 +412,19 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 						if (!(question instanceof QuestionNum)) {
 							return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
 									D3webModule.getKwikiBundle_d3web()
-									.getString("KnowWE.questiontree.onlyfornumerical"),
+											.getString("KnowWE.questiontree.onlyfornumerical"),
 									this.getClass()));
 						}
 						question.getProperties().setProperty(
 								Property.UNIT, s.get().getUnit(s));
 						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
 								D3webModule.getKwikiBundle_d3web()
-								.getString("KnowWE.questiontree.setunit")));
+										.getString("KnowWE.questiontree.setunit")));
 
 					}
 					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
 							D3webModule.getKwikiBundle_d3web()
-							.getString("KnowWE.questiontree.unit"),
+									.getString("KnowWE.questiontree.unit"),
 							this.getClass()));
 				}
 			});
@@ -433,13 +435,13 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	/**
 	 * Allows for the definition of abstract-flagged questions Syntax is:
 	 * "<abstract>" or "<abstrakt>"
-	 *
+	 * 
 	 * The subtreehandler creates the corresponding
 	 * ABSTRACTION_QUESTION-property in the knoweldge base
-	 *
-	 *
+	 * 
+	 * 
 	 * @author Jochen
-	 *
+	 * 
 	 */
 	static class AbstractFlag extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
 
@@ -463,12 +465,12 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 								Property.ABSTRACTION_QUESTION, true);
 						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
 								D3webModule.getKwikiBundle_d3web()
-								.getString("KnowWE.questiontree.abstractquestion")));
+										.getString("KnowWE.questiontree.abstractquestion")));
 
 					}
 					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
 							D3webModule.getKwikiBundle_d3web()
-							.getString("KnowWE.questiontree.abstractflag"),
+									.getString("KnowWE.questiontree.abstractflag"),
 							this.getClass()));
 				}
 			});
@@ -478,12 +480,12 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	/**
 	 * A type to allow for the definition of (extended) question-text for a
 	 * question leaded by '~'
-	 *
+	 * 
 	 * the subtreehandler creates the corresponding DCMarkup using
 	 * MMInfoSubject.PROMPT for the question object
-	 *
+	 * 
 	 * @author Jochen
-	 *
+	 * 
 	 */
 	static class QuestionText extends DefaultAbstractKnowWEObjectType {
 
@@ -513,12 +515,12 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 									QuestionText.getQuestionText(sec), null);
 							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
 									D3webModule.getKwikiBundle_d3web()
-									.getString("KnowWE.questiontree.questiontextcreated")));
+											.getString("KnowWE.questiontree.questiontextcreated")));
 						}
 					}
 					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
 							D3webModule.getKwikiBundle_d3web()
-							.getString("KnowWE.questiontree.questiontext"),
+									.getString("KnowWE.questiontree.questiontext"),
 							this.getClass()));
 				}
 			});
@@ -536,18 +538,17 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * @author Jochen
-	 *
+	 * 
 	 *         A KnowWEType for the question-type declaration keys
 	 *         "[oc],[mc],[num],..."
-	 *
+	 * 
 	 */
 	static class QuestionTypeDeclaration extends
 			DefaultAbstractKnowWEObjectType {
 
 		public static QuestionType getQuestionType(Section<QuestionTypeDeclaration> typeSection) {
 
-			if (typeSection == null)
-				return null;
+			if (typeSection == null) return null;
 			String embracedContent = typeSection.getOriginalText();
 			if (embracedContent.contains("oc")) {
 				return QuestionType.OC;
@@ -600,7 +601,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			this.addSubtreeHandler(new StringEnumChecker<QuestionTypeDeclaration>(
 					QUESTION_DECLARATIONS, new SimpleMessageError(
 							D3webModule.getKwikiBundle_d3web()
-							.getString("KnowWE.questiontree.allowingonly")
+									.getString("KnowWE.questiontree.allowingonly")
 									+ QUESTION_DECLARATIONS.toString())));
 		}
 	}

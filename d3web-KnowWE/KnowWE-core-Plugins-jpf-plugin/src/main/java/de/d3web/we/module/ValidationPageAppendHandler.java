@@ -11,15 +11,19 @@ public class ValidationPageAppendHandler implements PageAppendHandler {
 	@Override
 	public String getDataToAppend(String topic, String web,
 			KnowWEUserContext user) {
-		
+
 		if (user.userIsAdmin()) {
 			KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(web, topic);
 			boolean valid = Validator.getTagHandlerInstance().validateArticle(article);
-			String header = "<div id=\"validator-panel\" class=\"panel\"><h3>" 
-				+ KnowWEEnvironment.getInstance().getKwikiBundle(user).getString("KnowWE.ValidatorHandler.header") 
-				+ "</h3><div><ul>";
-			return valid ? "" : KnowWEUtils.maskHTML(header + Validator.getTagHandlerInstance().getBuilder().toString() + "</ul></div></div>");
-		} else {
+			String header = "<div id=\"validator-panel\" class=\"panel\"><h3>"
+					+ KnowWEEnvironment.getInstance().getKwikiBundle(user).getString(
+							"KnowWE.ValidatorHandler.header")
+					+ "</h3><div><ul>";
+			return valid ? "" : KnowWEUtils.maskHTML(header
+					+ Validator.getTagHandlerInstance().getBuilder().toString()
+					+ "</ul></div></div>");
+		}
+		else {
 			return "";
 		}
 	}
@@ -28,7 +32,5 @@ public class ValidationPageAppendHandler implements PageAppendHandler {
 	public boolean isPre() {
 		return false;
 	}
-
-
 
 }

@@ -87,11 +87,11 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 						// single "%" in
 						// a line with no other content
 						"(?:[:=]?\\p{Blank}*(?://[^$]*?)?$" + // only comment
-																// allowed
-																// before
+						// allowed
+						// before
 						// end-of-line
 						"(.*?)" + // CONTENT --> anything in multiple lines
-									// (reluctant
+						// (reluctant
 						// match)
 						"^\\p{Blank}*/?%\\p{Blank}*$" + // "/%" or "%" in a line
 						")" +
@@ -100,8 +100,8 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 						// at least one non-whitespace character followed by any
 						// non-line-break item
 						"[:=\\p{Blank}]\\p{Blank}*([^/][^$]*?)$" + // CONTENT
-																	// -->
-																	// anything
+						// -->
+						// anything
 						// in a single
 						// line
 						// (reluctant match)
@@ -144,12 +144,11 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	 * section. If the section is not of type "DefaultMarkup" an
 	 * IllegalArgumentException is thrown.
 	 * 
-	 * @param section
-	 *            the section to take the content block from
+	 * @param section the section to take the content block from
 	 * @return the contents of the content block, if the section is not null. An
 	 *         empty string otherwise.
-	 * @throws IllegalArgumentException
-	 *             if the specified section is not of {@link DefaultMarkupType}
+	 * @throws IllegalArgumentException if the specified section is not of
+	 *         {@link DefaultMarkupType}
 	 */
 	public static String getContent(Section<?> section) {
 		Section<? extends ContentType> contentSection = getContentSection(section);
@@ -162,11 +161,10 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	 * specified section. If the section is not of type "DefaultMarkup" an
 	 * IllegalArgumentException is thrown.
 	 * 
-	 * @param section
-	 *            the section to take the content section from
+	 * @param section the section to take the content section from
 	 * @return the content section
-	 * @throws IllegalArgumentException
-	 *             if the specified section is not of {@link DefaultMarkupType}
+	 * @throws IllegalArgumentException if the specified section is not of
+	 *         {@link DefaultMarkupType}
 	 */
 	public static Section<? extends ContentType> getContentSection(Section<?> section) {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.getObjectType().getClass())) {
@@ -181,13 +179,11 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	 * IllegalArgumentException is thrown. If there is no annotation section
 	 * with the specified name, null is returned.
 	 * 
-	 * @param section
-	 *            the section to be searched
-	 * @param name
-	 *            the name of the annotation
+	 * @param section the section to be searched
+	 * @param name the name of the annotation
 	 * @return the content string of the annotation
-	 * @throws IllegalArgumentException
-	 *             if the specified section is not of {@link DefaultMarkupType}
+	 * @throws IllegalArgumentException if the specified section is not of
+	 *         {@link DefaultMarkupType}
 	 */
 	public static String getAnnotation(Section<?> section, String name) {
 		Section<?> annotationSection = getAnnotationSection(section, name);
@@ -201,13 +197,11 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	 * thrown. If there is no annotation section with the specified name, null
 	 * is returned.
 	 * 
-	 * @param section
-	 *            the section to be searched
-	 * @param name
-	 *            the name of the annotation
+	 * @param section the section to be searched
+	 * @param name the name of the annotation
 	 * @return the annotation section
-	 * @throws IllegalArgumentException
-	 *             if the specified section is not of {@link DefaultMarkupType}
+	 * @throws IllegalArgumentException if the specified section is not of
+	 *         {@link DefaultMarkupType}
 	 */
 	public static Section<? extends AnnotationType> getAnnotationSection(Section<?> section, String name) {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.getObjectType().getClass())) {
@@ -229,13 +223,11 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	 * there is no annotation section with the specified name, an empty list is
 	 * returned.
 	 * 
-	 * @param section
-	 *            the section to be searched
-	 * @param name
-	 *            the name of the annotation
+	 * @param section the section to be searched
+	 * @param name the name of the annotation
 	 * @return the list of annotation sections
-	 * @throws IllegalArgumentException
-	 *             if the specified section is not of {@link DefaultMarkupType}
+	 * @throws IllegalArgumentException if the specified section is not of
+	 *         {@link DefaultMarkupType}
 	 */
 	public static List<Section<? extends AnnotationType>> getAnnotationSections(Section<?> section, String name) {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.getObjectType().getClass())) {
@@ -256,8 +248,7 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	 * Returns the pattern to match a default mark-up section of a specified
 	 * name.
 	 * 
-	 * @param name
-	 *            the name of the section ("%%&lt;name&gt;")
+	 * @param name the name of the section ("%%&lt;name&gt;")
 	 * @return the pattern to match the complete section
 	 */
 	public static Pattern getPattern(String name) {

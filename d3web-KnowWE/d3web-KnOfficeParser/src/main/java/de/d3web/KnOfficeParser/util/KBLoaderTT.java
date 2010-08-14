@@ -1,24 +1,25 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.KnOfficeParser.util;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -34,7 +35,7 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 
-public class KBLoaderTT implements TerminologyTester{
+public class KBLoaderTT implements TerminologyTester {
 
 	private Map<String, KnowledgeBase> kbs;
 	private String id;
@@ -74,7 +75,8 @@ public class KBLoaderTT implements TerminologyTester{
 			try {
 				URL resource = this.getClass().getResource(path);
 				f = new File(resource.toURI());
-			} catch (URISyntaxException e) {
+			}
+			catch (URISyntaxException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -100,7 +102,7 @@ public class KBLoaderTT implements TerminologyTester{
 	}
 
 	public boolean checkQuestion(String term) {
-//		System.out.println("Frage: "+term);
+		// System.out.println("Frage: "+term);
 		KnowledgeBase kb = null;
 		if (id != null) {
 			kb = kbs.get(id);
@@ -113,15 +115,15 @@ public class KBLoaderTT implements TerminologyTester{
 		}
 		KnowledgeBaseManagement kbm = KnowledgeBaseManagement
 				.createInstance(kb);
-//		List<Question> fl = kb.getQuestions();
-//		for (Question q: fl) {
-//			System.out.println(q.getText());
-//		}
+		// List<Question> fl = kb.getQuestions();
+		// for (Question q: fl) {
+		// System.out.println(q.getText());
+		// }
 		return kbm.findQuestion(term) != null;
 	}
 
 	public boolean checkAnswer(String question, String answer) {
-//		System.out.println("Frage: "+question+", Antwort: "+answer);
+		// System.out.println("Frage: "+question+", Antwort: "+answer);
 		KnowledgeBase kb = null;
 		if (id != null) {
 			kb = kbs.get(id);
@@ -138,18 +140,18 @@ public class KBLoaderTT implements TerminologyTester{
 		Question q = kbm.findQuestion(question);
 		if (q != null && q instanceof QuestionChoice) {
 			Choice a = kbm.findChoice((QuestionChoice) q, answer);
-			if (a != null)
-				return true;
+			if (a != null) return true;
 		}
-		
+
 		if (q != null && q instanceof QuestionNum) {
 			try {
 				Double.parseDouble(answer.trim());
-			} catch (NumberFormatException e) {
+			}
+			catch (NumberFormatException e) {
 				return false;
 			}
 			return true;
-		} 
+		}
 
 		return false;
 	}

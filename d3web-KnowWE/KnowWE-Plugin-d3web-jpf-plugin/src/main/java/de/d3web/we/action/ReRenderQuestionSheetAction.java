@@ -4,12 +4,13 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.taghandler.QuestionSheetHandler;
 
 public class ReRenderQuestionSheetAction extends DeprecatedAbstractKnowWEAction {
-	
+
 	@Override
-	public String perform(KnowWEParameterMap map) {	
-		
-		return QuestionSheetHandler.getInstance().render( map.getTopic(), map.getWikiContext(), null, map.getWeb());
-		
+	public String perform(KnowWEParameterMap map) {
+
+		return QuestionSheetHandler.getInstance().render(map.getTopic(), map.getWikiContext(),
+				null, map.getWeb());
+
 	}
 
 }

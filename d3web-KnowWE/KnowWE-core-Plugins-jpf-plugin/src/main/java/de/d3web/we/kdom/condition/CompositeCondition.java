@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.condition;
@@ -79,7 +79,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 		// comments
 		braced.addChildType(bracedContent);
 		braced.addChildType(new CompCondLineEndComment()); // explicit nodes for
-															// the
+		// the
 		// endline-comments
 		bracedContent.addChildType(this);
 
@@ -238,7 +238,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 
 		return terminal;
 	}
-	
+
 	/**
 	 * 
 	 * @created 03.08.2010
@@ -273,6 +273,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
  * 
  */
 class Disjunct extends NonTerminalCondition implements de.d3web.we.kdom.sectionFinder.ExclusiveType {
+
 	@Override
 	protected void init() {
 
@@ -401,6 +402,7 @@ class ConjunctSectionFinder implements ISectionFinder {
  * 
  */
 class BracedConditionContent extends NonTerminalCondition {
+
 	@Override
 	protected void init() {
 		this.sectionFinder = new BracedConditionContentFinder();
@@ -500,7 +502,8 @@ class EmbracedExpressionFinder implements ISectionFinder {
 		// so has to start with '(' and have a lineend-comment-sign after
 		// the closing bracket but nothing in between!
 		if (trimmed.startsWith(Character.toString(CompositeCondition.BRACE_OPEN))) {
-			if (lastEndLineCommentSymbol > -1 && !CompositeCondition.hasLineBreakAfterComment(trimmed)) {
+			if (lastEndLineCommentSymbol > -1
+					&& !CompositeCondition.hasLineBreakAfterComment(trimmed)) {
 				// TODO fix: < 3 is inaccurate
 				// better check that there is no other expression in between
 				if (lastEndLineCommentSymbol - closingBracket < 3) {
@@ -513,8 +516,6 @@ class EmbracedExpressionFinder implements ISectionFinder {
 
 		return null;
 	}
-
-
 
 }
 
@@ -550,13 +551,14 @@ class CompCondLineEndComment extends DefaultAbstractKnowWEObjectType {
 					lineBreak = matcher.start();
 				}
 
-				//if no linebreak, then everthing from '//'
+				// if no linebreak, then everthing from '//'
 				if (lineBreak == -1) {
 
 					return SectionFinderResult
 							.createSingleItemList(new SectionFinderResult(start,
 									text.length()));
-				} // linebreak check whether it is before or after the endline-comment
+				} // linebreak check whether it is before or after the
+					// endline-comment
 				else {
 					if (CompositeCondition.hasLineBreakAfterComment(text)) {
 						// not comment for current expression

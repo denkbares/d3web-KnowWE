@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.action;
@@ -37,8 +37,9 @@ public class ParseWebOfflineRenderer extends DeprecatedAbstractKnowWEAction {
 	public String perform(KnowWEParameterMap parameterMap) {
 		String webname = parameterMap.get(KnowWEAttributes.WEB);
 
-		ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle(parameterMap.getRequest());
-		
+		ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle(
+				parameterMap.getRequest());
+
 		Map<String, String> articles = KnowWEEnvironment.getInstance()
 				.getWikiConnector().getAllArticles(webname);
 		Set<String> articleNames = articles.keySet();
@@ -46,28 +47,31 @@ public class ParseWebOfflineRenderer extends DeprecatedAbstractKnowWEAction {
 		int problems = 0;
 		for (String name : articleNames) {
 			KnowWEDomParseReport object = KnowWEEnvironment.getInstance()
-					.getArticleManager(webname).saveUpdatedArticle(new KnowWEArticle(articles.get(name),
-							name, KnowWEEnvironment.getInstance().getRootType(),webname));
-			
+					.getArticleManager(webname).saveUpdatedArticle(
+							new KnowWEArticle(articles.get(name),
+									name, KnowWEEnvironment.getInstance().getRootType(), webname));
+
 			if (object.hasErrors()) {
 				reports.append("<p class=\"box error\">");
-			} else {
+			}
+			else {
 				reports.append("<p class=\"box ok\">");
 			}
 			reports.append(rb.getString("webparser.info.parsing")
-					+ createLink(name, webname)+ "<br />");
+					+ createLink(name, webname) + "<br />");
 			if (object.hasErrors()) {
 				problems++;
 				reports.append("<br />\n");
-			} 
+			}
 		}
-		
+
 		String converted = KnowWEUtils.convertUmlaut(reports.toString());
 		reports.delete(0, reports.length());
 		reports.append(converted);
-		
-		reports.insert(0, "<a href=\"#\" id='js-parseWeb' class='clear-element'>" + rb.getString("KnowWE.buttons.close") + "</a><br />");
-		
+
+		reports.insert(0, "<a href=\"#\" id='js-parseWeb' class='clear-element'>"
+				+ rb.getString("KnowWE.buttons.close") + "</a><br />");
+
 		return reports.toString();
 
 	}
@@ -77,11 +81,11 @@ public class ParseWebOfflineRenderer extends DeprecatedAbstractKnowWEAction {
 		return "<a href='Wiki.jsp?page=" + topicName + "' target='_blank'>"
 				+ topicName + "</a>";
 	}
-	
+
 	@Override
 	public boolean isAdminAction() {
 		return true;
-		//return false;  //for local testing
+		// return false; //for local testing
 	}
 
 }

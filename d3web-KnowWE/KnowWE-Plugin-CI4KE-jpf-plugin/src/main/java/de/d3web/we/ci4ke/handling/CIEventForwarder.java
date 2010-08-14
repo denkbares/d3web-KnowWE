@@ -38,7 +38,7 @@ public class CIEventForwarder implements EventListener<ArticleCreatedEvent> {
 	}
 
 	@Override
-	public void notify(ArticleCreatedEvent event, String web, String username, 
+	public void notify(ArticleCreatedEvent event, String web, String username,
 			Section<? extends KnowWEObjectType> s) {
 		if (s.getObjectType().getClass().equals(KnowWEArticle.class)) {
 			CIHookManager.getInstance().triggerHooks(s.getID());

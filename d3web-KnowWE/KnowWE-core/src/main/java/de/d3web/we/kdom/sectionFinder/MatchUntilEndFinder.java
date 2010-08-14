@@ -20,11 +20,10 @@ public class MatchUntilEndFinder extends SectionFinder {
 		this.startFinder = start;
 	}
 
-
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 
-		SectionFinderResult res = startFinder.lookForSection(text, father,type);
+		SectionFinderResult res = startFinder.lookForSection(text, father, type);
 		if (res != null) {
 			return SectionFinderResult.createSingleItemResultList(res.getStart(),
 					text.length());

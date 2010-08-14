@@ -129,7 +129,7 @@ public class DefaultMarkupOwlHandler extends OwlSubtreeHandler {
 		catch (RepositoryException e) {
 			Logger.getLogger("DefaultMarkup").log(Level.SEVERE,
 					"cannot create concept for default markup '" +
-					getMarkupName() + "'", e);
+							getMarkupName() + "'", e);
 			msgs.add(new SimpleMessageError(e.getMessage()));
 			return msgs;
 		}

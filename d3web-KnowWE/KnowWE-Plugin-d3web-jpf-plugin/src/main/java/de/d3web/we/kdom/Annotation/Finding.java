@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.Annotation;
@@ -90,8 +90,8 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 			try {
 				Section csection = (Section) section
 						.getChildren(
-						new TypeSectionFilter(new FindingComparator()
-						.getName())).get(0);
+								new TypeSectionFilter(new FindingComparator()
+										.getName())).get(0);
 				String comparator = ((FindingComparator) csection
 						.getObjectType()).getComparator(csection);
 
@@ -108,7 +108,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 				URI answeruri = uo.getHelper().createlocalURI(answer);
 				URI literalinstance = uo.getHelper().createlocalURI(
 						section.getTitle() + ".." + section.getID() + ".."
-						+ question + comparator + answer);
+								+ question + comparator + answer);
 
 				ArrayList<Statement> slist = new ArrayList<Statement>();
 				try {
@@ -120,9 +120,9 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 							D3WebOWLVokab.HASINPUT, questionuri));
 					slist
 							.add(uo.getHelper().createStatement(
-							literalinstance, D3WebOWLVokab.HASCOMPARATOR
-							,
-							compuri));
+									literalinstance, D3WebOWLVokab.HASCOMPARATOR
+									,
+									compuri));
 					slist.add(uo.getHelper().createStatement(literalinstance,
 							D3WebOWLVokab.HASVALUE
 							, answeruri));
@@ -133,9 +133,11 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 				}
 				io.addAllStatements(slist);
 				io.addLiteral(literalinstance);
-			} catch (IndexOutOfBoundsException e) {
+			}
+			catch (IndexOutOfBoundsException e) {
 				msgs.add(new SimpleMessageError("Finding without subsections"));
-			} catch (NullPointerException e) {
+			}
+			catch (NullPointerException e) {
 				msgs.add(new SimpleMessageError("Nullpointer"));
 			}
 			KnowWEUtils.storeSectionInfo(section, OwlHelper.IOO, io);
@@ -154,7 +156,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 			if (text.contains(">") || text.contains("=") || text.contains("<")) {
 				if (!text.contains("+=")) { // hack excluding "+="
 					return textFinder.lookForSections(
-							text, father,  type);
+							text, father, type);
 				}
 			}
 			return null;

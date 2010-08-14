@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.hermes.taghandler;
@@ -73,7 +73,8 @@ public class TimeLineHandler extends AbstractTagHandler {
 		String querystring = null;
 		try {
 			querystring = TIME_SPARQL.replaceAll("YEAR", yearAfter);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			return "Illegal query String: " + querystring + "<br />"
 					+ " no valid parameter for: " + TIME_AFTER;
 		}
@@ -84,9 +85,11 @@ public class TimeLineHandler extends AbstractTagHandler {
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL,
 					SparqlDelegateRenderer.addNamespaces(querystring));
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			return e.getMessage();
-		} catch (MalformedQueryException e) {
+		}
+		catch (MalformedQueryException e) {
 			return e.getMessage();
 		}
 		try {
@@ -94,17 +97,21 @@ public class TimeLineHandler extends AbstractTagHandler {
 				TupleQueryResult result = ((TupleQuery) query).evaluate();
 				return KnowWEEnvironment.maskHTML(renderQueryResult(result,
 						values, asList));
-			} else if (query instanceof GraphQuery) {
+			}
+			else if (query instanceof GraphQuery) {
 				// GraphQueryResult result = ((GraphQuery) query).evaluate();
 				return "graphquery output implementation: TODO";
-			} else if (query instanceof BooleanQuery) {
+			}
+			else if (query instanceof BooleanQuery) {
 				boolean result = ((BooleanQuery) query).evaluate();
 				return result + "";
 			}
-		} catch (QueryEvaluationException e) {
+		}
+		catch (QueryEvaluationException e) {
 			return kwikiBundle.getString("KnowWE.owl.query.evaluation.error")
 					+ ":" + e.getMessage();
-		} finally {
+		}
+		finally {
 
 		}
 		return null;
@@ -114,7 +121,8 @@ public class TimeLineHandler extends AbstractTagHandler {
 			Map<String, String> valueMap, String valueFromMap) {
 		try {
 			return String.valueOf(Integer.parseInt(valueMap.get(valueFromMap)));
-		} catch (NumberFormatException nfe) {
+		}
+		catch (NumberFormatException nfe) {
 			return String.valueOf(defaultValue);
 		}
 	}
@@ -135,10 +143,12 @@ public class TimeLineHandler extends AbstractTagHandler {
 				}
 
 			}
-		} catch (QueryEvaluationException e) {
+		}
+		catch (QueryEvaluationException e) {
 			return kwikiBundle.getString("KnowWE.owl.query.evalualtion.error")
 					+ ":" + e.getMessage();
-		} catch (UnsupportedEncodingException e) {
+		}
+		catch (UnsupportedEncodingException e) {
 			return e.toString();
 		}
 

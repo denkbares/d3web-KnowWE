@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.action;
@@ -34,25 +34,25 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 
 /**
- * Renders the Mask for the findings of
- * an KnowWEObjectType in the running Wiki.
+ * Renders the Mask for the findings of an KnowWEObjectType in the running Wiki.
+ * 
  * @See KnowWEObjectTypeBrowserHandler.
  * 
  * @author Johannes Dienst
- *
+ * 
  */
 public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEAction {
 
 	private ResourceBundle rb;
-	
+
 	@Override
 	public String perform(KnowWEParameterMap map) {
-		
+
 		rb = KnowWEEnvironment.getInstance().getKwikiBundle(map.getRequest());
-		
+
 		String atmUrl = map.get(KnowWEAttributes.ATM_URL);
 		String query = map.get(KnowWEAttributes.TYPE_BROWSER_QUERY);
-		
+
 		// handle show additional text
 		if (atmUrl != null) {
 			String web = map.getWeb();
@@ -66,9 +66,8 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 
 		// Build the Findings
 		StringBuilder buildi = new StringBuilder();
-		
-		ArrayList<Section> found 
-				= new ArrayList<Section>();
+
+		ArrayList<Section> found = new ArrayList<Section>();
 		String types = map.get("TypeBrowserQuery");
 		try {
 			KnowWEObjectType typ = null;
@@ -84,9 +83,10 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 				}
 			}
 
-		} catch (ClassNotFoundException e) {
+		}
+		catch (ClassNotFoundException e) {
 			Logger.getLogger(this.getClass().getName()).warning(
-			"Searched Type not Found!");
+					"Searched Type not Found!");
 		}
 
 		// if found is empty display error message
@@ -102,8 +102,8 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 	}
 
 	/**
-	 * Renders a table with the results of the search in it.
-	 * Code Based upon RenamingRenderer
+	 * Renders a table with the results of the search in it. Code Based upon
+	 * RenamingRenderer
 	 * 
 	 * @param found a List with all found Sections in it
 	 * @return a HTML formatted table witch lists all the findings in it
@@ -133,21 +133,21 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 				mask.append("<strong>" + sec.getTitle() + "</strong>");
 				mask.append("</td><td></td><td></td>");
 			}
-			
+
 			String BOLD_OPEN = "BOLD_OPEN";
 			String BOLD_CLOSE = "BOLD_CLOSE";
-			
+
 			// Create a RenameFinding from the Section for context.
-			String [] sectionWords = sec.getOriginalText().split(" ");
+			String[] sectionWords = sec.getOriginalText().split(" ");
 			WordBasedRenameFinding f = new WordBasedRenameFinding
-											(0,sectionWords.length-1, sectionWords[0], sec);
+											(0, sectionWords.length - 1, sectionWords[0], sec);
 			String text = BOLD_OPEN + f.contextText() + BOLD_CLOSE;
-			
+
 			// replace special characters
 			text = replaceSpecialCharacters(text);
 			text = text.replaceAll(BOLD_OPEN, "<b>");
-			text = text.replaceAll(BOLD_CLOSE, "</b>");			
-			
+			text = text.replaceAll(BOLD_CLOSE, "</b>");
+
 			// Add context with Scroll-Arrows
 			mask.append("<tbody>");
 			mask.append("<tr>");
@@ -157,12 +157,12 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 							f.getSec().getAbsolutePositionStartInArticle(),
 							0, 'p',
 							true, sectionWords.length, sectionWords[0].length()));
-			
+
 			mask.append(" " + text + " ");
 
 			mask.append(createAdditionalMatchingTextSpan(sec.getArticle(),
 							f.getSec().getID(),
-							f.getSec().getAbsolutePositionStartInArticle(),0,
+							f.getSec().getAbsolutePositionStartInArticle(), 0,
 							'a', true, sectionWords.length, sectionWords[0].length()));
 
 			// Add Ancestors of Section to Table and relative Path
@@ -179,12 +179,12 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 	 * 
 	 * @param article
 	 * @param section
-	 * @param start         startIndex of the Finding
-	 * @param curWords		currently displayed amount Words(Context)
-	 * @param direction		[p]revious or [a]fter
+	 * @param start startIndex of the Finding
+	 * @param curWords currently displayed amount Words(Context)
+	 * @param direction [p]revious or [a]fter
 	 * @param span
-	 * @param wordCount		amount of words in the found section
-	 * @param queryLength	length of the first word of the found section
+	 * @param wordCount amount of words in the found section
+	 * @param queryLength length of the first word of the found section
 	 * @return
 	 */
 	private String createAdditionalMatchingTextSpan(KnowWEArticle article,
@@ -197,7 +197,7 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 		String arrowRight = "KnowWEExtension/images/arrow_right.png";
 
 		String img;
-		
+
 		switch (direction) {
 		case 'a':
 			img = arrowRight;
@@ -216,13 +216,13 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 		}
 
 		// create atmUrl
-		String atmUrl = "{article: '"+ article.getTitle()+"'," 
-			        + "section: '"+section+"'," 
-			        + "index: " + start + ", "
-			        + "words: " + curWords + ", "
-			        + "direction: '"+direction+"'," 
-			        + "wordCount: "+wordCount +	"," 
-			        + "queryLength: "+queryLength + "}";
+		String atmUrl = "{article: '" + article.getTitle() + "',"
+					+ "section: '" + section + "',"
+					+ "index: " + start + ", "
+					+ "words: " + curWords + ", "
+					+ "direction: '" + direction + "',"
+					+ "wordCount: " + wordCount + ","
+					+ "queryLength: " + queryLength + "}";
 
 		if (span) {
 			html.append("<span id='" + direction + start
@@ -230,13 +230,14 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 		}
 
 		html.append("<img width=\"12\" height=\"12\" border=\"0\" src=\"" + img
-				+ "\" alt=\"more\" rel=\"" + atmUrl + "\" " //delete queryLength 
+				+ "\" alt=\"more\" rel=\"" + atmUrl + "\" " // delete
+															// queryLength
 				+ "class=\"show-additional-text\"/>");
 
 		if (span) {
 			html.append("</span>");
 		}
-		
+
 		return html.toString();
 
 	}
@@ -256,7 +257,7 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 		String[] params = atmURL.split(":");
 		String articleTitle = params[0];
 		String sectionId = params[1];
-		int pos = Integer.parseInt(params[2]); 
+		int pos = Integer.parseInt(params[2]);
 		int curWords = Integer.parseInt(params[3]);
 		String direction = params[4];
 		int wordCount = Integer.parseInt(params[5]);
@@ -269,34 +270,35 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 		while (iter.hasNext()) {
 			KnowWEArticle article = iter.next();
 			if (article.getTitle().equals(articleTitle)) {
-				
+
 				// get the Section needed for additional Context
 				Section section = article.findSection(String.valueOf(sectionId));
 				additionalText = WordBasedRenameFinding.getAdditionalContextTypeBrowser(pos,
-								 direction, curWords, queryLength,
-								 section.getArticle().getSection().getOriginalText(), wordCount);							
+									direction, curWords, queryLength,
+									section.getArticle().getSection().getOriginalText(), wordCount);
 
 				// add highlighting when needed
 				additionalText = this.replaceSpecialCharacters(additionalText);
-				if ((direction.equals("a")) && (curWords+1 < wordCount)) {						
-						additionalText = "<b>" + additionalText + "</b>";
+				if ((direction.equals("a")) && (curWords + 1 < wordCount)) {
+					additionalText = "<b>" + additionalText + "</b>";
 				}
 
 				// Create new Scroll-Arrow
 				if (direction.equals("a")) {
 					additionalText += createAdditionalMatchingTextSpan(article, sectionId,
-							pos, curWords+1, direction.charAt(0), false, wordCount, queryLength);
-				} else {
+							pos, curWords + 1, direction.charAt(0), false, wordCount, queryLength);
+				}
+				else {
 					additionalText = createAdditionalMatchingTextSpan(article, sectionId,
-							pos, curWords+1, direction.charAt(0), false, wordCount, queryLength)
+							pos, curWords + 1, direction.charAt(0), false, wordCount, queryLength)
 							+ additionalText;
 				}
 			}
 		}
-		
+
 		return additionalText;
 	}
-	
+
 	/**
 	 * Runs up the DomTree and collects all Fathers from a Section.
 	 * 
@@ -306,7 +308,7 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 	@SuppressWarnings("unchecked")
 	private List<Section> getAllFathers(Section sec) {
 		ArrayList<Section> found2 = new ArrayList<Section>();
-	
+
 		if (sec.getFather() != null) {
 			found2.addAll(this.getAllFathers(sec.getFather()));
 			found2.add(sec.getFather());
@@ -337,12 +339,12 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 	@SuppressWarnings("unchecked")
 	private String createFindingsMaskFatherColumnAndPath(Section sec) {
 		StringBuilder mask = new StringBuilder();
-		
+
 		mask.append("</td><td>");
-	
-		ArrayList<Section> fathers  = new ArrayList<Section>(this.getAllFathers(sec));
-		StringBuffer fstringbuffy=new StringBuffer();
-		
+
+		ArrayList<Section> fathers = new ArrayList<Section>(this.getAllFathers(sec));
+		StringBuffer fstringbuffy = new StringBuffer();
+
 		for (Section s : fathers) {
 			if (!(s.getObjectType() instanceof KnowWEArticle)) {
 				String name = s.getObjectType().getName() + ", ";
@@ -358,13 +360,13 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 			mask.append(fString);
 		}
 		mask.append("</td>");
-		
+
 		// Relative Path for Link to Section
 		mask.append("<td><a href=/KnowWE/Wiki.jsp?page=" + sec.getTitle()
 				+ ">" + sec.getTitle() + "</a></td>");
 		mask.append("</tr>");
 		mask.append("</tbody>");
-		
+
 		return mask.toString();
 	}
 
@@ -377,13 +379,13 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 	 */
 	@SuppressWarnings("unchecked")
 	private int getValidNextSection(int k, List<Section> found) {
-		for (;k < found.size();k++) {
+		for (; k < found.size(); k++) {
 			try {
-				if (found.get(k).getArticle() != null)
-					return k;
-			} catch (NullPointerException e) {
+				if (found.get(k).getArticle() != null) return k;
+			}
+			catch (NullPointerException e) {
 				Logger.getLogger(this.getClass().getName()).warning(
-				"Section is not valid: " + found.get(k).getID() + "!");
+						"Section is not valid: " + found.get(k).getID() + "!");
 			}
 		}
 		return -1;
@@ -399,7 +401,7 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 		StringBuilder mask = new StringBuilder();
 		mask.append("<fieldset><legend>"
 				+ rb.getString("KnowWE.KnowWeObjectTypeBrowser.searchresult")
-				+ " '" + searchedType.substring(searchedType.lastIndexOf(".")+1)
+				+ " '" + searchedType.substring(searchedType.lastIndexOf(".") + 1)
 				+ "'</legend>");
 		mask.append("<table id='sortable1'><colgroup><col class='match' /><col class='section' />");
 		mask.append("<col class='preview' /></colgroup>");
@@ -408,7 +410,7 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 				+ "</th><th scope='col'>"
 				+ rb.getString("KnowWE.KnowWeObjectTypeBrowser.clmn.context")
 				+ "</th>");
-	
+
 		mask.append("<th scope='col'>"
 				+ rb.getString("KnowWE.KnowWeObjectTypeBrowser.clmn.article")
 				+ "</th></tr>"

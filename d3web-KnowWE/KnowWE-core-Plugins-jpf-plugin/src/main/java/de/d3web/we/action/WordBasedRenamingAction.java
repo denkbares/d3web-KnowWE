@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.action;
@@ -46,19 +46,19 @@ import de.d3web.we.kdom.Section;
  * Renders all actions for the Renaming Tool.
  * 
  * @author Johannes Dienst
- *
+ * 
  */
 public class WordBasedRenamingAction extends AbstractAction {
 
 	private ResourceBundle rb;
 
 	private boolean caseSensitive;
-	
+
 	public final static String TXT_SEPERATOR = ":";
-	
+
 	@Override
 	public void execute(ActionContext context) throws IOException {
-		
+
 		KnowWEParameterMap parameterMap = context.getKnowWEParameterMap();
 		rb = KnowWEEnvironment.getInstance().getKwikiBundle(context.getRequest());
 		// get the selected sections from the section selection tree
@@ -74,7 +74,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 		String queryContextAfter = parameterMap.get(KnowWEAttributes.CONTEXT_AFTER);
 		String atmUrl = parameterMap.get(KnowWEAttributes.ATM_URL);
 
-		setCaseSensitive(Boolean.parseBoolean( parameterMap.get(KnowWEAttributes.CASE_SENSITIVE )));
+		setCaseSensitive(Boolean.parseBoolean(parameterMap.get(KnowWEAttributes.CASE_SENSITIVE)));
 
 		String queryContext = "";
 		queryContextAfter = (!queryContextAfter.equals("")) ? " " + queryContextAfter : "";
@@ -91,30 +91,30 @@ public class WordBasedRenamingAction extends AbstractAction {
 
 		// handle show additional text
 		if (atmUrl != null) {
-			 context.getWriter().write(getAdditionalMatchText(atmUrl, web, queryString));
-			 return;
+			context.getWriter().write(getAdditionalMatchText(atmUrl, web, queryString));
+			return;
 		}
 
-		Map<KnowWEArticle, Collection<WordBasedRenameFinding>> findings = 
-							scanForFindings(web, queryContext, queryContextPrevious.length(), sections);
+		Map<KnowWEArticle, Collection<WordBasedRenameFinding>> findings =
+							scanForFindings(web, queryContext, queryContextPrevious.length(),
+									sections);
 
 		context.getWriter().write(renderFindingsSelectionMask(findings, queryString, replacement));
 	}
 
 	/**
-	 * Returns an additional text passage around
-	 * the search result. So the user
+	 * Returns an additional text passage around the search result. So the user
 	 * can view the result in a larger context.
 	 * 
 	 * @param amtURL additional text parameters
-	 * @param web 
+	 * @param web
 	 * @param query user query string
 	 * @return additional text area
 	 */
 	private String getAdditionalMatchText(String atmURL, String web, String query) {
 
 		// article#section#position#curWords#direction
-		String[] params = atmURL.split( WordBasedRenamingAction.TXT_SEPERATOR );
+		String[] params = atmURL.split(WordBasedRenamingAction.TXT_SEPERATOR);
 		String articleTitle = params[0];
 		String sectionID = params[1];
 		int pos = Integer.parseInt(params[2]);
@@ -123,8 +123,8 @@ public class WordBasedRenamingAction extends AbstractAction {
 
 		String additionalText = "";
 
-		Iterator<KnowWEArticle> iter = 
-			KnowWEEnvironment.getInstance().getArticleManager(web).getArticleIterator();
+		Iterator<KnowWEArticle> iter =
+				KnowWEEnvironment.getInstance().getArticleManager(web).getArticleIterator();
 		while (iter.hasNext()) {
 			KnowWEArticle article = iter.next();
 
@@ -133,28 +133,29 @@ public class WordBasedRenamingAction extends AbstractAction {
 				String context = WordBasedRenameFinding.getAdditionalContext(
 									pos, direction, curWords, query.length(),
 									section.getOriginalText());
-				
+
 				// No more Words to display
 				if (context == null) {
 					context = WordBasedRenameFinding.getAdditionalContext(
-							pos, direction, curWords-1, query.length(),
+							pos, direction, curWords - 1, query.length(),
 							section.getOriginalText());
-					curWords = WordBasedRenameFinding.MAX_WORDS + 1;					
+					curWords = WordBasedRenameFinding.MAX_WORDS + 1;
 				}
-					
+
 				String span = createAdditionalMatchingTextSpan(article, pos,
-							sectionID, curWords+1, direction.charAt(0), false);
-				
-				if( direction.charAt(0) == 'a') {
+							sectionID, curWords + 1, direction.charAt(0), false);
+
+				if (direction.charAt(0) == 'a') {
 					additionalText = context + span;
-				} else {
-				    additionalText = span + context;
+				}
+				else {
+					additionalText = span + context;
 				}
 			}
 		}
 		return additionalText;
 	}
-	
+
 	/**
 	 * Renders a table with the results of the search in it.
 	 * 
@@ -166,7 +167,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 	private String renderFindingsSelectionMask(
 			Map<KnowWEArticle, Collection<WordBasedRenameFinding>> findings,
 			String query, String replacement) {
-		
+
 		StringBuffer mask = new StringBuffer();
 
 		mask.append("<form method='post' action=''><fieldset><legend>"
@@ -180,11 +181,11 @@ public class WordBasedRenamingAction extends AbstractAction {
 				+ rb.getString("KnowWE.renamingtool.clmn.section")
 				+ "</th>");
 		mask.append("<th scope='col'>"
-				+ rb.getString("KnowWE.renamingtool.clmn.replace")							
+				+ rb.getString("KnowWE.renamingtool.clmn.replace")
 				+ "</th><th scope='col'>"
 				+ rb.getString("KnowWE.renamingtool.clmn.preview")
 				+ "</th></tr></thead>"
-				
+
 				+ "<thead>"
 				+ "<tr><td></td><td></td><td>"
 				+ "<input class='check-select check' value='' type='button'  title='Select all checkboxes' rel='{section: undefined}'/>"
@@ -204,20 +205,25 @@ public class WordBasedRenamingAction extends AbstractAction {
 						+ rb.getString("KnowWE.renamingtool.article")
 						+ ": " + article.getTitle() + "</strong>");
 				mask.append("</td><td></td><td>");
-				
-				mask.append("<input class='check-select check' value='' type='button'  title='Select all checkboxes' rel='{section: \""+article.getTitle()+"\"}'/>");
-				mask.append("<input class='check-deselect check' value='' type='button' title='Deselect all checkboxes' rel='{section: \""+article.getTitle()+"\"}'/>");
-/*				mask.append("<input id='check-select' class='check' onclick='selectPerSection(this, \""
-								+ article.getTitle()
-								+ "\");' value='' type='button'  title='Select all checkboxes'/>");
-				mask.append("<input id='check-deselect' class='check' onclick='deselectPerSection(this, \""
-								+ article.getTitle()
-								+ "\");' value='' type='button' title='Deselect all checkboxes'/>"
-								+ "</td><td></td></tr>"); */
+
+				mask.append("<input class='check-select check' value='' type='button'  title='Select all checkboxes' rel='{section: \""
+						+ article.getTitle() + "\"}'/>");
+				mask.append("<input class='check-deselect check' value='' type='button' title='Deselect all checkboxes' rel='{section: \""
+						+ article.getTitle() + "\"}'/>");
+				/*
+				 * mask.append("<input id='check-select' class='check' onclick='selectPerSection(this, \""
+				 * + article.getTitle() +
+				 * "\");' value='' type='button'  title='Select all checkboxes'/>"
+				 * );mask.append(
+				 * "<input id='check-deselect' class='check' onclick='deselectPerSection(this, \""
+				 * + article.getTitle() +
+				 * "\");' value='' type='button' title='Deselect all checkboxes'/>"
+				 * + "</td><td></td></tr>");
+				 */
 				mask.append("</thead>");
 			}
 			mask.append("<tbody>");
-			
+
 			for (WordBasedRenameFinding WordBasedRenameFinding : findingsInArticle) {
 
 				String text = WordBasedRenameFinding.contextText();
@@ -228,9 +234,9 @@ public class WordBasedRenamingAction extends AbstractAction {
 						+ TXT_SEPERATOR
 						+ WordBasedRenameFinding.getSec().getID() + TXT_SEPERATOR
 						+ WordBasedRenameFinding.getStart();
-				
+
 				mask.append("<tr>");
-				
+
 				// TODO indexOf only searches the 1. children
 				// and does not consider the section to be
 				// deeper in the tree!!!
@@ -264,17 +270,19 @@ public class WordBasedRenamingAction extends AbstractAction {
 				+ rb.getString("KnowWE.renamingtool.bttn.replace")
 				+ "' type='button' class='button'"
 				+ " title='Begriff in ausgewählten Stellen ersetzen'/></td>");
-		/*mask.append("<td><input onclick='replaceAll();' value='"
-						+ rb.getString("KnowWE.renamingtool.bttn.replace")
-						+ "' type='button' class='button'"
-						+ " title='Begriff in ausgewï¿½hlten Stellen ersetzen'/></td>");*/
+		/*
+		 * mask.append("<td><input onclick='replaceAll();' value='" +
+		 * rb.getString("KnowWE.renamingtool.bttn.replace") +
+		 * "' type='button' class='button'" +
+		 * " title='Begriff in ausgewï¿½hlten Stellen ersetzen'/></td>");
+		 */
 		mask.append("<td></td></tr>");
 		mask.append("</tfoot>");
 		mask.append("</table></fieldset></form>");
 
 		return mask.toString();
 	}
-	
+
 	/**
 	 * Scans all articles for the query expressions. If the expressions is found
 	 * a <code>RenameFinding</code> object is created.
@@ -282,28 +290,30 @@ public class WordBasedRenamingAction extends AbstractAction {
 	 * @param web
 	 * @param query any string the user is looking for
 	 * @param previousMatchLength
-	 * @param sections just add findings to the map which have a corresponding section type - if null, all findings are added  
+	 * @param sections just add findings to the map which have a corresponding
+	 *        section type - if null, all findings are added
 	 * @return a map containing all findings of the string <code>query<code>
 	 */
 	public Map<KnowWEArticle, Collection<WordBasedRenameFinding>> scanForFindings(
 			String web, String query, int previousMatchLength, String[] sections) {
-		Set<String> sectionSet=null;
-		if (sections!=null){
-			 sectionSet= new HashSet<String>(Arrays.asList(sections));
+		Set<String> sectionSet = null;
+		if (sections != null) {
+			sectionSet = new HashSet<String>(Arrays.asList(sections));
 		}
-		
-		Map<KnowWEArticle, Collection<WordBasedRenameFinding>> map = 
+
+		Map<KnowWEArticle, Collection<WordBasedRenameFinding>> map =
 						new HashMap<KnowWEArticle, Collection<WordBasedRenameFinding>>();
-		Iterator<KnowWEArticle> iter = 
+		Iterator<KnowWEArticle> iter =
 						KnowWEEnvironment.getInstance().getArticleManager(web).getArticleIterator();
-		
+
 		Pattern p;
 		if (getCaseSensitive()) {
 			p = Pattern.compile(Pattern.quote(query));
-		} else {
+		}
+		else {
 			p = Pattern.compile(Pattern.quote(query), Pattern.CASE_INSENSITIVE);
 		}
-		
+
 		while (iter.hasNext()) {
 			KnowWEArticle article = iter.next();
 			map.put(article, new HashSet<WordBasedRenameFinding>());
@@ -311,16 +321,16 @@ public class WordBasedRenamingAction extends AbstractAction {
 
 			Matcher m = p.matcher(text);
 			while (m.find()) {
-				int start = m.start() + previousMatchLength; 
+				int start = m.start() + previousMatchLength;
 				int end = start + query.length();
-				
+
 				Section sec = article.findSmallestNodeContaining(start, end);
 				int startInSec = start - sec.getAbsolutePositionStartInArticle();
 
-				WordBasedRenameFinding f = 
-					new WordBasedRenameFinding(startInSec, startInSec+query.length(),
-							WordBasedRenameFinding.
-								getContext(startInSec,sec, text, query.length()), sec);
+				WordBasedRenameFinding f =
+						new WordBasedRenameFinding(startInSec, startInSec + query.length(),
+								WordBasedRenameFinding.
+										getContext(startInSec, sec, text, query.length()), sec);
 				if (sections == null || sectionSet.contains(sec.getObjectType().getName())) {
 					map.get(article).add(f);
 				}
@@ -328,15 +338,15 @@ public class WordBasedRenamingAction extends AbstractAction {
 		}
 		return map;
 	}
-	
+
 	/**
 	 * Creates the buttons to navigate through the context.
 	 * 
-	 * @param article 			the article containing section
-	 * @param section 			where the query was found
-	 * @param sectionIndex 		position of the section in the article
-	 * @param curWords 			currently amount of words displayed
-	 * @param direction 		[p]revious [a]fter
+	 * @param article the article containing section
+	 * @param section where the query was found
+	 * @param sectionIndex position of the section in the article
+	 * @param curWords currently amount of words displayed
+	 * @param direction [p]revious [a]fter
 	 * @param span
 	 * @return
 	 */
@@ -368,22 +378,23 @@ public class WordBasedRenamingAction extends AbstractAction {
 		}
 
 		// create atmUrl
-		String atmUrl = "{article: '"+ article.getTitle()+"'," 
-				        + "section: '"+sectionId+"'," 
-				        + "index: " + sectionIndex + ", "
-				        + "words: " + curWords + ", "
-				        + "direction: '"+direction+"'}";		
+		String atmUrl = "{article: '" + article.getTitle() + "',"
+						+ "section: '" + sectionId + "',"
+						+ "index: " + sectionIndex + ", "
+						+ "words: " + curWords + ", "
+						+ "direction: '" + direction + "'}";
 
 		if (span) {
 			html.append("<span id='" + direction + sectionIndex
 					+ "' class='short' style='display: inline;'>");
 		}
 
-//		html.append("<a href='javascript:getAdditionalMatchText(\"" + atmUrl
-//				+ "\")'>");
+		// html.append("<a href='javascript:getAdditionalMatchText(\"" + atmUrl
+		// + "\")'>");
 		html.append("<img width=\"12\" height=\"12\" border=\"0\" src=\"" + img
-				+ "\" alt=\"more\" rel=\""+ atmUrl+"\" class=\"show-additional-text-renaming\"/>");
-//		html.append("</a>");
+				+ "\" alt=\"more\" rel=\"" + atmUrl
+				+ "\" class=\"show-additional-text-renaming\"/>");
+		// html.append("</a>");
 
 		if (span) {
 			html.append("</span>");
@@ -391,7 +402,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 
 		return html.toString();
 	}
-	
+
 	/**
 	 * Searches the query string and highlights it. Works case-sensitive.
 	 * 
@@ -400,7 +411,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 	 * @return
 	 */
 	private String highlightQueryResult(String text, String query) {
-		
+
 		StringTokenizer tokenizer = new StringTokenizer(text,
 				"; .,\n\r[](){}?!/|:'<>", true);
 		StringBuilder result = new StringBuilder();
@@ -412,7 +423,8 @@ public class WordBasedRenamingAction extends AbstractAction {
 				Pattern p;
 				if (getCaseSensitive()) {
 					p = Pattern.compile(query);
-				} else {
+				}
+				else {
 					p = Pattern.compile(query, Pattern.CASE_INSENSITIVE);
 				}
 				Matcher m = p.matcher(token);
@@ -422,13 +434,14 @@ public class WordBasedRenamingAction extends AbstractAction {
 							+ token.substring(m.start(), m.end()) + "</strong>"
 							+ token.substring(m.end(), token.length()));
 				}
-			} else {
+			}
+			else {
 				result.append(token);
 			}
 		}
 		return result.toString();
 	}
-	
+
 	/**
 	 * Replaces the query string with the given replacement. Works
 	 * case-sensitive.
@@ -442,20 +455,20 @@ public class WordBasedRenamingAction extends AbstractAction {
 				"; .,\n\r[](){}?!/|:'<>", true);
 		StringBuilder result = new StringBuilder();
 
-		if (replacement == null)
-			replacement = "";
+		if (replacement == null) replacement = "";
 
 		while (tokenizer.hasMoreElements()) {
 			String token = tokenizer.nextToken();
 			if (query.equalsIgnoreCase(token)) {
 				result.append(replacement);
-			} else {
+			}
+			else {
 				result.append(token);
 			}
 		}
 		return result.toString();
 	}
-	
+
 	public boolean getCaseSensitive() {
 		return caseSensitive;
 	}
@@ -463,7 +476,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 	public void setCaseSensitive(boolean caseSensitive) {
 		this.caseSensitive = caseSensitive;
 	}
-	
+
 	private String verbalizeModul(String type) {
 		int i = type.lastIndexOf(".");
 		String modName = type;
@@ -474,10 +487,10 @@ public class WordBasedRenamingAction extends AbstractAction {
 		try {
 			name = rb.getString("KnowWE.sectionfinder." + modName);
 
-		} catch (Exception e) {
 		}
-		if (name != null)
-			return name;
+		catch (Exception e) {
+		}
+		if (name != null) return name;
 
 		return type;
 	}

@@ -66,7 +66,7 @@ public class ListCriteriaD3SubtreeHandler extends D3webSubtreeHandler<ListCriter
 		QuestionOC q = kbm.createQuestionOC(kbm.findNewIDFor(QuestionOC.class),
 				listID, kbm.getKnowledgeBase().getRootQASet(),
 				new String[] {
-				"active", "inactive" });
+						"active", "inactive" });
 
 		// Make created Question abstract
 		q.getProperties().setProperty(Property.ABSTRACTION_QUESTION, Boolean.TRUE);
@@ -96,7 +96,7 @@ public class ListCriteriaD3SubtreeHandler extends D3webSubtreeHandler<ListCriter
 						// QuestionNum counterQ =
 						// kbm.createQuestionNum(criteria,
 						// kbm.findQContainer("Counter"));
-//						createCounterRule(kbm, listID, counterQ, value);
+						// createCounterRule(kbm, listID, counterQ, value);
 					}
 				}
 			}
@@ -125,31 +125,34 @@ public class ListCriteriaD3SubtreeHandler extends D3webSubtreeHandler<ListCriter
 				// QuestionNum counterQ =
 				// kbm.createQuestionNum(criteria,
 				// kbm.findQContainer("Counter"));
-//				createCounterRule(kbm, listID, counterQ, value);
+				// createCounterRule(kbm, listID, counterQ, value);
 			}
 		}
 	}
 
 	/*
-	* Replaced by OWL + SPARQL => {@link WISECFindingSetEventListener}!
-	*/
-//	private void createCounterRule(KnowledgeBaseManagement kbm, String listID,
-//			QuestionNum counterQuestion, String value) {
-//
-//		// Get abstract List-Question
-//		QuestionChoice listQuestion = (QuestionChoice) kbm.findQuestion(listID);
-//		Choice activeAnswer = kbm.findChoice(listQuestion, "active");
-//
-//		// Create condition
-//		CondEqual condition = new CondEqual(listQuestion, new ChoiceValue(activeAnswer));
-//
-//		// Create rule action (here it is a FormulaExpression)
-//		FormulaNumber valueFN = new FormulaNumber(Double.valueOf(value));
-//		Add add = new Add(new QNumWrapper(counterQuestion), valueFN);
-//		FormulaExpression addition = new FormulaExpression(counterQuestion, add);
-//
-//		// Create Rule
-//		RuleFactory.createSetValueRule(kbm.createRuleID(), counterQuestion, addition, condition);
-//	}
+	 * Replaced by OWL + SPARQL => {@link WISECFindingSetEventListener}!
+	 */
+	// private void createCounterRule(KnowledgeBaseManagement kbm, String
+	// listID,
+	// QuestionNum counterQuestion, String value) {
+	//
+	// // Get abstract List-Question
+	// QuestionChoice listQuestion = (QuestionChoice) kbm.findQuestion(listID);
+	// Choice activeAnswer = kbm.findChoice(listQuestion, "active");
+	//
+	// // Create condition
+	// CondEqual condition = new CondEqual(listQuestion, new
+	// ChoiceValue(activeAnswer));
+	//
+	// // Create rule action (here it is a FormulaExpression)
+	// FormulaNumber valueFN = new FormulaNumber(Double.valueOf(value));
+	// Add add = new Add(new QNumWrapper(counterQuestion), valueFN);
+	// FormulaExpression addition = new FormulaExpression(counterQuestion, add);
+	//
+	// // Create Rule
+	// RuleFactory.createSetValueRule(kbm.createRuleID(), counterQuestion,
+	// addition, condition);
+	// }
 
 }

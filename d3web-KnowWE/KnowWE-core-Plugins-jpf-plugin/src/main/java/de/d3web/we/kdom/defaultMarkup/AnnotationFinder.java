@@ -1,20 +1,20 @@
 /*
  * Copyright (C) 2010 denkbares GmbH
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.d3web.we.kdom.defaultMarkup;
 
@@ -30,11 +30,12 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class AnnotationFinder extends SectionFinder {
 
-	private final static Pattern nextAnnotationPattern = 
-		Pattern.compile("\\p{Space}+@\\w+", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE);
+	private final static Pattern nextAnnotationPattern =
+			Pattern.compile("\\p{Space}+@\\w+", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE);
 
-	private final static Pattern endpattern = 
-		Pattern.compile("\\p{Space}*^\\p{Blank}*/?%\\p{Blank}*$", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE);
+	private final static Pattern endpattern =
+			Pattern.compile("\\p{Space}*^\\p{Blank}*/?%\\p{Blank}*$", Pattern.CASE_INSENSITIVE
+					+ Pattern.MULTILINE);
 
 	private final String name;
 	private final Pattern startPattern;
@@ -60,7 +61,7 @@ public class AnnotationFinder extends SectionFinder {
 			int end1 = (text.charAt(start) == '@') ? start : text.length();
 			int end2 = findStart(text, start, nextAnnotationPattern);
 			int end3 = findStart(text, start, endpattern);
-			
+
 			// find the earliest match of all possible terminators
 			int end = end1;
 			if (end2 != -1 && end2 < end) {
@@ -69,9 +70,11 @@ public class AnnotationFinder extends SectionFinder {
 			if (end3 != -1 && end3 < end) {
 				end = end3;
 			}
-			
-			// trim end (if it is a single-line markup, trailing spaces are not eliminated)
-			while (end > start && Character.isWhitespace(text.charAt(end-1))) end--;
+
+			// trim end (if it is a single-line markup, trailing spaces are not
+			// eliminated)
+			while (end > start && Character.isWhitespace(text.charAt(end - 1)))
+				end--;
 			result.add(new SectionFinderResult(start, end));
 			pos = end;
 		}

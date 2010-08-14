@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.persistence;
@@ -48,31 +48,32 @@ import de.d3web.we.core.broker.Broker;
 public class SessionPersistenceHandler {
 
 	private static SessionPersistenceHandler instance = new SessionPersistenceHandler();
-	
+
 	private SessionPersistenceHandler() {
 		super();
 	}
-	
+
 	public static SessionPersistenceHandler getInstance() {
 		return instance;
 	}
 
-	
 	public List<Information> loadSession(Broker broker, URL target) {
 		XMLInputFactory fact = XMLInputFactory.newInstance();
 		XMLStreamReader parser = null;
 		try {
 			InputStream in = target.openStream();
 			parser = fact.createXMLStreamReader(in, "ISO-8859-1");
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			Logger.getLogger(getClass().getName()).warning(
 					"Error: Cannot load: " + target + " :\n "
 							+ e.getMessage());
-		} 
+		}
 		if (parser != null) {
 			try {
 				return parseXML(parser, broker);
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				Logger.getLogger(getClass().getName()).warning(
 						"Error: Cannot parse: " + target + " :\n "
 								+ e.getMessage());
@@ -80,33 +81,35 @@ public class SessionPersistenceHandler {
 		}
 		return new ArrayList<Information>();
 	}
-	
+
 	private List<Information> parseXML(XMLStreamReader parser, Broker broker) throws Exception {
 		List<Information> result = new ArrayList<Information>();
 		for (int event = parser.next(); event != XMLStreamConstants.END_DOCUMENT; event = parser
 				.next()) {
-			if(event == XMLStreamConstants.START_ELEMENT) {
-				if(parser.getLocalName().equals("Information")) {
+			if (event == XMLStreamConstants.START_ELEMENT) {
+				if (parser.getLocalName().equals("Information")) {
 					String date = parser.getAttributeValue(0);
 					String terminologyType = parser.getAttributeValue(1);
 					String inforamtionType = parser.getAttributeValue(2);
 					String namespace = parser.getAttributeValue(3);
 					String objectID = parser.getAttributeValue(4);
 					List<Object> values = new ArrayList<Object>();
-					if(parser.nextTag() == XMLStreamConstants.START_ELEMENT) {
-						while(parser.nextTag() == XMLStreamConstants.START_ELEMENT) {
-							if(parser.getLocalName().equals("Value")) {
+					if (parser.nextTag() == XMLStreamConstants.START_ELEMENT) {
+						while (parser.nextTag() == XMLStreamConstants.START_ELEMENT) {
+							if (parser.getLocalName().equals("Value")) {
 								String type = parser.getAttributeValue(0);
 								String value = parser.getAttributeValue(1);
 								Object obj = getValue(type, value);
-								if(obj != null) {
-									values.add(obj);						
+								if (obj != null) {
+									values.add(obj);
 								}
 							}
 							parser.nextTag();
 						}
 					}
-					Information info = new Information(namespace, objectID, values, TerminologyType.getType(terminologyType), InformationType.getType(inforamtionType));
+					Information info = new Information(namespace, objectID, values,
+							TerminologyType.getType(terminologyType),
+							InformationType.getType(inforamtionType));
 					info.setCreationDate(new Date(Long.parseLong(date)));
 					result.add(info);
 				}
@@ -117,11 +120,13 @@ public class SessionPersistenceHandler {
 	}
 
 	private Object getValue(String type, String value) {
-		if(type.equals("String")) {
+		if (type.equals("String")) {
 			return value;
-		} else if(type.equals("Double")) {
+		}
+		else if (type.equals("Double")) {
 			return Double.valueOf(value);
-		} else if(type.equals("SolutionState")) {
+		}
+		else if (type.equals("SolutionState")) {
 			return SolutionState.getType(value);
 		}
 		return null;
@@ -131,10 +136,10 @@ public class SessionPersistenceHandler {
 		OutputStream out = new FileOutputStream(new File(target.toURI()));
 		XMLOutputFactory factory = XMLOutputFactory.newInstance();
 		XMLStreamWriter writer = factory.createXMLStreamWriter(out, "ISO-8859-1");
-		
-		//writer.writeStartDocument("ISO-8859-1", "1.0");
+
+		// writer.writeStartDocument("ISO-8859-1", "1.0");
 		writer.writeStartElement("Informations");
-		for (Information each : broker.getSession().getBlackboard().getAllInformation()) {		
+		for (Information each : broker.getSession().getBlackboard().getAllInformation()) {
 			writer.writeStartElement("Information");
 			writer.writeAttribute("Date", String.valueOf(each.getCreationDate().getTime()));
 			writer.writeAttribute("TerminologyType", each.getTerminologyType().getIdString());
@@ -153,13 +158,12 @@ public class SessionPersistenceHandler {
 		}
 		writer.writeEndElement();
 		writer.writeEndDocument();
-		
+
 		Logger.getLogger(getClass().getName()).info("Saved session to " + target);
-		
+
 		writer.flush();
 		writer.close();
 		out.close();
 	}
-	
-	
+
 }

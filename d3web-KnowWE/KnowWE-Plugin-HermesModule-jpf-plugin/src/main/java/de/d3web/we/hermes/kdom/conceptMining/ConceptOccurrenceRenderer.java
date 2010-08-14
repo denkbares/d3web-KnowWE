@@ -34,7 +34,7 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 		Section<PersonOccurrence> personSection = arg0;
 
-		//TableUtils.getRow(arg0);
+		// TableUtils.getRow(arg0);
 
 		String conceptName = arg0.getOriginalText();
 
@@ -45,7 +45,7 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 		URI subjectURI = null;
 
 		if (subjectContext != null) {
-			 subjectURI =((DefaultSubjectContext) subjectContext)
+			subjectURI = ((DefaultSubjectContext) subjectContext)
 					.getSolutionURI();
 			subjectString = subjectURI.getLocalName();
 			TupleQueryResult result = SPARQLUtil.executeTupleQuery(TITLE_QUERY
@@ -59,12 +59,14 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 						try {
 							title = URLDecoder.decode(title, "UTF-8");
 							subjectString = title;
-						} catch (UnsupportedEncodingException e) {
+						}
+						catch (UnsupportedEncodingException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
-				} catch (QueryEvaluationException e) {
+				}
+				catch (QueryEvaluationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -77,7 +79,7 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 		String htmlContent1 = "<strong>"
 				+ arg0.getOriginalText()
 				+ "</strong>"
-				+ "<img rel=\"{type: '"	+ conceptName
+				+ "<img rel=\"{type: '" + conceptName
 				+ "', id: '" + arg0.getID()
 				+ "', termName: '" + conceptName
 				+ "', user:'" + arg1.getUsername()
@@ -89,8 +91,8 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 		String popupContent = generatePopupContent(arg0, subjectURI, subjectString);
 
-		if(popupContent == null) {
-			arg2.append("__"+conceptName+"__");
+		if (popupContent == null) {
+			arg2.append("__" + conceptName + "__");
 			return;
 		}
 
@@ -102,26 +104,26 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 	}
 
 	private static final String PROP_SPARQL = "SELECT ?x WHERE {  " +
-	"?x rdf:type owl:ObjectProperty .   " +
-	"?x rdfs:domain <SUBJECT> .		   " +
-	"?x rdfs:range <OBJECT>." +
-	"} ";
+			"?x rdf:type owl:ObjectProperty .   " +
+			"?x rdfs:domain <SUBJECT> .		   " +
+			"?x rdfs:range <OBJECT>." +
+			"} ";
 
 	protected String[] getPossibleProperties(URI subject, String object) {
 
 		TupleQueryResult subjectClasses = SPARQLUtil.findClassesOfEntity(subject);
 
-		TupleQueryResult objectClasses = SPARQLUtil.findClassesOfEntity(UpperOntology.getInstance().getHelper().createlocalURI(object));
+		TupleQueryResult objectClasses = SPARQLUtil.findClassesOfEntity(UpperOntology.getInstance().getHelper().createlocalURI(
+				object));
 
 		try {
-			while(subjectClasses.hasNext()) {
+			while (subjectClasses.hasNext()) {
 				BindingSet subjectClass = subjectClasses.next();
 				String subjectClazzString = subjectClass.getBinding("x").getValue().stringValue();
 
-				while(objectClasses.hasNext()){
+				while (objectClasses.hasNext()) {
 					BindingSet objectClass = objectClasses.next();
 					String objectClassString = objectClass.getBinding("x").getValue().toString();
-
 
 					String q = PROP_SPARQL.replaceAll("SUBJECT", subjectClazzString);
 					q = q.replaceAll("OBJECT", objectClassString);
@@ -138,13 +140,15 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 								try {
 									propName = URLDecoder.decode(propName, "UTF-8");
-								} catch (UnsupportedEncodingException e) {
+								}
+								catch (UnsupportedEncodingException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-								propList.add(propName.substring(propName.lastIndexOf('#')+1));
+								propList.add(propName.substring(propName.lastIndexOf('#') + 1));
 							}
-						} catch (QueryEvaluationException e) {
+						}
+						catch (QueryEvaluationException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
@@ -153,11 +157,12 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 				}
 
 			}
-		} catch (QueryEvaluationException e1) {
+		}
+		catch (QueryEvaluationException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		return new String[]{};
+		return new String[] {};
 	}
 
 	private String generatePopupContent(Section arg0, URI subject, String subjectTitle) {
@@ -174,9 +179,10 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 		String[] newOpts = filterOpts(subject, originalText, opts);
 
-		if(newOpts.length == 0) return null;
+		if (newOpts.length == 0) return null;
 
-		String[] defaultOpts = { "concept missmatch", "dont ask again" };
+		String[] defaultOpts = {
+				"concept missmatch", "dont ask again" };
 
 		Section<? extends TimeEventType> eventSection = arg0.findAncestorOfType(TimeEventType.class);
 		// Section ancestor = KnowWEObjectTypeUtils.getAncestorOfType( arg0,
@@ -184,14 +190,14 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 		for (String relationName : newOpts) {
 
-			String options =  "kdomid='" + arg0.getID() + "' subject='" + subject
-				+ "' rel='"	+ relationName + "' object='" + originalText
-				+ "' name='" + relationName + "' " + "ancestor='" + eventSection.getID() + "'";
-
+			String options = "kdomid='" + arg0.getID() + "' subject='" + subject
+					+ "' rel='" + relationName + "' object='" + originalText
+					+ "' name='" + relationName + "' " + "ancestor='" + eventSection.getID() + "'";
 
 			buffy.append("<li><p class=\"confirmOption pointer\" " + options + ">");
 			buffy.append("" + relationName + "  " + "");
-			buffy.append("<span style='font-style:italic' class='confirmobject' "+options+">" + originalText + " </span>");
+			buffy.append("<span style='font-style:italic' class='confirmobject' " + options + ">"
+					+ originalText + " </span>");
 			buffy.append("<em> ? </em>");
 			buffy.append("</p></li>");
 		}
@@ -204,8 +210,8 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 		buffy.append("</ul>");
 		buffy.append("</div>\n"); // add some \n from time to time to satisfy
-									// jspwiki's paragraph length
-									// restriction.... :p
+		// jspwiki's paragraph length
+		// restriction.... :p
 		return buffy.toString();
 	}
 
@@ -218,12 +224,12 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 		for (String relation : opts) {
 
-			String q = RELATION_QUERY.replaceAll("SUBJECT", "<"+subject.stringValue()+">");
+			String q = RELATION_QUERY.replaceAll("SUBJECT", "<" + subject.stringValue() + ">");
 			q = q.replaceAll("RELATION", relation);
 			q = q.replaceAll("OBJECT", "<"
 					+ helper.createlocalURI(originalText).toString() + ">");
 			Boolean result = SPARQLUtil.executeBooleanQuery(q);
-			if(result != null && !result.booleanValue()) {
+			if (result != null && !result.booleanValue()) {
 				goodOpts.add(relation);
 			}
 		}

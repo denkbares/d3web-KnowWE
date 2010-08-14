@@ -16,13 +16,13 @@ public class RatingOverviewWriter extends WISECWriter {
 
 	@Override
 	public void write() throws IOException {
-		Writer writer = ConverterUtils.createWriter(this.outputDirectory+FILENAME +".txt");
-		
+		Writer writer = ConverterUtils.createWriter(this.outputDirectory + FILENAME + ".txt");
+
 		writer.write("!!! Rankings\n\n");
 		for (String rating : model.generatedRatings()) {
 			writer.write("* [" + rating + " | " + model.wikiFileNameForRating(rating) + "]\n");
 		}
-		
+
 		writer.close();
 	}
 

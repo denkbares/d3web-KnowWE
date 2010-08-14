@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.core.blackboard;
@@ -48,7 +48,7 @@ public class BlackboardImpl implements Blackboard {
 	private List<Information> allInformation;
 
 	private ISetMap<Term, Information> inferenceMap;
-	
+
 	private GlobalSolutionManager globalSolutionManager;
 
 	private Map<String, ClusterSolutionManager> clusterManagers;
@@ -120,12 +120,15 @@ public class BlackboardImpl implements Blackboard {
 		removeOldInformation(info);
 		if (InformationType.OriginalUserInformation.equals(infoType)) {
 			originalUserInformation.add(info);
-		} else if (InformationType.AlignedUserInformation.equals(infoType)) {
+		}
+		else if (InformationType.AlignedUserInformation.equals(infoType)) {
 			alignedUserInformation.add(info);
-		} else if ((InformationType.SolutionInformation.equals(infoType)||InformationType.ClusterInformation.equals(infoType))
+		}
+		else if ((InformationType.SolutionInformation.equals(infoType) || InformationType.ClusterInformation.equals(infoType))
 				&& TerminologyType.diagnosis.equals(info.getTerminologyType())) {
 			globalSolutionManager.update(info);
-		} else {
+		}
+		else {
 			// clusters:
 			if (info.getInformationType().equals(
 					InformationType.HeuristicInferenceInformation)
@@ -138,7 +141,7 @@ public class BlackboardImpl implements Blackboard {
 							.getNamespace());
 					if (clusterID != null) {
 						ClusterSolutionManager manager = clusterManagers.get(clusterID);
-						if(manager != null) {
+						if (manager != null) {
 							manager.update(info);
 						}
 					}
@@ -147,21 +150,22 @@ public class BlackboardImpl implements Blackboard {
 		}
 		if (info.getInformationType().equals(InformationType.HeuristicInferenceInformation)
 				|| info.getInformationType().equals(InformationType.SetCoveringInferenceInformation)
-			|| info.getInformationType().equals(InformationType.CaseBasedInferenceInformation)
+				|| info.getInformationType().equals(InformationType.CaseBasedInferenceInformation)
 					|| info.getInformationType().equals(InformationType.XCLInferenceInformation)) {
-			List<Term> solutionTerms = environment.getTerminologyServer().getBroker().getAlignedTerms(info.getIdentifiableObjectInstance());
+			List<Term> solutionTerms = environment.getTerminologyServer().getBroker().getAlignedTerms(
+					info.getIdentifiableObjectInstance());
 			for (Term eachTerm : new ArrayList<Term>(solutionTerms)) {
 				Collection<Information> dummy = inferenceMap.get(eachTerm);
-				if(dummy == null) continue;
+				if (dummy == null) continue;
 				for (Information eachInfo : new ArrayList<Information>(dummy)) {
-					if(eachInfo.equalsNamespaces(info)) {
+					if (eachInfo.equalsNamespaces(info)) {
 						inferenceMap.remove(eachTerm, eachInfo);
 					}
-				} 
+				}
 			}
 			inferenceMap.addAll(solutionTerms, info);
 		}
-		
+
 		allInformation.add(info);
 	}
 
@@ -223,7 +227,8 @@ public class BlackboardImpl implements Blackboard {
 					&& information.getInformationType().equals(
 							InformationType.OriginalUserInformation)) {
 				originalUserInformation.add(information);
-			} else if (information.getInformationType() != null
+			}
+			else if (information.getInformationType() != null
 					&& information.getInformationType().equals(
 							InformationType.AlignedUserInformation)) {
 				alignedUserInformation.add(information);
@@ -246,14 +251,14 @@ public class BlackboardImpl implements Blackboard {
 	}
 
 	public static void removeInfo(Collection<Information> coll, String namespace) {
-		//TODO NOT STATIC!!!!!!
+		// TODO NOT STATIC!!!!!!
 		Collection<Information> toRemove = new ArrayList<Information>();
 		for (Information information : coll) {
-			if(information.getNamespace().equals(namespace)) {
+			if (information.getNamespace().equals(namespace)) {
 				toRemove.add(information);
 			}
 		}
 		coll.removeAll(toRemove);
 	}
-	
+
 }

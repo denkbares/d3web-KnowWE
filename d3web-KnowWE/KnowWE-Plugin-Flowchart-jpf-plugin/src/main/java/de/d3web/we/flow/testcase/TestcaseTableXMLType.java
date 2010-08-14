@@ -8,15 +8,13 @@ public class TestcaseTableXMLType extends AbstractXMLObjectType {
 	public TestcaseTableXMLType(String tagName) {
 		super(tagName);
 	}
-	
-	public TestcaseTableXMLType()
-	{
+
+	public TestcaseTableXMLType() {
 		super("Testcase");
 	}
-	
+
 	@Override
-	protected void init() 
-	{
-		childrenTypes.add( new XMLContent(new TestcaseTable () ));
+	protected void init() {
+		childrenTypes.add(new XMLContent(new TestcaseTable()));
 	}
 }

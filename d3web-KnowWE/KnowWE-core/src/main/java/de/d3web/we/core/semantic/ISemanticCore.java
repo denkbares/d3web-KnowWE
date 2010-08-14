@@ -26,7 +26,7 @@ public interface ISemanticCore {
 	public abstract void addNamespace(String sh, String ns);
 
 	/**
-	 *
+	 * 
 	 * @return current settings
 	 */
 	public abstract HashMap<String, String> getSettings();
@@ -41,15 +41,11 @@ public interface ISemanticCore {
 	 */
 	public abstract UpperOntology getUpper();
 
-	
-	
 	/**
 	 * adds Statements to the repository
-	 *
-	 * @param inputio
-	 *            the output of the section
-	 * @param sec
-	 *            source section
+	 * 
+	 * @param inputio the output of the section
+	 * @param sec source section
 	 */
 	public abstract void addStatements(IntermediateOwlObject inputio,
 			Section sec);
@@ -58,9 +54,8 @@ public interface ISemanticCore {
 	 * Add static statements to the repository. Static statements are those
 	 * statements that are not connected to a specific section and therefore are
 	 * not updated during the wiki lifetime.
-	 *
-	 * @param inputio
-	 *            the statements to be added
+	 * 
+	 * @param inputio the statements to be added
 	 * @author volker_belli
 	 * @date 19.03.2010
 	 */
@@ -70,7 +65,7 @@ public interface ISemanticCore {
 	/**
 	 * Gets a contet for a section. Is used for differentiation of statements in
 	 * the triple-store
-	 *
+	 * 
 	 * @author FHaupt
 	 * @created Mar 25, 2010
 	 * @param sec
@@ -80,7 +75,7 @@ public interface ISemanticCore {
 
 	/**
 	 * perform a spql tuplequery
-	 *
+	 * 
 	 * @param query
 	 * @return
 	 * @throws QueryEvaluationException
@@ -90,7 +85,7 @@ public interface ISemanticCore {
 
 	/**
 	 * perform a sparql graphquery
-	 *
+	 * 
 	 * @param query
 	 * @return
 	 * @throws QueryEvaluationException
@@ -100,7 +95,7 @@ public interface ISemanticCore {
 
 	/**
 	 * perform a sparql booleanquery
-	 *
+	 * 
 	 * @param query
 	 * @return
 	 * @throws QueryEvaluationException
@@ -116,7 +111,7 @@ public interface ISemanticCore {
 
 	/**
 	 * recursivley collects all statements saved for a section.
-	 *
+	 * 
 	 * @return List of statements.
 	 */
 	public abstract List<Statement> getSectionStatementsRecursive(
@@ -134,7 +129,7 @@ public interface ISemanticCore {
 
 	/**
 	 * removes all statements produced by a specific section
-	 *
+	 * 
 	 * @param sec
 	 */
 	public abstract void clearContext(Section sec);
@@ -144,7 +139,7 @@ public interface ISemanticCore {
 	 * statements that were added by section that are now not in the article
 	 * anymore. this addresses #166 so don't you mess with this unless you
 	 * _really_ know what you're doing
-	 *
+	 * 
 	 * @param sec
 	 */
 	public abstract void clearContext(KnowWEArticle art);
@@ -154,7 +149,7 @@ public interface ISemanticCore {
 	/**
 	 * creates an arraylist of a simple sparql query. the binding given in
 	 * targetbinding is rendered into the list, the rest is ignored
-	 *
+	 * 
 	 * @param inquery
 	 * @param targetbinding
 	 * @return
@@ -182,7 +177,7 @@ public interface ISemanticCore {
 
 	/**
 	 * reduces any namespace to its shortcut
-	 *
+	 * 
 	 * @param s
 	 * @return
 	 */

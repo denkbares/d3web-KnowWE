@@ -20,8 +20,8 @@ public class BulletListItemLine extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(new BulletType());
 		this.childrenTypes.add(new LineBreak());
 		this.childrenTypes.add(new BulletCommentType());
-		this.childrenTypes.add(new BulletContentType()) ;
-		
+		this.childrenTypes.add(new BulletContentType());
+
 	}
 
 	class BulletListItemLineFinder extends SectionFinder {
@@ -30,8 +30,7 @@ public class BulletListItemLine extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
 				Section father, KnowWEObjectType type) {
-				
-				
+
 			String lineRegex = "\\r?\\n";
 			Pattern linePattern = Pattern.compile(lineRegex);
 
@@ -39,7 +38,7 @@ public class BulletListItemLine extends DefaultAbstractKnowWEObjectType {
 			ArrayList<SectionFinderResult> resultRegex = new ArrayList<SectionFinderResult>();
 			int lastStart = 0;
 			while (tagMatcher.find()) {
-				
+
 				String line = text.substring(lastStart,
 						tagMatcher.end());
 				// only lines starting with '*' can be bulletListItemLines

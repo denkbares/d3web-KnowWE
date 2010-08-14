@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.d3web.we.action;
 
@@ -32,35 +32,41 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * ActionServlet is a Servlet for ajax-based interview or any other user interfaces.
+ * ActionServlet is a Servlet for ajax-based interview or any other user
+ * interfaces.
  * 
- * ActionServlet provides an extensible set of actions that can be used to provide
- * required functionality. These actions can be used from client side to
+ * ActionServlet provides an extensible set of actions that can be used to
+ * provide required functionality. These actions can be used from client side to
  * proceed e.g. within the interview or to deliver required information.
  * <p>
  * New actions can be added easily by providing a class implementing the
- * {@link Action} interface and adds it to the package specified by the 
- * this.COMMAND_PACKAGE constant (or a sub-package). The command name is
- * the name of the class, or if it is in a sub-package, the class name preceded
- * by the missing sub-package names (e.g. command name for class 
+ * {@link Action} interface and adds it to the package specified by the
+ * this.COMMAND_PACKAGE constant (or a sub-package). The command name is the
+ * name of the class, or if it is in a sub-package, the class name preceded by
+ * the missing sub-package names (e.g. command name for class
  * "cc.d3web.use.servlet.cmd.ajax.Restart" will be "ajax.Restart").
  * <p>
  * There are two methods of calling a action:
  * <ol>
  * 
- * <li> A action is called by using a POST or GET for the following URL:
+ * <li>A action is called by using a POST or GET for the following URL:
  * 
- * <pre>"http://&lt;host&gt;:&lt;port&gt;[/&lt;servlet-locator&gt;]/&lt;command-name&gt;[/&lt;path-suffix&gt;]"</pre>
+ * <pre>
+ * &quot;http://&lt;host&gt;:&lt;port&gt;[/&lt;servlet-locator&gt;]/&lt;command-name&gt;[/&lt;path-suffix&gt;]&quot;
+ * </pre>
  * 
  * Depending on the action, it may utilize information given by query parameters
- * or the path suffix to produce the desired outcome.
- * </li>
+ * or the path suffix to produce the desired outcome.</li>
  * 
- * <li> In addition you can call a series of actions using an xml structure as
+ * <li>In addition you can call a series of actions using an xml structure as
  * the body of a post request (or the query string). The url of this method is:
  * 
- * <pre>"http://&lt;host&gt;:&lt;port&gt;[/&lt;servlet-locator&gt;]/command"</pre>
+ * <pre>
+ * &quot;http://&lt;host&gt;:&lt;port&gt;[/&lt;servlet-locator&gt;]/command&quot;
+ * </pre>
+ * 
  * The provided xml must have the following structure:
+ * 
  * <pre>
  * 	&lt;commands&gt;
  * 		&lt;command name="ajax.Restart" path="ui.zip/index.html"&gt;
@@ -71,27 +77,35 @@ import javax.servlet.http.HttpServletResponse;
  * 
  * The action tag can be repeated multiple times. The example above is almost
  * identical to the following url:
- * <pre>"http://&lt;host&gt;:&lt;port&gt;[/&lt;servlet-locator&gt;]/ajax.Restart/ui.zip/index.html?foo=bla"</pre>
+ * 
+ * <pre>
+ * &quot;http://&lt;host&gt;:&lt;port&gt;[/&lt;servlet-locator&gt;]/ajax.Restart/ui.zip/index.html?foo=bla&quot;
+ * </pre>
+ * 
  * </li>
  * </ol>
  * 
  * @author Volker Belli (refactored by Sebastian Furth)
- *
+ * 
  */
 public class ActionServlet extends HttpServlet {
+
 	private static final long serialVersionUID = 9190931066151487381L;
-		
+
 	public ActionServlet() {
 	}
-	
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		Logger.getLogger("ActionServlet").info("GET: "+request.getRequestURI()+"?"+request.getQueryString());
+		Logger.getLogger("ActionServlet").info(
+				"GET: " + request.getRequestURI() + "?" + request.getQueryString());
 		if (request.getPathInfo() == null || request.getPathInfo().length() <= 1) {
 			// no path provided (or only "/" as path)
-			Logger.getLogger("ActionServlet").info("no path provided (or only \"/\" as path): "+request.getRequestURI());
-			response.getWriter().write("<b>ActionServlet:</b> No path provided (or only \"/\" as path): "+request.getRequestURI());
+			Logger.getLogger("ActionServlet").info(
+					"no path provided (or only \"/\" as path): " + request.getRequestURI());
+			response.getWriter().write(
+					"<b>ActionServlet:</b> No path provided (or only \"/\" as path): "
+							+ request.getRequestURI());
 		}
 		else if (request.getPathInfo().equals("/command")) {
 			// xml base command list
@@ -102,10 +116,10 @@ public class ActionServlet extends HttpServlet {
 			doPathAction(request, response);
 		}
 	}
-	
+
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		Logger.getLogger("ActionServlet").info("POST: "+request.getRequestURI());
+		Logger.getLogger("ActionServlet").info("POST: " + request.getRequestURI());
 		if (request.getPathInfo().equals("/command")) {
 			doXmlActions(request, response, request.getReader());
 		}
@@ -113,8 +127,8 @@ public class ActionServlet extends HttpServlet {
 			doPathAction(request, response);
 		}
 	}
-	
-	private void doPathAction(HttpServletRequest request, HttpServletResponse response) throws IOException {		
+
+	private void doPathAction(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// create action context
 		ActionContext context = new ActionContext(
 				getActionName(request),
@@ -125,7 +139,7 @@ public class ActionServlet extends HttpServlet {
 				getServletContext(),
 				null);
 		try {
-			//get action and execute it
+			// get action and execute it
 			Action cmd = context.getAction();
 			cmd.execute(context);
 		}
@@ -146,7 +160,7 @@ public class ActionServlet extends HttpServlet {
 	@Override
 	public synchronized void destroy() {
 	}
-	
+
 	public String getActionName(HttpServletRequest request) {
 		String path = request.getPathInfo();
 		int cmdEndPos = path.indexOf('/', 1);
@@ -154,19 +168,19 @@ public class ActionServlet extends HttpServlet {
 		if (cmdEndPos == -1) cmdEndPos = path.length();
 		return path.substring(1, cmdEndPos);
 	}
-	
+
 	public static String getActionFollowUpPath(HttpServletRequest request) {
 		String path = request.getPathInfo();
-		
+
 		int pathStartPos = path.indexOf('/', 1);
 		if (pathStartPos == -1) return null;
-		
+
 		int pathEndPos = path.indexOf('?', pathStartPos + 1);
 		if (pathEndPos == -1) pathEndPos = path.length();
-		
+
 		return path.substring(pathStartPos + 1, pathEndPos);
 	}
-	
+
 	public static Properties getParameters(HttpServletRequest request) {
 		Properties parameters = new Properties();
 		Enumeration<?> iter = request.getParameterNames();

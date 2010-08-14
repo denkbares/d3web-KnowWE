@@ -90,8 +90,7 @@ public class ShowMapHandler extends AbstractTagHandler {
 	private static Collection<? extends Placemark> buildPlacemarksForLocation(
 			TupleQueryResult result) {
 		List<Placemark> placemarks = new ArrayList<Placemark>();
-		if (result == null)
-			return placemarks;
+		if (result == null) return placemarks;
 		try {
 			while (result.hasNext()) {
 

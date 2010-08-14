@@ -70,10 +70,8 @@ public class FlowchartType extends AbstractXMLObjectType {
 		Map<String, String> mapFor = AbstractXMLObjectType
 				.getAttributeMapFor(sec);
 		String id = mapFor.get("id");
-		if (id == null)
-			id = mapFor.get("name");
-		if (id == null)
-			id = "sheet_01";
+		if (id == null) id = mapFor.get("name");
+		if (id == null) id = "sheet_01";
 		return id;
 	}
 
@@ -105,8 +103,8 @@ public class FlowchartType extends AbstractXMLObjectType {
 
 		List<Section<?>> children = sec.getChildren();
 		if (children.size() == 3) // HOTFIX for parser section returning
-									// enclosing xml-tags
-			return children.get(1).getOriginalText();
+		// enclosing xml-tags
+		return children.get(1).getOriginalText();
 
 		// Old mechanism
 		for (Section child : children) {

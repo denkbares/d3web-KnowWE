@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.utils;
@@ -28,7 +28,7 @@ public class SplitUtility {
 	/**
 	 * Splits the text by the splitSymbol disregarding splitSymbols which are
 	 * quoted
-	 *
+	 * 
 	 * @param text
 	 * @param splitSymbol
 	 * @return
@@ -64,7 +64,7 @@ public class SplitUtility {
 	}
 
 	public static boolean containsUnquoted(String text, String symbol) {
-		return splitUnquoted(text+"1", symbol).size() > 1;
+		return splitUnquoted(text + "1", symbol).size() > 1;
 	}
 
 	public static String unquote(String text) {
@@ -79,7 +79,7 @@ public class SplitUtility {
 	/**
 	 * scans the 'text' for the (first) occurrence of 'symbol' which is not
 	 * emboded in quotes ('"')
-	 *
+	 * 
 	 * @param text
 	 * @param symbol
 	 * @return
@@ -110,7 +110,7 @@ public class SplitUtility {
 	/**
 	 * scans the 'text' for the last occurrence of 'symbol' which is not
 	 * embraced in quotes ('"')
-	 *
+	 * 
 	 * @param text
 	 * @param symbol
 	 * @return
@@ -142,7 +142,7 @@ public class SplitUtility {
 	/**
 	 * For a given index of an opening symbol (usually brackets) it finds (char
 	 * index of) the corresponding closing bracket/symbol
-	 *
+	 * 
 	 * @param text
 	 * @param openBracketIndex
 	 * @param open
@@ -154,12 +154,12 @@ public class SplitUtility {
 			boolean quoted = false;
 			int closedBrackets = -1;
 			// scanning the text
-			for(int i  = openBracketIndex + 1; i < text.length(); i++) {
+			for (int i = openBracketIndex + 1; i < text.length(); i++) {
 				char current = text.charAt(i);
 
 				// toggle quote state
-				if(current == '"') {
-						quoted = !quoted;
+				if (current == '"') {
+					quoted = !quoted;
 				}
 				// decrement closed brackets when open bracket is found
 				else if (!quoted && current == open) {
@@ -186,7 +186,7 @@ public class SplitUtility {
 	 * (unquoted) brackets (opening bracket 'open' and closing bracket 'close')
 	 * Here the kind of bracket can be passed as char, however it will also work
 	 * with char that are not brackets.. ;-)
-	 *
+	 * 
 	 * @param text
 	 * @param symbol
 	 * @param open

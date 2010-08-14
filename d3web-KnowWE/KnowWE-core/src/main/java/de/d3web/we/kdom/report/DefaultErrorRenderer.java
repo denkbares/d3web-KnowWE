@@ -5,12 +5,12 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * Default renderer for error messages
- *
+ * 
  * To have your own customized ErrorRenderer overwrite getErrorRenderer in your
  * KnowWEObjectType and return a (custom) MessageRenderer of your choice
  * 
  * @author Jochen
- *
+ * 
  */
 public class DefaultErrorRenderer implements MessageRenderer {
 
@@ -25,12 +25,8 @@ public class DefaultErrorRenderer implements MessageRenderer {
 		return instance;
 	}
 
-
-
 	private final String cssClass = "KDDOMError";
 	private final String cssStyle = "color:red;text-decoration:underline;";
-
-
 
 	@Override
 	public String postRenderMessage(KDOMReportMessage m, KnowWEUserContext user) {
@@ -56,6 +52,5 @@ public class DefaultErrorRenderer implements MessageRenderer {
 
 		return string.toString();
 	}
-
 
 }

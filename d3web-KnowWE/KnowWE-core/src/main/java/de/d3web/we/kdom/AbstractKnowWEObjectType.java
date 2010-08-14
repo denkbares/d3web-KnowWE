@@ -49,7 +49,6 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 */
 	protected List<KnowWEObjectType> childrenTypes = new ArrayList<KnowWEObjectType>();
 
-
 	/**
 	 * Manages the subtreeHandlers which are registered to this type
 	 * 
@@ -120,7 +119,6 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * wiki view
 	 */
 	protected KnowWEDomRenderer customRenderer = null;
-
 
 	/**
 	 * constructor calling init() which is abstract
@@ -383,7 +381,6 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		return this.getClass().getSimpleName();
 	}
 
-	
 	/**
 	 * use normal constructor!
 	 */
@@ -532,7 +529,6 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	public boolean isNotRecyclable() {
 		return isNotRecyclable;
 	}
-
 
 	/*
 	 * (non-Javadoc)

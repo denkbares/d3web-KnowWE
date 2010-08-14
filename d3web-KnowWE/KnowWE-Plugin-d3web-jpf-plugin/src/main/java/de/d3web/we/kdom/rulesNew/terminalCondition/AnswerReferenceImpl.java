@@ -7,7 +7,6 @@ import de.d3web.we.kdom.renderer.FontColorRenderer;
 
 public class AnswerReferenceImpl extends AnswerReference {
 
-
 	@Override
 	public Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s) {
 		return s.getFather().findSuccessor(QuestionReference.class);

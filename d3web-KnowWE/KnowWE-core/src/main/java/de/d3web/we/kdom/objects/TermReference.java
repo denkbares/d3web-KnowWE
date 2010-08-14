@@ -1,6 +1,5 @@
 package de.d3web.we.kdom.objects;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;

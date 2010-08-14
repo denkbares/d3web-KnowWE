@@ -11,33 +11,32 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
-
-public class BulletCommentType extends  DefaultAbstractKnowWEObjectType {
+public class BulletCommentType extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	public void init() {
 		this.sectionFinder = new BulletCommentFinder();
 		this.setCustomRenderer(new CommentRenderer());
 	}
-	
-	
-	class BulletCommentFinder extends SectionFinder { 
+
+	class BulletCommentFinder extends SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
 				Section father, KnowWEObjectType type) {
-			ArrayList<SectionFinderResult> result =  new ArrayList<SectionFinderResult>();;
-			if(text.contains("//")) {
-				
-			    // be sure the comment is in a quoted region   
+			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			;
+			if (text.contains("//")) {
+
+				// be sure the comment is in a quoted region
 				int index = text.indexOf("//");
 				int quotesBefore = countQuotes(text.substring(0, index));
 				int quotesAfter = countQuotes(text.substring(index, text.length()));
-				
-				if(! (quotesBefore == 1 && quotesAfter >= 1 )) {
+
+				if (!(quotesBefore == 1 && quotesAfter >= 1)) {
 					result.add(new SectionFinderResult(index, text.length()));
 				}
-					
+
 			}
 			return result;
 		}
@@ -45,14 +44,14 @@ public class BulletCommentType extends  DefaultAbstractKnowWEObjectType {
 		private int countQuotes(String text) {
 			String lineRegex = "\"";
 			Pattern linePattern = Pattern.compile(lineRegex);
-			
-	        Matcher tagMatcher = linePattern.matcher(text);		
-	        int count = 0;
-	        while (tagMatcher.find()) {
-	        	count++;
+
+			Matcher tagMatcher = linePattern.matcher(text);
+			int count = 0;
+			while (tagMatcher.find()) {
+				count++;
 			}
 			return count;
 		}
-		
+
 	}
 }

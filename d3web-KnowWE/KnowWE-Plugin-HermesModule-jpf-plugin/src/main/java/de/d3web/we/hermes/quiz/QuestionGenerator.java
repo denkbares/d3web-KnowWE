@@ -20,7 +20,6 @@ public class QuestionGenerator {
 		events = TimeEventSPARQLUtils.findTimeEventsFromTo(-1000, 1000);
 	}
 
-
 	public Question generateNewQuestion() {
 
 		if (events.size() == 0) {

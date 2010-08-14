@@ -6,7 +6,6 @@ import de.d3web.we.kdom.include.IncludeSectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.KnowWEUtils;
 
-
 public class IncludeSectionizerModule implements SectionizerModule {
 
 	@Override

@@ -27,12 +27,13 @@ public class SetAnswerAction extends DeprecatedAbstractKnowWEAction {
 		int answer = -1;
 
 		try {
-		answer = Integer.parseInt(answerString);
-		} catch (Exception e) {
+			answer = Integer.parseInt(answerString);
+		}
+		catch (Exception e) {
 
 		}
 
-		QuizSessionManager.getInstance().setAnswer(parameterMap.getUser(),answer);
+		QuizSessionManager.getInstance().setAnswer(parameterMap.getUser(), answer);
 		return QuizHandler.renderQuizPanel(user,
 				QuizSessionManager.getInstance().getSession(user), kdomid);
 	}

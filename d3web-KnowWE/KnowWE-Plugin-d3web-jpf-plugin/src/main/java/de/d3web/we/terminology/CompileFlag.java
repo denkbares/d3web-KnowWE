@@ -42,7 +42,7 @@ public class CompileFlag extends DefaultMarkupType {
 	}
 
 	static class NamespaceIncludeType extends DefaultAbstractKnowWEObjectType implements NamespaceInclude {
-		
+
 		public NamespaceIncludeType() {
 			this.sectionFinder = new AllTextSectionFinder();
 			this.addSubtreeHandler(Priority.PRECOMPILE, new RegisterNamespaceInclude());
@@ -68,7 +68,7 @@ public class CompileFlag extends DefaultMarkupType {
 			KnowWENamespaceManager nsMng = KnowWEEnvironment.getInstance().getNamespaceManager(
 					article.getWeb());
 			nsMng.registerNamespaceInclude(article, s);
-			
+
 			if (s.get().getNamespaceToInclude(s).equals(article.getTitle())) return null;
 
 			List<Section<?>> namespaceDefinitions = nsMng.getNamespaceDefinitions(s.getOriginalText().trim());
@@ -112,7 +112,6 @@ public class CompileFlag extends DefaultMarkupType {
 			return null;
 		}
 
-
 		@Override
 		@SuppressWarnings("unchecked")
 		public void destroy(KnowWEArticle article, Section<NamespaceIncludeType> s) {
@@ -147,7 +146,6 @@ public class CompileFlag extends DefaultMarkupType {
 
 				TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
 						Priority.createPrioritySortedList(includedNamespaces);
-
 
 				for (Priority priority : prioMap.descendingKeySet()) {
 					List<Section<? extends KnowWEObjectType>> prioList = prioMap.get(priority);

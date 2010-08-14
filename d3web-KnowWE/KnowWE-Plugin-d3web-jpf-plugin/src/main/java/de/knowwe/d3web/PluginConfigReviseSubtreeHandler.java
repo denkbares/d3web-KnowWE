@@ -1,20 +1,20 @@
 /*
  * Copyright (C) 2010 denkbares GmbH
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.knowwe.d3web;
 
@@ -42,20 +42,23 @@ public class PluginConfigReviseSubtreeHandler extends SubtreeHandler {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
-		String xmlText = "<settings><plugins /><psmethods>"+s.getOriginalText()+"</psmethods></settings>";
-		KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article.getTitle());
-		if (kbm==null) return null;
+		String xmlText = "<settings><plugins /><psmethods>" + s.getOriginalText()
+				+ "</psmethods></settings>";
+		KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(
+				article.getWeb()).getKBM(article.getTitle());
+		if (kbm == null) return null;
 		KnowledgeBase kb = kbm.getKnowledgeBase();
 		try {
-			new PluginConfigPersistenceHandler().read(kb, new StringInputStream(xmlText), new DummyProgressListener());
+			new PluginConfigPersistenceHandler().read(kb, new StringInputStream(xmlText),
+					new DummyProgressListener());
 		}
 		catch (IOException e1) {
-			AbstractKnowWEObjectType.storeMessages(article, s, this.getClass(), 
-					Arrays.asList(new Message(Message.ERROR, 
+			AbstractKnowWEObjectType.storeMessages(article, s, this.getClass(),
+					Arrays.asList(new Message(Message.ERROR,
 							e1.getMessage(), null, -1, null)));
 			return null;
 		}
-		
+
 		return null;
 	}
 

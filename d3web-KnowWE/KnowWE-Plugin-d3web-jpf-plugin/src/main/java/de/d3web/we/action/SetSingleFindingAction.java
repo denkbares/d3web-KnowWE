@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.action;
@@ -84,11 +84,11 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 			return "null";
 		}
 
-
 		// if DPS is inactive
 		if (!ResourceBundle.getBundle("KnowWE_config").getString("dps.active").contains("true")) {
 
-			KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(web).getKBM(topic);
+			KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(web).getKBM(
+					topic);
 			Session session = D3webUtils.getSession(topic, user, web);
 			Blackboard blackboard = session.getBlackboard();
 
@@ -128,7 +128,7 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 			}
 		}
 		// with active DPS
-		else  {
+		else {
 			DPSEnvironment env = DPSEnvironmentManager.getInstance()
 					.getEnvironments(web);
 			Broker broker = env.getBroker(user);
@@ -191,8 +191,7 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 				qid = iio.getObjectId();
 				Collection<IdentifiableInstance> iivs = information
 						.getIdentifiableValueInstances();
-				if (iivs.isEmpty())
-					break;
+				if (iivs.isEmpty()) break;
 				Iterator<IdentifiableInstance> iter = iivs.iterator();
 
 				while (iter.hasNext()) {
@@ -255,7 +254,7 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 					}
 					catch (NumberFormatException e) {
 					}
-					
+
 				}
 				else {
 					valuesAfterClick.add(valueid.trim());
@@ -278,10 +277,12 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 
 		try {
 			KnowWEFacade.getInstance().performAction("RefreshHTMLDialogAction", parameterMap);
-		} catch (IOException e) {
-			Logger.getLogger(this.getClass()).error("Error while performing RefreshHTMLDialogAction" + e.getMessage());
 		}
-		
+		catch (IOException e) {
+			Logger.getLogger(this.getClass()).error(
+					"Error while performing RefreshHTMLDialogAction" + e.getMessage());
+		}
+
 		return null;
 	}
 

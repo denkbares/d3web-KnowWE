@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 /**
@@ -58,6 +58,7 @@ import de.d3web.we.kdom.Section;
  * 
  */
 public class OwlHelper {
+
 	private static String basens = "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#";
 	public static URI EQUAL;
 	public static URI EXPLAINS;
@@ -149,12 +150,9 @@ public class OwlHelper {
 	 * Resource is of the right type if applicable (eg attachto RDF.TYPE
 	 * RDF.STATEMENT)
 	 * 
-	 * @param attachto
-	 *            The Resource that will be annotated bei the TO-Node
-	 * @param source
-	 *            The source section that should be used
-	 * @param io
-	 *            the IntermediateOwlObject that should collect the statements
+	 * @param attachto The Resource that will be annotated bei the TO-Node
+	 * @param source The source section that should be used
+	 * @param io the IntermediateOwlObject that should collect the statements
 	 */
 	public void attachTextOrigin(Resource attachto, Section source,
 			IntermediateOwlObject io) {
@@ -229,8 +227,7 @@ public class OwlHelper {
 	/**
 	 * creates an URI in the upperontologynamespace
 	 * 
-	 * @param value
-	 *            the name of the URI to be created
+	 * @param value the name of the URI to be created
 	 * @return the created URI
 	 * @throws RepositoryException
 	 */
@@ -243,10 +240,8 @@ public class OwlHelper {
 	/**
 	 * creates an URI in the specified namespace
 	 * 
-	 * @param ns
-	 *            the name of the namespace
-	 * @param value
-	 *            the name of the URI to be created
+	 * @param ns the name of the namespace
+	 * @param value the name of the URI to be created
 	 * @return the created URI
 	 * @throws RepositoryException
 	 */

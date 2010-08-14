@@ -101,7 +101,7 @@ public class FindingToConditionBuilder {
 			catch (NumberFormatException e) {
 				KnowWEUtils.storeSingleMessage(article, answer,
 						FindingToConditionBuilder.class, Message.class, new Message(
-						"Numerical value expected, got: '" + answerText + "'."));
+								"Numerical value expected, got: '" + answerText + "'."));
 			}
 
 			QuestionNum questionNum = (QuestionNum) kbQuest;
@@ -113,7 +113,7 @@ public class FindingToConditionBuilder {
 			else {
 				KnowWEUtils.storeSingleMessage(article, comp,
 						FindingToConditionBuilder.class, Message.class, new Message(
-						"Unkown comparator '" + comparator + "'."));
+								"Unkown comparator '" + comparator + "'."));
 				return null;
 			}
 		}
@@ -185,16 +185,19 @@ public class FindingToConditionBuilder {
 		Section answer = f.findSuccessor(FindingAnswer.class);
 
 		// clean out all old Messages from a previous run of this builder...
-		if(comp != null) KnowWEUtils.clearMessages(article, comp, FindingToConditionBuilder.class, Message.class);
-		if(question != null) KnowWEUtils.clearMessages(article, question, FindingToConditionBuilder.class, Message.class);
-		if(answer != null) KnowWEUtils.clearMessages(article, answer, FindingToConditionBuilder.class, Message.class);
+		if (comp != null) KnowWEUtils.clearMessages(article, comp, FindingToConditionBuilder.class,
+				Message.class);
+		if (question != null) KnowWEUtils.clearMessages(article, question,
+				FindingToConditionBuilder.class, Message.class);
+		if (answer != null) KnowWEUtils.clearMessages(article, answer,
+				FindingToConditionBuilder.class, Message.class);
 
 		String questiontext = question.getOriginalText().replaceAll(p.toString(), "").trim();
 		if (answer == null) {
 			KnowWEUtils.storeSingleMessage(article, f,
 					FindingToConditionBuilder.class, Message.class, new Message(
-					"No answer-section found for finding: '"
-					+ f.getOriginalText() + "'."));
+							"No answer-section found for finding: '"
+									+ f.getOriginalText() + "'."));
 			return null;
 		}
 		String answertext = answer.getOriginalText().replaceAll(p.toString(), "").trim();
@@ -216,7 +219,7 @@ public class FindingToConditionBuilder {
 				else {
 					KnowWEUtils.storeSingleMessage(article, answer,
 							FindingToConditionBuilder.class, Message.class, new Message(
-							"Not a valid answer for question: '" + answertext + "'."));
+									"Not a valid answer for question: '" + answertext + "'."));
 					return null;
 				}
 			}
@@ -244,10 +247,10 @@ public class FindingToConditionBuilder {
 		else {
 			KnowWEUtils.storeSingleMessage(article, question,
 					FindingToConditionBuilder.class, Message.class, new Message("Question '"
-					+ question.getOriginalText() + "' not found."));
+							+ question.getOriginalText() + "' not found."));
 			KnowWEUtils.storeSingleMessage(article, answer,
 					FindingToConditionBuilder.class, Message.class, new Message("Question '"
-					+ question.getOriginalText() + "' not found."));
+							+ question.getOriginalText() + "' not found."));
 			return null;
 
 		}

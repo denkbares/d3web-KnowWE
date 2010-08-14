@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.terminology;
@@ -55,8 +55,7 @@ public class TerminologyBroker {
 	private final ISetMap<IdentifiableInstance, LocalAlignment> localAlignments;
 	private final ISetMap<IdentifiableInstance, GlobalAlignment> globalAlignments;
 	private final ISetMap<Term, GlobalAlignment> globalTermAlignments;
-	
-	
+
 	public TerminologyBroker() {
 		super();
 		globalTerminologies = new HashMap<TerminologyType, GlobalTerminology>();
@@ -68,11 +67,11 @@ public class TerminologyBroker {
 	public Collection<LocalAlignment> getLocalAlignments() {
 		return localAlignments.getAllValues();
 	}
-	
+
 	public Collection<GlobalAlignment> getGlobalAlignments() {
 		return globalAlignments.getAllValues();
 	}
-	
+
 	public List<Term> getAlignedTerms(IdentifiableInstance ii) {
 		List<Term> result = new ArrayList<Term>();
 		Set<IdentifiableInstance> iis = new HashSet<IdentifiableInstance>();
@@ -82,24 +81,23 @@ public class TerminologyBroker {
 		}
 		return result;
 	}
-	
+
 	public List<IdentifiableInstance> getAlignedIdentifiableInstances(Term term) {
 		return getAlignedIdentifiableInstances(term, null);
 	}
-	
+
 	public List<IdentifiableInstance> getAlignedIdentifiableInstances(Term term, AlignmentFilter filter) {
 		List<IdentifiableInstance> result = new ArrayList<IdentifiableInstance>();
 		Collection<GlobalAlignment> gas = globalTermAlignments.get(term);
-		if(gas == null) return result;
+		if (gas == null) return result;
 		for (GlobalAlignment ga : gas) {
-			if(filter == null || filter.accepts(ga)) {
+			if (filter == null || filter.accepts(ga)) {
 				result.add(ga.getObject());
 			}
 		}
 		return result;
 	}
-	
-	
+
 	public ISetMap<IdentifiableInstance, IdentifiableInstance> getAlignmentMap(
 			Information info) {
 		IdentifiableInstance iio = info.getIdentifiableObjectInstance();
@@ -124,15 +122,14 @@ public class TerminologyBroker {
 				false);
 
 		Collection<GlobalAlignment> iioAlignments = globalAlignments.get(iio);
-		if (iioAlignments == null)
-			return result;
-		
+		if (iioAlignments == null) return result;
+
 		for (GlobalAlignment alignment : iioAlignments) {
 			Term alignedTerm = alignment.getTerm();
 			Collection<GlobalAlignment> termAlignments = globalTermAlignments.get(alignedTerm);
 			for (GlobalAlignment each : termAlignments) {
 				IdentifiableInstance alignedIIO = each.getObject();
-				if(!alignedIIO.equals(iio) && !alignedIIO.isValued()) {
+				if (!alignedIIO.equals(iio) && !alignedIIO.isValued()) {
 					result.add(alignedIIO, dummy);
 				}
 			}
@@ -140,17 +137,16 @@ public class TerminologyBroker {
 
 		for (IdentifiableInstance iiv : iivs) {
 			Collection<GlobalAlignment> iivAlignments = globalAlignments.get(iiv);
-			if (iivAlignments == null)
-				continue;
+			if (iivAlignments == null) continue;
 			for (GlobalAlignment alignment : iivAlignments) {
 				Term alignedTerm = alignment.getTerm();
 				Collection<GlobalAlignment> termAlignments = globalTermAlignments.get(alignedTerm);
 				for (GlobalAlignment each : termAlignments) {
 					IdentifiableInstance dummyIIV = each.getObject();
-					if(!dummyIIV.equals(iiv) && dummyIIV.isValued()) {
+					if (!dummyIIV.equals(iiv) && dummyIIV.isValued()) {
 						IdentifiableInstance alignedIIV = new IdentifiableInstance(
-							dummyIIV.getNamespace(), dummyIIV.getObjectId(),
-							alignment.getAlignedValue(iiv, dummyIIV));
+								dummyIIV.getNamespace(), dummyIIV.getObjectId(),
+								alignment.getAlignedValue(iiv, dummyIIV));
 						IdentifiableInstance dummyIIO = new IdentifiableInstance(
 								dummyIIV.getNamespace(), dummyIIV.getObjectId(), null);
 						result.add(dummyIIO, alignedIIV);
@@ -159,10 +155,7 @@ public class TerminologyBroker {
 			}
 		}
 		return result;
-		
-		
-		
-		
+
 	}
 
 	private ISetMap<IdentifiableInstance, IdentifiableInstance> getLocalIIOVMap(
@@ -172,8 +165,7 @@ public class TerminologyBroker {
 				false);
 
 		Collection<LocalAlignment> iioAlignments = localAlignments.get(iio);
-		if (iioAlignments == null)
-			return result;
+		if (iioAlignments == null) return result;
 		for (LocalAlignment alignment : iioAlignments) {
 			IdentifiableInstance alignedIIO = alignment.getAligned(iio);
 			result.add(alignedIIO, dummy);
@@ -181,8 +173,7 @@ public class TerminologyBroker {
 
 		for (IdentifiableInstance iiv : iivs) {
 			Collection<LocalAlignment> iivAlignments = localAlignments.get(iiv);
-			if (iivAlignments == null)
-				continue;
+			if (iivAlignments == null) continue;
 			for (LocalAlignment alignment : iivAlignments) {
 				IdentifiableInstance dummyIIV = alignment.getAligned(iiv);
 				IdentifiableInstance alignedIIV = new IdentifiableInstance(
@@ -214,21 +205,19 @@ public class TerminologyBroker {
 
 	public void removeTerminology(TerminologyType type,
 			String idString, LocalTerminologyStorage storage) {
-		
-		//TODO remove terms in GT!!
-		
+
+		// TODO remove terms in GT!!
+
 		removeLocalAlignments(idString);
 		removeGlobalAlignments(idString);
 	}
-
-	
 
 	public Collection<LocalAlignment> alignLocal(LocalTerminologyAccess terminology, String idString,
 			LocalTerminologyStorage storage) {
 		Collection<LocalAlignment> result = new ArrayList<LocalAlignment>();
 		Collection<LocalAligner> aligners = AlignmentUtilRepository
 				.getInstance().getLocalAligners(terminology.getContext());
-		if(aligners == null) return result;
+		if (aligners == null) return result;
 		Collection<Class> efilters = new ArrayList<Class>();
 		efilters.add(QContainer.class);
 		efilters.add(Solution.class);
@@ -244,7 +233,8 @@ public class TerminologyBroker {
 
 	public Collection<GlobalAlignment> alignGlobal(LocalTerminologyAccess terminology, String id, LocalTerminologyStorage storage) {
 		List<GlobalAlignment> result = new ArrayList<GlobalAlignment>();
-		TermFactory factory = AlignmentUtilRepository.getInstance().getTermFactory(terminology.getContext());
+		TermFactory factory = AlignmentUtilRepository.getInstance().getTermFactory(
+				terminology.getContext());
 		for (GlobalTerminology eachGT : globalTerminologies.values()) {
 			for (Object eachObj : terminology.getHandler()) {
 				result.addAll(factory.getAlignableTerms(eachObj, id, eachGT));
@@ -253,28 +243,27 @@ public class TerminologyBroker {
 		Collections.sort(result);
 		return result;
 	}
-		
-	
+
 	public void addGlobalAlignments(Collection<GlobalAlignment> alignments) {
-		if(alignments == null) {
+		if (alignments == null) {
 			return;
 		}
 		for (GlobalAlignment each : alignments) {
-			if(each.getTerm() == null) {
+			if (each.getTerm() == null) {
 				continue;
 			}
 			globalAlignments.add(each.getObject(), each);
 			globalTermAlignments.add(each.getTerm(), each);
 		}
 	}
-	
+
 	public void addLocalAlignments(Collection<LocalAlignment> alignments) {
 		for (LocalAlignment each : alignments) {
 			localAlignments.add(each.getLocal(), each);
 			localAlignments.add(each.getObject(), each);
 		}
 	}
-	
+
 	public void removeGlobalAlignment(GlobalAlignment alignment) {
 		globalAlignments.removeAll(new ArrayList<IdentifiableInstance>(globalAlignments
 				.keySet()), alignment);
@@ -287,7 +276,7 @@ public class TerminologyBroker {
 				.keySet()), alignment);
 	}
 
-	//TODO inefficient
+	// TODO inefficient
 	private void removeLocalAlignments(String namespace) {
 		for (IdentifiableInstance ii : new ArrayList<IdentifiableInstance>(
 				localAlignments.keySet())) {
@@ -300,7 +289,7 @@ public class TerminologyBroker {
 		}
 	}
 
-//	TODO inefficient
+	// TODO inefficient
 	private void removeGlobalAlignments(String namespace) {
 		for (IdentifiableInstance ii : new ArrayList<IdentifiableInstance>(
 				globalAlignments.keySet())) {
@@ -314,14 +303,14 @@ public class TerminologyBroker {
 			}
 		}
 	}
-	
+
 	public void setLocalAlignments(Collection<LocalAlignment> local) {
 		localAlignments.clear();
 		addLocalAlignments(local);
 	}
 
 	public void setGlobalAlignments(Collection<GlobalAlignment> global) {
-		globalAlignments.clear(); 
+		globalAlignments.clear();
 		globalTermAlignments.clear();
 		addGlobalAlignments(global);
 	}
@@ -342,15 +331,12 @@ public class TerminologyBroker {
 		return result;
 	}
 
-	
-
 	public void setGlobalTerminology(TerminologyType type, GlobalTerminology gt) {
-		globalTerminologies.put(type, gt);		
+		globalTerminologies.put(type, gt);
 	}
 
 	public Collection<GlobalTerminology> getGlobalTerminologies() {
 		return globalTerminologies.values();
 	}
-
 
 }

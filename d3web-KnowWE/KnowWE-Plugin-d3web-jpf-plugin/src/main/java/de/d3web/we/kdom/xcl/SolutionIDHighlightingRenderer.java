@@ -76,10 +76,8 @@ public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 					Rating state;
 					XCLModel diagModel = this.findModel(solution, slices);
 
-					if (diagModel == null)
-						state = new Rating(State.UNCLEAR);
-					else
-						state = diagModel.getState(session);
+					if (diagModel == null) state = new Rating(State.UNCLEAR);
+					else state = diagModel.getState(session);
 
 					if (state.hasState(State.ESTABLISHED)) {
 						string
@@ -103,7 +101,8 @@ public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 					}
 				}
 			}
-		} else {
+		}
+		else {
 			string.append("");
 		}
 

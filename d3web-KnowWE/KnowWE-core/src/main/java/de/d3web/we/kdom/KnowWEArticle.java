@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom;
@@ -112,7 +112,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		long startTime = startTimeOverall;
 
 		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
-		
+
 		lastVersion = env.getArticle(web, title);
 
 		this.fullParse = fullParse
@@ -183,8 +183,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 							+ (System.currentTimeMillis() - startTime) + "ms <-");
 			startTime = System.currentTimeMillis();
 		}
-		
-		
+
 		// run initHooks at KnowledgeRepManager
 		env.getKnowledgeRepresentationManager(web)
 				.initArticle(this);
@@ -202,7 +201,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			con.setSubject(title);
 			ContextManager.getInstance().attachContext(sec, con);
 		}
-
 
 		// call SubTreeHandler for all Sections to create
 		reviseCurrentArticleToCreate();
@@ -267,7 +265,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		if (articleManager != null) {
 			KnowWESectionInfoStorage typeStore = articleManager.getTypeStore();
 			typeStore.clearStoreForArticle(title);
-		} else {
+		}
+		else {
 			// System.out.println("ArticleManager for web is null: "+web);
 		}
 
@@ -294,38 +293,40 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		if (!idMap.containsKey(id)) {
 			idMap.put(id, 1);
 			return 1;
-		} else {
+		}
+		else {
 			int num = idMap.get(id) + 1;
 			idMap.put(id, num);
 			return num;
 		}
 	}
-	
+
 	@Deprecated
 	public Section<? extends KnowWEObjectType> getNode(String nodeID) {
 		return sec.getNode(nodeID);
 	}
 
-//	/**
-//	 * stores report as html-page on harddisk
-//	 * 
-//	 * @param topicname
-//	 * @param htmlReport
-//	 */
-//	private void writeOutReport(String topicname, String htmlReport, String web) {
-//		File f = new File(KnowWEEnvironment.getInstance()
-//				.getArticleManager(web).getReportPath()
-//				+ topicname + ".html");
-//		try {
-//			FileOutputStream out = new FileOutputStream(f);
-//			out.write(htmlReport.getBytes());
-//			out.flush();
-//			out.close();
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
+	// /**
+	// * stores report as html-page on harddisk
+	// *
+	// * @param topicname
+	// * @param htmlReport
+	// */
+	// private void writeOutReport(String topicname, String htmlReport, String
+	// web) {
+	// File f = new File(KnowWEEnvironment.getInstance()
+	// .getArticleManager(web).getReportPath()
+	// + topicname + ".html");
+	// try {
+	// FileOutputStream out = new FileOutputStream(f);
+	// out.write(htmlReport.getBytes());
+	// out.flush();
+	// out.close();
+	// } catch (Exception e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
 
 	// /**
 	// * updates the distributed reasoning engine when KB has changed after
@@ -405,8 +406,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	}
 
 	/**
-	 * Returns the simple name of this class, NOT THE NAME (Title) OF THIS ARTICLE!
-	 * For the articles title, use getTitle() instead!
+	 * Returns the simple name of this class, NOT THE NAME (Title) OF THIS
+	 * ARTICLE! For the articles title, use getTitle() instead!
 	 */
 	@Override
 	public String getName() {
@@ -429,9 +430,9 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			new HashMap<String, Map<String, List<Section<?>>>>();
 
 	/**
-	 * Finds all children with the same path of ObjectTypes in the KDOM.
-	 * The <tt>path</tt> has to start with theKnowWEArticle and end with 
-	 * the ObjectType of the Sections you are looking for.
+	 * Finds all children with the same path of ObjectTypes in the KDOM. The
+	 * <tt>path</tt> has to start with theKnowWEArticle and end with the
+	 * ObjectType of the Sections you are looking for.
 	 * 
 	 * @return Map of Sections, using their originalText as key.
 	 */
@@ -447,16 +448,15 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	}
 
 	/**
-	 * Finds all children with the same path of ObjectTypes in the KDOM.
-	 * The <tt>path</tt> has to start with theKnowWEArticle and end with 
-	 * the ObjectType of the Sections you are looking for.
+	 * Finds all children with the same path of ObjectTypes in the KDOM. The
+	 * <tt>path</tt> has to start with theKnowWEArticle and end with the
+	 * ObjectType of the Sections you are looking for.
 	 * 
 	 * @return List of Sections
 	 */
 	public List<Section<? extends KnowWEObjectType>> findChildrenOfTypeList(
 			LinkedList<Class<? extends KnowWEObjectType>> path) {
-		List<Section<? extends KnowWEObjectType>> foundChildren 
-				= new ArrayList<Section<? extends KnowWEObjectType>>();
+		List<Section<? extends KnowWEObjectType>> foundChildren = new ArrayList<Section<? extends KnowWEObjectType>>();
 		sec.findSuccessorsOfTypeAtTheEndOfPath(path, 0, foundChildren);
 		return foundChildren;
 	}
@@ -478,65 +478,66 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		sec.getAllNodesPostOrder(nodes);
 		return nodes;
 	}
-	
+
 	public List<Section<? extends KnowWEObjectType>> getAllNodesToDestroyPostOrder() {
 		List<Section<? extends KnowWEObjectType>> nodes = new LinkedList<Section<? extends KnowWEObjectType>>();
 		if (lastVersion != null) lastVersion.sec.getAllNodesToDestroyPostOrder(this, nodes);
 		return nodes;
 	}
-	
+
 	@Override
 	public String toString() {
 		return sec.getOriginalText();
 	}
 
-	
 	public Set<Section<Include>> getIncludeSections() {
 		return this.activeIncludes;
 	}
-	
+
 	private void reviseLastArticleToDestroy() {
 
 		List<Section<?>> nodes = getAllNodesToDestroyPostOrder();
 		// Collections.reverse(nodes);
 		TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
 				Priority.createPrioritySortedList(nodes);
-		
+
 		for (Priority priority : prioMap.descendingKeySet()) {
 			List<Section<? extends KnowWEObjectType>> prioList = prioMap.get(priority);
 			for (Section<? extends KnowWEObjectType> section : prioList) {
 				section.letSubtreeHandlersDestroy(this, priority);
 			}
-			
+
 		}
 	}
 
 	private void reviseCurrentArticleToCreate() {
 		TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
 				Priority.createPrioritySortedList(getAllNodesPostOrder());
-		
-		for (Priority priority:prioMap.descendingKeySet()) {
+
+		for (Priority priority : prioMap.descendingKeySet()) {
 			List<Section<? extends KnowWEObjectType>> prioList = prioMap.get(priority);
-			for (Section<? extends KnowWEObjectType> section:prioList) {
+			for (Section<? extends KnowWEObjectType> section : prioList) {
 				section.letSubtreeHandlersCreate(this, priority);
 			}
 		}
 
 		sec.setReusedStateRecursively(title, true);
 	}
-	
-//	// This method is needed for the case that Sections get reused and are flagged
-//	// false from previous revising.
-//	private List<Section<? extends KnowWEObjectType>> setAllHandlersToNotYetRevised
-//			(List<Section<? extends KnowWEObjectType>> sectionList) {
-//		for (Section<? extends KnowWEObjectType> section:sectionList) {
-//			for (SubtreeHandler<? extends KnowWEObjectType> handler
-//					:section.getObjectType().getSubtreeHandlers()) {
-//				handler.setNotYetRevisedBy(title, true);
-//			}
-//		}
-//		return sectionList;
-//	}
+
+	// // This method is needed for the case that Sections get reused and are
+	// flagged
+	// // false from previous revising.
+	// private List<Section<? extends KnowWEObjectType>>
+	// setAllHandlersToNotYetRevised
+	// (List<Section<? extends KnowWEObjectType>> sectionList) {
+	// for (Section<? extends KnowWEObjectType> section:sectionList) {
+	// for (SubtreeHandler<? extends KnowWEObjectType> handler
+	// :section.getObjectType().getSubtreeHandlers()) {
+	// handler.setNotYetRevisedBy(title, true);
+	// }
+	// }
+	// return sectionList;
+	// }
 
 	public boolean isFullParse() {
 		return this.fullParse;
@@ -559,7 +560,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			EventManager.getInstance().fireEvent(new FullParseEvent(), web, null,
 					this.sec);
 		}
-		
+
 		if (fullParse) {
 			handlersUnableToDestroy.add(source.getClass().isAnonymousClass()
 					? source.getClass().getName().substring(

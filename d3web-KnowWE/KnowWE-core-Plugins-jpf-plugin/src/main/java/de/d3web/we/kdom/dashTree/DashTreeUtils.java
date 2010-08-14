@@ -8,7 +8,6 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.TermReference;
 
-
 public class DashTreeUtils {
 
 	public static Section<? extends DashTreeElement> getFatherDashTreeElement(Section<?> s) {
@@ -43,7 +42,7 @@ public class DashTreeUtils {
 
 	/**
 	 * Delegates the getDashTreeFather-operation to DashTreeElement
-	 *
+	 * 
 	 * @param s
 	 * @return
 	 */
@@ -102,8 +101,6 @@ public class DashTreeUtils {
 		return index;
 	}
 
-
-
 	public static int getPositionInFatherDashSubtree(Section<?> s) {
 
 		Section<DashSubtree> subTreeRoot = s.findAncestorOfType(DashSubtree.class);
@@ -145,6 +142,5 @@ public class DashTreeUtils {
 		}
 		return false;
 	}
-
 
 }

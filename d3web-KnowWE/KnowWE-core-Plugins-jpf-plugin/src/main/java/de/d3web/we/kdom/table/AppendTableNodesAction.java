@@ -1,20 +1,20 @@
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.d3web.we.kdom.table;
 
@@ -55,8 +55,6 @@ public class AppendTableNodesAction extends AbstractAction {
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 		KnowWEArticle article = mgr.getArticle(topic);
 
-
-
 		Section<KnowWEArticle> root = article.getSection();
 		Section<Table> table = (Section<Table>) root.findChild(tablePath);
 		Map<String, String> nodesMap;
@@ -69,7 +67,6 @@ public class AppendTableNodesAction extends AbstractAction {
 		}
 		mgr.replaceKDOMNodes(map, topic, nodesMap);
 	}
-
 
 	/**
 	 * adds a row by replacing the last row with with itself, \n and a new line
@@ -87,14 +84,13 @@ public class AppendTableNodesAction extends AbstractAction {
 		int cells = lines[0].length() - lines[0].replace("|", "").length();
 		String id = table.getChildren().get(lines.length - 1).getID();
 
-		
 		StringBuffer buffy = new StringBuffer();
 		buffy.append("\n|platzhalter");
 		for (int i = 1; i < cells; i++) {
 			buffy.append("| - ");
 		}
 		buffy.append("\n");
-		
+
 		nodesMap.put(id, lines[lastLine] + buffy.toString());
 		return nodesMap;
 	}

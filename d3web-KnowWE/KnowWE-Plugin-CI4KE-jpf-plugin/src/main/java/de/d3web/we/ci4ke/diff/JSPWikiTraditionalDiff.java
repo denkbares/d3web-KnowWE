@@ -85,9 +85,9 @@ public class JSPWikiTraditionalDiff implements DiffEngine {
 			}
 
 			StringBuffer ret = new StringBuffer(rev.size() * 20); // Guessing
-																	// how big
-																	// it will
-																	// become...
+			// how big
+			// it will
+			// become...
 
 			// ret.append("<table class=\"diff\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n");
 			rev.accept(new RevisionPrint(ret));

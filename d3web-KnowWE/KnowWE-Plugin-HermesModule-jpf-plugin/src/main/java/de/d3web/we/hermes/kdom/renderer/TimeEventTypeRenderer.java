@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.hermes.kdom.renderer;
@@ -63,8 +63,7 @@ public class TimeEventTypeRenderer extends KnowWEDomRenderer<TimeEventType> {
 
 		Section<? extends TimeEventTitleType> titleSection = sec.findChildOfType(TimeEventTitleType.class);
 		String title = "no title found";
-		if (titleSection != null)
-			title = titleSection.getOriginalText();
+		if (titleSection != null) title = titleSection.getOriginalText();
 
 		String date = TimeStamp.decode(getDateString(sec));
 
@@ -88,7 +87,8 @@ public class TimeEventTypeRenderer extends KnowWEDomRenderer<TimeEventType> {
 			style = "color:rgb(235, 235, 20)";
 		}
 
-		title = KnowWEUtils.maskHTML("<span style='" + style + "'>") + title + KnowWEUtils.maskHTML("</span>");
+		title = KnowWEUtils.maskHTML("<span style='" + style + "'>") + title
+				+ KnowWEUtils.maskHTML("</span>");
 		titleHeader = title + "   :   ";
 		titleHeader += date;
 		// titleHeader += " " + importance;
@@ -117,10 +117,8 @@ public class TimeEventTypeRenderer extends KnowWEDomRenderer<TimeEventType> {
 	private String getDateString(Section<TimeEventType> sec) {
 		Section<? extends TimeEventDateType> dateSection = sec.findChildOfType(TimeEventDateType.class);
 		String date = "no date found";
-		if (dateSection != null)
-			date = dateSection.getOriginalText();
-		if (date.startsWith("\r\n"))
-			date = date.substring(2);
+		if (dateSection != null) date = dateSection.getOriginalText();
+		if (date.startsWith("\r\n")) date = date.substring(2);
 		return date;
 	}
 
@@ -147,11 +145,10 @@ public class TimeEventTypeRenderer extends KnowWEDomRenderer<TimeEventType> {
 					importance.indexOf(')')).trim();
 			int eventLevel = Integer.parseInt(digit);
 			return eventLevel;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			return -1;
 		}
 	}
-
-
 
 }

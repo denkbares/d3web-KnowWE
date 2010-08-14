@@ -23,53 +23,47 @@ import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 /**
  * @author Reinhard Hatko
  * @created 10.08.10
- *
+ * 
  */
 public class DiagnosisNodeHandler extends AbstractNodeHandler {
-
 
 	public DiagnosisNodeHandler() {
 		super(ActionType.getInstance(), "KnOffice");
 	}
 
-
 	public boolean canCreateNode(KnowWEArticle article,
 			KnowledgeBaseManagement kbm, Section nodeSection) {
-		
+
 		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
-		
-		if (nodeInfo == null)
-			return false;
-		
+
+		if (nodeInfo == null) return false;
+
 		String actionString = FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
-		
-		//TODO check if LHS of actionstring is diagnosis
-		
+
+		// TODO check if LHS of actionstring is diagnosis
+
 		return actionString.contains("=");
 	}
 
-
 	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm,
 			Section nodeSection, Section flowSection, String id, List<Message> errors) {
-		
+
 		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
 		String actionString = FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
-		
-		if (!actionString.contains("=")) 
-			return null;
-			
+
+		if (!actionString.contains("=")) return null;
+
 		String[] split = actionString.split("=");
 		String solutionString = split[0].trim();
 		String scoreString = split[1].trim();
 
-
 		ActionHeuristicPS action = new ActionHeuristicPS();
 
 		if (solutionString.startsWith("\"")) // remove "
-			solutionString = solutionString.substring(1, solutionString.length() - 1);
-	
+		solutionString = solutionString.substring(1, solutionString.length() - 1);
+
 		if (scoreString.startsWith("\"")) // remove "
-			scoreString = scoreString.substring(1, scoreString.length() - 1);
+		scoreString = scoreString.substring(1, scoreString.length() - 1);
 
 		Solution solution = kbm.findSolution(solutionString);
 
@@ -81,7 +75,7 @@ public class DiagnosisNodeHandler extends AbstractNodeHandler {
 		action.setSolution(solution);
 
 		Score score = Scorefinder.getScore(scoreString);
-		
+
 		if (score == null) {
 			errors.add(new Message("Score not found: " + scoreString));
 			return null;
@@ -90,8 +84,7 @@ public class DiagnosisNodeHandler extends AbstractNodeHandler {
 		action.setScore(score);
 
 		return FlowFactory.getInstance().createActionNode(id, action);
-	
-	
+
 	}
 
 }

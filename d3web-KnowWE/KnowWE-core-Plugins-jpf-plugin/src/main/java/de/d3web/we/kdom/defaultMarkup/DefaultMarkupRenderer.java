@@ -20,7 +20,7 @@ import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> {
-	
+
 	@Override
 	public void render(KnowWEArticle article, Section<DefaultMarkupType> section, KnowWEUserContext user, StringBuilder string) {
 

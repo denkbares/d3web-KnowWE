@@ -112,12 +112,12 @@ public class KBRenderer extends AbstractTagHandler {
 			Solution diagnosis = kb.getRootSolution();
 			boolean appendedSolutionsHeadline = false;
 			if (diagnosis.getName().equals("P000")) {
-					if (!appendedSolutionsHeadline) {
-						text.append("<strong>"
+				if (!appendedSolutionsHeadline) {
+					text.append("<strong>"
 								+ rb.getString("KnowWE.KBRenderer.solutions")
 								+ ":</strong><p/>");
-						appendedSolutionsHeadline = true;
-					}
+					appendedSolutionsHeadline = true;
+				}
 				TerminologyObject[] getRoots = diagnosis.getChildren();
 				for (TerminologyObject t1 : getRoots) {
 					if (t1.getParents().length == 1) {
@@ -130,7 +130,6 @@ public class KBRenderer extends AbstractTagHandler {
 				}
 			}
 			text.append("<p/>");
-
 
 			// text.append("<br /><b>SCRelations: </b><br />");
 			//
@@ -196,25 +195,25 @@ public class KBRenderer extends AbstractTagHandler {
 								idMap.put(kbRuleId, rule.getID());
 							}
 
-							// TODO:Johannes: Refactor this after old rule rendering
+							// TODO:Johannes: Refactor this after old rule
+							// rendering
 							// is deprecated
 							List<Section<ConditionActionRule>> allRulesNew =
-								new ArrayList<Section<ConditionActionRule>>();
+									new ArrayList<Section<ConditionActionRule>>();
 							KnowWEEnvironment.getInstance().getArticleManager(
 									web).getArticle(topic).getSection()
 									.findSuccessorsOfType(ConditionActionRule.class, allRulesNew);
 							for (Section<ConditionActionRule> rule : allRulesNew) {
 								de.d3web.core.inference.Rule kbRuleId =
-									(de.d3web.core.inference.Rule) KnowWEUtils
-										.getStoredObject(
-												rule.getWeb(),
-												topic,
-												rule.getID(),
-												RuleContentType.ruleStoreKey);
-								if (kbRuleId != null)
-									idMap.put(kbRuleId.getId(), rule.getID());
+										(de.d3web.core.inference.Rule) KnowWEUtils
+												.getStoredObject(
+														rule.getWeb(),
+														topic,
+														rule.getID(),
+														RuleContentType.ruleStoreKey);
+								if (kbRuleId != null) idMap.put(kbRuleId.getId(), rule.getID());
 							}
-							
+
 							for (Section<BulletContentType> bullet : allBulletContentTypes) {
 								String kbRuleId = (String) KnowWEUtils
 										.getStoredObject(
@@ -235,16 +234,17 @@ public class KBRenderer extends AbstractTagHandler {
 			// due to strange JS Problems
 			for (de.d3web.core.inference.Rule r : sort) {
 				String kdomid = idMap.get(r.getId());
-//				if (kdomid != null) {
-//					String button = ("<img src=KnowWEExtension/images/page_white_find.png "
-//							+ "class=\"highlight-rule\" "
-//							+ "rel=\"{kdomid: '"
-//							+ kdomid
-//							+ "', topic: '"
-//							+ topic
-//							+ "', depth: 1, breadth: 1}\"" + "/></img>");
-//					text.append(button);
-//				}
+				// if (kdomid != null) {
+				// String button =
+				// ("<img src=KnowWEExtension/images/page_white_find.png "
+				// + "class=\"highlight-rule\" "
+				// + "rel=\"{kdomid: '"
+				// + kdomid
+				// + "', topic: '"
+				// + topic
+				// + "', depth: 1, breadth: 1}\"" + "/></img>");
+				// text.append(button);
+				// }
 
 				text.append("Rule: "
 						+ VerbalizationManager.getInstance().verbalize(
@@ -334,19 +334,20 @@ public class KBRenderer extends AbstractTagHandler {
 							if (type == XCLRelationType.explains) {
 								weight = "[" + rel.getWeight() + "]";
 							}
-							
+
 							// TODO:Johannes: Highlighting does not work
 							// due to strange JS Problems
-//							if (kdomid != null) {
-//								String button = ("<img src=\"KnowWEExtension/images/page_white_find.png\" "
-//										+ "class=\"highlight-xcl-relation\" "
-//										+ "rel=\"{kdomid: '"
-//										+ kdomid
-//										+ "', topic: '"
-//										+ topic
-//										+ "', depth: 0, breadth: 0}\"" + "/></img>");
-//								text.append(button);
-//							}
+							// if (kdomid != null) {
+							// String button =
+							// ("<img src=\"KnowWEExtension/images/page_white_find.png\" "
+							// + "class=\"highlight-xcl-relation\" "
+							// + "rel=\"{kdomid: '"
+							// + kdomid
+							// + "', topic: '"
+							// + topic
+							// + "', depth: 0, breadth: 0}\"" + "/></img>");
+							// text.append(button);
+							// }
 
 							text.append(type.getName() + weight + ": ");
 							text.append("&nbsp;&nbsp;&nbsp;"
@@ -379,7 +380,8 @@ public class KBRenderer extends AbstractTagHandler {
 					}
 				}
 			}
-		} else {
+		}
+		else {
 			text.append("<p class=\"box error\">"
 					+ rb.getString("KnowWE.KBRenderer.error") + "</p>");
 		}
@@ -413,7 +415,8 @@ public class KBRenderer extends AbstractTagHandler {
 					result.append("<span style=\"color: rgb(0, 128, 0);\">"
 							+ t1.toString() + " " + properties + " [mc] "
 							+ range + "</span><br/>");
-				} else {
+				}
+				else {
 					result.append("<span style=\"color: rgb(0, 128, 0);\">"
 							+ t1.toString() + " " + properties + " [oc] "
 							+ range + "</span><br/>");
@@ -425,19 +428,23 @@ public class KBRenderer extends AbstractTagHandler {
 					result.append("<span style=\"color: rgb(0, 0, 255);\">"
 							+ c1.toString() + "</span><br/>");
 				}
-			} else if (t1 instanceof QuestionText) {
+			}
+			else if (t1 instanceof QuestionText) {
 				result.append("<span style=\"color: rgb(0, 128, 0);\">"
 						+ t1.getName() + " " + properties + " [text] " + range
 						+ "</span><br/>");
-			} else if (t1 instanceof QuestionNum) {
+			}
+			else if (t1 instanceof QuestionNum) {
 				result.append("<span style=\"color: rgb(0, 128, 0);\">"
 						+ t1.getName() + " " + properties + " [num] " + range
 						+ "</span><br/>");
-			} else if (t1 instanceof QuestionDate) {
+			}
+			else if (t1 instanceof QuestionDate) {
 				result.append("<span style=\"color: rgb(0, 128, 0);\">"
 						+ t1.getName() + " " + properties + " [date] " + range
 						+ "</span><br/>");
-			} else if (t1 instanceof Solution) {
+			}
+			else if (t1 instanceof Solution) {
 				result.append("<span style=\"color: rgb(150, 110, 120);\">"
 						+ VerbalizationManager.getInstance().verbalize(t1,
 								RenderingFormat.HTML) + "</span><br/>");

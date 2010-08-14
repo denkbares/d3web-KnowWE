@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.core.semantic;
@@ -138,8 +138,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 		}
 		String output = "";
 		for (String temptag : tags) {
-			if (!temptag.equals(tag))
-				output += temptag.trim() + " ";
+			if (!temptag.equals(tag)) output += temptag.trim() + " ";
 		}
 		output = output.trim();
 		Section keep = tagslist.get(0);
@@ -181,8 +180,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * Creates a list of tags this page is associated with. Always returns a
 	 * list. Any errors result in an empty list.
 	 * 
-	 * @param pagename
-	 *            the topic in question
+	 * @param pagename the topic in question
 	 * @return a list a tags for this topic
 	 */
 	public ArrayList<String> getPageTags(String pagename) {
@@ -212,8 +210,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 	public ArrayList<String> getAllTags() {
 		ArrayList<String> erg = new ArrayList<String>();
 		for (String cur : getAllTagsWithDuplicates())
-			if (!erg.contains(cur))
-				erg.add(cur);
+			if (!erg.contains(cur)) erg.add(cur);
 		return erg;
 	}
 
@@ -298,8 +295,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * sets tags to tag and replaces old ones
 	 * 
 	 * @param topic
-	 * @param tag
-	 *            comma/space separated list of tags
+	 * @param tag comma/space separated list of tags
 	 */
 	public void setTags(String topic, String tag, KnowWEParameterMap params) {
 		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();

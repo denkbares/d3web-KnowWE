@@ -213,10 +213,10 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 			resultBuffy.append(" <tr>");
 			resultBuffy
 					.append("<td><a title='" + score
-					+ "' class=\"wikipage\" target='_blank' href=\"Wiki.jsp?page="
-					+ genericSearchResult.getPagename() + "" + url
-					+ "\">" + genericSearchResult.getPagename()
-					+ "</a> </td>");
+							+ "' class=\"wikipage\" target='_blank' href=\"Wiki.jsp?page="
+							+ genericSearchResult.getPagename() + "" + url
+							+ "\">" + genericSearchResult.getPagename()
+							+ "</a> </td>");
 			// resultBuffy.append("<td><span class=\"gbar\">"
 			// + genericSearchResult.getScore() + "</span> </td>");
 

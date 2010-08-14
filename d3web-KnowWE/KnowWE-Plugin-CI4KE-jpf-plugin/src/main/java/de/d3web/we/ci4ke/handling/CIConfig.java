@@ -78,7 +78,7 @@ public class CIConfig {
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		
+
 		CIConfig c = new CIConfig(this.dashboardID,
 				this.monitoredArticleTitle,
 				this.dashboardArticleTitle,

@@ -5,11 +5,13 @@ import java.util.Map;
 
 /**
  * Sorts according to the specified count of considered substances in a list.
+ * 
  * @author joba
- *
+ * 
  */
 public class SubstancesConsideredCountComparator implements
 		Comparator<String> {
+
 	private Map<String, Integer> substanceListConsideredSubstances;
 
 	public SubstancesConsideredCountComparator(

@@ -98,7 +98,8 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 
 	@SuppressWarnings("unchecked")
 	private void removeTermReferenceLogsForArticle(KnowWEArticle article) {
-		termReferenceLogsMaps.put(article.getTitle(), new HashMap<TermIdentifier, TermReferenceLog>());
+		termReferenceLogsMaps.put(article.getTitle(),
+				new HashMap<TermIdentifier, TermReferenceLog>());
 	}
 
 	public void initArticle(KnowWEArticle article) {
@@ -318,7 +319,7 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	 * references of terms
 	 * 
 	 * @author Jochen
-	 *
+	 * 
 	 * @param <TermObject>
 	 */
 	class TermReferenceLog<TermObject> {
@@ -397,6 +398,5 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		}
 
 	}
-
 
 }

@@ -8,6 +8,4 @@ public class CommentRenderer extends FontColorRenderer {
 		super("color:rgb(160, 160, 160)");
 	}
 
-
-
 }

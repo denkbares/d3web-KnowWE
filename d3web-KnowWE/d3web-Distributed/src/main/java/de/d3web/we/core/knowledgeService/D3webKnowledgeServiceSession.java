@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -199,7 +199,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	}
 
 	private void initCase() {
-		//DistributedControllerFactory factory = getControllerFactory();
+		// DistributedControllerFactory factory = getControllerFactory();
 		session = SessionFactory.createSession(base);
 		((DefaultSession) session).addUsedPSMethod(PSMethodDelegate.getInstance());
 
@@ -263,7 +263,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			// info.getValues()));
 		}
 		else if (object instanceof QuestionNum) {
-			value = getAnswers((QuestionNum) object,theValues);
+			value = getAnswers((QuestionNum) object, theValues);
 			// values.addAll(getAnswers((QuestionNum) object,
 			// info.getValues()));
 		}
@@ -296,13 +296,13 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 						InformationType.SolutionInformation)) {
 					session.getBlackboard().addValueFact(
 							new DefaultFact(diag, value, new Object(),
-							PSMethodHeuristic.getInstance()));
+									PSMethodHeuristic.getInstance()));
 				}
 				else if (info.getInformationType().equals(
 						InformationType.HeuristicInferenceInformation)) {
 					session.getBlackboard().addValueFact(
 							new DefaultFact(diag, value, new Object(),
-							PSMethodHeuristic.getInstance()));
+									PSMethodHeuristic.getInstance()));
 				}
 			}
 		}
@@ -311,13 +311,13 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 				toChange.add(vo);
 				session.getBlackboard().addValueFact(
 						new DefaultFact(vo, value, PSMethodUserSelected.getInstance(),
-						PSMethodUserSelected.getInstance()));
+								PSMethodUserSelected.getInstance()));
 			}
 			else {
 				Logger.getLogger(this.getClass().getName()).log(
 						Level.WARNING,
 						"ValuedObject is null: " + object.getClass().getName() + " :"
-						+ object.toString());
+								+ object.toString());
 			}
 		}
 	}
@@ -414,7 +414,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			if (instantly) {
 				broker.update(new Information(id, question.getId(),
 						ConverterUtils.toValueList(session.getBlackboard().getValue(question),
-						session), TerminologyType.symptom, infoType));
+								session), TerminologyType.symptom, infoType));
 			}
 			else {
 				// mag ich grad net

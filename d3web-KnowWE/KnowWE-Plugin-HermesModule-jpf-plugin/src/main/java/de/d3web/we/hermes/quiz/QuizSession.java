@@ -37,7 +37,7 @@ public class QuizSession {
 	public void setAnswer(int answer) {
 		this.currentAnswer = answer;
 		answered++;
-		if(this.lastQuestion.getCorrectAnswer() == currentAnswer) {
+		if (this.lastQuestion.getCorrectAnswer() == currentAnswer) {
 			solved++;
 		}
 	}
@@ -72,8 +72,6 @@ public class QuizSession {
 		this.isStopped = isStopped;
 	}
 
-
-
 	public Question getLastQuestion() {
 		return lastQuestion;
 	}
@@ -91,6 +89,5 @@ public class QuizSession {
 	public String getUser() {
 		return username;
 	}
-
 
 }

@@ -59,13 +59,15 @@ public class EmbracedType extends DefaultAbstractKnowWEObjectType {
 					}
 				}
 
-			}else {
-				
+			}
+			else {
+
 				if (trimmed.startsWith(start) && trimmed.endsWith(end)) {
 					String body = trimmed.substring(start.length(), trimmed
 							.length()
 							- end.length());
-					List<SectionFinderResult> lookAheadSections = bodyType.getSectioner().lookForSections(body, father, type);
+					List<SectionFinderResult> lookAheadSections = bodyType.getSectioner().lookForSections(
+							body, father, type);
 					if (lookAheadSections != null && lookAheadSections.size() > 0) {
 						result.add(new SectionFinderResult(text.indexOf(trimmed),
 								text.indexOf(trimmed) + trimmed.length()));

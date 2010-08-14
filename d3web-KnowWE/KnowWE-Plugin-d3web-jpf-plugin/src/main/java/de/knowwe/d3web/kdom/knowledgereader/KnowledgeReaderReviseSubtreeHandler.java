@@ -1,20 +1,20 @@
 /*
  * Copyright (C) 2010 denkbares GmbH
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.knowwe.d3web.kdom.knowledgereader;
 
@@ -41,9 +41,10 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+
 /**
  * ReviseSubtreehandler for KnowledgeReaderType
- *
+ * 
  * @author Markus Friedrich (denkbares GmbH)
  */
 public class KnowledgeReaderReviseSubtreeHandler extends SubtreeHandler {
@@ -51,28 +52,31 @@ public class KnowledgeReaderReviseSubtreeHandler extends SubtreeHandler {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
-		KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article.getTitle());
-		if (kbm==null) return null;
-		
+		KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(
+				article.getWeb()).getKBM(article.getTitle());
+		if (kbm == null) return null;
+
 		KnowledgeBase kb = kbm.getKnowledgeBase();
 		String readerID = DefaultMarkupType.getAnnotation(s, "KnowledgeReader");
 		String toRead = DefaultMarkupType.getContent(s);
-		Extension[] allextensions = PluginManager.getInstance().getExtensions(PersistenceManager.EXTENDED_PLUGIN_ID, PersistenceManager.EXTENDED_POINT_READER);
+		Extension[] allextensions = PluginManager.getInstance().getExtensions(
+				PersistenceManager.EXTENDED_PLUGIN_ID, PersistenceManager.EXTENDED_POINT_READER);
 		List<Extension> extensions = new ArrayList();
-		for (Extension e: allextensions) {
+		for (Extension e : allextensions) {
 			if (e.getID().equals(readerID)) {
 				extensions.add(e);
 			}
 		}
-		if (extensions.size()==0) {
-			AbstractKnowWEObjectType.storeMessages(article, s, this.getClass(), 
+		if (extensions.size() == 0) {
+			AbstractKnowWEObjectType.storeMessages(article, s, this.getClass(),
 					Arrays.asList(new Message(Message.ERROR,
-							"KnowledgeReader "+readerID+ " not found.", null, -1, null)));
+							"KnowledgeReader " + readerID + " not found.", null, -1, null)));
 			return null;
-		} else if (extensions.size()>1) {
-			AbstractKnowWEObjectType.storeMessages(article, s, this.getClass(), 
+		}
+		else if (extensions.size() > 1) {
+			AbstractKnowWEObjectType.storeMessages(article, s, this.getClass(),
 					Arrays.asList(new Message(Message.ERROR,
-							"KnowledgeReaderID "+readerID+ " is not unique.", null, -1, null)));
+							"KnowledgeReaderID " + readerID + " is not unique.", null, -1, null)));
 			return null;
 		}
 		KnowledgeReader reader = (KnowledgeReader) extensions.get(0).getSingleton();
@@ -80,8 +84,8 @@ public class KnowledgeReaderReviseSubtreeHandler extends SubtreeHandler {
 			reader.read(kb, new StringInputStream(toRead), new DummyProgressListener());
 		}
 		catch (IOException e1) {
-			AbstractKnowWEObjectType.storeMessages(article, s, this.getClass(), 
-					Arrays.asList(new Message(Message.ERROR, 
+			AbstractKnowWEObjectType.storeMessages(article, s, this.getClass(),
+					Arrays.asList(new Message(Message.ERROR,
 							e1.getMessage(), null, -1, null)));
 			return null;
 		}

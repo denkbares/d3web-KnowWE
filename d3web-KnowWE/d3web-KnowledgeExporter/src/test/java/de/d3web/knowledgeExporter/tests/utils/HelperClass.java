@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.knowledgeExporter.tests.utils;
@@ -36,72 +36,75 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 public class HelperClass {
 
-	public HelperClass(){
-		
+	public HelperClass() {
+
 	}
-	
-//	public KnowledgeBaseAndReport createKnowledgeBase(String dHierarchy,
-//			String qHierarchy, String decisionTree) {
-//		Report report;
-//		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance();
-//		KnowledgeBase kb = kbm.getKnowledgeBase();
-//		report = parseDiagnosisHierarchy(dHierarchy, kb);
-//		report.addAll(parseQContainerHierarchy(qHierarchy, kb));
-//		report.addAll(parseExtDecisionTree(decisionTree, kb));
-//		return new KnowledgeBaseAndReport(kb, report);
-//	}
-//	
-//	private Report parseExtDecisionTree(String decisionTree, KnowledgeBase kb) {
-//		Report decisionTreeReport = new Report();
-//		de.d3web.textParser.cocor.extDecisionTreeParser.Scanner dts = 
-//			new de.d3web.textParser.cocor.extDecisionTreeParser.Scanner(
-//				this.getStream(decisionTree));
-//		de.d3web.textParser.cocor.extDecisionTreeParser.Parser dtp = 
-//			new de.d3web.textParser.cocor.extDecisionTreeParser.Parser(
-//				dts, kb, false);
-//		dtp.Parse();
-//		decisionTreeReport.addAll(dtp.getErrorMessages());
-//		return decisionTreeReport;
-//	}
-//	
-//	private Report parseQContainerHierarchy(String qHierarchy, KnowledgeBase kb) {
-//		Report qContainerReport = new Report();
-//		de.d3web.textParser.cocor.qContainerHierarchyParser.Scanner qchs = 
-//			new de.d3web.textParser.cocor.qContainerHierarchyParser.Scanner(
-//				this.getStream(qHierarchy));
-//		de.d3web.textParser.cocor.qContainerHierarchyParser.Parser qchp = 
-//			new de.d3web.textParser.cocor.qContainerHierarchyParser.Parser(
-//				qchs, kb, false);
-//		qchp.Parse();
-//		qContainerReport.addAll(qchp.getErrorMessages());
-//		return qContainerReport;
-//	}
-//
-//	private Report parseDiagnosisHierarchy(String dHierarchy, KnowledgeBase kb) {
-//		Report diagnosisReport = new Report();
-//		de.d3web.textParser.cocor.diagnosisHierarchyParser.Scanner dhs = 
-//			new de.d3web.textParser.cocor.diagnosisHierarchyParser.Scanner(
-//				this.getStream(dHierarchy));
-//		de.d3web.textParser.cocor.diagnosisHierarchyParser.Parser dhp = 
-//			new de.d3web.textParser.cocor.diagnosisHierarchyParser.Parser(
-//				dhs, kb, false);
-//		dhp.Parse();
-//		diagnosisReport.addAll(dhp.getErrorMessages());
-//		return diagnosisReport;
-//	}
-	
+
+	// public KnowledgeBaseAndReport createKnowledgeBase(String dHierarchy,
+	// String qHierarchy, String decisionTree) {
+	// Report report;
+	// KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance();
+	// KnowledgeBase kb = kbm.getKnowledgeBase();
+	// report = parseDiagnosisHierarchy(dHierarchy, kb);
+	// report.addAll(parseQContainerHierarchy(qHierarchy, kb));
+	// report.addAll(parseExtDecisionTree(decisionTree, kb));
+	// return new KnowledgeBaseAndReport(kb, report);
+	// }
+	//	
+	// private Report parseExtDecisionTree(String decisionTree, KnowledgeBase
+	// kb) {
+	// Report decisionTreeReport = new Report();
+	// de.d3web.textParser.cocor.extDecisionTreeParser.Scanner dts =
+	// new de.d3web.textParser.cocor.extDecisionTreeParser.Scanner(
+	// this.getStream(decisionTree));
+	// de.d3web.textParser.cocor.extDecisionTreeParser.Parser dtp =
+	// new de.d3web.textParser.cocor.extDecisionTreeParser.Parser(
+	// dts, kb, false);
+	// dtp.Parse();
+	// decisionTreeReport.addAll(dtp.getErrorMessages());
+	// return decisionTreeReport;
+	// }
+	//	
+	// private Report parseQContainerHierarchy(String qHierarchy, KnowledgeBase
+	// kb) {
+	// Report qContainerReport = new Report();
+	// de.d3web.textParser.cocor.qContainerHierarchyParser.Scanner qchs =
+	// new de.d3web.textParser.cocor.qContainerHierarchyParser.Scanner(
+	// this.getStream(qHierarchy));
+	// de.d3web.textParser.cocor.qContainerHierarchyParser.Parser qchp =
+	// new de.d3web.textParser.cocor.qContainerHierarchyParser.Parser(
+	// qchs, kb, false);
+	// qchp.Parse();
+	// qContainerReport.addAll(qchp.getErrorMessages());
+	// return qContainerReport;
+	// }
+	//
+	// private Report parseDiagnosisHierarchy(String dHierarchy, KnowledgeBase
+	// kb) {
+	// Report diagnosisReport = new Report();
+	// de.d3web.textParser.cocor.diagnosisHierarchyParser.Scanner dhs =
+	// new de.d3web.textParser.cocor.diagnosisHierarchyParser.Scanner(
+	// this.getStream(dHierarchy));
+	// de.d3web.textParser.cocor.diagnosisHierarchyParser.Parser dhp =
+	// new de.d3web.textParser.cocor.diagnosisHierarchyParser.Parser(
+	// dhs, kb, false);
+	// dhp.Parse();
+	// diagnosisReport.addAll(dhp.getErrorMessages());
+	// return diagnosisReport;
+	// }
+
 	private InputStream getStream(String ressource) {
 		InputStream stream;
-//		try {
-			//stream = new ByteArrayInputStream(ressource.getBytes("UTF-8"));
-			stream = new ByteArrayInputStream(ressource.getBytes());
-//		} catch (UnsupportedEncodingException e1) {
-//			e1.printStackTrace();
-//			stream = null;
-//		}
+		// try {
+		// stream = new ByteArrayInputStream(ressource.getBytes("UTF-8"));
+		stream = new ByteArrayInputStream(ressource.getBytes());
+		// } catch (UnsupportedEncodingException e1) {
+		// e1.printStackTrace();
+		// stream = null;
+		// }
 		return stream;
 	}
-	
+
 	public String toString(String[] in) {
 		String out = new String();
 		for (int i = 0; i < in.length; i++) {
@@ -109,23 +112,23 @@ public class HelperClass {
 		}
 		return out;
 	}
-	
+
 	/**
-	 * Sucht zu jeder Zelle der inTable, ob es eine entsprechende Zellen in der outTable
-	 * gibt. Positionen werden nicht berücksichtigt.
+	 * Sucht zu jeder Zelle der inTable, ob es eine entsprechende Zellen in der
+	 * outTable gibt. Positionen werden nicht berücksichtigt.
 	 * 
 	 * @param inTable: importierte Tabelle
 	 * @param outTable: exportierte Tabelle
 	 * @return Report über Unterschiede der beiden Tabellen
 	 */
 	public String compareXLSTablesByContent(File inTable, File outTable) {
-		
+
 		try {
 			StringBuffer report = new StringBuffer();
 			HSSFWorkbook in = new HSSFWorkbook(new FileInputStream(inTable));
 			HSSFWorkbook out = new HSSFWorkbook(new FileInputStream(outTable));
 			ArrayList<String> inContent = new ArrayList<String>();
-			
+
 			for (int i = 0; i < in.getNumberOfSheets(); i++) {
 				HSSFSheet inSheet = in.getSheetAt(i);
 				Iterator inRowIter = inSheet.rowIterator();
@@ -134,7 +137,7 @@ public class HelperClass {
 					Iterator inCellIter = inRow.cellIterator();
 					while (inCellIter.hasNext()) {
 						HSSFCell inCell = (HSSFCell) inCellIter.next();
-						if (inCell.getCellType() == 1 && inCell.getStringCellValue() != null 
+						if (inCell.getCellType() == 1 && inCell.getStringCellValue() != null
 								&& inCell.getStringCellValue() != "") {
 							inContent.add(inCell.getStringCellValue());
 						}
@@ -142,7 +145,7 @@ public class HelperClass {
 							inContent.add(inCell.getNumericCellValue() + "");
 						}
 					}
-				
+
 				}
 			}
 			ArrayList<String> inContent2 = new ArrayList<String>();
@@ -154,59 +157,61 @@ public class HelperClass {
 					Iterator outCellIter = outRow.cellIterator();
 					while (outCellIter.hasNext()) {
 						HSSFCell outCell = (HSSFCell) outCellIter.next();
-						if (outCell.getStringCellValue() != null && outCell.getStringCellValue() != "") {
+						if (outCell.getStringCellValue() != null
+								&& outCell.getStringCellValue() != "") {
 							if (inContent.contains(outCell.getStringCellValue())) {
 								inContent.remove(outCell.getStringCellValue());
-							} else {
+							}
+							else {
 								inContent2.add(outCell.getStringCellValue());
 							}
 						}
 					}
-				
+
 				}
 			}
 			if (inContent.size() > 0) {
 				report.append("\nFolgende Einträge wurde nicht gefunden:\n");
-				for (String cell:inContent) {
+				for (String cell : inContent) {
 					report.append(cell + "\n");
 				}
 			}
 			if (inContent2.size() > 0) {
 				report.append("\nFolgende Einträge sind überzählig:\n");
-				for (String cell:inContent2) {
+				for (String cell : inContent2) {
 					report.append(cell + "\n");
 				}
 			}
 			return report.toString();
-			
-		} catch (Exception e) {
+
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
+
 		return "Fehler beim Lesen der Tabellen!";
 	}
-	
+
 	/**
-	 * Sucht zu jeder Reihe der inTable, ob es eine gleiche oder ähnliche Reihe in der outTable gibt.
-	 * Die Position der Reihen spielt keine Rolle
+	 * Sucht zu jeder Reihe der inTable, ob es eine gleiche oder ähnliche Reihe
+	 * in der outTable gibt. Die Position der Reihen spielt keine Rolle
 	 * 
 	 * @param inTable: importierte Tabelle
 	 * @param outTable: exportierte Tabelle
-	 * @param minResemblance: ist die minimale Ähnlichkeit in Prozent, die Reihen haben müssen, um als
-	 *			 ähnlich bezeichnet zu werden
+	 * @param minResemblance: ist die minimale Ähnlichkeit in Prozent, die
+	 *        Reihen haben müssen, um als ähnlich bezeichnet zu werden
 	 * @return Report über Unterschiede der beiden Tabellen
 	 */
 	public String compareXLSTablesByRowContent(File inTable, File outTable, double minResemblance) {
-		
+
 		try {
 			StringBuffer report = new StringBuffer();
 			HSSFWorkbook in = new HSSFWorkbook(new FileInputStream(inTable));
 			HSSFWorkbook out = new HSSFWorkbook(new FileInputStream(outTable));
 			ArrayList<ArrayList<String>> inContent = new ArrayList<ArrayList<String>>();
 			ArrayList<ArrayList<String>> outContent = new ArrayList<ArrayList<String>>();
-			
-			//Tabelleninhalte in die zweidimensionale Arrays schreiben
+
+			// Tabelleninhalte in die zweidimensionale Arrays schreiben
 			for (int i = 0; i < in.getNumberOfSheets(); i++) {
 				HSSFSheet inSheet = in.getSheetAt(i);
 				Iterator inRowIter = inSheet.rowIterator();
@@ -216,7 +221,7 @@ public class HelperClass {
 					Iterator inCellIter = inRow.cellIterator();
 					while (inCellIter.hasNext()) {
 						HSSFCell inCell = (HSSFCell) inCellIter.next();
-						if (inCell.getCellType() == 1 && inCell.getStringCellValue() != null 
+						if (inCell.getCellType() == 1 && inCell.getStringCellValue() != null
 								&& inCell.getStringCellValue() != "") {
 							inRowContent.add(inCell.getStringCellValue());
 						}
@@ -238,7 +243,7 @@ public class HelperClass {
 					Iterator outCellIter = outRow.cellIterator();
 					while (outCellIter.hasNext()) {
 						HSSFCell outCell = (HSSFCell) outCellIter.next();
-						if (outCell.getCellType() == 1 && outCell.getStringCellValue() != null 
+						if (outCell.getCellType() == 1 && outCell.getStringCellValue() != null
 								&& outCell.getStringCellValue() != "") {
 							outRowContent.add(outCell.getStringCellValue());
 						}
@@ -254,10 +259,10 @@ public class HelperClass {
 			int inRowCount = inContent.size();
 			int outRowCount = outContent.size();
 			int sameRowsCount = 0;
-			
-			
+
 			// Diejenigen Reihen finden, die am besten zusammenpassen
-			// und mindestens "minResemblance" Übereinstimmung haben, anschliessend löschen
+			// und mindestens "minResemblance" Übereinstimmung haben,
+			// anschliessend löschen
 			if (inContent.size() <= outContent.size()) {
 				for (int i = 0; i < inContent.size(); i++) {
 					ArrayList<String> inRow = inContent.get(i);
@@ -267,9 +272,9 @@ public class HelperClass {
 						ArrayList<String> outRow = outContent.get(j);
 						ArrayList<String> compareRow = new ArrayList<String>();
 						compareRow.addAll(inRow);
-						if (outRow.size() > 0 && inRow.size() > 0){
+						if (outRow.size() > 0 && inRow.size() > 0) {
 							int resemblance = 0;
-							for (String cell:outRow) {
+							for (String cell : outRow) {
 								if (compareRow.contains(cell)) {
 									compareRow.remove(cell);
 									resemblance++;
@@ -280,24 +285,26 @@ public class HelperClass {
 								bestRow = outRow;
 							}
 						}
-						
+
 					}
-					if (maxResemblance > (inRow.size()*minResemblance) 
+					if (maxResemblance > (inRow.size() * minResemblance)
 							&& maxResemblance > 0) {
 						outContent.remove(bestRow);
 						inContent.remove(inRow);
 						i--;
 						if (bestRow.containsAll(inRow) && inRow.containsAll(bestRow)) {
 							sameRowsCount++;
-						} else {
-							report.append("Unterschiedliche, aber ähnliche Reihen (" 
-									+ "Übereinstimmung " + maxResemblance + "/" + 
-									(inRow.size() > bestRow.size() ? inRow.size() : bestRow.size()) 
-									+ "):\nImport: "+ inRow + "\nExport: " + bestRow + "\n\n");
+						}
+						else {
+							report.append("Unterschiedliche, aber ähnliche Reihen ("
+									+ "Übereinstimmung " + maxResemblance + "/" +
+									(inRow.size() > bestRow.size() ? inRow.size() : bestRow.size())
+									+ "):\nImport: " + inRow + "\nExport: " + bestRow + "\n\n");
 						}
 					}
 				}
-			} else {
+			}
+			else {
 				for (int i = 0; i < outContent.size(); i++) {
 					ArrayList<String> outRow = outContent.get(i);
 					ArrayList<String> bestRow = new ArrayList<String>();
@@ -306,9 +313,9 @@ public class HelperClass {
 						ArrayList<String> inRow = inContent.get(j);
 						ArrayList<String> compareRow = new ArrayList<String>();
 						compareRow.addAll(outRow);
-						if (inRow.size() > 0 && outRow.size() > 0){
+						if (inRow.size() > 0 && outRow.size() > 0) {
 							int resemblance = 0;
-							for (String cell:inRow) {
+							for (String cell : inRow) {
 								if (compareRow.contains(cell)) {
 									compareRow.remove(cell);
 									resemblance++;
@@ -319,33 +326,40 @@ public class HelperClass {
 								bestRow = inRow;
 							}
 						}
-						
+
 					}
-					if (maxResemblance > (outRow.size()*minResemblance) 
+					if (maxResemblance > (outRow.size() * minResemblance)
 							&& maxResemblance > 0) {
 						inContent.remove(bestRow);
 						outContent.remove(outRow);
 						i--;
 						if (bestRow.containsAll(outRow) && outRow.containsAll(bestRow)) {
 							sameRowsCount++;
-						} else {
-							report.append("Unterschiedliche, aber ähnliche Reihen (" 
-									+ "Übereinstimmung " + maxResemblance + "/" + 
-									(outRow.size() > bestRow.size() ? outRow.size() : bestRow.size()) 
-									+ "):\nImport: "+ bestRow + "\nExport: " + outRow + "\n\n");
+						}
+						else {
+							report.append("Unterschiedliche, aber ähnliche Reihen ("
+									+ "Übereinstimmung "
+									+ maxResemblance
+									+ "/"
+									+
+									(outRow.size() > bestRow.size()
+											? outRow.size()
+											: bestRow.size())
+									+ "):\nImport: " + bestRow + "\nExport: " + outRow + "\n\n");
 						}
 					}
 				}
 			}
 
-			// Sind jetzt beide Tabellenarrays leer, stimmt der Inhalt reihenweise
+			// Sind jetzt beide Tabellenarrays leer, stimmt der Inhalt
+			// reihenweise
 			// überein.
-			
+
 			if (inContent.size() > 0) {
 				report.append("Folgende Reihen der Importtabelle wurden in der "
 						+ "Exporttabelle nicht gefunden:\n"
 						+ "(Weniger als " + (minResemblance * 100) + "% Übereinstimmung)\n");
-				for (ArrayList<String> row:inContent) {
+				for (ArrayList<String> row : inContent) {
 					report.append(row + "\n");
 				}
 				report.append("\n");
@@ -354,45 +368,46 @@ public class HelperClass {
 				report.append("Folgende Reihen der Exporttabelle wurden in der "
 						+ "Importtabelle nicht gefunden:\n"
 						+ "(Weniger als " + (minResemblance * 100) + "% Übereinstimmung)\n");
-				for (ArrayList<String> row:outContent) {
+				for (ArrayList<String> row : outContent) {
 					report.append(row + "\n");
 				}
 				report.append("\n");
 			}
 			if (report.toString().length() > 0) {
-				report.insert(0, "\n\n" + sameRowsCount + " von " 
-						+ inRowCount + " importieren Reihen stimmen inhaltlich mit\n" 
-						+ sameRowsCount + " von " + outRowCount 
+				report.insert(0, "\n\n" + sameRowsCount + " von "
+						+ inRowCount + " importieren Reihen stimmen inhaltlich mit\n"
+						+ sameRowsCount + " von " + outRowCount
 						+ " exportierten Reihen überein!\n\n");
 				report.deleteCharAt(report.toString().length() - 1);
 			}
 			return report.toString();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return "Fehler beim Lesen der Tabellen!";
 	}
-	
+
 	/**
-	 * Sucht zu jeder Spalte der inTable, ob es eine gleiche oder ähnliche Spalte in der outTable gibt.
-	 * Die Position der Spalten spielt keine Rolle
+	 * Sucht zu jeder Spalte der inTable, ob es eine gleiche oder ähnliche
+	 * Spalte in der outTable gibt. Die Position der Spalten spielt keine Rolle
 	 * 
 	 * @param inTable: importierte Tabelle
 	 * @param outTable: exportierte Tabelle
-	 * @param minResemblance: ist die minimale Ähnlichkeit in Prozent, die die Spalte haben müssen, 
-	 * 			um als ähnlich bezeichnet zu werden
+	 * @param minResemblance: ist die minimale Ähnlichkeit in Prozent, die die
+	 *        Spalte haben müssen, um als ähnlich bezeichnet zu werden
 	 * @return Report über Unterschiede der beiden Tabellen
 	 */
 	public String compareXLSTablesByColumnContent(File inTable, File outTable, double minResemblance) {
-		
+
 		try {
 			StringBuffer report = new StringBuffer();
 			HSSFWorkbook in = new HSSFWorkbook(new FileInputStream(inTable));
 			HSSFWorkbook out = new HSSFWorkbook(new FileInputStream(outTable));
 			ArrayList<ArrayList<String>> inContent = new ArrayList<ArrayList<String>>();
 			ArrayList<ArrayList<String>> outContent = new ArrayList<ArrayList<String>>();
-			
-			//Tabelleninhalte in die zweidimensionale Arrays schreiben
+
+			// Tabelleninhalte in die zweidimensionale Arrays schreiben
 			int inColumnCount = 0;
 			for (int i = 0; i < in.getNumberOfSheets(); i++) {
 				HSSFSheet inSheet = in.getSheetAt(i);
@@ -404,8 +419,8 @@ public class HelperClass {
 						if (inContent.size() <= j + inColumnCount) {
 							inContent.add(new ArrayList<String>());
 						}
-						if (inCell != null && inCell.getCellType() == 1 
-								&& inCell.getStringCellValue() != null 
+						if (inCell != null && inCell.getCellType() == 1
+								&& inCell.getStringCellValue() != null
 								&& inCell.getStringCellValue() != "") {
 							inContent.get(j + inColumnCount).add(inCell.getStringCellValue());
 						}
@@ -434,21 +449,22 @@ public class HelperClass {
 						if (outContent.size() <= j + outColumnCount) {
 							outContent.add(new ArrayList<String>());
 						}
-						if (outCell != null && outCell.getCellType() == 1 
-								&& outCell.getStringCellValue() != null 
+						if (outCell != null && outCell.getCellType() == 1
+								&& outCell.getStringCellValue() != null
 								&& outCell.getStringCellValue() != "") {
 							outContent.get(j + outColumnCount).add(outCell.getStringCellValue());
 						}
 						if (outCell != null && outCell.getCellType() == 0) {
-							outContent.get(j + outColumnCount).add(outCell.getNumericCellValue() + "");
+							outContent.get(j + outColumnCount).add(
+									outCell.getNumericCellValue() + "");
 						}
 					}
 				}
 				outColumnCount = outContent.size();
 			}
-//			for (ArrayList<String> col:outContent) {
-//				System.out.println(col);
-//			}
+			// for (ArrayList<String> col:outContent) {
+			// System.out.println(col);
+			// }
 			for (int i = 0; i < outContent.size(); i++) {
 				if (outContent.get(i).size() == 0) {
 					outContent.remove(i);
@@ -458,9 +474,10 @@ public class HelperClass {
 			int inRowCount = inContent.size();
 			int outRowCount = outContent.size();
 			int sameRowsCount = 0;
-			
+
 			// Diejenigen Spalten finden, die am besten zusammenpassen
-			// und mindestens "minResemblance" Übereinstimmung haben, anschliessend löschen
+			// und mindestens "minResemblance" Übereinstimmung haben,
+			// anschliessend löschen
 			if (inContent.size() <= outContent.size()) {
 				for (int i = 0; i < inContent.size(); i++) {
 					ArrayList<String> inRow = inContent.get(i);
@@ -470,9 +487,9 @@ public class HelperClass {
 						ArrayList<String> outRow = outContent.get(j);
 						ArrayList<String> compareRow = new ArrayList<String>();
 						compareRow.addAll(inRow);
-						if (outRow.size() > 0 && inRow.size() > 0){
+						if (outRow.size() > 0 && inRow.size() > 0) {
 							int resemblance = 0;
-							for (String cell:outRow) {
+							for (String cell : outRow) {
 								if (compareRow.contains(cell)) {
 									compareRow.remove(cell);
 									resemblance++;
@@ -483,24 +500,26 @@ public class HelperClass {
 								bestRow = outRow;
 							}
 						}
-						
+
 					}
-					if (maxResemblance > (inRow.size()* minResemblance) 
+					if (maxResemblance > (inRow.size() * minResemblance)
 							&& maxResemblance > 0) {
 						outContent.remove(bestRow);
 						inContent.remove(inRow);
 						i--;
 						if (bestRow.containsAll(inRow) && inRow.containsAll(bestRow)) {
 							sameRowsCount++;
-						} else {
-							report.append("Unterschiedliche, aber ähnliche Spalten (" 
-									+ "Übereinstimmung " + maxResemblance + "/" + 
+						}
+						else {
+							report.append("Unterschiedliche, aber ähnliche Spalten ("
+									+ "Übereinstimmung " + maxResemblance + "/" +
 									(inRow.size() > bestRow.size() ? inRow.size() : bestRow.size())
-									+ "):\nImport: "+ inRow + "\nExport: " + bestRow + "\n\n");
+									+ "):\nImport: " + inRow + "\nExport: " + bestRow + "\n\n");
 						}
 					}
 				}
-			} else {
+			}
+			else {
 				for (int i = 0; i < outContent.size(); i++) {
 					ArrayList<String> outRow = outContent.get(i);
 					ArrayList<String> bestRow = new ArrayList<String>();
@@ -509,9 +528,9 @@ public class HelperClass {
 						ArrayList<String> inRow = inContent.get(j);
 						ArrayList<String> compareRow = new ArrayList<String>();
 						compareRow.addAll(outRow);
-						if (inRow.size() > 0 && outRow.size() > 0){
+						if (inRow.size() > 0 && outRow.size() > 0) {
 							int resemblance = 0;
-							for (String cell:inRow) {
+							for (String cell : inRow) {
 								if (compareRow.contains(cell)) {
 									compareRow.remove(cell);
 									resemblance++;
@@ -522,33 +541,40 @@ public class HelperClass {
 								bestRow = inRow;
 							}
 						}
-						
+
 					}
-					if (maxResemblance > (outRow.size()*minResemblance) 
+					if (maxResemblance > (outRow.size() * minResemblance)
 							&& maxResemblance > 0) {
 						inContent.remove(bestRow);
 						outContent.remove(outRow);
 						i--;
 						if (bestRow.containsAll(outRow) && outRow.containsAll(bestRow)) {
 							sameRowsCount++;
-						} else {
-							report.append("Unterschiedliche, aber ähnliche Spalten (" 
-									+ "Übereinstimmung " + maxResemblance + "/" + 
-									(outRow.size() > bestRow.size() ? outRow.size() : bestRow.size()) 
-									+ "):\nImport: "+ bestRow + "\nExport: " + outRow + "\n\n");
+						}
+						else {
+							report.append("Unterschiedliche, aber ähnliche Spalten ("
+									+ "Übereinstimmung "
+									+ maxResemblance
+									+ "/"
+									+
+									(outRow.size() > bestRow.size()
+											? outRow.size()
+											: bestRow.size())
+									+ "):\nImport: " + bestRow + "\nExport: " + outRow + "\n\n");
 						}
 					}
 				}
 			}
 
-			// Sind jetzt beide Tabellenarrays leer, stimmt der Inhalt reihenweise
+			// Sind jetzt beide Tabellenarrays leer, stimmt der Inhalt
+			// reihenweise
 			// überein.
 
 			if (inContent.size() > 0) {
 				report.append("Folgende Spalten der Importtabelle wurden in der "
 						+ "Exporttabelle nicht gefunden:\n"
 						+ "(Weniger als " + (minResemblance * 100) + "% Übereinstimmung)\n");
-				for (ArrayList<String> row:inContent) {
+				for (ArrayList<String> row : inContent) {
 					report.append(row + "\n");
 				}
 				report.append("\n");
@@ -557,43 +583,43 @@ public class HelperClass {
 				report.append("Folgende Spalten der Exporttabelle wurden in der "
 						+ "Importtabelle nicht gefunden:\n"
 						+ "(Weniger als " + (minResemblance * 100) + "% Übereinstimmung)\n");
-				for (ArrayList<String> row:outContent) {
+				for (ArrayList<String> row : outContent) {
 					report.append(row + "\n");
 				}
 				report.append("\n");
 			}
-			
+
 			// Falls unterschiede gefunden wurde, Report formatieren...
 			if (report.toString().length() > 0) {
-				report.insert(0, "\n\n" + sameRowsCount + " von " 
-						+ inRowCount + " importieren Spalten stimmen inhaltlich mit\n" 
-						+ sameRowsCount + " von " + outRowCount 
+				report.insert(0, "\n\n" + sameRowsCount + " von "
+						+ inRowCount + " importieren Spalten stimmen inhaltlich mit\n"
+						+ sameRowsCount + " von " + outRowCount
 						+ " exportierten Spalten überein!\n\n");
 				report.deleteCharAt(report.toString().length() - 1);
 			}
 			return report.toString();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return "Fehler beim Lesen der Tabellen!";
 	}
-	
+
 	/**
-	 * Vergleicht exakt jede Zelle der inTable mit der entsprechenden Zelle der outTable.
-	 * Die Position der Zellen spielt eine Rolle!
+	 * Vergleicht exakt jede Zelle der inTable mit der entsprechenden Zelle der
+	 * outTable. Die Position der Zellen spielt eine Rolle!
 	 * 
 	 * @param inTable: importierte Tabelle
 	 * @param outTable: exportierte Tabelle
 	 * @return Report über Unterschiede der beiden Tabellen
 	 */
 	public String compareXLSTablesByCell(File inTable, File outTable) {
-		
+
 		try {
 			StringBuffer report = new StringBuffer();
 			HSSFWorkbook in = new HSSFWorkbook(new FileInputStream(inTable));
 			HSSFWorkbook out = new HSSFWorkbook(new FileInputStream(outTable));
-			
-			
+
 			if (in.getNumberOfSheets() != out.getNumberOfSheets()) {
 				report.append("Unterschiedliche Anzahl an Sheets!\n");
 			}
@@ -616,25 +642,29 @@ public class HelperClass {
 						HSSFCell outCell = (HSSFCell) outCellIter.next();
 						if (inCell.getCellType() == 1 && outCell.getCellType() == 1) {
 							if (inCell.getStringCellValue().compareTo(outCell.getStringCellValue()) != 0) {
-								report.append("Unterschied in Tabelle " + i + ", Reihe " 
-										+ row + ", Spalte " + cell + ", Erwartet: <" 
-										+ inCell.getStringCellValue() + "> aber war <" 
+								report.append("Unterschied in Tabelle " + i + ", Reihe "
+										+ row + ", Spalte " + cell + ", Erwartet: <"
+										+ inCell.getStringCellValue() + "> aber war <"
 										+ outCell.getStringCellValue() + ">\n");
 							}
-						} else if (inCell.getCellType() == 0 && outCell.getCellType() == 0) {
+						}
+						else if (inCell.getCellType() == 0 && outCell.getCellType() == 0) {
 							if (inCell.getNumericCellValue() != outCell.getNumericCellValue()) {
-								report.append("Unterschied in Tabelle " + i + ", Reihe " 
-										+ row + ", Spalte " + cell + ", Erwartet: <" 
-										+ inCell.getNumericCellValue() + "> aber war <" 
+								report.append("Unterschied in Tabelle " + i + ", Reihe "
+										+ row + ", Spalte " + cell + ", Erwartet: <"
+										+ inCell.getNumericCellValue() + "> aber war <"
 										+ outCell.getNumericCellValue() + ">\n");
 							}
-						} else if (inCell.getCellType() == 3 && outCell.getCellType() == 3) {
+						}
+						else if (inCell.getCellType() == 3 && outCell.getCellType() == 3) {
 							// Beide Zellen Blank
-						} else if (inCell.getCellType() != outCell.getCellType()) {
-							report.append("Unterschiedlicher Zellentyp in Tabelle " + i 
+						}
+						else if (inCell.getCellType() != outCell.getCellType()) {
+							report.append("Unterschiedlicher Zellentyp in Tabelle " + i
 									+ ", Reihe " + row + ", Spalte " + cell + "\n");
-						} else {
-							report.append("Nicht ausgewerter Unterschied in Tabelle " + i 
+						}
+						else {
+							report.append("Nicht ausgewerter Unterschied in Tabelle " + i
 									+ ", Reihe " + row + ", Spalte " + cell + "\n");
 						}
 					}
@@ -644,7 +674,7 @@ public class HelperClass {
 						cellinTable++;
 					}
 					if (cellinTable > cell) {
-						report.append("Zuwenig Spalten in Reihe " + row + ", Tabelle " 
+						report.append("Zuwenig Spalten in Reihe " + row + ", Tabelle "
 								+ i + ", Erwartet: <"
 								+ cellinTable + "> aber waren <" + cell + ">\n");
 					}
@@ -654,7 +684,7 @@ public class HelperClass {
 						celloutTable++;
 					}
 					if (celloutTable > cell) {
-						report.append("Zuviele Spalten in Reihe " + row + ", Tabelle " 
+						report.append("Zuviele Spalten in Reihe " + row + ", Tabelle "
 								+ i + ", Erwartet: <"
 								+ cell + "> aber waren <" + celloutTable + ">\n");
 					}
@@ -683,12 +713,14 @@ public class HelperClass {
 				report.deleteCharAt(report.toString().length() - 1);
 			}
 			return report.toString();
-			
-		} catch (Exception e) {}
-		
+
+		}
+		catch (Exception e) {
+		}
+
 		return "Fehler beim Lesen der Tabellen!";
 	}
-	
+
 	public String readTxtFile(String fileName) {
 		StringBuffer inContent = new StringBuffer();
 		try {
@@ -700,7 +732,8 @@ public class HelperClass {
 				char1 = bufferedReader.read();
 			}
 			bufferedReader.close();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return inContent.toString();

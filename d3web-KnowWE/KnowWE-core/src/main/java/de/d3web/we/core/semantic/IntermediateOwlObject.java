@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 /**
@@ -35,6 +35,7 @@ import org.openrdf.model.URI;
  * 
  */
 public class IntermediateOwlObject {
+
 	public static final int LIST = 1;
 	public static final int LITERAL = 0;
 	private final ArrayList<URI> literals;
@@ -54,8 +55,7 @@ public class IntermediateOwlObject {
 	}
 
 	/**
-	 * @param myLiteral
-	 *            the myLiteral to set
+	 * @param myLiteral the myLiteral to set
 	 */
 	public void addLiteral(URI literal) {
 		literals.add(literal);
@@ -106,8 +106,7 @@ public class IntermediateOwlObject {
 	}
 
 	/**
-	 * @param statementslist
-	 *            the statementslist to set
+	 * @param statementslist the statementslist to set
 	 */
 	public void setStatementslist(ArrayList<Statement> statementslist) {
 		this.statementslist = statementslist;

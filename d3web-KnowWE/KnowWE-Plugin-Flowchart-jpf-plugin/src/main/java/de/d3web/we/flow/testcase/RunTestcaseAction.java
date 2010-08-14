@@ -1,20 +1,20 @@
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.d3web.we.flow.testcase;
 
@@ -71,7 +71,8 @@ public class RunTestcaseAction extends AbstractAction {
 
 		for (String questionName : testcaseMap.keySet()) {
 
-			KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(web).getKBM(topic);
+			KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(web).getKBM(
+					topic);
 			String user = context.getWikiContext().getUsername();
 			Session session = D3webUtils.getSession(topic, user, web);
 			Blackboard blackboard = session.getBlackboard();
@@ -81,14 +82,13 @@ public class RunTestcaseAction extends AbstractAction {
 			// Necessary for FindingSetEvent
 			Question question = kbm.findQuestion(questionName);
 			if (question == null) {
-				System.out.println("Could not find Question '" + questionName +"'.");
+				System.out.println("Could not find Question '" + questionName + "'.");
 				continue;
 			}
 
-			//TODO
+			// TODO
 			String namespace = "TODO";
 			Value value = kbm.findValue(question, valueString);
-
 
 			if (value == null) {
 				System.out.println("Could not find value '" + valueString + "' on Question '"
@@ -117,9 +117,7 @@ public class RunTestcaseAction extends AbstractAction {
 					new FindingSetEvent(question, value, namespace),
 					web, user, null);
 
-
 		}
-
 
 	}
 

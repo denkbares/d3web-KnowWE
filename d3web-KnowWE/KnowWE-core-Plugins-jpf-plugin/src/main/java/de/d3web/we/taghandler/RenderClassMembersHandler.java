@@ -38,12 +38,11 @@ public class RenderClassMembersHandler extends AbstractTagHandler {
 		if (className == null) {
 			return "No class given for list class members tag!";
 		}
-		
+
 		ISemanticCore sc = SemanticCoreDelegator.getInstance();
 		URI classURI = sc.getUpper().getHelper().createlocalURI(className);
-			
 
-		String querystring = TIME_SPARQL.replaceAll("CLASS","<"+classURI.toString()+">" );
+		String querystring = TIME_SPARQL.replaceAll("CLASS", "<" + classURI.toString() + ">");
 		RepositoryConnection con = sc.getUpper().getConnection();
 		// try {
 		// con.setAutoCommit(false);
@@ -55,9 +54,11 @@ public class RenderClassMembersHandler extends AbstractTagHandler {
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL,
 					SparqlDelegateRenderer.addNamespaces(querystring));
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			return e.getMessage();
-		} catch (MalformedQueryException e) {
+		}
+		catch (MalformedQueryException e) {
 			return e.getMessage();
 		}
 		try {
@@ -67,17 +68,21 @@ public class RenderClassMembersHandler extends AbstractTagHandler {
 				// values.put("render", "links");
 				return KnowWEEnvironment.maskHTML(DefaultSparqlRenderer
 						.getInstance().renderResults(result, true));
-			} else if (query instanceof GraphQuery) {
+			}
+			else if (query instanceof GraphQuery) {
 				// GraphQueryResult result = ((GraphQuery) query).evaluate();
 				return "graphquery ouput implementation: TODO";
-			} else if (query instanceof BooleanQuery) {
+			}
+			else if (query instanceof BooleanQuery) {
 				boolean result = ((BooleanQuery) query).evaluate();
 				return result + "";
 			}
-		} catch (QueryEvaluationException e) {
+		}
+		catch (QueryEvaluationException e) {
 			return ("KnowWE.owl.query.evalualtion.error") + ":"
 					+ e.getMessage();
-		} finally {
+		}
+		finally {
 
 		}
 		return null;

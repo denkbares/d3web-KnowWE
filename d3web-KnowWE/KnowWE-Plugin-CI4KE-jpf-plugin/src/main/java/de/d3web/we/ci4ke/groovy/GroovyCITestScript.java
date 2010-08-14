@@ -50,7 +50,7 @@ public abstract class GroovyCITestScript extends Script implements CITest {
 		this.config = config;
 	}
 
-	 public Collection<KnowWEArticle> getAllArticles(){
+	public Collection<KnowWEArticle> getAllArticles() {
 		return KnowWEEnvironment.getInstance().getArticleManager(
 				KnowWEEnvironment.DEFAULT_WEB).getArticles();
 	}
@@ -85,6 +85,5 @@ public abstract class GroovyCITestScript extends Script implements CITest {
 		}
 		return sectionIDs;
 	}
-
 
 }

@@ -10,9 +10,9 @@ import de.d3web.we.utils.SplitUtility;
 /**
  * This SectionFinder finds the _all_ unquoted occurrence of the 'symbol' in the
  * text and creates a section from it.
- *
+ * 
  * @author Jochen
- *
+ * 
  */
 public class UnquotedExpressionFinder extends SectionFinder {
 
@@ -40,7 +40,6 @@ public class UnquotedExpressionFinder extends SectionFinder {
 			counter += index + 1;
 			index = SplitUtility.indexOfUnquoted(text, symbol);
 		}
-
 
 		return result;
 	}

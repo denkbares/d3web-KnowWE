@@ -302,30 +302,30 @@ public class CIDashboardType extends DefaultMarkupType {
 	 * @return
 	 */
 	public static String renderBuildDetails(String dashboardID, int selectedBuildNumber) {
-	
+
 		KnowWEWikiConnector conny = KnowWEEnvironment.getInstance().getWikiConnector();
 		CIBuildPersistenceHandler handler = new CIBuildPersistenceHandler(dashboardID);
 		StringBuffer buffy = new StringBuffer();
-	
+
 		// ------------------------------------------------------------------------
 		// Render the build details in the middle colum
 		// (ci-column-middle)
 		// ------------------------------------------------------------------------
-	
+
 		buffy.append("<div id='" + dashboardID + "-column-middle' class='ci-column-middle'>");
-	
+
 		String xPath = "builds/build[@nr=%s]/tests/test";
 		List<?> tests = handler.selectNodes(String.format(xPath, selectedBuildNumber));
-	
+
 		buffy.append("<h3 style=\"background-color: #CCCCCC;\">" +
 				"Results of Build #" + selectedBuildNumber + "</h3>");
-	
+
 		for (Object o : tests) {
 			if (o instanceof Element) {
 				Element e = (Element) o;
-	
+
 				buffy.append("<div class='ci-collapsible-box'><h4>");
-	
+
 				// Render Test Result
 				String s = e.getAttributeValue("result");
 				if (s != null && !s.isEmpty()) {
@@ -335,40 +335,40 @@ public class CIDashboardType extends DefaultMarkupType {
 				// Render Test-Name
 				s = e.getAttributeValue("name");
 				if (s != null && !s.isEmpty()) buffy.append(s);
-	
+
 				buffy.append("</h4>\n");
-	
+
 				// Render Test Message (if existent)
 				buffy.append("<span style=\"display: none;\">\n");
 				s = e.getAttributeValue("message");
 				if (s != null && !s.isEmpty()) {
 					buffy.append(s);
 				}
-	
+
 				buffy.append("</span>\n");
-	
+
 				buffy.append("</div>\n");
 			}
 		}
 		buffy.append("</table></div>");
-	
+
 		// ------------------------------------------------------------------------
-	
+
 		// -------------------------------------------------------------------------
 		// Render the wiki-changes in the right column
 		// (ci-column-right)
 		// -------------------------------------------------------------------------
-	
+
 		buffy.append("<div id='" + dashboardID + "-column-right' class='ci-column-right'>");
-	
+
 		// the version of the article of the selected build
 		int articleVersionSelected = 1;
 		// the version of the article of the previous build
 		int articleVersionPrevious = 1;
-	
+
 		// Number of build to compare to (the previous build number)
 		int previousBuildNr = selectedBuildNumber > 1 ? selectedBuildNumber - 1 : 1;
-	
+
 		String monitoredArticleTitle = "";
 		Object attrib = handler.selectSingleNode("builds/@monitoredArticle");
 		if (attrib instanceof Attribute) {
@@ -380,7 +380,7 @@ public class CIDashboardType extends DefaultMarkupType {
 
 		// xPath to select the article version of a buildNumber
 		xPath = "builds/build[@nr=%s]/@articleVersion";
-	
+
 		// try to parse the selected build article version
 		attrib = handler.selectSingleNode(String.format(xPath, selectedBuildNumber));
 		if (attrib instanceof Attribute) {
@@ -388,7 +388,7 @@ public class CIDashboardType extends DefaultMarkupType {
 			if (attrValue != null && !attrValue.isEmpty()) articleVersionSelected = Integer.parseInt(attrValue);
 		}
 		attrib = null;
-	
+
 		// try to parse the selected build article version
 		attrib = handler.selectSingleNode(String.format(xPath, previousBuildNr));
 		if (attrib instanceof Attribute) {
@@ -396,25 +396,25 @@ public class CIDashboardType extends DefaultMarkupType {
 			if (attrValue != null && !attrValue.isEmpty()) articleVersionPrevious = Integer.parseInt(attrValue);
 		}
 		attrib = null;
-	
+
 		// buffy.append("<h4>Unterschiede zwischen <b>Build " + buildNr +
 		// "</b> (Article Version " + articleVersionSelected +
 		// ") und <b>Build " + previousBuildNr + "</b> (Article " +
 		// "Version " + articleVersionPrevious + ")</h4>");
-	
+
 		// buffy.append("<h3 style=\"background-color: #CCCCCC;\">Differences between Build #"
 		// +
 		// selectedBuildNumber + " and Build #" + previousBuildNr + "</h3>");
 		buffy.append("<h3 style=\"background-color: #CCCCCC;\">Changes in Build #" +
 				selectedBuildNumber + "</h3>");
-	
+
 		String author = conny.getAuthor(monitoredArticleTitle, articleVersionSelected);
-	
+
 		if (author != null && !author.isEmpty()) {
 			buffy.append("<div id=\"last-author-changed\"><b>Last change:</b> " +
 					author + "</div>");
 		}
-	
+
 		xPath = "builds/build[@nr=%s]/modifiedArticles/modifiedArticle";
 		List<?> articles = handler.selectNodes(String.format(xPath, selectedBuildNumber));
 		DiffEngine diff = DiffFactory.defaultDiffEngine();
@@ -438,9 +438,9 @@ public class CIDashboardType extends DefaultMarkupType {
 								articleVersionPrevious),
 						conny.getArticleSource(monitoredArticleTitle,
 								articleVersionSelected)));
-	
+
 		buffy.append("</div>");
-	
+
 		return buffy.toString();
 	}
 }

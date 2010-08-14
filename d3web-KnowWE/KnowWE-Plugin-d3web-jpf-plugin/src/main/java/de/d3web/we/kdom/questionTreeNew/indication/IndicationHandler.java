@@ -70,7 +70,7 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 		return super.needsToCreate(article, s)
 				|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 	}
-	
+
 	@Override
 	public boolean needsToDestroy(KnowWEArticle article, Section<KnowWETerm<?>> s) {
 		return super.needsToDestroy(article, s)
@@ -172,7 +172,5 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 
 		return new ArrayList<KDOMReportMessage>(0);
 	}
-
-
 
 }
