@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.selenium.tests;
@@ -27,10 +27,11 @@ import de.d3web.we.selenium.main.KnowledgeTestCase;
 
 /**
  * Selenium Test Class for checking the functionality of QuickEdit.
+ * 
  * @author Max Diez
- *
+ * 
  */
-public class QuickEditTest extends KnowledgeTestCase{
+public class QuickEditTest extends KnowledgeTestCase {
 
 	final String CANCEL = rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test.button_cancel");
 	final String ACCEPT = rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test.button_save");
@@ -68,7 +69,6 @@ public class QuickEditTest extends KnowledgeTestCase{
 		refreshAndWait();
 		assertEquals("Input wasn't adopted (in the right way).", "+", selenium.getText(divLocator
 				+ "//table/tbody/tr[4]/td[2]"));
-
 
 		// Test: Input -> not saving
 		oldCellValues.putAll(doQuickEditTableChange("//table/tbody/tr[2]/td[4]/select", "+", false));
@@ -185,8 +185,10 @@ public class QuickEditTest extends KnowledgeTestCase{
 	public void testAttributeTableEditing() {
 		open(rb.getString("KnowWE.SeleniumTest.url") + "Wiki.jsp?page=Quick-Edit-Test");
 		openQuickEdit(attTableID);
-		doSelActionAndWait(attTableID + "/AttributeTableLine/AttributeTableCell2", "type", "Newinfo");
-		doSelActionAndWait(attTableID + "/AttributeTableLine2/AttributeTableCell3", "type", "Beschreibung");
+		doSelActionAndWait(attTableID + "/AttributeTableLine/AttributeTableCell2", "type",
+				"Newinfo");
+		doSelActionAndWait(attTableID + "/AttributeTableLine2/AttributeTableCell3", "type",
+				"Beschreibung");
 		doSelActionAndWait(attTableID + "/AttributeTableLine2/AttributeTableCell", "type",
 				"Leere Batterie");
 		doSelActionAndWait(attTableID + ACCEPT, "click");
@@ -218,35 +220,39 @@ public class QuickEditTest extends KnowledgeTestCase{
 	// }
 
 	public void testQuickCoveringTableEditing() {
-		//TODO write test
+		// TODO write test
 	}
 
 	/**
 	 * Adds some new content to the page (e.g. to Rules-section) per QuickEdit.
-	 * @param sectionID The ID of the section containing the QuickEdit
-	 * which should be used.
-	 * @param newText The new content which is being added after the existing one.
+	 * 
+	 * @param sectionID The ID of the section containing the QuickEdit which
+	 *        should be used.
+	 * @param newText The new content which is being added after the existing
+	 *        one.
 	 */
 	private void quickEditAdd(String sectionID, String newText) {
 		openQuickEdit(sectionID);
-		doSelActionAndWait("//div[@id='" + sectionID + "']//textarea[@id='" + sectionID + "/default-edit-area']",
+		doSelActionAndWait("//div[@id='" + sectionID + "']//textarea[@id='" + sectionID
+				+ "/default-edit-area']",
 				"type", selenium.getValue("//div[@id='" + sectionID + "']//textarea[@id='"
 						+ sectionID + "/default-edit-area']")
-				+ newText);
+						+ newText);
 		doSelActionAndWait(sectionID + ACCEPT, "click");
 		waitForElement(sectionID + QEB);
 	}
 
 	/**
 	 * This method simulates the using of quickedit: First the quickedit is
-	 * opened, then the select button is changed to a new value and at last
-	 * it is clicked on save or cancel.
-	 * @param tableCellLocator Locator of the select button in row x and
-	 * column y, normally in a form like //table/tbody/tr[x]/td[y]/select
+	 * opened, then the select button is changed to a new value and at last it
+	 * is clicked on save or cancel.
+	 * 
+	 * @param tableCellLocator Locator of the select button in row x and column
+	 *        y, normally in a form like //table/tbody/tr[x]/td[y]/select
 	 * @param newValue is chosen (has to be in the select's drop down list)
 	 * @param save whether changes should be saved or not
-	 * @return a pair of Strings packed in a map: the tableCellLocator and
-	 * the old value of this cell
+	 * @return a pair of Strings packed in a map: the tableCellLocator and the
+	 *         old value of this cell
 	 */
 	private Map<String, String> doQuickEditTableChange(final String tableCellLocator,
 			final String newValue, final Boolean save) {
@@ -257,26 +263,27 @@ public class QuickEditTest extends KnowledgeTestCase{
 
 	/**
 	 * This method simulates the using of quickedit: First the quickedit is
-	 * opened, eventually the page is refreshed and then all the select
-	 * buttons are changed to their new value and at last it is clicked
-	 * on save or cancel.
-	 * @param tableCellLocator Locator of the select button in row x and
-	 * column y, normally in a form like //table/tbody/tr[x]/td[y]/select
+	 * opened, eventually the page is refreshed and then all the select buttons
+	 * are changed to their new value and at last it is clicked on save or
+	 * cancel.
+	 * 
+	 * @param tableCellLocator Locator of the select button in row x and column
+	 *        y, normally in a form like //table/tbody/tr[x]/td[y]/select
 	 * @param newValue is chosen (has to be in the select's drop down list)
 	 * @param save whether changes should be saved or not
-	 * @param refresh whether the page should be refreshed before setting
-	 * the new values
-	 * @return a map of pairs of Strings packed: the tableCellLocator and
-	 * the old value of this cell (for restoring the old values)
+	 * @param refresh whether the page should be refreshed before setting the
+	 *        new values
+	 * @return a map of pairs of Strings packed: the tableCellLocator and the
+	 *         old value of this cell (for restoring the old values)
 	 */
-	private Map<String, String> doQuickEditTableChange(final Map<String,String> input,
+	private Map<String, String> doQuickEditTableChange(final Map<String, String> input,
 			final Boolean save, Boolean refresh) {
 		Map<String, String> output = new HashMap<String, String>();
 		openQuickEdit(tableID);
 		if (refresh) {
 			refreshAndWait();
 		}
-		//Selects the new values for the given tablecells (=key)
+		// Selects the new values for the given tablecells (=key)
 		for (String key : input.keySet()) {
 			assertTrue(divLocator + key + " does not exists",
 					waitForElement(divLocator + key));
@@ -284,28 +291,32 @@ public class QuickEditTest extends KnowledgeTestCase{
 			doSelActionAndWait(divLocator + key, "select", "label=" + input.get(key));
 		}
 		if (save) {
-			doSelActionAndWait(tableID +  ACCEPT, "click");
-		} else {
-			doSelActionAndWait(tableID +  CANCEL, "click");
+			doSelActionAndWait(tableID + ACCEPT, "click");
+		}
+		else {
+			doSelActionAndWait(tableID + CANCEL, "click");
 			output.clear();
 		}
-		//Checks if Quick-Edit-Button is visible (save/cancel action finished)
+		// Checks if Quick-Edit-Button is visible (save/cancel action finished)
 		assertTrue("Accept or cancel button didn't worked", waitForElement(tableID + QEB));
 		return output;
 	}
 
 	/**
 	 * Opens the Quick-Edit-Mode and checks if it was already opened.
+	 * 
 	 * @param locator The id of the section containing the Quick-Edit-Element
-	 * (e.g. Quick-Edit-Test/RootType/Kopic/Kopic_content/Rules-section/Rules-section_content)
+	 *        (e.g.
+	 *        Quick-Edit-Test/RootType/Kopic/Kopic_content/Rules-section/Rules
+	 *        -section_content)
 	 */
 	private void openQuickEdit(String locator) {
-		//If another session opened Quick-Edit-Mode -> close it
+		// If another session opened Quick-Edit-Mode -> close it
 		if (selenium.isElementPresent(locator + CANCEL)) {
 			doSelActionAndWait(locator + CANCEL, "click");
 		}
-		doSelActionAndWait(locator +  QEB, "click");
-		//Kind of guaranteeing the completion of opening the QuickEdit
+		doSelActionAndWait(locator + QEB, "click");
+		// Kind of guaranteeing the completion of opening the QuickEdit
 		waitForElement(locator + CANCEL);
 	}
 }
