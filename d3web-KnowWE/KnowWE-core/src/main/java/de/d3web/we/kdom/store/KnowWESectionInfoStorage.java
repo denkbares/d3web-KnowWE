@@ -47,7 +47,7 @@ public class KnowWESectionInfoStorage {
 		return null;
 	}
 
-	public SectionStore getLastStoredObjects(String articleName, String kdomid) {
+	public SectionStore getLastSectionStore(String articleName, String kdomid) {
 		InfoStorePerArticle oldArtStore = lastArticleStores.get(articleName);
 		if (oldArtStore != null) return oldArtStore.getSectionStore(kdomid);
 		return null;

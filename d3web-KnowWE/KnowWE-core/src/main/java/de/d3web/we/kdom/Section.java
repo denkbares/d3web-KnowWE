@@ -1590,10 +1590,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 		@Override
 		public int compare(Section<? extends KnowWEObjectType> arg0, Section<? extends KnowWEObjectType> arg1) {
-			if (arg0.getOffSetFromFatherText() > arg1.getOffSetFromFatherText()) return 1;
-			if (arg0.getOffSetFromFatherText() < arg1.getOffSetFromFatherText()) return -1;
-			return 0;
-
+			return Integer.valueOf(arg0.getOffSetFromFatherText())
+					.compareTo(Integer.valueOf(arg1.getOffSetFromFatherText()));
 		}
 
 	}

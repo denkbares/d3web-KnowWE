@@ -112,7 +112,7 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 					}
 
 					SectionStore lastStore = KnowWEEnvironment.getInstance().getArticleManager(
-							father.getWeb()).getTypeStore().getLastStoredObjects(father.getTitle(),
+							father.getWeb()).getTypeStore().getLastSectionStore(father.getTitle(),
 							node.getID());
 
 					// don't do the following if the node is

@@ -81,7 +81,7 @@ public class KnowWENamespaceManager {
 		LinkedList<Section<?>> namespaceDefs = namespaceDefinitionsMap.get(namespace);
 		if (namespaceDefs != null) {
 			Collections.sort(namespaceDefs);
-			return Collections.unmodifiableList(namespaceDefs);
+			return Collections.unmodifiableList(new ArrayList<Section<?>>(namespaceDefs));
 		}
 		else {
 			return Collections.unmodifiableList(new ArrayList<Section<?>>(0));
@@ -113,7 +113,8 @@ public class KnowWENamespaceManager {
 		Set<Section<? extends NamespaceInclude>> namespaceIncludes = namespaceIncludesMap.get(article.getTitle());
 		return namespaceIncludes == null
 				? Collections.unmodifiableSet(new HashSet<Section<? extends NamespaceInclude>>(0))
-				: Collections.unmodifiableSet(namespaceIncludes);
+				: Collections.unmodifiableSet(new HashSet<Section<? extends NamespaceInclude>>(
+						namespaceIncludes));
 	}
 
 	public Set<String> getIncludedNamespaces(KnowWEArticle article) {

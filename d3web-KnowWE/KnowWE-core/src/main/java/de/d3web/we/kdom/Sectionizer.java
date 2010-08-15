@@ -205,9 +205,6 @@ public class Sectionizer {
 					}
 				}
 
-				if (findings.size() > 1) {
-					Collections.sort(findings);
-				}
 				// this sectionFinder has found something!
 				if (!findings.isEmpty()) {
 					List<Section<?>> newSections = new ArrayList<Section<?>>();

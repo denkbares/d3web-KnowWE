@@ -20,6 +20,7 @@ import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.store.SectionStore;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -67,7 +68,7 @@ public class CompileFlag extends DefaultMarkupType {
 
 			KnowWENamespaceManager nsMng = KnowWEEnvironment.getInstance().getNamespaceManager(
 					article.getWeb());
-			nsMng.registerNamespaceInclude(article, s);
+			if (!s.isReusedBy(article.getTitle())) nsMng.registerNamespaceInclude(article, s);
 
 			if (s.get().getNamespaceToInclude(s).equals(article.getTitle())) return null;
 
@@ -113,11 +114,18 @@ public class CompileFlag extends DefaultMarkupType {
 		}
 
 		@Override
+		public boolean needsToDestroy(KnowWEArticle article, Section<NamespaceIncludeType> s) {
+			return true;
+		}
+
+		@Override
 		@SuppressWarnings("unchecked")
 		public void destroy(KnowWEArticle article, Section<NamespaceIncludeType> s) {
 
+			Set<Section<?>> lastNamespaceDefinitions = new HashSet<Section<?>>();
+
 			if (!article.isFullParse()
-					|| !s.get().getNamespaceToInclude(s).equals(article.getTitle())) {
+					&& !s.get().getNamespaceToInclude(s).equals(article.getTitle())) {
 
 				List<Section<?>> namespaceDefinitions = KnowWEEnvironment.getInstance().getNamespaceManager(
 						article.getWeb()).getNamespaceDefinitions(s.getOriginalText().trim());
@@ -125,13 +133,9 @@ public class CompileFlag extends DefaultMarkupType {
 				List<Section<?>> storedNamespaceDefinitions = (List<Section<?>>) KnowWEUtils.getObjectFromLastVersion(
 						article, s, NAMESPACEDEFS_SNAPSHOT_KEY);
 
-				Set<Section<?>> lastNamespaceDefinitions;
 
-				if (storedNamespaceDefinitions == null) {
-					lastNamespaceDefinitions = new HashSet<Section<?>>(0);
-				}
-				else {
-					lastNamespaceDefinitions = new HashSet<Section<?>>(storedNamespaceDefinitions);
+				if (storedNamespaceDefinitions != null) {
+					lastNamespaceDefinitions.addAll(storedNamespaceDefinitions);
 				}
 
 				lastNamespaceDefinitions.removeAll(namespaceDefinitions);
@@ -142,6 +146,21 @@ public class CompileFlag extends DefaultMarkupType {
 					List<Section<?>> nodes = new LinkedList<Section<?>>();
 					nsDef.getAllNodesPostOrder(nodes);
 					includedNamespaces.addAll(nodes);
+				}
+				for (Section<?> node : includedNamespaces) {
+					if (node.isReusedBy(article.getTitle())) {
+					SectionStore lastStore = KnowWEEnvironment.getInstance().getArticleManager(
+							article.getWeb()).getTypeStore().getLastSectionStore(
+							article.getTitle(),
+							node.getID());
+						if (lastStore != null) {
+							// reuse last section store
+							KnowWEEnvironment.getInstance().getArticleManager(
+									article.getWeb()).getTypeStore().putSectionStore(
+											article.getTitle(), node.getID(),
+									lastStore);
+						}
+					}
 				}
 
 				TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
@@ -154,15 +173,21 @@ public class CompileFlag extends DefaultMarkupType {
 					}
 				}
 
+			}
+
+			if (!s.isReusedBy(article.getTitle())) {
+				KnowWEEnvironment.getInstance().getNamespaceManager(
+						article.getWeb()).unregisterNamespaceInclude(
+						article, s);
+
 				for (Section<?> nsDef : lastNamespaceDefinitions) {
 					nsDef.setReusedBy(article.getTitle(), false);
 				}
+
+				article.setFullParse(true, this);
 			}
 
-			KnowWEEnvironment.getInstance().getNamespaceManager(article.getWeb()).unregisterNamespaceInclude(
-					article, s);
 
-			article.setFullParse(true, this);
 		}
 
 	}
