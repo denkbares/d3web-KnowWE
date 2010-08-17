@@ -36,8 +36,6 @@ public class QuickInterviewTagHandler extends AbstractTagHandler {
 	 */
 	public QuickInterviewTagHandler() {
 		super("quickInterview");
-		KnowWERessourceLoader.getInstance().add("quicki.css",
-				KnowWERessourceLoader.RESOURCE_STYLESHEET);
 		KnowWERessourceLoader.getInstance().add("quicki.js",
 				KnowWERessourceLoader.RESOURCE_SCRIPT);
 
@@ -48,6 +46,11 @@ public class QuickInterviewTagHandler extends AbstractTagHandler {
 		return D3webModule.getKwikiBundle_d3web(user).getString("KnowWE.QuickInterview.description");
 	}
 
+	/*
+	 * calls the appropriate Action that is responsible for creating the
+	 * session, knowledge etc and then in turn calls the interview renderer that
+	 * returns the interview-HTML-String
+	 */
 	@Override
 	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 

@@ -59,8 +59,8 @@ public class QuickInterviewAction extends AbstractAction {
 	}
 
 	/**
-	 * The new Interview Renderer call. Will substitute above "Dialog Renderer"
-	 * once completed and working.
+	 * First initializes everything needed for using knowledge / using an
+	 * interview, then calls the appropriate renderer with the created session
 	 * 
 	 * @created 15.07.2010
 	 * @param topic

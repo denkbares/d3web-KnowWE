@@ -24,9 +24,16 @@
 
 
 /* dont display the blue plugin panel border */
-#quicki .panel{ border: none; }
-
+#quickinterview .panel{ border: none; }
 
 /* dont display a header for the quicki plugin */
-#quicki .panel h3{ display: none; }
+#quickinterview .panel h3{ display: none; }
 
+#quickinterview .containerHeader {display: block; } 
+
+#quickinterview .qablock {display: block; }
+
+#quickinterview .question { display: block; float: left; width: 350px;}
+
+/* answer styling */
+#quickinterview .answer { float: left; background-color: red; }
