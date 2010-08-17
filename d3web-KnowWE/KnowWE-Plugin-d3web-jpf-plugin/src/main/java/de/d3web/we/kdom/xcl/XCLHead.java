@@ -31,6 +31,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryException;
 
+import de.d3web.we.core.semantic.DefaultURIContext;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.OwlSubtreeHandler;
@@ -67,6 +68,7 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 
 	private class XCLHeadSubtreeHandler extends D3webSubtreeHandler {
 
+		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 
 			Section father = s.getFather();
@@ -82,7 +84,7 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 				string = string.substring(1, string.length() - 1);
 			}
 
-			DefaultSubjectContext context = new DefaultSubjectContext(string);
+			DefaultURIContext context = new DefaultURIContext(string);
 			ContextManager.getInstance().attachContext(father, context);
 
 			return null;
