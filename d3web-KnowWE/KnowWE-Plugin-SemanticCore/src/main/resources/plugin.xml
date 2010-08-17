@@ -14,6 +14,26 @@
 		</library>
 	</runtime>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Instantiation"
+		id="SemanticCoreDelegator">
+		<parameter id="class"
+			value="de.d3web.we.core.semantic.SemanticCoreDelegator" />
+		<parameter id="name" value="SemanticCoreDelegator" />
+		<parameter id="description" value="Instantiation SemanticCoreDelegator" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="2" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="EventListener"
+		id="FullParseListener">
+		<parameter id="class"
+			value="de.d3web.we.core.semantic.SemanticCoreDelegator" />
+		<parameter id="name" value="FullParseListener" />
+		<parameter id="description" value="EventListener FullParseListener" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
         <extension plugin-id="KnowWEExtensionPoints" point-id="SemanticCoreImpl" id="SemanticCoreImpl">
                 <parameter id="class" value="de.d3web.we.core.semantic.SemanticCore"/>
                 <parameter id="name" value="SemanticCoreImpl"/>

@@ -104,11 +104,5 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-core-Plugins-jpf-plugin</artifactId>
-			<version>${project.version}</version>
-			<scope>compile</scope>
-		</dependency>
 	</dependencies>
 </project>
