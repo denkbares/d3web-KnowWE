@@ -29,11 +29,14 @@
 /* dont display a header for the quicki plugin */
 #quickinterview .panel h3{ display: none; }
 
-#quickinterview .containerHeader {display: block; } 
+/* styling of the questionnaire div */
+#quickinterview .questionnaire {display: block; width: 100%;} 
 
-#quickinterview .qablock {display: block; }
+/* styling of the qablock enclosing div */
+#quickinterview .qablock {display: block; clear: both; width: 100%; }
 
-#quickinterview .question { display: block; float: left; width: 350px;}
+/* styling of the front part of the qablock that displays the question name */
+#quickinterview .question { display: inline; float: left; }
 
 /* answer styling */
-#quickinterview .answer { float: left; background-color: red; }
+#quickinterview .answer { display: inline; }
