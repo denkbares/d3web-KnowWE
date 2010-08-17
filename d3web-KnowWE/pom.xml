@@ -138,6 +138,7 @@
 		<module>KnowWE-Plugin-QuickInterview-jpf-plugin</module>
 		<module>KnowWE-Plugin-SolutionPanel-jpf-plugin</module>
 		<module>KnowWE-Plugin-XML</module>
+		<module>KnowWEPlugin-SemanticCore-Tests</module>
 	</modules>
 	<repositories>
 		<repository>
