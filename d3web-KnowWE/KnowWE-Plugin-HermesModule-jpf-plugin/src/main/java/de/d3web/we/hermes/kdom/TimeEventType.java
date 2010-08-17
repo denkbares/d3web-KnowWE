@@ -31,6 +31,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryException;
 
+import de.d3web.we.core.semantic.DefaultURIContext;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlSubtreeHandler;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
@@ -42,7 +43,6 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
-import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
@@ -84,7 +84,7 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			try {
 
-				Section<TimeEventType> sec = (Section<TimeEventType>) section;
+				Section<TimeEventType> sec = section;
 
 				/* Getting all the sections from KDOM */
 				Section<? extends TimeEventDescriptionType> descriptionSection = sec.findChildOfType(TimeEventDescriptionType.class);
@@ -130,7 +130,7 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 				// NOTE currently revise of OWL is bottom up => context are set
 				// too late
 
-				DefaultSubjectContext sc = new DefaultSubjectContext();
+				DefaultURIContext sc = new DefaultURIContext();
 				sc.setSubjectURI(localURI);
 				ContextManager.getInstance().attachContext(section, sc);
 

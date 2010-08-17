@@ -11,6 +11,7 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
+import de.d3web.we.core.semantic.DefaultURIContext;
 import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
@@ -45,7 +46,7 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 		URI subjectURI = null;
 
 		if (subjectContext != null) {
-			subjectURI = ((DefaultSubjectContext) subjectContext)
+			subjectURI = ((DefaultURIContext) subjectContext)
 					.getSolutionURI();
 			subjectString = subjectURI.getLocalName();
 			TupleQueryResult result = SPARQLUtil.executeTupleQuery(TITLE_QUERY
