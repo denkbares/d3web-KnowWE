@@ -76,7 +76,7 @@ public class SetFindingAction extends DeprecatedAbstractKnowWEAction {
 	// m.put(KnowWEAttributes.SEMANO_VALUE_NUM, valuenum);
 	// m.put(KnowWEAttributes.SEMANO_VALUE_IDS, valueids);
 	// perform(m);
-	//		
+	//
 	// }
 
 	@SuppressWarnings( {
@@ -106,6 +106,13 @@ public class SetFindingAction extends DeprecatedAbstractKnowWEAction {
 			// Necessary for FindingSetEvent
 			Question question = kbm.findQuestion(objectid);
 			if (question != null) {
+
+				// reset choices in case the selection changed
+				// (user removed choices)
+				blackboard.addValueFact(new DefaultFact(question,
+						Unknown.getInstance(), PSMethodUserSelected.getInstance(),
+						PSMethodUserSelected.getInstance()));
+
 				List<Value> values = new ArrayList<Value>();
 				if (valueids != null) {
 					String[] ids = valueids.split("\\,");

@@ -95,6 +95,13 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 			// Necessary for FindingSetEvent
 			Question question = kbm.findQuestion(objectid);
 			if (question != null) {
+
+				// reset choices in case the selection changed
+				// (user removed choices)
+				blackboard.addValueFact(new DefaultFact(question,
+						Unknown.getInstance(), PSMethodUserSelected.getInstance(),
+						PSMethodUserSelected.getInstance()));
+
 				Value value = null;
 				if (valueid != null) {
 					value = kbm.findValue(question, valueid);
