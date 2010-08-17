@@ -38,6 +38,7 @@ import de.d3web.KnOfficeParser.DefaultLexer;
 import de.d3web.KnOfficeParser.complexcondition.ComplexConditionSOLO;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.OwlSubtreeHandler;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.d3webModule.D3WebOWLVokab;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
@@ -55,7 +56,6 @@ import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class ComplexFinding extends DefaultAbstractKnowWEObjectType {

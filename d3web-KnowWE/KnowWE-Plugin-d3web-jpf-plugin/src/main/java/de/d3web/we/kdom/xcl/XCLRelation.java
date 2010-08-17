@@ -32,6 +32,7 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.OwlSubtreeHandler;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.d3webModule.D3WebOWLVokab;
@@ -45,7 +46,6 @@ import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
-import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.Patterns;
 
