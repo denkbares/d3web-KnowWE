@@ -1,6 +1,5 @@
-package de.d3web.we.kdom.bulletLists;
+package de.d3web.we.kdom.renderer;
 
-import de.d3web.we.kdom.renderer.FontColorRenderer;
 
 public class CommentRenderer extends FontColorRenderer {
 
