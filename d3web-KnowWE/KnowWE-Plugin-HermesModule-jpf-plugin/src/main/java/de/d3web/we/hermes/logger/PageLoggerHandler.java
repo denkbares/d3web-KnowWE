@@ -7,7 +7,7 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.module.PageAppendHandler;
+import de.d3web.we.kdom.rendering.PageAppendHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class PageLoggerHandler implements PageAppendHandler {
