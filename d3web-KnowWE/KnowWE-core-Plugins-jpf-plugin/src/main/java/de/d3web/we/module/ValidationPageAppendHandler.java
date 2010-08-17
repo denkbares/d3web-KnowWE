@@ -2,6 +2,7 @@ package de.d3web.we.module;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.rendering.PageAppendHandler;
 import de.d3web.we.kdom.validation.Validator;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
