@@ -30,6 +30,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryException;
 
+import de.d3web.we.core.semantic.DefaultURIContext;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.OwlSubtreeHandler;
@@ -42,7 +43,6 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.condition.ComplexFinding;
 import de.d3web.we.kdom.contexts.ContextManager;
-import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
@@ -72,8 +72,8 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 
 				URI explainsdings = uo.getHelper().createlocalURI(
 						s.getTitle() + ".." + s.getID());
-				URI solutionuri = ((DefaultSubjectContext) ContextManager
-						.getInstance().getContext(s, DefaultSubjectContext.CID))
+				URI solutionuri = ((DefaultURIContext) ContextManager
+						.getInstance().getContext(s, DefaultURIContext.CID))
 						.getSolutionURI();
 				io.addStatement(uo.getHelper().createStatement(solutionuri, D3WebOWLVokab.ISRATEDBY
 						, explainsdings));
