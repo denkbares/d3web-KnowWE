@@ -58,7 +58,7 @@ import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.module.PageAppendHandler;
+import de.d3web.we.kdom.rendering.PageAppendHandler;
 import de.d3web.we.search.MultiSearchEngine;
 import de.d3web.we.utils.KnowWEUtils;
 
