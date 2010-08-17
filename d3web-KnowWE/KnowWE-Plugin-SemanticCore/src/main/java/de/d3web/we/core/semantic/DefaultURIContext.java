@@ -52,8 +52,8 @@ public class DefaultURIContext extends StringContext {
 
 	public URI getSolutionURI() {
 		if (soluri == null) {
-			// UpperOntology uo = UpperOntology.getInstance();
-			// soluri = uo.getHelper().createlocalURI(getSubject());
+			UpperOntology uo = UpperOntology.getInstance();
+			soluri = uo.getHelper().createlocalURI(getSubject());
 		}
 		return soluri;
 	}
