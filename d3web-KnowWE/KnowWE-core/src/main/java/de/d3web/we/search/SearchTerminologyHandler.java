@@ -11,7 +11,6 @@ import java.util.Map.Entry;
 
 import com.wcohen.ss.Levenstein;
 
-import de.d3web.we.search.termExpansion.SearchTermExpander;
 
 public class SearchTerminologyHandler {
 

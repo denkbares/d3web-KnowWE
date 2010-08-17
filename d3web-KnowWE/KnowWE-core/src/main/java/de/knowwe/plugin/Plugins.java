@@ -14,8 +14,8 @@ import de.d3web.we.kdom.IncludeSectionizerModule;
 import de.d3web.we.kdom.IncrementalSectionizerModule;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.SectionizerModule;
+import de.d3web.we.kdom.rendering.PageAppendHandler;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
-import de.d3web.we.module.PageAppendHandler;
 import de.d3web.we.taghandler.TagHandler;
 
 /**

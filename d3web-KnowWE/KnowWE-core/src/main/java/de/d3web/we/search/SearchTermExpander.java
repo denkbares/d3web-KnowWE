@@ -1,8 +1,7 @@
-package de.d3web.we.search.termExpansion;
+package de.d3web.we.search;
 
 import java.util.Collection;
 
-import de.d3web.we.search.SearchTerm;
 
 /**
  * @author Jochen
