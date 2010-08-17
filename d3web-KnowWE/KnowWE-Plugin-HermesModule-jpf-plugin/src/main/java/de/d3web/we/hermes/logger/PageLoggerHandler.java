@@ -31,7 +31,7 @@ public class PageLoggerHandler implements PageAppendHandler {
 				e.printStackTrace();
 			}
 		}
-		return null;
+		return "";
 	}
 
 	@Override
