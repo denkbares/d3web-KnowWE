@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.uniwue.d3web</groupId>
   <artifactId>KnowWE-Plugin-SemanticCore-Tests</artifactId>
-  <name>KnowWE-Plugin: Semantic Core tests</name>
+  <name>KnowWE-Plugin-SemanticCore-Tests</name>
   <version>0.2-SNAPSHOT</version>
   
   <build>
@@ -31,20 +31,6 @@
 							<pathSeparator>;</pathSeparator>
 							<outputFile>target/dependencies/output.txt</outputFile>
 						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>de.uniwue.maven.plugins</groupId>
-				<artifactId>knowwe-versionator</artifactId>
-				<version>${versionatorVersion}</version>
-				<executions>
-					<execution>
-						<id>versionate-plugin</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>versionate-plugin</goal>
-						</goals>
 					</execution>
 				</executions>
 			</plugin>
