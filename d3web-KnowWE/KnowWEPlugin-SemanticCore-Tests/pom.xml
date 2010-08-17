@@ -6,7 +6,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.uniwue.d3web</groupId>
-  <artifactId>KnowWEPlugin-SemanticCore-Tests</artifactId>
+  <artifactId>KnowWE-Plugin-SemanticCore-Tests</artifactId>
+  <name>KnowWE-Plugin: Semantic Core tests</name>
   <version>0.2-SNAPSHOT</version>
   
   <build>
