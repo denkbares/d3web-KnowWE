@@ -68,14 +68,36 @@ public class RunTestcaseAction extends AbstractAction {
 		}
 
 		System.out.println(testcaseMap);
+		String user = context.getWikiContext().getUsername();
+		Session session = D3webUtils.getSession(topic, user, web);
 
+		KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(web).getKBM(
+				topic);
+		Blackboard blackboard = session.getBlackboard();
+
+		try {
+			long time = TimeStampType.getTimeInMillis(timestamp);
+			session.getPropagationManager().openPropagation(time);
+
+			setValues(testcaseMap, web, user, kbm, blackboard);
+
+		}
+		finally {
+			session.getPropagationManager().commitPropagation();
+		}
+
+	}
+
+	/**
+	 * @param testcaseMap
+	 * @param web
+	 * @param user
+	 * @param kbm
+	 * @param blackboard
+	 */
+	private void setValues(Map<String, String> testcaseMap, String web,
+			String user, KnowledgeBaseManagement kbm, Blackboard blackboard) {
 		for (String questionName : testcaseMap.keySet()) {
-
-			KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(web).getKBM(
-					topic);
-			String user = context.getWikiContext().getUsername();
-			Session session = D3webUtils.getSession(topic, user, web);
-			Blackboard blackboard = session.getBlackboard();
 
 			String valueString = testcaseMap.get(questionName);
 
@@ -118,7 +140,6 @@ public class RunTestcaseAction extends AbstractAction {
 					web, user, null);
 
 		}
-
 	}
 
 }
