@@ -328,8 +328,16 @@ KNOWWE.core.util = function(){
                   var oldDOM = document.getElementById( ids[i] );
                   var newDOMwrapper = document.createElement("div");
                   newDOMwrapper.innerHTML = value;
-                  var newDOM = newDOMwrapper.firstChild;
-                  oldDOM.parentNode.replaceChild( newDOM, oldDOM );
+                  
+                  var domChildNodes = newDOMwrapper.children;
+                  
+                  for(var j = 0; j < domChildNodes.length; j++) {
+                      var newDOM = domChildNodes[j];
+                      oldDOM = document.getElementById(newDOM.id);
+                      if(oldDOM) {
+                          oldDOM.parentNode.replaceChild( newDOM, oldDOM );
+                  	  }
+                  }
             }
         }
     }

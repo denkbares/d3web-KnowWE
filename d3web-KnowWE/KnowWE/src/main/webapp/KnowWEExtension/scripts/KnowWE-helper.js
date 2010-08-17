@@ -256,6 +256,7 @@ KNOWWE.helper = function(){
          * Returns a parentnode to the given starting node that has the given tagname.
          */
         tagParent : function( element, tag){
+        	if(!element) return false;
             if(!element.tagName) return element;
             if( element.tagName.toLowerCase() === tag.toLowerCase()){
                 return new KNOWWE.helper.element(element);
@@ -415,7 +416,10 @@ KNOWWE.helper.ajax = function ( options ) {
                 case 'insert':
                     var max = ids.length;
                     for ( var i = 0; i < max; i++ ) {
-                        document.getElementById(ids[i]).innerHTML = http.responseText;
+                    	var d = document.getElementById(ids[i]);
+                    	if( d ) {
+                            document.getElementById(ids[i]).innerHTML = http.responseText;
+                    	}
                     }
                     break;
                 case 'create':
