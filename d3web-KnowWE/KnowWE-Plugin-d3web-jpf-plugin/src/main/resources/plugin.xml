@@ -392,6 +392,7 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
+	<!-- temporarily removed
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GraphMLOwlRenderer">
 		<parameter id="class"
@@ -401,6 +402,8 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
+	
+	-->
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="KnowledgeSummerizeAction">
