@@ -28,12 +28,12 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
+import de.d3web.we.core.semantic.DefaultURIContext;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
-import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.renderer.ConditionalRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SPARQLUtil;
@@ -81,9 +81,9 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 		else {
 
 			Context context = ContextManager.getInstance().getContext(sec,
-					DefaultSubjectContext.CID);
+					DefaultURIContext.CID);
 			if (context != null) {
-				URI solutionURI = ((DefaultSubjectContext) context)
+				URI solutionURI = ((DefaultURIContext) context)
 						.getSolutionURI();
 				subject = solutionURI.getLocalName();
 				TupleQueryResult result = SPARQLUtil.executeTupleQuery(

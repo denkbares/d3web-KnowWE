@@ -33,6 +33,7 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryException;
 
+import de.d3web.we.core.semantic.DefaultURIContext;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.OwlSubtreeHandler;
@@ -43,13 +44,10 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
-import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
-import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -136,8 +134,8 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 			}
 
 			if (prop != null && validprop && stringa != null) {
-				DefaultSubjectContext sol = (DefaultSubjectContext) ContextManager
-						.getInstance().getContext(s, DefaultSubjectContext.CID);
+				DefaultURIContext sol = (DefaultURIContext) ContextManager
+						.getInstance().getContext(s, DefaultURIContext.CID);
 				if (soluri == null) {
 					soluri = sol.getSolutionURI();
 				}
