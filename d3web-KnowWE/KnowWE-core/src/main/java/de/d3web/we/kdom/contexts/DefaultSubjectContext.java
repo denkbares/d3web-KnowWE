@@ -20,15 +20,12 @@
 
 package de.d3web.we.kdom.contexts;
 
-import org.openrdf.model.URI;
-
 import de.d3web.we.kdom.Section;
 
 public class DefaultSubjectContext extends StringContext {
 
 	public final static String CID = "SOLUTIONCONTEXT";
 
-	private URI soluri;
 
 	public DefaultSubjectContext(String sol) {
 		setSubject(sol);
@@ -41,21 +38,11 @@ public class DefaultSubjectContext extends StringContext {
 		attributes.put("solution", sol);
 	}
 
-	public void setSubjectURI(URI solutionuri) {
-		soluri = solutionuri;
-	}
 
 	public String getSubject() {
 		return attributes.get("solution");
 	}
 
-	public URI getSolutionURI() {
-		if (soluri == null) {
-			// UpperOntology uo = UpperOntology.getInstance();
-			// soluri = uo.getHelper().createlocalURI(getSubject());
-		}
-		return soluri;
-	}
 
 	@Override
 	public String getCID() {
