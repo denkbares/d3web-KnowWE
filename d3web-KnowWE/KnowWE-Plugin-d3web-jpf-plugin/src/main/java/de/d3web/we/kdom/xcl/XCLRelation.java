@@ -72,9 +72,14 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 
 				URI explainsdings = uo.getHelper().createlocalURI(
 						s.getTitle() + ".." + s.getID());
-				URI solutionuri = ((DefaultURIContext) ContextManager
-						.getInstance().getContext(s, DefaultURIContext.CID))
+				DefaultURIContext defaultURIContext = (DefaultURIContext) ContextManager
+						.getInstance().getContext(s, DefaultURIContext.CID);
+				URI solutionuri = defaultURIContext
 						.getSolutionURI();
+				if (solutionuri == null) {
+					msgs.add(new SimpleMessageError("no solution context found"));
+					return msgs;
+				}
 				io.addStatement(uo.getHelper().createStatement(solutionuri, D3WebOWLVokab.ISRATEDBY
 						, explainsdings));
 				uo.getHelper().attachTextOrigin(explainsdings, s, io);
