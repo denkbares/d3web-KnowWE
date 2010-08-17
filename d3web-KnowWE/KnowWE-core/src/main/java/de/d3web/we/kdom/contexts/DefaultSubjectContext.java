@@ -22,7 +22,6 @@ package de.d3web.we.kdom.contexts;
 
 import org.openrdf.model.URI;
 
-import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.Section;
 
 public class DefaultSubjectContext extends StringContext {
@@ -52,8 +51,8 @@ public class DefaultSubjectContext extends StringContext {
 
 	public URI getSolutionURI() {
 		if (soluri == null) {
-			UpperOntology uo = UpperOntology.getInstance();
-			soluri = uo.getHelper().createlocalURI(getSubject());
+			// UpperOntology uo = UpperOntology.getInstance();
+			// soluri = uo.getHelper().createlocalURI(getSubject());
 		}
 		return soluri;
 	}

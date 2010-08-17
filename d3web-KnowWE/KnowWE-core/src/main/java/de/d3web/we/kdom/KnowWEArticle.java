@@ -35,7 +35,6 @@ import java.util.logging.Logger;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.FullParseEvent;
 import de.d3web.we.kdom.contexts.ContextManager;
@@ -120,11 +119,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 				|| ResourceBundle.getBundle("KnowWE_config").getString("incremental.fullparse")
 						.contains("true");
 
-		if (fullParse) EventManager.getInstance().fireEvent(new FullParseEvent(), web, null,
-				this.sec);
 
-		// TODO: KnowWEIncludeManager should listen to the events instead of
-		// being referenced directly
+
 		KnowWEIncludeManager includeManager = env.getIncludeManager(web);
 
 		includeManager.addSectionizingArticle(title);
@@ -143,6 +139,10 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 		// create new Section, here the KDOM is created recursively
 		sec = Section.createTypedSection(text, this, null, 0, this, null, false);
+
+		if (fullParse)
+			EventManager.getInstance().fireEvent(new FullParseEvent(), web, null,
+					this.sec);
 
 		sec.addNamespace(title);
 
@@ -176,7 +176,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		if (this.fullParse) {
 			// TODO: Semantic Core should listen to the FullParseEvent instead
 			// of being referenced directly
-			SemanticCoreDelegator.getInstance().clearContext(this);
+			// SemanticCoreDelegator.getInstance().clearContext(this);
 			Logger.getLogger(this.getClass().getName()).log(
 					Level.FINE,
 					"<- Cleared SemanticCore context in "

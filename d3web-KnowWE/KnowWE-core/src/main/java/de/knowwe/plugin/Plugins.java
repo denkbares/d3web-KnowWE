@@ -9,7 +9,6 @@ import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.we.action.Action;
 import de.d3web.we.core.KnowWERessourceLoader;
-import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.kdom.IncludeSectionizerModule;
 import de.d3web.we.kdom.IncrementalSectionizerModule;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -159,15 +158,16 @@ public class Plugins {
 	 * 
 	 * @return List of SemanticCores
 	 */
-	public static List<ISemanticCore> getSemanticCoreImpl() {
-		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_SemanticCore);
-		List<ISemanticCore> ret = new ArrayList<ISemanticCore>();
-		for (Extension e : extensions) {
-			ret.add((ISemanticCore) e.getSingleton());
-		}
-		return ret;
-	}
+	// public static List<ISemanticCore> getSemanticCoreImpl() {
+	// Extension[] extensions =
+	// PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+	// EXTENDED_POINT_SemanticCore);
+	// List<ISemanticCore> ret = new ArrayList<ISemanticCore>();
+	// for (Extension e : extensions) {
+	// ret.add((ISemanticCore) e.getSingleton());
+	// }
+	// return ret;
+	// }
 
 	/**
 	 * Returns a list of all plugged PageAppendHandlers.

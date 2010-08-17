@@ -43,8 +43,6 @@ import de.d3web.plugin.PluginManager;
 import de.d3web.plugin.Resource;
 import de.d3web.we.action.KnowWEActionDispatcher;
 import de.d3web.we.core.namespace.KnowWENamespaceManager;
-import de.d3web.we.core.semantic.ISemanticCore;
-import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.event.ArticleCreatedEvent;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.InitEvent;
@@ -448,19 +446,19 @@ public class KnowWEEnvironment {
 			}
 		}
 
-		List<ISemanticCore> sclist = Plugins.getSemanticCoreImpl();
-		if (sclist.size() == 1) {
-			SemanticCoreDelegator.setImpl(sclist.get(0));
-		}
-		else {
-			for (ISemanticCore cur : sclist) {
-				if (!cur.getClass().toString().contains("Dummy")) {
-					SemanticCoreDelegator.setImpl(cur);
-				}
-			}
-		}
-
-		SemanticCoreDelegator.initImpl(this);
+		// List<ISemanticCore> sclist = Plugins.getSemanticCoreImpl();
+		// if (sclist.size() == 1) {
+		// SemanticCoreDelegator.setImpl(sclist.get(0));
+		// }
+		// else {
+		// for (ISemanticCore cur : sclist) {
+		// if (!cur.getClass().toString().contains("Dummy")) {
+		// SemanticCoreDelegator.setImpl(cur);
+		// }
+		// }
+		// }
+		//
+		// SemanticCoreDelegator.initImpl(this);
 
 		for (Instantiation inst : Plugins.getInstantiations()) {
 			inst.init(context);
