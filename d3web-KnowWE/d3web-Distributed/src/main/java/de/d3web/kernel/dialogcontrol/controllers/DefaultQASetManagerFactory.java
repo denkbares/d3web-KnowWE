@@ -18,28 +18,31 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.kernel.dialogcontrol;
+/*
+ * Created on 01.12.2003
+ */
+package de.d3web.kernel.dialogcontrol.controllers;
 
 import de.d3web.core.session.Session;
-import de.d3web.kernel.dialogcontrol.controllers.DialogController;
-import de.d3web.kernel.dialogcontrol.controllers.MQDialogController;
-import de.d3web.kernel.dialogcontrol.controllers.QASetManager;
-import de.d3web.kernel.dialogcontrol.controllers.QASetManagerFactory;
 
-public class DistributedControllerFactory implements QASetManagerFactory {
+/**
+ * [DOC]
+ * 
+ * @author Christian Betz
+ * 
+ */
+public class DefaultQASetManagerFactory implements QASetManagerFactory {
 
-	private final ExternalProxy proxy;
-
-	public DistributedControllerFactory(ExternalProxy proxy) {
+	public DefaultQASetManagerFactory() {
 		super();
-		this.proxy = proxy;
 	}
 
+	/**
+	 * @see de.d3web.kernel.dialogcontrol.controllers.QASetManagerFactory#createQASetManager(de.d3web.core.session.Session)
+	 */
 	@Override
 	public QASetManager createQASetManager(Session session) {
-		DialogController delegate = new MQDialogController(session);
-		DistributedDialogController result = new DistributedDialogController(delegate, proxy);
-		return result;
+		return new OQDialogController(session);
 	}
 
 }

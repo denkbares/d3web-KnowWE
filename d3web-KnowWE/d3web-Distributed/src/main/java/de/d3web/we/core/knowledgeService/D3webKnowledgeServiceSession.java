@@ -38,8 +38,8 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Rating.State;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.PropertiesContainer;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseManagement;
@@ -51,6 +51,7 @@ import de.d3web.core.session.SessionEventListener;
 import de.d3web.core.session.SessionFactory;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.blackboard.DefaultFact;
+import de.d3web.core.session.interviewmanager.EmptyForm;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
@@ -59,6 +60,8 @@ import de.d3web.indication.inference.PSMethodUserSelected;
 import de.d3web.kernel.dialogcontrol.DistributedControllerFactory;
 import de.d3web.kernel.dialogcontrol.ExternalClient;
 import de.d3web.kernel.dialogcontrol.ExternalProxy;
+import de.d3web.kernel.dialogcontrol.controllers.QASetManager;
+import de.d3web.kernel.dialogcontrol.controllers.QASetManagerManagement;
 import de.d3web.kernel.psMethods.delegate.PSMethodDelegate;
 import de.d3web.scoring.inference.PSMethodHeuristic;
 import de.d3web.we.basic.Information;
@@ -149,6 +152,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			percentagesToScores.put(1.00, 100);
 		}
 
+		@Override
 		public void notify(IEventSource source, Session session) {
 			if (session != session) return;
 
@@ -217,6 +221,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	private void initConnection() {
 		session.addListener(new SessionEventListener() {
 
+			@Override
 			public void notify(Session source, TerminologyObject o, Object context) {
 				maybeNotifyBroker(o, source, context);
 			}
@@ -232,11 +237,13 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		}
 	}
 
+	@Override
 	public void clear() {
 		initCase();
 		initConnection();
 	}
 
+	@Override
 	public void processInit() {
 		for (Question question : base.getQuestions()) {
 			Information info = new Information(id, question.getId(), null,
@@ -248,6 +255,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		}
 	}
 
+	@Override
 	public void inform(Information info) {
 		IDObject object = base.search(info.getObjectID());
 
@@ -322,6 +330,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		}
 	}
 
+	@Override
 	public void request(List<Information> infos) {
 		List<Solution> requestedDiagnoses = new ArrayList<Solution>();
 		List<QASet> requestedFindings = new ArrayList<QASet>();
@@ -338,13 +347,14 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		// [TODO]: no idea if this is correct:
 		if (requestedDiagnoses.isEmpty()) {
 			for (QASet set : requestedFindings) {
-				session.getQASetManager().propagate(set, null,
+				QASetManager m = QASetManagerManagement.getInstance().getQASetManager(session);
+				m.propagate(set, null,
 						PSMethodNextQASet.getInstance());
 			}
 		}
 		else {
 			for (QASet set : base.getInitQuestions()) {
-				session.getQASetManager().propagate(set, null,
+				QASetManagerManagement.getInstance().getQASetManager(session).propagate(set, null,
 						PSMethodInit.getInstance());
 			}
 		}
@@ -445,8 +455,9 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		}
 	}
 
+	@Override
 	public boolean isFinished() {
-		return !session.getQASetManager().hasNextQASet();
+		return session.getInterview().nextForm().equals(EmptyForm.getInstance());
 	}
 
 	private SolutionState getLocalSolutionState(Rating state) {
@@ -506,6 +517,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		return base.getSolutions().toString();
 	}
 
+	@Override
 	public String getNamespace() {
 		return id;
 	}

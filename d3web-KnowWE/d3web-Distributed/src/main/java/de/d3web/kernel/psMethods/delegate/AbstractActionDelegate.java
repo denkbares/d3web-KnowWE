@@ -23,12 +23,13 @@ package de.d3web.kernel.psMethods.delegate;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.PSAction;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.session.Session;
-import de.d3web.core.session.interviewmanager.QASetManager;
+import de.d3web.kernel.dialogcontrol.controllers.QASetManager;
+import de.d3web.kernel.dialogcontrol.controllers.QASetManagerManagement;
 
 public abstract class AbstractActionDelegate extends PSAction {
 
@@ -47,7 +48,7 @@ public abstract class AbstractActionDelegate extends PSAction {
 
 	@Override
 	public void doIt(Session session, Object source, PSMethod psmethod) {
-		QASetManager manager = session.getQASetManager();
+		QASetManager manager = QASetManagerManagement.getInstance().getQASetManager(session);
 		for (NamedObject no : getNamedObjects()) {
 			// TODO added cast to Rule, as source was formerly of type rule
 			// --rh@20100625

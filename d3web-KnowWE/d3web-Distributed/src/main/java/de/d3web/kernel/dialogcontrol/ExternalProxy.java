@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import de.d3web.core.session.interviewmanager.DialogClientComparator;
+import de.d3web.kernel.dialogcontrol.controllers.DialogClientComparator;
 
 public class ExternalProxy {
 

@@ -28,11 +28,11 @@ import de.d3web.core.inference.Rule;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.core.session.interviewmanager.DialogController;
-import de.d3web.core.session.interviewmanager.InvalidQASetRequestException;
-import de.d3web.core.session.interviewmanager.MQDialogController;
-import de.d3web.core.session.interviewmanager.OQDialogController;
 import de.d3web.indication.inference.PSMethodNextQASet;
+import de.d3web.kernel.dialogcontrol.controllers.DialogController;
+import de.d3web.kernel.dialogcontrol.controllers.InvalidQASetRequestException;
+import de.d3web.kernel.dialogcontrol.controllers.MQDialogController;
+import de.d3web.kernel.dialogcontrol.controllers.OQDialogController;
 import de.d3web.kernel.psMethods.delegate.AbstractActionDelegate;
 import de.d3web.kernel.psMethods.delegate.ActionDelegate;
 import de.d3web.kernel.psMethods.delegate.ActionInstantDelegate;
@@ -40,8 +40,8 @@ import de.d3web.kernel.psMethods.delegate.PSMethodDelegate;
 
 public class DistributedDialogController implements DialogController {
 
-	private DialogController delegate;
-	private ExternalProxy proxy;
+	private final DialogController delegate;
+	private final ExternalProxy proxy;
 
 	public DistributedDialogController(DialogController delegate, ExternalProxy proxy) {
 		super();
@@ -49,6 +49,7 @@ public class DistributedDialogController implements DialogController {
 		this.proxy = proxy;
 	}
 
+	@Override
 	public void propagate(NamedObject no, Rule rule, PSMethod psm) {
 		Boolean external = (Boolean) no.getProperties().getProperty(Property.EXTERNAL);
 		String targetNamespace = (String) no.getProperties().getProperty(Property.FOREIGN_NAMESPACE);
@@ -79,26 +80,32 @@ public class DistributedDialogController implements DialogController {
 		}
 	}
 
+	@Override
 	public QASet getCurrentQASet() throws InvalidQASetRequestException {
 		return delegate.getCurrentQASet();
 	}
 
+	@Override
 	public boolean hasNewestQASet() {
 		return delegate.hasNewestQASet();
 	}
 
+	@Override
 	public boolean hasPreviousQASet() {
 		return delegate.hasPreviousQASet();
 	}
 
+	@Override
 	public boolean isValidForDC(QASet q) {
 		return delegate.isValidForDC(q);
 	}
 
+	@Override
 	public QASet moveToNewestQASet() {
 		return delegate.moveToNewestQASet();
 	}
 
+	@Override
 	public QASet moveToNextQASet() {
 		return delegate.moveToNextQASet();
 	}
@@ -108,30 +115,38 @@ public class DistributedDialogController implements DialogController {
 	 *             dafür einen DialogController zu verwenden, dem es egal ist,
 	 *             ob ein QContainer komplett beantwortet ist.
 	 */
+	@Deprecated
+	@Override
 	public QASet moveToNextRemainingQASet() {
 		return delegate.moveToNextRemainingQASet();
 	}
 
+	@Override
 	public QASet moveToPreviousQASet() {
 		return delegate.moveToPreviousQASet();
 	}
 
+	@Override
 	public QASet moveToQASet(QASet q) {
 		return delegate.moveToQASet(q);
 	}
 
+	@Override
 	public QASet moveToQuestion(QASet q) {
 		return delegate.moveToQuestion(q);
 	}
 
+	@Override
 	public List getProcessedContainers() {
 		return delegate.getProcessedContainers();
 	}
 
+	@Override
 	public List getQASetQueue() {
 		return delegate.getQASetQueue();
 	}
 
+	@Override
 	public boolean hasNextQASet() {
 		return delegate.hasNextQASet();
 	}
@@ -140,6 +155,7 @@ public class DistributedDialogController implements DialogController {
 		return delegate;
 	}
 
+	@Override
 	public MQDialogController getMQDialogcontroller() {
 		if (delegate instanceof MQDialogController) {
 			return (MQDialogController) delegate;
@@ -147,10 +163,14 @@ public class DistributedDialogController implements DialogController {
 		return null;
 	}
 
+	@Override
+	/**
+	 * Always returns null - this should be all removed!
+	 */
 	public OQDialogController getOQDialogcontroller() {
-		if (delegate instanceof OQDialogController) {
-			return (OQDialogController) delegate;
-		}
+		// if (delegate instanceof OQDialogController) {
+		// return (OQDialogController) delegate;
+		// }
 		return null;
 	}
 

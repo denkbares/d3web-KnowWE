@@ -18,28 +18,19 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.kernel.dialogcontrol;
+package de.d3web.kernel.dialogcontrol.controllers;
 
-import de.d3web.core.session.Session;
-import de.d3web.kernel.dialogcontrol.controllers.DialogController;
-import de.d3web.kernel.dialogcontrol.controllers.MQDialogController;
-import de.d3web.kernel.dialogcontrol.controllers.QASetManager;
-import de.d3web.kernel.dialogcontrol.controllers.QASetManagerFactory;
-
-public class DistributedControllerFactory implements QASetManagerFactory {
-
-	private final ExternalProxy proxy;
-
-	public DistributedControllerFactory(ExternalProxy proxy) {
-		super();
-		this.proxy = proxy;
-	}
+/**
+ * This Exception will be thrown by DialogController, if the history cursor is
+ * out of range (&gt; size-1) and the getCurrentQASet()-Method is invoked.
+ * 
+ * @author Norman Brümmer
+ */
+public class InvalidNextQASetRequestException
+		extends InvalidQASetRequestException {
 
 	@Override
-	public QASetManager createQASetManager(Session session) {
-		DialogController delegate = new MQDialogController(session);
-		DistributedDialogController result = new DistributedDialogController(delegate, proxy);
-		return result;
+	public String toString() {
+		return super.toString() + "there is no next QASet\n";
 	}
-
 }
