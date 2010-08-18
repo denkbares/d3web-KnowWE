@@ -156,12 +156,6 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>org.openrdf</groupId>
-			<artifactId>sesame</artifactId>
-			<version>2.3.2</version>
-			<classifier>onejar</classifier>
-		</dependency>
-		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom</artifactId>
 			<version>1.1</version>
@@ -198,16 +192,6 @@
 			<artifactId>KnowWE-ExtensionPoints-jpf-plugin</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.ontotext</groupId>
-			<artifactId>owlim</artifactId>
-			<version>3.3</version>
-		</dependency>
-		<dependency>
-			<groupId>com.ontotext</groupId>
-			<artifactId>trree</artifactId>
-			<version>3.3</version>
 		</dependency>
 	</dependencies>
 </project>
