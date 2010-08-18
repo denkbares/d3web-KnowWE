@@ -3,7 +3,6 @@
 <plugin id="KnowWE-Plugin-SemanticCore" version="0.0.1">
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
-		<import plugin-id="KnowWE-Basic-Plugins" />
 	</requires>
         	<runtime>
 		<library id="de.d3web" path="." type="code">
