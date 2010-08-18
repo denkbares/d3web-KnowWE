@@ -143,7 +143,7 @@ public class SubstanceInfoWriter extends WISECWriter {
 		// "3", "2", "1", "0", "-1", "-2", "-3" };
 
 		b.append("!! Criteria Scoring\n\n");
-
+		b.append("%%zebra-table\n%%sortable\n");
 		DecimalFormat df = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(
 				new Locale("en", "US")));
 		Collection<SubstanceList> lists = this.model.getSubstanceListsContaining(substance);
@@ -175,6 +175,7 @@ public class SubstanceInfoWriter extends WISECWriter {
 			b.append("| " + count);
 			b.append("\n");
 		}
+		b.append("/%\n/%\n");
 		if (totalScore > 0) {
 			b.append("Total score: " + df.format(totalScore));
 		}
