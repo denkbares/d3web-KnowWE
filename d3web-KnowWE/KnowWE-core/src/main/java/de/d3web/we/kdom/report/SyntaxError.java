@@ -10,7 +10,6 @@ public class SyntaxError extends KDOMError {
 
 	@Override
 	public String getVerbalization() {
-		// TODO Auto-generated method stub
 		return "Syntax Error: " + text;
 	}
 

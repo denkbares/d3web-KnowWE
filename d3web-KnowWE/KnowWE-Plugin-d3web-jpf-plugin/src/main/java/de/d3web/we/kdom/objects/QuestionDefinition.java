@@ -36,6 +36,7 @@ import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.utils.MessageUtils;
 
 /**
  * 
@@ -140,9 +141,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 				qidSection.get().storeTermObject(article, qidSection, q);
 
 				// return success message
-				return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
-						q.getClass().getSimpleName()
-								+ " " + q.getName()));
+				return MessageUtils.createdMessageAsList(q);
 			}
 			else {
 				return Arrays.asList((KDOMReportMessage) new ObjectCreationError(name,
