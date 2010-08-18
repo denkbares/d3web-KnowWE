@@ -246,9 +246,10 @@ public class QuickInterviewRenderer {
 	private static String getQuestionnaireRendering(QContainer container, int depth,
 			String display) {
 		StringBuffer div = new StringBuffer();
+		int margin = 10 + depth * 10;
 
 		div.append("<div id='" + container.getId() + "' " +
-				"class='questionnaire' style='padding-left: " + depth * 10 + "px;"
+				"class='questionnaire' style='margin-left: " + margin + "px;"
 				+ display + "'>");
 		div.append(" " + container.getName() + ": ");
 		div.append("</div>");
@@ -272,7 +273,7 @@ public class QuickInterviewRenderer {
 		html.append("<div class='qablock' style='" + display + "'");
 
 		// calculate indentation depth & resulting width of the question display
-		int d = depth * 10;
+		int d = 10 + depth * 10;
 		int w = 300 - d;
 
 		// render the first cell displaying the Question in a separate div,
@@ -280,7 +281,7 @@ public class QuickInterviewRenderer {
 		html.append("<div id='" + q.getId() + "' " +
 				"parent='" + parent.getId() + "' " +
 				"class='question' " +
-				"style='padding-left: " + d + "px; width: " + w + "px;' >"
+				"style='margin-left: " + d + "px; width: " + w + "px;' >"
 				+ q.getName() + "</div>");
 
 		if (q instanceof QuestionChoice) {
@@ -376,7 +377,7 @@ public class QuickInterviewRenderer {
 				cssclass = "answer answerActive";
 			}
 			String spanid = q.getId() + "_" + choice.getId();
-			html.append(getEnclosingTagOnClick("span", "" + choice.getName() + " ", cssclass,
+			html.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ", cssclass,
 					jscall, null, spanid, "&nbsp;-&nbsp;"));
 		}
 
@@ -420,9 +421,9 @@ public class QuickInterviewRenderer {
 				+ "ns:'" + namespace + "', "
 				+ "qid:'" + q.getId() + "'"
 				+ "}\" ";
-		String cssclass = "answer";
+		String cssclass = "answerunknown";
 		String spanid = q.getId() + "_" + Unknown.getInstance().getId();
-		html.append(getEnclosingTagOnClick("span", "&gt;?&lt;", cssclass, jscall, null,
+		html.append(getEnclosingTagOnClick("div", "", cssclass, jscall, null,
 				spanid, ""));
 		return html.toString();
 	}
