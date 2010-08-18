@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2010 denkbares GmbH
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
 package de.d3web.wisec.scoring;
 
 import java.util.Collection;
@@ -9,7 +27,7 @@ public class ScoringWeightsConfiguration {
 	public int MAX_SUBSTANCES_IN_RATING = 10000; // means no cutting
 	private String name = "NONAME";
 	// the weights for the particular criteria
-	private Map<String, Double> weights = new LinkedHashMap<String, Double>();
+	private final Map<String, Double> weights = new LinkedHashMap<String, Double>();
 
 	// P, B, Aqua_Tox, Multiple_Tox, EDC, CMR, LRT, Climatic_Change,
 	// Risk_related, Political, Exposure
