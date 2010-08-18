@@ -621,7 +621,9 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	}
 
 	public boolean removeNamespace(String namespace) {
-		return namespaces == null ? false : namespaces.remove(namespace);
+		boolean removed = namespaces == null ? false : namespaces.remove(namespace);
+		if (namespaces != null && namespaces.isEmpty()) namespaces = null;
+		return removed;
 	}
 
 	public Set<String> getNamespaces() {

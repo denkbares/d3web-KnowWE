@@ -47,11 +47,20 @@ public class KnowWENamespaceManager {
 	}
 
 	public boolean unregisterNamespaceDefinition(Section<?> s) {
+		Set<String> includingArticles = null;
 		for (String namespace : s.getNamespaces()) {
 			LinkedList<Section<?>> namespaceList = namespaceDefinitionsMap.get(namespace);
 			if (namespaceList != null) {
 				boolean removed = namespaceList.remove(s);
-				if (removed) changedNamespaces.add(namespace);
+				if (removed) {
+					changedNamespaces.add(namespace);
+					if (includingArticles == null) {
+						includingArticles = getArticlesIncluding(namespace);
+					}
+					for (String article : includingArticles) {
+						if (s.isReusedBy(article)) s.setReusedStateRecursively(article, false);
+					}
+				}
 				if (namespaceList.isEmpty()) namespaceDefinitionsMap.remove(namespace);
 				return removed;
 			}
@@ -115,6 +124,18 @@ public class KnowWENamespaceManager {
 				? Collections.unmodifiableSet(new HashSet<Section<? extends NamespaceInclude>>(0))
 				: Collections.unmodifiableSet(new HashSet<Section<? extends NamespaceInclude>>(
 						namespaceIncludes));
+	}
+
+	public Set<String> getArticlesIncluding(String namespace) {
+		Set<String> matchingArticles = new HashSet<String>();
+		for (String article : namespaceIncludesMap.keySet()) {
+			for (Section<? extends NamespaceInclude> namespaceInclude : namespaceIncludesMap.get(article)) {
+				if (namespaceInclude.get().getNamespaceToInclude(namespaceInclude).equals(namespace)) {
+					matchingArticles.add(article);
+				}
+			}
+		}
+		return Collections.unmodifiableSet(matchingArticles);
 	}
 
 	public Set<String> getIncludedNamespaces(KnowWEArticle article) {

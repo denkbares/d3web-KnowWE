@@ -2,10 +2,8 @@ package de.d3web.we.terminology;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeMap;
 
 import de.d3web.we.core.KnowWEEnvironment;
@@ -122,37 +120,22 @@ public class CompileFlag extends DefaultMarkupType {
 		@SuppressWarnings("unchecked")
 		public void destroy(KnowWEArticle article, Section<NamespaceIncludeType> s) {
 
-			Set<Section<?>> lastNamespaceDefinitions = new HashSet<Section<?>>();
-
 			if (!article.isFullParse()
 					&& !s.get().getNamespaceToInclude(s).equals(article.getTitle())) {
-
-				List<Section<?>> namespaceDefinitions = KnowWEEnvironment.getInstance().getNamespaceManager(
-						article.getWeb()).getNamespaceDefinitions(s.getOriginalText().trim());
 
 				List<Section<?>> storedNamespaceDefinitions = (List<Section<?>>) KnowWEUtils.getObjectFromLastVersion(
 						article, s, NAMESPACEDEFS_SNAPSHOT_KEY);
 
-
-				if (storedNamespaceDefinitions != null) {
-					lastNamespaceDefinitions.addAll(storedNamespaceDefinitions);
-				}
-
-				lastNamespaceDefinitions.removeAll(namespaceDefinitions);
-
-				List<Section<?>> includedNamespaces = new ArrayList<Section<?>>();
-
-				for (Section<?> nsDef : lastNamespaceDefinitions) {
-					List<Section<?>> nodes = new LinkedList<Section<?>>();
+				List<Section<?>> nodes = new LinkedList<Section<?>>();
+				for (Section<?> nsDef : storedNamespaceDefinitions) {
 					nsDef.getAllNodesPostOrder(nodes);
-					includedNamespaces.addAll(nodes);
 				}
-				for (Section<?> node : includedNamespaces) {
+				for (Section<?> node : nodes) {
 					if (node.isReusedBy(article.getTitle())) {
-					SectionStore lastStore = KnowWEEnvironment.getInstance().getArticleManager(
-							article.getWeb()).getTypeStore().getLastSectionStore(
-							article.getTitle(),
-							node.getID());
+						SectionStore lastStore = KnowWEEnvironment.getInstance().getArticleManager(
+								article.getWeb()).getTypeStore().getLastSectionStore(
+								article.getTitle(),
+								node.getID());
 						if (lastStore != null) {
 							// reuse last section store
 							KnowWEEnvironment.getInstance().getArticleManager(
@@ -164,7 +147,7 @@ public class CompileFlag extends DefaultMarkupType {
 				}
 
 				TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
-						Priority.createPrioritySortedList(includedNamespaces);
+						Priority.createPrioritySortedList(nodes);
 
 				for (Priority priority : prioMap.descendingKeySet()) {
 					List<Section<? extends KnowWEObjectType>> prioList = prioMap.get(priority);
@@ -180,13 +163,8 @@ public class CompileFlag extends DefaultMarkupType {
 						article.getWeb()).unregisterNamespaceInclude(
 						article, s);
 
-				for (Section<?> nsDef : lastNamespaceDefinitions) {
-					nsDef.setReusedBy(article.getTitle(), false);
-				}
-
 				article.setFullParse(true, this);
 			}
-
 
 		}
 
