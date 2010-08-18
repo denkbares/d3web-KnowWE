@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -48,46 +48,46 @@ import de.d3web.report.Message;
 
 /**
  * This builder handles Questionnaires/QContainers.
- * 
+ *
  * @author Markus Friedrich
  * @author Alex Legler
  */
 public class QuestionnaireBuilder implements DashTBuilder, KnOfficeParser {
 
 	private IDObjectManagement idom;
-	private String file;
-	private List<Message> errors = new ArrayList<Message>();
+	private final String file;
+	private final List<Message> errors = new ArrayList<Message>();
 
 	/**
 	 * Little internal tree to cache the QContainers, allowing for a sorted
 	 * inclusion.
 	 */
-	private Node cacheTree = new Node("root", null, Integer.MAX_VALUE, null);
+	private final Node cacheTree = new Node("root", null, Integer.MAX_VALUE, null);
 
 	/**
 	 * The start-up questions
 	 */
-	private Map<Integer, QContainer> startQContainers = new HashMap<Integer, QContainer>();
+	private final Map<Integer, QASet> startQContainers = new HashMap<Integer, QASet>();
 
 	private Node prevNode = cacheTree;
 
 	/**
 	 * Internal class representing a QContainer in the hierarchy
-	 * 
+	 *
 	 * @author Alex Legler
 	 */
 	class Node {
 
-		private String content;
-		private String id;
-		private String description;
-		private int order;
-		private List<Node> children = new LinkedList<Node>();
+		private final String content;
+		private final String id;
+		private final String description;
+		private final int order;
+		private final List<Node> children = new LinkedList<Node>();
 		private Node parent;
 
 		/**
 		 * Creates a new Node.
-		 * 
+		 *
 		 * @param content Name of the questionnaire
 		 * @param order The initial questionnaire order ([X] in the markup)
 		 * @param description An optional description
@@ -226,22 +226,30 @@ public class QuestionnaireBuilder implements DashTBuilder, KnOfficeParser {
 	 */
 	private void finish() {
 		processNode(cacheTree, null);
+		
+		if (startQContainers.isEmpty())
+			return;
+		
+		List<Integer> initQuestionsIndices = new ArrayList<Integer>(startQContainers.keySet());
+		Collections.sort(initQuestionsIndices);
 
-		List<Integer> initQuestions = new ArrayList<Integer>(startQContainers.keySet());
-		Collections.sort(initQuestions);
+		List<QASet> questions = new LinkedList<QASet>();
 
-		List<QContainer> questions = new LinkedList<QContainer>();
-
-		for (Integer key : initQuestions) {
+		for (Integer key : initQuestionsIndices) {
 			questions.add(startQContainers.get(key));
 		}
 
+		// add previous init questions to new list
+		questions.addAll(idom.getKnowledgeBase().getInitQuestions());
+		
+		//set new list
 		idom.getKnowledgeBase().setInitQuestions(questions);
+
 	}
 
 	/**
 	 * Adds a single node to the KBM.
-	 * 
+	 *
 	 * @param n Node to process
 	 * @param parent Parent node (if applicable)
 	 */
