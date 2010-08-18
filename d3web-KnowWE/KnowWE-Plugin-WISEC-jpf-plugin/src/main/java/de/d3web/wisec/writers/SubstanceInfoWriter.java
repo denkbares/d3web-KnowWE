@@ -148,7 +148,7 @@ public class SubstanceInfoWriter extends WISECWriter {
 				new Locale("en", "US")));
 		Collection<SubstanceList> lists = this.model.getSubstanceListsContaining(substance);
 		List<String> usedCriteria = criteriaContainedInAtLeastOneList(lists);
-		b.append("|| Criteria || Lists || Scoring\n");
+		b.append("|| Criteria || Lists || Scoring || No Lists\n");
 		double totalScore = 0;
 		for (String criteria : usedCriteria) {
 			int count = 0;
@@ -171,6 +171,8 @@ public class SubstanceInfoWriter extends WISECWriter {
 			else {
 				b.append("| 0 ");
 			}
+			// number of lists
+			b.append("| " + count);
 			b.append("\n");
 		}
 		if (totalScore > 0) {

@@ -38,8 +38,8 @@ import de.d3web.wisec.writers.WISECWriter;
  * Converts the WISEC database (provided as Excel file) into a collection of
  * KnowWE wiki articles (provided as text files).
  * 
- * Current Todos: - Sonderzeichen in names of substances? - no "+" preleading
- * the rating of a substance (should be done, check!)
+ * Current Todos: - no "+" preleading the rating of a substance (should be done,
+ * check!)
  * 
  * Later Todos: - Semantic alignment of lists and upper lists
  * 
@@ -54,7 +54,7 @@ public class WISECExcelConverter {
 	// The directory of the master database file
 	public static String workspace = "/Users/joba/Documents/Projekte/Temp/KnowWE/WISEC/";
 	// Destination directory, where the generated files are put
-	public static String wikiworkspace = "/Users/joba/Desktop/KnowWE/wikicontent/";
+	public static String wikiworkspace = "/Users/joba/Desktop/KnowWE/wikicontent_WISEC/";
 	// "/Users/joba/Documents/Projekte/Temp/KnowWE/WISEC/wikicontent_gen/";
 	// public static String wikiworkspace =
 	// "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/wikicontent/Treshold-40/";
