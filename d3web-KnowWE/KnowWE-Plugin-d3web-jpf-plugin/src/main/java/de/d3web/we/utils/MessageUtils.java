@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SyntaxError;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 
 public final class MessageUtils {
@@ -22,8 +23,8 @@ public final class MessageUtils {
 	 * @param object the terminology object created
 	 * @return the list of messages
 	 */
-	public static final Collection<KDOMReportMessage> createdMessageAsList(TerminologyObject object) {
-		return Arrays.asList((KDOMReportMessage) createdMessage(object));
+	public static final Collection<KDOMReportMessage> objectCreatedAsList(TerminologyObject object) {
+		return Arrays.asList((KDOMReportMessage) objectCreated(object));
 
 	}
 
@@ -35,10 +36,34 @@ public final class MessageUtils {
 	 * @param object the terminology object created
 	 * @return the message
 	 */
-	public static final KDOMReportMessage createdMessage(TerminologyObject object) {
+	public static final KDOMReportMessage objectCreated(TerminologyObject object) {
 		return new NewObjectCreated(
 						object.getClass().getSimpleName() + " " + object.getName());
 
+	}
+
+	/**
+	 * Returns a collection of one message to be returned by a SubtreeHandler
+	 * recognizes an syntactial error within its markup.
+	 * 
+	 * @created 18.08.2010
+	 * @param localizedMessage the message of the syntax error
+	 * @return
+	 */
+	public static Collection<KDOMReportMessage> syntaxErrorAsList(String localizedMessage) {
+		return Arrays.asList((KDOMReportMessage) syntaxError(localizedMessage));
+	}
+
+	/**
+	 * Returns a message to be used when a SubtreeHandler recognizes an
+	 * syntactial error within its markup.
+	 * 
+	 * @created 18.08.2010
+	 * @param localizedMessage the message of the syntax error
+	 * @return
+	 */
+	public static KDOMReportMessage syntaxError(String localizedMessage) {
+		return new SyntaxError(localizedMessage);
 	}
 
 	/**
@@ -52,4 +77,5 @@ public final class MessageUtils {
 	public static final Collection<KDOMReportMessage> asList(KDOMReportMessage... messages) {
 		return Arrays.asList(messages);
 	}
+
 }

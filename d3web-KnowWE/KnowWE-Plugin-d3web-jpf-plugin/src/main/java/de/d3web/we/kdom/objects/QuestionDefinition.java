@@ -141,7 +141,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 				qidSection.get().storeTermObject(article, qidSection, q);
 
 				// return success message
-				return MessageUtils.createdMessageAsList(q);
+				return MessageUtils.objectCreatedAsList(q);
 			}
 			else {
 				return Arrays.asList((KDOMReportMessage) new ObjectCreationError(name,
