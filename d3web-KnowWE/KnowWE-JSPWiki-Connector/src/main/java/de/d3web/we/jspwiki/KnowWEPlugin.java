@@ -486,7 +486,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		LinkedList<String> script = loader.getScriptIncludes();
 		for (String resource : script) {
 			if (ctx != null && !ctx.toString().contains(resource)) {
-				if (!resource.startsWith("http://")) {
+				if (!resource.contains("://")) {
 					TemplateManager.addResourceRequest(wikiContext,
 							KnowWERessourceLoader.RESOURCE_SCRIPT,
 							KnowWERessourceLoader.defaultScript + resource);
@@ -498,7 +498,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				}
 			}
 			else if (ctx == null) {
-				if (!resource.startsWith("http://")) {
+				if (!resource.contains("://")) {
 					TemplateManager.addResourceRequest(wikiContext,
 							KnowWERessourceLoader.RESOURCE_SCRIPT,
 							KnowWERessourceLoader.defaultScript + resource);
