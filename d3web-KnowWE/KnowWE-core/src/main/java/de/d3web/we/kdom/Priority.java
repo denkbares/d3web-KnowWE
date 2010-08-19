@@ -101,6 +101,11 @@ public class Priority implements Comparable<Priority> {
 	}
 
 	@Override
+	public int hashCode() {
+		return value;
+	}
+
+	@Override
 	public String toString() {
 		return String.valueOf(value);
 	}
