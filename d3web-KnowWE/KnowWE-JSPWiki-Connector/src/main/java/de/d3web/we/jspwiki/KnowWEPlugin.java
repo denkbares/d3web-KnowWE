@@ -145,6 +145,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 	}
 
+	@Override
 	public String execute(WikiContext context, Map params)
 			throws PluginException {
 		String result = "tag not found or error";
@@ -485,14 +486,28 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		LinkedList<String> script = loader.getScriptIncludes();
 		for (String resource : script) {
 			if (ctx != null && !ctx.toString().contains(resource)) {
-				TemplateManager.addResourceRequest(wikiContext,
-						KnowWERessourceLoader.RESOURCE_SCRIPT,
-						KnowWERessourceLoader.defaultScript + resource);
+				if (!resource.startsWith("http://")) {
+					TemplateManager.addResourceRequest(wikiContext,
+							KnowWERessourceLoader.RESOURCE_SCRIPT,
+							KnowWERessourceLoader.defaultScript + resource);
+				}
+				else {
+					TemplateManager.addResourceRequest(wikiContext,
+							KnowWERessourceLoader.RESOURCE_SCRIPT,
+							resource);
+				}
 			}
 			else if (ctx == null) {
-				TemplateManager.addResourceRequest(wikiContext,
-						KnowWERessourceLoader.RESOURCE_SCRIPT,
-						KnowWERessourceLoader.defaultScript + resource);
+				if (!resource.startsWith("http://")) {
+					TemplateManager.addResourceRequest(wikiContext,
+							KnowWERessourceLoader.RESOURCE_SCRIPT,
+							KnowWERessourceLoader.defaultScript + resource);
+				}
+				else {
+					TemplateManager.addResourceRequest(wikiContext,
+							KnowWERessourceLoader.RESOURCE_SCRIPT,
+							resource);
+				}
 			}
 		}
 

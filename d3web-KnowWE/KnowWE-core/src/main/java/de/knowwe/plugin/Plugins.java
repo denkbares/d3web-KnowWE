@@ -21,7 +21,7 @@ package de.knowwe.plugin;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.d3web.plugin.Extension;
@@ -211,7 +211,7 @@ public class Plugins {
 	 * Initializes the Javascript files
 	 */
 	public static void initJS() {
-		HashSet<String> files = new HashSet<String>();
+		LinkedList<String> files = new LinkedList<String>();
 		getStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_PageAppendHandler));
 		getStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
@@ -223,7 +223,7 @@ public class Plugins {
 		}
 	}
 
-	private static void getStripts(HashSet<String> files, Extension[] extensions) {
+	private static void getStripts(LinkedList<String> files, Extension[] extensions) {
 		for (Extension e : extensions) {
 			List<String> scripts = e.getParameters("script");
 			if (scripts != null) {
