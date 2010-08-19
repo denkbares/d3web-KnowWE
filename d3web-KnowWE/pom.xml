@@ -139,6 +139,7 @@
 		<module>KnowWE-Plugin-SolutionPanel-jpf-plugin</module>
 		<module>KnowWE-Plugin-XML</module>
 		<module>KnowWEPlugin-SemanticCore-Tests</module>
+		<module>KnowWE-Plugin-OneQuestionDialog</module>
 	</modules>
 	<repositories>
 		<repository>

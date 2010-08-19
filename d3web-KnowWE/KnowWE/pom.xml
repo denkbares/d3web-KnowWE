@@ -329,6 +329,25 @@
 			</dependencies>
 		</profile>
 		
+		<!-- OneQuestionDialog plugin -->
+		<profile>
+			<id>onequestiondialog-plugin</id>
+			<activation>
+				<property>
+					<name>onequestiondialog-plugin</name>
+				</property>
+			</activation>
+			
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-OneQuestionDialog-jpf-plugin</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		
 		<!-- Solution Panel plugin -->
 		<profile>
 			<id>solutionPanel</id>

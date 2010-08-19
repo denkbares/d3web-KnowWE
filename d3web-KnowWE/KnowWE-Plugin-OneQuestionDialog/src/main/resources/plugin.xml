@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-OneQuestionDialog" version="0.0.1">
+	
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+		<import plugin-id="KnowWE-Plugin-d3web" />
+	</requires>
+	
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+		 	<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="OneQuestionDialogTagHandler">
+	    <parameter id="class"
+			value="de.d3web.we.oqd.OneQuestionDialogTagHandler" />
+		<parameter id="name" value="OneQuestionDialogTagHandler" />
+		<parameter id="description" value="TagHandler OneQuestionDialogTagHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="onequestiondialog.js" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="OneQuestionDialogAction">
+	    <parameter id="class"
+			value="de.d3web.we.oqd.OneQuestionDialogAction" />
+		<parameter id="name" value="OneQuestionDialogAction" />
+		<parameter id="description" value="Action OneQuestionDialogAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>	
+</plugin>
