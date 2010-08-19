@@ -27,39 +27,49 @@
 #quickinterview { border: none; }
 
 /* dont display a header for the quicki plugin */
-#quickinterview  h3{ padding: 10px 0 5px 5px; font-size: 1.25em; margin: 10px; line-height: 1.0em;
+#quickinterview  h3{ padding: 10px 0 5px 10px; font-size: 1.25em; margin: 10px; line-height: 1.0em;
 	-moz-box-shadow: 0 0 3px black; -webkit-box-shadow: 0 0 3px black; box-shadow: 0 0 3px black;}
 
 /* styling of the questionnaire div */
-#quickinterview .questionnaire {clear: both; display: block; padding: 5px 0 5px 30px; margin: 5px; margin-right: 10px; min-height: 9px;
-	background-color: transparent;} 
+#quickinterview .questionnaire {clear: both; display: block; padding: 5px 0 5px 30px; min-height: 9px; margin: 5px 10px 0px 0;
+	font-weight: bold;} 
 	
 /* styling of the questionnaire div */
-#quickinterview .pointRight { background: #7991A7 url(../images/arrow_right.png) no-repeat 10px 5px; }
+#quickinterview .pointRight { background: #ACC0D6 url(../images/arrow_right.png) no-repeat 10px 10px; }
 	
 /* styling of the questionnaire div */
-#quickinterview .pointDown { background: #7991A7 url(../images/arrow_down.png) no-repeat 10px 5px;  } 
+#quickinterview .pointDown { background: #ACC0D6 url(../images/arrow_down.png) no-repeat 10px 10px;  } 
 
-/* styling of the qablock enclosing div */
-#quickinterview .qa { clear: both; background-color: red; border-bottom: 2px black solid; margin-left: 10px; margin-right: 10px;
-	display: block; width: 100%; }
+/* some declaration regarding as well questions as well as answers */
+#quickinterview .qablock { height: 18px; margin-left: 10px; margin-right: 10px;}
 
 /* styling of the front part of the qablock that displays the question name */
-#quickinterview .question { clear: both; float: left; background-color: transparent; }
+#quickinterview .question { clear: both; float: left; background-color: transparent; font-weight: bold; padding-top: 2px;
+	padding-bottom: 2px; }
+
+/* styling for indicated questions/questionnaires */
+#quickinterview .indicated { border: 2px solid orange; padding: 3px 0 0 0; }
 
 /* the separator between the answers */
-#quickinterview .answerseparator { float: left; background-color: transparent; }
+#quickinterview .answerseparator { float: left; background-image: url(../images/ballWhite_s.png); height: 20px; width: 20px;
+	 background-repeat: no-repeat; background-position: center center; background-color: transparent; padding-top: 7px;}
 
 /* answer styling */
-#quickinterview .answer { float: left; background-color: transparent; padding: 2px; }
+#quickinterview .answer { float: left; background-color: transparent; padding-top: 5px; padding-bottom: 2px;}
 
 /* answer active syling */
-#quickinterview .answerClicked { float: left; background-color: #D7DEE4; padding: 2px; }
+#quickinterview .answerClicked { float: left; background-color: #D7DEE4; padding-top: 5px; padding-bottom: 2px;}
 
 /* answer unknown styling */
 #quickinterview .answerunknown { background-image: url(../images/questionMark.png); height: 20px; width: 20px; float: left;
-	 background-repeat: no-repeat; background-position: center center; background-color: transparent;}
+	 background-repeat: no-repeat; background-position: center center; background-color: transparent; padding-top: 5px; padding-bottom: 2px;}
 	 
 /*TODO answer unknown styling if ACTIVE = clicked TODO */
 #quickinterview .answerunknownClicked { background-image: url(../images/questionMark.png); height: 20px; width: 20px; float: left;
-	 background-repeat: no-repeat; background-position: center center; background-color: transparent;}
+	 background-repeat: no-repeat; background-position: center center; background-color: transparent; padding-top: 5px; padding-bottom: 2px;}
+	 
+/* styling of input box */
+#quickinterview .input { height: 10px; float: left; }
+
+/* styling of input box button */
+#quickinterview .num-ok{ height: 20px; margin-left: 10px; float: left; padding-top: 5px; }

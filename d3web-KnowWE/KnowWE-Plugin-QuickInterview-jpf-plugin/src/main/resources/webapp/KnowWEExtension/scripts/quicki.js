@@ -78,6 +78,9 @@ KNOWWE.plugin.quicki = function(){
         	_KS('.questionnaire').each(function(element){
                 _KE.add('click', element, KNOWWE.plugin.quicki.updateQuestionnaireVisibility);
         	});
+        	 _KS('.num-ok').each(function( element ){
+                 _KE.add('click', element, KNOWWE.plugin.quicki.numAnswer);
+             });   
         }, 
         /**
          * Function: answerClicked
@@ -93,9 +96,54 @@ KNOWWE.plugin.quicki = function(){
             
             var rel = eval("(" + el.getAttribute('rel') + ")");
             if( !rel ) return;
+            
             KNOWWE.plugin.quicki.toggleAnswerHighlighting(el);
-            KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', {ValueID: rel.oid});
-        }, 
+                       
+            // check whether answer was already given. if so, remove the fact.
+            // as answer was toggled before, 'answer' means that answer was 
+            // selected before
+            //if(element.className=='answer'){
+            	//KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
+            	//		{ action : 'RemoveSingleFindingAction', ValueID: rel.oid});
+            //} else {
+            	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
+                	{ action : 'SetSingleFindingAction', ValueID: rel.oid});
+           // }
+        },
+        /**
+         * Function: numAnswer
+         * 		Handles the input of num-values
+         * 
+         * Parameters:
+         * 		event - the event firing the action
+         */
+        numAnswer : function (event) {
+        	event = new Event( event ).stopPropagation();
+            var bttn = (_KE.target( event ).className == 'num-ok');            
+            var key = (event.code == 13);
+            
+            // check, if either button was clicked or enter was pressed
+            if( !(key || bttn) ) return false;
+            
+            var rel = null;
+            if(key){				// if enter was pressed
+                rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")");
+            } else {				// if button was clicked
+                rel = eval("(" + _KE.target( event ).previousSibling.getAttribute('rel') + ")");
+            }
+            if( !rel ) return;
+            
+            var inputtext = 'inputTextNotFound';	// default input
+            
+            // if an input was given in the field
+            if(_KS('#input_' + rel.oid)) {
+                    inputtext = _KS('#input_' + rel.oid).value; 
+            }
+            
+            // send KNOWWE request as SingleFindingAction with given value
+            KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
+            		{action : 'SetSingleFindingAction', ValueNum: inputtext});
+        },
         /**
          * Function: toggleImage(int)
          * 		Toggles the image display for questionnaire headings
@@ -134,6 +182,9 @@ KNOWWE.plugin.quicki = function(){
         		element.className = 'answerunknownClicked';
         	}
         }, 
+        /** Function: updateIndication 
+         *		goes through the questions, tests, which one  
+         */
         /**
          * Function: updateQuestionnaireVisibility 
          * Toggles the visibility of questionnaire-contents on click:
@@ -174,24 +225,41 @@ KNOWWE.plugin.quicki = function(){
          */
         send : function( web, namespace, oid, termName, params){
             var pDefault = {
-                action : 'SetSingleFindingAction',
                 KWikiWeb : web,
                 namespace : namespace,
                 ObjectID : oid,
-                TermName : termName
+                TermName : termName,
             }
+            
             pDefault = KNOWWE.helper.enrich( params, pDefault );
             
             var options = {
                 url : KNOWWE.core.util.getURL( pDefault ),
                 response : {
                     fn : function(){
-                    	KNOWWE.plugin.d3web.dialog.initAction();
-                    	KNOWWE.helper.observer.notify('update');
+                    	// KNOWWE.plugin.quicki.showRefreshed();
+                    	 KNOWWE.plugin.d3web.dialog.initAction();
+                		 KNOWWE.helper.observer.notify('update');
                     }
                 }
             }
             new _KA( options ).send();         
+        }, 
+        showRefreshed : function ( event ){
+        	 var params = {
+                     namespace : KNOWWE.helper.gup( 'page' ),
+                     action : 'QuickInterviewAction'
+             }
+             var options = {
+                 url : KNOWWE.core.util.getURL( params ),
+                 response : {
+                	 fn : function(){
+                		 KNOWWE.plugin.d3web.dialog.initAction();
+                		 KNOWWE.helper.observer.notify('update');
+                	 }	
+                 }
+        	 }
+             new _KA( options ).send();
         }
     }
 }();

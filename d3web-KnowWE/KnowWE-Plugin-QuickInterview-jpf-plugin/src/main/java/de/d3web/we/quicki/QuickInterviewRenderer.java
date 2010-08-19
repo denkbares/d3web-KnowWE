@@ -174,12 +174,10 @@ public class QuickInterviewRenderer {
 			StringBuffer qcon, Set<TerminologyObject> processedTOs, int depth, boolean init) {
 
 		depth++;
-		boolean show = false;
-		show = init ? true : false;
 
 		if (!processedTOs.contains(topContainer)) {
 			processedTOs.add(topContainer);
-			qcon.append(getQuestionnaireRendering(topContainer, depth, show));
+			qcon.append(getQuestionnaireRendering(topContainer, depth, init));
 		}
 
 		String display = init ? "display: block" : "display: none";
@@ -211,27 +209,20 @@ public class QuickInterviewRenderer {
 			Set<TerminologyObject> processedTOs, int depth, TerminologyObject parent, boolean init) {
 
 		depth++;
-		if (topQuestion.getChildren().length == 0) {
-			// no further follow-up questions, thus append question rendering
-			// but only if not yet done (if so it is contained in processedTOs
-			if (!processedTOs.contains(topQuestion)) {
-				processedTOs.add(topQuestion);
-				sb.append(getQABlockRendering(topQuestion, depth, parent));
-			}
-		}
-		else {
 
-			if (!processedTOs.contains(topQuestion)) {
-				processedTOs.add(topQuestion);
-				sb.append(getQABlockRendering(topQuestion, depth, parent));
-			}
+		// no further follow-up questions, thus append question rendering
+		// but only if not yet done (if so it is contained in processedTOs
+		if (!processedTOs.contains(topQuestion)) {
+			processedTOs.add(topQuestion);
+			sb.append(getQABlockRendering(topQuestion, depth, parent));
+		}
+
+		if (topQuestion.getChildren().length != 0) {
 			// we got follow-up questions, thus call method again
 			for (TerminologyObject qchild : topQuestion.getChildren()) {
-				getQuestionsRecursively((Question) qchild, sb, processedTOs, depth, parent,
-						init);
+				getQuestionsRecursively((Question) qchild, sb, processedTOs, depth, parent, init);
 			}
 		}
-
 	}
 
 
@@ -271,21 +262,27 @@ public class QuickInterviewRenderer {
 			TerminologyObject parent) {
 
 		StringBuffer html = new StringBuffer();
-		// String id = "qa_" + parent.getId();
-		// html.append("<div id='" + id + "' class='qa' style='" + display +
-		// "' >");
+		html.append("<div id='qablock'>");
 
 		// calculate indentation depth & resulting width of the question display
-		int d = 10 + depth * 10;
+		// 10 for the standard margin and 30 for indenting as far as the
+		// triangle
+		int d = 10 + 30 + depth * 10;
 		int w = 300 - d;
+		String clazz = "class='question' ";
+
+		if (session.getInterview().nextForm().getInterviewObject().equals(q)) {
+			clazz = "class='question indicated' ";
+		}
 
 		// render the first cell displaying the Question in a separate div,
 		// then call method for rendering a question's answers in another div
 		html.append("<div id='" + q.getId() + "' " +
 				"parent='" + parent.getId() + "' " +
-				"class='question' " +
+				clazz +
 				"style='margin-left: " + d + "px; width: " + w + "px; display: inline-block;' >"
 				+ q.getName() + "</div>");
+
 
 		// MultChoiceValue --> setValue TODO
 		if (q instanceof QuestionOC) {
@@ -306,7 +303,7 @@ public class QuickInterviewRenderer {
 		else {
 			html.append(renderNumAnswers(q));
 		}
-		// html.append("</div>");
+		html.append("</div>");
 		return html.toString();
 	}
 
@@ -330,7 +327,7 @@ public class QuickInterviewRenderer {
 			String spanid = q.getId() + "_" + choice.getId();
 			html.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ", cssclass,
 					jscall, null, spanid));
-			html.append("<div class='answerseparator'>&nbsp;-&nbsp;</div>");
+			html.append("<div class='answerseparator'></div>");
 		}
 
 		// also render the unknown alternative for choice questions
@@ -373,7 +370,6 @@ public class QuickInterviewRenderer {
 					+ "web:'" + web + "',"
 					+ "ns:'" + namespace + "',"
 					+ "qtext:'" + URLEncoder.encode(q.getName(), "UTF-8") + "', "
-					+ "inputid:'" + id + "'"
 					+ "}\" ";
 		}
 		catch (UnsupportedEncodingException e) {
@@ -381,13 +377,14 @@ public class QuickInterviewRenderer {
 		}
 
 		// append the input, if available with already provided input
-		html.append("<div class='answer' style='display: inline;'>"
-				+ "<input id='" + id + "' type='text' "
+		// html.append("<div class='answer' style='display: inline;'>"
+		html.append("<input class='input'  style='display: inline' id='input_" + id
+				+ "' type='text' "
 				+ "value='" + value + "' "
 				+ "size='7' "
 				+ jscall + ">");
 		html.append("<input type='button' value='ok' class='num-ok'>");
-		html.append("</div>");
+		// html.append("</div>");
 		return html.toString();
 	}
 
@@ -425,7 +422,7 @@ public class QuickInterviewRenderer {
 			String spanid = q.getId() + "_" + choice.getId();
 			html.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ", cssclass,
 					jscall, null, spanid));
-			html.append("<div class='answerseparator'>&nbsp;-&nbsp;</div>");
+			html.append("<div class='answerseparator'></div>");
 		}
 
 		// also render the unknown alternative for choice questions
