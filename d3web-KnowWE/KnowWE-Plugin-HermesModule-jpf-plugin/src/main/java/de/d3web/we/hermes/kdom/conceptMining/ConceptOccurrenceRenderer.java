@@ -59,15 +59,23 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 		String conceptName = arg0.getOriginalText();
 
-		Context subjectContext = ContextManager.getInstance().getContext(arg0,
+		Context context = ContextManager.getInstance().getContext(
+				arg0,
 				DefaultSubjectContext.CID);
 
 		String subjectString = "error: subject not found!";
 		URI subjectURI = null;
 
-		if (subjectContext != null) {
-			subjectURI = ((DefaultURIContext) subjectContext)
+		if (context != null) {
+			if (context instanceof DefaultURIContext) {
+			subjectURI = ((DefaultURIContext) context)
 					.getSolutionURI();
+			}
+			if (context instanceof DefaultSubjectContext) {
+				subjectURI = UpperOntology.getInstance().getHelper().createlocalURI(
+						((DefaultSubjectContext) context)
+								.getSubject());
+			}
 			subjectString = subjectURI.getLocalName();
 			TupleQueryResult result = SPARQLUtil.executeTupleQuery(TITLE_QUERY
 					.replaceAll("URI", subjectURI.toString()), arg0.getTitle());
