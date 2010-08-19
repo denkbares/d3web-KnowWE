@@ -1,4 +1,24 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g 2010-04-29 15:39:32
+// $ANTLR 3.1.1 D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g 2010-08-19 06:37:20
+
+/*
+ * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 
 package de.d3web.KnOfficeParser.decisiontree;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -92,7 +112,7 @@ public class DecisionTree extends Parser {
         
 
     public String[] getTokenNames() { return DecisionTree.tokenNames; }
-    public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g"; }
+    public String getGrammarFileName() { return "D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g"; }
 
 
       private int dashcount = 0;
@@ -138,13 +158,13 @@ public class DecisionTree extends Parser {
 
 
     // $ANTLR start "knowledge"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:79:1: knowledge : ( line | NL )* ( deslimit )? ( description NL )* ( description )? ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:99:1: knowledge : ( line | NL )* ( deslimit )? ( description NL )* ( description )? ;
     public final void knowledge() throws RecognitionException {
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:80:1: ( ( line | NL )* ( deslimit )? ( description NL )* ( description )? )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:80:3: ( line | NL )* ( deslimit )? ( description NL )* ( description )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:100:1: ( ( line | NL )* ( deslimit )? ( description NL )* ( description )? )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:100:3: ( line | NL )* ( deslimit )? ( description NL )* ( description )?
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:80:3: ( line | NL )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:100:3: ( line | NL )*
             loop1:
             do {
                 int alt1=3;
@@ -160,7 +180,7 @@ public class DecisionTree extends Parser {
 
                 switch (alt1) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:80:4: line
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:100:4: line
             	    {
             	    pushFollow(FOLLOW_line_in_knowledge57);
             	    line();
@@ -171,7 +191,7 @@ public class DecisionTree extends Parser {
             	    }
             	    break;
             	case 2 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:80:10: NL
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:100:10: NL
             	    {
             	    match(input,NL,FOLLOW_NL_in_knowledge60); if (state.failed) return ;
             	    if ( state.backtracking==0 ) {
@@ -186,7 +206,7 @@ public class DecisionTree extends Parser {
                 }
             } while (true);
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:80:35: ( deslimit )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:100:35: ( deslimit )?
             int alt2=2;
             int LA2_0 = input.LA(1);
 
@@ -195,7 +215,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt2) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:80:35: deslimit
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:100:35: deslimit
                     {
                     pushFollow(FOLLOW_deslimit_in_knowledge65);
                     deslimit();
@@ -208,14 +228,14 @@ public class DecisionTree extends Parser {
 
             }
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:80:45: ( description NL )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:100:45: ( description NL )*
             loop3:
             do {
                 int alt3=2;
                 alt3 = dfa3.predict(input);
                 switch (alt3) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:80:46: description NL
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:100:46: description NL
             	    {
             	    pushFollow(FOLLOW_description_in_knowledge69);
             	    description();
@@ -232,7 +252,7 @@ public class DecisionTree extends Parser {
                 }
             } while (true);
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:80:63: ( description )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:100:63: ( description )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -241,7 +261,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt4) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:80:63: description
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:100:63: description
                     {
                     pushFollow(FOLLOW_description_in_knowledge75);
                     description();
@@ -270,17 +290,17 @@ public class DecisionTree extends Parser {
 
 
     // $ANTLR start "line"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:82:1: line : ( questionclass | include | dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] ) ) NL ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:102:1: line : ( questionclass | include | dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] ) ) NL ;
     public final void line() throws RecognitionException {
         int dashes1 = 0;
 
 
         int i=0;
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:84:1: ( ( questionclass | include | dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] ) ) NL )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:84:3: ( questionclass | include | dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] ) ) NL
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:104:1: ( ( questionclass | include | dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] ) ) NL )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:104:3: ( questionclass | include | dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] ) ) NL
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:84:3: ( questionclass | include | dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:104:3: ( questionclass | include | dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] ) )
             int alt6=3;
             switch ( input.LA(1) ) {
             case String:
@@ -310,7 +330,7 @@ public class DecisionTree extends Parser {
 
             switch (alt6) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:84:4: questionclass
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:104:4: questionclass
                     {
                     pushFollow(FOLLOW_questionclass_in_line89);
                     questionclass();
@@ -324,7 +344,7 @@ public class DecisionTree extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:85:2: include
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:105:2: include
                     {
                     pushFollow(FOLLOW_include_in_line94);
                     include();
@@ -335,7 +355,7 @@ public class DecisionTree extends Parser {
                     }
                     break;
                 case 3 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:86:2: dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] )
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:106:2: dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] )
                     {
                     pushFollow(FOLLOW_dashes_in_line97);
                     dashes1=dashes();
@@ -352,12 +372,12 @@ public class DecisionTree extends Parser {
                     if ( state.backtracking==0 ) {
                       builder.finishOldQuestionsandConditions(i);
                     }
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:86:88: ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] )
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:106:88: ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] )
                     int alt5=5;
                     alt5 = dfa5.predict(input);
                     switch (alt5) {
                         case 1 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:86:89: numeric[i]
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:106:89: numeric[i]
                             {
                             pushFollow(FOLLOW_numeric_in_line104);
                             numeric(i);
@@ -368,7 +388,7 @@ public class DecisionTree extends Parser {
                             }
                             break;
                         case 2 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:86:100: answer[i]
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:106:100: answer[i]
                             {
                             pushFollow(FOLLOW_answer_in_line107);
                             answer(i);
@@ -379,7 +399,7 @@ public class DecisionTree extends Parser {
                             }
                             break;
                         case 3 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:86:110: question[i]
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:106:110: question[i]
                             {
                             pushFollow(FOLLOW_question_in_line110);
                             question(i);
@@ -390,7 +410,7 @@ public class DecisionTree extends Parser {
                             }
                             break;
                         case 4 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:86:122: diagnosis[i]
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:106:122: diagnosis[i]
                             {
                             pushFollow(FOLLOW_diagnosis_in_line113);
                             diagnosis(i);
@@ -401,7 +421,7 @@ public class DecisionTree extends Parser {
                             }
                             break;
                         case 5 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:86:135: manyQCLinks[i]
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:106:135: manyQCLinks[i]
                             {
                             pushFollow(FOLLOW_manyQCLinks_in_line116);
                             manyQCLinks(i);
@@ -439,7 +459,7 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "questionclass"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:88:1: questionclass : name ( dialogannotations )? ( NS manualref )? ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:108:1: questionclass : name ( dialogannotations )? ( NS manualref )? ;
     public final DecisionTree.questionclass_return questionclass() throws RecognitionException {
         DecisionTree.questionclass_return retval = new DecisionTree.questionclass_return();
         retval.start = input.LT(1);
@@ -452,15 +472,15 @@ public class DecisionTree extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:89:1: ( name ( dialogannotations )? ( NS manualref )? )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:89:3: name ( dialogannotations )? ( NS manualref )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:109:1: ( name ( dialogannotations )? ( NS manualref )? )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:109:3: name ( dialogannotations )? ( NS manualref )?
             {
             pushFollow(FOLLOW_name_in_questionclass130);
             name2=name();
 
             state._fsp--;
             if (state.failed) return retval;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:89:8: ( dialogannotations )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:109:8: ( dialogannotations )?
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -469,7 +489,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt7) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:89:8: dialogannotations
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:109:8: dialogannotations
                     {
                     pushFollow(FOLLOW_dialogannotations_in_questionclass132);
                     dialogannotations4=dialogannotations();
@@ -482,7 +502,7 @@ public class DecisionTree extends Parser {
 
             }
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:89:27: ( NS manualref )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:109:27: ( NS manualref )?
             int alt8=2;
             int LA8_0 = input.LA(1);
 
@@ -491,7 +511,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt8) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:89:28: NS manualref
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:109:28: NS manualref
                     {
                     match(input,NS,FOLLOW_NS_in_questionclass136); if (state.failed) return retval;
                     pushFollow(FOLLOW_manualref_in_questionclass138);
@@ -531,7 +551,7 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "question"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:91:1: question[int Dashes] : ( REF h= name | a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )? ) ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:111:1: question[int Dashes] : ( REF h= name | a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )? ) ;
     public final DecisionTree.question_return question(int Dashes) throws RecognitionException {
         DecisionTree.question_return retval = new DecisionTree.question_return();
         retval.start = input.LT(1);
@@ -560,10 +580,10 @@ public class DecisionTree extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:92:1: ( ( REF h= name | a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )? ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:92:3: ( REF h= name | a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )? )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:112:1: ( ( REF h= name | a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )? ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:112:3: ( REF h= name | a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )? )
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:92:3: ( REF h= name | a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )? )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:112:3: ( REF h= name | a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )? )
             int alt17=2;
             int LA17_0 = input.LA(1);
 
@@ -582,7 +602,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt17) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:92:4: REF h= name
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:112:4: REF h= name
                     {
                     match(input,REF,FOLLOW_REF_in_question155); if (state.failed) return retval;
                     pushFollow(FOLLOW_name_in_question159);
@@ -597,14 +617,14 @@ public class DecisionTree extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:94:3: a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )?
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:114:3: a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )?
                     {
                     pushFollow(FOLLOW_name_in_question168);
                     a=name();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:94:10: ( synonyms )?
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:114:10: ( synonyms )?
                     int alt9=2;
                     int LA9_0 = input.LA(1);
 
@@ -613,7 +633,7 @@ public class DecisionTree extends Parser {
                     }
                     switch (alt9) {
                         case 1 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:94:10: synonyms
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:114:10: synonyms
                             {
                             pushFollow(FOLLOW_synonyms_in_question170);
                             synonyms7=synonyms();
@@ -626,7 +646,7 @@ public class DecisionTree extends Parser {
 
                     }
 
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:94:20: ( TILDE b= name )?
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:114:20: ( TILDE b= name )?
                     int alt10=2;
                     int LA10_0 = input.LA(1);
 
@@ -635,7 +655,7 @@ public class DecisionTree extends Parser {
                     }
                     switch (alt10) {
                         case 1 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:94:21: TILDE b= name
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:114:21: TILDE b= name
                             {
                             match(input,TILDE,FOLLOW_TILDE_in_question174); if (state.failed) return retval;
                             pushFollow(FOLLOW_name_in_question178);
@@ -652,7 +672,7 @@ public class DecisionTree extends Parser {
                     match(input,SBO,FOLLOW_SBO_in_question182); if (state.failed) return retval;
                     ID5=(Token)match(input,ID,FOLLOW_ID_in_question184); if (state.failed) return retval;
                     match(input,SBC,FOLLOW_SBC_in_question186); if (state.failed) return retval;
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:94:47: ( CBO e= name CBC )?
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:114:47: ( CBO e= name CBC )?
                     int alt11=2;
                     int LA11_0 = input.LA(1);
 
@@ -661,7 +681,7 @@ public class DecisionTree extends Parser {
                     }
                     switch (alt11) {
                         case 1 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:94:48: CBO e= name CBC
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:114:48: CBO e= name CBC
                             {
                             match(input,CBO,FOLLOW_CBO_in_question189); if (state.failed) return retval;
                             pushFollow(FOLLOW_name_in_question193);
@@ -676,7 +696,7 @@ public class DecisionTree extends Parser {
 
                     }
 
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:94:65: ( LP f= d3double g= d3double RP )?
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:114:65: ( LP f= d3double g= d3double RP )?
                     int alt12=2;
                     int LA12_0 = input.LA(1);
 
@@ -689,7 +709,7 @@ public class DecisionTree extends Parser {
                     }
                     switch (alt12) {
                         case 1 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:94:66: LP f= d3double g= d3double RP
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:114:66: LP f= d3double g= d3double RP
                             {
                             match(input,LP,FOLLOW_LP_in_question200); if (state.failed) return retval;
                             pushFollow(FOLLOW_d3double_in_question204);
@@ -709,7 +729,7 @@ public class DecisionTree extends Parser {
 
                     }
 
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:94:97: (c= ABSTRACT )?
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:114:97: (c= ABSTRACT )?
                     int alt13=2;
                     int LA13_0 = input.LA(1);
 
@@ -718,7 +738,7 @@ public class DecisionTree extends Parser {
                     }
                     switch (alt13) {
                         case 1 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:94:97: c= ABSTRACT
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:114:97: c= ABSTRACT
                             {
                             c=(Token)match(input,ABSTRACT,FOLLOW_ABSTRACT_in_question216); if (state.failed) return retval;
 
@@ -727,7 +747,7 @@ public class DecisionTree extends Parser {
 
                     }
 
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:94:108: ( idlink )?
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:114:108: ( idlink )?
                     int alt14=2;
                     int LA14_0 = input.LA(1);
 
@@ -736,7 +756,7 @@ public class DecisionTree extends Parser {
                     }
                     switch (alt14) {
                         case 1 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:94:108: idlink
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:114:108: idlink
                             {
                             pushFollow(FOLLOW_idlink_in_question219);
                             idlink8=idlink();
@@ -749,7 +769,7 @@ public class DecisionTree extends Parser {
 
                     }
 
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:94:116: ( dialogannotations )?
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:114:116: ( dialogannotations )?
                     int alt15=2;
                     int LA15_0 = input.LA(1);
 
@@ -758,7 +778,7 @@ public class DecisionTree extends Parser {
                     }
                     switch (alt15) {
                         case 1 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:94:116: dialogannotations
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:114:116: dialogannotations
                             {
                             pushFollow(FOLLOW_dialogannotations_in_question222);
                             dialogannotations9=dialogannotations();
@@ -771,7 +791,7 @@ public class DecisionTree extends Parser {
 
                     }
 
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:94:135: ( NS manualref )?
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:114:135: ( NS manualref )?
                     int alt16=2;
                     int LA16_0 = input.LA(1);
 
@@ -780,7 +800,7 @@ public class DecisionTree extends Parser {
                     }
                     switch (alt16) {
                         case 1 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:94:136: NS manualref
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:114:136: NS manualref
                             {
                             match(input,NS,FOLLOW_NS_in_question226); if (state.failed) return retval;
                             pushFollow(FOLLOW_manualref_in_question228);
@@ -826,7 +846,7 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "answer"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:97:1: answer[int Dashes] : name ( synonyms )? ( idlink )? ( NS manualref )? (a= DEFAULT )? (b= INIT )? ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:117:1: answer[int Dashes] : name ( synonyms )? ( idlink )? ( NS manualref )? (a= DEFAULT )? (b= INIT )? ;
     public final DecisionTree.answer_return answer(int Dashes) throws RecognitionException {
         DecisionTree.answer_return retval = new DecisionTree.answer_return();
         retval.start = input.LT(1);
@@ -843,15 +863,15 @@ public class DecisionTree extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:98:1: ( name ( synonyms )? ( idlink )? ( NS manualref )? (a= DEFAULT )? (b= INIT )? )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:98:3: name ( synonyms )? ( idlink )? ( NS manualref )? (a= DEFAULT )? (b= INIT )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:118:1: ( name ( synonyms )? ( idlink )? ( NS manualref )? (a= DEFAULT )? (b= INIT )? )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:118:3: name ( synonyms )? ( idlink )? ( NS manualref )? (a= DEFAULT )? (b= INIT )?
             {
             pushFollow(FOLLOW_name_in_answer246);
             name10=name();
 
             state._fsp--;
             if (state.failed) return retval;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:98:8: ( synonyms )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:118:8: ( synonyms )?
             int alt18=2;
             int LA18_0 = input.LA(1);
 
@@ -860,7 +880,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt18) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:98:8: synonyms
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:118:8: synonyms
                     {
                     pushFollow(FOLLOW_synonyms_in_answer248);
                     synonyms12=synonyms();
@@ -873,7 +893,7 @@ public class DecisionTree extends Parser {
 
             }
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:98:18: ( idlink )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:118:18: ( idlink )?
             int alt19=2;
             int LA19_0 = input.LA(1);
 
@@ -882,7 +902,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt19) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:98:18: idlink
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:118:18: idlink
                     {
                     pushFollow(FOLLOW_idlink_in_answer251);
                     idlink13=idlink();
@@ -895,7 +915,7 @@ public class DecisionTree extends Parser {
 
             }
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:98:26: ( NS manualref )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:118:26: ( NS manualref )?
             int alt20=2;
             int LA20_0 = input.LA(1);
 
@@ -904,7 +924,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt20) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:98:27: NS manualref
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:118:27: NS manualref
                     {
                     match(input,NS,FOLLOW_NS_in_answer255); if (state.failed) return retval;
                     pushFollow(FOLLOW_manualref_in_answer257);
@@ -918,7 +938,7 @@ public class DecisionTree extends Parser {
 
             }
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:98:43: (a= DEFAULT )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:118:43: (a= DEFAULT )?
             int alt21=2;
             int LA21_0 = input.LA(1);
 
@@ -927,7 +947,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt21) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:98:43: a= DEFAULT
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:118:43: a= DEFAULT
                     {
                     a=(Token)match(input,DEFAULT,FOLLOW_DEFAULT_in_answer263); if (state.failed) return retval;
 
@@ -936,7 +956,7 @@ public class DecisionTree extends Parser {
 
             }
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:98:54: (b= INIT )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:118:54: (b= INIT )?
             int alt22=2;
             int LA22_0 = input.LA(1);
 
@@ -945,7 +965,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt22) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:98:54: b= INIT
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:118:54: b= INIT
                     {
                     b=(Token)match(input,INIT,FOLLOW_INIT_in_answer269); if (state.failed) return retval;
 
@@ -977,7 +997,7 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "diagnosis"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:100:1: diagnosis[int Dashes] : a= name ( NS a= name )* (b= SET )? diagvalue ( link )? ( idlink )? ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:120:1: diagnosis[int Dashes] : a= name ( NS a= name )* (b= SET )? diagvalue ( link )? ( idlink )? ;
     public final DecisionTree.diagnosis_return diagnosis(int Dashes) throws RecognitionException {
         DecisionTree.diagnosis_return retval = new DecisionTree.diagnosis_return();
         retval.start = input.LT(1);
@@ -994,8 +1014,8 @@ public class DecisionTree extends Parser {
 
         List<String> diags = new ArrayList<String>();
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:102:1: (a= name ( NS a= name )* (b= SET )? diagvalue ( link )? ( idlink )? )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:102:3: a= name ( NS a= name )* (b= SET )? diagvalue ( link )? ( idlink )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:122:1: (a= name ( NS a= name )* (b= SET )? diagvalue ( link )? ( idlink )? )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:122:3: a= name ( NS a= name )* (b= SET )? diagvalue ( link )? ( idlink )?
             {
             pushFollow(FOLLOW_name_in_diagnosis289);
             a=name();
@@ -1005,7 +1025,7 @@ public class DecisionTree extends Parser {
             if ( state.backtracking==0 ) {
               diags.add((a!=null?a.value:null));
             }
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:102:33: ( NS a= name )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:122:33: ( NS a= name )*
             loop23:
             do {
                 int alt23=2;
@@ -1018,7 +1038,7 @@ public class DecisionTree extends Parser {
 
                 switch (alt23) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:102:34: NS a= name
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:122:34: NS a= name
             	    {
             	    match(input,NS,FOLLOW_NS_in_diagnosis294); if (state.failed) return retval;
             	    pushFollow(FOLLOW_name_in_diagnosis298);
@@ -1038,7 +1058,7 @@ public class DecisionTree extends Parser {
                 }
             } while (true);
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:102:70: (b= SET )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:122:70: (b= SET )?
             int alt24=2;
             int LA24_0 = input.LA(1);
 
@@ -1047,7 +1067,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt24) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:102:70: b= SET
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:122:70: b= SET
                     {
                     b=(Token)match(input,SET,FOLLOW_SET_in_diagnosis306); if (state.failed) return retval;
 
@@ -1061,7 +1081,7 @@ public class DecisionTree extends Parser {
 
             state._fsp--;
             if (state.failed) return retval;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:102:86: ( link )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:122:86: ( link )?
             int alt25=2;
             int LA25_0 = input.LA(1);
 
@@ -1070,7 +1090,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt25) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:102:86: link
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:122:86: link
                     {
                     pushFollow(FOLLOW_link_in_diagnosis311);
                     link15=link();
@@ -1083,7 +1103,7 @@ public class DecisionTree extends Parser {
 
             }
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:102:92: ( idlink )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:122:92: ( idlink )?
             int alt26=2;
             int LA26_0 = input.LA(1);
 
@@ -1092,7 +1112,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt26) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:102:92: idlink
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:122:92: idlink
                     {
                     pushFollow(FOLLOW_idlink_in_diagnosis314);
                     idlink16=idlink();
@@ -1128,7 +1148,7 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "numeric"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:104:1: numeric[int Dashes] : (op= eq d1= d3double | SBO d1= d3double d2= d3double SBC ) ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:124:1: numeric[int Dashes] : (op= eq d1= d3double | SBO d1= d3double d2= d3double SBC ) ;
     public final DecisionTree.numeric_return numeric(int Dashes) throws RecognitionException {
         DecisionTree.numeric_return retval = new DecisionTree.numeric_return();
         retval.start = input.LT(1);
@@ -1141,10 +1161,10 @@ public class DecisionTree extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:105:1: ( (op= eq d1= d3double | SBO d1= d3double d2= d3double SBC ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:105:3: (op= eq d1= d3double | SBO d1= d3double d2= d3double SBC )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:125:1: ( (op= eq d1= d3double | SBO d1= d3double d2= d3double SBC ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:125:3: (op= eq d1= d3double | SBO d1= d3double d2= d3double SBC )
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:105:3: (op= eq d1= d3double | SBO d1= d3double d2= d3double SBC )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:125:3: (op= eq d1= d3double | SBO d1= d3double d2= d3double SBC )
             int alt27=2;
             int LA27_0 = input.LA(1);
 
@@ -1163,7 +1183,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt27) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:105:4: op= eq d1= d3double
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:125:4: op= eq d1= d3double
                     {
                     pushFollow(FOLLOW_eq_in_numeric330);
                     op=eq();
@@ -1179,7 +1199,7 @@ public class DecisionTree extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:105:22: SBO d1= d3double d2= d3double SBC
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:125:22: SBO d1= d3double d2= d3double SBC
                     {
                     match(input,SBO,FOLLOW_SBO_in_numeric336); if (state.failed) return retval;
                     pushFollow(FOLLOW_d3double_in_numeric340);
@@ -1222,7 +1242,7 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "manyQCLinks"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:107:1: manyQCLinks[int Dashes] : (a= name SEMI )+ a= name ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:127:1: manyQCLinks[int Dashes] : (a= name SEMI )+ a= name ;
     public final DecisionTree.manyQCLinks_return manyQCLinks(int Dashes) throws RecognitionException {
         DecisionTree.manyQCLinks_return retval = new DecisionTree.manyQCLinks_return();
         retval.start = input.LT(1);
@@ -1232,10 +1252,10 @@ public class DecisionTree extends Parser {
 
         List<String> qcs = new ArrayList<String>();
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:109:1: ( (a= name SEMI )+ a= name )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:109:3: (a= name SEMI )+ a= name
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:129:1: ( (a= name SEMI )+ a= name )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:129:3: (a= name SEMI )+ a= name
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:109:3: (a= name SEMI )+
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:129:3: (a= name SEMI )+
             int cnt28=0;
             loop28:
             do {
@@ -1243,7 +1263,7 @@ public class DecisionTree extends Parser {
                 alt28 = dfa28.predict(input);
                 switch (alt28) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:109:4: a= name SEMI
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:129:4: a= name SEMI
             	    {
             	    pushFollow(FOLLOW_name_in_manyQCLinks367);
             	    a=name();
@@ -1296,7 +1316,7 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "include"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:111:1: include : INCLUDE EQ String G ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:131:1: include : INCLUDE EQ String G ;
     public final DecisionTree.include_return include() throws RecognitionException {
         DecisionTree.include_return retval = new DecisionTree.include_return();
         retval.start = input.LT(1);
@@ -1304,8 +1324,8 @@ public class DecisionTree extends Parser {
         Token String17=null;
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:112:1: ( INCLUDE EQ String G )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:112:3: INCLUDE EQ String G
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:132:1: ( INCLUDE EQ String G )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:132:3: INCLUDE EQ String G
             {
             match(input,INCLUDE,FOLLOW_INCLUDE_in_include387); if (state.failed) return retval;
             match(input,EQ,FOLLOW_EQ_in_include389); if (state.failed) return retval;
@@ -1334,7 +1354,7 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "deslimit"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:114:1: deslimit : ALLOWEDNAMES EQ CBO (a= ids COMMA )* b= ids CBC NL ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:134:1: deslimit : ALLOWEDNAMES EQ CBO (a= ids COMMA )* b= ids CBC NL ;
     public final DecisionTree.deslimit_return deslimit() throws RecognitionException {
         DecisionTree.deslimit_return retval = new DecisionTree.deslimit_return();
         retval.start = input.LT(1);
@@ -1346,20 +1366,20 @@ public class DecisionTree extends Parser {
 
         List<String> allowedNames = new ArrayList<String>();
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:116:1: ( ALLOWEDNAMES EQ CBO (a= ids COMMA )* b= ids CBC NL )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:116:3: ALLOWEDNAMES EQ CBO (a= ids COMMA )* b= ids CBC NL
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:136:1: ( ALLOWEDNAMES EQ CBO (a= ids COMMA )* b= ids CBC NL )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:136:3: ALLOWEDNAMES EQ CBO (a= ids COMMA )* b= ids CBC NL
             {
             match(input,ALLOWEDNAMES,FOLLOW_ALLOWEDNAMES_in_deslimit408); if (state.failed) return retval;
             match(input,EQ,FOLLOW_EQ_in_deslimit410); if (state.failed) return retval;
             match(input,CBO,FOLLOW_CBO_in_deslimit412); if (state.failed) return retval;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:116:23: (a= ids COMMA )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:136:23: (a= ids COMMA )*
             loop29:
             do {
                 int alt29=2;
                 alt29 = dfa29.predict(input);
                 switch (alt29) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:116:24: a= ids COMMA
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:136:24: a= ids COMMA
             	    {
             	    pushFollow(FOLLOW_ids_in_deslimit417);
             	    a=ids();
@@ -1412,16 +1432,16 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "ids"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:118:1: ids : ( ID )+ ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:138:1: ids : ( ID )+ ;
     public final DecisionTree.ids_return ids() throws RecognitionException {
         DecisionTree.ids_return retval = new DecisionTree.ids_return();
         retval.start = input.LT(1);
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:119:1: ( ( ID )+ )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:119:3: ( ID )+
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:139:1: ( ( ID )+ )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:139:3: ( ID )+
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:119:3: ( ID )+
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:139:3: ( ID )+
             int cnt30=0;
             loop30:
             do {
@@ -1435,7 +1455,7 @@ public class DecisionTree extends Parser {
 
                 switch (alt30) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:119:3: ID
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:139:3: ID
             	    {
             	    match(input,ID,FOLLOW_ID_in_ids441); if (state.failed) return retval;
 
@@ -1472,7 +1492,7 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "description"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:121:1: description : ORS AT a= name ORS c= name ORS ( ID DD DD )? b= name ORS destext ORS ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:141:1: description : ORS AT a= name ORS c= name ORS ( ID DD DD )? b= name ORS destext ORS ;
     public final DecisionTree.description_return description() throws RecognitionException {
         DecisionTree.description_return retval = new DecisionTree.description_return();
         retval.start = input.LT(1);
@@ -1488,8 +1508,8 @@ public class DecisionTree extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:122:1: ( ORS AT a= name ORS c= name ORS ( ID DD DD )? b= name ORS destext ORS )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:122:3: ORS AT a= name ORS c= name ORS ( ID DD DD )? b= name ORS destext ORS
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:142:1: ( ORS AT a= name ORS c= name ORS ( ID DD DD )? b= name ORS destext ORS )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:142:3: ORS AT a= name ORS c= name ORS ( ID DD DD )? b= name ORS destext ORS
             {
             match(input,ORS,FOLLOW_ORS_in_description450); if (state.failed) return retval;
             match(input,AT,FOLLOW_AT_in_description452); if (state.failed) return retval;
@@ -1505,7 +1525,7 @@ public class DecisionTree extends Parser {
             state._fsp--;
             if (state.failed) return retval;
             match(input,ORS,FOLLOW_ORS_in_description464); if (state.failed) return retval;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:122:32: ( ID DD DD )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:142:32: ( ID DD DD )?
             int alt31=2;
             int LA31_0 = input.LA(1);
 
@@ -1518,7 +1538,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt31) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:122:33: ID DD DD
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:142:33: ID DD DD
                     {
                     ID19=(Token)match(input,ID,FOLLOW_ID_in_description467); if (state.failed) return retval;
                     match(input,DD,FOLLOW_DD_in_description469); if (state.failed) return retval;
@@ -1562,7 +1582,7 @@ public class DecisionTree extends Parser {
 
 
     // $ANTLR start "synonyms"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:124:1: synonyms returns [List<String> syn] : ( CBO (a= name SEMI )* b= name CBC ) ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:144:1: synonyms returns [List<String> syn] : ( CBO (a= name SEMI )* b= name CBC ) ;
     public final List<String> synonyms() throws RecognitionException {
         List<String> syn = null;
 
@@ -1573,21 +1593,21 @@ public class DecisionTree extends Parser {
 
         syn = new ArrayList<String>();
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:126:1: ( ( CBO (a= name SEMI )* b= name CBC ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:126:4: ( CBO (a= name SEMI )* b= name CBC )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:146:1: ( ( CBO (a= name SEMI )* b= name CBC ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:146:4: ( CBO (a= name SEMI )* b= name CBC )
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:126:4: ( CBO (a= name SEMI )* b= name CBC )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:126:5: CBO (a= name SEMI )* b= name CBC
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:146:4: ( CBO (a= name SEMI )* b= name CBC )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:146:5: CBO (a= name SEMI )* b= name CBC
             {
             match(input,CBO,FOLLOW_CBO_in_synonyms504); if (state.failed) return syn;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:126:8: (a= name SEMI )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:146:8: (a= name SEMI )*
             loop32:
             do {
                 int alt32=2;
                 alt32 = dfa32.predict(input);
                 switch (alt32) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:126:9: a= name SEMI
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:146:9: a= name SEMI
             	    {
             	    pushFollow(FOLLOW_name_in_synonyms508);
             	    a=name();
@@ -1635,7 +1655,7 @@ public class DecisionTree extends Parser {
 
 
     // $ANTLR start "diagvalue"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:128:1: diagvalue returns [String value] : LP ( ( MINUS INT | INT DOT )=> d3double | name | EX ) RP ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:148:1: diagvalue returns [String value] : LP ( ( MINUS INT | INT DOT )=> d3double | name | EX ) RP ;
     public final String diagvalue() throws RecognitionException {
         String value = null;
 
@@ -1645,11 +1665,11 @@ public class DecisionTree extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:129:1: ( LP ( ( MINUS INT | INT DOT )=> d3double | name | EX ) RP )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:129:3: LP ( ( MINUS INT | INT DOT )=> d3double | name | EX ) RP
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:149:1: ( LP ( ( MINUS INT | INT DOT )=> d3double | name | EX ) RP )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:149:3: LP ( ( MINUS INT | INT DOT )=> d3double | name | EX ) RP
             {
             match(input,LP,FOLLOW_LP_in_diagvalue534); if (state.failed) return value;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:129:6: ( ( MINUS INT | INT DOT )=> d3double | name | EX )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:149:6: ( ( MINUS INT | INT DOT )=> d3double | name | EX )
             int alt33=3;
             int LA33_0 = input.LA(1);
 
@@ -1688,7 +1708,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt33) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:129:7: ( MINUS INT | INT DOT )=> d3double
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:149:7: ( MINUS INT | INT DOT )=> d3double
                     {
                     pushFollow(FOLLOW_d3double_in_diagvalue550);
                     d3double20=d3double();
@@ -1702,7 +1722,7 @@ public class DecisionTree extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:129:78: name
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:149:78: name
                     {
                     pushFollow(FOLLOW_name_in_diagvalue555);
                     name21=name();
@@ -1716,7 +1736,7 @@ public class DecisionTree extends Parser {
                     }
                     break;
                 case 3 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:129:107: EX
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:149:107: EX
                     {
                     match(input,EX,FOLLOW_EX_in_diagvalue561); if (state.failed) return value;
                     if ( state.backtracking==0 ) {
@@ -1747,16 +1767,16 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "destext"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:131:1: destext : ( options {greedy=false; } : ~ ORS )* ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:151:1: destext : ( options {greedy=false; } : ~ ORS )* ;
     public final DecisionTree.destext_return destext() throws RecognitionException {
         DecisionTree.destext_return retval = new DecisionTree.destext_return();
         retval.start = input.LT(1);
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:132:1: ( ( options {greedy=false; } : ~ ORS )* )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:132:3: ( options {greedy=false; } : ~ ORS )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:152:1: ( ( options {greedy=false; } : ~ ORS )* )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:152:3: ( options {greedy=false; } : ~ ORS )*
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:132:3: ( options {greedy=false; } : ~ ORS )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:152:3: ( options {greedy=false; } : ~ ORS )*
             loop34:
             do {
                 int alt34=2;
@@ -1772,7 +1792,7 @@ public class DecisionTree extends Parser {
 
                 switch (alt34) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:132:31: ~ ORS
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:152:31: ~ ORS
             	    {
             	    if ( (input.LA(1)>=String && input.LA(1)<=AT)||(input.LA(1)>=NS && input.LA(1)<=74) ) {
             	        input.consume();
@@ -1815,7 +1835,7 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "link"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:136:1: link returns [String s1, String s2] : SBO SBO a= name SBC ( SBO b= name SBC )? SBC ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:156:1: link returns [String s1, String s2] : SBO SBO a= name SBC ( SBO b= name SBC )? SBC ;
     public final DecisionTree.link_return link() throws RecognitionException {
         DecisionTree.link_return retval = new DecisionTree.link_return();
         retval.start = input.LT(1);
@@ -1826,8 +1846,8 @@ public class DecisionTree extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:137:1: ( SBO SBO a= name SBC ( SBO b= name SBC )? SBC )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:137:3: SBO SBO a= name SBC ( SBO b= name SBC )? SBC
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:157:1: ( SBO SBO a= name SBC ( SBO b= name SBC )? SBC )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:157:3: SBO SBO a= name SBC ( SBO b= name SBC )? SBC
             {
             match(input,SBO,FOLLOW_SBO_in_link604); if (state.failed) return retval;
             match(input,SBO,FOLLOW_SBO_in_link606); if (state.failed) return retval;
@@ -1837,7 +1857,7 @@ public class DecisionTree extends Parser {
             state._fsp--;
             if (state.failed) return retval;
             match(input,SBC,FOLLOW_SBC_in_link612); if (state.failed) return retval;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:137:22: ( SBO b= name SBC )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:157:22: ( SBO b= name SBC )?
             int alt35=2;
             int LA35_0 = input.LA(1);
 
@@ -1846,7 +1866,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt35) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:137:23: SBO b= name SBC
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:157:23: SBO b= name SBC
                     {
                     match(input,SBO,FOLLOW_SBO_in_link615); if (state.failed) return retval;
                     pushFollow(FOLLOW_name_in_link619);
@@ -1883,11 +1903,11 @@ public class DecisionTree extends Parser {
 
 
     // $ANTLR start "type"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:139:1: type : SBO ID SBC ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:159:1: type : SBO ID SBC ;
     public final void type() throws RecognitionException {
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:140:1: ( SBO ID SBC )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:140:3: SBO ID SBC
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:160:1: ( SBO ID SBC )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:160:3: SBO ID SBC
             {
             match(input,SBO,FOLLOW_SBO_in_type635); if (state.failed) return ;
             match(input,ID,FOLLOW_ID_in_type637); if (state.failed) return ;
@@ -1908,18 +1928,18 @@ public class DecisionTree extends Parser {
 
 
     // $ANTLR start "dashes"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:143:1: dashes returns [int i] : ( MINUS )+ ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:163:1: dashes returns [int i] : ( MINUS )+ ;
     public final int dashes() throws RecognitionException {
         int i = 0;
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:144:1: ( ( MINUS )+ )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:144:3: ( MINUS )+
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:164:1: ( ( MINUS )+ )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:164:3: ( MINUS )+
             {
             if ( state.backtracking==0 ) {
               i=0;
             }
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:144:10: ( MINUS )+
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:164:10: ( MINUS )+
             int cnt36=0;
             loop36:
             do {
@@ -1933,7 +1953,7 @@ public class DecisionTree extends Parser {
 
                 switch (alt36) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:144:11: MINUS
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:164:11: MINUS
             	    {
             	    match(input,MINUS,FOLLOW_MINUS_in_dashes655); if (state.failed) return i;
             	    if ( state.backtracking==0 ) {
@@ -1971,16 +1991,16 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "manualref"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:146:1: manualref : ( ID | INT )* ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:166:1: manualref : ( ID | INT )* ;
     public final DecisionTree.manualref_return manualref() throws RecognitionException {
         DecisionTree.manualref_return retval = new DecisionTree.manualref_return();
         retval.start = input.LT(1);
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:146:10: ( ( ID | INT )* )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:147:1: ( ID | INT )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:166:10: ( ( ID | INT )* )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:167:1: ( ID | INT )*
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:147:1: ( ID | INT )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:167:1: ( ID | INT )*
             loop37:
             do {
                 int alt37=2;
@@ -1993,7 +2013,7 @@ public class DecisionTree extends Parser {
 
                 switch (alt37) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:
             	    {
             	    if ( input.LA(1)==INT||input.LA(1)==ID ) {
             	        input.consume();
@@ -2032,7 +2052,7 @@ public class DecisionTree extends Parser {
 
 
     // $ANTLR start "idlink"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:149:1: idlink returns [String s] : AT name ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:169:1: idlink returns [String s] : AT name ;
     public final String idlink() throws RecognitionException {
         String s = null;
 
@@ -2040,8 +2060,8 @@ public class DecisionTree extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:149:26: ( AT name )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:150:1: AT name
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:169:26: ( AT name )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:170:1: AT name
             {
             match(input,AT,FOLLOW_AT_in_idlink683); if (state.failed) return s;
             pushFollow(FOLLOW_name_in_idlink685);
@@ -2072,7 +2092,7 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "dialogannotations"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:152:1: dialogannotations returns [List<String> attribute, List<String> value] : LP ( AT a= name DD b= String SEMI )* AT a= name DD b= String ( SEMI )? RP ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:172:1: dialogannotations returns [List<String> attribute, List<String> value] : LP ( AT a= name DD b= String SEMI )* AT a= name DD b= String ( SEMI )? RP ;
     public final DecisionTree.dialogannotations_return dialogannotations() throws RecognitionException {
         DecisionTree.dialogannotations_return retval = new DecisionTree.dialogannotations_return();
         retval.start = input.LT(1);
@@ -2083,18 +2103,18 @@ public class DecisionTree extends Parser {
 
         retval.attribute = new ArrayList<String>(); retval.value = new ArrayList<String>();
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:154:1: ( LP ( AT a= name DD b= String SEMI )* AT a= name DD b= String ( SEMI )? RP )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:154:3: LP ( AT a= name DD b= String SEMI )* AT a= name DD b= String ( SEMI )? RP
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:174:1: ( LP ( AT a= name DD b= String SEMI )* AT a= name DD b= String ( SEMI )? RP )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:174:3: LP ( AT a= name DD b= String SEMI )* AT a= name DD b= String ( SEMI )? RP
             {
             match(input,LP,FOLLOW_LP_in_dialogannotations704); if (state.failed) return retval;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:154:6: ( AT a= name DD b= String SEMI )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:174:6: ( AT a= name DD b= String SEMI )*
             loop38:
             do {
                 int alt38=2;
                 alt38 = dfa38.predict(input);
                 switch (alt38) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:154:7: AT a= name DD b= String SEMI
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:174:7: AT a= name DD b= String SEMI
             	    {
             	    match(input,AT,FOLLOW_AT_in_dialogannotations707); if (state.failed) return retval;
             	    pushFollow(FOLLOW_name_in_dialogannotations711);
@@ -2125,7 +2145,7 @@ public class DecisionTree extends Parser {
             if (state.failed) return retval;
             match(input,DD,FOLLOW_DD_in_dialogannotations731); if (state.failed) return retval;
             b=(Token)match(input,String,FOLLOW_String_in_dialogannotations735); if (state.failed) return retval;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:154:117: ( SEMI )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:174:117: ( SEMI )?
             int alt39=2;
             int LA39_0 = input.LA(1);
 
@@ -2134,7 +2154,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt39) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:154:117: SEMI
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:174:117: SEMI
                     {
                     match(input,SEMI,FOLLOW_SEMI_in_dialogannotations737); if (state.failed) return retval;
 
@@ -2165,7 +2185,7 @@ public class DecisionTree extends Parser {
 
     // $ANTLR start synpred1_DecisionTree
     public final void synpred1_DecisionTree_fragment() throws RecognitionException {   
-        // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:129:7: ( MINUS INT | INT DOT )
+        // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:149:7: ( MINUS INT | INT DOT )
         int alt40=2;
         int LA40_0 = input.LA(1);
 
@@ -2184,7 +2204,7 @@ public class DecisionTree extends Parser {
         }
         switch (alt40) {
             case 1 :
-                // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:129:8: MINUS INT
+                // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:149:8: MINUS INT
                 {
                 match(input,MINUS,FOLLOW_MINUS_in_synpred1_DecisionTree538); if (state.failed) return ;
                 match(input,INT,FOLLOW_INT_in_synpred1_DecisionTree540); if (state.failed) return ;
@@ -2192,7 +2212,7 @@ public class DecisionTree extends Parser {
                 }
                 break;
             case 2 :
-                // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:129:20: INT DOT
+                // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g:149:20: INT DOT
                 {
                 match(input,INT,FOLLOW_INT_in_synpred1_DecisionTree544); if (state.failed) return ;
                 match(input,DOT,FOLLOW_DOT_in_synpred1_DecisionTree546); if (state.failed) return ;
@@ -2204,11 +2224,11 @@ public class DecisionTree extends Parser {
     // $ANTLR end synpred1_DecisionTree
 
     // Delegated rules
-    public DecisionTree_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
-    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
     public DecisionTree_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
-    public DecisionTree_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
     public DecisionTree_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
+    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
+    public DecisionTree_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
+    public DecisionTree_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
 
     public final boolean synpred1_DecisionTree() {
         state.backtracking++;
@@ -2302,7 +2322,7 @@ public class DecisionTree extends Parser {
             this.transition = DFA3_transition;
         }
         public String getDescription() {
-            return "()* loopback of 80:45: ( description NL )*";
+            return "()* loopback of 100:45: ( description NL )*";
         }
     }
     static final String DFA5_eotS =
@@ -2379,7 +2399,7 @@ public class DecisionTree extends Parser {
             this.transition = DFA5_transition;
         }
         public String getDescription() {
-            return "86:88: ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] )";
+            return "106:88: ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] )";
         }
     }
     static final String DFA28_eotS =
@@ -2434,7 +2454,7 @@ public class DecisionTree extends Parser {
             this.transition = DFA28_transition;
         }
         public String getDescription() {
-            return "()+ loopback of 109:3: (a= name SEMI )+";
+            return "()+ loopback of 129:3: (a= name SEMI )+";
         }
     }
     static final String DFA29_eotS =
@@ -2486,7 +2506,7 @@ public class DecisionTree extends Parser {
             this.transition = DFA29_transition;
         }
         public String getDescription() {
-            return "()* loopback of 116:23: (a= ids COMMA )*";
+            return "()* loopback of 136:23: (a= ids COMMA )*";
         }
     }
     static final String DFA32_eotS =
@@ -2541,7 +2561,7 @@ public class DecisionTree extends Parser {
             this.transition = DFA32_transition;
         }
         public String getDescription() {
-            return "()* loopback of 126:8: (a= name SEMI )*";
+            return "()* loopback of 146:8: (a= name SEMI )*";
         }
     }
     static final String DFA38_eotS =
@@ -2600,7 +2620,7 @@ public class DecisionTree extends Parser {
             this.transition = DFA38_transition;
         }
         public String getDescription() {
-            return "()* loopback of 154:6: ( AT a= name DD b= String SEMI )*";
+            return "()* loopback of 174:6: ( AT a= name DD b= String SEMI )*";
         }
     }
  

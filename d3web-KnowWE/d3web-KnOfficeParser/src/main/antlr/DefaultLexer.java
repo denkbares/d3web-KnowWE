@@ -1,4 +1,24 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g 2010-04-19 10:47:45
+// $ANTLR 3.1.1 D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g 2010-08-18 21:22:47
+
+/*
+ * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 
 package de.d3web.KnOfficeParser;
 
@@ -106,15 +126,15 @@ public class DefaultLexer extends Lexer {
         super(input,state);
         gBasicLexer = new DefaultLexer_BasicLexer(input, state, this);
     }
-    public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g"; }
+    public String getGrammarFileName() { return "D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g"; }
 
     // $ANTLR start "BLUB"
     public final void mBLUB() throws RecognitionException {
         try {
             int _type = BLUB;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:57:5: ()
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:57:6: 
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:77:5: ()
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:77:6: 
             {
             }
 
@@ -127,7 +147,7 @@ public class DefaultLexer extends Lexer {
     // $ANTLR end "BLUB"
 
     public void mTokens() throws RecognitionException {
-        // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:1:8: ( BLUB | BasicLexer. Tokens )
+        // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:1:8: ( BLUB | BasicLexer. Tokens )
         int alt1=2;
         int LA1_0 = input.LA(1);
 
@@ -138,14 +158,14 @@ public class DefaultLexer extends Lexer {
             alt1=1;}
         switch (alt1) {
             case 1 :
-                // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:1:10: BLUB
+                // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:1:10: BLUB
                 {
                 mBLUB(); 
 
                 }
                 break;
             case 2 :
-                // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:1:15: BasicLexer. Tokens
+                // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:1:15: BasicLexer. Tokens
                 {
                 gBasicLexer.mTokens(); 
 

@@ -1,4 +1,24 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g 2010-04-19 10:47:31
+// $ANTLR 3.1.1 D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g 2010-08-18 21:19:36
+
+/*
+ * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 
 package de.d3web.we.testsuite;
 import de.d3web.KnOfficeParser.LexerErrorHandler;
@@ -113,14 +133,14 @@ public class TestsuiteLexer extends Lexer {
         super(input,state);
         gBasicLexer = new TestsuiteLexer_BasicLexer(input, state, this);
     }
-    public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g"; }
+    public String getGrammarFileName() { return "D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g"; }
 
     // $ANTLR start "HEURISTIC"
     public final void mHEURISTIC() throws RecognitionException {
         try {
             int _type = HEURISTIC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:65:11: ( 'heuristic' | 'HEURISTIC' | 'Heuristic' )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:85:11: ( 'heuristic' | 'HEURISTIC' | 'Heuristic' )
             int alt1=3;
             int LA1_0 = input.LA(1);
 
@@ -151,7 +171,7 @@ public class TestsuiteLexer extends Lexer {
             }
             switch (alt1) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:65:13: 'heuristic'
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:85:13: 'heuristic'
                     {
                     match("heuristic"); 
 
@@ -159,7 +179,7 @@ public class TestsuiteLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:65:25: 'HEURISTIC'
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:85:25: 'HEURISTIC'
                     {
                     match("HEURISTIC"); 
 
@@ -167,7 +187,7 @@ public class TestsuiteLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:65:37: 'Heuristic'
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:85:37: 'Heuristic'
                     {
                     match("Heuristic"); 
 
@@ -189,7 +209,7 @@ public class TestsuiteLexer extends Lexer {
         try {
             int _type = XCL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:66:5: ( 'xcl' | 'XCL' | 'Xcl' )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:86:5: ( 'xcl' | 'XCL' | 'Xcl' )
             int alt2=3;
             int LA2_0 = input.LA(1);
 
@@ -220,7 +240,7 @@ public class TestsuiteLexer extends Lexer {
             }
             switch (alt2) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:66:7: 'xcl'
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:86:7: 'xcl'
                     {
                     match("xcl"); 
 
@@ -228,7 +248,7 @@ public class TestsuiteLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:66:13: 'XCL'
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:86:13: 'XCL'
                     {
                     match("XCL"); 
 
@@ -236,7 +256,7 @@ public class TestsuiteLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:66:19: 'Xcl'
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:86:19: 'Xcl'
                     {
                     match("Xcl"); 
 
@@ -254,26 +274,26 @@ public class TestsuiteLexer extends Lexer {
     // $ANTLR end "XCL"
 
     public void mTokens() throws RecognitionException {
-        // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:1:8: ( HEURISTIC | XCL | BasicLexer. Tokens )
+        // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:1:8: ( HEURISTIC | XCL | BasicLexer. Tokens )
         int alt3=3;
         alt3 = dfa3.predict(input);
         switch (alt3) {
             case 1 :
-                // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:1:10: HEURISTIC
+                // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:1:10: HEURISTIC
                 {
                 mHEURISTIC(); 
 
                 }
                 break;
             case 2 :
-                // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:1:20: XCL
+                // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:1:20: XCL
                 {
                 mXCL(); 
 
                 }
                 break;
             case 3 :
-                // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:1:24: BasicLexer. Tokens
+                // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g:1:24: BasicLexer. Tokens
                 {
                 gBasicLexer.mTokens(); 
 

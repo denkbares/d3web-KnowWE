@@ -1,4 +1,24 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g 2010-04-19 10:47:27
+// $ANTLR 3.1.1 D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g 2010-08-18 21:19:38
+
+/*
+ * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 
 package de.d3web.we.testsuite;
 import de.d3web.we.testsuite.TestsuiteBuilder;
@@ -93,7 +113,7 @@ public class TestsuiteANTLR extends Parser {
         
 
     public String[] getTokenNames() { return TestsuiteANTLR.tokenNames; }
-    public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g"; }
+    public String getGrammarFileName() { return "D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g"; }
 
 
       private TestsuiteBuilder builder;
@@ -132,13 +152,13 @@ public class TestsuiteANTLR extends Parser {
 
 
     // $ANTLR start "knowledge"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:73:1: knowledge : ( sqtestcase )* ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:93:1: knowledge : ( sqtestcase )* ;
     public final void knowledge() throws RecognitionException {
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:74:1: ( ( sqtestcase )* )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:74:3: ( sqtestcase )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:94:1: ( ( sqtestcase )* )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:94:3: ( sqtestcase )*
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:74:3: ( sqtestcase )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:94:3: ( sqtestcase )*
             loop1:
             do {
                 int alt1=2;
@@ -151,7 +171,7 @@ public class TestsuiteANTLR extends Parser {
 
                 switch (alt1) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:74:3: sqtestcase
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:94:3: sqtestcase
             	    {
             	    pushFollow(FOLLOW_sqtestcase_in_knowledge54);
             	    sqtestcase();
@@ -184,15 +204,15 @@ public class TestsuiteANTLR extends Parser {
 
 
     // $ANTLR start "sqtestcase"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:76:1: sqtestcase : n= name CBO ( ratedtestcase[i] )+ CBC ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:96:1: sqtestcase : n= name CBO ( ratedtestcase[i] )+ CBC ;
     public final void sqtestcase() throws RecognitionException {
         TestsuiteANTLR.name_return n = null;
 
 
         int i = 0;
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:78:1: (n= name CBO ( ratedtestcase[i] )+ CBC )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:78:3: n= name CBO ( ratedtestcase[i] )+ CBC
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:98:1: (n= name CBO ( ratedtestcase[i] )+ CBC )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:98:3: n= name CBO ( ratedtestcase[i] )+ CBC
             {
             pushFollow(FOLLOW_name_in_sqtestcase72);
             n=name();
@@ -201,7 +221,7 @@ public class TestsuiteANTLR extends Parser {
 
             builder.addSequentialTestCase((n!=null?n.value:null));
             match(input,CBO,FOLLOW_CBO_in_sqtestcase76); 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:78:57: ( ratedtestcase[i] )+
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:98:57: ( ratedtestcase[i] )+
             int cnt2=0;
             loop2:
             do {
@@ -215,7 +235,7 @@ public class TestsuiteANTLR extends Parser {
 
                 switch (alt2) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:78:58: ratedtestcase[i]
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:98:58: ratedtestcase[i]
             	    {
             	    i++;
             	    pushFollow(FOLLOW_ratedtestcase_in_sqtestcase81);
@@ -256,14 +276,14 @@ public class TestsuiteANTLR extends Parser {
     };
 
     // $ANTLR start "ratedtestcase"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:80:1: ratedtestcase[int i] : findings DD ( solutions )? SEMI ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:100:1: ratedtestcase[int i] : findings DD ( solutions )? SEMI ;
     public final TestsuiteANTLR.ratedtestcase_return ratedtestcase(int i) throws RecognitionException {
         TestsuiteANTLR.ratedtestcase_return retval = new TestsuiteANTLR.ratedtestcase_return();
         retval.start = input.LT(1);
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:81:1: ( findings DD ( solutions )? SEMI )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:81:3: findings DD ( solutions )? SEMI
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:101:1: ( findings DD ( solutions )? SEMI )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:101:3: findings DD ( solutions )? SEMI
             {
             builder.addRatedTestCase(i, ((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)));
             pushFollow(FOLLOW_findings_in_ratedtestcase99);
@@ -272,7 +292,7 @@ public class TestsuiteANTLR extends Parser {
             state._fsp--;
 
             match(input,DD,FOLLOW_DD_in_ratedtestcase101); 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:81:71: ( solutions )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:101:71: ( solutions )?
             int alt3=2;
             int LA3_0 = input.LA(1);
 
@@ -281,7 +301,7 @@ public class TestsuiteANTLR extends Parser {
             }
             switch (alt3) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:81:71: solutions
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:101:71: solutions
                     {
                     pushFollow(FOLLOW_solutions_in_ratedtestcase103);
                     solutions();
@@ -316,7 +336,7 @@ public class TestsuiteANTLR extends Parser {
     };
 
     // $ANTLR start "findings"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:83:1: findings : (q= name EQ a= name COMMA )* (q= name EQ a= name ) ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:103:1: findings : (q= name EQ a= name COMMA )* (q= name EQ a= name ) ;
     public final TestsuiteANTLR.findings_return findings() throws RecognitionException {
         TestsuiteANTLR.findings_return retval = new TestsuiteANTLR.findings_return();
         retval.start = input.LT(1);
@@ -327,17 +347,17 @@ public class TestsuiteANTLR extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:84:1: ( (q= name EQ a= name COMMA )* (q= name EQ a= name ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:84:3: (q= name EQ a= name COMMA )* (q= name EQ a= name )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:104:1: ( (q= name EQ a= name COMMA )* (q= name EQ a= name ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:104:3: (q= name EQ a= name COMMA )* (q= name EQ a= name )
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:84:3: (q= name EQ a= name COMMA )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:104:3: (q= name EQ a= name COMMA )*
             loop4:
             do {
                 int alt4=2;
                 alt4 = dfa4.predict(input);
                 switch (alt4) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:84:4: q= name EQ a= name COMMA
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:104:4: q= name EQ a= name COMMA
             	    {
             	    pushFollow(FOLLOW_name_in_findings119);
             	    q=name();
@@ -361,8 +381,8 @@ public class TestsuiteANTLR extends Parser {
                 }
             } while (true);
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:85:3: (q= name EQ a= name )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:85:4: q= name EQ a= name
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:105:3: (q= name EQ a= name )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:105:4: q= name EQ a= name
             {
             pushFollow(FOLLOW_name_in_findings139);
             q=name();
@@ -397,27 +417,27 @@ public class TestsuiteANTLR extends Parser {
 
 
     // $ANTLR start "solutions"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:87:1: solutions : ( ( heuristic_solution | xcl_solution | normalsolution ) COMMA )* ( heuristic_solution | xcl_solution | normalsolution ) ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:107:1: solutions : ( ( heuristic_solution | xcl_solution | normalsolution ) COMMA )* ( heuristic_solution | xcl_solution | normalsolution ) ;
     public final void solutions() throws RecognitionException {
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:88:1: ( ( ( heuristic_solution | xcl_solution | normalsolution ) COMMA )* ( heuristic_solution | xcl_solution | normalsolution ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:88:3: ( ( heuristic_solution | xcl_solution | normalsolution ) COMMA )* ( heuristic_solution | xcl_solution | normalsolution )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:108:1: ( ( ( heuristic_solution | xcl_solution | normalsolution ) COMMA )* ( heuristic_solution | xcl_solution | normalsolution ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:108:3: ( ( heuristic_solution | xcl_solution | normalsolution ) COMMA )* ( heuristic_solution | xcl_solution | normalsolution )
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:88:3: ( ( heuristic_solution | xcl_solution | normalsolution ) COMMA )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:108:3: ( ( heuristic_solution | xcl_solution | normalsolution ) COMMA )*
             loop6:
             do {
                 int alt6=2;
                 alt6 = dfa6.predict(input);
                 switch (alt6) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:88:4: ( heuristic_solution | xcl_solution | normalsolution ) COMMA
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:108:4: ( heuristic_solution | xcl_solution | normalsolution ) COMMA
             	    {
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:88:4: ( heuristic_solution | xcl_solution | normalsolution )
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:108:4: ( heuristic_solution | xcl_solution | normalsolution )
             	    int alt5=3;
             	    alt5 = dfa5.predict(input);
             	    switch (alt5) {
             	        case 1 :
-            	            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:88:5: heuristic_solution
+            	            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:108:5: heuristic_solution
             	            {
             	            pushFollow(FOLLOW_heuristic_solution_in_solutions158);
             	            heuristic_solution();
@@ -428,7 +448,7 @@ public class TestsuiteANTLR extends Parser {
             	            }
             	            break;
             	        case 2 :
-            	            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:88:24: xcl_solution
+            	            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:108:24: xcl_solution
             	            {
             	            pushFollow(FOLLOW_xcl_solution_in_solutions160);
             	            xcl_solution();
@@ -439,7 +459,7 @@ public class TestsuiteANTLR extends Parser {
             	            }
             	            break;
             	        case 3 :
-            	            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:88:37: normalsolution
+            	            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:108:37: normalsolution
             	            {
             	            pushFollow(FOLLOW_normalsolution_in_solutions162);
             	            normalsolution();
@@ -462,12 +482,12 @@ public class TestsuiteANTLR extends Parser {
                 }
             } while (true);
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:88:61: ( heuristic_solution | xcl_solution | normalsolution )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:108:61: ( heuristic_solution | xcl_solution | normalsolution )
             int alt7=3;
             alt7 = dfa7.predict(input);
             switch (alt7) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:88:62: heuristic_solution
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:108:62: heuristic_solution
                     {
                     pushFollow(FOLLOW_heuristic_solution_in_solutions170);
                     heuristic_solution();
@@ -478,7 +498,7 @@ public class TestsuiteANTLR extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:88:81: xcl_solution
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:108:81: xcl_solution
                     {
                     pushFollow(FOLLOW_xcl_solution_in_solutions172);
                     xcl_solution();
@@ -489,7 +509,7 @@ public class TestsuiteANTLR extends Parser {
                     }
                     break;
                 case 3 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:88:94: normalsolution
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:108:94: normalsolution
                     {
                     pushFollow(FOLLOW_normalsolution_in_solutions174);
                     normalsolution();
@@ -520,7 +540,7 @@ public class TestsuiteANTLR extends Parser {
     };
 
     // $ANTLR start "heuristic_solution"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:90:1: heuristic_solution : (n= name ( LP HEURISTIC DD r= name RP ) ) ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:110:1: heuristic_solution : (n= name ( LP HEURISTIC DD r= name RP ) ) ;
     public final TestsuiteANTLR.heuristic_solution_return heuristic_solution() throws RecognitionException {
         TestsuiteANTLR.heuristic_solution_return retval = new TestsuiteANTLR.heuristic_solution_return();
         retval.start = input.LT(1);
@@ -531,19 +551,19 @@ public class TestsuiteANTLR extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:91:1: ( (n= name ( LP HEURISTIC DD r= name RP ) ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:91:3: (n= name ( LP HEURISTIC DD r= name RP ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:111:1: ( (n= name ( LP HEURISTIC DD r= name RP ) ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:111:3: (n= name ( LP HEURISTIC DD r= name RP ) )
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:91:3: (n= name ( LP HEURISTIC DD r= name RP ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:91:4: n= name ( LP HEURISTIC DD r= name RP )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:111:3: (n= name ( LP HEURISTIC DD r= name RP ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:111:4: n= name ( LP HEURISTIC DD r= name RP )
             {
             pushFollow(FOLLOW_name_in_heuristic_solution186);
             n=name();
 
             state._fsp--;
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:91:11: ( LP HEURISTIC DD r= name RP )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:91:12: LP HEURISTIC DD r= name RP
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:111:11: ( LP HEURISTIC DD r= name RP )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:111:12: LP HEURISTIC DD r= name RP
             {
             match(input,LP,FOLLOW_LP_in_heuristic_solution189); 
             match(input,HEURISTIC,FOLLOW_HEURISTIC_in_heuristic_solution191); 
@@ -581,7 +601,7 @@ public class TestsuiteANTLR extends Parser {
     };
 
     // $ANTLR start "xcl_solution"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:93:1: xcl_solution : (n= name ( LP XCL DD r= name RP ) ) ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:113:1: xcl_solution : (n= name ( LP XCL DD r= name RP ) ) ;
     public final TestsuiteANTLR.xcl_solution_return xcl_solution() throws RecognitionException {
         TestsuiteANTLR.xcl_solution_return retval = new TestsuiteANTLR.xcl_solution_return();
         retval.start = input.LT(1);
@@ -592,19 +612,19 @@ public class TestsuiteANTLR extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:94:1: ( (n= name ( LP XCL DD r= name RP ) ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:94:3: (n= name ( LP XCL DD r= name RP ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:114:1: ( (n= name ( LP XCL DD r= name RP ) ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:114:3: (n= name ( LP XCL DD r= name RP ) )
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:94:3: (n= name ( LP XCL DD r= name RP ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:94:4: n= name ( LP XCL DD r= name RP )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:114:3: (n= name ( LP XCL DD r= name RP ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:114:4: n= name ( LP XCL DD r= name RP )
             {
             pushFollow(FOLLOW_name_in_xcl_solution215);
             n=name();
 
             state._fsp--;
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:94:11: ( LP XCL DD r= name RP )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:94:12: LP XCL DD r= name RP
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:114:11: ( LP XCL DD r= name RP )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:114:12: LP XCL DD r= name RP
             {
             match(input,LP,FOLLOW_LP_in_xcl_solution218); 
             match(input,XCL,FOLLOW_XCL_in_xcl_solution220); 
@@ -642,7 +662,7 @@ public class TestsuiteANTLR extends Parser {
     };
 
     // $ANTLR start "normalsolution"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:96:1: normalsolution : (n= name ( LP r= name RP ) ) ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:116:1: normalsolution : (n= name ( LP r= name RP ) ) ;
     public final TestsuiteANTLR.normalsolution_return normalsolution() throws RecognitionException {
         TestsuiteANTLR.normalsolution_return retval = new TestsuiteANTLR.normalsolution_return();
         retval.start = input.LT(1);
@@ -653,19 +673,19 @@ public class TestsuiteANTLR extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:97:1: ( (n= name ( LP r= name RP ) ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:97:3: (n= name ( LP r= name RP ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:117:1: ( (n= name ( LP r= name RP ) ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:117:3: (n= name ( LP r= name RP ) )
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:97:3: (n= name ( LP r= name RP ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:97:4: n= name ( LP r= name RP )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:117:3: (n= name ( LP r= name RP ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:117:4: n= name ( LP r= name RP )
             {
             pushFollow(FOLLOW_name_in_normalsolution243);
             n=name();
 
             state._fsp--;
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:97:11: ( LP r= name RP )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:97:12: LP r= name RP
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:117:11: ( LP r= name RP )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:117:12: LP r= name RP
             {
             match(input,LP,FOLLOW_LP_in_normalsolution246); 
             pushFollow(FOLLOW_name_in_normalsolution250);
@@ -702,7 +722,7 @@ public class TestsuiteANTLR extends Parser {
     };
 
     // $ANTLR start "name"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:99:1: name returns [String value] : ( ( ID | d3double )+ | String );
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:119:1: name returns [String value] : ( ( ID | d3double )+ | String );
     public final TestsuiteANTLR.name_return name() throws RecognitionException {
         TestsuiteANTLR.name_return retval = new TestsuiteANTLR.name_return();
         retval.start = input.LT(1);
@@ -710,7 +730,7 @@ public class TestsuiteANTLR extends Parser {
         Token String1=null;
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:100:1: ( ( ID | d3double )+ | String )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:120:1: ( ( ID | d3double )+ | String )
             int alt9=2;
             int LA9_0 = input.LA(1);
 
@@ -728,9 +748,9 @@ public class TestsuiteANTLR extends Parser {
             }
             switch (alt9) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:100:3: ( ID | d3double )+
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:120:3: ( ID | d3double )+
                     {
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:100:3: ( ID | d3double )+
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:120:3: ( ID | d3double )+
                     int cnt8=0;
                     loop8:
                     do {
@@ -747,14 +767,14 @@ public class TestsuiteANTLR extends Parser {
 
                         switch (alt8) {
                     	case 1 :
-                    	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:100:4: ID
+                    	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:120:4: ID
                     	    {
                     	    match(input,ID,FOLLOW_ID_in_name269); 
 
                     	    }
                     	    break;
                     	case 2 :
-                    	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:100:7: d3double
+                    	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:120:7: d3double
                     	    {
                     	    pushFollow(FOLLOW_d3double_in_name271);
                     	    d3double();
@@ -779,7 +799,7 @@ public class TestsuiteANTLR extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:101:3: String
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g:121:3: String
                     {
                     String1=(Token)match(input,String,FOLLOW_String_in_name279); 
                     retval.value =delQuotes((String1!=null?String1.getText():null));
@@ -802,11 +822,11 @@ public class TestsuiteANTLR extends Parser {
     // $ANTLR end "name"
 
     // Delegated rules
-    public void eq() throws RecognitionException { gBasicParser.eq(); }
-    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
     public String type() throws RecognitionException { return gBasicParser.type(); }
     public TestsuiteANTLR_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
     public TestsuiteANTLR_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
+    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
+    public void eq() throws RecognitionException { gBasicParser.eq(); }
 
 
     protected DFA4 dfa4 = new DFA4(this);
@@ -889,7 +909,7 @@ public class TestsuiteANTLR extends Parser {
             this.transition = DFA4_transition;
         }
         public String getDescription() {
-            return "()* loopback of 84:3: (q= name EQ a= name COMMA )*";
+            return "()* loopback of 104:3: (q= name EQ a= name COMMA )*";
         }
     }
     static final String DFA6_eotS =
@@ -978,7 +998,7 @@ public class TestsuiteANTLR extends Parser {
             this.transition = DFA6_transition;
         }
         public String getDescription() {
-            return "()* loopback of 88:3: ( ( heuristic_solution | xcl_solution | normalsolution ) COMMA )*";
+            return "()* loopback of 108:3: ( ( heuristic_solution | xcl_solution | normalsolution ) COMMA )*";
         }
     }
     static final String DFA5_eotS =
@@ -1037,7 +1057,7 @@ public class TestsuiteANTLR extends Parser {
             this.transition = DFA5_transition;
         }
         public String getDescription() {
-            return "88:4: ( heuristic_solution | xcl_solution | normalsolution )";
+            return "108:4: ( heuristic_solution | xcl_solution | normalsolution )";
         }
     }
     static final String DFA7_eotS =
@@ -1096,7 +1116,7 @@ public class TestsuiteANTLR extends Parser {
             this.transition = DFA7_transition;
         }
         public String getDescription() {
-            return "88:61: ( heuristic_solution | xcl_solution | normalsolution )";
+            return "108:61: ( heuristic_solution | xcl_solution | normalsolution )";
         }
     }
  

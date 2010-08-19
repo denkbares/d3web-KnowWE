@@ -1,4 +1,24 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g 2010-04-19 10:47:22
+// $ANTLR 3.1.1 D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g 2010-08-18 21:16:15
+
+/*
+ * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 
 package de.d3web.KnOfficeParser.rule;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -95,7 +115,7 @@ public class Complexrules extends Parser {
         
 
     public String[] getTokenNames() { return Complexrules.tokenNames; }
-    public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g"; }
+    public String getGrammarFileName() { return "D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g"; }
 
 
       private RuleBuilder builder;
@@ -130,13 +150,13 @@ public class Complexrules extends Parser {
 
 
     // $ANTLR start "knowledge"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:69:1: knowledge : ( complexrule )* ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:89:1: knowledge : ( complexrule )* ;
     public final void knowledge() throws RecognitionException {
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:70:1: ( ( complexrule )* )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:70:3: ( complexrule )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:90:1: ( ( complexrule )* )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:90:3: ( complexrule )*
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:70:3: ( complexrule )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:90:3: ( complexrule )*
             loop1:
             do {
                 int alt1=2;
@@ -149,7 +169,7 @@ public class Complexrules extends Parser {
 
                 switch (alt1) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:70:3: complexrule
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:90:3: complexrule
             	    {
             	    pushFollow(FOLLOW_complexrule_in_knowledge53);
             	    complexrule();
@@ -181,13 +201,13 @@ public class Complexrules extends Parser {
 
 
     // $ANTLR start "complexrule"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:72:1: complexrule : IF complexcondition (a= EXCEPT complexcondition ( NL )? )? THEN ruleaction[($a!=null)] ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:92:1: complexrule : IF complexcondition (a= EXCEPT complexcondition ( NL )? )? THEN ruleaction[($a!=null)] ;
     public final void complexrule() throws RecognitionException {
         Token a=null;
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:73:1: ( IF complexcondition (a= EXCEPT complexcondition ( NL )? )? THEN ruleaction[($a!=null)] )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:73:3: IF complexcondition (a= EXCEPT complexcondition ( NL )? )? THEN ruleaction[($a!=null)]
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:93:1: ( IF complexcondition (a= EXCEPT complexcondition ( NL )? )? THEN ruleaction[($a!=null)] )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:93:3: IF complexcondition (a= EXCEPT complexcondition ( NL )? )? THEN ruleaction[($a!=null)]
             {
             match(input,IF,FOLLOW_IF_in_complexrule62); if (state.failed) return ;
             pushFollow(FOLLOW_complexcondition_in_complexrule64);
@@ -195,7 +215,7 @@ public class Complexrules extends Parser {
 
             state._fsp--;
             if (state.failed) return ;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:73:23: (a= EXCEPT complexcondition ( NL )? )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:93:23: (a= EXCEPT complexcondition ( NL )? )?
             int alt3=2;
             int LA3_0 = input.LA(1);
 
@@ -204,7 +224,7 @@ public class Complexrules extends Parser {
             }
             switch (alt3) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:73:24: a= EXCEPT complexcondition ( NL )?
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:93:24: a= EXCEPT complexcondition ( NL )?
                     {
                     a=(Token)match(input,EXCEPT,FOLLOW_EXCEPT_in_complexrule69); if (state.failed) return ;
                     pushFollow(FOLLOW_complexcondition_in_complexrule71);
@@ -212,7 +232,7 @@ public class Complexrules extends Parser {
 
                     state._fsp--;
                     if (state.failed) return ;
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:73:50: ( NL )?
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:93:50: ( NL )?
                     int alt2=2;
                     int LA2_0 = input.LA(1);
 
@@ -221,7 +241,7 @@ public class Complexrules extends Parser {
                     }
                     switch (alt2) {
                         case 1 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:73:50: NL
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:93:50: NL
                             {
                             match(input,NL,FOLLOW_NL_in_complexrule73); if (state.failed) return ;
 
@@ -258,15 +278,15 @@ public class Complexrules extends Parser {
 
 
     // $ANTLR start "ruleaction"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:75:1: ruleaction[boolean except] : ( indicationrule[except] | suppressrule[except] | abstractionrule[except] );
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:95:1: ruleaction[boolean except] : ( indicationrule[except] | suppressrule[except] | abstractionrule[except] );
     public final void ruleaction(boolean except) throws RecognitionException {
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:76:1: ( indicationrule[except] | suppressrule[except] | abstractionrule[except] )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:96:1: ( indicationrule[except] | suppressrule[except] | abstractionrule[except] )
             int alt4=3;
             alt4 = dfa4.predict(input);
             switch (alt4) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:76:3: indicationrule[except]
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:96:3: indicationrule[except]
                     {
                     pushFollow(FOLLOW_indicationrule_in_ruleaction90);
                     indicationrule(except);
@@ -277,7 +297,7 @@ public class Complexrules extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:76:28: suppressrule[except]
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:96:28: suppressrule[except]
                     {
                     pushFollow(FOLLOW_suppressrule_in_ruleaction95);
                     suppressrule(except);
@@ -288,7 +308,7 @@ public class Complexrules extends Parser {
                     }
                     break;
                 case 3 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:76:51: abstractionrule[except]
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:96:51: abstractionrule[except]
                     {
                     pushFollow(FOLLOW_abstractionrule_in_ruleaction100);
                     abstractionrule(except);
@@ -315,7 +335,7 @@ public class Complexrules extends Parser {
     };
 
     // $ANTLR start "indicationrule"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:78:1: indicationrule[boolean except] : (n= names | a= INSTANT SBO n= names SBC | b= NOT SBO n= names SBC ) ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:98:1: indicationrule[boolean except] : (n= names | a= INSTANT SBO n= names SBC | b= NOT SBO n= names SBC ) ;
     public final Complexrules.indicationrule_return indicationrule(boolean except) throws RecognitionException {
         Complexrules.indicationrule_return retval = new Complexrules.indicationrule_return();
         retval.start = input.LT(1);
@@ -326,10 +346,10 @@ public class Complexrules extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:79:1: ( (n= names | a= INSTANT SBO n= names SBC | b= NOT SBO n= names SBC ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:79:4: (n= names | a= INSTANT SBO n= names SBC | b= NOT SBO n= names SBC )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:99:1: ( (n= names | a= INSTANT SBO n= names SBC | b= NOT SBO n= names SBC ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:99:4: (n= names | a= INSTANT SBO n= names SBC | b= NOT SBO n= names SBC )
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:79:4: (n= names | a= INSTANT SBO n= names SBC | b= NOT SBO n= names SBC )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:99:4: (n= names | a= INSTANT SBO n= names SBC | b= NOT SBO n= names SBC )
             int alt5=3;
             switch ( input.LA(1) ) {
             case String:
@@ -359,7 +379,7 @@ public class Complexrules extends Parser {
 
             switch (alt5) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:79:5: n= names
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:99:5: n= names
                     {
                     pushFollow(FOLLOW_names_in_indicationrule115);
                     n=names();
@@ -370,7 +390,7 @@ public class Complexrules extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:79:15: a= INSTANT SBO n= names SBC
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:99:15: a= INSTANT SBO n= names SBC
                     {
                     a=(Token)match(input,INSTANT,FOLLOW_INSTANT_in_indicationrule121); if (state.failed) return retval;
                     match(input,SBO,FOLLOW_SBO_in_indicationrule123); if (state.failed) return retval;
@@ -384,7 +404,7 @@ public class Complexrules extends Parser {
                     }
                     break;
                 case 3 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:79:43: b= NOT SBO n= names SBC
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:99:43: b= NOT SBO n= names SBC
                     {
                     b=(Token)match(input,NOT,FOLLOW_NOT_in_indicationrule135); if (state.failed) return retval;
                     match(input,SBO,FOLLOW_SBO_in_indicationrule137); if (state.failed) return retval;
@@ -424,7 +444,7 @@ public class Complexrules extends Parser {
     };
 
     // $ANTLR start "scoreOrName"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:81:1: scoreOrName returns [String value] : ( name | EX );
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:101:1: scoreOrName returns [String value] : ( name | EX );
     public final Complexrules.scoreOrName_return scoreOrName() throws RecognitionException {
         Complexrules.scoreOrName_return retval = new Complexrules.scoreOrName_return();
         retval.start = input.LT(1);
@@ -433,7 +453,7 @@ public class Complexrules extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:82:1: ( name | EX )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:102:1: ( name | EX )
             int alt6=2;
             int LA6_0 = input.LA(1);
 
@@ -452,7 +472,7 @@ public class Complexrules extends Parser {
             }
             switch (alt6) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:82:3: name
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:102:3: name
                     {
                     pushFollow(FOLLOW_name_in_scoreOrName157);
                     name1=name();
@@ -466,7 +486,7 @@ public class Complexrules extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:82:32: EX
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:102:32: EX
                     {
                     match(input,EX,FOLLOW_EX_in_scoreOrName163); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
@@ -494,7 +514,7 @@ public class Complexrules extends Parser {
     };
 
     // $ANTLR start "suppressrule"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:84:1: suppressrule[boolean except] : HIDE a= name ( type )? EQ SBO names SBC ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:104:1: suppressrule[boolean except] : HIDE a= name ( type )? EQ SBO names SBC ;
     public final Complexrules.suppressrule_return suppressrule(boolean except) throws RecognitionException {
         Complexrules.suppressrule_return retval = new Complexrules.suppressrule_return();
         retval.start = input.LT(1);
@@ -507,8 +527,8 @@ public class Complexrules extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:85:1: ( HIDE a= name ( type )? EQ SBO names SBC )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:85:3: HIDE a= name ( type )? EQ SBO names SBC
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:105:1: ( HIDE a= name ( type )? EQ SBO names SBC )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:105:3: HIDE a= name ( type )? EQ SBO names SBC
             {
             match(input,HIDE,FOLLOW_HIDE_in_suppressrule175); if (state.failed) return retval;
             pushFollow(FOLLOW_name_in_suppressrule179);
@@ -516,7 +536,7 @@ public class Complexrules extends Parser {
 
             state._fsp--;
             if (state.failed) return retval;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:85:15: ( type )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:105:15: ( type )?
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -525,7 +545,7 @@ public class Complexrules extends Parser {
             }
             switch (alt7) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:85:15: type
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:105:15: type
                     {
                     pushFollow(FOLLOW_type_in_suppressrule181);
                     type2=type();
@@ -569,7 +589,7 @@ public class Complexrules extends Parser {
     };
 
     // $ANTLR start "abstractionrule"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:87:1: abstractionrule[boolean except] : a= name ( type )? eqncalc ( ( formulaOrName ( PLUS | MINUS | DIV | PROD ) )=> formulawithoutP | scoreOrName | formula ) ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:107:1: abstractionrule[boolean except] : a= name ( type )? eqncalc ( ( formulaOrName ( PLUS | MINUS | DIV | PROD ) )=> formulawithoutP | scoreOrName | formula ) ;
     public final Complexrules.abstractionrule_return abstractionrule(boolean except) throws RecognitionException {
         Complexrules.abstractionrule_return retval = new Complexrules.abstractionrule_return();
         retval.start = input.LT(1);
@@ -584,15 +604,15 @@ public class Complexrules extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:88:1: (a= name ( type )? eqncalc ( ( formulaOrName ( PLUS | MINUS | DIV | PROD ) )=> formulawithoutP | scoreOrName | formula ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:88:3: a= name ( type )? eqncalc ( ( formulaOrName ( PLUS | MINUS | DIV | PROD ) )=> formulawithoutP | scoreOrName | formula )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:108:1: (a= name ( type )? eqncalc ( ( formulaOrName ( PLUS | MINUS | DIV | PROD ) )=> formulawithoutP | scoreOrName | formula ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:108:3: a= name ( type )? eqncalc ( ( formulaOrName ( PLUS | MINUS | DIV | PROD ) )=> formulawithoutP | scoreOrName | formula )
             {
             pushFollow(FOLLOW_name_in_abstractionrule204);
             a=name();
 
             state._fsp--;
             if (state.failed) return retval;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:88:10: ( type )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:108:10: ( type )?
             int alt8=2;
             int LA8_0 = input.LA(1);
 
@@ -601,7 +621,7 @@ public class Complexrules extends Parser {
             }
             switch (alt8) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:88:10: type
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:108:10: type
                     {
                     pushFollow(FOLLOW_type_in_abstractionrule206);
                     type4=type();
@@ -622,7 +642,7 @@ public class Complexrules extends Parser {
 
             state._fsp--;
             if (state.failed) return retval;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:88:105: ( ( formulaOrName ( PLUS | MINUS | DIV | PROD ) )=> formulawithoutP | scoreOrName | formula )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:108:105: ( ( formulaOrName ( PLUS | MINUS | DIV | PROD ) )=> formulawithoutP | scoreOrName | formula )
             int alt9=3;
             int LA9_0 = input.LA(1);
 
@@ -723,7 +743,7 @@ public class Complexrules extends Parser {
             }
             switch (alt9) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:88:106: ( formulaOrName ( PLUS | MINUS | DIV | PROD ) )=> formulawithoutP
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:108:106: ( formulaOrName ( PLUS | MINUS | DIV | PROD ) )=> formulawithoutP
                     {
                     pushFollow(FOLLOW_formulawithoutP_in_abstractionrule229);
                     formulawithoutP();
@@ -737,7 +757,7 @@ public class Complexrules extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:89:3: scoreOrName
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:109:3: scoreOrName
                     {
                     pushFollow(FOLLOW_scoreOrName_in_abstractionrule235);
                     scoreOrName6=scoreOrName();
@@ -751,7 +771,7 @@ public class Complexrules extends Parser {
                     }
                     break;
                 case 3 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:90:4: formula
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:110:4: formula
                     {
                     pushFollow(FOLLOW_formula_in_abstractionrule243);
                     formula();
@@ -785,11 +805,11 @@ public class Complexrules extends Parser {
 
 
     // $ANTLR start "formula"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:93:1: formula : LP formulawithoutP RP ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:113:1: formula : LP formulawithoutP RP ;
     public final void formula() throws RecognitionException {
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:94:1: ( LP formulawithoutP RP )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:94:3: LP formulawithoutP RP
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:114:1: ( LP formulawithoutP RP )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:114:3: LP formulawithoutP RP
             {
             match(input,LP,FOLLOW_LP_in_formula256); if (state.failed) return ;
             pushFollow(FOLLOW_formulawithoutP_in_formula258);
@@ -814,18 +834,18 @@ public class Complexrules extends Parser {
 
 
     // $ANTLR start "formulawithoutP"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:96:1: formulawithoutP : formulaOrName ( PLUS formulaOrName | MINUS formulaOrName | PROD formulaOrName | DIV formulaOrName )? ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:116:1: formulawithoutP : formulaOrName ( PLUS formulaOrName | MINUS formulaOrName | PROD formulaOrName | DIV formulaOrName )? ;
     public final void formulawithoutP() throws RecognitionException {
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:97:1: ( formulaOrName ( PLUS formulaOrName | MINUS formulaOrName | PROD formulaOrName | DIV formulaOrName )? )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:97:3: formulaOrName ( PLUS formulaOrName | MINUS formulaOrName | PROD formulaOrName | DIV formulaOrName )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:117:1: ( formulaOrName ( PLUS formulaOrName | MINUS formulaOrName | PROD formulaOrName | DIV formulaOrName )? )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:117:3: formulaOrName ( PLUS formulaOrName | MINUS formulaOrName | PROD formulaOrName | DIV formulaOrName )?
             {
             pushFollow(FOLLOW_formulaOrName_in_formulawithoutP268);
             formulaOrName();
 
             state._fsp--;
             if (state.failed) return ;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:97:17: ( PLUS formulaOrName | MINUS formulaOrName | PROD formulaOrName | DIV formulaOrName )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:117:17: ( PLUS formulaOrName | MINUS formulaOrName | PROD formulaOrName | DIV formulaOrName )?
             int alt10=5;
             switch ( input.LA(1) ) {
                 case PLUS:
@@ -852,7 +872,7 @@ public class Complexrules extends Parser {
 
             switch (alt10) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:97:18: PLUS formulaOrName
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:117:18: PLUS formulaOrName
                     {
                     match(input,PLUS,FOLLOW_PLUS_in_formulawithoutP271); if (state.failed) return ;
                     pushFollow(FOLLOW_formulaOrName_in_formulawithoutP273);
@@ -867,7 +887,7 @@ public class Complexrules extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:98:2: MINUS formulaOrName
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:118:2: MINUS formulaOrName
                     {
                     match(input,MINUS,FOLLOW_MINUS_in_formulawithoutP278); if (state.failed) return ;
                     pushFollow(FOLLOW_formulaOrName_in_formulawithoutP280);
@@ -882,7 +902,7 @@ public class Complexrules extends Parser {
                     }
                     break;
                 case 3 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:99:3: PROD formulaOrName
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:119:3: PROD formulaOrName
                     {
                     match(input,PROD,FOLLOW_PROD_in_formulawithoutP286); if (state.failed) return ;
                     pushFollow(FOLLOW_formulaOrName_in_formulawithoutP288);
@@ -897,7 +917,7 @@ public class Complexrules extends Parser {
                     }
                     break;
                 case 4 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:100:3: DIV formulaOrName
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:120:3: DIV formulaOrName
                     {
                     match(input,DIV,FOLLOW_DIV_in_formulawithoutP294); if (state.failed) return ;
                     pushFollow(FOLLOW_formulaOrName_in_formulawithoutP296);
@@ -932,7 +952,7 @@ public class Complexrules extends Parser {
     };
 
     // $ANTLR start "formulaOrName"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:103:1: formulaOrName : ( formula | nameOrDouble );
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:123:1: formulaOrName : ( formula | nameOrDouble );
     public final Complexrules.formulaOrName_return formulaOrName() throws RecognitionException {
         Complexrules.formulaOrName_return retval = new Complexrules.formulaOrName_return();
         retval.start = input.LT(1);
@@ -941,7 +961,7 @@ public class Complexrules extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:104:1: ( formula | nameOrDouble )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:124:1: ( formula | nameOrDouble )
             int alt11=2;
             int LA11_0 = input.LA(1);
 
@@ -960,7 +980,7 @@ public class Complexrules extends Parser {
             }
             switch (alt11) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:104:2: formula
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:124:2: formula
                     {
                     pushFollow(FOLLOW_formula_in_formulaOrName308);
                     formula();
@@ -971,7 +991,7 @@ public class Complexrules extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:104:12: nameOrDouble
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:124:12: nameOrDouble
                     {
                     pushFollow(FOLLOW_nameOrDouble_in_formulaOrName312);
                     nameOrDouble7=nameOrDouble();
@@ -1005,7 +1025,7 @@ public class Complexrules extends Parser {
     };
 
     // $ANTLR start "names"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:106:1: names returns [List<String> nlist, List<String> tlist] : a= name (c= type )? ( SEMI b= name (d= type )? )* ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:126:1: names returns [List<String> nlist, List<String> tlist] : a= name (c= type )? ( SEMI b= name (d= type )? )* ;
     public final Complexrules.names_return names() throws RecognitionException {
         Complexrules.names_return retval = new Complexrules.names_return();
         retval.start = input.LT(1);
@@ -1021,15 +1041,15 @@ public class Complexrules extends Parser {
 
         retval.nlist = new ArrayList<String>(); retval.tlist = new ArrayList<String>();
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:108:1: (a= name (c= type )? ( SEMI b= name (d= type )? )* )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:108:2: a= name (c= type )? ( SEMI b= name (d= type )? )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:128:1: (a= name (c= type )? ( SEMI b= name (d= type )? )* )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:128:2: a= name (c= type )? ( SEMI b= name (d= type )? )*
             {
             pushFollow(FOLLOW_name_in_names331);
             a=name();
 
             state._fsp--;
             if (state.failed) return retval;
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:108:10: (c= type )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:128:10: (c= type )?
             int alt12=2;
             int LA12_0 = input.LA(1);
 
@@ -1038,7 +1058,7 @@ public class Complexrules extends Parser {
             }
             switch (alt12) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:108:10: c= type
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:128:10: c= type
                     {
                     pushFollow(FOLLOW_type_in_names335);
                     c=type();
@@ -1054,7 +1074,7 @@ public class Complexrules extends Parser {
             if ( state.backtracking==0 ) {
               retval.nlist.add((a!=null?a.value:null)); retval.tlist.add(c);
             }
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:108:63: ( SEMI b= name (d= type )? )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:128:63: ( SEMI b= name (d= type )? )*
             loop14:
             do {
                 int alt14=2;
@@ -1067,7 +1087,7 @@ public class Complexrules extends Parser {
 
                 switch (alt14) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:108:64: SEMI b= name (d= type )?
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:128:64: SEMI b= name (d= type )?
             	    {
             	    match(input,SEMI,FOLLOW_SEMI_in_names341); if (state.failed) return retval;
             	    pushFollow(FOLLOW_name_in_names345);
@@ -1075,7 +1095,7 @@ public class Complexrules extends Parser {
 
             	    state._fsp--;
             	    if (state.failed) return retval;
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:108:77: (d= type )?
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:128:77: (d= type )?
             	    int alt13=2;
             	    int LA13_0 = input.LA(1);
 
@@ -1084,7 +1104,7 @@ public class Complexrules extends Parser {
             	    }
             	    switch (alt13) {
             	        case 1 :
-            	            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:108:77: d= type
+            	            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:128:77: d= type
             	            {
             	            pushFollow(FOLLOW_type_in_names349);
             	            d=type();
@@ -1131,7 +1151,7 @@ public class Complexrules extends Parser {
     };
 
     // $ANTLR start "intervall"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:110:1: intervall returns [Double a, Double b] : SBO d1= d3double d2= d3double SBC ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:130:1: intervall returns [Double a, Double b] : SBO d1= d3double d2= d3double SBC ;
     public final Complexrules.intervall_return intervall() throws RecognitionException {
         Complexrules.intervall_return retval = new Complexrules.intervall_return();
         retval.start = input.LT(1);
@@ -1142,8 +1162,8 @@ public class Complexrules extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:111:1: ( SBO d1= d3double d2= d3double SBC )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:111:3: SBO d1= d3double d2= d3double SBC
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:131:1: ( SBO d1= d3double d2= d3double SBC )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:131:3: SBO d1= d3double d2= d3double SBC
             {
             match(input,SBO,FOLLOW_SBO_in_intervall365); if (state.failed) return retval;
             pushFollow(FOLLOW_d3double_in_intervall369);
@@ -1178,8 +1198,8 @@ public class Complexrules extends Parser {
 
     // $ANTLR start synpred1_Complexrules
     public final void synpred1_Complexrules_fragment() throws RecognitionException {   
-        // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:88:106: ( formulaOrName ( PLUS | MINUS | DIV | PROD ) )
-        // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:88:107: formulaOrName ( PLUS | MINUS | DIV | PROD )
+        // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:108:106: ( formulaOrName ( PLUS | MINUS | DIV | PROD ) )
+        // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g:108:107: formulaOrName ( PLUS | MINUS | DIV | PROD )
         {
         pushFollow(FOLLOW_formulaOrName_in_synpred1_Complexrules215);
         formulaOrName();
@@ -1203,17 +1223,17 @@ public class Complexrules extends Parser {
 
     // Delegated rules
     public Complexrules_ComplexCondition.complexcondition_return complexcondition() throws RecognitionException { return gComplexCondition.complexcondition(); }
-    public Complexrules_ComplexCondition.condition_return condition() throws RecognitionException { return gComplexCondition.condition(); }
-    public void startruleComplexCondition() throws RecognitionException { gComplexCondition.startruleComplexCondition(); }
-    public String type() throws RecognitionException { return gBasicParser.type(); }
-    public Complexrules_ComplexCondition.dnf_return dnf() throws RecognitionException { return gComplexCondition.dnf(); }
-    public Complexrules_ComplexCondition_BasicParser.eqncalc_return eqncalc() throws RecognitionException { return gBasicParser.eqncalc(); }
-    public Complexrules_ComplexCondition_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
     public Complexrules_ComplexCondition_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
-    public Complexrules_ComplexCondition.disjunct_return disjunct() throws RecognitionException { return gComplexCondition.disjunct(); }
-    public Complexrules_ComplexCondition_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
+    public String type() throws RecognitionException { return gBasicParser.type(); }
     public Complexrules_ComplexCondition.conjunct_return conjunct() throws RecognitionException { return gComplexCondition.conjunct(); }
+    public Complexrules_ComplexCondition.condition_return condition() throws RecognitionException { return gComplexCondition.condition(); }
+    public Complexrules_ComplexCondition_BasicParser.eqncalc_return eqncalc() throws RecognitionException { return gBasicParser.eqncalc(); }
+    public Complexrules_ComplexCondition.disjunct_return disjunct() throws RecognitionException { return gComplexCondition.disjunct(); }
+    public void startruleComplexCondition() throws RecognitionException { gComplexCondition.startruleComplexCondition(); }
+    public Complexrules_ComplexCondition_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
     public Complexrules_ComplexCondition_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
+    public Complexrules_ComplexCondition_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
+    public Complexrules_ComplexCondition.dnf_return dnf() throws RecognitionException { return gComplexCondition.dnf(); }
 
     public final boolean synpred1_Complexrules() {
         state.backtracking++;
@@ -1291,7 +1311,7 @@ public class Complexrules extends Parser {
             this.transition = DFA4_transition;
         }
         public String getDescription() {
-            return "75:1: ruleaction[boolean except] : ( indicationrule[except] | suppressrule[except] | abstractionrule[except] );";
+            return "95:1: ruleaction[boolean except] : ( indicationrule[except] | suppressrule[except] | abstractionrule[except] );";
         }
     }
  

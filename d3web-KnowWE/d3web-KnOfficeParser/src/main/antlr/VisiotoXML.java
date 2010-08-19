@@ -1,4 +1,24 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g 2010-04-19 10:47:37
+// $ANTLR 3.1.1 D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g 2010-08-18 21:27:21
+
+/*
+ * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 
 package de.d3web.KnOfficeParser.visio;
 
@@ -152,7 +172,7 @@ public class VisiotoXML extends TreeParser {
     }
 
     public String[] getTokenNames() { return VisiotoXML.tokenNames; }
-    public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g"; }
+    public String getGrammarFileName() { return "D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g"; }
 
 
       private double x,y;
@@ -212,7 +232,7 @@ public class VisiotoXML extends TreeParser {
     };
 
     // $ANTLR start "knowledge"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:90:1: knowledge : ^( Knowledge (pages+= page )* ) -> foo(i=$pages);
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:110:1: knowledge : ^( Knowledge (pages+= page )* ) -> foo(i=$pages);
     public final VisiotoXML.knowledge_return knowledge() throws RecognitionException {
         VisiotoXML.knowledge_return retval = new VisiotoXML.knowledge_return();
         retval.start = input.LT(1);
@@ -220,14 +240,14 @@ public class VisiotoXML extends TreeParser {
         List list_pages=null;
         RuleReturnScope pages = null;
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:90:11: ( ^( Knowledge (pages+= page )* ) -> foo(i=$pages))
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:90:13: ^( Knowledge (pages+= page )* )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:110:11: ( ^( Knowledge (pages+= page )* ) -> foo(i=$pages))
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:110:13: ^( Knowledge (pages+= page )* )
             {
             match(input,Knowledge,FOLLOW_Knowledge_in_knowledge65); 
 
             if ( input.LA(1)==Token.DOWN ) {
                 match(input, Token.DOWN, null); 
-                // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:90:30: (pages+= page )*
+                // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:110:30: (pages+= page )*
                 loop1:
                 do {
                     int alt1=2;
@@ -240,7 +260,7 @@ public class VisiotoXML extends TreeParser {
 
                     switch (alt1) {
                 	case 1 :
-                	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:90:30: pages+= page
+                	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:110:30: pages+= page
                 	    {
                 	    pushFollow(FOLLOW_page_in_knowledge69);
                 	    pages=page();
@@ -265,7 +285,7 @@ public class VisiotoXML extends TreeParser {
 
 
             // TEMPLATE REWRITE
-            // 90:39: -> foo(i=$pages)
+            // 110:39: -> foo(i=$pages)
             {
                 retval.st = templateLib.getInstanceOf("foo",
               new STAttrMap().put("i", list_pages));
@@ -292,7 +312,7 @@ public class VisiotoXML extends TreeParser {
     };
 
     // $ANTLR start "page"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:91:1: page : ^( Page textbox picture (i+= shape )* ) -> root(it=$iqid=questionidpopq=$textbox.stpicname=picname);
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:111:1: page : ^( Page textbox picture (i+= shape )* ) -> root(it=$iqid=questionidpopq=$textbox.stpicname=picname);
     public final VisiotoXML.page_return page() throws RecognitionException {
         VisiotoXML.page_return retval = new VisiotoXML.page_return();
         retval.start = input.LT(1);
@@ -302,8 +322,8 @@ public class VisiotoXML extends TreeParser {
 
         RuleReturnScope i = null;
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:91:6: ( ^( Page textbox picture (i+= shape )* ) -> root(it=$iqid=questionidpopq=$textbox.stpicname=picname))
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:91:8: ^( Page textbox picture (i+= shape )* )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:111:6: ( ^( Page textbox picture (i+= shape )* ) -> root(it=$iqid=questionidpopq=$textbox.stpicname=picname))
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:111:8: ^( Page textbox picture (i+= shape )* )
             {
             match(input,Page,FOLLOW_Page_in_page88); 
 
@@ -318,7 +338,7 @@ public class VisiotoXML extends TreeParser {
 
             state._fsp--;
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:91:32: (i+= shape )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:111:32: (i+= shape )*
             loop2:
             do {
                 int alt2=2;
@@ -331,7 +351,7 @@ public class VisiotoXML extends TreeParser {
 
                 switch (alt2) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:91:32: i+= shape
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:111:32: i+= shape
             	    {
             	    pushFollow(FOLLOW_shape_in_page96);
             	    i=shape();
@@ -355,7 +375,7 @@ public class VisiotoXML extends TreeParser {
 
 
             // TEMPLATE REWRITE
-            // 91:42: -> root(it=$iqid=questionidpopq=$textbox.stpicname=picname)
+            // 111:42: -> root(it=$iqid=questionidpopq=$textbox.stpicname=picname)
             {
                 retval.st = templateLib.getInstanceOf("root",
               new STAttrMap().put("it", list_i).put("qid", questionid).put("popq", (textbox1!=null?textbox1.st:null)).put("picname", picname));
@@ -382,7 +402,7 @@ public class VisiotoXML extends TreeParser {
     };
 
     // $ANTLR start "picture"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:92:1: picture : ^( Picture x y width height ) ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:112:1: picture : ^( Picture x y width height ) ;
     public final VisiotoXML.picture_return picture() throws RecognitionException {
         VisiotoXML.picture_return retval = new VisiotoXML.picture_return();
         retval.start = input.LT(1);
@@ -397,8 +417,8 @@ public class VisiotoXML extends TreeParser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:92:9: ( ^( Picture x y width height ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:92:11: ^( Picture x y width height )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:112:9: ( ^( Picture x y width height ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:112:11: ^( Picture x y width height )
             {
             match(input,Picture,FOLLOW_Picture_in_picture130); 
 
@@ -447,7 +467,7 @@ public class VisiotoXML extends TreeParser {
     };
 
     // $ANTLR start "textbox"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:93:1: textbox : ^( Box x y width height textboxtext ) -> string(w=$textboxtext.st);
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:113:1: textbox : ^( Box x y width height textboxtext ) -> string(w=$textboxtext.st);
     public final VisiotoXML.textbox_return textbox() throws RecognitionException {
         VisiotoXML.textbox_return retval = new VisiotoXML.textbox_return();
         retval.start = input.LT(1);
@@ -456,8 +476,8 @@ public class VisiotoXML extends TreeParser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:93:8: ( ^( Box x y width height textboxtext ) -> string(w=$textboxtext.st))
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:93:10: ^( Box x y width height textboxtext )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:113:8: ( ^( Box x y width height textboxtext ) -> string(w=$textboxtext.st))
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:113:10: ^( Box x y width height textboxtext )
             {
             match(input,Box,FOLLOW_Box_in_textbox148); 
 
@@ -492,7 +512,7 @@ public class VisiotoXML extends TreeParser {
 
 
             // TEMPLATE REWRITE
-            // 93:45: -> string(w=$textboxtext.st)
+            // 113:45: -> string(w=$textboxtext.st)
             {
                 retval.st = templateLib.getInstanceOf("string",
               new STAttrMap().put("w", (textboxtext6!=null?textboxtext6.st:null)));
@@ -519,7 +539,7 @@ public class VisiotoXML extends TreeParser {
     };
 
     // $ANTLR start "shape"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:94:1: shape : ^( Shape x y width height shapetext ) -> shape(xstart=getXstart($x.d, $width.d)xend=getXend($x.d, $width.d)ystart=getYstart($y.d, $height.d)yend=getYend($y.d, $height.d)text=$shapetext.st);
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:114:1: shape : ^( Shape x y width height shapetext ) -> shape(xstart=getXstart($x.d, $width.d)xend=getXend($x.d, $width.d)ystart=getYstart($y.d, $height.d)yend=getYend($y.d, $height.d)text=$shapetext.st);
     public final VisiotoXML.shape_return shape() throws RecognitionException {
         VisiotoXML.shape_return retval = new VisiotoXML.shape_return();
         retval.start = input.LT(1);
@@ -536,8 +556,8 @@ public class VisiotoXML extends TreeParser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:94:7: ( ^( Shape x y width height shapetext ) -> shape(xstart=getXstart($x.d, $width.d)xend=getXend($x.d, $width.d)ystart=getYstart($y.d, $height.d)yend=getYend($y.d, $height.d)text=$shapetext.st))
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:94:9: ^( Shape x y width height shapetext )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:114:7: ( ^( Shape x y width height shapetext ) -> shape(xstart=getXstart($x.d, $width.d)xend=getXend($x.d, $width.d)ystart=getYstart($y.d, $height.d)yend=getYend($y.d, $height.d)text=$shapetext.st))
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:114:9: ^( Shape x y width height shapetext )
             {
             match(input,Shape,FOLLOW_Shape_in_shape175); 
 
@@ -572,7 +592,7 @@ public class VisiotoXML extends TreeParser {
 
 
             // TEMPLATE REWRITE
-            // 94:45: -> shape(xstart=getXstart($x.d, $width.d)xend=getXend($x.d, $width.d)ystart=getYstart($y.d, $height.d)yend=getYend($y.d, $height.d)text=$shapetext.st)
+            // 114:45: -> shape(xstart=getXstart($x.d, $width.d)xend=getXend($x.d, $width.d)ystart=getYstart($y.d, $height.d)yend=getYend($y.d, $height.d)text=$shapetext.st)
             {
                 retval.st = templateLib.getInstanceOf("shape",
               new STAttrMap().put("xstart", getXstart((x7!=null?x7.d:0.0), (width8!=null?width8.d:0.0))).put("xend", getXend((x7!=null?x7.d:0.0), (width8!=null?width8.d:0.0))).put("ystart", getYstart((y9!=null?y9.d:0.0), (height10!=null?height10.d:0.0))).put("yend", getYend((y9!=null?y9.d:0.0), (height10!=null?height10.d:0.0))).put("text", (shapetext11!=null?shapetext11.st:null)));
@@ -600,7 +620,7 @@ public class VisiotoXML extends TreeParser {
     };
 
     // $ANTLR start "x"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:95:1: x returns [double d] : ^( Xcoord mydouble ) ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:115:1: x returns [double d] : ^( Xcoord mydouble ) ;
     public final VisiotoXML.x_return x() throws RecognitionException {
         VisiotoXML.x_return retval = new VisiotoXML.x_return();
         retval.start = input.LT(1);
@@ -609,8 +629,8 @@ public class VisiotoXML extends TreeParser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:95:21: ( ^( Xcoord mydouble ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:95:23: ^( Xcoord mydouble )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:115:21: ( ^( Xcoord mydouble ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:115:23: ^( Xcoord mydouble )
             {
             match(input,Xcoord,FOLLOW_Xcoord_in_x226); 
 
@@ -647,7 +667,7 @@ public class VisiotoXML extends TreeParser {
     };
 
     // $ANTLR start "y"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:96:1: y returns [double d] : ^( Ycoord mydouble ) ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:116:1: y returns [double d] : ^( Ycoord mydouble ) ;
     public final VisiotoXML.y_return y() throws RecognitionException {
         VisiotoXML.y_return retval = new VisiotoXML.y_return();
         retval.start = input.LT(1);
@@ -656,8 +676,8 @@ public class VisiotoXML extends TreeParser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:96:21: ( ^( Ycoord mydouble ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:96:23: ^( Ycoord mydouble )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:116:21: ( ^( Ycoord mydouble ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:116:23: ^( Ycoord mydouble )
             {
             match(input,Ycoord,FOLLOW_Ycoord_in_y242); 
 
@@ -694,7 +714,7 @@ public class VisiotoXML extends TreeParser {
     };
 
     // $ANTLR start "width"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:97:1: width returns [double d] : ^( Width mydouble ) ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:117:1: width returns [double d] : ^( Width mydouble ) ;
     public final VisiotoXML.width_return width() throws RecognitionException {
         VisiotoXML.width_return retval = new VisiotoXML.width_return();
         retval.start = input.LT(1);
@@ -703,8 +723,8 @@ public class VisiotoXML extends TreeParser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:97:25: ( ^( Width mydouble ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:97:27: ^( Width mydouble )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:117:25: ( ^( Width mydouble ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:117:27: ^( Width mydouble )
             {
             match(input,Width,FOLLOW_Width_in_width258); 
 
@@ -741,7 +761,7 @@ public class VisiotoXML extends TreeParser {
     };
 
     // $ANTLR start "height"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:98:1: height returns [double d] : ^( Height mydouble ) ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:118:1: height returns [double d] : ^( Height mydouble ) ;
     public final VisiotoXML.height_return height() throws RecognitionException {
         VisiotoXML.height_return retval = new VisiotoXML.height_return();
         retval.start = input.LT(1);
@@ -750,8 +770,8 @@ public class VisiotoXML extends TreeParser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:98:26: ( ^( Height mydouble ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:98:28: ^( Height mydouble )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:118:26: ( ^( Height mydouble ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:118:28: ^( Height mydouble )
             {
             match(input,Height,FOLLOW_Height_in_height274); 
 
@@ -787,7 +807,7 @@ public class VisiotoXML extends TreeParser {
     };
 
     // $ANTLR start "shapetext"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:99:1: shapetext : ^( Shapetext text ) -> string(w=delXML($text.text));
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:119:1: shapetext : ^( Shapetext text ) -> string(w=delXML($text.text));
     public final VisiotoXML.shapetext_return shapetext() throws RecognitionException {
         VisiotoXML.shapetext_return retval = new VisiotoXML.shapetext_return();
         retval.start = input.LT(1);
@@ -796,8 +816,8 @@ public class VisiotoXML extends TreeParser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:99:10: ( ^( Shapetext text ) -> string(w=delXML($text.text)))
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:99:12: ^( Shapetext text )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:119:10: ( ^( Shapetext text ) -> string(w=delXML($text.text)))
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:119:12: ^( Shapetext text )
             {
             match(input,Shapetext,FOLLOW_Shapetext_in_shapetext286); 
 
@@ -812,7 +832,7 @@ public class VisiotoXML extends TreeParser {
 
 
             // TEMPLATE REWRITE
-            // 99:30: -> string(w=delXML($text.text))
+            // 119:30: -> string(w=delXML($text.text))
             {
                 retval.st = templateLib.getInstanceOf("string",
               new STAttrMap().put("w", delXML((text16!=null?(input.getTokenStream().toString(
@@ -841,7 +861,7 @@ public class VisiotoXML extends TreeParser {
     };
 
     // $ANTLR start "textboxtext"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:100:1: textboxtext : ^( Textboxtext a= file o1= INT o2= INT questionid (pops+= popup )* ) -> foo(i=$pops);
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:120:1: textboxtext : ^( Textboxtext a= file o1= INT o2= INT questionid (pops+= popup )* ) -> foo(i=$pops);
     public final VisiotoXML.textboxtext_return textboxtext() throws RecognitionException {
         VisiotoXML.textboxtext_return retval = new VisiotoXML.textboxtext_return();
         retval.start = input.LT(1);
@@ -855,8 +875,8 @@ public class VisiotoXML extends TreeParser {
 
         RuleReturnScope pops = null;
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:100:12: ( ^( Textboxtext a= file o1= INT o2= INT questionid (pops+= popup )* ) -> foo(i=$pops))
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:100:14: ^( Textboxtext a= file o1= INT o2= INT questionid (pops+= popup )* )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:120:12: ( ^( Textboxtext a= file o1= INT o2= INT questionid (pops+= popup )* ) -> foo(i=$pops))
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:120:14: ^( Textboxtext a= file o1= INT o2= INT questionid (pops+= popup )* )
             {
             match(input,Textboxtext,FOLLOW_Textboxtext_in_textboxtext305); 
 
@@ -873,7 +893,7 @@ public class VisiotoXML extends TreeParser {
 
             state._fsp--;
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:100:64: (pops+= popup )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:120:64: (pops+= popup )*
             loop3:
             do {
                 int alt3=2;
@@ -886,7 +906,7 @@ public class VisiotoXML extends TreeParser {
 
                 switch (alt3) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:100:64: pops+= popup
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:120:64: pops+= popup
             	    {
             	    pushFollow(FOLLOW_popup_in_textboxtext323);
             	    pops=popup();
@@ -915,7 +935,7 @@ public class VisiotoXML extends TreeParser {
 
 
             // TEMPLATE REWRITE
-            // 100:190: -> foo(i=$pops)
+            // 120:190: -> foo(i=$pops)
             {
                 retval.st = templateLib.getInstanceOf("foo",
               new STAttrMap().put("i", list_pops));
@@ -942,14 +962,14 @@ public class VisiotoXML extends TreeParser {
     };
 
     // $ANTLR start "file"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:101:1: file : ^( Text name DOT name ) ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:121:1: file : ^( Text name DOT name ) ;
     public final VisiotoXML.file_return file() throws RecognitionException {
         VisiotoXML.file_return retval = new VisiotoXML.file_return();
         retval.start = input.LT(1);
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:101:6: ( ^( Text name DOT name ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:101:8: ^( Text name DOT name )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:121:6: ( ^( Text name DOT name ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:121:8: ^( Text name DOT name )
             {
             match(input,Text,FOLLOW_Text_in_file343); 
 
@@ -988,14 +1008,14 @@ public class VisiotoXML extends TreeParser {
     };
 
     // $ANTLR start "questionid"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:102:1: questionid : ^( QID name ) ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:122:1: questionid : ^( QID name ) ;
     public final VisiotoXML.questionid_return questionid() throws RecognitionException {
         VisiotoXML.questionid_return retval = new VisiotoXML.questionid_return();
         retval.start = input.LT(1);
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:102:12: ( ^( QID name ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:102:14: ^( QID name )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:122:12: ( ^( QID name ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:122:14: ^( QID name )
             {
             match(input,QID,FOLLOW_QID_in_questionid358); 
 
@@ -1028,7 +1048,7 @@ public class VisiotoXML extends TreeParser {
     };
 
     // $ANTLR start "popup"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:103:1: popup : ^( Popup a= text b= text ) -> popupquestion(target=$b.textanswer=$a.text);
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:123:1: popup : ^( Popup a= text b= text ) -> popupquestion(target=$b.textanswer=$a.text);
     public final VisiotoXML.popup_return popup() throws RecognitionException {
         VisiotoXML.popup_return retval = new VisiotoXML.popup_return();
         retval.start = input.LT(1);
@@ -1039,8 +1059,8 @@ public class VisiotoXML extends TreeParser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:103:7: ( ^( Popup a= text b= text ) -> popupquestion(target=$b.textanswer=$a.text))
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:103:9: ^( Popup a= text b= text )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:123:7: ( ^( Popup a= text b= text ) -> popupquestion(target=$b.textanswer=$a.text))
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:123:9: ^( Popup a= text b= text )
             {
             match(input,Popup,FOLLOW_Popup_in_popup369); 
 
@@ -1060,7 +1080,7 @@ public class VisiotoXML extends TreeParser {
 
 
             // TEMPLATE REWRITE
-            // 103:32: -> popupquestion(target=$b.textanswer=$a.text)
+            // 123:32: -> popupquestion(target=$b.textanswer=$a.text)
             {
                 retval.st = templateLib.getInstanceOf("popupquestion",
               new STAttrMap().put("target", (b!=null?(input.getTokenStream().toString(
@@ -1091,7 +1111,7 @@ public class VisiotoXML extends TreeParser {
     };
 
     // $ANTLR start "text"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:104:1: text : ^( Text name ) -> string(w=$name.value);
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:124:1: text : ^( Text name ) -> string(w=$name.value);
     public final VisiotoXML.text_return text() throws RecognitionException {
         VisiotoXML.text_return retval = new VisiotoXML.text_return();
         retval.start = input.LT(1);
@@ -1100,8 +1120,8 @@ public class VisiotoXML extends TreeParser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:104:6: ( ^( Text name ) -> string(w=$name.value))
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:104:8: ^( Text name )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:124:6: ( ^( Text name ) -> string(w=$name.value))
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:124:8: ^( Text name )
             {
             match(input,Text,FOLLOW_Text_in_text400); 
 
@@ -1116,7 +1136,7 @@ public class VisiotoXML extends TreeParser {
 
 
             // TEMPLATE REWRITE
-            // 104:21: -> string(w=$name.value)
+            // 124:21: -> string(w=$name.value)
             {
                 retval.st = templateLib.getInstanceOf("string",
               new STAttrMap().put("w", (name18!=null?name18.value:null)));
@@ -1143,19 +1163,19 @@ public class VisiotoXML extends TreeParser {
     };
 
     // $ANTLR start "mydouble"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:106:1: mydouble : ^( MyDouble ( MINUS )? INT DOT INT ) ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:126:1: mydouble : ^( MyDouble ( MINUS )? INT DOT INT ) ;
     public final VisiotoXML.mydouble_return mydouble() throws RecognitionException {
         VisiotoXML.mydouble_return retval = new VisiotoXML.mydouble_return();
         retval.start = input.LT(1);
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:106:10: ( ^( MyDouble ( MINUS )? INT DOT INT ) )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:106:12: ^( MyDouble ( MINUS )? INT DOT INT )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:126:10: ( ^( MyDouble ( MINUS )? INT DOT INT ) )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:126:12: ^( MyDouble ( MINUS )? INT DOT INT )
             {
             match(input,MyDouble,FOLLOW_MyDouble_in_mydouble421); 
 
             match(input, Token.DOWN, null); 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:106:23: ( MINUS )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:126:23: ( MINUS )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -1164,7 +1184,7 @@ public class VisiotoXML extends TreeParser {
             }
             switch (alt4) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:106:23: MINUS
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:126:23: MINUS
                     {
                     match(input,MINUS,FOLLOW_MINUS_in_mydouble423); 
 
@@ -1200,7 +1220,7 @@ public class VisiotoXML extends TreeParser {
     };
 
     // $ANTLR start "name"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:107:1: name returns [String value] : ( ( String )* ( ID | INT ) ( ID | INT | String )* | String );
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:127:1: name returns [String value] : ( ( String )* ( ID | INT ) ( ID | INT | String )* | String );
     public final VisiotoXML.name_return name() throws RecognitionException {
         VisiotoXML.name_return retval = new VisiotoXML.name_return();
         retval.start = input.LT(1);
@@ -1208,7 +1228,7 @@ public class VisiotoXML extends TreeParser {
         CommonTree String19=null;
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:108:1: ( ( String )* ( ID | INT ) ( ID | INT | String )* | String )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:128:1: ( ( String )* ( ID | INT ) ( ID | INT | String )* | String )
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -1239,9 +1259,9 @@ public class VisiotoXML extends TreeParser {
             }
             switch (alt7) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:108:3: ( String )* ( ID | INT ) ( ID | INT | String )*
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:128:3: ( String )* ( ID | INT ) ( ID | INT | String )*
                     {
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:108:3: ( String )*
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:128:3: ( String )*
                     loop5:
                     do {
                         int alt5=2;
@@ -1254,7 +1274,7 @@ public class VisiotoXML extends TreeParser {
 
                         switch (alt5) {
                     	case 1 :
-                    	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:108:3: String
+                    	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:128:3: String
                     	    {
                     	    match(input,String,FOLLOW_String_in_name442); 
 
@@ -1275,7 +1295,7 @@ public class VisiotoXML extends TreeParser {
                         throw mse;
                     }
 
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:108:20: ( ID | INT | String )*
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:128:20: ( ID | INT | String )*
                     loop6:
                     do {
                         int alt6=2;
@@ -1288,7 +1308,7 @@ public class VisiotoXML extends TreeParser {
 
                         switch (alt6) {
                     	case 1 :
-                    	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:
+                    	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:
                     	    {
                     	    if ( (input.LA(1)>=String && input.LA(1)<=INT)||input.LA(1)==ID ) {
                     	        input.consume();
@@ -1315,7 +1335,7 @@ public class VisiotoXML extends TreeParser {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:109:3: String
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\VisiotoXML.g:129:3: String
                     {
                     String19=(CommonTree)match(input,String,FOLLOW_String_in_name464); 
                     retval.value =delQuotes((String19!=null?String19.getText():null));

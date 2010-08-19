@@ -1,4 +1,24 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\ComplexConditionSOLO.g 2010-04-19 10:47:17
+// $ANTLR 3.1.1 D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\ComplexConditionSOLO.g 2010-08-18 21:16:27
+
+/*
+ * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 
 package de.d3web.KnOfficeParser.complexcondition;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -89,7 +109,7 @@ public class ComplexConditionSOLO extends Parser {
         
 
     public String[] getTokenNames() { return ComplexConditionSOLO.tokenNames; }
-    public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\ComplexConditionSOLO.g"; }
+    public String getGrammarFileName() { return "D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\ComplexConditionSOLO.g"; }
 
 
       private ParserErrorHandler eh;
@@ -119,11 +139,11 @@ public class ComplexConditionSOLO extends Parser {
 
 
     // $ANTLR start "knowledge"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\ComplexConditionSOLO.g:58:1: knowledge : complexcondition ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\ComplexConditionSOLO.g:78:1: knowledge : complexcondition ;
     public final void knowledge() throws RecognitionException {
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\ComplexConditionSOLO.g:58:10: ( complexcondition )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\ComplexConditionSOLO.g:58:12: complexcondition
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\ComplexConditionSOLO.g:78:10: ( complexcondition )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\ComplexConditionSOLO.g:78:12: complexcondition
             {
             pushFollow(FOLLOW_complexcondition_in_knowledge47);
             complexcondition();
@@ -145,19 +165,19 @@ public class ComplexConditionSOLO extends Parser {
     // $ANTLR end "knowledge"
 
     // Delegated rules
-    public ComplexConditionSOLO_ComplexCondition_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
-    public ComplexConditionSOLO_ComplexCondition.complexcondition_return complexcondition() throws RecognitionException { return gComplexCondition.complexcondition(); }
-    public String type() throws RecognitionException { return gBasicParser.type(); }
-    public ComplexConditionSOLO_ComplexCondition_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
-    public ComplexConditionSOLO_ComplexCondition.conjunct_return conjunct() throws RecognitionException { return gComplexCondition.conjunct(); }
-    public void startruleComplexCondition() throws RecognitionException { gComplexCondition.startruleComplexCondition(); }
-    public ComplexConditionSOLO_ComplexCondition_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
-    public ComplexConditionSOLO_ComplexCondition.condition_return condition() throws RecognitionException { return gComplexCondition.condition(); }
     public ComplexConditionSOLO_ComplexCondition_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
-    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
-    public ComplexConditionSOLO_ComplexCondition.intervall_return intervall() throws RecognitionException { return gComplexCondition.intervall(); }
     public ComplexConditionSOLO_ComplexCondition.disjunct_return disjunct() throws RecognitionException { return gComplexCondition.disjunct(); }
+    public ComplexConditionSOLO_ComplexCondition.intervall_return intervall() throws RecognitionException { return gComplexCondition.intervall(); }
     public ComplexConditionSOLO_ComplexCondition.dnf_return dnf() throws RecognitionException { return gComplexCondition.dnf(); }
+    public ComplexConditionSOLO_ComplexCondition.conjunct_return conjunct() throws RecognitionException { return gComplexCondition.conjunct(); }
+    public ComplexConditionSOLO_ComplexCondition.condition_return condition() throws RecognitionException { return gComplexCondition.condition(); }
+    public ComplexConditionSOLO_ComplexCondition_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
+    public ComplexConditionSOLO_ComplexCondition.complexcondition_return complexcondition() throws RecognitionException { return gComplexCondition.complexcondition(); }
+    public void startruleComplexCondition() throws RecognitionException { gComplexCondition.startruleComplexCondition(); }
+    public ComplexConditionSOLO_ComplexCondition_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
+    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
+    public ComplexConditionSOLO_ComplexCondition_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
+    public String type() throws RecognitionException { return gBasicParser.type(); }
 
 
  

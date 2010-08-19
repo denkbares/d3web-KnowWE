@@ -1,4 +1,24 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g 2010-04-19 10:47:34
+// $ANTLR 3.1.1 D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g 2010-08-18 21:17:40
+
+/*
+ * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 
 package de.d3web.KnOfficeParser.scmcbr;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -91,7 +111,7 @@ public class SCMCBR extends Parser {
         
 
     public String[] getTokenNames() { return SCMCBR.tokenNames; }
-    public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g"; }
+    public String getGrammarFileName() { return "D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g"; }
 
 
       private SCMCBRBuilder builder;
@@ -136,13 +156,13 @@ public class SCMCBR extends Parser {
 
 
     // $ANTLR start "knowledge"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:77:1: knowledge : ( solution | NL )* ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:97:1: knowledge : ( solution | NL )* ;
     public final void knowledge() throws RecognitionException {
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:77:10: ( ( solution | NL )* )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:78:1: ( solution | NL )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:97:10: ( ( solution | NL )* )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:98:1: ( solution | NL )*
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:78:1: ( solution | NL )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:98:1: ( solution | NL )*
             loop1:
             do {
                 int alt1=3;
@@ -158,7 +178,7 @@ public class SCMCBR extends Parser {
 
                 switch (alt1) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:78:2: solution
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:98:2: solution
             	    {
             	    pushFollow(FOLLOW_solution_in_knowledge55);
             	    solution();
@@ -169,7 +189,7 @@ public class SCMCBR extends Parser {
             	    }
             	    break;
             	case 2 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:78:11: NL
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:98:11: NL
             	    {
             	    match(input,NL,FOLLOW_NL_in_knowledge57); 
 
@@ -199,7 +219,7 @@ public class SCMCBR extends Parser {
     };
 
     // $ANTLR start "solution"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:80:1: solution : name DD NL ( line NL )* ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:100:1: solution : name DD NL ( line NL )* ;
     public final SCMCBR.solution_return solution() throws RecognitionException {
         SCMCBR.solution_return retval = new SCMCBR.solution_return();
         retval.start = input.LT(1);
@@ -208,8 +228,8 @@ public class SCMCBR extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:80:9: ( name DD NL ( line NL )* )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:81:1: name DD NL ( line NL )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:100:9: ( name DD NL ( line NL )* )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:101:1: name DD NL ( line NL )*
             {
             pushFollow(FOLLOW_name_in_solution66);
             name1=name();
@@ -219,14 +239,14 @@ public class SCMCBR extends Parser {
             builder.solution(((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (name1!=null?name1.value:null));
             match(input,DD,FOLLOW_DD_in_solution69); 
             match(input,NL,FOLLOW_NL_in_solution71); 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:81:69: ( line NL )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:101:69: ( line NL )*
             loop2:
             do {
                 int alt2=2;
                 alt2 = dfa2.predict(input);
                 switch (alt2) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:81:70: line NL
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:101:70: line NL
             	    {
             	    pushFollow(FOLLOW_line_in_solution74);
             	    line();
@@ -263,7 +283,7 @@ public class SCMCBR extends Parser {
     };
 
     // $ANTLR start "line"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:83:1: line : ( name ( assign SEMI )* assign | name DD d3double | name CBO a= d3double b= d3double CBC | name SBO INT SBC );
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:103:1: line : ( name ( assign SEMI )* assign | name DD d3double | name CBO a= d3double b= d3double CBC | name SBO INT SBC );
     public final SCMCBR.line_return line() throws RecognitionException {
         SCMCBR.line_return retval = new SCMCBR.line_return();
         retval.start = input.LT(1);
@@ -284,12 +304,12 @@ public class SCMCBR extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:83:5: ( name ( assign SEMI )* assign | name DD d3double | name CBO a= d3double b= d3double CBC | name SBO INT SBC )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:103:5: ( name ( assign SEMI )* assign | name DD d3double | name CBO a= d3double b= d3double CBC | name SBO INT SBC )
             int alt4=4;
             alt4 = dfa4.predict(input);
             switch (alt4) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:84:1: name ( assign SEMI )* assign
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:104:1: name ( assign SEMI )* assign
                     {
                     pushFollow(FOLLOW_name_in_line85);
                     name2=name();
@@ -297,14 +317,14 @@ public class SCMCBR extends Parser {
                     state._fsp--;
 
                     builder.question(((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (name2!=null?name2.value:null));
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:84:64: ( assign SEMI )*
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:104:64: ( assign SEMI )*
                     loop3:
                     do {
                         int alt3=2;
                         alt3 = dfa3.predict(input);
                         switch (alt3) {
                     	case 1 :
-                    	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:84:65: assign SEMI
+                    	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:104:65: assign SEMI
                     	    {
                     	    pushFollow(FOLLOW_assign_in_line90);
                     	    assign();
@@ -330,7 +350,7 @@ public class SCMCBR extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:85:3: name DD d3double
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:105:3: name DD d3double
                     {
                     pushFollow(FOLLOW_name_in_line100);
                     name3=name();
@@ -348,7 +368,7 @@ public class SCMCBR extends Parser {
                     }
                     break;
                 case 3 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:86:3: name CBO a= d3double b= d3double CBC
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:106:3: name CBO a= d3double b= d3double CBC
                     {
                     pushFollow(FOLLOW_name_in_line110);
                     name5=name();
@@ -372,7 +392,7 @@ public class SCMCBR extends Parser {
                     }
                     break;
                 case 4 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:87:3: name SBO INT SBC
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:107:3: name SBO INT SBC
                     {
                     pushFollow(FOLLOW_name_in_line128);
                     name6=name();
@@ -405,7 +425,7 @@ public class SCMCBR extends Parser {
     };
 
     // $ANTLR start "assign"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:89:1: assign : ( eq name ( weight )? | IN ( LP | c= SBO ) a= values ( RP | d= SBC ) SBO b= values SBC | INTER ( LP | c= SBO ) a= values ( RP | d= SBC ) CBO b= values CBC | ( AND | c= OR ) LP names RP ( weight )? | NOT name ( weight )? );
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:109:1: assign : ( eq name ( weight )? | IN ( LP | c= SBO ) a= values ( RP | d= SBC ) SBO b= values SBC | INTER ( LP | c= SBO ) a= values ( RP | d= SBC ) CBO b= values CBC | ( AND | c= OR ) LP names RP ( weight )? | NOT name ( weight )? );
     public final SCMCBR.assign_return assign() throws RecognitionException {
         SCMCBR.assign_return retval = new SCMCBR.assign_return();
         retval.start = input.LT(1);
@@ -432,7 +452,7 @@ public class SCMCBR extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:89:7: ( eq name ( weight )? | IN ( LP | c= SBO ) a= values ( RP | d= SBC ) SBO b= values SBC | INTER ( LP | c= SBO ) a= values ( RP | d= SBC ) CBO b= values CBC | ( AND | c= OR ) LP names RP ( weight )? | NOT name ( weight )? )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:109:7: ( eq name ( weight )? | IN ( LP | c= SBO ) a= values ( RP | d= SBC ) SBO b= values SBC | INTER ( LP | c= SBO ) a= values ( RP | d= SBC ) CBO b= values CBC | ( AND | c= OR ) LP names RP ( weight )? | NOT name ( weight )? )
             int alt13=5;
             switch ( input.LA(1) ) {
             case LE:
@@ -474,7 +494,7 @@ public class SCMCBR extends Parser {
 
             switch (alt13) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:90:1: eq name ( weight )?
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:110:1: eq name ( weight )?
                     {
                     pushFollow(FOLLOW_eq_in_assign143);
                     eq9=eq();
@@ -486,7 +506,7 @@ public class SCMCBR extends Parser {
 
                     state._fsp--;
 
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:90:9: ( weight )?
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:110:9: ( weight )?
                     int alt5=2;
                     int LA5_0 = input.LA(1);
 
@@ -495,7 +515,7 @@ public class SCMCBR extends Parser {
                     }
                     switch (alt5) {
                         case 1 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:90:9: weight
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:110:9: weight
                             {
                             pushFollow(FOLLOW_weight_in_assign147);
                             weight8=weight();
@@ -513,10 +533,10 @@ public class SCMCBR extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:91:3: IN ( LP | c= SBO ) a= values ( RP | d= SBC ) SBO b= values SBC
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:111:3: IN ( LP | c= SBO ) a= values ( RP | d= SBC ) SBO b= values SBC
                     {
                     match(input,IN,FOLLOW_IN_in_assign154); 
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:91:6: ( LP | c= SBO )
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:111:6: ( LP | c= SBO )
                     int alt6=2;
                     int LA6_0 = input.LA(1);
 
@@ -534,14 +554,14 @@ public class SCMCBR extends Parser {
                     }
                     switch (alt6) {
                         case 1 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:91:7: LP
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:111:7: LP
                             {
                             match(input,LP,FOLLOW_LP_in_assign157); 
 
                             }
                             break;
                         case 2 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:91:10: c= SBO
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:111:10: c= SBO
                             {
                             c=(Token)match(input,SBO,FOLLOW_SBO_in_assign161); 
 
@@ -555,7 +575,7 @@ public class SCMCBR extends Parser {
 
                     state._fsp--;
 
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:91:26: ( RP | d= SBC )
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:111:26: ( RP | d= SBC )
                     int alt7=2;
                     int LA7_0 = input.LA(1);
 
@@ -573,14 +593,14 @@ public class SCMCBR extends Parser {
                     }
                     switch (alt7) {
                         case 1 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:91:27: RP
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:111:27: RP
                             {
                             match(input,RP,FOLLOW_RP_in_assign169); 
 
                             }
                             break;
                         case 2 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:91:30: d= SBC
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:111:30: d= SBC
                             {
                             d=(Token)match(input,SBC,FOLLOW_SBC_in_assign173); 
 
@@ -601,10 +621,10 @@ public class SCMCBR extends Parser {
                     }
                     break;
                 case 3 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:92:3: INTER ( LP | c= SBO ) a= values ( RP | d= SBC ) CBO b= values CBC
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:112:3: INTER ( LP | c= SBO ) a= values ( RP | d= SBC ) CBO b= values CBC
                     {
                     match(input,INTER,FOLLOW_INTER_in_assign188); 
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:92:9: ( LP | c= SBO )
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:112:9: ( LP | c= SBO )
                     int alt8=2;
                     int LA8_0 = input.LA(1);
 
@@ -622,14 +642,14 @@ public class SCMCBR extends Parser {
                     }
                     switch (alt8) {
                         case 1 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:92:10: LP
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:112:10: LP
                             {
                             match(input,LP,FOLLOW_LP_in_assign191); 
 
                             }
                             break;
                         case 2 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:92:13: c= SBO
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:112:13: c= SBO
                             {
                             c=(Token)match(input,SBO,FOLLOW_SBO_in_assign195); 
 
@@ -643,7 +663,7 @@ public class SCMCBR extends Parser {
 
                     state._fsp--;
 
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:92:29: ( RP | d= SBC )
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:112:29: ( RP | d= SBC )
                     int alt9=2;
                     int LA9_0 = input.LA(1);
 
@@ -661,14 +681,14 @@ public class SCMCBR extends Parser {
                     }
                     switch (alt9) {
                         case 1 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:92:30: RP
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:112:30: RP
                             {
                             match(input,RP,FOLLOW_RP_in_assign203); 
 
                             }
                             break;
                         case 2 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:92:33: d= SBC
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:112:33: d= SBC
                             {
                             d=(Token)match(input,SBC,FOLLOW_SBC_in_assign207); 
 
@@ -689,9 +709,9 @@ public class SCMCBR extends Parser {
                     }
                     break;
                 case 4 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:93:3: ( AND | c= OR ) LP names RP ( weight )?
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:113:3: ( AND | c= OR ) LP names RP ( weight )?
                     {
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:93:3: ( AND | c= OR )
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:113:3: ( AND | c= OR )
                     int alt10=2;
                     int LA10_0 = input.LA(1);
 
@@ -709,14 +729,14 @@ public class SCMCBR extends Parser {
                     }
                     switch (alt10) {
                         case 1 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:93:4: AND
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:113:4: AND
                             {
                             match(input,AND,FOLLOW_AND_in_assign223); 
 
                             }
                             break;
                         case 2 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:93:8: c= OR
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:113:8: c= OR
                             {
                             c=(Token)match(input,OR,FOLLOW_OR_in_assign227); 
 
@@ -732,7 +752,7 @@ public class SCMCBR extends Parser {
                     state._fsp--;
 
                     match(input,RP,FOLLOW_RP_in_assign234); 
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:93:26: ( weight )?
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:113:26: ( weight )?
                     int alt11=2;
                     int LA11_0 = input.LA(1);
 
@@ -741,7 +761,7 @@ public class SCMCBR extends Parser {
                     }
                     switch (alt11) {
                         case 1 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:93:26: weight
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:113:26: weight
                             {
                             pushFollow(FOLLOW_weight_in_assign236);
                             weight11=weight();
@@ -759,7 +779,7 @@ public class SCMCBR extends Parser {
                     }
                     break;
                 case 5 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:94:3: NOT name ( weight )?
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:114:3: NOT name ( weight )?
                     {
                     match(input,NOT,FOLLOW_NOT_in_assign243); 
                     pushFollow(FOLLOW_name_in_assign245);
@@ -767,7 +787,7 @@ public class SCMCBR extends Parser {
 
                     state._fsp--;
 
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:94:12: ( weight )?
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:114:12: ( weight )?
                     int alt12=2;
                     int LA12_0 = input.LA(1);
 
@@ -776,7 +796,7 @@ public class SCMCBR extends Parser {
                     }
                     switch (alt12) {
                         case 1 :
-                            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:94:12: weight
+                            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:114:12: weight
                             {
                             pushFollow(FOLLOW_weight_in_assign247);
                             weight13=weight();
@@ -810,7 +830,7 @@ public class SCMCBR extends Parser {
 
 
     // $ANTLR start "names"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:96:1: names returns [List<String> values] : (a= name COMMA )* b= name ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:116:1: names returns [List<String> values] : (a= name COMMA )* b= name ;
     public final List<String> names() throws RecognitionException {
         List<String> values = null;
 
@@ -821,17 +841,17 @@ public class SCMCBR extends Parser {
 
         values = new ArrayList<String>();
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:98:1: ( (a= name COMMA )* b= name )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:98:4: (a= name COMMA )* b= name
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:118:1: ( (a= name COMMA )* b= name )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:118:4: (a= name COMMA )* b= name
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:98:4: (a= name COMMA )*
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:118:4: (a= name COMMA )*
             loop14:
             do {
                 int alt14=2;
                 alt14 = dfa14.predict(input);
                 switch (alt14) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:98:5: a= name COMMA
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:118:5: a= name COMMA
             	    {
             	    pushFollow(FOLLOW_name_in_names271);
             	    a=name();
@@ -871,7 +891,7 @@ public class SCMCBR extends Parser {
 
 
     // $ANTLR start "values"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:100:1: values returns [List<Double> values] : (a= d3double )+ ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:120:1: values returns [List<Double> values] : (a= d3double )+ ;
     public final List<Double> values() throws RecognitionException {
         List<Double> values = null;
 
@@ -880,10 +900,10 @@ public class SCMCBR extends Parser {
 
         values = new ArrayList<Double>();
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:102:1: ( (a= d3double )+ )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:102:3: (a= d3double )+
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:122:1: ( (a= d3double )+ )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:122:3: (a= d3double )+
             {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:102:3: (a= d3double )+
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:122:3: (a= d3double )+
             int cnt15=0;
             loop15:
             do {
@@ -897,7 +917,7 @@ public class SCMCBR extends Parser {
 
                 switch (alt15) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:102:4: a= d3double
+            	    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:122:4: a= d3double
             	    {
             	    pushFollow(FOLLOW_d3double_in_values303);
             	    a=d3double();
@@ -937,17 +957,17 @@ public class SCMCBR extends Parser {
     };
 
     // $ANTLR start "weight"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:104:1: weight returns [String value] : SBO ( PLUS | MINUS | EX )? ( INT )? SBC ;
+    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:124:1: weight returns [String value] : SBO ( PLUS | MINUS | EX )? ( INT )? SBC ;
     public final SCMCBR.weight_return weight() throws RecognitionException {
         SCMCBR.weight_return retval = new SCMCBR.weight_return();
         retval.start = input.LT(1);
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:104:30: ( SBO ( PLUS | MINUS | EX )? ( INT )? SBC )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:105:1: SBO ( PLUS | MINUS | EX )? ( INT )? SBC
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:124:30: ( SBO ( PLUS | MINUS | EX )? ( INT )? SBC )
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:125:1: SBO ( PLUS | MINUS | EX )? ( INT )? SBC
             {
             match(input,SBO,FOLLOW_SBO_in_weight318); 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:105:5: ( PLUS | MINUS | EX )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:125:5: ( PLUS | MINUS | EX )?
             int alt16=2;
             int LA16_0 = input.LA(1);
 
@@ -956,7 +976,7 @@ public class SCMCBR extends Parser {
             }
             switch (alt16) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:
                     {
                     if ( input.LA(1)==EX||(input.LA(1)>=PLUS && input.LA(1)<=MINUS) ) {
                         input.consume();
@@ -973,7 +993,7 @@ public class SCMCBR extends Parser {
 
             }
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:105:22: ( INT )?
+            // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:125:22: ( INT )?
             int alt17=2;
             int LA17_0 = input.LA(1);
 
@@ -982,7 +1002,7 @@ public class SCMCBR extends Parser {
             }
             switch (alt17) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:105:22: INT
+                    // D:\\Projects\\denkbares\\workspace\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g:125:22: INT
                     {
                     match(input,INT,FOLLOW_INT_in_weight329); 
 
@@ -1010,12 +1030,12 @@ public class SCMCBR extends Parser {
     // $ANTLR end "weight"
 
     // Delegated rules
+    public SCMCBR_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
+    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
+    public SCMCBR_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
     public SCMCBR_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
     public String type() throws RecognitionException { return gBasicParser.type(); }
-    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
     public SCMCBR_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
-    public SCMCBR_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
-    public SCMCBR_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
 
 
     protected DFA2 dfa2 = new DFA2(this);
@@ -1078,7 +1098,7 @@ public class SCMCBR extends Parser {
             this.transition = DFA2_transition;
         }
         public String getDescription() {
-            return "()* loopback of 81:69: ( line NL )*";
+            return "()* loopback of 101:69: ( line NL )*";
         }
     }
     static final String DFA4_eotS =
@@ -1138,7 +1158,7 @@ public class SCMCBR extends Parser {
             this.transition = DFA4_transition;
         }
         public String getDescription() {
-            return "83:1: line : ( name ( assign SEMI )* assign | name DD d3double | name CBO a= d3double b= d3double CBC | name SBO INT SBC );";
+            return "103:1: line : ( name ( assign SEMI )* assign | name DD d3double | name CBO a= d3double b= d3double CBC | name SBO INT SBC );";
         }
     }
     static final String DFA3_eotS =
@@ -1263,7 +1283,7 @@ public class SCMCBR extends Parser {
             this.transition = DFA3_transition;
         }
         public String getDescription() {
-            return "()* loopback of 84:64: ( assign SEMI )*";
+            return "()* loopback of 104:64: ( assign SEMI )*";
         }
     }
     static final String DFA14_eotS =
@@ -1318,7 +1338,7 @@ public class SCMCBR extends Parser {
             this.transition = DFA14_transition;
         }
         public String getDescription() {
-            return "()* loopback of 98:4: (a= name COMMA )*";
+            return "()* loopback of 118:4: (a= name COMMA )*";
         }
     }
  
