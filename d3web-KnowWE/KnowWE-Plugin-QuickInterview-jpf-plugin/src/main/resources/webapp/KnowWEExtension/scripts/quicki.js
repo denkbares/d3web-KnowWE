@@ -97,13 +97,33 @@ KNOWWE.plugin.quicki = function(){
             KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', {ValueID: rel.oid});
         }, 
         /**
+         * Function: toggleImage(int)
+         * 		Toggles the image display for questionnaire headings
+         * 
+         * Parameter:
+         * 		flag - either 1 or 0; 1 means, image is actually displayed
+         * 		  and needs to be hidden, 0 vice versa
+         * 		questionnaire - the element, the image is attached to
+         */	
+        toggleImage : function (flag, questionnaire) {
+        	
+        	if(flag==1){
+        		// questionnaire is visible and should be hidden
+        		// thus image needs to be the triangle indicating extensibility
+        		// class='questionnaire pointRight
+        		questionnaire.setAttribute('class', 'questionnaire pointRight');     
+        	} else if (flag==0){
+        		questionnaire.setAttribute('class', 'questionnaire pointDown');   
+        	}
+        },
+        /**
          * Function: toggleAnswerHighlighting
          * Hightlights an answer if clicked or unhighlights an highlighted answer if clicked
          *
          * Parameters:
-         * 	element - The clicked answer-element
+         * 		element - The clicked answer-element
          */
-        toggleAnswerHighlighting: function( element ){
+        toggleAnswerHighlighting : function( element ){
         	if(element.className=='answerClicked'){
         		element.className = 'answer';
         	} else if (element.className=='answerunknownClicked'){
@@ -127,16 +147,13 @@ KNOWWE.plugin.quicki = function(){
         	// get the clicked element, i.e., the questionnaire
         	var questionnaire = _KE.target(event); 	
         	var group = _KS('#group_' + questionnaire.id);
-        	alert(group);
-        	// for each qablock toggle visibility
         	
         	if(group.getAttribute('style') == 'display: block;'){
-            	alert("block");
-            	group.setAttribute('style', 'display: none;');        
-            	
+            	group.setAttribute('style', 'display: none;');     
+            	KNOWWE.plugin.quicki.toggleImage(1, questionnaire);            	
             } else if (group.getAttribute('style') == 'display: none;'){
-            	alert("none");
-            	group.setAttribute('style', 'display: block;');            	
+            	group.setAttribute('style', 'display: block;');       
+            	KNOWWE.plugin.quicki.toggleImage(0, questionnaire);   
             } 
             
         	KNOWWE.plugin.d3web.dialog.initAction();

@@ -174,14 +174,20 @@ public class QuickInterviewRenderer {
 			StringBuffer qcon, Set<TerminologyObject> processedTOs, int depth, boolean init) {
 
 		depth++;
-		String display = depth == 0 ? "display: block" : "display: none";
+		boolean show = false;
+		if (depth == 0) {
+			show = depth == 0 ? true : false;
+		}
+		else {
+			show = init ? true : false;
+		}
 
 		if (!processedTOs.contains(topContainer)) {
-			qcon.append(getQuestionnaireRendering(topContainer, depth));
+			processedTOs.add(topContainer);
+			qcon.append(getQuestionnaireRendering(topContainer, depth, show));
 		}
-		processedTOs.add(topContainer);
 
-		display = init ? "display: block" : "display: none";
+		String display = init ? "display: block" : "display: none";
 		qcon.append("<div id='group_" + topContainer.getId() + "' class='group' style='"
 				+ display + "'");
 		for (TerminologyObject qcontainerchild : topContainer.getChildren()) {
@@ -191,7 +197,6 @@ public class QuickInterviewRenderer {
 						topContainer, init);
 			}
 			else {
-
 				getInterviewElementsRenderingRecursively((QContainer) qcontainerchild, qcon, processedTOs,
 						depth, init);
 			}
@@ -215,20 +220,18 @@ public class QuickInterviewRenderer {
 			// no further follow-up questions, thus append question rendering
 			// but only if not yet done (if so it is contained in processedTOs
 			if (!processedTOs.contains(topQuestion)) {
-
+				processedTOs.add(topQuestion);
 				sb.append(getQABlockRendering(topQuestion, depth, parent));
 			}
-			processedTOs.add(topQuestion);
 		}
 		else {
 
 			if (!processedTOs.contains(topQuestion)) {
+				processedTOs.add(topQuestion);
 				sb.append(getQABlockRendering(topQuestion, depth, parent));
 			}
-			processedTOs.add(topQuestion);
 			// we got follow-up questions, thus call method again
 			for (TerminologyObject qchild : topQuestion.getChildren()) {
-
 				getQuestionsRecursively((Question) qchild, sb, processedTOs, depth, parent,
 						init);
 			}
@@ -244,12 +247,16 @@ public class QuickInterviewRenderer {
 	 * @param container the QContainer to be rendered
 	 * @return the HTML for the div
 	 */
-	private static String getQuestionnaireRendering(QContainer container, int depth) {
+	private static String getQuestionnaireRendering(QContainer container, int depth, boolean show) {
 		StringBuffer div = new StringBuffer();
 		int margin = 10 + depth * 10;
 
+		String clazz = show
+				? "class='questionnaire pointDown'"
+				: "class='questionnaire pointRight'";
+
 		div.append("<div id='" + container.getId() + "' " +
-				"class='questionnaire' style='margin-left: " + margin + "px; display: block'>");
+				clazz + " style='margin-left: " + margin + "px; display: block'>");
 		div.append(" " + container.getName() + ": ");
 		div.append("</div>");
 

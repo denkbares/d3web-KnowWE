@@ -33,6 +33,12 @@
 /* styling of the questionnaire div */
 #quickinterview .questionnaire {clear: both; display: block; padding: 5px; margin: 5px; margin-right: 10px;
 	background-color: #7991A7;} 
+	
+/* styling of the questionnaire div */
+#quickinterview .pointRight { border: 2px solid red; }
+	
+/* styling of the questionnaire div */
+#quickinterview .pointDown { border: 2px dotted green;} 
 
 /* styling of the qablock enclosing div */
 #quickinterview .qa { clear: both; background-color: red; border-bottom: 2px black solid; margin-left: 10px; margin-right: 10px;
