@@ -175,12 +175,7 @@ public class QuickInterviewRenderer {
 
 		depth++;
 		boolean show = false;
-		if (depth == 0) {
-			show = depth == 0 ? true : false;
-		}
-		else {
-			show = init ? true : false;
-		}
+		show = init ? true : false;
 
 		if (!processedTOs.contains(topContainer)) {
 			processedTOs.add(topContainer);

@@ -31,14 +31,14 @@
 	-moz-box-shadow: 0 0 3px black; -webkit-box-shadow: 0 0 3px black; box-shadow: 0 0 3px black;}
 
 /* styling of the questionnaire div */
-#quickinterview .questionnaire {clear: both; display: block; padding: 5px; margin: 5px; margin-right: 10px;
-	background-color: #7991A7;} 
+#quickinterview .questionnaire {clear: both; display: block; padding: 5px 0 5px 30px; margin: 5px; margin-right: 10px; min-height: 9px;
+	background-color: transparent;} 
 	
 /* styling of the questionnaire div */
-#quickinterview .pointRight { border: 2px solid red; }
+#quickinterview .pointRight { background: #7991A7 url(../images/arrow_right.png) no-repeat 10px 5px; }
 	
 /* styling of the questionnaire div */
-#quickinterview .pointDown { border: 2px dotted green;} 
+#quickinterview .pointDown { background: #7991A7 url(../images/arrow_down.png) no-repeat 10px 5px;  } 
 
 /* styling of the qablock enclosing div */
 #quickinterview .qa { clear: both; background-color: red; border-bottom: 2px black solid; margin-left: 10px; margin-right: 10px;
@@ -57,9 +57,9 @@
 #quickinterview .answerClicked { float: left; background-color: #D7DEE4; padding: 2px; }
 
 /* answer unknown styling */
-#quickinterview .answerunknown { background-image: url(../images/questionMark24.png); height: 20px; width: 20px; float: left;
+#quickinterview .answerunknown { background-image: url(../images/questionMark.png); height: 20px; width: 20px; float: left;
 	 background-repeat: no-repeat; background-position: center center; background-color: transparent;}
 	 
 /*TODO answer unknown styling if ACTIVE = clicked TODO */
-#quickinterview .answerunknownClicked { background-image: url(../images/questionMark24.png); height: 20px; width: 20px; float: left;
+#quickinterview .answerunknownClicked { background-image: url(../images/questionMark.png); height: 20px; width: 20px; float: left;
 	 background-repeat: no-repeat; background-position: center center; background-color: transparent;}
