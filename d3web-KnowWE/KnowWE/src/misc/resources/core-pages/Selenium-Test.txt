@@ -4,6 +4,13 @@
 
 [Quick-Edit-Test]
 
+!Stress-Tests
+
+[Markup(Car-Diagnosis)]
+
+[TimeLineEntries]
+
+
 <COMMENT1 Selenium-Comment:Comments on this Test?>
 <DOCU1 Selenium-Docu:Add some appointments>
 

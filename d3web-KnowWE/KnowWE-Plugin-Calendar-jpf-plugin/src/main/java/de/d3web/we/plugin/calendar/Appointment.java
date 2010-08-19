@@ -29,7 +29,7 @@ public class Appointment extends AbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 
-		sectionFinder = new RegexSectionFinder("<<[0-9]+[^>]*>>");
+		sectionFinder = new RegexSectionFinder("<&<[0-9]+.*?>&>");
 
 		childrenTypes.add(new AppointmentStartSymbol());
 		childrenTypes.add(new AppointmentEndSymbol());

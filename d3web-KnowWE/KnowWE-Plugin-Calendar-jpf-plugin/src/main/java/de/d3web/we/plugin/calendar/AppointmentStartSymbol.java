@@ -27,7 +27,7 @@ public class AppointmentStartSymbol extends AbstractKnowWEObjectType {
 
 	@Override
 	protected void init() {
-		sectionFinder = new RegexSectionFinder("<<([0-9]+(\\.|-|/|:| )){5}");
+		sectionFinder = new RegexSectionFinder("<&<([0-9]+(\\.|-|/|:| )){5}");
 
 		childrenTypes.add(new AppointmentDate());
 		childrenTypes.add(new AppointmentTime());

@@ -27,7 +27,7 @@ public class AppointmentEndSymbol extends AbstractKnowWEObjectType {
 
 	@Override
 	protected void init() {
-		sectionFinder = new RegexSectionFinder(">>");
+		sectionFinder = new RegexSectionFinder(">&>");
 	}
 
 	@Override
