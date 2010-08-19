@@ -126,6 +126,21 @@
 		<parameter id="script" value="Hermes.js" />
 	</extension>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="CreateMapHandler">
+		<parameter id="class"
+			value="de.d3web.we.hermes.taghandler.CreateMapHandler" />
+		<parameter id="name" value="CreateMapHandler" />
+		<parameter id="description" value="TagHandler CreateMapHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="Hermes.js" />
+		<!-- This is done in Html in CreateMapHandler
+		<parameter id="script" value="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=0" />
+		<parameter id="script" value="CreateMap.js" />
+		-->
+	</extension>
+	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="TimeEventType">
 		<parameter id="class"
