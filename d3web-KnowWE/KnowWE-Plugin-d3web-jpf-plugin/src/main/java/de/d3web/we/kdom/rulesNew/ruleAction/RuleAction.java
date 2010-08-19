@@ -22,7 +22,6 @@ package de.d3web.we.kdom.rulesNew.ruleAction;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.kopic.rules.ruleActionLine.AbstractionRuleAction;
-import de.d3web.we.kdom.kopic.rules.ruleActionLine.IndicationRuleAction;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 
 public class RuleAction extends DefaultAbstractKnowWEObjectType {
@@ -31,7 +30,6 @@ public class RuleAction extends DefaultAbstractKnowWEObjectType {
 	protected void init() {
 		sectionFinder = new AllTextSectionFinder();
 		this.childrenTypes.add(new SolutionValueAssignment());
-		this.childrenTypes.add(new AddValueAction());
 		this.childrenTypes.add(new SetQuestionValue());
 		this.childrenTypes.add(new AbstractionRuleAction());
 		this.childrenTypes.add(new ContraIndicationAction());

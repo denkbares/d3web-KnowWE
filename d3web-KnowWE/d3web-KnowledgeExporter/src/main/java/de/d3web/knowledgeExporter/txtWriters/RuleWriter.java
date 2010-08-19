@@ -24,9 +24,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import de.d3web.abstraction.ActionAddValue;
 import de.d3web.abstraction.ActionQuestionSetter;
-import de.d3web.abstraction.ActionSetValue;
 import de.d3web.abstraction.formula.FormulaExpression;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.Rule;
@@ -164,8 +162,9 @@ public class RuleWriter extends TxtKnowledgeWriter {
 			}
 			s.append(quote(q.toString()));
 
-			if (action instanceof ActionSetValue) s.append(" = ");
-			else if (action instanceof ActionAddValue) s.append(" += ");
+			// if (action instanceof ActionSetValue)
+			s.append(" = ");
+			// else if (action instanceof ActionAddValue) s.append(" += ");
 			// append
 			Object value = action.getValue();
 			if (value instanceof Value) {

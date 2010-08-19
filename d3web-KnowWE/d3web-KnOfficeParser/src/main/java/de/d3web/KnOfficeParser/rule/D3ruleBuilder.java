@@ -44,8 +44,8 @@ import de.d3web.abstraction.formula.FormulaExpression;
 import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.abstraction.formula.FormulaNumberElement;
 import de.d3web.abstraction.formula.Operator;
-import de.d3web.abstraction.formula.QNumWrapper;
 import de.d3web.abstraction.formula.Operator.Operation;
+import de.d3web.abstraction.formula.QNumWrapper;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.Condition;
@@ -54,8 +54,8 @@ import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Rating.State;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.Value;
@@ -195,7 +195,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				// rule.formula, rule.ifcond, rule.exceptcond);
 			}
 			else if (rule.answers != null) {
-				newRule = RuleFactory.createAddValueRule(newRuleID, rule.question,
+				newRule = RuleFactory.createSetValueRule(newRuleID, rule.question,
 						new ChoiceValue(rule.answers), rule.ifcond, rule.exceptcond);
 			}
 			else {

@@ -58,8 +58,8 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Rating.State;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
@@ -412,7 +412,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 						RuleFactory.createSetValueRule(newRuleID, q, e, cond);
 					}
 					else {
-						RuleFactory.createAddValueRule(newRuleID, q,
+						RuleFactory.createSetValueRule(newRuleID, q,
 								new Object[] { e }, cond);
 					}
 				}
@@ -423,7 +423,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 								new Object[] { a }, cond);
 					}
 					else {
-						RuleFactory.createAddValueRule(newRuleID, q,
+						RuleFactory.createSetValueRule(newRuleID, q,
 								new Object[] { a }, cond);
 					}
 				}
@@ -656,6 +656,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		}
 	}
 
+	@Override
 	public void finishOldQuestionsandConditions(int dashes) {
 		// System.out.println(dashes);
 		while ((!conditionStack.isEmpty()) && (conddashstack.peek() >= dashes)) {

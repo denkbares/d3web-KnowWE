@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import de.d3web.abstraction.ActionAddValue;
+import de.d3web.abstraction.ActionSetValue;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Question;
@@ -171,7 +171,7 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 								DashTreeUtils.getAncestorDashTreeElements(s));
 
 				Double d = Double.parseDouble(argument);
-				ActionAddValue action = new ActionAddValue();
+				ActionSetValue action = new ActionSetValue();
 				action.setQuestion(q);
 				action.setValue(d);
 

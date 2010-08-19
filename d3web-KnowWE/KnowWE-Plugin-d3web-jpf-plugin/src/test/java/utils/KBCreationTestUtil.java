@@ -27,8 +27,8 @@ import java.util.List;
 import de.d3web.abstraction.formula.FormulaExpression;
 import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.abstraction.formula.Operator;
-import de.d3web.abstraction.formula.QNumWrapper;
 import de.d3web.abstraction.formula.Operator.Operation;
+import de.d3web.abstraction.formula.QNumWrapper;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
@@ -46,8 +46,8 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Rating.State;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
@@ -460,7 +460,7 @@ public class KBCreationTestUtil {
 		QuestionNum q3 = (QuestionNum) createdKBM.findQuestion("Num. Mileage evaluation");
 		FormulaNumber fn2 = new FormulaNumber(20.0);
 		FormulaExpression f2 = new FormulaExpression(q3, fn2);
-		RuleFactory.createAddValueRule(ruleID, q3, new Object[] { f2 }, c2);
+		RuleFactory.createSetValueRule(ruleID, q3, new Object[] { f2 }, c2);
 	}
 
 	/**
