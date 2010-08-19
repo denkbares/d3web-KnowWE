@@ -23,6 +23,7 @@ package de.d3web.we.hermes.taghandler;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
@@ -87,6 +88,7 @@ public class LocalTimeEventsHandler extends AbstractTagHandler {
 		try {
 			buffy.append("<ul>");
 			boolean found = false;
+			TreeMap<TimeStamp, String> queryResults = new TreeMap<TimeStamp, String>();
 			while (result.hasNext()) {
 				found = true;
 				BindingSet set = result.next();
@@ -100,9 +102,9 @@ public class LocalTimeEventsHandler extends AbstractTagHandler {
 								"UTF-8");
 						String timeString = URLDecoder.decode(set.getBinding(
 								"y").getValue().stringValue(), "UTF-8");
-						String timeDescr = new TimeStamp(timeString)
-								.getDescription();
-						buffy.append("<li>" + timeDescr + ": " + title
+						TimeStamp timeStamp = new TimeStamp(timeString);
+						String timeDescr = timeStamp.getDescription();
+						queryResults.put(timeStamp, "<li>" + timeDescr + ": " + title
 								+ "</li>");
 					}
 				}
@@ -116,6 +118,9 @@ public class LocalTimeEventsHandler extends AbstractTagHandler {
 				// buffy.append(URLDecoder.decode(event.toString(), "UTF-8")
 				// + "<br>");
 				// }
+			}
+			for (String s : queryResults.values()) {
+				buffy.append(s);
 			}
 			if (!found) buffy.append("no results found");
 			buffy.append("</ul>");
