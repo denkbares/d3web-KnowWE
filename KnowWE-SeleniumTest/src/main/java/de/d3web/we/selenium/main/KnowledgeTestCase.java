@@ -209,7 +209,7 @@ public abstract class KnowledgeTestCase extends KnowWETestCase {
 
 					// If interview is still opened, the input wasn't correct ->
 					// cancel test
-					if (selenium.isElementPresent(OLAY_LOC)
+					if (selenium.isElementPresent(OLAY_LOC + "/h3")
 							&& selenium.getText(OLAY_LOC + "/h3").equals(elem[j].toString())) {
 						selenium.click("Your answer number " + actCategoryInput[i]
 								+ " from category " + elem[j].toString() + " is not existing.");
@@ -247,7 +247,7 @@ public abstract class KnowledgeTestCase extends KnowWETestCase {
 		testResult = "";
 		doSelActionAndWait(ST_UPDATE, "click");
 		assertEquals("No solutions displayed", true,
-				selenium.isElementPresent("//div[@id='sstate-result']"));
+				selenium.isElementPresent("//div[@id='solutionPanelResults']"));
 		if (selenium.isElementPresent(ST_SOL_EST)) {
 			actSolutions = selenium.getText(ST_SOL_EST);
 		}
@@ -283,7 +283,7 @@ public abstract class KnowledgeTestCase extends KnowWETestCase {
 	protected void initKnowledgeTest() {
 		open("Wiki.jsp?page=Car-Diagnosis-Test");
 		assertEquals("KnowWE: Car-Diagnosis-Test", selenium.getTitle());
-		assertTrue("Solutionstates nicht eingebunden",
+		assertTrue("SolutionPanel nicht eingebunden",
 				selenium.isElementPresent(ST_LOC));
 		map.clear();
 	}

@@ -35,18 +35,18 @@ public class SetUpWikiPages extends KnowWETestCase {
 		open("Wiki.jsp?page=Main");
 		assertEquals("KnowWE: Main", selenium.getTitle());
 
-		// Add Solutionstates if necessary
+		// Add SolutionPanel if necessary
 		if (!selenium.isElementPresent("sstate-panel")) {
 			open("/KnowWE/Wiki.jsp?page=LeftMenuFooter");
 			loadAndWait(B_EDIT);
 			doSelActionAndWait(EA, "type",
 					selenium.getValue(EA)
-							+ "\n\n[{KnowWEPlugin solutionstates}]");
+							+ "\n\n[{KnowWEPlugin solutionpanel}]");
 			loadAndWait(B_SAVE);
 			open("/KnowWE/Wiki.jsp?page=Main");
 		}
 
-		assertTrue("Solutionstates wasn't integrated", selenium.isElementPresent("sstate-panel"));
+		assertTrue("SolutionPanel wasn't integrated", selenium.isElementPresent("sstate-panel"));
 
 		// If Wikipages already exist -> done
 		if (selenium.isElementPresent("link=Selenium-Test")) {
@@ -58,10 +58,13 @@ public class SetUpWikiPages extends KnowWETestCase {
 				+ "\n\n[Selenium-Test]");
 		loadAndWait(B_SAVE);
 
+
+		// Selenium Main Page
 		loadAndWait("link=Selenium-Test");
 		doSelActionAndWait(EA, "type", rb.getString("KnowWE.SeleniumTest.MainPage"));
 		loadAndWait(B_SAVE);
 
+		// Car-Diagnosis-Test Page
 		loadAndWait("link=Car-Diagnosis-Test");
 		doSelActionAndWait(EA, "type",
 				rb.getString("KnowWE.SeleniumTest.Car-Diagnosis-Test-Page"));
@@ -117,5 +120,15 @@ public class SetUpWikiPages extends KnowWETestCase {
 		open(rb.getString("KnowWE.SeleniumTest.url") + "/Edit.jsp?page=CD-compiled-KB");
 		loadAndWait(B_SAVE);
 		loadAndWait("link=Car-Diagnosis-Test");
+
+		// Markup (Car-Diagnosis) Page
+		open("Edit.jsp?page=Markup(Car-Diagnosis)");
+		doSelActionAndWait(EA, "type", rb.getString("KnowWE.SeleniumTest.Markup"));
+		loadAndWait(B_SAVE);
+
+		// Hermes-Test Page
+		open("Edit.jsp?page=TimeLineEntries");
+		doSelActionAndWait(EA, "type", rb.getString("KnowWE.SeleniumTest.TimeLineEntries"));
+		loadAndWait(B_SAVE);
 	}
 }

@@ -110,7 +110,7 @@ public class QuickEditTest extends KnowledgeTestCase {
 
 		open(rb.getString("KnowWE.SeleniumTest.url") + "Wiki.jsp?page=Quick-Edit-Test");
 		assertTrue(selenium.getTitle().contains("KnowWE: Quick-Edit-Test"));
-		assertTrue("Solutionstates nicht eingebunden.", selenium.isElementPresent(ST_LOC));
+		assertTrue("Solutionpanel nicht eingebunden.", selenium.isElementPresent(ST_LOC));
 
 		// Copy actual page content
 		loadAndWait(B_EDIT);
@@ -183,21 +183,39 @@ public class QuickEditTest extends KnowledgeTestCase {
 	}
 
 	public void testAttributeTableEditing() {
+		String[] oldVal = new String[3];
 		open(rb.getString("KnowWE.SeleniumTest.url") + "Wiki.jsp?page=Quick-Edit-Test");
 		openQuickEdit(attTableID);
+		oldVal[0] = selenium.getAttribute("//input[@id='" + attTableID
+				+ "/AttributeTableLine/AttributeTableCell2']@name");
 		doSelActionAndWait(attTableID + "/AttributeTableLine/AttributeTableCell2", "type",
 				"Newinfo");
+		oldVal[1] = selenium.getAttribute("//input[@id='" + attTableID
+				+ "/AttributeTableLine2/AttributeTableCell3']@name");
 		doSelActionAndWait(attTableID + "/AttributeTableLine2/AttributeTableCell3", "type",
 				"Beschreibung");
+		oldVal[2] = selenium.getAttribute("//input[@id='" + attTableID
+				+ "/AttributeTableLine2/AttributeTableCell']@name");
 		doSelActionAndWait(attTableID + "/AttributeTableLine2/AttributeTableCell", "type",
 				"Leere Batterie");
 		doSelActionAndWait(attTableID + ACCEPT, "click");
-		assertTrue("//div[@id='" + attTableID + "'] isn't present (yet)",
-				waitForElement("//div[@id='" + attTableID + "']"));
+		assertTrue("//img[@id='" + attTableID + QEB + "'] isn't present (yet)",
+				waitForElement("//img[@id='" + attTableID + QEB + "']"));
 		String attTableText = selenium.getText("//div[@id='" + attTableID + "']");
 		assertTrue("New attribute wasn't saved", attTableText.contains("Leere Batterie"));
 		assertTrue("New attribute wasn't saved", attTableText.contains("Newinfo"));
 		assertTrue("New attribute wasn't saved", attTableText.contains("Beschreibung"));
+		// Undo changes
+		openQuickEdit(attTableID);
+		doSelActionAndWait(attTableID + "/AttributeTableLine/AttributeTableCell2", "type",
+				oldVal[0]);
+		doSelActionAndWait(attTableID + "/AttributeTableLine2/AttributeTableCell3", "type",
+				oldVal[1]);
+		doSelActionAndWait(attTableID + "/AttributeTableLine2/AttributeTableCell", "type",
+				oldVal[2]);
+		doSelActionAndWait(attTableID + ACCEPT, "click");
+		assertTrue("//img[@id='" + attTableID + QEB + "'] isn't present (yet)",
+				waitForElement("//img[@id='" + attTableID + QEB + "']"));
 	}
 
 	// public void testHermesTimeEventEditing() {

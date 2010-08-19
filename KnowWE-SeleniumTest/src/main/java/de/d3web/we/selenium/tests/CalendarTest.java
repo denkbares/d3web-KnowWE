@@ -37,7 +37,7 @@ public class CalendarTest extends KnowWETestCase {
 		SimpleDateFormat fmt = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 		String today = fmt.format(d);
 		doSelActionAndWait(EA, "type", selenium.getValue(EA) +
-				"\n\n<<" + today + " MD Das ist der aktuelle Selenium-Test>>");
+				"\n\n<&<" + today + " MD Das ist der aktuelle Selenium-Test>&>");
 		loadAndWait(B_SAVE);
 
 		loadAndWait("link=<< back");
