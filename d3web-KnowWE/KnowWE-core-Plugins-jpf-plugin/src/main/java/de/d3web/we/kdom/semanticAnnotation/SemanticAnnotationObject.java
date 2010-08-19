@@ -33,7 +33,6 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryException;
 
-import de.d3web.we.core.semantic.DefaultURIContext;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.OwlSubtreeHandler;
@@ -44,6 +43,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
+import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
@@ -134,10 +134,11 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 			}
 
 			if (prop != null && validprop && stringa != null) {
-				DefaultURIContext sol = (DefaultURIContext) ContextManager
-						.getInstance().getContext(s, DefaultURIContext.CID);
+				DefaultSubjectContext sol = (DefaultSubjectContext) ContextManager
+						.getInstance().getContext(s, DefaultSubjectContext.CID);
 				if (soluri == null) {
-					soluri = sol.getSolutionURI();
+					String soluriString = sol.getSubject();
+					soluri = uo.getHelper().createlocalURI(soluriString);
 				}
 				Statement stmnt = null;
 				try {
