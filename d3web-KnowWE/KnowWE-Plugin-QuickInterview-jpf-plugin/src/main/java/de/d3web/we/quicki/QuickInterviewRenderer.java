@@ -22,6 +22,7 @@ package de.d3web.we.quicki;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,6 +34,8 @@ import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.QuestionMC;
+import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
@@ -171,30 +174,29 @@ public class QuickInterviewRenderer {
 			StringBuffer qcon, Set<TerminologyObject> processedTOs, int depth, boolean init) {
 
 		depth++;
-		String display = "";
-		if (depth == 0) {
-			display = "display: block";
-		}
-		else {
-			display = "display: none";
-		}
+		String display = depth == 0 ? "display: block" : "display: none";
 
 		if (!processedTOs.contains(topContainer)) {
-			qcon.append(getQuestionnaireRendering(topContainer, depth, display));
+			qcon.append(getQuestionnaireRendering(topContainer, depth));
 		}
 		processedTOs.add(topContainer);
 
+		display = init ? "display: block" : "display: none";
+		qcon.append("<div id='group_" + topContainer.getId() + "' class='group' style='"
+				+ display + "'");
 		for (TerminologyObject qcontainerchild : topContainer.getChildren()) {
 
 			if (qcontainerchild instanceof Question) {
 				getQuestionsRecursively((Question) qcontainerchild, qcon, processedTOs, depth,
-						topContainer, display, init);
+						topContainer, init);
 			}
 			else {
+
 				getInterviewElementsRenderingRecursively((QContainer) qcontainerchild, qcon, processedTOs,
 						depth, init);
 			}
 		}
+		qcon.append("</div>");
 	}
 
 	/**
@@ -206,9 +208,7 @@ public class QuickInterviewRenderer {
 	 * @param processedTOs
 	 */
 	private static void getQuestionsRecursively(Question topQuestion, StringBuffer sb,
-			Set<TerminologyObject> processedTOs, int depth, TerminologyObject parent, String display, boolean init) {
-
-		display = init ? "display: block" : "display: none";
+			Set<TerminologyObject> processedTOs, int depth, TerminologyObject parent, boolean init) {
 
 		depth++;
 		if (topQuestion.getChildren().length == 0) {
@@ -216,20 +216,21 @@ public class QuickInterviewRenderer {
 			// but only if not yet done (if so it is contained in processedTOs
 			if (!processedTOs.contains(topQuestion)) {
 
-				sb.append(getQABlockRendering(topQuestion, depth, parent, display));
+				sb.append(getQABlockRendering(topQuestion, depth, parent));
 			}
 			processedTOs.add(topQuestion);
 		}
 		else {
 
 			if (!processedTOs.contains(topQuestion)) {
-				sb.append(getQABlockRendering(topQuestion, depth, parent, display));
+				sb.append(getQABlockRendering(topQuestion, depth, parent));
 			}
 			processedTOs.add(topQuestion);
 			// we got follow-up questions, thus call method again
 			for (TerminologyObject qchild : topQuestion.getChildren()) {
+
 				getQuestionsRecursively((Question) qchild, sb, processedTOs, depth, parent,
-						display, init);
+						init);
 			}
 		}
 
@@ -243,14 +244,12 @@ public class QuickInterviewRenderer {
 	 * @param container the QContainer to be rendered
 	 * @return the HTML for the div
 	 */
-	private static String getQuestionnaireRendering(QContainer container, int depth,
-			String display) {
+	private static String getQuestionnaireRendering(QContainer container, int depth) {
 		StringBuffer div = new StringBuffer();
 		int margin = 10 + depth * 10;
 
 		div.append("<div id='" + container.getId() + "' " +
-				"class='questionnaire' style='margin-left: " + margin + "px;"
-				+ display + "'>");
+				"class='questionnaire' style='margin-left: " + margin + "px; display: block'>");
 		div.append(" " + container.getName() + ": ");
 		div.append("</div>");
 
@@ -259,7 +258,7 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Returns the HTML-string representation for one QA-Block, that is, one
-	 * question first, and the answers afterwardss.
+	 * question first, and the answers afterwards.
 	 *
 	 * @created 20.07.2010
 	 * @param q the question to be rendered
@@ -267,10 +266,12 @@ public class QuickInterviewRenderer {
 	 * @return HTML-String representation for one QA-Block
 	 */
 	private static String getQABlockRendering(Question q, int depth,
-			TerminologyObject parent, String display) {
+			TerminologyObject parent) {
 
 		StringBuffer html = new StringBuffer();
-		html.append("<div class='qablock' style='" + display + "'");
+		// String id = "qa_" + parent.getId();
+		// html.append("<div id='" + id + "' class='qa' style='" + display +
+		// "' >");
 
 		// calculate indentation depth & resulting width of the question display
 		int d = 10 + depth * 10;
@@ -281,16 +282,58 @@ public class QuickInterviewRenderer {
 		html.append("<div id='" + q.getId() + "' " +
 				"parent='" + parent.getId() + "' " +
 				"class='question' " +
-				"style='margin-left: " + d + "px; width: " + w + "px;' >"
+				"style='margin-left: " + d + "px; width: " + w + "px; display: inline-block;' >"
 				+ q.getName() + "</div>");
 
-		if (q instanceof QuestionChoice) {
+		// MultChoiceValue --> setValue TODO
+		if (q instanceof QuestionOC) {
 			List<Choice> list = ((QuestionChoice) q).getAllAlternatives();
-			html.append(renderChoiceAnswers(q, list));
+			html.append(renderOCChoiceAnswers(q, list));
+		}
+		else if (q instanceof QuestionMC) {
+			List<Choice> list = ((QuestionMC) q).getAlternatives();
+			List<ChoiceValue> cvlist = new ArrayList<ChoiceValue>();
+			for (Choice c : list) {
+				cvlist.add(new ChoiceValue(c));
+			}
+			MultipleChoiceValue mcVal = new MultipleChoiceValue(cvlist);
+			System.out.println(mcVal);
+
+			html.append(renderChoiceAnswers(q, mcVal));
 		}
 		else {
 			html.append(renderNumAnswers(q));
 		}
+		// html.append("</div>");
+		return html.toString();
+	}
+
+	private static String renderOCChoiceAnswers(Question q, List<Choice> list) {
+		StringBuffer html = new StringBuffer();
+		html.append("<div class='answers' style='display: inline;'>");
+		for (Choice choice : list) {
+
+			String cssclass = "answer";
+			String jscall = " rel=\"{oid:'" + choice.getId() + "', "
+					+ "web:'" + web + "', "
+					+ "ns:'" + namespace + "', "
+					+ "qid:'" + q.getId() + "'"
+					+ "}\" ";
+
+			// Value value = session.getBlackboard().getValue(q);
+			// if (value != null && UndefinedValue.isNotUndefinedValue(value)
+			// && isAnsweredinCase(value, new ChoiceValue(choice))) {
+			// cssclass = "answer answerActive";
+			// }
+			String spanid = q.getId() + "_" + choice.getId();
+			html.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ", cssclass,
+					jscall, null, spanid));
+			html.append("<div class='answerseparator'>&nbsp;-&nbsp;</div>");
+		}
+
+		// also render the unknown alternative for choice questions
+		html.append(renderAnswerUnknown(q));
+
 		html.append("</div>");
 		return html.toString();
 	}
@@ -336,7 +379,7 @@ public class QuickInterviewRenderer {
 		}
 
 		// append the input, if available with already provided input
-		html.append("<div class='answer'>"
+		html.append("<div class='answer' style='display: inline;'>"
 				+ "<input id='" + id + "' type='text' "
 				+ "value='" + value + "' "
 				+ "size='7' "
@@ -358,27 +401,29 @@ public class QuickInterviewRenderer {
 	 * @param namespace
 	 * @return
 	 */
-	private static String renderChoiceAnswers(Question q, List<Choice> choices) {
+	private static String renderChoiceAnswers(Question q, MultipleChoiceValue mcval) {
 
 		StringBuffer html = new StringBuffer();
-		html.append("<div class='answers'>");
-		for (Choice choice : choices) {
+		html.append("<div class='answers' style='display: inline;'>");
+		for (Choice choice : mcval.asChoiceList()) {
 
 			String cssclass = "answer";
 			String jscall = " rel=\"{oid:'" + choice.getId() + "', "
 					+ "web:'" + web + "', "
 					+ "ns:'" + namespace + "', "
-					+ "qid:'" + q.getId() + "'"
+					+ "qid:'" + q.getId() + "', "
+					+ "mcid:'" + mcval.getAnswerChoicesID() + "'"
 					+ "}\" ";
 
-			Value value = session.getBlackboard().getValue(q);
-			if (value != null && UndefinedValue.isNotUndefinedValue(value)
-					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
-				cssclass = "answer answerActive";
-			}
+			// Value value = session.getBlackboard().getValue(q);
+			// if (value != null && UndefinedValue.isNotUndefinedValue(value)
+			// && isAnsweredinCase(value, new ChoiceValue(choice))) {
+			// cssclass = "answer answerActive";
+			// }
 			String spanid = q.getId() + "_" + choice.getId();
 			html.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ", cssclass,
-					jscall, null, spanid, "&nbsp;-&nbsp;"));
+					jscall, null, spanid));
+			html.append("<div class='answerseparator'>&nbsp;-&nbsp;</div>");
 		}
 
 		// also render the unknown alternative for choice questions
@@ -423,8 +468,8 @@ public class QuickInterviewRenderer {
 				+ "}\" ";
 		String cssclass = "answerunknown";
 		String spanid = q.getId() + "_" + Unknown.getInstance().getId();
-		html.append(getEnclosingTagOnClick("div", "", cssclass, jscall, null,
-				spanid, ""));
+		html.append(getEnclosingTagOnClick("div", "", cssclass, jscall, null, spanid));
+
 		return html.toString();
 	}
 
@@ -445,7 +490,7 @@ public class QuickInterviewRenderer {
 	 *         class="answercell" id="span_Q2_MaU" > MaU </span>
 	 */
 	private static String getEnclosingTagOnClick(String tag, String text,
-			String cssclass, String onclick, String onmouseover, String id, String separator) {
+			String cssclass, String onclick, String onmouseover, String id) {
 		StringBuffer sub = new StringBuffer();
 		sub.append("<" + tag);
 		if (id != null && id.length() > 0) {
@@ -461,7 +506,7 @@ public class QuickInterviewRenderer {
 			sub.append(" " + onmouseover + " ");
 		}
 		sub.append(">");
-		sub.append(text + separator);
+		sub.append(text);
 		sub.append("</" + tag + ">");
 		return sub.toString();
 	}

@@ -27,22 +27,33 @@
 #quickinterview { border: none; }
 
 /* dont display a header for the quicki plugin */
-#quickinterview  h3{ padding: 5px; font-size: 1.25em; margin: 10px; line-height: 1.25em;
+#quickinterview  h3{ padding: 10px 0 5px 5px; font-size: 1.25em; margin: 10px; line-height: 1.0em;
 	-moz-box-shadow: 0 0 3px black; -webkit-box-shadow: 0 0 3px black; box-shadow: 0 0 3px black;}
 
 /* styling of the questionnaire div */
-#quickinterview .questionnaire {clear: both; display: block; width: 98%; padding: 2px; margin-bottom: 5px; margin-right: 10px;
-	-moz-box-shadow: 0 0 3px black; -webkit-box-shadow: 0 0 3px black; box-shadow: 0 0 3px black; } 
+#quickinterview .questionnaire {clear: both; display: block; padding: 5px; margin: 5px; margin-right: 10px;
+	background-color: #7991A7;} 
 
 /* styling of the qablock enclosing div */
-#quickinterview .qablock {display: block; clear: both; width: 98%; margin-bottom: 10px; margin-left: 10px; padding: 5px;  margin-right: 10px;}
+#quickinterview .qa { clear: both; background-color: red; border-bottom: 2px black solid; margin-left: 10px; margin-right: 10px;
+	display: block; width: 100%; }
 
 /* styling of the front part of the qablock that displays the question name */
-#quickinterview .question { float: left; }
+#quickinterview .question { clear: both; float: left; background-color: transparent; }
+
+/* the separator between the answers */
+#quickinterview .answerseparator { float: left; background-color: transparent; }
 
 /* answer styling */
-#quickinterview .answer { float: left; }
+#quickinterview .answer { float: left; background-color: transparent; padding: 2px; }
+
+/* answer active syling */
+#quickinterview .answerClicked { float: left; background-color: #D7DEE4; padding: 2px; }
 
 /* answer unknown styling */
 #quickinterview .answerunknown { background-image: url(../images/questionMark24.png); height: 20px; width: 20px; float: left;
+	 background-repeat: no-repeat; background-position: center center; background-color: transparent;}
+	 
+/*TODO answer unknown styling if ACTIVE = clicked TODO */
+#quickinterview .answerunknownClicked { background-image: url(../images/questionMark24.png); height: 20px; width: 20px; float: left;
 	 background-repeat: no-repeat; background-position: center center; background-color: transparent;}
