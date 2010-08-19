@@ -31,7 +31,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class CreateMapHandler extends AbstractTagHandler {
 
 	// Google Maps API Key for http://hermeswiki.informatik.uni-wuerzburg.de
-	private static final String apiKey = "ABQIAAAAb3JzCPOo-PmQupF8WKTY_BQNdmTeEwtHSpwKpd4yBRwneI_FzRTQYKppHxAkneXE1MQ0Qy9XAzctjA";
+	private static final String apiKey = "ABQIAAAAb3JzCPOo-PmQupF8WKTY_BQhTDteWOscIBEFxr5sPfw40-jPhhS0zVcy-utMHpbsLwjf1yApcwxvXg";
 
 	public CreateMapHandler() {
 		super("orterzeugen");
