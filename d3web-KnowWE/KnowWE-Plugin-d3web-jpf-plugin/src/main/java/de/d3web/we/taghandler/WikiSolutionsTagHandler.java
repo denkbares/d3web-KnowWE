@@ -60,6 +60,9 @@ public class WikiSolutionsTagHandler extends AbstractTagHandler {
 				+ "</h1>";
 		GlobalTerminology solutions = DPSEnvironmentManager.getInstance().getEnvironments(web).getTerminologyServer().getGlobalTerminology(
 				TerminologyType.diagnosis);
+
+		if (solutions == null) return "no global solutions";
+
 		Collection<Term> allTerms = solutions.getAllTerms();
 		for (Term term : allTerms) {
 			text += term.getInfo(TermInfoType.TERM_NAME) + "<br>";
