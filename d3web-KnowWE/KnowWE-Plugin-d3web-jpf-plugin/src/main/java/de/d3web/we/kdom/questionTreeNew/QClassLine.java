@@ -29,6 +29,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
+import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.objects.QuestionnaireDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.RelationCreatedMessage;
@@ -37,7 +38,7 @@ import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.terminology.D3webSubtreeHandler;
 
-public class QClassLine extends DefaultAbstractKnowWEObjectType {
+public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
 
 	@Override
 	protected void init() {

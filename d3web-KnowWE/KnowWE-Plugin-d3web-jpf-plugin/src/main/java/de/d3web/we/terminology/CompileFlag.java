@@ -22,8 +22,10 @@ package de.d3web.we.terminology;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 
 import de.d3web.we.core.KnowWEEnvironment;
@@ -86,11 +88,36 @@ public class CompileFlag extends DefaultMarkupType {
 
 			KnowWENamespaceManager nsMng = KnowWEEnvironment.getInstance().getNamespaceManager(
 					article.getWeb());
-			if (!s.isReusedBy(article.getTitle())) nsMng.registerNamespaceInclude(article, s);
 
-			if (s.get().getNamespaceToInclude(s).equals(article.getTitle())) return null;
+			if (s.get().getNamespaceToInclude(s).equals(article.getTitle())) {
+				if (article.isFullParse() || !s.isReusedBy(article.getTitle())) {
+					Set<String> includedNamespaces = nsMng.getIncludedNamespaces(article);
 
-			List<Section<?>> namespaceDefinitions = nsMng.getNamespaceDefinitions(s.getOriginalText().trim());
+					Set<Section<?>> alreadyIncluded = new HashSet<Section<?>>();
+					for (String incNS : includedNamespaces) {
+						List<Section<?>> nsDefs = nsMng.getNamespaceDefinitions(incNS);
+						for (Section<?> nsDef : nsDefs) {
+							List<Section<?>> tempNodes = new LinkedList<Section<?>>();
+							nsDef.getAllNodesPostOrder(tempNodes);
+							alreadyIncluded.addAll(tempNodes);
+						}
+					}
+					List<Section<?>> allNodesPostOrder = article.getAllNodesPostOrder();
+					for (Section<?> node : allNodesPostOrder) {
+						if (!alreadyIncluded.contains(node)) {
+							node.setReusedBy(article.getTitle(), false);
+						}
+					}
+					nsMng.registerNamespaceInclude(article, s);
+				}
+				return null;
+			}
+
+			if (article.isFullParse() || !s.isReusedBy(article.getTitle())) nsMng.registerNamespaceInclude(
+					article, s);
+
+			List<Section<?>> namespaceDefinitions = nsMng.getNamespaceDefinitions(
+					s.get().getNamespaceToInclude(s));
 
 			KnowWEUtils.storeSectionInfo(article, s, NAMESPACEDEFS_SNAPSHOT_KEY,
 					namespaceDefinitions);

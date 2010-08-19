@@ -32,13 +32,14 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
+import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.terminology.D3webSubtreeHandler;
 
-public class NumericCondLine extends DefaultAbstractKnowWEObjectType {
+public class NumericCondLine extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
 
 	@Override
 	protected void init() {
