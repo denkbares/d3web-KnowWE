@@ -158,10 +158,9 @@ KNOWWE.plugin.quicki = function(){
         	if(flag==1){
         		// questionnaire is visible and should be hidden
         		// thus image needs to be the triangle indicating extensibility
-        		// class='questionnaire pointRight
-        		questionnaire.setAttribute('class', 'questionnaire pointRight');     
+        		questionnaire.className = 'questionnaire pointRight';     
         	} else if (flag==0){
-        		questionnaire.setAttribute('class', 'questionnaire pointDown');   
+        		questionnaire.className = 'questionnaire pointDown';   
         	}
         },
         /**
@@ -199,16 +198,17 @@ KNOWWE.plugin.quicki = function(){
         	var questionnaire = _KE.target(event); 	
         	var group = _KS('#group_' + questionnaire.id);
         	
-        	if(group.getAttribute('style') == 'display: block;'){
-            	group.setAttribute('style', 'display: none;');     
+        	alert(group.style.display);
+        	if(group.style.display=='block'){
+            	group.style.display = 'none';     
             	KNOWWE.plugin.quicki.toggleImage(1, questionnaire);            	
-            } else if (group.getAttribute('style') == 'display: none;'){
-            	group.setAttribute('style', 'display: block;');       
+            } else if (group.style.display=='none'){
+            	//group.setAttribute('style', 'display: block;');       
+            	group.style.display = 'block';
             	KNOWWE.plugin.quicki.toggleImage(0, questionnaire);   
             } 
             
-        	KNOWWE.plugin.d3web.dialog.initAction();
-        	KNOWWE.helper.observer.notify('update');
+        	KNOWWE.plugin.quicki.showRefreshed();
                 // display the right image for the questionnaire
                 //toogleImage( _KE.target(event) , tbl.className ); 
         },
