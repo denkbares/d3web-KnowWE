@@ -81,7 +81,7 @@ public class QuickInterviewRenderer {
 	 * indicate abstraction questions with a special additional class
 	 */
 	public static String renderInterview(Session c, String webb) {
-
+		System.out.println("render");
 		// Assembles the Interview
 		StringBuffer buffi = new StringBuffer();
 		buffi.append("<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/quicki.css'></link>");
@@ -271,14 +271,14 @@ public class QuickInterviewRenderer {
 		int w = 300 - d;
 		String clazz = "class='question' ";
 
-		if (session.getInterview().nextForm().getInterviewObject().equals(q)) {
-			clazz = "class='question indicated' ";
-		}
+		String nextID = session.getInterview().nextForm().getInterviewObject().getId() == null ?
+				"" : session.getInterview().nextForm().getInterviewObject().getId();
 
 		// render the first cell displaying the Question in a separate div,
 		// then call method for rendering a question's answers in another div
 		html.append("<div id='" + q.getId() + "' " +
 				"parent='" + parent.getId() + "' " +
+				"nextForm='" + nextID + "' " +
 				clazz +
 				"style='margin-left: " + d + "px; width: " + w + "px; display: inline-block;' >"
 				+ q.getName() + "</div>");
@@ -296,7 +296,6 @@ public class QuickInterviewRenderer {
 				cvlist.add(new ChoiceValue(c));
 			}
 			MultipleChoiceValue mcVal = new MultipleChoiceValue(cvlist);
-			System.out.println(mcVal);
 
 			html.append(renderChoiceAnswers(q, mcVal));
 		}

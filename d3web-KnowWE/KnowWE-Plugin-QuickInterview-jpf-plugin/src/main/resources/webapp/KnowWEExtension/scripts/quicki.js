@@ -71,6 +71,10 @@ KNOWWE.plugin.quicki = function(){
         init : function(){
                // here was the code for displaying the more-menu button - still needed?
         },
+        /**
+         * Function: initAction
+         * 		add the click events and corresponding functions to interview elments
+         */
         initAction : function (){
         	_KS('.answer').each(function(element){
         		_KE.add('click', element, KNOWWE.plugin.quicki.answerClicked);                
@@ -98,6 +102,10 @@ KNOWWE.plugin.quicki = function(){
             if( !rel ) return;
             
             KNOWWE.plugin.quicki.toggleAnswerHighlighting(el);
+            
+            // get the currently indicated question
+            var q = _KS('#' + rel.qid)
+            KNOWWE.plugin.quicki.toggleIndicationHighlighting(q);
                        
             // check whether answer was already given. if so, remove the fact.
             // as answer was toggled before, 'answer' means that answer was 
@@ -181,9 +189,11 @@ KNOWWE.plugin.quicki = function(){
         		element.className = 'answerunknownClicked';
         	}
         }, 
-        /** Function: updateIndication 
-         *		goes through the questions, tests, which one  
-         */
+        toggleIndicationHighlighting : function ( element ) {
+        	if(element.className=='question indicated'){
+        		element.className = 'question';
+        	}
+        },
         /**
          * Function: updateQuestionnaireVisibility 
          * Toggles the visibility of questionnaire-contents on click:
@@ -198,19 +208,14 @@ KNOWWE.plugin.quicki = function(){
         	var questionnaire = _KE.target(event); 	
         	var group = _KS('#group_' + questionnaire.id);
         	
-        	alert(group.style.display);
         	if(group.style.display=='block'){
             	group.style.display = 'none';     
             	KNOWWE.plugin.quicki.toggleImage(1, questionnaire);            	
-            } else if (group.style.display=='none'){
-            	//group.setAttribute('style', 'display: block;');       
+            } else if (group.style.display=='none'){     
             	group.style.display = 'block';
             	KNOWWE.plugin.quicki.toggleImage(0, questionnaire);   
             } 
-            
-        	KNOWWE.plugin.quicki.showRefreshed();
-                // display the right image for the questionnaire
-                //toogleImage( _KE.target(event) , tbl.className ); 
+          	KNOWWE.plugin.quicki.showRefreshed();
         },
         /**
          * Function: send
@@ -237,15 +242,18 @@ KNOWWE.plugin.quicki = function(){
                 url : KNOWWE.core.util.getURL( pDefault ),
                 response : {
                     fn : function(){
-                    	// KNOWWE.plugin.quicki.showRefreshed();
-                    	 KNOWWE.plugin.d3web.dialog.initAction();
-                		 KNOWWE.helper.observer.notify('update');
+                    	 KNOWWE.plugin.quicki.showRefreshed();
                     }
                 }
             }
             new _KA( options ).send();         
-        }, 
-        showRefreshed : function ( event ){
+        },
+        /**
+         * Function: showRefreshed
+         * 		send the request and render the interview newly via
+         * 		QuickInterviewAction 
+         */
+        showRefreshed : function ( ){
         	 var params = {
                      namespace : KNOWWE.helper.gup( 'page' ),
                      action : 'QuickInterviewAction'
@@ -254,7 +262,7 @@ KNOWWE.plugin.quicki = function(){
                  url : KNOWWE.core.util.getURL( params ),
                  response : {
                 	 fn : function(){
-                		 KNOWWE.plugin.d3web.dialog.initAction();
+                		 KNOWWE.plugin.quicki.initAction();
                 		 KNOWWE.helper.observer.notify('update');
                 	 }	
                  }
