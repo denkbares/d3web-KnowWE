@@ -218,12 +218,17 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public void destroy(KnowWEArticle article, Section<AbstractXMLObjectType> s) {
 
-			String value = getAttributeMapFor(s).get("namespace");
+			Map<String, String> attributeMap = getAttributeMapFor(s);
 
-			if (value != null) {
-				KnowWEEnvironment.getInstance().getNamespaceManager(
-						article.getWeb()).unregisterNamespaceDefinition(s);
-				s.removeNamespace(value);
+			if (attributeMap != null) {
+
+				String value = attributeMap.get("namespace");
+
+				if (value != null) {
+					KnowWEEnvironment.getInstance().getNamespaceManager(
+							article.getWeb()).unregisterNamespaceDefinition(s);
+					s.removeNamespace(value);
+				}
 			}
 		}
 
