@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -155,6 +155,42 @@ public class SolutionsPanelAction extends AbstractAction {
 					+ ":</strong>");
 			// sb.append("</a>");
 			sb.append(getSolutionLinkListNonDPS(user, web, sessions, State.SUGGESTED));
+			sb.append("</div>");
+			painted = true;
+		}
+
+		/*
+		 * added unclear and excluded solutions to solution panel M. Freiberg
+		 * Aug/2010
+		 */
+		if (!unclear.isEmpty()) {
+			if (painted) {
+				sb.append("<hr/>");
+				painted = false;
+			}
+			sb.append("<div>");
+
+			sb.append("<strong>"
+					+ rb.getString("KnowWE.solution.unclearSolutions")
+					+ ":</strong>");
+			// sb.append("</a>");
+			sb.append(getSolutionLinkListNonDPS(user, web, sessions, State.UNCLEAR));
+			sb.append("</div>");
+			painted = true;
+		}
+
+		if (!excluded.isEmpty()) {
+			if (painted) {
+				sb.append("<hr/>");
+				painted = false;
+			}
+			sb.append("<div>");
+
+			sb.append("<strong>"
+					+ rb.getString("KnowWE.solution.excludedSolutions")
+					+ ":</strong>");
+			// sb.append("</a>");
+			sb.append(getSolutionLinkListNonDPS(user, web, sessions, State.EXCLUDED));
 			sb.append("</div>");
 			painted = true;
 		}
@@ -675,7 +711,7 @@ public class SolutionsPanelAction extends AbstractAction {
 		 * +rb.getString("KnowWE.solution.excludedSolutions")+":</b>");
 		 * sb.append("</a>"); sb.append(getSolutionLinkList(model, excluded,
 		 * assumptionMap)); sb.append("</div>"); painted = true; }
-		 * 
+		 *
 		 * if (!conflict.isEmpty()) { if(painted) { sb.append("<hr/>"); painted
 		 * = false; } sb.append("<div>"); sb.append("<a
 		 * href=\"/bin/view/"+web+"/Conflict\"><b>"

@@ -22,7 +22,6 @@ package de.d3web.we.quicki;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,12 +33,10 @@ import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
-import de.d3web.core.knowledge.terminology.QuestionMC;
+import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
-import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
@@ -66,36 +63,25 @@ public class QuickInterviewRenderer {
 	/**
 	 * Assembles and returns the HTML representation of the interview.
 	 *
-	 *
 	 * @created 15.07.2010
-	 * @param c
-	 * @param web
+	 * @param c the session
+	 * @param web the web context
 	 * @return the String representation of the interview
 	 */
-
-	/*
-	 * First generate all objects: (1) get all questionnaires, in hierarchical
-	 * order, and corresponding questions (2) while traversing those objects add
-	 * css related information: needed for every question/questionnaire is its
-	 * ID for finding it later (e.g., highlighting indicated questions),
-	 * indicate abstraction questions with a special additional class
-	 */
 	public static String renderInterview(Session c, String webb) {
-		System.out.println("render");
+
 		// Assembles the Interview
 		StringBuffer buffi = new StringBuffer();
-		buffi.append("<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/quicki.css'></link>");
 
-		KnowledgeBase b = c.getKnowledgeBase();
-		kb = b;
+		// insert specific CSS
+		buffi.append("<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/quicki.css' />");
+
+		kb = c.getKnowledgeBase();
 		session = c;
 		web = webb;
-		namespace = b.getId();
+		namespace = kb.getId();
 
-		// Get the qcontainers for the current session / knowledge base
-		List<QContainer> containers = setupKBAndGetInterviewElements();
-
-		// Map all processed TerminologyObjects already in interview table,
+		// TODO Map all processed TerminologyObjects already in interview table,
 		// avoids endless recursion in cyclic hierarchies
 		Set<TerminologyObject> processedTOs = new HashSet<TerminologyObject>();
 
@@ -104,47 +90,17 @@ public class QuickInterviewRenderer {
 
 		inits = kb.getInitQuestions();
 
-		// go through all top-level qcontainers of the knowledge base
-		for (QContainer container : containers) {
+		StringBuffer qcon = new StringBuffer();
 
-			// skip the topmost (sometimes default) root element "Q000"
-			if (container.getName().endsWith("Q000")) continue;
+		// call method for getting interview elements recursively
+		// start with root QASet and go DFS strategy
+		getInterviewElementsRenderingRecursively(kb.getRootQASet(), qcon, processedTOs, 0, true);
 
-			StringBuffer qcon = new StringBuffer();
-			// call recursive method for getting QContainer HTML
+		buffi.append(qcon.toString());
 
-			int recCounter = -1;
-
-			boolean init = false;
-			if (inits.contains(container)) {
-				init = true;
-			}
-			getInterviewElementsRenderingRecursively(container, qcon, processedTOs, recCounter,
-					init);
-			buffi.append(qcon.toString());
-		}
-
+		// add pseudo element for correctly closing the plugin
+		buffi.append("<div class='invisible'>  </div>");
 		return buffi.toString();
-	}
-
-	/**
-	 * Gets the knowledge base of the current session and fills the QContainer
-	 * list with the QContainers of that session, thereby orders them according
-	 * to DFS strategy of the KnowledgeBaseManagement.
-	 *
-	 * @created 15.07.2010
-	 */
-	private static List<QContainer> setupKBAndGetInterviewElements() {
-
-		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance(kb);
-
-		// get all qcontainers of kb into a list
-		List<QContainer> containers = kb.getQContainers();
-
-		// sort according to DFS as implemented in KnowledgeBaseManagement
-		kbm.sortQContainers(containers);
-
-		return containers;
 	}
 
 	/**
@@ -163,86 +119,110 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Assembles the HTML representation of QContainers and Questions, starting
-	 * from a given top-level container, recursively and writes them into the
+	 * from the root QASet of the KB, recursively, and writes them into the
 	 * given StringBuffer
 	 *
-	 * @created 17.08.2010
-	 * @param topContainer the starting top-level container
-	 * @param qcon the StringBuffer, taking in the HTML
+	 * @created 14.07.2010
+	 * @param topContainer the root container
+	 * @param qcon the StringBuffer
+	 * @param processedTOs already processed TerminologyObjects
+	 * @param depth recursion depth; used to calculate identation
+	 * @param init flag for signalling whether the processed element was in the
+	 *        init questionnaire
 	 */
-	private static void getInterviewElementsRenderingRecursively(QContainer topContainer,
+	private static void getInterviewElementsRenderingRecursively(QASet topContainer,
 			StringBuffer qcon, Set<TerminologyObject> processedTOs, int depth, boolean init) {
+
+		// just do not display the rooty root
+		if (topContainer.getName().endsWith("Q000")) {
+			if (!processedTOs.contains(topContainer)) {
+				processedTOs.add(topContainer);
+				qcon.append(getQuestionnaireRendering(topContainer, depth, init));
+			}
+		}
+
+		// if init questionnaire: all contained elements are to be displayed
+		String display = init ? "display: block;" : "display: none;";
+
+		// group all following questionnairs/questions for easily hiding them
+		// blockwise later
+		qcon.append("<div id='group_" + topContainer.getId() + "' class='group' style='"
+				+ display + "' >");
 
 		depth++;
 
-		if (!processedTOs.contains(topContainer)) {
-			processedTOs.add(topContainer);
-			qcon.append(getQuestionnaireRendering(topContainer, depth, init));
-		}
-
-		String display = init ? "display: block" : "display: none";
-		qcon.append("<div id='group_" + topContainer.getId() + "' class='group' style='"
-				+ display + "'");
+		// process all children, depending on element type branch into
+		// corresponding recursion
 		for (TerminologyObject qcontainerchild : topContainer.getChildren()) {
 
-			if (qcontainerchild instanceof Question) {
-				getQuestionsRecursively((Question) qcontainerchild, qcon, processedTOs, depth,
-						topContainer, init);
+			init = inits.contains(qcontainerchild) ? true : false;
+
+			if (qcontainerchild instanceof QContainer) {
+				getInterviewElementsRenderingRecursively((QContainer)
+						qcontainerchild, qcon, processedTOs, depth, init);
 			}
-			else {
-				getInterviewElementsRenderingRecursively((QContainer) qcontainerchild, qcon, processedTOs,
-						depth, init);
+			else if (qcontainerchild instanceof Question) {
+				getQuestionsRecursively((Question) qcontainerchild, qcon,
+							processedTOs, depth, topContainer, init);
 			}
 		}
-		qcon.append("</div>");
+		qcon.append("</div>"); // close the grouping div
 	}
 
 	/**
-	 *
+	 * Recursively walks through the questions of the hierarchy and calls
+	 * methods for appending their rendering
 	 *
 	 * @created 17.08.2010
-	 * @param topQuestion
-	 * @param sb
-	 * @param processedTOs
+	 * @param topQuestion the root question
+	 * @param sb the StringBuffer
+	 * @param processedTOs already processed elements
+	 * @param depth the recursion depth
+	 * @param parent the parent element
+	 * @param init flag for displaying whether processed element is contained in
+	 *        an init questionnaire
 	 */
 	private static void getQuestionsRecursively(Question topQuestion, StringBuffer sb,
 			Set<TerminologyObject> processedTOs, int depth, TerminologyObject parent, boolean init) {
 
-		depth++;
-
-		// no further follow-up questions, thus append question rendering
-		// but only if not yet done (if so it is contained in processedTOs
+		// no follow-ups --> append question rendering if not already rendered
 		if (!processedTOs.contains(topQuestion)) {
 			processedTOs.add(topQuestion);
-			sb.append(getQABlockRendering(topQuestion, depth, parent));
+			sb.append(getQABlockRendering(topQuestion, depth++, parent));
 		}
 
-		if (topQuestion.getChildren().length != 0) {
-			// we got follow-up questions, thus call method again
+		if (topQuestion.getChildren().length > 0) {
+
+			// we got follow-up questions, thus call recursively for children
 			for (TerminologyObject qchild : topQuestion.getChildren()) {
-				getQuestionsRecursively((Question) qchild, sb, processedTOs, depth, parent, init);
+
+				getQuestionsRecursively((Question) qchild, sb, processedTOs,
+						depth++, parent, init);
 			}
 		}
 	}
 
-
 	/**
-	 * Assembles the div that displays the name and an icon for questionnaires
+	 * Assembles the div that displays icon and name of questionnaires
 	 *
 	 * @created 16.08.2010
-	 * @param container the QContainer to be rendered
-	 * @return the HTML for the div
+	 * @param container the qcontainer to be rendered
+	 * @param depth recursion depth
+	 * @param show flag that indicates whether questionnaire is expanded (show)
+	 *        or not; for appropriately displaying corresponding triangles
+	 * @return the HTML of a questionnaire div
 	 */
-	private static String getQuestionnaireRendering(QContainer container, int depth, boolean show) {
-		StringBuffer div = new StringBuffer();
-		int margin = 10 + depth * 10;
+	private static String getQuestionnaireRendering(QASet container, int depth, boolean show) {
 
-		String clazz = show
+		StringBuffer div = new StringBuffer();
+		int margin = 10 + depth * 10; // calculate identation
+
+		String clazz = show // decide class for rendering expand-icon
 				? "class='questionnaire pointDown'"
 				: "class='questionnaire pointRight'";
 
 		div.append("<div id='" + container.getId() + "' " +
-				clazz + " style='margin-left: " + margin + "px; display: block'>");
+				clazz + " style='margin-left: " + margin + "px; display: block'; >");
 		div.append(" " + container.getName() + ": ");
 		div.append("</div>");
 
@@ -250,65 +230,69 @@ public class QuickInterviewRenderer {
 	}
 
 	/**
-	 * Returns the HTML-string representation for one QA-Block, that is, one
+	 * Assembles the HTML-string representation for one QA-Block, that is, one
 	 * question first, and the answers afterwards.
 	 *
 	 * @created 20.07.2010
 	 * @param q the question to be rendered
 	 * @param depth the depth of the recursion - for calculating identation
+	 * @param parent the parent element
 	 * @return HTML-String representation for one QA-Block
 	 */
 	private static String getQABlockRendering(Question q, int depth,
 			TerminologyObject parent) {
 
 		StringBuffer html = new StringBuffer();
-		html.append("<div id='qablock'>");
+		html.append("<div id='qablock' style='display: block;'>");
 
 		// calculate indentation depth & resulting width of the question display
-		// 10 for the standard margin and 30 for indenting as far as the
-		// triangle
+		// 10 for standard margin and 30 for indenting further than the triangle
 		int d = 10 + 30 + depth * 10;
-		int w = 300 - d;
-		String clazz = "class='question' ";
 
-		String nextID = session.getInterview().nextForm().getInterviewObject().getId() == null ?
-				"" : session.getInterview().nextForm().getInterviewObject().getId();
+		// width of the question front section, i.e. total width - identation
+		int w = 300 - d;
 
 		// render the first cell displaying the Question in a separate div,
 		// then call method for rendering a question's answers in another div
 		html.append("<div id='" + q.getId() + "' " +
 				"parent='" + parent.getId() + "' " +
-				"nextForm='" + nextID + "' " +
-				clazz +
+				"class='question' " +
 				"style='margin-left: " + d + "px; width: " + w + "px; display: inline-block;' >"
 				+ q.getName() + "</div>");
 
-
-		// MultChoiceValue --> setValue TODO
+		// TODO MultChoiceValue --> setValue
 		if (q instanceof QuestionOC) {
 			List<Choice> list = ((QuestionChoice) q).getAllAlternatives();
 			html.append(renderOCChoiceAnswers(q, list));
 		}
-		else if (q instanceof QuestionMC) {
-			List<Choice> list = ((QuestionMC) q).getAlternatives();
-			List<ChoiceValue> cvlist = new ArrayList<ChoiceValue>();
-			for (Choice c : list) {
-				cvlist.add(new ChoiceValue(c));
-			}
-			MultipleChoiceValue mcVal = new MultipleChoiceValue(cvlist);
-
-			html.append(renderChoiceAnswers(q, mcVal));
-		}
-		else {
+		/*
+		 * else if (q instanceof QuestionMC) { List<Choice> list = ((QuestionMC)
+		 * q).getAlternatives(); List<ChoiceValue> cvlist = new
+		 * ArrayList<ChoiceValue>(); for (Choice c : list) { cvlist.add(new
+		 * ChoiceValue(c)); } MultipleChoiceValue mcVal = new
+		 * MultipleChoiceValue(cvlist);
+		 *
+		 * html.append(renderChoiceAnswers(q, mcVal)); }
+		 */
+		else if (q instanceof QuestionNum) {
 			html.append(renderNumAnswers(q));
 		}
 		html.append("</div>");
 		return html.toString();
 	}
 
+	/**
+	 * Assembles the HTML for rendering a one choice question
+	 *
+	 * @created 21.08.2010
+	 * @param q the question
+	 * @param list the list of possible choices
+	 * @return the HTML representation of one choice questions
+	 */
 	private static String renderOCChoiceAnswers(Question q, List<Choice> list) {
+
 		StringBuffer html = new StringBuffer();
-		html.append("<div class='answers' style='display: inline;'>");
+
 		for (Choice choice : list) {
 
 			String cssclass = "answer";
@@ -318,6 +302,7 @@ public class QuickInterviewRenderer {
 					+ "qid:'" + q.getId() + "'"
 					+ "}\" ";
 
+			// TODO: activate?
 			// Value value = session.getBlackboard().getValue(q);
 			// if (value != null && UndefinedValue.isNotUndefinedValue(value)
 			// && isAnsweredinCase(value, new ChoiceValue(choice))) {
@@ -326,33 +311,30 @@ public class QuickInterviewRenderer {
 			String spanid = q.getId() + "_" + choice.getId();
 			html.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ", cssclass,
 					jscall, null, spanid));
+
+			// for having a separator between answer alternatives (img, text...)
 			html.append("<div class='answerseparator'></div>");
 		}
 
-		// also render the unknown alternative for choice questions
+		// TODO also render the unknown alternative for choice questions?!
 		html.append(renderAnswerUnknown(q));
 
-		html.append("</div>");
 		return html.toString();
 	}
 
 	/**
-	 * Generates the HTML needed for displaying the (numerical) answers and for
-	 * integrating necessary JS calls for interactivity.
+	 * Assembles the HTML needed for displaying the (numerical) answer field
 	 *
 	 * @created 20.07.2010
-	 * @param c
-	 * @param q
-	 * @param web
-	 * @param namespace
-	 * @return the String for rendering numerical answers and corresponding JS
+	 * @param q the question to which numerical answers are attached
+	 * @return the String for rendering numerical answer field
 	 */
 	private static String renderNumAnswers(Question q) {
 
 		StringBuffer html = new StringBuffer();
 		String value = "";
 
-		// if answer has already been answered
+		// if answer has already been answered write value into the field
 		if (UndefinedValue.isNotUndefinedValue(session.getBlackboard().getValue(q))) {
 			Value answer = session.getBlackboard().getValue(q);
 			if (answer != null && answer instanceof NumValue) {
@@ -362,7 +344,7 @@ public class QuickInterviewRenderer {
 
 		String id = q.getId();
 
-		// append the JS call
+		// assemble the JS call
 		String jscall = "";
 		try {
 			jscall = " rel=\"{oid: '" + id + "', "
@@ -375,21 +357,20 @@ public class QuickInterviewRenderer {
 			e.printStackTrace();
 		}
 
-		// append the input, if available with already provided input
-		// html.append("<div class='answer' style='display: inline;'>"
-		html.append("<input class='input'  style='display: inline' id='input_" + id
+		// assemble the input field
+		html.append("<input class='input'  style='display: inline;' id='input_" + id
 				+ "' type='text' "
 				+ "value='" + value + "' "
 				+ "size='7' "
-				+ jscall + ">");
-		html.append("<input type='button' value='ok' class='num-ok'>");
-		// html.append("</div>");
+				+ jscall + " />");
+		html.append("<input type='button' value='ok' class='num-ok' />");
+
 		return html.toString();
 	}
 
 	/**
-	 * Creates the HTML needed for displaying the answer alternatives of choice
-	 * answers.
+	 * TODO Creates the HTML needed for displaying the answer alternatives of
+	 * choice answers.
 	 *
 	 * @created 22.07.2010
 	 * @param session
@@ -432,30 +413,13 @@ public class QuickInterviewRenderer {
 	}
 
 	/**
-	 *
-	 * @created 22.07.2010
-	 * @param sessionValue
-	 * @param value
-	 * @return
-	 */
-	private static boolean isAnsweredinCase(Value sessionValue, Value value) {
-		// test for MC values separately
-		if (sessionValue instanceof MultipleChoiceValue) {
-			return ((MultipleChoiceValue) sessionValue).contains(value);
-		}
-		else {
-			return sessionValue.equals(value);
-		}
-	}
-
-	/**
 	 * Assembles the HTML representation for rendering answer unknown
 	 *
 	 * @created 22.07.2010
-	 * @param web
-	 * @param namespace
-	 * @param q
-	 * @return
+	 * @param web the web context
+	 * @param namespace the namespace
+	 * @param q the question, to which unknown is added
+	 * @return the HTML representation
 	 */
 	private static String renderAnswerUnknown(Question q) {
 		StringBuffer html = new StringBuffer();
