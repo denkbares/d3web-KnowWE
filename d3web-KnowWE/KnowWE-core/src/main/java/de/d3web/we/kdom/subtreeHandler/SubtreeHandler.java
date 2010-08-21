@@ -39,6 +39,20 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
  */
 public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 
+	private final boolean ignoreNamespaces;
+
+	public SubtreeHandler(boolean ignoreNamespaces) {
+		this.ignoreNamespaces = ignoreNamespaces;
+	}
+
+	public SubtreeHandler() {
+		this.ignoreNamespaces = false;
+	}
+
+	public boolean isIgnoringNamespaces() {
+		return this.ignoreNamespaces;
+	}
+
 	/**
 	 * If this method returns false, the method
 	 * <tt>create(KnowWEArticle, Section)</tt> in this handler will not be
@@ -59,7 +73,8 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 				|| !s.isReusedBy(article.getTitle())
 				|| (s.get().isOrderSensitive() && s.isPositionChangedFor(article.getTitle()))
 				|| (s.get() instanceof IncrementalConstraints
-						&& ((IncrementalConstraints) s.get()).hasViolatedConstraints(article, s));
+						&& ((IncrementalConstraints) s.get()).hasViolatedConstraints(
+								article, s));
 	}
 
 	/**

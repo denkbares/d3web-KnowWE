@@ -36,6 +36,7 @@ import java.util.Set;
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.core.namespace.KnowWENamespaceManager;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.basic.EmbracedType;
 import de.d3web.we.kdom.basic.PlainText;
@@ -1480,6 +1481,22 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return calcPositionTil(getArticle().getSection());
 	}
 
+	private boolean isMatchingNamespace(KnowWEArticle article, SubtreeHandler<T> h) {
+		if (!h.isIgnoringNamespaces() && !KnowWENamespaceManager.AUTOCOMPILE_ARTICLE) {
+			Set<String> namespaceIncludes = KnowWEEnvironment.getInstance().getNamespaceManager(
+					article.getWeb()).getIncludedNamespaces(article);
+
+			for (String ns : getNamespaces()) {
+				if (namespaceIncludes.contains(ns)) return true;
+			}
+
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -1503,7 +1520,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	@SuppressWarnings("unchecked")
 	public final void letSubtreeHandlerCreate(KnowWEArticle article, SubtreeHandler handler) {
-		if (handler.needsToCreate(article, this)) {
+		if (isMatchingNamespace(article, handler) && handler.needsToCreate(article, this)) {
 			try {
 				// long time = System.currentTimeMillis();
 				KDOMReportMessage.storeMessages(article, this, handler.getClass(), handler.create(

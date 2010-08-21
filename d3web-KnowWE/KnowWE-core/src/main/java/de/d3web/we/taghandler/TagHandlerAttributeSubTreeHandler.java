@@ -38,6 +38,11 @@ public class TagHandlerAttributeSubTreeHandler extends SubtreeHandler {
 
 	public static final String ATTRIBUTE_MAP = "TagHandler.attributeMap";
 
+	public TagHandlerAttributeSubTreeHandler() {
+		super(true);
+	}
+
+	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle art, Section sec) {
 
 		String text = sec.getOriginalText();

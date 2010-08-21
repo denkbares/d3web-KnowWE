@@ -170,7 +170,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		if (this.fullParse) {
 			// TODO: NamespaceManager should listen to the FullParseEvent
 			// instead of being referenced directly
-			env.getNamespaceManager(web).cleanForArticle(title);
+			env.getNamespaceManager(web).cleanForArticle(this);
 		}
 
 		if (this.fullParse) {

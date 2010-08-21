@@ -27,9 +27,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 
@@ -42,7 +44,10 @@ import de.d3web.we.terminology.TerminologyHandler;
 
 public class KnowWEUtils {
 
+	private static final Set<Class<?>> usedMSGTypes = new HashSet<Class<?>>();
+
 	private static final String createMsgMapKey(Class<?> msgType) {
+		usedMSGTypes.add(msgType);
 		return "message_map_key_" + msgType.getName();
 	}
 
@@ -90,6 +95,45 @@ public class KnowWEUtils {
 	}
 
 	/**
+	 * Clears all Messages for the given article and subtree.
+	 * 
+	 * @param article is the article you want to clear the message for
+	 * @param sec is the root of the subtree you want to clear the message for
+	 */
+	public static void clearMessagesRecursively(KnowWEArticle article, Section<?> sec) {
+		clearMessages(article, sec);
+		for (Section<?> child : sec.getChildren()) {
+			clearMessagesRecursively(article, child);
+		}
+	}
+
+	/**
+	 * Clears all Messages for the given article and section.
+	 * 
+	 * @param article is the article you want to clear the message for
+	 * @param sec is the section you want to clear the message for
+	 */
+	public static void clearMessages(KnowWEArticle article, Section<?> sec) {
+		for (Class<?> msgType : usedMSGTypes) {
+			clearMessages(article, sec, msgType);
+		}
+	}
+
+	/**
+	 * Clears all Messages for the given article, section and msgType.
+	 * 
+	 * @param article is the article you want to clear the message for
+	 * @param sec is the section you want to clear the message for
+	 * @param msgType is the Class of the message you want to clear
+	 */
+	@SuppressWarnings("unchecked")
+	public static void clearMessages(KnowWEArticle article, Section<?> sec, Class<?> msgType) {
+		Map<String, Collection> messages = (Map<String, Collection>) KnowWEUtils.getStoredObject(
+				article.getWeb(), article.getTitle(), sec.getID(), createMsgMapKey(msgType));
+		if (messages != null) messages.clear();
+	}
+
+	/**
 	 * Clears all Messages for the given article, section, source and msgType.
 	 * 
 	 * @param article is the article you want to clear the message for
@@ -99,7 +143,12 @@ public class KnowWEUtils {
 	 */
 	public static <MSGType> void clearMessages(KnowWEArticle article, Section<?> sec,
 			Class<?> source, Class<MSGType> msgType) {
-		storeMessages(article, sec, source, msgType, new ArrayList<MSGType>(0));
+
+		Map<String, Collection<MSGType>> msgsMap = getMessagesMapModifiable(article, sec,
+				msgType);
+		if (msgsMap != null) {
+			msgsMap.remove(source.getName());
+		}
 	}
 
 	/**
@@ -141,7 +190,6 @@ public class KnowWEUtils {
 	 * @param msgType is the Class of the messages you want to store
 	 * @param msgs is the Collection of messages you want so store
 	 */
-
 	public static <MSGType> void storeMessages(KnowWEArticle article, Section<?> sec,
 			Class<?> source, Class<MSGType> msgType, Collection<MSGType> msgs) {
 		if (msgs != null) {
@@ -149,7 +197,7 @@ public class KnowWEUtils {
 					msgType);
 			if (msgsMap == null) {
 				msgsMap = new HashMap<String, Collection<MSGType>>();
-				KnowWEUtils.storeSectionInfo(article.getWeb(), article.getTitle(), sec.getID(),
+				KnowWEUtils.storeObject(article.getWeb(), article.getTitle(), sec.getID(),
 						createMsgMapKey(msgType), msgsMap);
 			}
 			msgsMap.put(source.getName(), Collections.unmodifiableCollection(msgs));
@@ -250,13 +298,14 @@ public class KnowWEUtils {
 				article.getTitle(), sec.getID(), createMsgMapKey(msgType));
 	}
 
+
 	/**
 	 * This method is deprecated! If the Section is included in other articles,
 	 * the returned object might be created for an other article!
 	 */
 	@Deprecated
 	public static void storeSectionInfo(Section<?> sec, String key, Object o) {
-		storeSectionInfo(sec.getWeb(), sec.getTitle(), sec.getID(), key, o);
+		storeObject(sec.getWeb(), sec.getTitle(), sec.getID(), key, o);
 	}
 
 	/**
@@ -268,8 +317,16 @@ public class KnowWEUtils {
 		return getStoredObject(s.getWeb(), s.getTitle(), s.getID(), key);
 	}
 
+	public static void storeObject(KnowWEArticle article, Section<?> s, String key, Object o) {
+		storeObject(article.getWeb(), article.getTitle(), s.getID(), key, o);
+	}
+
+	/**
+	 * Unfitting name -> deprecated: Use storeObject(...) instead.
+	 */
+	@Deprecated
 	public static void storeSectionInfo(KnowWEArticle article, Section<?> s, String key, Object o) {
-		storeSectionInfo(article.getWeb(), article.getTitle(), s.getID(), key, o);
+		storeObject(article.getWeb(), article.getTitle(), s.getID(), key, o);
 	}
 
 	public static Object getStoredObject(KnowWEArticle article, Section<?> s, String key) {
@@ -282,9 +339,17 @@ public class KnowWEUtils {
 						s.isReusedBy(article.getTitle()) ? s.getLastID() : s.getID(), key);
 	}
 
-	public static void storeSectionInfo(String web, String article, String kdomid, String key, Object o) {
+	public static void storeObject(String web, String article, String kdomid, String key, Object o) {
 		KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().storeObject(
 				article, kdomid, key, o);
+	}
+
+	/**
+	 * Unfitting name -> deprecated: Use storeObject(...) instead.
+	 */
+	@Deprecated
+	public static void storeSectionInfo(String web, String article, String kdomid, String key, Object o) {
+		storeObject(web, article, kdomid, key, o);
 	}
 
 	public static Object getStoredObject(String web, String article, String kdomid, String key) {

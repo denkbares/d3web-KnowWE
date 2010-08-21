@@ -38,8 +38,10 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler {
 	private final DefaultMarkup markup;
 
 	public DefaultMarkupSubtreeHandler(DefaultMarkup markup) {
+		super(true);
 		this.markup = markup;
 	}
+
 
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section markupSection) {
@@ -105,7 +107,7 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler {
 	public void destroy(KnowWEArticle article, Section markupSection) {
 		// TODO: refactor this to somewhere else
 		Annotation namespaceAnno = this.markup.getAnnotation("namespace");
-		if (namespaceAnno != null) {
+		if (namespaceAnno != null && markupSection.getTitle().equals(article.getTitle())) {
 			Section<? extends AnnotationType> annotationSection =
 					DefaultMarkupType.getAnnotationSection(markupSection, namespaceAnno.getName());
 			if (annotationSection != null) {

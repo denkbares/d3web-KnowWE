@@ -20,10 +20,7 @@
 
 package de.d3web.we.terminology;
 
-import java.util.Set;
-
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -43,24 +40,6 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 				article.getTitle());
 	}
 
-	private boolean isMatchingNamespace(KnowWEArticle article, Section<T> s) {
-		boolean active = false;
-		if (active) {
-			Set<String> namespaceIncludes = KnowWEEnvironment.getInstance().getNamespaceManager(
-					article.getWeb()).getIncludedNamespaces(article);
-			Set<String> namespaces = s.getNamespaces();
-
-			for (String ns : namespaces) {
-				if (namespaceIncludes.contains(ns)) return true;
-			}
-
-			return false;
-		}
-		else {
-			return true;
-		}
-	}
-
 	/*
 	 * Checking for a Section with an KnowWEObjectType implementing
 	 * KnowWETermMarker is necessary for the compatibility with
@@ -72,10 +51,10 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	 */
 	@Override
 	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
-		return isMatchingNamespace(article, s)
-				&& (super.needsToCreate(article, s) || (!(s.get() instanceof KnowWETermMarker)
+		return super.needsToCreate(article, s)
+				|| (!(s.get() instanceof KnowWETermMarker)
 						&& KnowWEUtils.getTerminologyHandler(
-								article.getWeb()).areTermDefinitionsModifiedFor(article)));
+								article.getWeb()).areTermDefinitionsModifiedFor(article));
 	}
 
 	/*
@@ -89,11 +68,10 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	 */
 	@Override
 	public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
-		return /*
-				 * isMatchingNamespace(article, s) &&
-				 */(super.needsToDestroy(article, s) || (!(s.get() instanceof KnowWETermMarker)
-				&& KnowWEUtils.getTerminologyHandler(article.getWeb()).areTermDefinitionsModifiedFor(
-								article)));
+		return super.needsToDestroy(article, s)
+				|| (!(s.get() instanceof KnowWETermMarker)
+						&& KnowWEUtils.getTerminologyHandler(article.getWeb()).areTermDefinitionsModifiedFor(
+								article));
 	}
 
 	@Override

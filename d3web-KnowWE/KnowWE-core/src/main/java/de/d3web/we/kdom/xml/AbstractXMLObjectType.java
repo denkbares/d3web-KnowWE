@@ -24,9 +24,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
@@ -175,10 +179,54 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 		childrenTypes.add(0, new XMLHead());
 		childrenTypes.add(1, new XMLTail());
 		this.sectionFinder = new XMLSectionFinder(anyXML ? null : xmlTagName);
+		this.addSubtreeHandler(new RegisterNamespaceDefinitionHandler());
 	}
 
 	public String getXMLTagName() {
 		return xmlTagName;
+	}
+
+	static class RegisterNamespaceDefinitionHandler extends SubtreeHandler<AbstractXMLObjectType> {
+
+		public RegisterNamespaceDefinitionHandler() {
+			super(true);
+		}
+
+		@Override
+		public boolean needsToCreate(KnowWEArticle article, Section<AbstractXMLObjectType> s) {
+			return super.needsToCreate(article, s) && s.getTitle().equals(article.getTitle());
+		}
+
+		@Override
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AbstractXMLObjectType> s) {
+
+			String value = getAttributeMapFor(s).get("namespace");
+
+			if (value != null) {
+				s.addNamespace(value);
+				KnowWEEnvironment.getInstance().getNamespaceManager(
+						article.getWeb()).registerNamespaceDefinition(s);
+			}
+			return null;
+		}
+
+		@Override
+		public boolean needsToDestroy(KnowWEArticle article, Section<AbstractXMLObjectType> s) {
+			return super.needsToDestroy(article, s) && s.getTitle().equals(article.getTitle());
+		}
+
+		@Override
+		public void destroy(KnowWEArticle article, Section<AbstractXMLObjectType> s) {
+
+			String value = getAttributeMapFor(s).get("namespace");
+
+			if (value != null) {
+				KnowWEEnvironment.getInstance().getNamespaceManager(
+						article.getWeb()).unregisterNamespaceDefinition(s);
+				s.removeNamespace(value);
+			}
+		}
+
 	}
 
 }

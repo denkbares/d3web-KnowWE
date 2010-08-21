@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import de.d3web.we.core.KnowWEEnvironment;
@@ -34,6 +35,7 @@ import de.d3web.we.event.ArticleCreatedEvent;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.utils.KnowWEUtils;
 
 public class KnowWENamespaceManager {
 
@@ -44,6 +46,9 @@ public class KnowWENamespaceManager {
 	private final Map<String, HashSet<Section<? extends NamespaceInclude>>> namespaceIncludesMap = new HashMap<String, HashSet<Section<? extends NamespaceInclude>>>();
 
 	private final Set<String> changedNamespaces = new HashSet<String>();
+
+	public static final boolean AUTOCOMPILE_ARTICLE = ResourceBundle.getBundle("KnowWE_config").getString(
+			"namespaces.autocompileArticle").contains("true");
 
 	public KnowWENamespaceManager(String web) {
 		this.web = web;
@@ -88,20 +93,24 @@ public class KnowWENamespaceManager {
 		return false;
 	}
 
-	public void cleanForArticle(String title) {
+	public void cleanForArticle(KnowWEArticle article) {
 		for (LinkedList<Section<?>> list : namespaceDefinitionsMap.values()) {
 			List<Section<?>> sectionsToRemove = new ArrayList<Section<?>>();
 			for (Section<?> sec : list) {
-				if (sec.getTitle().equals(title)) sectionsToRemove.add(sec);
+				if (sec.getTitle().equals(article.getTitle())) sectionsToRemove.add(sec);
 			}
-			list.removeAll(sectionsToRemove);
+			for (Section<?> sec : sectionsToRemove) {
+				unregisterNamespaceDefinition(sec);
+			}
 		}
 		for (HashSet<Section<? extends NamespaceInclude>> set : namespaceIncludesMap.values()) {
-			List<Section<?>> sectionsToRemove = new ArrayList<Section<?>>();
-			for (Section<?> sec : set) {
-				if (sec.getTitle().equals(title)) sectionsToRemove.add(sec);
+			List<Section<? extends NamespaceInclude>> sectionsToRemove = new ArrayList<Section<? extends NamespaceInclude>>();
+			for (Section<? extends NamespaceInclude> sec : set) {
+				if (sec.getTitle().equals(article.getTitle())) sectionsToRemove.add(sec);
 			}
-			set.removeAll(sectionsToRemove);
+			for (Section<? extends NamespaceInclude> sec : sectionsToRemove) {
+				unregisterNamespaceInclude(article, sec);
+			}
 		}
 
 	}
@@ -118,6 +127,40 @@ public class KnowWENamespaceManager {
 	}
 
 	public void registerNamespaceInclude(KnowWEArticle article, Section<? extends NamespaceInclude> s) {
+		
+		if (s.get().getNamespaceToInclude(s).equals(article.getTitle())) {
+			if (!AUTOCOMPILE_ARTICLE) {
+
+				// If the NamespaceInclude aims at the article it is defined in
+				// and autocompile is deactivated, the reused-flags need to be
+				// reset. If for example only the NamespaceInclude was added to
+				// the article and all other Sections could be reused, all these
+				// reused-flags are set to true although no SubtreeHandlers have
+				// created yet.
+
+				Set<String> includedNamespaces = getIncludedNamespaces(article);
+
+				Set<Section<?>> alreadyIncluded = new HashSet<Section<?>>();
+				for (String incNS : includedNamespaces) {
+					List<Section<?>> nsDefs = getNamespaceDefinitions(incNS);
+					for (Section<?> nsDef : nsDefs) {
+						List<Section<?>> tempNodes = new LinkedList<Section<?>>();
+						nsDef.getAllNodesPostOrder(tempNodes);
+						alreadyIncluded.addAll(tempNodes);
+					}
+				}
+				List<Section<?>> allNodesPostOrder = article.getAllNodesPostOrder();
+				for (Section<?> node : allNodesPostOrder) {
+					if (!alreadyIncluded.contains(node)) {
+						node.setReusedBy(article.getTitle(), false);
+					}
+				}
+			}
+			else {
+				return;
+			}
+		}
+		
 		HashSet<Section<? extends NamespaceInclude>> namespaceIncludes =
 				namespaceIncludesMap.get(article.getTitle());
 		if (namespaceIncludes == null) {
@@ -132,6 +175,31 @@ public class KnowWENamespaceManager {
 
 		if (namespaceIncludes != null) {
 			boolean removed = namespaceIncludes.remove(s);
+			if (removed) {
+				String includedNamespace = s.get().getNamespaceToInclude(s);
+				boolean stillIncluded = false;
+				for (Section<? extends NamespaceInclude> nsInclude : namespaceIncludes) {
+					if (nsInclude.get().getNamespaceToInclude(nsInclude).equals(includedNamespace)) {
+						stillIncluded = true;
+						break;
+					}
+				}
+				if (!stillIncluded) {
+					List<Section<?>> namespaceDefinitions;
+					if (includedNamespace.equals(article.getTitle())) {
+						namespaceDefinitions = new ArrayList<Section<?>>(1);
+						namespaceDefinitions.add(article.getSection());
+					}
+					else {
+						namespaceDefinitions = getNamespaceDefinitions(
+								s.get().getNamespaceToInclude(s));
+					}
+					for (Section<?> namespaceDef : namespaceDefinitions) {
+						namespaceDef.setReusedStateRecursively(article.getTitle(), false);
+						KnowWEUtils.clearMessagesRecursively(article, namespaceDef);
+					}
+				}
+			}
 			if (namespaceIncludes.isEmpty()) namespaceIncludesMap.remove(article.getTitle());
 			return removed;
 		}

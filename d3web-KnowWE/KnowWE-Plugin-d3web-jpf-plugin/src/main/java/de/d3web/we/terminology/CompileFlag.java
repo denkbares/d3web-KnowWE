@@ -22,10 +22,8 @@ package de.d3web.we.terminology;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeMap;
 
 import de.d3web.we.core.KnowWEEnvironment;
@@ -66,8 +64,8 @@ public class CompileFlag extends DefaultMarkupType {
 
 		public NamespaceIncludeType() {
 			this.sectionFinder = new AllTextSectionFinder();
-			this.addSubtreeHandler(Priority.PRECOMPILE, new RegisterNamespaceInclude());
-			this.addSubtreeHandler(Priority.POSTCOMPILE, new UnregisterNamespaceInclude());
+			this.addSubtreeHandler(Priority.PRECOMPILE, new CompileFlagCreateHandler());
+			this.addSubtreeHandler(Priority.POSTCOMPILE, new CompileFlagDestroyHandler());
 		}
 
 		@Override
@@ -76,7 +74,11 @@ public class CompileFlag extends DefaultMarkupType {
 		}
 	}
 
-	static class RegisterNamespaceInclude extends SubtreeHandler<NamespaceIncludeType> {
+	static class CompileFlagCreateHandler extends SubtreeHandler<NamespaceIncludeType> {
+
+		public CompileFlagCreateHandler() {
+			super(true);
+		}
 
 		@Override
 		public boolean needsToCreate(KnowWEArticle article, Section<NamespaceIncludeType> s) {
@@ -89,69 +91,51 @@ public class CompileFlag extends DefaultMarkupType {
 			KnowWENamespaceManager nsMng = KnowWEEnvironment.getInstance().getNamespaceManager(
 					article.getWeb());
 
-			if (s.get().getNamespaceToInclude(s).equals(article.getTitle())) {
-				if (article.isFullParse() || !s.isReusedBy(article.getTitle())) {
-					Set<String> includedNamespaces = nsMng.getIncludedNamespaces(article);
+			if (article.isFullParse() || !s.isReusedBy(article.getTitle())) {
+				nsMng.registerNamespaceInclude(article, s);
+			}
 
-					Set<Section<?>> alreadyIncluded = new HashSet<Section<?>>();
-					for (String incNS : includedNamespaces) {
-						List<Section<?>> nsDefs = nsMng.getNamespaceDefinitions(incNS);
-						for (Section<?> nsDef : nsDefs) {
-							List<Section<?>> tempNodes = new LinkedList<Section<?>>();
-							nsDef.getAllNodesPostOrder(tempNodes);
-							alreadyIncluded.addAll(tempNodes);
-						}
-					}
-					List<Section<?>> allNodesPostOrder = article.getAllNodesPostOrder();
-					for (Section<?> node : allNodesPostOrder) {
-						if (!alreadyIncluded.contains(node)) {
-							node.setReusedBy(article.getTitle(), false);
-						}
-					}
-					nsMng.registerNamespaceInclude(article, s);
+			if (!s.get().getNamespaceToInclude(s).equals(article.getTitle())) {
+
+				List<Section<?>> namespaceDefinitions = nsMng.getNamespaceDefinitions(
+						s.get().getNamespaceToInclude(s));
+
+				KnowWEUtils.storeObject(article, s, NAMESPACEDEFS_SNAPSHOT_KEY,
+						namespaceDefinitions);
+
+				List<Section<?>> includedNamespaces = new ArrayList<Section<?>>();
+
+				for (Section<?> nsDef : namespaceDefinitions) {
+					List<Section<?>> nodes = new LinkedList<Section<?>>();
+					nsDef.getAllNodesPostOrder(nodes);
+					includedNamespaces.addAll(nodes);
 				}
-				return null;
-			}
 
-			if (article.isFullParse() || !s.isReusedBy(article.getTitle())) nsMng.registerNamespaceInclude(
-					article, s);
+				TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
+						Priority.createPrioritySortedList(includedNamespaces);
 
-			List<Section<?>> namespaceDefinitions = nsMng.getNamespaceDefinitions(
-					s.get().getNamespaceToInclude(s));
-
-			KnowWEUtils.storeSectionInfo(article, s, NAMESPACEDEFS_SNAPSHOT_KEY,
-					namespaceDefinitions);
-
-			List<Section<?>> includedNamespaces = new ArrayList<Section<?>>();
-
-			for (Section<?> nsDef : namespaceDefinitions) {
-				List<Section<?>> nodes = new LinkedList<Section<?>>();
-				nsDef.getAllNodesPostOrder(nodes);
-				includedNamespaces.addAll(nodes);
-			}
-
-			TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
-					Priority.createPrioritySortedList(includedNamespaces);
-
-			// KnowWEUtils.storeSectionInfo(article, s, PRIO_MAP_KEY, prioMap);
-
-			for (Priority priority : prioMap.descendingKeySet()) {
-				List<Section<? extends KnowWEObjectType>> prioList = prioMap.get(priority);
-				for (Section<? extends KnowWEObjectType> section : prioList) {
-					section.letSubtreeHandlersCreate(article, priority);
+				for (Priority priority : prioMap.descendingKeySet()) {
+					List<Section<? extends KnowWEObjectType>> prioList = prioMap.get(priority);
+					for (Section<? extends KnowWEObjectType> section : prioList) {
+						section.letSubtreeHandlersCreate(article, priority);
+					}
 				}
-			}
 
-			for (Section<?> nsDef : namespaceDefinitions) {
-				nsDef.setReusedStateRecursively(article.getTitle(), true);
-			}
+				for (Section<?> nsDef : namespaceDefinitions) {
+					nsDef.setReusedStateRecursively(article.getTitle(), true);
+				}
 
+			}
 			return null;
 		}
 
 	}
 
-	static class UnregisterNamespaceInclude extends SubtreeHandler<NamespaceIncludeType> {
+	static class CompileFlagDestroyHandler extends SubtreeHandler<NamespaceIncludeType> {
+
+		public CompileFlagDestroyHandler() {
+			super(true);
+		}
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<NamespaceIncludeType> s) {
@@ -166,6 +150,8 @@ public class CompileFlag extends DefaultMarkupType {
 		@Override
 		@SuppressWarnings("unchecked")
 		public void destroy(KnowWEArticle article, Section<NamespaceIncludeType> s) {
+
+			if (!s.isReusedBy(article.getTitle())) article.setFullParse(true, this);
 
 			if (!article.isFullParse()
 					&& !s.get().getNamespaceToInclude(s).equals(article.getTitle())) {
@@ -205,13 +191,6 @@ public class CompileFlag extends DefaultMarkupType {
 
 			}
 
-			if (!s.isReusedBy(article.getTitle())) {
-				KnowWEEnvironment.getInstance().getNamespaceManager(
-						article.getWeb()).unregisterNamespaceInclude(
-						article, s);
-
-				article.setFullParse(true, this);
-			}
 
 		}
 

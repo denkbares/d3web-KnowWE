@@ -429,7 +429,7 @@ public class KnowWEIncludeManager {
 	public List<Section<? extends KnowWEObjectType>> getChildrenForSection(Section<Include> src) {
 		List<Section<? extends KnowWEObjectType>> children = src2targets.get(src);
 		if (children == null) {
-			children = new ArrayList<Section<? extends KnowWEObjectType>>();
+			children = new ArrayList<Section<? extends KnowWEObjectType>>(0);
 		}
 		if (children.isEmpty()) {
 			children.add(new IncludeErrorSection("Section " + src.toString()

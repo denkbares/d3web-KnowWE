@@ -217,66 +217,70 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 				if (solutionDef != null) {
 					Solution solution = solutionDef.get().getTermObject(
 							article, solutionDef);
-					KnowledgeSlice xclModel = solution.getKnowledge(PSMethodXCL.class,
+
+					if (solution != null) {
+						KnowledgeSlice xclModel = solution.getKnowledge(PSMethodXCL.class,
 							XCLModel.XCLMODEL);
 
-					if (xclModel != null) {
+						if (xclModel != null) {
 
-						if (cond != null) {
+							if (cond != null) {
 
-							Condition condition = KDOMConditionFactory.createCondition(article,
-									cond);
+								Condition condition = KDOMConditionFactory.createCondition(article,
+										cond);
 
-							if (condition == null) {
-								return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
-										D3webModule.getKwikiBundle_d3web()
-												.getString("KnowWE.xcllist.conditionerror")));
-							}
+								if (condition == null) {
+									return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+											D3webModule.getKwikiBundle_d3web()
+													.getString("KnowWE.xcllist.conditionerror")));
+								}
 
-							// check the weight/relation type in square brackets
-							Section<XCLWeight> weight = s.findSuccessor(
-									XCLWeight.class);
-							XCLRelationType type = XCLRelationType.explains;
-							Double w = 1.0;
-							if (weight != null) {
-								String weightString = weight.getOriginalText();
-								type = D3webUtils.getXCLRealtionTypeForString(weightString);
-								if (type == XCLRelationType.explains) {
-									weightString = weightString.replaceAll("\\[", "");
-									weightString = weightString.replaceAll("\\]", "");
-									try {
-										w = Double.valueOf(weightString.trim());
-										if (w <= 0) {
-											result.add(new InvalidNumberWarning(
-													weightString));
+								// check the weight/relation type in square
+								// brackets
+								Section<XCLWeight> weight = s.findSuccessor(
+										XCLWeight.class);
+								XCLRelationType type = XCLRelationType.explains;
+								Double w = 1.0;
+								if (weight != null) {
+									String weightString = weight.getOriginalText();
+									type = D3webUtils.getXCLRealtionTypeForString(weightString);
+									if (type == XCLRelationType.explains) {
+										weightString = weightString.replaceAll("\\[", "");
+										weightString = weightString.replaceAll("\\]", "");
+										try {
+											w = Double.valueOf(weightString.trim());
+											if (w <= 0) {
+												result.add(new InvalidNumberWarning(
+														weightString));
+											}
+										}
+										catch (NumberFormatException e) {
+											// not a valid weight
+											result.add(new InvalidNumberWarning(weightString));
 										}
 									}
-									catch (NumberFormatException e) {
-										// not a valid weight
-										result.add(new InvalidNumberWarning(weightString));
-									}
 								}
+
+								// Insert the Relation into the currentModel
+								XCLRelation relation = XCLModel.insertAndReturnXCLRelation(
+												getKBM(article).getKnowledgeBase(),
+												condition,
+												solution, type, w, null);
+
+								// set KDOMID here used in {@link KBRenderer}
+								relation.setKdmomID(s.getID());
+
+								KnowWEUtils.storeSectionInfo(article, s, relationStoreKey, relation);
+
+								String wString = "";
+								if (w > 0 && w != 1) {
+									wString = Double.toString(w);
+								}
+								result.add(new RelationCreatedMessage("XCL: "
+										+ type.toString() + " " + wString));
+								return result;
+
 							}
-
-							// Insert the Relation into the currentModel
-							XCLRelation relation = XCLModel.insertAndReturnXCLRelation(
-											getKBM(article).getKnowledgeBase(),
-											condition,
-											solution, type, w, null);
-
-							// set KDOMID here used in {@link KBRenderer}
-							relation.setKdmomID(s.getID());
-
-							KnowWEUtils.storeSectionInfo(article, s, relationStoreKey, relation);
-
-							String wString = "";
-							if (w > 0 && w != 1) {
-								wString = Double.toString(w);
-							}
-							result.add(new RelationCreatedMessage("XCL: "
-									+ type.toString() + " " + wString));
-							return result;
-
 						}
 					}
 				}
