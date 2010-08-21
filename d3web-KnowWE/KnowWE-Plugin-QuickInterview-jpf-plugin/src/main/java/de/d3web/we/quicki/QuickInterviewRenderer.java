@@ -134,7 +134,7 @@ public class QuickInterviewRenderer {
 			StringBuffer qcon, Set<TerminologyObject> processedTOs, int depth, boolean init) {
 
 		// just do not display the rooty root
-		if (topContainer.getName().endsWith("Q000")) {
+		if (!topContainer.getName().endsWith("Q000")) {
 			if (!processedTOs.contains(topContainer)) {
 				processedTOs.add(topContainer);
 				qcon.append(getQuestionnaireRendering(topContainer, depth, init));
