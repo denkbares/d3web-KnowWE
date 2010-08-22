@@ -102,6 +102,7 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 						Unknown.getInstance(), PSMethodUserSelected.getInstance(),
 						PSMethodUserSelected.getInstance()));
 
+
 				Value value = null;
 				if (valueid != null) {
 					value = kbm.findValue(question, valueid);
@@ -128,9 +129,22 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 							value, PSMethodUserSelected.getInstance(),
 									PSMethodUserSelected.getInstance()));
 
-					EventManager.getInstance().fireEvent(
-							new FindingSetEvent(question, value, namespace),
-							web, user, null);
+					MultipleChoiceValue mcv =
+							((MultipleChoiceValue) blackboard.getValueFact(question).getValue());
+					System.out.println(mcv.getValue());
+					System.out.println(mcv.getValue().getClass());
+
+					if (question instanceof QuestionMC) {
+						EventManager.getInstance().fireEvent(
+								new FindingSetEvent(question, mcv, namespace),
+								web, user, null);
+					}
+					else {
+						EventManager.getInstance().fireEvent(
+								new FindingSetEvent(question, value, namespace),
+								web, user, null);
+					}
+
 				}
 			}
 		}

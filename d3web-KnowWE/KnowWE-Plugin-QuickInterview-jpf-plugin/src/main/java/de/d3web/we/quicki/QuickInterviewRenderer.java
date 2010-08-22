@@ -304,8 +304,8 @@ public class QuickInterviewRenderer {
 			String jscall = " rel=\"{oid:'" + choice.getId() + "', "
 					+ "web:'" + web + "', "
 					+ "ns:'" + namespace + "', "
-					+ "qid:'" + q.getId() + "'"
-					+ "type: 'oc'"
+					+ "qid:'" + q.getId() + "', "
+					+ "type:'oc'"
 					+ "}\" ";
 
 			// TODO: activate?
@@ -397,7 +397,7 @@ public class QuickInterviewRenderer {
 					+ "web:'" + web + "', "
 					+ "ns:'" + namespace + "', "
 					+ "qid:'" + q.getId() + "', "
-					+ "type: 'mc'"
+					+ "type:'mc', "
 					+ "mcid:'" + mcval.getAnswerChoicesID() + "'"
 					+ "}\" ";
 

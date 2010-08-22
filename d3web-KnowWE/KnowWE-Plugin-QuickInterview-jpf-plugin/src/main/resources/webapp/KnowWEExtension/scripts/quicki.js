@@ -108,16 +108,14 @@ KNOWWE.plugin.quicki = function(){
             var q = _KS('#' + rel.qid)
             KNOWWE.plugin.quicki.toggleIndicationHighlighting(q);
                        
-            // check whether answer was already given. if so, remove the fact.
-            // as answer was toggled before, 'answer' means that answer was 
-            // selected before
-            //if(element.className=='answer'){
-            	//KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
-            	//		{ action : 'RemoveSingleFindingAction', ValueID: rel.oid});
-            //} else {
+            if(type=="mc"){
+            	alert("mc clicked");
+            	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
+                    	{ action : 'SetSingleFindingAction', ValueID: rel.oid});
+            } else {
             	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
                 	{ action : 'SetSingleFindingAction', ValueID: rel.oid});
-           // }
+            }
         },
         /**
          * Function: numAnswer
@@ -182,10 +180,16 @@ KNOWWE.plugin.quicki = function(){
          * 				highlighting
          */
         toggleAnswerHighlighting : function( answerEl, type ){
-        	alert(type);
-        	alert(answerEl.parentNode.parentNode.className);
-        	if(type=="oc"){
-        		
+        	
+        	var relClicked = eval("(" +  answerEl.getAttribute('rel') + ")");
+        	if(type=="oc"){	
+        		_KS('.answerClicked').each(function(element){
+        			var relElement =  eval("(" +  element.getAttribute('rel') + ")");
+        			if (relElement.qid==relClicked.qid){
+        				alert("found");
+        				element.className = 'answer';
+        			}
+                });
         	} else if (type=="mc"){
         		
         	}

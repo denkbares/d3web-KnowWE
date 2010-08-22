@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -20,7 +20,7 @@
 
 package de.d3web.we.event;
 
-import java.util.List;
+import java.util.HashSet;
 
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -38,9 +38,9 @@ import de.d3web.core.session.values.Unknown;
 /**
  * The Finding Set Event. Which will be fired each time a finding is set in the
  * embedded dialog.
- * 
+ *
  * @author Sebastian Furth
- * 
+ *
  */
 public class FindingSetEvent extends Event {
 
@@ -50,7 +50,7 @@ public class FindingSetEvent extends Event {
 
 	/**
 	 * Standard Constructor which encapsulates a question and the applied value.
-	 * 
+	 *
 	 * @param question the underlying question
 	 * @param value the applied value
 	 * @param namespace defines in which session the value was set (optional!)
@@ -63,8 +63,13 @@ public class FindingSetEvent extends Event {
 				"Paramters mustn't be null!");
 		else if (value instanceof Unknown) this.value = Unknown.getInstance();
 		else if (question instanceof QuestionChoice) {
-			if (question instanceof QuestionMC && value.getValue() instanceof List<?>) {
-				List<ChoiceValue> choiceValues = (List<ChoiceValue>) value.getValue();
+
+			// TODO check with Joba if it's correct to check for HashSet here
+			// rather than for List<?> as it was before!
+			// Please also cross-check SetSingleFindingAction
+
+			if (question instanceof QuestionMC && value.getValue() instanceof HashSet<?>) {
+				HashSet<ChoiceValue> choiceValues = (HashSet<ChoiceValue>) value.getValue();
 				for (ChoiceValue cv : choiceValues) {
 					if (!(((QuestionChoice) question).getAllAlternatives().contains(cv.getValue()))) {
 						throw new IllegalArgumentException(value + " is not an allowed value for "

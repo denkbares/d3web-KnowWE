@@ -129,7 +129,9 @@ public class SolutionsPanelAction extends AbstractAction {
 			established.addAll(session.getBlackboard().getSolutions(State.ESTABLISHED));
 			suggested.addAll(session.getBlackboard().getSolutions(State.SUGGESTED));
 			excluded.addAll(session.getBlackboard().getSolutions(State.EXCLUDED));
-			// unclear.addAll(session.getBlackboard().getSolutions(State.UNCLEAR));
+
+			// take unclears in M.Freiberg Aug/2010
+			unclear.addAll(session.getBlackboard().getSolutions(State.UNCLEAR));
 		}
 
 		boolean painted = false;
