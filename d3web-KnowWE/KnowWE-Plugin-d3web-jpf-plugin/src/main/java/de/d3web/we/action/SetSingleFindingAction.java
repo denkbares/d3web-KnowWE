@@ -129,22 +129,9 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 							value, PSMethodUserSelected.getInstance(),
 									PSMethodUserSelected.getInstance()));
 
-					MultipleChoiceValue mcv =
-							((MultipleChoiceValue) blackboard.getValueFact(question).getValue());
-					System.out.println(mcv.getValue());
-					System.out.println(mcv.getValue().getClass());
-
-					if (question instanceof QuestionMC) {
-						EventManager.getInstance().fireEvent(
-								new FindingSetEvent(question, mcv, namespace),
-								web, user, null);
-					}
-					else {
-						EventManager.getInstance().fireEvent(
+					EventManager.getInstance().fireEvent(
 								new FindingSetEvent(question, value, namespace),
 								web, user, null);
-					}
-
 				}
 			}
 		}

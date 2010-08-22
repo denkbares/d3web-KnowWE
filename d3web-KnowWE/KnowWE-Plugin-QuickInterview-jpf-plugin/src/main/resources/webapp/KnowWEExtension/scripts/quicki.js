@@ -108,14 +108,13 @@ KNOWWE.plugin.quicki = function(){
             var q = _KS('#' + rel.qid)
             KNOWWE.plugin.quicki.toggleIndicationHighlighting(q);
                        
-            if(type=="mc"){
-            	alert("mc clicked");
-            	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
-                    	{ action : 'SetSingleFindingAction', ValueID: rel.oid});
-            } else {
+          //  if(type=="mc"){
+            //	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
+              //      	{ action : 'SetSingleFindingAction', ValueID: rel.oid});
+           // } else {
             	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
                 	{ action : 'SetSingleFindingAction', ValueID: rel.oid});
-            }
+           // }
         },
         /**
          * Function: numAnswer
