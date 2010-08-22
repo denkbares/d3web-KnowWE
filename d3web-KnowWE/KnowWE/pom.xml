@@ -42,7 +42,7 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
 					<overlays>
-						<overlay>
+<!--						<overlay>
 							<groupId>de.uniwue.d3web</groupId>
 							<artifactId>d3web-Dialog2</artifactId>
 							<excludes>
@@ -54,7 +54,7 @@
 								<exclude>WEB-INF/lib/commons-lang*</exclude>
 								<exclude>WEB-INF/lib/commons-logging*</exclude>
 							</excludes>
-						</overlay>
+						</overlay>-->
 						<overlay>
 							<groupId>com.ecryd.jspwiki</groupId>
 							<artifactId>jspwiki</artifactId>
@@ -549,13 +549,13 @@
 			<version>1.1.2</version>
 			<type>jar</type>
 		</dependency>
-		<dependency>
+<!--		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Dialog2</artifactId>
 			<version>${d3webCoreVersion}</version>
 			<type>war</type>
 			<scope>runtime</scope>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-TiRex</artifactId>
