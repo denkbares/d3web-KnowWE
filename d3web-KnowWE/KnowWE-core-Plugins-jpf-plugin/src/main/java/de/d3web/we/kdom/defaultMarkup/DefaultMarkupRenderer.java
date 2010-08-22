@@ -53,9 +53,9 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> 
 
 		String id = section.getID();
 		String name = "<span>"+section.getObjectType().getName()+"</span>";
-		String icon = this.iconPath;
-		if (icon != null) {
-			icon = "<img class='markupIcon' src='" + icon + "'></img> ";
+		String icon = "";
+		if (this.iconPath != null) {
+			icon = "<img class='markupIcon' src='" + this.iconPath + "'></img> ";
 		}
 		string.append(KnowWEUtils.maskHTML("<div id=\"" + id + "\" class='defaultMarkup'>\n"));
 		string.append(KnowWEUtils.maskHTML("<div class='markupHeader'>" + icon + name + "</div>\n"));
