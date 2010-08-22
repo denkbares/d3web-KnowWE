@@ -51,10 +51,10 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	 */
 	@Override
 	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
-		return super.needsToCreate(article, s)
-				|| (!(s.get() instanceof KnowWETermMarker)
-						&& KnowWEUtils.getTerminologyHandler(
-								article.getWeb()).areTermDefinitionsModifiedFor(article));
+		return super.needsToCreate(article, s);
+		// || (!(s.get() instanceof KnowWETermMarker)
+		// && KnowWEUtils.getTerminologyHandler(
+		// article.getWeb()).areTermDefinitionsModifiedFor(article));
 	}
 
 	/*

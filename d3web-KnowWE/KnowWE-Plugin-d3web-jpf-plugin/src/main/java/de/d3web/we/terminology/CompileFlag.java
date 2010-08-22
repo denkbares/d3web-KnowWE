@@ -121,10 +121,6 @@ public class CompileFlag extends DefaultMarkupType {
 					}
 				}
 
-				for (Section<?> nsDef : namespaceDefinitions) {
-					nsDef.setReusedStateRecursively(article.getTitle(), true);
-				}
-
 			}
 			return null;
 		}

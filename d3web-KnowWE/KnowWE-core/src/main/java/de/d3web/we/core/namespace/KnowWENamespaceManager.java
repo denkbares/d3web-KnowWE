@@ -94,7 +94,8 @@ public class KnowWENamespaceManager {
 	}
 
 	public void cleanForArticle(KnowWEArticle article) {
-		for (LinkedList<Section<?>> list : namespaceDefinitionsMap.values()) {
+		for (LinkedList<Section<?>> list : new ArrayList<LinkedList<Section<?>>>(
+				namespaceDefinitionsMap.values())) {
 			List<Section<?>> sectionsToRemove = new ArrayList<Section<?>>();
 			for (Section<?> sec : list) {
 				if (sec.getTitle().equals(article.getTitle())) sectionsToRemove.add(sec);
@@ -103,7 +104,8 @@ public class KnowWENamespaceManager {
 				unregisterNamespaceDefinition(sec);
 			}
 		}
-		for (HashSet<Section<? extends NamespaceInclude>> set : namespaceIncludesMap.values()) {
+		for (HashSet<Section<? extends NamespaceInclude>> set : new ArrayList<HashSet<Section<? extends NamespaceInclude>>>(
+				namespaceIncludesMap.values())) {
 			List<Section<? extends NamespaceInclude>> sectionsToRemove = new ArrayList<Section<? extends NamespaceInclude>>();
 			for (Section<? extends NamespaceInclude> sec : set) {
 				if (sec.getTitle().equals(article.getTitle())) sectionsToRemove.add(sec);
@@ -128,7 +130,8 @@ public class KnowWENamespaceManager {
 
 	public void registerNamespaceInclude(KnowWEArticle article, Section<? extends NamespaceInclude> s) {
 		
-		if (s.get().getNamespaceToInclude(s).equals(article.getTitle())) {
+		if (s.get().getNamespaceToInclude(s).equals(article.getTitle())
+				&& !getNamespaceIncludes(article).contains(s)) {
 			if (!AUTOCOMPILE_ARTICLE) {
 
 				// If the NamespaceInclude aims at the article it is defined in

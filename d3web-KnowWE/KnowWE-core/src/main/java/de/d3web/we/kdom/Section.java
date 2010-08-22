@@ -1525,6 +1525,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 				// long time = System.currentTimeMillis();
 				KDOMReportMessage.storeMessages(article, this, handler.getClass(), handler.create(
 						article, this));
+				setReusedBy(article.getTitle(), true);
 				// System.out.println(handler.getClass().getSimpleName());
 				// System.out.println(handler.getClass().getSimpleName() + " "
 				// + (System.currentTimeMillis() - time));
@@ -1587,6 +1588,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	public final void letSubtreeHandlerDestroy(KnowWEArticle article, SubtreeHandler handler) {
 		if (handler.needsToDestroy(article, this)) {
 			handler.destroy(article, this);
+			setReusedBy(article.getTitle(), false);
 			// System.out.println(handler.getClass().getSimpleName());
 		}
 	}
