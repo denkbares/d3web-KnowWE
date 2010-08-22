@@ -22,6 +22,7 @@ package de.d3web.we.quicki;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,10 +34,12 @@ import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
+import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
@@ -265,15 +268,17 @@ public class QuickInterviewRenderer {
 			List<Choice> list = ((QuestionChoice) q).getAllAlternatives();
 			html.append(renderOCChoiceAnswers(q, list));
 		}
-		/*
-		 * else if (q instanceof QuestionMC) { List<Choice> list = ((QuestionMC)
-		 * q).getAlternatives(); List<ChoiceValue> cvlist = new
-		 * ArrayList<ChoiceValue>(); for (Choice c : list) { cvlist.add(new
-		 * ChoiceValue(c)); } MultipleChoiceValue mcVal = new
-		 * MultipleChoiceValue(cvlist);
-		 *
-		 * html.append(renderChoiceAnswers(q, mcVal)); }
-		 */
+
+		else if (q instanceof QuestionMC) {
+			List<Choice> list = ((QuestionMC) q).getAlternatives();
+			List<ChoiceValue> cvlist = new ArrayList<ChoiceValue>();
+			for (Choice c : list) {
+				cvlist.add(new ChoiceValue(c));
+			}
+			MultipleChoiceValue mcVal = new MultipleChoiceValue(cvlist);
+
+			html.append(renderMCChoiceAnswers(q, mcVal));
+		}
 		else if (q instanceof QuestionNum) {
 			html.append(renderNumAnswers(q));
 		}
@@ -300,6 +305,7 @@ public class QuickInterviewRenderer {
 					+ "web:'" + web + "', "
 					+ "ns:'" + namespace + "', "
 					+ "qid:'" + q.getId() + "'"
+					+ "type: 'oc'"
 					+ "}\" ";
 
 			// TODO: activate?
@@ -380,7 +386,7 @@ public class QuickInterviewRenderer {
 	 * @param namespace
 	 * @return
 	 */
-	private static String renderChoiceAnswers(Question q, MultipleChoiceValue mcval) {
+	private static String renderMCChoiceAnswers(Question q, MultipleChoiceValue mcval) {
 
 		StringBuffer html = new StringBuffer();
 		html.append("<div class='answers' style='display: inline;'>");
@@ -391,6 +397,7 @@ public class QuickInterviewRenderer {
 					+ "web:'" + web + "', "
 					+ "ns:'" + namespace + "', "
 					+ "qid:'" + q.getId() + "', "
+					+ "type: 'mc'"
 					+ "mcid:'" + mcval.getAnswerChoicesID() + "'"
 					+ "}\" ";
 

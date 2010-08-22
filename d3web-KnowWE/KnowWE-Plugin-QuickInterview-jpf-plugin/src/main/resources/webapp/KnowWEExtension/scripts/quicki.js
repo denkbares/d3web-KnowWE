@@ -100,8 +100,9 @@ KNOWWE.plugin.quicki = function(){
             
             var rel = eval("(" + el.getAttribute('rel') + ")");
             if( !rel ) return;
+            var type = rel.type;
             
-            KNOWWE.plugin.quicki.toggleAnswerHighlighting(el);
+            KNOWWE.plugin.quicki.toggleAnswerHighlighting(el, type);
             
             // get the currently indicated question
             var q = _KS('#' + rel.qid)
@@ -176,17 +177,28 @@ KNOWWE.plugin.quicki = function(){
          * Hightlights an answer if clicked or unhighlights an highlighted answer if clicked
          *
          * Parameters:
-         * 		element - The clicked answer-element
+         * 		answerEl - The clicked answer-element
+         * 		type - flag that tells whether OC or MC question for appropriate
+         * 				highlighting
          */
-        toggleAnswerHighlighting : function( element ){
-        	if(element.className=='answerClicked'){
-        		element.className = 'answer';
-        	} else if (element.className=='answerunknownClicked'){
-        		element.className = 'answerunknown';
-        	} else if (element.className=='answer'){
-        		element.className = 'answerClicked';
+        toggleAnswerHighlighting : function( answerEl, type ){
+        	alert(type);
+        	alert(answerEl.parentNode.parentNode.className);
+        	if(type=="oc"){
+        		
+        	} else if (type=="mc"){
+        		
+        	}
+        	
+        	// to highlight/unhighlight an answer if clicked on
+        	if(answerEl.className=='answerClicked'){
+        		answerEl.className = 'answer';
+        	} else if (answerEl.className=='answerunknownClicked'){
+        		answerEl.className = 'answerunknown';
+        	} else if (answerEl.className=='answer'){
+        		answerEl.className = 'answerClicked';
         	} else {
-        		element.className = 'answerunknownClicked';
+        		answerEl.className = 'answerunknownClicked';
         	}
         }, 
         toggleIndicationHighlighting : function ( element ) {
