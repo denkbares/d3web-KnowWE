@@ -934,3 +934,27 @@ td.invalidTimeStamp:hover div.invalidTimeStamp {
 	border: 1px solid #777;
 }
 
+
+/* ################################################## */
+/* ------------Default Markup Styles----------------- */
+/* ################################################## */
+
+.defaultMarkup {
+	position:relative;
+}
+
+.defaultMarkup .markupHeader {
+	position:absolute; 
+	top:			0px; 
+	right:			10px; 
+	margin-right:	14px;
+	padding:		3px 10px 3px 10px; 
+	border-left:	1px solid #DDD; 
+	border-bottom:	1px solid #DDD; 
+	border-bottom-left-radius: 10px; 
+}
+
+.defaultMarkup .markupHeader .markupIcon {
+	vertical-align:	-7px;
+}
+

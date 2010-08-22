@@ -17,20 +17,17 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-
-/**
- * 
- */
 package de.d3web.we.kdom.defaultMarkup;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import de.d3web.report.Message;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMNotice;
@@ -41,10 +38,27 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> {
 
+	private final String iconPath;
+
+	public DefaultMarkupRenderer() {
+		this(null);
+	}
+
+	public DefaultMarkupRenderer(String iconPath) {
+		this.iconPath = iconPath;
+	}
+
 	@Override
 	public void render(KnowWEArticle article, Section<DefaultMarkupType> section, KnowWEUserContext user, StringBuilder string) {
 
-		string.append(KnowWEUtils.maskHTML("<div id=\"" + section.getID() + "\">\n"));
+		String id = section.getID();
+		String name = "<span>"+section.getObjectType().getName()+"</span>";
+		String icon = this.iconPath;
+		if (icon != null) {
+			icon = "<img class='markupIcon' src='" + icon + "'></img> ";
+		}
+		string.append(KnowWEUtils.maskHTML("<div id=\"" + id + "\" class='defaultMarkup'>\n"));
+		string.append(KnowWEUtils.maskHTML("<div class='markupHeader'>" + icon + name + "</div>\n"));
 		// render pre-formatted box
 		string.append("{{{\n");
 
@@ -54,7 +68,16 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> 
 
 		// render messages and content
 		renderMessages(article, section, string);
-		DelegateRenderer.getInstance().render(article, section, user, string);
+		// DelegateRenderer.getInstance().render(article, section, user,
+		// string);
+		List<Section<?>> subsecs = section.getChildren();
+		Section<?> first = subsecs.get(0);
+		Section<?> last = subsecs.get(subsecs.size() - 1);
+		for (Section<?> subsec : subsecs) {
+			if (subsec == first && subsec.getObjectType() instanceof PlainText) continue;
+			if (subsec == last && subsec.getObjectType() instanceof PlainText) continue;
+			subsec.getObjectType().getRenderer().render(article, subsec, user, string);
+		}
 
 		// and close the box
 		string.append("}}}\n");

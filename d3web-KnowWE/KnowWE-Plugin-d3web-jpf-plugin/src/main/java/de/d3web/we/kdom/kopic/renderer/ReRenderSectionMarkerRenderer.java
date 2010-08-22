@@ -20,8 +20,8 @@
 package de.d3web.we.kdom.kopic.renderer;
 
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -33,22 +33,19 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  *         content is automatically updated when answers are set.
  * 
  */
-public class ReRenderSectionMarkerRenderer extends KnowWEDomRenderer {
+public class ReRenderSectionMarkerRenderer<T extends KnowWEObjectType> extends KnowWEDomRenderer<T> {
 
 	/**
 	 * Holds the renderer of the inner text.
 	 */
-	@SuppressWarnings("unchecked")
-	KnowWEDomRenderer renderer = DelegateRenderer.getInstance();
+	private final KnowWEDomRenderer<T> renderer;
 
-	@SuppressWarnings("unchecked")
-	public ReRenderSectionMarkerRenderer(KnowWEDomRenderer renderer) {
+	public ReRenderSectionMarkerRenderer(KnowWEDomRenderer<T> renderer) {
 		this.renderer = renderer;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public void render(KnowWEArticle article, Section sec,
+	public void render(KnowWEArticle article, Section<T> sec,
 			KnowWEUserContext user, StringBuilder string) {
 		Boolean ajaxAction = user.getUrlParameterMap().containsKey("action");
 		if (!ajaxAction) {

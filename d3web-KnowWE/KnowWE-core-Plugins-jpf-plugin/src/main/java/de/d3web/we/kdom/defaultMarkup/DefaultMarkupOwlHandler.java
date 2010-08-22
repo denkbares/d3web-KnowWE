@@ -82,10 +82,11 @@ public class DefaultMarkupOwlHandler extends OwlSubtreeHandler {
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section section) {
 
-		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
+		if (SemanticCoreDelegator.getInstance() == null) return null;
 
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		OwlHelper helper = SemanticCoreDelegator.getInstance().getUpper().getHelper();
+		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 
 		try {
 			// Access (or lazy build) parent concept
