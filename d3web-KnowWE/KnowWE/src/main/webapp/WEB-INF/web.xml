@@ -27,17 +27,6 @@
 		<filter-name>KnowWEUploadFilter</filter-name>
 		<url-pattern>/KnowWEUpload</url-pattern>
 	</filter-mapping>
-	
-	<!-- Action Servlet -->
-	<servlet>
- 		<servlet-name>ActionServlet</servlet-name>
- 		<servlet-class>de.d3web.we.action.ActionServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
- 		<servlet-name>ActionServlet</servlet-name>
- 		<url-pattern>/action/*</url-pattern>
-	</servlet-mapping>
-	
 
    <!--
       WikiServletFilter defines a servlet filter which filters all requests. It was
@@ -62,66 +51,17 @@
       <filter-class>com.ecyrd.jspwiki.ui.WikiServletFilter</filter-class>
    </filter>
    
-   <!-- d3web-dialog2 stuff -->
+
    <filter>
       <filter-name>WikiJSPFilter</filter-name>
       <filter-class>com.ecyrd.jspwiki.ui.WikiJSPFilter</filter-class>
    </filter>
-	<!-- Ajax4JSF Filter -->
-	<filter>
-		<display-name>Ajax4jsf Filter</display-name>
-		<filter-name>ajax4jsf</filter-name>
-		<filter-class>org.ajax4jsf.Filter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>ajax4jsf</filter-name>
-		<servlet-name>Faces Servlet</servlet-name>
-		<dispatcher>REQUEST</dispatcher>
-		<dispatcher>FORWARD</dispatcher>
-		<dispatcher>INCLUDE</dispatcher>
-	</filter-mapping>
+
 
 	<!-- Extensions Filter -->
-	<filter>
-		<filter-name>MyFacesExtensionsFilter</filter-name>
-		<filter-class>
-			org.apache.myfaces.webapp.filter.ExtensionsFilter
-		</filter-class>
-	    <init-param>
-	      <description>Set the size limit for uploaded files.
-	                Format: 10 - 10 bytes
-	                        10k - 10 KB
-	                        10m - 10 MB
-	                        1g - 1 GB</description>
-	      <param-name>uploadMaxFileSize</param-name>
-	      <param-value>10m</param-value>
-	    </init-param>
-	    <init-param>
-	      <description>Set the threshold size - files
-	                    below this limit are stored in memory, files above
-	                    this limit are stored on disk.
 	
-	                Format: 10 - 10 bytes
-	                        10k - 10 KB
-	                        10m - 10 MB
-	                        1g - 1 GB</description>
-	      <param-name>uploadThresholdSize</param-name>
-	      <param-value>100k</param-value>
-	    </init-param>
-	</filter>
-	<filter-mapping>
-		<filter-name>MyFacesExtensionsFilter</filter-name>
-		<servlet-name>Faces Servlet</servlet-name>
-	</filter-mapping>
-	<filter-mapping>
-		<filter-name>MyFacesExtensionsFilter</filter-name>
-		<url-pattern>/faces/myFacesExtensionResource/*</url-pattern>
-	</filter-mapping>
-	<filter-mapping>
-		<filter-name>MyFacesExtensionsFilter</filter-name>
-		<url-pattern>*.jsp</url-pattern>
-	</filter-mapping>
-   <filter-mapping>
+
+   <filter-mapping> 
        <filter-name>WikiServletFilter</filter-name>
        <url-pattern>/attach/*</url-pattern>
    </filter-mapping>
@@ -160,18 +100,7 @@
    <listener>
       <listener-class>com.ecyrd.jspwiki.auth.SessionMonitor</listener-class>
    </listener>
-   
-   <listener>
-		<listener-class>
-			org.apache.myfaces.webapp.StartupServletContextListener
-		</listener-class>
-	</listener>
-	<listener>
-	  	<listener-class>
-	  		de.d3web.dialog2.util.CaseFinalizationNotifier
-	  	</listener-class>
-	</listener>
-   
+
    <!--
        Now, let's define the XML-RPC interfaces.  You probably don't have to
        touch these.
@@ -195,28 +124,8 @@
    <!--
        OK, this then defines that our UTF-8 -capable server.
      -->
-<servlet>
-		<servlet-name>Faces Servlet</servlet-name>
-		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-		<load-on-startup>0</load-on-startup>
-	</servlet>
-	<servlet>
-		<servlet-name>FrontControllerServlet</servlet-name>
-		<servlet-class>de.d3web.dialog2.FrontControllerServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>Faces Servlet</servlet-name>
-		<url-pattern>*.jsf</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>Faces Servlet</servlet-name>
-		<url-pattern>/faces/*</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>FrontControllerServlet</servlet-name>
-		<url-pattern>/Controller</url-pattern>
-	</servlet-mapping>
+     
+
 	
 	   <servlet>
        <servlet-name>XMLRPC-UTF8</servlet-name>
@@ -230,7 +139,7 @@
            <param-name>prefix</param-name>
            <param-value>wiki</param-value>
        </init-param>
-   </servlet>
+   </servlet> 
 
    <!-- JSON AJAX API -->
    <servlet>
