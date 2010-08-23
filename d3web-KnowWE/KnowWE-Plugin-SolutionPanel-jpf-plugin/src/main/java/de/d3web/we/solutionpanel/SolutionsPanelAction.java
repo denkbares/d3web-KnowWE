@@ -131,7 +131,7 @@ public class SolutionsPanelAction extends AbstractAction {
 			excluded.addAll(session.getBlackboard().getSolutions(State.EXCLUDED));
 
 			// take unclears in M.Freiberg Aug/2010
-			unclear.addAll(session.getBlackboard().getSolutions(State.UNCLEAR));
+			// unclear.addAll(session.getBlackboard().getSolutions(State.UNCLEAR));
 		}
 
 		boolean painted = false;
@@ -165,21 +165,15 @@ public class SolutionsPanelAction extends AbstractAction {
 		 * added unclear and excluded solutions to solution panel M. Freiberg
 		 * Aug/2010
 		 */
-		if (!unclear.isEmpty()) {
-			if (painted) {
-				sb.append("<hr/>");
-				painted = false;
-			}
-			sb.append("<div>");
-
-			sb.append("<strong>"
-					+ rb.getString("KnowWE.solution.unclearSolutions")
-					+ ":</strong>");
-			// sb.append("</a>");
-			sb.append(getSolutionLinkListNonDPS(user, web, sessions, State.UNCLEAR));
-			sb.append("</div>");
-			painted = true;
-		}
+		/*
+		 * if (!unclear.isEmpty()) { if (painted) { sb.append("<hr/>"); painted
+		 * = false; } sb.append("<div>");
+		 * 
+		 * sb.append("<strong>" +
+		 * rb.getString("KnowWE.solution.unclearSolutions") + ":</strong>"); //
+		 * sb.append("</a>"); sb.append(getSolutionLinkListNonDPS(user, web,
+		 * sessions, State.UNCLEAR)); sb.append("</div>"); painted = true; }
+		 */
 
 		if (!excluded.isEmpty()) {
 			if (painted) {
