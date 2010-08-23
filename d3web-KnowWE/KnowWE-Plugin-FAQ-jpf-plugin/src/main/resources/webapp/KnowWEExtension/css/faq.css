@@ -33,12 +33,13 @@
 
 /* the question text style */
 .faq_question{ font-weight: bold; background-color: #CCC; margin: 7.5px 5px 10px 0px; -moz-box-shadow: 0 0 2px #003366;
-	-webkit-box-shadow: 0 0 2px #003366; box-shadow: 0 0 2px #003366; padding: 5px; padding-left: 7px; }
+	-webkit-box-shadow: 0 0 2px #003366; box-shadow: 0 0 2px #003366; padding: 5px; padding-left: 7px; clear: both; display: block;}
 
 
 /* the answer text style */
 .faq_answer{ background-color: #EEE; margin-left: 8px; margin-right: 8px; margin-bottom: 20px; margin-top: 3px;
-	-moz-box-shadow: 0 0 3px black; -webkit-box-shadow: 0 0 3px black; box-shadow: 0 0 3px black; padding: 5px; }
+	-moz-box-shadow: 0 0 3px black; -webkit-box-shadow: 0 0 3px black; box-shadow: 0 0 3px black; padding: 5px; 
+	clear: both; display: block}
 
 
 /* style p tags without margin and padding */
@@ -46,14 +47,14 @@
 
 
 /* the tags style */
-.faq_tags{ font-size: 0.7em; font-weight: bold; margin-right: 5px; text-align: right; margin: 0px; }
+.faq_tags{ font-size: 0.7em; font-weight: bold; margin-right: 5px; display: block; clear: both; text-align: right;  }
 
 
 /* Styling of the alphabetical symbol-anchors for grouping the faq entries */
 .cat { background-color: rgb(176, 196, 222); padding: 2px 5px; margin: 2px; -moz-border-radius: 5px; -webkit-border-radius: 5px;
-      -moz-box-shadow: 0 0 2px #888; -webkit-box-shadow: 0 0 2px #888; display: inline-block; }
+      -moz-box-shadow: 0 0 2px #888; -webkit-box-shadow: 0 0 2px #888; display: block; clear: both; float: left; }
       
       
 /* Styling of the topline category links */
 .cattop{ background-color: #DDD; padding: 2px 5px; margin: 2px; -moz-border-radius: 5px; -webkit-border-radius: 5px;
-      -moz-box-shadow: 0 0 2px #888; -webkit-box-shadow: 0 0 2px #888; display: inline-block; }
+      -moz-box-shadow: 0 0 2px #888; -webkit-box-shadow: 0 0 2px #888; float: left; display: block; }

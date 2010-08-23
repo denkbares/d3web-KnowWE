@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -48,12 +48,12 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 /**
  * e.g. [{KnowWEPlugin faq=all; status=stud; major=inf;}] renders all faq
  * entries where status = stud (student) and major = inf (informatics)
- * 
+ *
  * if isset faq=all --> render all entries = SPARQL_ALL-querystring
- * 
+ *
  * if not isset faq=all --> query the attributes major and status and adapt the
  * SPARQL accordingly
- * 
+ *
  * @author M. Freiberg
  * @date July 2010
  */
@@ -103,6 +103,7 @@ public class FAQTagHandler extends AbstractTagHandler {
 
 			String major = "";
 			String status = "";
+			boolean maj = false;
 
 			// check for all annotations if provided. In case they are, replace
 			// the variables with the given annotation.
@@ -111,30 +112,27 @@ public class FAQTagHandler extends AbstractTagHandler {
 			if (values.get("major") != null) {
 
 				major = values.get("major");
-				try {
-					querystring =
-							querystring.replace("WHERE {", "WHERE { " +
-									"FILTER (regex(?m, \"" + major + "\")) .");
-				}
-
-				catch (Exception e) {
-					return "Illegal query String: " + querystring + "<br />"
-								+ " no valid parameter for: " + "MAJOR";
-				}
+				querystring =
+						querystring.replace("}", ". " + "FILTER (regex(?m, \"" + major
+								+ "\"))" + "}");
+				maj = true;
 			}
 
 			if (values.get("status") != null) {
 
 				status = values.get("status");
-				try {
+
+				if (maj) {
 					querystring =
-							querystring.replace("WHERE {", "WHERE { " +
-									"FILTER (regex(?s, \"" + status + "\")) .");
+							querystring.replace("}", " FILTER (regex(?s, \"" + status
+									+ "\"))" + "}");
 				}
-				catch (Exception e) {
-					return "Illegal query String: " + querystring + "<br />"
-								+ " no valid parameter for: " + "STATUS";
+				else {
+					querystring =
+							querystring.replace("}", ". " + " FILTER (regex(?s, \""
+									+ status + "\"))" + "}");
 				}
+				System.out.println(querystring);
 			}
 		}
 
@@ -187,7 +185,7 @@ public class FAQTagHandler extends AbstractTagHandler {
 
 	/**
 	 * Assembles the actual HTML String for display in the wiki page
-	 * 
+	 *
 	 * @created 06.07.2010
 	 * @param result the result of the SPARQL query that is to be displayed in
 	 *        the page
@@ -239,7 +237,7 @@ public class FAQTagHandler extends AbstractTagHandler {
 	 * Takes a TupleQueryResult from the SPARQL query and creates a list with
 	 * all FAQ entries, the entry vals each separated by "----", that is sorted
 	 * alphabetically
-	 * 
+	 *
 	 * @created 03.08.2010
 	 * @param result the TupleQueryResult from the SPARQL query
 	 * @return the sorted list of FAQ entries in String representation
