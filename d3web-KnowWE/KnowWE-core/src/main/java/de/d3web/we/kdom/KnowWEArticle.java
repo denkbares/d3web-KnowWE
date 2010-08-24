@@ -520,7 +520,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 				section.letSubtreeHandlersCreate(this, priority);
 			}
 		}
-
+		sec.setReusedStateRecursively(title, true);
 	}
 
 	// // This method is needed for the case that Sections get reused and are

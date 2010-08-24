@@ -120,7 +120,9 @@ public class CompileFlag extends DefaultMarkupType {
 						section.letSubtreeHandlersCreate(article, priority);
 					}
 				}
-
+				for (Section<?> namespaceDef : namespaceDefinitions) {
+					namespaceDef.setReusedStateRecursively(article.getTitle(), true);
+				}
 			}
 			return null;
 		}
