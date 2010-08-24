@@ -132,7 +132,6 @@ public class FAQTagHandler extends AbstractTagHandler {
 							querystring.replace("}", ". " + " FILTER (regex(?s, \""
 									+ status + "\"))" + "}");
 				}
-				System.out.println(querystring);
 			}
 		}
 
@@ -199,13 +198,13 @@ public class FAQTagHandler extends AbstractTagHandler {
 		List<String> sortedFAQs = sortAlphabetically(result);
 		StringBuilder string = new StringBuilder();
 		String[] resultVals = null;
-
+	
 		// render the topmost category-link line
-		string.append(FAQUtils.renderCategoriesAnchorLinks());
+		// string.append(FAQUtils.renderCategoriesAnchorLinks());
 
 		// go through all possible FAQ categories, for each check whether the
 		// current entry from the list starts with that symbol, if yes append
-		for (FAQCats symbol : FAQCats.values()) {
+		 for (FAQCats symbol : FAQCats.values()) {
 
 			// print the category symbol
 			string.append(FAQUtils.printCategory(symbol));
@@ -213,20 +212,11 @@ public class FAQTagHandler extends AbstractTagHandler {
 			for (int i = 0; i < sortedFAQs.size(); i++) {
 				resultVals = sortedFAQs.get(i).split("----");
 
-				if (Character.isDigit(resultVals[0].charAt(0))) {
+				if (resultVals[0].startsWith(symbol.toString()) ||
+					resultVals[0].startsWith(symbol.toString().toLowerCase())) {
+			
 					string.append(FAQUtils.renderFAQPluginInner(
 							resultVals[0], resultVals[1], resultVals[2], resultVals[3]));
-
-				}
-				else {
-
-					if (resultVals[0].startsWith(symbol.toString()) ||
-							resultVals[0].startsWith(symbol.toString().toLowerCase())) {
-
-						string.append(FAQUtils.renderFAQPluginInner(
-								resultVals[0], resultVals[1], resultVals[2], resultVals[3]));
-
-					}
 				}
 			}
 		}
@@ -265,6 +255,7 @@ public class FAQTagHandler extends AbstractTagHandler {
 					String a = set.getValue("a").stringValue();
 					a = a.trim();
 					a = FAQUtils.resolveLinks(a);
+					System.out.println(a);
 					bui.append(a);
 					bui.append("----");
 				}

@@ -56,5 +56,4 @@
       
       
 /* Styling of the topline category links */
-.cattop{ background-color: #DDD; padding: 2px 5px; margin: 2px; -moz-border-radius: 5px; -webkit-border-radius: 5px;
-      -moz-box-shadow: 0 0 2px #888; -webkit-box-shadow: 0 0 2px #888; float: left; display: block; }
+.cattop{ background-color: #DDD; padding: 2px 5px; margin: 2px; }

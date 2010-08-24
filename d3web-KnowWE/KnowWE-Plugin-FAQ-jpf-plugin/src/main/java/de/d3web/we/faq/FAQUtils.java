@@ -20,7 +20,6 @@
 
 package de.d3web.we.faq;
 
-import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * Class for collecting some useful global helper functions
@@ -68,7 +67,6 @@ public class FAQUtils {
 			a = a.replaceFirst("\\[", "");
 			a = a.replaceFirst("\\]", "");
 		}
-		a = KnowWEUtils.maskHTML(a);
 		return a;
 	}
 
@@ -85,17 +83,17 @@ public class FAQUtils {
 	public static String renderFAQPluginInner(String question, String answer, String status, String major) {
 		StringBuilder string = new StringBuilder();
 
-		string.append(KnowWEUtils.maskHTML("<div class='faq_question'> Q: "));
+		string.append("<div class='faq_question'> Q: ");
 		string.append(question);
-		string.append(KnowWEUtils.maskHTML("</div>"));
-		string.append(KnowWEUtils.maskHTML("<div class='faq_answer'> "));
+		string.append("</div>");
+		string.append("<div class='faq_answer'> ");
 		string.append(answer);
-		string.append(KnowWEUtils.maskHTML("<div class='faq_tags'> "));
+		string.append("<div class='faq_tags'> ");
 		string.append(status);
 		string.append(" ");
 		string.append(major);
-		string.append(KnowWEUtils.maskHTML("</div>"));
-		string.append(KnowWEUtils.maskHTML("</div>"));
+		string.append("</div>");
+		string.append("</div>");
 
 		return string.toString();
 	}
@@ -109,10 +107,10 @@ public class FAQUtils {
 	 */
 	public static String renderFAQPluginFrame(String pluginInner) {
 		StringBuilder string = new StringBuilder();
-		string.append(KnowWEUtils.maskHTML("<div class='panel'>"));
-		string.append(KnowWEUtils.maskHTML("<h3>FAQ Plugin</h3>"));
+		string.append("<div class='panel'>");
+		string.append("<h3>FAQ Plugin</h3>");
 		string.append(pluginInner);
-		string.append(KnowWEUtils.maskHTML("</div>"));
+		string.append("</div>");
 		return string.toString();
 	}
 
@@ -126,17 +124,17 @@ public class FAQUtils {
 	 */
 	public static String printCategory(FAQCats cat) {
 		StringBuilder string = new StringBuilder();
-		string.append(KnowWEUtils.maskHTML("<div class='cat'>"));
+		string.append("<div class='cat'>");
 
 		if (cat.toString().equals("NUM")) {
-			string.append(KnowWEUtils.maskHTML("<a name='" + cat.toString() + "'>0...9</a>"));
+			string.append("<a name='" + cat.toString() + "'>0...9</a>");
 		}
 		else {
-			string.append(KnowWEUtils.maskHTML("<a name='" + cat.toString() + "'>"
-					+ cat.toString() + "</a>"));
+			string.append("<a name='" + cat.toString() + "'>"
+					+ cat.toString() + "</a>");
 		}
 
-		string.append(KnowWEUtils.maskHTML("</div> <br>"));
+		string.append("</div> <br />");
 		return string.toString();
 	}
 
@@ -149,18 +147,20 @@ public class FAQUtils {
 	 */
 	public static String renderCategoriesAnchorLinks() {
 		StringBuilder string = new StringBuilder();
+
 		for (FAQCats cat : FAQCats.values()) {
-			if (cat.toString().equals("NUM")) {
-				string.append(KnowWEUtils.maskHTML("<a class='cattop' href='#" + cat.toString()
-						+ "'>0...9</a>"));
-			}
-			else {
-				string.append(KnowWEUtils.maskHTML("<a class='cattop' href='#" + cat.toString()
-						+ "'>"
-						+ cat.toString() + "</a>"));
-			}
+			System.out.println(cat.name());
+			string.append("<div class='cattop'>");
+			// if (cat.toString().equals("NUM")) {
+			// string.append("<a class='cattop' href='" + cat.toString()
+			// + "'>0...9</a>");
+			// }
+			// else {
+			string.append("<a href=\"" + cat.name() + "\">" + cat.name() + "</a>");
+			// }
+
+			string.append("</div>");
 		}
-		// string.append("<p>");
 		return string.toString();
 	}
 }
