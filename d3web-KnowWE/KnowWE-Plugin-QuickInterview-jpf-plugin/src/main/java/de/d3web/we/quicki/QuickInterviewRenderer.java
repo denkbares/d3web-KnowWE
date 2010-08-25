@@ -63,6 +63,7 @@ public class QuickInterviewRenderer {
 
 	private static List<? extends QASet> inits = null;
 
+
 	/**
 	 * Assembles and returns the HTML representation of the interview.
 	 *
@@ -138,7 +139,10 @@ public class QuickInterviewRenderer {
 
 		// just do not display the rooty root
 		if (!topContainer.getName().endsWith("Q000")) {
-			if (!processedTOs.contains(topContainer)) {
+			if (processedTOs.contains(topContainer)) {
+				return;
+			}
+			else {
 				processedTOs.add(topContainer);
 				qcon.append(getQuestionnaireRendering(topContainer, depth, init));
 			}
@@ -189,10 +193,12 @@ public class QuickInterviewRenderer {
 			Set<TerminologyObject> processedTOs, int depth, TerminologyObject parent, boolean init) {
 
 		// no follow-ups --> append question rendering if not already rendered
-		if (!processedTOs.contains(topQuestion)) {
-			processedTOs.add(topQuestion);
-			sb.append(getQABlockRendering(topQuestion, depth++, parent));
+		if (processedTOs.contains(topQuestion)) {
+			return;
 		}
+
+		sb.append(getQABlockRendering(topQuestion, depth++, parent));
+		processedTOs.add(topQuestion);
 
 		if (topQuestion.getChildren().length > 0) {
 
