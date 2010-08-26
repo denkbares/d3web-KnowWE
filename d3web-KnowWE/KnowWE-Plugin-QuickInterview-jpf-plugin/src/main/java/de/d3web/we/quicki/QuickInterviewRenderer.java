@@ -134,17 +134,17 @@ public class QuickInterviewRenderer {
 	 * @param init flag for signalling whether the processed element was in the
 	 *        init questionnaire
 	 */
-	private static void getInterviewElementsRenderingRecursively(QASet topContainer,
+	private static void getInterviewElementsRenderingRecursively(TerminologyObject topContainer,
 			StringBuffer qcon, Set<TerminologyObject> processedTOs, int depth, boolean init) {
 
 		// just do not display the rooty root
 		if (!topContainer.getName().endsWith("Q000")) {
 			if (processedTOs.contains(topContainer)) {
-				return;
+				// return;
 			}
 			else {
 				processedTOs.add(topContainer);
-				qcon.append(getQuestionnaireRendering(topContainer, depth, init));
+				qcon.append(getQuestionnaireRendering((QContainer) topContainer, depth, init));
 			}
 		}
 
@@ -157,7 +157,6 @@ public class QuickInterviewRenderer {
 				+ display + "' >");
 
 		depth++;
-		System.out.println(topContainer.getName() + " " + depth);
 
 		// process all children, depending on element type branch into
 		// corresponding recursion
@@ -166,7 +165,7 @@ public class QuickInterviewRenderer {
 			init = inits.contains(qcontainerchild) ? true : false;
 
 			if (qcontainerchild instanceof QContainer) {
-				getInterviewElementsRenderingRecursively((QContainer)
+				getInterviewElementsRenderingRecursively(
 						qcontainerchild, qcon, processedTOs, depth, init);
 			}
 			else if (qcontainerchild instanceof Question) {
@@ -195,12 +194,12 @@ public class QuickInterviewRenderer {
 
 		// no follow-ups --> append question rendering if not already rendered
 		if (processedTOs.contains(topQuestion)) {
+			getAlreadyDefinedIndicator(topQuestion, sb, depth);
 			return;
 		}
 
 		depth++;
 
-		System.out.println(topQuestion.getName() + " " + depth);
 		sb.append(getQABlockRendering(topQuestion, depth, parent));
 		processedTOs.add(topQuestion);
 
@@ -208,11 +207,19 @@ public class QuickInterviewRenderer {
 
 			// we got follow-up questions, thus call recursively for children
 			for (TerminologyObject qchild : topQuestion.getChildren()) {
-
 				getQuestionsRecursively((Question) qchild, sb, processedTOs,
 						depth, parent, init);
 			}
 		}
+	}
+
+	private static void getAlreadyDefinedIndicator(Question topQuestion, StringBuffer sb, int depth) {
+
+		int margin = 10 + 30 + depth * 10;
+		sb.append("<div id='" + topQuestion.getId() + "' " +
+				"class='alreadyDefined' style='margin-left: " + margin + "px; display: block'; >");
+		sb.append(" " + topQuestion.getName() + " ");
+		sb.append("</div>");
 	}
 
 	/**
@@ -236,7 +243,7 @@ public class QuickInterviewRenderer {
 
 		div.append("<div id='" + container.getId() + "' " +
 				clazz + " style='margin-left: " + margin + "px; display: block'; >");
-		div.append(" " + container.getName() + ": ");
+		div.append(" " + container.getName() + " ");
 		div.append("</div>");
 
 		return div.toString();
