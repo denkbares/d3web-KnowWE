@@ -157,6 +157,7 @@ public class QuickInterviewRenderer {
 				+ display + "' >");
 
 		depth++;
+		System.out.println(topContainer.getName() + " " + depth);
 
 		// process all children, depending on element type branch into
 		// corresponding recursion
@@ -197,7 +198,10 @@ public class QuickInterviewRenderer {
 			return;
 		}
 
-		sb.append(getQABlockRendering(topQuestion, depth++, parent));
+		depth++;
+
+		System.out.println(topQuestion.getName() + " " + depth);
+		sb.append(getQABlockRendering(topQuestion, depth, parent));
 		processedTOs.add(topQuestion);
 
 		if (topQuestion.getChildren().length > 0) {
@@ -206,7 +210,7 @@ public class QuickInterviewRenderer {
 			for (TerminologyObject qchild : topQuestion.getChildren()) {
 
 				getQuestionsRecursively((Question) qchild, sb, processedTOs,
-						depth++, parent, init);
+						depth, parent, init);
 			}
 		}
 	}
