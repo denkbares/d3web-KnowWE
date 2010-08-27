@@ -79,6 +79,9 @@ KNOWWE.plugin.quicki = function(){
         	_KS('.answer').each(function(element){
         		_KE.add('click', element, KNOWWE.plugin.quicki.answerClicked);                
             });
+        	_KS('.answerunknown').each(function(element){
+                _KE.add('click', element, KNOWWE.plugin.quicki.answerUnknownClicked);
+        	});
         	_KS('.questionnaire').each(function(element){
                 _KE.add('click', element, KNOWWE.plugin.quicki.updateQuestionnaireVisibility);
         	});
@@ -122,6 +125,28 @@ KNOWWE.plugin.quicki = function(){
             	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
                     	{ action : 'SetSingleFindingAction', ValueID: rel.oid});
             }
+        },
+        /**
+         * Function: answerUnknownClicked
+         * 		Sets value unknown for the clicked quesstion and toggles all
+         * 		already highlighted answers
+         * 
+         * Parameters:
+         *     event - The user click event on an answer.
+         */
+        answerUnknownClicked : function( event ) {
+            var el = _KE.target(event); 	// get the clicked element
+            if(el.tagName.toLowerCase() == "input") return; // TODO check
+            var retract = false;
+            _KE.cancel( event );
+            
+            var rel = eval("(" + el.getAttribute('rel') + ")");
+            var questionID = rel.qid;
+            
+            KNOWWE.plugin.quicki.toggleAnswerHighlightingAfterUnknown(questionID);          
+           
+            KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
+             	{ action : 'SetSingleFindingAction', ValueID: 'MaU'});
         },
         /**
          * Function: numAnswer
@@ -225,6 +250,15 @@ KNOWWE.plugin.quicki = function(){
             		answerEl.className = 'answerunknownClicked';
             	}
         	}
+        }, 
+        toggleAnswerHighlightingAfterUnknown : function( questionID ){
+        	
+        	_KS('.answerClicked').each(function(element){
+    			var relElement =  eval("(" +  element.getAttribute('rel') + ")");
+    			if (relElement.qid==questionID){
+    				element.className = 'answer';
+    			}
+            	});
         }, 
         toggleIndicationHighlighting : function ( element ) {
         	if(element.className=='question indicated'){
