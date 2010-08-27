@@ -114,6 +114,8 @@ public class QuickInterviewRenderer {
 	private static void getInterviewPluginHeader(StringBuffer html) {
 		html.append("<h3>");
 		html.append("Quick Interview");
+		html.append("<div class='qreset'></div>");
+		html.append("<div class='qquickanswers'></div>");
 		html.append("</h3>");
 	}
 

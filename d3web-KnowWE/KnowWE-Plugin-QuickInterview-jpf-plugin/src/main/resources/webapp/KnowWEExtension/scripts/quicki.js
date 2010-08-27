@@ -76,18 +76,31 @@ KNOWWE.plugin.quicki = function(){
          * 		add the click events and corresponding functions to interview elments
          */
         initAction : function (){
+        	
         	_KS('.answer').each(function(element){
         		_KE.add('click', element, KNOWWE.plugin.quicki.answerClicked);                
             });
+        	
         	_KS('.answerunknown').each(function(element){
                 _KE.add('click', element, KNOWWE.plugin.quicki.answerUnknownClicked);
         	});
+        	
         	_KS('.questionnaire').each(function(element){
                 _KE.add('click', element, KNOWWE.plugin.quicki.updateQuestionnaireVisibility);
         	});
-        	 _KS('.num-ok').each(function( element ){
-                 _KE.add('click', element, KNOWWE.plugin.quicki.numAnswer);
-             });   
+        	
+        	_KS('.num-ok').each(function( element ){
+                _KE.add('click', element, KNOWWE.plugin.quicki.numAnswer);
+            });  
+        	
+        	 _KS('.qreset').each(function( element ){
+                 _KE.add('click', element, KNOWWE.plugin.quicki.qReset);
+             });  
+        	 
+        	 _KS('.qquickanswers').each(function( element ){
+                 _KE.add('click', element, KNOWWE.plugin.quicki.enableQAnswers);
+             });  
+        	 
         }, 
         /**
          * Function: answerClicked
@@ -300,6 +313,14 @@ KNOWWE.plugin.quicki = function(){
             	KNOWWE.plugin.quicki.toggleImage(0, questionnaire);   
             } 
           	KNOWWE.plugin.quicki.showRefreshed();
+        },
+        qReset : function ( event ) {
+        	//TODO reset complete interview
+        	alert("reset interview");
+        },
+        enableQAnswers : function ( event ) {
+        	//TODO switch between quick answering and non q-a
+        	alert("toggle quick answering");
         },
         /**
          * Function: send
