@@ -136,25 +136,20 @@ KNOWWE.plugin.quicki = function(){
          */
         answerUnknownClicked : function( event ) {
             var el = _KE.target(event); 	// get the clicked element
-            var retract = false;
-            
+           
             var rel = eval("(" + el.getAttribute('rel') + ")");
             var questionID = rel.qid;
-            
-        	event = new Event( event ).stopPropagation();
-            var bttn = (_KE.target( event ).className == 'num-ok');            
-            var key = (event.code == 13);
           
             if( rel.type=='num') {
             	
             	var numfield = _KS('#input_' + rel.qid);
-            	
             	// clear input field
             	if(numfield) {
                     numfield.value = "";
             	}      
             } else {
             	KNOWWE.plugin.quicki.toggleAnswerHighlightingAfterUnknown(questionID);   
+            	el.className="answerunknown";
             }
 
             KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
@@ -263,14 +258,20 @@ KNOWWE.plugin.quicki = function(){
             	}
         	}
         }, 
+        /**
+         * Function toggleAnswerHighlightingAfterUnknown
+         * 		process the correct highlighting of answer elements after unknown is clicked
+         *		i.e., remove highlighting 
+         */
         toggleAnswerHighlightingAfterUnknown : function( questionID ){
         	
         	_KS('.answerClicked').each(function(element){
+        		
     			var relElement =  eval("(" +  element.getAttribute('rel') + ")");
     			if (relElement.qid==questionID){
     				element.className = 'answer';
     			}
-            	});
+            });
         }, 
         toggleIndicationHighlighting : function ( element ) {
         	if(element.className=='question indicated'){

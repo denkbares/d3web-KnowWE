@@ -468,7 +468,7 @@ public class QuickInterviewRenderer {
 	 * @return the HTML representation
 	 */
 	private static void renderAnswerUnknown(Question q, String type, StringBuffer sb) {
-		System.out.println("render unknown");
+
 		String jscall = " rel=\"{oid: '" + Unknown.getInstance().getId() + "', "
 				+ "web:'" + web + "', "
 				+ "ns:'" + namespace + "', "
@@ -477,7 +477,6 @@ public class QuickInterviewRenderer {
 				+ "}\" ";
 		String cssclass = "answerunknown";
 		String spanid = q.getId() + "_" + Unknown.getInstance().getId();
-		System.out.println(getEnclosingTagOnClick("div", "", cssclass, jscall, null, spanid));
 		sb.append(getEnclosingTagOnClick("div", "", cssclass, jscall, null, spanid));
 	}
 
