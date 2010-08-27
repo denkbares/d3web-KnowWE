@@ -57,3 +57,8 @@
       
 /* Styling of the topline category links */
 .cattop{ background-color: #DDD; padding: 2px 5px; margin: 2px; }
+
+
+/* Giving the FAQ app a fitting logo */
+.applicationlogo a { display:block; height:76px; width:264px; overflow:hidden; margin-left:auto; margin-right:auto;
+	text-indent:-1000px; background:url(../images/logoFAQ.png) +10px 0 no-repeat; }

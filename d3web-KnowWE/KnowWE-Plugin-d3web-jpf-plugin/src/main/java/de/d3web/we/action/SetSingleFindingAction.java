@@ -293,7 +293,7 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 		}
 		catch (IOException e) {
 			Logger.getLogger(this.getClass()).error(
-					"Error while performing RefreshHTMLDialogAction" + e.getMessage());
+					"Error while performing QuickInterviewAction" + e.getMessage());
 		}
 
 		return null;

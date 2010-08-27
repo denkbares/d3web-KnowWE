@@ -21,6 +21,7 @@
 package de.d3web.we.event;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -68,7 +69,7 @@ public class FindingSetEvent extends Event {
 			// rather than for List<?> as it was before!
 			// Please also cross-check SetSingleFindingAction
 
-			if (question instanceof QuestionMC && value.getValue() instanceof HashSet<?>) {
+			if (question instanceof QuestionMC && value.getValue() instanceof Set<?>) {
 				HashSet<ChoiceValue> choiceValues = (HashSet<ChoiceValue>) value.getValue();
 				for (ChoiceValue cv : choiceValues) {
 					if (!(((QuestionChoice) question).getAllAlternatives().contains(cv.getValue()))) {
