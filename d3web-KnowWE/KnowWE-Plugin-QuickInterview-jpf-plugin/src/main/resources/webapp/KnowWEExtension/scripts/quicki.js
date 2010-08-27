@@ -96,6 +96,10 @@ KNOWWE.plugin.quicki = function(){
         answerClicked : function( event ) {
             var el = _KE.target(event); 	// get the clicked element
             if(el.tagName.toLowerCase() == "input") return; // TODO check
+            var retract = false;
+            if(el.className == 'answerClicked'){
+            	retract = true;
+            }
             _KE.cancel( event );
             
             var rel = eval("(" + el.getAttribute('rel') + ")");
@@ -108,13 +112,16 @@ KNOWWE.plugin.quicki = function(){
             var q = _KS('#' + rel.qid)
             KNOWWE.plugin.quicki.toggleIndicationHighlighting(q);
                        
-          //  if(type=="mc"){
-            //	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
-              //      	{ action : 'SetSingleFindingAction', ValueID: rel.oid});
-           // } else {
+            // if it is already highlighted it should now be deactivated and value retracted
+            // thus send value unknown
+            if(retract){
             	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
-                	{ action : 'SetSingleFindingAction', ValueID: rel.oid});
-           // }
+                    	{ action : 'SetSingleFindingAction', ValueID: "MaU"});
+            }
+            else {
+            	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
+                    	{ action : 'SetSingleFindingAction', ValueID: rel.oid});
+            }
         },
         /**
          * Function: numAnswer
@@ -180,28 +187,43 @@ KNOWWE.plugin.quicki = function(){
          */
         toggleAnswerHighlighting : function( answerEl, type ){
         	
-        	var relClicked = eval("(" +  answerEl.getAttribute('rel') + ")");
-        	if(type=="oc"){	
-        		_KS('.answerClicked').each(function(element){
-        			var relElement =  eval("(" +  element.getAttribute('rel') + ")");
-        			if (relElement.qid==relClicked.qid){
-        				alert("found");
-        				element.className = 'answer';
-        			}
-                });
-        	} else if (type=="mc"){
-        		
-        	}
+        	var relClicked = eval("(" +  answerEl.getAttribute('rel') + ")");        	
         	
-        	// to highlight/unhighlight an answer if clicked on
-        	if(answerEl.className=='answerClicked'){
-        		answerEl.className = 'answer';
-        	} else if (answerEl.className=='answerunknownClicked'){
-        		answerEl.className = 'answerunknown';
-        	} else if (answerEl.className=='answer'){
-        		answerEl.className = 'answerClicked';
-        	} else {
-        		answerEl.className = 'answerunknownClicked';
+        	// get the highlighting state: if answer was already highlighted it should
+        	// be un-highlighted in return
+        	var unhighlight = false;	
+        	if(answerEl.className == 'answerClicked'){
+    			unhighlight = true;
+    		}
+        	
+        	// if clicked q is a oc q, already clicked answer alternatives need to be de-highlighted
+        	if(type=="oc"){
+        		_KS('.answerClicked').each(function(element){
+    				var relElement =  eval("(" +  element.getAttribute('rel') + ")");
+    				if (relElement.qid==relClicked.qid){
+    					element.className = 'answer';
+    				}
+            	});
+        		
+        		// all oc answers are now per default un-highlighted by above code
+        		// thus if un-highlighting is not correct, highlight again here
+        		if(!unhighlight){
+        			answerEl.className = 'answerClicked';
+        		}
+        	} 
+        	
+        	// otherwise just toggle highlighting 
+        	else {
+        		// to highlight/unhighlight an answer if clicked on, generally
+            	if(answerEl.className=='answerClicked'){
+            		answerEl.className = 'answer';
+            	} else if (answerEl.className=='answerunknownClicked'){
+            		answerEl.className = 'answerunknown';
+            	} else if (answerEl.className=='answer'){
+            		answerEl.className = 'answerClicked';
+            	} else {
+            		answerEl.className = 'answerunknownClicked';
+            	}
         	}
         }, 
         toggleIndicationHighlighting : function ( element ) {

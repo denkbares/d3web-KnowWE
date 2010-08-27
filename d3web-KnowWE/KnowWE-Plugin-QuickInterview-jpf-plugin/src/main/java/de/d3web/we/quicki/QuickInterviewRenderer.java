@@ -22,7 +22,6 @@ package de.d3web.we.quicki;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -85,7 +84,7 @@ public class QuickInterviewRenderer {
 		web = webb;
 		namespace = kb.getId();
 
-		// TODO Map all processed TerminologyObjects already in interview table,
+		// Map all processed TerminologyObjects already in interview table,
 		// avoids endless recursion in cyclic hierarchies
 		Set<TerminologyObject> processedTOs = new HashSet<TerminologyObject>();
 
@@ -140,7 +139,7 @@ public class QuickInterviewRenderer {
 		// just do not display the rooty root
 		if (!topContainer.getName().endsWith("Q000")) {
 			if (processedTOs.contains(topContainer)) {
-				// return;
+				getAlreadyDefinedIndicator(topContainer, qcon, depth++);
 			}
 			else {
 				processedTOs.add(topContainer);
@@ -194,7 +193,7 @@ public class QuickInterviewRenderer {
 
 		// no follow-ups --> append question rendering if not already rendered
 		if (processedTOs.contains(topQuestion)) {
-			getAlreadyDefinedIndicator(topQuestion, sb, depth);
+			getAlreadyDefinedIndicator(topQuestion, sb, depth++);
 			return;
 		}
 
@@ -213,12 +212,21 @@ public class QuickInterviewRenderer {
 		}
 	}
 
-	private static void getAlreadyDefinedIndicator(Question topQuestion, StringBuffer sb, int depth) {
+	/**
+	 * Assembles an own div for indicating questions/questionnaires that have
+	 * already been answered
+	 * 
+	 * @created 26.08.2010
+	 * @param element the element that was already been answered
+	 * @param sb StringBuffer to append the div to
+	 * @param depth indicator for the indentation depth
+	 */
+	private static void getAlreadyDefinedIndicator(TerminologyObject element, StringBuffer sb, int depth) {
 
 		int margin = 10 + 30 + depth * 10;
-		sb.append("<div id='" + topQuestion.getId() + "' " +
+		sb.append("<div id='" + element.getId() + "' " +
 				"class='alreadyDefined' style='margin-left: " + margin + "px; display: block'; >");
-		sb.append(" " + topQuestion.getName() + " ");
+		sb.append(" " + element.getName() + " ");
 		sb.append("</div>");
 	}
 
@@ -280,7 +288,8 @@ public class QuickInterviewRenderer {
 				"style='margin-left: " + d + "px; width: " + w + "px; display: inline-block;' >"
 				+ q.getName() + "</div>");
 
-		// TODO MultChoiceValue --> setValue
+		// switch question type for assembling corresponding answers
+		// TODO maybe add some more answer types?
 		if (q instanceof QuestionOC) {
 			List<Choice> list = ((QuestionChoice) q).getAllAlternatives();
 			html.append(renderOCChoiceAnswers(q, list));
@@ -288,12 +297,7 @@ public class QuickInterviewRenderer {
 
 		else if (q instanceof QuestionMC) {
 			List<Choice> list = ((QuestionMC) q).getAlternatives();
-			List<ChoiceValue> cvlist = new ArrayList<ChoiceValue>();
-			for (Choice c : list) {
-				cvlist.add(new ChoiceValue(c));
-			}
-			MultipleChoiceValue mcVal = new MultipleChoiceValue(cvlist);
-
+			MultipleChoiceValue mcVal = MultipleChoiceValue.fromChoices(list);
 			html.append(renderMCChoiceAnswers(q, mcVal));
 		}
 		else if (q instanceof QuestionNum) {
@@ -325,12 +329,12 @@ public class QuickInterviewRenderer {
 					+ "type:'oc'"
 					+ "}\" ";
 
-			// TODO: activate?
-			// Value value = session.getBlackboard().getValue(q);
-			// if (value != null && UndefinedValue.isNotUndefinedValue(value)
-			// && isAnsweredinCase(value, new ChoiceValue(choice))) {
-			// cssclass = "answer answerActive";
-			// }
+			Value value = session.getBlackboard().getValue(q);
+			if (value != null && UndefinedValue.isNotUndefinedValue(value)
+					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
+				cssclass = "answerClicked";
+			}
+
 			String spanid = q.getId() + "_" + choice.getId();
 			html.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ", cssclass,
 					jscall, null, spanid));
@@ -418,11 +422,11 @@ public class QuickInterviewRenderer {
 					+ "mcid:'" + mcval.getAnswerChoicesID() + "'"
 					+ "}\" ";
 
-			// Value value = session.getBlackboard().getValue(q);
-			// if (value != null && UndefinedValue.isNotUndefinedValue(value)
-			// && isAnsweredinCase(value, new ChoiceValue(choice))) {
-			// cssclass = "answer answerActive";
-			// }
+			Value value = session.getBlackboard().getValue(q);
+			if (value != null && UndefinedValue.isNotUndefinedValue(value)
+					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
+				cssclass = "answerClicked";
+			}
 			String spanid = q.getId() + "_" + choice.getId();
 			html.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ", cssclass,
 					jscall, null, spanid));
@@ -495,5 +499,15 @@ public class QuickInterviewRenderer {
 		sub.append(text);
 		sub.append("</" + tag + ">");
 		return sub.toString();
+	}
+
+	private static boolean isAnsweredinCase(Value sessionValue, Value value) {
+		// test for MC values separately
+		if (sessionValue instanceof MultipleChoiceValue) {
+			return ((MultipleChoiceValue) sessionValue).contains(value);
+		}
+		else {
+			return sessionValue.equals(value);
+		}
 	}
 }
