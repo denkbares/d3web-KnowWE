@@ -34,6 +34,9 @@
 #quickinterview .questionnaire {clear: both; display: block; padding: 5px 0 5px 30px; min-height: 9px; margin: 5px 10px 0px 0;
 	font-weight: bold;} 
 	
+#quickinterview .emptyQuestionnaire {clear: both; display: block; padding: 5px 0 5px 30px; min-height: 9px; margin: 5px 10px 0px 0;
+	font-weight: bold; background-color: #E8F2FE; font-color: #666; color: #666; } 
+	
 /* styling of the questionnaire div */
 #quickinterview .pointRight { background: #ACC0D6 url(../images/arrow_right.png) no-repeat 10px 10px; }
 	
@@ -44,8 +47,7 @@
 #quickinterview .qablock { height: 18px; margin-left: 10px; margin-right: 10px;}
 
 /* styling of the front part of the qablock that displays the question name */
-#quickinterview .question { clear: both; float: left; background-color: transparent; font-weight: bold; padding-top: 2px;
-	padding-bottom: 2px; }
+#quickinterview .question { clear: both; float: left; background-color: transparent; font-weight: bold; padding: 2px 5px 2px 0; }
 
 /* styling for indicated questions/questionnaires */
 #quickinterview .indicated { border: 2px solid orange; padding: 3px 0 0 0; }
@@ -77,4 +79,4 @@
 /* pseudo element for the correct closing of the plugin rendering regardless of at which depth of recursion */
 #quickinterview .invisible { display: block; clear: both; width:100%; height: 2px; background-color: transparent;}
 
-#quickinterview .alreadyDefined { background-color:  #DDD; font-color: #666; color: #777; font-style: italic; clear: both;  margin-right: 10px; padding: 2px; }
+#quickinterview .alreadyDefined { background-color:  #DDD; font-color: #666; color: #666; font-style: italic; clear: both;  margin-right: 10px; padding: 2px; }
