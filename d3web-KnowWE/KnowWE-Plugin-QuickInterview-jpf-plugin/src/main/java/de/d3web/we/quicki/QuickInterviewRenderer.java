@@ -344,7 +344,7 @@ public class QuickInterviewRenderer {
 		}
 
 		// TODO also render the unknown alternative for choice questions?!
-		html.append(renderAnswerUnknown(q));
+		html.append(renderAnswerUnknown(q, "oc"));
 
 		return html.toString();
 	}
@@ -364,7 +364,11 @@ public class QuickInterviewRenderer {
 		// if answer has already been answered write value into the field
 		if (UndefinedValue.isNotUndefinedValue(session.getBlackboard().getValue(q))) {
 			Value answer = session.getBlackboard().getValue(q);
-			if (answer != null && answer instanceof NumValue) {
+
+			if (answer != null && answer instanceof Unknown) {
+				value = "";
+			}
+			else if (answer != null && answer instanceof NumValue) {
 				value = answer.getValue().toString();
 			}
 		}
@@ -377,6 +381,7 @@ public class QuickInterviewRenderer {
 			jscall = " rel=\"{oid: '" + id + "', "
 					+ "web:'" + web + "',"
 					+ "ns:'" + namespace + "',"
+					+ "type:'num', "
 					+ "qtext:'" + URLEncoder.encode(q.getName(), "UTF-8") + "', "
 					+ "}\" ";
 		}
@@ -392,13 +397,16 @@ public class QuickInterviewRenderer {
 				+ jscall + " />");
 		html.append("<input type='button' value='ok' class='num-ok' />");
 
+		html.append("<div class='answerseparator'></div>");
+		html.append(renderAnswerUnknown(q, "num"));
+
 		return html.toString();
 	}
 
 	/**
-	 * TODO Creates the HTML needed for displaying the answer alternatives of
-	 * choice answers.
-	 *
+	 * Creates the HTML needed for displaying the answer alternatives of choice
+	 * answers.
+	 * 
 	 * @created 22.07.2010
 	 * @param session
 	 * @param q
@@ -434,7 +442,7 @@ public class QuickInterviewRenderer {
 		}
 
 		// also render the unknown alternative for choice questions
-		html.append(renderAnswerUnknown(q));
+		html.append(renderAnswerUnknown(q, "mc"));
 
 		html.append("</div>");
 		return html.toString();
@@ -449,11 +457,12 @@ public class QuickInterviewRenderer {
 	 * @param q the question, to which unknown is added
 	 * @return the HTML representation
 	 */
-	private static String renderAnswerUnknown(Question q) {
+	private static String renderAnswerUnknown(Question q, String type) {
 		StringBuffer html = new StringBuffer();
 		String jscall = " rel=\"{oid: '" + Unknown.getInstance().getId() + "', "
 				+ "web:'" + web + "', "
 				+ "ns:'" + namespace + "', "
+				+ "type:'" + type + "', "
 				+ "qid:'" + q.getId() + "'"
 				+ "}\" ";
 		String cssclass = "answerunknown";
@@ -501,6 +510,16 @@ public class QuickInterviewRenderer {
 		return sub.toString();
 	}
 
+	/**
+	 * Checks, whether an answer value was already processed in the current
+	 * session
+	 * 
+	 * @created 27.08.2010
+	 * @param sessionValue the sessionValue
+	 * @param value the value to be checked
+	 * @return true if the given session value contains the checked value (MC
+	 *         Questions) or if the session value equals the value
+	 */
 	private static boolean isAnsweredinCase(Value sessionValue, Value value) {
 		// test for MC values separately
 		if (sessionValue instanceof MultipleChoiceValue) {

@@ -136,15 +136,27 @@ KNOWWE.plugin.quicki = function(){
          */
         answerUnknownClicked : function( event ) {
             var el = _KE.target(event); 	// get the clicked element
-            if(el.tagName.toLowerCase() == "input") return; // TODO check
             var retract = false;
-            _KE.cancel( event );
             
             var rel = eval("(" + el.getAttribute('rel') + ")");
             var questionID = rel.qid;
             
-            KNOWWE.plugin.quicki.toggleAnswerHighlightingAfterUnknown(questionID);          
-           
+        	event = new Event( event ).stopPropagation();
+            var bttn = (_KE.target( event ).className == 'num-ok');            
+            var key = (event.code == 13);
+          
+            if( rel.type=='num') {
+            	
+            	var numfield = _KS('#input_' + rel.qid);
+            	
+            	// clear input field
+            	if(numfield) {
+                    numfield.value = "";
+            	}      
+            } else {
+            	KNOWWE.plugin.quicki.toggleAnswerHighlightingAfterUnknown(questionID);   
+            }
+
             KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
              	{ action : 'SetSingleFindingAction', ValueID: 'MaU'});
         },

@@ -56,8 +56,8 @@ public class SolutionPanelTagHandler extends AbstractTagHandler {
 	 */
 	public SolutionPanelTagHandler() {
 		super("solutionPanel");
-		KnowWERessourceLoader.getInstance().add("solPane.css",
-				KnowWERessourceLoader.RESOURCE_STYLESHEET);
+		// KnowWERessourceLoader.getInstance().add("solPane.css",
+		// KnowWERessourceLoader.RESOURCE_STYLESHEET);
 		KnowWERessourceLoader.getInstance().add("solutionPanel.js",
 				KnowWERessourceLoader.RESOURCE_SCRIPT);
 	}

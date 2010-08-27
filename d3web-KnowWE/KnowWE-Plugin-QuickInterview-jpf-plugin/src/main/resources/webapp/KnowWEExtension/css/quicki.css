@@ -69,10 +69,10 @@
 	 background-repeat: no-repeat; background-position: center center; background-color: transparent; padding-top: 5px; padding-bottom: 2px;}
 	 
 /* styling of input box */
-#quickinterview .input { height: 10px; float: left; }
+#quickinterview .input { height: 14px; float: left; }
 
 /* styling of input box button */
-#quickinterview .num-ok{ height: 20px; margin-left: 10px; float: left; padding-top: 5px; }
+#quickinterview .num-ok{ height: 24px; margin-left: 10px; float: left; padding-top: 5px; }
 
 /* pseudo element for the correct closing of the plugin rendering regardless of at which depth of recursion */
 #quickinterview .invisible { display: block; clear: both; width:100%; height: 2px; background-color: transparent;}
