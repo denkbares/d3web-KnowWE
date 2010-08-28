@@ -197,7 +197,7 @@ public class QuickInterviewRenderer {
 
 		buffi.append("<div id='" + container.getId() + "' class='emptyQuestionnaire'" +
 				" style='margin-left: " + margin + "px; display: block'; >");
-		buffi.append(" " + container.getName() + " ");
+		buffi.append(" " + container.getName() + " - No elements defined!");
 		buffi.append("</div>");
 	}
 
@@ -251,7 +251,7 @@ public class QuickInterviewRenderer {
 	 */
 	private static void getAlreadyDefinedRendering(TerminologyObject element, StringBuffer sb, int depth) {
 
-		int margin = 10 + 30 + depth * 10;
+		int margin = 10 + depth * 10;
 		sb.append("<div id='" + element.getId() + "' " +
 				"class='alreadyDefined' style='margin-left: " + margin + "px; display: block'; >");
 		sb.append(" " + element.getName() + " ");
@@ -301,7 +301,7 @@ public class QuickInterviewRenderer {
 
 		// calculate indentation depth & resulting width of the question display
 		// 10 for standard margin and 30 for indenting further than the triangle
-		int d = 10 + 30 + depth * 10;
+		int d = 10 + depth * 10;
 
 		// width of the question front section, i.e. total width - identation
 		int w = 300 - d;

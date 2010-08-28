@@ -101,17 +101,23 @@ KNOWWE.plugin.quicki = function(){
         	});
         	
         	_KS('.questionnaire').each(function(element){
-                _KE.add('click', element, KNOWWE.plugin.quicki.updateQuestionnaireVisibility);
+                _KE.add('click', element, KNOWWE.plugin.quicki.toggleQuestionnaireVisibility);
         	});
         	
+        	// TODO
+        	// _KS('.question').each(function(element){
+            //    _KE.add('click', element, KNOWWE.plugin.quicki.toggleQuestionVisibility);
+        	// });
+        	
         	_KS('.num-ok').each(function( element ){
-                _KE.add('click', element, KNOWWE.plugin.quicki.numAnswer);
+        		_KE.add('click', element, KNOWWE.plugin.quicki.numAnswerClicked);
             });  
         	
-        	 _KS('.quickireset').each(function( element ){
-                 _KE.add('click', element, KNOWWE.plugin.quicki.quickIReset);
-             });  
+        	_KS('.quickireset').each(function( element ){
+                _KE.add('click', element, KNOWWE.plugin.quicki.quickIReset);
+            });  
         	 
+        	 // TODO
         	 _KS('.qquickanswers').each(function( element ){
                  _KE.add('click', element, KNOWWE.plugin.quicki.enableQAnswers);
              });  
@@ -126,7 +132,7 @@ KNOWWE.plugin.quicki = function(){
          */
         answerClicked : function( event ) {
             var el = _KE.target(event); 	// get the clicked element
-            if(el.tagName.toLowerCase() == "input") return; // TODO check
+           // if(el.tagName.toLowerCase() == "input") return;
             var retract = false;
             if(el.className == 'answerClicked'){
             	retract = true;
@@ -137,12 +143,8 @@ KNOWWE.plugin.quicki = function(){
             if( !rel ) return;
             var type = rel.type;
             
-            KNOWWE.plugin.quicki.toggleAnswerHighlighting(el, type);
+            KNOWWE.plugin.quicki.toggleAnswerHighlighting(el, type, retract);
             
-            // get the currently indicated question
-            var q = _KS('#' + rel.qid)
-            KNOWWE.plugin.quicki.toggleIndicationHighlighting(q);
-                       
             // if it is already highlighted it should now be deactivated and value retracted
             // thus send value unknown
             if(retract){
@@ -190,7 +192,7 @@ KNOWWE.plugin.quicki = function(){
          * Parameters:
          * 		event - the event firing the action
          */
-        numAnswer : function (event) {
+        numAnswerClicked : function (event) {
         	event = new Event( event ).stopPropagation();
             var bttn = (_KE.target( event ).className == 'num-ok');            
             var key = (event.code == 13);
@@ -218,7 +220,7 @@ KNOWWE.plugin.quicki = function(){
             		{action : 'SetSingleFindingAction', ValueNum: inputtext});
         },
         /**
-         * Function: toggleImage(int)
+         * Function: toggleImage
          * 		Toggles the image display for questionnaire headings
          * 
          * Parameter:
@@ -244,17 +246,11 @@ KNOWWE.plugin.quicki = function(){
          * 		answerEl - The clicked answer-element
          * 		type - flag that tells whether OC or MC question for appropriate
          * 				highlighting
+         * 		retract - flag that tells whether question is to be set or retracted
          */
-        toggleAnswerHighlighting : function( answerEl, type ){
+        toggleAnswerHighlighting : function( answerEl, type, retract ){
         	
         	var relClicked = eval("(" +  answerEl.getAttribute('rel') + ")");        	
-        	
-        	// get the highlighting state: if answer was already highlighted it should
-        	// be un-highlighted in return
-        	var unhighlight = false;	
-        	if(answerEl.className == 'answerClicked'){
-    			unhighlight = true;
-    		}
         	
         	// if clicked q is a oc q, already clicked answer alternatives need to be de-highlighted
         	if(type=="oc"){
@@ -267,7 +263,7 @@ KNOWWE.plugin.quicki = function(){
         		
         		// all oc answers are now per default un-highlighted by above code
         		// thus if un-highlighting is not correct, highlight again here
-        		if(!unhighlight){
+        		if(!retract){
         			answerEl.className = 'answerClicked';
         		}
         	} 
@@ -287,9 +283,12 @@ KNOWWE.plugin.quicki = function(){
         	}
         }, 
         /**
-         * Function toggleAnswerHighlightingAfterUnknown
+         * 	Function toggleAnswerHighlightingAfterUnknown
          * 		process the correct highlighting of answer elements after unknown is clicked
          *		i.e., remove highlighting 
+         *
+         *	Parameters:
+         *		questionID - id of the question that was clicked with unknown
          */
         toggleAnswerHighlightingAfterUnknown : function( questionID ){
         	
@@ -301,6 +300,7 @@ KNOWWE.plugin.quicki = function(){
     			}
             });
         }, 
+        // TODO
         toggleIndicationHighlighting : function ( element ) {
         	if(element.className=='question indicated'){
         		element.className = 'question';
@@ -314,7 +314,7 @@ KNOWWE.plugin.quicki = function(){
          * Parameters: 
          *  	event - The fired the click event  
          */
-        updateQuestionnaireVisibility : function( event ){
+        toggleQuestionnaireVisibility : function( event ){
         	      
         	// get the clicked element, i.e., the questionnaire
         	var questionnaire = _KE.target(event); 	
@@ -326,6 +326,29 @@ KNOWWE.plugin.quicki = function(){
             } else if (group.style.display=='none'){     
             	group.style.display = 'block';
             	KNOWWE.plugin.quicki.toggleImage(0, questionnaire);   
+            } 
+          	KNOWWE.plugin.quicki.showRefreshed();
+        },
+        /**
+         * TODO
+         * 
+         * Function: toggleQuestionVisibility 
+         * Toggles the visibility of question-contents on click:
+         * 		visible ones are hidden, hidden ones are displayed
+         * 
+         * Parameters: 
+         *  	event - The fired the click event  
+         */
+        toggleQuestionVisibility : function( event ){
+        	      
+        	// get the clicked element, i.e., the questionnaire
+        	var question = _KE.target(event); 	
+        	var group = _KS('#group_' + question.id);
+        	
+        	if(group.style.display=='block'){
+            	group.style.display = 'none';   	
+            } else if (group.style.display=='none'){     
+            	group.style.display = 'block';
             } 
           	KNOWWE.plugin.quicki.showRefreshed();
         },
@@ -356,22 +379,16 @@ KNOWWE.plugin.quicki = function(){
         			url : KNOWWE.core.util.getURL( params ),
         			response : {
         				 action : 'insert',
-                         ids : [ id ],
+                         ids : [ id ],					// to re-insert a freshly created interview
                          fn : function(){
-                    		 KNOWWE.plugin.quicki.initAction();
+                    		 KNOWWE.plugin.quicki.initAction();					// click functionality
                     		 KNOWWE.helper.observer.notify('update');
-                    		 KNOWWE.plugin.solutionpanel.clearSolutionstate(); // clear solutionpanel
-                             KNOWWE.core.rerendercontent.update();			  // rerender 
+                    		 KNOWWE.plugin.solutionpanel.clearSolutionstate(); 	// clear solutionpanel
+                             KNOWWE.core.rerendercontent.update();			  	// rerender 
                     	 }	
         			}
         	}
         	
-            /* if( _KS('#quickinterview') ) {	// if that element exists
-                new _KA( options ).send();	// send request
-                KNOWWE.plugin.quicki.initAction();	// initialize actions
-                KNOWWE.helper.observer.notify('update');
-             
-            }   */
             new _KA( options ).send();
         },
         enableQAnswers : function ( event ) {
