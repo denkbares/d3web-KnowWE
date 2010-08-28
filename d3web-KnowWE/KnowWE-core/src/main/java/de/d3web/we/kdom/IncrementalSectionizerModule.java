@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.store.SectionStore;
 
@@ -106,10 +105,10 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 					node.setLastPositionInKDOM(lastPositions);
 					node.clearPositionInKDOM();
 
-					if (node.getObjectType() instanceof Include) {
-						article.getIncludeSections().add(
-								(Section<Include>) node);
-					}
+					// if (node.getObjectType() instanceof Include) {
+					// article.getActiveIncludes().add(
+					// (Section<Include>) node);
+					// }
 
 					SectionStore lastStore = KnowWEEnvironment.getInstance().getArticleManager(
 							father.getWeb()).getTypeStore().getLastSectionStore(father.getTitle(),

@@ -26,7 +26,7 @@ public class DefaultSectionizerModule implements SectionizerModule {
 
 	@Override
 	public Section<?> createSection(KnowWEArticle article, KnowWEObjectType ob, Section<?> father, Section<?> thisSection, String secText, SectionFinderResult result) {
-		return Section.createTypedSection(
+		return Section.createSection(
 				thisSection.getOriginalText().substring(result.getStart(), result.getEnd()),
 				ob,
 				father,

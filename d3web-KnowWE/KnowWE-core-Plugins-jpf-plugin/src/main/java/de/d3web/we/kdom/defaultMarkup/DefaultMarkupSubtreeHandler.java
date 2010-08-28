@@ -26,6 +26,7 @@ import java.util.List;
 
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -63,14 +64,14 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler {
 		}
 
 		// TODO: refactor this to somewhere else
-		Annotation namespaceAnno = this.markup.getAnnotation("namespace");
-		if (namespaceAnno != null && markupSection.getTitle().equals(article.getTitle())) {
+		Annotation packageAnno = this.markup.getAnnotation(KnowWEPackageManager.ATTRIBUTE_ENAME);
+		if (packageAnno != null && markupSection.getTitle().equals(article.getTitle())) {
 			Section<? extends AnnotationType> annotationSection =
-					DefaultMarkupType.getAnnotationSection(markupSection, namespaceAnno.getName());
+					DefaultMarkupType.getAnnotationSection(markupSection, packageAnno.getName());
 			if (annotationSection != null) {
 				String value = annotationSection.getOriginalText();
-				markupSection.addNamespace(value);
-				KnowWEEnvironment.getInstance().getNamespaceManager(article.getWeb()).registerNamespaceDefinition(
+				markupSection.addPackageName(value);
+				KnowWEEnvironment.getInstance().getPackageManager(article.getWeb()).registerPackageDefinition(
 						markupSection);
 			}
 		}
@@ -106,15 +107,15 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler {
 	@Override
 	public void destroy(KnowWEArticle article, Section markupSection) {
 		// TODO: refactor this to somewhere else
-		Annotation namespaceAnno = this.markup.getAnnotation("namespace");
-		if (namespaceAnno != null && markupSection.getTitle().equals(article.getTitle())) {
+		Annotation packageAnno = this.markup.getAnnotation(KnowWEPackageManager.ATTRIBUTE_ENAME);
+		if (packageAnno != null && markupSection.getTitle().equals(article.getTitle())) {
 			Section<? extends AnnotationType> annotationSection =
-					DefaultMarkupType.getAnnotationSection(markupSection, namespaceAnno.getName());
+					DefaultMarkupType.getAnnotationSection(markupSection, packageAnno.getName());
 			if (annotationSection != null) {
 				String value = annotationSection.getOriginalText();
-				KnowWEEnvironment.getInstance().getNamespaceManager(article.getWeb()).unregisterNamespaceDefinition(
+				KnowWEEnvironment.getInstance().getPackageManager(article.getWeb()).unregisterPackageDefinition(
 						markupSection);
-				markupSection.removeNamespace(value);
+				markupSection.removePackageName(value);
 			}
 		}
 	}

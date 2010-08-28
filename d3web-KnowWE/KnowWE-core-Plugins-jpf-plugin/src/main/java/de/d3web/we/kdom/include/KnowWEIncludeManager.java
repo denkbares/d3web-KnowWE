@@ -28,9 +28,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.d3web.plugin.PluginManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.event.ArticleCreatedEvent;
-import de.d3web.we.event.EventManager;
+import de.d3web.we.event.Event;
+import de.d3web.we.event.EventListener;
+import de.d3web.we.event.KDOMCreatedEvent;
+import de.d3web.we.event.UpdatingDependenciesEvent;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.RootType;
@@ -38,6 +42,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.SectionID;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.kdom.xml.XMLContent;
+import de.knowwe.plugin.Plugins;
 
 /**
  * This class manages all Includes. Keeps tack and links them to their target
@@ -46,7 +51,7 @@ import de.d3web.we.kdom.xml.XMLContent;
  * @author astriffler
  * 
  */
-public class KnowWEIncludeManager {
+public class KnowWEIncludeManager implements EventListener {
 
 	private final String web;
 
@@ -54,33 +59,48 @@ public class KnowWEIncludeManager {
 	 * This map stores for every Include the Section they are including. Key is
 	 * the Include Section, value the included Section.
 	 */
-	private final Map<Section<Include>, List<Section<? extends KnowWEObjectType>>> src2targets = new HashMap<Section<Include>, List<Section<? extends KnowWEObjectType>>>();
-
+	private final Map<Section<Include>, List<Section<? extends KnowWEObjectType>>> src2targets =
+			new HashMap<Section<Include>, List<Section<? extends KnowWEObjectType>>>();
+	
 	/**
 	 * This map stores for every Include the last Section they were including,
 	 * if the target of the Include changes. Key is the Include Section, value
 	 * the last included Section.
 	 */
-	private final Map<Section<Include>, List<Section<? extends KnowWEObjectType>>> src2lastTargets = new HashMap<Section<Include>, List<Section<? extends KnowWEObjectType>>>();
+	private final Map<Section<Include>, List<Section<? extends KnowWEObjectType>>> src2lastTargets =
+				new HashMap<Section<Include>, List<Section<? extends KnowWEObjectType>>>();
 
 	/**
 	 * This map stores for every title a set of Includes that include Sections
 	 * from the article with the given title.
 	 */
-	private final Map<String, Set<Section<Include>>> targetArticle2src = new HashMap<String, Set<Section<Include>>>();
+	private final Map<String, Set<Section<Include>>> targetArticle2src =
+			new HashMap<String, Set<Section<Include>>>();
+	
+	private static KnowWEIncludeManager instance = null;
 
-	/**
-	 * List that keeps track of all articles that are sectionizing at the
-	 * moment.
-	 */
-	private final Set<String> sectionizingArticles = new HashSet<String>();
+	public static KnowWEIncludeManager getInstance() {
+		if (instance == null) {
+			instance = (KnowWEIncludeManager) PluginManager.getInstance().getExtension(
+					Plugins.EXTENDED_PLUGIN_ID,
+					Plugins.EXTENDED_POINT_EventListener,
+					"KnowWE-Basic-Plugins",
+					KnowWEIncludeManager.class.getSimpleName()).getSingleton();
+		}
+		return instance;
+	}
+
+	public KnowWEIncludeManager() {
+		this.web = KnowWEEnvironment.DEFAULT_WEB;
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
 
 	public String getWeb() {
 		return web;
-	}
-
-	public KnowWEIncludeManager(String web) {
-		this.web = web;
 	}
 
 	/**
@@ -94,14 +114,15 @@ public class KnowWEIncludeManager {
 			IncludeAddress address = Include.getIncludeAddress(src);
 
 			// this is the Section the Include Section wants to include
-			List<Section<? extends KnowWEObjectType>> target =
+			List<Section<? extends KnowWEObjectType>> targets =
 					new ArrayList<Section<? extends KnowWEObjectType>>();
 
 			if (address == null) {
-				target.add(getNoValidAddressErrorSection(src));
+				targets.add(getNoValidAddressErrorSection(src));
 
 			}
-			else if (sectionizingArticles.contains(address.getTargetArticle())) {
+			else if (KnowWEEnvironment.getInstance().getArticleManager(web)
+					.getSectionizingArticles().contains(address.getTargetArticle())) {
 				// check for include loops
 				// (This algorithm later initializes articles, if they are not
 				// yet build but the Include Sections wants to include from
@@ -109,7 +130,7 @@ public class KnowWEIncludeManager {
 				// include
 				// this article, which isn't completely build itself, we got a
 				// loop.)
-				target.add(getIncludeLoopErrorSection(src));
+				targets.add(getIncludeLoopErrorSection(src));
 
 			}
 			else {
@@ -127,7 +148,7 @@ public class KnowWEIncludeManager {
 										address.getTargetArticle());
 						if (artSrc != null) {
 							// build the targeted article
-							art = new KnowWEArticle(artSrc, address.getTargetArticle(),
+							art = KnowWEArticle.createArticle(artSrc, address.getTargetArticle(),
 									KnowWEEnvironment.getInstance().getRootType(), web);
 							KnowWEEnvironment.getInstance()
 									.getArticleManager(web)
@@ -137,10 +158,10 @@ public class KnowWEIncludeManager {
 				}
 
 				if (art != null) {
-					target = findTargets(art, src);
+					targets = findTargets(art, src);
 				}
 				else {
-					target.add(new IncludeErrorSection("Error: Article '"
+					targets.add(new IncludeErrorSection("Error: Article '"
 							+ address.getTargetArticle()
 							+ "' not found.", src, src.getArticle()));
 				}
@@ -150,7 +171,8 @@ public class KnowWEIncludeManager {
 			if (address != null) {
 				getIncludingSectionsForArticle(address.getTargetArticle()).add(src);
 			}
-			src2targets.put(src, target);
+			src2targets.put(src, targets);
+			src.setChildren(targets);
 		}
 	}
 
@@ -252,15 +274,15 @@ public class KnowWEIncludeManager {
 				if (!children.isEmpty()) {
 
 					// Checks the given List of children if it contains Sections
-					// that
-					// were already included in the article in another place.
-					Set<Section<? extends KnowWEObjectType>> candidates = new HashSet<Section<? extends KnowWEObjectType>>(
-							children);
+					// that were already included in the article in another
+					// place.
+					Set<Section<? extends KnowWEObjectType>> candidates =
+							new HashSet<Section<? extends KnowWEObjectType>>(children);
 
 					List<Section<? extends KnowWEObjectType>> potentialDuplicates =
 							new ArrayList<Section<? extends KnowWEObjectType>>();
 
-					for (Section<Include> inc : includeSec.getArticle().getIncludeSections()) {
+					for (Section<Include> inc : getActiveIncludesForArticle(includeSec.getArticle())) {
 						if (inc != includeSec) {
 							inc.getAllNodesPreOrderToDepth(potentialDuplicates, 2);
 						}
@@ -326,7 +348,7 @@ public class KnowWEIncludeManager {
 	 * Updates Includes to the given <tt>article</tt>. This method needs to get
 	 * called after an article has changed.
 	 */
-	public void updateIncludesToArticle(KnowWEArticle article) {
+	private void updateIncludesToArticle(KnowWEArticle article) {
 		Set<String> reviseArticles = new HashSet<String>();
 		Set<Section<Include>> includes = new HashSet<Section<Include>>(
 				getIncludingSectionsForArticle(article.getTitle()));
@@ -355,9 +377,11 @@ public class KnowWEIncludeManager {
 				}
 				// overwrite the last target with the new
 				src2targets.put(inc, targets);
+				inc.setChildren(targets);
 				// put the last target in the according map to make it available
 				// for destruction of the stuff produced by its SubtreeHandlers
 				src2lastTargets.put(inc, lastTargets);
+				inc.setLastChildren(lastTargets);
 				if (Include.getIncludeAddress(inc) != null) {
 					getIncludingSectionsForArticle(
 							Include.getIncludeAddress(inc).getTargetArticle()).add(inc);
@@ -403,49 +427,45 @@ public class KnowWEIncludeManager {
 		// that
 		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
 
-		String updatingArticle;
-		if (article.isUpdatingIncludes()) {
-			updatingArticle = article.getArticleUpdatingIncludesOfThisArticle();
-		}
-		else {
-			updatingArticle = article.getTitle();
-		}
 		for (String title : reviseArticles) {
-			KnowWEArticle newArt = new KnowWEArticle(
+			if (env.getArticleManager(web).getSectionizingArticles().contains(title)
+					|| env.getArticleManager(web).getDependenciesUpdatingArticles().contains(title)) {
+				continue;
+			}
+			KnowWEArticle newArt = KnowWEArticle.createArticle(
 					env.getArticle(article.getWeb(), title).getSection().getOriginalText(), title,
-					env.getRootType(), web, updatingArticle, false);
-
-			// fire 'article-created' event for the new article
-			EventManager.getInstance().fireEvent(ArticleCreatedEvent.getInstance(), web,
-					null, newArt.getSection());
+					env.getRootType(), web, false);
 
 			env.getArticleManager(web).saveUpdatedArticle(newArt);
 		}
 	}
 
-	/**
-	 * @returns the children respectively the target of the Include
-	 */
-	public List<Section<? extends KnowWEObjectType>> getChildrenForSection(Section<Include> src) {
-		List<Section<? extends KnowWEObjectType>> children = src2targets.get(src);
-		if (children == null) {
-			children = new ArrayList<Section<? extends KnowWEObjectType>>(0);
-		}
-		if (children.isEmpty()) {
-			children.add(new IncludeErrorSection("Section " + src.toString()
-					+ " is not registered as an including Section", src, src.getArticle()));
-		}
-		return children;
-	}
-
-	/**
-	 * <b>IF THERE IS NO LAST SECTION, THIS RETUNS NULL... CHECK FOR NULL!</b>
-	 * 
-	 * @returns the last children respectively the last target of the Include
-	 */
-	public List<Section<? extends KnowWEObjectType>> getLastChildrenForSection(Section<Include> src) {
-		return src2lastTargets.get(src);
-	}
+	// /**
+	// * @returns the children respectively the target of the Include
+	// */
+	// public List<Section<? extends KnowWEObjectType>>
+	// getChildrenForSection(Section<Include> src) {
+	// List<Section<? extends KnowWEObjectType>> children =
+	// src2targets.get(src);
+	// if (children == null) {
+	// children = new ArrayList<Section<? extends KnowWEObjectType>>(0);
+	// }
+	// if (children.isEmpty()) {
+	// children.add(new IncludeErrorSection("Section " + src.toString()
+	// + " is not registered as an including Section", src, src.getArticle()));
+	// }
+	// return children;
+	// }
+	//
+	// /**
+	// * <b>IF THERE IS NO LAST SECTION, THIS RETUNS NULL... CHECK FOR NULL!</b>
+	// *
+	// * @returns the last children respectively the last target of the Include
+	// */
+	// public List<Section<? extends KnowWEObjectType>>
+	// getLastChildrenForSection(Section<Include> src) {
+	// return src2lastTargets.get(src);
+	// }
 
 	/**
 	 * Gets all Sections that include from the given Article
@@ -459,31 +479,17 @@ public class KnowWEIncludeManager {
 		return includingSections;
 	}
 
-	public void removeSectionizingArticles(String title) {
-		this.sectionizingArticles.remove(title);
-	}
-
-	public void addSectionizingArticle(String title) {
-		this.sectionizingArticles.add(title);
-	}
-
 	/**
-	 * Returns all inactive Includes for the article with the given title. The
-	 * calling of this method only makes sense after building the new KDOM but
-	 * before removing the inactive Includes.
+	 * Returns all inactive Includes for the article with the given title.
 	 * 
 	 * @created 29.05.2010
 	 * @param title is the title of the article you want the inactive Includes
 	 *        from.
-	 * @param activeIncludes are the active includes of the article you want the
-	 *        inactive Includes from. They are needed to calculate, which
-	 *        Includes are inactive.
 	 * @return a List with all inactive Includes for the article with the given
 	 *         title. Returns an empty list, if there are no inactive Includes
 	 *         still registered to the KnowWEIncludeManager.
 	 */
-	public List<Section<Include>> getInactiveIncludesForArticle(String title,
-			Set<Section<Include>> activeIncludes) {
+	private List<Section<Include>> getInactiveIncludesForArticle(KnowWEArticle article) {
 		List<Section<Include>> inactiveIncludes = new ArrayList<Section<Include>>();
 		// get all registered Includes (from all articles)
 		List<Section<Include>> allIncludes = new ArrayList<Section<Include>>(src2targets.keySet());
@@ -492,11 +498,27 @@ public class KnowWEIncludeManager {
 			// if an Include is from the article with the given title but not in
 			// the active Includes of this article, it is out of use and
 			// inactive
-			if (inc.getTitle().equals(title) && !activeIncludes.contains(inc)) {
+			if (inc.getTitle().equals(article.getTitle()) && inc.getArticle() != article) {
 				inactiveIncludes.add(inc);
 			}
 		}
 		return inactiveIncludes;
+	}
+	
+	private List<Section<Include>> getActiveIncludesForArticle(KnowWEArticle article) {
+		List<Section<Include>> activeIncludes = new ArrayList<Section<Include>>();
+		// get all registered Includes (from all articles)
+		List<Section<Include>> allIncludes = new ArrayList<Section<Include>>(src2targets.keySet());
+
+		for (Section<Include> inc : allIncludes) {
+			// if an Include is from the article with the given title but not in
+			// the active Includes of this article, it is out of use and
+			// inactive
+			if (inc.getTitle().equals(article.getTitle()) && inc.getArticle() == article) {
+				activeIncludes.add(inc);
+			}
+		}
+		return activeIncludes;
 	}
 
 	// /**
@@ -546,7 +568,7 @@ public class KnowWEIncludeManager {
 	 *        article you need the active Includes from.
 	 * @param activeIncludes are the active Includes
 	 */
-	public void resetReusedStateOfInactiveIncludeTargets(String title,
+	private void resetReusedStateOfInactiveIncludeTargets(String title,
 			Collection<Section<Include>> inactiveIncludes,
 			Collection<Section<Include>> activeIncludes) {
 
@@ -578,7 +600,7 @@ public class KnowWEIncludeManager {
 	 * @created 29.05.2010
 	 * @param includes are the Includes you want to unregister/remove.
 	 */
-	public void unregisterIncludes(Collection<Section<Include>> includes) {
+	private void unregisterIncludes(Collection<Section<Include>> includes) {
 
 		for (Section<Include> inc : includes) {
 			// remove from maps...
@@ -593,5 +615,30 @@ public class KnowWEIncludeManager {
 		}
 
 	}
+
+	@Override
+	public Collection<Class<? extends Event>> getEvents() {
+		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(3);
+		events.add(KDOMCreatedEvent.class);
+		events.add(ArticleCreatedEvent.class);
+		events.add(UpdatingDependenciesEvent.class);
+		return events;
+	}
+
+	@Override
+	public void notify(Event event, String web, String username, Section<? extends KnowWEObjectType> s) {
+		if (event instanceof KDOMCreatedEvent) {
+			resetReusedStateOfInactiveIncludeTargets(s.getArticle().getTitle(),
+					getInactiveIncludesForArticle(s.getArticle()),
+					getActiveIncludesForArticle(s.getArticle()));
+		}
+		else if (event instanceof ArticleCreatedEvent) {
+			unregisterIncludes(getInactiveIncludesForArticle(s.getArticle()));
+		}
+		else if (event instanceof UpdatingDependenciesEvent) {
+			updateIncludesToArticle(s.getArticle());
+		}
+	}
+
 
 }

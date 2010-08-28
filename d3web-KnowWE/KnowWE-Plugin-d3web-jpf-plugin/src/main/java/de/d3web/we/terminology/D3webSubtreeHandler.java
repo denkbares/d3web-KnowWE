@@ -51,10 +51,18 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	 */
 	@Override
 	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
+		if (!(s.get() instanceof KnowWETermMarker)) {
+			if (s.isReusedBy(article.getTitle())) {
+				if ((KnowWEUtils.getTerminologyHandler(
+						article.getWeb()).areTermDefinitionsModifiedFor(article))) {
+					article.setFullParse(this);
+				}
+			}
+			else {
+				article.setFullParse(this);
+			}
+		}
 		return super.needsToCreate(article, s);
-		// || (!(s.get() instanceof KnowWETermMarker)
-		// && KnowWEUtils.getTerminologyHandler(
-		// article.getWeb()).areTermDefinitionsModifiedFor(article));
 	}
 
 	/*
@@ -76,7 +84,7 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 
 	@Override
 	public void destroy(KnowWEArticle article, Section<T> s) {
-		article.setFullParse(true, this);
+		article.setFullParse(this);
 		return;
 	}
 

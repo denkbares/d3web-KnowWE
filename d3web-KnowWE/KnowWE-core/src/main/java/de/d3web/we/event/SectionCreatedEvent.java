@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
- * Computer Science VI, University of Wuerzburg
+ * Copyright (C) 2010 University Wuerzburg, Computer Science VI
  * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -18,12 +17,26 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.core.namespace;
+package de.d3web.we.event;
 
-import de.d3web.we.kdom.Section;
+/**
+ * 
+ * @author Albrecht Striffler
+ * @created 26.08.2010
+ */
+public class SectionCreatedEvent extends Event {
 
-public interface NamespaceInclude {
+	private static SectionCreatedEvent instance = null;
 
-	public String getNamespaceToInclude(Section<? extends NamespaceInclude> s);
+	public static SectionCreatedEvent getInstance() {
+		if (instance == null) {
+			instance = new SectionCreatedEvent();
+		}
+		return instance;
+	}
+
+	private SectionCreatedEvent() {
+
+	}
 
 }

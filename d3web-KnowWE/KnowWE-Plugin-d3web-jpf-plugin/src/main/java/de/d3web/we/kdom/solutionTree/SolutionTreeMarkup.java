@@ -19,6 +19,7 @@
  */
 package de.d3web.we.kdom.solutionTree;
 
+import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -29,7 +30,7 @@ public class SolutionTreeMarkup extends DefaultMarkupType {
 	static {
 		m = new DefaultMarkup("Solution");
 		m.addContentType(new SolutionsDashTree());
-		m.addAnnotation("namespace", false);
+		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_ENAME, false);
 	}
 
 	public SolutionTreeMarkup() {

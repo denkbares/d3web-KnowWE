@@ -296,15 +296,15 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 						&& (parse.equals("full") || parse.equals("true"));
 				if ((fullParse/* && !article.isFullParse() */)
 						|| !originalText.equals(content)) {
-					article = new KnowWEArticle(content, topicName,
+					article = KnowWEArticle.createArticle(content, topicName,
 							KnowWEEnvironment.getInstance().getRootType(),
-							KnowWEEnvironment.DEFAULT_WEB, null, fullParse);
+							KnowWEEnvironment.DEFAULT_WEB, fullParse);
 					KnowWEEnvironment.getInstance().getArticleManager(
 							"default_web").saveUpdatedArticle(article);
 				}
 			}
 			else {
-				article = new KnowWEArticle(content, topicName,
+				article = KnowWEArticle.createArticle(content, topicName,
 						KnowWEEnvironment.getInstance().getRootType(),
 						KnowWEEnvironment.DEFAULT_WEB);
 				if (pagedata.endsWith(content)) {
@@ -393,7 +393,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 					KnowWEEnvironment.DEFAULT_WEB, wp.getName());
 			if (article == null) {
 				String content = engine.getPureText(wp.getName(), wp.getVersion());
-				article = new KnowWEArticle(content, wp.getName(),
+				article = KnowWEArticle.createArticle(content, wp.getName(),
 						KnowWEEnvironment.getInstance().getRootType(),
 						KnowWEEnvironment.DEFAULT_WEB);
 				KnowWEEnvironment.getInstance().getArticleManager(

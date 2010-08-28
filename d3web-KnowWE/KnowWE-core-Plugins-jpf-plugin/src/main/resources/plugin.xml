@@ -628,7 +628,7 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
-		<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="RenderRestrictionEnd">
 		<parameter id="class"
 			value="de.d3web.we.kdom.renderRestriction.RenderRestrictionEnd" />
@@ -655,6 +655,37 @@
                 <parameter id="description" value="core Dummy"/>
                 <parameter id="version"  value="0.0.1"/>
                 <parameter id="priority"  value="0" />
-        </extension>
+     </extension>
+     
+    <extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="Include">
+		<parameter id="class"
+			value="de.d3web.we.kdom.include.Include" />
+		<parameter id="name" value="Include" />
+		<parameter id="description" value="KnowWEObjectType Include" />
+		<parameter id="scope" value="global" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="SectionizerModule"
+		id="IncludeSectionizerModule">
+		<parameter id="class"
+			value="de.d3web.we.kdom.include.IncludeSectionizerModule" />
+		<parameter id="name" value="ImageQuestionAction" />
+		<parameter id="description" value="SectionizerModule IncludeSectionizerModule" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="EventListener"
+		id="KnowWEIncludeManager">
+		<parameter id="class"
+			value="de.d3web.we.kdom.include.KnowWEIncludeManager" />
+		<parameter id="name" value="KnowWEIncludeManager" />
+		<parameter id="description" value="EventListener KnowWEIncludeManager" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
 	
 </plugin>

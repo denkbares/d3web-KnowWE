@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -179,16 +180,16 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 		childrenTypes.add(0, new XMLHead());
 		childrenTypes.add(1, new XMLTail());
 		this.sectionFinder = new XMLSectionFinder(anyXML ? null : xmlTagName);
-		this.addSubtreeHandler(new RegisterNamespaceDefinitionHandler());
+		this.addSubtreeHandler(new RegisterPackageDefinitionHandler());
 	}
 
 	public String getXMLTagName() {
 		return xmlTagName;
 	}
 
-	static class RegisterNamespaceDefinitionHandler extends SubtreeHandler<AbstractXMLObjectType> {
+	static class RegisterPackageDefinitionHandler extends SubtreeHandler<AbstractXMLObjectType> {
 
-		public RegisterNamespaceDefinitionHandler() {
+		public RegisterPackageDefinitionHandler() {
 			super(true);
 		}
 
@@ -200,12 +201,12 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AbstractXMLObjectType> s) {
 
-			String value = getAttributeMapFor(s).get("namespace");
+			String value = getAttributeMapFor(s).get(KnowWEPackageManager.ATTRIBUTE_ENAME);
 
 			if (value != null) {
-				s.addNamespace(value);
-				KnowWEEnvironment.getInstance().getNamespaceManager(
-						article.getWeb()).registerNamespaceDefinition(s);
+				s.addPackageName(value);
+				KnowWEEnvironment.getInstance().getPackageManager(
+						article.getWeb()).registerPackageDefinition(s);
 			}
 			return null;
 		}
@@ -222,12 +223,12 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 
 			if (attributeMap != null) {
 
-				String value = attributeMap.get("namespace");
+				String value = attributeMap.get(KnowWEPackageManager.ATTRIBUTE_ENAME);
 
 				if (value != null) {
-					KnowWEEnvironment.getInstance().getNamespaceManager(
-							article.getWeb()).unregisterNamespaceDefinition(s);
-					s.removeNamespace(value);
+					KnowWEEnvironment.getInstance().getPackageManager(
+							article.getWeb()).unregisterPackageDefinition(s);
+					s.removePackageName(value);
 				}
 			}
 		}

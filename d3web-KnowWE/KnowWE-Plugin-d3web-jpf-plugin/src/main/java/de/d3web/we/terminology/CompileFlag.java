@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.TreeMap;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.namespace.KnowWENamespaceManager;
-import de.d3web.we.core.namespace.NamespaceInclude;
+import de.d3web.we.core.packaging.KnowWEPackageManager;
+import de.d3web.we.core.packaging.PackageInclude;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -48,11 +48,11 @@ public class CompileFlag extends DefaultMarkupType {
 
 	// private static String PRIO_MAP_KEY = "prio_map_key";
 
-	private static String NAMESPACEDEFS_SNAPSHOT_KEY = "namespacedefs_snapshot_key";
+	private static String PACKAGEDEFS_SNAPSHOT_KEY = "packagedefs_snapshot_key";
 
 	static {
 		m = new DefaultMarkup("Compile");
-		m.addContentType(new NamespaceIncludeType());
+		m.addContentType(new PackageIncludeType());
 
 	}
 
@@ -60,47 +60,47 @@ public class CompileFlag extends DefaultMarkupType {
 		super(m);
 	}
 
-	static class NamespaceIncludeType extends DefaultAbstractKnowWEObjectType implements NamespaceInclude {
+	static class PackageIncludeType extends DefaultAbstractKnowWEObjectType implements PackageInclude {
 
-		public NamespaceIncludeType() {
+		public PackageIncludeType() {
 			this.sectionFinder = new AllTextSectionFinder();
 			this.addSubtreeHandler(Priority.PRECOMPILE, new CompileFlagCreateHandler());
 			this.addSubtreeHandler(Priority.POSTCOMPILE, new CompileFlagDestroyHandler());
 		}
 
 		@Override
-		public String getNamespaceToInclude(Section<? extends NamespaceInclude> s) {
+		public String getPackageToInclude(Section<? extends PackageInclude> s) {
 			return s.getOriginalText().trim();
 		}
 	}
 
-	static class CompileFlagCreateHandler extends SubtreeHandler<NamespaceIncludeType> {
+	static class CompileFlagCreateHandler extends SubtreeHandler<PackageIncludeType> {
 
 		public CompileFlagCreateHandler() {
 			super(true);
 		}
 
 		@Override
-		public boolean needsToCreate(KnowWEArticle article, Section<NamespaceIncludeType> s) {
+		public boolean needsToCreate(KnowWEArticle article, Section<PackageIncludeType> s) {
 			return true;
 		}
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<NamespaceIncludeType> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<PackageIncludeType> s) {
 
-			KnowWENamespaceManager nsMng = KnowWEEnvironment.getInstance().getNamespaceManager(
+			KnowWEPackageManager nsMng = KnowWEEnvironment.getInstance().getPackageManager(
 					article.getWeb());
 
 			if (article.isFullParse() || !s.isReusedBy(article.getTitle())) {
-				nsMng.registerNamespaceInclude(article, s);
+				nsMng.registerPackageInclude(article, s);
 			}
 
-			if (!s.get().getNamespaceToInclude(s).equals(article.getTitle())) {
+			if (!s.get().getPackageToInclude(s).equals(article.getTitle())) {
 
-				List<Section<?>> namespaceDefinitions = nsMng.getNamespaceDefinitions(
-						s.get().getNamespaceToInclude(s));
+				List<Section<?>> namespaceDefinitions = nsMng.getPackageDefinitions(
+						s.get().getPackageToInclude(s));
 
-				KnowWEUtils.storeObject(article, s, NAMESPACEDEFS_SNAPSHOT_KEY,
+				KnowWEUtils.storeObject(article, s, PACKAGEDEFS_SNAPSHOT_KEY,
 						namespaceDefinitions);
 
 				List<Section<?>> includedNamespaces = new ArrayList<Section<?>>();
@@ -129,33 +129,33 @@ public class CompileFlag extends DefaultMarkupType {
 
 	}
 
-	static class CompileFlagDestroyHandler extends SubtreeHandler<NamespaceIncludeType> {
+	static class CompileFlagDestroyHandler extends SubtreeHandler<PackageIncludeType> {
 
 		public CompileFlagDestroyHandler() {
 			super(true);
 		}
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<NamespaceIncludeType> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<PackageIncludeType> s) {
 			return null;
 		}
 
 		@Override
-		public boolean needsToDestroy(KnowWEArticle article, Section<NamespaceIncludeType> s) {
+		public boolean needsToDestroy(KnowWEArticle article, Section<PackageIncludeType> s) {
 			return true;
 		}
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public void destroy(KnowWEArticle article, Section<NamespaceIncludeType> s) {
+		public void destroy(KnowWEArticle article, Section<PackageIncludeType> s) {
 
-			if (!s.isReusedBy(article.getTitle())) article.setFullParse(true, this);
+			if (!s.isReusedBy(article.getTitle())) article.setFullParse(this);
 
 			if (!article.isFullParse()
-					&& !s.get().getNamespaceToInclude(s).equals(article.getTitle())) {
+					&& !s.get().getPackageToInclude(s).equals(article.getTitle())) {
 
 				List<Section<?>> storedNamespaceDefinitions = (List<Section<?>>) KnowWEUtils.getObjectFromLastVersion(
-						article, s, NAMESPACEDEFS_SNAPSHOT_KEY);
+						article, s, PACKAGEDEFS_SNAPSHOT_KEY);
 
 				List<Section<?>> nodes = new LinkedList<Section<?>>();
 				for (Section<?> nsDef : storedNamespaceDefinitions) {

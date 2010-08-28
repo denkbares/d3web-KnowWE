@@ -19,6 +19,8 @@
  */
 package de.d3web.we.wisec.event;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -54,25 +56,31 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.wisec.util.Criteria;
 
-public class WISECFindingSetEventListener implements EventListener<FindingSetEvent> {
+public class WISECFindingSetEventListener implements EventListener {
 
 	private static final String LIST = "list";
 	private final List<String> activeLists = new LinkedList<String>();
 
 	@Override
-	public Class<? extends Event> getEvent() {
-		return FindingSetEvent.class;
+	public Collection<Class<? extends Event>> getEvents() {
+		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(1);
+		events.add(FindingSetEvent.class);
+		return events;
 	}
 
 	@Override
-	public void notify(FindingSetEvent event, String web, String username,
+	public void notify(Event event, String web, String username,
 			Section<? extends KnowWEObjectType> s) {
 
-		if (!checkQuestion(event.getQuestion())) return;
+		if (!(event instanceof FindingSetEvent)) return;
+
+		FindingSetEvent findingEvent = (FindingSetEvent) event;
+
+		if (!checkQuestion(findingEvent.getQuestion())) return;
 
 		// Specifies whether vales are added (true) or subtracted (false)
 		boolean add = true;
-		if (event.getValue().toString().equals("excluded")) add = false;
+		if (findingEvent.getValue().toString().equals("excluded")) add = false;
 
 		// Stores the currently computed lists
 		List<String> computedLists = new LinkedList<String>();
@@ -80,10 +88,12 @@ public class WISECFindingSetEventListener implements EventListener<FindingSetEve
 		for (Criteria criteria : Criteria.values()) {
 
 			try {
-				Query query = createQuery(event.getQuestion(), event.getValue(), criteria);
+				Query query = createQuery(findingEvent.getQuestion(), findingEvent.getValue(),
+						criteria);
 				TupleQueryResult result = evaluateQuery(query);
 				double accumulatedValue = computeNumValue(criteria, result, computedLists, add);
-				setCounterValue(criteria, accumulatedValue, web, username, event.getNamespace());
+				setCounterValue(criteria, accumulatedValue, web, username,
+						findingEvent.getNamespace());
 				System.out.println(criteria + ": " + accumulatedValue);
 			}
 			catch (RepositoryException e) {

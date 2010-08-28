@@ -28,7 +28,6 @@ import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.we.action.Action;
 import de.d3web.we.core.KnowWERessourceLoader;
-import de.d3web.we.kdom.IncludeSectionizerModule;
 import de.d3web.we.kdom.IncrementalSectionizerModule;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.SectionizerModule;
@@ -54,6 +53,7 @@ public class Plugins {
 	public static final String EXTENDED_POINT_Instantiation = "Instantiation";
 	public static final String EXTENDED_POINT_SectionizerModule = "SectionizerModule";
 	public static final String EXTENDED_POINT_SemanticCore = "SemanticCoreImpl";
+	public static final String EXTENDED_POINT_EventListener = "EventListener";
 
 	/**
 	 * Returns all plugged Instantiations These are used to initialize plugins.
@@ -149,7 +149,6 @@ public class Plugins {
 			sm.add((SectionizerModule) e.getSingleton());
 		}
 		sm.add(new IncrementalSectionizerModule());
-		sm.add(new IncludeSectionizerModule());
 		return sm;
 	}
 

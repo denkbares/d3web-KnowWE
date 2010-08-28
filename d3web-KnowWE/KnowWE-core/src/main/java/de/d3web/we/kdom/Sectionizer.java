@@ -358,7 +358,7 @@ public class Sectionizer {
 			ArrayList<Section<?>> sectionList, Section<?> father, KnowWEArticle article) {
 		for (Section<?> section : sectionList) {
 			if (section instanceof UndefinedSection) {
-				Section.createTypedSection(section.getOriginalText(),
+				Section.createSection(section.getOriginalText(),
 						PlainText.getInstance(),
 						father, section.getOffSetFromFatherText(),
 						article, null, false);

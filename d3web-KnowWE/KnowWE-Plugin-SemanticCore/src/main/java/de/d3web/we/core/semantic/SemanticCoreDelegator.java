@@ -22,6 +22,7 @@ package de.d3web.we.core.semantic;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -46,8 +47,9 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.knowwe.plugin.Instantiation;
+import de.knowwe.plugin.Plugins;
 
-public class SemanticCoreDelegator implements ISemanticCore, Instantiation, EventListener<FullParseEvent> {
+public class SemanticCoreDelegator implements ISemanticCore, Instantiation, EventListener {
 
 	private static ISemanticCore me;
 	private static ISemanticCore impl;
@@ -256,13 +258,11 @@ public class SemanticCoreDelegator implements ISemanticCore, Instantiation, Even
 
 	}
 
-	public static final String EXTENDED_PLUGIN_ID = "KnowWEExtensionPoints";
-	public static final String EXTENDED_POINT_SemanticCore = "SemanticCoreImpl";
 
 	public static List<ISemanticCore> getSemanticCoreImpl() {
 		Extension[] extensions =
-				PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-						EXTENDED_POINT_SemanticCore);
+				PluginManager.getInstance().getExtensions(Plugins.EXTENDED_PLUGIN_ID,
+						Plugins.EXTENDED_POINT_SemanticCore);
 		List<ISemanticCore> ret = new ArrayList<ISemanticCore>();
 		for (Extension e : extensions) {
 			ret.add((ISemanticCore) e.getSingleton());
@@ -271,12 +271,14 @@ public class SemanticCoreDelegator implements ISemanticCore, Instantiation, Even
 	}
 
 	@Override
-	public Class<? extends Event> getEvent() {
-		return FullParseEvent.class;
+	public Collection<Class<? extends Event>> getEvents() {
+		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(1);
+		events.add(FullParseEvent.class);
+		return events;
 	}
 
 	@Override
-	public void notify(FullParseEvent event, String web, String username, Section<? extends KnowWEObjectType> s) {
+	public void notify(Event event, String web, String username, Section<? extends KnowWEObjectType> s) {
 		KnowWEArticle article = s.getArticle();
 		this.clearContext(article);
 	}

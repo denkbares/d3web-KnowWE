@@ -104,6 +104,8 @@ public interface KnowWEObjectType extends KnowWEType {
 
 	public boolean isNotRecyclable();
 
+	public boolean allowesGlobalTypes();
+
 	public void setNotRecyclable(boolean notRecyclable);
 
 	public boolean isOrderSensitive();

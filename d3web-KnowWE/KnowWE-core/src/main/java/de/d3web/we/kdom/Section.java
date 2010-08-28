@@ -36,13 +36,13 @@ import java.util.Set;
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.namespace.KnowWENamespaceManager;
+import de.d3web.we.core.packaging.KnowWEPackageManager;
+import de.d3web.we.event.EventManager;
+import de.d3web.we.event.SectionCreatedEvent;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.basic.EmbracedType;
 import de.d3web.we.kdom.basic.PlainText;
-import de.d3web.we.kdom.basic.VerbatimType;
 import de.d3web.we.kdom.filter.SectionFilter;
-import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -81,7 +81,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	protected KnowWEArticle article;
 
-	private HashSet<String> namespaces = null;
+	private HashSet<String> packageNames = null;
 
 	protected boolean isExpanded = false;
 
@@ -119,10 +119,22 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	protected String originalText;
 
 	/**
+	 * Specifies whether the children of this map were set through the
+	 * setChildren(List<Section> children) methods.
+	 */
+	protected boolean possiblySharedChildren;
+
+	/**
 	 * The child-nodes of this KDOM-node. This forms the tree-structure of KDOM.
 	 */
-	protected final List<Section<? extends KnowWEObjectType>> children =
+	protected List<Section<? extends KnowWEObjectType>> children =
 			new ArrayList<Section<? extends KnowWEObjectType>>(5);
+
+	/**
+	 * The last child-nodes of this KDOM-node. They get only set, when the
+	 * normal list of children gets replaced (e.g. with includes).
+	 */
+	protected List<Section<? extends KnowWEObjectType>> lastChildren = null;
 
 	/**
 	 * The father section of this KDOM-node. Used for upwards navigation through
@@ -148,8 +160,11 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return objectType;
 	}
 
-	public static <T extends KnowWEObjectType> Section<T> createTypedSection(String text, T o, Section<? extends KnowWEObjectType> father, int beginIndexOfFather, KnowWEArticle article, SectionID id, boolean isExpanded) {
-		return new Section<T>(text, o, father, beginIndexOfFather, article, id, isExpanded);
+	public static <T extends KnowWEObjectType> Section<T> createSection(String text, T o, Section<? extends KnowWEObjectType> father, int beginIndexOfFather, KnowWEArticle article, SectionID id, boolean isExpanded) {
+		Section<T> s = new Section<T>(text, o, father, beginIndexOfFather, article, id, isExpanded);
+		EventManager.getInstance().fireEvent(SectionCreatedEvent.getInstance(),
+				article.getWeb(), null, s);
+		return s;
 	}
 
 	/**
@@ -165,15 +180,12 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @param beginIndexFather
 	 * @param article is the article this section is hooked in
 	 */
-	@SuppressWarnings("unchecked")
 	private Section(String text, T objectType, Section<? extends KnowWEObjectType> father,
 			int beginIndexFather, KnowWEArticle article, SectionID sectionID,
 			boolean isExpanded) {
 
 		this.article = article;
 		this.isExpanded = isExpanded;
-		// this.address = address;
-
 		this.father = father;
 		if (father != null) father.addChild(this);
 		this.originalText = text == null ? "null" : text;
@@ -195,76 +207,31 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		this.lastID = id;
 
 		// fetches the allowed children types of the local type
-		// TODO: Clean up here... maybe merge Include types with global types?
 		List<KnowWEObjectType> types = new LinkedList<KnowWEObjectType>();
 
 		if (objectType != null && objectType.getAllowedChildrenTypes() != null) {
 			types.addAll(objectType.getAllowedChildrenTypes());
 		}
 
-		if (objectType != null
-				&& !objectType.getClass().equals(Include.class)
-				&& !objectType.getClass().equals(PlainText.class)
-				&& !objectType.getClass().equals(VerbatimType.class)) {
-			types.add(Include.getInstance());
-		}
-
-		/**
-		 * adding the registered global types to the children-list
-		 * 
-		 * TODO: Types should be able to restrict global types if they dont want
-		 * any (foreign) global types in the sub-KDOM-tree
-		 */
-		if (KnowWEEnvironment.GLOBAL_TYPES_ENABLED && !(objectType instanceof TerminalType)) {
+		// adding the registered global types to the children-list
+		if (KnowWEEnvironment.GLOBAL_TYPES_ENABLED
+				&& !(objectType instanceof TerminalType)
+				&& objectType.allowesGlobalTypes()) {
 			types.addAll(KnowWEEnvironment.getInstance().getGlobalTypes());
 		}
 
-		if (types.size() == 0 && objectType != null) {
-			if (!objectType.getClass().equals(PlainText.class)) {
-				types.add(PlainText.getInstance());
-			}
-		}
-
-		/**
-		 * searches for children types and splits recursively
-		 */
+		// searches for children types and splits recursively
 		if (!(this instanceof UndefinedSection)
 				&& !objectType.getClass().equals(PlainText.class)
-				&& !objectType.getClass().equals(Include.class)
 				&& !isExpanded) {
+
 			Sectionizer.getInstance().splitToSections(originalText, types, this,
 					article);
 		}
 
-		// childrenParsingOrder.addAll(children);
-
-		/**
-		 * sort children sections in text-order
-		 */
+		// sort children sections in text-order
 		Collections.sort(children, new TextOrderComparator());
 
-		// LinkedList<Integer> currentPositions = new LinkedList<Integer>();
-		// Section<?> temp = this;
-		// Section<?> tempFather = temp.getFather();
-		// while (tempFather != null) {
-		// currentPositions.add(tempFather.getChildren().indexOf(temp));
-		// temp = tempFather;
-		// tempFather = temp.getFather();
-		// }
-		// for (int i = 0; i < children.size(); i++) {
-		// Section<?> child = children.get(i);
-		// if (child.lastPositions != null) {
-		// LinkedList<Integer> currentPosTemp = new
-		// LinkedList<Integer>(currentPositions);
-		// currentPosTemp.addFirst(i);
-		// child.setPositionChangedRecursivelyFor(getTitle(),
-		// !child.lastPositions.equals(currentPosTemp));
-		// }
-		// }
-
-		if (objectType instanceof Include) {
-			article.getIncludeSections().add((Section<Include>) this);
-		}
 	}
 
 	protected Section(KnowWEArticle article) {
@@ -277,7 +244,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	@Override
 	@SuppressWarnings("unchecked")
 	public String toString() {
-		return (objectType != null && objectType instanceof Include && article != null ?
+		return (objectType != null && article != null ?
 				article.getTitle() : this.getObjectType().getClass().getName() + " l:"
 						+ this.getOriginalText().length()) + " - "
 				+ (objectType != null && objectType instanceof KnowWETerm<?>
@@ -342,7 +309,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	/**
 	 * Adds a child to this node. Use for KDOM creation and editing only!
-	 * 
 	 */
 	public void addChild(Section<?> s) {
 		this.addChild(this.children.size(), s);
@@ -350,7 +316,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	/**
 	 * Adds a child to this node. Use for KDOM creation and editing only!
-	 * 
 	 */
 	public void addChild(int index, Section<?> s) {
 		if (s.getOffSetFromFatherText() == -1) {
@@ -429,7 +394,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			return;
 		}
 		List<Section<?>> children = this.getChildren();
-		if (children.isEmpty() || this.getObjectType().getClass() == Include.class) {
+		if (children.isEmpty() || possiblySharedChildren) {
 			return;
 		}
 		for (Section<?> section : children) {
@@ -444,7 +409,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @return
 	 */
 	public Section<? extends KnowWEObjectType> getChildSectionAtPosition(int index) {
-		for (Section<?> child : this.children) {
+		for (Section<?> child : getChildren()) {
 			if (child.getOffSetFromFatherText() <= index
 					&& index < child.getOffSetFromFatherText()
 							+ child.getOriginalText().length()) {
@@ -474,15 +439,40 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	}
 
 	/**
+	 * Use for KDOM creation and editing only!
+	 * 
+	 * @created 26.08.2010
+	 * @param children
+	 */
+	public void setChildren(List<Section<? extends KnowWEObjectType>> children) {
+		if (children == null) {
+			throw new NullPointerException("Children of a Section cannot be null.");
+		}
+		this.possiblySharedChildren = true;
+		this.children = children;
+	}
+
+	/**
+	 * Use for KDOM creation and editing only!
+	 * 
+	 * @created 26.08.2010
+	 * @param children
+	 */
+	public void setLastChildren(List<Section<? extends KnowWEObjectType>> children) {
+		this.possiblySharedChildren = true;
+		this.lastChildren = children;
+	}
+
+	/**
 	 * @return the list of child nodes
 	 */
-	@SuppressWarnings("unchecked")
 	public List<Section<? extends KnowWEObjectType>> getChildren() {
-		if (objectType instanceof Include) {
-			return KnowWEEnvironment.getInstance().getIncludeManager(getWeb())
-					.getChildrenForSection((Section<Include>) this);
-		}
-		else return children;
+//		if (objectType instanceof Include) {
+//			return KnowWEEnvironment.getInstance().getIncludeManager(getWeb())
+//					.getChildrenForSection((Section<Include>) this);
+//		}
+		// else
+		return this.children;
 
 	}
 
@@ -525,7 +515,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		if (depth > 0) {
 			for (Section<? extends KnowWEObjectType> child : this.getChildren()) {
 				child.getAllNodesPreOrderToDepth(nodes,
-						child.getObjectType() instanceof Include ? depth : --depth);
+						child.getTitle().equals(getTitle()) ? --depth : depth);
 			}
 		}
 	}
@@ -552,18 +542,14 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @param article is the article calling this method
 	 * @param nodes is the list of nodes to store the collected nodes in
 	 */
-	@SuppressWarnings("unchecked")
 	public void getAllNodesToDestroyPostOrder(KnowWEArticle article, List<Section<? extends KnowWEObjectType>> nodes) {
 
 		List<Section<?>> children = this.getChildren();
 
-		if (article.isUpdatingIncludes()
-				&& objectType instanceof Include) {
-
-			List<Section<?>> lastChildren = KnowWEEnvironment.getInstance().getIncludeManager(
-					getWeb()).getLastChildrenForSection((Section<Include>) this);
-
-			if (lastChildren != null) children = lastChildren;
+		if (KnowWEEnvironment.getInstance().getArticleManager(
+				article.getWeb()).getDependenciesUpdatingArticles().contains(
+				article.getTitle()) && lastChildren != null) {
+			children = lastChildren;
 		}
 
 		for (Section<? extends KnowWEObjectType> child : children) {
@@ -613,28 +599,28 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return this.article.getTitle();
 	}
 
-	public void addNamespace(String namespace) {
-		if (namespaces == null) {
-			namespaces = new HashSet<String>(4);
-			namespaces.add(getTitle());
+	public void addPackageName(String packageName) {
+		if (packageNames == null) {
+			packageNames = new HashSet<String>(4);
+			packageNames.add(getTitle());
 		}
-		namespaces.add(namespace);
+		packageNames.add(packageName);
 	}
 
-	public boolean removeNamespace(String namespace) {
-		boolean removed = namespaces == null ? false : namespaces.remove(namespace);
-		if (namespaces != null && namespaces.isEmpty()) namespaces = null;
+	public boolean removePackageName(String packageName) {
+		boolean removed = packageNames == null ? false : packageNames.remove(packageName);
+		if (packageNames != null && packageNames.isEmpty()) packageNames = null;
 		return removed;
 	}
 
-	public Set<String> getNamespaces() {
-		if (namespaces == null) {
-			return Collections.unmodifiableSet(father.getNamespaces());
+	public Set<String> getPackageNames() {
+		if (packageNames == null) {
+			return Collections.unmodifiableSet(father.getPackageNames());
 		}
 		else {
 			Set<String> tempNamespaces = new HashSet<String>(4);
-			if (father != null) tempNamespaces.addAll(father.getNamespaces());
-			tempNamespaces.addAll(namespaces);
+			if (father != null) tempNamespaces.addAll(father.getPackageNames());
+			tempNamespaces.addAll(packageNames);
 			return Collections.unmodifiableSet(tempNamespaces);
 		}
 	}
@@ -1255,24 +1241,19 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	/**
 	 * @param buffi
-	 * @param followIncludes if false, the text from includes will not be
-	 *        included. this is necessary if you want just the text of a
-	 *        wikipage having generated.
+	 * @param followSharedChildren if false, the text from for example includes
+	 *        will not be included. this is necessary if you want just the text
+	 *        of a wikipage having generated.
 	 */
-	public void collectTextsFromLeaves(StringBuilder buffi, boolean followIncludes) {
-		if (!this.getChildren().isEmpty()
-				&& (followIncludes || !(this.getObjectType().getClass() == Include.class))) {
+	public void collectTextsFromLeaves(StringBuilder buffi, boolean followSharedChildren) {
+		if (!this.getChildren().isEmpty() && (followSharedChildren ? true : possiblySharedChildren)) {
 			for (Section<?> s : this.getChildren()) {
 				if (s != null) {
-					s.collectTextsFromLeaves(buffi, followIncludes);
+					s.collectTextsFromLeaves(buffi, followSharedChildren);
 				}
 			}
 		}
 		else {
-			if (this.getObjectType().getClass() == Include.class) {
-				// System.out.println( "include tag complete text: " +
-				// section.getOriginalText());
-			}
 			buffi.append(this.originalText);
 		}
 	}
@@ -1296,6 +1277,18 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		}
 
 		return false;
+	}
+
+	/**
+	 * Return whether this Section has children that were set with the
+	 * setChildren(List<Section> children) methods, for example by the
+	 * IncludeManager.
+	 * 
+	 * @created 26.08.2010
+	 * @return
+	 */
+	public boolean hasPossiblySharedChildren() {
+		return this.possiblySharedChildren;
 	}
 
 	public boolean hasQuickEditModeSet(String user) {
@@ -1416,7 +1409,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 */
 	public void setReusedStateOfThisArticleRecursively(String title, boolean reused) {
 		setReusedBy(title, reused);
-		if (!(objectType instanceof Include)) {
+		if (!possiblySharedChildren) {
 			for (Section<? extends KnowWEObjectType> child : getChildren()) {
 				child.setReusedStateOfThisArticleRecursively(title, reused);
 			}
@@ -1482,11 +1475,11 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	}
 
 	private boolean isMatchingNamespace(KnowWEArticle article, SubtreeHandler<T> h) {
-		if (!h.isIgnoringNamespaces() && !KnowWENamespaceManager.AUTOCOMPILE_ARTICLE) {
-			Set<String> namespaceIncludes = KnowWEEnvironment.getInstance().getNamespaceManager(
-					article.getWeb()).getIncludedNamespaces(article);
+		if (!h.isIgnoringNamespaces() && !KnowWEPackageManager.AUTOCOMPILE_ARTICLE) {
+			Set<String> namespaceIncludes = KnowWEEnvironment.getInstance().getPackageManager(
+					article.getWeb()).getIncludedPackages(article);
 
-			for (String ns : getNamespaces()) {
+			for (String ns : getPackageNames()) {
 				if (namespaceIncludes.contains(ns)) return true;
 			}
 

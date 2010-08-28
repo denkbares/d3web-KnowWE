@@ -27,8 +27,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import junit.framework.TestCase;
 import utils.Utils;
-
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -38,7 +38,6 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.xml.GenericXMLObjectType;
 import de.d3web.we.kdom.xml.XMLSectionFinder;
 import dummies.KnowWETestWikiConnector;
-import junit.framework.TestCase;
 
 public class XMLSectionFinderTest extends TestCase {
 
@@ -60,7 +59,7 @@ public class XMLSectionFinderTest extends TestCase {
 		 */
 		String content = this.readXMLFile("2");
 
-		KnowWEArticle article = new KnowWEArticle(content, "Test_Article",
+		KnowWEArticle article = KnowWEArticle.createArticle(content, "Test_Article",
 				RootType.getInstance(), "default_web");
 		Section artSec = article.getSection();
 
@@ -131,7 +130,7 @@ public class XMLSectionFinderTest extends TestCase {
 		 * Build a complete Article using GenericXMLObjectType
 		 */
 		content = this.readXMLFile("0");
-		article = new KnowWEArticle(content, "Test_Article2", new GenericXMLObjectType(),
+		article = KnowWEArticle.createArticle(content, "Test_Article2", new GenericXMLObjectType(),
 				"default_web");
 		artSec = article.getSection();
 

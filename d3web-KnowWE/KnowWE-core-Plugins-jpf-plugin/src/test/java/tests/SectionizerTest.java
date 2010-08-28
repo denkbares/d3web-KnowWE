@@ -23,9 +23,9 @@ package tests;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import junit.framework.TestCase;
 import objectTypes.SplitObjectType;
 import objectTypes.WordObjectType;
-
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
@@ -33,7 +33,6 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import dummies.KnowWETestWikiConnector;
-import junit.framework.TestCase;
 
 /**
  * Sectionizer Test Class.
@@ -71,7 +70,8 @@ public class SectionizerTest extends TestCase {
 
 		// System.out.println(rootType.getAllowedChildrenTypes());;
 
-		KnowWEArticle article = new KnowWEArticle(content, "Test_Article", rootType, "default_web");
+		KnowWEArticle article = KnowWEArticle.createArticle(content, "Test_Article", rootType,
+				"default_web");
 
 		/**
 		 * The real tests 1. Check some children-Counts

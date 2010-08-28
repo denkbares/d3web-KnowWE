@@ -69,7 +69,7 @@ public class GroovySparqlRendererRendererTest {
 		/*
 		 * Init first Article
 		 */
-		KnowWEArticle article1 = new KnowWEArticle("", "TagTest", type,
+		KnowWEArticle article1 = KnowWEArticle.createArticle("", "TagTest", type,
 				"default_web");
 
 		am.saveUpdatedArticle(article1);
@@ -80,9 +80,9 @@ public class GroovySparqlRendererRendererTest {
 
 	@Test
 	public void testRenderer() {
-		KnowWEArticle article1 = new KnowWEArticle("", "Tag1", type,
+		KnowWEArticle article1 = KnowWEArticle.createArticle("", "Tag1", type,
 				"default_web");
-		KnowWEArticle article2 = new KnowWEArticle("", "Tag2", type,
+		KnowWEArticle article2 = KnowWEArticle.createArticle("", "Tag2", type,
 				"default_web");
 
 		am.saveUpdatedArticle(article1);
@@ -97,7 +97,7 @@ public class GroovySparqlRendererRendererTest {
 				+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n"
 				+ "}</sparql>";
 		String renderstring = "<groovysparqlrenderer name=\"junit\">return KnowWEUtils.maskHTML(\"hallo\");</groovysparqlrenderer>";
-		KnowWEArticle setrenderer = new KnowWEArticle(renderstring,
+		KnowWEArticle setrenderer = KnowWEArticle.createArticle(renderstring,
 				"SetRenderer", type, "default_web");
 		am.saveUpdatedArticle(setrenderer);
 		StringBuilder articleString = new StringBuilder();
@@ -108,7 +108,7 @@ public class GroovySparqlRendererRendererTest {
 		String setrenderer_result_should_be = "renderer junit already present";
 		assertEquals(setrenderer_result_should_be, setrenderer_result);
 		articleString = new StringBuilder();
-		KnowWEArticle junitquery = new KnowWEArticle(querystring, "JunitQuery",
+		KnowWEArticle junitquery = KnowWEArticle.createArticle(querystring, "JunitQuery",
 				type, "default_web");
 		am.saveUpdatedArticle(junitquery);
 		junitquery.getRenderer().render(junitquery, junitquery.getSection(),

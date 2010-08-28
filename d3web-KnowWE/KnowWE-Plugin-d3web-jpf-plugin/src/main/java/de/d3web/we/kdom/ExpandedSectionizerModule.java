@@ -35,7 +35,7 @@ public class ExpandedSectionizerModule implements SectionizerModule {
 	}
 
 	private Section<?> createExpandedSection(ExpandedSectionFinderResult result, Section<?> father) {
-		Section<?> s = Section.createTypedSection(result.getText(),
+		Section<?> s = Section.createSection(result.getText(),
 				result.getObjectType(), father,
 				result.getStart(), father.getArticle(), null, true);
 		if (s.getOffSetFromFatherText() < 0

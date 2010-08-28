@@ -61,26 +61,23 @@ public class SolutionsSection extends AbstractKopicSection {
 
 			KnowledgeBaseManagement kbm = getKBM(article);
 
-			if (kbm != null) {
+			Section content = ((AbstractKopicSection) s.getObjectType()).getContentChild(s);
 
-				Section content = ((AbstractKopicSection) s.getObjectType()).getContentChild(s);
+			if (content != null) {
 
-				if (content != null) {
+				List<de.d3web.report.Message> messages = SolutionsBuilder
+						.parse(new StringReader(content.getOriginalText()), kbm,
+								new SingleKBMIDObjectManager(kbm));
 
-					List<de.d3web.report.Message> messages = SolutionsBuilder
-							.parse(new StringReader(content.getOriginalText()), kbm,
-									new SingleKBMIDObjectManager(kbm));
+				AbstractKnowWEObjectType.storeMessages(article, s, this.getClass(), messages);
 
-					AbstractKnowWEObjectType.storeMessages(article, s, this.getClass(), messages);
-
-					Report ruleRep = new Report();
-					for (Message messageKnOffice : messages) {
-						ruleRep.add(messageKnOffice);
-					}
-					KnowWEParseResult result = new KnowWEParseResult(ruleRep, s
-							.getTitle(), s.getOriginalText());
-					s.getArticle().getReport().addReport(result);
+				Report ruleRep = new Report();
+				for (Message messageKnOffice : messages) {
+					ruleRep.add(messageKnOffice);
 				}
+				KnowWEParseResult result = new KnowWEParseResult(ruleRep, s
+						.getTitle(), s.getOriginalText());
+				s.getArticle().getReport().addReport(result);
 			}
 			return null;
 		}

@@ -60,24 +60,21 @@ public class QuestionsSection extends AbstractKopicSection {
 
 			KnowledgeBaseManagement kbm = getKBM(article);
 
-			if (kbm != null) {
+			Section content = ((AbstractKopicSection) s.getObjectType()).getContentChild(s);
+			if (content != null) {
 
-				Section content = ((AbstractKopicSection) s.getObjectType()).getContentChild(s);
-				if (content != null) {
+				List<de.d3web.report.Message> messages = D3DTBuilder
+						.parse(new StringReader(content.getOriginalText()),
+								new SingleKBMIDObjectManager(kbm));
 
-					List<de.d3web.report.Message> messages = D3DTBuilder
-							.parse(new StringReader(content.getOriginalText()),
-									new SingleKBMIDObjectManager(kbm));
-
-					storeMessages(article, s, this.getClass(), messages);
-					Report ruleRep = new Report();
-					for (Message messageKnOffice : messages) {
-						ruleRep.add(messageKnOffice);
-					}
-					KnowWEParseResult result = new KnowWEParseResult(ruleRep, s
-							.getTitle(), s.getOriginalText());
-					s.getArticle().getReport().addReport(result);
+				storeMessages(article, s, this.getClass(), messages);
+				Report ruleRep = new Report();
+				for (Message messageKnOffice : messages) {
+					ruleRep.add(messageKnOffice);
 				}
+				KnowWEParseResult result = new KnowWEParseResult(ruleRep, s
+						.getTitle(), s.getOriginalText());
+				s.getArticle().getReport().addReport(result);
 			}
 			return null;
 		}

@@ -32,17 +32,18 @@ import de.d3web.we.utils.KnowWEUtils;
 
 public class Include extends AbstractXMLObjectType {
 
-	private static Include instance;
+	// private static Include instance = null;
+	//
+	// public static Include getInstance() {
+	// if (instance == null) {
+	// instance = new Include();
+	// }
+	// return instance;
+	// }
 
-	public static Include getInstance() {
-		if (instance == null) {
-			instance = new Include();
-		}
-		return instance;
-	}
-
-	private Include() {
+	public Include() {
 		super("include");
+		this.allowesGlobalTypes = false;
 		this.customRenderer = new EditIncludeSectionRenderer(IncludeSectionRenderer.getInstance());
 	}
 

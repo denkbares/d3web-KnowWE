@@ -36,6 +36,7 @@ public class XMLHead extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 		sectionFinder = new XMLHeadSectionFinder();
+		this.allowesGlobalTypes = false;
 	}
 
 	@Override

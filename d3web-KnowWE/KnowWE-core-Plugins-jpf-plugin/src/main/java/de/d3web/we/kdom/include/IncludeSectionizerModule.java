@@ -18,11 +18,12 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom;
+package de.d3web.we.kdom.include;
 
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.include.Include;
-import de.d3web.we.kdom.include.IncludeSectionFinderResult;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.SectionizerModule;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -33,7 +34,7 @@ public class IncludeSectionizerModule implements SectionizerModule {
 	public Section<?> createSection(KnowWEArticle article, KnowWEObjectType ob, Section<?> father, Section<?> thisSection, String secText, SectionFinderResult result) {
 		Section s = null;
 		if (result instanceof IncludeSectionFinderResult) {
-			s = Section.createTypedSection(
+			s = Section.createSection(
 					thisSection.getOriginalText().substring(
 							result.getStart(),
 							result.getEnd()),
@@ -45,11 +46,10 @@ public class IncludeSectionizerModule implements SectionizerModule {
 					result.getId(),
 					false);
 
-			KnowWEUtils.storeSectionInfo(s.getWeb(), s.getTitle(), s.getID(),
+			KnowWEUtils.storeObject(s.getWeb(), s.getTitle(), s.getID(),
 					Include.INCLUDE_ADDRESS_KEY,
 					((IncludeSectionFinderResult) result).getIncludeAddress());
-			KnowWEEnvironment.getInstance().getIncludeManager(
-					s.getWeb()).registerInclude(s);
+			KnowWEIncludeManager.getInstance().registerInclude(s);
 
 		}
 		return s;

@@ -88,6 +88,11 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 */
 	protected boolean isNumberedType = false;
 
+	/**
+	 * a flag to allow or disallow global types for this type.
+	 */
+	protected boolean allowesGlobalTypes = true;
+
 	public boolean isNumberedType() {
 		return isNumberedType;
 	}
@@ -473,21 +478,21 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		this.customRenderer = renderer;
 	}
 
-	/**
-	 * This enables a second sectionizing stage. Normally all Sections get
-	 * sectionized at the start of building an article and after that, the
-	 * knowledge gets created by the SubtreeHandlers.
-	 * <p />
-	 * If this returns true, the Sections of this ObjectType don't get
-	 * sectionized further until after creating the knowledge (from other
-	 * Sections). Therefore it is possible to use all the stuff created by the
-	 * SubtreeHandlers to sectionze this Section.
-	 * 
-	 * @created 14.06.2010
-	 */
-	public boolean isPostBuildSectionizing() {
-		return this.postBuildSectionizing;
-	}
+	// /**
+	// * This enables a second sectionizing stage. Normally all Sections get
+	// * sectionized at the start of building an article and after that, the
+	// * knowledge gets created by the SubtreeHandlers.
+	// * <p />
+	// * If this returns true, the Sections of this ObjectType don't get
+	// * sectionized further until after creating the knowledge (from other
+	// * Sections). Therefore it is possible to use all the stuff created by the
+	// * SubtreeHandlers to sectionze this Section.
+	// *
+	// * @created 14.06.2010
+	// */
+	// public boolean isPostBuildSectionizing() {
+	// return this.postBuildSectionizing;
+	// }
 
 	/*
 	 * (non-Javadoc)
@@ -497,6 +502,11 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	@Override
 	public boolean isAssignableFromType(Class<? extends KnowWEObjectType> clazz) {
 		return clazz.isAssignableFrom(this.getClass());
+	}
+
+	@Override
+	public boolean allowesGlobalTypes() {
+		return this.allowesGlobalTypes;
 	}
 
 	/*

@@ -20,6 +20,7 @@
 
 package de.d3web.we.kdom.rulesNew;
 
+import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -42,7 +43,7 @@ public class RulesMarkup extends DefaultMarkupType {
 	static {
 		m = new DefaultMarkup("Rule");
 		m.addContentType(new RuleContentType());
-		m.addAnnotation("namespace", false);
+		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_ENAME, false);
 	}
 
 	public RulesMarkup() {

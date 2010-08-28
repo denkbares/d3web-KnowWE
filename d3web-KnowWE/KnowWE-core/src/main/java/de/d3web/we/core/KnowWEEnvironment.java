@@ -42,8 +42,7 @@ import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginManager;
 import de.d3web.plugin.Resource;
 import de.d3web.we.action.KnowWEActionDispatcher;
-import de.d3web.we.core.namespace.KnowWENamespaceManager;
-import de.d3web.we.event.ArticleCreatedEvent;
+import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.InitEvent;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -52,7 +51,6 @@ import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sectionizer;
 import de.d3web.we.kdom.SectionizerModule;
-import de.d3web.we.kdom.include.KnowWEIncludeManager;
 import de.d3web.we.kdom.renderer.ConditionalRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.PageAppendHandler;
@@ -125,16 +123,10 @@ public class KnowWEEnvironment {
 	private final Map<String, KnowledgeRepresentationManager> knowledgeManagers = new HashMap<String, KnowledgeRepresentationManager>();
 
 	/**
-	 * An include manager for each web. In case of JSPWiki there is only on web
-	 * ('default_web')
-	 */
-	private final Map<String, KnowWEIncludeManager> includeManagers = new HashMap<String, KnowWEIncludeManager>();
-
-	/**
 	 * A namespace manager for each web. In case of JSPWiki there is only on web
 	 * ('default_web')
 	 */
-	private final Map<String, KnowWENamespaceManager> namespaceManagers = new HashMap<String, KnowWENamespaceManager>();
+	private final Map<String, KnowWEPackageManager> packageManagers = new HashMap<String, KnowWEPackageManager>();
 
 	// /**
 	// * The servlet context of the running application. Necessary to determine
@@ -310,31 +302,16 @@ public class KnowWEEnvironment {
 	}
 
 	/**
-	 * returns the IncludeManager for a given web
+	 * returns the PackageManager for a given web
 	 * 
 	 * @param web
 	 * @return
 	 */
-	public KnowWEIncludeManager getIncludeManager(String web) {
-		KnowWEIncludeManager mgr = this.includeManagers.get(web);
+	public KnowWEPackageManager getPackageManager(String web) {
+		KnowWEPackageManager mgr = this.packageManagers.get(web);
 		if (mgr == null) {
-			mgr = new KnowWEIncludeManager(web);
-			includeManagers.put(web, mgr);
-		}
-		return mgr;
-	}
-
-	/**
-	 * returns the NamespaceManager for a given web
-	 * 
-	 * @param web
-	 * @return
-	 */
-	public KnowWENamespaceManager getNamespaceManager(String web) {
-		KnowWENamespaceManager mgr = this.namespaceManagers.get(web);
-		if (mgr == null) {
-			mgr = new KnowWENamespaceManager(web);
-			namespaceManagers.put(web, mgr);
+			mgr = new KnowWEPackageManager(web);
+			packageManagers.put(web, mgr);
 		}
 		return mgr;
 	}
@@ -621,12 +598,8 @@ public class KnowWEEnvironment {
 			String topic, String web, boolean fullParse) {
 
 		// create article with the new content
-		KnowWEArticle article = new KnowWEArticle(content, topic, KnowWEEnvironment
+		KnowWEArticle article = KnowWEArticle.createArticle(content, topic, KnowWEEnvironment
 				.getInstance().getRootType(), web);
-
-		// fire 'article-created' event
-		EventManager.getInstance().fireEvent(ArticleCreatedEvent.getInstance(), web,
-				username, article.getSection());
 
 		return this.getArticleManager(web).saveUpdatedArticle(
 				article).getHTML();
@@ -645,7 +618,7 @@ public class KnowWEEnvironment {
 			String topic, String web, KnowWEObjectType rootType) {
 		this.rootTypes = rootType;
 		this.articleManagers.get(web).saveUpdatedArticle(
-				new KnowWEArticle(content, topic, rootType, web));
+				KnowWEArticle.createArticle(content, topic, rootType, web));
 	}
 
 	public ServletContext getContext() {

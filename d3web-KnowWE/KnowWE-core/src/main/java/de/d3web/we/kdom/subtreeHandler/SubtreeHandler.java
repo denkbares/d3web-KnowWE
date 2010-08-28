@@ -69,10 +69,11 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	 * @return true if this handler needs to create, false if not.
 	 */
 	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
-		return article.isFullParse()
-				|| !s.isReusedBy(article.getTitle())
-				|| (s.get().isOrderSensitive() && s.isPositionChangedFor(article.getTitle()))
-				|| (s.get() instanceof IncrementalConstraints
+		return (article.isSecondBuild() || !article.isPostDestroyFullParse())
+				&& article.isFullParse()
+					|| !s.isReusedBy(article.getTitle())
+					|| (s.get().isOrderSensitive() && s.isPositionChangedFor(article.getTitle()))
+					|| (s.get() instanceof IncrementalConstraints
 						&& ((IncrementalConstraints) s.get()).hasViolatedConstraints(
 								article, s));
 	}

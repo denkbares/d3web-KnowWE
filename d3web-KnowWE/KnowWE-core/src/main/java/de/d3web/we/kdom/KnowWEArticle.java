@@ -35,12 +35,12 @@ import java.util.logging.Logger;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.event.ArticleCreatedEvent;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.FullParseEvent;
+import de.d3web.we.event.KDOMCreatedEvent;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
-import de.d3web.we.kdom.include.Include;
-import de.d3web.we.kdom.include.KnowWEIncludeManager;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.store.KnowWESectionInfoStorage;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
@@ -73,11 +73,12 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	/**
 	 * The section representing the root-node of the KDOM-tree
 	 */
-	private final Section<KnowWEArticle> sec;
+	private Section<KnowWEArticle> sec;
 
 	private final Map<String, Integer> idMap = new HashMap<String, Integer>();
 
-	private final Set<Section<Include>> activeIncludes = new HashSet<Section<Include>>();
+	// private final Set<Section<Include>> activeIncludes = new
+	// HashSet<Section<Include>>();
 
 	private KnowWEArticle lastVersion;
 
@@ -85,13 +86,29 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 	private boolean fullParse;
 
+	private boolean postDestroy;
+
+	private boolean postDestroyFullParse;
+
+	private boolean secondBuild;
+
 	private final Set<String> handlersUnableToDestroy = new HashSet<String>();
 
-	private final String updateIncludesTo;
-
-	public KnowWEArticle(String text, String title, KnowWEObjectType rootType,
+	public static KnowWEArticle createArticle(String text, String title, KnowWEObjectType rootType,
 			String web) {
-		this(text, title, rootType, web, null, false);
+		return createArticle(text, title, rootType, web, false);
+	}
+
+	public static KnowWEArticle createArticle(String text, String title, KnowWEObjectType rootType,
+			String web, boolean fullParse) {
+
+		KnowWEArticle article = new KnowWEArticle(text, title, rootType,
+				web, fullParse);
+
+		EventManager.getInstance().fireEvent(ArticleCreatedEvent.getInstance(), web,
+				null, article.getSection());
+
+		return article;
 	}
 
 	/**
@@ -101,88 +118,97 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	 * @param title
 	 * @param allowedObjects
 	 */
-	public KnowWEArticle(String text, String title, KnowWEObjectType rootType,
-			String web, String updateIncludesTo, boolean fullParse) {
+	private KnowWEArticle(String text, String title, KnowWEObjectType rootType,
+			String web, boolean fullParse) {
 
 		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
 				"====>> Starting to build article '" + title + "' ====>>");
 
-		startTimeOverall = System.currentTimeMillis();
+		this.startTimeOverall = System.currentTimeMillis();
 		long startTime = startTimeOverall;
+		this.title = title;
+		this.web = web;
+		this.report = new KnowWEDomParseReport(this);
+		this.childrenTypes.add(rootType);
+		this.lastVersion = KnowWEEnvironment.getInstance().getArticle(web, title);
 
-		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
-
-		lastVersion = env.getArticle(web, title);
-
-		this.fullParse = fullParse
+		boolean defFullParse = fullParse
 				|| lastVersion == null
 				|| ResourceBundle.getBundle("KnowWE_config").getString("incremental.fullparse")
 						.contains("true");
-
-
-
-		KnowWEIncludeManager includeManager = env.getIncludeManager(web);
-
-		includeManager.addSectionizingArticle(title);
-
-		this.updateIncludesTo = updateIncludesTo;
-
-		this.title = title;
-		this.web = web;
-
-		report = new KnowWEDomParseReport(this);
-
-		this.childrenTypes.add(rootType);
+		this.fullParse = defFullParse;
 
 		// clear KnowWETypeStorage before re-parsing data
 		clearTypeStore(rootType, title);
 
-		// create new Section, here the KDOM is created recursively
-		sec = Section.createTypedSection(text, this, null, 0, this, null, false);
+		build(text, title, rootType, web, startTime);
 
-		if (fullParse)
+		if (this.postDestroyFullParse) {
+			this.secondBuild = true;
+			build(text, title, rootType, web, startTime);
+		}
+
+		// if a SubtreeHandlers uses KnowWEArticle#setFullParse(boolean,
+		// SubtreeHandler) he prevents incremental updating
+		if (!defFullParse && !handlersUnableToDestroy.isEmpty()) {
+			Logger.getLogger(this.getClass().getName()).log(
+					Level.INFO, "The following SubtreeHandlers " +
+							"prevent inrememental updating:\n" +
+							handlersUnableToDestroy.toString());
+		}
+
+		// prevent memory leak
+		lastVersion = null;
+	}
+
+	private void build(String text, String title, KnowWEObjectType rootType,
+			String web, long startTime) {
+
+		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
+
+		env.getArticleManager(web).registerSectionizingArticle(title);
+
+		// create new Section, here the KDOM is created recursively
+		sec = Section.createSection(text, this, null, 0, this, null, false);
+
+		if (this.fullParse)
 			EventManager.getInstance().fireEvent(new FullParseEvent(), web, null,
 					this.sec);
 
-		sec.addNamespace(title);
+		sec.addPackageName(title);
 
 		sec.absolutePositionStartInArticle = 0;
 		sec.setReusedSuccessorStateRecursively(false);
 
-		List<Section<Include>> inactiveIncludes = includeManager.getInactiveIncludesForArticle(
-				title, activeIncludes);
+		EventManager.getInstance().fireEvent(new KDOMCreatedEvent(), web, null, sec);
 
-		includeManager.resetReusedStateOfInactiveIncludeTargets(title, inactiveIncludes,
-				activeIncludes);
+		// calls Validator if configured
+		if (Validator.getResourceBundle().getString("validator.active")
+				.contains("true")) {
+			Logger.getLogger(this.getClass().getName()).log(Level.FINER,
+					"-> Starting to validate article ->");
+
+			Validator.getFileHandlerInstance().validateArticle(this);
+
+			Logger.getLogger(this.getClass().getName()).log(
+					Level.FINER,
+					"<- Finished validating article in "
+							+ (System.currentTimeMillis() - startTime)
+							+ "ms <-");
+			startTime = System.currentTimeMillis();
+		}
 
 		// destroy no longer used knowledge and stuff from the last article
 		if (!this.fullParse) reviseLastArticleToDestroy();
+		this.postDestroy = true;
 
-		includeManager.removeSectionizingArticles(title);
+		env.getArticleManager(web).unregisterSectionizingArticles(title);
 
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.FINE,
 				"<- Built KDOM in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
-
 		startTime = System.currentTimeMillis();
-
-		if (this.fullParse) {
-			// TODO: NamespaceManager should listen to the FullParseEvent
-			// instead of being referenced directly
-			env.getNamespaceManager(web).cleanForArticle(this);
-		}
-
-		if (this.fullParse) {
-			// TODO: Semantic Core should listen to the FullParseEvent instead
-			// of being referenced directly
-			// SemanticCoreDelegator.getInstance().clearContext(this);
-			Logger.getLogger(this.getClass().getName()).log(
-					Level.FINE,
-					"<- Cleared SemanticCore context in "
-							+ (System.currentTimeMillis() - startTime) + "ms <-");
-			startTime = System.currentTimeMillis();
-		}
 
 		// run initHooks at KnowledgeRepManager
 		env.getKnowledgeRepresentationManager(web)
@@ -192,7 +218,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 				Level.FINE,
 				"<- Initialized Knowledge Manager in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
-
 		startTime = System.currentTimeMillis();
 
 		// create default solution context as title name
@@ -209,46 +234,15 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 				Level.FINE,
 				"<- Built Knowledge in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
-
 		startTime = System.currentTimeMillis();
 
-		// calls Validator if configured
-		if (Validator.getResourceBundle().getString("validator.active")
-				.contains("true")) {
-			Logger.getLogger(this.getClass().getName()).log(Level.FINER,
-					"-> Starting to validate article ->");
-
-			Validator.getFileHandlerInstance().validateArticle(this);
-
-			Logger.getLogger(this.getClass().getName()).log(
-					Level.FINER,
-					"<- Finished validating article in "
-							+ (System.currentTimeMillis() - startTime)
-							+ "ms <-");
-
-			startTime = System.currentTimeMillis();
-		}
-
-		KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(web)
+		env.getKnowledgeRepresentationManager(web)
 				.finishArticle(this);
 
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.FINE,
 				"<- Registered Knowledge in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
-
-		// if a SubtreeHandlers uses KnowWEArticle#setFullParse(boolean,
-		// SubtreeHandler) he prevents incremental updating
-		if (!handlersUnableToDestroy.isEmpty()) {
-			Logger.getLogger(this.getClass().getName()).log(
-					Level.INFO, "The following SubtreeHandlers " +
-							"prevent inrememental updating:\n" +
-							handlersUnableToDestroy.toString());
-		}
-
-		// prevent memory leak
-		includeManager.unregisterIncludes(inactiveIncludes);
-		lastVersion = null;
 
 	}
 
@@ -305,72 +299,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	public Section<? extends KnowWEObjectType> getNode(String nodeID) {
 		return sec.getNode(nodeID);
 	}
-
-	// /**
-	// * stores report as html-page on harddisk
-	// *
-	// * @param topicname
-	// * @param htmlReport
-	// */
-	// private void writeOutReport(String topicname, String htmlReport, String
-	// web) {
-	// File f = new File(KnowWEEnvironment.getInstance()
-	// .getArticleManager(web).getReportPath()
-	// + topicname + ".html");
-	// try {
-	// FileOutputStream out = new FileOutputStream(f);
-	// out.write(htmlReport.getBytes());
-	// out.flush();
-	// out.close();
-	// } catch (Exception e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// }
-
-	// /**
-	// * updates the distributed reasoning engine when KB has changed after
-	// * parsing article
-	// *
-	// * @param result
-	// */
-	// private void updateKnowledgeBase(KnowWEDomParseReport result) {
-	//
-	// KopicParseResult kResult = result.getKopicParseResult();
-	//
-	// if (kResult != null) {
-	// KnowledgeBase base = kResult.getKb();
-	// DPSEnvironment env = WebEnvironmentManager.getInstance()
-	// .getEnvironment(KnowWEEnvironment.DEFAULT_WEB,
-	// KnowWEArticleManager.jarsPath);
-	// KnowledgeService service = new D3webKnowledgeService(base, base
-	// .getId(), KnowWEUtils.getUrl(KnowWEArticleManager.jarsPath
-	// + "/" + KnowWEEnvironment.DEFAULT_WEB + "/" + base.getId()
-	// + ".jar"));
-	// env.addService(service, kResult.getClusterID(), true);
-	// // KnowledgeBaseRepository.getInstance().addKnowledgeBase(
-	// // base.getId(), base);
-	//
-	// for (Broker broker : env.getBrokers()) {
-	// broker.register(service);
-	// }
-	//
-	// }
-	//
-	// }
-
-	// /**
-	// *
-	// * @return last parse-report of this article
-	// * @throws NoParseResultException
-	// * if hadnt been parsed yet
-	// */
-	// public KopicParseResult getLastParseResult() throws
-	// NoParseResultException {
-	// if (report.getKopicParseResult() == null)
-	// throw new NoParseResultException();
-	// return report.getKopicParseResult();
-	// }
 
 	/**
 	 * Returns the title of this KnowWEArticle.
@@ -490,9 +418,9 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return sec.getOriginalText();
 	}
 
-	public Set<Section<Include>> getIncludeSections() {
-		return this.activeIncludes;
-	}
+	// public Set<Section<Include>> getActiveIncludes() {
+	// return this.activeIncludes;
+	// }
 
 	private void reviseLastArticleToDestroy() {
 
@@ -542,32 +470,32 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return this.fullParse;
 	}
 
-	public boolean isUpdatingIncludes() {
-		return this.updateIncludesTo != null;
+	public boolean isPostDestroyFullParse() {
+		return this.postDestroyFullParse;
 	}
 
-	public String getArticleUpdatingIncludesOfThisArticle() {
-		return this.updateIncludesTo;
+	public boolean isSecondBuild() {
+		return this.secondBuild;
 	}
 
 	public KnowWEObjectType getRootType() {
 		return getAllowedChildrenTypes().get(0);
 	}
 
-	public void setFullParse(boolean fullParse, SubtreeHandler<?> source) {
-		if (!this.fullParse && fullParse) {
+	public void setFullParse(SubtreeHandler<?> source) {
+		if (!this.fullParse) {
 			EventManager.getInstance().fireEvent(new FullParseEvent(), web, null,
 					this.sec);
 		}
+		handlersUnableToDestroy.add(source.getClass().isAnonymousClass()
+				? source.getClass().getName().substring(
+						source.getClass().getName().lastIndexOf(".") + 1)
+				: source.getClass().getSimpleName());
 
-		if (fullParse) {
-			handlersUnableToDestroy.add(source.getClass().isAnonymousClass()
-					? source.getClass().getName().substring(
-							source.getClass().getName().lastIndexOf(".") + 1)
-					: source.getClass().getSimpleName());
+		if (!this.postDestroyFullParse && !this.fullParse && this.postDestroy) {
+			this.postDestroyFullParse = true;
 		}
-
-		this.fullParse = fullParse;
+		this.fullParse = true;
 	}
 
 }

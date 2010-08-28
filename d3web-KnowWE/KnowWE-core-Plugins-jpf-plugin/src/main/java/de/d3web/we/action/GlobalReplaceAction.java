@@ -142,8 +142,8 @@ public class GlobalReplaceAction extends DeprecatedAbstractKnowWEAction {
 			String text = art.collectTextsFromLeaves();
 
 			KnowWEEnvironment.getInstance().saveArticle(web, art.getTitle(), text, parameterMap);
-			mgr.saveUpdatedArticle(new KnowWEArticle(text, art.getTitle(), KnowWEEnvironment
-					.getInstance().getRootType(), web));
+			mgr.saveUpdatedArticle(KnowWEArticle.createArticle(text, art.getTitle(),
+					KnowWEEnvironment.getInstance().getRootType(), web));
 		}
 
 		// Meldung gernerieren und zurueckgeben.

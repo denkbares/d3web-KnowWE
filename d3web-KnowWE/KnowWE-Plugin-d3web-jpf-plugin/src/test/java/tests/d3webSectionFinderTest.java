@@ -47,7 +47,6 @@ import de.d3web.we.kdom.rules.Rule;
 import de.d3web.we.kdom.rules.RuleActionLine;
 import de.d3web.we.kdom.rules.RuleCondLine;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.semanticAnnotation.AnnotatedString;
 import de.d3web.we.kdom.semanticAnnotation.AnnotationMapSign;
@@ -100,7 +99,8 @@ public class d3webSectionFinderTest extends TestCase {
 				+ "<=> asks::Real mileage  /100km}}bla blub";
 
 		Annotation type = new de.d3web.we.kdom.Annotation.Annotation();
-		KnowWEArticle article = new KnowWEArticle(test, "Test_Article2", type, "default_web");
+		KnowWEArticle article = KnowWEArticle.createArticle(test, "Test_Article2", type,
+				"default_web");
 		Section artSec = article.getSection();
 		List<Section> childs = artSec.getChildren();
 
@@ -163,7 +163,8 @@ public class d3webSectionFinderTest extends TestCase {
 		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());
 		KnowWEEnvironment.getInstance().getArticle("default_web", "Test_Article");
 
-		KnowWEArticle article = new KnowWEArticle(test, "Test_Article2", new ComplexFinding(),
+		KnowWEArticle article = KnowWEArticle.createArticle(test, "Test_Article2",
+				new ComplexFinding(),
 				"default_web");
 		Section artSec = article.getSection();
 		List<Section> childs = artSec.getChildren();

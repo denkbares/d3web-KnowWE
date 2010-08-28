@@ -36,6 +36,7 @@ public class XMLTail extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 		sectionFinder = new XMLTailSectionFinder();
+		this.allowesGlobalTypes = false;
 	}
 
 	@Override

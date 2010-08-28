@@ -20,6 +20,9 @@
 
 package de.d3web.we.ci4ke.handling;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import de.d3web.we.event.ArticleCreatedEvent;
 import de.d3web.we.event.Event;
 import de.d3web.we.event.EventListener;
@@ -27,18 +30,20 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 
-public class CIEventForwarder implements EventListener<ArticleCreatedEvent> {
+public class CIEventForwarder implements EventListener {
 
 	public CIEventForwarder() {
 	}
 
 	@Override
-	public Class<? extends Event> getEvent() {
-		return ArticleCreatedEvent.class;
+	public Collection<Class<? extends Event>> getEvents() {
+		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(1);
+		events.add(ArticleCreatedEvent.class);
+		return events;
 	}
 
 	@Override
-	public void notify(ArticleCreatedEvent event, String web, String username,
+	public void notify(Event event, String web, String username,
 			Section<? extends KnowWEObjectType> s) {
 		if (s.getObjectType().getClass().equals(KnowWEArticle.class)) {
 			CIHookManager.getInstance().triggerHooks(s.getID());

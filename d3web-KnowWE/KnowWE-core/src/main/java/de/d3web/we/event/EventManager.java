@@ -20,6 +20,7 @@
 package de.d3web.we.event;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.knowwe.plugin.Plugins;
 
 /**
  * A very simple EventManager. Events are represented by Classes
@@ -46,36 +48,38 @@ public class EventManager {
 		return instance;
 	}
 
-	@SuppressWarnings("unchecked")
-	private final Map<Class<? extends Event>, List<EventListener>> listenerMap = new HashMap<Class<? extends Event>, List<EventListener>>();
+	private final Map<Class<? extends Event>, List<EventListener>> listenerMap =
+			new HashMap<Class<? extends Event>, List<EventListener>>();
 
 	/**
 	 * Creates the listener map by fetching all EventListener extensions from
 	 * the PluginManager
 	 */
-	@SuppressWarnings("unchecked")
 	public EventManager() {
 		// get all EventListeners
 		Extension[] exts = PluginManager.getInstance().getExtensions(
-				"KnowWEExtensionPoints",
-				"EventListener");
+				Plugins.EXTENDED_PLUGIN_ID,
+				Plugins.EXTENDED_POINT_EventListener);
 		for (Extension extension : exts) {
 			Object o = extension.getSingleton();
 			if (o instanceof EventListener) {
-				EventListener listener = ((EventListener) o);
-
-				// Get the class of the event
-				Class<? extends Event> eventClass = listener.getEvent();
-
-				// Register the listener for the event's class
-				List<EventListener> list = null;
-				if (listenerMap.containsKey(eventClass)) list = listenerMap.get(eventClass);
-				else {
-					list = new ArrayList<EventListener>();
-					listenerMap.put(eventClass, list);
-				}
-				list.add(listener);
+				registerListener(((EventListener) o));
 			}
+		}
+	}
+
+	public void registerListener(EventListener listener) {
+		// Get the class of the event
+		Collection<Class<? extends Event>> eventClasses = listener.getEvents();
+
+		for (Class<? extends Event> eventClass : eventClasses) {
+			// Register the listener for the event's class
+			List<EventListener> list = listenerMap.get(eventClass);
+			if (list == null) {
+				list = new ArrayList<EventListener>();
+				listenerMap.put(eventClass, list);
+			}
+			list.add(listener);
 		}
 	}
 
@@ -87,7 +91,6 @@ public class EventManager {
 	 * @param s
 	 * @param event
 	 */
-	@SuppressWarnings("unchecked")
 	public void fireEvent(Event e, String web, String username, Section<? extends KnowWEObjectType> s) {
 
 		List<EventListener> listeners = this.listenerMap.get(e.getClass());

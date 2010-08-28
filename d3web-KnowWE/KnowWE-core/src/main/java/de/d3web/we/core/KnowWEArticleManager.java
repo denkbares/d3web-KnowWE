@@ -22,17 +22,21 @@ package de.d3web.we.core;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.d3web.we.event.EventManager;
+import de.d3web.we.event.UpdatingDependenciesEvent;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.store.KnowWESectionInfoStorage;
 import de.d3web.we.utils.KnowWEUtils;
 import dummies.KnowWETestWikiConnector;
@@ -49,6 +53,18 @@ public class KnowWEArticleManager {
 	 * Stores KnowWEArticles for article-names
 	 */
 	private HashMap<String, KnowWEArticle> articleMap = new java.util.HashMap<String, KnowWEArticle>();
+
+	/**
+	 * List that keeps track of all articles that are sectionizing at the
+	 * moment.
+	 */
+	private final Set<String> sectionizingArticles = new HashSet<String>();
+
+	/**
+	 * List that keeps track of all articles that are updating their
+	 * dependencies at the moment.
+	 */
+	private final Set<String> updatingArticles = new HashSet<String>();
 
 	protected KnowWESectionInfoStorage typeStore = new KnowWESectionInfoStorage();
 
@@ -208,7 +224,7 @@ public class KnowWEArticleManager {
 		}
 		List<Section> children = sec.getChildren();
 		if (children == null || children.isEmpty()
-				|| sec.getObjectType() instanceof Include) {
+				|| sec.hasPossiblySharedChildren()) {
 			newText.append(sec.getOriginalText());
 			return;
 		}
@@ -234,18 +250,20 @@ public class KnowWEArticleManager {
 
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.FINE,
-				"-> Starting to update Includes to article '" + art.getTitle()
+				"-> Starting to update dependencies to article '" + art.getTitle()
 						+ "' ->");
+		updatingArticles.add(art.getTitle());
 
-		KnowWEEnvironment.getInstance().getIncludeManager(web)
-				.updateIncludesToArticle(art);
+		EventManager.getInstance().fireEvent(new UpdatingDependenciesEvent(), web, null,
+				art.getSection());
 
-		KnowWEEnvironment.getInstance().getNamespaceManager(web)
-				.updateNamespaceIncludes(art);
+		KnowWEEnvironment.getInstance().getPackageManager(web)
+				.updatePackageIncludes(art);
 
+		updatingArticles.remove(art.getTitle());
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.FINE,
-				"<- Finished updating Includes to article '" + art.getTitle()
+				"<- Finished updating dependencies to article '" + art.getTitle()
 						+ "' in " + (System.currentTimeMillis() - startTime)
 						+ "ms <-");
 
@@ -284,6 +302,22 @@ public class KnowWEArticleManager {
 
 		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
 				"-> Deleted article '" + art.getTitle() + "'" + " from " + web);
+	}
+
+	public void unregisterSectionizingArticles(String title) {
+		this.sectionizingArticles.remove(title);
+	}
+
+	public void registerSectionizingArticle(String title) {
+		this.sectionizingArticles.add(title);
+	}
+
+	public Set<String> getSectionizingArticles() {
+		return Collections.unmodifiableSet(this.sectionizingArticles);
+	}
+
+	public Set<String> getDependenciesUpdatingArticles() {
+		return Collections.unmodifiableSet(this.updatingArticles);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
  * 
  * This is free software; you can redistribute it and/or modify it under the
@@ -18,31 +18,12 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.questionTreeNew;
+package de.d3web.we.core.packaging;
 
-import de.d3web.we.core.packaging.KnowWEPackageManager;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
-import de.d3web.we.kdom.questionTreeNew.dialog.QuestionTreeRootTypeDefaultRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.Section;
 
-public class QuestionTreeRootType extends QuestionTree {
+public interface PackageInclude {
 
-	private static DefaultMarkup m = null;
-
-	static {
-		m = new DefaultMarkup("QuestionTree");
-		m.addContentType(new QuestionDashTree());
-		m.addAnnotation("dialog", false);
-		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_ENAME, false);
-	}
-
-	public QuestionTreeRootType() {
-		super(m);
-	}
-
-	@Override
-	protected KnowWEDomRenderer<?> getDefaultRenderer() {
-		return new QuestionTreeRootTypeDefaultRenderer();
-	}
+	public String getPackageToInclude(Section<? extends PackageInclude> s);
 
 }

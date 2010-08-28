@@ -20,6 +20,8 @@
 
 package de.d3web.we.event;
 
+import java.util.Collection;
+
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 
@@ -27,22 +29,20 @@ import de.d3web.we.kdom.Section;
  * An EventListener is an extension to KnowWE, that can listen to events firing
  * during operations handled by KnowWE (e.g., init, page-save...)
  * 
- * TODO: Would be nice if we could listen to more than one event (and keep
- * generics)
  * 
  * @author Jochen
  * 
  */
-public interface EventListener<T extends Event> {
+public interface EventListener {
 
 	/**
-	 * returns the event {@Link Event} the listener wants to listen to.
-	 * The EventManager {@link EventManager} will register the listener for this
-	 * event.
+	 * returns the events {@Link Event} the listener wants to listen to.
+	 * The EventManager {@link EventManager} will register the listener for
+	 * these events.
 	 * 
 	 * @return
 	 */
-	public Class<? extends Event> getEvent();
+	public Collection<Class<? extends Event>> getEvents();
 
 	/**
 	 * this method will be called when an event {@Link Event} is fired
@@ -53,6 +53,6 @@ public interface EventListener<T extends Event> {
 	 * @param eventName
 	 * @param web
 	 */
-	public void notify(T event, String web, String username, Section<? extends KnowWEObjectType> s);
+	public void notify(Event event, String web, String username, Section<? extends KnowWEObjectType> s);
 
 }

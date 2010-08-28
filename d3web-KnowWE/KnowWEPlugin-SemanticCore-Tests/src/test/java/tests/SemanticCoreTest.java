@@ -157,7 +157,7 @@ public class SemanticCoreTest {
 
 	@Test
 	public void testAddStatements() {
-		KnowWEArticle article1 = new KnowWEArticle("", "Tag1", type,
+		KnowWEArticle article1 = KnowWEArticle.createArticle("", "Tag1", type,
 				"default_web");
 		am.saveUpdatedArticle(article1);
 		TaggingMangler tm = TaggingMangler.getInstance();
