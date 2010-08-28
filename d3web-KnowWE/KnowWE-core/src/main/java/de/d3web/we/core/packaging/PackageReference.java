@@ -20,10 +20,12 @@
 
 package de.d3web.we.core.packaging;
 
+import java.util.List;
+
 import de.d3web.we.kdom.Section;
 
-public interface PackageInclude {
+public interface PackageReference {
 
-	public String getPackageToInclude(Section<? extends PackageInclude> s);
+	public List<String> getPackagesToReferTo(Section<? extends PackageReference> s);
 
 }

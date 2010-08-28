@@ -1477,7 +1477,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	private boolean isMatchingNamespace(KnowWEArticle article, SubtreeHandler<T> h) {
 		if (!h.isIgnoringNamespaces() && !KnowWEPackageManager.AUTOCOMPILE_ARTICLE) {
 			Set<String> namespaceIncludes = KnowWEEnvironment.getInstance().getPackageManager(
-					article.getWeb()).getIncludedPackages(article);
+					article.getWeb()).getReferencedPackages(article);
 
 			for (String ns : getPackageNames()) {
 				if (namespaceIncludes.contains(ns)) return true;

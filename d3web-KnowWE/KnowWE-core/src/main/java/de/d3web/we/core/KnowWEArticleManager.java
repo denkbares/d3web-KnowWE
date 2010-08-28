@@ -258,7 +258,7 @@ public class KnowWEArticleManager {
 				art.getSection());
 
 		KnowWEEnvironment.getInstance().getPackageManager(web)
-				.updatePackageIncludes(art);
+				.updatePackageReferences(art);
 
 		updatingArticles.remove(art.getTitle());
 		Logger.getLogger(this.getClass().getName()).log(

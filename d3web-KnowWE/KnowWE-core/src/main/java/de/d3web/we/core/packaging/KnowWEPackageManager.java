@@ -49,7 +49,7 @@ public class KnowWEPackageManager implements EventListener {
 
 	private final Map<String, LinkedList<Section<?>>> packageDefinitionsMap = new HashMap<String, LinkedList<Section<?>>>();
 
-	private final Map<String, HashSet<Section<? extends PackageInclude>>> packageIncludesMap = new HashMap<String, HashSet<Section<? extends PackageInclude>>>();
+	private final Map<String, HashSet<Section<? extends PackageReference>>> packageReferencesMap = new HashMap<String, HashSet<Section<? extends PackageReference>>>();
 
 	private final Set<String> changedPackages = new HashSet<String>();
 
@@ -79,16 +79,19 @@ public class KnowWEPackageManager implements EventListener {
 	}
 
 	public boolean unregisterPackageDefinition(Section<?> s) {
-		Set<String> includingArticles = null;
 		for (String packageName : s.getPackageNames()) {
+
+			if (packageName.equals(s.getTitle())) continue;
+
 			LinkedList<Section<?>> packageList = packageDefinitionsMap.get(packageName);
 			if (packageList != null) {
 				boolean removed = packageList.remove(s);
 				if (removed) {
 					changedPackages.add(packageName);
-					if (includingArticles == null) {
-						includingArticles = getArticlesIncluding(packageName);
-					}
+
+					// set reused = false for all articles that don't compile
+					// this Section any longer
+					Set<String> includingArticles = getArticlesReferingTo(packageName);
 					for (String article : includingArticles) {
 						if (s.isReusedBy(article)) s.setReusedStateRecursively(article, false);
 					}
@@ -111,14 +114,15 @@ public class KnowWEPackageManager implements EventListener {
 				unregisterPackageDefinition(sec);
 			}
 		}
-		for (HashSet<Section<? extends PackageInclude>> set : new ArrayList<HashSet<Section<? extends PackageInclude>>>(
-				packageIncludesMap.values())) {
-			List<Section<? extends PackageInclude>> sectionsToRemove = new ArrayList<Section<? extends PackageInclude>>();
-			for (Section<? extends PackageInclude> sec : set) {
+		for (HashSet<Section<? extends PackageReference>> set : new ArrayList<HashSet<Section<? extends PackageReference>>>(
+				packageReferencesMap.values())) {
+			List<Section<? extends PackageReference>> sectionsToRemove =
+					new ArrayList<Section<? extends PackageReference>>();
+			for (Section<? extends PackageReference> sec : set) {
 				if (sec.getTitle().equals(article.getTitle())) sectionsToRemove.add(sec);
 			}
-			for (Section<? extends PackageInclude> sec : sectionsToRemove) {
-				unregisterPackageInclude(article, sec);
+			for (Section<? extends PackageReference> sec : sectionsToRemove) {
+				unregisterPackageReference(article, sec);
 			}
 		}
 
@@ -135,33 +139,33 @@ public class KnowWEPackageManager implements EventListener {
 		}
 	}
 
-	public void registerPackageInclude(KnowWEArticle article, Section<? extends PackageInclude> s) {
+	public void registerPackageReference(KnowWEArticle article, Section<? extends PackageReference> s) {
 		
-		if (s.get().getPackageToInclude(s).equals(article.getTitle())
-				&& !getPackageIncludes(article).contains(s)) {
+		if (s.get().getPackagesToReferTo(s).contains(article.getTitle())
+				&& !getPackageReferences(article).contains(s)) {
 			if (!AUTOCOMPILE_ARTICLE) {
 
-				// If the PackageInclude aims at the article it is defined in
+				// If the PackageReference aims at the article it is defined in
 				// and autocompile is deactivated, the reused-flags need to be
-				// reset. If for example only the PackageInclude was added to
+				// reset. If for example only the PackageReference was added to
 				// the article and all other Sections could be reused, all these
 				// reused-flags are set to true although no SubtreeHandlers have
 				// created yet.
 
-				Set<String> includedPackages = getIncludedPackages(article);
+				Set<String> referencedPackages = getReferencedPackages(article);
 
-				Set<Section<?>> alreadyIncluded = new HashSet<Section<?>>();
-				for (String incPack : includedPackages) {
+				Set<Section<?>> alreadyReferenced = new HashSet<Section<?>>();
+				for (String incPack : referencedPackages) {
 					List<Section<?>> packDefs = getPackageDefinitions(incPack);
 					for (Section<?> packDef : packDefs) {
 						List<Section<?>> tempNodes = new LinkedList<Section<?>>();
 						packDef.getAllNodesPostOrder(tempNodes);
-						alreadyIncluded.addAll(tempNodes);
+						alreadyReferenced.addAll(tempNodes);
 					}
 				}
 				List<Section<?>> allNodesPostOrder = article.getAllNodesPostOrder();
 				for (Section<?> node : allNodesPostOrder) {
-					if (!alreadyIncluded.contains(node)) {
+					if (!alreadyReferenced.contains(node)) {
 						node.setReusedBy(article.getTitle(), false);
 					}
 				}
@@ -171,64 +175,71 @@ public class KnowWEPackageManager implements EventListener {
 			}
 		}
 		
-		HashSet<Section<? extends PackageInclude>> packageIncludes =
-				packageIncludesMap.get(article.getTitle());
-		if (packageIncludes == null) {
-			packageIncludes = new HashSet<Section<? extends PackageInclude>>(4);
-			packageIncludesMap.put(article.getTitle(), packageIncludes);
+		HashSet<Section<? extends PackageReference>> packageReferences =
+				packageReferencesMap.get(article.getTitle());
+		if (packageReferences == null) {
+			packageReferences = new HashSet<Section<? extends PackageReference>>(4);
+			packageReferencesMap.put(article.getTitle(), packageReferences);
 		}
-		packageIncludes.add(s);
+		packageReferences.add(s);
 	}
 
-	public boolean unregisterPackageInclude(KnowWEArticle article, Section<? extends PackageInclude> s) {
-		Set<Section<? extends PackageInclude>> packageIncludes = packageIncludesMap.get(article.getTitle());
+	public boolean unregisterPackageReference(KnowWEArticle article, Section<? extends PackageReference> s) {
+		Set<Section<? extends PackageReference>> packageReferences = packageReferencesMap.get(article.getTitle());
 
-		if (packageIncludes != null) {
-			boolean removed = packageIncludes.remove(s);
+		if (packageReferences != null) {
+			boolean removed = packageReferences.remove(s);
 			if (removed) {
-				String includedPackage = s.get().getPackageToInclude(s);
-				boolean stillIncluded = false;
-				for (Section<? extends PackageInclude> packInclude : packageIncludes) {
-					if (packInclude.get().getPackageToInclude(packInclude).equals(includedPackage)) {
-						stillIncluded = true;
-						break;
+				// set all Sections that were referenced by this
+				// PackageReference to reused = false for the given article
+				Collection<String> referencedPackages = s.get().getPackagesToReferTo(s);
+				for (String referencedPackage : referencedPackages) {
+					boolean stillReferenced = false;
+					for (Section<? extends PackageReference> packReference : packageReferences) {
+						if (packReference.get().getPackagesToReferTo(packReference).contains(
+								referencedPackage)) {
+							stillReferenced = true;
+							break;
+						}
 					}
-				}
-				if (!stillIncluded) {
-					List<Section<?>> packageDefinitions;
-					if (includedPackage.equals(article.getTitle())) {
-						packageDefinitions = new ArrayList<Section<?>>(1);
-						packageDefinitions.add(article.getSection());
-					}
-					else {
-						packageDefinitions = getPackageDefinitions(
-								s.get().getPackageToInclude(s));
-					}
-					for (Section<?> packageDef : packageDefinitions) {
-						packageDef.setReusedStateRecursively(article.getTitle(), false);
-						KnowWEUtils.clearMessagesRecursively(article, packageDef);
+					// but don't set to false, if the package is still
+					// referenced in another PackageReference in this
+					// article
+					if (!stillReferenced) {
+						List<Section<?>> packageDefinitions;
+						if (referencedPackage.equals(article.getTitle())) {
+							packageDefinitions = new ArrayList<Section<?>>(1);
+							packageDefinitions.add(article.getSection());
+						}
+						else {
+							packageDefinitions = getPackageDefinitions(referencedPackage);
+						}
+						for (Section<?> packageDef : packageDefinitions) {
+							packageDef.setReusedStateRecursively(article.getTitle(), false);
+							KnowWEUtils.clearMessagesRecursively(article, packageDef);
+						}
 					}
 				}
 			}
-			if (packageIncludes.isEmpty()) packageIncludesMap.remove(article.getTitle());
+			if (packageReferences.isEmpty()) packageReferencesMap.remove(article.getTitle());
 			return removed;
 		}
 		return false;
 	}
 
-	public Set<Section<? extends PackageInclude>> getPackageIncludes(KnowWEArticle article) {
-		Set<Section<? extends PackageInclude>> packageIncludes = packageIncludesMap.get(article.getTitle());
-		return packageIncludes == null
-				? Collections.unmodifiableSet(new HashSet<Section<? extends PackageInclude>>(0))
-				: Collections.unmodifiableSet(new HashSet<Section<? extends PackageInclude>>(
-						packageIncludes));
-	}
-
-	public Set<String> getArticlesIncluding(String packageName) {
+	/**
+	 * Returns all articles that refer to the given packageName.
+	 * 
+	 * @created 28.08.2010
+	 * @param packageName
+	 * @return
+	 */
+	public Set<String> getArticlesReferingTo(String packageName) {
 		Set<String> matchingArticles = new HashSet<String>();
-		for (String article : packageIncludesMap.keySet()) {
-			for (Section<? extends PackageInclude> packageInclude : packageIncludesMap.get(article)) {
-				if (packageInclude.get().getPackageToInclude(packageInclude).equals(packageName)) {
+		for (String article : packageReferencesMap.keySet()) {
+			for (Section<? extends PackageReference> packageReference : packageReferencesMap.get(article)) {
+				if (packageReference.get().getPackagesToReferTo(packageReference).contains(
+						packageName)) {
 					matchingArticles.add(article);
 				}
 			}
@@ -236,25 +247,50 @@ public class KnowWEPackageManager implements EventListener {
 		return Collections.unmodifiableSet(matchingArticles);
 	}
 
-	public Set<String> getIncludedPackages(KnowWEArticle article) {
-		Set<Section<? extends PackageInclude>> packageIncludes = getPackageIncludes(article);
-		HashSet<String> includedPackages = new HashSet<String>();
-		for (Section<? extends PackageInclude> packInclude : packageIncludes) {
-			String tempPackage = packInclude.get().getPackageToInclude(packInclude);
-			if (tempPackage != null) includedPackages.add(tempPackage);
+	/**
+	 * Returns all Packages the given article refers to in his Sections of the
+	 * type PackageReference.
+	 * 
+	 * @created 29.08.2010
+	 * @param article
+	 * @return
+	 */
+	public Set<String> getReferencedPackages(KnowWEArticle article) {
+		Set<Section<? extends PackageReference>> packageReferences = getPackageReferences(article);
+		HashSet<String> referencedPackages = new HashSet<String>();
+		for (Section<? extends PackageReference> packReference : packageReferences) {
+			List<String> tempPackages = packReference.get().getPackagesToReferTo(packReference);
+			if (tempPackages != null) referencedPackages.addAll(tempPackages);
 		}
-		return Collections.unmodifiableSet(includedPackages);
+		return Collections.unmodifiableSet(referencedPackages);
 	}
 
-	public void updatePackageIncludes(KnowWEArticle article) {
+	/**
+	 * Returns all Sections of the type PackageReference of the given article.
+	 * 
+	 * @created 29.08.2010
+	 * @param article
+	 * @return
+	 */
+	public Set<Section<? extends PackageReference>> getPackageReferences(KnowWEArticle article) {
+		Set<Section<? extends PackageReference>> packageReferences = packageReferencesMap.get(article.getTitle());
+		return packageReferences == null
+				? Collections.unmodifiableSet(new HashSet<Section<? extends PackageReference>>(0))
+				: Collections.unmodifiableSet(new HashSet<Section<? extends PackageReference>>(
+						packageReferences));
+	}
+
+	public void updatePackageReferences(KnowWEArticle article) {
 		List<String> articlesToRevise = new ArrayList<String>();
 
-		for (HashSet<Section<? extends PackageInclude>> includesSet : packageIncludesMap.values()) {
-			for (Section<? extends PackageInclude> packInclude : includesSet) {
-				if (changedPackages.contains(packInclude.get().getPackageToInclude(packInclude))
-						&& !article.getTitle().equals(
-								packInclude.get().getPackageToInclude(packInclude))) {
-					articlesToRevise.add(packInclude.getTitle());
+		for (HashSet<Section<? extends PackageReference>> referencesSet : packageReferencesMap.values()) {
+			for (Section<? extends PackageReference> packReference : referencesSet) {
+				List<String> packagesToReference = packReference.get().getPackagesToReferTo(
+						packReference);
+				for (String pack : packagesToReference) {
+					if (changedPackages.contains(pack) && !article.getTitle().equals(pack)) {
+						articlesToRevise.add(packReference.getTitle());
+					}
 				}
 			}
 		}
