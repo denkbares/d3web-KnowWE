@@ -85,7 +85,7 @@
 	margin-right: 10px; padding: 2px; }
 
 /* the reset button in the interview header */
-#quickinterview .qreset {background-image: url(../images/update.gif); height: 20px; width: 20px; float: right; margin-right: 30px;
+#quickinterview .quickireset {background-image: url(../images/update.gif); height: 20px; width: 20px; float: right; margin-right: 30px;
 	background-repeat: no-repeat; background-position: center center; background-color: transparent;  }
 
 /* the enable-quick answers button in the interview header */ 

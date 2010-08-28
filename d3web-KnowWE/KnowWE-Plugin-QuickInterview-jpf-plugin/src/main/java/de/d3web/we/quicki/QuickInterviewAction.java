@@ -79,7 +79,7 @@ public class QuickInterviewAction extends AbstractAction {
 		String kbid = knowledgeServiceInTopic.getId();
 		// String kbid = topic+".."+KnowWEEnvironment.generateDefaultID(topic);
 
-		Broker broker = (Broker) D3webModule.getBroker(user, web);
+		Broker broker = D3webModule.getBroker(user, web);
 		broker.activate(broker.getSession().getServiceSession(kbid), null, true,
 				false, null);
 		broker.getDialogControl().showNextActiveDialog();
@@ -88,6 +88,7 @@ public class QuickInterviewAction extends AbstractAction {
 		Session session = null;
 
 		if (serviceSession instanceof D3webKnowledgeServiceSession) {
+
 			session = ((D3webKnowledgeServiceSession) serviceSession).getSession();
 			return QuickInterviewRenderer.renderInterview(session, web);
 		}

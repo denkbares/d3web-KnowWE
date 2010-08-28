@@ -112,10 +112,18 @@ public class QuickInterviewRenderer {
 	 * @return the plugin header HTML String
 	 */
 	private static void getInterviewPluginHeader(StringBuffer html) {
+
+		// assemble JS string
+		String relAt = " rel=\"{"
+				+ "web:'" + web + "', "
+				+ "ns:'" + namespace + "'"
+				+ "}\" ";
+
 		html.append("<h3>");
 		html.append("Quick Interview");
-		html.append("<div class='qreset'></div>");
+		html.append("<div class='quickireset' " + relAt + "></div>");
 		html.append("<div class='qquickanswers'></div>");
+		// html.append("<div class='qanswerunknown'></div>");
 		html.append("</h3>");
 	}
 

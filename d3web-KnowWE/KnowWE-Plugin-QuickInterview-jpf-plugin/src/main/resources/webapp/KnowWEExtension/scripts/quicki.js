@@ -64,12 +64,27 @@ KNOWWE.plugin.quicki = function(){
  */
 KNOWWE.plugin.quicki = function(){
     
-    return {
+	 return {
         /**
          * Function: init
          */
-        init : function(){
-               // here was the code for displaying the more-menu button - still needed?
+        init : function( doReset ){
+            
+        	// reset highlighting of elements if doReset is true
+        	if(doReset){
+        		alert("do reset highlighting");
+        		
+        		_KS('.answerClicked').each(function(element){
+            		element.className = "answer";
+                });
+        		
+        		_KS('.input').each(function(element){
+            		element.value="";
+                });
+        		
+        	} else {
+        		alert("only reset now");
+        	}
         },
         /**
          * Function: initAction
@@ -93,8 +108,8 @@ KNOWWE.plugin.quicki = function(){
                 _KE.add('click', element, KNOWWE.plugin.quicki.numAnswer);
             });  
         	
-        	 _KS('.qreset').each(function( element ){
-                 _KE.add('click', element, KNOWWE.plugin.quicki.qReset);
+        	 _KS('.quickireset').each(function( element ){
+                 _KE.add('click', element, KNOWWE.plugin.quicki.quickIReset);
              });  
         	 
         	 _KS('.qquickanswers').each(function( element ){
@@ -314,9 +329,50 @@ KNOWWE.plugin.quicki = function(){
             } 
           	KNOWWE.plugin.quicki.showRefreshed();
         },
-        qReset : function ( event ) {
-        	//TODO reset complete interview
-        	alert("reset interview");
+        /**
+         * Function quickIReset 
+         * 		Reset the whole interview, i.e., call reset action and
+         * 		clear highlighting and fields
+         *  
+         *  Parameters:
+         *  	event: the triggering event
+         */
+        quickIReset : function ( event ) {
+        	
+        	var resetBttn = _KE.target(event); 	// get the clicked element 
+            var rel = eval("(" + resetBttn.getAttribute('rel') + ")");
+        	
+            // call reset action with necessary parameters
+        	var params = {
+                    action : 'QuickInterviewResetAction',
+                    KWikiWeb : rel.web,
+                    namespace : rel.ns,
+            }
+        	
+        	// insert the String/HTML returned by the QuickIntervewResetAction at
+        	// the div with id "auickinterview"
+        	var id = 'quickinterview';
+            var options = {
+        			url : KNOWWE.core.util.getURL( params ),
+        			response : {
+        				 action : 'insert',
+                         ids : [ id ],
+                         fn : function(){
+                    		 KNOWWE.plugin.quicki.initAction();
+                    		 KNOWWE.helper.observer.notify('update');
+                    		 KNOWWE.plugin.solutionpanel.clearSolutionstate(); // clear solutionpanel
+                             KNOWWE.core.rerendercontent.update();			  // rerender 
+                    	 }	
+        			}
+        	}
+        	
+            /* if( _KS('#quickinterview') ) {	// if that element exists
+                new _KA( options ).send();	// send request
+                KNOWWE.plugin.quicki.initAction();	// initialize actions
+                KNOWWE.helper.observer.notify('update');
+             
+            }   */
+            new _KA( options ).send();
         },
         enableQAnswers : function ( event ) {
         	//TODO switch between quick answering and non q-a
