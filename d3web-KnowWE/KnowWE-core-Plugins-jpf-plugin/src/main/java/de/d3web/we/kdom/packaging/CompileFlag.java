@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 
+import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.core.packaging.PackageReference;
@@ -36,12 +37,17 @@ import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.KDOMWarning;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.store.SectionStore;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class CompileFlag extends DefaultMarkupType {
 
@@ -53,17 +59,47 @@ public class CompileFlag extends DefaultMarkupType {
 
 	static {
 		m = new DefaultMarkup("Compile");
-		m.addContentType(new PackageIncludeType());
+		m.addContentType(new PackageReferenceType());
 
 	}
 
 	public CompileFlag() {
 		super(m);
+		this.setCustomRenderer(new CompileFlagRenderer());
 	}
 
-	static class PackageIncludeType extends DefaultAbstractKnowWEObjectType implements PackageReference {
+	static class CompileFlagRenderer extends KnowWEDomRenderer<CompileFlag> {
 
-		public PackageIncludeType() {
+		@Override
+		@SuppressWarnings("unchecked")
+		public void render(KnowWEArticle article,
+				Section<CompileFlag> sec,
+				KnowWEUserContext user,
+				StringBuilder string) {
+
+			List<Section<SinglePackageReference>> packageReferences = new LinkedList<Section<SinglePackageReference>>();
+			sec.findSuccessorsOfType(SinglePackageReference.class, packageReferences);
+			if (packageReferences.isEmpty()) {
+				DelegateRenderer.getInstance().render(article, sec, user, string);
+				return;
+			}
+			string.append(KnowWEUtils.maskHTML("<div id=\"knowledge-panel\" class=\"panel\">"));
+			string.append(KnowWEUtils.maskHTML("<h3>" + "Compile: " + sec.getOriginalText() +
+					"</h3><div>"));
+			for (Section<?> child : packageReferences) {
+				if (child.get() instanceof SinglePackageReference) {
+					((SinglePackageReferenceRenderer) child.get().getRenderer()).render(article,
+							(Section<SinglePackageReference>) child, user, string);
+				}
+			}
+			string.append(KnowWEUtils.maskHTML("</div></div>"));
+		}
+
+	}
+
+	static class PackageReferenceType extends DefaultAbstractKnowWEObjectType implements PackageReference {
+
+		public PackageReferenceType() {
 			this.sectionFinder = new AllTextSectionFinder();
 			this.addSubtreeHandler(Priority.PRECOMPILE, new CompileFlagCreateHandler());
 			this.addSubtreeHandler(Priority.POSTCOMPILE, new CompileFlagDestroyHandler());
@@ -86,22 +122,96 @@ public class CompileFlag extends DefaultMarkupType {
 
 		public SinglePackageReference() {
 			this.sectionFinder = new RegexSectionFinder("[\\w-_]+");
+			this.setCustomRenderer(new SinglePackageReferenceRenderer());
 		}
 	}
 
-	static class CompileFlagCreateHandler extends SubtreeHandler<PackageIncludeType> {
+	static class SinglePackageReferenceRenderer extends KnowWEDomRenderer<SinglePackageReference> {
+
+		@Override
+		public void render(KnowWEArticle article,
+				Section<SinglePackageReference> sec,
+				KnowWEUserContext user,
+				StringBuilder string) {
+
+			String packageName = sec.getOriginalText();
+
+			KnowWEPackageManager packageManager = KnowWEEnvironment.getInstance().getPackageManager(
+					article.getWeb());
+
+			List<Section<?>> packageDefinitions = packageManager.getPackageDefinitions(packageName);
+
+			Collection<Message> messagesErrors = new LinkedList<Message>();
+			Collection<Message> messagesWarnings = new LinkedList<Message>();
+			Collection<KDOMError> kdomErrors = new LinkedList<KDOMError>();
+			Collection<KDOMWarning> kdomWarnings = new LinkedList<KDOMWarning>();
+
+			for (Section<?> packageDef : packageDefinitions) {
+				for (Message m : KnowWEUtils.getMessagesFromSubtree(article,
+						packageDef, Message.class)) {
+					if (m.getMessageType().equals(Message.ERROR)) {
+						messagesErrors.add(m);
+					}
+					else if (m.getMessageType().equals(Message.WARNING)) {
+						messagesWarnings.add(m);
+					}
+				}
+				kdomErrors.addAll(KnowWEUtils.getMessagesFromSubtree(article,
+						packageDef, KDOMError.class));
+				kdomWarnings.addAll(KnowWEUtils.getMessagesFromSubtree(article,
+						packageDef, KDOMWarning.class));
+			}
+
+			int errorsCount = messagesErrors.size() + kdomErrors.size();
+			int warningsCount = messagesWarnings.size() + kdomWarnings.size();
+			String headerErrorsCount = errorsCount > 0 ? "Errors: " + errorsCount : "";
+			String headerWarningsCount = warningsCount > 0 ? "Warnings: " + warningsCount : "";
+			String headerSuffix = errorsCount > 0 || warningsCount > 0 ? " (" + headerErrorsCount
+					+ (errorsCount > 0 ? ", " : "") + headerWarningsCount + ")" : "";
+
+			string.append("%%collapsebox-closed \n");
+			string.append("! " + "Compiled package: " + packageName + headerSuffix + " \n");
+
+			if (errorsCount > 0) {
+				string.append(KnowWEUtils.maskHTML("<strong>Errors:</strong><p/>\n"));
+				for (Message error : messagesErrors) {
+					string.append(KnowWEUtils.maskHTML(error.getMessageText() + "<br/>\n"));
+				}
+				for (KDOMError error : kdomErrors) {
+					string.append(KnowWEUtils.maskHTML(error.getVerbalization() + "<br/>\n"));
+				}
+				string.append(KnowWEUtils.maskHTML("<p/>"));
+			}
+			if (warningsCount > 0) {
+				string.append(KnowWEUtils.maskHTML("<strong>Warnings:</strong><p/>\n"));
+				for (Message warning : messagesWarnings) {
+					string.append(KnowWEUtils.maskHTML(warning.getMessageText() + "<br/>\n"));
+				}
+				for (KDOMWarning warning : kdomWarnings) {
+					string.append(KnowWEUtils.maskHTML(warning.getVerbalization() + "<br/>\n"));
+				}
+			}
+			string.append("/%\n");
+		}
+
+
+
+	}
+
+
+	static class CompileFlagCreateHandler extends SubtreeHandler<PackageReferenceType> {
 
 		public CompileFlagCreateHandler() {
 			super(true);
 		}
 
 		@Override
-		public boolean needsToCreate(KnowWEArticle article, Section<PackageIncludeType> s) {
+		public boolean needsToCreate(KnowWEArticle article, Section<PackageReferenceType> s) {
 			return true;
 		}
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<PackageIncludeType> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<PackageReferenceType> s) {
 
 			KnowWEPackageManager nsMng = KnowWEEnvironment.getInstance().getPackageManager(
 					article.getWeb());
@@ -146,25 +256,25 @@ public class CompileFlag extends DefaultMarkupType {
 
 	}
 
-	static class CompileFlagDestroyHandler extends SubtreeHandler<PackageIncludeType> {
+	static class CompileFlagDestroyHandler extends SubtreeHandler<PackageReferenceType> {
 
 		public CompileFlagDestroyHandler() {
 			super(true);
 		}
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<PackageIncludeType> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<PackageReferenceType> s) {
 			return null;
 		}
 
 		@Override
-		public boolean needsToDestroy(KnowWEArticle article, Section<PackageIncludeType> s) {
+		public boolean needsToDestroy(KnowWEArticle article, Section<PackageReferenceType> s) {
 			return true;
 		}
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public void destroy(KnowWEArticle article, Section<PackageIncludeType> s) {
+		public void destroy(KnowWEArticle article, Section<PackageReferenceType> s) {
 
 			if (!s.isReusedBy(article.getTitle())) article.setFullParse(this);
 

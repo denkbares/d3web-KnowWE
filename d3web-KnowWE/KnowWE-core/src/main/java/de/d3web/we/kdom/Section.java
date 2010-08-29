@@ -119,7 +119,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	protected String originalText;
 
 	/**
-	 * Specifies whether the children of this map were set through the
+	 * Specifies whether the children of this Section were set through the
 	 * setChildren(List<Section> children) methods.
 	 */
 	protected boolean possiblySharedChildren;
