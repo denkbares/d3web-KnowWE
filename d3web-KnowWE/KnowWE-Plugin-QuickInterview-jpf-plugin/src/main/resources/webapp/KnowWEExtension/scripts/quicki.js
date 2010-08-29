@@ -132,7 +132,7 @@ KNOWWE.plugin.quicki = function(){
          */
         answerClicked : function( event ) {
             var el = _KE.target(event); 	// get the clicked element
-           // if(el.tagName.toLowerCase() == "input") return;
+            if(el.className.toLowerCase() == "answerunknown") return;
             var retract = false;
             if(el.className == 'answerClicked'){
             	retract = true;
@@ -179,8 +179,13 @@ KNOWWE.plugin.quicki = function(){
             	}      
             } else {
             	KNOWWE.plugin.quicki.toggleAnswerHighlightingAfterUnknown(questionID);   
-            	el.className="answerunknown";
             }
+            
+            if (el.className=='answerunknownClicked'){
+        		el.className = 'answerunknown';
+        	} else  if (el.className=='answerunknown'){
+        		el.className = 'answerunknownClicked';
+        	} 
 
             KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
              	{ action : 'SetSingleFindingAction', ValueID: 'MaU'});
@@ -261,6 +266,13 @@ KNOWWE.plugin.quicki = function(){
     				}
             	});
         		
+        		_KS('.answerunknownClicked').each(function(element){
+    				var relElement =  eval("(" +  element.getAttribute('rel') + ")");
+    				if (relElement.qid==relClicked.qid){
+    					element.className = 'answerunknown';
+    				}
+            	});
+        		
         		// all oc answers are now per default un-highlighted by above code
         		// thus if un-highlighting is not correct, highlight again here
         		if(!retract){
@@ -273,8 +285,6 @@ KNOWWE.plugin.quicki = function(){
         		// to highlight/unhighlight an answer if clicked on, generally
             	if(answerEl.className=='answerClicked'){
             		answerEl.className = 'answer';
-            	} else if (answerEl.className=='answerunknownClicked'){
-            		answerEl.className = 'answerunknown';
             	} else if (answerEl.className=='answer'){
             		answerEl.className = 'answerClicked';
             	} else {

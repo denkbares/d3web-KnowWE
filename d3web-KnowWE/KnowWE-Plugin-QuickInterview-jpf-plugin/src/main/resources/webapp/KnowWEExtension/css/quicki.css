@@ -68,9 +68,10 @@
 #quickinterview .answerunknown { background: #E8F2FE url(../images/questionMark.png); height: 19px; width: 19px; float: left;
 	 background-repeat: no-repeat; background-position: center center;  padding: 1px 5px; margin: 5px 0; }
 	 
-/*TODO answer unknown styling if ACTIVE = clicked TODO */
-/*#quickinterview .answerunknownClicked { background: #E8F2FE url(../images/questionMark.png); height: 20px; width: 20px; float: left;
-	 background-repeat: no-repeat; background-position: center center; background-color: transparent; padding-top: 5px; padding-bottom: 2px;}*/
+/* answer unknown styling if ACTIVE = clicked */
+#quickinterview .answerunknownClicked { background: #E8F2FE url(../images/questionMark.png); height: 19px; width: 19px; float: left;
+	 background-repeat: no-repeat; background-position: center center; padding: 1px 5px; margin: 2px 0; 
+	 border: 3px white solid;}
 	 
 /* styling of input box */
 #quickinterview .input { height: 14px; float: left; }
