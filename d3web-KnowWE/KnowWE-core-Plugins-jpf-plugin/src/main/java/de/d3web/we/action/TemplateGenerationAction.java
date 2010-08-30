@@ -30,7 +30,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
-import de.d3web.we.kdom.basic.Template;
+import de.d3web.we.kdom.wikiTemplate.Template;
 import de.d3web.we.taghandler.TemplateTagHandler;
 
 /**
@@ -86,7 +86,7 @@ public class TemplateGenerationAction extends AbstractAction {
 				return;
 			}
 
-			Section<PlainText> text = (Section<PlainText>) renderMe
+			Section<PlainText> text = renderMe
 					.findChildOfType(PlainText.class);
 			KnowWEEnvironment.getInstance().getWikiConnector().createWikiPage(
 					pageName, text.getOriginalText(), map.getUser());

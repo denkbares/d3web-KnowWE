@@ -25,11 +25,12 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import de.d3web.we.action.TemplateGenerationAction;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.basic.Template;
+import de.d3web.we.kdom.wikiTemplate.Template;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
