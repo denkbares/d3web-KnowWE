@@ -221,16 +221,16 @@ public class QuickInterviewRenderer {
 		// return for
 		// avoiding endless recursion
 		if (processedTOs.contains(topQuestion)) {
-			getAlreadyDefinedRendering(topQuestion, sb, depth++);
+			getAlreadyDefinedRendering(topQuestion, sb, depth);
 			return;
 		}
-
-		depth++;
 
 		getQABlockRendering(topQuestion, depth, parent, sb);
 		processedTOs.add(topQuestion);
 
 		if (topQuestion.getChildren().length > 0) {
+
+			depth++;
 
 			// we got follow-up questions, thus call recursively for children
 			for (TerminologyObject qchild : topQuestion.getChildren()) {
@@ -297,11 +297,11 @@ public class QuickInterviewRenderer {
 	private static void getQABlockRendering(Question q, int depth,
 			TerminologyObject parent, StringBuffer sb) {
 
-		sb.append("<div id='qablock' style='display: block;'>");
-
 		// calculate indentation depth & resulting width of the question display
 		// 10 for standard margin and 30 for indenting further than the triangle
 		int d = 10 + depth * 10;
+
+		sb.append("<div id='qablock' style='display: block; margin-left: " + d + "px;'>");
 
 		// width of the question front section, i.e. total width - identation
 		int w = 300 - d;

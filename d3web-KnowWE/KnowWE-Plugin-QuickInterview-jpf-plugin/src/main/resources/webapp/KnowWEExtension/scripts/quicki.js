@@ -72,8 +72,6 @@ KNOWWE.plugin.quicki = function(){
             
         	// reset highlighting of elements if doReset is true
         	if(doReset){
-        		alert("do reset highlighting");
-        		
         		_KS('.answerClicked').each(function(element){
             		element.className = "answer";
                 });
@@ -178,15 +176,15 @@ KNOWWE.plugin.quicki = function(){
                     numfield.value = "";
             	}      
             } else {
-            	KNOWWE.plugin.quicki.toggleAnswerHighlightingAfterUnknown(questionID);   
+            	KNOWWE.plugin.quicki.toggleAnswerHighlightingAfterUnknown(questionID);  
             }
             
-            if (el.className=='answerunknownClicked'){
-        		el.className = 'answerunknown';
-        	} else  if (el.className=='answerunknown'){
-        		el.className = 'answerunknownClicked';
-        	} 
-
+            if(el.className=='answerunknown'){
+            	el.className = 'answerunknownClicked';
+            } else {
+            	el.className = 'answerunknown';
+            }
+               
             KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
              	{ action : 'SetSingleFindingAction', ValueID: 'MaU'});
         },
@@ -266,6 +264,7 @@ KNOWWE.plugin.quicki = function(){
     				}
             	});
         		
+        		// if a oc question is clicked, also answer unknown needs to be reset
         		_KS('.answerunknownClicked').each(function(element){
     				var relElement =  eval("(" +  element.getAttribute('rel') + ")");
     				if (relElement.qid==relClicked.qid){
@@ -287,9 +286,7 @@ KNOWWE.plugin.quicki = function(){
             		answerEl.className = 'answer';
             	} else if (answerEl.className=='answer'){
             		answerEl.className = 'answerClicked';
-            	} else {
-            		answerEl.className = 'answerunknownClicked';
-            	}
+            	} 
         	}
         }, 
         /**
@@ -300,13 +297,16 @@ KNOWWE.plugin.quicki = function(){
          *	Parameters:
          *		questionID - id of the question that was clicked with unknown
          */
-        toggleAnswerHighlightingAfterUnknown : function( questionID ){
+        toggleAnswerHighlightingAfterUnknown : function( questionID){
         	
         	_KS('.answerClicked').each(function(element){
         		
     			var relElement =  eval("(" +  element.getAttribute('rel') + ")");
     			if (relElement.qid==questionID){
-    				element.className = 'answer';
+    				
+    				if(element.className!='answerunknown'){
+    					element.className = 'answer';
+    				} 	
     			}
             });
         }, 
