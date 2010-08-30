@@ -20,6 +20,7 @@
 package de.d3web.we.core;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * KnowWERessourceLoader.
@@ -59,12 +60,12 @@ public class KnowWERessourceLoader {
 	/**
 	 * Stores the registered script files.
 	 */
-	private final LinkedList<String> script = new LinkedList<String>();
+	private final List<String> script = new LinkedList<String>();
 
 	/**
 	 * Stores the registered CSS files.
 	 */
-	private final LinkedList<String> stylesheets = new LinkedList<String>();
+	private final List<String> stylesheets = new LinkedList<String>();
 
 	/**
 	 * Instance of the Loader. The loader is implemented as a Singleton.
@@ -118,7 +119,7 @@ public class KnowWERessourceLoader {
 	 *        otherwise at the end.
 	 */
 	public void add(String file, String type) {
-		LinkedList<String> tmp = this.getList(type);
+		List<String> tmp = this.getList(type);
 
 		if (!tmp.contains(file)) {
 			tmp.add(file);
@@ -131,18 +132,18 @@ public class KnowWERessourceLoader {
 	 * resource file location.
 	 * 
 	 * @param file The resource file that should be added.
-	 * @param first If TRUE the file will be added as the first element,
-	 *        otherwise at the end.
 	 */
 	public void addFirst(String file, String type) {
-		LinkedList<String> tmp = this.getList(type);
+		List<String> tmp = this.getList(type);
 
 		if (!tmp.contains(file)) {
-			tmp.addFirst(file);
+			// add as first element
+			tmp.add(0, file);
 		}
 		else {
 			tmp.remove(file);
-			tmp.addFirst(file);
+			// add as first element
+			tmp.add(0, file);
 		}
 	}
 
@@ -152,7 +153,7 @@ public class KnowWERessourceLoader {
 	 * @param file The resource file that should be removed.
 	 */
 	public void remove(String file, String type) {
-		LinkedList<String> tmp = this.getList(type);
+		List<String> tmp = this.getList(type);
 		if (tmp.contains(file)) {
 			tmp.remove(file);
 		}
@@ -163,7 +164,7 @@ public class KnowWERessourceLoader {
 	 * 
 	 * @return String The script files.
 	 */
-	public LinkedList<String> getScriptIncludes() {
+	public List<String> getScriptIncludes() {
 		return this.script;
 	}
 
@@ -172,7 +173,7 @@ public class KnowWERessourceLoader {
 	 * 
 	 * @return String The CSS files.
 	 */
-	public LinkedList<String> getStylesheetIncludes() {
+	public List<String> getStylesheetIncludes() {
 		return this.stylesheets;
 	}
 
@@ -181,7 +182,7 @@ public class KnowWERessourceLoader {
 	 * @param type
 	 * @return
 	 */
-	private LinkedList<String> getList(String type) {
+	private List<String> getList(String type) {
 		if (type.equals(RESOURCE_SCRIPT)) {
 			return this.script;
 		}
