@@ -26,7 +26,6 @@ import java.io.FileReader;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -483,7 +482,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		Object ctx = wikiContext.getVariable(TemplateManager.RESOURCE_INCLUDES);
 		KnowWERessourceLoader loader = KnowWERessourceLoader.getInstance();
 
-		LinkedList<String> script = loader.getScriptIncludes();
+		List<String> script = loader.getScriptIncludes();
 		for (String resource : script) {
 			if (ctx != null && !ctx.toString().contains(resource)) {
 				if (!resource.contains("://")) {
@@ -511,7 +510,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			}
 		}
 
-		LinkedList<String> css = loader.getStylesheetIncludes();
+		List<String> css = loader.getStylesheetIncludes();
 		for (String resource : css) {
 			if (ctx != null && !ctx.toString().contains(resource)) {
 				TemplateManager.addResourceRequest(wikiContext,
