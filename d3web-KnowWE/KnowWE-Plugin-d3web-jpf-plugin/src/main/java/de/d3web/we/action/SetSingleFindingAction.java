@@ -71,6 +71,7 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 	public String perform(KnowWEParameterMap parameterMap) {
 		String namespace = java.net.URLDecoder.decode(parameterMap
 				.get(KnowWEAttributes.SEMANO_NAMESPACE));
+
 		String objectid = parameterMap.get(KnowWEAttributes.SEMANO_OBJECT_ID);
 		String termName = URLDecoder.decode(parameterMap
 				.get(KnowWEAttributes.SEMANO_TERM_NAME));
@@ -289,7 +290,14 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 			// to activate the commented out line below.
 			// KnowWEFacade.getInstance().performAction("RefreshHTMLDialogAction",
 			// parameterMap);
-			KnowWEFacade.getInstance().performAction("QuickInterviewAction", parameterMap);
+
+			if (namespace.contains("OneQuestionDialog")) {
+				KnowWEFacade.getInstance().performAction("OneQuestionDialogAction", parameterMap);
+			}
+			else {
+				KnowWEFacade.getInstance().performAction("QuickInterviewAction", parameterMap);
+			}
+
 		}
 		catch (IOException e) {
 			Logger.getLogger(this.getClass()).error(
