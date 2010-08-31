@@ -46,10 +46,10 @@ public class OneQuestionDialogAction extends AbstractAction{
 		// D3webKnowledgeService knowledgeService =
 		// D3webModule.getAD3webKnowledgeServiceInTopic(
 		// web, topic);
-		Session current = OneQuestionDialogUtils.getSession(topic, web);
-		
+		Session current = OneQuestionDialogUtils.getSession(topic, web, map.getWikiContext());
+
 		InterviewObject o = current.getInterview().nextForm().getInterviewObject();
-		
+
 		String html = OneQuestionDialogUtils.createNewForm(o);
 		
 		// Blackboard blackboard = current.getBlackboard();
@@ -57,5 +57,6 @@ public class OneQuestionDialogAction extends AbstractAction{
 		context.getWriter().write(html.toString());
 		
 	}
+
 
 }

@@ -27,9 +27,13 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.session.Session;
-import de.d3web.core.session.SessionFactory;
+import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
+import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
+import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 
 /**
@@ -47,11 +51,44 @@ public class OneQuestionDialogUtils {
 	 * @param web
 	 * @return the session
 	 */
-	public static Session getSession(String topic, String web) {
-		D3webKnowledgeService knowledgeService = D3webModule.getAD3webKnowledgeServiceInTopic(
-				web, topic);
+	public static Session getSession(String topic, String web, KnowWEUserContext user) {
+		/*
+		 * D3webKnowledgeService knowledgeService =
+		 * D3webModule.getAD3webKnowledgeServiceInTopic( web, topic);
+		 * 
+		 * return SessionFactory.createSession(knowledgeService.getBase());
+		 */
 		
-		return SessionFactory.createSession(knowledgeService.getBase()); 
+		D3webKnowledgeService knowledgeServiceInTopic = D3webModule.getAD3webKnowledgeServiceInTopic(
+				web, topic);
+		String kbid = knowledgeServiceInTopic.getId();
+
+		Broker broker = D3webModule.getBroker(user.getUsername(), web);
+		broker.activate(broker.getSession().getServiceSession(kbid), null, true,
+				false, null);
+		broker.getDialogControl().showNextActiveDialog();
+
+		KnowledgeServiceSession serviceSession = broker.getSession()
+				.getServiceSession(kbid);
+		Session session = null;
+
+		if (serviceSession instanceof D3webKnowledgeServiceSession) {
+
+			session = ((D3webKnowledgeServiceSession) serviceSession).getSession();
+			return session;
+		}
+
+		if (serviceSession == null) {
+			kbid = KnowWEEnvironment.WIKI_FINDINGS + ".."
+					+ KnowWEEnvironment.generateDefaultID(KnowWEEnvironment.WIKI_FINDINGS);
+			serviceSession = broker.getSession().getServiceSession(kbid);
+			if (serviceSession instanceof D3webKnowledgeServiceSession) {
+				session = ((D3webKnowledgeServiceSession) serviceSession).getSession();
+				return session;
+			}
+		}
+
+		return null;
 	}
 
 	/**

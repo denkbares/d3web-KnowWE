@@ -19,10 +19,13 @@
 package de.d3web.we.oqd;
 
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import de.d3web.core.knowledge.InterviewObject;
 import de.d3web.core.session.Session;
 import de.d3web.we.core.KnowWERessourceLoader;
+import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
+import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.taghandler.AbstractTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -44,8 +47,12 @@ public class OneQuestionDialogTagHandler extends AbstractTagHandler {
 		// D3webKnowledgeService knowledgeService =
 		// D3webModule.getAD3webKnowledgeServiceInTopic(
 		// web, topic);
+		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user.getHttpRequest());
+		D3webKnowledgeService knowledgeServiceInTopic = D3webModule.getAD3webKnowledgeServiceInTopic(
+				web, topic);
+		if (knowledgeServiceInTopic == null) return rb.getString("KnowWE.QuickInterview.error");
 
-		Session current = OneQuestionDialogUtils.getSession(topic, web);
+		Session current = OneQuestionDialogUtils.getSession(topic, web, user);
 
 		InterviewObject o = current.getInterview().nextForm().getInterviewObject();
 

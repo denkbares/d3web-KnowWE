@@ -23,14 +23,14 @@ OneQuestionDialog.sendQuestion = function(element) {
 	
 	var type = trs[1].firstChild.firstChild.type;
 	
-	if (type == 'checkbox') {
+	if (type == 'radio') {
 		for (var i = 0; i < trs.length; i++) {
 			if (trs[i].firstChild.firstChild.checked) {
 				answerId = trs[i].firstChild.lastChild.value;
 				break;
 			}
 		}
-	}
+	} 
 	
 	OneQuestionDialog.sendInput(web, namespace, questionId, 'undefined', {ValueID: answerId});
 	OneQuestionDialog.getNewQuestion(question);
@@ -87,7 +87,7 @@ OneQuestionDialog.sendInput = function( web, namespace, oid, termName, params){
         var options = {
             url : KNOWWE.core.util.getURL( pDefault ),
             response : {
-                action: 'insert',
+                action: 'none',
                 ids : ['dialog-panel'],
                 fn : function(){
                     KNOWWE.plugin.d3web.dialog.refreshed();
