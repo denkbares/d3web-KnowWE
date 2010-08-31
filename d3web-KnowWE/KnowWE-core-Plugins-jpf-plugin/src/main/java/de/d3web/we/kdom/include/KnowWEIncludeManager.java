@@ -389,7 +389,7 @@ public class KnowWEIncludeManager implements EventListener {
 				// don't revise the article that is currently revised again
 				// and don't revise if the originalText hasn't changed
 				if (!inc.getTitle().equals(article.getTitle())) {
-					if (targets.size() == lastTargets.size()) {
+					if (lastTargets != null && targets.size() == lastTargets.size()) {
 						for (int i = 0; i < targets.size(); i++) {
 							if (!targets.get(i).getOriginalText().equals(
 									lastTargets.get(i).getOriginalText())) {
