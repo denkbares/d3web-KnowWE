@@ -1,8 +1,16 @@
 var OneQuestionDialog = {};
 
+
+/**
+ * The function, which is called after a click on the button.
+ * Evaluates which input was selected, and sends the selected
+ * value via sendInput to appropiate action.
+ * Next it gets the new Question and Answers and replaces the
+ * old.
+ */
 OneQuestionDialog.sendQuestion = function(element) {
 	var div = OneQuestionDialog.findParentDiv(element);
-	var question = div.firstChild.firstChild.firstChild.nodeValue;
+	var question = div.firstChild.firstChild.firstChild.textContent;
 	var questionId = div.firstChild.firstChild.lastChild.value;
 	var tbody = OneQuestionDialog.findTbody(element);
 	var trs = tbody.childNodes;
@@ -13,23 +21,29 @@ OneQuestionDialog.sendQuestion = function(element) {
 	
 	var answerId = '';
 	
-	for (var i = 0; i < trs.length; i++) {
-		if (trs[i].firstChild.firstChild.checked) {
-			answerId = trs[i].firstChild.lastChild.value;
-			break;
+	var type = trs[1].firstChild.firstChild.type;
+	
+	if (type == 'checkbox') {
+		for (var i = 0; i < trs.length; i++) {
+			if (trs[i].firstChild.firstChild.checked) {
+				answerId = trs[i].firstChild.lastChild.value;
+				break;
+			}
 		}
 	}
 	
-	//answers = answers.substring(0, answers.lastIndexOf(',.,'));
-	OneQuestionDialog.send(web, namespace, questionId, 'undefined', {ValueID: answerId});
-	//OneQuestionDialog.sendAnswers(question, answers);
+	OneQuestionDialog.sendInput(web, namespace, questionId, 'undefined', {ValueID: answerId});
+	OneQuestionDialog.getNewQuestion(question);
 }
 
+/**
+ * returns the parentDiv of an element or null
+ */
 OneQuestionDialog.findParentDiv = function(element) {
 	if (element.className === 'oneQuestionDialog' && element.tagName === 'DIV') {
 		return element;
 	} else {
-		while (element.className !== 'oneQuestionDialog' && element.tagName !== 'DIV') {
+		while (!(element.className === 'oneQuestionDialog' && element.tagName === 'DIV')) {
 			if (element.tagName == 'BODY') {
 				return null;
 			}
@@ -39,6 +53,9 @@ OneQuestionDialog.findParentDiv = function(element) {
 	}
 }
 
+/**
+ * return the parentTbody of an element or null
+ */
 OneQuestionDialog.findTbody = function(element) {
 	if (element.tagName === 'TBODY') {
 		return element;
@@ -53,7 +70,11 @@ OneQuestionDialog.findTbody = function(element) {
 	}
 }
 
-OneQuestionDialog.send = function( web, namespace, oid, termName, params){
+
+/**
+ * sends an input to SetSingleFindingAction
+ */
+OneQuestionDialog.sendInput = function( web, namespace, oid, termName, params){
     var pDefault = {
             action : 'SetSingleFindingAction',
             KWikiWeb : web,
@@ -77,13 +98,15 @@ OneQuestionDialog.send = function( web, namespace, oid, termName, params){
         new _KA( options ).send();         
 }
 
-OneQuestionDialog.sendAnswers = function(question, answers) {
+/**
+ * gets the next question from OneQuestionDialogAction
+ */
+OneQuestionDialog.getNewQuestion = function(question) {
 
     var params = {
         action : 'OneQuestionDialogAction',
         KWiki_Topic : KNOWWE.helper.gup('page'),
-        question: question,
-        answers: answers
+        question: question
     }
 
     var options = {
@@ -92,9 +115,26 @@ OneQuestionDialog.sendAnswers = function(question, answers) {
         response : {
             action : 'none',
             fn : function(){
-    			
+    			OneQuestionDialog.insertNewQuestion(this);
             }
         }
     }
     new _KA( options ).send();
+}
+
+/**
+ * replaces the old question with the next new one
+ * from the response of an ajax request
+ */
+OneQuestionDialog.insertNewQuestion = function(response) {
+	var root = $('onequestiondialog');
+	var div = root.getElement('div');
+	
+	if (div.hasChildNodes()){
+	    while (div.childNodes.length >= 1){
+	    	div.removeChild(div.firstChild);       
+	    } 
+	}
+	
+	div.innerHTML = response.responseText;
 }

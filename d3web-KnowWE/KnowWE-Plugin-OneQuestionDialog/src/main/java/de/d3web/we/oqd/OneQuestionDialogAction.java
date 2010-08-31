@@ -21,18 +21,10 @@ package de.d3web.we.oqd;
 import java.io.IOException;
 
 import de.d3web.core.knowledge.InterviewObject;
-import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.session.Session;
-import de.d3web.core.session.SessionFactory;
-import de.d3web.core.session.blackboard.Blackboard;
-import de.d3web.core.session.interviewmanager.NextUnansweredQuestionFormStrategy;
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
-import de.d3web.we.d3webModule.D3webModule;
 
 
 /**
@@ -48,20 +40,21 @@ public class OneQuestionDialogAction extends AbstractAction{
 		KnowWEParameterMap map = context.getKnowWEParameterMap();
 		String web = map.getWeb();
 		String topic = map.getTopic();
-		String question = map.get("question");
-		String answers = map.get("answers");
+		// String question = map.get("question");
 		
-		String[] answerArray = answers.split(",.,");
 		
-		D3webKnowledgeService knowledgeService = D3webModule.getAD3webKnowledgeServiceInTopic(
-				web, topic);
+		// D3webKnowledgeService knowledgeService =
+		// D3webModule.getAD3webKnowledgeServiceInTopic(
+		// web, topic);
 		Session current = OneQuestionDialogUtils.getSession(topic, web);
 		
 		InterviewObject o = current.getInterview().nextForm().getInterviewObject();
 		
-		Blackboard blackboard = current.getBlackboard();
+		String html = OneQuestionDialogUtils.createNewForm(o);
 		
-		context.getWriter().write("");
+		// Blackboard blackboard = current.getBlackboard();
+		
+		context.getWriter().write(html.toString());
 		
 	}
 
