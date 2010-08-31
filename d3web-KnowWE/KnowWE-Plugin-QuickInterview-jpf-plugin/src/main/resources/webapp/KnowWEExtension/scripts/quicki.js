@@ -422,15 +422,21 @@ KNOWWE.plugin.quicki = function(){
                 namespace : namespace,
                 ObjectID : oid,
                 TermName : termName,
+               // namespace : KNOWWE.helper.gup( 'page' ),
+                action : 'QuickInterviewAction'
             }
             
             pDefault = KNOWWE.helper.enrich( params, pDefault );
+            var id = 'quickinterview';
             
             var options = {
                 url : KNOWWE.core.util.getURL( pDefault ),
                 response : {
+                	action : 'insert',
+                    ids : [ id ],					// to re-insert a freshly created interview
                     fn : function(){
-                    	 KNOWWE.plugin.quicki.showRefreshed();
+                    	 KNOWWE.plugin.quicki.initAction();
+                		 KNOWWE.helper.observer.notify('update');
                     }
                 }
             }

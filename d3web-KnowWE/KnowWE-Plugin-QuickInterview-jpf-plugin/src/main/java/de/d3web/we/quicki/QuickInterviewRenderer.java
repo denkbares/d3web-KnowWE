@@ -75,6 +75,7 @@ public class QuickInterviewRenderer {
 	 */
 	public static String renderInterview(Session c, String webb) {
 
+
 		// Assembles the Interview
 		StringBuffer buffi = new StringBuffer();
 
@@ -159,7 +160,7 @@ public class QuickInterviewRenderer {
 				}
 				// if empty, specific rendering
 				else {
-					getEmptyQuestionnaireRendering((QContainer) topContainer, depth, buffer);
+					getEmptyQuestionnaireRendering((QContainer) topContainer, depth, buffer, init);
 				}
 			}
 		}
@@ -167,7 +168,7 @@ public class QuickInterviewRenderer {
 		// if init questionnaire: all contained elements are to be displayed
 		String display = init ? "display: block;" : "display: none;";
 
-		// group all following questionnairs/questions for easily hiding them
+		// group all following questionnaires/questions for easily hiding them
 		// blockwise later
 		buffer.append("<div id='group_" + topContainer.getId() + "' class='group' style='"
 				+ display + "' >");
@@ -192,13 +193,30 @@ public class QuickInterviewRenderer {
 		buffer.append("</div>"); // close the grouping div
 	}
 
-	private static void getEmptyQuestionnaireRendering(QContainer container, int depth, StringBuffer buffi) {
+	private static void getEmptyQuestionnaireRendering(QContainer container, int depth, StringBuffer buffi,
+			boolean show) {
 		int margin = 10 + depth * 10; // calculate identation
 
-		buffi.append("<div id='" + container.getId() + "' class='emptyQuestionnaire'" +
-				" style='margin-left: " + margin + "px; display: block'; >");
-		buffi.append(" " + container.getName() + " - No elements defined!");
+		String clazz = show // decide class for rendering expand-icon
+				? "class='questionnaire pointDown'"
+				: "class='questionnaire pointRight'";
+
+		// if init questionnaire: all contained elements are to be displayed
+		String display = show ? "display: block;" : "display: none;";
+
+		buffi.append("<div id='" + container.getId() + "' " + clazz + " style='display: block;" +
+				" margin-left: " + margin + "px;' >");
+		buffi.append(container.getName());
 		buffi.append("</div>");
+
+		margin = margin + 30;
+		buffi.append("<div id='group_" + container.getId() + "' class='group' style='"
+				+ display + "' >");
+		buffi.append("<div class='emptyQuestionnaire' " +
+				"style='margin-left: " + margin + "px; display: block;' "
+				+ ">No elements defined!</div>");
+		buffi.append("</div>");
+
 	}
 
 	/**
@@ -251,10 +269,10 @@ public class QuickInterviewRenderer {
 	 */
 	private static void getAlreadyDefinedRendering(TerminologyObject element, StringBuffer sb, int depth) {
 
-		int margin = 10 + depth * 10;
+		int margin = 30 + depth * 10;
 		sb.append("<div id='" + element.getId() + "' " +
 				"class='alreadyDefined' style='margin-left: " + margin + "px; display: block'; >");
-		sb.append(" " + element.getName() + " ");
+		sb.append(element.getName() + " is already defined!");
 		sb.append("</div>");
 	}
 
@@ -299,19 +317,19 @@ public class QuickInterviewRenderer {
 
 		// calculate indentation depth & resulting width of the question display
 		// 10 for standard margin and 30 for indenting further than the triangle
-		int d = 10 + depth * 10;
+		int d = 30 + depth * 10;
 
 		sb.append("<div id='qablock' style='display: block; margin-left: " + d + "px;'>");
 
 		// width of the question front section, i.e. total width - identation
-		int w = 300 - d;
+		int w = 200 - d;
 
 		// render the first cell displaying the Question in a separate div,
 		// then call method for rendering a question's answers in another div
 		sb.append("<div id='" + q.getId() + "' " +
 				"parent='" + parent.getId() + "' " +
 				"class='question' " +
-				"style='margin-left: " + d + "px; width: " + w + "px; display: inline-block;' >"
+				"style='width: " + w + "px; display: inline-block;' >"
 				+ q.getName() + "</div>");
 
 		// switch question type for assembling corresponding answers
@@ -328,6 +346,11 @@ public class QuickInterviewRenderer {
 		else if (q instanceof QuestionNum) {
 			renderNumAnswers(q, sb);
 		}
+		/*
+		 * else if (q instanceof QuestionDate) { System.out.println(q.getName()
+		 * + " DATE " + ((QuestionDate) q).getAllKnowledge()); } else if (q
+		 * instanceof QuestionText)
+		 */
 		sb.append("</div>");
 	}
 
@@ -354,17 +377,23 @@ public class QuickInterviewRenderer {
 					+ "type:'oc'"
 					+ "}\" ";
 
+			String spanid = q.getId() + "_" + choice.getId();
+
 			// if a value was already set, get the value and set corresponding
 			// css class
 			Value value = session.getBlackboard().getValue(q);
+
 			if (value != null && UndefinedValue.isNotUndefinedValue(value)
 					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
+
 				cssclass = "answerClicked";
 			}
 
-			String spanid = q.getId() + "_" + choice.getId();
-			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ", cssclass,
-					jscall, null, spanid));
+			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ",
+					cssclass, jscall, null, spanid));
+
+			System.out.println(getEnclosingTagOnClick("div", "" + choice.getName() + " ",
+					cssclass, jscall, null, spanid));
 
 			// for having a separator between answer alternatives (img, text...)
 			sb.append("<div class='answerseparator'></div>");
