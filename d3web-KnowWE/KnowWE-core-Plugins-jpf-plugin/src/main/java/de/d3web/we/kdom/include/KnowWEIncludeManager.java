@@ -202,15 +202,19 @@ public class KnowWEIncludeManager implements EventListener {
 
 		if (address.getTargetSection() != null) {
 			for (Section<?> node : art.getAllNodesPreOrder()) {
+				// included Section -> skip
+				if (node.getArticle() != art) continue;
+
 				// if the complete ID is given
 				if (node.getID().equalsIgnoreCase(address.getOriginalAddress())) {
 					matchingIDSection = node;
 					break;
 				}
 				// if only the last part of the ID is given
-				if ((node.getID().length() > address.getTargetSection().length() && node.getID().substring(
-						node.getID().length() - address.getTargetSection().length())
-							.equalsIgnoreCase(address.getTargetSection()))) {
+				if ((node.getID().length() > address.getTargetSection().length()
+								&& node.getID().substring(
+										node.getID().length() - address.getTargetSection().length()).equalsIgnoreCase(
+										address.getTargetSection()))) {
 					matchingIdEndSections.add(node);
 					if (!address.isWildcardSectionTarget() && matchingIdEndSections.size() > 1) {
 						break;
