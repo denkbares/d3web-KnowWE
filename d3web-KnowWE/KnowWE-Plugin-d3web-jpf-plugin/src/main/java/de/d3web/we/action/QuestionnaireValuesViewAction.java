@@ -64,6 +64,7 @@ public class QuestionnaireValuesViewAction extends AbstractAction {
 							renderQuestion((Question) no, session, result);
 						}
 					}
+			        context.setContentType("text/html; charset=UTF-8");
 					context.getWriter().write(result.toString());
 					return;
 				}
