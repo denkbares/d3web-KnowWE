@@ -67,12 +67,12 @@ import de.d3web.wisec.writers.WISECWriter;
 public class WISECExcelConverter {
 
 	// The master database file, that is the input of all knowledge
-	public static String WISEC_FILE = "20100804_WISEC_v1.xls";
+	public static String WISEC_FILE = "20100820_WISEC_v1.xls";
 	public final static String EXCEL_ENCODING = "cp1252";
 	// The directory of the master database file
-	public static String workspace = "/Users/joba/Documents/Projekte/Temp/KnowWE/WISEC/";
+	public static String workspace = "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/";
 	// Destination directory, where the generated files are put
-	public static String wikiworkspace = "/Users/joba/Desktop/KnowWE/wikicontent_WISEC/";
+	public static String wikiworkspace = "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/wikicontent/content/";
 	// "/Users/joba/Documents/Projekte/Temp/KnowWE/WISEC/wikicontent_gen/";
 	// public static String wikiworkspace =
 	// "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/wikicontent/Treshold-40/";

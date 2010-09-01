@@ -145,7 +145,7 @@ public class SubstanceInfoWriter extends WISECWriter {
 	private void writeAdjacentGroups(String substance, StringBuffer b) {
 		List<String> includedGroups = new ArrayList<String>();
 		for (String group : this.model.groups.keySet()) {
-			List<String> substances = this.model.groups.get(group);
+			List<String> substances = this.model.groups.get(group).getSubstances();
 			if (substances.contains(substance)) {
 				includedGroups.add(group);
 			}

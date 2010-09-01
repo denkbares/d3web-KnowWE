@@ -23,6 +23,7 @@ import java.io.Writer;
 import java.util.Collection;
 
 import de.d3web.wisec.converter.WISECExcelConverter;
+import de.d3web.wisec.model.Group;
 import de.d3web.wisec.model.WISECModel;
 
 /**
@@ -49,10 +50,12 @@ public class GroupsWriter extends WISECWriter {
 
 		buffy.append("|| Group_name || CAS_no || \n");
 		for (String groupName : this.model.groups.keySet()) {
-			Collection<String> cas_nos = this.model.groups.get(groupName);
+			Group group = this.model.groups.get(groupName);
+			Collection<String> cas_nos = group.getSubstances();
 			if (cas_nos != null && !cas_nos.isEmpty()) {
 				buffy.append("| [" + groupName + "|"
-						+ GroupInfoWriter.getWikiFileNameFor(groupName) + "] | ");
+						+ GroupInfoWriter.getWikiFileNameFor(Integer.toString(group.getID()))
+						+ "] | ");
 				for (String cas : cas_nos) {
 					buffy.append(" [ " + cas + " | "
 							+ SubstanceInfoWriter.getWikiFileNameFor(cas) + "]\\\\");

@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Locale;
 
 import de.d3web.wisec.converter.WISECExcelConverter;
+import de.d3web.wisec.model.Group;
 import de.d3web.wisec.model.SourceList;
 import de.d3web.wisec.model.SubstanceList;
 import de.d3web.wisec.model.WISECModel;
@@ -46,7 +47,8 @@ public class GroupInfoWriter extends WISECWriter {
 	@Override
 	public void write() throws IOException {
 		for (String groupName : this.model.groups.keySet()) {
-			String filename = getWikiFileNameFor(groupName);
+			Group group = this.model.groups.get(groupName);
+			String filename = getWikiFileNameFor(Integer.toString(group.getID()));
 			Writer writer = ConverterUtils.createWriter(this.outputDirectory + filename + ".txt");
 
 			writeBreadcrumb(writer, groupName);
@@ -155,7 +157,7 @@ public class GroupInfoWriter extends WISECWriter {
 
 	private List<SubstanceList> getAllListWithOneCasOf(String groupName) {
 		Collection<SubstanceList> lists = new HashSet<SubstanceList>();
-		for (String cas : this.model.groups.get(groupName)) {
+		for (String cas : this.model.groups.get(groupName).getSubstances()) {
 			if (this.model.getSubstanceListsContaining(cas) != null) {
 				lists.addAll(this.model.getSubstanceListsContaining(cas));
 			}
@@ -164,7 +166,7 @@ public class GroupInfoWriter extends WISECWriter {
 	}
 
 	private void writeIDBlock(StringBuffer b, String groupName) {
-		Collection<String> cas_nos = this.model.groups.get(groupName);
+		Collection<String> cas_nos = this.model.groups.get(groupName).getSubstances();
 
 		// CAS_no
 		b.append("* CAS_no: \n");

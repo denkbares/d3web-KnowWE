@@ -60,7 +60,7 @@ public class WISECModel {
 	Map<String, Collection<SubstanceList>> substanceInList = new HashMap<String, Collection<SubstanceList>>();
 
 	// relation: group name -> List of substance ids stored in this group
-	public Map<String, List<String>> groups = new HashMap<String, List<String>>();
+	public Map<String, Group> groups = new HashMap<String, Group>();
 
 	// EC_no for the given CAS
 	Map<String, Collection<String>> CAS2EC;
@@ -78,18 +78,16 @@ public class WISECModel {
 		CAS2ChemNames = new HashMap<String, Collection<String>>();
 		CAS2IUPACname = new HashMap<String, Collection<String>>();
 		activeSubstances = new HashSet<String>();
-		groups = new HashMap<String, List<String>>();
+		groups = new HashMap<String, Group>();
 	}
 
 	public void addToGroup(String groupName, String substanceID) {
-		List<String> gsubstances = groups.get(groupName);
-		if (gsubstances == null) {
-			gsubstances = new ArrayList<String>();
+		Group group = groups.get(groupName);
+		if (group == null) {
+			group = new Group(groupName);
+			groups.put(groupName, group);
 		}
-		if (!gsubstances.contains(substanceID)) {
-			gsubstances.add(substanceID);
-			groups.put(groupName, gsubstances);
-		}
+		group.addSubstance(substanceID);
 	}
 
 	public void addSubstanceToTeam(String teamName, String substance) {

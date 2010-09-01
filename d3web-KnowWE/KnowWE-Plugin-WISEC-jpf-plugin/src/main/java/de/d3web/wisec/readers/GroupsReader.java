@@ -41,18 +41,21 @@ public class GroupsReader extends WISECReader {
 	public void read(WISECModel model) {
 		final int HEADER_ROW = 0;
 		Sheet sheet = workbook.getSheet(SHEETNAME);
-		String groupName = "";
+		String defaultGroupName = "";
 		for (int row = HEADER_ROW + 1; row < sheet.getRows(); row++) {
-			String newGroupName = sheet.getCell(0, row).getContents();
-			String newSubstance = sheet.getCell(1, row).getContents();
-			if (newGroupName == null || newGroupName.isEmpty()) {
-				newGroupName = groupName;
+			String groupName = sheet.getCell(0, row).getContents();
+			String substancesLine = sheet.getCell(1, row).getContents();
+			String[] substances = new String[0];
+			if (substancesLine != null) {
+				substances = substancesLine.split("\\$");
 			}
-			else {
-				groupName = newGroupName;
+			if (groupName == null || groupName.isEmpty()) {
+				groupName = defaultGroupName;
 			}
-			if (newSubstance != null && !newSubstance.isEmpty()) {
-				model.addToGroup(newGroupName, newSubstance);
+			for (String substance : substances) {
+				if (!substance.matches("\\s*")) {
+					model.addToGroup(groupName, substance.trim());
+				}
 			}
 		}
 	}

@@ -34,22 +34,37 @@ public class TeamsReader extends WISECReader {
 	public void read(WISECModel model) {
 		final int HEADER_ROW = 0;
 		Sheet sheet = workbook.getSheet(SHEETNAME);
-		String teamName = "";
+		String defaultTeamName = "";
 		for (int row = HEADER_ROW + 1; row < sheet.getRows(); row++) {
-			String newTeamName = sheet.getCell(0, row).getContents();
-			String newSubstance = sheet.getCell(1, row).getContents();
-			String newGroupName = sheet.getCell(2, row).getContents();
-			if (newTeamName == null || newTeamName.isEmpty()) {
-				newTeamName = teamName;
+
+			// Team name
+			String teamName = sheet.getCell(0, row).getContents();
+			if (teamName == null || teamName.isEmpty()) {
+				teamName = defaultTeamName;
 			}
-			else {
-				teamName = newTeamName;
+
+			// Substances
+			String substancesLine = sheet.getCell(1, row).getContents();
+			String[] substances = new String[0];
+			if (substancesLine != null) {
+				substances = substancesLine.split("\\$");
 			}
-			if (newSubstance != null && !newSubstance.isEmpty()) {
-				model.addSubstanceToTeam(newTeamName, newSubstance);
+			for (String substance : substances) {
+				if (!substance.matches("\\s*")) {
+					model.addSubstanceToTeam(teamName, substance.trim());
+				}
 			}
-			if (newGroupName != null && !newGroupName.isEmpty()) {
-				model.addGroupToTeam(newTeamName, newGroupName);
+
+			// Groups
+			String groupsLine = sheet.getCell(2, row).getContents();
+			String[] groups = new String[0];
+			if (groupsLine != null) {
+				groups = groupsLine.split("\\$");
+			}
+			for (String group : groups) {
+				if (!group.matches("\\s*")) {
+					model.addGroupToTeam(teamName, group.trim());
+				}
 			}
 		}
 	}
