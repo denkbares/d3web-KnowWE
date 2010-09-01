@@ -175,8 +175,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			EventManager.getInstance().fireEvent(new FullParseEvent(), web, null,
 					this.sec);
 
-		sec.addPackageName(title);
-
 		sec.absolutePositionStartInArticle = 0;
 		sec.setReusedSuccessorStateRecursively(false);
 

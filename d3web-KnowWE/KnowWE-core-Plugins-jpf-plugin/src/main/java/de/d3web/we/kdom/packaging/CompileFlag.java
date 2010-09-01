@@ -214,28 +214,33 @@ public class CompileFlag extends DefaultMarkupType {
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<PackageReferenceType> s) {
 
-			KnowWEPackageManager nsMng = KnowWEEnvironment.getInstance().getPackageManager(
+			KnowWEPackageManager packageMng = KnowWEEnvironment.getInstance().getPackageManager(
 					article.getWeb());
 
 			if (article.isFullParse() || !s.isReusedBy(article.getTitle())) {
-				nsMng.registerPackageReference(article, s);
+				packageMng.registerPackageReference(article, s);
 			}
 
-			List<Section<?>> namespaceDefinitions = new LinkedList<Section<?>>();
-			for (String packageToInclude : s.get().getPackagesToReferTo(s)) {
-				if (packageToInclude.equals(article.getTitle())) continue;
-
-				namespaceDefinitions.addAll(nsMng.getPackageDefinitions(packageToInclude));
+			List<Section<?>> packageDefinitions = new LinkedList<Section<?>>();
+			for (String referedPackages : s.get().getPackagesToReferTo(s)) {
+				if (referedPackages.equals(article.getTitle())) continue;
+				List<Section<?>> tempPackageDefs = packageMng.getPackageDefinitions(referedPackages);
+				for (Section<?> packageDef : tempPackageDefs) {
+					if (!(KnowWEPackageManager.AUTOCOMPILE_ARTICLE && packageDef.getTitle().equals(
+							article.getTitle()))) {
+						packageDefinitions.add(packageDef);
+					}
+				}
 			}
 
 			KnowWEUtils.storeObject(article, s, PACKAGEDEFS_SNAPSHOT_KEY,
-					namespaceDefinitions);
+					packageDefinitions);
 
 			List<Section<?>> includedNamespaces = new ArrayList<Section<?>>();
 
-			for (Section<?> nsDef : namespaceDefinitions) {
+			for (Section<?> packDef : packageDefinitions) {
 				List<Section<?>> nodes = new LinkedList<Section<?>>();
-				nsDef.getAllNodesPostOrder(nodes);
+				packDef.getAllNodesPostOrder(nodes);
 				includedNamespaces.addAll(nodes);
 			}
 
@@ -248,7 +253,7 @@ public class CompileFlag extends DefaultMarkupType {
 					section.letSubtreeHandlersCreate(article, priority);
 				}
 			}
-			for (Section<?> namespaceDef : namespaceDefinitions) {
+			for (Section<?> namespaceDef : packageDefinitions) {
 				namespaceDef.setReusedStateRecursively(article.getTitle(), true);
 			}
 

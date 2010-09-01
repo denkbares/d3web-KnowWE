@@ -615,7 +615,14 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	public Set<String> getPackageNames() {
 		if (packageNames == null) {
-			return Collections.unmodifiableSet(father.getPackageNames());
+			Set<String> fatherSet;
+			if (father == null) {
+				fatherSet = new HashSet<String>(0);
+			}
+			else {
+				fatherSet = father.getPackageNames();
+			}
+			return Collections.unmodifiableSet(fatherSet);
 		}
 		else {
 			Set<String> tempNamespaces = new HashSet<String>(4);
@@ -1474,19 +1481,21 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return calcPositionTil(getArticle().getSection());
 	}
 
-	private boolean isMatchingNamespace(KnowWEArticle article, SubtreeHandler<T> h) {
-		if (!h.isIgnoringNamespaces() && !KnowWEPackageManager.AUTOCOMPILE_ARTICLE) {
-			Set<String> namespaceIncludes = KnowWEEnvironment.getInstance().getPackageManager(
-					article.getWeb()).getReferencedPackages(article);
+	private boolean isMatchingPackageName(KnowWEArticle article, SubtreeHandler<T> h) {
 
-			for (String ns : getPackageNames()) {
-				if (namespaceIncludes.contains(ns)) return true;
-			}
-
-			return false;
+		if (h.isIgnoringNamespaces() || KnowWEPackageManager.AUTOCOMPILE_ARTICLE) {
+			return true;
 		}
 		else {
-			return true;
+			Set<String> referencedPackages = KnowWEEnvironment.getInstance().getPackageManager(
+					article.getWeb()).getReferencedPackages(article);
+
+			if (referencedPackages.contains(article.getTitle())) return true;
+
+			for (String name : getPackageNames()) {
+				if (referencedPackages.contains(name)) return true;
+			}
+			return false;
 		}
 	}
 
@@ -1513,7 +1522,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	@SuppressWarnings("unchecked")
 	public final void letSubtreeHandlerCreate(KnowWEArticle article, SubtreeHandler handler) {
-		if (isMatchingNamespace(article, handler) && handler.needsToCreate(article, this)) {
+		if (isMatchingPackageName(article, handler) && handler.needsToCreate(article, this)) {
 			try {
 				// long time = System.currentTimeMillis();
 				KDOMReportMessage.storeMessages(article, this, handler.getClass(), handler.create(
