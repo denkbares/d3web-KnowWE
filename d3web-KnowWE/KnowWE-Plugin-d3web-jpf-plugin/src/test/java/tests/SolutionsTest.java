@@ -25,10 +25,12 @@ import java.util.Arrays;
 
 import junit.framework.TestCase;
 import utils.KBCreationTestUtil;
+import utils.MyTestArticleManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.plugin.test.InitPluginManager;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.logging.Logging;
 
 /**
@@ -48,7 +50,8 @@ public class SolutionsTest extends TestCase {
 
 	public void testNumberOfSolutions() {
 
-		KnowledgeBase loadedKB = KBCreationTestUtil.getInstance().getLoadedKB();
+		KnowWEArticle art = MyTestArticleManager.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
+		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
 		assertEquals("Number of Solutions differ.", createdKB.getSolutions().size(),
@@ -57,7 +60,8 @@ public class SolutionsTest extends TestCase {
 
 	public void testSolutions() {
 
-		KnowledgeBase loadedKB = KBCreationTestUtil.getInstance().getLoadedKB();
+		KnowWEArticle art = MyTestArticleManager.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
+		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
 		if (loadedKB.getSolutions().size() == createdKB.getSolutions().size()) {

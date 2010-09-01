@@ -21,6 +21,8 @@
 package utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -66,16 +68,9 @@ import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.StateRating;
 import de.d3web.empiricaltesting.TestSuite;
 import de.d3web.scoring.Score;
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.terminology.D3webKnowledgeHandler;
-import de.d3web.we.testsuite.TestsuiteSection;
-import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelationType;
-import dummies.KnowWETestWikiConnector;
 
 /**
  * This Class loads the KnowledgeBase which will be tested.
@@ -95,10 +90,13 @@ import dummies.KnowWETestWikiConnector;
  */
 public class KBCreationTestUtil {
 
+	public static final String KBCREATION_ARTICLE_FILE = "src/test/resources/KBCreationTest.txt";
+
+
+	private final Collection<KnowWEArticle> articles = new HashSet<KnowWEArticle>();
+
 	private static KBCreationTestUtil instance = new KBCreationTestUtil();
-	private KnowledgeBase loadedKB;
 	private KnowledgeBase createdKB;
-	private TestSuite loadedTS;
 	private TestSuite createdTS;
 	private KnowledgeBaseManagement createdKBM;
 
@@ -107,8 +105,7 @@ public class KBCreationTestUtil {
 	 */
 	private KBCreationTestUtil() {
 
-		loadKnowledge();
-		createKnowledge();
+		createGoldenKnowledge();
 
 	}
 
@@ -121,14 +118,6 @@ public class KBCreationTestUtil {
 		return instance;
 	}
 
-	/**
-	 * Returns the KnowledgeBase loaded from the KnowWEArticle.
-	 * 
-	 * @return KnowledgeBase
-	 */
-	public KnowledgeBase getLoadedKB() {
-		return loadedKB;
-	}
 
 	/**
 	 * Returns the KnowledgeBase which was created manually.
@@ -140,15 +129,6 @@ public class KBCreationTestUtil {
 	}
 
 	/**
-	 * Returns the TestSuite loaded from the KnowWEArticle.
-	 * 
-	 * @return TestSuite
-	 */
-	public TestSuite getLoadedTS() {
-		return loadedTS;
-	}
-
-	/**
 	 * Returns the TestSuite which was created manually.
 	 * 
 	 * @return TestSuite
@@ -157,41 +137,12 @@ public class KBCreationTestUtil {
 		return createdTS;
 	}
 
-	/**
-	 * Creates a KnowWEArticle and loads the created Knowledge.
-	 */
-	private void loadKnowledge() {
-
-		// Read File containing content
-		String content = Utils.readTxtFile("src/test/resources/KBCreationTest.txt");
-
-		// Initialize KnowWE
-		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());
-		D3webKnowledgeHandler d3Handler = D3webModule.getKnowledgeRepresentationHandler("default_web");
-
-		// Create Article
-		KnowWEArticle article = KnowWEArticle.createArticle(content, "KBCreationTest",
-				KnowWEEnvironment.getInstance().getRootType(), "default_web");
-		KnowWEEnvironment.getInstance().getArticleManager("default_web").saveUpdatedArticle(article);
-
-		// Load KnowledgeBase
-		loadedKB = d3Handler.getKBM(article.getTitle()).getKnowledgeBase();
-
-		// Load TestSuite
-		// TODO: HOTFIX!! I don't think this is the proper way to get the
-		// TestsuiteSection...
-		Section<?> s = article.getSection().getChildren().get(0).findChildOfType(
-				TestsuiteSection.class);
-		loadedTS = (TestSuite) KnowWEUtils.getStoredObject("default_web", "KBCreationTest",
-				s.getID(), "TestsuiteSection_Testsuite");
-
-	}
 
 	/**
 	 * Creates the Knowledge against which the loaded KnowledgeBase will be
 	 * tested.
 	 */
-	private void createKnowledge() {
+	private void createGoldenKnowledge() {
 
 		createdKB = new KnowledgeBase();
 		createdKBM = KnowledgeBaseManagement.createInstance(createdKB);

@@ -26,6 +26,7 @@ import java.util.Iterator;
 
 import junit.framework.TestCase;
 import utils.KBCreationTestUtil;
+import utils.MyTestArticleManager;
 import de.d3web.abstraction.ActionQuestionSetter;
 import de.d3web.abstraction.formula.FormulaExpression;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
@@ -40,6 +41,7 @@ import de.d3web.indication.inference.PSMethodNextQASet;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.scoring.ActionHeuristicPS;
 import de.d3web.scoring.inference.PSMethodHeuristic;
+import de.d3web.we.kdom.KnowWEArticle;
 
 /**
  * This class tests whether the Rules are created as expected.
@@ -62,7 +64,8 @@ public class RulesTest extends TestCase {
 	public void testHeuristicRules() {
 
 		// load KnowledgeBases
-		KnowledgeBase loadedKB = KBCreationTestUtil.getInstance().getLoadedKB();
+		KnowWEArticle art = MyTestArticleManager.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
+		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
 		// load Rules in HashMaps (necessary because they are unsorted)
@@ -143,7 +146,8 @@ public class RulesTest extends TestCase {
 	public void testNextQASetRules() {
 
 		// load KnowledgeBases
-		KnowledgeBase loadedKB = KBCreationTestUtil.getInstance().getLoadedKB();
+		KnowWEArticle art = MyTestArticleManager.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
+		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
 		// load Rules in HashMaps (necessary because they are unsorted)
@@ -212,7 +216,8 @@ public class RulesTest extends TestCase {
 	public void testSetValueRules() {
 
 		// load KnowledgeBases
-		KnowledgeBase loadedKB = KBCreationTestUtil.getInstance().getLoadedKB();
+		KnowWEArticle art = MyTestArticleManager.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
+		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
 		// load Rules in HashMaps (necessary because they are unsorted)

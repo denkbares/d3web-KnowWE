@@ -23,15 +23,17 @@ package tests;
 import java.io.IOException;
 import java.util.Collection;
 
+import junit.framework.TestCase;
 import utils.KBCreationTestUtil;
+import utils.MyTestArticleManager;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.plugin.test.InitPluginManager;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.logging.Logging;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.inference.PSMethodXCL;
-import junit.framework.TestCase;
 
 /**
  * This class tests whether the XCLModels are created as expected.
@@ -50,7 +52,8 @@ public class XCLTest extends TestCase {
 
 	public void testNumberOfXCLModels() {
 		// load KnowledgeBases
-		KnowledgeBase loadedKB = KBCreationTestUtil.getInstance().getLoadedKB();
+		KnowWEArticle art = MyTestArticleManager.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
+		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
 		// Check number of rules
@@ -62,7 +65,8 @@ public class XCLTest extends TestCase {
 	public void testXCLModels() {
 
 		// load KnowledgeBases
-		KnowledgeBase loadedKB = KBCreationTestUtil.getInstance().getLoadedKB();
+		KnowWEArticle art = MyTestArticleManager.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
+		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
 		Collection<KnowledgeSlice> loadedXCLModels = loadedKB.getAllKnowledgeSlicesFor(

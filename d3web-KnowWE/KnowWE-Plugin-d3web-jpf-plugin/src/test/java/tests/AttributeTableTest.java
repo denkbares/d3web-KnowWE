@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 import utils.KBCreationTestUtil;
+import utils.MyTestArticleManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.DCElement;
@@ -33,6 +34,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.plugin.test.InitPluginManager;
+import de.d3web.we.kdom.KnowWEArticle;
 
 /**
  * This class tests whether the Objects got the right MMInfo from the
@@ -50,7 +52,8 @@ public class AttributeTableTest extends TestCase {
 
 	public void testMMInfo() {
 
-		KnowledgeBase loadedKB = KBCreationTestUtil.getInstance().getLoadedKB();
+		KnowWEArticle art = MyTestArticleManager.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
+		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
 		// Get Diagnosis with ID "P1": "Mechanical Problem"

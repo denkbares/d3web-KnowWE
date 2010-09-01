@@ -22,11 +22,13 @@ package tests;
 
 import java.io.IOException;
 
+import junit.framework.TestCase;
 import utils.KBCreationTestUtil;
+import utils.MyTestArticleManager;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.empiricaltesting.TestSuite;
 import de.d3web.plugin.test.InitPluginManager;
-import junit.framework.TestCase;
+import de.d3web.we.kdom.KnowWEArticle;
 
 /**
  * This class tests whether the TestSuites are equal
@@ -49,8 +51,8 @@ public class TestSuiteTest extends TestCase {
 	 * TestSuite(-section)
 	 */
 	public void testTestSuites() {
-
-		TestSuite loadedTS = KBCreationTestUtil.getInstance().getLoadedTS();
+		KnowWEArticle article = MyTestArticleManager.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
+		TestSuite loadedTS = MyTestArticleManager.findTestSuite(article);
 		TestSuite createdTS = KBCreationTestUtil.getInstance().getCreatedTS();
 
 		assertNotNull("TestSuite has no Sequential-Test-Case.",

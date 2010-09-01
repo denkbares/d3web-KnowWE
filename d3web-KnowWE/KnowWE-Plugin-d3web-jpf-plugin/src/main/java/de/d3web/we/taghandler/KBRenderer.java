@@ -401,9 +401,8 @@ public class KBRenderer extends AbstractTagHandler {
 				Properties rUnit = ((NamedObject) t1).getProperties();
 				Set<Property> sUnit = rUnit.getKeys();
 				for (Property p1 : sUnit) {
-					if (p1.getName() != "mminfo"
-							&& p1.getName() != "abstractionQuestion") {
-						range.append(" " + rUnit.getProperty(p1));
+					if (p1.getName() != "mminfo") {
+						range.append(" " + p1.getName() + ": " + rUnit.getProperty(p1));
 					}
 				}
 			}

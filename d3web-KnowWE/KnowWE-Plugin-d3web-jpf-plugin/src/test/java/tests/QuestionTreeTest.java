@@ -23,7 +23,9 @@ package tests;
 import java.io.IOException;
 import java.util.Arrays;
 
+import junit.framework.TestCase;
 import utils.KBCreationTestUtil;
+import utils.MyTestArticleManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -35,8 +37,8 @@ import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.plugin.test.InitPluginManager;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.logging.Logging;
-import junit.framework.TestCase;
 
 /**
  * This class tests whether the Questions are created as expected.
@@ -54,7 +56,8 @@ public class QuestionTreeTest extends TestCase {
 	}
 
 	public void testNumberOfQuestions() {
-		KnowledgeBase loadedKB = KBCreationTestUtil.getInstance().getLoadedKB();
+		KnowWEArticle art = MyTestArticleManager.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
+		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 		assertEquals("Number of Questions differ.", createdKB.getQuestions().size(),
 				loadedKB.getQuestions().size());
@@ -62,7 +65,8 @@ public class QuestionTreeTest extends TestCase {
 
 	public void testQuestions() {
 
-		KnowledgeBase loadedKB = KBCreationTestUtil.getInstance().getLoadedKB();
+		KnowWEArticle art = MyTestArticleManager.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
+		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
 		if (loadedKB.getQuestions().size() == createdKB.getQuestions().size()) {
@@ -118,7 +122,8 @@ public class QuestionTreeTest extends TestCase {
 
 	public void testMMInfo() {
 
-		KnowledgeBase loadedKB = KBCreationTestUtil.getInstance().getLoadedKB();
+		KnowWEArticle art = MyTestArticleManager.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
+		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
 		// Get Question with ID "Q1": "Exhaust fumes"
