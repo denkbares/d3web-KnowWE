@@ -99,31 +99,30 @@ public class KBRenderer extends AbstractTagHandler {
 		text.append("<div>");
 		text.append("<p>");
 		if (service != null) {
-			// text.append("<h4>Knowledge of article:</h4>";
 			KnowledgeBase kb = service.getBase();
 
-			// kb.getAllKnowledgeSlices(); // Actions in Verbalizer schmeißen
-			// (nach
-			// // ProblemSolverMethod sortieren)
-			// kb.getQContainers(); // Durchlaufen und schaun ob weiterer
-			// Container
+			/*
+			 * Render Solutions
+			 */
 
-			// Solutions
 			Solution diagnosis = kb.getRootSolution();
 			boolean appendedSolutionsHeadline = false;
 			if (diagnosis.getName().equals("P000")) {
 				if (!appendedSolutionsHeadline) {
 					text.append("<strong>"
-								+ rb.getString("KnowWE.KBRenderer.solutions")
-								+ ":</strong><p/>");
+							+ rb.getString("KnowWE.KBRenderer.solutions")
+							+ ":</strong><p/>");
 					appendedSolutionsHeadline = true;
 				}
+				// Get all Children
 				TerminologyObject[] getRoots = diagnosis.getChildren();
 				for (TerminologyObject t1 : getRoots) {
+					// Look for children @ depth 1
 					if (t1.getParents().length == 1) {
 						text
 								.append("<span style=\"color: rgb(150, 110, 120);\">"
 										+ t1.getName() + "</span><br/>");
+						// Get their childrens and build up the tree recursively
 						text.append(getAll(t1.getChildren(), 1));
 						text.append("<br/>");
 					}
@@ -131,28 +130,10 @@ public class KBRenderer extends AbstractTagHandler {
 			}
 			text.append("<p/>");
 
-			// text.append("<br /><b>SCRelations: </b><br />");
-			//
-			// Collection<KnowledgeSlice> scRels = kb
-			// .getAllKnowledgeSlicesFor(PSMethodSetCovering.class);
-			// for (KnowledgeSlice knowledgeSlice : scRels) {
-			// if (knowledgeSlice instanceof SCRelation) {
-			// SCRelation screl = ((SCRelation) knowledgeSlice);
-			// SCNode targetNode = screl.getTargetNode();
-			// if (targetNode instanceof PredictedFinding) {
-			// PredictedFinding finding = ((PredictedFinding) targetNode);
-			// AbstractCondition cond = finding.getCondition();
-			// // Verbalization of the condition
-			// text.append(VerbalizationManager.getInstance().verbalize(
-			// cond, RenderingFormat.HTML)
-			// + "<br>");
-			// }
-			//
-			// screl.getTargetNode().getNamedObject();
-			// }
-			// }
+			/*
+			 * Render Rules
+			 */
 
-			// Rules
 			Map<String, Object> parameterMap = new HashMap<String, Object>();
 			parameterMap.put(Verbalizer.IS_SINGLE_LINE, Boolean.TRUE);
 			List<KnowledgeSlice> rules = new ArrayList<KnowledgeSlice>(kb
@@ -160,11 +141,13 @@ public class KBRenderer extends AbstractTagHandler {
 
 			boolean appendedRulesHeadline = false;
 			Map<String, String> idMap = new HashMap<String, String>();
+			// HashSet for checking duplicate rules
 			HashSet<de.d3web.core.inference.Rule> duplRules = new HashSet<de.d3web.core.inference.Rule>();
 			for (KnowledgeSlice knowledgeSlice : rules) {
 				if (knowledgeSlice instanceof RuleSet) {
 					RuleSet rs = (RuleSet) knowledgeSlice;
 					for (de.d3web.core.inference.Rule r : rs.getRules()) {
+						// add every rule once
 						duplRules.add(r);
 						if (!appendedRulesHeadline) {
 							if (appendedSolutionsHeadline) {
@@ -198,20 +181,19 @@ public class KBRenderer extends AbstractTagHandler {
 							// TODO:Johannes: Refactor this after old rule
 							// rendering
 							// is deprecated
-							List<Section<ConditionActionRule>> allRulesNew =
-									new ArrayList<Section<ConditionActionRule>>();
+							List<Section<ConditionActionRule>> allRulesNew = new ArrayList<Section<ConditionActionRule>>();
 							KnowWEEnvironment.getInstance().getArticleManager(
 									web).getArticle(topic).getSection()
-									.findSuccessorsOfType(ConditionActionRule.class, allRulesNew);
+									.findSuccessorsOfType(
+											ConditionActionRule.class,
+											allRulesNew);
 							for (Section<ConditionActionRule> rule : allRulesNew) {
-								de.d3web.core.inference.Rule kbRuleId =
-										(de.d3web.core.inference.Rule) KnowWEUtils
-												.getStoredObject(
-														rule.getWeb(),
-														topic,
-														rule.getID(),
-														RuleContentType.ruleStoreKey);
-								if (kbRuleId != null) idMap.put(kbRuleId.getId(), rule.getID());
+								de.d3web.core.inference.Rule kbRuleId = (de.d3web.core.inference.Rule) KnowWEUtils
+										.getStoredObject(rule.getWeb(), topic,
+												rule.getID(),
+												RuleContentType.ruleStoreKey);
+								if (kbRuleId != null)
+									idMap.put(kbRuleId.getId(), rule.getID());
 							}
 
 							for (Section<BulletContentType> bullet : allBulletContentTypes) {
@@ -227,8 +209,10 @@ public class KBRenderer extends AbstractTagHandler {
 					}
 				}
 			}
+			// List with all Rules (no duplicates)
 			List<de.d3web.core.inference.Rule> sort = new ArrayList<de.d3web.core.inference.Rule>(
 					duplRules);
+			// Sort rules
 			Collections.sort(sort, new RuleComparator());
 			// TODO:Johannes: Highlighting does not work
 			// due to strange JS Problems
@@ -258,7 +242,10 @@ public class KBRenderer extends AbstractTagHandler {
 			}
 			text.append("<p/>");
 
-			// Questions
+			/*
+			 * Questions
+			 */
+
 			KnowledgeBaseManagement kbm = KnowledgeBaseManagement
 					.createInstance(kb);
 			List<QContainer> questions = kb.getQContainers();
@@ -278,6 +265,7 @@ public class KBRenderer extends AbstractTagHandler {
 					if (q1 instanceof QContainer) {
 						text.append("<span style=\"color: rgb(128, 128, 0);\">"
 								+ q1.getName() + "</span><br/>");
+						// Build up question tree recursively
 						text.append(getAll(q1.getChildren(), 1));
 						text.append("<br/>");
 					}
@@ -302,20 +290,6 @@ public class KBRenderer extends AbstractTagHandler {
 						appendedXCLHeadline = true;
 					}
 					de.d3web.xcl.XCLModel model = ((de.d3web.xcl.XCLModel) slice);
-
-					// adds tresholds if different from default
-					// String thresholds = "";
-					// if (model.getEstablishedThreshold() !=
-					// XCLModel.defaultEstablishedThreshold ||
-					// model.getSuggestedThreshold() !=
-					// XCLModel.defaultSuggestedThreshold ||
-					// model.getMinSupport() != XCLModel.defaultMinSupport) {
-					// thresholds = " [" + model.getSuggestedThreshold() + ", "
-					// + model.getEstablishedThreshold() + ", " +
-					// model.getMinSupport()
-					// + "]";
-					//
-					// }
 
 					text.append("<p /> " + model.getSolution().getName()
 							+ ": <br />");
@@ -380,29 +354,43 @@ public class KBRenderer extends AbstractTagHandler {
 					}
 				}
 			}
-		}
-		else {
+		} else {
 			text.append("<p class=\"box error\">"
 					+ rb.getString("KnowWE.KBRenderer.error") + "</p>");
 		}
 		return text.append("</p></div></div>").toString();
 	}
 
+	/**
+	 * 
+	 * Returns all children in an hierarchically view from a given list of
+	 * terminologyobjects.
+	 * 
+	 * @param nodes
+	 *            the nodes from which you want to have all children displayed.
+	 * @param depth
+	 *            the depth of the recursion, which is needed for the
+	 *            hierarchically view.
+	 * @return all children from the given objects, including their properties.
+	 */
 	private String getAll(TerminologyObject[] nodes, int depth) {
 		StringBuffer result = new StringBuffer();
-		StringBuffer properties = new StringBuffer();
-		StringBuffer range = new StringBuffer();
+		StringBuffer prompt = new StringBuffer();
+		StringBuffer property = new StringBuffer();
 		for (TerminologyObject t1 : nodes) {
 			if (t1 instanceof NamedObject
 					&& ((NamedObject) t1).getProperties() != null) {
+				// Append the prompt for questions
 				if (t1 instanceof Question && getPrompt((Question) t1) != null) {
-					properties.append("&#126; " + getPrompt((Question) t1));
+					prompt.append("&#126; " + getPrompt((Question) t1));
 				}
+				// Append the properties
 				Properties rUnit = ((NamedObject) t1).getProperties();
 				Set<Property> sUnit = rUnit.getKeys();
 				for (Property p1 : sUnit) {
 					if (p1.getName() != "mminfo") {
-						range.append(" " + p1.getName() + ": " + rUnit.getProperty(p1));
+						property.append(" " + p1.getName() + ": "
+								+ rUnit.getProperty(p1));
 					}
 				}
 			}
@@ -412,13 +400,20 @@ public class KBRenderer extends AbstractTagHandler {
 			if (t1 instanceof QuestionChoice) {
 				if (t1 instanceof QuestionMC) {
 					result.append("<span style=\"color: rgb(0, 128, 0);\">"
-							+ t1.toString() + " " + properties + " [mc] "
-							+ range + "</span><br/>");
-				}
-				else {
+									+ t1.toString()
+									+ " "
+									+ prompt
+									+ "</span>"
+									+ "<span style=\"color: rgb(125, 80, 102);\"> [mc] "
+									+ property + " </span><br/>");
+				} else {
 					result.append("<span style=\"color: rgb(0, 128, 0);\">"
-							+ t1.toString() + " " + properties + " [oc] "
-							+ range + "</span><br/>");
+									+ t1.toString()
+									+ " "
+									+ prompt
+									+ "</span>"
+									+ "<span style=\"color: rgb(125, 80, 102);\"> [oc] "
+									+ property + " </span><br/>");
 				}
 				for (Choice c1 : ((QuestionChoice) t1).getAllAlternatives()) {
 					for (int i = 0; i < depth + 1; i++) {
@@ -427,29 +422,29 @@ public class KBRenderer extends AbstractTagHandler {
 					result.append("<span style=\"color: rgb(0, 0, 255);\">"
 							+ c1.toString() + "</span><br/>");
 				}
-			}
-			else if (t1 instanceof QuestionText) {
+			} else if (t1 instanceof QuestionText) {
 				result.append("<span style=\"color: rgb(0, 128, 0);\">"
-						+ t1.getName() + " " + properties + " [text] " + range
-						+ "</span><br/>");
-			}
-			else if (t1 instanceof QuestionNum) {
+						+ t1.getName() + " " + prompt + "</span>"
+						+ "<span style=\"color: rgb(125, 80, 102);\"> [text] "
+						+ property + " </span><br/>");
+			} else if (t1 instanceof QuestionNum) {
 				result.append("<span style=\"color: rgb(0, 128, 0);\">"
-						+ t1.getName() + " " + properties + " [num] " + range
-						+ "</span><br/>");
-			}
-			else if (t1 instanceof QuestionDate) {
+						+ t1.getName() + " " + prompt + "</span>"
+						+ "<span style=\"color: rgb(125, 80, 102);\"> [num] "
+						+ property + " </span><br/>");
+			} else if (t1 instanceof QuestionDate) {
 				result.append("<span style=\"color: rgb(0, 128, 0);\">"
-						+ t1.getName() + " " + properties + " [date] " + range
-						+ "</span><br/>");
-			}
-			else if (t1 instanceof Solution) {
+						+ t1.getName() + " " + prompt
+						+ "<span style=\"color: rgb(125, 80, 102);\"> [date] "
+						+ property + " </span><br/>");
+			} else if (t1 instanceof Solution) {
 				result.append("<span style=\"color: rgb(150, 110, 120);\">"
 						+ VerbalizationManager.getInstance().verbalize(t1,
 								RenderingFormat.HTML) + "</span><br/>");
 			}
-			properties = new StringBuffer();
-			range = new StringBuffer();
+			// Reset the prompt & property buffer for every object
+			prompt = new StringBuffer();
+			property = new StringBuffer();
 			if (t1.getChildren().length > 0) {
 				depth++;
 				result.append(getAll(t1.getChildren(), depth));
@@ -459,6 +454,13 @@ public class KBRenderer extends AbstractTagHandler {
 		return result.toString();
 	}
 
+	/**
+	 * Returns the prompt for a given question.
+	 * 
+	 * @param q
+	 *            Question
+	 * @return the prompt of the question.
+	 */
 	public static String getPrompt(Question q) {
 		MMInfoStorage storage = (MMInfoStorage) q.getProperties().getProperty(
 				Property.MMINFO);
@@ -479,16 +481,17 @@ public class KBRenderer extends AbstractTagHandler {
 		return null;
 	}
 
-	private class RuleComparator implements Comparator<de.d3web.core.inference.Rule> {
+	private class RuleComparator implements
+			Comparator<de.d3web.core.inference.Rule> {
 
 		@Override
-		public int compare(de.d3web.core.inference.Rule o1, de.d3web.core.inference.Rule o2) {
+		public int compare(de.d3web.core.inference.Rule o1,
+				de.d3web.core.inference.Rule o2) {
 			try {
 				Integer i1 = Integer.parseInt(o1.getId().substring(1));
 				Integer i2 = Integer.parseInt(o2.getId().substring(1));
 				return i1.compareTo(i2);
-			}
-			catch (NumberFormatException e) {
+			} catch (NumberFormatException e) {
 				// shouldn't happen, fallback...
 				return o1.getId().compareTo(o2.getId());
 			}
