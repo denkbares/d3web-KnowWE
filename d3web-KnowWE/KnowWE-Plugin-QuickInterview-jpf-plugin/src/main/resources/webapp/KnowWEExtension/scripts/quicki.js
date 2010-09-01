@@ -64,10 +64,13 @@ KNOWWE.plugin.quicki = function(){
  */
 KNOWWE.plugin.quicki = function(){
     
+	var mcanswervals = '';
+	
 	 return {
         /**
          * Function: init
          */
+		 // TODO
         init : function( doReset ){
             
         	// reset highlighting of elements if doReset is true
@@ -98,6 +101,14 @@ KNOWWE.plugin.quicki = function(){
                 _KE.add('click', element, KNOWWE.plugin.quicki.answerUnknownClicked);
         	});
         	
+        	_KS('.answerMC').each(function(element){
+                _KE.add('click', element, KNOWWE.plugin.quicki.answerMCCollect);
+        	});
+        	
+        	_KS('.MCButton').each(function(element){
+                _KE.add('click', element, KNOWWE.plugin.quicki.answerMCCollectSend);
+        	});
+        	
         	_KS('.questionnaire').each(function(element){
                 _KE.add('click', element, KNOWWE.plugin.quicki.toggleQuestionnaireVisibility);
         	});
@@ -125,6 +136,31 @@ KNOWWE.plugin.quicki = function(){
              });  
         	 
         }, 
+        answerMCCollect : function( event ) {
+            var el = _KE.target(event); 	// get the clicked element
+            _KE.cancel( event );
+            
+            var rel = eval("(" + el.getAttribute('rel') + ")");
+            if( !rel ) return;
+            var oid = rel.oid;
+            
+            mcanswervals += oid;
+            mcanswervals += "#####"
+        },
+        answerMCCollectSend : function( event ) {
+        	 var el = _KE.target(event); 	// get the clicked element
+             _KE.cancel( event );
+            
+        	var rel = eval("(" + el.getAttribute('rel') + ")");
+        	alert(rel);
+        	mcvals = mcanswervals.substring(0, mcanswervals.length-5);
+        	alert(mcvals);
+        	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
+                	{ action : 'SetSingleFindingAction', ValueID: mcvals});
+        	
+        	// finally, reset answervals collector
+        	mcanswervals = '';
+        },
         /**
          * Function: answerClicked
          * Stores the user selected answer of the HTMLDialog.
@@ -135,6 +171,7 @@ KNOWWE.plugin.quicki = function(){
         answerClicked : function( event ) {
             var el = _KE.target(event); 	// get the clicked element
             if(el.className.toLowerCase() == "answerunknown") return;
+            if(el.className.toLowerCase() == "answermc") return;
             var retract = false;
             if(el.className == 'answerClicked'){
             	retract = true;
@@ -255,7 +292,6 @@ KNOWWE.plugin.quicki = function(){
             if(_KS('#input_' + rel.oid)) {
                     inputtext = _KS('#input_' + rel.oid).value; 
             }
-            alert(inputtext);
             
             // send KNOWWE request as SingleFindingAction with given value
             KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 

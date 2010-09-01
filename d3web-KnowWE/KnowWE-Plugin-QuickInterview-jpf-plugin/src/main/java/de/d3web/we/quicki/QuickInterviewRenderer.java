@@ -39,12 +39,14 @@ import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
+import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
+import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 
@@ -334,13 +336,12 @@ public class QuickInterviewRenderer {
 				"style='width: " + w + "px; display: inline-block;' >"
 				+ q.getName() + "</div>");
 
-		System.out.println(q.getName() + ": " + session.getBlackboard().getValue(q));
-		System.out.println();
-		// switch question type for assembling corresponding answers
-		// TODO add some more answer types?
-		if (isQuestionAbstraction(q)) {
-			renderChoicesAbstract(q);
-		}
+		// TODO Maybe render abstraction questions otherwise once I know how to
+		// distinguish them
+		// q.getProperties().getProperty(Property.ABSTRACTION_QUESTION);
+		// if (isQuestionAbstraction(q)) {
+		// renderChoicesAbstract(q);
+		// } else
 		if (q instanceof QuestionOC) {
 			List<Choice> list = ((QuestionChoice) q).getAllAlternatives();
 			renderOCChoiceAnswers(q, list, sb);
@@ -357,10 +358,55 @@ public class QuickInterviewRenderer {
 		else if (q instanceof QuestionDate) {
 			renderDateAnswers(q, sb);
 		}
-		// else if (q
-		// instanceof QuestionText)
+		else if (q instanceof QuestionText) {
+			renderTextAnswers(q, sb);
+		}
+
 
 		sb.append("</div>");
+	}
+
+	private static void renderTextAnswers(Question q, StringBuffer sb) {
+		String value = "";
+
+		// if answer has already been answered write value into the field
+		if (UndefinedValue.isNotUndefinedValue(session.getBlackboard().getValue(q))) {
+			Value answer = session.getBlackboard().getValue(q);
+
+			if (answer != null && answer instanceof Unknown) {
+				value = "";
+			}
+			else if (answer != null && answer instanceof TextValue) {
+				value = ((TextValue) answer).toString();
+			}
+		}
+
+		String id = q.getId();
+		String jscall = "";
+		// assemble the JS call
+		try {
+			jscall = " rel=\"{oid: '" + id + "', "
+					+ "web:'" + web + "',"
+					+ "ns:'" + namespace + "',"
+					+ "type:'num', "
+					+ "qtext:'" + URLEncoder.encode(q.getName(), "UTF-8") + "', "
+					+ "}\" ";
+		}
+		catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		// assemble the input field
+		sb.append("<input class='inputdate'  style='display: inline;' id='input_" + id
+				+ "' type='text' "
+				+ "value='" + value + "' "
+				+ "size='18' "
+				+ jscall + " />");
+		sb.append("<input type='button' value='ok' class='date-ok' /> ");
+		// "<div class='dateformatdesc'>()</div>");
+
+		sb.append("<div class='answerseparator'></div>");
+		renderAnswerUnknown(q, "num", sb);
 	}
 
 	private static void renderChoicesAbstract(Question q) {
@@ -530,10 +576,10 @@ public class QuickInterviewRenderer {
 	}
 
 	/**
-	 * Creates the HTML needed for displaying the answer alternatives of choice
-	 * answers.
+	 * Creates the HTML needed for displaying the answer alternatives of mc
+	 * choice answers.
 	 * 
-	 * @created 22.07.2010
+	 * @created 01.09.2010
 	 * @param session
 	 * @param q
 	 * @param sb
@@ -547,19 +593,18 @@ public class QuickInterviewRenderer {
 		sb.append("<div class='answers' style='display: inline;'>");
 		for (Choice choice : mcval.asChoiceList()) {
 
-			String cssclass = "answer";
+			String cssclass = "answerMC";
 			String jscall = " rel=\"{oid:'" + choice.getId() + "', "
 					+ "web:'" + web + "', "
 					+ "ns:'" + namespace + "', "
 					+ "qid:'" + q.getId() + "', "
 					+ "type:'mc', "
-					+ "mcid:'" + mcval.getAnswerChoicesID() + "'"
 					+ "}\" ";
 
 			Value value = session.getBlackboard().getValue(q);
 			if (value != null && UndefinedValue.isNotUndefinedValue(value)
 					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
-				cssclass = "answerClicked";
+				cssclass = "answerMCClicked";
 			}
 			String spanid = q.getId() + "_" + choice.getId();
 			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ", cssclass,
@@ -569,6 +614,13 @@ public class QuickInterviewRenderer {
 
 		// also render the unknown alternative for choice questions
 		renderAnswerUnknown(q, "mc", sb);
+
+		String jscall = " rel=\"{web:'" + web + "', "
+				+ "ns:'" + namespace + "', "
+				+ "qid:'" + q.getId() + "', "
+				+ "type:'mc', "
+				+ "}\" ";
+		sb.append("<button type='button' class='MCButton' " + jscall + " >OK</button>");
 
 		sb.append("</div>");
 	}

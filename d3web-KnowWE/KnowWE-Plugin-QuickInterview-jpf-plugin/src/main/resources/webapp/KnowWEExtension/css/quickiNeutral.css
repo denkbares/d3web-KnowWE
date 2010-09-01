@@ -62,8 +62,14 @@
 /* answer styling */
 #quickinterview .answer { float: left; background-color: white;; padding: 0 5px 0 5px; }
 
+/* answer mc styling */
+#quickinterview .answerMC { float: left; background-color: white;; padding: 0 5px 0 5px; }
+
 /* answer active syling */
-#quickinterview .answerClicked { float: left; background-color: white;; border: 3px red solid;  padding: 0 5px 0 5px; }
+#quickinterview .answerClicked { float: left; background-color: white;; border: 1px  solid orange;  padding: 0 5px 0 5px; }
+
+#quickinterview .answerMCClicked { float: left; background-color: white;; border: 1px solid orange;  padding: 0 5px 0 5px; }
+
 
 /* answer unknown styling */
 #quickinterview .answerunknown { background: transparent url(../images/questionMark.png); height: 18px; width: 18px; float: left;

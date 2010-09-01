@@ -91,6 +91,7 @@ public class KnowWEAttributes {
 	public static final String SEMANO_VALUE_IDS = "ValueIDS";
 	public static final String SEMANO_VALUE_NUM = "ValueNum";
 	public static final String SEMANO_VALUE_DATE = "ValueDate";
+	public static final String SEMANO_VALUE_TEXT = "ValueText";
 	public static final String SEMANO_TERM_TYPE = "TermType";
 
 	public static final String TAGGING_ACTION = "tagaction";
