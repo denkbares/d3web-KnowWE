@@ -334,8 +334,13 @@ public class QuickInterviewRenderer {
 				"style='width: " + w + "px; display: inline-block;' >"
 				+ q.getName() + "</div>");
 
+		System.out.println(q.getName() + ": " + session.getBlackboard().getValue(q));
+		System.out.println();
 		// switch question type for assembling corresponding answers
 		// TODO add some more answer types?
+		if (isQuestionAbstraction(q)) {
+			renderChoicesAbstract(q);
+		}
 		if (q instanceof QuestionOC) {
 			List<Choice> list = ((QuestionChoice) q).getAllAlternatives();
 			renderOCChoiceAnswers(q, list, sb);
@@ -350,13 +355,21 @@ public class QuickInterviewRenderer {
 		}
 	
 		else if (q instanceof QuestionDate) {
-					+ " DATE " + ((QuestionDate) q).getAllKnowledge());
 			renderDateAnswers(q, sb);
 		}
 		// else if (q
 		// instanceof QuestionText)
 
 		sb.append("</div>");
+	}
+
+	private static void renderChoicesAbstract(Question q) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private static boolean isQuestionAbstraction(Question q) {
+		return false;
 	}
 
 	/**
@@ -397,8 +410,9 @@ public class QuickInterviewRenderer {
 			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ",
 					cssclass, jscall, null, spanid));
 
-			System.out.println(getEnclosingTagOnClick("div", "" + choice.getName() + " ",
-					cssclass, jscall, null, spanid));
+			// System.out.println(getEnclosingTagOnClick("div", "" +
+			// choice.getName() + " ",
+			// cssclass, jscall, null, spanid));
 
 			// for having a separator between answer alternatives (img, text...)
 			sb.append("<div class='answerseparator'></div>");
