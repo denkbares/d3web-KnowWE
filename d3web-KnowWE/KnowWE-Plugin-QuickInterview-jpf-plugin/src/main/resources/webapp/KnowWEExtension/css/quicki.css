@@ -73,11 +73,17 @@
 	 background-repeat: no-repeat; background-position: center center; padding: 1px 5px;; 
 	 border: 3px white solid;}
 	 
-/* styling of input box */
+/* styling of input box num answers */
 #quickinterview .input { height: 14px; float: left; margin-left: 5px;  }
 
-/* styling of input box button */
+/* styling of input box button num answers */
 #quickinterview .num-ok{ height: 20px; margin: 0 5px; float: left; padding-top: 5px; }
+
+/* styling of input box date answers */
+#quickinterview .inputdate { height: 14px; float: left; margin-left: 5px;  }
+
+/* styling of input box button date answers */
+#quickinterview .date-ok{ height: 20px; margin: 0 5px; float: left; padding-top: 5px; }
 
 /* pseudo element for the correct closing of the plugin rendering regardless of at which depth of recursion */
 #quickinterview .invisible { display: block; clear: both; width:100%; height: 2px; background-color: transparent;}

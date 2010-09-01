@@ -35,12 +35,14 @@ import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
@@ -346,11 +348,15 @@ public class QuickInterviewRenderer {
 		else if (q instanceof QuestionNum) {
 			renderNumAnswers(q, sb);
 		}
-		/*
-		 * else if (q instanceof QuestionDate) { System.out.println(q.getName()
-		 * + " DATE " + ((QuestionDate) q).getAllKnowledge()); } else if (q
-		 * instanceof QuestionText)
-		 */
+	
+		else if (q instanceof QuestionDate) {
+			System.out.println(q.getName()
+					+ " DATE " + ((QuestionDate) q).getAllKnowledge());
+			renderDateAnswers(q, sb);
+		}
+		// else if (q
+		// instanceof QuestionText)
+
 		sb.append("</div>");
 	}
 
@@ -448,6 +454,52 @@ public class QuickInterviewRenderer {
 				+ "size='7' "
 				+ jscall + " />");
 		sb.append("<input type='button' value='ok' class='num-ok' />");
+
+		sb.append("<div class='answerseparator'></div>");
+		renderAnswerUnknown(q, "num", sb);
+	}
+
+	// TODO: check Date input format
+	private static void renderDateAnswers(Question q, StringBuffer sb) {
+
+		String value = "";
+
+		// if answer has already been answered write value into the field
+		if (UndefinedValue.isNotUndefinedValue(session.getBlackboard().getValue(q))) {
+			Value answer = session.getBlackboard().getValue(q);
+
+			if (answer != null && answer instanceof Unknown) {
+				value = "";
+			}
+			else if (answer != null && answer instanceof DateValue) {
+				value = ((DateValue) answer).getDateString();
+			}
+		}
+
+		String id = q.getId();
+
+		System.out.println("date in renderer: " + value);
+		// assemble the JS call
+		String jscall = "";
+		try {
+			jscall = " rel=\"{oid: '" + id + "', "
+					+ "web:'" + web + "',"
+					+ "ns:'" + namespace + "',"
+					+ "type:'num', "
+					+ "qtext:'" + URLEncoder.encode(q.getName(), "UTF-8") + "', "
+					+ "}\" ";
+		}
+		catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		// assemble the input field
+		sb.append("<input class='inputdate'  style='display: inline;' id='input_" + id
+				+ "' type='text' "
+				+ "value='" + value + "' "
+				+ "size='7' "
+				+ jscall + " />");
+		sb.append("<input type='button' value='ok' class='date-ok' />");
 
 		sb.append("<div class='answerseparator'></div>");
 		renderAnswerUnknown(q, "num", sb);

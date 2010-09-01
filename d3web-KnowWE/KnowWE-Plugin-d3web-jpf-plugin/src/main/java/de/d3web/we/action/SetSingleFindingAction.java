@@ -22,8 +22,12 @@ package de.d3web.we.action;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -41,6 +45,7 @@ import de.d3web.core.session.blackboard.Blackboard;
 import de.d3web.core.session.blackboard.DefaultFact;
 import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.Unknown;
@@ -77,6 +82,7 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 				.get(KnowWEAttributes.SEMANO_TERM_NAME));
 		String valueid = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_ID);
 		String valuenum = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_NUM);
+		String valuedate = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_DATE);
 		String topic = parameterMap.getTopic();
 		String user = parameterMap.get(KnowWEAttributes.USER);
 		String web = parameterMap.get(KnowWEAttributes.WEB);
@@ -110,6 +116,19 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 				}
 				else if (valuenum != null) {
 					value = new NumValue(Double.parseDouble(valuenum));
+
+					// TODO set valuedate in Attributes
+				}
+				else if (valuedate != null) {
+					final DateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+					try {
+						Date date = format.parse(valuedate);
+						value = new DateValue(date);
+						System.out.println("date: " + value);
+					}
+					catch (ParseException e) {
+						e.printStackTrace();
+					}
 				}
 
 				if (value != null) {

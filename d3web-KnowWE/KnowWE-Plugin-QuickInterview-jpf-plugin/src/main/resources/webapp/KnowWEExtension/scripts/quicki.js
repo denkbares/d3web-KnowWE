@@ -111,6 +111,10 @@ KNOWWE.plugin.quicki = function(){
         		_KE.add('click', element, KNOWWE.plugin.quicki.numAnswerClicked);
             });  
         	
+        	_KS('.date-ok').each(function( element ){
+        		_KE.add('click', element, KNOWWE.plugin.quicki.dateAnswerClicked);
+            });  
+        	
         	_KS('.quickireset').each(function( element ){
                 _KE.add('click', element, KNOWWE.plugin.quicki.quickIReset);
             });  
@@ -221,6 +225,41 @@ KNOWWE.plugin.quicki = function(){
             // send KNOWWE request as SingleFindingAction with given value
             KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
             		{action : 'SetSingleFindingAction', ValueNum: inputtext});
+        },
+        /**
+         * Function: dateAnswerClicked
+         * 		Handles the input of date-values
+         * 
+         * Parameters:
+         * 		event - the event firing the action
+         */
+        dateAnswerClicked : function (event) {
+        	event = new Event( event ).stopPropagation();
+            var bttn = (_KE.target( event ).className == 'date-ok');            
+            var key = (event.code == 13);
+            
+            // check, if either button was clicked or enter was pressed
+            if( !(key || bttn) ) return false;
+            
+            var rel = null;
+            if(key){				// if enter was pressed
+                rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")");
+            } else {				// if button was clicked
+                rel = eval("(" + _KE.target( event ).previousSibling.getAttribute('rel') + ")");
+            }
+            if( !rel ) return;
+            
+            var inputtext = 'inputTextNotFound';	// default input
+            
+            // if an input was given in the field
+            if(_KS('#input_' + rel.oid)) {
+                    inputtext = _KS('#input_' + rel.oid).value; 
+            }
+            alert(inputtext);
+            
+            // send KNOWWE request as SingleFindingAction with given value
+            KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
+            		{action : 'SetSingleFindingAction', ValueDate: inputtext});
         },
         /**
          * Function: toggleImage
