@@ -22,9 +22,6 @@ package de.d3web.we.event;
 
 import java.util.Collection;
 
-import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.Section;
-
 /**
  * An EventListener is an extension to KnowWE, that can listen to events firing
  * during operations handled by KnowWE (e.g., init, page-save...)
@@ -47,12 +44,7 @@ public interface EventListener {
 	/**
 	 * this method will be called when an event {@Link Event} is fired
 	 * that this listener is registered for
-	 * 
-	 * @param username
-	 * @param s
-	 * @param eventName
-	 * @param web
 	 */
-	public void notify(Event event, String web, String username, Section<? extends KnowWEObjectType> s);
+	public void notify(Event event);
 
 }

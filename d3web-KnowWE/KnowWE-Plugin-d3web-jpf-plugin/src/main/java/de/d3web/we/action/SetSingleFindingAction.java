@@ -150,8 +150,7 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 									PSMethodUserSelected.getInstance()));
 
 					EventManager.getInstance().fireEvent(
-								new FindingSetEvent(question, value, namespace),
-								web, user, null);
+								new FindingSetEvent(question, value, namespace, web, user));
 				}
 			}
 		}
@@ -293,8 +292,8 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 				value = Unknown.getInstance();
 			}
 
-			EventManager.getInstance().fireEvent(new FindingSetEvent(question, value, namespace),
-					web, user, null);
+			EventManager.getInstance().fireEvent(
+					new FindingSetEvent(question, value, namespace, web, user));
 
 			Information info = new Information(namespace, objectid,
 					valuesAfterClick, TerminologyType.symptom,

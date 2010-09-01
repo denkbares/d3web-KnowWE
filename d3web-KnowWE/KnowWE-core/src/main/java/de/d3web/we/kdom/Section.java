@@ -162,8 +162,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	public static <T extends KnowWEObjectType> Section<T> createSection(String text, T o, Section<? extends KnowWEObjectType> father, int beginIndexOfFather, KnowWEArticle article, SectionID id, boolean isExpanded) {
 		Section<T> s = new Section<T>(text, o, father, beginIndexOfFather, article, id, isExpanded);
-		EventManager.getInstance().fireEvent(SectionCreatedEvent.getInstance(),
-				article.getWeb(), null, s);
+		EventManager.getInstance().fireEvent(new SectionCreatedEvent(s));
 		return s;
 	}
 

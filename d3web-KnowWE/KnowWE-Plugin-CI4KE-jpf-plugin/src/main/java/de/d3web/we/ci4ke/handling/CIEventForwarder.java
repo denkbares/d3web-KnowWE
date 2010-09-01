@@ -26,9 +26,6 @@ import java.util.Collection;
 import de.d3web.we.event.ArticleCreatedEvent;
 import de.d3web.we.event.Event;
 import de.d3web.we.event.EventListener;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.Section;
 
 public class CIEventForwarder implements EventListener {
 
@@ -43,10 +40,10 @@ public class CIEventForwarder implements EventListener {
 	}
 
 	@Override
-	public void notify(Event event, String web, String username,
-			Section<? extends KnowWEObjectType> s) {
-		if (s.getObjectType().getClass().equals(KnowWEArticle.class)) {
-			CIHookManager.getInstance().triggerHooks(s.getID());
+	public void notify(Event event) {
+		if (event instanceof ArticleCreatedEvent) {
+			CIHookManager.getInstance().triggerHooks(
+					((ArticleCreatedEvent) event).getArticle().getSection().getID());
 		}
 
 	}

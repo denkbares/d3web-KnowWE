@@ -254,8 +254,7 @@ public class KnowWEArticleManager {
 						+ "' ->");
 		updatingArticles.add(art.getTitle());
 
-		EventManager.getInstance().fireEvent(new UpdatingDependenciesEvent(), web, null,
-				art.getSection());
+		EventManager.getInstance().fireEvent(new UpdatingDependenciesEvent(art));
 
 		KnowWEEnvironment.getInstance().getPackageManager(web)
 				.updatePackageReferences(art);

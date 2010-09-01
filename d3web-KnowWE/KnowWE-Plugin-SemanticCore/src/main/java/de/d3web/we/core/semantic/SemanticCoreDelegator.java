@@ -278,9 +278,10 @@ public class SemanticCoreDelegator implements ISemanticCore, Instantiation, Even
 	}
 
 	@Override
-	public void notify(Event event, String web, String username, Section<? extends KnowWEObjectType> s) {
-		KnowWEArticle article = s.getArticle();
-		this.clearContext(article);
+	public void notify(Event event) {
+		if (event instanceof FullParseEvent) {
+			this.clearContext(((FullParseEvent) event).getArticle());
+		}
 	}
 
 }

@@ -19,6 +19,8 @@
 
 package de.d3web.we.event;
 
+import de.d3web.we.kdom.Section;
+
 /**
  * 
  * @author Albrecht Striffler
@@ -26,17 +28,14 @@ package de.d3web.we.event;
  */
 public class SectionCreatedEvent extends Event {
 
-	private static SectionCreatedEvent instance = null;
+	private final Section<?> section;
 
-	public static SectionCreatedEvent getInstance() {
-		if (instance == null) {
-			instance = new SectionCreatedEvent();
-		}
-		return instance;
+	public SectionCreatedEvent(Section<?> section) {
+		this.section = section;
 	}
 
-	private SectionCreatedEvent() {
-
+	public Section<?> getSection() {
+		return this.section;
 	}
 
 }

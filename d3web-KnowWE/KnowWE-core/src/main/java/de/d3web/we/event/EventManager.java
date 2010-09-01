@@ -27,8 +27,6 @@ import java.util.Map;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
-import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.Section;
 import de.knowwe.plugin.Plugins;
 
 /**
@@ -91,12 +89,12 @@ public class EventManager {
 	 * @param s
 	 * @param event
 	 */
-	public void fireEvent(Event e, String web, String username, Section<? extends KnowWEObjectType> s) {
+	public void fireEvent(Event e) {
 
 		List<EventListener> listeners = this.listenerMap.get(e.getClass());
 		if (listeners != null) {
 			for (EventListener eventListener : listeners) {
-				eventListener.notify(e, web, username, s);
+				eventListener.notify(e);
 			}
 		}
 

@@ -105,8 +105,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		KnowWEArticle article = new KnowWEArticle(text, title, rootType,
 				web, fullParse);
 
-		EventManager.getInstance().fireEvent(ArticleCreatedEvent.getInstance(), web,
-				null, article.getSection());
+		EventManager.getInstance().fireEvent(new ArticleCreatedEvent(article));
 
 		return article;
 	}
@@ -172,13 +171,12 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		sec = Section.createSection(text, this, null, 0, this, null, false);
 
 		if (this.fullParse)
-			EventManager.getInstance().fireEvent(new FullParseEvent(), web, null,
-					this.sec);
+ EventManager.getInstance().fireEvent(new FullParseEvent(this));
 
 		sec.absolutePositionStartInArticle = 0;
 		sec.setReusedSuccessorStateRecursively(false);
 
-		EventManager.getInstance().fireEvent(new KDOMCreatedEvent(), web, null, sec);
+		EventManager.getInstance().fireEvent(new KDOMCreatedEvent(this));
 
 		// calls Validator if configured
 		if (Validator.getResourceBundle().getString("validator.active")
@@ -482,8 +480,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 	public void setFullParse(SubtreeHandler<?> source) {
 		if (!this.fullParse) {
-			EventManager.getInstance().fireEvent(new FullParseEvent(), web, null,
-					this.sec);
+			EventManager.getInstance().fireEvent(new FullParseEvent(this));
 		}
 		handlersUnableToDestroy.add(source.getClass().isAnonymousClass()
 				? source.getClass().getName().substring(

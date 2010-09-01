@@ -20,23 +20,24 @@
 
 package de.d3web.we.event;
 
+import de.d3web.we.kdom.KnowWEArticle;
+
 /**
  * The Article Created event.
- * 
- * The Singleton Pattern can be removed if necessary.
  * 
  * @author Sebastian Furth
  * 
  */
 public class ArticleCreatedEvent extends Event {
 
-	private static ArticleCreatedEvent instance = new ArticleCreatedEvent();
+	private final KnowWEArticle article;
 
-	private ArticleCreatedEvent() {
+	public ArticleCreatedEvent(KnowWEArticle article) {
+		this.article = article;
 	}
 
-	public static ArticleCreatedEvent getInstance() {
-		return instance;
+	public KnowWEArticle getArticle() {
+		return this.article;
 	}
 
 }

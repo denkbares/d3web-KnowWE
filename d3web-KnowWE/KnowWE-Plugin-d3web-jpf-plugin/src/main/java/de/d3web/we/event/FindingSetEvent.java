@@ -48,6 +48,7 @@ public class FindingSetEvent extends Event {
 	private final Question question;
 	private Value value;
 	private final String namespace;
+	private final String web, user;
 
 	/**
 	 * Standard Constructor which encapsulates a question and the applied value.
@@ -57,8 +58,10 @@ public class FindingSetEvent extends Event {
 	 * @param namespace defines in which session the value was set (optional!)
 	 */
 	@SuppressWarnings("unchecked")
-	public FindingSetEvent(Question question, Value value, String namespace) {
+	public FindingSetEvent(Question question, Value value, String namespace, String web, String user) {
 
+		this.web = web;
+		this.user = user;
 		// Check parameters for validity
 		if (question == null || value == null) throw new IllegalArgumentException(
 				"Paramters mustn't be null!");
@@ -108,6 +111,14 @@ public class FindingSetEvent extends Event {
 
 	public String getNamespace() {
 		return namespace;
+	}
+
+	public String getWeb() {
+		return web;
+	}
+
+	public String getUsername() {
+		return user;
 	}
 
 }

@@ -630,17 +630,20 @@ public class KnowWEIncludeManager implements EventListener {
 	}
 
 	@Override
-	public void notify(Event event, String web, String username, Section<? extends KnowWEObjectType> s) {
+	public void notify(Event event) {
 		if (event instanceof KDOMCreatedEvent) {
-			resetReusedStateOfInactiveIncludeTargets(s.getArticle().getTitle(),
-					getInactiveIncludesForArticle(s.getArticle()),
-					getActiveIncludesForArticle(s.getArticle()));
+			KDOMCreatedEvent ev = (KDOMCreatedEvent) event;
+			resetReusedStateOfInactiveIncludeTargets(ev.getArticle().getTitle(),
+					getInactiveIncludesForArticle(ev.getArticle()),
+					getActiveIncludesForArticle(ev.getArticle()));
 		}
 		else if (event instanceof ArticleCreatedEvent) {
-			unregisterIncludes(getInactiveIncludesForArticle(s.getArticle()));
+			ArticleCreatedEvent ev = (ArticleCreatedEvent) event;
+			unregisterIncludes(getInactiveIncludesForArticle(ev.getArticle()));
 		}
 		else if (event instanceof UpdatingDependenciesEvent) {
-			updateIncludesToArticle(s.getArticle());
+			UpdatingDependenciesEvent ev = (UpdatingDependenciesEvent) event;
+			updateIncludesToArticle(ev.getArticle());
 		}
 	}
 

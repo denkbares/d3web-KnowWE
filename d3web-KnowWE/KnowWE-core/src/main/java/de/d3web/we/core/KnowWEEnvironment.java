@@ -245,8 +245,7 @@ public class KnowWEEnvironment {
 		instance.initModules(wiki.getServletContext(), DEFAULT_WEB, wiki);
 
 		// firing the init event
-		EventManager.getInstance().fireEvent(InitEvent.getInstance(), DEFAULT_WEB,
-				"system init", null);
+		EventManager.getInstance().fireEvent(InitEvent.getInstance());
 
 	}
 

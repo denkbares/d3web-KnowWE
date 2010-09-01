@@ -37,7 +37,6 @@ import de.d3web.we.event.EventListener;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.FullParseEvent;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -316,8 +315,10 @@ public class KnowWEPackageManager implements EventListener {
 	}
 
 	@Override
-	public void notify(Event event, String web, String username, Section<? extends KnowWEObjectType> s) {
-		cleanForArticle(s.getArticle());
+	public void notify(Event event) {
+		if (event instanceof FullParseEvent) {
+			cleanForArticle(((FullParseEvent) event).getArticle());
+		}
 	}
 
 }

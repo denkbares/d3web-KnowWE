@@ -52,8 +52,6 @@ import de.d3web.we.d3webModule.DPSEnvironmentManager;
 import de.d3web.we.event.Event;
 import de.d3web.we.event.EventListener;
 import de.d3web.we.event.FindingSetEvent;
-import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.Section;
 import de.d3web.we.wisec.util.Criteria;
 
 public class WISECFindingSetEventListener implements EventListener {
@@ -69,8 +67,7 @@ public class WISECFindingSetEventListener implements EventListener {
 	}
 
 	@Override
-	public void notify(Event event, String web, String username,
-			Section<? extends KnowWEObjectType> s) {
+	public void notify(Event event) {
 
 		if (!(event instanceof FindingSetEvent)) return;
 
@@ -92,7 +89,8 @@ public class WISECFindingSetEventListener implements EventListener {
 						criteria);
 				TupleQueryResult result = evaluateQuery(query);
 				double accumulatedValue = computeNumValue(criteria, result, computedLists, add);
-				setCounterValue(criteria, accumulatedValue, web, username,
+				setCounterValue(criteria, accumulatedValue, findingEvent.getWeb(),
+						findingEvent.getUsername(),
 						findingEvent.getNamespace());
 				System.out.println(criteria + ": " + accumulatedValue);
 			}

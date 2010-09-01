@@ -149,8 +149,7 @@ public class SetFindingAction extends DeprecatedAbstractKnowWEAction {
 										PSMethodUserSelected.getInstance()));
 
 						EventManager.getInstance().fireEvent(
-								new FindingSetEvent(question, value, namespace),
-								web, user, null);
+								new FindingSetEvent(question, value, namespace, web, user));
 					}
 				}
 			}
