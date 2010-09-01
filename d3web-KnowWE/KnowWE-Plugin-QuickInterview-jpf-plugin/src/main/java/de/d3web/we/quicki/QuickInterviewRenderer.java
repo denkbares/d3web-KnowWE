@@ -350,7 +350,6 @@ public class QuickInterviewRenderer {
 		}
 	
 		else if (q instanceof QuestionDate) {
-			System.out.println(q.getName()
 					+ " DATE " + ((QuestionDate) q).getAllKnowledge());
 			renderDateAnswers(q, sb);
 		}
@@ -460,6 +459,13 @@ public class QuickInterviewRenderer {
 	}
 
 	// TODO: check Date input format
+	/**
+	 * Assembles the HTML representation of a date answer input
+	 * 
+	 * @created 01.09.2010
+	 * @param q the date-question
+	 * @param sb the String Buffer, the HTML is attached to
+	 */
 	private static void renderDateAnswers(Question q, StringBuffer sb) {
 
 		String value = "";
@@ -476,9 +482,12 @@ public class QuickInterviewRenderer {
 			}
 		}
 
+		if (value.equals("")) {
+			value = "yyyy-mm-dd-hh-mm-ss";
+		}
+
 		String id = q.getId();
 
-		System.out.println("date in renderer: " + value);
 		// assemble the JS call
 		String jscall = "";
 		try {
@@ -497,9 +506,10 @@ public class QuickInterviewRenderer {
 		sb.append("<input class='inputdate'  style='display: inline;' id='input_" + id
 				+ "' type='text' "
 				+ "value='" + value + "' "
-				+ "size='7' "
+				+ "size='18' "
 				+ jscall + " />");
-		sb.append("<input type='button' value='ok' class='date-ok' />");
+		sb.append("<input type='button' value='ok' class='date-ok' /> ");
+		// "<div class='dateformatdesc'>()</div>");
 
 		sb.append("<div class='answerseparator'></div>");
 		renderAnswerUnknown(q, "num", sb);

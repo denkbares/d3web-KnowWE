@@ -100,3 +100,4 @@
 #quickinterview .qquickanswers {background-image: url(../images/smartmode_co.gif); height: 20px; width: 20px; float: right;
 	margin-right: 15px; background-repeat: no-repeat; background-position: center center; background-color: transparent; }
 	
+#quickinterview .dateformatdesc{font-size: smaller; color: grey;}	
