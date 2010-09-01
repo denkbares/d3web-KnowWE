@@ -281,7 +281,7 @@ public class KnowWEPackageManager implements EventListener {
 	}
 
 	public void updatePackageReferences(KnowWEArticle article) {
-		List<String> articlesToRevise = new ArrayList<String>();
+		Set<String> articlesToRevise = new HashSet<String>();
 
 		for (HashSet<Section<? extends PackageReference>> referencesSet : packageReferencesMap.values()) {
 			for (Section<? extends PackageReference> packReference : referencesSet) {
@@ -299,6 +299,7 @@ public class KnowWEPackageManager implements EventListener {
 
 		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
 		for (String title : articlesToRevise) {
+			if (title.equals(article.getTitle())) continue;
 			KnowWEArticle newArt = KnowWEArticle.createArticle(
 					env.getArticle(article.getWeb(), title).getSection().getOriginalText(), title,
 					env.getRootType(), web, false);

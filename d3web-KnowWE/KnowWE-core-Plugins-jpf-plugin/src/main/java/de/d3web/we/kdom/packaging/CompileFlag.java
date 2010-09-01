@@ -167,7 +167,8 @@ public class CompileFlag extends DefaultMarkupType {
 			String headerErrorsCount = errorsCount > 0 ? "Errors: " + errorsCount : "";
 			String headerWarningsCount = warningsCount > 0 ? "Warnings: " + warningsCount : "";
 			String headerSuffix = errorsCount > 0 || warningsCount > 0 ? " (" + headerErrorsCount
-					+ (errorsCount > 0 ? ", " : "") + headerWarningsCount + ")" : "";
+					+ (errorsCount > 0 && warningsCount > 0 ? ", " : "") + headerWarningsCount
+					+ ")" : "";
 
 			string.append("%%collapsebox-closed \n");
 			string.append("! " + "Compiled package: " + packageName + headerSuffix + " \n");
