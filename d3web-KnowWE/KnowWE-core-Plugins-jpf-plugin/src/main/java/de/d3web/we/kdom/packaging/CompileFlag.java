@@ -166,12 +166,19 @@ public class CompileFlag extends DefaultMarkupType {
 			int warningsCount = messagesWarnings.size() + kdomWarnings.size();
 			String headerErrorsCount = errorsCount > 0 ? "Errors: " + errorsCount : "";
 			String headerWarningsCount = warningsCount > 0 ? "Warnings: " + warningsCount : "";
-			String headerSuffix = errorsCount > 0 || warningsCount > 0 ? " (" + headerErrorsCount
-					+ (errorsCount > 0 && warningsCount > 0 ? ", " : "") + headerWarningsCount
-					+ ")" : "";
+
+			String errorsAndWarnings = errorsCount > 0 || warningsCount > 0 ? headerErrorsCount
+					+ (errorsCount > 0 && warningsCount > 0 ? ", " : "") + headerWarningsCount : "";
+
+			String sectionsCount = "Sections: " + packageDefinitions.size();
+
+			String headerSuffix = packageName.equals(article.getTitle()) ? "" : " ("
+					+ sectionsCount
+					+ (errorsAndWarnings.length() > 0 ? ", " : "") +
+					errorsAndWarnings + ")";
 
 			string.append("%%collapsebox-closed \n");
-			string.append("! " + "Compiled package: " + packageName + headerSuffix + " \n");
+			string.append("! " + "Compiled package: " + packageName + headerSuffix + "\n");
 
 			if (errorsCount > 0) {
 				string.append(KnowWEUtils.maskHTML("<strong>Errors:</strong><p/>\n"));
