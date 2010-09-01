@@ -21,11 +21,12 @@
 package de.d3web.we.core;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletResponse;
 
 import de.d3web.we.action.Action;
 import de.d3web.we.action.ActionContext;
@@ -120,6 +121,7 @@ public class KnowWEFacade {
 		Action actionInstance = context.getAction();
 
 		if (actionInstance == null) {
+			context.sendError(HttpServletResponse.SC_NOT_FOUND, "Unable to load action: \"" + action + "\"");
 			context.getWriter().write("Unable to load action: \"" + action + "\"");
 			Logger.getLogger(this.getClass().getName()).warning(
 					"Unable to load action: \"" + action + "\"");

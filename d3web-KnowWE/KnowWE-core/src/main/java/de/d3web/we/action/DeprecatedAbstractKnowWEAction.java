@@ -43,7 +43,10 @@ public abstract class DeprecatedAbstractKnowWEAction extends AbstractAction {
 	@Override
 	public void execute(ActionContext context) throws IOException {
 		String result = perform(context.getKnowWEParameterMap());
-		if (result != null && context.getWriter() != null) context.getWriter().write(result);
+		if (result != null && context.getWriter() != null) {
+	        context.setContentType("text/html; charset=UTF-8");
+			context.getWriter().write(result);
+		}
 	}
 
 	public abstract String perform(KnowWEParameterMap parameterMap);
