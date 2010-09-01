@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 
 import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
@@ -64,7 +65,7 @@ public class QuestionnaireValuesViewAction extends AbstractAction {
 							renderQuestion((Question) no, session, result);
 						}
 					}
-			        context.setContentType("text/html; charset=UTF-8");
+					context.setContentType("text/html; charset=UTF-8");
 					context.getWriter().write(result.toString());
 					return;
 				}
@@ -80,8 +81,9 @@ public class QuestionnaireValuesViewAction extends AbstractAction {
 
 		Value v = null;
 
-		if (session.getBlackboard().getAnsweredQuestions().contains(question)) v = session.getBlackboard().getValue(
-				question);
+		if (session.getBlackboard().getAnsweredQuestions().contains(question)) {
+			v = session.getBlackboard().getValue(question);
+		}
 
 		result.append("<p>");
 		result.append(question.getName());
@@ -92,12 +94,14 @@ public class QuestionnaireValuesViewAction extends AbstractAction {
 		}
 		else if (v instanceof MultipleChoiceValue) {
 			result.append(": ");
-			List<ChoiceValue> cvs = (List<ChoiceValue>) ((MultipleChoiceValue) v.getValue()).getValue();
-			for (ChoiceValue cv : cvs) {
-				result.append(cv);
-				result.append(", ");
+			List<Choice> choices = ((MultipleChoiceValue) v).asChoiceList();
+			if (choices.size() > 0) {
+				for (Choice choice : choices) {
+					result.append(choice);
+					result.append(", ");
+				}
+				result.delete(result.length() - 2, result.length());
 			}
-			result.delete(result.length() - 2, result.length());
 		}
 		else if (v instanceof NumValue) {
 			result.append(": ");
