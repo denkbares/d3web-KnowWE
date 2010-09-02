@@ -285,6 +285,17 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 
 		// Render Legend (if printinfo = true)
 		if (printinfo) {
+
+			// Tooltip: available criterias
+			result.append("<p title=\"Available criterias: ");
+			for (Criteria c : Criteria.values()) {
+				result.append(c.toString());
+				result.append(", ");
+			}
+			result.delete(result.length() - 2, result.length());
+			result.append("\">");
+
+			// used criterias
 			result.append("%%sub * (");
 			for (Criteria c : underlyingData.keySet()) {
 				result.append(c.name());
@@ -294,6 +305,7 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 			}
 			result.delete(result.length() - 2, result.length());
 			result.append(")/%");
+			result.append("</p>");
 		}
 
 		return result.toString();
