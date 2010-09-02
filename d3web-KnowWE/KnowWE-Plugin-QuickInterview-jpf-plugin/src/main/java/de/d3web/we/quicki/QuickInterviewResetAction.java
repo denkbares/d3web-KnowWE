@@ -60,6 +60,7 @@ public class QuickInterviewResetAction extends AbstractAction {
 
 		Broker broker = D3webModule.getBroker(parameterMap);
 		broker.clearDPSSession();
-		return QuickInterviewAction.callQuickInterviewRenderer(topic, user, request, web);
+		return QuickInterviewAction.callQuickInterviewRenderer(topic, user, request, web,
+				parameterMap.getWikiContext());
 	}
 }

@@ -36,6 +36,7 @@ import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class QuickInterviewAction extends AbstractAction {
 
@@ -51,7 +52,7 @@ public class QuickInterviewAction extends AbstractAction {
 		HttpServletRequest request = map.getRequest();
 		String web = map.getWeb();
 
-		String result = callQuickInterviewRenderer(topic, user, request, web);
+		String result = callQuickInterviewRenderer(topic, user, request, web, map.getWikiContext());
 		if (result != null && context.getWriter() != null) {
 			context.getWriter().write(result);
 		}
@@ -69,7 +70,8 @@ public class QuickInterviewAction extends AbstractAction {
 	 * @param web
 	 * @return
 	 */
-	public static String callQuickInterviewRenderer(String topic, String user, HttpServletRequest request, String web) {
+	public static String callQuickInterviewRenderer(String topic, String user, HttpServletRequest request, String web,
+			KnowWEUserContext usercontext) {
 
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(request);
 
@@ -90,7 +92,7 @@ public class QuickInterviewAction extends AbstractAction {
 		if (serviceSession instanceof D3webKnowledgeServiceSession) {
 
 			session = ((D3webKnowledgeServiceSession) serviceSession).getSession();
-			return QuickInterviewRenderer.renderInterview(session, web);
+			return QuickInterviewRenderer.renderInterview(session, web, usercontext);
 		}
 
 		if (serviceSession == null) {
@@ -99,7 +101,7 @@ public class QuickInterviewAction extends AbstractAction {
 			serviceSession = broker.getSession().getServiceSession(kbid);
 			if (serviceSession instanceof D3webKnowledgeServiceSession) {
 				session = ((D3webKnowledgeServiceSession) serviceSession).getSession();
-				return QuickInterviewRenderer.renderInterview(session, web);
+				return QuickInterviewRenderer.renderInterview(session, web, usercontext);
 			}
 		}
 

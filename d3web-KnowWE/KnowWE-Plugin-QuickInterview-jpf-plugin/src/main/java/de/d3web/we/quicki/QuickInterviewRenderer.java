@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import de.d3web.core.knowledge.Indication;
@@ -49,6 +50,8 @@ import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
+import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * Render the quick interview -aka QuickI- in KnowWE --- HTML / JS / CSS based
@@ -68,6 +71,7 @@ public class QuickInterviewRenderer {
 
 	private static List<? extends QASet> inits = null;
 
+	private static ResourceBundle rb;
 
 	/**
 	 * Assembles and returns the HTML representation of the interview.
@@ -77,7 +81,7 @@ public class QuickInterviewRenderer {
 	 * @param web the web context
 	 * @return the String representation of the interview
 	 */
-	public static String renderInterview(Session c, String webb) {
+	public static String renderInterview(Session c, String webb, KnowWEUserContext user) {
 
 
 		// Assembles the Interview
@@ -86,10 +90,12 @@ public class QuickInterviewRenderer {
 		// insert specific CSS
 		// buffi.append("<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/quicki.css' />");
 
+
 		kb = c.getKnowledgeBase();
 		session = c;
 		web = webb;
 		namespace = kb.getId();
+		rb = D3webModule.getKwikiBundle_d3web(user);
 
 		// Map all processed TerminologyObjects already in interview table,
 		// avoids endless recursion in cyclic hierarchies
@@ -126,7 +132,10 @@ public class QuickInterviewRenderer {
 
 		html.append("<h3>");
 		html.append("Quick Interview");
-		html.append("<div id='quickireset' class='reset' " + relAt + "></div>");
+		html.append("<div id='quickireset' class='reset pointer' title='"
+				+ rb.getString("KnowWE.quicki.reset") + "'"
+				+ relAt
+				+ "></div>");
 		// html.append("<div class=''></div>");
 		// html.append("<div class='qanswerunknown'></div>");
 		html.append("</h3>");
@@ -202,8 +211,8 @@ public class QuickInterviewRenderer {
 		int margin = 10 + depth * 10; // calculate identation
 
 		String clazz = show // decide class for rendering expand-icon
-				? "class='questionnaire pointDown'"
-				: "class='questionnaire pointRight'";
+				? "class='questionnaire pointDown pointer'"
+				: "class='questionnaire pointRight pointer'";
 
 		// if init questionnaire: all contained elements are to be displayed
 		String display = show ? "display: block;" : "display: none;";
@@ -296,8 +305,8 @@ public class QuickInterviewRenderer {
 		int margin = 10 + depth * 10; // calculate identation
 
 		String clazz = show // decide class for rendering expand-icon
-				? "class='questionnaire pointDown'"
-				: "class='questionnaire pointRight'";
+				? "class='questionnaire pointDown pointer'"
+				: "class='questionnaire pointRight pointer'";
 
 		buffi.append("<div id='" + container.getId() + "' " +
 				clazz + " style='margin-left: " + margin + "px; display: block'; >");
@@ -332,7 +341,7 @@ public class QuickInterviewRenderer {
 		// then call method for rendering a question's answers in another div
 		sb.append("<div id='" + q.getId() + "' " +
 				"parent='" + parent.getId() + "' " +
-				"class='question' " +
+				"class='question pointer' " +
 				"style='width: " + w + "px; display: inline-block;' >"
 				+ q.getName() + "</div>");
 
@@ -454,7 +463,7 @@ public class QuickInterviewRenderer {
 			}
 
 			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ",
-					cssclass, jscall, null, spanid));
+					cssclass, jscall, null, spanid, ""));
 
 			// System.out.println(getEnclosingTagOnClick("div", "" +
 			// choice.getName() + " ",
@@ -608,7 +617,7 @@ public class QuickInterviewRenderer {
 			}
 			String spanid = q.getId() + "_" + choice.getId();
 			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ", cssclass,
-					jscall, null, spanid));
+					jscall, null, spanid, ""));
 			sb.append("<div class='answerseparator'></div>");
 		}
 
@@ -642,9 +651,10 @@ public class QuickInterviewRenderer {
 				+ "type:'" + type + "', "
 				+ "qid:'" + q.getId() + "'"
 				+ "}\" ";
-		String cssclass = "answerunknown";
+		String cssclass = "answerunknown pointer";
 		String spanid = q.getId() + "_" + Unknown.getInstance().getId();
-		sb.append(getEnclosingTagOnClick("div", "", cssclass, jscall, null, spanid));
+		String title = "title=' " + rb.getString("KnowWE.quicki.unknown") + " '";
+		sb.append(getEnclosingTagOnClick("div", "", cssclass, jscall, null, spanid, title));
 	}
 
 	/**
@@ -664,7 +674,7 @@ public class QuickInterviewRenderer {
 	 *         class="answercell" id="span_Q2_MaU" > MaU </span>
 	 */
 	private static String getEnclosingTagOnClick(String tag, String text,
-			String cssclass, String onclick, String onmouseover, String id) {
+			String cssclass, String onclick, String onmouseover, String id, String title) {
 		StringBuffer sub = new StringBuffer();
 		sub.append("<" + tag);
 		if (id != null && id.length() > 0) {
@@ -678,6 +688,9 @@ public class QuickInterviewRenderer {
 		}
 		if (onmouseover != null && onmouseover.length() > 0) {
 			sub.append(" " + onmouseover + " ");
+		}
+		if (title != null && title.length() > 0) {
+			sub.append(" " + title + " ");
 		}
 		sub.append(">");
 		sub.append(text);

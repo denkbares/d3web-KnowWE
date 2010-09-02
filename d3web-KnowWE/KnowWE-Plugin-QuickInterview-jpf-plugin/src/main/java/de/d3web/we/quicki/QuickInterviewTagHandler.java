@@ -57,7 +57,7 @@ public class QuickInterviewTagHandler extends AbstractTagHandler {
 	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 
 		String iv = QuickInterviewAction.callQuickInterviewRenderer(topic, user.getUsername(),
-				user.getHttpRequest(), web);
+				user.getHttpRequest(), web, user);
 		if (iv == null) return null;
 
 		return iv;
