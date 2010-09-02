@@ -78,36 +78,88 @@
 %%collapsebox-closed
 ! [My Favorites|{$username}Favorites]
 [{InsertPage page='{$username}Favorites' }]
-%% }]
+%%}]
   </wiki:Translate>
   </wiki:UserCheck>
 
   <wiki:Permission permission="view">
 
-  <%-- LeftMenu is automatically generated from a Wiki page called "LeftMenu" --%>
-  <div class="leftmenu">
-    
-	<wiki:InsertPage page="LeftMenu" />
-    <wiki:NoSuchPage page="LeftMenu">
-      <div class="error">
-        <wiki:EditLink page="LeftMenu">
-          <fmt:message key="fav.nomenu"><fmt:param>LeftMenu</fmt:param></fmt:message>
-        </wiki:EditLink>
-      </div>
-    </wiki:NoSuchPage>
-  </div>
-  
-  <div class="leftmenufooter">
-    <wiki:InsertPage page="LeftMenuFooter" />
-    <wiki:NoSuchPage page="LeftMenuFooter">
-      <div class="error">
-        <wiki:EditLink page="LeftMenuFooter">
-          <fmt:message key="fav.nomenu"><fmt:param>LeftMenuFooter</fmt:param></fmt:message>
-        </wiki:EditLink>
-      </div>
-    </wiki:NoSuchPage>
-  </div>
-
+	  <%-- LeftMenu is automatically generated from a Wiki page called "LeftMenu" --%>
+	<wiki:UserCheck status="authenticated">	
+		<div class="leftmenu">
+			
+			<wiki:InsertPage page="LeftMenu" />
+			<wiki:NoSuchPage page="LeftMenu">
+			  <div class="error">
+				<wiki:EditLink page="LeftMenu">
+				  <fmt:message key="fav.nomenu"><fmt:param>LeftMenu</fmt:param></fmt:message>
+				</wiki:EditLink>
+			  </div>
+			</wiki:NoSuchPage>
+		  </div>
+		  
+		  <div class="leftmenufooter">
+			<wiki:InsertPage page="LeftMenuFooter" />
+			<wiki:NoSuchPage page="LeftMenuFooter">
+			  <div class="error">
+				<wiki:EditLink page="LeftMenuFooter">
+				  <fmt:message key="fav.nomenu"><fmt:param>LeftMenuFooter</fmt:param></fmt:message>
+				</wiki:EditLink>
+			  </div>
+			</wiki:NoSuchPage>
+		  </div>
+	</wiki:UserCheck>
+	
+	<wiki:UserCheck status="anonymous">	
+		<div class="leftmenu">
+			
+			<wiki:InsertPage page="LeftMenu2" />
+			<wiki:NoSuchPage page="LeftMenu2">
+			  <div class="error">
+				<wiki:EditLink page="LeftMenu2">
+				  <fmt:message key="fav.nomenu"><fmt:param>LeftMenu2</fmt:param></fmt:message>
+				</wiki:EditLink>
+			  </div>
+			</wiki:NoSuchPage>
+		  </div>
+		  
+		  <div class="leftmenufooter">
+			<wiki:InsertPage page="LeftMenuFooter" />
+			<wiki:NoSuchPage page="LeftMenuFooter">
+			  <div class="error">
+				<wiki:EditLink page="LeftMenuFooter">
+				  <fmt:message key="fav.nomenu"><fmt:param>LeftMenuFooter</fmt:param></fmt:message>
+				</wiki:EditLink>
+			  </div>
+			</wiki:NoSuchPage>
+		  </div>
+	</wiki:UserCheck>
+	
+	<wiki:UserCheck status="asserted">	
+		<div class="leftmenu">
+			
+			<wiki:InsertPage page="LeftMenu2" />
+			<wiki:NoSuchPage page="LeftMenu2">
+			  <div class="error">
+				<wiki:EditLink page="LeftMenu2">
+				  <fmt:message key="fav.nomenu"><fmt:param>LeftMenu2</fmt:param></fmt:message>
+				</wiki:EditLink>
+			  </div>
+			</wiki:NoSuchPage>
+		  </div>
+		  
+		  <div class="leftmenufooter">
+			<wiki:InsertPage page="LeftMenuFooter" />
+			<wiki:NoSuchPage page="LeftMenuFooter">
+			  <div class="error">
+				<wiki:EditLink page="LeftMenuFooter">
+				  <fmt:message key="fav.nomenu"><fmt:param>LeftMenuFooter</fmt:param></fmt:message>
+				</wiki:EditLink>
+			  </div>
+			</wiki:NoSuchPage>
+		  </div>
+	</wiki:UserCheck>
+	
   </wiki:Permission>
 
   </wiki:CheckRequestContext>

@@ -1,7 +1,7 @@
 #wikibody{margin:1em 2em;padding:.25em;}
 #header,#footer{padding:0 0 0 20%;}
 
-#footer .applicationlogo,#footer .companylogo,#footer .wikiversion,#footer .rssfeed,#header .companylogo{display:inline;}
+#footer .applicationlogo,#footer .companylogo,#header .companylogo{display:inline;}
 #header .userbox{float:right;}
 #header .pagename{float:left;}
 #header .searchbox{clear:right;float:right;}
@@ -206,7 +206,7 @@ th.changenote,td.changenote{width:30%;overflow:hidden;}
 .pageactions{line-height:1.5;}
 .pageactions ul{list-style:none;margin:0;padding:0;}
 .pageactions li{display:block;float:left;}
-.pageactions li ul{position:absolute;background:white;border:2px solid #ddd;left:0;z-index:10;}
+.pageactions li ul{position:absolute;background:white;border:2px solid #ddd;left:0;z-index:10;} 
 .pageactions li ul li ul{position:static;left:auto;}
 .pageactions li ul li{display:block;white-space:nowrap;float:none;}
 .pageactions li ul li.separator{border-top:2px solid #ddd;}
@@ -418,11 +418,11 @@ ul.wisec_top a, ul.wisec_top img{
 	position:relative;
 }
 a{color:#0d70e4;}
-a:hover,a:focus,a:active {background-color: #d4e074;text-decoration:none;}
+a:hover,a:focus,a:active {background-color: #d4e074}
 
 #header .applicationlogo {
 	position:absolute;
-	top:4em;
+	top:1em;
 	left:3em; 
 	right:auto;
 	width:18%;
@@ -433,6 +433,32 @@ img.attlink {
 .applicationlogo a:hover {
 	background-position:0 0;
 }
-a.wikipage{color:#0d70e4;text-decoration:none;}
-a:link{text-decoration:none;}
-footer{margin-top:2ex;}
+.wikipage{color:#0d70e4;font-family:Arial,Helvetica,sans-serif;}
+
+#footer{margin-top:2ex;margin-right:2ex;}
+.rssfeed{margin-top:2ex;margin-right:2ex}
+
+.tabs{clear:both;padding:.5em;border:1px solid #028338;margin-bottom:.5em;}
+.tabmenu {font-weight:normal}
+.tabmenu a{float:left;margin:0 0 -1px -1px;padding:.25em .5em;border:1px solid #028338;border-bottom-style:hidden;color:#0d70e4;background:#ffffff;text-decoration:none;cursor:pointer;line-height:normal;}
+.tabmenu a:hover{background:#d4e074;}
+
+h1{font-family:Arial,Helvetica,sans-serif;}
+body{font-family:Arial,Helvetica,sans-serif;}
+
+img.inline {position:absolute;z-index:1;left:1055px}
+#morebutton a:hover,a.action:hover,#sectiontoc a:hover .userbox a.action:hover,a.action.quick2bottom:hover,a.action.quick2top:hover{background-color:#d4e074!important;}
+a.action.edit,a.action.more{margin-left:4px;border-bottom:none;background-color:white;border:1px solid #028338;border-bottom-style:hidden;font-family:Arial,Helvetica,sans-serif;color:#0d70e4}
+a.action.dialog {
+    background:white none repeat scroll 0%;
+	font-family:Arial,Helvetica,sans-serif;
+	color:#0d70e4;
+    border:1px solid #028338;
+	border-bottom-style:hidden;
+    line-height:normal;
+    padding:0.25em 0.5em;
+    text-decoration:none;
+    white-space:nowrap;
+}
+a.createpage{color:#0d70e4;text-decoration:none;border-bottom:1px dashed #0d70e4;font-family:Arial,Helvetica,sans-serif;}
+a.external{color:#0d70e4;font-family:Arial,Helvetica,sans-serif;}

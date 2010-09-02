@@ -98,8 +98,8 @@
          <span class="formhelp"><fmt:message key="prefs.email.description"/></span>
        </td>
      </tr>
-
-     <wiki:UserProfile property="exists">
+	
+	 <wiki:UserProfile property="exists">
      <tr class="additinfo">
        <td><label><fmt:message key="prefs.roles"/></label></td>
        <td><div class="formvalue"><wiki:UserProfile property="roles" /></div></td>

@@ -30,7 +30,17 @@
          <fmt:param><wiki:Author /></fmt:param>
       </fmt:message>
     </wiki:CheckVersion>
-
+   
+   <wiki:Permission permission="edit">
+	<wiki:UserCheck exists="true">
+		<wiki:EditLink>Edit this page</wiki:EditLink>
+	</UserCheck>
+	<wiki:UserCheck exists="false">
+		<wiki:LinkTo page="UserPreferences">Set your User Preferences to edit this page</wiki:LinkTo>
+	</UserCheck>
+	
+   </wiki:Permission>	
+   
    <wiki:RSSImageLink mode="wiki" />
 
   </wiki:PageExists>

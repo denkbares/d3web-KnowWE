@@ -9,8 +9,17 @@
   String frontpage = c.getEngine().getFrontPage(); 
 %> 
 <div id="footer">
+	
+	  
   <div class="rssfeed">
-    <wiki:RSSImageLink title="Aggregate the RSS feed" />
+	<wiki:CheckVersion mode="latest">
+       <fmt:message key="info.lastmodified">
+          <fmt:param><wiki:PageVersion /></fmt:param>
+          <fmt:param><wiki:DiffLink version="latest" newVersion="previous"><wiki:PageDate format='${prefs["DateFormat"]}'/></wiki:DiffLink></fmt:param>
+          <fmt:param><wiki:Author /></fmt:param>
+       </fmt:message>
+    </wiki:CheckVersion>
+    <wiki:RSSImageLink title="Aggregate the RSS feed"  />
   </div>
 
 </div>

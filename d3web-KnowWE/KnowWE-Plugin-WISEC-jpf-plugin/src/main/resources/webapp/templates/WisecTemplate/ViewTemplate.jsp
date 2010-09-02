@@ -33,7 +33,8 @@
 	    
 			<div id="page">
 				<wiki:Include page="PageActionsTop.jsp"/>
-			    <wiki:Content/>
+			   	<wiki:Include page="PageActionsBottom.jsp"/>
+				<wiki:Content/>
 			</div>
 		
 		<wiki:Include page="Favorites.jsp"/>

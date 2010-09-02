@@ -9,10 +9,19 @@
 %>
 <div id="header">
 	<div class="applicationlogo" > 
-		
+		<img src="templates/WisecTemplate/images/uba.png">
 	</div>
+	
 	<%-- start change --%>
 	<ul class="wisec_top">
+		<li>
+		<wiki:UserCheck status="authenticated">
+			<a href="<wiki:Link jsp='UserPreferences.jsp' format='url' />" 
+				class="action prefs"
+				title="Manage your preferences"><fmt:message key="actions.prefs"/></a>
+		</wiki:UserCheck>
+		<li>|</li>
+		</li>
 		<li>
 			<wiki:UserCheck status="notAuthenticated">
 				<wiki:CheckRequestContext context='!login'>
@@ -31,9 +40,11 @@
 			</wiki:UserCheck>
 		</li>
 		<li>|</li>
-		<li><a href="http://reach-info.de/kontakt.htm">Contact</a></li>
+		
+		
+		<li><a href="http://localhost:8080/KnowWE/Wiki.jsp?page=Contact">Contact</a></li>
 		<li>|</li>
-		<li><a href="http://reach-info.de/impressum.htm">Legal notice</a></li>
+		<li><a href="http://localhost:8080/KnowWE/Wiki.jsp?page=LegalNotice">Legal notice</a></li>
 		<li>|</li>
 		<li><a href="<wiki:LinkTo page='<%=frontpage%>' format='url' />"
 			title="<fmt:message key='actions.home.title' ><fmt:param><%=frontpage%></fmt:param></fmt:message> "><fmt:message key='actions.home' /></a>
