@@ -39,7 +39,6 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionID;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.kdom.xml.XMLContent;
 import de.knowwe.plugin.Plugins;
@@ -197,7 +196,7 @@ public class KnowWEIncludeManager implements EventListener {
 
 		String typeName = address.isContentSectionTarget() ? address.getTargetSection().substring(
 				0,
-				address.getTargetSection().indexOf(SectionID.CONTENT_SUFFIX))
+						address.getTargetSection().indexOf(XMLContent.CONTENT_SUFFIX))
 				: address.getTargetSection();
 
 		if (address.getTargetSection() != null) {

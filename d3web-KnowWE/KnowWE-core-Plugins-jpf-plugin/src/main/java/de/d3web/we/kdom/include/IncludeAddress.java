@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.include;
 
 import de.d3web.we.kdom.SectionID;
+import de.d3web.we.kdom.xml.XMLContent;
 
 /**
  * @author astriffler
@@ -32,7 +33,7 @@ public class IncludeAddress {
 
 	private String targetSection;
 
-	private String originalAddress;
+	private final String originalAddress;
 
 	private boolean isContent;
 
@@ -47,11 +48,12 @@ public class IncludeAddress {
 				if (this.isWildcard) {
 					this.targetSection = src.substring(src.lastIndexOf(SectionID.SEPARATOR) + 1,
 							src.length() - 1).trim();
-					this.isContent = src.matches(".*?" + SectionID.CONTENT_SUFFIX + " *\\*");
+					this.isContent = src.matches(".*?" + XMLContent.CONTENT_SUFFIX
+							+ " *\\*");
 				}
 				else {
 					this.targetSection = src.substring(src.lastIndexOf(SectionID.SEPARATOR) + 1);
-					this.isContent = src.endsWith(SectionID.CONTENT_SUFFIX);
+					this.isContent = src.endsWith(XMLContent.CONTENT_SUFFIX);
 				}
 
 			}
