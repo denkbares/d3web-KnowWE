@@ -21,8 +21,9 @@ package de.d3web.we.wisec.util;
 
 public enum Criteria {
 
-	Persistence, Bioakumulation_Potential, Aqua_Tox, CMR, EDC, Multiple_Tox, LRT, Climatic_Change,
-	Risk_related, Political, Exposure, Market_Volume, SVHC_regulated, Regulated, PBT, vPvB,
-	drinking_water, surface_water, sea, groundwater, ecological_concerns, Wide_d_use
+	CMR, Persistence, Bioakumulation_Potential, Aqua_Tox, EDC, Further_Tox, Climatic_Change,
+	LRT, Water_solubility, Adsorption, Vapour_pressure, Air, Soil, Sediment, Surface_water,
+	Sea, Groundwater, Drinking_water, Biota, Market_Volume, Wide_d_use, Political_concern,
+	Need_for_regulation
 
 }
