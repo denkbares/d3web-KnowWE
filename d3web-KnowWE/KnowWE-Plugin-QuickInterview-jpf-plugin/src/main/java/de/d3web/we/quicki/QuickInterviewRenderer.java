@@ -126,8 +126,8 @@ public class QuickInterviewRenderer {
 
 		html.append("<h3>");
 		html.append("Quick Interview");
-		html.append("<div class='quickireset' " + relAt + "></div>");
-		html.append("<div class='qquickanswers'></div>");
+		html.append("<div id='quickireset' class='reset' " + relAt + "></div>");
+		// html.append("<div class=''></div>");
 		// html.append("<div class='qanswerunknown'></div>");
 		html.append("</h3>");
 	}

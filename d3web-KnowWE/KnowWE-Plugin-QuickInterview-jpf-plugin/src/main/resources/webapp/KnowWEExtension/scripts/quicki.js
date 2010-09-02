@@ -65,6 +65,7 @@ KNOWWE.plugin.quicki = function(){
 KNOWWE.plugin.quicki = function(){
     
 	var mcanswervals = '';
+	var quickiruns = false;
 	
 	 return {
         /**
@@ -126,9 +127,8 @@ KNOWWE.plugin.quicki = function(){
         		_KE.add('click', element, KNOWWE.plugin.quicki.dateAnswerClicked);
             });  
         	
-        	_KS('.quickireset').each(function( element ){
-                _KE.add('click', element, KNOWWE.plugin.quicki.quickIReset);
-            });  
+            _KE.add('click', _KS('#quickireset'), KNOWWE.plugin.quicki.quickIReset);
+          
         	 
         	 // TODO
         	 _KS('.qquickanswers').each(function( element ){
@@ -136,9 +136,43 @@ KNOWWE.plugin.quicki = function(){
              });  
         	 
         }, 
+        // TODO
+        checkRuns: function(){
+        	var runElement = _KS('#quickireset');
+        	if(quickiruns==false){
+        		runElement.className='.norun';
+        		quickiruns=true;
+        	} else {
+        		runElement.className='.reset';
+        	}
+        },
+        /**
+         * Function: toggleAnswerMC
+         * 		toggles the highlighting of MC answers
+         * 
+         * Parameters:
+         * 		element - the clicked mc answer element
+         */
+        toggleAnswerMC: function( element ){
+        	if(element.className=='answerMC'){
+        		element.className='answerMCClicked';
+        	} else {
+        		element.className='answerMC';
+        	}
+        },
+        /**
+         * Function: answerMCCollect
+         * 		collects given mc answer vals into a variable for sending them later
+         * 		as ONE MultipleChoiceValue
+         * 
+         * Parameters:
+         * 		event - the event fired by the mc answer val that was clicked
+         */
         answerMCCollect : function( event ) {
+        	//KNOWWE.plugin.quicki.checkRuns();
             var el = _KE.target(event); 	// get the clicked element
             _KE.cancel( event );
+            KNOWWE.plugin.quicki.toggleAnswerMC(el);
             
             var rel = eval("(" + el.getAttribute('rel') + ")");
             if( !rel ) return;
@@ -147,14 +181,19 @@ KNOWWE.plugin.quicki = function(){
             mcanswervals += oid;
             mcanswervals += "#####"
         },
+        /**
+         * Function: answerMCCollectSend
+         * 		sends the mcvalues that were collected into a variable at one glance
+         * 
+         * Parameters:	
+         * 		event - the event fired by the mcval send-confirm button
+         */
         answerMCCollectSend : function( event ) {
         	 var el = _KE.target(event); 	// get the clicked element
              _KE.cancel( event );
             
         	var rel = eval("(" + el.getAttribute('rel') + ")");
-        	alert(rel);
         	mcvals = mcanswervals.substring(0, mcanswervals.length-5);
-        	alert(mcvals);
         	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
                 	{ action : 'SetSingleFindingAction', ValueID: mcvals});
         	
@@ -169,6 +208,7 @@ KNOWWE.plugin.quicki = function(){
          *     event - The user click event on an answer.
          */
         answerClicked : function( event ) {
+        	//KNOWWE.plugin.quicki.checkRuns();
             var el = _KE.target(event); 	// get the clicked element
             if(el.className.toLowerCase() == "answerunknown") return;
             if(el.className.toLowerCase() == "answermc") return;
@@ -204,6 +244,7 @@ KNOWWE.plugin.quicki = function(){
          *     event - The user click event on an answer.
          */
         answerUnknownClicked : function( event ) {
+        	//KNOWWE.plugin.quicki.checkRuns();
             var el = _KE.target(event); 	// get the clicked element
            
             var rel = eval("(" + el.getAttribute('rel') + ")");
@@ -237,6 +278,7 @@ KNOWWE.plugin.quicki = function(){
          * 		event - the event firing the action
          */
         numAnswerClicked : function (event) {
+        	//KNOWWE.plugin.quicki.checkRuns();
         	event = new Event( event ).stopPropagation();
             var bttn = (_KE.target( event ).className == 'num-ok');            
             var key = (event.code == 13);
@@ -271,6 +313,7 @@ KNOWWE.plugin.quicki = function(){
          * 		event - the event firing the action
          */
         dateAnswerClicked : function (event) {
+        	//KNOWWE.plugin.quicki.checkRuns();
         	event = new Event( event ).stopPropagation();
             var bttn = (_KE.target( event ).className == 'date-ok');            
             var key = (event.code == 13);
@@ -385,12 +428,6 @@ KNOWWE.plugin.quicki = function(){
     			}
             });
         }, 
-        // TODO
-        toggleIndicationHighlighting : function ( element ) {
-        	if(element.className=='question indicated'){
-        		element.className = 'question';
-        	}
-        },
         /**
          * Function: updateQuestionnaireVisibility 
          * Toggles the visibility of questionnaire-contents on click:
@@ -466,6 +503,7 @@ KNOWWE.plugin.quicki = function(){
         				 action : 'insert',
                          ids : [ id ],					// to re-insert a freshly created interview
                          fn : function(){
+                        	 KNOWWE.plugin.quicki.resetRun();
                     		 KNOWWE.plugin.quicki.initAction();					// click functionality
                     		 KNOWWE.helper.observer.notify('update');
                     		 KNOWWE.plugin.solutionpanel.clearSolutionstate(); 	// clear solutionpanel
@@ -476,6 +514,10 @@ KNOWWE.plugin.quicki = function(){
         	
             new _KA( options ).send();
         },
+        resetRun: function(){
+        	quickiruns = false;
+        },
+        // TODO
         enableQAnswers : function ( event ) {
         	//TODO switch between quick answering and non q-a
         	alert("toggle quick answering");

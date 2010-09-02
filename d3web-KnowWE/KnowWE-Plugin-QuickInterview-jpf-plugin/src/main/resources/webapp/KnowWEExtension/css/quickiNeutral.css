@@ -62,11 +62,11 @@
 /* answer styling */
 #quickinterview .answer { float: left; background-color: white;; padding: 0 5px 0 5px; }
 
-/* answer mc styling */
-#quickinterview .answerMC { float: left; background-color: white;; padding: 0 5px 0 5px; }
-
 /* answer active syling */
 #quickinterview .answerClicked { float: left; background-color: white;; border: 1px  solid orange;  padding: 0 5px 0 5px; }
+
+/* answer mc styling */
+#quickinterview .answerMC { float: left; background-color: white;; padding: 0 5px 0 5px; }
 
 #quickinterview .answerMCClicked { float: left; background-color: white;; border: 1px solid orange;  padding: 0 5px 0 5px; }
 
@@ -100,9 +100,12 @@
 	margin-right: 10px; padding: 2px; }
 
 /* the reset button in the interview header */
-#quickinterview .quickireset {background-image: url(../images/update.gif); height: 20px; width: 20px; float: right; margin-right: 30px;
+#quickinterview .norun {background-image: url(../images/progress_stop_pale.gif); height: 20px; width: 20px; float: right; margin-right: 30px;
 	background-repeat: no-repeat; background-position: center center; background-color: transparent;  }
-
+	
+#quickinterview .reset {background-image: url(../images/progress_stop.gif); height: 20px; width: 20px; float: right; margin-right: 30px;
+	background-repeat: no-repeat; background-position: center center; background-color: transparent;  }
+	
 /* the enable-quick answers button in the interview header */ 
 #quickinterview .qquickanswers {background-image: url(../images/smartmode_co.gif); height: 20px; width: 20px; float: right;
 	margin-right: 15px; background-repeat: no-repeat; background-position: center center; background-color: transparent; }
