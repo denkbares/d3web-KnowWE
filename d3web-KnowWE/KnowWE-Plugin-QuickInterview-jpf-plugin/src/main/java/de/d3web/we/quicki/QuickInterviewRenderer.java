@@ -211,8 +211,8 @@ public class QuickInterviewRenderer {
 		int margin = 10 + depth * 10; // calculate identation
 
 		String clazz = show // decide class for rendering expand-icon
-				? "class='questionnaire pointDown pointer'"
-				: "class='questionnaire pointRight pointer'";
+				? "class='questionnaire pointDown'"
+				: "class='questionnaire pointRight'";
 
 		// if init questionnaire: all contained elements are to be displayed
 		String display = show ? "display: block;" : "display: none;";
@@ -305,8 +305,8 @@ public class QuickInterviewRenderer {
 		int margin = 10 + depth * 10; // calculate identation
 
 		String clazz = show // decide class for rendering expand-icon
-				? "class='questionnaire pointDown pointer'"
-				: "class='questionnaire pointRight pointer'";
+				? "class='questionnaire pointDown'"
+				: "class='questionnaire pointRight'";
 
 		buffi.append("<div id='" + container.getId() + "' " +
 				clazz + " style='margin-left: " + margin + "px; display: block'; >");
@@ -341,7 +341,7 @@ public class QuickInterviewRenderer {
 		// then call method for rendering a question's answers in another div
 		sb.append("<div id='" + q.getId() + "' " +
 				"parent='" + parent.getId() + "' " +
-				"class='question pointer' " +
+				"class='question' " +
 				"style='width: " + w + "px; display: inline-block;' >"
 				+ q.getName() + "</div>");
 
@@ -418,14 +418,6 @@ public class QuickInterviewRenderer {
 		renderAnswerUnknown(q, "num", sb);
 	}
 
-	private static void renderChoicesAbstract(Question q) {
-		// TODO Auto-generated method stub
-
-	}
-
-	private static boolean isQuestionAbstraction(Question q) {
-		return false;
-	}
 
 	/**
 	 * Assembles the HTML for rendering a one choice question
@@ -651,7 +643,7 @@ public class QuickInterviewRenderer {
 				+ "type:'" + type + "', "
 				+ "qid:'" + q.getId() + "'"
 				+ "}\" ";
-		String cssclass = "answerunknown pointer";
+		String cssclass = "answerunknown";
 		String spanid = q.getId() + "_" + Unknown.getInstance().getId();
 		String title = "title=' " + rb.getString("KnowWE.quicki.unknown") + " '";
 		sb.append(getEnclosingTagOnClick("div", "", cssclass, jscall, null, spanid, title));
