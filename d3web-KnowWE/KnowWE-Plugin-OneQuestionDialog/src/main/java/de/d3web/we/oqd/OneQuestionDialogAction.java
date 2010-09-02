@@ -50,6 +50,10 @@ public class OneQuestionDialogAction extends AbstractAction{
 
 		InterviewObject o = current.getInterview().nextForm().getInterviewObject();
 
+		if (o == null) {
+			return;
+		}
+
 		String html = OneQuestionDialogUtils.createNewForm(o);
 		
 		// Blackboard blackboard = current.getBlackboard();

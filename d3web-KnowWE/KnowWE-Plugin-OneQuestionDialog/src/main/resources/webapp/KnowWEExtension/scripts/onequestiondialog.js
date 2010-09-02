@@ -20,8 +20,9 @@ OneQuestionDialog.sendQuestion = function(element) {
 	
 	
 	var answerId = '';
+	var answerValue = '';
 	
-	var type = trs[1].firstChild.firstChild.type;
+	var type = trs[0].firstChild.firstChild.type;
 	
 	if (type == 'radio') {
 		for (var i = 0; i < trs.length; i++) {
@@ -30,10 +31,23 @@ OneQuestionDialog.sendQuestion = function(element) {
 				break;
 			}
 		}
-	} 
+	} else if (type == 'checkbox') {
+		for (var i = 0; i < trs.length; i++) {
+			if (trs[i].firstChild.firstChild.checked) {
+				answerId += trs[i].firstChild.lastChild.value + '#####';
+			}
+		}
+		answerId = answerId.substring(0, answerId.lastIndexOf('#####'));
+	} else if (type == 'text') {
+		answerValue = trs[0].firstChild.lastChild.value;
+	}
+		
+	if (answerId != '') {
+		OneQuestionDialog.sendInput(web, namespace, questionId, 'undefined', question, {ValueID: answerId});
+	} else {
+		OneQuestionDialog.sendInput(web, namespace, questionId, 'undefined', question, {ValueNum: answerValue});	
+	}
 	
-	OneQuestionDialog.sendInput(web, namespace, questionId, 'undefined', {ValueID: answerId});
-	OneQuestionDialog.getNewQuestion(question);
 }
 
 /**
@@ -74,7 +88,7 @@ OneQuestionDialog.findTbody = function(element) {
 /**
  * sends an input to SetSingleFindingAction
  */
-OneQuestionDialog.sendInput = function( web, namespace, oid, termName, params){
+OneQuestionDialog.sendInput = function( web, namespace, oid, termName, question, params){
     var pDefault = {
             action : 'SetSingleFindingAction',
             KWikiWeb : web,
@@ -88,9 +102,8 @@ OneQuestionDialog.sendInput = function( web, namespace, oid, termName, params){
             url : KNOWWE.core.util.getURL( pDefault ),
             response : {
                 action: 'none',
-                ids : ['dialog-panel'],
                 fn : function(){
-                    KNOWWE.plugin.d3web.dialog.refreshed();
+        			OneQuestionDialog.getNewQuestion(question);
                 }
             }
         }
