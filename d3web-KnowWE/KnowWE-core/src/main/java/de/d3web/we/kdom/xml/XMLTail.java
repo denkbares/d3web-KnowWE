@@ -26,12 +26,25 @@ import java.util.List;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.SectionIDDeclarant;
 import de.d3web.we.kdom.renderer.NothingRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
-public class XMLTail extends DefaultAbstractKnowWEObjectType {
+public class XMLTail extends DefaultAbstractKnowWEObjectType implements SectionIDDeclarant {
+
+	public static final String SEPARATOR = "/";
+	public static final String TAIL_SUFFIX = "_tail";
+
+	@Override
+	public String createSectionID(Section<? extends KnowWEObjectType> father) {
+		return getEndOfId(father.getID()) + TAIL_SUFFIX;
+	}
+
+	private String getEndOfId(String id) {
+		return id.substring(id.lastIndexOf(SEPARATOR) + 1);
+	}
 
 	@Override
 	protected void init() {

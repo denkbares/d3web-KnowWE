@@ -20,9 +20,6 @@
 
 package de.d3web.we.kdom;
 
-import de.d3web.we.kdom.xml.XMLContent;
-import de.d3web.we.kdom.xml.XMLHead;
-import de.d3web.we.kdom.xml.XMLTail;
 
 /**
  * This class generates ids for Sections.
@@ -38,25 +35,15 @@ public class SectionID {
 
 	public static final String SEPARATOR = "/";
 
-	public static final String CONTENT_SUFFIX = "_content";
-
-	public static final String HEAD_SUFFIX = "_head";
-
-	public static final String TAIL_SUFFIX = "_tail";
 
 	/**
 	 * This Constructor should be used for assigning <b>nonspecific</b> IDs
 	 */
-	public SectionID(Section father, KnowWEObjectType type) {
+	public SectionID(Section<? extends KnowWEObjectType> father, KnowWEObjectType type) {
 		String typename;
-		if (type instanceof XMLContent) {
-			typename = getEndOfId(father.getID()) + CONTENT_SUFFIX;
-		}
-		else if (type instanceof XMLHead) {
-			typename = getEndOfId(father.getID()) + HEAD_SUFFIX;
-		}
-		else if (type instanceof XMLTail) {
-			typename = getEndOfId(father.getID()) + TAIL_SUFFIX;
+
+		if (type instanceof SectionIDDeclarant) {
+			typename = ((SectionIDDeclarant) type).createSectionID(father);
 		}
 		else {
 			typename = type.getName();
@@ -67,7 +54,7 @@ public class SectionID {
 	/**
 	 * This Constructor should be used for assigning <b>nonspecific</b> IDs
 	 */
-	public SectionID(Section father, String id) {
+	public SectionID(Section<? extends KnowWEObjectType> father, String id) {
 		createID(father.getArticle(), father.getID() + SEPARATOR + id);
 	}
 
