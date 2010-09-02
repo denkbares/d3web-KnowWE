@@ -36,13 +36,13 @@ import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.d3webModule.D3WebOWLVokab;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.RoundBracedType;
 import de.d3web.we.kdom.condition.AndOperator;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class Disjunct extends DefaultAbstractKnowWEObjectType {
@@ -56,10 +56,10 @@ public class Disjunct extends DefaultAbstractKnowWEObjectType {
 		this.addSubtreeHandler(new DisjunctSubTreeHandler());
 	}
 
-	private class DisjunctSubTreeHandler extends OwlSubtreeHandler {
+	private class DisjunctSubTreeHandler extends OwlSubtreeHandler<Disjunct> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<Disjunct> s) {
 
 			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 			IntermediateOwlObject io = new IntermediateOwlObject();
@@ -72,7 +72,7 @@ public class Disjunct extends DefaultAbstractKnowWEObjectType {
 						compositeexpression, RDF.TYPE,
 						D3WebOWLVokab.DISJUNCTION));
 				io.addLiteral(compositeexpression);
-				List<Section> children = s.getChildren();
+				List<Section<? extends KnowWEObjectType>> children = s.getChildren();
 				for (Section current : children) {
 					if (current.getObjectType() instanceof Conjunct) {
 						IntermediateOwlObject iohandler = (IntermediateOwlObject) KnowWEUtils

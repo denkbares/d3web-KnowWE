@@ -57,7 +57,7 @@ public class Conjunct extends DefaultAbstractKnowWEObjectType {
 		this.addSubtreeHandler(new ConjunctSubTreeHandler());
 	}
 
-	private class ConjunctSubTreeHandler extends OwlSubtreeHandler {
+	private class ConjunctSubTreeHandler extends OwlSubtreeHandler<Conjunct> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {

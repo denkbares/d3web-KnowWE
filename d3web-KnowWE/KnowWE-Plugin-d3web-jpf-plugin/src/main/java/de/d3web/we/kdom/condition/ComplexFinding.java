@@ -77,10 +77,10 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType {
 					getRenderer(FontColorRenderer.COLOR5, color);
 	}
 
-	private class ComplexFindingSubtreeHandler extends OwlSubtreeHandler {
+	private class ComplexFindingSubtreeHandler extends OwlSubtreeHandler<ComplexFinding> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ComplexFinding> s) {
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 			try {
@@ -90,7 +90,7 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType {
 						uo.getHelper().createlocalURI(
 								s.getTitle() + ".." + s.getID()));
 				io.addLiteral(complexfinding);
-				List<Section> children = s.getChildren();
+				List<Section<? extends KnowWEObjectType>> children = s.getChildren();
 				for (Section current : children) {
 					if (current.getObjectType() instanceof Disjunct) {
 						IntermediateOwlObject iohandler = (IntermediateOwlObject) KnowWEUtils.getStoredObject(

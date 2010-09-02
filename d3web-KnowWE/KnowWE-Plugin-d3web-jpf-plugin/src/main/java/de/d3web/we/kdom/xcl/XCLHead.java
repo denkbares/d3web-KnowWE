@@ -66,10 +66,10 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	private class XCLHeadSubtreeHandler extends D3webSubtreeHandler {
+	private class XCLHeadSubtreeHandler extends D3webSubtreeHandler<XCLHead> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<XCLHead> s) {
 
 			Section father = s.getFather();
 
@@ -120,13 +120,23 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 		}
 	}
 
-	private class XCLHeadOWLSubTreeHandler extends OwlSubtreeHandler {
+	private class XCLHeadOWLSubTreeHandler extends OwlSubtreeHandler<XCLHead> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section section) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<XCLHead> section) {
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			DefaultSubjectContext sol = (DefaultSubjectContext) ContextManager.getInstance()
 					.getContext(section, DefaultSubjectContext.CID);
+
+			Section father = section.getFather();
+			String string = section.getOriginalText().trim();
+
+			if (string.startsWith("\"")) {
+				string = string.substring(1, string.length() - 1);
+			}
+			DefaultURIContext context = new DefaultURIContext(string);
+			ContextManager.getInstance().attachContext(father, context);
+
 			String solution = sol != null ? sol.getSubject() : null;
 			if (solution != null) {
 				UpperOntology uo = SemanticCoreDelegator.getInstance().getUpper();

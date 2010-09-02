@@ -31,6 +31,7 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.OwlSubtreeHandler;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.d3webModule.D3WebOWLVokab;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
@@ -49,7 +50,6 @@ import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class Finding extends DefaultAbstractKnowWEObjectType {
@@ -79,7 +79,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 				FontColorRenderer.COLOR5, color);
 	}
 
-	private class FindingSubTreeHandler extends SubtreeHandler {
+	private class FindingSubTreeHandler extends OwlSubtreeHandler<Finding> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
@@ -148,7 +148,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 
 	public class FindingSectionFinder extends SectionFinder {
 
-		private AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
+		private final AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,

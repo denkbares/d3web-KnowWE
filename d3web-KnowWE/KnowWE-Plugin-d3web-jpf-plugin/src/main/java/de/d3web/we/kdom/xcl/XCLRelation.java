@@ -39,6 +39,7 @@ import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.d3webModule.D3WebOWLVokab;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.condition.ComplexFinding;
@@ -61,10 +62,10 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 		this.addSubtreeHandler(new XCLRelationOWLSubTreeHandler());
 	}
 
-	private class XCLRelationOWLSubTreeHandler extends OwlSubtreeHandler {
+	private class XCLRelationOWLSubTreeHandler extends OwlSubtreeHandler<XCLRelation> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<XCLRelation> s) {
 			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			try {
@@ -86,7 +87,7 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 
 				io.addStatement(uo.getHelper().createStatement(explainsdings,
 						RDF.TYPE, D3WebOWLVokab.EXPLAINS));
-				List<Section> children = s.getChildren();
+				List<Section<? extends KnowWEObjectType>> children = s.getChildren();
 				for (Section current : children) {
 					if (current.getObjectType() instanceof ComplexFinding
 							|| current.getObjectType() instanceof Finding) {
