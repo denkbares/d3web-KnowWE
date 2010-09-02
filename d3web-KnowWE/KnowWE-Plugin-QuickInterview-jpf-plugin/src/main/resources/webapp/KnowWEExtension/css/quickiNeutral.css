@@ -78,7 +78,7 @@
 /* answer unknown styling clicked */
 #quickinterview .answerunknownClicked { background: transparent url(../images/questionMark.png); height: 18px; width: 18px; float: left;
 	 background-repeat: no-repeat; background-position: center center; padding: 0 5px;; 
-	 border: 3px red solid;}
+	 border: 1px orange solid;}
 	 
 /* styling of input box */
 #quickinterview .input { height: 12px; float: left; margin-left: 5px;  }
