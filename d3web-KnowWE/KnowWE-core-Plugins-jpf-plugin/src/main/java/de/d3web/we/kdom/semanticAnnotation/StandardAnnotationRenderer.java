@@ -123,6 +123,14 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 		IntermediateOwlObject tempio = (IntermediateOwlObject) KnowWEUtils
 				.getStoredObject(objectSection, OwlHelper.IOO);
 
+		if (tempio == null) {
+			text = KnowWEUtils
+					.maskHTML("<p class=\"box error\">IntermediateOwlObject tempio not found"
+							+ "</p>");
+			string.append(text);
+			return;
+		}
+
 		if (!tempio.getValidPropFlag()) {
 			text = KnowWEUtils
 					.maskHTML("<p class=\"box error\">invalid annotation attribute:"
