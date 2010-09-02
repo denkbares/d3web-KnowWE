@@ -233,8 +233,8 @@ public class CompileFlag extends DefaultMarkupType {
 				if (referedPackages.equals(article.getTitle())) continue;
 				List<Section<?>> tempPackageDefs = packageMng.getPackageDefinitions(referedPackages);
 				for (Section<?> packageDef : tempPackageDefs) {
-					if (!(KnowWEPackageManager.AUTOCOMPILE_ARTICLE && packageDef.getTitle().equals(
-							article.getTitle()))) {
+					if (!packageDef.getTitle().equals(
+							article.getTitle())) {
 						packageDefinitions.add(packageDef);
 					}
 				}
