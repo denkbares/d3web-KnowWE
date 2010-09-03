@@ -28,8 +28,6 @@ import java.util.logging.Logger;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.basic.PlainText;
-import de.d3web.we.kdom.renderer.DefaultTextRenderer;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMNotice;
 import de.d3web.we.kdom.report.KDOMReportMessage;

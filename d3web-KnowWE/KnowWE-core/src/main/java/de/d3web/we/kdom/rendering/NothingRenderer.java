@@ -18,36 +18,36 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.renderer;
+package de.d3web.we.kdom.rendering;
 
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class DefaultTextLineRenderer extends KnowWEDomRenderer {
+public class NothingRenderer extends KnowWEDomRenderer {
+
+	private NothingRenderer() {
+
+	}
+
+	private static NothingRenderer instance;
+
+	public static synchronized NothingRenderer getInstance() {
+		if (instance == null) instance = new NothingRenderer();
+		return instance;
+	}
+
+	/**
+	 * prevent cloning
+	 */
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
 
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
-		/* generateQuickEditLink(topic, sec.getId(), web, user)+ */
-		DelegateRenderer.getInstance().render(article, sec, user, string);
-		string.append(generateTextField(sec));
-	}
-
-	private String generateTextField(Section sec) {
-
-		return "";
-		// OFF by now
-		// return KnowWEEnvironment
-		// .maskHTML("<span><textarea cols=\"30\" rows=\"1\">"+sec.getOriginalText()+"</textarea></span>");
-	}
-
-	private String generateQuickEditLink(String topic, String id, String web2, String user) {
-		String icon = " <img src=KnowWEExtension/images/pencil.png title='Set QuickEdit-Mode' class='quickedit default pointer'/>";
-
-		return KnowWEEnvironment.maskHTML("<a>" + icon + "</a>");
+		// nothing
 	}
 
 }

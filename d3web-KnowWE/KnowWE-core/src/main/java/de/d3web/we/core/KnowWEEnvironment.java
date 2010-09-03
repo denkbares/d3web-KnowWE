@@ -51,7 +51,7 @@ import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sectionizer;
 import de.d3web.we.kdom.SectionizerModule;
-import de.d3web.we.kdom.renderer.ConditionalRenderer;
+import de.d3web.we.kdom.rendering.ConditionalRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.PageAppendHandler;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
