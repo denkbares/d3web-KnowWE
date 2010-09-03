@@ -25,7 +25,7 @@ import java.util.List;
 import de.d3web.KnOfficeParser.txttable.TxtTableBuilder;
 import de.d3web.KnOfficeParser.txttable.TxtTableParserResult;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.renderer.NothingRenderer;
+import de.d3web.we.kdom.rendering.NothingRenderer;
 
 public class TableCellSeparator extends DefaultAbstractKnowWEObjectType {
 

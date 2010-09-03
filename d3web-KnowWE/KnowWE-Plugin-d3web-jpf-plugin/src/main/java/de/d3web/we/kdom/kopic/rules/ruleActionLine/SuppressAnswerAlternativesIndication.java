@@ -19,8 +19,8 @@
  */
 package de.d3web.we.kdom.kopic.rules.ruleActionLine;
 
+import de.d3web.we.kdom.basic.ParameterizedKeyWordType;
 import de.d3web.we.kdom.decisionTree.QClassID;
-import de.d3web.we.kdom.type.ParameterizedKeyWordType;
 
 /**
  * @author Johannes Dienst

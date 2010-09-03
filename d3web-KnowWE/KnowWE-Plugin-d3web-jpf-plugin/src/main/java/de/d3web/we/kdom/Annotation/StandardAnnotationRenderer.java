@@ -21,7 +21,7 @@
 package de.d3web.we.kdom.Annotation;
 
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.renderer.ConditionalRenderer;
+import de.d3web.we.kdom.rendering.ConditionalRenderer;
 import de.d3web.we.kdom.semanticAnnotation.AnnotatedString;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationContent;
 import de.d3web.we.utils.KnowWEUtils;

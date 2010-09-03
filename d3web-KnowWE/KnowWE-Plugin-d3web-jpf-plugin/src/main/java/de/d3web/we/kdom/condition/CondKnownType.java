@@ -20,7 +20,7 @@
 
 package de.d3web.we.kdom.condition;
 
-import de.d3web.we.kdom.type.ParameterizedKeyWordType;
+import de.d3web.we.kdom.basic.ParameterizedKeyWordType;
 
 public class CondKnownType extends ParameterizedKeyWordType {
 
