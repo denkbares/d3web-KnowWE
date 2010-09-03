@@ -20,7 +20,7 @@
 
 package de.d3web.we.kdom.tagging;
 
-import de.d3web.we.core.semantic.TagsContent;
+import de.d3web.we.core.semantic.tagging.TagsContent;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 public class Tags extends AbstractXMLObjectType {
