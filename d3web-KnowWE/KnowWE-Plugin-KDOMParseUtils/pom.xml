@@ -10,4 +10,13 @@
   <name>KnowWE-Plugin-KDOMParseUtils</name>
   <version>0.2-SNAPSHOT</version>
   <description>Some components helping to create KDOM parsers easily</description>
+  <dependencies>
+  	<dependency>
+  		<groupId>de.uniwue.d3web</groupId>
+  		<artifactId>KnowWE-core</artifactId>
+  		<version>0.2-SNAPSHOT</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  </dependencies>
 </project>
