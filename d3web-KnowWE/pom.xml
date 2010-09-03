@@ -146,6 +146,7 @@
 		<module>KnowWE-Plugin-XML</module>
 		<module>KnowWEPlugin-SemanticCore-Tests</module>
 		<module>KnowWE-Plugin-OneQuestionDialog</module>
+		<module>KnowWE-Plugin-KDOMParseUtils</module>
 	</modules>
 	<repositories>
 		<repository>
