@@ -43,6 +43,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
+import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
@@ -130,8 +131,11 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 				// NOTE currently revise of OWL is bottom up => context are set
 				// too late
 
-				DefaultURIContext sc = new DefaultURIContext();
-				sc.setSubjectURI(localURI);
+				DefaultURIContext uc = new DefaultURIContext();
+				uc.setSubjectURI(localURI);
+				ContextManager.getInstance().attachContext(section, uc);
+
+				DefaultSubjectContext sc = new DefaultSubjectContext(localID);
 				ContextManager.getInstance().attachContext(section, sc);
 
 				Literal descriptionURI = uo.getHelper().createLiteral(
