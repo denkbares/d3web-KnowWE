@@ -68,8 +68,14 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> 
 
 		// render messages and content
 		renderMessages(article, section, string);
-		// DelegateRenderer.getInstance().render(article, section, user,
-		// string);
+		renderContents(article, section, user, string);
+
+		// and close the box
+		string.append("}}}\n");
+		string.append(KnowWEUtils.maskHTML("</div>\n"));
+	}
+	
+	protected void renderContents(KnowWEArticle article, Section<? extends DefaultMarkupType> section, KnowWEUserContext user, StringBuilder string) {
 		List<Section<?>> subsecs = section.getChildren();
 		Section<?> first = subsecs.get(0);
 		Section<?> last = subsecs.get(subsecs.size() - 1);
@@ -78,12 +84,12 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> 
 			if (subsec == last && subsec.getObjectType() instanceof PlainText) continue;
 			subsec.getObjectType().getRenderer().render(article, subsec, user, string);
 		}
-
-		// and close the box
-		string.append("}}}\n");
-		string.append(KnowWEUtils.maskHTML("</div>\n"));
 	}
 
+	protected void renderMessages(KnowWEArticle article, Section<? extends DefaultMarkupType> section, KnowWEUserContext user, StringBuilder string) {
+		renderMessages(article, section, string);
+	}
+	
 	public static void renderMessages(KnowWEArticle article, Section<? extends DefaultMarkupType> section, StringBuilder string) {
 		Collection<Message> messages = AbstractKnowWEObjectType.getMessagesFromSubtree(article,
 				section);
