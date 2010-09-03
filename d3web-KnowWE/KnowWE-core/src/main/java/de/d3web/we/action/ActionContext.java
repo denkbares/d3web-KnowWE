@@ -162,6 +162,10 @@ public class ActionContext {
 		return this.request;
 	}
 
+	public HttpServletResponse getResponse() {
+		return this.response;
+	}
+
 	public HttpSession getSession() {
 		return this.request.getSession();
 	}

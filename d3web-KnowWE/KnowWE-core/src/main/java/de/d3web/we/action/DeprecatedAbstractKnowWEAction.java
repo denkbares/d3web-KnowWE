@@ -21,6 +21,7 @@ package de.d3web.we.action;
 
 import java.io.IOException;
 
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 
 /**
@@ -42,7 +43,8 @@ public abstract class DeprecatedAbstractKnowWEAction extends AbstractAction {
 
 	@Override
 	public void execute(ActionContext context) throws IOException {
-		String result = perform(context.getKnowWEParameterMap());
+		KnowWEParameterMap parameterMap = context.getKnowWEParameterMap();
+		String result = perform(parameterMap);
 		if (result != null && context.getWriter() != null) {
 	        context.setContentType("text/html; charset=UTF-8");
 			context.getWriter().write(result);

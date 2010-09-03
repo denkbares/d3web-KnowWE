@@ -31,6 +31,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.core.KnowWEParameterMap;
+
 /**
  * ActionServlet is a Servlet for ajax-based interview or any other user
  * interfaces.
@@ -130,14 +133,15 @@ public class ActionServlet extends HttpServlet {
 
 	private void doPathAction(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// create action context
-		ActionContext context = new ActionContext(
+	    ActionContext context = new ActionContext(
 				getActionName(request),
 				getActionFollowUpPath(request),
 				getParameters(request),
 				request,
 				response,
 				getServletContext(),
-				null);
+				null
+			);
 		try {
 			// get action and execute it
 			Action cmd = context.getAction();
