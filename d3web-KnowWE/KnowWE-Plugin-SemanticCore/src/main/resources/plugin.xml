@@ -23,6 +23,17 @@
 		<parameter id="priority" value="2" />
 	</extension>
 	
+		<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="Tags">
+		<parameter id="class"
+			value="de.d3web.we.core.semantic.tagging.Tags" />
+		<parameter id="name" value="Tags" />
+		<parameter id="description" value="KnowWEObjectType Tags" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="EventListener"
 		id="SemanticCoreDelegatorEventListener">
 		<parameter id="class"
