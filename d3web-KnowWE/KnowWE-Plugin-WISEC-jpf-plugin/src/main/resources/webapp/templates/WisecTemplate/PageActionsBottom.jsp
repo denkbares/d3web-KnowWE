@@ -34,10 +34,10 @@
    <wiki:Permission permission="edit">
 	<wiki:UserCheck exists="true">
 		<wiki:EditLink>Edit this page</wiki:EditLink>
-	</UserCheck>
+	</wiki:UserCheck>
 	<wiki:UserCheck exists="false">
 		<wiki:LinkTo page="UserPreferences">Set your User Preferences to edit this page</wiki:LinkTo>
-	</UserCheck>
+	</wiki:UserCheck>
 	
    </wiki:Permission>	
    
