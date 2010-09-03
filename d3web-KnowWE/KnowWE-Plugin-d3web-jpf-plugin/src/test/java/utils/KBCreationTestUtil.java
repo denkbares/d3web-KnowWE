@@ -29,8 +29,8 @@ import java.util.List;
 import de.d3web.abstraction.formula.FormulaExpression;
 import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.abstraction.formula.Operator;
-import de.d3web.abstraction.formula.QNumWrapper;
 import de.d3web.abstraction.formula.Operator.Operation;
+import de.d3web.abstraction.formula.QNumWrapper;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
@@ -48,8 +48,8 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Rating.State;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
@@ -92,7 +92,6 @@ public class KBCreationTestUtil {
 
 	public static final String KBCREATION_ARTICLE_FILE = "src/test/resources/KBCreationTest.txt";
 
-
 	private final Collection<KnowWEArticle> articles = new HashSet<KnowWEArticle>();
 
 	private static KBCreationTestUtil instance = new KBCreationTestUtil();
@@ -118,7 +117,6 @@ public class KBCreationTestUtil {
 		return instance;
 	}
 
-
 	/**
 	 * Returns the KnowledgeBase which was created manually.
 	 * 
@@ -136,7 +134,6 @@ public class KBCreationTestUtil {
 	public TestSuite getCreatedTS() {
 		return createdTS;
 	}
-
 
 	/**
 	 * Creates the Knowledge against which the loaded KnowledgeBase will be
@@ -164,6 +161,7 @@ public class KBCreationTestUtil {
 		Solution p0 = new Solution("P000");
 		p0.setName("P000");
 		createdKB.add(p0);
+		createdKB.setRootSolution(p0);
 
 		Solution p1 = new Solution("P1");
 		p1.setName("Mechanical problem");
@@ -197,6 +195,7 @@ public class KBCreationTestUtil {
 		QContainer qc0 = new QContainer("Q000");
 		qc0.setName("Q000");
 		createdKB.add(qc0);
+		createdKB.setRootQASet(qc0);
 
 		QContainer qc1 = new QContainer("QC1");
 		qc1.setName("Observations");
