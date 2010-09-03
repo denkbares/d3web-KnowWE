@@ -38,7 +38,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
-import de.d3web.we.core.semantic.TaggingMangler;
+import de.d3web.we.core.semantic.tagging.TaggingMangler;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.search.GenericSearchResult;
@@ -87,7 +87,7 @@ public class TaggingManglerTest extends TestCase {
 	}
 
 	/**
-	 * Test method for {@link de.d3web.we.core.semantic.TaggingMangler#clone()}.
+	 * Test method for {@link de.d3web.we.core.semantic.tagging.TaggingMangler#clone()}.
 	 */
 	@Test
 	public void testClone() {
@@ -104,9 +104,9 @@ public class TaggingManglerTest extends TestCase {
 
 	/**
 	 * Test method for
-	 * {@link de.d3web.we.core.semantic.TaggingMangler#addTag(java.lang.String, java.lang.String, de.d3web.we.core.KnowWEParameterMap)}
+	 * {@link de.d3web.we.core.semantic.tagging.TaggingMangler#addTag(java.lang.String, java.lang.String, de.d3web.we.core.KnowWEParameterMap)}
 	 * . Test method for
-	 * {@link de.d3web.we.core.semantic.TaggingMangler#removeTag(java.lang.String, java.lang.String, de.d3web.we.core.KnowWEParameterMap)}
+	 * {@link de.d3web.we.core.semantic.tagging.TaggingMangler#removeTag(java.lang.String, java.lang.String, de.d3web.we.core.KnowWEParameterMap)}
 	 * .
 	 */
 	@Test
@@ -125,7 +125,7 @@ public class TaggingManglerTest extends TestCase {
 
 	/**
 	 * Test method for
-	 * {@link de.d3web.we.core.semantic.TaggingMangler#addTag(java.lang.String, java.lang.String, de.d3web.we.core.KnowWEParameterMap)}
+	 * {@link de.d3web.we.core.semantic.tagging.TaggingMangler#addTag(java.lang.String, java.lang.String, de.d3web.we.core.KnowWEParameterMap)}
 	 * . Test method for
 	 * 
 	 * .
@@ -170,7 +170,7 @@ public class TaggingManglerTest extends TestCase {
 
 	/**
 	 * Test method for
-	 * {@link de.d3web.we.core.semantic.TaggingMangler#getPages(java.lang.String)}
+	 * {@link de.d3web.we.core.semantic.tagging.TaggingMangler#getPages(java.lang.String)}
 	 * .
 	 */
 	@Test
@@ -209,7 +209,7 @@ public class TaggingManglerTest extends TestCase {
 
 	/**
 	 * Test method for
-	 * {@link de.d3web.we.core.semantic.TaggingMangler#getPageTags(java.lang.String)}
+	 * {@link de.d3web.we.core.semantic.tagging.TaggingMangler#getPageTags(java.lang.String)}
 	 * .
 	 */
 	@Test
@@ -232,7 +232,7 @@ public class TaggingManglerTest extends TestCase {
 
 	/**
 	 * Test method for
-	 * {@link de.d3web.we.core.semantic.TaggingMangler#getAllTags()}.
+	 * {@link de.d3web.we.core.semantic.tagging.TaggingMangler#getAllTags()}.
 	 */
 	@Test
 	public void testGetAllTags() {
@@ -263,7 +263,7 @@ public class TaggingManglerTest extends TestCase {
 
 	/**
 	 * Test method for
-	 * {@link de.d3web.we.core.semantic.TaggingMangler#getCloudList(int, int)}.
+	 * {@link de.d3web.we.core.semantic.tagging.TaggingMangler#getCloudList(int, int)}.
 	 */
 	@Test
 	public void testGetCloudList() {
@@ -294,7 +294,7 @@ public class TaggingManglerTest extends TestCase {
 
 	/**
 	 * Test method for
-	 * {@link de.d3web.we.core.semantic.TaggingMangler#getCloudList(int, int)}.
+	 * {@link de.d3web.we.core.semantic.tagging.TaggingMangler#getCloudList(int, int)}.
 	 */
 	@Test
 	public void testGetCloudList2() {
@@ -330,7 +330,7 @@ public class TaggingManglerTest extends TestCase {
 
 	/**
 	 * Test method for
-	 * {@link de.d3web.we.core.semantic.TaggingMangler#setTags(java.lang.String, java.lang.String, de.d3web.we.core.KnowWEParameterMap)}
+	 * {@link de.d3web.we.core.semantic.tagging.TaggingMangler#setTags(java.lang.String, java.lang.String, de.d3web.we.core.KnowWEParameterMap)}
 	 * .
 	 */
 	@Test
@@ -345,7 +345,7 @@ public class TaggingManglerTest extends TestCase {
 
 	/**
 	 * Test method for
-	 * {@link de.d3web.we.core.semantic.TaggingMangler#searchPages(java.lang.String)}
+	 * {@link de.d3web.we.core.semantic.tagging.TaggingMangler#searchPages(java.lang.String)}
 	 * .
 	 */
 	@Test
