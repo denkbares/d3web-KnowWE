@@ -103,12 +103,13 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 			Question question = kbm.findQuestion(objectid);
 			if (question != null) {
 
+				// update: resetting the value is unnecessary --rh@100903
 				// reset choices in case the selection changed
 				// (user removed choices)
-				blackboard.addValueFact(new DefaultFact(question,
-						Unknown.getInstance(), PSMethodUserSelected.getInstance(),
-						PSMethodUserSelected.getInstance()));
-
+				// blackboard.addValueFact(new DefaultFact(question,
+				// Unknown.getInstance(), PSMethodUserSelected.getInstance(),
+				// PSMethodUserSelected.getInstance()));
+				//
 
 				Value value = null;
 				if (valueid != null) {
@@ -136,8 +137,8 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 						Fact mcFact = blackboard.getValueFact(question);
 						if (mcFact != null && !mcFact.getValue().equals(Unknown.getInstance())) {
 							MultipleChoiceValue mcv = ((MultipleChoiceValue) mcFact.getValue());
-							List<ChoiceValue> thisMcv = (List<ChoiceValue>) ((MultipleChoiceValue) value).getValue();
-							for (ChoiceValue cv : (List<ChoiceValue>) mcv.getValue()) {
+							Collection<ChoiceValue> thisMcv = (Collection<ChoiceValue>) ((MultipleChoiceValue) value).getValue();
+							for (ChoiceValue cv : (Collection<ChoiceValue>) mcv.getValue()) {
 								if (!thisMcv.contains(cv)) {
 									thisMcv.add(cv);
 								}
