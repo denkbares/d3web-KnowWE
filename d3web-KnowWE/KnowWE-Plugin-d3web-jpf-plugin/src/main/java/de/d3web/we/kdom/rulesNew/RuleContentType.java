@@ -248,19 +248,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 					this.exceptionRenderer.render(article, sec, user, newContent);
 				}
 			}
-			// Deletes the newline character after the rule so that it is
-			// in one line with the postrendering (DelegateRenderer).
-			if (!newContent.toString().endsWith("\n")) {
-				// In Case the newline splitted the HTML-code
-				String[] lines = newContent.toString().split("\n");
-				int countLines = lines.length;
-				if (countLines > 1) {
-					newContent.replace(newContent.length() - 1 - lines[countLines - 1].length()
-							- lines[countLines - 2].length(), newContent.length(),
-							lines[countLines - 2].trim() + lines[countLines - 1]);
-				}
-			}
-			string.append(newContent.toString().trim());
+			string.append(newContent.toString());
 		}
 
 	}

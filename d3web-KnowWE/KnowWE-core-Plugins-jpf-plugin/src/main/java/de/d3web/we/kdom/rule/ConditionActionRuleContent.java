@@ -28,7 +28,6 @@ import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.renderer.CommentRenderer;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
-import de.d3web.we.kdom.sectionFinder.AllTextFinderDivCorrectTrimmed;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 
 /**
@@ -44,7 +43,7 @@ public class ConditionActionRuleContent extends DefaultAbstractKnowWEObjectType 
 	ConditionArea condArea = new ConditionArea();
 
 	public ConditionActionRuleContent(AbstractKnowWEObjectType action) {
-		this.sectionFinder = new AllTextFinderDivCorrectTrimmed();
+		this.sectionFinder = new AllTextFinderTrimmed();
 		this.addChildType(new If());
 		Then then = new Then();
 		this.addChildType(then);
