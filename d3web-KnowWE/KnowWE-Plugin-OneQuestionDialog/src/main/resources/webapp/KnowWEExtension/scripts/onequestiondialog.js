@@ -10,36 +10,38 @@ var OneQuestionDialog = {};
  */
 OneQuestionDialog.sendQuestion = function(element) {
 	var div = OneQuestionDialog.findParentDiv(element);
-	var question = div.firstChild.firstChild.firstChild.textContent;
-	var questionId = div.firstChild.firstChild.lastChild.value;
+	var question = div.getElement('p').textContent;;
+	var questionId = div.getElement('p').getElement('input').value;
 	var tbody = OneQuestionDialog.findTbody(element);
 	var trs = tbody.childNodes;
 	
 	var web = 'default_web';
-	var namespace = 'OneQuestionDialog..OneQuestionDialog_KB'
+	var namespace = KNOWWE.helper.gup('page');
 	
 	
 	var answerId = '';
 	var answerValue = '';
 	
-	var type = trs[0].firstChild.firstChild.type;
+	var type = trs[0].getElement('input').type;
 	
 	if (type == 'radio') {
 		for (var i = 0; i < trs.length; i++) {
-			if (trs[i].firstChild.firstChild.checked) {
-				answerId = trs[i].firstChild.lastChild.value;
+			var td = trs[i].getElement('td');
+			if (td.firstChild.checked) {
+				answerId = td.lastChild.value;
 				break;
 			}
 		}
 	} else if (type == 'checkbox') {
 		for (var i = 0; i < trs.length; i++) {
-			if (trs[i].firstChild.firstChild.checked) {
-				answerId += trs[i].firstChild.lastChild.value + '#####';
+			var td = trs[i].getElement('td');
+			if (td.firstChild.checked) {
+				answerId += td.lastChild.value + '#####';
 			}
 		}
 		answerId = answerId.substring(0, answerId.lastIndexOf('#####'));
 	} else if (type == 'text') {
-		answerValue = trs[0].firstChild.lastChild.value;
+		answerValue = trs[0].getElement('td').lastChild.value;
 	}
 		
 	if (answerId != '') {
