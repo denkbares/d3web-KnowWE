@@ -293,7 +293,7 @@ public class Sectionizer {
 		// check if left brother is exclusive
 		Section<?> leftBrother = father.getChildSectionAtPosition(offset - 1);
 		if (leftBrother != null) {
-			if (leftBrother.get() instanceof de.d3web.we.kdom.sectionFinder.ExclusiveType) {
+			if (leftBrother.get() instanceof ExclusiveType) {
 				return true;
 			}
 		}
@@ -302,7 +302,7 @@ public class Sectionizer {
 		Section<?> rightBrother = father.getChildSectionAtPosition(offset
 				+ thisSection.getOriginalText().length());
 		if (rightBrother != null) {
-			if (rightBrother.get() instanceof de.d3web.we.kdom.sectionFinder.ExclusiveType) {
+			if (rightBrother.get() instanceof ExclusiveType) {
 				return true;
 			}
 		}

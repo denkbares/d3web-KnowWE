@@ -16,38 +16,15 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.kdom.sectionFinder;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.Section;
+package de.d3web.we.kdom;
 
 /**
  * 
+ * Marker-interface
+ * 
  * @author Jochen
- * @created 29.07.2010
+ * @created 20.07.2010
  */
-public abstract class ConditionalSectionFinder implements ISectionFinder {
-
-	ISectionFinder finder = null;
-
-	public ConditionalSectionFinder(ISectionFinder internalFinder) {
-		this.finder = internalFinder;
-	}
-
-	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
-		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-		if (text.length() > 0) {
-			if (condition(text, father)) {
-				return finder.lookForSections(text, father, type);
-			}
-		}
-		return result;
-	}
-
-	protected abstract boolean condition(String text, Section<?> father);
+public interface ExclusiveType {
 
 }
