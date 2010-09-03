@@ -272,7 +272,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
  *         example: 'a OR b' here 'a' and 'b' are nodes of type disjunct
  * 
  */
-class Disjunct extends NonTerminalCondition implements de.d3web.we.kdom.sectionFinder.ExclusiveType {
+class Disjunct extends NonTerminalCondition implements de.d3web.we.kdom.ExclusiveType {
 
 	@Override
 	protected void init() {
@@ -290,7 +290,7 @@ class Disjunct extends NonTerminalCondition implements de.d3web.we.kdom.sectionF
  *         example: 'a AND b' here 'a' and 'b' are nodes of type conjunct
  * 
  */
-class Conjunct extends NonTerminalCondition implements de.d3web.we.kdom.sectionFinder.ExclusiveType {
+class Conjunct extends NonTerminalCondition implements de.d3web.we.kdom.ExclusiveType {
 
 	static String[] CONJ_SIGNS = {
 			"AND", "UND", "&" };
