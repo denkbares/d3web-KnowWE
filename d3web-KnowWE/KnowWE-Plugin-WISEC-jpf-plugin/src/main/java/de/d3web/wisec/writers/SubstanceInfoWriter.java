@@ -166,7 +166,7 @@ public class SubstanceInfoWriter extends WISECWriter {
 				new Locale("en", "US")));
 		Collection<SubstanceList> lists = this.model.getSubstanceListsContaining(substance);
 		List<String> usedCriteria = criteriaContainedInAtLeastOneList(lists);
-		b.append("|| Criteria || Lists || Scoring || No Lists\n");
+		b.append("|| Criteria || Lists || Scoring || On Lists\n");
 		double totalScore = 0;
 		for (String criteria : usedCriteria) {
 			int count = 0;
