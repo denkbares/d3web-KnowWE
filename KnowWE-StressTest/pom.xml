@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>d3.uniwue.d3web</groupId>
+  <artifactId>KnowWE-StressTest</artifactId>
+  <name>KnowWE StressTest</name>
+  <version>0.0.1-SNAPSHOT</version>
+  <description>This Project should provide some tests based on Selenium (Interface driven test) guaranteeing the stability of the KnowWE-Server. The tests simulate changes in the knowledgebases (incremental updates) and in the wiki itself (sections overflow) in different tasks simultaneously.</description>
+  <issueManagement>
+  	<system>Trac</system>
+  	<url>http://knowwetrac.informatik.uni-wuerzburg.de/</url>
+  </issueManagement>
+  <ciManagement>
+  	<system>Hudson</system>
+  	<url>https://isci.informatik.uni-wuerzburg.de/hudson/</url>
+  </ciManagement>
+  <organization>
+  	<name>Universität Würzburg</name>
+  	<url>http://uni-wuerzburg.de/</url>
+  </organization>
+  <dependencies>
+  	<dependency>
+  		<groupId>d3.uniwue.d3web</groupId>
+  		<artifactId>KnowWE-SeleniumTest</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.kohsuke.junit</groupId>
+  		<artifactId>parallel-junit</artifactId>
+  		<version>0-SNAPSHOT</version>
+  		<type>pom</type>
+  		<scope>compile</scope>
+  	</dependency>
+  </dependencies>
+</project>
