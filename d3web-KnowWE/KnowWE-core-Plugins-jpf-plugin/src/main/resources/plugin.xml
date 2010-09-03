@@ -114,49 +114,11 @@
 		<parameter id="scope" value="root" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
-		id="Extension">
-		<parameter id="class"
-			value="de.d3web.we.kdom.owlextension.Extension" />
-		<parameter id="name" value="Extension" />
-		<parameter id="description" value="KnowWEObjectType Extension" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="4" />
-		<parameter id="scope" value="root" />
-	</extension>
+
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
-		id="OwlProperties">
-		<parameter id="class"
-			value="de.d3web.we.kdom.owlextension.OwlProperties" />
-		<parameter id="name" value="OwlProperties" />
-		<parameter id="description" value="KnowWEObjectType OwlProperties" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="4" />
-		<parameter id="scope" value="root" />
-	</extension>
+
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
-		id="SemanticAnnotation">
-		<parameter id="class"
-			value="de.d3web.we.kdom.semanticAnnotation.SemanticAnnotation" />
-		<parameter id="name" value="SemanticAnnotation" />
-		<parameter id="description" value="KnowWEObjectType SemanticAnnotation" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="4" />
-		<parameter id="scope" value="root" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
-		id="Info">
-		<parameter id="class"
-			value="de.d3web.we.kdom.semanticFactSheet.Info" />
-		<parameter id="name" value="Info" />
-		<parameter id="description" value="KnowWEObjectType Info" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="4" />
-		<parameter id="scope" value="root" />
-	</extension>
+
 	
 
 	
