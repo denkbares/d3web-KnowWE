@@ -6,11 +6,10 @@
         version="2.4">
 
    <description>
-       JSPWiki is a free JSP-based WikiClone.  It is licenced
-       under the Lesser GNU General Public License.
+       JSPWiki is an open source JSP-based WikiClone.  It is licenced
+       under the Apache 2.0 license.
 
-       JSPWiki is maintained by Janne Jalkanen (+others),
-       jalkanen+jspwiki@ecyrd.com
+       For more information, please come to http://www.jspwiki.org/
    </description>
    <display-name>JSPWiki</display-name>
 
@@ -20,7 +19,16 @@
      <param-value>templates.default</param-value>
    </context-param>
    
-   	<!-- Action Servlet -->
+    <filter>
+      <filter-name>KnowWEUploadFilter</filter-name>
+      <filter-class>de.d3web.we.upload.KnowWEUploadFilter</filter-class>
+   </filter>
+   	<filter-mapping>
+		<filter-name>KnowWEUploadFilter</filter-name>
+		<url-pattern>/KnowWEUpload</url-pattern>
+	</filter-mapping>
+	
+	<!-- Action Servlet -->
 	<servlet>
  		<servlet-name>ActionServlet</servlet-name>
  		<servlet-class>de.d3web.we.action.ActionServlet</servlet-class>
@@ -31,19 +39,39 @@
 	</servlet-mapping>
 
    <!--
-      This is new in 2.4.  This defines a servlet filter which filters all requests. 
+      WikiServletFilter defines a servlet filter which filters all requests. It was
+      introduced in JSPWiki 2.4.
+
+      In 2.7/2.8, the WikiServlet filter also performs an important security function:
+      it sets authentication status based on container credentials. It should generally
+      execute first. Note that if you configure a filter *before* this one that returns
+      non-null values for getUserPrincipal() or getRemoteUser(), WikiSecurityFilter
+      will pick the credentials up, and set the user's WikiSession state to
+      "authenticated." WikiServletFlter will also set the WikiSession's' state
+      to "authenticated" if jspwiki.properties property "jspwiki.cookieAuthentication"
+      is set to true, and the user possesses the correct authentication cookie.
+
+      Lastly, if jspwiki.properties property "jspwiki.cookieAssertions" is set to true,
+      WikiServletFilter will also set WikiSession state to "asserted" if the user
+      possesses the correct "assertion cookie."
    -->
 
    <filter>
       <filter-name>WikiServletFilter</filter-name>
       <filter-class>com.ecyrd.jspwiki.ui.WikiServletFilter</filter-class>
    </filter>
+   
+
    <filter>
       <filter-name>WikiJSPFilter</filter-name>
       <filter-class>com.ecyrd.jspwiki.ui.WikiJSPFilter</filter-class>
    </filter>
 
-   <filter-mapping>
+
+	<!-- Extensions Filter -->
+	
+
+   <filter-mapping> 
        <filter-name>WikiServletFilter</filter-name>
        <url-pattern>/attach/*</url-pattern>
    </filter-mapping>
@@ -82,7 +110,7 @@
    <listener>
       <listener-class>com.ecyrd.jspwiki.auth.SessionMonitor</listener-class>
    </listener>
-   
+
    <!--
        Now, let's define the XML-RPC interfaces.  You probably don't have to
        touch these.
@@ -106,8 +134,10 @@
    <!--
        OK, this then defines that our UTF-8 -capable server.
      -->
+     
 
-   <servlet>
+	
+	   <servlet>
        <servlet-name>XMLRPC-UTF8</servlet-name>
        <servlet-class>com.ecyrd.jspwiki.xmlrpc.RPCServlet</servlet-class>       
        <init-param>
@@ -119,7 +149,7 @@
            <param-name>prefix</param-name>
            <param-value>wiki</param-value>
        </init-param>
-   </servlet>
+   </servlet> 
 
    <!-- JSON AJAX API -->
    <servlet>
@@ -182,6 +212,22 @@
    </servlet-mapping>
 
    AND REMOVE ME TOO -->
+   
+   
+ 	<servlet-mapping>
+ 		<servlet-name>default</servlet-name>
+        <url-pattern>/KnowWEExtension/KBrepository/default_web*</url-pattern>
+   </servlet-mapping> 
+   
+   <servlet-mapping>
+ 		<servlet-name>default</servlet-name>
+        <url-pattern>/KnowWEExtension/convertedPDFs*</url-pattern>
+   </servlet-mapping>
+
+ 	<servlet-mapping>
+ 		<servlet-name>default</servlet-name>
+        <url-pattern>/KnowWEExtension/applets*</url-pattern>
+   </servlet-mapping> 
 
    <servlet-mapping>
        <servlet-name>AttachmentServlet</servlet-name>
