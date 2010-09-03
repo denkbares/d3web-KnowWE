@@ -33,6 +33,7 @@ import org.openrdf.query.TupleQueryResult;
 
 import de.d3web.we.core.semantic.DefaultURIContext;
 import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.SPARQLUtil;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.hermes.kdom.TimeEventType;
@@ -43,7 +44,6 @@ import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.utils.SPARQLUtil;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {

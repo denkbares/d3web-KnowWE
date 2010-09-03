@@ -22,7 +22,7 @@ package de.d3web.we.hermes;
 
 import java.util.HashMap;
 
-import de.d3web.we.core.semantic.TagEditPanel;
+import de.d3web.we.core.semantic.tagging.TagEditPanel;
 import de.d3web.we.kdom.rendering.PageAppendHandler;
 import de.d3web.we.taghandler.TagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
