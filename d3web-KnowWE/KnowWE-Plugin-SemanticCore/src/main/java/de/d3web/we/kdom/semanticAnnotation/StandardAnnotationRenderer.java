@@ -34,7 +34,7 @@ import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
-import de.d3web.we.kdom.renderer.ConditionalRenderer;
+import de.d3web.we.kdom.rendering.ConditionalRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
