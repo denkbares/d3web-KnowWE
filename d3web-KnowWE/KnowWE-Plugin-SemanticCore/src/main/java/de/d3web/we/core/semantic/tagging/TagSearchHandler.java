@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.core.semantic;
+package de.d3web.we.core.semantic.tagging;
 
 import java.util.Map;
 import java.util.ResourceBundle;

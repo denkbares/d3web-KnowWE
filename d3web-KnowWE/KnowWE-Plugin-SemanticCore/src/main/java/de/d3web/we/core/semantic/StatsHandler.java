@@ -34,6 +34,7 @@ import java.util.Map.Entry;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
+import de.d3web.we.core.semantic.tagging.TaggingMangler;
 import de.d3web.we.taghandler.AbstractTagHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
