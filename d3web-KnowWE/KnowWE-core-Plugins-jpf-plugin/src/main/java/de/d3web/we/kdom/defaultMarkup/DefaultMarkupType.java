@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
@@ -140,7 +141,7 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 			this.childrenTypes.add(new AnnotationType(parameter));
 		}
 		this.childrenTypes.add(new UnknownAnnotationType());
-		this.addSubtreeHandler(new DefaultMarkupSubtreeHandler(markup));
+		this.addSubtreeHandler(Priority.PRECOMPILE_HIGH, new DefaultMarkupSubtreeHandler(markup));
 		this.addSubtreeHandler(new DefaultMarkupOwlHandler(this));
 	}
 

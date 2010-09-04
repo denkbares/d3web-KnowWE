@@ -39,18 +39,22 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
  */
 public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 
-	private final boolean ignoreNamespaces;
+	private boolean ignorePackageCompile;
 
-	public SubtreeHandler(boolean ignoreNamespaces) {
-		this.ignoreNamespaces = ignoreNamespaces;
+	public SubtreeHandler(boolean ignorePackageCompile) {
+		this.ignorePackageCompile = ignorePackageCompile;
 	}
 
 	public SubtreeHandler() {
-		this.ignoreNamespaces = false;
+		this.ignorePackageCompile = false;
 	}
 
-	public boolean isIgnoringNamespaces() {
-		return this.ignoreNamespaces;
+	public void setIgnorePackageCompile(boolean ignore) {
+		this.ignorePackageCompile = ignore;
+	}
+
+	public boolean isIgnoringPackageCompile() {
+		return this.ignorePackageCompile;
 	}
 
 	/**

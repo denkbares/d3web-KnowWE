@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.TreeMap;
 
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -32,7 +31,6 @@ import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.core.packaging.PackageReference;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
@@ -44,7 +42,6 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.KDOMWarning;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
-import de.d3web.we.kdom.store.SectionStore;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -55,7 +52,8 @@ public class CompileFlag extends DefaultMarkupType {
 
 	// private static String PRIO_MAP_KEY = "prio_map_key";
 
-	private static String PACKAGEDEFS_SNAPSHOT_KEY = "packagedefs_snapshot_key";
+	// private static String PACKAGEDEFS_SNAPSHOT_KEY =
+	// "packagedefs_snapshot_key";
 
 	static {
 		m = new DefaultMarkup("Compile");
@@ -101,8 +99,9 @@ public class CompileFlag extends DefaultMarkupType {
 
 		public PackageReferenceType() {
 			this.sectionFinder = new AllTextSectionFinder();
-			this.addSubtreeHandler(Priority.PRECOMPILE, new CompileFlagCreateHandler());
-			this.addSubtreeHandler(Priority.POSTCOMPILE, new CompileFlagDestroyHandler());
+			this.addSubtreeHandler(Priority.PRECOMPILE_LOW, new CompileFlagCreateHandler());
+			// this.addSubtreeHandler(Priority.POSTCOMPILE, new
+			// CompileFlagDestroyHandler());
 			this.childrenTypes.add(new SinglePackageReference());
 		}
 
@@ -202,8 +201,6 @@ public class CompileFlag extends DefaultMarkupType {
 			string.append("/%\n");
 		}
 
-
-
 	}
 
 
@@ -233,103 +230,118 @@ public class CompileFlag extends DefaultMarkupType {
 				if (referedPackages.equals(article.getTitle())) continue;
 				List<Section<?>> tempPackageDefs = packageMng.getPackageDefinitions(referedPackages);
 				for (Section<?> packageDef : tempPackageDefs) {
-					if (!packageDef.getTitle().equals(
-							article.getTitle())) {
+					if (!packageDef.getTitle().equals(article.getTitle())) {
 						packageDefinitions.add(packageDef);
 					}
 				}
 			}
 
-			KnowWEUtils.storeObject(article, s, PACKAGEDEFS_SNAPSHOT_KEY,
-					packageDefinitions);
+			// KnowWEUtils.storeObject(article, s, PACKAGEDEFS_SNAPSHOT_KEY,
+			// packageDefinitions);
 
-			List<Section<?>> includedNamespaces = new ArrayList<Section<?>>();
+			List<Section<?>> referedPackages = new ArrayList<Section<?>>();
 
 			for (Section<?> packDef : packageDefinitions) {
 				List<Section<?>> nodes = new LinkedList<Section<?>>();
 				packDef.getAllNodesPostOrder(nodes);
-				includedNamespaces.addAll(nodes);
+				referedPackages.addAll(nodes);
 			}
 
-			TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
-					Priority.createPrioritySortedList(includedNamespaces);
+			article.getReviseIterator().addSectionsToRevise(referedPackages);
 
-			for (Priority priority : prioMap.descendingKeySet()) {
-				List<Section<? extends KnowWEObjectType>> prioList = prioMap.get(priority);
-				for (Section<? extends KnowWEObjectType> section : prioList) {
-					section.letSubtreeHandlersCreate(article, priority);
-				}
-			}
-			for (Section<?> namespaceDef : packageDefinitions) {
-				namespaceDef.setReusedStateRecursively(article.getTitle(), true);
-			}
+			// TreeMap<Priority, List<Section<? extends KnowWEObjectType>>>
+			// prioMap =
+			// Priority.createPrioritySortedList(referedPackages);
+			//
+			// for (Priority priority : prioMap.descendingKeySet()) {
+			// List<Section<? extends KnowWEObjectType>> prioList =
+			// prioMap.get(priority);
+			// for (Section<? extends KnowWEObjectType> section : prioList) {
+			// section.letSubtreeHandlersCreate(article, priority);
+			// }
+			// }
+			// for (Section<?> packageDef : packageDefinitions) {
+			// packageDef.setReusedStateRecursively(article.getTitle(), true);
+			// }
 
 			return null;
 		}
 
-	}
-
-	static class CompileFlagDestroyHandler extends SubtreeHandler<PackageReferenceType> {
-
-		public CompileFlagDestroyHandler() {
-			super(true);
-		}
-
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<PackageReferenceType> s) {
-			return null;
-		}
-
-		@Override
-		public boolean needsToDestroy(KnowWEArticle article, Section<PackageReferenceType> s) {
-			return true;
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
 		public void destroy(KnowWEArticle article, Section<PackageReferenceType> s) {
-
-			if (!s.isReusedBy(article.getTitle())) article.setFullParse(this);
-
-			if (!article.isFullParse()) {
-
-				List<Section<?>> storedNamespaceDefinitions = (List<Section<?>>) KnowWEUtils.getObjectFromLastVersion(
-						article, s, PACKAGEDEFS_SNAPSHOT_KEY);
-
-				List<Section<?>> nodes = new LinkedList<Section<?>>();
-				for (Section<?> nsDef : storedNamespaceDefinitions) {
-					nsDef.getAllNodesPostOrder(nodes);
-				}
-				for (Section<?> node : nodes) {
-					if (node.isReusedBy(article.getTitle())) {
-						SectionStore lastStore = KnowWEEnvironment.getInstance().getArticleManager(
-								article.getWeb()).getTypeStore().getLastSectionStore(
-								article.getTitle(),
-								node.getID());
-						if (lastStore != null) {
-							// reuse last section store
-							KnowWEEnvironment.getInstance().getArticleManager(
-									article.getWeb()).getTypeStore().putSectionStore(
-											article.getTitle(), node.getID(),
-									lastStore);
-						}
-					}
-				}
-
-				TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
-						Priority.createPrioritySortedList(nodes);
-
-				for (Priority priority : prioMap.descendingKeySet()) {
-					List<Section<? extends KnowWEObjectType>> prioList = prioMap.get(priority);
-					for (Section<? extends KnowWEObjectType> section : prioList) {
-						section.letSubtreeHandlersDestroy(article, priority);
-					}
-				}
-
-			}
-
-
+			article.setFullParse(this);
 		}
 
 	}
+
+	// static class CompileFlagDestroyHandler extends
+	// SubtreeHandler<PackageReferenceType> {
+	//
+	// public CompileFlagDestroyHandler() {
+	// super(true);
+	// }
+	//
+	// @Override
+	// public Collection<KDOMReportMessage> create(KnowWEArticle article,
+	// Section<PackageReferenceType> s) {
+	// return null;
+	// }
+	//
+	// @Override
+	// public boolean needsToDestroy(KnowWEArticle article,
+	// Section<PackageReferenceType> s) {
+	// return true;
+	// }
+	//
+	// @Override
+	// @SuppressWarnings("unchecked")
+	// public void destroy(KnowWEArticle article, Section<PackageReferenceType>
+	// s) {
+	//
+	// if (!s.isReusedBy(article.getTitle())) article.setFullParse(this);
+	//
+	// if (!article.isFullParse()) {
+	//
+	// List<Section<?>> storedNamespaceDefinitions = (List<Section<?>>)
+	// KnowWEUtils.getObjectFromLastVersion(
+	// article, s, PACKAGEDEFS_SNAPSHOT_KEY);
+	//
+	// List<Section<?>> nodes = new LinkedList<Section<?>>();
+	// for (Section<?> nsDef : storedNamespaceDefinitions) {
+	// nsDef.getAllNodesPostOrder(nodes);
+	// }
+	// for (Section<?> node : nodes) {
+	// if (node.isReusedBy(article.getTitle())) {
+	// SectionStore lastStore =
+	// KnowWEEnvironment.getInstance().getArticleManager(
+	// article.getWeb()).getTypeStore().getLastSectionStore(
+	// article.getTitle(),
+	// node.getID());
+	// if (lastStore != null) {
+	// // reuse last section store
+	// KnowWEEnvironment.getInstance().getArticleManager(
+	// article.getWeb()).getTypeStore().putSectionStore(
+	// article.getTitle(), node.getID(),
+	// lastStore);
+	// }
+	// }
+	// }
+	//
+	// TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
+	// Priority.createPrioritySortedList(nodes);
+	//
+	// for (Priority priority : prioMap.descendingKeySet()) {
+	// List<Section<? extends KnowWEObjectType>> prioList =
+	// prioMap.get(priority);
+	// for (Section<? extends KnowWEObjectType> section : prioList) {
+	// section.letSubtreeHandlersDestroy(article, priority);
+	// }
+	// }
+	//
+	// }
+	//
+	//
+	// }
+	//
+	// }
 }

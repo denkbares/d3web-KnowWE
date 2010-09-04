@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,10 +38,12 @@ import de.d3web.we.event.ArticleCreatedEvent;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.FullParseEvent;
 import de.d3web.we.event.KDOMCreatedEvent;
+import de.d3web.we.kdom.ReviseIterator.SectionPriorityTuple;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.store.KnowWESectionInfoStorage;
+import de.d3web.we.kdom.store.SectionStore;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.validation.Validator;
 
@@ -91,6 +92,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	private boolean postDestroyFullParse;
 
 	private boolean secondBuild;
+	
+	private ReviseIterator reviseIterator;
 
 	private final Set<String> handlersUnableToDestroy = new HashSet<String>();
 
@@ -170,8 +173,9 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		// create new Section, here the KDOM is created recursively
 		sec = Section.createSection(text, this, null, 0, this, null, false);
 
-		if (this.fullParse)
- EventManager.getInstance().fireEvent(new FullParseEvent(this));
+		if (this.fullParse) {
+			EventManager.getInstance().fireEvent(new FullParseEvent(this));
+		}
 
 		sec.absolutePositionStartInArticle = 0;
 		sec.setReusedSuccessorStateRecursively(false);
@@ -195,7 +199,26 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		}
 
 		// destroy no longer used knowledge and stuff from the last article
-		if (!this.fullParse) reviseLastArticleToDestroy();
+		if (!this.fullParse && this.lastVersion != null) {
+			lastVersion.reviseIterator.reset();
+			while (lastVersion.reviseIterator.hasNext()) {
+				SectionPriorityTuple tuple = lastVersion.reviseIterator.next();
+				Section<?> s = tuple.getSection();
+				if (!s.getTitle().equals(title) && s.isReusedBy(title)) {
+					// get last section store, if this is a section from a
+					// different article but is reused by this article
+					SectionStore lastStore = KnowWEEnvironment.getInstance().getArticleManager(
+							web).getTypeStore().getLastSectionStore(title, s.getID());
+					if (lastStore != null) {
+						KnowWEEnvironment.getInstance().getArticleManager(
+								web).getTypeStore().putSectionStore(
+										title, s.getID(), lastStore);
+					}
+				}
+				s.letSubtreeHandlersDestroy(this, tuple.getPriority());
+			}
+
+		}
 		this.postDestroy = true;
 
 		env.getArticleManager(web).unregisterSectionizingArticles(title);
@@ -224,7 +247,15 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		}
 
 		// call SubTreeHandler for all Sections to create
-		reviseCurrentArticleToCreate();
+		reviseIterator = new ReviseIterator();
+		reviseIterator.addSectionsToRevise(getAllNodesPostOrder());
+		while (reviseIterator.hasNext()) {
+			SectionPriorityTuple tuple = reviseIterator.next();
+			tuple.getSection().letSubtreeHandlersCreate(this, tuple.getPriority());
+		}
+		for (Section<?> s : reviseIterator.getAllSections()) {
+			s.setReusedBy(title, true);
+		}
 
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.FINE,
@@ -403,11 +434,14 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return nodes;
 	}
 
-	public List<Section<? extends KnowWEObjectType>> getAllNodesToDestroyPostOrder() {
-		List<Section<? extends KnowWEObjectType>> nodes = new LinkedList<Section<? extends KnowWEObjectType>>();
-		if (lastVersion != null) lastVersion.sec.getAllNodesToDestroyPostOrder(this, nodes);
-		return nodes;
-	}
+	// public List<Section<? extends KnowWEObjectType>>
+	// getAllNodesToDestroyPostOrder() {
+	// List<Section<? extends KnowWEObjectType>> nodes = new
+	// LinkedList<Section<? extends KnowWEObjectType>>();
+	// if (lastVersion != null)
+	// lastVersion.sec.getAllNodesToDestroyPostOrder(this, nodes);
+	// return nodes;
+	// }
 
 	@Override
 	public String toString() {
@@ -418,34 +452,36 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	// return this.activeIncludes;
 	// }
 
-	private void reviseLastArticleToDestroy() {
-
-		List<Section<?>> nodes = getAllNodesToDestroyPostOrder();
-		// Collections.reverse(nodes);
-		TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
-				Priority.createPrioritySortedList(nodes);
-
-		for (Priority priority : prioMap.descendingKeySet()) {
-			List<Section<? extends KnowWEObjectType>> prioList = prioMap.get(priority);
-			for (Section<? extends KnowWEObjectType> section : prioList) {
-				section.letSubtreeHandlersDestroy(this, priority);
-			}
-
-		}
-	}
-
-	private void reviseCurrentArticleToCreate() {
-		TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
-				Priority.createPrioritySortedList(getAllNodesPostOrder());
-
-		for (Priority priority : prioMap.descendingKeySet()) {
-			List<Section<? extends KnowWEObjectType>> prioList = prioMap.get(priority);
-			for (Section<? extends KnowWEObjectType> section : prioList) {
-				section.letSubtreeHandlersCreate(this, priority);
-			}
-		}
-		sec.setReusedStateRecursively(title, true);
-	}
+	// private void reviseLastArticleToDestroy() {
+	//
+	// List<Section<?>> nodes = getAllNodesToDestroyPostOrder();
+	// // Collections.reverse(nodes);
+	// TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
+	// Priority.createPrioritySortedList(nodes);
+	//
+	// for (Priority priority : prioMap.descendingKeySet()) {
+	// List<Section<? extends KnowWEObjectType>> prioList =
+	// prioMap.get(priority);
+	// for (Section<? extends KnowWEObjectType> section : prioList) {
+	// section.letSubtreeHandlersDestroy(this, priority);
+	// }
+	//
+	// }
+	// }
+	//
+	// private void reviseCurrentArticleToCreate() {
+	// TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
+	// Priority.createPrioritySortedList(getAllNodesPostOrder());
+	//
+	// for (Priority priority : prioMap.descendingKeySet()) {
+	// List<Section<? extends KnowWEObjectType>> prioList =
+	// prioMap.get(priority);
+	// for (Section<? extends KnowWEObjectType> section : prioList) {
+	// section.letSubtreeHandlersCreate(this, priority);
+	// }
+	// }
+	// sec.setReusedStateRecursively(title, true);
+	// }
 
 	// // This method is needed for the case that Sections get reused and are
 	// flagged
@@ -476,6 +512,10 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 	public KnowWEObjectType getRootType() {
 		return getAllowedChildrenTypes().get(0);
+	}
+
+	public ReviseIterator getReviseIterator() {
+		return this.reviseIterator;
 	}
 
 	public void setFullParse(SubtreeHandler<?> source) {

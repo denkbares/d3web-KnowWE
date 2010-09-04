@@ -46,9 +46,14 @@ public class KnowWEPackageManager implements EventListener {
 
 	private final String web;
 
-	private final Map<String, LinkedList<Section<?>>> packageDefinitionsMap = new HashMap<String, LinkedList<Section<?>>>();
+	private final Map<String, LinkedList<Section<?>>> packageDefinitionsMap =
+			new HashMap<String, LinkedList<Section<?>>>();
 
-	private final Map<String, HashSet<Section<? extends PackageReference>>> packageReferencesMap = new HashMap<String, HashSet<Section<? extends PackageReference>>>();
+	private final Map<String, HashSet<Section<? extends PackageReference>>> packageReferenceMap =
+			new HashMap<String, HashSet<Section<? extends PackageReference>>>();
+
+	private final Map<String, HashSet<String>> referencedPackagesMap =
+			new HashMap<String, HashSet<String>>();
 
 	private final Set<String> changedPackages = new HashSet<String>();
 
@@ -73,6 +78,17 @@ public class KnowWEPackageManager implements EventListener {
 				packageDefinitionsMap.put(packageName, packageList);
 			}
 			packageList.add(s);
+			for (String title : getArticlesReferingTo(packageName)) {
+				boolean alreadyCompiling = false;
+				if (title.equals(s.getTitle())) {
+					HashSet<String> referencedPackages = referencedPackagesMap.get(s.getTitle());
+					if ((referencedPackages != null && referencedPackages.contains(s.getTitle()))
+							|| AUTOCOMPILE_ARTICLE) {
+						alreadyCompiling = true;
+					}
+				}
+				if (!alreadyCompiling) s.setReusedStateRecursively(title, false);
+			}
 			changedPackages.add(packageName);
 		}
 	}
@@ -92,7 +108,7 @@ public class KnowWEPackageManager implements EventListener {
 					// this Section any longer
 					Set<String> includingArticles = getArticlesReferingTo(packageName);
 					for (String article : includingArticles) {
-						if (s.isReusedBy(article)) s.setReusedStateRecursively(article, false);
+						s.setReusedStateRecursively(article, false);
 					}
 				}
 				if (packageList.isEmpty()) packageDefinitionsMap.remove(packageName);
@@ -114,7 +130,7 @@ public class KnowWEPackageManager implements EventListener {
 			}
 		}
 		for (HashSet<Section<? extends PackageReference>> set : new ArrayList<HashSet<Section<? extends PackageReference>>>(
-				packageReferencesMap.values())) {
+				packageReferenceMap.values())) {
 			List<Section<? extends PackageReference>> sectionsToRemove =
 					new ArrayList<Section<? extends PackageReference>>();
 			for (Section<? extends PackageReference> sec : set) {
@@ -175,16 +191,25 @@ public class KnowWEPackageManager implements EventListener {
 		}
 		
 		HashSet<Section<? extends PackageReference>> packageReferences =
-				packageReferencesMap.get(article.getTitle());
+				packageReferenceMap.get(article.getTitle());
 		if (packageReferences == null) {
 			packageReferences = new HashSet<Section<? extends PackageReference>>(4);
-			packageReferencesMap.put(article.getTitle(), packageReferences);
+			packageReferenceMap.put(article.getTitle(), packageReferences);
 		}
 		packageReferences.add(s);
+
+		HashSet<String> referencedPackages =
+				referencedPackagesMap.get(article.getTitle());
+		if (referencedPackages == null) {
+			referencedPackages = new HashSet<String>();
+			referencedPackagesMap.put(article.getTitle(), referencedPackages);
+		}
+		referencedPackages.addAll(s.get().getPackagesToReferTo(s));
 	}
 
 	public boolean unregisterPackageReference(KnowWEArticle article, Section<? extends PackageReference> s) {
-		Set<Section<? extends PackageReference>> packageReferences = packageReferencesMap.get(article.getTitle());
+
+		Set<Section<? extends PackageReference>> packageReferences = packageReferenceMap.get(article.getTitle());
 
 		if (packageReferences != null) {
 			boolean removed = packageReferences.remove(s);
@@ -205,6 +230,9 @@ public class KnowWEPackageManager implements EventListener {
 					// referenced in another PackageReference in this
 					// article
 					if (!stillReferenced) {
+						// also remove package from referencedPackagesMap
+						referencedPackagesMap.get(article.getTitle()).remove(referencedPackage);
+
 						List<Section<?>> packageDefinitions;
 						if (referencedPackage.equals(article.getTitle())) {
 							packageDefinitions = new ArrayList<Section<?>>(1);
@@ -220,7 +248,12 @@ public class KnowWEPackageManager implements EventListener {
 					}
 				}
 			}
-			if (packageReferences.isEmpty()) packageReferencesMap.remove(article.getTitle());
+			if (packageReferences.isEmpty()) {
+				packageReferenceMap.remove(article.getTitle());
+			}
+			if (referencedPackagesMap.get(article.getTitle()).isEmpty()) {
+				referencedPackagesMap.remove(article.getTitle());
+			}
 			return removed;
 		}
 		return false;
@@ -235,8 +268,8 @@ public class KnowWEPackageManager implements EventListener {
 	 */
 	public Set<String> getArticlesReferingTo(String packageName) {
 		Set<String> matchingArticles = new HashSet<String>();
-		for (String article : packageReferencesMap.keySet()) {
-			for (Section<? extends PackageReference> packageReference : packageReferencesMap.get(article)) {
+		for (String article : packageReferenceMap.keySet()) {
+			for (Section<? extends PackageReference> packageReference : packageReferenceMap.get(article)) {
 				if (packageReference.get().getPackagesToReferTo(packageReference).contains(
 						packageName)) {
 					matchingArticles.add(article);
@@ -255,13 +288,11 @@ public class KnowWEPackageManager implements EventListener {
 	 * @return
 	 */
 	public Set<String> getReferencedPackages(KnowWEArticle article) {
-		Set<Section<? extends PackageReference>> packageReferences = getPackageReferences(article);
-		HashSet<String> referencedPackages = new HashSet<String>();
-		for (Section<? extends PackageReference> packReference : packageReferences) {
-			List<String> tempPackages = packReference.get().getPackagesToReferTo(packReference);
-			if (tempPackages != null) referencedPackages.addAll(tempPackages);
-		}
-		return Collections.unmodifiableSet(referencedPackages);
+		Set<String> referencedPackages = referencedPackagesMap.get(article.getTitle());
+		return referencedPackages == null
+				? Collections.unmodifiableSet(new HashSet<String>(0))
+				: Collections.unmodifiableSet(new HashSet<String>(
+						referencedPackages));
 	}
 
 	/**
@@ -272,7 +303,7 @@ public class KnowWEPackageManager implements EventListener {
 	 * @return
 	 */
 	public Set<Section<? extends PackageReference>> getPackageReferences(KnowWEArticle article) {
-		Set<Section<? extends PackageReference>> packageReferences = packageReferencesMap.get(article.getTitle());
+		Set<Section<? extends PackageReference>> packageReferences = packageReferenceMap.get(article.getTitle());
 		return packageReferences == null
 				? Collections.unmodifiableSet(new HashSet<Section<? extends PackageReference>>(0))
 				: Collections.unmodifiableSet(new HashSet<Section<? extends PackageReference>>(
@@ -282,7 +313,7 @@ public class KnowWEPackageManager implements EventListener {
 	public void updatePackageReferences(KnowWEArticle article) {
 		Set<String> articlesToRevise = new HashSet<String>();
 
-		for (HashSet<Section<? extends PackageReference>> referencesSet : packageReferencesMap.values()) {
+		for (HashSet<Section<? extends PackageReference>> referencesSet : packageReferenceMap.values()) {
 			for (Section<? extends PackageReference> packReference : referencesSet) {
 				List<String> packagesToReference = packReference.get().getPackagesToReferTo(
 						packReference);

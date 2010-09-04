@@ -71,6 +71,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	private HashSet<String> reusedBy = null;
 
+	private HashSet<String> alreadyCompiledBy = null;
+
 	private List<Integer> position = null;
 
 	private List<Integer> lastPositions = null;
@@ -130,11 +132,11 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	protected List<Section<? extends KnowWEObjectType>> children =
 			new ArrayList<Section<? extends KnowWEObjectType>>(5);
 
-	/**
-	 * The last child-nodes of this KDOM-node. They get only set, when the
-	 * normal list of children gets replaced (e.g. with includes).
-	 */
-	protected List<Section<? extends KnowWEObjectType>> lastChildren = null;
+	// /**
+	// * The last child-nodes of this KDOM-node. They get only set, when the
+	// * normal list of children gets replaced (e.g. with includes).
+	// */
+	// protected List<Section<? extends KnowWEObjectType>> lastChildren = null;
 
 	/**
 	 * The father section of this KDOM-node. Used for upwards navigation through
@@ -451,16 +453,17 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		this.children = children;
 	}
 
-	/**
-	 * Use for KDOM creation and editing only!
-	 * 
-	 * @created 26.08.2010
-	 * @param children
-	 */
-	public void setLastChildren(List<Section<? extends KnowWEObjectType>> children) {
-		this.possiblySharedChildren = true;
-		this.lastChildren = children;
-	}
+	// /**
+	// * Use for KDOM creation and editing only!
+	// *
+	// * @created 26.08.2010
+	// * @param children
+	// */
+	// public void setLastChildren(List<Section<? extends KnowWEObjectType>>
+	// children) {
+	// this.possiblySharedChildren = true;
+	// this.lastChildren = children;
+	// }
 
 	/**
 	 * @return the list of child nodes
@@ -533,30 +536,31 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		nodes.add(this);
 	}
 
-	/**
-	 * Collects all Sections that were not reused by or changed their position
-	 * in the given article.
-	 * 
-	 * @created 30.05.2010
-	 * @param article is the article calling this method
-	 * @param nodes is the list of nodes to store the collected nodes in
-	 */
-	public void getAllNodesToDestroyPostOrder(KnowWEArticle article, List<Section<? extends KnowWEObjectType>> nodes) {
-
-		List<Section<?>> children = this.getChildren();
-
-		if (KnowWEEnvironment.getInstance().getArticleManager(
-				article.getWeb()).getDependenciesUpdatingArticles().contains(
-				article.getTitle()) && lastChildren != null) {
-			children = lastChildren;
-		}
-
-		for (Section<? extends KnowWEObjectType> child : children) {
-			child.getAllNodesToDestroyPostOrder(article, nodes);
-		}
-
-		nodes.add(this);
-	}
+	// /**
+	// * Collects all Sections that were not reused by or changed their position
+	// * in the given article.
+	// *
+	// * @created 30.05.2010
+	// * @param article is the article calling this method
+	// * @param nodes is the list of nodes to store the collected nodes in
+	// */
+	// public void getAllNodesToDestroyPostOrder(KnowWEArticle article,
+	// List<Section<? extends KnowWEObjectType>> nodes) {
+	//
+	// List<Section<?>> children = this.getChildren();
+	//
+	// if (KnowWEEnvironment.getInstance().getArticleManager(
+	// article.getWeb()).getDependenciesUpdatingArticles().contains(
+	// article.getTitle()) && lastChildren != null) {
+	// children = lastChildren;
+	// }
+	//
+	// for (Section<? extends KnowWEObjectType> child : children) {
+	// child.getAllNodesToDestroyPostOrder(article, nodes);
+	// }
+	//
+	// nodes.add(this);
+	// }
 
 	/**
 	 * returns father node
@@ -1321,6 +1325,10 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return reusedBy == null ? false : reusedBy.contains(title);
 	}
 
+	public boolean isAlreadyCompiledBy(String title) {
+		return alreadyCompiledBy == null ? false : alreadyCompiledBy.contains(title);
+	}
+
 	public Set<String> isReusedBy() {
 		return reusedBy == null
 				? Collections.unmodifiableSet(new HashSet<String>(0))
@@ -1398,6 +1406,27 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	// return false;
 	// }
 	// }
+	public void setAlreadyCompiledBy(String title, boolean reused) {
+		if (reused) {
+			if (alreadyCompiledBy == null) alreadyCompiledBy = new HashSet<String>(4);
+			alreadyCompiledBy.add(title);
+		}
+		else {
+			if (alreadyCompiledBy != null) alreadyCompiledBy.remove(title);
+		}
+	}
+
+	/**
+	 * Affects all Sections this Section is connected to (also included
+	 * Sections).
+	 */
+	public void setAlreadyCompiledStateRecursively(String title, boolean
+			alreadyCompiled) {
+		setAlreadyCompiledBy(title, alreadyCompiled);
+		for (Section<? extends KnowWEObjectType> child : getChildren()) {
+			child.setAlreadyCompiledStateRecursively(title, alreadyCompiled);
+		}
+	}
 
 	public void setReusedBy(String title, boolean reused) {
 		if (reused) {
@@ -1482,7 +1511,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	private boolean isMatchingPackageName(KnowWEArticle article, SubtreeHandler<T> h) {
 
-		if (h.isIgnoringNamespaces() || KnowWEPackageManager.AUTOCOMPILE_ARTICLE) {
+		if (h.isIgnoringPackageCompile() || KnowWEPackageManager.AUTOCOMPILE_ARTICLE) {
 			return true;
 		}
 		else {
@@ -1521,12 +1550,12 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	@SuppressWarnings("unchecked")
 	public final void letSubtreeHandlerCreate(KnowWEArticle article, SubtreeHandler handler) {
-		if (isMatchingPackageName(article, handler) && handler.needsToCreate(article, this)) {
+		if (!isAlreadyCompiledBy(article.getTitle()) && isMatchingPackageName(article, handler)
+				&& handler.needsToCreate(article, this)) {
 			try {
 				// long time = System.currentTimeMillis();
 				KDOMReportMessage.storeMessages(article, this, handler.getClass(), handler.create(
 						article, this));
-				setReusedBy(article.getTitle(), true);
 				// System.out.println(handler.getClass().getSimpleName());
 				// System.out.println(handler.getClass().getSimpleName() + " "
 				// + (System.currentTimeMillis() - time));
@@ -1589,7 +1618,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	public final void letSubtreeHandlerDestroy(KnowWEArticle article, SubtreeHandler handler) {
 		if (handler.needsToDestroy(article, this)) {
 			handler.destroy(article, this);
-			setReusedBy(article.getTitle(), false);
 			// System.out.println(handler.getClass().getSimpleName());
 		}
 	}

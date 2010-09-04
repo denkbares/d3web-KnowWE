@@ -61,13 +61,16 @@ public class KnowWEIncludeManager implements EventListener {
 	private final Map<Section<Include>, List<Section<? extends KnowWEObjectType>>> src2targets =
 			new HashMap<Section<Include>, List<Section<? extends KnowWEObjectType>>>();
 	
-	/**
-	 * This map stores for every Include the last Section they were including,
-	 * if the target of the Include changes. Key is the Include Section, value
-	 * the last included Section.
-	 */
-	private final Map<Section<Include>, List<Section<? extends KnowWEObjectType>>> src2lastTargets =
-				new HashMap<Section<Include>, List<Section<? extends KnowWEObjectType>>>();
+
+	// /**
+	// * This map stores for every Include the last Section they were including,
+	// * if the target of the Include changes. Key is the Include Section, value
+	// * the last included Section.
+	// */
+	// private final Map<Section<Include>, List<Section<? extends
+	// KnowWEObjectType>>> src2lastTargets =
+	// new HashMap<Section<Include>, List<Section<? extends
+	// KnowWEObjectType>>>();
 
 	/**
 	 * This map stores for every title a set of Includes that include Sections
@@ -381,10 +384,12 @@ public class KnowWEIncludeManager implements EventListener {
 				// overwrite the last target with the new
 				src2targets.put(inc, targets);
 				inc.setChildren(targets);
-				// put the last target in the according map to make it available
-				// for destruction of the stuff produced by its SubtreeHandlers
-				src2lastTargets.put(inc, lastTargets);
-				inc.setLastChildren(lastTargets);
+				// // put the last target in the according map to make it
+				// available
+				// // for destruction of the stuff produced by its
+				// SubtreeHandlers
+				// src2lastTargets.put(inc, lastTargets);
+				// inc.setLastChildren(lastTargets);
 				if (Include.getIncludeAddress(inc) != null) {
 					getIncludingSectionsForArticle(
 							Include.getIncludeAddress(inc).getTargetArticle()).add(inc);
@@ -407,10 +412,11 @@ public class KnowWEIncludeManager implements EventListener {
 				}
 			}
 			else {
-				// if there are last targets for the given Include from a
-				// previous update, they are not longer up to date and need to
-				// be removed
-				src2lastTargets.remove(inc);
+				// // if there are last targets for the given Include from a
+				// // previous update, they are not longer up to date and need
+				// to
+				// // be removed
+				// src2lastTargets.remove(inc);
 
 				// if the targets are the same, but because of an update of the
 				// targets article, there are some new, not reused successors
@@ -608,7 +614,7 @@ public class KnowWEIncludeManager implements EventListener {
 		for (Section<Include> inc : includes) {
 			// remove from maps...
 			src2targets.remove(inc);
-			src2lastTargets.remove(inc);
+			// src2lastTargets.remove(inc);
 			// also delete the Include from the set of Includes of
 			// the target article
 			if (Include.getIncludeAddress(inc) != null) {

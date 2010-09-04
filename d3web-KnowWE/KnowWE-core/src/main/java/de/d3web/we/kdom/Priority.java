@@ -20,16 +20,24 @@
 
 package de.d3web.we.kdom;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.HashMap;
 import java.util.TreeSet;
 
 public class Priority implements Comparable<Priority> {
 
-	private static final TreeSet<Priority> registeredPriorities = new TreeSet<Priority>();
+	private static final TreeSet<Priority> registeredPrioritiesTree = new TreeSet<Priority>();
 
-	public static final Priority PRECOMPILE = new Priority(100000);
+	private static final HashMap<Integer, Priority> registeredPrioritiesHash = new HashMap<Integer, Priority>();
+
+	/**
+	 * DON'T USE THIS PRIORITY FOR HANDLERS CREATING KNOWLEDGE!!!
+	 */
+	public static final Priority PRECOMPILE_HIGH = new Priority(200000);
+
+	/**
+	 * DON'T USE THIS PRIORITY FOR HANDLERS CREATING KNOWLEDGE!!!
+	 */
+	public static final Priority PRECOMPILE_LOW = new Priority(100000);
 
 	public static final Priority HIGHEST = new Priority(300);
 
@@ -45,13 +53,12 @@ public class Priority implements Comparable<Priority> {
 
 	public static final Priority LOWEST = new Priority(-300);
 
-	public static final Priority POSTCOMPILE = new Priority(-100000);
-
 	private final int value;
 
 	private Priority(int value) {
 		this.value = value;
-		registeredPriorities.add(this);
+		registeredPrioritiesTree.add(this);
+		registeredPrioritiesHash.put(value, this);
 	}
 
 	// private to prevent usage
@@ -64,7 +71,7 @@ public class Priority implements Comparable<Priority> {
 	}
 
 	public static TreeSet<Priority> getRegisteredPriorities() {
-		return registeredPriorities;
+		return registeredPrioritiesTree;
 	}
 
 	/**
@@ -85,6 +92,10 @@ public class Priority implements Comparable<Priority> {
 	 */
 	public static Priority decrement(Priority p) {
 		return getRegisteredPriorities().lower(p);
+	}
+
+	public static Priority getPriority(int value) {
+		return registeredPrioritiesHash.get(value);
 	}
 
 	@Override
@@ -110,39 +121,46 @@ public class Priority implements Comparable<Priority> {
 		return String.valueOf(value);
 	}
 
-	/**
-	 * Creates a Map of Lists with Sections that contain SubTreeHandlers with a
-	 * certain Priority. The Lists are mapped by this common Priority of the
-	 * SubTreeHandlers.
-	 * <p />
-	 * The Sections in each List of the returned Map occur in the same order as
-	 * they occur in the given List of Sections.
-	 * <p />
-	 * Sections may appear in multiple Lists, if they contain multiple
-	 * SubtreeHandlers with different Priorities.
-	 * 
-	 * @param sections
-	 */
-	public static TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> createPrioritySortedList(List<Section<? extends KnowWEObjectType>> sections) {
-
-		TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> priorityMap = new TreeMap<Priority, List<Section<? extends KnowWEObjectType>>>();
-
-		for (Section<? extends KnowWEObjectType> section : sections) {
-
-			for (Priority p : section.getObjectType().getSubtreeHandlers().keySet()) {
-
-				List<Section<? extends KnowWEObjectType>> singlePrioList = priorityMap.get(p);
-
-				if (singlePrioList == null) {
-					singlePrioList = new ArrayList<Section<? extends KnowWEObjectType>>();
-					priorityMap.put(p, singlePrioList);
-				}
-				singlePrioList.add(section);
-			}
-		}
-
-		return priorityMap;
-
-	}
+	// /**
+	// * Creates a Map of Lists with Sections that contain SubTreeHandlers with
+	// a
+	// * certain Priority. The Lists are mapped by this common Priority of the
+	// * SubTreeHandlers.
+	// * <p />
+	// * The Sections in each List of the returned Map occur in the same order
+	// as
+	// * they occur in the given List of Sections.
+	// * <p />
+	// * Sections may appear in multiple Lists, if they contain multiple
+	// * SubtreeHandlers with different Priorities.
+	// *
+	// * @param sections
+	// */
+	// public static TreeMap<Priority, List<Section<? extends
+	// KnowWEObjectType>>> createPrioritySortedList(List<Section<? extends
+	// KnowWEObjectType>> sections) {
+	//
+	// TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> priorityMap
+	// = new TreeMap<Priority, List<Section<? extends KnowWEObjectType>>>();
+	//
+	// for (Section<? extends KnowWEObjectType> section : sections) {
+	//
+	// for (Priority p : section.getObjectType().getSubtreeHandlers().keySet())
+	// {
+	//
+	// List<Section<? extends KnowWEObjectType>> singlePrioList =
+	// priorityMap.get(p);
+	//
+	// if (singlePrioList == null) {
+	// singlePrioList = new ArrayList<Section<? extends KnowWEObjectType>>();
+	// priorityMap.put(p, singlePrioList);
+	// }
+	// singlePrioList.add(section);
+	// }
+	// }
+	//
+	// return priorityMap;
+	//
+	// }
 
 }

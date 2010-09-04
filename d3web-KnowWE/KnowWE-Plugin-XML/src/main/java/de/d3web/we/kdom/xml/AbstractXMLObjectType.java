@@ -29,6 +29,7 @@ import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
@@ -180,7 +181,7 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 		childrenTypes.add(0, new XMLHead());
 		childrenTypes.add(1, new XMLTail());
 		this.sectionFinder = new XMLSectionFinder(anyXML ? null : xmlTagName);
-		this.addSubtreeHandler(new RegisterPackageDefinitionHandler());
+		this.addSubtreeHandler(Priority.PRECOMPILE_HIGH, new RegisterPackageDefinitionHandler());
 	}
 
 	public String getXMLTagName() {

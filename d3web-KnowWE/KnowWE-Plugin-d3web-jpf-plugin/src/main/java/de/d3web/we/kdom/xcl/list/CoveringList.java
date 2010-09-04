@@ -182,7 +182,9 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 				// TODO: handle this case...
 				Section<SolutionDefinition> solutionDef = getCorrespondingSolutionDef(article, s);
-				if (solutionDef == null) return false;
+				if (solutionDef == null) {
+					return false;
+				}
 
 				return super.needsToCreate(article, s)
 						|| !solutionDef.isReusedBy(article.getTitle())

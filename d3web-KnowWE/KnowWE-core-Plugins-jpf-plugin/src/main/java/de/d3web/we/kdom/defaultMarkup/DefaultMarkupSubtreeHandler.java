@@ -34,7 +34,7 @@ import de.d3web.we.kdom.defaultMarkup.DefaultMarkup.Annotation;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
-public class DefaultMarkupSubtreeHandler extends SubtreeHandler {
+public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupType> {
 
 	private final DefaultMarkup markup;
 
@@ -45,7 +45,7 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler {
 
 
 	@Override
-	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section markupSection) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<DefaultMarkupType> markupSection) {
 
 		List<Message> msgs = new ArrayList<Message>();
 
@@ -77,8 +77,8 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler {
 		}
 
 		// check unrecognized annotations
-		List<Section<?>> unknownSections = markupSection.findChildrenOfType(UnknownAnnotationType.class);
-		for (Section<?> annotationSection : unknownSections) {
+		List<Section<UnknownAnnotationType>> unknownSections = markupSection.findChildrenOfType(UnknownAnnotationType.class);
+		for (Section<UnknownAnnotationType> annotationSection : unknownSections) {
 			String name = UnknownAnnotationType.getName(annotationSection);
 			Message message = new Message(Message.WARNING, "The annotation @" + name
 					+ " is not known to KnowWE. It will be ignored.", "", -1, "");
@@ -105,7 +105,7 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler {
 	}
 
 	@Override
-	public void destroy(KnowWEArticle article, Section markupSection) {
+	public void destroy(KnowWEArticle article, Section<DefaultMarkupType> markupSection) {
 		// TODO: refactor this to somewhere else
 		Annotation packageAnno = this.markup.getAnnotation(KnowWEPackageManager.ATTRIBUTE_ENAME);
 		if (packageAnno != null && markupSection.getTitle().equals(article.getTitle())) {
