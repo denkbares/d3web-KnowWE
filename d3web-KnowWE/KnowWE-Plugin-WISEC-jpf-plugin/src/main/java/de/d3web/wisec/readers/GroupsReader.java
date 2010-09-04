@@ -55,6 +55,7 @@ public class GroupsReader extends WISECReader {
 			for (String substance : substances) {
 				if (!substance.matches("\\s*")) {
 					model.addToGroup(groupName, substance.trim());
+					model.activeSubstances.add(substance);
 				}
 			}
 		}

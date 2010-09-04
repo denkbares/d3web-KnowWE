@@ -47,8 +47,8 @@ public class WISECModel {
 
 	// new model from here
 
-	// the names of all known substances
-	public Collection<String> substances = new HashSet<String>();
+	// the CAS no. of all known substances
+	public Collection<String> substancesByCAS = new HashSet<String>();
 	// the names of all active substances (subset of substances)
 	public Collection<String> activeSubstances = new HashSet<String>();
 	// all imported source lists
@@ -142,18 +142,17 @@ public class WISECModel {
 
 	private void updateSubstanceOccurences(SubstanceList substanceList) {
 		for (Substance substance : substanceList.substances) {
-			String substanceName = substance.getName();
-			substances.add(substanceName);
-			Collection<SubstanceList> lists = substanceInList.get(substanceName);
+			String casNo = substance.getName();
+			substancesByCAS.add(casNo);
+			Collection<SubstanceList> lists = substanceInList.get(casNo);
 			if (lists == null) {
 				lists = new HashSet<SubstanceList>();
 			}
 			lists.add(substanceList);
-			substanceInList.put(substanceName, lists);
+			substanceInList.put(casNo, lists);
 			update("EC_No", CAS2EC, substance);
 			update("Chemical_name", CAS2ChemNames, substance);
 			update("IUPAC_name", CAS2IUPACname, substance);
-
 		}
 
 	}

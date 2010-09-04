@@ -58,7 +58,16 @@ public class Substance {
 				return values.get(key);
 			}
 		}
-		return "NONAME";
+		return "NOCAS";
+	}
+
+	public String getChemicalName() {
+		for (String key : values.keySet()) {
+			if (key.equalsIgnoreCase("Chemical_name")) {
+				return values.get(key);
+			}
+		}
+		return "NOCHEMNAME";
 	}
 
 	@Override
@@ -77,17 +86,6 @@ public class Substance {
 		if (getClass() != obj.getClass()) return false;
 		Substance other = (Substance) obj;
 		return other.getName().equals(getName());
-	}
-
-	@Deprecated
-	public String getCAS() {
-		for (String key : values.keySet()) {
-			if (key.equalsIgnoreCase("CAS_No")) {
-				return values.get(key);
-			}
-		}
-		return "NONAME";
-
 	}
 
 }

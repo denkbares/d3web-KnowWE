@@ -38,7 +38,8 @@ import de.d3web.wisec.readers.TeamsReader;
 import de.d3web.wisec.readers.WISECReader;
 import de.d3web.wisec.scoring.ScoringWeightsConfiguration;
 import de.d3web.wisec.writers.ActiveSubstancesWriter;
-import de.d3web.wisec.writers.AllSubstancesWriter;
+import de.d3web.wisec.writers.AllSubstancesChapterWriter;
+import de.d3web.wisec.writers.AllSubstancesOverviewWriter;
 import de.d3web.wisec.writers.GroupInfoWriter;
 import de.d3web.wisec.writers.GroupsWriter;
 import de.d3web.wisec.writers.OverviewWriter;
@@ -150,8 +151,8 @@ public class WISECExcelConverter {
 		writers.add(new SubstanceListsOverviewWriter(model,
 				outputDirectory));
 
-		writers.add(new AllSubstancesWriter(model, outputDirectory));
-
+		writers.add(new AllSubstancesChapterWriter(model, outputDirectory));
+		writers.add(new AllSubstancesOverviewWriter(model, outputDirectory));
 		writers.add(new ActiveSubstancesWriter(model, outputDirectory));
 
 		writers.add(new GroupsWriter(model, outputDirectory));

@@ -52,7 +52,7 @@ public class OverviewWriter extends WISECWriter {
 		writer.write("* [List of all substance lists | " + ALL_SUBSTANCE_LISTS + "] ("
 				+ model.substanceLists.size() + " lists)\n");
 		writer.write("* [List of all substances | " + ALL_SUBSTANCES + "] ("
-				+ model.activeSubstances.size() + " active of " + model.substances.size()
+				+ model.activeSubstances.size() + " active of " + model.substancesByCAS.size()
 				+ " substances)\n");
 		writer.write("\n\n");
 

@@ -93,7 +93,7 @@ public class TeamsWriter extends WISECWriter {
 	@Override
 	protected void writeBreadcrumb(Writer writer) throws IOException {
 		super.writeBreadcrumb(writer);
-		writer.write(" > [List of Substances|" + AllSubstancesWriter.FILENAME + "] > "
+		writer.write(" > [List of Substances|" + AllSubstancesOverviewWriter.FILENAME + "] > "
 				+ "[Active Substances | " + ActiveSubstancesWriter.FILENAME
 				+ "] > Assessment > Teams\n\n");
 	}

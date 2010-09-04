@@ -57,7 +57,7 @@ public class SubstanceInfoWriter extends WISECWriter {
 	}
 
 	private String findSubstanceWithName(String substanceName, WISECModel model) {
-		for (String substance : model.substances) {
+		for (String substance : model.substancesByCAS) {
 			if (substance.equalsIgnoreCase(substanceName)) {
 				return substance;
 			}
@@ -67,7 +67,7 @@ public class SubstanceInfoWriter extends WISECWriter {
 
 	protected void writeBreadcrumb(Writer writer, String substance) throws IOException {
 		super.writeBreadcrumb(writer);
-		writer.write(" > [List of Substances|" + AllSubstancesWriter.FILENAME + "] > "
+		writer.write(" > [List of Substances|" + AllSubstancesOverviewWriter.FILENAME + "] > "
 				+ "[Active Substances|" + ActiveSubstancesWriter.FILENAME + "] > " + substance
 				+ "\n\n");
 	}

@@ -88,7 +88,7 @@ public class TeamInfoWriter extends WISECWriter {
 
 	protected void writeBreadcrumb(Writer writer, String teamName) throws IOException {
 		super.writeBreadcrumb(writer);
-		writer.write(" > [List of Substances|" + AllSubstancesWriter.FILENAME + "] > "
+		writer.write(" > [List of Substances|" + AllSubstancesOverviewWriter.FILENAME + "] > "
 				+ "[Active Substances|" + ActiveSubstancesWriter.FILENAME + "] > Assessment > "
 				+ teamName
 				+ "\n\n");
