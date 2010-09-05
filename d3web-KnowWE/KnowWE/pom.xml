@@ -426,7 +426,7 @@
 				</dependency>
 				<dependency>
 					<groupId>cc.denkbar</groupId>
-					<artifactId>KnowWE-Plugin-MobileApplication-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-DenkbaresDialog-jpf-plugin</artifactId>
 					<version>0.2-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
@@ -455,7 +455,7 @@
 				</dependency>
 				<dependency>
 					<groupId>cc.denkbar</groupId>
-					<artifactId>KnowWE-Plugin-MobileApplication-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-DenkbaresDialog-jpf-plugin</artifactId>
 					<version>0.2-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
