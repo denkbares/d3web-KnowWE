@@ -30,6 +30,7 @@ import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.TextLine;
+import de.d3web.we.kdom.packaging.PackageRenderUtils;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
@@ -46,7 +47,7 @@ public class KopicSectionRenderer extends KnowWEDomRenderer {
 
 		StringBuilder builder = new StringBuilder();
 		String tooltip = null;
-
+		article = PackageRenderUtils.checkArticlesCompiling(article, sec, builder);
 		if (sec.getObjectType() instanceof AbstractKnowWEObjectType) {
 			Collection<Message> messages = AbstractKnowWEObjectType.getMessages(article, sec);
 			if (messages != null && !messages.isEmpty()) {

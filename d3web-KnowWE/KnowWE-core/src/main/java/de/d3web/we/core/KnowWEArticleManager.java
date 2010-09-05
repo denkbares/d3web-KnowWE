@@ -109,11 +109,11 @@ public class KnowWEArticleManager {
 	/**
 	 * Servs the KnowWEArticle for a given article name
 	 * 
-	 * @param id
+	 * @param title
 	 * @return
 	 */
-	public KnowWEArticle getArticle(String id) {
-		return articleMap.get(id);
+	public KnowWEArticle getArticle(String title) {
+		return articleMap.get(title);
 	}
 
 	public Iterator<KnowWEArticle> getArticleIterator() {
@@ -124,6 +124,10 @@ public class KnowWEArticleManager {
 		return articleMap.values();
 	}
 
+	public Set<String> getTitles() {
+		return new HashSet<String>(articleMap.keySet());
+	}
+
 	/**
 	 * Replaces KDOM-nodes with the given texts, but not in the KDOM itself. It
 	 * collects the originalTexts deep through the KDOM and appends the new text
@@ -131,23 +135,23 @@ public class KnowWEArticleManager {
 	 * Finally the article is saved with this new content.
 	 * 
 	 * @param map
-	 * @param articleName
+	 * @param title
 	 * @param nodesMap containing pairs of the nodeID and the new text for this
 	 *        node
 	 * @return
 	 */
-	public String replaceKDOMNodes(KnowWEParameterMap map, String articleName,
+	public String replaceKDOMNodes(KnowWEParameterMap map, String title,
 			Map<String, String> nodesMap) {
 		// String user = map.getUser();
 		String web = map.getWeb();
-		KnowWEArticle art = this.getArticle(articleName);
-		if (art == null) return "article not found: " + articleName;
+		KnowWEArticle art = this.getArticle(title);
+		if (art == null) return "article not found: " + title;
 		Section<KnowWEArticle> root = art.getSection();
 		StringBuffer newText = new StringBuffer();
 		appendTextReplaceNode(root, nodesMap, newText);
 
 		String newArticleSourceText = newText.toString();
-		KnowWEEnvironment.getInstance().saveArticle(web, articleName,
+		KnowWEEnvironment.getInstance().saveArticle(web, title,
 				newArticleSourceText, map);
 		// saveUpdatedArticle(new KnowWEArticle(newArticleSourceText,
 		// articleName,
@@ -161,16 +165,16 @@ public class KnowWEArticleManager {
 	 * (instead of the originalText) for the nodes with an ID in the nodesMap.
 	 * 
 	 * @param map
-	 * @param articleName
+	 * @param title
 	 * @param nodesMap containing pairs of the nodeID and the new text for this
 	 *        node
 	 * @return The content of the article with the text changes or an error
 	 *         String if the article wasn't found.
 	 */
 	public String replaceKDOMNodesWithoutSave(KnowWEParameterMap map,
-			String articleName, Map<String, String> nodesMap) {
-		KnowWEArticle art = this.getArticle(articleName);
-		if (art == null) return "article not found: " + articleName;
+			String title, Map<String, String> nodesMap) {
+		KnowWEArticle art = this.getArticle(title);
+		if (art == null) return "article not found: " + title;
 		Section root = art.getSection();
 		StringBuffer newText = new StringBuffer();
 		appendTextReplaceNode(root, nodesMap, newText);
@@ -185,15 +189,15 @@ public class KnowWEArticleManager {
 	/**
 	 * Looks in KDOM of given article for the Section object with given nodeID
 	 * 
-	 * @param articleName
+	 * @param title
 	 * @param nodeID
 	 * @return null if article or node not found
 	 * @see findNode(String nodeID)
 	 */
-	public Section findNode(String articleName, String nodeID) {
-		if (nodeID == null || articleName == null) return null;
+	public Section findNode(String title, String nodeID) {
+		if (nodeID == null || title == null) return null;
 
-		KnowWEArticle art = this.getArticle(articleName);
+		KnowWEArticle art = this.getArticle(title);
 		if (art == null) return null;
 		return art.findSection(nodeID);
 	}
@@ -242,45 +246,45 @@ public class KnowWEArticleManager {
 	 * @param topic
 	 * @return
 	 */
-	public KnowWEDomParseReport saveUpdatedArticle(KnowWEArticle art) {
+	public KnowWEDomParseReport saveUpdatedArticle(KnowWEArticle article) {
 
 		// store new article
-		articleMap.put(art.getTitle(), art);
+		articleMap.put(article.getTitle(), article);
 		long startTime = System.currentTimeMillis();
 
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.FINE,
-				"-> Starting to update dependencies to article '" + art.getTitle()
+				"-> Starting to update dependencies to article '" + article.getTitle()
 						+ "' ->");
-		updatingArticles.add(art.getTitle());
+		updatingArticles.add(article.getTitle());
 
-		EventManager.getInstance().fireEvent(new UpdatingDependenciesEvent(art));
+		EventManager.getInstance().fireEvent(new UpdatingDependenciesEvent(article));
 
 		KnowWEEnvironment.getInstance().getPackageManager(web)
-				.updatePackageReferences(art);
+				.updatePackageReferences(article);
 
-		updatingArticles.remove(art.getTitle());
+		updatingArticles.remove(article.getTitle());
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.FINE,
-				"<- Finished updating dependencies to article '" + art.getTitle()
+				"<- Finished updating dependencies to article '" + article.getTitle()
 						+ "' in " + (System.currentTimeMillis() - startTime)
 						+ "ms <-");
 
 		// reset the reused state of the Sections of this article for this
 		// article to don't interfere with the next incremental update of this
 		// article
-		art.getSection().setReusedStateOfThisArticleRecursively(art.getTitle(), false);
+		article.getSection().setReusedStateOfThisArticleRecursively(article.getTitle(), false);
 		// art.getSection().setPositionChangedRecursivelyFor(art.getTitle(),
 		// false);
 
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.INFO,
-				"<<==== Finished building article '" + art.getTitle() + "' in "
+				"<<==== Finished building article '" + article.getTitle() + "' in "
 						+ web + " in "
-						+ (System.currentTimeMillis() - art.getStartTime())
+						+ (System.currentTimeMillis() - article.getStartTime())
 						+ "ms <<====");
 
-		return art.getReport();
+		return article.getReport();
 	}
 
 	public void clearArticleMap() {
@@ -291,16 +295,16 @@ public class KnowWEArticleManager {
 	 * Deletes the given article from the article map and invalidates all
 	 * knowledge content that was in the article.
 	 * 
-	 * @param art The article to delete
+	 * @param article The article to delete
 	 */
-	public void deleteArticle(KnowWEArticle art) {
+	public void deleteArticle(KnowWEArticle article) {
 		KnowWEEnvironment.getInstance().processAndUpdateArticle("", "",
-				art.getTitle(), web, true);
+				article.getTitle(), web, true);
 
-		articleMap.remove(art.getTitle());
+		articleMap.remove(article.getTitle());
 
 		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
-				"-> Deleted article '" + art.getTitle() + "'" + " from " + web);
+				"-> Deleted article '" + article.getTitle() + "'" + " from " + web);
 	}
 
 	public void unregisterSectionizingArticles(String title) {

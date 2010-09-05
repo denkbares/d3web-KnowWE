@@ -28,6 +28,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.packaging.PackageRenderUtils;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.RendererManager;
@@ -54,8 +55,11 @@ public class ReRenderContentPartAction extends DeprecatedAbstractKnowWEAction {
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 		KnowWEArticle article = mgr.getArticle(topic);
 
+
 		Section<? extends KnowWEObjectType> root = article.getSection();
 		Section<? extends KnowWEObjectType> secWithNodeID = getSectionFromCurrentID(nodeID, root);
+
+		article = PackageRenderUtils.checkArticlesCompiling(article, secWithNodeID);
 
 		if (secWithNodeID != null) {
 			StringBuilder b = new StringBuilder();

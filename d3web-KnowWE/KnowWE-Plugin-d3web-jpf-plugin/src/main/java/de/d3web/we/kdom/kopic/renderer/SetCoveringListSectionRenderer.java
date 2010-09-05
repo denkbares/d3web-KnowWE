@@ -27,6 +27,7 @@ import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.packaging.PackageRenderUtils;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
@@ -46,6 +47,9 @@ public class SetCoveringListSectionRenderer extends KnowWEDomRenderer {
 		// }
 
 		// string.append("! " +title + " \n");
+		StringBuilder compile = new StringBuilder();
+		article = PackageRenderUtils.checkArticlesCompiling(article, sec, compile);
+
 		if (sec.getObjectType() instanceof AbstractKnowWEObjectType) {
 			KnowWEObjectType type = sec.getObjectType();
 			Collection<Message> messages = AbstractKnowWEObjectType
@@ -70,7 +74,7 @@ public class SetCoveringListSectionRenderer extends KnowWEDomRenderer {
 
 		StringBuilder b = new StringBuilder();
 		DelegateRenderer.getInstance().render(article, sec, user, b);
-		string.append("{{{" + b.toString() + "}}}");
+		string.append("{{{" + compile + b.toString() + "}}}");
 
 		// string.append(KnowWEUtils.maskHTML("</pre></div>"));
 

@@ -605,9 +605,13 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	public void addPackageName(String packageName) {
 		if (packageNames == null) {
 			packageNames = new HashSet<String>(4);
-			packageNames.add(getTitle());
 		}
-		packageNames.add(packageName);
+		if (!KnowWEEnvironment.getInstance().getArticleManager(
+				article.getWeb()).getTitles().contains(packageName)) {
+			// ArticleNames are disallowed as packageNames
+			// TODO: Render error message
+			packageNames.add(packageName);
+		}
 	}
 
 	public boolean removePackageName(String packageName) {

@@ -31,6 +31,7 @@ import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
+import de.d3web.we.kdom.packaging.PackageRenderUtils;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rules.Rule;
@@ -46,6 +47,7 @@ public class RuleSectionRenderer extends KnowWEDomRenderer {
 		StringBuilder messagesBuilder = new StringBuilder();
 
 		result.append("\n{{{");
+		article = PackageRenderUtils.checkArticlesCompiling(article, sec, result);
 		int parsedCount = 0;
 		if (sec.getObjectType() instanceof AbstractKopicSection) {
 

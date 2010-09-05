@@ -171,7 +171,12 @@ public class CompileFlag extends DefaultMarkupType {
 
 			String sectionsCount = "Sections: " + packageDefinitions.size();
 
-			String headerSuffix = packageName.equals(article.getTitle()) ? "" : " ("
+			String headerSuffix = KnowWEEnvironment.getInstance().getArticleManager(
+					article.getWeb()).getTitles().contains(packageName)
+					? (sec.getTitle().equals(packageName)
+							? " (Compiling this article)"
+							: " (Names of articles besides the name of this one are disallowed)")
+					: " ("
 					+ sectionsCount
 					+ (errorsAndWarnings.length() > 0 ? ", " : "") +
 					errorsAndWarnings + ")";
@@ -196,6 +201,15 @@ public class CompileFlag extends DefaultMarkupType {
 				}
 				for (KDOMWarning warning : kdomWarnings) {
 					string.append(KnowWEUtils.maskHTML(warning.getVerbalization() + "<br/>\n"));
+				}
+				string.append(KnowWEUtils.maskHTML("<p/>"));
+			}
+			if (packageDefinitions.size() > 0) {
+				string.append(KnowWEUtils.maskHTML("<strong>Compiled Sections:</strong><p/>\n"));
+				for (Section<?> packDef : packageDefinitions) {
+					string.append(KnowWEUtils.maskHTML(packDef.getTitle() + " - "
+							+ packDef.get().getName() + "<br/>\n"));
+					// TODO: Make links!
 				}
 			}
 			string.append("/%\n");

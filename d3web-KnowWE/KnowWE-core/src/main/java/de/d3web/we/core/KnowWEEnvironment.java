@@ -272,8 +272,8 @@ public class KnowWEEnvironment {
 	 * @param topic
 	 * @return
 	 */
-	public KnowWEArticle getArticle(String web, String topic) {
-		return getArticleManager(web).getArticle(topic);
+	public KnowWEArticle getArticle(String web, String title) {
+		return getArticleManager(web).getArticle(title);
 	}
 
 	/**

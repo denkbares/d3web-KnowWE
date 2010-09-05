@@ -24,6 +24,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.we.kdom.packaging.PackageRenderUtils;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -45,7 +46,7 @@ public class QuestionTreeRootTypeDefaultRenderer extends DefaultMarkupRenderer {
 		string.append(KnowWEUtils.maskHTML("<div id=\"" + sec.getID() + "\" >\n"));
 		string.append(KnowWEUtils.maskHTML("<a name='" + KnowWEUtils.getAnchor(sec) + "'></a>\n"));
 		string.append("{{{\n");
-
+		article = PackageRenderUtils.checkArticlesCompiling(article, sec, string);
 		if (renderDialog) {
 
 			string.append(KnowWEUtils.maskHTML("<div id=\"\" style=\"float:right;\">"));

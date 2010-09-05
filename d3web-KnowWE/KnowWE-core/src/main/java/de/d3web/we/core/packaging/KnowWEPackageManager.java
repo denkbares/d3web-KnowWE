@@ -204,7 +204,15 @@ public class KnowWEPackageManager implements EventListener {
 			referencedPackages = new HashSet<String>();
 			referencedPackagesMap.put(article.getTitle(), referencedPackages);
 		}
-		referencedPackages.addAll(s.get().getPackagesToReferTo(s));
+		Set<String> titles = KnowWEEnvironment.getInstance().getArticleManager(article.getWeb()).getTitles();
+		List<String> packagesToReferTo = s.get().getPackagesToReferTo(s);
+		for (String packageToReferTo : packagesToReferTo) {
+			// ArticleNames are disallowed as packageNames
+			// TODO: Render error message!
+			if (packageToReferTo.equals(s.getTitle()) || !titles.contains(packageToReferTo)) {
+				referencedPackages.add(packageToReferTo);
+			}
+		}
 	}
 
 	public boolean unregisterPackageReference(KnowWEArticle article, Section<? extends PackageReference> s) {
@@ -218,6 +226,13 @@ public class KnowWEPackageManager implements EventListener {
 				// PackageReference to reused = false for the given article
 				Collection<String> referencedPackages = s.get().getPackagesToReferTo(s);
 				for (String referencedPackage : referencedPackages) {
+					// ArticleNames are disallowed as packageNames
+					if (!referencedPackage.equals(s.getTitle())
+							&& KnowWEEnvironment.getInstance().getArticleManager(
+							article.getWeb()).getTitles().contains(
+							referencedPackage)) {
+						continue;
+					}
 					boolean stillReferenced = false;
 					for (Section<? extends PackageReference> packReference : packageReferences) {
 						if (packReference.get().getPackagesToReferTo(packReference).contains(
@@ -277,6 +292,19 @@ public class KnowWEPackageManager implements EventListener {
 			}
 		}
 		return Collections.unmodifiableSet(matchingArticles);
+	}
+
+	public Set<String> getArticlesReferingTo(Section<?> section) {
+		Set<String> packageNames = section.getPackageNames();
+		Set<String> matchingArticles = new HashSet<String>();
+		for (String packageName : packageNames) {
+			matchingArticles.addAll(getArticlesReferingTo(packageName));
+		}
+		if (AUTOCOMPILE_ARTICLE
+				|| getReferencedPackages(section.getArticle()).contains(section.getTitle())) {
+			matchingArticles.add(section.getTitle());
+		}
+		return matchingArticles;
 	}
 
 	/**
