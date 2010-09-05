@@ -147,6 +147,7 @@
 		<module>KnowWEPlugin-SemanticCore-Tests</module>
 		<module>KnowWE-Plugin-OneQuestionDialog</module>
 		<module>KnowWE-Plugin-KDOMParseUtils</module>
+		<module>KnowWE-Plugin-Table-jpf-plugin</module>
 	</modules>
 	<repositories>
 		<repository>

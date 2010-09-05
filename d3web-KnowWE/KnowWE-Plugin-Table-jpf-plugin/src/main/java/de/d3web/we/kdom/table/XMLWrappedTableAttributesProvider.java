@@ -20,6 +20,8 @@
 
 package de.d3web.we.kdom.table;
 
+import java.util.Map;
+
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
@@ -32,7 +34,11 @@ public class XMLWrappedTableAttributesProvider implements TableAttributesProvide
 	public String[] getAttributeValues(Section<? extends TableCellContent> s) {
 		Section<AbstractXMLObjectType> xml = s.findAncestorOfType(AbstractXMLObjectType.class);
 		if (xml != null) {
-			return AbstractXMLObjectType.getAttributeMapFor(xml).get(Table.ATT_VALUES).split(",");
+			Map<String, String> map = AbstractXMLObjectType.getAttributeMapFor(xml);
+			String str = map.get(Table.ATT_VALUES);
+			if (str != null) return str.split(",");
+			// return
+			// AbstractXMLObjectType.getAttributeMapFor(xml).get(Table.ATT_VALUES).split(",");
 		}
 		return null;
 	}
