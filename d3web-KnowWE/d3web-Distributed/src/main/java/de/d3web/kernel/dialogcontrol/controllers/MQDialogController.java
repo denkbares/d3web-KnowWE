@@ -44,7 +44,7 @@ import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.values.UndefinedValue;
-import de.d3web.indication.inference.PSMethodNextQASet;
+import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.indication.inference.PSMethodUserSelected;
 
 /**
@@ -550,7 +550,7 @@ public class MQDialogController implements DialogController {
 	 */
 	public QASet getFirstLogicalParent(Question followQuestion) {
 		KnowledgeSlice knowledge = followQuestion.getKnowledge(
-				PSMethodNextQASet.class, MethodKind.BACKWARD);
+				PSMethodStrategic.class, MethodKind.BACKWARD);
 		if (knowledge == null) {
 			knowledge = followQuestion.getKnowledge(PSMethodAbstraction.class,
 					MethodKind.BACKWARD);

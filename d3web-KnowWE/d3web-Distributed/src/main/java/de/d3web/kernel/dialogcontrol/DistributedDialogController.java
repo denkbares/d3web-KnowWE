@@ -28,7 +28,7 @@ import de.d3web.core.inference.Rule;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.indication.inference.PSMethodNextQASet;
+import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.kernel.dialogcontrol.controllers.DialogController;
 import de.d3web.kernel.dialogcontrol.controllers.InvalidQASetRequestException;
 import de.d3web.kernel.dialogcontrol.controllers.MQDialogController;
@@ -71,7 +71,7 @@ public class DistributedDialogController implements DialogController {
 			if (psm instanceof PSMethodInit) {
 				proxy.delegateInstantly(targetNamespace, no.getId(), true, rule.getComment());
 			}
-			else if (psm instanceof PSMethodNextQASet) {
+			else if (psm instanceof PSMethodStrategic) {
 				proxy.delegate(targetNamespace, no.getId(), true, rule.getComment());
 			}
 		}

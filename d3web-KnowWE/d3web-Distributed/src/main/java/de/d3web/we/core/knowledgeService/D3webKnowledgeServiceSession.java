@@ -55,7 +55,7 @@ import de.d3web.core.session.interviewmanager.EmptyForm;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
-import de.d3web.indication.inference.PSMethodNextQASet;
+import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.indication.inference.PSMethodUserSelected;
 import de.d3web.kernel.dialogcontrol.DistributedControllerFactory;
 import de.d3web.kernel.dialogcontrol.ExternalClient;
@@ -349,7 +349,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			for (QASet set : requestedFindings) {
 				QASetManager m = QASetManagerManagement.getInstance().getQASetManager(session);
 				m.propagate(set, null,
-						PSMethodNextQASet.getInstance());
+						PSMethodStrategic.getInstance());
 			}
 		}
 		else {

@@ -59,7 +59,7 @@ import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.indication.ActionIndication;
 import de.d3web.indication.ActionNextQASet;
-import de.d3web.indication.inference.PSMethodNextQASet;
+import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.kernel.verbalizer.CondVerbalization;
 import de.d3web.kernel.verbalizer.TerminalCondVerbalization;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
@@ -245,7 +245,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 
 		level++;
 		Map<Condition, List<Rule>> mergedRules = new HashMap<Condition, List<Rule>>();
-		addChildren(q, PSMethodNextQASet.class, mergedRules);
+		addChildren(q, PSMethodStrategic.class, mergedRules);
 		addChildren(q, PSMethodHeuristic.class, mergedRules);
 
 		Set<Condition> conditions = mergedRules.keySet();
@@ -386,7 +386,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 
 	private void processSolution(Solution solution, StringBuffer s) {
 		Map<Condition, List<Rule>> mergedRules = new HashMap<Condition, List<Rule>>();
-		addChildren(solution, PSMethodNextQASet.class, mergedRules);
+		addChildren(solution, PSMethodStrategic.class, mergedRules);
 		for (Condition diagCondition : mergedRules.keySet()) {
 			if (diagCondition instanceof CondDState) {
 				for (Rule diagRule : mergedRules.get(diagCondition)) {

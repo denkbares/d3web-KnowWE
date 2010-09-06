@@ -37,7 +37,7 @@ import de.d3web.core.inference.RuleSet;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.indication.ActionIndication;
 import de.d3web.indication.ActionRefine;
-import de.d3web.indication.inference.PSMethodNextQASet;
+import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.scoring.ActionHeuristicPS;
 import de.d3web.scoring.inference.PSMethodHeuristic;
@@ -152,9 +152,9 @@ public class RulesTest extends TestCase {
 
 		// load Rules in HashMaps (necessary because they are unsorted)
 		HashMap<String, Rule> loadedRules =
-				getRulesInHashMap(loadedKB, PSMethodNextQASet.class);
+				getRulesInHashMap(loadedKB, PSMethodStrategic.class);
 		HashMap<String, Rule> createdRules =
-				getRulesInHashMap(createdKB, PSMethodNextQASet.class);
+				getRulesInHashMap(createdKB, PSMethodStrategic.class);
 
 		// Check number of rules
 		assertEquals("Wrong number of rules for PSMethodNextQASet.",
