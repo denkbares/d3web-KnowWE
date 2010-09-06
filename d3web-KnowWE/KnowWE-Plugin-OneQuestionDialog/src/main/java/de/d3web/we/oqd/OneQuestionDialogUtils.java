@@ -165,11 +165,39 @@ public class OneQuestionDialogUtils {
 		html.append("<td>");
 		html.append("<div class=\"oqdbutton\" onclick=\"return OneQuestionDialog.sendQuestion(this)\">");
 		html.append("</div>");
+		html.append("<div class=\"oqdprevious\" onclick=\"return OneQuestionDialog.getPrevious(this)\">");
+		html.append("</div>");
 		html.append("</td>");
 		html.append("</tr>");
 		html.append("</table>");
 		html.append("</form>");
 
 		return html.toString();
+	}
+
+	/**
+	 * returns the previous InterviewObject from the history. Tries to match
+	 * them via name and id.
+	 * 
+	 * @created 06.09.2010
+	 * @param question name of the InterviewObject
+	 * @param questionId id of the InterviewObject
+	 * @return
+	 */
+	public static InterviewObject getPrevious(String question, String questionId) {
+		List<InterviewObject> interviewObjects = OneQuestionDialogHistory.getInstance().getInterviewObjects();
+		int pos = 0;
+
+		for (InterviewObject o : interviewObjects) {
+			if (o.getName().equals(question) && o.getId().equals(questionId)) {
+				pos = interviewObjects.indexOf(o);
+			}
+		}
+		if (pos > 0) {
+			return interviewObjects.get(pos - 1);
+		}
+		else {
+			return null;
+		}
 	}
 }

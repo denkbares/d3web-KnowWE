@@ -45,9 +45,9 @@ OneQuestionDialog.sendQuestion = function(element) {
 	}
 		
 	if (answerId != '') {
-		OneQuestionDialog.sendInput(web, namespace, questionId, 'undefined', question, {ValueID: answerId});
+		OneQuestionDialog.sendInput(web, namespace, questionId, 'undefined', question, questionId, {ValueID: answerId});
 	} else {
-		OneQuestionDialog.sendInput(web, namespace, questionId, 'undefined', question, {ValueNum: answerValue});	
+		OneQuestionDialog.sendInput(web, namespace, questionId, 'undefined', question, questionId,{ValueNum: answerValue});	
 	}
 	
 }
@@ -90,7 +90,7 @@ OneQuestionDialog.findTbody = function(element) {
 /**
  * sends an input to SetSingleFindingAction
  */
-OneQuestionDialog.sendInput = function( web, namespace, oid, termName, question, params){
+OneQuestionDialog.sendInput = function( web, namespace, oid, termName, question, questionId, params){
     var pDefault = {
             action : 'SetSingleFindingAction',
             KWikiWeb : web,
@@ -105,7 +105,8 @@ OneQuestionDialog.sendInput = function( web, namespace, oid, termName, question,
             response : {
                 action: 'none',
                 fn : function(){
-        			OneQuestionDialog.getNewQuestion(question);
+        			OneQuestionDialog.getNewQuestion(question, questionId, 'next');
+        			KNOWWE.plugin.solutionpanel.updateSolutionstate();
                 }
             }
         }
@@ -116,12 +117,14 @@ OneQuestionDialog.sendInput = function( web, namespace, oid, termName, question,
 /**
  * gets the next question from OneQuestionDialogAction
  */
-OneQuestionDialog.getNewQuestion = function(question) {
+OneQuestionDialog.getNewQuestion = function(question, questionId, type) {
 
     var params = {
         action : 'OneQuestionDialogAction',
         KWiki_Topic : KNOWWE.helper.gup('page'),
-        question: question
+        question: question,
+        questionId: questionId,
+        type: type
     }
 
     var options = {
@@ -142,6 +145,11 @@ OneQuestionDialog.getNewQuestion = function(question) {
  * from the response of an ajax request
  */
 OneQuestionDialog.insertNewQuestion = function(response) {
+	var newText = response.responseText;
+	if (!newText) {
+		return;
+	}
+	
 	var root = $('onequestiondialog');
 	var div = root.getElement('div');
 	
@@ -151,5 +159,18 @@ OneQuestionDialog.insertNewQuestion = function(response) {
 	    } 
 	}
 	
-	div.innerHTML = response.responseText;
+	div.innerHTML = newText;
 }
+
+
+/**
+ * replaces the current question with the previous one
+ */
+OneQuestionDialog.getPrevious = function(element) {
+	var div = OneQuestionDialog.findParentDiv(element);
+	var question = div.getElement('p').textContent;;
+	var questionId = div.getElement('p').getElement('input').value;
+	
+	return OneQuestionDialog.getNewQuestion(question, questionId, 'previous');
+}
+

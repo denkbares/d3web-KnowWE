@@ -58,10 +58,13 @@ public class OneQuestionDialogTagHandler extends AbstractTagHandler {
 
 		InterviewObject o = current.getInterview().nextForm().getInterviewObject();
 
+		OneQuestionDialogHistory.getInstance().addInterviewObject(o);
+
 		String html = "<h3 class=\"oneQuestionDialog\">One Question Dialog</h3>";
 
 		if (o == null) {
-			return html + "<div class=\"oneQuestionDialog\"></div>";
+			return html
+					+ "<div class=\"oneQuestionDialog\">Keine weiteren Fragen vorhanden</div>";
 		}
 
 		return html + "<div class=\"oneQuestionDialog\">" + OneQuestionDialogUtils.createNewForm(o)
