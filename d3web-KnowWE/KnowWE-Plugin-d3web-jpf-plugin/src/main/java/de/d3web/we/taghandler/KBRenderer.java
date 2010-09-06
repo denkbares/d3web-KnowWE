@@ -364,16 +364,20 @@ public class KBRenderer extends AbstractTagHandler {
 	/**
 	 * 
 	 * Returns all children in an hierarchically view from a given list of
-	 * terminologyobjects.
+	 * terminology objects.
 	 * 
 	 * @param nodes
 	 *            the nodes from which you want to have all children displayed.
+	 * @param save
+	 *            List for saving already visited nodes, to avoid an infinite
+	 *            loop in case of periodic appearing objects
 	 * @param depth
 	 *            the depth of the recursion, which is needed for the
 	 *            hierarchically view.
 	 * @return all children from the given objects, including their properties.
 	 */
-	private String getAll(TerminologyObject[] nodes, int depth) {
+	private String getAll(TerminologyObject[] nodes,
+			ArrayList<TerminologyObject> save, int depth) {
 		StringBuffer result = new StringBuffer();
 		StringBuffer prompt = new StringBuffer();
 		StringBuffer property = new StringBuffer();
@@ -399,7 +403,8 @@ public class KBRenderer extends AbstractTagHandler {
 			}
 			if (t1 instanceof QuestionChoice) {
 				if (t1 instanceof QuestionMC) {
-					result.append("<span style=\"color: rgb(0, 128, 0);\">"
+					result
+							.append("<span style=\"color: rgb(0, 128, 0);\">"
 									+ t1.toString()
 									+ " "
 									+ prompt
@@ -407,7 +412,8 @@ public class KBRenderer extends AbstractTagHandler {
 									+ "<span style=\"color: rgb(125, 80, 102);\"> [mc] "
 									+ property + " </span><br/>");
 				} else {
-					result.append("<span style=\"color: rgb(0, 128, 0);\">"
+					result
+							.append("<span style=\"color: rgb(0, 128, 0);\">"
 									+ t1.toString()
 									+ " "
 									+ prompt
@@ -445,13 +451,25 @@ public class KBRenderer extends AbstractTagHandler {
 			// Reset the prompt & property buffer for every object
 			prompt = new StringBuffer();
 			property = new StringBuffer();
-			if (t1.getChildren().length > 0) {
+			if (t1.getChildren().length > 0 && !save.contains(t1)) {
+				save.add(t1);
 				depth++;
-				result.append(getAll(t1.getChildren(), depth));
+				result.append(getAll(t1.getChildren(), save, depth));
 				depth--;
 			}
 		}
 		return result.toString();
+	}
+
+	/**
+	 * See above.
+	 * 
+	 * @param nodes
+	 * @param depth
+	 * @return String
+	 */
+	private String getAll(TerminologyObject[] nodes, int depth) {
+		return getAll(nodes, new ArrayList<TerminologyObject>(), depth);
 	}
 
 	/**
