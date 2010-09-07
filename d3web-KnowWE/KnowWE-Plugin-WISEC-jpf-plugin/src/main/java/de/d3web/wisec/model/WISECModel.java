@@ -142,7 +142,7 @@ public class WISECModel {
 
 	private void updateSubstanceOccurences(SubstanceList substanceList) {
 		for (Substance substance : substanceList.substances) {
-			String casNo = substance.getName();
+			String casNo = substance.getCAS();
 			substancesByCAS.add(casNo);
 			Collection<SubstanceList> lists = substanceInList.get(casNo);
 			if (lists == null) {
@@ -160,13 +160,13 @@ public class WISECModel {
 	private void update(String idName, Map<String, Collection<String>> infoMap, Substance substance) {
 		String theName = substance.get(idName).trim().replaceAll("\\n", " ");
 		if (theName != null && !theName.isEmpty()) {
-			Collection<String> names = infoMap.get(substance.getName());
+			Collection<String> names = infoMap.get(substance.getCAS());
 			if (names == null) {
 				names = new HashSet<String>();
 			}
 			if (!names.contains(theName)) {
 				names.add(theName);
-				infoMap.put(substance.getName(), names);
+				infoMap.put(substance.getCAS(), names);
 			}
 		}
 	}

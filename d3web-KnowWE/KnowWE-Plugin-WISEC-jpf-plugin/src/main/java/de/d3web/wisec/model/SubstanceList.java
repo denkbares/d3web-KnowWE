@@ -78,7 +78,7 @@ public class SubstanceList {
 
 	public boolean hasSubstanceWithName(String name) {
 		for (Substance s : substances) {
-			if (s.getName().equals(name)) {
+			if (s.getCAS().equals(name)) {
 				return true;
 			}
 		}
@@ -113,7 +113,7 @@ public class SubstanceList {
 
 	public boolean contains(String substanceName) {
 		for (Substance substance : this.substances) {
-			if (substance.getName().equalsIgnoreCase(substanceName)) {
+			if (substance.getCAS().equalsIgnoreCase(substanceName)) {
 				return true;
 			}
 		}

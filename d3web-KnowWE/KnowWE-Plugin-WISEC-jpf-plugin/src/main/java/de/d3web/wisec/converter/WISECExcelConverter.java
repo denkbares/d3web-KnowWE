@@ -68,7 +68,7 @@ import de.d3web.wisec.writers.WISECWriter;
 public class WISECExcelConverter {
 
 	// The master database file, that is the input of all knowledge
-	public static String WISEC_FILE = "20100820_WISEC_v1.xls";
+	public static String WISEC_FILE = "20100907_WISEC_v2.xls";
 	public final static String EXCEL_ENCODING = "cp1252";
 	// The directory of the master database file
 	public static String workspace = "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/";

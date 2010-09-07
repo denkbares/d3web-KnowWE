@@ -71,10 +71,11 @@ public class TeamsWriter extends WISECWriter {
 			if (groups != null && !groups.isEmpty()) {
 				for (String groupName : groups) {
 					Group group = this.model.groups.get(groupName);
-					buffy.append(" [ " + groupName
-							+ " | "
-							+ GroupInfoWriter.getWikiFileNameFor(Integer.toString(group.getID()))
-							+ "]\\\\");
+					buffy.append(" [ ");
+					buffy.append(groupName);
+					buffy.append(" | ");
+					buffy.append(GroupInfoWriter.getWikiFileNameFor(Integer.toString(group.getID())));
+					buffy.append("]\\\\");
 				}
 			}
 

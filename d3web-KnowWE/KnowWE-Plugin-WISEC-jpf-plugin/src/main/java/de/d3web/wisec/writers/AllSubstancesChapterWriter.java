@@ -155,15 +155,15 @@ public class AllSubstancesChapterWriter extends WISECWriter {
 			buffy.append("| " + ConverterUtils.clean(model.getChemNamesFor(substance).toString())); // Chemical_name
 		}
 
-		buffy.append("| ");
+		buffy.append("| <ul>");
 		for (SubstanceList list : model.getSubstanceListsContaining(substance)) {
-			buffy.append("<a href=\"http://wisec.informatik.uni-wuerzburg.de/Wiki.jsp?page=");
-			buffy.append(SubstanceListWriter.getWikiFileNameFor(list.getName()));
+			buffy.append("<li><a href=\"Wiki.jsp?page=");
+			buffy.append(SubstanceListWriter.getWikiFileNameFor(list.getId()));
 			buffy.append("\"> ");
 			buffy.append(list.getName());
-			buffy.append(" </a> \\\\");
+			buffy.append(" </a></li> \\\\");
 		}
-		buffy.append("\n");
+		buffy.append("</ul>\n");
 	}
 
 	@Override

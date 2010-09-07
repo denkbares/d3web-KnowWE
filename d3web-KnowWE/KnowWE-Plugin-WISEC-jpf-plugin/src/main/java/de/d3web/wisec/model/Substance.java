@@ -52,7 +52,7 @@ public class Substance {
 		return this.values.toString();
 	}
 
-	public String getName() {
+	public String getCAS() {
 		for (String key : values.keySet()) {
 			if (key.equalsIgnoreCase(WISECExcelConverter.SUBSTANCE_IDENTIFIER)) {
 				return values.get(key);
@@ -75,7 +75,7 @@ public class Substance {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result
-				+ getName().hashCode();
+				+ getCAS().hashCode();
 		return result;
 	}
 
@@ -85,7 +85,7 @@ public class Substance {
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		Substance other = (Substance) obj;
-		return other.getName().equals(getName());
+		return other.getCAS().equals(getCAS());
 	}
 
 }
