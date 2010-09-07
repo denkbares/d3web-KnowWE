@@ -2670,7 +2670,7 @@ Testcase.runTestcase = function(element) {
         response : {
             action : 'none',
             fn : function(){
-			
+				KNOWWE.helper.observer.notify('update');
 			}
 
         }

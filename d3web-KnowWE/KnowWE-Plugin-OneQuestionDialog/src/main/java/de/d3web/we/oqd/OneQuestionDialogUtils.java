@@ -163,10 +163,10 @@ public class OneQuestionDialogUtils {
 		}
 		html.append("<tr>");
 		html.append("<td>");
-		html.append("<div class=\"oqdbutton\" onclick=\"return OneQuestionDialog.sendQuestion(this)\">");
+		html.append("<div id=\"oqdbutton\" class=\"oqdbutton\" onclick=\"return OneQuestionDialog.sendQuestion(this)\">");
 		html.append("</div>");
-		html.append("<div class=\"oqdprevious\" onclick=\"return OneQuestionDialog.getPrevious(this)\">");
-		html.append("</div>");
+		// html.append("<div class=\"oqdprevious\" onclick=\"return OneQuestionDialog.getPrevious(this)\">");
+		// html.append("</div>");
 		html.append("</td>");
 		html.append("</tr>");
 		html.append("</table>");

@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2010 University Wuerzburg, Computer Science VI
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+
 var OneQuestionDialog = {};
 
 
@@ -106,7 +125,7 @@ OneQuestionDialog.sendInput = function( web, namespace, oid, termName, question,
                 action: 'none',
                 fn : function(){
         			OneQuestionDialog.getNewQuestion(question, questionId, 'next');
-        			KNOWWE.plugin.solutionpanel.updateSolutionstate();
+        			KNOWWE.helper.observer.notify('update');
                 }
             }
         }
@@ -174,3 +193,17 @@ OneQuestionDialog.getPrevious = function(element) {
 	return OneQuestionDialog.getNewQuestion(question, questionId, 'previous');
 }
 
+
+/**
+ * the function which is called, after a question is answered
+ */
+OneQuestionDialog.newQuestionAfterUpdate = function() {
+	var element = $('oqdbutton');
+	var div = OneQuestionDialog.findParentDiv(element);
+	var question = div.getElement('p').textContent;;
+	var questionId = div.getElement('p').getElement('input').value;
+	
+	OneQuestionDialog.getNewQuestion(question, questionId, 'next');
+}
+
+KNOWWE.helper.observer.subscribe( 'update', OneQuestionDialog.newQuestionAfterUpdate);
