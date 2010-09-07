@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2010 University Wuerzburg, Computer Science VI
+ * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
+ * Computer Science VI, University of Wuerzburg
  * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -16,26 +17,24 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.flow.testcase;
 
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.table.TableCellContent;
+package de.d3web.we.testcase;
 
-/**
- * @author Florian Ziegler
- * @created 10.08.2010
- */
-public class TestcaseTableColHeaderCellContent extends TableCellContent {
+import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.XMLContent;
+
+public class TestcaseTableXMLType extends AbstractXMLObjectType {
+
+	public TestcaseTableXMLType(String tagName) {
+		super(tagName);
+	}
+
+	public TestcaseTableXMLType() {
+		super("Testcase");
+	}
 
 	@Override
 	protected void init() {
-		setCustomRenderer(new TestcaseTableColHeaderCellContentRenderer());
-		childrenTypes.add(new TimeStampType());
+		childrenTypes.add(new XMLContent(new TestcaseTable()));
 	}
-
-	@Override
-	public KnowWEDomRenderer getRenderer() {
-		return new TestcaseTableColHeaderCellContentRenderer();
-	}
-
 }

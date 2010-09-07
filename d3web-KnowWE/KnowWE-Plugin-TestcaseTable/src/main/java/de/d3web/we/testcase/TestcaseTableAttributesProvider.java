@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.flow.testcase;
+package de.d3web.we.testcase;
 
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.table.Table;

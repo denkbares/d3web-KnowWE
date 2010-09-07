@@ -16,7 +16,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.flow.testcase;
+package de.d3web.we.testcase;
 
 import java.io.IOException;
 import java.util.List;

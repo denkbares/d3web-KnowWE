@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-TestcaseTable" version="0.0.1">
+	
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+		<import plugin-id="KnowWE-Plugin-d3web" />
+	</requires>
+	
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+		 	<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="TestcaseTableXMLType">
+		<parameter id="class"
+			value="de.d3web.we.flow.testcase.TestcaseTableXMLType" />
+		<parameter id="name" value="TestcaseTableXMLType" />
+		<parameter id="description" value="KnowWEObjectType TestcaseTableXMLType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="RunTestcaseAction">
+		<parameter id="class"
+			value="de.d3web.we.flow.testcase.RunTestcaseAction" />
+		<parameter id="name" value="RunTestcaseAction" />
+		<parameter id="description" value="Action RunTestcaseAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+		
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="GetNewQuickEditAnswersAction">
+		<parameter id="class"
+			value="de.d3web.we.flow.testcase.GetNewQuickEditAnswersAction" />
+		<parameter id="name" value="GetNewQuickEditAnswersAction" />
+		<parameter id="description" value="Action GetNewQuickEditAnswersAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+</plugin>

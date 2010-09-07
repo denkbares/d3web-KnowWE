@@ -377,6 +377,25 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		
+		<!-- TestcaseTable plugin -->
+		<profile>
+			<id>testcasetable-plugin</id>
+			<activation>
+				<property>
+					<name>testcasetable-plugin</name>
+				</property>
+			</activation>
+
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-TestcaseTable-jpf-plugin</artifactId>
+					<version>0.2-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 
 		<!-- Solution Panel plugin -->
 		<profile>

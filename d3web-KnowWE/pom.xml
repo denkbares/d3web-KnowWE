@@ -148,6 +148,7 @@
 		<module>KnowWE-Plugin-OneQuestionDialog</module>
 		<module>KnowWE-Plugin-KDOMParseUtils</module>
 		<module>KnowWE-Plugin-Table-jpf-plugin</module>
+		<module>KnowWE-Plugin-TestcaseTable</module>
 	</modules>
 	<repositories>
 		<repository>

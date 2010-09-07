@@ -16,7 +16,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.flow.testcase;
+package de.d3web.we.testcase;
 
 import java.util.regex.Pattern;
 
@@ -86,11 +86,6 @@ public class TimeStampType extends AbstractKnowWEObjectType {
 		}
 
 		return sum;
-	}
-
-	public static void main(String[] args) {
-
-		System.out.println(getTimeInMillis("1s1m"));
 	}
 
 }

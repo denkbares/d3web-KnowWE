@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.flow.testcase;
+package de.d3web.we.testcase;
 
 import java.util.ArrayList;
 import java.util.List;
