@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -55,7 +55,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * Render the quick interview -aka QuickI- in KnowWE --- HTML / JS / CSS based
- *
+ * 
  * @author Martina Freiberg
  * @created 15.07.2010
  */
@@ -75,7 +75,7 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Assembles and returns the HTML representation of the interview.
-	 *
+	 * 
 	 * @created 15.07.2010
 	 * @param c the session
 	 * @param web the web context
@@ -83,13 +83,11 @@ public class QuickInterviewRenderer {
 	 */
 	public static String renderInterview(Session c, String webb, KnowWEUserContext user) {
 
-
 		// Assembles the Interview
 		StringBuffer buffi = new StringBuffer();
 
 		// insert specific CSS
 		// buffi.append("<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/quicki.css' />");
-
 
 		kb = c.getKnowledgeBase();
 		session = c;
@@ -118,7 +116,7 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Returns the Plugin Header As String
-	 *
+	 * 
 	 * @created 15.07.2010
 	 * @return the plugin header HTML String
 	 */
@@ -130,15 +128,15 @@ public class QuickInterviewRenderer {
 				+ "ns:'" + namespace + "'"
 				+ "}\" ";
 
-		html.append("<h3>");
-		html.append("Quick Interview");
+		html.append("<h3>\n");
+		html.append("Quick Interview\n");
 		html.append("<div id='quickireset' class='reset pointer' title='"
 				+ rb.getString("KnowWE.quicki.reset") + "'"
 				+ relAt
-				+ "></div>");
+				+ "></div>\n");
 		// html.append("<div class=''></div>");
 		// html.append("<div class='qanswerunknown'></div>");
-		html.append("</h3>");
+		html.append("</h3>\n");
 	}
 
 	/**
@@ -183,7 +181,7 @@ public class QuickInterviewRenderer {
 
 		// group all following questionnaires/questions for easily hiding them
 		// blockwise later
-		buffer.append("<div id='group_" + topContainer.getId() + "' class='group' style='"
+		buffer.append("\n<div id='group_" + topContainer.getId() + "' class='group' style='"
 				+ display + "' >");
 
 		depth++;
@@ -223,9 +221,9 @@ public class QuickInterviewRenderer {
 		buffi.append("</div>");
 
 		margin = margin + 30;
-		buffi.append("<div id='group_" + container.getId() + "' class='group' style='"
+		buffi.append("\n<div id='group_" + container.getId() + "' class='group' style='"
 				+ display + "' >");
-		buffi.append("<div class='emptyQuestionnaire' " +
+		buffi.append("\n<div class='emptyQuestionnaire' " +
 				"style='margin-left: " + margin + "px; display: block;' "
 				+ ">No elements defined!</div>");
 		buffi.append("</div>");
@@ -235,7 +233,7 @@ public class QuickInterviewRenderer {
 	/**
 	 * Recursively walks through the questions of the hierarchy and calls
 	 * methods for appending their rendering
-	 *
+	 * 
 	 * @created 17.08.2010
 	 * @param topQuestion the root question
 	 * @param sb the StringBuffer
@@ -332,14 +330,14 @@ public class QuickInterviewRenderer {
 		// 10 for standard margin and 30 for indenting further than the triangle
 		int d = 30 + depth * 10;
 
-		sb.append("<div id='qablock' style='display: block; margin-left: " + d + "px;'>");
+		sb.append("\n<div id='qablock' style='display: block; margin-left: " + d + "px;'>");
 
 		// width of the question front section, i.e. total width - identation
 		int w = 200 - d;
 
 		// render the first cell displaying the Question in a separate div,
 		// then call method for rendering a question's answers in another div
-		sb.append("<div id='" + q.getId() + "' " +
+		sb.append("\n<div id='" + q.getId() + "' " +
 				"parent='" + parent.getId() + "' " +
 				"class='question' " +
 				"style='width: " + w + "px; display: inline-block;' >"
@@ -363,14 +361,13 @@ public class QuickInterviewRenderer {
 		else if (q instanceof QuestionNum) {
 			renderNumAnswers(q, sb);
 		}
-	
+
 		else if (q instanceof QuestionDate) {
 			renderDateAnswers(q, sb);
 		}
 		else if (q instanceof QuestionText) {
 			renderTextAnswers(q, sb);
 		}
-
 
 		sb.append("</div>");
 	}
@@ -406,22 +403,21 @@ public class QuickInterviewRenderer {
 		}
 
 		// assemble the input field
-		sb.append("<input class='inputdate'  style='display: inline;' id='input_" + id
+		sb.append("\n<input class='inputdate'  style='display: inline;' id='input_" + id
 				+ "' type='text' "
 				+ "value='" + value + "' "
 				+ "size='18' "
 				+ jscall + " />");
-		sb.append("<input type='button' value='ok' class='date-ok' /> ");
+		sb.append("\n<input type='button' value='ok' class='date-ok' /> ");
 		// "<div class='dateformatdesc'>()</div>");
 
-		sb.append("<div class='answerseparator'></div>");
+		sb.append("\n<div class='answerseparator'></div>");
 		renderAnswerUnknown(q, "num", sb);
 	}
 
-
 	/**
 	 * Assembles the HTML for rendering a one choice question
-	 *
+	 * 
 	 * @created 21.08.2010
 	 * @param q the question
 	 * @param list the list of possible choices
@@ -462,7 +458,7 @@ public class QuickInterviewRenderer {
 			// cssclass, jscall, null, spanid));
 
 			// for having a separator between answer alternatives (img, text...)
-			sb.append("<div class='answerseparator'></div>");
+			sb.append("\n<div class='answerseparator'></div>");
 		}
 
 		renderAnswerUnknown(q, "oc", sb);
@@ -470,7 +466,7 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Assembles the HTML needed for displaying the (numerical) answer field
-	 *
+	 * 
 	 * @created 20.07.2010
 	 * @param q the question to which numerical answers are attached
 	 * @return the String for rendering numerical answer field
@@ -508,14 +504,14 @@ public class QuickInterviewRenderer {
 		}
 
 		// assemble the input field
-		sb.append("<input class='input'  style='display: inline;' id='input_" + id
+		sb.append("\n<input class='input'  style='display: inline;' id='input_" + id
 				+ "' type='text' "
 				+ "value='" + value + "' "
 				+ "size='7' "
 				+ jscall + " />");
-		sb.append("<input type='button' value='ok' class='num-ok' />");
+		sb.append("\n<input type='button' value='ok' class='num-ok' />");
 
-		sb.append("<div class='answerseparator'></div>");
+		sb.append("\n<div class='answerseparator'></div>");
 		renderAnswerUnknown(q, "num", sb);
 	}
 
@@ -591,7 +587,7 @@ public class QuickInterviewRenderer {
 	 */
 	private static void renderMCChoiceAnswers(Question q, MultipleChoiceValue mcval, StringBuffer sb) {
 
-		sb.append("<div class='answers' style='display: inline;'>");
+		sb.append("\n<div class='answers' style='display: inline;'>");
 		for (Choice choice : mcval.asChoiceList()) {
 
 			String cssclass = "answerMC";
@@ -610,7 +606,7 @@ public class QuickInterviewRenderer {
 			String spanid = q.getId() + "_" + choice.getId();
 			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ", cssclass,
 					jscall, null, spanid, ""));
-			sb.append("<div class='answerseparator'></div>");
+			sb.append("\n<div class='answerseparator'></div>");
 		}
 
 		// also render the unknown alternative for choice questions
@@ -628,7 +624,7 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Assembles the HTML representation for rendering answer unknown
-	 *
+	 * 
 	 * @created 22.07.2010
 	 * @param web the web context
 	 * @param namespace the namespace
@@ -651,7 +647,7 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Assembles the HTML representation for a given Tag
-	 *
+	 * 
 	 * @created 22.07.2010
 	 * @param tag The String representation of the tag
 	 * @param text The text to be placed inside the tag
@@ -710,10 +706,10 @@ public class QuickInterviewRenderer {
 		}
 	}
 
-	private static Set<TerminologyObject> getNextIndicated(){
-		
+	private static Set<TerminologyObject> getNextIndicated() {
+
 		Set<TerminologyObject> nextIndicated = new HashSet<TerminologyObject>();
-		
+
 		for (TerminologyObject to : session.getBlackboard().getInterviewObjects()) {
 
 			if (session.getBlackboard().getIndication((InterviewObject) to).getState().equals(
