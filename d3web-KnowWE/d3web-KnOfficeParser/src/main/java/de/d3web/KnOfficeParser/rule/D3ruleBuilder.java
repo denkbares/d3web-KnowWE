@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -65,9 +65,9 @@ import de.d3web.scoring.Score;
 
 /**
  * Adapterklasse um d3 Regeln zu erstellen
- * 
+ *
  * @author Markus Friedrich
- * 
+ *
  */
 public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 
@@ -562,7 +562,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			}
 		}
 		if (currentquestion instanceof QuestionChoice) {
-			boolean add = false;
+			boolean add;
 			if (op.equals("=")) {
 				add = false;
 			}
@@ -577,11 +577,14 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				return;
 			}
 			QuestionChoice qc = (QuestionChoice) currentquestion;
-			Choice a = (Choice) idom.findValue(qc, value).getValue();
+			Value answer = idom.findValue(qc, value);
 
-			if (a == null) {
-				if (lazy) {
-					a = idom.addChoiceAnswer(qc, value);
+			if (answer == null) { // answer is not present
+				if (lazy) { // create it if lazy
+					idom.addChoiceAnswer(qc, value);
+
+					// try finding the value again with the new answer present
+					answer = idom.findValue(qc, value);
 				}
 				else {
 					errors.add(MessageKnOfficeGenerator
@@ -591,6 +594,9 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 					return;
 				}
 			}
+
+			Choice a = (Choice) answer.getValue();
+
 			Condition ifcond;
 			Condition exceptcond;
 			if (except) {
