@@ -71,18 +71,20 @@ public class SolutionPanelTagHandler extends AbstractTagHandler {
 				+ rb.getString("KnowWE.Solutions.name")
 				+ "</h3><div>"
 				+ createDropdownList(user, web, rb)
-				+ "<img src='KnowWEExtension/images/refresh.png' id='sstate-update' class='pointer' title='"
+				+ "<img src='KnowWEExtension/images/refresh.gif' id='sstate-update' class='pointer' title='"
 				+ rb.getString("KnowWE.Solutions.update")
 				+ "' />\n"
-				+ "<img src='KnowWEExtension/images/cross_blue.png' id='sstate-clear' class='pointer' title='"
+				+ "<img src='KnowWEExtension/images/progress_stop.gif' id='sstate-clear' class='pointer' title='"
 				+ rb.getString("KnowWE.Solutions.clear")
 				+ "' />\n"
-				+ "<img src='KnowWEExtension/images/application_view_list_big.png' id='sstate-findings' class='pointer' title='"
-				+ rb.getString("KnowWE.Solutions.findings")
-				+ "' />\n"
-				+ "</p>"
+				// +
+				// "<img src='KnowWEExtension/images/application_view_list_big.png' id='sstate-findings' class='pointer' title='"
+				// + rb.getString("KnowWE.Solutions.findings")
+				// + "' />\n"
+				// + "</p>"
 				+ "<div id='solutionPanelResults'></div>"
-				+ "</div></div>";
+				+ "</div>"
+				+ "</div>";
 
 	}
 

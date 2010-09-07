@@ -55,10 +55,10 @@ public class KopicRenderer extends KnowWEDomRenderer {
 	private String generateLinkIcons(String user, String topic, String id,
 			String web, boolean error, String nodeID) {
 		StringBuilder result = new StringBuilder();
-		if (!error) {
-			result.append(generateDialogLink(user, topic, id));
-		}
-		result.append(generateDownloadLink(topic, id, web, nodeID));
+		// if (!error) {
+		// result.append(generateDialogLink(user, topic, id));
+		// }
+		// result.append(generateDownloadLink(topic, id, web, nodeID));
 		if (!error) {
 			result.append(generateJarLink(topic, id, web, nodeID));
 		}
@@ -66,7 +66,7 @@ public class KopicRenderer extends KnowWEDomRenderer {
 	}
 
 	private String generateJarLink(String topic2, String id, String web2, String nodeID) {
-		String icon = "<img src=KnowWEExtension/images/drive_disk.png title='Download jar file' /></img>";
+		String icon = "<img src=KnowWEExtension/images/save_edit.gif title='Download knowledge base' /></img>";
 		String result = "<a href='KnowWEDownload.jsp?KWiki_Topic="
 				+ topic2 + "&web=" + web2 + "&nodeID=" + nodeID + "&filename=" + topic2
 				+ "_kopic.jar' >" + icon + "</a>";
