@@ -89,6 +89,8 @@ public class SolutionsPanelAction extends AbstractAction {
 		int i = Integer.parseInt(index);
 		SolutionPanelTagHandler.setSelected(web, user, i);
 
+		context.setContentType("text/html; charset=UTF-8");
+
 		if (configRB.getString("dps.active").equals("true")) {
 			context.getWriter().write(renderSolutionStates(web, user, topic, i));
 		}
@@ -168,7 +170,7 @@ public class SolutionsPanelAction extends AbstractAction {
 		/*
 		 * if (!unclear.isEmpty()) { if (painted) { sb.append("<hr/>"); painted
 		 * = false; } sb.append("<div>");
-		 * 
+		 *
 		 * sb.append("<strong>" +
 		 * rb.getString("KnowWE.solution.unclearSolutions") + ":</strong>"); //
 		 * sb.append("</a>"); sb.append(getSolutionLinkListNonDPS(user, web,
