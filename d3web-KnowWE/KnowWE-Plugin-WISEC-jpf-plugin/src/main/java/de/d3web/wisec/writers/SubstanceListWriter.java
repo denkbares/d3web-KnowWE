@@ -23,6 +23,7 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 
+import de.d3web.we.wisec.util.Criteria;
 import de.d3web.wisec.converter.WISECExcelConverter;
 import de.d3web.wisec.model.SourceList;
 import de.d3web.wisec.model.Substance;
@@ -60,32 +61,35 @@ public class SubstanceListWriter extends WISECWriter {
 		// WRITE THE IDENTIFICATION HEADER
 		writeIdentificationHeader(writer, list);
 
+		
 		// WRITE THE SUBSTANCE LIST CRITERIA
 		writer.write("!! Criteria \n\n");
-		writeKnowledge(writer, "%%ListCriteria\n");
-
-		for (String key : list.criteria.keySet()) {
-			String value = ConverterUtils.clean(list.criteria.get(key));
-			if (value != null && !value.isEmpty()) {
-				writer.write("|| " + key + " | " + value + " \n");
+		for (String criteriaGroup : Criteria.CRITERIAS.keySet()) {
+			writer.write("!" + criteriaGroup + "\n");
+			writeKnowledge(writer, "%%ListCriteria\n");
+			for (String criteria : Criteria.CRITERIAS.get(criteriaGroup)) {
+				String value = list.criteria.get(criteria);
+				if (value == null || value.isEmpty()) value = "0";
+				else ConverterUtils.clean(value);
+				writer.write("|| " + criteria + " | " + value + " \n");
 			}
-		}
-		String sourceID = list.info.get("Source_ID");
-		if (sourceID != null) {
-			writeKnowledge(writer, "-\n\n" +
-					"@ListID: " + list.getId() + "\n\n" +
-					"@SourceID: " + sourceID + "\n" +
-					"%\n");
+			String sourceID = list.info.get("Source_ID");
+			if (sourceID != null) {
+				writeKnowledge(writer, "-\n\n" +
+						"@ListID: " + list.getId() + "\n\n" +
+						"@SourceID: " + sourceID + "\n" +
+						"%\n");
 
-			writer.write("\n __Source:__ ");
-			writer.write("[ " + model.getSourceListNameForID(sourceID) + "|"
-						+ SourceListWriter.getWikiFilename(sourceID) + "]");
+				writer.write("\n __Source:__ ");
+				writer.write("[ " + model.getSourceListNameForID(sourceID) + "|"
+							+ SourceListWriter.getWikiFilename(sourceID) + "]");
+			}
+			else {
+				writer.write("__Attention:__ No source list known.");
+			}
+			writer.write("\n\n");
 		}
-		else {
-			writer.write("__Attention:__ No source list known.");
-		}
-		writer.write("\n\n");
-
+		
 		// WRITE THE LIST OF SUBSTANCES
 		writeSubstanceTable(writer, list);
 	}

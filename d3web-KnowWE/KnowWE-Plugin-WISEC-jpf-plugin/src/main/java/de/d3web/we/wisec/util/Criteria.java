@@ -68,11 +68,11 @@ public class Criteria {
 	 * Put all criterias with their group name in a HashMap
 	 */
 	static {
+		CRITERIAS.put("Need for regulation", regulationNeed);
+		CRITERIAS.put("Relevance for regulation", regulationRelevance);
+		CRITERIAS.put("Exposure / Monitoring", exposure);
 		CRITERIAS.put("Hazardous Properties", hazardous);
 		CRITERIAS.put("Mobility", mobility);
-		CRITERIAS.put("Exposure / Monitoring", exposure);
-		CRITERIAS.put("Relevance for regulation", regulationRelevance);
-		CRITERIAS.put("Need for regulation", regulationNeed);
 	}
 
 	/*

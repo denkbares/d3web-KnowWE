@@ -39,9 +39,9 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.taghandler.AbstractTagHandler;
-import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.we.wisec.util.Criteria;
+import de.d3web.wisec.writers.SubstanceInfoWriter;
 
 /**
  * Displays a ranking of the substances with the highest rating. The
@@ -199,6 +199,7 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 	 * @throws QueryEvaluationException
 	 */
 	private void updateScores(TupleQueryResult result, double weight, HashMap<String, RatedSubstance> ratedSubstances) throws QueryEvaluationException {
+
 		while (result.hasNext()) {
 			BindingSet binding = result.next();
 			String substance = binding.getValue("substance").stringValue();
@@ -208,15 +209,17 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 				ratedSubstance = new RatedSubstance(substance);
 				ratedSubstances.put(substance, ratedSubstance);
 			}
+
 			String scoreStr = binding.getValue("score").stringValue();
+			double score = Double.parseDouble(scoreStr);
 
-			// Get the correct score
-			double score;
-			if (scoreStr.equals("u")) score = -1;
-			else if (scoreStr.equals("X")) score = -0.5;
-			else score = Double.parseDouble(scoreStr);
-
+			// Just an "intermediate" score from one list
 			ratedSubstance.addValue(score * weight);
+		}
+
+		// Adds all intermediate scores to the real score
+		for (RatedSubstance rs : ratedSubstances.values()) {
+			rs.updateScore();
 		}
 
 	}
@@ -260,28 +263,16 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 		for (int i = 0; i < limit; i++) {
 			RatedSubstance rs = sortedSubstances.get(i);
 			result.append("|");
-			result.append(generateLink(KnowWEUtils.urldecode(rs.getSubstance())));
+			// result.append(generateLink(KnowWEUtils.urldecode(rs.getSubstance())));
+			result.append("[");
+			result.append(rs.getSubstance());
+			result.append("|");
+			result.append(SubstanceInfoWriter.getWikiFileNameFor(rs.getSubstance()));
+			result.append("]");
 			result.append("|");
 			result.append(rs.getScore());
 			result.append("\n");
 		}
-
-		// result.append("\n<table class='wikitable' border='1'>");
-		// result.append("\n<tr><th>Substance</th><th>Score");
-		// result.append(printinfo ? "*</th>" : "</th></tr>");
-		// double limit = numberSubstances < sortedSubstances.size()
-		// ? numberSubstances
-		// : sortedSubstances.size();
-		//
-		// // Render Substances
-		// for (int i = 0; i < limit; i++) {
-		// RatedSubstance rs = sortedSubstances.get(i);
-		// result.append("<tr><td>");
-		// result.append(KnowWEUtils.urldecode(rs.getSubstance()));
-		// result.append("</td><td>");
-		// result.append(rs.getScore());
-		// result.append("</td></tr>\n");
-		// }
 
 		// Render Legend (if printinfo = true)
 		if (printinfo) {
@@ -349,6 +340,10 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 		private final String substance;
 		private double score = 0;
 
+		// used for one criteria
+		private double intermediateScore = 0;
+		private double intermediateCounter = 0;
+
 		public RatedSubstance(String substance) {
 			if (substance == null) throw new IllegalArgumentException();
 
@@ -359,8 +354,23 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 			return score;
 		}
 
+		/*
+		 * Adds a value to the intermediate score
+		 */
 		public void addValue(double value) {
-			this.score += value;
+			this.intermediateScore += value;
+			this.intermediateCounter++;
+		}
+
+		/*
+		 * Updates the real score at the end of the criteria processing
+		 */
+		public void updateScore() {
+			if (intermediateCounter > 0) {
+				score += intermediateScore / intermediateCounter;
+				intermediateScore = 0;
+				intermediateCounter = 0;
+			}
 		}
 
 		public String getSubstance() {
