@@ -150,10 +150,13 @@ public class ConverterUtils {
 	public static String colorizeText(double value) {
 		DecimalFormat df = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(
 				new Locale("en", "US")));
-		if (value >= 2) {
+		if (value == 0) {
+			return df.format(value);
+		}
+		else if (value >= 2) {
 			return "%%(background:red;)" + df.format(value) + "%%";
 		}
-		else if (value == 1 || value == -1) {
+		else if (value <= 1 || value >= -1) {
 			return "%%(background:yellow;)" + df.format(value) + "%%";
 		}
 		else if (value <= -2) {
