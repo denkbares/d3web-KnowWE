@@ -18,11 +18,11 @@
  */
 package de.d3web.wisec.readers;
 
-import java.util.Arrays;
 import java.util.List;
 
 import jxl.Sheet;
 import jxl.Workbook;
+import de.d3web.we.wisec.util.Criteria;
 import de.d3web.wisec.model.SubstanceList;
 import de.d3web.wisec.model.WISECModel;
 
@@ -35,7 +35,6 @@ import de.d3web.wisec.model.WISECModel;
 public class ListsReader extends WISECReader {
 
 	public static String SHEETNAME = "Lists";
-	private static final List<String> CRITERIA_NAMES = Arrays.asList(SubstanceList.CRITERIA_NAMES);
 
 	public ListsReader(Workbook workbook) {
 		super(workbook);
@@ -54,7 +53,7 @@ public class ListsReader extends WISECReader {
 				String attribute = headers.get(col);
 				String value = sheet.getCell(col, row).getContents();
 				substanceList.info.put(attribute, value);
-				if (CRITERIA_NAMES.contains(attribute)) {
+				if (Criteria.getAllCriterias().contains(attribute)) {
 					substanceList.addCriteria(attribute, value);
 				}
 			}

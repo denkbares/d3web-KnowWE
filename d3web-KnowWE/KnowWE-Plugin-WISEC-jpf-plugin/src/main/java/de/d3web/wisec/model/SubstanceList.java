@@ -26,12 +26,6 @@ import java.util.Map;
 
 public class SubstanceList {
 
-	public final static String[] CRITERIA_NAMES = new String[] {
-			"CMR", "Persistence", "Bioakumulation_Potential", "Aqua_Tox", "EDC", "Further_Tox",
-			"Climatic_Change", "LRT", "Water_solubility", "Adsorption", "Vapour_pressure", "Air",
-			"Soil", "Sediment", "Surface_water", "Sea", "Groundwater", "Drinking_water", "Biota",
-			"Market_Volume", "Wide_d_use", "Political_concern", "Need_for_regulation" };
-
 	private final String id;
 	// public String name;
 

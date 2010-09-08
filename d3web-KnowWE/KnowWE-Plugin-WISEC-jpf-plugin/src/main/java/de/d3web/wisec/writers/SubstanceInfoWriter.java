@@ -38,7 +38,7 @@ import de.d3web.wisec.model.WISECModel;
 public class SubstanceInfoWriter extends WISECWriter {
 
 	public static final String FILE_PRAEFIX = WISECExcelConverter.FILE_PRAEFIX + "SUB_";
-	private static final int MAXLENGTH = 10;
+	private static final int MAXLENGTH = 20;
 	private static Map<String, String> filenameMap = new HashMap<String, String>();
 
 	public SubstanceInfoWriter(WISECModel model, String outputDirectory) {
@@ -200,7 +200,7 @@ public class SubstanceInfoWriter extends WISECWriter {
 
 		}
 
-		if (totalScore > 0) {
+		if (totalScore != 0) {
 			b.append("\n!Total score: " + df.format(totalScore));
 		}
 

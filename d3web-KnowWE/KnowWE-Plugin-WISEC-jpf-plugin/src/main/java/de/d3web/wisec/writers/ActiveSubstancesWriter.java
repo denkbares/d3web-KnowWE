@@ -48,7 +48,8 @@ public class ActiveSubstancesWriter extends WISECWriter {
 		// List<Substance> sortedSubstances = sortSubstances();
 		for (String substanceName : model.getActiveSubstances()) {
 			// String casName = substance.getCAS();
-			b.append("| [" + substanceName + " | WI_SUB_" + substanceName + "] | "
+			b.append("| [" + substanceName + " | "
+					+ SubstanceInfoWriter.getWikiFileNameFor(substanceName) + "] | "
 					+ ConverterUtils.asString(model.getECNamesFor(substanceName)) + "| "
 					+ ConverterUtils.asString(model.getIUPACFor(substanceName)) + " | "
 					+ ConverterUtils.asString(model.getChemNamesFor(substanceName)) + "\n");

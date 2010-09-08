@@ -116,7 +116,7 @@ public class GroupInfoWriter extends WISECWriter {
 
 		}
 
-		if (totalScore > 0) {
+		if (totalScore != 0) {
 			b.append("\n!Total score: " + df.format(totalScore));
 		}
 
