@@ -82,7 +82,7 @@ public class WISECFindingSetEventListener implements EventListener {
 		// Stores the currently computed lists
 		List<String> computedLists = new LinkedList<String>();
 
-		for (Criteria criteria : Criteria.values()) {
+		for (String criteria : Criteria.getAllCriterias()) {
 
 			try {
 				Query query = createQuery(findingEvent.getQuestion(), findingEvent.getValue(),
@@ -130,7 +130,7 @@ public class WISECFindingSetEventListener implements EventListener {
 	/**
 	 * Creates a SPARQL-Query with the appropriate substance and criteria.
 	 */
-	private Query createQuery(Question question, Value value, Criteria criteria) throws RepositoryException, MalformedQueryException {
+	private Query createQuery(Question question, Value value, String criteria) throws RepositoryException, MalformedQueryException {
 
 		String queryString = SemanticCoreDelegator.getInstance().getSparqlNamespaceShorts() +
 								"SELECT ?" + LIST + " ?" + criteria + " " +
@@ -161,7 +161,7 @@ public class WISECFindingSetEventListener implements EventListener {
 	 * Computes the numerical value which will be added to the counter. The
 	 * value is based on the committed TupleQueryResult.
 	 */
-	private double computeNumValue(Criteria criteria, TupleQueryResult result,
+	private double computeNumValue(String criteria, TupleQueryResult result,
 			List<String> computedLists, boolean add) throws QueryEvaluationException {
 		double accumulatedValue = 0;
 		while (result.hasNext()) {
@@ -180,7 +180,7 @@ public class WISECFindingSetEventListener implements EventListener {
 																		// computed
 																		// yet
 			continue;
-			accumulatedValue += Double.parseDouble(binding.getValue(criteria.name()).stringValue());
+			accumulatedValue += Double.parseDouble(binding.getValue(criteria).stringValue());
 			computedLists.add(currentList);
 		}
 		return add ? accumulatedValue : accumulatedValue * (-1);
@@ -189,7 +189,7 @@ public class WISECFindingSetEventListener implements EventListener {
 	/**
 	 * Adds the computed value to the counter of the current criteria.
 	 */
-	private void setCounterValue(Criteria criteria, double accumulatedValue,
+	private void setCounterValue(String criteria, double accumulatedValue,
 			String web, String user, String namespace) {
 
 		if (accumulatedValue == 0) return;
@@ -206,7 +206,7 @@ public class WISECFindingSetEventListener implements EventListener {
 		}
 
 		// Search the Counter-Question (P, B, Aqua_Tox etc.)
-		Question counterQuestion = kss.getBaseManagement().findQuestion(criteria.name());
+		Question counterQuestion = kss.getBaseManagement().findQuestion(criteria);
 		if (counterQuestion == null) {
 			Logger.getLogger(this.getClass()).error(
 					"Counter-Question: " + criteria + " was not found! No value set!");

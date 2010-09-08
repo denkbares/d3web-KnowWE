@@ -80,25 +80,25 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 			Map<String, String> values, String web) {
 
 		HashMap<String, RatedSubstance> ratedSubstances = new HashMap<String, RatedSubstance>();
-		HashMap<Criteria, Double> underlyingData = new HashMap<Criteria, Double>();
+		HashMap<String, Double> underlyingData = new HashMap<String, Double>();
 		double weight = 0;
 
-		for (Criteria criteria : Criteria.values()) {
+		for (String criteria : Criteria.getAllCriterias()) {
 
 			// try to get the weight for the current criteria
 			try {
-				String weightStr = values.get(criteria.name());
+				String weightStr = values.get(criteria);
 				if (weightStr != null) weight = Double.parseDouble(weightStr);
 				else continue;
 			}
 			catch (NumberFormatException e) {
-				return "Weight for criteria \"" + criteria.name() + "\" is not valid!";
+				return "Weight for criteria \"" + criteria + "\" is not valid!";
 			}
 
 			// process the current criteria with the extracted weight
 			if (weight != 0) {
 				try {
-					processCriteria(criteria.name(), weight, ratedSubstances);
+					processCriteria(criteria, weight, ratedSubstances);
 					underlyingData.put(criteria, weight);
 				}
 				catch (Exception e) {
@@ -247,7 +247,7 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 	 * @param printinfo
 	 * @return HTML formatted string representing the substances
 	 */
-	private String renderSubstances(List<RatedSubstance> sortedSubstances, double numberSubstances, HashMap<Criteria, Double> underlyingData, boolean printinfo) {
+	private String renderSubstances(List<RatedSubstance> sortedSubstances, double numberSubstances, HashMap<String, Double> underlyingData, boolean printinfo) {
 		StringBuilder result = new StringBuilder();
 
 		result.append("\n||Substance ||Score ");
@@ -288,8 +288,8 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 
 			// Tooltip: available criterias
 			result.append("<p title=\"Available criterias: ");
-			for (Criteria c : Criteria.values()) {
-				result.append(c.toString());
+			for (String criteria : Criteria.getAllCriterias()) {
+				result.append(criteria.toString());
 				result.append(", ");
 			}
 			result.delete(result.length() - 2, result.length());
@@ -297,10 +297,10 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 
 			// used criterias
 			result.append("%%sub * (");
-			for (Criteria c : underlyingData.keySet()) {
-				result.append(c.name());
+			for (String criteria : underlyingData.keySet()) {
+				result.append(criteria);
 				result.append("=");
-				result.append(underlyingData.get(c));
+				result.append(underlyingData.get(criteria));
 				result.append(", ");
 			}
 			result.delete(result.length() - 2, result.length());

@@ -19,11 +19,75 @@
  */
 package de.d3web.we.wisec.util;
 
-public enum Criteria {
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 
-	CMR, Persistence, Bioakumulation_Potential, Aqua_Tox, EDC, Further_Tox, Climatic_Change,
-	LRT, Water_solubility, Adsorption, Vapour_pressure, Air, Soil, Sediment, Surface_water,
-	Sea, Groundwater, Drinking_water, Biota, Market_Volume, Wide_d_use, Political_concern,
-	Need_for_regulation
+public class Criteria {
+
+	private static final String[] hazardous = { "CMR",
+												"Persistence",
+												"Bioakumulation_Potential",
+												"Aqua_Tox",
+												"EDC",
+												"Further_Tox",
+												"Climatic_Change"
+												};
+	
+	private static final String[] mobility = {
+												"LRT",
+												"Water_solubility",
+												"Adsorption",
+												"Vapour_pressure"
+												};
+
+	private static final String[] exposure = {
+												"Air",
+												"Soil",
+												"Sediment",
+												"Surface_water",
+												"Sea",
+												"Groundwater",
+												"Drinking_water",
+												"Biota"
+												};
+
+	private static final String[] regulationRelevance = {
+															"Market_Volume",
+															"Wide_d_use",
+															"Political_concern"
+															};
+
+	private static final String[] regulationNeed = { "Need_for_regulation" };
+
+	private static Collection<String> allCriterias = new HashSet<String>();
+
+	public static HashMap<String, String[]> CRITERIAS = new HashMap<String, String[]>();
+
+	/*
+	 * Put all criterias with their group name in a HashMap
+	 */
+	static {
+		CRITERIAS.put("Hazardous Properties", hazardous);
+		CRITERIAS.put("Mobility", mobility);
+		CRITERIAS.put("Exposure / Monitoring", exposure);
+		CRITERIAS.put("Relevance for regulation", regulationRelevance);
+		CRITERIAS.put("Need for regulation", regulationNeed);
+	}
+
+	/*
+	 * Put all criterias in a HashSet for easy Access
+	 */
+	static {
+		for (String[] group : CRITERIAS.values()) {
+			for (String criteria : group) {
+				allCriterias.add(criteria);
+			}
+		}
+	}
+
+	public static Collection<String> getAllCriterias() {
+		return allCriterias;
+	}
 
 }
