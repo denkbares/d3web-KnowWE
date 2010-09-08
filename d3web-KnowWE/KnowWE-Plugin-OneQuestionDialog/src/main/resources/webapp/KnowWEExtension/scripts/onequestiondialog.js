@@ -124,7 +124,6 @@ OneQuestionDialog.sendInput = function( web, namespace, oid, termName, question,
             response : {
                 action: 'none',
                 fn : function(){
-        			OneQuestionDialog.getNewQuestion(question, questionId, 'next');
         			KNOWWE.helper.observer.notify('update');
                 }
             }
@@ -206,4 +205,11 @@ OneQuestionDialog.newQuestionAfterUpdate = function() {
 	OneQuestionDialog.getNewQuestion(question, questionId, 'next');
 }
 
-KNOWWE.helper.observer.subscribe( 'update', OneQuestionDialog.newQuestionAfterUpdate);
+OneQuestionDialog.submitOnEnter = function(element, e) {
+	  var keyCode=(e)? e.which :event.keyCode;
+	  if(keyCode==13) {
+		  OneQuestionDialog.sendQuestion(element);
+	  }
+}
+
+window.addEvent('domready', KNOWWE.helper.observer.subscribe( 'update', OneQuestionDialog.newQuestionAfterUpdate));

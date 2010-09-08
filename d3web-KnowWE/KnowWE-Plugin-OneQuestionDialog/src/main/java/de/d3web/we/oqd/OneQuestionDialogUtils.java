@@ -134,7 +134,6 @@ public class OneQuestionDialogUtils {
 		List<Choice> answers = OneQuestionDialogUtils.getAllAlternatives(o);
 
 		StringBuilder html = new StringBuilder();
-		html.append("<form>");
 		html.append("<p class=\"oqdquestion\">");
 		html.append(o.getName());
 		html.append("<input type=\"hidden\" name=\"" + o.getId() + "\" value=\"" + o.getId()
@@ -146,7 +145,8 @@ public class OneQuestionDialogUtils {
 			for (Choice c : answers) {
 				html.append("<tr>");
 				html.append("<td class=\"oqdanswer\">");
-				html.append("<input type=\"" + type + "\" value=\"" + c.getName() + "\">"
+				html.append("<input type=\"" + type + "\" name=\"" + o.getName() + "\" value=\""
+						+ c.getName() + "\">"
 						+ c.getName());
 				html.append("<input type=\"hidden\" name=\"" + c.getId() + "\" value=\""
 						+ c.getId() + "\">");
@@ -157,7 +157,8 @@ public class OneQuestionDialogUtils {
 		else {
 			html.append("<tr>");
 			html.append("<td>");
-			html.append("<input type=\"" + type + "\">");
+			html.append("<input onkeypress=\"return OneQuestionDialog.submitOnEnter(this, event)\" type=\""
+					+ type + "\">");
 			html.append("</td>");
 			html.append("</tr>");
 		}
@@ -170,7 +171,6 @@ public class OneQuestionDialogUtils {
 		html.append("</td>");
 		html.append("</tr>");
 		html.append("</table>");
-		html.append("</form>");
 
 		return html.toString();
 	}
