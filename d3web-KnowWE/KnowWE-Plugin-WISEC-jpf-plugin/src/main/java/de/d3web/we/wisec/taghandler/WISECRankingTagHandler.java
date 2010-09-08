@@ -19,10 +19,13 @@
  */
 package de.d3web.we.wisec.taghandler;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.openrdf.query.BindingSet;
@@ -251,6 +254,9 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 	 * @return HTML formatted string representing the substances
 	 */
 	private String renderSubstances(List<RatedSubstance> sortedSubstances, double numberSubstances, HashMap<String, Double> underlyingData, boolean printinfo) {
+
+		DecimalFormat df = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(
+				new Locale("en", "US")));
 		StringBuilder result = new StringBuilder();
 
 		result.append("\n||Substance ||Score ");
@@ -266,7 +272,7 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 			// result.append(generateLink(KnowWEUtils.urldecode(rs.getSubstance())));
 			result.append(generateLink(rs.getSubstance()));
 			result.append("|");
-			result.append(rs.getScore());
+			result.append(df.format(rs.getScore()));
 			result.append("\n");
 		}
 
@@ -345,8 +351,10 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 		 * Adds a value to the intermediate score
 		 */
 		public void addValue(double value) {
-			this.intermediateScore += value;
-			this.intermediateCounter++;
+			if (value != 0) {
+				this.intermediateScore += value;
+				this.intermediateCounter++;
+			}
 		}
 
 		/*
