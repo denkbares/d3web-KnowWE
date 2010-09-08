@@ -187,7 +187,7 @@ public class SubstanceInfoWriter extends WISECWriter {
 				if (count > 0) {
 					double score = sum / count;
 					totalScore += score;
-					b.append("| " + df.format(score));
+					b.append("| " + ConverterUtils.colorizeText(score));
 				}
 				else {
 					b.append("| 0 ");
@@ -201,7 +201,7 @@ public class SubstanceInfoWriter extends WISECWriter {
 		}
 
 		if (totalScore > 0) {
-			b.append("Total score: " + df.format(totalScore));
+			b.append("\n!Total score: " + df.format(totalScore));
 		}
 
 	}

@@ -64,6 +64,7 @@ public class SubstanceListWriter extends WISECWriter {
 		
 		// WRITE THE SUBSTANCE LIST CRITERIA
 		writer.write("!! Criteria \n\n");
+		String sourceID = null;
 		for (String criteriaGroup : Criteria.CRITERIAS.keySet()) {
 			writer.write("!" + criteriaGroup + "\n");
 			writeKnowledge(writer, "%%ListCriteria\n");
@@ -73,23 +74,29 @@ public class SubstanceListWriter extends WISECWriter {
 				else ConverterUtils.clean(value);
 				writer.write("|| " + criteria + " | " + value + " \n");
 			}
-			String sourceID = list.info.get("Source_ID");
+			sourceID = list.info.get("Source_ID");
 			if (sourceID != null) {
 				writeKnowledge(writer, "\n" +
 						"@ListID: " + list.getId() + "\n\n" +
 						"@SourceID: " + sourceID + "\n" +
 						"%\n");
+			}
 
-				writer.write("\n __Source:__ ");
-				writer.write("[ " + model.getSourceListNameForID(sourceID) + "|"
-							+ SourceListWriter.getWikiFilename(sourceID) + "]");
-			}
-			else {
-				writer.write("__Attention:__ No source list known.");
-			}
-			writer.write("\n\n");
+			writer.write("\n");
 		}
 		
+		// WRITE SOURCE LINK
+		if (sourceID != null) {
+			writer.write("\n __Source:__ ");
+			writer.write("[ " + model.getSourceListNameForID(sourceID) + "|"
+					+ SourceListWriter.getWikiFilename(sourceID) + "]");
+		}
+		else {
+			writer.write("__Attention:__ No source list known.");
+		}
+
+		writer.write("\n\n");
+
 		// WRITE THE LIST OF SUBSTANCES
 		writeSubstanceTable(writer, list);
 	}

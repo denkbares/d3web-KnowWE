@@ -23,9 +23,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import jxl.Cell;
 
@@ -77,8 +80,11 @@ public class ConverterUtils {
 	public static String cleanForFilename(String string) {
 		string = string.replaceAll("&", "_and_");
 		string = string.replaceAll("ä", "ae");
+		string = string.replaceAll("Ä", "Ae");
 		string = string.replaceAll("ö", "oe");
+		string = string.replaceAll("Ö", "Oe");
 		string = string.replaceAll("ü", "ue");
+		string = string.replaceAll("Ü", "Ue");
 		string = string.replaceAll("ß", "ss");
 		string = string.replaceAll("/", "_");
 		string = string.replaceAll(" ", "");
@@ -139,6 +145,21 @@ public class ConverterUtils {
 		else {
 			return "";
 		}
+	}
+
+	public static String colorizeText(double value) {
+		DecimalFormat df = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(
+				new Locale("en", "US")));
+		if (value >= 2) {
+			return "%%(background:red;)" + df.format(value) + "%%";
+		}
+		else if (value == 1 || value == -1) {
+			return "%%(background:yellow;)" + df.format(value) + "%%";
+		}
+		else if (value <= -2) {
+			return "%%(background:green;)" + df.format(value) + "%%";
+		}
+		return df.format(value);
 	}
 
 }

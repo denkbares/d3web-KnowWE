@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
+import de.d3web.we.wisec.util.Criteria;
 import de.d3web.wisec.converter.WISECExcelConverter;
 import de.d3web.wisec.model.Group;
 import de.d3web.wisec.model.SourceList;
@@ -73,43 +74,50 @@ public class GroupInfoWriter extends WISECWriter {
 	}
 
 	private void writeCriteriaScoring(StringBuffer b, String groupName) {
-		// private void writeCriteriaScoring(String substance, StringBuffer b)
-		// String[] criteriaValues = new String[] {
-		// "3", "2", "1", "0", "-1", "-2", "-3" };
 
-		b.append("!! Criteria Scoring\n\n");
-
+		double totalScore = 0;
 		DecimalFormat df = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(
 				new Locale("en", "US")));
 		Collection<SubstanceList> lists = getAllListWithOneCasOf(groupName);
 
-		List<String> usedCriteria = SubstanceInfoWriter.criteriaContainedInAtLeastOneList(lists);
-		double totalScore = 0;
-		b.append("|| Criteria || Lists || Scoring\n");
-		for (String criteria : usedCriteria) {
-			int count = 0;
-			double sum = 0;
-			b.append("| " + criteria + " | ");
-			for (SubstanceList list : lists) {
-				String value = list.criteria.get(criteria);
-				if (value != null && !value.isEmpty()) {
-					count++;
-					sum += Double.valueOf(value);
-					b.append(" [" + value + "|"
+		b.append("!! Criteria Scoring\n\n");
+		for (String criteriaGroup : Criteria.CRITERIAS.keySet()) {
+
+			b.append("!" + criteriaGroup + "\n");
+			b.append("%%zebra-table\n%%sortable\n");
+			b.append("|| Criteria || Lists || Scoring || On Lists\n");
+
+			for (String criteria : Criteria.CRITERIAS.get(criteriaGroup)) {
+				int count = 0;
+				double sum = 0;
+				b.append("| " + criteria + " | ");
+				for (SubstanceList list : lists) {
+					String value = list.criteria.get(criteria);
+					if (value != null && !value.isEmpty()) {
+						count++;
+						sum += Double.valueOf(value);
+						b.append(" [" + value + "|"
 								+ SubstanceListWriter.getWikiFileNameFor(list.getId()) + "]");
+					}
 				}
+				if (count > 0) {
+					double score = sum / count;
+					totalScore += score;
+					b.append("| " + ConverterUtils.colorizeText(score));
+				}
+				else {
+					b.append("| 0 ");
+				}
+				// number of lists
+				b.append("| " + count);
+				b.append("\n");
 			}
-			if (count > 0) {
-				double score = sum / count;
-				b.append("| " + df.format(score));
-			}
-			else {
-				b.append("| 0 ");
-			}
-			b.append("\n");
+			b.append("/%\n/%\n");
+
 		}
+
 		if (totalScore > 0) {
-			b.append("Total score: " + df.format(totalScore));
+			b.append("\n!Total score: " + df.format(totalScore));
 		}
 
 	}
