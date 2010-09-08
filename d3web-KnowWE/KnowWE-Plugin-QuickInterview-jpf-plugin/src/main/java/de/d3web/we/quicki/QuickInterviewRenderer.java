@@ -128,8 +128,8 @@ public class QuickInterviewRenderer {
 				+ "ns:'" + namespace + "'"
 				+ "}\" ";
 
-		html.append("<h3>\n");
-		html.append("Quick Interview\n");
+		html.append("<h3>");
+		html.append("Quick Interview");
 		html.append("<div id='quickireset' class='reset pointer' title='"
 				+ rb.getString("KnowWE.quicki.reset") + "'"
 				+ relAt
@@ -408,7 +408,8 @@ public class QuickInterviewRenderer {
 				+ "value='" + value + "' "
 				+ "size='18' "
 				+ jscall + " />");
-		sb.append("\n<input type='button' value='ok' class='date-ok' /> ");
+		// TODO: Really a date-ok class?
+		sb.append("<input type='button' value='ok' class='date-ok' /> ");
 		// "<div class='dateformatdesc'>()</div>");
 
 		sb.append("\n<div class='answerseparator'></div>");
@@ -509,7 +510,8 @@ public class QuickInterviewRenderer {
 				+ "value='" + value + "' "
 				+ "size='7' "
 				+ jscall + " />");
-		sb.append("\n<input type='button' value='ok' class='num-ok' />");
+		// TODO: do not insert a newline here, breaks functionality
+		sb.append("<input type='button' value='ok' class='num-ok' />");
 
 		sb.append("\n<div class='answerseparator'></div>");
 		renderAnswerUnknown(q, "num", sb);
