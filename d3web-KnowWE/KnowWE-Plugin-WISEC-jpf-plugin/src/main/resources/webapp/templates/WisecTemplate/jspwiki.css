@@ -40,7 +40,7 @@ h3{font-size:132%;}
 h3 .editsection,h3 .hashlink{font-size:76%;}
 h4{font-size:116%;}
 h4 .editsection,h4 .hashlink{font-size:86%;}
-a.editsection,a.hashlink{font-weight:normal;line-height:1.2;padding:.25em;text-decoration:none;color:#ccc;}
+a.editsection,a.hashlink{font-weight:normal;line-height:1.2;padding:.25em;text-decoration:none;color:#ddd;}
 a.editsection:hover,a.hashlink:hover{background-color:#ddd;color:blue!important;}
 h2:hover .editsection,h3:hover .editsection,h4:hover .editsection,h2:hover .hashlink,h3:hover .hashlink,h4:hover .hashlink{color:#999;}
 b,i{color:inherit;}
@@ -462,3 +462,4 @@ a.action.dialog {
 }
 a.createpage{color:#0d70e4;text-decoration:none;border-bottom:1px dashed #0d70e4;font-family:Arial,Helvetica,sans-serif;}
 a.external{color:#0d70e4;font-family:Arial,Helvetica,sans-serif;}
+a.hashlink, a.hashlink:hover{color:white;}

@@ -53,7 +53,7 @@
 
 
 	<div id="WISEC" style="width:80;">
-		<img src="templates/WisecTemplate/images/wisec_knowwe.png" style="float:none"/>
+		<img src="templates/WisecTemplate/images/wisec_knowwe2.png" style="float:none"/>
 	</div>
 
 	<div class="clearbox"></div>

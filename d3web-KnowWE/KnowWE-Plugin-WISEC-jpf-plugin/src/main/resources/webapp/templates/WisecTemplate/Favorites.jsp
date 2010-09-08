@@ -113,11 +113,11 @@
 	<wiki:UserCheck status="anonymous">	
 		<div class="leftmenu">
 			
-			<wiki:InsertPage page="LeftMenu2" />
-			<wiki:NoSuchPage page="LeftMenu2">
+			<wiki:InsertPage page="LeftMenu" />
+			<wiki:NoSuchPage page="LeftMenu">
 			  <div class="error">
-				<wiki:EditLink page="LeftMenu2">
-				  <fmt:message key="fav.nomenu"><fmt:param>LeftMenu2</fmt:param></fmt:message>
+				<wiki:EditLink page="LeftMenu">
+				  <fmt:message key="fav.nomenu"><fmt:param>LeftMenu</fmt:param></fmt:message>
 				</wiki:EditLink>
 			  </div>
 			</wiki:NoSuchPage>
@@ -138,11 +138,11 @@
 	<wiki:UserCheck status="asserted">	
 		<div class="leftmenu">
 			
-			<wiki:InsertPage page="LeftMenu2" />
-			<wiki:NoSuchPage page="LeftMenu2">
+			<wiki:InsertPage page="LeftMenu" />
+			<wiki:NoSuchPage page="LeftMenu">
 			  <div class="error">
-				<wiki:EditLink page="LeftMenu2">
-				  <fmt:message key="fav.nomenu"><fmt:param>LeftMenu2</fmt:param></fmt:message>
+				<wiki:EditLink page="LeftMenu">
+				  <fmt:message key="fav.nomenu"><fmt:param>LeftMenu</fmt:param></fmt:message>
 				</wiki:EditLink>
 			  </div>
 			</wiki:NoSuchPage>
