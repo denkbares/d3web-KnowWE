@@ -75,7 +75,7 @@ public class SubstanceListWriter extends WISECWriter {
 			}
 			String sourceID = list.info.get("Source_ID");
 			if (sourceID != null) {
-				writeKnowledge(writer, "-\n\n" +
+				writeKnowledge(writer, "\n" +
 						"@ListID: " + list.getId() + "\n\n" +
 						"@SourceID: " + sourceID + "\n" +
 						"%\n");

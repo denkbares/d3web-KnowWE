@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.MalformedQueryException;
@@ -36,6 +34,8 @@ import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+
+import common.Logger;
 
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.taghandler.AbstractTagHandler;
@@ -264,11 +264,7 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 			RatedSubstance rs = sortedSubstances.get(i);
 			result.append("|");
 			// result.append(generateLink(KnowWEUtils.urldecode(rs.getSubstance())));
-			result.append("[");
-			result.append(rs.getSubstance());
-			result.append("|");
-			result.append(SubstanceInfoWriter.getWikiFileNameFor(rs.getSubstance()));
-			result.append("]");
+			result.append(generateLink(rs.getSubstance()));
 			result.append("|");
 			result.append(rs.getScore());
 			result.append("\n");
@@ -308,24 +304,15 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 	 * @param urldecode
 	 * @return
 	 */
-	private Object generateLink(String text) {
-		String regex = "(.+)((\\[\\s*>\\s*\\|\\s*)([a-zA-Z_0-9-äöüÄÖÜß]+)(\\]))";
-		Pattern p = Pattern.compile(regex);
-		Matcher m = p.matcher(text);
-		boolean matches = m.find();
-
-		String name;
-		String link;
-
-		if (matches && m.groupCount() == 5) {
-			name = m.group(1);
-			link = m.group(4);
-			return "<a href='Wiki.jsp?page=" + link + "'>" + name + "</a>";
+	private Object generateLink(String substance) {
+		if (substance == null) {
+			Logger.getLogger(this.getClass()).warn("Substance was null, unable to render link!");
+			return "";
 		}
 
-		// Assumption:
-		// If the text doesn't match the pattern, then it can't be a link.
-		return text;
+		return "<a href='Wiki.jsp?page=" + SubstanceInfoWriter.getWikiFileNameFor(substance) + "'>"
+				+ substance + "</a>";
+
 	}
 
 	/**

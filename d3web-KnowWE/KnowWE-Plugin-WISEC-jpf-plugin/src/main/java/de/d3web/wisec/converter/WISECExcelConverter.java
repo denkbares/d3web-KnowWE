@@ -71,9 +71,9 @@ public class WISECExcelConverter {
 	public static String WISEC_FILE = "20100907_WISEC_v2.xls";
 	public final static String EXCEL_ENCODING = "cp1252";
 	// The directory of the master database file
-	public static String workspace = "e:/";
+	public static String workspace = "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/";
 	// Destination directory, where the generated files are put
-	public static String wikiworkspace = "e:/wisec/wikicontent/";
+	public static String wikiworkspace = "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/wikicontent/";
 
 	// The master database file, that is the input of all knowledge
 
