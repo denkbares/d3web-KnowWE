@@ -71,13 +71,12 @@ public class WISECExcelConverter {
 	public static String WISEC_FILE = "20100907_WISEC_v2.xls";
 	public final static String EXCEL_ENCODING = "cp1252";
 	// The directory of the master database file
-	public static String workspace = "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/";
+	public static String workspace = "e:/";
 	// Destination directory, where the generated files are put
-	public static String wikiworkspace = "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/wikicontent/content/";
-	// "/Users/joba/Documents/Projekte/Temp/KnowWE/WISEC/wikicontent_gen/";
-	// public static String wikiworkspace =
-	// "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/wikicontent/Treshold-40/";
-	// Praefix of most of the generated files
+	public static String wikiworkspace = "e:/wisec/wikicontent/";
+
+	// The master database file, that is the input of all knowledge
+
 	public static final String FILE_PRAEFIX = "WI_";
 
 	// Name of the column that identifies the name of a substance
@@ -144,7 +143,6 @@ public class WISECExcelConverter {
 		w.setWithKnowledge(GENERATE_WITH_KNOWLEDGE);
 		writers.add(w);
 
-		writers.add(new SubstanceInfoWriter(model, outputDirectory));
 
 		writers.add(new SourceListOverviewWriter(model, outputDirectory));
 
@@ -160,6 +158,7 @@ public class WISECExcelConverter {
 		writers.add(new TeamsWriter(model, outputDirectory));
 		writers.add(new TeamInfoWriter(model, outputDirectory));
 
+		writers.add(new SubstanceInfoWriter(model, outputDirectory));
 		// ////// Substance Ratings
 		// writers.addAll(configureRatingConfigurations(model,
 		// outputDirectory));

@@ -32,7 +32,7 @@ import de.d3web.wisec.model.WISECModel;
  */
 public class ActiveSubstancesReader extends WISECReader {
 
-	public static String SHEETNAME = "Active";
+	public static String SHEETNAME = "Active_long";
 	private final Collection<String> activeSubstanceNames;
 
 	public ActiveSubstancesReader(Workbook workbook) {

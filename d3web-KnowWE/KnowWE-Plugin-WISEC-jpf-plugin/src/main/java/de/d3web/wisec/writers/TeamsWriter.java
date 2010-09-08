@@ -51,7 +51,8 @@ public class TeamsWriter extends WISECWriter {
 		buffy.append("%%zebra-table\n%%sortable\n");
 
 		buffy.append("|| Team_name || CAS_no || Groups || \n");
-		for (String teamName : model.getAllTeamNames()) {
+		Collection<String> allTeamNames = model.getAllTeamNames();
+		for (String teamName : allTeamNames) {
 			buffy.append("| [" + teamName + "|" + TeamInfoWriter.getWikiFileNameFor(teamName)
 					+ "] ");
 
@@ -71,11 +72,20 @@ public class TeamsWriter extends WISECWriter {
 			if (groups != null && !groups.isEmpty()) {
 				for (String groupName : groups) {
 					Group group = this.model.groups.get(groupName);
+					if (group == null) {
+						buffy.append(" [ ");
+						buffy.append("groupName not found(@see Excelfile: Teams/Groups)");
+						buffy.append(" | ");
+						buffy.append("dummy");
+						buffy.append("]\\\\");
+					}
+					else {
 					buffy.append(" [ ");
 					buffy.append(groupName);
 					buffy.append(" | ");
 					buffy.append(GroupInfoWriter.getWikiFileNameFor(Integer.toString(group.getID())));
 					buffy.append("]\\\\");
+					}
 				}
 			}
 

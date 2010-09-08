@@ -41,7 +41,8 @@ public class GroupsWriter extends WISECWriter {
 
 	@Override
 	public void write() throws IOException {
-		Writer writer = ConverterUtils.createWriter(this.outputDirectory + FILENAME + ".txt");
+		Writer writer = ConverterUtils.createWriter(this.outputDirectory + FILENAME
+				+ ".txt");
 		writeBreadcrumb(writer);
 
 		StringBuffer buffy = new StringBuffer();
@@ -53,10 +54,19 @@ public class GroupsWriter extends WISECWriter {
 			Group group = this.model.groups.get(groupName);
 			Collection<String> cas_nos = group.getSubstances();
 			if (cas_nos != null && !cas_nos.isEmpty()) {
-				buffy.append("| [" + groupName + "|"
+				String groupNameLabel = groupName;
+				if (groupNameLabel.contains("[")) {
+					groupNameLabel = groupNameLabel.replaceAll("\\[", "[[");
+				}
+				buffy.append("| ["
+						+ groupNameLabel
+						+ "|"
 						+ GroupInfoWriter.getWikiFileNameFor(Integer.toString(group.getID()))
 						+ "] | ");
 				for (String cas : cas_nos) {
+					if (!model.activeSubstances.contains(cas)) {
+						model.activeSubstances.add(cas);
+					}
 					buffy.append(" [ " + cas + " | "
 							+ SubstanceInfoWriter.getWikiFileNameFor(cas) + "]\\\\");
 				}
@@ -73,7 +83,9 @@ public class GroupsWriter extends WISECWriter {
 	@Override
 	protected void writeBreadcrumb(Writer writer) throws IOException {
 		super.writeBreadcrumb(writer);
-		writer.write(" > [List of Substances|" + AllSubstancesOverviewWriter.FILENAME + "] > "
-				+ "[Active Substances|" + ActiveSubstancesWriter.FILENAME + "] > Groups\n\n");
+		writer.write(" > [List of Substances|" + AllSubstancesOverviewWriter.FILENAME
+				+ "] > "
+				+ "[Active Substances|" + ActiveSubstancesWriter.FILENAME
+				+ "] > Groups\n\n");
 	}
 }
