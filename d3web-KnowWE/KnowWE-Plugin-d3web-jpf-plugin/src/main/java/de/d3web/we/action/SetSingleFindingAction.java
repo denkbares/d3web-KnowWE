@@ -310,12 +310,10 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 			// KnowWEFacade.getInstance().performAction("RefreshHTMLDialogAction",
 			// parameterMap);
 
-			if (namespace.contains("OneQuestionDialog")) {
-				KnowWEFacade.getInstance().performAction("OneQuestionDialogAction", parameterMap);
-			}
-			else {
-				KnowWEFacade.getInstance().performAction("QuickInterviewAction", parameterMap);
-			}
+			// TODO this looks like a dirty workaround. Better register QuickI
+			// for 'update'
+			// on KNOWWE.helper.observer in your js
+			KnowWEFacade.getInstance().performAction("QuickInterviewAction", parameterMap);
 
 		}
 		catch (IOException e) {

@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -51,6 +51,7 @@ public class UpdateQuestions extends AbstractAction {
 		String pageName = context.getParameter("pageName");
 		String answersToLine = context.getParameter("answers");
 		String[] answers = answersToLine.split("::");
+
 
 		// get everything to update the article
 		KnowWEArticleManager artManager = KnowWEEnvironment.getInstance().getArticleManager(web);
@@ -97,10 +98,12 @@ public class UpdateQuestions extends AbstractAction {
 
 			GetInfoObjects.appendInfoObject(web, test, buffer);
 			buffer.append("</kbinfo>");
+			context.setContentType("text/xml; charset=UTF-8");
 			context.getWriter().write(buffer.toString());
 
 		}
 		else {
+			context.setContentType("text/plain; charset=UTF-8");
 			context.getWriter().write("Could not find id for: " + questionText);
 		}
 
@@ -114,7 +117,7 @@ public class UpdateQuestions extends AbstractAction {
 	/**
 	 * some special characters cause bugs, so the have to be escaped in
 	 * javascript. this method turns them back into normal special characters.
-	 * 
+	 *
 	 * @param text
 	 * @return
 	 */
@@ -140,7 +143,7 @@ public class UpdateQuestions extends AbstractAction {
 
 	/**
 	 * finds the right place for Solutions or Questions-section
-	 * 
+	 *
 	 * @param the article as string
 	 * @param sectionName Questions or Solutions
 	 * @return [0] everything before the new questions/solutions [1] everything
@@ -185,7 +188,7 @@ public class UpdateQuestions extends AbstractAction {
 
 	/**
 	 * returns the content of a questions or solutions-section
-	 * 
+	 *
 	 * @param article as string
 	 * @param sectionName
 	 */

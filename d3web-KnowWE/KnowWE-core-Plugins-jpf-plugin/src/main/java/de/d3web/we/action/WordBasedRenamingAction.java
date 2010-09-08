@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -27,10 +27,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,9 +44,9 @@ import de.d3web.we.kdom.Section;
 
 /**
  * Renders all actions for the Renaming Tool.
- * 
+ *
  * @author Johannes Dienst
- * 
+ *
  */
 public class WordBasedRenamingAction extends AbstractAction {
 
@@ -58,6 +58,8 @@ public class WordBasedRenamingAction extends AbstractAction {
 
 	@Override
 	public void execute(ActionContext context) throws IOException {
+
+		context.setContentType("text/html; charset=UTF-8");
 
 		KnowWEParameterMap parameterMap = context.getKnowWEParameterMap();
 		rb = KnowWEEnvironment.getInstance().getKwikiBundle(context.getRequest());
@@ -105,7 +107,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 	/**
 	 * Returns an additional text passage around the search result. So the user
 	 * can view the result in a larger context.
-	 * 
+	 *
 	 * @param amtURL additional text parameters
 	 * @param web
 	 * @param query user query string
@@ -158,7 +160,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 
 	/**
 	 * Renders a table with the results of the search in it.
-	 * 
+	 *
 	 * @param findings a map with all found text passages in it
 	 * @param query the users query string
 	 * @param replacement the replacement string for the query string
@@ -286,7 +288,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 	/**
 	 * Scans all articles for the query expressions. If the expressions is found
 	 * a <code>RenameFinding</code> object is created.
-	 * 
+	 *
 	 * @param web
 	 * @param query any string the user is looking for
 	 * @param previousMatchLength
@@ -341,7 +343,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 
 	/**
 	 * Creates the buttons to navigate through the context.
-	 * 
+	 *
 	 * @param article the article containing section
 	 * @param section where the query was found
 	 * @param sectionIndex position of the section in the article
@@ -405,7 +407,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 
 	/**
 	 * Searches the query string and highlights it. Works case-sensitive.
-	 * 
+	 *
 	 * @param text
 	 * @param query
 	 * @return
@@ -445,7 +447,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 	/**
 	 * Replaces the query string with the given replacement. Works
 	 * case-sensitive.
-	 * 
+	 *
 	 * @param text
 	 * @param query
 	 * @return
