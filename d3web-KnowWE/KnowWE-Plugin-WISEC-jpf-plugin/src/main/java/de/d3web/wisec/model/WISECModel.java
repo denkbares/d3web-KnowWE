@@ -43,6 +43,10 @@ import de.d3web.wisec.writers.SubstanceRatingListWriter;
  */
 public class WISECModel {
 
+	public Collection<String> getActiveSubstances() {
+		return activeSubstances;
+	}
+
 	Map<String, String> substanceRatings;
 
 	// new model from here
@@ -50,7 +54,7 @@ public class WISECModel {
 	// the CAS no. of all known substances
 	public Collection<String> substancesByCAS = new HashSet<String>();
 	// the names of all active substances (subset of substances)
-	public Collection<String> activeSubstances = new HashSet<String>();
+	private Collection<String> activeSubstances = new HashSet<String>();
 	// all imported source lists
 	public Collection<SourceList> sourceLists = new HashSet<SourceList>();
 	// all imported substance lists
@@ -79,6 +83,16 @@ public class WISECModel {
 		CAS2IUPACname = new HashMap<String, Collection<String>>();
 		activeSubstances = new HashSet<String>();
 		groups = new HashMap<String, Group>();
+	}
+
+	public void addToActiveSubstanceList(String substanceName) {
+		if (substanceName != null && substanceName.trim().length() > 0) {
+			this.activeSubstances.add(substanceName.trim());
+		}
+	}
+
+	public void setActiveSubstances(Collection<String> activeSubstances) {
+		this.activeSubstances = activeSubstances;
 	}
 
 	public void addToGroup(String groupName, String substanceID) {

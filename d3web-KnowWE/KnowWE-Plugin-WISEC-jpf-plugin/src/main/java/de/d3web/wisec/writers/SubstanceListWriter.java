@@ -183,7 +183,7 @@ public class SubstanceListWriter extends WISECWriter {
 		for (Substance substance : list.substances) {
 			for (String header : FIRST_HEADERS) {
 				if (header.equals("Action")) {
-					if (model.activeSubstances.contains(substance.getCAS())) {
+					if (model.getActiveSubstances().contains(substance.getCAS())) {
 						buffy.append("| A ");
 					}
 					else {
@@ -211,7 +211,7 @@ public class SubstanceListWriter extends WISECWriter {
 	private void getCellValue(StringBuffer buffy, Substance substance, String header) {
 		String value = ConverterUtils.clean(substance.values.get(header));
 		if (header.equals(WISECExcelConverter.SUBSTANCE_IDENTIFIER)) {
-			if (model.activeSubstances.contains(substance.getCAS())) {
+			if (model.getActiveSubstances().contains(substance.getCAS())) {
 				buffy.append(" [ " + value + "|"
 						+ SubstanceInfoWriter.getWikiFileNameFor(value) + "] ");
 			}

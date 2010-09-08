@@ -139,7 +139,7 @@ public class AllSubstancesChapterWriter extends WISECWriter {
 			buffy.append("| " + substance); // CAS
 		}
 
-		if (model.activeSubstances.contains(substance)) {
+		if (model.getActiveSubstances().contains(substance)) {
 			buffy.append("| A ");
 		}
 		else {

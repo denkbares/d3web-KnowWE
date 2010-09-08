@@ -99,7 +99,7 @@ public class SubstanceRatingListWriter extends WISECWriter {
 
 	private List<SubstanceWithRating> computeRating() {
 		List<SubstanceWithRating> ratings = new ArrayList<SubstanceWithRating>();
-		for (String substanceName : model.activeSubstances) {
+		for (String substanceName : model.getActiveSubstances()) {
 			SubstanceWithRating swr = new SubstanceWithRating();
 			swr.substanceName = substanceName;
 			swr.rating = ScoringUtils.computeTotalScoreFor(model, getConfiguration(), substanceName);

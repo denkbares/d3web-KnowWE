@@ -52,7 +52,7 @@ public class TeamsReader extends WISECReader {
 			for (String substance : substances) {
 				if (!substance.matches("\\s*")) {
 					model.addSubstanceToTeam(teamName, substance.trim());
-					model.activeSubstances.add(substance);
+					model.addToActiveSubstanceList(substance);
 				}
 			}
 

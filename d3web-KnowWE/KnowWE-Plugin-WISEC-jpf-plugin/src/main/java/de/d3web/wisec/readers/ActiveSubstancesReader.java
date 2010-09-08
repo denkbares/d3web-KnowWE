@@ -51,7 +51,7 @@ public class ActiveSubstancesReader extends WISECReader {
 				this.activeSubstanceNames.add(substanceName);
 			}
 		}
-		model.activeSubstances = this.activeSubstanceNames;
+		model.setActiveSubstances(this.activeSubstanceNames);
 	}
 
 }

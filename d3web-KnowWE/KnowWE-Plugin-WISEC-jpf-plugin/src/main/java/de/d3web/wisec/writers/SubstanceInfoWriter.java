@@ -47,7 +47,7 @@ public class SubstanceInfoWriter extends WISECWriter {
 
 	@Override
 	public void write() throws IOException {
-		for (String substanceName : model.activeSubstances) {
+		for (String substanceName : model.getActiveSubstances()) {
 			// for (Substance substance : model.getSubstances()) {
 			String filename = getWikiFileNameFor(substanceName);
 			Writer writer = ConverterUtils.createWriter(this.outputDirectory + filename + ".txt");

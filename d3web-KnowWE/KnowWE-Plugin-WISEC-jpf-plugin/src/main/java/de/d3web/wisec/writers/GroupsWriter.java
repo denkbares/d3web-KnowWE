@@ -64,8 +64,8 @@ public class GroupsWriter extends WISECWriter {
 						+ GroupInfoWriter.getWikiFileNameFor(Integer.toString(group.getID()))
 						+ "] | ");
 				for (String cas : cas_nos) {
-					if (!model.activeSubstances.contains(cas)) {
-						model.activeSubstances.add(cas);
+					if (!model.getActiveSubstances().contains(cas)) {
+						model.addToActiveSubstanceList(cas);
 					}
 					buffy.append(" [ " + cas + " | "
 							+ SubstanceInfoWriter.getWikiFileNameFor(cas) + "]\\\\");
