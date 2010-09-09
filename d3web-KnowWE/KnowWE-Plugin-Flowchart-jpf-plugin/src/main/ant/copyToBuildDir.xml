@@ -9,9 +9,9 @@ So no need to build after changes in these files. Reloading the page is sufficie
 -->
 <project name="project" default="copyToBildDir">
 
-	<property name="flowchartDir" value="${basedir}/../../../../KnowWE-Plugin-Flowchart" />
+	<property name="flowchartDir" value="${basedir}/../../../../KnowWE-Plugin-Flowchart-jpf-plugin" />
 
-	<property name="buildDir"  value="${basedir}/../../../../KnowWE/target/KnowWE-0-SNAPSHOT"/>
+	<property name="buildDir"  value="${basedir}/../../../../KnowWE/target/KnowWE-0.2-SNAPSHOT"/>
 	
 	<target name="copyToBildDir">
 
