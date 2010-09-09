@@ -20,9 +20,9 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="FlowchartTagHandler">
 		<parameter id="class"
-			value="de.d3web.we.flow.FlowchartTagHandler" />
-		<parameter id="name" value="FlowchartTagHandler" />
-		<parameter id="description" value="TagHandler FlowchartTagHandler" />
+			value="de.d3web.we.flow.FlowchartStateTagHandler" />
+		<parameter id="name" value="FlowchartStateTagHandler" />
+		<parameter id="description" value="TagHandler FlowchartStateTagHandler" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

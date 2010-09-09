@@ -1,23 +1,21 @@
 /*
- * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
- * Computer Science VI, University of Wuerzburg
+ * Copyright (C) 2010 University Wuerzburg, Computer Science VI
  *
- * This is free software; you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 3 of the License, or (at your option) any
- * later version.
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
  *
- * This software is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this software; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
- * site: http://www.fsf.org.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package de.d3web.we.flow;
 
 import java.util.ArrayList;
@@ -38,52 +36,44 @@ import de.d3web.diaFlux.flow.ISupport;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.inference.Entry;
 import de.d3web.diaFlux.inference.IPath;
-import de.d3web.we.core.KnowWEArticleManager;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
-import de.d3web.we.taghandler.AbstractTagHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-/**
- * [{KnowWEPlugin Flowchart}]
- *
- * @author Florian Ziegler
- */
-public class FlowchartTagHandler extends AbstractTagHandler {
 
-	public FlowchartTagHandler() {
-		super("flowchart");
-	}
+/**
+ *
+ * @author Reinhard Hatko
+ * @created 09.09.2010
+ */
+public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
-			Map<String, String> values, String web) {
+	public void render(KnowWEArticle article, Section<KnowWEObjectType> sec, KnowWEUserContext user, StringBuilder string) {
 
-		Session theCase = D3webUtils.getSession(topic, user, web);
+		Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
 
-		if (!DiaFluxUtils.isFlowCase(theCase)) {
-			return "No Flowchart found.";
+		if (!DiaFluxUtils.isFlowCase(session)) {
+			string.append("No Flowchart found.");
+			return;
 		}
-
-		KnowWEArticleManager artManager = KnowWEEnvironment.getInstance().getArticleManager(web);
-		KnowWEArticle article = artManager.getArticle(topic);
 
 		List<Section<FlowchartType>> flows = new ArrayList<Section<FlowchartType>>();
 
 		article.getSection().findSuccessorsOfType(FlowchartType.class, flows);
 
-		StringBuilder builder = new StringBuilder();
 
 		if (flows.isEmpty()) {
-			builder.append("No Flowcharts found in KB.");
+			string.append("No Flowcharts found in KB.");
 		}
 
 		// Debug
-		if (isDebug(user.getUrlParameterMap())) builder.append(getPathendText(theCase));
+		if (isDebug(user.getUrlParameterMap())) string.append(getPathendText(session));
 		//
 
 		for (Section<FlowchartType> section : flows) {
@@ -91,23 +81,22 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 			Map<String, String> attributeMap = AbstractXMLObjectType.getAttributeMapFor(section);
 			String name = attributeMap.get("name");
 
-			builder.append("<div>");
-			builder.append("<h3>");
-			builder.append("Diagnostic Flow '");
-			builder.append(name);
-			builder.append("'");
-			builder.append("</h3>");
+			string.append("<div>");
+			string.append("<h3>");
+			string.append("Diagnostic Flow '");
+			string.append(name);
+			string.append("'");
+			string.append("</h3>");
 
-			if (isActive(section, theCase)) {
-				builder.append(createPreviewWithHighlightedPath(section, theCase));
+			if (isActive(section, session)) {
+				string.append(createPreviewWithHighlightedPath(section, session));
 			}
 
-			builder.append("</div>");
-			builder.append("<p/><p/>");
+			string.append("</div>");
+			string.append("<p/><p/>");
 
 		}
 
-		return builder.toString();
 	}
 
 	private boolean isActive(Section section, Session theCase) {
@@ -293,5 +282,8 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		String debug = urlParameterMap.get("debug");
 		return debug != null && debug.equals("true");
 	}
+
+
+
 
 }
