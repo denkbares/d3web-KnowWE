@@ -153,13 +153,13 @@ public class ConverterUtils {
 		if (value == 0) {
 			return df.format(value);
 		}
-		else if (value >= 2) {
+		else if (value > 1.5) {
 			return "%%(background:red;)" + df.format(value) + "%%";
 		}
-		else if (value <= 1 || value >= -1) {
+		else if (value <= 1.5 && value >= -1.5) {
 			return "%%(background:yellow;)" + df.format(value) + "%%";
 		}
-		else if (value <= -2) {
+		else if (value < -1.5) {
 			return "%%(background:green;)" + df.format(value) + "%%";
 		}
 		return df.format(value);

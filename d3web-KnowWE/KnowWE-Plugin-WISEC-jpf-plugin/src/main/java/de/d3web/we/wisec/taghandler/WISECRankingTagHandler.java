@@ -119,8 +119,14 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 		catch (NumberFormatException e) {
 			numberSubstances = 10;
 		}
-		return renderSubstances(toList(ratedSubstances), numberSubstances, underlyingData,
-				checkPrintInfo(values));
+		String result = "";
+		try {
+			result = renderSubstances(toList(ratedSubstances), numberSubstances, underlyingData,
+					checkPrintInfo(values));
+		} catch (Exception e) {
+			result = "Error during list counting. Unable to create ranking.\n" + e.getMessage();
+		}
+		return result;
 	}
 
 	/**
@@ -148,7 +154,7 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 	 * @throws QueryEvaluationException
 	 */
 	private void processCriteria(String criteria, double weight, HashMap<String, RatedSubstance> ratedSubstances) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
-		Query query = createQuery(criteria);
+		Query query = createCriteriaQuery(criteria);
 		TupleQueryResult result = evaluateQuery(query);
 		updateScores(result, weight, ratedSubstances);
 	}
@@ -162,7 +168,7 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 	 * @throws RepositoryException
 	 * @throws MalformedQueryException
 	 */
-	private Query createQuery(String criteria) throws RepositoryException, MalformedQueryException {
+	private Query createCriteriaQuery(String criteria) throws RepositoryException, MalformedQueryException {
 
 		String queryString = SemanticCoreDelegator.getInstance().getSparqlNamespaceShorts() +
 								"SELECT ?substance ?score " +
@@ -252,15 +258,18 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 	 * @param underlyingData
 	 * @param printinfo
 	 * @return HTML formatted string representing the substances
+	 * @throws QueryEvaluationException
+	 * @throws MalformedQueryException
+	 * @throws RepositoryException
 	 */
-	private String renderSubstances(List<RatedSubstance> sortedSubstances, double numberSubstances, HashMap<String, Double> underlyingData, boolean printinfo) {
+	private String renderSubstances(List<RatedSubstance> sortedSubstances, double numberSubstances, HashMap<String, Double> underlyingData, boolean printinfo) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
 
 		DecimalFormat df = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(
 				new Locale("en", "US")));
 		StringBuilder result = new StringBuilder();
 
-		result.append("\n||Substance ||Score ");
-		result.append(printinfo ? "*\n" : "\n");
+		result.append("\n||Substance ||Score * ||Lists ");
+		result.append(printinfo ? "\n" : "\n");
 		double limit = numberSubstances < sortedSubstances.size()
 				? numberSubstances
 				: sortedSubstances.size();
@@ -273,6 +282,8 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 			result.append(generateLink(rs.getSubstance()));
 			result.append("|");
 			result.append(df.format(rs.getScore()));
+			result.append("|");
+			result.append(getListOccurences(rs.getSubstance()));
 			result.append("\n");
 		}
 
@@ -306,6 +317,58 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 
 	/**
 	 * 
+	 * @created 09/09/2010
+	 * @param substance
+	 * @return
+	 * @throws MalformedQueryException
+	 * @throws RepositoryException
+	 * @throws QueryEvaluationException
+	 */
+	private int getListOccurences(String substance) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
+		Query query = createListOccurenceQuery(substance);
+		TupleQueryResult result = evaluateQuery(query);
+		return countLists(result);
+	}
+
+
+	/**
+	 * 
+	 * @created 09/09/2010
+	 * @param substance
+	 * @return
+	 * @throws MalformedQueryException
+	 * @throws RepositoryException
+	 */
+	private Query createListOccurenceQuery(String substance) throws RepositoryException, MalformedQueryException {
+		String queryString = SemanticCoreDelegator.getInstance().getSparqlNamespaceShorts() +
+				"SELECT ?list " +
+				"WHERE { " +
+				"<http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#" + substance
+				+ "> w:onListRelation ?list " +
+				"}";
+
+		RepositoryConnection con = SemanticCoreDelegator.getInstance().getUpper().getConnection();
+		return con.prepareQuery(QueryLanguage.SPARQL, queryString);
+	}
+
+	/**
+	 * 
+	 * @created 09/09/2010
+	 * @param result
+	 * @return
+	 * @throws QueryEvaluationException
+	 */
+	private int countLists(TupleQueryResult result) throws QueryEvaluationException {
+		int counter = 0;
+		while (result.hasNext()) {
+			result.next();
+			counter++;
+		}
+		return counter;
+	}
+
+	/**
+	 * 
 	 * @created 22.06.2010
 	 * @param urldecode
 	 * @return
@@ -335,7 +398,7 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 
 		// used for one criteria
 		private double intermediateScore = 0;
-		private double intermediateCounter = 0;
+		private int intermediateCounter = 0;
 
 		public RatedSubstance(String substance) {
 			if (substance == null) throw new IllegalArgumentException();
