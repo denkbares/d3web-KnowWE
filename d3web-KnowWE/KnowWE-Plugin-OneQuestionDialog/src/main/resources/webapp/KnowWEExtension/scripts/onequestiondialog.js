@@ -198,6 +198,9 @@ OneQuestionDialog.getPrevious = function(element) {
  */
 OneQuestionDialog.newQuestionAfterUpdate = function() {
 	var element = $('oqdbutton');
+	if (!element)
+		return; 
+	
 	var div = OneQuestionDialog.findParentDiv(element);
 	var question = div.getElement('p').textContent;;
 	var questionId = div.getElement('p').getElement('input').value;
