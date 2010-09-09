@@ -41,6 +41,8 @@ import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
+import de.d3web.core.knowledge.terminology.info.NumericalInterval;
+import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.ChoiceValue;
@@ -489,32 +491,68 @@ public class QuickInterviewRenderer {
 		}
 
 		String id = q.getId();
+		String unit = "";
+		Double rangeMax = Double.MAX_VALUE;
+		Double rangeMin = Double.MIN_VALUE;
+
+		if (q.getProperties().getProperty(Property.QUESTION_NUM_RANGE) != null) {
+			NumericalInterval range = (NumericalInterval) q.getProperties().getProperty(
+					Property.QUESTION_NUM_RANGE);
+			rangeMax = range.getRight();
+			rangeMin = range.getLeft();
+		}
+
+		if (q.getProperties().getProperty(Property.UNIT) != null) {
+			unit = q.getProperties().getProperty(Property.UNIT).toString();
+		}
 
 		// assemble the JS call
 		String jscall = "";
 		try {
-			jscall = " rel=\"{oid: '" + id + "', "
-					+ "web:'" + web + "',"
-					+ "ns:'" + namespace + "',"
-					+ "type:'num', "
-					+ "qtext:'" + URLEncoder.encode(q.getName(), "UTF-8") + "', "
-					+ "}\" ";
+			if (rangeMin != Double.MIN_VALUE && rangeMax != Double.MAX_VALUE) {
+				jscall = " rel=\"{oid: '" + id + "', "
+						+ "web:'" + web + "',"
+						+ "ns:'" + namespace + "',"
+						+ "type:'num', "
+						+ "rangeMin:'" + rangeMin + "', "
+						+ "rangeMax:'" + rangeMax + "', "
+						+ "qtext:'" + URLEncoder.encode(q.getName(), "UTF-8") + "', "
+						+ "}\" ";
+			}
+			else {
+				jscall = " rel=\"{oid: '" + id + "', "
+						+ "web:'" + web + "',"
+						+ "ns:'" + namespace + "',"
+						+ "type:'num', "
+						+ "rangeMin:'NaN', "
+						+ "rangeMax:'NaN', "
+						+ "qtext:'" + URLEncoder.encode(q.getName(), "UTF-8") + "', "
+						+ "}\" ";
+			}
 		}
 		catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 
 		// assemble the input field
-		sb.append("\n<input class='input'  style='display: inline;' id='input_" + id
+		sb.append("<input class='input'  style='display: inline;' id='input_" + id
 				+ "' type='text' "
 				+ "value='" + value + "' "
 				+ "size='7' "
 				+ jscall + " />");
+
+		// print the units
+		sb.append("<div class='unit'>" + unit + "</div>");
+
 		// TODO: do not insert a newline here, breaks functionality
 		sb.append("<input type='button' value='ok' class='num-ok' />");
 
-		sb.append("\n<div class='answerseparator'></div>");
+		sb.append("<div class='answerseparator'></div>");
+
 		renderAnswerUnknown(q, "num", sb);
+
+		String errmsgid = q.getId() + "_errormsg";
+		sb.append("<div id='" + errmsgid + "' class='invisible' ></div>");
 	}
 
 	// TODO: check Date input format

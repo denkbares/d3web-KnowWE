@@ -285,25 +285,65 @@ KNOWWE.plugin.quicki = function(){
             
             // check, if either button was clicked or enter was pressed
             if( !(key || bttn) ) return false;
+           // alert(key);
+            
+            _KE.target( event ).previousSibling.previousSibling.className = 'input';
             
             var rel = null;
             if(key){				// if enter was pressed
                 rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")");
             } else {				// if button was clicked
-                rel = eval("(" + _KE.target( event ).previousSibling.getAttribute('rel') + ")");
+                rel = eval("(" + _KE.target( event ).previousSibling.previousSibling.getAttribute('rel') + ")");
             }
             if( !rel ) return;
             
             var inputtext = 'inputTextNotFound';	// default input
             
-            // if an input was given in the field
+            // get the provided value if any is provided
             if(_KS('#input_' + rel.oid)) {
-                    inputtext = _KS('#input_' + rel.oid).value; 
-            }
+                inputtext = _KS('#input_' + rel.oid).value; 
+    	 		
+                // if range is given, validate range
+                if(rel.rangeMin!='NaN' && rel.rangeMax!='NaN'){
+            	            	
+                	var min = parseInt(rel.rangeMin);
+                	var max = parseInt(rel.rangeMax);
+            	 	// compare with range
+                	if(parseInt(inputtext) >= min && parseInt(inputtext) <= max){
+            		 	 	                		
+                        if(_KS('#' + rel.oid + "_errormsg")){
+                        	_KS('#' + rel.oid + "_errormsg").className='invisible';	
+                        	_KS('#' + rel.oid + "_errormsg").innerHTML='';
+                        }
+                        
+            	 		// send KNOWWE request as SingleFindingAction with given value
+                    	KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
+                    		{action : 'SetSingleFindingAction', ValueNum: inputtext});
+                    	
+            	 	} else {
+
+            	 		// not within range: toggle css for red display...
+            		 	_KE.target( event ).previousSibling.previousSibling.className = 'inputrangeerror';
+            		 	
+            		 	// and display error message
+            		 	var errormessage = 'Input needs to be a number between ' + rel.rangeMin + ' and ' + rel.rangeMax + '!';
+            		 	_KS('#' + rel.oid + "_errormsg").className='errormsg';
+            		 	_KS('#' + rel.oid + "_errormsg").innerHTML=errormessage;
+
+                	 	// refresh quicki display
+            		 	KNOWWE.plugin.quicki.showRefreshed();
+            		 	
+            	 	} 
+            	} 
             
-            // send KNOWWE request as SingleFindingAction with given value
-            KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
-            		{action : 'SetSingleFindingAction', ValueNum: inputtext});
+            	// else just try to get the value and set it as finding
+            	else {
+        
+                	// send KNOWWE request as SingleFindingAction with given value
+                	KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
+                		{action : 'SetSingleFindingAction', ValueNum: inputtext});
+            	}
+            }
         },
         /**
          * Function: dateAnswerClicked

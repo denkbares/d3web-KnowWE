@@ -84,8 +84,15 @@
 /* styling of input box */
 #quickinterview .input { height: 12px; float: left; margin-left: 5px; cursor: pointer; }
 
+#quickinterview .inputrangeerror {color: red; height: 12px; float: left; margin-left: 5px; cursor: pointer; }
+
+#quickinterview .errormsg {color: red; float: left; margin-left: 5px; cursor: default; }
+
 /* styling of input box button */
 #quickinterview .num-ok{ height: 20px; margin: 0 5px; float: left; cursor: pointer;}
+
+/* styling of input box button */
+#quickinterview .unit{ margin: 0 5px; float: left; cursor: default; }
 
 /* styling of input box date answers */
 #quickinterview .inputdate { height: 12px; float: left; margin-left: 5px; cursor: pointer; }
