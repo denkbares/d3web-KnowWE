@@ -82,7 +82,7 @@
 	 border: 2px #ACC0D6 solid;}
 	 
 /* styling of input box */
-#quickinterview .input { height: 12px; float: left; margin-left: 5px; cursor: pointer; }
+#quickinterview .numinput { height: 12px; float: left; margin-left: 5px; cursor: pointer; }
 
 #quickinterview .inputrangeerror {color: red; height: 12px; float: left; margin-left: 5px; cursor: pointer; }
 

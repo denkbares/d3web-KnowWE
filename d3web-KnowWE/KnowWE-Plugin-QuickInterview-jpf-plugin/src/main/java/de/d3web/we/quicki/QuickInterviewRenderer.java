@@ -535,7 +535,7 @@ public class QuickInterviewRenderer {
 		}
 
 		// assemble the input field
-		sb.append("<input class='input'  style='display: inline;' id='input_" + id
+		sb.append("<input class='numinput'  style='display: inline;' id='input_" + id
 				+ "' type='text' "
 				+ "value='" + value + "' "
 				+ "size='7' "

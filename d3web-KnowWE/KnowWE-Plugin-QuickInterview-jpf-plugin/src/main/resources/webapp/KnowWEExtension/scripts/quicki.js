@@ -123,9 +123,17 @@ KNOWWE.plugin.quicki = function(){
         		_KE.add('click', element, KNOWWE.plugin.quicki.numAnswerClicked);
             });  
         	
+        	_KS('.numinput').each(function( element ){
+        		_KE.add('keydown', element, KNOWWE.plugin.quicki.numAnswerClicked);
+            });  
+        	
         	_KS('.date-ok').each(function( element ){
         		_KE.add('click', element, KNOWWE.plugin.quicki.dateAnswerClicked);
             });  
+        	
+        	_KS('.inputdate').each(function( element ){
+        		_KE.add('keydown', element, KNOWWE.plugin.quicki.dateAnswerClicked);
+            }); 
         	
             _KE.add('click', _KS('#quickireset'), KNOWWE.plugin.quicki.quickIReset);
           
@@ -285,13 +293,14 @@ KNOWWE.plugin.quicki = function(){
             
             // check, if either button was clicked or enter was pressed
             if( !(key || bttn) ) return false;
-           // alert(key);
+            alert(key);
             
-            _KE.target( event ).previousSibling.previousSibling.className = 'input';
+            _KE.target( event ).previousSibling.previousSibling.className = 'numinput';
             
             var rel = null;
             if(key){				// if enter was pressed
                 rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")");
+                alert(rel);
             } else {				// if button was clicked
                 rel = eval("(" + _KE.target( event ).previousSibling.previousSibling.getAttribute('rel') + ")");
             }
