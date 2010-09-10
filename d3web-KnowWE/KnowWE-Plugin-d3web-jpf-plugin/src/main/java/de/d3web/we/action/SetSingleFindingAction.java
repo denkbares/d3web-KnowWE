@@ -43,7 +43,6 @@ import de.d3web.core.session.blackboard.DefaultFact;
 import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.DateValue;
-import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.indication.inference.PSMethodUserSelected;
@@ -121,7 +120,6 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 					try {
 						Date date = format.parse(valuedate);
 						value = new DateValue(date);
-						System.out.println("date: " + value);
 					}
 					catch (ParseException e) {
 						e.printStackTrace();
@@ -130,15 +128,24 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 
 				if (value != null) {
 					if (question instanceof QuestionMC && !value.equals(Unknown.getInstance())) {
+
+						/*
+						 * if (mcFact != null &&
+						 * !mcFact.getValue().equals(Unknown.getInstance())) {
+						 * MultipleChoiceValue mcv = ((MultipleChoiceValue)
+						 * mcFact.getValue()); Collection<ChoiceValue> thisMcv =
+						 * (Collection<ChoiceValue>) ((MultipleChoiceValue)
+						 * value).getValue(); for (ChoiceValue cv :
+						 * (Collection<ChoiceValue>) mcv.getValue()) { if
+						 * (!thisMcv.contains(cv)) { thisMcv.add(cv); } } }
+						 */
+
 						Fact mcFact = blackboard.getValueFact(question);
-						if (mcFact != null && !mcFact.getValue().equals(Unknown.getInstance())) {
-							MultipleChoiceValue mcv = ((MultipleChoiceValue) mcFact.getValue());
-							Collection<ChoiceValue> thisMcv = (Collection<ChoiceValue>) ((MultipleChoiceValue) value).getValue();
-							for (ChoiceValue cv : (Collection<ChoiceValue>) mcv.getValue()) {
-								if (!thisMcv.contains(cv)) {
-									thisMcv.add(cv);
-								}
-							}
+
+						// remove old mc value if any
+						if (mcFact != null) {
+							blackboard.removeValueFact(mcFact);
+
 						}
 					}
 

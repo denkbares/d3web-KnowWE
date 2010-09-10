@@ -167,13 +167,7 @@ KNOWWE.plugin.quicki = function(){
          */
         toggleAnswerMC: function( element ){
         	
-        	if(element.className=='answerMC'){
-        		element.className='answerMCClicked';
-        		alert(1);
-        	} else if (element.className=='answerMCClicked'){
-        		element.className='answerMC';
-        		alert(2);
-        	}
+        	
         	
         },
         /**
@@ -188,14 +182,33 @@ KNOWWE.plugin.quicki = function(){
         	//KNOWWE.plugin.quicki.checkRuns();
             var el = _KE.target(event); 	// get the clicked element
             _KE.cancel( event );
-            KNOWWE.plugin.quicki.toggleAnswerMC(el);
-            
+           
             var rel = eval("(" + el.getAttribute('rel') + ")");
             if( !rel ) return;
             var oid = rel.oid;
+            var toreplace = oid + "#####";
+        	            
+            // not yet clicked, thus collect values
+            if(el.className=='answerMC'){
+            	el.className='answerMCClicked';
+            	
+            	// if not already contained, attach value
+            	if(mcanswervals.indexOf(toreplace)==-1){
+            		mcanswervals += oid;
+                    mcanswervals += "#####"
+           		
+            	}
+            } 
             
-            mcanswervals += oid;
-            mcanswervals += "#####"
+            // already clicked. Thus value needs to be removed
+            else if (el.className=='answerMCClicked'){
+            	el.className='answerMC';
+            	
+            	// if value is alerady contained, remove it
+            	if(mcanswervals.indexOf(toreplace)!=-1){
+            		mcanswervals = mcanswervals.replace(toreplace, '');
+            	}
+        	}
             alert(mcanswervals);
         },
         /**
@@ -215,7 +228,7 @@ KNOWWE.plugin.quicki = function(){
                 	{ValueID: mcvals});
         	
         	// finally, reset answervals collector
-        	mcanswervals = '';
+        	//mcanswervals = '';
         },
         /**
          * Function: answerClicked
