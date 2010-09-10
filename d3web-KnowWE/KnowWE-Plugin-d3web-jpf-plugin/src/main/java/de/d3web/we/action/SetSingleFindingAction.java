@@ -20,7 +20,6 @@
 
 package de.d3web.we.action;
 
-import java.io.IOException;
 import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -31,8 +30,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
-
-import common.Logger;
 
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
@@ -56,7 +53,6 @@ import de.d3web.we.basic.InformationType;
 import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
-import de.d3web.we.core.KnowWEFacade;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
@@ -303,23 +299,6 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 			broker.update(info);
 		}
 
-		try {
-			// TODO WATCH!
-			// if anyone still needs to work with the old interview you need
-			// to activate the commented out line below.
-			// KnowWEFacade.getInstance().performAction("RefreshHTMLDialogAction",
-			// parameterMap);
-
-			// TODO this looks like a dirty workaround. Better register QuickI
-			// for 'update'
-			// on KNOWWE.helper.observer in your js
-			KnowWEFacade.getInstance().performAction("QuickInterviewAction", parameterMap);
-
-		}
-		catch (IOException e) {
-			Logger.getLogger(this.getClass()).error(
-					"Error while performing QuickInterviewAction" + e.getMessage());
-		}
 
 		return null;
 	}
