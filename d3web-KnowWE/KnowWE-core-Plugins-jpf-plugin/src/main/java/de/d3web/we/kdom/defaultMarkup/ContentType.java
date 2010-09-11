@@ -32,6 +32,8 @@ public class ContentType extends DefaultAbstractKnowWEObjectType {
 	private final static String SECTION_REGEXP =
 			// prefix (declare the markup section)
 			"^\\p{Blank}*%%$NAME$\\p{Blank}*[:=\\p{Space}]\\p{Blank}*" +
+					// skip empty lines before content
+					"(\\p{Blank}*[\\r\\n]+)*" +
 					// content (any reluctant matched), as group with whitespace
 					// characters
 					"(\\p{Space}*?(.*?)\\p{Space}*)" +
@@ -48,7 +50,7 @@ public class ContentType extends DefaultAbstractKnowWEObjectType {
 	public ContentType(DefaultMarkup markup) {
 		this.markup = markup;
 		Pattern pattern = getContentPattern(this.markup.getName());
-		this.setSectionFinder(new RegexSectionFinder(pattern, 1));
+		this.setSectionFinder(new RegexSectionFinder(pattern, 2));
 		Collections.addAll(this.childrenTypes, this.markup.getTypes());
 	}
 
