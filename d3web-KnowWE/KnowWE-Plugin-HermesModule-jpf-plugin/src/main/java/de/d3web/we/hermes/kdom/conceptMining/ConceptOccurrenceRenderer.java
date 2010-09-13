@@ -77,8 +77,9 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 								.getSubject());
 			}
 			subjectString = subjectURI.getLocalName();
-			TupleQueryResult result = SPARQLUtil.executeTupleQuery(TITLE_QUERY
-					.replaceAll("URI", subjectURI.toString()), arg0.getTitle());
+			String q = TITLE_QUERY
+					.replaceAll("URI", subjectURI.toString());
+			TupleQueryResult result = SPARQLUtil.executeTupleQuery(q, arg0.getTitle());
 			if (result != null) {
 				try {
 					if (result.hasNext()) {
@@ -139,9 +140,12 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 			"} ";
 
 	protected String[] getPossibleProperties(URI subject, String object) {
+		List<String> propList = new ArrayList<String>();
 
+		// all classes the subject belongs to
 		TupleQueryResult subjectClasses = SPARQLUtil.findClassesOfEntity(subject);
 
+		// all classes the object belongs to
 		TupleQueryResult objectClasses = SPARQLUtil.findClassesOfEntity(UpperOntology.getInstance().getHelper().createlocalURI(
 				object));
 
@@ -152,13 +156,27 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 				while (objectClasses.hasNext()) {
 					BindingSet objectClass = objectClasses.next();
-					String objectClassString = objectClass.getBinding("x").getValue().toString();
+					Binding bindingX = objectClass.getBinding("x");
+					String objectClassString = bindingX.getValue().toString();
 
+					
+					// new..
+					// String name = bindingX.getName();
+					// TupleQueryResult objectSuperClasses =
+					// SPARQLUtil.findSuperClasses(UpperOntology.getInstance().getHelper().createlocalURI(
+					// name));
+					//
+					// while (objectSuperClasses.hasNext()) {
+					// BindingSet objectSuperClass = objectClasses.next();
+					// Binding bindingSuperX = objectClass.getBinding("x");
+					// String objectSuperClassString =
+					// bindingX.getValue().toString();
+					// }
+					
 					String q = PROP_SPARQL.replaceAll("SUBJECT", subjectClazzString);
 					q = q.replaceAll("OBJECT", objectClassString);
 					TupleQueryResult result = SPARQLUtil.executeTupleQuery(q);
 
-					List<String> propList = new ArrayList<String>();
 
 					if (result != null) {
 						try {
@@ -181,11 +199,11 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						return propList.toArray(new String[propList.size()]);
 					}
 				}
 
 			}
+			return propList.toArray(new String[propList.size()]);
 		}
 		catch (QueryEvaluationException e1) {
 			// TODO Auto-generated catch block

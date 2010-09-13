@@ -298,6 +298,8 @@ public class TimeEventSPARQLUtils {
 	private static List<Placemark> buildPlacemarks(TupleQueryResult result) {
 		// List<String> bindings = result.getBindingNames();
 
+		if (result == null) return new ArrayList<Placemark>(0);
+
 		List<Placemark> placemarks = new ArrayList<Placemark>();
 		try {
 			while (result.hasNext()) {

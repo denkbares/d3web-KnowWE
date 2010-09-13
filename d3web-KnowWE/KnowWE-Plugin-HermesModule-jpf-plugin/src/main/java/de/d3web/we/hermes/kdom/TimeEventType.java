@@ -124,7 +124,7 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 				String localID = section.getTitle() + "_" + section.getID();
 				URI localURI = uo.getHelper().createlocalURI(localID);
 
-				URI timeEventURI = uo.getHelper().createlocalURI("TimeEvent");
+				URI timeEventURI = uo.getHelper().createlocalURI("Ereignis");
 
 				// Putting the TimeEventURI in a context, so it can be found by
 				// subtypes

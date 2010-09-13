@@ -50,6 +50,7 @@ public class MapType extends AbstractXMLObjectType {
 
 	public MapType() {
 		super("Map");
+		this.addSubtreeHandler(new MapTypeOWLSubTreeHandler());
 	}
 
 	@Override
@@ -59,10 +60,10 @@ public class MapType extends AbstractXMLObjectType {
 		return childrenTypes;
 	}
 
-	private class MapTypeOWLSubTreeHandler extends OwlSubtreeHandler {
+	private class MapTypeOWLSubTreeHandler extends OwlSubtreeHandler<MapType> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<MapType> s) {
 			IntermediateOwlObject ioo = new IntermediateOwlObject();
 			String url = getIFrameSrcURL(s);
 			KMLLoader kmlLoader = new KMLLoader(url);
