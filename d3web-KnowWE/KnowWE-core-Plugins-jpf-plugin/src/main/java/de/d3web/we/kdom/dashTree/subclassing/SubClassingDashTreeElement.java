@@ -45,13 +45,28 @@ public class SubClassingDashTreeElement extends DashTreeElement {
 	}
 
 	private class SubClassingDashTreeElementOWLSubTreeHandler extends
-			OwlSubtreeHandler {
+			OwlSubtreeHandler<SubClassingDashTreeElement> {
+
+		/*
+		 * needsToCreate() and needsToDestroy() here is necessary to update the
+		 * subClass relations of the child of this section
+		 */
+		@Override
+		public boolean needsToCreate(KnowWEArticle article, Section<SubClassingDashTreeElement> s) {
+			return super.needsToCreate(article, s)
+					|| DashTreeUtils.isChangeInAncestorSubtree(article, s, 1);
+		}
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
-			Section<DashTreeElement> element = s; // warning
+		public boolean needsToDestroy(KnowWEArticle article, Section<SubClassingDashTreeElement> s) {
+			return super.needsToDestroy(article, s)
+					|| DashTreeUtils.isChangeInAncestorSubtree(article, s, 1);
+		}
+
+		@Override
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<SubClassingDashTreeElement> element) {
 			IntermediateOwlObject io = new IntermediateOwlObject();
-			if (s.getObjectType().isAssignableFromType(DashTreeElement.class)) {
+			if (element.getObjectType().isAssignableFromType(DashTreeElement.class)) {
 				Section<? extends DashTreeElement> father = DashTreeUtils
 						.getFatherDashTreeElement(element);
 				if (father != null) {
@@ -59,11 +74,11 @@ public class SubClassingDashTreeElement extends DashTreeElement {
 							.findChildOfType(DashTreeElementContent.class);
 					Section<? extends DashTreeElementContent> childElement = element
 							.findChildOfType(DashTreeElementContent
-									.getDefaultInstance());
+									.class);
 					createSubClassRelation(childElement, fatherElement, io);
 				}
 			}
-			SemanticCoreDelegator.getInstance().addStatements(io, s);
+			SemanticCoreDelegator.getInstance().addStatements(io, element);
 			return null;
 		}
 
