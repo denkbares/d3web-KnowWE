@@ -29,6 +29,7 @@ import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlSubtreeHandler;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
+import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
@@ -36,7 +37,7 @@ import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 
-public class SubClassingDashTreeElement extends DashTreeElement {
+public class SubClassingDashTreeElement extends DashTreeElement implements IncrementalConstraints {
 
 	@Override
 	protected void init() {
@@ -44,24 +45,14 @@ public class SubClassingDashTreeElement extends DashTreeElement {
 		this.addSubtreeHandler(new SubClassingDashTreeElementOWLSubTreeHandler());
 	}
 
+	@Override
+	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+		return DashTreeUtils.isChangeInAncestorSubtree(article, s, 1);
+	}
+
 	private class SubClassingDashTreeElementOWLSubTreeHandler extends
 			OwlSubtreeHandler<SubClassingDashTreeElement> {
 
-		/*
-		 * needsToCreate() and needsToDestroy() here is necessary to update the
-		 * subClass relations of the child of this section
-		 */
-		@Override
-		public boolean needsToCreate(KnowWEArticle article, Section<SubClassingDashTreeElement> s) {
-			return super.needsToCreate(article, s)
-					|| DashTreeUtils.isChangeInAncestorSubtree(article, s, 1);
-		}
-
-		@Override
-		public boolean needsToDestroy(KnowWEArticle article, Section<SubClassingDashTreeElement> s) {
-			return super.needsToDestroy(article, s)
-					|| DashTreeUtils.isChangeInAncestorSubtree(article, s, 1);
-		}
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<SubClassingDashTreeElement> element) {
