@@ -35,7 +35,7 @@ import de.d3web.wisec.model.WISECModel;
  */
 public class AllSubstancesChapterWriter extends WISECWriter {
 
-	public static final String FILENAME = WISECExcelConverter.FILE_PRAEFIX + "Substances_";
+	public static final String FILENAME = WISECExcelConverter.FILE_PRAEFIX + "Substances+";
 	public static final String CHAPTERNUMBERS = "123456789";
 	public static final String CHAPTERLETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	private String currentChapterSymbol = "";
@@ -94,7 +94,7 @@ public class AllSubstancesChapterWriter extends WISECWriter {
 			List<String> remaining = new ArrayList<String>(substances);
 			remaining.removeAll(addedSubstances);
 			for (String substance : remaining) {
-				appendTableLineFor(substance, buffy, counter, byName);
+				appendTableLineFor(substance, buffy, counter);
 				counter++;
 			}
 		}
@@ -104,7 +104,7 @@ public class AllSubstancesChapterWriter extends WISECWriter {
 				if (!byName) {
 					if (substance.startsWith(currentChapterSymbol)
 							|| substance.startsWith(currentChapterSymbol.toLowerCase())) {
-						appendTableLineFor(substance, buffy, counter, byName);
+						appendTableLineFor(substance, buffy, counter);
 						counter++;
 						addedSubstances.add(substance);
 					}
@@ -115,7 +115,7 @@ public class AllSubstancesChapterWriter extends WISECWriter {
 								.startsWith("[[" + currentChapterSymbol)
 							|| ConverterUtils.clean(model.getChemNamesFor(substance).toString())
 									.startsWith("[[" + currentChapterSymbol.toLowerCase())) {
-					appendTableLineFor(substance, buffy, counter, byName);
+						appendTableLineFor(substance, buffy, counter);
 					counter++;
 					addedSubstances.add(substance);
 					}
@@ -129,15 +129,10 @@ public class AllSubstancesChapterWriter extends WISECWriter {
 		writer.close();
 	}
 
-	private void appendTableLineFor(String substance, StringBuffer buffy, long counter, boolean byName) {
+	private void appendTableLineFor(String substance, StringBuffer buffy, long counter) {
 
 		buffy.append("| " + counter);
-		if (byName) {
-			buffy.append("| " + ConverterUtils.clean(model.getChemNamesFor(substance).toString())); // Chemical_name
-		}
-		else {
-			buffy.append("| " + substance); // CAS
-		}
+		buffy.append("| " + substance); // CAS
 
 		if (model.getActiveSubstances().contains(substance)) {
 			buffy.append("| A ");
@@ -146,14 +141,9 @@ public class AllSubstancesChapterWriter extends WISECWriter {
 			buffy.append("| + ");
 		}
 
-		buffy.append("| " + ConverterUtils.clean(model.getECNamesFor(substance).toString()));
-		buffy.append("| " + ConverterUtils.clean(model.getIUPACFor(substance).toString()));
-		if (byName) {
-			buffy.append("| " + substance); // CAS
-		}
-		else {
-			buffy.append("| " + ConverterUtils.clean(model.getChemNamesFor(substance).toString())); // Chemical_name
-		}
+		buffy.append("| " + ConverterUtils.asStringNoBraces(model.getECNamesFor(substance)));
+		buffy.append("| " + ConverterUtils.asStringNoBraces(model.getIUPACFor(substance)));
+		buffy.append("| " + ConverterUtils.asStringNoBraces(model.getChemNamesFor(substance))); // Chemical_name
 
 		buffy.append("| <ul>");
 		for (SubstanceList list : model.getSubstanceListsContaining(substance)) {
@@ -161,7 +151,7 @@ public class AllSubstancesChapterWriter extends WISECWriter {
 			buffy.append(SubstanceListWriter.getWikiFileNameFor(list.getId()));
 			buffy.append("\"> ");
 			buffy.append(list.getName());
-			buffy.append(" </a></li> \\\\");
+			buffy.append(" </a></li>");
 		}
 		buffy.append("</ul>\n");
 	}
@@ -169,8 +159,11 @@ public class AllSubstancesChapterWriter extends WISECWriter {
 	@Override
 	protected void writeBreadcrumb(Writer writer) throws IOException {
 		super.writeBreadcrumb(writer);
-		writer.write(" > [Index of Lists|" + SubstanceListsOverviewWriter.FILENAME + "] > "
-				+ "[All Substances|" + AllSubstancesOverviewWriter.FILENAME + "] > "
+		writer.write(" > [Index of Lists|"
+				+ ConverterUtils.cleanWikiLinkSpaces(SubstanceListsOverviewWriter.FILENAME)
+				+ "] > "
+				+ "[All Substances|"
+				+ ConverterUtils.cleanWikiLinkSpaces(AllSubstancesOverviewWriter.FILENAME) + "] > "
 				+ "Substances " + currentChapterSymbol + "\n\n");
 	}
 }

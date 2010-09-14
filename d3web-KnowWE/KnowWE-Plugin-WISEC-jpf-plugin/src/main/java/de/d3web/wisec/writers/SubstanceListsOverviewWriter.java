@@ -32,23 +32,23 @@ import de.d3web.wisec.model.WISECModel;
 
 public class SubstanceListsOverviewWriter extends WISECWriter {
 
-	public static final String FILENAME = WISECExcelConverter.FILE_PRAEFIX + "AllSubstanceLists";
+	public static final String FILENAME = WISECExcelConverter.FILE_PRAEFIX + "All+Substance+Lists";
 
-	public final static String[] LIST_ATTRIBUTES = new String[] {
-			"Source_ID", "ID", "Name", "Criteria_Code", "List_allocation", "Number_of_substances",
-			"CMR", "Persistence", "Bioakumulation_Potential", "Aqua_Tox", "PBT", "vPvB", "EDC",
-			"Multiple_Tox", "LRT", "Climatic_Change", "drinking_water", " surface_water", "sea",
-			"groundwater", "Risk_related", "Exposure", "compartment", "Market_Volume",
-			"Wide_d_use", "Political", "SVHC_regulated", "Regulated", "ecological_concerns" };
-
-	public final static String[] CRITERIA_ATTRIBUTES = new String[] {
-			"CMR", "Persistence", "Bioakumulation_Potential", "Aqua_Tox", "PBT", "vPvB", "EDC",
-			"Multiple_Tox", "LRT", "Climatic_Change", "drinking_water", " surface_water", "sea",
-			"groundwater", "Risk_related", "Exposure", "compartment", "Market_Volume",
-			"Wide_d_use", "Political", "SVHC_regulated", "Regulated", "ecological_concerns" };
+	// TODO RemoveMe
+	// public final static String[] LIST_ATTRIBUTES = new String[] {
+	// "Source_ID", "ID", "Name", "Criteria_Code", "List_allocation",
+	// "Number_of_substances",
+	// "CMR", "Persistence", "Bioakumulation_Potential", "Aqua_Tox", "PBT",
+	// "vPvB", "EDC",
+	// "Multiple_Tox", "LRT", "Climatic_Change", "drinking_water",
+	// " surface_water", "sea",
+	// "groundwater", "Risk_related", "Exposure", "compartment",
+	// "Market_Volume",
+	// "Wide_d_use", "Political", "SVHC_regulated", "Regulated",
+	// "ecological_concerns" };
 
 	public final static String[] WRITEABLE_ATTR = new String[] {
-			"Source_ID", "Source_Name", "ID", "Name", "Author", "Country"
+			"Source_ID", "Source_Name", "ID", "Name", "Author", "Country", "Criteria_code"
 	};
 
 	public SubstanceListsOverviewWriter(WISECModel model, String outputDirectory) {
@@ -88,11 +88,13 @@ public class SubstanceListsOverviewWriter extends WISECWriter {
 		StringBuffer buffy = new StringBuffer();
 		buffy.append("| " + getWikiedValueForAttribute("Source_ID", list) + " ");
 		buffy.append("| [" + sourceList.get("Name") + " | " +
-				SourceListWriter.getWikiFilename(sourceList.getId()) + "] ");
+				ConverterUtils.cleanWikiLinkSpaces(SourceListWriter.getWikiFilename(sourceList.getId()))
+				+ "] ");
 		buffy.append("| " + getWikiedValueForAttribute("ID", list) + " ");
 		buffy.append("| " + getWikiedValueForAttribute("Name", list) + " ");
 		buffy.append("| " + sourceList.get("Author") + " ");
 		buffy.append("| " + sourceList.get("Country") + " ");
+		buffy.append("| " + ConverterUtils.clean(sourceList.get("Criteria_code")) + " ");
 		return buffy.toString();
 	}
 
@@ -104,9 +106,11 @@ public class SubstanceListsOverviewWriter extends WISECWriter {
 
 	public static String generateOverviewLineFor(SubstanceList list, String[] listAttr) {
 		if (listAttr == null) {
-			listAttr = LIST_ATTRIBUTES;
+			// listAttr = LIST_ATTRIBUTES; TODO: RemoveMe
+			System.out.println("listAttr is null!");
+			listAttr = new String[0];
 		}
-		String filename = SubstanceListWriter.getWikiFileNameFor(list.getId());
+		String filename = ConverterUtils.cleanWikiLinkSpaces(SubstanceListWriter.getWikiFileNameFor(list.getId()));
 		StringBuffer buffy = new StringBuffer();
 		for (String attribute : listAttr) {
 			if (attribute.equalsIgnoreCase("Name")) {
@@ -131,7 +135,8 @@ public class SubstanceListsOverviewWriter extends WISECWriter {
 		StringBuffer buffy = new StringBuffer();
 		if (attribute.equalsIgnoreCase("Name")) {
 			buffy.append("[" + clean(list.getName()) + " | "
-					+ SubstanceListWriter.getWikiFileNameFor(list.getId()) + "] ");
+					+ ConverterUtils.cleanWikiLinkSpaces(SubstanceListWriter.getWikiFileNameFor(list.getId()))
+					+ "] ");
 		}
 		else {
 			String value = list.info.get(attribute);

@@ -32,7 +32,7 @@ import de.d3web.wisec.scoring.ScoringWeightsConfiguration;
 
 public class SubstanceRatingListWriter extends WISECWriter {
 
-	public static final String FILE_PRAEFIX = WISECExcelConverter.FILE_PRAEFIX + "RATING_";
+	public static final String FILE_PRAEFIX = WISECExcelConverter.FILE_PRAEFIX + "RATING+";
 	ScoringWeightsConfiguration configuration = new DefaultScoringWeightsConfiguration();
 
 	class SubstanceWithRating implements Comparable<SubstanceWithRating> {

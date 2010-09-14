@@ -77,7 +77,7 @@ public class WISECExcelConverter {
 
 	// The master database file, that is the input of all knowledge
 
-	public static final String FILE_PRAEFIX = "WI_";
+	public static final String FILE_PRAEFIX = "WI+";
 
 	// Name of the column that identifies the name of a substance
 	public static String SUBSTANCE_IDENTIFIER = "CAS_No";

@@ -70,19 +70,19 @@ public class AllSubstancesOverviewWriter extends WISECWriter {
 			buffy.append("~[ [");
 			buffy.append(currentChapterSymbol);
 			buffy.append("|");
-			buffy.append(AllSubstancesChapterWriter.FILENAME);
+			buffy.append(ConverterUtils.cleanWikiLinkSpaces(AllSubstancesChapterWriter.FILENAME));
 			buffy.append(currentChapterSymbol);
 			buffy.append("] ]");
 		}
 
 		if (chapterSymbols.startsWith("1")) {
 			buffy.append("~[ [Sonstige|");
-			buffy.append(AllSubstancesChapterWriter.FILENAME);
+			buffy.append(ConverterUtils.cleanWikiLinkSpaces(AllSubstancesChapterWriter.FILENAME));
 			buffy.append("OtherCAS] ]");
 		}
 		else {
 			buffy.append("~[ [0-9, Sonderzeichen|");
-			buffy.append(AllSubstancesChapterWriter.FILENAME);
+			buffy.append(ConverterUtils.cleanWikiLinkSpaces(AllSubstancesChapterWriter.FILENAME));
 			buffy.append("OtherNames] ]");
 		}
 		buffy.append("\n\n");
@@ -92,7 +92,9 @@ public class AllSubstancesOverviewWriter extends WISECWriter {
 	@Override
 	protected void writeBreadcrumb(Writer writer) throws IOException {
 		super.writeBreadcrumb(writer);
-		writer.write(" > [Index of Lists|" + SubstanceListsOverviewWriter.FILENAME + "] > "
+		writer.write(" > [Index of Lists|"
+				+ ConverterUtils.cleanWikiLinkSpaces(SubstanceListsOverviewWriter.FILENAME)
+				+ "] > "
 				+ "All Substances\n\n");
 	}
 }

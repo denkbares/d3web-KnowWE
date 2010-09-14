@@ -34,7 +34,7 @@ import de.d3web.wisec.model.WISECModel;
 
 public class SourceListWriter extends WISECWriter {
 
-	private static String filePraefix = WISECExcelConverter.FILE_PRAEFIX + "SOL_";
+	private static String filePraefix = WISECExcelConverter.FILE_PRAEFIX + "SOL+";
 	private static Map<String, String> listID2fileName = new HashMap<String, String>();
 
 	private static String[] OVERVIEW_ATTR = new String[] {
@@ -97,7 +97,6 @@ public class SourceListWriter extends WISECWriter {
 				else {
 					System.err.println("Substance lists with name " + listname + " not found.");
 				}
-				// w.write("* "+SubstanceListWriter.asWikiMarkup(substancelist)+"\n");
 			}
 			w.write("/%\n/%\n");
 
@@ -107,7 +106,8 @@ public class SourceListWriter extends WISECWriter {
 
 	protected void writeBreadcrumb(Writer writer, SourceList list) throws IOException {
 		super.writeBreadcrumb(writer);
-		writer.append(" > [Index of Sources|" + SourceListOverviewWriter.FILENAME +
+		writer.append(" > [Index of Sources|"
+				+ ConverterUtils.cleanWikiLinkSpaces(SourceListOverviewWriter.FILENAME) +
 				"] > " + list.getName());
 		writer.append("\n\n");
 	}

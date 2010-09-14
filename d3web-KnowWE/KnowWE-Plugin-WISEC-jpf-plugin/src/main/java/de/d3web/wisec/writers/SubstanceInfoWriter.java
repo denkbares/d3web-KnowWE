@@ -37,7 +37,7 @@ import de.d3web.wisec.model.WISECModel;
 
 public class SubstanceInfoWriter extends WISECWriter {
 
-	public static final String FILE_PRAEFIX = WISECExcelConverter.FILE_PRAEFIX + "SUB_";
+	public static final String FILE_PRAEFIX = WISECExcelConverter.FILE_PRAEFIX + "SUB+";
 	private static final int MAXLENGTH = 20;
 	private static Map<String, String> filenameMap = new HashMap<String, String>();
 
@@ -68,8 +68,11 @@ public class SubstanceInfoWriter extends WISECWriter {
 
 	protected void writeBreadcrumb(Writer writer, String substance) throws IOException {
 		super.writeBreadcrumb(writer);
-		writer.write(" > [List of Substances|" + AllSubstancesOverviewWriter.FILENAME + "] > "
-				+ "[Active Substances|" + ActiveSubstancesWriter.FILENAME + "] > " + substance
+		writer.write(" > [List of Substances|"
+				+ ConverterUtils.cleanWikiLinkSpaces(AllSubstancesOverviewWriter.FILENAME) + "] > "
+				+ "[Active Substances|"
+				+ ConverterUtils.cleanWikiLinkSpaces(ActiveSubstancesWriter.FILENAME) + "] > "
+				+ substance
 				+ "\n\n");
 	}
 
@@ -125,7 +128,7 @@ public class SubstanceInfoWriter extends WISECWriter {
 
 	public static List<String> criteriaContainedInAtLeastOneList(Collection<SubstanceList> lists) {
 		List<String> criteria = new ArrayList<String>();
-		for (String crit : SubstanceListsOverviewWriter.CRITERIA_ATTRIBUTES) {
+		for (String crit : Criteria.getAllCriterias()) {
 			if (isInOneList(crit, lists)) {
 				criteria.add(crit);
 			}
@@ -165,13 +168,14 @@ public class SubstanceInfoWriter extends WISECWriter {
 		Collection<SubstanceList> lists = this.model.getSubstanceListsContaining(substance);
 
 		b.append("!! Criteria Scoring\n\n");
-		for (String criteriaGroup : Criteria.CRITERIAS.keySet()) {
+		b.append("|| Criteria || Lists || Scoring || On Lists\n");
 
-			b.append("!" + criteriaGroup + "\n");
-			b.append("%%zebra-table\n%%sortable\n");
-			b.append("|| Criteria || Lists || Scoring || On Lists\n");
+		for (String criteriaGroup : Criteria.getCriteriaGroups()) {
 
-			for (String criteria : Criteria.CRITERIAS.get(criteriaGroup)) {
+			b.append("|| " + criteriaGroup + "|| || || \n");
+			double criteriaScore = 0;
+
+			for (String criteria : Criteria.getCriteriasFor(criteriaGroup)) {
 				int count = 0;
 				double sum = 0;
 				b.append("| " + criteria + " | ");
@@ -181,12 +185,14 @@ public class SubstanceInfoWriter extends WISECWriter {
 						count++;
 						sum += Double.valueOf(value);
 						b.append(" [" + value + "|"
-								+ SubstanceListWriter.getWikiFileNameFor(list.getId()) + "]");
+								+ ConverterUtils.cleanWikiLinkSpaces(SubstanceListWriter.getWikiFileNameFor(list.getId()))
+								+ "]");
 					}
 				}
 				if (count > 0) {
 					double score = sum / count;
 					totalScore += score;
+					criteriaScore += score;
 					b.append("| " + ConverterUtils.colorizeText(score));
 				}
 				else {
@@ -196,7 +202,9 @@ public class SubstanceInfoWriter extends WISECWriter {
 				b.append("| " + count);
 				b.append("\n");
 			}
-			b.append("/%\n/%\n");
+
+			b.append("|| Intermediate score || || || " + df.format(criteriaScore));
+			b.append("\n");
 
 		}
 
@@ -207,14 +215,6 @@ public class SubstanceInfoWriter extends WISECWriter {
 	}
 
 	private void writeCASReferences(String substance, StringBuffer b) {
-		b.append("* Chemical names: ");
-		if (model.getChemNamesFor(substance).size() > 1) {
-			b.append("\n" + ConverterUtils.asBulletList(model.getChemNamesFor(substance), 2)
-					+ " \n");
-		}
-		else {
-			b.append(model.getChemNamesFor(substance).toArray()[0] + "\n");
-		}
 		b.append("* EC_No: ");
 		if (model.getECNamesFor(substance).isEmpty()) {
 			b.append(" - \n");
@@ -229,6 +229,14 @@ public class SubstanceInfoWriter extends WISECWriter {
 		}
 		else {
 			b.append(ConverterUtils.asString(model.getIUPACFor(substance)) + " \n");
+		}
+		b.append("* Chemical names: ");
+		if (model.getChemNamesFor(substance).size() > 1) {
+			b.append("\n" + ConverterUtils.asBulletList(model.getChemNamesFor(substance), 2)
+					+ " \n");
+		}
+		else {
+			b.append(model.getChemNamesFor(substance).toArray()[0] + "\n");
 		}
 
 		b.append("\n");
@@ -249,7 +257,8 @@ public class SubstanceInfoWriter extends WISECWriter {
 
 	public static String asWikiMarkup(String substanceName) {
 		return "[ " + ConverterUtils.clean(substanceName) + " | "
-				+ SubstanceInfoWriter.getWikiFileNameFor(substanceName) + "]";
+				+ ConverterUtils.cleanWikiLinkSpaces(SubstanceInfoWriter.getWikiFileNameFor(substanceName))
+				+ "]";
 	}
 
 }

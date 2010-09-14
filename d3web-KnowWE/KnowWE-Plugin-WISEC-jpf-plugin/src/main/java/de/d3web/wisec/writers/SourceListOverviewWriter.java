@@ -32,7 +32,7 @@ import de.d3web.wisec.model.WISECModel;
 public class SourceListOverviewWriter extends WISECWriter {
 
 	public static final String FILENAME = WISECExcelConverter.FILE_PRAEFIX
-			+ "All_Sources";
+			+ "All+Sources";
 
 	private static final String[] WRITEABLE_ATTRIBUTES = new String[] {
 			"ID", "Name", "Author", "Country", "Inclusion_WISEC"
@@ -66,7 +66,8 @@ public class SourceListOverviewWriter extends WISECWriter {
 						value = ConverterUtils.clean(value);
 						if (value.equals(list.getName())) {
 							value = "[" + value + " | "
-									+ SourceListWriter.getWikiFilename(list.getId()) + "]";
+									+ ConverterUtils.cleanWikiLinkSpaces(SourceListWriter.getWikiFilename(list.getId()))
+									+ "]";
 						}
 						else if (attribute.equals(WISECExcelConverter.NUMBER_KEY)) {
 							value = ConverterUtils.toShoppedString(value);

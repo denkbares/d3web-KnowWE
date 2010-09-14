@@ -22,6 +22,7 @@ package de.d3web.we.wisec.util;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 public class Criteria {
 
@@ -62,24 +63,34 @@ public class Criteria {
 
 	private static Collection<String> allCriterias = new HashSet<String>();
 
-	public static HashMap<String, String[]> CRITERIAS = new HashMap<String, String[]>();
+	// Necessary because UBA wants a special order...
+	private static Collection<String> criteriaGroups = new LinkedList<String>();
+
+	private static HashMap<String, String[]> criterias = new HashMap<String, String[]>();
 
 	/*
-	 * Put all criterias with their group name in a HashMap
+	 * Put all criterias with their group name in a HashMap and add the
+	 * groupnames to a list for sorted output
 	 */
 	static {
-		CRITERIAS.put("Need for regulation", regulationNeed);
-		CRITERIAS.put("Relevance for regulation", regulationRelevance);
-		CRITERIAS.put("Exposure / Monitoring", exposure);
-		CRITERIAS.put("Hazardous Properties", hazardous);
-		CRITERIAS.put("Mobility", mobility);
+		criterias.put("Need for regulation", regulationNeed);
+		criterias.put("Relevance for regulation", regulationRelevance);
+		criterias.put("Exposure / Monitoring", exposure);
+		criterias.put("Mobility", mobility);
+		criterias.put("Hazardous Properties", hazardous);
+
+		criteriaGroups.add("Hazardous Properties");
+		criteriaGroups.add("Mobility");
+		criteriaGroups.add("Exposure / Monitoring");
+		criteriaGroups.add("Relevance for regulation");
+		criteriaGroups.add("Need for regulation");
 	}
 
 	/*
 	 * Put all criterias in a HashSet for easy Access
 	 */
 	static {
-		for (String[] group : CRITERIAS.values()) {
+		for (String[] group : criterias.values()) {
 			for (String criteria : group) {
 				allCriterias.add(criteria);
 			}
@@ -88,6 +99,14 @@ public class Criteria {
 
 	public static Collection<String> getAllCriterias() {
 		return allCriterias;
+	}
+
+	public static Collection<String> getCriteriaGroups() {
+		return criteriaGroups;
+	}
+
+	public static String[] getCriteriasFor(String groupName) {
+		return criterias.get(groupName);
 	}
 
 }

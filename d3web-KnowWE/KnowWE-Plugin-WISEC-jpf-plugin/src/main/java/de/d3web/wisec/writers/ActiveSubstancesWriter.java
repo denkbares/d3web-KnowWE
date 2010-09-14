@@ -26,7 +26,7 @@ import de.d3web.wisec.model.WISECModel;
 
 public class ActiveSubstancesWriter extends WISECWriter {
 
-	public static final String FILENAME = WISECExcelConverter.FILE_PRAEFIX + "ActiveSubstances";
+	public static final String FILENAME = WISECExcelConverter.FILE_PRAEFIX + "Active+Substances";
 
 	public ActiveSubstancesWriter(WISECModel model, String outputDirectory) {
 		super(model, outputDirectory);
@@ -45,15 +45,13 @@ public class ActiveSubstancesWriter extends WISECWriter {
 
 		// write the data
 		b.append("|| CAS_No || EC_no || IUPAC_name || Chemical_name  \n");
-		// List<Substance> sortedSubstances = sortSubstances();
 		for (String substanceName : model.getActiveSubstances()) {
-			// String casName = substance.getCAS();
 			b.append("| [" + substanceName + " | "
-					+ SubstanceInfoWriter.getWikiFileNameFor(substanceName) + "] | "
-					+ ConverterUtils.asString(model.getECNamesFor(substanceName)) + "| "
-					+ ConverterUtils.asString(model.getIUPACFor(substanceName)) + " | "
-					+ ConverterUtils.asString(model.getChemNamesFor(substanceName)) + "\n");
-			// + " | " + model.usesInLists(substance) + "\n");
+					+ ConverterUtils.cleanWikiLinkSpaces(SubstanceInfoWriter.getWikiFileNameFor(substanceName))
+					+ "] | "
+					+ ConverterUtils.asStringNoBraces(model.getECNamesFor(substanceName)) + "| "
+					+ ConverterUtils.asStringNoBraces(model.getIUPACFor(substanceName)) + " | "
+					+ ConverterUtils.asStringNoBraces(model.getChemNamesFor(substanceName)) + "\n");
 		}
 
 		writer.write(b.toString());
@@ -66,7 +64,8 @@ public class ActiveSubstancesWriter extends WISECWriter {
 	@Override
 	protected void writeBreadcrumb(Writer writer) throws IOException {
 		super.writeBreadcrumb(writer);
-		writer.write(" > [List of Substances|" + AllSubstancesOverviewWriter.FILENAME + "] > "
+		writer.write(" > [List of Substances|"
+				+ ConverterUtils.cleanWikiLinkSpaces(AllSubstancesOverviewWriter.FILENAME) + "] > "
 				+ "Active Substances\n\n");
 	}
 

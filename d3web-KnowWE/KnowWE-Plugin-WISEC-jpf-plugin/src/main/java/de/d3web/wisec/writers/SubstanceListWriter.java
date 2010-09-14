@@ -32,7 +32,7 @@ import de.d3web.wisec.model.WISECModel;
 
 public class SubstanceListWriter extends WISECWriter {
 
-	private static String FILE_PRAEFIX = WISECExcelConverter.FILE_PRAEFIX + "SUL_";
+	private static String FILE_PRAEFIX = WISECExcelConverter.FILE_PRAEFIX + "SUL+";
 	private boolean withKnowledge;
 
 	public SubstanceListWriter(WISECModel model, String outputDirectory) {
@@ -65,10 +65,10 @@ public class SubstanceListWriter extends WISECWriter {
 		// WRITE THE SUBSTANCE LIST CRITERIA
 		writer.write("!! Criteria \n\n");
 		String sourceID = null;
-		for (String criteriaGroup : Criteria.CRITERIAS.keySet()) {
+		for (String criteriaGroup : Criteria.getCriteriaGroups()) {
 			writer.write("!" + criteriaGroup + "\n");
 			writeKnowledge(writer, "%%ListCriteria\n");
-			for (String criteria : Criteria.CRITERIAS.get(criteriaGroup)) {
+			for (String criteria : Criteria.getCriteriasFor(criteriaGroup)) {
 				String value = list.criteria.get(criteria);
 				if (value == null || value.isEmpty()) value = "0";
 				else ConverterUtils.clean(value);
@@ -89,7 +89,8 @@ public class SubstanceListWriter extends WISECWriter {
 		if (sourceID != null) {
 			writer.write("\n __Source:__ ");
 			writer.write("[ " + model.getSourceListNameForID(sourceID) + "|"
-					+ SourceListWriter.getWikiFilename(sourceID) + "]");
+					+ ConverterUtils.cleanWikiLinkSpaces(SourceListWriter.getWikiFilename(sourceID))
+					+ "]");
 		}
 		else {
 			writer.write("__Attention:__ No source list known.");
@@ -107,7 +108,8 @@ public class SubstanceListWriter extends WISECWriter {
 		buffy.append("|| Source_ID   | " + getWikiedValueForAttribute("Source_ID", list)
 				+ "\n");
 		buffy.append("|| Source_Name | [" + sourceList.get("Name") + "|" +
-				SourceListWriter.getWikiFilename(sourceList.getId()) + "]\n");
+				ConverterUtils.cleanWikiLinkSpaces(SourceListWriter.getWikiFilename(sourceList.getId()))
+				+ "]\n");
 		buffy.append("|| List_ID     | " + getWikiedValueForAttribute("ID", list) + "\n");
 		buffy.append("|| List_Name   | " + getWikiedValueForAttribute("Name", list)
 				+ "\n");
@@ -132,7 +134,8 @@ public class SubstanceListWriter extends WISECWriter {
 		StringBuffer buffy = new StringBuffer();
 		if (attribute.equalsIgnoreCase("Name")) {
 			buffy.append("[" + ConverterUtils.clean(list.getName()) + "|"
-					+ SubstanceListWriter.getWikiFileNameFor(list.getId()) + "] ");
+					+ ConverterUtils.cleanWikiLinkSpaces(SubstanceListWriter.getWikiFileNameFor(list.getId()))
+					+ "] ");
 		}
 		else {
 			String value = list.info.get(attribute);
@@ -146,7 +149,8 @@ public class SubstanceListWriter extends WISECWriter {
 
 	private void writeBreadcrumb(Writer writer, SubstanceList list) throws IOException {
 		super.writeBreadcrumb(writer);
-		writer.write(" > [Index of Lists|" + SubstanceListsOverviewWriter.FILENAME
+		writer.write(" > [Index of Lists|"
+				+ ConverterUtils.cleanWikiLinkSpaces(SubstanceListsOverviewWriter.FILENAME)
 				+ "] > "
 				+ list.getName() + "\n\n");
 	}
@@ -220,7 +224,8 @@ public class SubstanceListWriter extends WISECWriter {
 		if (header.equals(WISECExcelConverter.SUBSTANCE_IDENTIFIER)) {
 			if (model.getActiveSubstances().contains(substance.getCAS())) {
 				buffy.append(" [ " + value + "|"
-						+ SubstanceInfoWriter.getWikiFileNameFor(value) + "] ");
+						+ ConverterUtils.cleanWikiLinkSpaces(SubstanceInfoWriter.getWikiFileNameFor(value))
+						+ "] ");
 			}
 			else {
 				buffy.append(value + " ");
@@ -246,7 +251,7 @@ public class SubstanceListWriter extends WISECWriter {
 
 	public static String asWikiMarkup(SubstanceList list) {
 		return "[ " + list.getName() + "|"
-				+ SubstanceListWriter.getWikiFileNameFor(list.getId())
+				+ ConverterUtils.cleanWikiLinkSpaces(SubstanceListWriter.getWikiFileNameFor(list.getId()))
 				+ "]";
 	}
 

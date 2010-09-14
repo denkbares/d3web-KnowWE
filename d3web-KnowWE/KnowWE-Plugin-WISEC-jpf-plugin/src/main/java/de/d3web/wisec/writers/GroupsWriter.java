@@ -61,14 +61,15 @@ public class GroupsWriter extends WISECWriter {
 				buffy.append("| ["
 						+ groupNameLabel
 						+ "|"
-						+ GroupInfoWriter.getWikiFileNameFor(Integer.toString(group.getID()))
+						+ ConverterUtils.cleanWikiLinkSpaces(GroupInfoWriter.getWikiFileNameFor(Integer.toString(group.getID())))
 						+ "] | ");
 				for (String cas : cas_nos) {
 					if (!model.getActiveSubstances().contains(cas)) {
 						model.addToActiveSubstanceList(cas);
 					}
 					buffy.append(" [ " + cas + " | "
-							+ SubstanceInfoWriter.getWikiFileNameFor(cas) + "]\\\\");
+							+ ConverterUtils.cleanWikiLinkSpaces(SubstanceInfoWriter.getWikiFileNameFor(cas))
+							+ "]\\\\");
 				}
 				buffy.append("| [add to group|dummy]\n");
 			}
@@ -83,9 +84,11 @@ public class GroupsWriter extends WISECWriter {
 	@Override
 	protected void writeBreadcrumb(Writer writer) throws IOException {
 		super.writeBreadcrumb(writer);
-		writer.write(" > [List of Substances|" + AllSubstancesOverviewWriter.FILENAME
+		writer.write(" > [List of Substances|"
+				+ ConverterUtils.cleanWikiLinkSpaces(AllSubstancesOverviewWriter.FILENAME)
 				+ "] > "
-				+ "[Active Substances|" + ActiveSubstancesWriter.FILENAME
+				+ "[Active Substances|"
+				+ ConverterUtils.cleanWikiLinkSpaces(ActiveSubstancesWriter.FILENAME)
 				+ "] > Groups\n\n");
 	}
 }

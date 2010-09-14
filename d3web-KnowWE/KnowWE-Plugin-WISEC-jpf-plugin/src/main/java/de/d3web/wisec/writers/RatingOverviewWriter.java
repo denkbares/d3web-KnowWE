@@ -26,7 +26,7 @@ import de.d3web.wisec.model.WISECModel;
 
 public class RatingOverviewWriter extends WISECWriter {
 
-	private final String FILENAME = WISECExcelConverter.FILE_PRAEFIX + "OverviewRatings";
+	private final String FILENAME = WISECExcelConverter.FILE_PRAEFIX + "Overview+Ratings";
 
 	public RatingOverviewWriter(WISECModel model, String outputDirectory) {
 		super(model, outputDirectory);
@@ -38,7 +38,9 @@ public class RatingOverviewWriter extends WISECWriter {
 
 		writer.write("!!! Rankings\n\n");
 		for (String rating : model.generatedRatings()) {
-			writer.write("* [" + rating + " | " + model.wikiFileNameForRating(rating) + "]\n");
+			writer.write("* [" + rating + " | "
+					+ ConverterUtils.cleanWikiLinkSpaces(model.wikiFileNameForRating(rating))
+					+ "]\n");
 		}
 
 		writer.close();

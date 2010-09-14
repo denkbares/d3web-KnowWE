@@ -39,7 +39,7 @@ import de.d3web.wisec.model.WISECModel;
 
 public class GroupInfoWriter extends WISECWriter {
 
-	private static final String FILENAME_PRAEFIX = WISECExcelConverter.FILE_PRAEFIX + "GR_";
+	private static final String FILENAME_PRAEFIX = WISECExcelConverter.FILE_PRAEFIX + "GR+";
 
 	public GroupInfoWriter(WISECModel model, String outputDirectory) {
 		super(model, outputDirectory);
@@ -81,13 +81,14 @@ public class GroupInfoWriter extends WISECWriter {
 		Collection<SubstanceList> lists = getAllListWithOneCasOf(groupName);
 
 		b.append("!! Criteria Scoring\n\n");
-		for (String criteriaGroup : Criteria.CRITERIAS.keySet()) {
+		b.append("|| Criteria || Lists || Scoring || On Lists\n");
 
-			b.append("!" + criteriaGroup + "\n");
-			b.append("%%zebra-table\n%%sortable\n");
-			b.append("|| Criteria || Lists || Scoring || On Lists\n");
+		for (String criteriaGroup : Criteria.getCriteriaGroups()) {
 
-			for (String criteria : Criteria.CRITERIAS.get(criteriaGroup)) {
+			b.append("|| " + criteriaGroup + "|| || || \n");
+			double criteriaScore = 0;
+
+			for (String criteria : Criteria.getCriteriasFor(criteriaGroup)) {
 				int count = 0;
 				double sum = 0;
 				b.append("| " + criteria + " | ");
@@ -97,12 +98,14 @@ public class GroupInfoWriter extends WISECWriter {
 						count++;
 						sum += Double.valueOf(value);
 						b.append(" [" + value + "|"
-								+ SubstanceListWriter.getWikiFileNameFor(list.getId()) + "]");
+								+ ConverterUtils.cleanWikiLinkSpaces(SubstanceListWriter.getWikiFileNameFor(list.getId()))
+								+ "]");
 					}
 				}
 				if (count > 0) {
 					double score = sum / count;
 					totalScore += score;
+					criteriaScore += score;
 					b.append("| " + ConverterUtils.colorizeText(score));
 				}
 				else {
@@ -112,7 +115,9 @@ public class GroupInfoWriter extends WISECWriter {
 				b.append("| " + count);
 				b.append("\n");
 			}
-			b.append("/%\n/%\n");
+
+			b.append("|| Intermediate score || || || " + df.format(criteriaScore));
+			b.append("\n");
 
 		}
 
@@ -258,8 +263,11 @@ public class GroupInfoWriter extends WISECWriter {
 
 	protected void writeBreadcrumb(Writer writer, String groupName) throws IOException {
 		super.writeBreadcrumb(writer);
-		writer.write(" > [List of Substances|" + AllSubstancesOverviewWriter.FILENAME + "] > "
-				+ "[Active Substances|" + ActiveSubstancesWriter.FILENAME + "] > " + groupName
+		writer.write(" > [List of Substances|"
+				+ ConverterUtils.cleanWikiLinkSpaces(AllSubstancesOverviewWriter.FILENAME) + "] > "
+				+ "[Active Substances|"
+				+ ConverterUtils.cleanWikiLinkSpaces(ActiveSubstancesWriter.FILENAME) + "] > "
+				+ groupName
 				+ "\n\n");
 	}
 

@@ -33,7 +33,7 @@ import de.d3web.wisec.model.WISECModel;
  */
 public class TeamInfoWriter extends WISECWriter {
 
-	private static final String FILENAME_PRAEFIX = WISECExcelConverter.FILE_PRAEFIX + "Team_";
+	private static final String FILENAME_PRAEFIX = WISECExcelConverter.FILE_PRAEFIX + "Team+";
 
 	public TeamInfoWriter(WISECModel model, String outputDirectory) {
 		super(model, outputDirectory);
@@ -77,7 +77,7 @@ public class TeamInfoWriter extends WISECWriter {
 			for (String groupName : groups) {
 				Group group = this.model.groups.get(groupName);
 				buffy.append("* [" + groupName + "|"
-						+ GroupInfoWriter.getWikiFileNameFor(Integer.toString(group.getID()))
+						+ ConverterUtils.cleanWikiLinkSpaces(GroupInfoWriter.getWikiFileNameFor(Integer.toString(group.getID())))
 						+ "]\n");
 			}
 		}
@@ -88,8 +88,11 @@ public class TeamInfoWriter extends WISECWriter {
 
 	protected void writeBreadcrumb(Writer writer, String teamName) throws IOException {
 		super.writeBreadcrumb(writer);
-		writer.write(" > [List of Substances|" + AllSubstancesOverviewWriter.FILENAME + "] > "
-				+ "[Active Substances|" + ActiveSubstancesWriter.FILENAME + "] > Assessment > "
+		writer.write(" > [List of Substances|"
+				+ ConverterUtils.cleanWikiLinkSpaces(AllSubstancesOverviewWriter.FILENAME) + "] > "
+				+ "[Active Substances|"
+				+ ConverterUtils.cleanWikiLinkSpaces(ActiveSubstancesWriter.FILENAME)
+				+ "] > Assessment > "
 				+ teamName
 				+ "\n\n");
 	}

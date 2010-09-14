@@ -57,7 +57,7 @@ fieldset{margin:.5em 0;padding:.5em;border:1px solid #ddd;}
 .wikiform input[type='submit'],.wikiform input[type='button'],.wikiform input[type='file'],.wikiform button{cursor:pointer;}
 .wikiform input,.wikiform option{padding:0 .25em;}
 code,tt,pre{font:110% Monaco,"Courier New",Courier,monospace;overflow:auto;}
-pre{clear:both;white-space:pre;margin:1em 2.5%;padding:.5em;background:#f9f9f9;border:1px solid #ddd;_width:100%;_overflow-x:auto;_padding-bottom:1.5em;}
+pre{clear:both;white-space:pre;margin:1em 2.5%;padding:.5em;background:#f9f9f9;border:1px solid #ddd;width:100%;padding-bottom:1.5em;}
 #previewcontent,#info,#pagecontent,#attach,#findcontent,.diffbody{overflow-y:hidden;_width:100%;_overflow-x:auto;_padding-bottom:1.5em!important;}
 a{color:blue;}
 .hover{background-color:#eee;}
@@ -183,7 +183,7 @@ a.tool:hover,.btn:hover{background-color:#ddd!important;}
 *:first-child+html #findSuggestionMenu .hover{background-color:black;}
 .userbox{overflow:hidden;padding:.5em 0;}
 #favorites .userbox a.action,#favorites .userbox .username{float:left;display:block;margin-right:4px;}
-.username{font-style:italic;padding:.25em .5em;}
+.username{font-style:normal;padding:.25em .5em;}
 .wikiversion,.rssfeed{font-size:90%;padding:.25em;text-align:center;}
 #details,#scope{margin-left:2em;}
 .graphBar{padding:0;color:white;border-color:#f93;border-left-style:solid;border-bottom-style:solid;}
@@ -443,7 +443,9 @@ img.attlink {
 .tabmenu a{float:left;margin:0 0 -1px -1px;padding:.25em .5em;border:1px solid #028338;border-bottom-style:hidden;color:#0d70e4;background:#ffffff;text-decoration:none;cursor:pointer;line-height:normal;}
 .tabmenu a:hover{background:#d4e074;}
 
-h1{font-family:Arial,Helvetica,sans-serif;}
+.wikitable * td{border:1px solid #ddd;vertical-align:top;text-align:left;}
+.sortable * td{border:1px solid #ddd;vertical-align:top;text-align:left;max-width:25em;white-space:normal}
+h1,h2,h3,h4{font-family:Arial,Helvetica,sans-serif;}
 body{font-family:Arial,Helvetica,sans-serif;}
 
 img.inline {position:absolute;z-index:1;left:1055px}
@@ -460,6 +462,8 @@ a.action.dialog {
     text-decoration:none;
     white-space:nowrap;
 }
+
 a.createpage{color:#0d70e4;text-decoration:none;border-bottom:1px dashed #0d70e4;font-family:Arial,Helvetica,sans-serif;}
 a.external{color:#0d70e4;font-family:Arial,Helvetica,sans-serif;}
 a.hashlink, a.hashlink:hover{color:white;}
+.wikitable a{color:#0d70e4}

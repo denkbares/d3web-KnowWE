@@ -63,7 +63,7 @@ public class ConverterUtils {
 		string = string.replaceAll("\\[", "[[");
 		string = string.replaceAll("\\n", "\\\\");
 		string = string.replaceAll("&", " and ");
-		string = string.replaceAll("__", "_ _");
+		string = string.replaceAll("__", "_ _ ");
 		// evil character, that is not displayed
 		string = string.replaceAll("", " ");
 		return string;
@@ -163,6 +163,10 @@ public class ConverterUtils {
 			return "%%(background:green;)" + df.format(value) + "%%";
 		}
 		return df.format(value);
+	}
+
+	public static String cleanWikiLinkSpaces(String link) {
+		return link.replaceAll("\\+", " ");
 	}
 
 }

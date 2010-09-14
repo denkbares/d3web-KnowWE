@@ -27,9 +27,14 @@ import de.d3web.wisec.model.WISECModel;
 public class OverviewWriter extends WISECWriter {
 
 	public static final String FILENANE = WISECExcelConverter.FILE_PRAEFIX + "WISEC.txt";
-	private static final String ALL_SUBSTANCES = WISECExcelConverter.FILE_PRAEFIX + "AllSubstances";
+
+	private static final String ALL_SUBSTANCES = WISECExcelConverter.FILE_PRAEFIX
+			+ "All+Substances";
+
 	private static final String ALL_SUBSTANCE_LISTS = WISECExcelConverter.FILE_PRAEFIX
-			+ "AllSubstanceLists";
+			+ "All+Substance+Lists";
+
+	private static final String ALL_SOURCES = WISECExcelConverter.FILE_PRAEFIX + "All+Sources";
 
 	public OverviewWriter(WISECModel model, String outputDirectory) {
 		super(model, outputDirectory);
@@ -40,21 +45,23 @@ public class OverviewWriter extends WISECWriter {
 		Writer writer = ConverterUtils.createWriter(this.outputDirectory + FILENANE);
 		writer.write("!!! WISEC Overview\n\n");
 		writeGeneralSettings(writer);
-		// writeSubstanceListOverview(writer);
 		writer.close();
-
-		// writeAllSubstances();
 	}
 
 	private void writeGeneralSettings(Writer writer) throws IOException {
-		writer.write("* [List of all sources | " + WISECExcelConverter.FILE_PRAEFIX
-				+ "All_Sources ] (" + model.sourceLists.size() + " sources)\n");
-		writer.write("* [List of all substance lists | " + ALL_SUBSTANCE_LISTS + "] ("
+		writer.write("* [List of all sources | " + ConverterUtils.cleanWikiLinkSpaces(ALL_SOURCES)
+				+ "] (" + model.sourceLists.size() + " sources)\n");
+
+		writer.write("* [List of all substance lists | "
+				+ ConverterUtils.cleanWikiLinkSpaces(ALL_SUBSTANCE_LISTS) + "] ("
 				+ model.substanceLists.size() + " lists)\n");
-		writer.write("* [List of all substances | " + ALL_SUBSTANCES + "] ("
+
+		writer.write("* [List of all substances | "
+				+ ConverterUtils.cleanWikiLinkSpaces(ALL_SUBSTANCES) + "] ("
 				+ model.getActiveSubstances().size() + " active of "
 				+ model.substancesByCAS.size()
 				+ " substances)\n");
+
 		writer.write("\n\n");
 
 	}

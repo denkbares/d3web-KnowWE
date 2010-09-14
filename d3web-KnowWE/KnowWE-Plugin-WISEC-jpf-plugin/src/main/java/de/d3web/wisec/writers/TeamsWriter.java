@@ -53,7 +53,10 @@ public class TeamsWriter extends WISECWriter {
 		buffy.append("|| Team_name || CAS_no || Groups || \n");
 		Collection<String> allTeamNames = model.getAllTeamNames();
 		for (String teamName : allTeamNames) {
-			buffy.append("| [" + teamName + "|" + TeamInfoWriter.getWikiFileNameFor(teamName)
+			buffy.append("| ["
+					+ teamName
+					+ "|"
+					+ ConverterUtils.cleanWikiLinkSpaces(TeamInfoWriter.getWikiFileNameFor(teamName))
 					+ "] ");
 
 			// the substances
@@ -62,7 +65,8 @@ public class TeamsWriter extends WISECWriter {
 			if (cas_nos != null && !cas_nos.isEmpty()) {
 				for (String cas : cas_nos) {
 					buffy.append(" [ " + cas + " | "
-							+ SubstanceInfoWriter.getWikiFileNameFor(cas) + "]\\\\");
+							+ ConverterUtils.cleanWikiLinkSpaces(SubstanceInfoWriter.getWikiFileNameFor(cas))
+							+ "]\\\\");
 				}
 			}
 
@@ -83,7 +87,7 @@ public class TeamsWriter extends WISECWriter {
 					buffy.append(" [ ");
 					buffy.append(groupName);
 					buffy.append(" | ");
-					buffy.append(GroupInfoWriter.getWikiFileNameFor(Integer.toString(group.getID())));
+						buffy.append(ConverterUtils.cleanWikiLinkSpaces(GroupInfoWriter.getWikiFileNameFor(Integer.toString(group.getID()))));
 					buffy.append("]\\\\");
 					}
 				}
@@ -104,8 +108,10 @@ public class TeamsWriter extends WISECWriter {
 	@Override
 	protected void writeBreadcrumb(Writer writer) throws IOException {
 		super.writeBreadcrumb(writer);
-		writer.write(" > [List of Substances|" + AllSubstancesOverviewWriter.FILENAME + "] > "
-				+ "[Active Substances | " + ActiveSubstancesWriter.FILENAME
+		writer.write(" > [List of Substances|"
+				+ ConverterUtils.cleanWikiLinkSpaces(AllSubstancesOverviewWriter.FILENAME) + "] > "
+				+ "[Active Substances | "
+				+ ConverterUtils.cleanWikiLinkSpaces(ActiveSubstancesWriter.FILENAME)
 				+ "] > Assessment > Teams\n\n");
 	}
 }
