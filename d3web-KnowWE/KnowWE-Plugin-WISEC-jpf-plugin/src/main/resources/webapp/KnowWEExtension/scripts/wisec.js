@@ -102,19 +102,15 @@ window.addEvent('domready', function() {
 			{ view: 'TextField', rect: '405 910 90 18', anchors: 'right top' },
 			
 			// OK
-			{ view: 'Button',   rect: '10 950 200 24',  anchors: 'left top', text: 'Generate Ranking' },
+			{ view: 'Button',   rect: '10 950 200 24',  anchors: 'left top', text: 'Generate Ranking' }
 	    ];
 	}
 
 	// page layout
 	if (document.getElementById('wisec-ranking-form')) {
-		uki(
-	    	{ view: 'Box', rect: '0 0 1000 300', minSize: '980 0', anchors: 'top left right width', childViews: [
-	        	{ view: 'Box', rect: '0 0 1000 100', anchors: 'top left right width', childViews: views() }
-	    		]}
-			).attachTo( document.getElementById('wisec-ranking-form'), '1000 300' );
+		uki( { view: 'Box', rect: '0 0 1000 100', anchors: 'top left right width', childViews: views() }
+	    	).attachTo( document.getElementById('wisec-ranking-form'), '1000 300' );
 	
-
 		// Bind alert to all buttons
 		uki('Button').bind('click', function() { 
 		    alert("This is for demo purposes only!");

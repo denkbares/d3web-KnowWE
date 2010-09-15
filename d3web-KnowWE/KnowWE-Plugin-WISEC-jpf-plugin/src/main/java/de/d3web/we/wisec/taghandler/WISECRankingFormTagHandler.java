@@ -65,6 +65,7 @@ public class WISECRankingFormTagHandler extends AbstractTagHandler {
 
 		StringBuilder html = new StringBuilder();
 
+		// All we need is a div, everything else is done in wisec.js
 		html.append("<div id=\"wisec-ranking-form\"></div>");
 
 		return html.toString();
