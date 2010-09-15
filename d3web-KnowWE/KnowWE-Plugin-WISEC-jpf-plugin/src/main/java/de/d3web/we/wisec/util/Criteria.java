@@ -28,7 +28,7 @@ public class Criteria {
 
 	private static final String[] hazardous = { "CMR",
 												"Persistence",
-												"Bioakumulation_Potential",
+												"Bioaccumulation_Potential",
 												"Aqua_Tox",
 												"EDC",
 												"Further_Tox",
@@ -39,7 +39,7 @@ public class Criteria {
 												"LRT",
 												"Water_solubility",
 												"Adsorption",
-												"Vapour_pressure"
+												"Vapor_pressure"
 												};
 
 	private static final String[] exposure = {
@@ -97,14 +97,35 @@ public class Criteria {
 		}
 	}
 
+	/**
+	 * Returns all Criterias as Strings e.g. "CMR", "Persistence", etc.
+	 * 
+	 * @created 15/09/2010
+	 * @return
+	 */
 	public static Collection<String> getAllCriterias() {
 		return allCriterias;
 	}
 
+	/**
+	 * Returns all Criteria groups as Strings e.g. "Mobility",
+	 * "Hazardous Properties", etc.
+	 * 
+	 * @created 15/09/2010
+	 * @return
+	 */
 	public static Collection<String> getCriteriaGroups() {
 		return criteriaGroups;
 	}
 
+	/**
+	 * Returns the Criterias for a given criteria group e.g. "Mobility" ->
+	 * "LRT", "Water_solubility", "Adsorption", "Vapor_pressure"
+	 * 
+	 * @created 15/09/2010
+	 * @param groupName
+	 * @return
+	 */
 	public static String[] getCriteriasFor(String groupName) {
 		return criterias.get(groupName);
 	}

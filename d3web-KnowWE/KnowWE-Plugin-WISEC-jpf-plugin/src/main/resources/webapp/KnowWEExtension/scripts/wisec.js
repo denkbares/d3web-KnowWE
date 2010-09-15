@@ -29,7 +29,7 @@ window.addEvent('domready', function() {
 			{ view: 'Label', rect: '15 285 70 18', anchors: 'left top', text: 'Persistence' },
 			{ view: 'Slider', rect: '180 285 200 18', anchors: 'left right top', values: [0, 1, 2, 3] },
 			{ view: 'TextField', rect: '405 285 90 18', anchors: 'right top' },
-			{ view: 'Label', rect: '15 310 70 18', anchors: 'left top', text: 'Bioakumulation_Potential' },
+			{ view: 'Label', rect: '15 310 70 18', anchors: 'left top', text: 'Bioaccumulation_Potential' },
 			{ view: 'Slider', rect: '180 310 200 18', anchors: 'left right top', values: [0, 1, 2, 3] },
 			{ view: 'TextField', rect: '405 310 90 18', anchors: 'right top' },
 			{ view: 'Label', rect: '15 335 70 18', anchors: 'left top', text: 'Aqua_Tox' },
@@ -55,7 +55,7 @@ window.addEvent('domready', function() {
 			{ view: 'Label', rect: '15 510 70 18', anchors: 'left top', text: 'Adsorption' },
 			{ view: 'Slider', rect: '180 510 200 18', anchors: 'left right top', values: [0, 1, 2, 3] },
 			{ view: 'TextField', rect: '405 510 90 18', anchors: 'right top' },
-			{ view: 'Label', rect: '15 535 70 18', anchors: 'left top', text: 'Vapour_pressure' },
+			{ view: 'Label', rect: '15 535 70 18', anchors: 'left top', text: 'Vapor_pressure' },
 			{ view: 'Slider', rect: '180 535 200 18', anchors: 'left right top', values: [0, 1, 2, 3] },
 			{ view: 'TextField', rect: '405 535 90 18', anchors: 'right top' },
 			// Exposure / Monitoring
