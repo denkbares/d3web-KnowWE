@@ -370,14 +370,14 @@ public class KnowWEIncludeManager implements EventListener {
 					Set<Section<?>> diff = new HashSet<Section<?>>(lastTargets);
 					diff.removeAll(targets);
 					for (Section<? extends KnowWEObjectType> unusedLastTar : diff) {
-						unusedLastTar.setReusedStateRecursively(inc.getTitle(), false);
+						unusedLastTar.setReusedByRecursively(inc.getTitle(), false);
 					}
 					// articles that reuse the include besides the owner of the
 					// include also do not reuse these last targets
-					Set<String> reusedBy = inc.isReusedBy();
+					Set<String> reusedBy = inc.getReusedBySet();
 					for (String title : reusedBy) {
 						for (Section<? extends KnowWEObjectType> unusedLastTar : diff) {
-							unusedLastTar.setReusedStateRecursively(title, false);
+							unusedLastTar.setReusedByRecursively(title, false);
 						}
 					}
 				}
@@ -598,7 +598,7 @@ public class KnowWEIncludeManager implements EventListener {
 		inactiveIncludeTargets.removeAll(activeIncludeTargets);
 
 		for (Section<?> inaIncTar : inactiveIncludeTargets) {
-			inaIncTar.setReusedStateRecursively(title, false);
+			inaIncTar.setReusedByRecursively(title, false);
 		}
 	}
 

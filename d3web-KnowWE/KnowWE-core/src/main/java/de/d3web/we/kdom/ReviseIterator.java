@@ -1,6 +1,5 @@
 package de.d3web.we.kdom;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,69 +9,88 @@ import java.util.TreeMap;
 
 public class ReviseIterator {
 
-	private final TreeMap<Priority, LinkedList<Section<?>>> priorityMap =
-			new TreeMap<Priority, LinkedList<Section<?>>>();
+	private final List<Section<?>> rootSectionsList = new LinkedList<Section<?>>();
 
-	private final TreeMap<Priority, LinkedList<Section<?>>> tempPriorityMap =
-			new TreeMap<Priority, LinkedList<Section<?>>>();
+	private TreeMap<Priority, LinkedList<Section<?>>> priorityMap;
 	
-	private final List<Section<?>> sectionsList = new LinkedList<Section<?>>();
+	private List<Section<?>> allSectionsList;
 
-	private Priority currentPriority = Priority.getRegisteredPriorities().first();
+	private Priority currentPriority;
+
+	private Priority stop;
 
 	public ReviseIterator() {
-		for (Priority p : Priority.getRegisteredPriorities()) {
-			priorityMap.put(p, new LinkedList<Section<?>>());
-			tempPriorityMap.put(p, new LinkedList<Section<?>>());
-		}
+		init();
 	}
 
-	public void addSectionsToRevise(Collection<Section<?>> sections) {
+	private void init() {
+		priorityMap = new TreeMap<Priority, LinkedList<Section<?>>>();
+		for (Priority p : Priority.getRegisteredPriorities()) {
+			priorityMap.put(p, new LinkedList<Section<?>>());
+		}
+		allSectionsList = new LinkedList<Section<?>>();
+		currentPriority = Priority.getRegisteredPriorities().first();
+		stop = Priority.getRegisteredPriorities().first();
+	}
+
+	private void addToPriorityMap(List<Section<?>> sections) {
 		for (Section<?> sec : sections) {
 			for (Priority p : sec.getObjectType().getSubtreeHandlers().keySet()) {
 				if (p.compareTo(currentPriority) > 0) currentPriority = p;
 				priorityMap.get(p).add(sec);
-				tempPriorityMap.get(p).add(sec);
 			}
-			sectionsList.add(sec);
+			allSectionsList.add(sec);
 		}
 	}
+
+	public void addRootSectionToRevise(Section<?> rootSection) {
+		rootSectionsList.add(rootSection);
+		List<Section<?>> sections = new LinkedList<Section<?>>();
+		rootSection.getAllNodesPostOrder(sections);
+		addToPriorityMap(sections);
+	}
 	
+	public void reset() {
+		init();
+		for (Section<?> rootSection : rootSectionsList) {
+			List<Section<?>> sections = new LinkedList<Section<?>>();
+			rootSection.getAllNodesPostOrder(sections);
+			addToPriorityMap(sections);
+		}
+	}
 
 	public SectionPriorityTuple next() {
-		if (tempPriorityMap.get(currentPriority).isEmpty()) {
+		if (priorityMap.get(currentPriority).isEmpty()) {
 			throw new NoSuchElementException();
 		}
 
 		SectionPriorityTuple tuple = new SectionPriorityTuple(
-				tempPriorityMap.get(currentPriority).removeFirst(),
+				priorityMap.get(currentPriority).removeFirst(),
 				Priority.getPriority(currentPriority.intValue()));
 
-		while (tempPriorityMap.get(currentPriority).isEmpty()
-				&& Priority.decrement(currentPriority) != null) {
-			currentPriority = Priority.decrement(currentPriority);
-		}
+		nextPriority();
 		return tuple;
 	}
 	
 	public boolean hasNext() {
-		return !tempPriorityMap.get(currentPriority).isEmpty();
+		return !priorityMap.get(currentPriority).isEmpty();
 	}
 
-	public void reset() {
-		for (Priority p : Priority.getRegisteredPriorities()) {
-			tempPriorityMap.get(p).clear();
-			tempPriorityMap.get(p).addAll(priorityMap.get(p));
-		}
-		currentPriority = Priority.getRegisteredPriorities().last();
-		while (tempPriorityMap.get(currentPriority).isEmpty()
-				&& Priority.decrement(currentPriority) != null) {
+	private void nextPriority() {
+		while (priorityMap.get(currentPriority).isEmpty()
+				&& Priority.decrement(currentPriority) != null
+				&& currentPriority.compareTo(stop) > 0) {
 			currentPriority = Priority.decrement(currentPriority);
 		}
 	}
 
+	public void setIteratorStop(Priority stop) {
+		this.stop = stop;
+		nextPriority();
+	}
+
 	public List<Section<?>> getAllSections() {
-		return Collections.unmodifiableList(sectionsList);
+		return Collections.unmodifiableList(allSectionsList);
 	}
 
 	public class SectionPriorityTuple {

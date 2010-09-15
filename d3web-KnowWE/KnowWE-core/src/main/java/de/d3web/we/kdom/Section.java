@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -71,13 +72,14 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	private HashSet<String> reusedBy = null;
 
-	private HashSet<String> alreadyCompiledBy = null;
+	@SuppressWarnings("unchecked")
+	private HashMap<String, HashSet<Class<? extends SubtreeHandler>>> compiledBy = null;
 
 	private List<Integer> position = null;
 
 	private List<Integer> lastPositions = null;
 
-	protected boolean hasReusedSuccessor = false;
+	protected boolean isOrHasReusedSuccessor = false;
 
 	protected PairOfInts startPosFromTmp;
 
@@ -530,6 +532,13 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	}
 
 	public void getAllNodesPostOrder(List<Section<? extends KnowWEObjectType>> nodes) {
+		for (Section<? extends KnowWEObjectType> child : this.getChildren()) {
+			child.getAllNodesPostOrder(nodes);
+		}
+		nodes.add(this);
+	}
+
+	public void getAllNodesPostOrder(Set<Section<? extends KnowWEObjectType>> nodes) {
 		for (Section<? extends KnowWEObjectType> child : this.getChildren()) {
 			child.getAllNodesPostOrder(nodes);
 		}
@@ -1071,7 +1080,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			// only replace the finding by this Section, if this Section is not
 			// reused
 			// but the Section already in the map is reused
-			if (tmp == null || (tmp.isReusedBy(getTitle()) && !this.isReusedBy(getTitle()))) {
+			if (tmp == null || (tmp.isOrHasReusedSuccessor && !this.isOrHasReusedSuccessor)) {
 				found.put((this).getOriginalText(), (Section<OT>) this);
 			}
 		}
@@ -1094,7 +1103,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			// only replace the finding by this Section, if this Section is not
 			// reused
 			// but the Section already in the map is reused
-			if (tmp == null || (tmp.isReusedBy(getTitle()) && !this.isReusedBy(getTitle()))) {
+			if (tmp == null || (tmp.isOrHasReusedSuccessor && !this.isOrHasReusedSuccessor)) {
 				found.put(this.getOriginalText(), (Section<OT>) this);
 			}
 		}
@@ -1329,11 +1338,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return reusedBy == null ? false : reusedBy.contains(title);
 	}
 
-	public boolean isAlreadyCompiledBy(String title) {
-		return alreadyCompiledBy == null ? false : alreadyCompiledBy.contains(title);
-	}
-
-	public Set<String> isReusedBy() {
+	public Set<String> getReusedBySet() {
 		return reusedBy == null
 				? Collections.unmodifiableSet(new HashSet<String>(0))
 				: Collections.unmodifiableSet(reusedBy);
@@ -1394,44 +1399,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		}
 	}
 
-	// public boolean
-	// isOrHasTermRefSuccessorNotReusedByOrPositionChangedFor(Set<Class<?
-	// extends TermReference<?>>> filter, String title) {
-	// if (objectType instanceof TermReference<?>
-	// && (!isReusedBy(title) || isPositionChangedFor(title))
-	// && (filter == null || !filter.contains(objectType.getClass()))) {
-	// return true;
-	// }
-	// else {
-	// for (Section<?> child : this.getChildren()) {
-	// if (child.isOrHasTermRefSuccessorNotReusedByOrPositionChangedFor(filter,
-	// title)) return true;
-	// }
-	// return false;
-	// }
-	// }
-	public void setAlreadyCompiledBy(String title, boolean reused) {
-		if (reused) {
-			if (alreadyCompiledBy == null) alreadyCompiledBy = new HashSet<String>(4);
-			alreadyCompiledBy.add(title);
-		}
-		else {
-			if (alreadyCompiledBy != null) alreadyCompiledBy.remove(title);
-		}
-	}
-
-	/**
-	 * Affects all Sections this Section is connected to (also included
-	 * Sections).
-	 */
-	public void setAlreadyCompiledStateRecursively(String title, boolean
-			alreadyCompiled) {
-		setAlreadyCompiledBy(title, alreadyCompiled);
-		for (Section<? extends KnowWEObjectType> child : getChildren()) {
-			child.setAlreadyCompiledStateRecursively(title, alreadyCompiled);
-		}
-	}
-
 	public void setReusedBy(String title, boolean reused) {
 		if (reused) {
 			if (reusedBy == null) reusedBy = new HashSet<String>(4);
@@ -1443,33 +1410,125 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	}
 
 	/**
-	 * Only affects Sections of the article this Section is hooked in (no
-	 * included Sections).
+	 * Affects all Sections this Section is connected to (also included
+	 * Sections).
 	 */
-	public void setReusedStateOfThisArticleRecursively(String title, boolean reused) {
+	public void setReusedByRecursively(String title, boolean reused) {
 		setReusedBy(title, reused);
-		if (!possiblySharedChildren) {
-			for (Section<? extends KnowWEObjectType> child : getChildren()) {
-				child.setReusedStateOfThisArticleRecursively(title, reused);
+		for (Section<? extends KnowWEObjectType> child : getChildren()) {
+			child.setReusedByRecursively(title, reused);
+		}
+	}
+
+	/**
+	 * Sets all compiled states to false. This method does not affect includes.
+	 */
+	public void clearCompiledRecursively() {
+		this.compiledBy = null;
+		for (Section<? extends KnowWEObjectType> child : getChildren()) {
+			if (child.getTitle().equals(getTitle())) {
+				child.clearCompiledRecursively();
 			}
 		}
+	}
+
+	/**
+	 * This method has the purpose to clear the reused states of all Sections
+	 * that could not be reused by the incremental update. Call this method on
+	 * the root Section of the old article with the new article as the argument.
+	 * 
+	 * @created 13.09.2010
+	 * @param article
+	 */
+	public void clearReusedOfOldSectionsRecursively(KnowWEArticle
+			article) {
+		// skip included Sections
+		if (article.getTitle().equals(getTitle())) {
+			// only old Sections can have old child Sections
+			if (this.article != article) {
+				for (Section<?> child : children) {
+					child.clearReusedOfOldSectionsRecursively(article);
+				}
+				reusedBy = null;
+			}
+		}
+	}
+
+	/**
+	 * Set reusedSuccessor state to false... only used for incremental KDOM
+	 * update.
+	 */
+	public void clearReusedSuccessorRecursively() {
+		this.isOrHasReusedSuccessor = false;
+		for (Section<? extends KnowWEObjectType> child : getChildren()) {
+			if (child.getTitle().equals(getTitle())) {
+				child.clearReusedSuccessorRecursively();
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public boolean isCompiledBy(String title, SubtreeHandler handler) {
+		if (compiledBy == null) return false;
+		HashSet<Class<? extends SubtreeHandler>> compiledByHandlerSet =
+				compiledBy.get(title);
+		if (compiledByHandlerSet == null) return false;
+		return compiledByHandlerSet.contains(handler.getClass());
+	}
+
+	public boolean isCompiledBy(String title) {
+		if (compiledBy == null) return false;
+		return compiledBy.containsKey(title);
+	}
+
+	@SuppressWarnings("unchecked")
+	public Map<String, HashSet<Class<? extends SubtreeHandler>>> getCompiledByMap() {
+		return compiledBy == null
+				? Collections.unmodifiableMap(
+						new HashMap<String, HashSet<Class<? extends SubtreeHandler>>>(
+								0))
+				: Collections.unmodifiableMap(compiledBy);
+	}
+
+	@SuppressWarnings("unchecked")
+	public void setCompiledBy(String title, SubtreeHandler handler, boolean compiled) {
+		if (compiled) {
+			if (compiledBy == null) {
+				compiledBy = new HashMap<String, HashSet<Class<? extends
+						SubtreeHandler>>>(4);
+			}
+			HashSet<Class<? extends SubtreeHandler>> reusedByArticleSet =
+					compiledBy.get(title);
+			if (reusedByArticleSet == null) {
+				reusedByArticleSet = new HashSet<Class<? extends SubtreeHandler>>(4);
+				compiledBy.put(title, reusedByArticleSet);
+			}
+			reusedByArticleSet.add(handler.getClass());
+		}
+		else {
+			if (compiledBy != null) {
+				HashSet<Class<? extends SubtreeHandler>> compiledByHandlerSet =
+						compiledBy.get(title);
+				if (compiledByHandlerSet != null) {
+					compiledByHandlerSet.remove(handler.getClass());
+					if (compiledByHandlerSet.isEmpty()) compiledBy.remove(title);
+				}
+			}
+		}
+	}
+
+	public void setNotCompiledBy(String title) {
+		if (compiledBy != null) compiledBy.remove(title);
 	}
 
 	/**
 	 * Affects all Sections this Section is connected to (also included
 	 * Sections).
 	 */
-	public void setReusedStateRecursively(String title, boolean reused) {
-		setReusedBy(title, reused);
+	public void setNotCompiledByRecursively(String title) {
+		setNotCompiledBy(title);
 		for (Section<? extends KnowWEObjectType> child : getChildren()) {
-			child.setReusedStateRecursively(title, reused);
-		}
-	}
-
-	public void setReusedSuccessorStateRecursively(boolean reused) {
-		this.hasReusedSuccessor = reused;
-		for (Section<? extends KnowWEObjectType> child : getChildren()) {
-			child.setReusedSuccessorStateRecursively(reused);
+			child.setNotCompiledByRecursively(title);
 		}
 	}
 
@@ -1513,14 +1572,14 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return calcPositionTil(getArticle().getSection());
 	}
 
-	private boolean isMatchingPackageName(KnowWEArticle article, SubtreeHandler<T> h) {
+	private boolean isMatchingPackageName(KnowWEArticle article, SubtreeHandler<?> h) {
 
 		if (h.isIgnoringPackageCompile() || KnowWEPackageManager.AUTOCOMPILE_ARTICLE) {
 			return true;
 		}
 		else {
 			Set<String> referencedPackages = KnowWEEnvironment.getInstance().getPackageManager(
-					article.getWeb()).getReferencedPackages(article);
+					article.getWeb()).getReferencedPackages(article.getTitle());
 
 			if (referencedPackages.contains(article.getTitle())) return true;
 
@@ -1554,12 +1613,12 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	@SuppressWarnings("unchecked")
 	public final void letSubtreeHandlerCreate(KnowWEArticle article, SubtreeHandler handler) {
-		if (!isAlreadyCompiledBy(article.getTitle()) && isMatchingPackageName(article, handler)
-				&& handler.needsToCreate(article, this)) {
+		if (handler.needsToCreate(article, this) && isMatchingPackageName(article, handler)) {
 			try {
 				// long time = System.currentTimeMillis();
 				KDOMReportMessage.storeMessages(article, this, handler.getClass(), handler.create(
 						article, this));
+				setCompiledBy(article.getTitle(), handler, true);
 				// System.out.println(handler.getClass().getSimpleName());
 				// System.out.println(handler.getClass().getSimpleName() + " "
 				// + (System.currentTimeMillis() - time));
@@ -1622,6 +1681,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	public final void letSubtreeHandlerDestroy(KnowWEArticle article, SubtreeHandler handler) {
 		if (handler.needsToDestroy(article, this)) {
 			handler.destroy(article, this);
+			setCompiledBy(article.getTitle(), handler, false);
 			// System.out.println(handler.getClass().getSimpleName());
 		}
 	}

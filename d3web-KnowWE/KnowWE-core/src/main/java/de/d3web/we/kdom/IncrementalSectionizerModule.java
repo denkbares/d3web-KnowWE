@@ -66,15 +66,14 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 			// KDOM twice
 			// -> conflict with IDs an other stuff
 			if (match != null
-					&& (!match.isReusedBy(match.getTitle())
-					&& !match.hasReusedSuccessor)
+					&& !match.isOrHasReusedSuccessor
 					&& !match.isDirty()) {
 
 				// mark ancestors, that they have an reused
 				// successor
-				Section<?> ancestor = match.getFather();
+				Section<?> ancestor = match;
 				while (ancestor != null) {
-					ancestor.hasReusedSuccessor = true;
+					ancestor.isOrHasReusedSuccessor = true;
 					ancestor = ancestor.getFather();
 				}
 
@@ -119,7 +118,7 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 					if (node.getTitle().equals(father.getTitle())) {
 						// mark as reused (so its not reused
 						// again)
-						node.setReusedBy(node.getTitle(), true);
+						node.isOrHasReusedSuccessor = true;
 						// update pointer to article
 						node.article = article;
 

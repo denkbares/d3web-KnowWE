@@ -20,7 +20,6 @@
 
 package de.d3web.we.kdom.packaging;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -253,15 +252,11 @@ public class CompileFlag extends DefaultMarkupType {
 			// KnowWEUtils.storeObject(article, s, PACKAGEDEFS_SNAPSHOT_KEY,
 			// packageDefinitions);
 
-			List<Section<?>> referedPackages = new ArrayList<Section<?>>();
 
 			for (Section<?> packDef : packageDefinitions) {
-				List<Section<?>> nodes = new LinkedList<Section<?>>();
-				packDef.getAllNodesPostOrder(nodes);
-				referedPackages.addAll(nodes);
+				article.getReviseIterator().addRootSectionToRevise(packDef);
 			}
 
-			article.getReviseIterator().addSectionsToRevise(referedPackages);
 
 			// TreeMap<Priority, List<Section<? extends KnowWEObjectType>>>
 			// prioMap =

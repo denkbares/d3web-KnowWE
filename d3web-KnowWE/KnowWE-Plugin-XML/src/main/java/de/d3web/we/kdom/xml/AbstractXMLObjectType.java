@@ -229,7 +229,6 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 				if (value != null) {
 					KnowWEEnvironment.getInstance().getPackageManager(
 							article.getWeb()).unregisterPackageDefinition(s);
-					s.removePackageName(value);
 				}
 			}
 		}

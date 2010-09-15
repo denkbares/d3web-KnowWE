@@ -36,6 +36,8 @@ import de.d3web.we.event.Event;
 import de.d3web.we.event.EventListener;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.FullParseEvent;
+import de.d3web.we.event.PreCompileFinishedEvent;
+import de.d3web.we.event.UpdatingDependenciesEvent;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
@@ -46,12 +48,30 @@ public class KnowWEPackageManager implements EventListener {
 
 	private final String web;
 
+	/**
+	 * For each packageName, you get all Sections in the wiki belonging to this
+	 * packageName.
+	 */
 	private final Map<String, LinkedList<Section<?>>> packageDefinitionsMap =
 			new HashMap<String, LinkedList<Section<?>>>();
 
+	/**
+	 * For each article, you get all Sections in the wiki belonging to a package
+	 */
+	private final Map<String, Map<String, LinkedList<Section<?>>>> packageDefinitionsByArticleMap =
+			new HashMap<String, Map<String, LinkedList<Section<?>>>>();
+
+	/**
+	 * For each article, you get all Sections of type PackageReference defined
+	 * in this article.
+	 */
 	private final Map<String, HashSet<Section<? extends PackageReference>>> packageReferenceMap =
 			new HashMap<String, HashSet<Section<? extends PackageReference>>>();
 
+	/**
+	 * For each article, you get all packageNames referenced in this article by
+	 * Sections of the type PackageReference.
+	 */
 	private final Map<String, HashSet<String>> referencedPackagesMap =
 			new HashMap<String, HashSet<String>>();
 
@@ -78,17 +98,6 @@ public class KnowWEPackageManager implements EventListener {
 				packageDefinitionsMap.put(packageName, packageList);
 			}
 			packageList.add(s);
-			for (String title : getArticlesReferingTo(packageName)) {
-				boolean alreadyCompiling = false;
-				if (title.equals(s.getTitle())) {
-					HashSet<String> referencedPackages = referencedPackagesMap.get(s.getTitle());
-					if ((referencedPackages != null && referencedPackages.contains(s.getTitle()))
-							|| AUTOCOMPILE_ARTICLE) {
-						alreadyCompiling = true;
-					}
-				}
-				if (!alreadyCompiling) s.setReusedStateRecursively(title, false);
-			}
 			changedPackages.add(packageName);
 		}
 	}
@@ -101,16 +110,7 @@ public class KnowWEPackageManager implements EventListener {
 			LinkedList<Section<?>> packageList = packageDefinitionsMap.get(packageName);
 			if (packageList != null) {
 				boolean removed = packageList.remove(s);
-				if (removed) {
-					changedPackages.add(packageName);
-
-					// set reused = false for all articles that don't compile
-					// this Section any longer
-					Set<String> includingArticles = getArticlesReferingTo(packageName);
-					for (String article : includingArticles) {
-						s.setReusedStateRecursively(article, false);
-					}
-				}
+				if (removed) changedPackages.add(packageName);
 				if (packageList.isEmpty()) packageDefinitionsMap.remove(packageName);
 				return removed;
 			}
@@ -167,7 +167,7 @@ public class KnowWEPackageManager implements EventListener {
 				// reused-flags are set to true although no SubtreeHandlers have
 				// created yet.
 
-				Set<String> referencedPackages = getReferencedPackages(article);
+				Set<String> referencedPackages = getReferencedPackages(article.getTitle());
 
 				Set<Section<?>> alreadyReferenced = new HashSet<Section<?>>();
 				for (String incPack : referencedPackages) {
@@ -181,7 +181,7 @@ public class KnowWEPackageManager implements EventListener {
 				List<Section<?>> allNodesPostOrder = article.getAllNodesPostOrder();
 				for (Section<?> node : allNodesPostOrder) {
 					if (!alreadyReferenced.contains(node)) {
-						node.setReusedBy(article.getTitle(), false);
+						node.setReusedByRecursively(article.getTitle(), false);
 					}
 				}
 			}
@@ -257,7 +257,7 @@ public class KnowWEPackageManager implements EventListener {
 							packageDefinitions = getPackageDefinitions(referencedPackage);
 						}
 						for (Section<?> packageDef : packageDefinitions) {
-							packageDef.setReusedStateRecursively(article.getTitle(), false);
+							packageDef.setReusedByRecursively(article.getTitle(), false);
 							KnowWEUtils.clearMessagesRecursively(article, packageDef);
 						}
 					}
@@ -295,13 +295,12 @@ public class KnowWEPackageManager implements EventListener {
 	}
 
 	public Set<String> getArticlesReferingTo(Section<?> section) {
-		Set<String> packageNames = section.getPackageNames();
 		Set<String> matchingArticles = new HashSet<String>();
-		for (String packageName : packageNames) {
+		for (String packageName : section.getPackageNames()) {
 			matchingArticles.addAll(getArticlesReferingTo(packageName));
 		}
 		if (AUTOCOMPILE_ARTICLE
-				|| getReferencedPackages(section.getArticle()).contains(section.getTitle())) {
+				|| getReferencedPackages(section.getTitle()).contains(section.getTitle())) {
 			matchingArticles.add(section.getTitle());
 		}
 		return matchingArticles;
@@ -315,8 +314,8 @@ public class KnowWEPackageManager implements EventListener {
 	 * @param article
 	 * @return
 	 */
-	public Set<String> getReferencedPackages(KnowWEArticle article) {
-		Set<String> referencedPackages = referencedPackagesMap.get(article.getTitle());
+	public Set<String> getReferencedPackages(String title) {
+		Set<String> referencedPackages = referencedPackagesMap.get(title);
 		return referencedPackages == null
 				? Collections.unmodifiableSet(new HashSet<String>(0))
 				: Collections.unmodifiableSet(new HashSet<String>(
@@ -338,7 +337,31 @@ public class KnowWEPackageManager implements EventListener {
 						packageReferences));
 	}
 
+	public void updateReusedStates(KnowWEArticle article) {
+		// TODO: not that fast... probably use own map sorted by article
+		// maybe only do this for changed PackageDefs... take care of
+		// multiuser-scenarios
+		for (LinkedList<Section<?>> packageDefList : packageDefinitionsMap.values()) {
+			for (Section<?> packageDef : packageDefList) {
+				if (packageDef.getTitle().equals(article.getTitle())) {
+					Set<String> articlesReferingTo = getArticlesReferingTo(packageDef);
+					LinkedList<Section<?>> nodes = new LinkedList<Section<?>>();
+					packageDef.getAllNodesPostOrder(nodes);
+					for (Section<?> node : nodes) {
+						for (String title : new LinkedList<String>(node.getReusedBySet())) {
+							if (!articlesReferingTo.contains(title)) {
+								node.setReusedBy(title, false);
+								KnowWEUtils.clearMessages(article.getWeb(), title, node.getID());
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	public void updatePackageReferences(KnowWEArticle article) {
+
 		Set<String> articlesToRevise = new HashSet<String>();
 
 		for (HashSet<Section<? extends PackageReference>> referencesSet : packageReferenceMap.values()) {
@@ -368,8 +391,10 @@ public class KnowWEPackageManager implements EventListener {
 
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
-		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(1);
+		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(3);
 		events.add(FullParseEvent.class);
+		events.add(UpdatingDependenciesEvent.class);
+		events.add(PreCompileFinishedEvent.class);
 		return events;
 	}
 
@@ -378,6 +403,14 @@ public class KnowWEPackageManager implements EventListener {
 		if (event instanceof FullParseEvent) {
 			cleanForArticle(((FullParseEvent) event).getArticle());
 		}
+		else if (event instanceof UpdatingDependenciesEvent) {
+			updatePackageReferences(((UpdatingDependenciesEvent) event).getArticle());
+		}
+		else if (event instanceof PreCompileFinishedEvent) {
+			updateReusedStates(((PreCompileFinishedEvent) event).getArticle());
+		}
 	}
+
+
 
 }

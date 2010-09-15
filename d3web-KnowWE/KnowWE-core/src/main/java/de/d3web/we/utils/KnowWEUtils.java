@@ -120,6 +120,20 @@ public class KnowWEUtils {
 	}
 
 	/**
+	 * Clears all Messages for the given article and section.
+	 * 
+	 * @param web is the web you want to clear the message for
+	 * @param title is the title of the article you want to clear the message
+	 *        for
+	 * @param secID is the id of the section you want to clear the message for
+	 */
+	public static void clearMessages(String web, String title, String secID) {
+		for (Class<?> msgType : usedMSGTypes) {
+			clearMessages(web, title, secID, msgType);
+		}
+	}
+
+	/**
 	 * Clears all Messages for the given article, section and msgType.
 	 * 
 	 * @param article is the article you want to clear the message for
@@ -130,6 +144,22 @@ public class KnowWEUtils {
 	public static void clearMessages(KnowWEArticle article, Section<?> sec, Class<?> msgType) {
 		Map<String, Collection> messages = (Map<String, Collection>) KnowWEUtils.getStoredObject(
 				article.getWeb(), article.getTitle(), sec.getID(), createMsgMapKey(msgType));
+		if (messages != null) messages.clear();
+	}
+
+	/**
+	 * Clears all Messages for the given web, title, section ID and msgType.
+	 * 
+	 * @param web is the web you want to clear the message for
+	 * @param article is the title of the article you want to clear the message
+	 *        for
+	 * @param sec is the if of the section you want to clear the message for
+	 * @param msgType is the Class of the message you want to clear
+	 */
+	@SuppressWarnings("unchecked")
+	public static void clearMessages(String web, String title, String secID, Class<?> msgType) {
+		Map<String, Collection> messages = (Map<String, Collection>) KnowWEUtils.getStoredObject(
+				web, title, secID, createMsgMapKey(msgType));
 		if (messages != null) messages.clear();
 	}
 
@@ -196,7 +226,7 @@ public class KnowWEUtils {
 			Map<String, Collection<MSGType>> msgsMap = getMessagesMapModifiable(article, sec,
 					msgType);
 			if (msgsMap == null) {
-				msgsMap = new HashMap<String, Collection<MSGType>>();
+				msgsMap = new HashMap<String, Collection<MSGType>>(4);
 				KnowWEUtils.storeObject(article.getWeb(), article.getTitle(), sec.getID(),
 						createMsgMapKey(msgType), msgsMap);
 			}

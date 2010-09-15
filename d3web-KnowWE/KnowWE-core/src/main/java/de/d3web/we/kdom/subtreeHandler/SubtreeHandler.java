@@ -74,12 +74,13 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	 */
 	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
 		return (article.isSecondBuild() || !article.isPostDestroyFullParse())
-				&& article.isFullParse()
-					|| !s.isReusedBy(article.getTitle())
-					|| (s.get().isOrderSensitive() && s.isPositionChangedFor(article.getTitle()))
-					|| (s.get() instanceof IncrementalConstraints
-						&& ((IncrementalConstraints) s.get()).hasViolatedConstraints(
-								article, s));
+				&& (article.isFullParse()
+						|| !s.isCompiledBy(article.getTitle(), this)
+						|| !s.isReusedBy(article.getTitle())
+						|| (s.get().isOrderSensitive() && s.isPositionChangedFor(article.getTitle()))
+						|| (s.get() instanceof IncrementalConstraints
+								&& ((IncrementalConstraints) s.get()).hasViolatedConstraints(
+										article, s)));
 	}
 
 	/**
@@ -111,7 +112,7 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	 * @return true if this handler needs to destroy, false if not.
 	 */
 	public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
-		return !article.isFullParse()
+		return (!article.isFullParse() || s.isCompiledBy(article.getTitle(), this))
 				&& (!s.isReusedBy(article.getTitle())
 						|| (s.get().isOrderSensitive() && s.isPositionChangedFor(article.getTitle()))
 						|| (s.get() instanceof IncrementalConstraints

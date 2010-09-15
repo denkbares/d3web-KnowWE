@@ -35,7 +35,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
-import de.d3web.we.kdom.validation.Validator;
+import de.d3web.we.kdom.validation.KDOMValidator;
 import dummies.KnowWETestWikiConnector;
 
 /**
@@ -100,7 +100,7 @@ public class ReplaceKdomNodeTest extends TestCase {
 		actual = original.equals(content);
 		assertEquals("Original equals replaced", false, actual);
 
-		actual = Validator.getFileHandlerInstance().validateArticle(
+		actual = KDOMValidator.getFileHandlerInstance().validateArticle(
 				_env.getArticle("default_web", "Test_Article"));
 		assertEquals("Article no longer valid", true, actual);
 
@@ -113,7 +113,7 @@ public class ReplaceKdomNodeTest extends TestCase {
 		map.put(KnowWEAttributes.TEXT, "-aa-");
 		KnowWEFacade.getInstance().replaceKDOMNode(map);
 
-		actual = Validator.getFileHandlerInstance().validateArticle(
+		actual = KDOMValidator.getFileHandlerInstance().validateArticle(
 				_env.getArticle("default_web", "Test_Article"));
 		assertEquals("Article no longer valid", true, actual);
 

@@ -250,6 +250,7 @@ public class KnowWEArticleManager {
 
 		// store new article
 		articleMap.put(article.getTitle(), article);
+
 		long startTime = System.currentTimeMillis();
 
 		Logger.getLogger(this.getClass().getName()).log(
@@ -260,22 +261,12 @@ public class KnowWEArticleManager {
 
 		EventManager.getInstance().fireEvent(new UpdatingDependenciesEvent(article));
 
-		KnowWEEnvironment.getInstance().getPackageManager(web)
-				.updatePackageReferences(article);
-
 		updatingArticles.remove(article.getTitle());
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.FINE,
 				"<- Finished updating dependencies to article '" + article.getTitle()
 						+ "' in " + (System.currentTimeMillis() - startTime)
 						+ "ms <-");
-
-		// reset the reused state of the Sections of this article for this
-		// article to don't interfere with the next incremental update of this
-		// article
-		article.getSection().setReusedStateOfThisArticleRecursively(article.getTitle(), false);
-		// art.getSection().setPositionChangedRecursivelyFor(art.getTitle(),
-		// false);
 
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.INFO,

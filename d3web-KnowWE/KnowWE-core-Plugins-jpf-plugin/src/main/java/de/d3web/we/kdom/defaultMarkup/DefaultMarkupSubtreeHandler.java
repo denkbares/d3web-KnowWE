@@ -112,10 +112,8 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 			Section<? extends AnnotationType> annotationSection =
 					DefaultMarkupType.getAnnotationSection(markupSection, packageAnno.getName());
 			if (annotationSection != null) {
-				String value = annotationSection.getOriginalText();
 				KnowWEEnvironment.getInstance().getPackageManager(article.getWeb()).unregisterPackageDefinition(
 						markupSection);
-				markupSection.removePackageName(value);
 			}
 		}
 	}

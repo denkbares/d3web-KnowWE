@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.core.inference.PSAction;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.scoring.ActionHeuristicPS;
+import de.d3web.scoring.Score;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -42,7 +44,7 @@ import de.d3web.we.utils.D3webUtils;
  */
 public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssignment> {
 
-	private List<String> possibleScorePoints = new ArrayList<String>();
+	private final List<String> possibleScorePoints = new ArrayList<String>();
 
 	public SolutionValueAssignment() {
 		// possibleScorePoints = D3webUtils.getPossibleScores();
@@ -131,9 +133,12 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 	public PSAction getAction(KnowWEArticle article, Section<SolutionValueAssignment> s) {
 		Section<SolutionReference> solutionRef = s.findSuccessor(SolutionReference.class);
 		Section<ScorePoint> scoreRef = s.findSuccessor(ScorePoint.class);
+		Solution solution = solutionRef.get().getTermObject(article, solutionRef);
+		Score score = D3webUtils.getScoreForString(scoreRef.getOriginalText());
+		if (solution == null || score == null) return null;
 		ActionHeuristicPS a = new ActionHeuristicPS();
-		a.setSolution(solutionRef.get().getTermObject(article, solutionRef));
-		a.setScore(D3webUtils.getScoreForString(scoreRef.getOriginalText()));
+		a.setSolution(solution);
+		a.setScore(score);
 		return a;
 	}
 }

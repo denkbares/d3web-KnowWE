@@ -150,7 +150,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 				Rule r = RuleFactory.createRule(mgn.createRuleID(), d3action, d3Cond,
 						null, null);
 				if (r != null) {
-					KnowWEUtils.storeSectionInfo(article, s, ruleStoreKey, r);
+					KnowWEUtils.storeObject(article, s, ruleStoreKey, r);
 					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage("Rule"));
 				}
 
@@ -174,7 +174,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 			Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, rule, ruleStoreKey);
 			if (kbr != null) {
 				kbr.remove();
-				KnowWEUtils.storeSectionInfo(article, rule, ruleStoreKey, null);
+				KnowWEUtils.storeObject(article, rule, ruleStoreKey, null);
 			}
 		}
 

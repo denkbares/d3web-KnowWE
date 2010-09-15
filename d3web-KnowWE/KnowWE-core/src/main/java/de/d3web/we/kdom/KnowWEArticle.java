@@ -38,6 +38,7 @@ import de.d3web.we.event.ArticleCreatedEvent;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.FullParseEvent;
 import de.d3web.we.event.KDOMCreatedEvent;
+import de.d3web.we.event.PreCompileFinishedEvent;
 import de.d3web.we.kdom.ReviseIterator.SectionPriorityTuple;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
@@ -45,7 +46,7 @@ import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.store.KnowWESectionInfoStorage;
 import de.d3web.we.kdom.store.SectionStore;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
-import de.d3web.we.kdom.validation.Validator;
+import de.d3web.we.kdom.validation.KDOMValidator;
 
 /**
  * @author Jochen
@@ -168,27 +169,100 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
 
+		// ============ Build KDOM =============
 		env.getArticleManager(web).registerSectionizingArticle(title);
 
-		// create new Section, here the KDOM is created recursively
+		// create Sections recursively
 		sec = Section.createSection(text, this, null, 0, this, null, false);
+
+		sec.absolutePositionStartInArticle = 0;
+		sec.clearReusedSuccessorRecursively();
+		if (this.lastVersion != null) {
+			lastVersion.getSection().clearReusedOfOldSectionsRecursively(this);
+		}
+
+		EventManager.getInstance().fireEvent(new KDOMCreatedEvent(this));
+
+		env.getArticleManager(web).unregisterSectionizingArticles(title);
+
+		Logger.getLogger(this.getClass().getName()).log(
+				Level.FINE,
+				"<- Built KDOM in "
+						+ (System.currentTimeMillis() - startTime) + "ms <-");
+		startTime = System.currentTimeMillis();
 
 		if (this.fullParse) {
 			EventManager.getInstance().fireEvent(new FullParseEvent(this));
 		}
 
-		sec.absolutePositionStartInArticle = 0;
-		sec.setReusedSuccessorStateRecursively(false);
+		// init DefaultSolutionContext
+		if (env != null) {
+			DefaultSubjectContext con = new DefaultSubjectContext();
+			con.setSubject(title);
+			ContextManager.getInstance().attachContext(sec, con);
+		}
 
-		EventManager.getInstance().fireEvent(new KDOMCreatedEvent(this));
+		// ============ Precompile =============
+		// destroy (precompile)
+		if (!this.fullParse && this.lastVersion != null) lastVersion.reviseIterator.reset();
+		destroyTilPriority(Priority.PRECOMPILE_LOW);
 
-		// calls Validator if configured
-		if (Validator.getResourceBundle().getString("validator.active")
+		// create (precompile)
+		reviseIterator = new ReviseIterator();
+		reviseIterator.addRootSectionToRevise(sec);
+		create(Priority.PRECOMPILE_LOW);
+
+		EventManager.getInstance().fireEvent(new PreCompileFinishedEvent(this));
+
+		// ============ Compile =============
+		// destroy (compile)
+		destroyTilPriority(Priority.LOWEST);
+		this.postDestroy = true;
+
+
+
+		// init KnowledgeRepHandler
+		env.getKnowledgeRepresentationManager(web)
+				.initArticle(this);
+
+		Logger.getLogger(this.getClass().getName()).log(
+				Level.FINE,
+				"<- Initialized Knowledge Manager in "
+						+ (System.currentTimeMillis() - startTime) + "ms <-");
+		startTime = System.currentTimeMillis();
+
+		// create (compile)
+		create(Priority.LOWEST);
+
+		Logger.getLogger(this.getClass().getName()).log(
+				Level.FINE,
+				"<- Built Knowledge in "
+						+ (System.currentTimeMillis() - startTime) + "ms <-");
+		startTime = System.currentTimeMillis();
+
+		// ============ Postcompile =============
+		
+		
+		for (Section<?> node : reviseIterator.getAllSections()) {
+			node.setReusedBy(title, true);
+		}
+
+		// finish KnowledgeRepHandler
+		env.getKnowledgeRepresentationManager(web)
+				.finishArticle(this);
+
+		Logger.getLogger(this.getClass().getName()).log(
+				Level.FINE,
+				"<- Registered Knowledge in "
+						+ (System.currentTimeMillis() - startTime) + "ms <-");
+
+		// ============ Validate KDOM =============
+		if (KDOMValidator.getResourceBundle().getString("validator.active")
 				.contains("true")) {
 			Logger.getLogger(this.getClass().getName()).log(Level.FINER,
 					"-> Starting to validate article ->");
 
-			Validator.getFileHandlerInstance().validateArticle(this);
+			KDOMValidator.getFileHandlerInstance().validateArticle(this);
 
 			Logger.getLogger(this.getClass().getName()).log(
 					Level.FINER,
@@ -198,9 +272,11 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			startTime = System.currentTimeMillis();
 		}
 
-		// destroy no longer used knowledge and stuff from the last article
+	}
+
+	private void destroyTilPriority(Priority p) {
 		if (!this.fullParse && this.lastVersion != null) {
-			lastVersion.reviseIterator.reset();
+			lastVersion.reviseIterator.setIteratorStop(p);
 			while (lastVersion.reviseIterator.hasNext()) {
 				SectionPriorityTuple tuple = lastVersion.reviseIterator.next();
 				Section<?> s = tuple.getSection();
@@ -219,58 +295,15 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			}
 
 		}
-		this.postDestroy = true;
+	}
 
-		env.getArticleManager(web).unregisterSectionizingArticles(title);
-
-		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINE,
-				"<- Built KDOM in "
-						+ (System.currentTimeMillis() - startTime) + "ms <-");
-		startTime = System.currentTimeMillis();
-
-		// run initHooks at KnowledgeRepManager
-		env.getKnowledgeRepresentationManager(web)
-				.initArticle(this);
-
-		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINE,
-				"<- Initialized Knowledge Manager in "
-						+ (System.currentTimeMillis() - startTime) + "ms <-");
-		startTime = System.currentTimeMillis();
-
-		// create default solution context as title name
-		if (env != null) {
-			DefaultSubjectContext con = new DefaultSubjectContext();
-			con.setSubject(title);
-			ContextManager.getInstance().attachContext(sec, con);
-		}
-
-		// call SubTreeHandler for all Sections to create
-		reviseIterator = new ReviseIterator();
-		reviseIterator.addSectionsToRevise(getAllNodesPostOrder());
+	private void create(Priority p) {
+		reviseIterator.setIteratorStop(p);
+		// compile the handlers with main priorities
 		while (reviseIterator.hasNext()) {
 			SectionPriorityTuple tuple = reviseIterator.next();
 			tuple.getSection().letSubtreeHandlersCreate(this, tuple.getPriority());
 		}
-		for (Section<?> s : reviseIterator.getAllSections()) {
-			s.setReusedBy(title, true);
-		}
-
-		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINE,
-				"<- Built Knowledge in "
-						+ (System.currentTimeMillis() - startTime) + "ms <-");
-		startTime = System.currentTimeMillis();
-
-		env.getKnowledgeRepresentationManager(web)
-				.finishArticle(this);
-
-		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINE,
-				"<- Registered Knowledge in "
-						+ (System.currentTimeMillis() - startTime) + "ms <-");
-
 	}
 
 	private void clearTypeStore(KnowWEObjectType type, String title) {
@@ -520,6 +553,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 	public void setFullParse(SubtreeHandler<?> source) {
 		if (!this.fullParse) {
+			sec.clearCompiledRecursively();
 			EventManager.getInstance().fireEvent(new FullParseEvent(this));
 		}
 		handlersUnableToDestroy.add(source.getClass().isAnonymousClass()
