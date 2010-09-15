@@ -1,3 +1,5 @@
+[{KnowWEPlugin questionsheet}]
+
 <Kopic>
 <include src="Car-Diagnosis-Test/QuestionsSection" />
 
