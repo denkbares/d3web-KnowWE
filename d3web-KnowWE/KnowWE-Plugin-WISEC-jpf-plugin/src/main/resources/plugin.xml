@@ -59,6 +59,17 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="WISECRankingFormTagHandler">
+	 	<parameter id="class"
+			value="de.d3web.we.wisec.taghandler.WISECRankingFormTagHandler" />
+		<parameter id="name" value="WISECRankingFormTagHandler" />
+		<parameter id="description" value="TagHandler WISECRankingFormTagHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="wisec.js" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="WISECRankingTagHandler">
 	 	<parameter id="class"
 			value="de.d3web.we.wisec.taghandler.WISECRankingTagHandler" />
@@ -68,7 +79,7 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
-		<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="ShowSubstancesHandler">
 	 	<parameter id="class"
 			value="de.d3web.we.wisec.taghandler.ShowSubstancesHandler" />

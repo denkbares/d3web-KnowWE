@@ -38,7 +38,7 @@ public class ActiveSubstancesWriter extends WISECWriter {
 		writeBreadcrumb(writer);
 
 		StringBuffer b = new StringBuffer();
-		b.append("!!! Active Substances\n\n");
+		b.append("!!! Active Substances %%(font-size:small;font-weight:normal)- customizable list of substances for further consideration. For every substance additional informations are available by using the links. \n\n");
 
 		// open the zebra and the sortable table
 		b.append("%%zebra-table\n%%sortable\n");

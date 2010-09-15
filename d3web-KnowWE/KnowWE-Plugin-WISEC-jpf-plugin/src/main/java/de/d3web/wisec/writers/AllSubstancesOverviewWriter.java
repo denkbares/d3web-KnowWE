@@ -48,6 +48,7 @@ public class AllSubstancesOverviewWriter extends WISECWriter {
 		Collections.sort(substances);
 
 		StringBuffer buffy = new StringBuffer();
+		buffy.append("!!!List of all substances %%(font-size:small;font-weight:normal)- Collection of all considered substances. For clearer overview divided into parts.%% \n\n");
 		writeChapterLinks(AllSubstancesChapterWriter.CHAPTERNUMBERS, "Substances by CAS", buffy);
 		writeChapterLinks(AllSubstancesChapterWriter.CHAPTERLETTERS, "Substances by chemical name",
 				buffy);

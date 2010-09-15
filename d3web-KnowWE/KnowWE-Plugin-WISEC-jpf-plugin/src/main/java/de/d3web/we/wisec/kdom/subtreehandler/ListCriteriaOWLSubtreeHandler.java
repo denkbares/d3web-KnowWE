@@ -149,6 +149,9 @@ public class ListCriteriaOWLSubtreeHandler extends OwlSubtreeHandler<ListCriteri
 
 	private void createCharacteristicStatement(IntermediateOwlObject ioo,
 			String ns, String listID, String characteristic, String value) {
+		if (value.equals("0")) {
+			return;
+		}
 		URI source = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(
 				listID);
 		URI prop = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(

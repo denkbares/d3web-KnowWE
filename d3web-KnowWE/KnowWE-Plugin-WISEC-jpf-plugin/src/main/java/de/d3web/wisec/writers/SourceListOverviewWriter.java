@@ -93,7 +93,7 @@ public class SourceListOverviewWriter extends WISECWriter {
 	}
 
 	private void writeHeader(Writer writer) throws IOException {
-		writer.append("!!! Information Sources\n\n");
+		writer.append("!!! Information Sources %%(font-size:small;font-weight:normal)- sources used/not used for data basis  %% \n\n");
 		// open the rebra and the sortable table
 		writer.append("%%zebra-table\n%%sortable\n");
 		// write all header names

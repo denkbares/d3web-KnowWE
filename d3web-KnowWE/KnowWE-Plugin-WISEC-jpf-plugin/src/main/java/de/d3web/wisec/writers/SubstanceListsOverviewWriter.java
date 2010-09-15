@@ -158,7 +158,7 @@ public class SubstanceListsOverviewWriter extends WISECWriter {
 	}
 
 	private void writeHeader(Writer writer) throws IOException {
-		writer.append("!!! Lists\n\n");
+		writer.append("!!! Lists %%(font-size:small;font-weight:normal)- categorization of parts of the initial sources based upon expertise %% \n\n");
 		// open the zebra and the sortable table
 		writer.append("%%zebra-table\n%%sortable\n");
 		// write all header names

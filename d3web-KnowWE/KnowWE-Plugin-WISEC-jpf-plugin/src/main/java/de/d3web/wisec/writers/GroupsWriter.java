@@ -46,6 +46,7 @@ public class GroupsWriter extends WISECWriter {
 		writeBreadcrumb(writer);
 
 		StringBuffer buffy = new StringBuffer();
+		buffy.append("!!! Groups %%(font-size:small;font-weight:normal)- User defined grouping of substances%% \n\n");
 		// open the zebra and the sortable table
 		buffy.append("%%zebra-table\n%%sortable\n");
 

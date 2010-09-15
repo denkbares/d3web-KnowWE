@@ -45,7 +45,7 @@ public class TeamsWriter extends WISECWriter {
 		writeBreadcrumb(writer);
 
 		StringBuffer buffy = new StringBuffer();
-		buffy.append("!!! Teams\n\n");
+		buffy.append("!!! Teams %%(font-size:small;font-weight:normal)- users can unite in teams to collect information or to share intelligence confidential%% \n\n");
 
 		// open the zebra and the sortable table
 		buffy.append("%%zebra-table\n%%sortable\n");
