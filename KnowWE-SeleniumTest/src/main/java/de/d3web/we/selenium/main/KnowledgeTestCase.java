@@ -281,8 +281,8 @@ public abstract class KnowledgeTestCase extends KnowWETestCase {
 	}
 
 	protected void initKnowledgeTest() {
-		open("Wiki.jsp?page=Car-Diagnosis-Test");
-		assertEquals("KnowWE: Car-Diagnosis-Test", selenium.getTitle());
+		open("Wiki.jsp?page=CD-compiled-KB");
+		assertEquals("KnowWE: CD-compiled-KB", selenium.getTitle());
 		assertTrue("SolutionPanel nicht eingebunden",
 				selenium.isElementPresent(ST_LOC));
 		map.clear();
