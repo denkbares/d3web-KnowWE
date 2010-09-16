@@ -26,6 +26,14 @@ import java.util.Set;
 
 import de.d3web.we.utils.SplitUtility;
 
+/**
+ * 
+ * Class providing some simple preprocessing functios to be used by concrete
+ * search front-ends.
+ * 
+ * @author Jochen
+ * @created 16.09.2010
+ */
 public class SearchWordPreprocessor {
 
 	private static SearchWordPreprocessor instance;
@@ -39,6 +47,14 @@ public class SearchWordPreprocessor {
 		return instance;
 	}
 
+	/**
+	 * Creates one or multple SearchTerm objects from a searchText string. Uses
+	 * the SearchTerminologyHandler to expand these SearchTerms
+	 * 
+	 * @created 16.09.2010
+	 * @param searchText
+	 * @return
+	 */
 	public Collection<SearchTerm> processForSearch(String searchText) {
 		List<String> terms = SplitUtility.splitUnquoted(searchText, " ");
 
@@ -62,6 +78,14 @@ public class SearchWordPreprocessor {
 
 	}
 
+	/**
+	 * Creates one or multple SearchTerm objects from a searchText string. Uses
+	 * the SearchTerminologyHandler to expand these SearchTerms
+	 * 
+	 * @created 16.09.2010
+	 * @param searchText
+	 * @return
+	 */
 	public Collection<SearchTerm> processForRecommendation(String searchText) {
 		List<String> terms = SplitUtility.splitUnquoted(searchText, " ");
 

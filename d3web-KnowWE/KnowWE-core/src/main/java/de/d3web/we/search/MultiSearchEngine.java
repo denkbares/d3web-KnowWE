@@ -29,8 +29,8 @@ import java.util.Set;
 import de.d3web.we.core.KnowWEParameterMap;
 
 /**
- * KnowWEs MultiSearchEngine manages multiple SearchProviders which are all
- * asked when a search query comes in.
+ * KnowWEs MultiSearchEngine manages multiple SearchProviders. When a search
+ * query comes in each of the providers can be asked.
  * 
  * @author Jochen
  * 
@@ -44,27 +44,56 @@ public class MultiSearchEngine {
 		return instance;
 	}
 
-	private Map<String, KnowWESearchProvider> searchProvider = new HashMap<String, KnowWESearchProvider>();
+	private final Map<String, KnowWESearchProvider> searchProvider = new HashMap<String, KnowWESearchProvider>();
 
 	public Map<String, KnowWESearchProvider> getSearchProvider() {
 		return searchProvider;
 	}
 
+	/**
+	 * Add a searchProvider to this MultiSearchEngine. It will be called on
+	 * {@link #search(Collection, KnowWEParameterMap)}
+	 * 
+	 * @created 16.09.2010
+	 * @param p
+	 */
 	public void addProvider(KnowWESearchProvider p) {
 		this.searchProvider.put(p.getID(), p);
 	}
 
+	/**
+	 * looks up searchProvider for the passed id
+	 * 
+	 * @created 16.09.2010
+	 * @param id
+	 * @return
+	 */
 	public KnowWESearchProvider getProvider(String id) {
 		if (id == null) return null;
 		return searchProvider.get(id);
 	}
 
+	/**
+	 * @param searchText
+	 * @param map
+	 * @return
+	 */
 	public Map<String, Collection<GenericSearchResult>> search(
 			String searchText, KnowWEParameterMap map) {
 		return search(SearchWordPreprocessor.getInstance().processForSearch(
 				searchText), map);
 	}
 
+	/**
+	 * 
+	 * Calls search on all registered searchProviders and returns all results in
+	 * a result map.
+	 * 
+	 * @created 16.09.2010
+	 * @param terms
+	 * @param map
+	 * @return
+	 */
 	public Map<String, Collection<GenericSearchResult>> search(
 			Collection<SearchTerm> terms, KnowWEParameterMap map) {
 

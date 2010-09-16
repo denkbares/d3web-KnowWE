@@ -32,8 +32,25 @@ import java.util.Collection;
  */
 public interface SearchTermExpander {
 
+	/**
+	 * 
+	 * expands a SearchTerm (in some way)
+	 * 
+	 * @created 16.09.2010
+	 * @param t
+	 * @return
+	 */
 	public Collection<SearchTerm> expandSearchTerm(SearchTerm t);
 
+	/**
+	 * expands a SearchTerm for a number of level, i.e., when Terms are
+	 * organized in hierarchical structures (taxonomy)
+	 * 
+	 * @created 16.09.2010
+	 * @param t
+	 * @param level
+	 * @return
+	 */
 	public Collection<SearchTerm> expandSearchTerm(SearchTerm t, int level);
 
 }

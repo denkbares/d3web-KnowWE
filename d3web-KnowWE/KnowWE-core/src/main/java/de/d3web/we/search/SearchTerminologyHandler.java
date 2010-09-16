@@ -31,7 +31,17 @@ import java.util.Map.Entry;
 
 import com.wcohen.ss.Levenstein;
 
-
+/**
+ * This class is part of the MultiSearchEngine. It allows to expand some *
+ * SearchTerm to multiple (related) SearchTerms. Further, for some SearchTerm it
+ * generates a set of possibly interesting related SearchTerms to be recommended
+ * to the user (e.g., by a cloud of search words). It also provides a method a
+ * calculate auto-completion suggestions for some entered character sequence
+ * based on the known terms.
+ * 
+ * @author Jochen
+ * 
+ */
 public class SearchTerminologyHandler {
 
 	private static SearchTerminologyHandler instance;
@@ -40,7 +50,7 @@ public class SearchTerminologyHandler {
 	 * A Levenstein object that is used to compute the edit-distance between two
 	 * Strings in some of the methods used in this class.
 	 */
-	private Levenstein levenstein = new Levenstein();
+	private final Levenstein levenstein = new Levenstein();
 
 	public static SearchTerminologyHandler getInstance() {
 		if (instance == null) {
@@ -51,17 +61,15 @@ public class SearchTerminologyHandler {
 		return instance;
 	}
 
-	private List<SearchTermExpander> expanders = new ArrayList<SearchTermExpander>();
 
-	public void addSearchTermExpander(SearchTermExpander expander) {
-		if (!expanders.contains(expander)) {
-			expanders.add(expander);
-		}
-	}
-
+	/**
+	 * expands some SearchTerm by delegating expansion to existiting SearchProviders
+	 * 
+	 * @param t
+	 * @return
+	 */
 	public Collection<SearchTerm> expandSearchTermForSearch(SearchTerm t) {
 		return expandSearchTermForSearchByProviders(t);
-
 	}
 
 	/**
@@ -75,55 +83,9 @@ public class SearchTerminologyHandler {
 	public Collection<SearchTerm> expandSearchTermForRecommendation(SearchTerm t) {
 
 		String query = t.getTerm();
-
+		
+		//Collect all known terms from the installed searchProviders
 		List<SearchTerm> generalSystemTerms = new ArrayList<SearchTerm>();
-
-		// terms.add(new SearchTerm("apfel", 2));
-		// terms.add(new SearchTerm("birne", 0.5));
-		// terms.add(new SearchTerm("banane", 1));
-		// terms.add(new SearchTerm("birnenkuchen", 2));
-		// terms.add(new SearchTerm("birnen marmelade", 1));
-		// terms.add(new SearchTerm("birnenkompott", 0.5));
-		// terms.add(new SearchTerm("birnen einkochen", 3));
-		// terms.add(new SearchTerm("birnensorten", 0.5));
-		// terms.add(new SearchTerm("advent", 0.5));
-		// terms.add(new SearchTerm("weihnachten", 0.5));
-		// terms.add(new SearchTerm("geschenke", 0.5));
-		// terms.add(new SearchTerm("freude", 0.5));
-		// terms.add(new SearchTerm("sterne", 0.5));
-		// terms.add(new SearchTerm("könige", 0.5));
-		// terms.add(new SearchTerm("kinder", 2.5));
-		// terms.add(new SearchTerm("plätzchen", 1.5));
-		// terms.add(new SearchTerm("gelächter", 0.5));
-		// terms.add(new SearchTerm("baum", 0.4));
-		// terms.add(new SearchTerm("kugel", 1.0));
-		// terms.add(new SearchTerm("schnee", 1.0));
-		// terms.add(new SearchTerm("kalt", 1.5));
-		// terms.add(new SearchTerm("kerzen", 2.0));
-		// terms.add(new SearchTerm("schneemann", 0.8));
-		// terms.add(new SearchTerm("schneefrau", 1.2));
-		// terms.add(new SearchTerm("wasser", 1.5));
-		// terms.add(new SearchTerm("feuer", 2.0));
-		// terms.add(new SearchTerm("erde", 0.4));
-		// terms.add(new SearchTerm("luft", 3.5));
-		// terms.add(new SearchTerm("vogel", 0.5));
-		// terms.add(new SearchTerm("stein", 0.5));
-		// terms.add(new SearchTerm("ameise", 0.5));
-		// terms.add(new SearchTerm("sonne", 0.5));
-		// terms.add(new SearchTerm("wolke", 0.5));
-		// terms.add(new SearchTerm("farben", 0.5));
-		// terms.add(new SearchTerm("landschaft", 0.5));
-		// terms.add(new SearchTerm("Grünland", 0.5));
-		// terms.add(new SearchTerm("Boden", 1.5));
-		// terms.add(new SearchTerm("Bewuchs", 0.5));
-		// terms.add(new SearchTerm("vielfalt", 0.4));
-		// terms.add(new SearchTerm("Pflanzen", 1.0));
-		// terms.add(new SearchTerm("Käfer", 1.0));
-		// terms.add(new SearchTerm("lebensraum", 1.5));
-		// terms.add(new SearchTerm("diversität", 2.0));
-		// terms.add(new SearchTerm("bio", 0.8));
-		// terms.add(new SearchTerm("natur", 1.2));
-
 		Collection<KnowWESearchProvider> providers = MultiSearchEngine
 				.getInstance().getSearchProvider().values();
 		if (providers != null) {
@@ -136,6 +98,7 @@ public class SearchTerminologyHandler {
 			}
 		}
 
+		//calculate foreach term the (Levenstein-)similarity to the SearchTerm
 		Map<SearchTerm, Double> similarities = new HashMap<SearchTerm, Double>();
 		if (query != null) {
 			for (SearchTerm searchTerm : generalSystemTerms) {
@@ -145,46 +108,46 @@ public class SearchTerminologyHandler {
 			}
 		}
 
-		Set<SearchTerm> filtered = new HashSet<SearchTerm>();
 
+		// create a new set of ranked proposed terms
+		Set<SearchTerm> filtered = new HashSet<SearchTerm>();
 		int maxTerms = 20;
 
-		SearchTerm exactMatch = null;
-
+		//terms that match the query will be added in advance
 		for (SearchTerm term : generalSystemTerms) {
+			// exact match will be expanded by providers
 			if (term.getTerm().equals(query)) {
-				exactMatch = term;
 				filtered.addAll(expandSearchTermForRecommendationByProviders(term));
-			}
+			} //infix matches just added
 			else if (term.getTerm().contains(query)) {
 				filtered.add(term);
 			}
 		}
 
-		// if (exactMatch != null) {
-		// filtered.addAll(OWLSibblingClassExpander.getInstance()
-		// .expandSearchTerm(exactMatch));
-		// }
 
+		// decrease number of free slots by found matches
 		maxTerms -= filtered.size();
 
-		// TODO implement more efficiently
 		int cnt = 0;
-		while (cnt < maxTerms) {
+		while (cnt < maxTerms) { //while still slots free
 			cnt++;
+			// find max-sim-object
 			double max = Double.NEGATIVE_INFINITY;
-			SearchTerm minTerm = null;
+			SearchTerm maxSimTerm = null;
 			for (SearchTerm searchTerm : similarities.keySet()) {
 				Double double1 = similarities.get(searchTerm);
 				if (double1 > max) {
 					max = double1;
-					minTerm = searchTerm;
+					maxSimTerm = searchTerm;
 				}
 			}
-			similarities.remove(minTerm);
-			if (minTerm != null) filtered.add(minTerm);
+			similarities.remove(maxSimTerm);
+			// add most similar term to filtered list
+			if (maxSimTerm != null) filtered.add(maxSimTerm);
 		}
-
+		
+		
+		// reduce to constant number if exceeding
 		if (filtered.size() > 25) {
 			Set<SearchTerm> cutResultList = new HashSet<SearchTerm>();
 			int cntLimit = 0;
