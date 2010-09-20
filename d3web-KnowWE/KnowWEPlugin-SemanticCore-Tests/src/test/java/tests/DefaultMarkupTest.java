@@ -20,13 +20,16 @@
 
 package tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 import types.DefaultMarkupTestType;
-
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -106,7 +109,7 @@ public class DefaultMarkupTest {
 		assertNotNull("DefaultMarkup Section was null!", sec);
 
 		assertEquals("Content of DefaultMarkup Section was not empty!",
-				DefaultMarkupType.getContent(sec), "");
+					"", DefaultMarkupType.getContent(sec));
 	}
 
 	/**
@@ -157,8 +160,8 @@ public class DefaultMarkupTest {
 		assertFalse("A annotation was part of the content! ",
 					content.contains("@anno1=BLUBB"));
 		// and if it is correctly recognized as annotation with correct value
-		assertEquals("Annotation was not correctly recognized!",
-				DefaultMarkupType.getAnnotation(sec, "anno1"), "BLUBB");
+		assertEquals("Annotation was not correctly recognized!", "BLUBB"
+				, DefaultMarkupType.getAnnotation(sec, "anno1"));
 	}
 
 	/**
@@ -198,7 +201,7 @@ public class DefaultMarkupTest {
 		String anno1 = DefaultMarkupType.getAnnotation(sec, "anno1");
 		assertNotNull("Annotation anno1 was null!", anno1);
 		assertEquals("Annotation anno1 has the wrong value!",
-				anno1, "Diese Annotation muss noch enthalten sein!");
+				"Diese Annotation muss noch enthalten sein!", anno1);
 
 		String anno2 = DefaultMarkupType.getAnnotation(sec, "anno2");
 		assertNull("Annotation anno2 was not null!", anno2);
@@ -242,7 +245,7 @@ public class DefaultMarkupTest {
 		String anno1 = DefaultMarkupType.getAnnotation(sec, "anno1");
 		assertNotNull("Annotation anno1 was null!", anno1);
 		assertEquals("Annotation anno1 has the wrong value!",
-				anno1, "Diese Annotation muss noch enthalten sein!");
+					"Diese Annotation muss noch enthalten sein!", anno1);
 
 		String anno2 = DefaultMarkupType.getAnnotation(sec, "anno2");
 		assertNull("Annotation anno2 was not null!", anno2);
