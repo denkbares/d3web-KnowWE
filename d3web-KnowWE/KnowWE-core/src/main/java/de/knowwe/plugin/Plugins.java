@@ -54,6 +54,7 @@ public class Plugins {
 	public static final String EXTENDED_POINT_SectionizerModule = "SectionizerModule";
 	public static final String EXTENDED_POINT_SemanticCore = "SemanticCoreImpl";
 	public static final String EXTENDED_POINT_EventListener = "EventListener";
+	public static final String EXTENDED_POINT_SearchProvider = "SearchProvider";
 
 	/**
 	 * Returns all plugged Instantiations These are used to initialize plugins.

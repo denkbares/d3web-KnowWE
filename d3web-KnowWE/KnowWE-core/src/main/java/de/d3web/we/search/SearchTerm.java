@@ -26,10 +26,11 @@ package de.d3web.we.search;
  * @author Jochen
  * 
  */
+
 public class SearchTerm implements Comparable<SearchTerm> {
 
 	private double importance = 1;
-	private String term;
+	private final String term;
 
 	public SearchTerm(String word) {
 		this.term = word;
