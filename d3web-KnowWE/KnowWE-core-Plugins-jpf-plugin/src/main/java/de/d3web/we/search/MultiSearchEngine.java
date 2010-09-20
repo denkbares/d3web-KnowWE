@@ -47,9 +47,9 @@ public class MultiSearchEngine implements Instantiation {
 	private static MultiSearchEngine instance;
 
 	public static MultiSearchEngine getInstance() {
-		if (instance == null) instance = new MultiSearchEngine();
 		return instance;
 	}
+
 
 	private final Map<String, KnowWESearchProvider> searchProvider = new HashMap<String, KnowWESearchProvider>();
 
@@ -122,8 +122,10 @@ public class MultiSearchEngine implements Instantiation {
 
 	@Override
 	public void init(ServletContext context) {
+
+		instance = this;
+
 		// get all SearchProvider
-		System.out.println("MultiSearch-init!!");
 		Extension[] exts = PluginManager.getInstance().getExtensions(
 				Plugins.EXTENDED_PLUGIN_ID,
 				Plugins.EXTENDED_POINT_SearchProvider);
