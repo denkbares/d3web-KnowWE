@@ -58,7 +58,6 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.rendering.PageAppendHandler;
-import de.d3web.we.search.MultiSearchEngine;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
@@ -126,6 +125,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				}
 			}
 		}
+
 		catch (Exception e) {
 			// Nothing to do. Start wiki without pages.
 		}
@@ -139,8 +139,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	private void initKnowWEEnvironmentIfNeeded(WikiEngine wEngine) {
 		if (!KnowWEEnvironment.isInitialized()) {
 			KnowWEEnvironment.initKnowWE(new JSPWikiKnowWEConnector(wEngine));
-			MultiSearchEngine.getInstance().addProvider(
-					new JSPWikiSearchConnector());
+			// MultiSearchEngine.getInstance().addProvider(
+			// new JSPWikiSearchConnector());
 		}
 	}
 

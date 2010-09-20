@@ -48,9 +48,10 @@ import de.d3web.we.search.GenericSearchResult;
 import de.d3web.we.search.KnowWESearchProvider;
 import de.d3web.we.search.SearchTerm;
 
+
 public class JSPWikiSearchConnector implements KnowWESearchProvider {
 
-	public static List<GenericSearchResult> getJSPWikiSearchResults(
+	private List<GenericSearchResult> getJSPWikiSearchResults(
 			Collection<SearchTerm> searchTerms, HttpServletRequest request,
 			WikiEngine wiki) {
 
@@ -131,7 +132,7 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 		return aggregateResultMap(resultMap);
 	}
 
-	private static List<GenericSearchResult> aggregateResultMap(
+	private List<GenericSearchResult> aggregateResultMap(
 			Map<String, Set<SearchResult>> resultMap) {
 
 		List<GenericSearchResult> resultList = new ArrayList<GenericSearchResult>();
@@ -234,6 +235,7 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 		return resultBuffy.toString();
 	}
 
+
 	@Override
 	public Collection<SearchTerm> getAllTerms() {
 		// Plaintext-search does not generate terms...
@@ -252,30 +254,5 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 		return null;
 	}
 
-	/*
-	 * <div class="graphBars"> <div class="zebra-table">
-	 * 
-	 * <table class="wikitable" >
-	 * 
-	 * <tr> <th align="left">Page</th> <th align="left">Score</th> </tr>
-	 * 
-	 * 
-	 * <tr> <td><a class="wikipage" href="/KnowWE/Wiki.jsp?page=Main"
-	 * accesskey="" title="">Main</a></td>
-	 * 
-	 * <td><span class="gBar">7</span></td> </tr>
-	 * 
-	 * 
-	 * 
-	 * <tr> <td><a class="wikipage" href="/KnowWE/Wiki.jsp?page=CD" accesskey=""
-	 * title="">CD</a></td> <td><span class="gBar">2</span></td> </tr>
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * </table> </div> </div>
-	 */
 
 }
