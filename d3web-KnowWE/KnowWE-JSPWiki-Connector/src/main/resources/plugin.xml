@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
-<plugin id="KnowWE-JSPWiki-Connector" version="0.0.1">
+<plugin id="KnowWE-JSPWiki-Connector-jpf-plugin" version="0.0.1">
 	
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
@@ -14,10 +14,8 @@
 	
 	
 		
-	<extension plugin-id="KnowWEExtensionPoints" point-id="SearchProvider"
-		id="JSPWikiSearchProvider">
-		<parameter id="class"
-			value="de.d3web.we.jspwiki.JSPWikiSearchConnector" />
+	<extension plugin-id="KnowWEExtensionPoints" point-id="SearchProvider" id="JSPWikiSearchProvider">
+		<parameter id="class" value="de.d3web.we.jspwiki.JSPWikiSearchConnector" />
 		<parameter id="name" value="JSPWikiSearchProvider" />
 		<parameter id="description" value="KnowWESearchProvider JSPWikiSearchConnector" />
 		<parameter id="version" value="1.0" />
