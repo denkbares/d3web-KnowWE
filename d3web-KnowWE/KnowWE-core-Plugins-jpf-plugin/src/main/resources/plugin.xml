@@ -12,6 +12,17 @@
 		</library>
 	</runtime>
 	
+	
+		<extension plugin-id="KnowWEExtensionPoints" point-id="Instantiation"
+		id="MultiSearchEngine">
+		<parameter id="class"
+			value="de.d3web.we.search.MultiSearchEngine" />
+		<parameter id="name" value="MultiSearchEngine" />
+		<parameter id="description" value="Instantiation MultiSearchEngine" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4.9" />
+	</extension>
+	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="SubClassing">
 		<parameter id="class"
@@ -622,5 +633,7 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
+	
+
 	
 </plugin>
