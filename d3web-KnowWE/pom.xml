@@ -129,7 +129,7 @@
 		<module>d3web-Distributed</module>
 		<module>KnowWE</module>
 		<module>KnowWE-core</module>
-		<module>KnowWE-JSPWiki-Connector</module>
+		<module>KnowWE-JSPWiki-Connector-jpf-plugin</module>
 		<module>KnowWE-Plugin-d3web-jpf-plugin</module>
 		<module>KnowWE-Plugin-Comment-jpf-plugin</module>
 		<module>KnowWE-Plugin-Calendar-jpf-plugin</module>
