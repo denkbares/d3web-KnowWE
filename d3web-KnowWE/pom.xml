@@ -149,6 +149,7 @@
 		<module>KnowWE-Plugin-KDOMParseUtils</module>
 		<module>KnowWE-Plugin-Table-jpf-plugin</module>
 		<module>KnowWE-Plugin-TestcaseTable</module>
+		<module>KnowWE-Plugin-d3web-MarkupSet-jpf-plugin</module>
 	</modules>
 	<repositories>
 		<repository>
