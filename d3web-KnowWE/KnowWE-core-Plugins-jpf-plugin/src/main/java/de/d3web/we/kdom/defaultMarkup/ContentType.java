@@ -31,12 +31,16 @@ public class ContentType extends DefaultAbstractKnowWEObjectType {
 	private final static int FLAGS = Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL;
 	private final static String SECTION_REGEXP =
 			// prefix (declare the markup section)
-			"^\\p{Blank}*%%$NAME$\\p{Blank}*[:=\\p{Space}]\\p{Blank}*" +
+			"^\\p{Blank}*%%$NAME$\\p{Blank}*[:=\\p{Space}]" +
 					// skip empty lines before content
-					"(\\p{Blank}*[\\r\\n]+)*" +
-					// content (any reluctant matched), as group with whitespace
-					// characters
-					"(\\p{Space}*?(.*?)\\p{Space}*)" +
+					"(?:\\p{Space}*[\\r\\n]+)*" +
+					// 100921 by ochlast: New content matching! This means:
+					// "From now on match everything, that begins NOT with a
+					// sequence of spaces, followed by an @ at the beginning of
+					// the line."
+					"((?:(?!^(?:\\p{Space}*)@\\w+).)*?)" +
+					// skip emtpy lines after content
+					"(?:\\p{Space}*[\\r\\n]+)*" +
 					// suffix: terminate-tag or end-of-input or declare next
 					// parameter
 					"(?:(?:^\\p{Blank}*/?%\\p{Blank}*$)" +
@@ -50,7 +54,7 @@ public class ContentType extends DefaultAbstractKnowWEObjectType {
 	public ContentType(DefaultMarkup markup) {
 		this.markup = markup;
 		Pattern pattern = getContentPattern(this.markup.getName());
-		this.setSectionFinder(new RegexSectionFinder(pattern, 2));
+		this.setSectionFinder(new RegexSectionFinder(pattern, 1));
 		Collections.addAll(this.childrenTypes, this.markup.getTypes());
 	}
 

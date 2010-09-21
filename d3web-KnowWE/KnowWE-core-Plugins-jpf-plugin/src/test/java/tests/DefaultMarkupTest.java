@@ -29,12 +29,12 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import types.DefaultMarkupTestType;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import dummies.KnowWETestWikiConnector;
 
@@ -45,6 +45,29 @@ import dummies.KnowWETestWikiConnector;
  * @author Marc-Oliver Ochlast
  */
 public class DefaultMarkupTest {
+
+	/**
+	 * Mock of DefaultMarkupType for testing purposes
+	 * 
+	 * @author Marc-Oliver Ochlast (denkbares GmbH)
+	 * @created 21.09.2010
+	 */
+	private static final class DefaultMarkupTestType extends DefaultMarkupType {
+
+		private static final DefaultMarkup MARKUP;
+
+		static {
+			MARKUP = new DefaultMarkup("TestMarkup");
+			MARKUP.addAnnotation("anno1", true);
+			MARKUP.addAnnotation("anno2", true, "anno2value1", "anno2value2", "anno2value3");
+			MARKUP.addAnnotation("anno3", false, "anno3value1", "anno3value2", "anno3value3");
+			MARKUP.addAnnotation("anno4", false);
+		}
+
+		public DefaultMarkupTestType() {
+			super(MARKUP);
+		}
+	}
 
 	private KnowWEEnvironment env;
 	private final String web = KnowWEEnvironment.DEFAULT_WEB;
