@@ -148,7 +148,7 @@
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-SolutionPanel-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-d3web-basic-jpf-plugin</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -409,7 +409,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-SolutionPanel-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-d3web-basic-jpf-plugin</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -691,6 +691,12 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-JSPWiki-Connector-jpf-plugin</artifactId>
+			<version>0.2-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-d3web-basic-jpf-plugin</artifactId>
 			<version>0.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
