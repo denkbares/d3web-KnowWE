@@ -87,8 +87,8 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 					Section<QuestionnaireDefinition> parentQclass = dashTreeFather
 							.findSuccessor(QuestionnaireDefinition.class);
 					if (parentQclass != null) {
-						QASet localParent = mgn.findQContainer(parentQclass
-								.getOriginalText());
+						QASet localParent = mgn.findQContainer(parentQclass.get().getTermName(
+								parentQclass));
 						if (localParent != null) {
 							parent = localParent;
 						}
