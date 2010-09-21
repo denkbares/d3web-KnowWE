@@ -10,4 +10,25 @@
   <name>KnowWE-Plugin-d3web-MarkupSet-jpf-plugin</name>
   <version>0.2-SNAPSHOT</version>
   <description>A set of markups for terminology, decision trees, rules and covering lists</description>
+  <dependencies>
+  	<dependency>
+  		<groupId>de.uniwue.d3web</groupId>
+  		<artifactId>KnowWE-core-Plugins-jpf-plugin</artifactId>
+  		<version>0.2-SNAPSHOT</version>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>de.uniwue.d3web</groupId>
+  		<artifactId>KnowWE-core</artifactId>
+  		<version>0.2-SNAPSHOT</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>de.uniwue.d3web</groupId>
+  		<artifactId>KnowWE-Plugin-d3web-basic-jpf-plugin</artifactId>
+  		<version>0.2-SNAPSHOT</version>
+  		<scope>compile</scope>
+  	</dependency>
+  </dependencies>
 </project>
