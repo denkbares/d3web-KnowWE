@@ -36,7 +36,7 @@ import de.d3web.we.kdom.report.message.RelationCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
-import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 
 public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
 

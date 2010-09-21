@@ -30,13 +30,13 @@ import java.util.ResourceBundle;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.session.values.Unknown;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.basic.IdentifiableInstance;
 import de.d3web.we.basic.Information;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.terminology.local.LocalTerminologyAccess;
 
 public class UserFindingsAction extends DeprecatedAbstractKnowWEAction {

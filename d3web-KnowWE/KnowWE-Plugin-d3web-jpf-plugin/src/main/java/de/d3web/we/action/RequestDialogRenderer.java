@@ -26,12 +26,12 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import de.d3web.core.session.Session;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
-import de.d3web.we.d3webModule.D3webModule;
 
 public class RequestDialogRenderer extends DeprecatedAbstractKnowWEAction {
 

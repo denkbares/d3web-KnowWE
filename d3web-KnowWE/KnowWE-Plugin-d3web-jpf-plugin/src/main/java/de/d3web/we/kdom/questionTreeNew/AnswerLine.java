@@ -25,7 +25,7 @@ import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;

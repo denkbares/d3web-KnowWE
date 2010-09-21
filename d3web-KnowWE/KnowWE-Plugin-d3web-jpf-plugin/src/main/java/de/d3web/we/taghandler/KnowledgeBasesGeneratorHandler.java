@@ -25,8 +25,8 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 

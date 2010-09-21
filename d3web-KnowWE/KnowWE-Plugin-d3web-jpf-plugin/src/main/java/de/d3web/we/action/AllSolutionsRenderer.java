@@ -32,14 +32,15 @@ import java.util.ResourceBundle;
 import java.util.Map.Entry;
 
 import de.d3web.utilities.ISetMap;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.SolutionState;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermInfoType;
+import de.d3web.we.utils.KnowWERenderUtils;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class AllSolutionsRenderer extends DeprecatedAbstractKnowWEAction {

@@ -37,7 +37,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
-import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 

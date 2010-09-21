@@ -22,7 +22,7 @@ package de.d3web.we.taghandler;
 import java.util.Map;
 
 import de.d3web.we.action.SessionValuesViewAction;
-import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**

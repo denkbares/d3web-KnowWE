@@ -25,11 +25,11 @@ import java.util.Map;
 
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.we.basic.D3webModule;
+import de.d3web.we.basic.DPSEnvironmentManager;
 import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
-import de.d3web.we.d3webModule.D3webModule;
-import de.d3web.we.d3webModule.DPSEnvironmentManager;
 import de.d3web.we.terminology.global.GlobalTerminology;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermInfoType;

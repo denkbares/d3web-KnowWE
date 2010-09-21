@@ -40,7 +40,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
-import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class CreateScoresHandler extends D3webSubtreeHandler {

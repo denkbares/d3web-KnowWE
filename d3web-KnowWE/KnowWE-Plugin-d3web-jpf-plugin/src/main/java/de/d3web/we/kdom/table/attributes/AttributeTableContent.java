@@ -32,7 +32,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.TableContentRenderer;
 import de.d3web.we.kdom.xml.XMLContent;
-import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 
 public class AttributeTableContent extends XMLContent {
 

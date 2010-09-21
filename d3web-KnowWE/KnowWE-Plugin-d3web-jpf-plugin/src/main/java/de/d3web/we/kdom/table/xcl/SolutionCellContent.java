@@ -33,7 +33,7 @@ import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableCellContentRenderer;
-import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 

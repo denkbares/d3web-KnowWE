@@ -22,9 +22,9 @@ package de.d3web.we.action;
 
 import java.io.File;
 
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.d3webModule.D3webModule;
 
 public class DeleteSessionAction extends DeprecatedAbstractKnowWEAction {
 

@@ -29,7 +29,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.Table;
 import de.d3web.we.kdom.table.TableColumnHeaderCellContent;
 import de.d3web.we.kdom.table.TableLine;
-import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**

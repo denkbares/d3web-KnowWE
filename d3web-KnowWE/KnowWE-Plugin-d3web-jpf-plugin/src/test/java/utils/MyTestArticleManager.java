@@ -23,11 +23,11 @@ import java.util.Map;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.empiricaltesting.TestSuite;
+import de.d3web.we.basic.D3webKnowledgeHandler;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.terminology.D3webKnowledgeHandler;
 import de.d3web.we.testsuite.TestsuiteSection;
 import de.d3web.we.utils.KnowWEUtils;
 import dummies.KnowWETestWikiConnector;

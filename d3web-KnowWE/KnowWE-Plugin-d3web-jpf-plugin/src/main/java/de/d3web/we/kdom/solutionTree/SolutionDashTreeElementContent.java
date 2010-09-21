@@ -34,7 +34,7 @@ import de.d3web.we.kdom.objects.SolutionDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.RelationCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 
 /**
  * @author Jochen

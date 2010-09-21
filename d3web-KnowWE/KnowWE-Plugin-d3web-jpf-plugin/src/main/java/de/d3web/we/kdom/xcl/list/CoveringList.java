@@ -29,7 +29,7 @@ import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
-import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -65,7 +65,7 @@ import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.sectionFinder.UnquotedExpressionFinder;
 import de.d3web.we.kdom.xcl.CoveringListContent;
 import de.d3web.we.kdom.xcl.XCLRelationWeight;
-import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -245,7 +245,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 								Double w = 1.0;
 								if (weight != null) {
 									String weightString = weight.getOriginalText();
-									type = D3webUtils.getXCLRealtionTypeForString(weightString);
+									type = getXCLRealtionTypeForString(weightString);
 									if (type == XCLRelationType.explains) {
 										weightString = weightString.replaceAll("\\[", "");
 										weightString = weightString.replaceAll("\\]", "");
@@ -471,6 +471,21 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 			}
 
 			return buffi.toString();
+		}
+	}
+
+	public static XCLRelationType getXCLRealtionTypeForString(String weightString) {
+		if (weightString.contains("--")) {
+			return XCLRelationType.contradicted;
+		}
+		else if (weightString.contains("!")) {
+			return XCLRelationType.requires;
+		}
+		else if (weightString.contains("++")) {
+			return XCLRelationType.sufficiently;
+		}
+		else {
+			return XCLRelationType.explains;
 		}
 	}
 }

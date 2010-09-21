@@ -29,7 +29,7 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.plugin.io.PluginConfigPersistenceHandler;
 import de.d3web.report.Message;
-import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;

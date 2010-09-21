@@ -30,7 +30,7 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
@@ -46,7 +46,7 @@ import de.d3web.we.kdom.questionTreeNew.QuestionTreeAnswerDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
-import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {

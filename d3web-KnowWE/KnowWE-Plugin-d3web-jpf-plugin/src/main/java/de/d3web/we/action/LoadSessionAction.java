@@ -24,11 +24,11 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.List;
 
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.basic.Information;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.persistence.SessionPersistenceHandler;
 
 public class LoadSessionAction extends DeprecatedAbstractKnowWEAction {

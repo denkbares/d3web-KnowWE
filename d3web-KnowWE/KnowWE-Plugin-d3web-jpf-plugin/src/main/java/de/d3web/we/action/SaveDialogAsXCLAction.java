@@ -29,6 +29,7 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.UndefinedValue;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -37,7 +38,6 @@ import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.xcl.CoveringListSection;
 

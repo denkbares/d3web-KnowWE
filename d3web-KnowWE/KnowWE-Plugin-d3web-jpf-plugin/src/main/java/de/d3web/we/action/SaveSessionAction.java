@@ -29,10 +29,10 @@ import java.util.Date;
 
 import javax.xml.stream.XMLStreamException;
 
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.persistence.SessionPersistenceHandler;
 import de.d3web.we.utils.KnowWEUtils;
 

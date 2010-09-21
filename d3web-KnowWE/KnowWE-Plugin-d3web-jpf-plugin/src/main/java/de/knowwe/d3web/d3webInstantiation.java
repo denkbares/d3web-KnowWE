@@ -22,7 +22,7 @@ package de.knowwe.d3web;
 
 import javax.servlet.ServletContext;
 
-import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.basic.D3webModule;
 import de.knowwe.plugin.Instantiation;
 
 public class d3webInstantiation implements Instantiation {

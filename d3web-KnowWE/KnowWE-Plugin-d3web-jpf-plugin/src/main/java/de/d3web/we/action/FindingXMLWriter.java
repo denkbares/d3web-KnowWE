@@ -38,7 +38,7 @@ import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.Unknown;
-import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.basic.D3webModule;
 
 /**
  * Generates the XML representation of a Question Object

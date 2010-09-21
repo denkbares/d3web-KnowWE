@@ -26,7 +26,7 @@ import java.util.List;
 
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.report.Message;
-import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;

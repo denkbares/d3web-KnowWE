@@ -20,9 +20,9 @@
 
 package de.d3web.we.action;
 
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.d3webModule.D3webModule;
 
 @Deprecated
 public class ReInitDPSEnvironment extends DeprecatedAbstractKnowWEAction {

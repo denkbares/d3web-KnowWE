@@ -22,11 +22,11 @@ package de.d3web.we.action;
 
 import java.util.ResourceBundle;
 
+import de.d3web.we.basic.D3webModule;
+import de.d3web.we.basic.DPSEnvironmentManager;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.d3webModule.D3webModule;
-import de.d3web.we.d3webModule.DPSEnvironmentManager;
 
 public class ReInitDPSEnvironmentAction extends DeprecatedAbstractKnowWEAction {
 

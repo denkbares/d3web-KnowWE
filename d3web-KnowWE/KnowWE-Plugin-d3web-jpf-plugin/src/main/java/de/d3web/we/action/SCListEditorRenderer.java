@@ -25,11 +25,11 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
-import de.d3web.we.d3webModule.D3webModule;
 
 public class SCListEditorRenderer extends DeprecatedAbstractKnowWEAction {
 

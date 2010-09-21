@@ -28,13 +28,13 @@ import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.MethodKind;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.scoring.inference.PSMethodHeuristic;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
-import de.d3web.we.d3webModule.D3webModule;
-import de.d3web.we.d3webModule.ProblemSolverType;
+import de.d3web.we.utils.ProblemSolverType;
 
 public class ExplanationRenderer2 extends DeprecatedAbstractKnowWEAction {
 

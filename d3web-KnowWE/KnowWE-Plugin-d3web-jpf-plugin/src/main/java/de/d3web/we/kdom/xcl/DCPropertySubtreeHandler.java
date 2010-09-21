@@ -35,7 +35,7 @@ import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.logging.Logging;
-import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 
 /**
  * A section for storing DCProperties in a MMInfo. The storing could be generic,

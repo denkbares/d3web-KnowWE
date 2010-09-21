@@ -27,13 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.codeCompletion.AbstractCompletionFinder;
 import de.d3web.we.codeCompletion.CompletionFinding;
 import de.d3web.we.codeCompletion.DefaultCompletionFinder;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.terminology.global.GlobalTerminology;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermInfoType;

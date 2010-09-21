@@ -39,7 +39,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.NonEmptyLineSectionFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
-import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.inference.PSMethodXCL;
 

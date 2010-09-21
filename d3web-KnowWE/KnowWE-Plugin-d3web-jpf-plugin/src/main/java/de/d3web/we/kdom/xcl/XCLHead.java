@@ -49,7 +49,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.logging.Logging;
-import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.Patterns;
 
 public class XCLHead extends DefaultAbstractKnowWEObjectType {

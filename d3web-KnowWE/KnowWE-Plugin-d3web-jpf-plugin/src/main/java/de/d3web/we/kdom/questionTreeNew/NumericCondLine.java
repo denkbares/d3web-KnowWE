@@ -37,7 +37,7 @@ import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
-import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 
 public class NumericCondLine extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
 

@@ -36,7 +36,7 @@ import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableColumnHeaderCellContent;
 import de.d3web.we.kdom.table.TableLine;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
-import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 
 public class CoveringTableSection extends AbstractKopicSection implements TableAttributesProvider {
 

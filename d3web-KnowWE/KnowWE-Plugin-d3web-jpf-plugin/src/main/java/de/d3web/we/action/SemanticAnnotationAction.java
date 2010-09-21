@@ -23,6 +23,7 @@ package de.d3web.we.action;
 import java.util.List;
 
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.we.basic.DPSEnvironmentManager;
 import de.d3web.we.basic.IdentifiableInstance;
 import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.DPSEnvironment;
@@ -31,7 +32,6 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
-import de.d3web.we.d3webModule.DPSEnvironmentManager;
 import de.d3web.we.terminology.global.GlobalTerminology;
 import de.d3web.we.terminology.local.LocalTerminologyAccess;
 import de.d3web.we.terminology.term.Term;

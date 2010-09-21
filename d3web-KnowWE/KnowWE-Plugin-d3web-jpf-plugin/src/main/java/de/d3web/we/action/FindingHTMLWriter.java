@@ -46,8 +46,8 @@ import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEAttributes;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**

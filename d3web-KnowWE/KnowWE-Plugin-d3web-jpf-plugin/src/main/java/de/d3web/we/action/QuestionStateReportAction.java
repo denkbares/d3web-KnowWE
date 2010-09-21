@@ -25,6 +25,7 @@ import java.util.List;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.session.Value;
+import de.d3web.we.basic.DPSEnvironmentManager;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -33,7 +34,6 @@ import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
-import de.d3web.we.d3webModule.DPSEnvironmentManager;
 
 public class QuestionStateReportAction extends DeprecatedAbstractKnowWEAction {
 

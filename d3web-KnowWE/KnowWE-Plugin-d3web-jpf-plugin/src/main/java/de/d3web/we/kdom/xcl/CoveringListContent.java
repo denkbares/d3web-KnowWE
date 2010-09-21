@@ -40,8 +40,7 @@ import de.d3web.we.kdom.condition.NegatedFinding;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.xml.XMLContent;
-import de.d3web.we.terminology.D3webSubtreeHandler;
-import de.d3web.we.utils.D3webUtils;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelationType;
@@ -176,7 +175,7 @@ public class CoveringListContent extends XMLContent {
 
 			for (Section rel : currentRels) {
 				double weight = this.getWeight(rel);
-				XCLRelationType relationType = D3webUtils.getRelationType(rel);
+				XCLRelationType relationType = getRelationType(rel);
 				// Get the Conditions
 				Condition cond = FindingToConditionBuilder.analyseAnyRelation(article, rel, kbm);
 
@@ -258,4 +257,37 @@ public class CoveringListContent extends XMLContent {
 
 	}
 
+	/**
+	 * Gets the RelationType from Relation
+	 * 
+	 * @param rel
+	 * @return
+	 */
+	public static XCLRelationType getRelationType(Section<XCLRelationWeight> rel) {
+
+		if (rel.findChildOfType(XCLRelationWeight.class) != null) {
+			Section<? extends XCLRelationWeight> relWeight = rel.findChildOfType(XCLRelationWeight.class);
+			String weightString = relWeight.getOriginalText();
+			return getXCLRealtionTypeForString(weightString);
+		}
+
+		return XCLRelationType.explains;
+	}
+
+	public static XCLRelationType getXCLRealtionTypeForString(String weightString) {
+		if (weightString.contains("--")) {
+			return XCLRelationType.contradicted;
+		}
+		else if (weightString.contains("!")) {
+			return XCLRelationType.requires;
+		}
+		else if (weightString.contains("++")) {
+			return XCLRelationType.sufficiently;
+		}
+		else {
+			return XCLRelationType.explains;
+		}
+	}
+
 }
+

@@ -25,12 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.dialog.Dialog;
 import de.d3web.we.core.dialog.DialogControl;
-import de.d3web.we.d3webModule.D3webModule;
 
 public class KSSViewHistoryAction extends DeprecatedAbstractKnowWEAction {
 

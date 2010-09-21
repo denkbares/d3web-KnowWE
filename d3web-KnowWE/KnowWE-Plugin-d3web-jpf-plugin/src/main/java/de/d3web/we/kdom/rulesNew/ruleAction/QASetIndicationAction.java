@@ -42,7 +42,7 @@ import de.d3web.we.kdom.report.message.NoSuchObjectError;
 import de.d3web.we.kdom.report.message.RelationCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
-import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.terminology.TerminologyHandler;
 import de.d3web.we.utils.KnowWEUtils;
 

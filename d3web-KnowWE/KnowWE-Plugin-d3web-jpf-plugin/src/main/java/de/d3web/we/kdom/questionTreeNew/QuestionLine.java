@@ -30,7 +30,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
-import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -61,7 +61,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.StringEnumChecker;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
-import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.SplitUtility;
 
