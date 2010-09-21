@@ -18,34 +18,9 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.taghandler;
+package de.d3web.we.kdom.search;
 
-import java.util.Map;
-
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.visitor.RenderKDOMVisitor;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
-
-public class KDOMRenderer extends AbstractTagHandler {
-
-	public KDOMRenderer() {
-		super("renderKDOM");
-	}
-
-	@Override
-	public String getDescription(KnowWEUserContext user) {
-		return KnowWEEnvironment.getInstance().getKwikiBundle(user).getString(
-				"KnowWE.KDOMRenderer.description");
-	}
-
-	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
-		RenderKDOMVisitor v = new RenderKDOMVisitor();
-		v.visit(KnowWEEnvironment.getInstance().getArticle(web, topic)
-				.getSection());
-		String data = "<div><h3>KDOM:</h3><tt>"
-				+ v.getRenderedKDOM() + "</tt></div>";
-		return data;
-	}
-
+public enum SearchOption {
+	CASE_INSENSITIVE,
+	FUZZY
 }
