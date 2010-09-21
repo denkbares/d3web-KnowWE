@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-d3web-MarkupSet" version="0.0.1">
+	
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+	</requires>
+	
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+
+	
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="SolutionsDashTree">
+		<parameter id="class"
+			value="de.d3web.we.kdom.solutionTree.SolutionTreeMarkup" />
+		<parameter id="name" value="SolutionTreeMarkup" />
+		<parameter id="description" value="KnowWEObjectType SolutionTreeMarkup" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4.5" />
+		<parameter id="scope" value="root" />
+		<parameter id="script" value="KnowWE-plugin-d3web.js" />
+	</extension>	
+
+</plugin>
