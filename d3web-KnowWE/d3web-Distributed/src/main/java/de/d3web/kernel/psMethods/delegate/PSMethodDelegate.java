@@ -63,4 +63,10 @@ public class PSMethodDelegate extends PSMethodAdapter {
 		return Facts.mergeError(facts);
 	}
 
+	@Override
+	public boolean hasType(Type type) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
