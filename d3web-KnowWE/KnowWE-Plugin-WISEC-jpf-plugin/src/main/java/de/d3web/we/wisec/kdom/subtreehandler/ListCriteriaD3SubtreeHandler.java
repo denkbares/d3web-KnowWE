@@ -37,7 +37,7 @@ import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableLine;
 import de.d3web.we.logging.Logging;
-import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.wisec.kdom.ListCriteriaRootType;
 import de.d3web.we.wisec.kdom.ListCriteriaType;
 import de.d3web.we.wisec.kdom.WISECTable;

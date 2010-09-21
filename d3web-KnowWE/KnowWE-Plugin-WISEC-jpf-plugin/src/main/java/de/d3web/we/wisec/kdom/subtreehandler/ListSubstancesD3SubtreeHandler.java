@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.we.basic.DistributedRegistrationManager;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.d3webModule.DistributedRegistrationManager;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.decisionTree.QuestionsSection;
@@ -38,7 +38,7 @@ import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableLine;
 import de.d3web.we.logging.Logging;
-import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.wisec.kdom.ListSubstancesRootType;
 import de.d3web.we.wisec.kdom.ListSubstancesType;
 import de.d3web.we.wisec.kdom.WISECTable;
