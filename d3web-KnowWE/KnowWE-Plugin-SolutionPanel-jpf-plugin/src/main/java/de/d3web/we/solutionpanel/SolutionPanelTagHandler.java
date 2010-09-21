@@ -28,9 +28,9 @@ import java.util.ResourceBundle;
 
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.session.Session;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWERessourceLoader;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.taghandler.AbstractTagHandler;
 import de.d3web.we.utils.D3webUtils;

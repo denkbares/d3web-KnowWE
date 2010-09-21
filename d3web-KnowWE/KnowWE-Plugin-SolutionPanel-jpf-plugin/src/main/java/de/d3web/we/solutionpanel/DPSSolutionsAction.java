@@ -26,14 +26,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.ResourceBundle;
+import java.util.Map.Entry;
 
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.utilities.ISetMap;
 import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
-import de.d3web.we.action.KnowWERenderUtils;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.InformationType;
 import de.d3web.we.basic.SolutionState;
@@ -42,7 +42,6 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermInfoType;
 import de.d3web.we.utils.KnowWEUtils;
@@ -216,7 +215,7 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 			// sb.append(getAssumptionsLink(user, web, term, assumptionMap));
 
 			StringBuffer inner = new StringBuffer();
-			inner.append(KnowWERenderUtils.getTopicLink(web,
+			inner.append(de.d3web.we.utils.KnowWERenderUtils.getTopicLink(web,
 					(String) term.getInfo(TermInfoType.TERM_NAME),
 					iconURL, "dps", true, true));
 			// inner.append(KnowWERenderUtils.getKopicLinks(web, term, iconURL,

@@ -34,7 +34,7 @@ import java.util.ResourceBundle;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
-import de.d3web.we.action.KnowWERenderUtils;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.basic.IdentifiableInstance;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.InformationNamespaceComparator;
@@ -44,20 +44,20 @@ import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
-import de.d3web.we.d3webModule.D3webModule;
-import de.d3web.we.d3webModule.ProblemSolverType;
 import de.d3web.we.terminology.local.LocalTerminologyAccess;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermInfoType;
+import de.d3web.we.utils.KnowWERenderUtils;
+import de.d3web.we.utils.ProblemSolverType;
 
 public class SolutionLogAction extends DeprecatedAbstractKnowWEAction {
 
-	private String htmlHeader;
-	private SimpleDateFormat dateFormat;
+	private final String htmlHeader;
+	private final SimpleDateFormat dateFormat;
 	// private String link =
 	// "KnowWE.jsp?renderer=KWiki_dialog&action=KWiki_requestDialog&KWikisessionid=%id%&KWikiUser=%user%&KWikiWeb=%web%";
-	private String jumplink = "KnowWE.jsp?renderer=KWiki_dialog&action=RequestDialogRenderer&KWikiJumpId=%jumpId%&KWikisessionid=%id%&KWikiUser=%user%&KWikiWeb=%web%";
-	private String iconURL;
+	private final String jumplink = "KnowWE.jsp?renderer=KWiki_dialog&action=RequestDialogRenderer&KWikiJumpId=%jumpId%&KWikisessionid=%id%&KWikiUser=%user%&KWikiWeb=%web%";
+	private final String iconURL;
 
 	public SolutionLogAction() {
 		htmlHeader = "<meta content='text/html; charset=iso-8859-1' http-equiv='content-type'><head><script src='../javascript/d3dialog.js'></script><script src='../javascript/dt.js'></script><link rel='stylesheet' type='text/css' href='../css/d3dialog.css' ></link><link rel='stylesheet' type='text/css' href='../css/dt.css' ><link rel='stylesheet' type='text/css' href='../css/KnowWE.css'></link></head>";
