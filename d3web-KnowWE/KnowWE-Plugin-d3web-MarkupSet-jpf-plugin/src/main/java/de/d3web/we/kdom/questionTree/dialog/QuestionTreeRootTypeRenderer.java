@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.questionTreeNew.dialog;
+package de.d3web.we.kdom.questionTree.dialog;
 
 import java.util.List;
 

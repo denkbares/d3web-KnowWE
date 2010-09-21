@@ -18,16 +18,30 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.questionTreeNew;
+package de.d3web.we.kdom.questionTree;
 
-import de.d3web.we.kdom.dashTree.DashTree;
-import de.d3web.we.kdom.rendering.EditSectionRenderer;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.dashTree.DashTreeUtils;
+import de.d3web.we.object.AnswerDefinition;
+import de.d3web.we.object.QuestionDefinition;
 
-public class QuestionDashTree extends DashTree {
+public class QuestionTreeAnswerDefinition extends AnswerDefinition {
 
-	public QuestionDashTree() {
-		super();
-		this.setCustomRenderer(new EditSectionRenderer());
-		this.replaceDashTreeElementContentType(this, new QuestionTreeElementContent());
+	@Override
+	public int getPosition(Section<? extends AnswerDefinition> s) {
+		return DashTreeUtils.getPositionInFatherDashSubtree(s);
 	}
+
+	@Override
+	public Section<? extends QuestionDefinition> getQuestionSection(Section<? extends AnswerDefinition> s) {
+		return DashTreeUtils.getFatherDashTreeElementContent(s).findSuccessor(
+				QuestionDefinition.class);
+	}
+
+	@Override
+	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+		return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
+	}
+
 }

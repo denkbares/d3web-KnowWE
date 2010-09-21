@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.questionTreeNew;
+package de.d3web.we.kdom.questionTree;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,7 +40,7 @@ import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
-import de.d3web.we.kdom.questionTreeNew.indication.IndicationHandler;
+import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;

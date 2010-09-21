@@ -18,30 +18,21 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.questionTreeNew;
+package de.d3web.we.kdom.questionTree;
 
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.dashTree.DashTreeUtils;
-import de.d3web.we.object.AnswerDefinition;
-import de.d3web.we.object.QuestionDefinition;
+import de.d3web.we.kdom.report.KDOMError;
 
-public class QuestionTreeAnswerDefinition extends AnswerDefinition {
+public class InvalidNumberError extends KDOMError {
 
-	@Override
-	public int getPosition(Section<? extends AnswerDefinition> s) {
-		return DashTreeUtils.getPositionInFatherDashSubtree(s);
+	private final String v;
+
+	public InvalidNumberError(String value) {
+		this.v = value;
 	}
 
 	@Override
-	public Section<? extends QuestionDefinition> getQuestionSection(Section<? extends AnswerDefinition> s) {
-		return DashTreeUtils.getFatherDashTreeElementContent(s).findSuccessor(
-				QuestionDefinition.class);
-	}
-
-	@Override
-	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
-		return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
+	public String getVerbalization() {
+		return "Not a valid number: " + v;
 	}
 
 }

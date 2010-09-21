@@ -18,56 +18,33 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.questionTreeNew.dialog;
-
-import java.util.List;
+package de.d3web.we.kdom.questionTree.dialog;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.basic.PlainText;
-import de.d3web.we.kdom.questionTreeNew.QuestionTreeAnswerDefinition;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.kdom.questionTree.AnswerLine;
 import de.d3web.we.kdom.rendering.CustomRenderer;
 import de.d3web.we.kdom.rendering.RenderingMode;
-import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
- * QuestionTreeAnswerDefRenderer. Renders the
- * {@link QuestionTreeAnswerDefinition } in the collapsible question tree view.
- * Used to remove the quotation marks that surround some answers.
+ * QuestionTypeDeclarationRenderer Removes the icons from the default question
+ * tree renderer. used within the collapsible view of the question tree in order
+ * to simplify the view and clean the {@link AnswerLine} from unnecessary icons.
  * 
  * @author smark
- * @since 2010/03/28
+ * @since 2010/03/09
  */
-public class QuestionTreeAnswerDefRenderer extends CustomRenderer {
+public class QuestionTypeDeclarationRenderer extends CustomRenderer {
 
 	@Override
 	public boolean doesApply(String user, String topic, RenderingMode type) {
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void render(KnowWEArticle article, Section sec,
 			KnowWEUserContext user, StringBuilder string) {
-
-		string.append(KnowWEUtils.maskHTML("<span class=\"pointer\""));
-		string.append(" style='").append(FontColorRenderer.COLOR6).append("'");
-		string.append(KnowWEUtils.maskHTML(">"));
-
-		List<Section<? extends KnowWEObjectType>> children = sec.getChildren();
-
-		for (Section<? extends KnowWEObjectType> section : children) {
-			if (section.getObjectType() instanceof PlainText) {
-				String cleaned = section.getOriginalText();
-				if (cleaned.startsWith("\"")) {
-					cleaned = cleaned.replaceAll("\"", "");
-				}
-				string.append(cleaned);
-			}
-		}
-		string.append(KnowWEUtils.maskHTML("</span>"));
+		// not needed
 	}
 }

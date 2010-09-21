@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.questionTreeNew.dialog;
+package de.d3web.we.kdom.questionTree.dialog;
 
 import java.util.List;
 import java.util.Set;
@@ -39,7 +39,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.dashTree.DashSubtree;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.questionTreeNew.QuestionTreeElementContent;
+import de.d3web.we.kdom.questionTree.QuestionTreeElementContent;
 import de.d3web.we.kdom.rendering.CustomRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -50,17 +50,15 @@ import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
- * This renderer renders a collapsible/expandable decision tree. This tree is
- * used to guide the user when answering the questions of the decision tree.
- * This renderer only renders the answers of the decision tree. If the question
- * should be present, please use the {@link QuestionDashTreeRenderer} which
- * provides also the questions.
+ * QuestionDashTreeRenderer. This renderer renders a collapsible/expandable
+ * decision tree. This tree is used to guide the user when answering the
+ * questions of the decision tree.
  * 
  * @author smark
- * @since 2010/03/25
+ * @since 2010/03/09
  * @see KnowWEDomRenderer
  */
-public class QuestionDashTreeOnlyAnswersRenderer extends CustomRenderer {
+public class QuestionDashTreeRenderer extends CustomRenderer {
 
 	@Override
 	public boolean doesApply(String user, String topic, RenderingMode type) {
@@ -96,29 +94,30 @@ public class QuestionDashTreeOnlyAnswersRenderer extends CustomRenderer {
 
 		string.append(KnowWEUtils.maskHTML("<ul>"));
 
+		String c = (dte) ? "head" : "qline";
+
 		for (Section<? extends KnowWEObjectType> s : section.getChildren()) {
 
 			if (s.getObjectType() instanceof PlainText) continue;
 
-			if (s.getObjectType() instanceof DashSubtree) {
-				// string.append(KnowWEUtils.maskHTML("<li class=\"qline pointer\"><p>"));
-				// //body class
+			if ((s.getObjectType() instanceof DashTreeElement
+					|| s.getChildren().size() <= 1) && dte) {
 
-				List<Section<DashSubtree>> children = s.findChildrenOfType(DashSubtree.class);
-				if (children.size() < 1) {
-					string.append(KnowWEUtils.maskHTML("<li class=\"qanswer\"><p>"));
+				string.append(KnowWEUtils.maskHTML("<li class=\"" + c + "\">")); // head
+																					// class
+				c = "";
 
-					renderLine(article, s.findChildOfType(DashTreeElement.class), user, string);
-					// DelegateRenderer.getInstance().render(article,
-					// s.findChildOfType( DashTreeElement.class ), user,
-					// string);
-				}
-				else {
-					string.append(KnowWEUtils.maskHTML("<li class=\"qline\"><p>"));
-				}
-				parseSubtreeChildren(article, children, user, string);
-				string.append(KnowWEUtils.maskHTML("</p></li>"));
+				renderLine(article, s, user, string);
 			}
+			else if (s.getObjectType() instanceof DashSubtree) {
+				string.append(KnowWEUtils.maskHTML("<li class=\"qline\">")); // body
+																				// class
+
+				renderLine(article, s.findChildOfType(DashTreeElement.class), user, string);
+				renderSubtreeChildren(article, s.findChildrenOfType(DashSubtree.class), user,
+						string);
+			}
+			string.append(KnowWEUtils.maskHTML("</li>"));
 		}
 		string.append(KnowWEUtils.maskHTML("</ul>"));
 	}
@@ -131,7 +130,7 @@ public class QuestionDashTreeOnlyAnswersRenderer extends CustomRenderer {
 	 * @param string
 	 * @param li
 	 */
-	private void parseSubtreeChildren(KnowWEArticle article,
+	private void renderSubtreeChildren(KnowWEArticle article,
 			List<Section<DashSubtree>> children,
 			KnowWEUserContext user,
 			StringBuilder string) {
@@ -141,9 +140,8 @@ public class QuestionDashTreeOnlyAnswersRenderer extends CustomRenderer {
 		for (Section<? extends KnowWEObjectType> s : children) {
 
 			if (s.getChildren().size() > 1) {
-				string.append(KnowWEUtils.maskHTML("<li class=\"\"><p>")); // head
-																			// class
-
+				string.append(KnowWEUtils.maskHTML("<li class=\"\">")); // head
+																		// class
 				renderLine(article, s.findChildOfType(DashTreeElement.class), user, string);
 				// DelegateRenderer.getInstance().render(article,
 				// s.findChildOfType( DashTreeElement.class ), user, string);
@@ -151,16 +149,15 @@ public class QuestionDashTreeOnlyAnswersRenderer extends CustomRenderer {
 			}
 			else {
 				if (!(s.getObjectType() instanceof PlainText)) {
-					string.append(KnowWEUtils.maskHTML("<li class=\"\"><p>")); // body
-																				// class
+					string.append(KnowWEUtils.maskHTML("<li class=\"\">")); // body
+																			// class
 					renderLine(article, s.findChildOfType(DashTreeElement.class), user, string);
 					// DelegateRenderer.getInstance().render(article,
 					// s.findChildOfType( DashTreeElement.class ), user,
 					// string);
 				}
 			}
-			// }
-			string.append(KnowWEUtils.maskHTML("</p></li>"));
+			string.append(KnowWEUtils.maskHTML("</li>"));
 		}
 		string.append(KnowWEUtils.maskHTML("</ul>"));
 	}

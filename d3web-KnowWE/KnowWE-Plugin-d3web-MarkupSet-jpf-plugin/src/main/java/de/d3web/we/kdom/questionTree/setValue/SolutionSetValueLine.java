@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- * Computer Science VI, University of Wuerzburg
+ * Copyright (C) 2010 University Wuerzburg, Computer Science VI
  * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -17,28 +16,25 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-
-package de.d3web.we.kdom.questionTreeNew.setValue;
+package de.d3web.we.kdom.questionTree.setValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import de.d3web.abstraction.ActionSetValue;
-import de.d3web.abstraction.formula.FormulaExpression;
-import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.RuleFactory;
+import de.d3web.scoring.Score;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
-import de.d3web.we.kdom.questionTreeNew.QuestionDashTreeUtils;
+import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
@@ -48,50 +44,69 @@ import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.object.QuestionReference;
+import de.d3web.we.object.SolutionReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
+/**
+ * 
+ * @author Jochen
+ * @created 21.07.2010
+ */
+public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
-	private static final String SETVALUE_ARGUMENT = "SetValueNumArgument";
+	private static final String SETVALUE_ARGUMENT = "SolutionScore";
 	private static final String OPEN = "(";
 	private static final String CLOSE = ")";
 
-	public QuestionSetValueNumLine() {
-		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
-
-			@Override
-			protected boolean condition(String text, Section<?> father) {
-				int open = SplitUtility.indexOfUnquoted(text, (OPEN));
-				if (open == -1) return false;
-
-				int close = SplitUtility.findIndexOfClosingBracket(text, open, OPEN.charAt(0),
-						CLOSE.charAt(0));
-
-				if (close == -1) return false;
-
-				String content = text.substring(open + 1, close).trim();
-
-				try {
-					Double.parseDouble(content);
-					return true;
-				}
-				catch (NumberFormatException e) {
-
-				}
-
-				return false;
-
-			}
-		};
-
+	@Override
+	protected void init() {
+		this.sectionFinder = new SolutionSetValueFinder();
 		AnonymousType argumentType = createArgumentType();
 		this.childrenTypes.add(argumentType);
 		this.childrenTypes.add(createObjectRefTypeBefore(argumentType));
 
+	}
+
+	class SolutionSetValueFinder extends ConditionalSectionFinder {
+
+		public SolutionSetValueFinder() {
+			super(new AllTextSectionFinder());
+		}
+
+		@Override
+		protected boolean condition(String text, Section<?> father) {
+			int open = SplitUtility.indexOfUnquoted(text, (OPEN));
+			if (open == -1) return false;
+
+			int close = SplitUtility.findIndexOfClosingBracket(text, open, OPEN.charAt(0),
+					CLOSE.charAt(0));
+
+			if (close == -1) return false;
+
+			String content = text.substring(open + 1, close).trim();
+
+			List<String> scores = D3webUtils.getPossibleScores();
+			for (String string : scores) {
+				if (content.equals(string)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+	}
+
+	private KnowWEObjectType createObjectRefTypeBefore(
+			KnowWEObjectType typeAfter) {
+		SolutionReference sid = new SolutionReference();
+		sid.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(typeAfter));
+		sid.addSubtreeHandler(new CreateScoringRuleHandler());
+		return sid;
 	}
 
 	private AnonymousType createArgumentType() {
@@ -113,18 +128,10 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 		return typeDef;
 	}
 
-	private KnowWEObjectType createObjectRefTypeBefore(
-			KnowWEObjectType typeAfter) {
-		QuestionReference qid = new QuestionReference();
-		qid.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(typeAfter));
-		qid.addSubtreeHandler(new CreateSetValueNumRuleHandler());
-		return qid;
-	}
-
-	static class ArgumentRenderer extends KnowWEDomRenderer<QuestionReference> {
+	static class ArgumentRenderer extends KnowWEDomRenderer<AnonymousType> {
 
 		@Override
-		public void render(KnowWEArticle article, Section<QuestionReference> sec,
+		public void render(KnowWEArticle article, Section<AnonymousType> sec,
 				KnowWEUserContext user, StringBuilder string) {
 			String embracedContent = sec.getOriginalText().substring(1,
 					sec.getOriginalText().length() - 1);
@@ -138,55 +145,51 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	static class CreateSetValueNumRuleHandler extends D3webSubtreeHandler<QuestionReference> {
+	static class CreateScoringRuleHandler extends D3webSubtreeHandler<SolutionReference> {
 
 		@Override
-		public boolean needsToCreate(KnowWEArticle article, Section<QuestionReference> s) {
+		public boolean needsToCreate(KnowWEArticle article, Section<SolutionReference> s) {
 			return super.needsToCreate(article, s)
 					|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
 
 		@Override
-		public boolean needsToDestroy(KnowWEArticle article, Section<QuestionReference> s) {
+		public boolean needsToDestroy(KnowWEArticle article, Section<SolutionReference> s) {
 			return super.needsToDestroy(article, s)
 					|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<QuestionReference> s) {
+		public void destroy(KnowWEArticle article, Section<SolutionReference> s) {
 			Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, s,
 					SETVALUE_ARGUMENT);
 			if (kbr != null) kbr.remove();
 		}
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionReference> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<SolutionReference> s) {
 
-			Question q = s.get().getTermObject(article, s);
+			Solution sol = s.get().getTermObject(s.getArticle(), s);
 
 			String argument = getArgumentString(s);
 
-			if (q != null) {
-				String newRuleID = getKBM(article).createRuleID();
+			if (sol != null) {
+				Score score = D3webUtils.getScoreForString(argument);
 
-				Condition cond = QuestionDashTreeUtils.createCondition(article,
-								DashTreeUtils.getAncestorDashTreeElements(s));
+				if (score != null) {
+					String newRuleID = getKBM(article).createRuleID();
 
-				Double d = Double.parseDouble(argument);
-				ActionSetValue action = new ActionSetValue();
-				action.setQuestion(q);
-				FormulaExpression formulaExpression = new FormulaExpression(q,
-						new FormulaNumber(d));
-				action.setValue(formulaExpression);
+					Condition cond = QuestionDashTreeUtils.createCondition(article,
+							DashTreeUtils.getAncestorDashTreeElements(s));
 
-				Rule r = RuleFactory.createRule(newRuleID, action, cond, null, null);
-				if (r != null) {
-					KnowWEUtils.storeSectionInfo(article, s, SETVALUE_ARGUMENT, r);
-					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
-									r.getClass() + " : "
-											+ r.getId()));
+					Rule r = RuleFactory.createHeuristicPSRule(newRuleID, sol, score, cond);
+					if (r != null) {
+						KnowWEUtils.storeSectionInfo(article, s, SETVALUE_ARGUMENT, r);
+						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+								r.getClass()
+										+ " : " + r.getId()));
+					}
 				}
-
 			}
 
 			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
@@ -194,7 +197,7 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 
 		}
 
-		private static String getArgumentString(Section<QuestionReference> s) {
+		private String getArgumentString(Section<SolutionReference> s) {
 			String argument = null;
 			List<Section<AnonymousType>> children = new ArrayList<Section<AnonymousType>>();
 			s.getFather().findSuccessorsOfType(AnonymousType.class, children);

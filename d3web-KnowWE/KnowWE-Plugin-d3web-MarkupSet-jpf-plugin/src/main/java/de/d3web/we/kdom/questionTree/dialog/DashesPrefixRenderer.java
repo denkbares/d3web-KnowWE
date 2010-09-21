@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
  * 
  * This is free software; you can redistribute it and/or modify it under the
@@ -17,27 +17,22 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.kdom.questionTreeNew.dialog;
 
-import java.util.List;
+package de.d3web.we.kdom.questionTree.dialog;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.CustomRenderer;
 import de.d3web.we.kdom.rendering.RenderingMode;
-import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
- * QuestionLineRenderer. Renders the {@link QuestionLine } in the collapsible
- * question tree view.
+ * DashesPrefixRenderer Renders the Dashes of in the decision tree dialog view.
  * 
  * @author smark
- * @since 2010/05/28
+ * @since 2010/03/09
  */
-public class QuestionLineRenderer extends CustomRenderer {
+public class DashesPrefixRenderer extends CustomRenderer {
 
 	@Override
 	public boolean doesApply(String user, String topic, RenderingMode type) {
@@ -47,19 +42,6 @@ public class QuestionLineRenderer extends CustomRenderer {
 	@Override
 	public void render(KnowWEArticle article, Section sec,
 			KnowWEUserContext user, StringBuilder string) {
-
-		string.append(KnowWEUtils.maskHTML("<span"));
-		string.append(" style='").append(FontColorRenderer.COLOR3).append("'");
-		string.append(KnowWEUtils.maskHTML(">"));
-
-		List<Section<? extends KnowWEObjectType>> children = sec.getChildren();
-
-		for (Section<? extends KnowWEObjectType> section : children) {
-			String sectionName = section.getObjectType().getName();
-			if (sectionName.equals("QuestionDefQTree")) {
-				string.append(section.getOriginalText());
-			}
-		}
-		string.append(KnowWEUtils.maskHTML("</span>"));
+		// do nothing since the dashes should not be visible in the view
 	}
 }

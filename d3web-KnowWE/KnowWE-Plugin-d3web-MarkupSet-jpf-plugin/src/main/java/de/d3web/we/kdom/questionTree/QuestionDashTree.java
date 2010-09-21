@@ -18,16 +18,16 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.questionTreeNew;
+package de.d3web.we.kdom.questionTree;
 
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.we.kdom.dashTree.DashTree;
+import de.d3web.we.kdom.rendering.EditSectionRenderer;
 
-public class QuestionTree extends DefaultMarkupType {
+public class QuestionDashTree extends DashTree {
 
-	public QuestionTree(DefaultMarkup markup) {
-		super(markup);
-
+	public QuestionDashTree() {
+		super();
+		this.setCustomRenderer(new EditSectionRenderer());
+		this.replaceDashTreeElementContentType(this, new QuestionTreeElementContent());
 	}
-
 }

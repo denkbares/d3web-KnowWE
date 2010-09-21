@@ -18,14 +18,14 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.questionTreeNew;
+package de.d3web.we.kdom.questionTree;
 
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
-import de.d3web.we.kdom.questionTreeNew.indication.IndicationLine;
-import de.d3web.we.kdom.questionTreeNew.indication.QuestionRefLine;
-import de.d3web.we.kdom.questionTreeNew.setValue.QuestionSetValueLine;
-import de.d3web.we.kdom.questionTreeNew.setValue.QuestionSetValueNumLine;
-import de.d3web.we.kdom.questionTreeNew.setValue.SolutionSetValueLine;
+import de.d3web.we.kdom.questionTree.indication.IndicationLine;
+import de.d3web.we.kdom.questionTree.indication.QuestionRefLine;
+import de.d3web.we.kdom.questionTree.setValue.QuestionSetValueLine;
+import de.d3web.we.kdom.questionTree.setValue.QuestionSetValueNumLine;
+import de.d3web.we.kdom.questionTree.setValue.SolutionSetValueLine;
 
 public class QuestionTreeElementContent extends DashTreeElementContent {
 

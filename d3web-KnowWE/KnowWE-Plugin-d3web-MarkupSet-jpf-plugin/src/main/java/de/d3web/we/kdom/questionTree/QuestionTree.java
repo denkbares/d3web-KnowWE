@@ -18,31 +18,16 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.questionTreeNew;
+package de.d3web.we.kdom.questionTree;
 
-import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
-import de.d3web.we.kdom.questionTreeNew.dialog.QuestionTreeRootTypeDefaultRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 
-public class QuestionTreeRootType extends QuestionTree {
+public class QuestionTree extends DefaultMarkupType {
 
-	private static DefaultMarkup m = null;
+	public QuestionTree(DefaultMarkup markup) {
+		super(markup);
 
-	static {
-		m = new DefaultMarkup("QuestionTree");
-		m.addContentType(new QuestionDashTree());
-		m.addAnnotation("dialog", false);
-		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_ENAME, false);
-	}
-
-	public QuestionTreeRootType() {
-		super(m);
-	}
-
-	@Override
-	protected KnowWEDomRenderer<?> getDefaultRenderer() {
-		return new QuestionTreeRootTypeDefaultRenderer();
 	}
 
 }

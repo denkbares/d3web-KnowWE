@@ -18,21 +18,31 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.questionTreeNew;
+package de.d3web.we.kdom.questionTree;
 
-import de.d3web.we.kdom.report.KDOMError;
+import de.d3web.we.core.packaging.KnowWEPackageManager;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
+import de.d3web.we.kdom.questionTree.dialog.QuestionTreeRootTypeDefaultRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 
-public class InvalidNumberError extends KDOMError {
+public class QuestionTreeRootType extends QuestionTree {
 
-	private final String v;
+	private static DefaultMarkup m = null;
 
-	public InvalidNumberError(String value) {
-		this.v = value;
+	static {
+		m = new DefaultMarkup("QuestionTree");
+		m.addContentType(new QuestionDashTree());
+		m.addAnnotation("dialog", false);
+		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_ENAME, false);
+	}
+
+	public QuestionTreeRootType() {
+		super(m);
 	}
 
 	@Override
-	public String getVerbalization() {
-		return "Not a valid number: " + v;
+	protected KnowWEDomRenderer<?> getDefaultRenderer() {
+		return new QuestionTreeRootTypeDefaultRenderer();
 	}
 
 }
