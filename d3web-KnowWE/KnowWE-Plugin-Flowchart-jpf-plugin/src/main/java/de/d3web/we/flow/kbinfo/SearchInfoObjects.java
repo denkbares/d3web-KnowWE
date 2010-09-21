@@ -33,12 +33,12 @@ import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
+import de.d3web.we.basic.DPSEnvironmentManager;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
-import de.d3web.we.d3webModule.DPSEnvironmentManager;
 
 public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
 
