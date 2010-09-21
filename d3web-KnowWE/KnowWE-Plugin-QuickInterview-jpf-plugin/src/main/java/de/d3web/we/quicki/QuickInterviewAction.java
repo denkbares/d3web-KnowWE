@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import de.d3web.core.session.Session;
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -35,7 +36,6 @@ import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class QuickInterviewAction extends AbstractAction {
