@@ -24,11 +24,11 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
-import de.d3web.we.kdom.objects.AnswerDefinition;
-import de.d3web.we.kdom.objects.QuestionDefinition;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.EmbracedContentFinder;
 import de.d3web.we.kdom.sectionFinder.UnquotedExpressionFinder;
+import de.d3web.we.object.AnswerDefinition;
+import de.d3web.we.object.QuestionDefinition;
 
 /**
  * This type is a child-type of QuestionLine and allows for the definition of

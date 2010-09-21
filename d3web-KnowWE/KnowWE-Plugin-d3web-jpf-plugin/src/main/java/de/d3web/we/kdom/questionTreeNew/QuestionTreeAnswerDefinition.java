@@ -23,8 +23,8 @@ package de.d3web.we.kdom.questionTreeNew;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
-import de.d3web.we.kdom.objects.AnswerDefinition;
-import de.d3web.we.kdom.objects.QuestionDefinition;
+import de.d3web.we.object.AnswerDefinition;
+import de.d3web.we.object.QuestionDefinition;
 
 public class QuestionTreeAnswerDefinition extends AnswerDefinition {
 

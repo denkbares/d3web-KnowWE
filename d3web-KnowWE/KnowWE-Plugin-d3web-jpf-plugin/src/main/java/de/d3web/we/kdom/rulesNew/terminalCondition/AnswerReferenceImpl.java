@@ -21,9 +21,9 @@
 package de.d3web.we.kdom.rulesNew.terminalCondition;
 
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.AnswerReference;
-import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.object.AnswerReference;
+import de.d3web.we.object.QuestionReference;
 
 public class AnswerReferenceImpl extends AnswerReference {
 

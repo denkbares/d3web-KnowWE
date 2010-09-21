@@ -19,6 +19,7 @@
 package de.d3web.we.kdom.objects;
 
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.d3web.we.object.D3webTermDefinition;
 
 /**
  * KnowWEObjectType representing text containing information

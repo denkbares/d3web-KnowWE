@@ -22,11 +22,11 @@ package de.d3web.we.kdom.questionTreeNew.indication;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
-import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
+import de.d3web.we.object.QuestionReference;
 
 public class QuestionRefLine extends DefaultAbstractKnowWEObjectType {
 

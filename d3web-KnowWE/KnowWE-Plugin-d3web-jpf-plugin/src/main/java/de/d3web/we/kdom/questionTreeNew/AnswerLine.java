@@ -31,8 +31,6 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
-import de.d3web.we.kdom.objects.AnswerDefinition;
-import de.d3web.we.kdom.objects.QuestionDefinition;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
@@ -42,6 +40,8 @@ import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumFinder;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.object.AnswerDefinition;
+import de.d3web.we.object.QuestionDefinition;
 
 /**
  * Answerline of the questionTree; a dashTreeElement is an AnswerLine if its

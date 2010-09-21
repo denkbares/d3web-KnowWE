@@ -41,9 +41,9 @@ import de.d3web.we.kdom.dashTree.DashSubtree;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.KnowWETerm;
-import de.d3web.we.kdom.objects.QASetDefinition;
-import de.d3web.we.kdom.objects.QuestionDefinition;
 import de.d3web.we.kdom.objects.TermReference;
+import de.d3web.we.object.QASetDefinition;
+import de.d3web.we.object.QuestionDefinition;
 
 public class QuestionDashTreeUtils {
 

@@ -29,8 +29,8 @@ import de.d3web.indication.ActionInstantIndication;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.rulesNew.ruleAction.ContraIndicationAction.QuestionReferenceInBrackets;
+import de.d3web.we.object.QuestionReference;
 
 /**
  * 
