@@ -28,9 +28,9 @@ import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
+import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
-import de.d3web.we.d3webModule.D3webModule;
 
 /**
  * @author Florian Ziegler
