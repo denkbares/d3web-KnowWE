@@ -25,7 +25,7 @@ import java.util.List;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rulesNew.ruleAction.SetQuestionValue;
+import de.d3web.we.kdom.WordSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -44,7 +44,7 @@ public class IndicationRuleAction extends DefaultAbstractKnowWEObjectType {
 		// this.childrenTypes.add(new QuestionIndication());
 		// to find single questionnaires
 		QuestionIndication qI = new QuestionIndication();
-		qI.setSectionFinder(new SetQuestionValue().new WordSectionFinder());
+		qI.setSectionFinder(new WordSectionFinder());
 		this.childrenTypes.add(qI);
 	}
 

@@ -17,7 +17,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.kdom.rulesNew.ruleAction;
+package de.d3web.we.kdom.condition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +30,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.kopic.rules.ruleActionLine.D3webRuleAction;
 import de.d3web.we.kdom.kopic.rules.ruleActionLine.Equals;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
@@ -77,10 +78,7 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 				possibleScorePoints.toArray(new String[possibleScorePoints.size()])));
 	}
 
-	@Override
-	public void init() {
 
-	}
 
 	/**
 	 * Searches the pattern diagnosis = Score.

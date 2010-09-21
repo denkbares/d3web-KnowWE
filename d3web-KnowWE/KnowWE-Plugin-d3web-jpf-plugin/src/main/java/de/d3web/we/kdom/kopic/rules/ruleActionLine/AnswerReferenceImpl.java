@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
  * 
  * This is free software; you can redistribute it and/or modify it under the
@@ -18,15 +18,18 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.rulesNew.ruleAction;
+package de.d3web.we.kdom.kopic.rules.ruleActionLine;
 
-import de.d3web.core.inference.PSAction;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.object.AnswerReference;
+import de.d3web.we.object.QuestionReference;
 
-public abstract class D3webRuleAction<T extends KnowWEObjectType> extends DefaultAbstractKnowWEObjectType {
+public class AnswerReferenceImpl extends AnswerReference {
 
-	public abstract PSAction getAction(KnowWEArticle article, Section<T> s);
+	@Override
+	public Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s) {
+		return s.getFather().findSuccessor(QuestionReference.class);
+	}
+
 }

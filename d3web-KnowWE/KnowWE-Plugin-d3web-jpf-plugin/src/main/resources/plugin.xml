@@ -30,20 +30,6 @@
 	</extension>
 	
 	
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
-		id="RulesMarkup">
-		<parameter id="class"
-			value="de.d3web.we.kdom.rulesNew.RulesMarkup" />
-		<parameter id="name" value="RulesBlock" />
-		<parameter id="description" value="KnowWEObjectType RulesMarkup" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5.0" />
-		<parameter id="scope" value="root" />
-		<parameter id="script" value="KnowWE-plugin-d3web.js" />
-		<parameter id="script" value="silveripe.0.2.js" />
-	</extension>
-	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="Kopic">
 		<parameter id="class"
@@ -161,18 +147,7 @@
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
-		id="CoveringListMarkup">
-		<parameter id="class"
-			value="de.d3web.we.kdom.xcl.list.CoveringListMarkup" />
-		<parameter id="name" value="CoveringListMarkup" />
-		<parameter id="description" value="KnowWEObjectType CoveringListMarkup" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="scope" value="root" />
-		<parameter id="script" value="KnowWE-plugin-d3web.js" />
-		<parameter id="script" value="silveripe.0.2.js" />
-	</extension>
+
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="RulesSection">

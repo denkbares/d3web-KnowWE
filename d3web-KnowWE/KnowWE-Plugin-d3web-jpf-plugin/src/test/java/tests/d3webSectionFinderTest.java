@@ -59,9 +59,9 @@ import de.d3web.we.kdom.semanticAnnotation.SimpleAnnotation;
 import de.d3web.we.kdom.xcl.XCLBody;
 import de.d3web.we.kdom.xcl.XCLHead;
 import de.d3web.we.kdom.xcl.XCLRelation;
-import de.d3web.we.kdom.xcl.XCLRelationWeight;
 import de.d3web.we.kdom.xcl.XCLTail;
 import de.d3web.we.kdom.xcl.XCList;
+import de.d3web.we.utils.XCLRelationWeight;
 import dummies.KnowWETestWikiConnector;
 
 /**

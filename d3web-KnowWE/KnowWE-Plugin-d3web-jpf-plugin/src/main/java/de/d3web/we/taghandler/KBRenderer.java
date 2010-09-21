@@ -66,7 +66,6 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.bulletLists.BulletContentType;
 import de.d3web.we.kdom.rule.ConditionActionRule;
 import de.d3web.we.kdom.rules.Rule;
-import de.d3web.we.kdom.rulesNew.RuleContentType;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.xcl.XCLRelation;
@@ -191,7 +190,7 @@ public class KBRenderer extends AbstractTagHandler {
 								de.d3web.core.inference.Rule kbRuleId = (de.d3web.core.inference.Rule) KnowWEUtils
 										.getStoredObject(rule.getWeb(), topic,
 												rule.getID(),
-												RuleContentType.ruleStoreKey);
+												"RULE_STORE_KEY");
 								if (kbRuleId != null)
 									idMap.put(kbRuleId.getId(), rule.getID());
 							}

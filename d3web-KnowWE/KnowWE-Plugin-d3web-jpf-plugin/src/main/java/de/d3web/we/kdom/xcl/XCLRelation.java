@@ -49,6 +49,7 @@ import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.Patterns;
+import de.d3web.we.utils.XCLRelationWeight;
 
 public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 

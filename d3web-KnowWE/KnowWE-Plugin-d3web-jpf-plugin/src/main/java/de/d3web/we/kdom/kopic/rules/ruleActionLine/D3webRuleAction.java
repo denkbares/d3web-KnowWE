@@ -18,36 +18,15 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.rulesNew;
+package de.d3web.we.kdom.kopic.rules.ruleActionLine;
 
-import de.d3web.we.core.packaging.KnowWEPackageManager;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.core.inference.PSAction;
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Section;
 
-/**
- * @author Jochen
- * 
- *         A markup to create a block for text-rules
- * @see RuleContentType
- * 
- * 
- */
-public class RulesMarkup extends DefaultMarkupType {
+public abstract class D3webRuleAction<T extends KnowWEObjectType> extends DefaultAbstractKnowWEObjectType {
 
-	public RulesMarkup(DefaultMarkup markup) {
-		super(markup);
-	}
-
-	private static DefaultMarkup m = null;
-
-	static {
-		m = new DefaultMarkup("Rule");
-		m.addContentType(new RuleContentType());
-		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_ENAME, false);
-	}
-
-	public RulesMarkup() {
-		super(m);
-	}
-
+	public abstract PSAction getAction(KnowWEArticle article, Section<T> s);
 }

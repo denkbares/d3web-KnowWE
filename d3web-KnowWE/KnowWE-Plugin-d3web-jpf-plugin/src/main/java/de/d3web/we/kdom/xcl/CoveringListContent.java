@@ -42,6 +42,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.utils.XCLRelationWeight;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelationType;
 import de.d3web.xcl.inference.PSMethodXCL;

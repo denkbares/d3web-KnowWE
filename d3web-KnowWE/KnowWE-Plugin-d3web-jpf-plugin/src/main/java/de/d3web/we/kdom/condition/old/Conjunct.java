@@ -39,8 +39,8 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.basic.RoundBracedType;
 import de.d3web.we.kdom.condition.CondKnownType;
+import de.d3web.we.kdom.condition.SolutionValueAssignment;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.rulesNew.ruleAction.SolutionValueAssignment;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.utils.KnowWEUtils;
 
