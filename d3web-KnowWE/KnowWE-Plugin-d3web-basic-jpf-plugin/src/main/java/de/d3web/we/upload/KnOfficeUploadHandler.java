@@ -30,7 +30,6 @@ import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.taghandler.ImportKnOfficeHandler;
 import de.d3web.we.taghandler.OwlUploadHandler;
-import de.d3web.we.upload.UploadHandler;
 import de.d3web.we.utils.KopicWriter;
 
 public class KnOfficeUploadHandler implements UploadHandler {
