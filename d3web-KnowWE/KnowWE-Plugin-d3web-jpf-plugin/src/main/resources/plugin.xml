@@ -1,37 +1,31 @@
 <?xml version="1.0" ?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="KnowWE-Plugin-d3web" version="0.0.1">
-	
+
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
 	</requires>
-	
+
 	<runtime>
 		<library id="de.d3web" path="." type="code">
 			<export prefix="*" />
 		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
 	</runtime>
-	
 
-	
-
-	
-
-	
-	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
-		id="Kopic">
-		<parameter id="class"
-			value="de.d3web.we.kdom.kopic.Kopic" />
-		<parameter id="name" value="Kopic" />
-		<parameter id="description" value="KnowWEObjectType Kopic" />
+		id="KnowledgeBase">
+		<parameter id="class" value="de.d3web.we.kdom.kopic.KnowledgeBaseType" />
+		<parameter id="name" value="KnowledgeBase" />
+		<parameter id="description"
+			value="Compiles and provides a master knowledge base." />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="4.1" />
+		<parameter id="priority" value="9" />
 		<parameter id="scope" value="root" />
-		<parameter id="script" value="KnowWE-plugin-d3web.js" />
-		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="SolutionsSection">
 		<parameter id="class"
@@ -44,7 +38,7 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="QuestionnairesSection">
 		<parameter id="class"
@@ -57,7 +51,7 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="QuestionsSection">
 		<parameter id="class"
@@ -70,7 +64,7 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="AttributeTableSection">
 		<parameter id="class"
@@ -83,11 +77,10 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="Annotation">
-		<parameter id="class"
-			value="de.d3web.we.kdom.Annotation.Annotation" />
+		<parameter id="class" value="de.d3web.we.kdom.Annotation.Annotation" />
 		<parameter id="name" value="Annotation" />
 		<parameter id="description" value="KnowWEObjectType Annotation" />
 		<parameter id="version" value="1.0" />
@@ -96,11 +89,10 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="TestsuiteSection">
-		<parameter id="class"
-			value="de.d3web.we.testsuite.TestsuiteSection" />
+		<parameter id="class" value="de.d3web.we.testsuite.TestsuiteSection" />
 		<parameter id="name" value="TestsuiteSection" />
 		<parameter id="description" value="KnowWEObjectType TestsuiteSection" />
 		<parameter id="version" value="1.0" />
@@ -109,7 +101,7 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="CoveringTableSection">
 		<parameter id="class"
@@ -122,11 +114,10 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="CoveringListSection">
-		<parameter id="class"
-			value="de.d3web.we.kdom.xcl.CoveringListSection" />
+		<parameter id="class" value="de.d3web.we.kdom.xcl.CoveringListSection" />
 		<parameter id="name" value="CoveringListSection" />
 		<parameter id="description" value="KnowWEObjectType CoveringListSection" />
 		<parameter id="version" value="1.0" />
@@ -135,13 +126,10 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
 
-	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="RulesSection">
-		<parameter id="class"
-			value="de.d3web.we.kdom.rules.RulesSection" />
+		<parameter id="class" value="de.d3web.we.kdom.rules.RulesSection" />
 		<parameter id="name" value="RulesSection" />
 		<parameter id="description" value="KnowWEObjectType RulesSection" />
 		<parameter id="version" value="1.0" />
@@ -150,7 +138,7 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="BulletScoring">
 		<parameter id="class"
@@ -163,11 +151,10 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="QuestionSheetHandler">
-		<parameter id="class"
-			value="de.d3web.we.taghandler.QuestionSheetHandler" />
+		<parameter id="class" value="de.d3web.we.taghandler.QuestionSheetHandler" />
 		<parameter id="name" value="QuestionSheetHandler" />
 		<parameter id="description" value="TagHandler QuestionSheetHandler" />
 		<parameter id="version" value="1.0" />
@@ -175,11 +162,10 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="KBRenderer">
-		<parameter id="class"
-			value="de.d3web.we.taghandler.KBRenderer" />
+		<parameter id="class" value="de.d3web.we.taghandler.KBRenderer" />
 		<parameter id="name" value="KBRenderer" />
 		<parameter id="description" value="TagHandler KBRenderer" />
 		<parameter id="version" value="1.0" />
@@ -187,11 +173,10 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="ShowAllKBsHandler">
-		<parameter id="class"
-			value="de.d3web.we.taghandler.ShowAllKBsHandler" />
+		<parameter id="class" value="de.d3web.we.taghandler.ShowAllKBsHandler" />
 		<parameter id="name" value="ShowAllKBsHandler.java" />
 		<parameter id="description" value="TagHandler ShowAllKBsHandler" />
 		<parameter id="version" value="1.0" />
@@ -199,7 +184,7 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="QuestionnaireValuesViewHandler">
 		<parameter id="class"
@@ -211,7 +196,7 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="SessionValuesViewHandler">
 		<parameter id="class"
@@ -223,7 +208,7 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="WikiSolutionsTagHandler">
 		<parameter id="class"
@@ -235,11 +220,10 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="DialogPaneTagHandler">
-		<parameter id="class"
-			value="de.d3web.we.taghandler.DialogPaneTagHandler" />
+		<parameter id="class" value="de.d3web.we.taghandler.DialogPaneTagHandler" />
 		<parameter id="name" value="DialogPaneTagHandler" />
 		<parameter id="description" value="TagHandler DialogPaneTagHandler" />
 		<parameter id="version" value="1.0" />
@@ -247,11 +231,10 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="ObjectInfoTagHandler">
-		<parameter id="class"
-			value="de.d3web.we.taghandler.ObjectInfoTagHandler" />
+		<parameter id="class" value="de.d3web.we.taghandler.ObjectInfoTagHandler" />
 		<parameter id="name" value="ObjectInfoTagHandler" />
 		<parameter id="description" value="TagHandler ObjectInfoTagHandler" />
 		<parameter id="version" value="1.0" />
@@ -259,11 +242,10 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="TestsuiteTagHandler">
-		<parameter id="class"
-			value="de.d3web.we.taghandler.TestsuiteTagHandler" />
+		<parameter id="class" value="de.d3web.we.taghandler.TestsuiteTagHandler" />
 		<parameter id="name" value="TestsuiteTagHandler" />
 		<parameter id="description" value="TagHandler TestsuiteTagHandler" />
 		<parameter id="version" value="1.0" />
@@ -271,7 +253,7 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="QuestionnaireValuesViewAction">
 		<parameter id="class"
@@ -281,70 +263,58 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SessionValuesViewAction">
-		<parameter id="class"
-			value="de.d3web.we.action.SessionValuesViewAction" />
+		<parameter id="class" value="de.d3web.we.action.SessionValuesViewAction" />
 		<parameter id="name" value="SessionValuesViewAction" />
 		<parameter id="description" value="Action SessionValuesViewAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GenerateKBAction">
-		<parameter id="class"
-			value="de.d3web.we.action.GenerateKBAction" />
+		<parameter id="class" value="de.d3web.we.action.GenerateKBAction" />
 		<parameter id="name" value="GenerateKBAction" />
 		<parameter id="description" value="Action GenerateKBAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SemanticAnnotationAction">
-		<parameter id="class"
-			value="de.d3web.we.action.SemanticAnnotationAction" />
+		<parameter id="class" value="de.d3web.we.action.SemanticAnnotationAction" />
 		<parameter id="name" value="SemanticAnnotationAction" />
 		<parameter id="description" value="Action SemanticAnnotationAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
-	<!-- temporarily removed
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="GraphMLOwlRenderer">
-		<parameter id="class"
-			value="de.d3web.we.renderer.xml.GraphMLOwlRenderer" />
-		<parameter id="name" value="GraphMLOwlRenderer" />
-		<parameter id="description" value="Action GraphMLOwlRenderer" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-	
-	-->
-	
+
+	<!-- temporarily removed <extension plugin-id="KnowWEExtensionPoints" point-id="Action" 
+		id="GraphMLOwlRenderer"> <parameter id="class" value="de.d3web.we.renderer.xml.GraphMLOwlRenderer" 
+		/> <parameter id="name" value="GraphMLOwlRenderer" /> <parameter id="description" 
+		value="Action GraphMLOwlRenderer" /> <parameter id="version" value="1.0" 
+		/> <parameter id="priority" value="5" /> </extension> -->
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="KnowledgeSummerizeAction">
-		<parameter id="class"
-			value="de.d3web.we.action.KnowledgeSummerizeAction" />
+		<parameter id="class" value="de.d3web.we.action.KnowledgeSummerizeAction" />
 		<parameter id="name" value="KnowledgeSummerizeAction" />
 		<parameter id="description" value="Action KnowledgeSummerizeAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="RequestDialogRenderer">
-		<parameter id="class"
-			value="de.d3web.we.action.RequestDialogRenderer" />
+		<parameter id="class" value="de.d3web.we.action.RequestDialogRenderer" />
 		<parameter id="name" value="RequestDialogRenderer" />
 		<parameter id="description" value="Action RequestDialogRenderer" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ReInitDPSEnvironmentAction">
 		<parameter id="class"
@@ -354,128 +324,116 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="DPSDialogsAction">
-		<parameter id="class"
-			value="de.d3web.we.action.DPSDialogsAction" />
+		<parameter id="class" value="de.d3web.we.action.DPSDialogsAction" />
 		<parameter id="name" value="DPSDialogsAction" />
 		<parameter id="description" value="Action DPSDialogsAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="UserFindingsAction">
-		<parameter id="class"
-			value="de.d3web.we.action.UserFindingsAction" />
+		<parameter id="class" value="de.d3web.we.action.UserFindingsAction" />
 		<parameter id="name" value="UserFindingsAction" />
 		<parameter id="description" value="Action UserFindingsAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="KSSViewHistoryAction">
-		<parameter id="class"
-			value="de.d3web.we.action.KSSViewHistoryAction" />
+		<parameter id="class" value="de.d3web.we.action.KSSViewHistoryAction" />
 		<parameter id="name" value="KSSViewHistoryAction" />
 		<parameter id="description" value="Action KSSViewHistoryAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ExplanationRenderer2">
-		<parameter id="class"
-			value="de.d3web.we.action.ExplanationRenderer2" />
+		<parameter id="class" value="de.d3web.we.action.ExplanationRenderer2" />
 		<parameter id="name" value="ExplanationRenderer2" />
 		<parameter id="description" value="Action ExplanationRenderer2" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="QuestionStateReportAction">
-		<parameter id="class"
-			value="de.d3web.we.action.QuestionStateReportAction" />
+		<parameter id="class" value="de.d3web.we.action.QuestionStateReportAction" />
 		<parameter id="name" value="QuestionStateReportAction" />
 		<parameter id="description" value="Action QuestionStateReportAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
-	
+
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="XCLExplanationAction">
-		<parameter id="class"
-			value="de.d3web.we.action.XCLExplanationAction" />
+		<parameter id="class" value="de.d3web.we.action.XCLExplanationAction" />
 		<parameter id="name" value="XCLExplanationAction" />
 		<parameter id="description" value="Action XCLExplanationAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SetSingleFindingAction">
-		<parameter id="class"
-			value="de.d3web.we.action.SetSingleFindingAction" />
+		<parameter id="class" value="de.d3web.we.action.SetSingleFindingAction" />
 		<parameter id="name" value="SetSingleFindingAction" />
 		<parameter id="description" value="Action SetSingleFindingAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ParseWebOfflineRenderer">
-		<parameter id="class"
-			value="de.d3web.we.action.ParseWebOfflineRenderer" />
+		<parameter id="class" value="de.d3web.we.action.ParseWebOfflineRenderer" />
 		<parameter id="name" value="ParseWebOfflineRenderer" />
 		<parameter id="description" value="Action ParseWebOfflineRenderer" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ClearDPSSessionAction">
-		<parameter id="class"
-			value="de.d3web.we.action.ClearDPSSessionAction" />
+		<parameter id="class" value="de.d3web.we.action.ClearDPSSessionAction" />
 		<parameter id="name" value="ClearDPSSessionAction" />
 		<parameter id="description" value="Action ClearDPSSessionAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="RefreshHTMLDialogAction">
-		<parameter id="class"
-			value="de.d3web.we.action.RefreshHTMLDialogAction" />
+		<parameter id="class" value="de.d3web.we.action.RefreshHTMLDialogAction" />
 		<parameter id="name" value="RefreshHTMLDialogAction" />
 		<parameter id="description" value="Action RefreshHTMLDialogAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SetFindingAction">
-		<parameter id="class"
-			value="de.d3web.we.action.SetFindingAction" />
+		<parameter id="class" value="de.d3web.we.action.SetFindingAction" />
 		<parameter id="name" value="SetFindingAction" />
 		<parameter id="description" value="Action SetFindingAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SaveDialogAsXCLAction">
-		<parameter id="class"
-			value="de.d3web.we.action.SaveDialogAsXCLAction" />
+		<parameter id="class" value="de.d3web.we.action.SaveDialogAsXCLAction" />
 		<parameter id="name" value="SaveDialogAsXCLAction" />
 		<parameter id="description" value="Action SaveDialogAsXCLAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ReRenderQuestionSheetAction">
 		<parameter id="class"
@@ -485,28 +443,26 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="TestSuiteServlet">
-		<parameter id="class"
-			value="de.d3web.we.testsuite.TestSuiteServlet" />
+		<parameter id="class" value="de.d3web.we.testsuite.TestSuiteServlet" />
 		<parameter id="name" value="TestSuiteServlet" />
 		<parameter id="description" value="Action TestSuiteServlet" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="PluginConfigType">
-		<parameter id="class"
-			value="de.knowwe.d3web.PluginConfigType" />
+		<parameter id="class" value="de.knowwe.d3web.PluginConfigType" />
 		<parameter id="name" value="PluginConfigType" />
 		<parameter id="description" value="KnowWEObjectType PluginConfigType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="KnowledgeReaderType">
 		<parameter id="class"
@@ -517,27 +473,25 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="AdminPanelHandler">
-		<parameter id="class"
-			value="de.d3web.we.taghandler.AdminPanelHandler" />
+		<parameter id="class" value="de.d3web.we.taghandler.AdminPanelHandler" />
 		<parameter id="name" value="AdminPanelHandler" />
 		<parameter id="description" value="TagHandler AdminPanelHandler" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="DialogLinkTagHandler">
-		<parameter id="class"
-			value="de.d3web.we.taghandler.DialogLinkTagHandler" />
+		<parameter id="class" value="de.d3web.we.taghandler.DialogLinkTagHandler" />
 		<parameter id="name" value="DialogLinkTagHandler" />
 		<parameter id="description" value="TagHandler DialogLinkTagHandler" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="KnowledgeBasesGeneratorHandler">
 		<parameter id="class"
@@ -547,7 +501,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="ImageQuestionHandler">
 		<parameter id="class"
@@ -555,23 +509,21 @@
 		<parameter id="name" value="ImageQuestionHandler" />
 		<parameter id="description" value="TagHandler ImageQuestionHandler" />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" /> 
+		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ImageQuestionAction">
-		<parameter id="class"
-			value="de.d3web.we.action.ImageQuestionAction" />
+		<parameter id="class" value="de.d3web.we.action.ImageQuestionAction" />
 		<parameter id="name" value="ImageQuestionAction" />
 		<parameter id="description" value="Action ImageQuestionAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="SectionizerModule"
 		id="ExpandedSectionizerModule">
-		<parameter id="class"
-			value="de.d3web.we.kdom.ExpandedSectionizerModule" />
+		<parameter id="class" value="de.d3web.we.kdom.ExpandedSectionizerModule" />
 		<parameter id="name" value="ImageQuestionAction" />
 		<parameter id="description" value="SectionizerModule ExpandedSectionizerModule" />
 		<parameter id="version" value="1.0" />
