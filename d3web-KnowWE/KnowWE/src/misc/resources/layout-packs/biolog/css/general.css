@@ -469,3 +469,79 @@ a.action.dialog {
     float:left;
     background:url(../images/biolog-logo.png) no-repeat;
 }
+
+
+/* ################################################## */
+/* ------------Default Markup Styles----------------- */
+/* ################################################## */
+
+
+.defaultMarkup {
+	position:relative;
+	border: 1px solid #DDD;
+	background-color: #F9F9F9; 
+	margin-right:	19px;
+	margin-left:	19px;
+	min-height:		30px;
+}
+
+.defaultMarkup .markupText {
+	white-space:	pre;
+	font:			normal normal normal 110%/normal Monaco, 'Courier New', Courier, monospace;
+	padding:		3px 3px 3px 3px; 
+}
+
+.defaultMarkup .markupHeader {
+	position:absolute; 
+	top:			0px; 
+	right:			0px; 
+	padding:		3px 10px 3px 10px; 
+	border-left:	1px solid #DDD; 
+	border-bottom:	1px solid #DDD; 
+	border-bottom-left-radius: 10px;
+	background-color: white; 
+	white-space:	nowrap;
+}
+
+.defaultMarkup .markupTools {
+	display:		inline;
+	vertical-align:	-3px;
+}
+
+.defaultMarkup .markupMenuIndicator {
+	background: white url(../../templates/knowweTmps/images/arrdownsmall.gif) no-repeat right 50%;
+	padding-right: 15px;
+}
+
+.defaultMarkup .markupMenu {
+	position:	absolute;
+	border:		2px solid #DDD;
+	background-color: white; 
+	right:		0px; 
+	z-index:	1000;
+	right:		-1px;
+}
+
+.defaultMarkup .markupMenuItem {
+	display:	block;
+	list-style: none;
+	padding:	0.25em;
+	white-space: nowrap;
+}
+
+.defaultMarkup .markupMenuItem > img {
+	vertical-align:		-3px;
+	color:				#036;
+}
+
+.defaultMarkup .markupMenuItem:hover {
+	background-color:	#EEE;
+	text-decoration:	none;
+	color:				#003DF5;
+}
+
+.defaultMarkup .markupHeader .markupIcon {
+	vertical-align:	-7px;
+}
+
+
