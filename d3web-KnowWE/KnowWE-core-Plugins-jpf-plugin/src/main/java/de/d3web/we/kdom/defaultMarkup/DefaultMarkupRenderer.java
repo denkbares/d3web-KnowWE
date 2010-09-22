@@ -37,7 +37,40 @@ import de.d3web.we.kdom.report.KDOMWarning;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> {
+public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDomRenderer<T> {
+
+	public static class Tool {
+
+		private final String iconPath;
+		private final String title;
+		private final String description;
+		private final String actionURL;
+
+		public Tool(String iconPath, String title, String description, String actionURL) {
+			super();
+			this.iconPath = iconPath;
+			this.title = title;
+			this.description = description;
+			this.actionURL = actionURL;
+		}
+
+		public String getIconPath() {
+			return iconPath;
+		}
+
+		public String getTitle() {
+			return title;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getActionURL() {
+			return actionURL;
+		}
+
+	}
 
 	private final String iconPath;
 
@@ -49,21 +82,84 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> 
 		this.iconPath = iconPath;
 	}
 
+	public Tool[] getTools(KnowWEArticle article, Section<T> section, KnowWEUserContext user) {
+		return null;
+	}
+
 	@Override
-	public void render(KnowWEArticle article, Section<DefaultMarkupType> section, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section<T> section, KnowWEUserContext user, StringBuilder string) {
 
 		String id = section.getID();
-		String name = "<span>"+section.getObjectType().getName()+"</span>";
+		string.append(KnowWEUtils.maskHTML("<div id=\"" + id + "\" class='defaultMarkup'>\n"));
+
+		String name = "<span>" + section.getObjectType().getName() + "</span>";
 		String icon = "";
 		if (this.iconPath != null) {
 			icon = "<img class='markupIcon' src='" + this.iconPath + "'></img> ";
 		}
-		string.append(KnowWEUtils.maskHTML("<div id=\"" + id + "\" class='defaultMarkup'>\n"));
-		string.append(KnowWEUtils.maskHTML("<div class='markupHeader'>" + icon + name + "</div>\n"));
+		Tool[] tools = getTools(article, section, user);
+		boolean hasTools = tools != null && tools.length > 0;
+		boolean hasMenu = hasTools;
+		boolean hasToolbar = false;
+		
+		String toolbarHtml = "";
+		if (hasToolbar) {
+			toolbarHtml += " | <div class='markupTools'> ";
+			for (Tool tool : tools) {
+				toolbarHtml +=
+						" <a href=\"" + tool.getActionURL() + "\">" +
+								"<img " +
+								"title=\"" + tool.getDescription() + "\" " +
+								"src=\"" + tool.getIconPath() + "\"></img>" +
+								"</a>";
 
+			}
+			toolbarHtml += "</div>";
+		}
+		
+		string.append(KnowWEUtils.maskHTML(
+				"<div id='header_"+id+"' " +
+				"class='markupHeader "+(hasMenu ? "markupMenuIndicator" : "")+"'>" + 
+				icon + 
+				name + 
+				toolbarHtml + 
+				"\n"));
+		if (hasMenu) {
+			String menuHtml = "<div id='menu_"+id+"' class=markupMenu>";
+			for (Tool tool : tools) {
+				menuHtml += "<div class='markupMenuItem'>" +
+						"<a class='markupMenuItem'" +
+						" href=\"" + tool.getActionURL() + "\"" +
+						" title=\"" + tool.getDescription() + "\">" +
+						"<img src=\"" + tool.getIconPath() + "\"></img>" +
+						" " + tool.getTitle() + 
+						"</a>" +
+						"</div>";
+			}
+			menuHtml += "</div>";
+			string.append(KnowWEUtils.maskHTML(menuHtml));
+		}
 
+		string.append(KnowWEUtils.maskHTML("</div>"));
+
+		if (hasMenu) {
+			//string.append(KnowWEUtils.maskHTML("<script>Wiki.makeMenuFx('parent_"+id+"', 'menu_"+id+"');</script>"));
+			string.append(KnowWEUtils.maskHTML("\n<script>\n" +
+					"var makeMenuFx = function() {" +
+					"var a=$('header_"+id+"'),c=$('menu_"+id+"');" +
+					"if(!a||!c){}\n" +
+					"var b=c.effect(\"opacity\",{wait:false}).set(0);" +
+					"a.adopt(c).set({href:\"#\",events:{" +
+					"mouseout:function(){b.start(0)}," +
+					"mouseover:function(){b.start(0.9)}}});" +
+					"};" +
+					"makeMenuFx();" +
+					"</script>\n"));
+		}
+		
 		// render pre-formatted box
-		string.append("{{{\n");
+		// string.append("{{{\n");
+		string.append(KnowWEUtils.maskHTML("<div id=\"" + id + "\" class='markupText'>"));
 		article = PackageRenderUtils.checkArticlesCompiling(article,
 				section, string);
 
@@ -76,11 +172,13 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> 
 		renderContents(article, section, user, string);
 
 		// and close the box
-		string.append("}}}\n");
-		string.append(KnowWEUtils.maskHTML("</div>\n"));
+		// string.append("}}}\n");
+		string.append(KnowWEUtils.maskHTML("</div>\n")); // class=markupText
+		string.append(KnowWEUtils.maskHTML("</div>\n")); // class=defaultMarkup
+
 	}
-	
-	protected void renderContents(KnowWEArticle article, Section<? extends DefaultMarkupType> section, KnowWEUserContext user, StringBuilder string) {
+
+	protected void renderContents(KnowWEArticle article, Section<T> section, KnowWEUserContext user, StringBuilder string) {
 		List<Section<?>> subsecs = section.getChildren();
 		Section<?> first = subsecs.get(0);
 		Section<?> last = subsecs.get(subsecs.size() - 1);
@@ -94,7 +192,7 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> 
 	protected void renderMessages(KnowWEArticle article, Section<? extends DefaultMarkupType> section, KnowWEUserContext user, StringBuilder string) {
 		renderMessages(article, section, string);
 	}
-	
+
 	public static void renderMessages(KnowWEArticle article, Section<? extends DefaultMarkupType> section, StringBuilder string) {
 		Collection<Message> messages = AbstractKnowWEObjectType.getMessagesFromSubtree(article,
 				section);

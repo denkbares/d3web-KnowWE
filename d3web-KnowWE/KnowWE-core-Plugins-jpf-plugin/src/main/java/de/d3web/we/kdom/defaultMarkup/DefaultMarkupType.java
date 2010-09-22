@@ -147,7 +147,7 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	protected KnowWEDomRenderer<?> getDefaultRenderer() {
-		return new DefaultMarkupRenderer();
+		return new DefaultMarkupRenderer<DefaultMarkupType>();
 	}
 
 	// TODO: already exists in parent class! Is this a problem?

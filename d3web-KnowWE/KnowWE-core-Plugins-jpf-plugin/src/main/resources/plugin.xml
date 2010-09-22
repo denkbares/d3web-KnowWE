@@ -146,6 +146,16 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="DownloadKnowledgeBase">
+		<parameter id="class"
+			value="de.d3web.we.action.DownloadKnowledgeBase" />
+		<parameter id="name" value="DownloadKnowledgeBase" />
+		<parameter id="description" value="Downloads a specific d3web knowledge base archive of a named wiki article." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="WordBasedRenamingAction">
 		<parameter id="class"
 			value="de.d3web.we.action.WordBasedRenamingAction" />
@@ -633,7 +643,5 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
-
 	
 </plugin>

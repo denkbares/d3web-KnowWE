@@ -94,7 +94,7 @@ public class CompileFlag extends DefaultMarkupType {
 
 	}
 
-	static class PackageReferenceType extends DefaultAbstractKnowWEObjectType implements PackageReference {
+	public static class PackageReferenceType extends DefaultAbstractKnowWEObjectType implements PackageReference {
 
 		public PackageReferenceType() {
 			this.sectionFinder = new AllTextSectionFinder();
@@ -116,7 +116,7 @@ public class CompileFlag extends DefaultMarkupType {
 		}
 	}
 
-	static class SinglePackageReference extends DefaultAbstractKnowWEObjectType {
+	public static class SinglePackageReference extends DefaultAbstractKnowWEObjectType {
 
 		public SinglePackageReference() {
 			this.sectionFinder = new RegexSectionFinder("[\\w-_]+");
@@ -124,7 +124,7 @@ public class CompileFlag extends DefaultMarkupType {
 		}
 	}
 
-	static class SinglePackageReferenceRenderer extends KnowWEDomRenderer<SinglePackageReference> {
+	public static class SinglePackageReferenceRenderer extends KnowWEDomRenderer<SinglePackageReference> {
 
 		@Override
 		public void render(KnowWEArticle article,
