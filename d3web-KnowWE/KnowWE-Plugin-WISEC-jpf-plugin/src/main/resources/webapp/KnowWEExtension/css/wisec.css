@@ -1,3 +1,8 @@
 #wisec-ranking-form {
 	height:1000px;
 }
+
+#wisec-ranking-back-button {
+	display: none;
+	height: 30px;
+}

@@ -102,7 +102,7 @@ window.addEvent('domready', function() {
 			{ view: 'TextField', rect: '405 910 35 18', anchors: 'right top' },
 			
 			// OK
-			{ view: 'Button',   rect: '10 950 200 24',  anchors: 'left top', text: 'Generate Ranking' }
+			{ view: 'Button', id: 'OK',  rect: '10 950 200 24',  anchors: 'left top', text: 'Generate Ranking' }
 	    ];
 	}
 
@@ -113,11 +113,13 @@ window.addEvent('domready', function() {
 		uki( { view: 'Box', rect: '0 0 1000 100', anchors: 'top left right width', childViews: views() }
 	    	).attachTo( document.getElementById('wisec-ranking-form'), '1000 300' );
 	
-		// Bind AJAX request to button
-		uki('Button').bind('click', function() {
+		// Bind AJAX request to OK button
+		uki('Button[id=OK]').bind('click', function() {
 			
 			// Hide form
 			document.getElementById('wisec-ranking-form').style.display = 'none';
+			document.getElementById('wisec-ranking-result').style.display = 'block';
+			document.getElementById('wisec-ranking-back-button').style.display = 'block';
 		    
 			// Get all sliders
 			sliders = uki('Slider');
@@ -147,6 +149,17 @@ window.addEvent('domready', function() {
             // send AJAX request
             new _KA( options ).send();
 		
+		});
+		
+		// Back button
+		uki({ view: "Button", text: "New Ranking", id: "back", rect: "0 0 180 24"
+			}).attachTo( document.getElementById("wisec-ranking-back-button") );
+		
+		// Add function to Back button
+		uki("Button[id^=back]").click(function() { 
+			document.getElementById('wisec-ranking-form').style.display = 'block';
+			document.getElementById('wisec-ranking-result').style.display = 'none'; 	  
+			document.getElementById('wisec-ranking-back-button').style.display = 'none'; 
 		});
 
 		// On slider move update textfield

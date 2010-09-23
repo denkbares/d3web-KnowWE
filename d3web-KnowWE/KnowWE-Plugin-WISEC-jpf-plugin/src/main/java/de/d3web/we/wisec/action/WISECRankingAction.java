@@ -231,7 +231,7 @@ public class WISECRankingAction extends AbstractAction {
 				result.append(", ");
 			}
 			result.delete(result.length() - 2, result.length());
-			result.append(")</sub>");
+			result.append(")</sub><br/><br/>");
 		}
 
 		return result.toString();
