@@ -57,12 +57,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>d3web-CaseRepository</artifactId>
-			<version>${d3webCoreVersion}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Config</artifactId>
 			<version>${d3webCoreVersion}</version>
 			<scope>compile</scope>
@@ -71,12 +65,6 @@
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Distributed</artifactId>
 			<version>${project.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>d3web-ExplainTree</artifactId>
-			<version>${d3webCoreVersion}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
