@@ -12,8 +12,7 @@
 		</library>
 	</runtime>
 	
-	<!-- currently commented out
-		<extension plugin-id="KnowWEExtensionPoints" point-id="Instantiation"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Instantiation"
 		id="MultiSearchEngine">
 		<parameter id="class"
 			value="de.d3web.we.search.MultiSearchEngine" />
@@ -22,7 +21,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="4.9" />
 	</extension>
-	 -->
+	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="SubClassing">
 		<parameter id="class"
