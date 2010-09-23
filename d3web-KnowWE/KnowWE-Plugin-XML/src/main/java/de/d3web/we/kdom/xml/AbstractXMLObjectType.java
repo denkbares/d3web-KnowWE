@@ -202,13 +202,13 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AbstractXMLObjectType> s) {
 
-			String value = getAttributeMapFor(s).get(KnowWEPackageManager.ATTRIBUTE_ENAME);
+			String value = getAttributeMapFor(s).get(KnowWEPackageManager.ATTRIBUTE_NAME);
 
-			if (value != null) {
-				s.addPackageName(value);
-				KnowWEEnvironment.getInstance().getPackageManager(
-						article.getWeb()).registerPackageDefinition(s);
-			}
+			if (value == null) value = KnowWEPackageManager.DEFAULT_PACKAGE;
+
+			s.addPackageName(value);
+			KnowWEEnvironment.getInstance().getPackageManager(
+					article.getWeb()).registerPackageDefinition(s);
 			return null;
 		}
 
@@ -219,18 +219,8 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public void destroy(KnowWEArticle article, Section<AbstractXMLObjectType> s) {
-
-			Map<String, String> attributeMap = getAttributeMapFor(s);
-
-			if (attributeMap != null) {
-
-				String value = attributeMap.get(KnowWEPackageManager.ATTRIBUTE_ENAME);
-
-				if (value != null) {
-					KnowWEEnvironment.getInstance().getPackageManager(
-							article.getWeb()).unregisterPackageDefinition(s);
-				}
-			}
+			KnowWEEnvironment.getInstance().getPackageManager(
+					article.getWeb()).unregisterPackageDefinition(s);
 		}
 
 	}

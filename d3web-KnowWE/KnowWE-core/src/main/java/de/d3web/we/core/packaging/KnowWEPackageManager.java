@@ -44,7 +44,9 @@ import de.d3web.we.utils.KnowWEUtils;
 
 public class KnowWEPackageManager implements EventListener {
 
-	public static final String ATTRIBUTE_ENAME = "package";
+	public static final String ATTRIBUTE_NAME = "package";
+
+	public static final String DEFAULT_PACKAGE = "default";
 
 	private final String web;
 

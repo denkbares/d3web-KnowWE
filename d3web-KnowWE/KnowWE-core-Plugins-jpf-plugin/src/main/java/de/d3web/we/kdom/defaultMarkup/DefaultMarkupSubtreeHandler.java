@@ -31,6 +31,7 @@ import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup.Annotation;
+import de.d3web.we.kdom.packaging.CompileFlag;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
@@ -64,12 +65,20 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 		}
 
 		// TODO: refactor this to somewhere else
-		Annotation packageAnno = this.markup.getAnnotation(KnowWEPackageManager.ATTRIBUTE_ENAME);
-		if (packageAnno != null && markupSection.getTitle().equals(article.getTitle())) {
-			Section<? extends AnnotationType> annotationSection =
-					DefaultMarkupType.getAnnotationSection(markupSection, packageAnno.getName());
-			if (annotationSection != null) {
-				String value = annotationSection.getOriginalText();
+		if (markupSection.getTitle().equals(article.getTitle())) {
+			String value = null;
+			Annotation packageAnno = this.markup.getAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME);
+			if (packageAnno != null) {
+				Section<? extends AnnotationType> annotationSection =
+						DefaultMarkupType.getAnnotationSection(markupSection, packageAnno.getName());
+				if (annotationSection != null) {
+					value = annotationSection.getOriginalText();
+
+				}
+			}
+			if (value == null) value = KnowWEPackageManager.DEFAULT_PACKAGE;
+
+			if (!markupSection.get().getMarkup().getName().equals(CompileFlag.MARKUP_NAME)) {
 				markupSection.addPackageName(value);
 				KnowWEEnvironment.getInstance().getPackageManager(article.getWeb()).registerPackageDefinition(
 						markupSection);
@@ -107,14 +116,10 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 	@Override
 	public void destroy(KnowWEArticle article, Section<DefaultMarkupType> markupSection) {
 		// TODO: refactor this to somewhere else
-		Annotation packageAnno = this.markup.getAnnotation(KnowWEPackageManager.ATTRIBUTE_ENAME);
-		if (packageAnno != null && markupSection.getTitle().equals(article.getTitle())) {
-			Section<? extends AnnotationType> annotationSection =
-					DefaultMarkupType.getAnnotationSection(markupSection, packageAnno.getName());
-			if (annotationSection != null) {
+		if (markupSection.getTitle().equals(article.getTitle())
+				&& !markupSection.get().getMarkup().getName().equals(CompileFlag.MARKUP_NAME)) {
 				KnowWEEnvironment.getInstance().getPackageManager(article.getWeb()).unregisterPackageDefinition(
 						markupSection);
-			}
 		}
 	}
 }

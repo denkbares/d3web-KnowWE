@@ -33,7 +33,7 @@ public class QuestionTreeRootType extends QuestionTree {
 		m = new DefaultMarkup("QuestionTree");
 		m.addContentType(new QuestionDashTree());
 		m.addAnnotation("dialog", false);
-		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_ENAME, false);
+		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME, false);
 	}
 
 	public QuestionTreeRootType() {

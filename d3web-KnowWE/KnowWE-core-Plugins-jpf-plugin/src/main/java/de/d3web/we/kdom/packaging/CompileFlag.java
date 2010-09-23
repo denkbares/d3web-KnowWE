@@ -49,10 +49,7 @@ public class CompileFlag extends DefaultMarkupType {
 
 	private static DefaultMarkup m = null;
 
-	// private static String PRIO_MAP_KEY = "prio_map_key";
-
-	// private static String PACKAGEDEFS_SNAPSHOT_KEY =
-	// "packagedefs_snapshot_key";
+	public static final String MARKUP_NAME = "Compile";
 
 	static {
 		m = new DefaultMarkup("Compile");
@@ -98,7 +95,7 @@ public class CompileFlag extends DefaultMarkupType {
 
 		public PackageReferenceType() {
 			this.sectionFinder = new AllTextSectionFinder();
-			this.addSubtreeHandler(Priority.PRECOMPILE_LOW, new CompileFlagCreateHandler());
+			this.addSubtreeHandler(Priority.PRECOMPILE_LOW, new CompileFlagHandler());
 			// this.addSubtreeHandler(Priority.POSTCOMPILE, new
 			// CompileFlagDestroyHandler());
 			this.childrenTypes.add(new SinglePackageReference());
@@ -217,9 +214,9 @@ public class CompileFlag extends DefaultMarkupType {
 	}
 
 
-	static class CompileFlagCreateHandler extends SubtreeHandler<PackageReferenceType> {
+	static class CompileFlagHandler extends SubtreeHandler<PackageReferenceType> {
 
-		public CompileFlagCreateHandler() {
+		public CompileFlagHandler() {
 			super(true);
 		}
 
@@ -283,74 +280,4 @@ public class CompileFlag extends DefaultMarkupType {
 
 	}
 
-	// static class CompileFlagDestroyHandler extends
-	// SubtreeHandler<PackageReferenceType> {
-	//
-	// public CompileFlagDestroyHandler() {
-	// super(true);
-	// }
-	//
-	// @Override
-	// public Collection<KDOMReportMessage> create(KnowWEArticle article,
-	// Section<PackageReferenceType> s) {
-	// return null;
-	// }
-	//
-	// @Override
-	// public boolean needsToDestroy(KnowWEArticle article,
-	// Section<PackageReferenceType> s) {
-	// return true;
-	// }
-	//
-	// @Override
-	// @SuppressWarnings("unchecked")
-	// public void destroy(KnowWEArticle article, Section<PackageReferenceType>
-	// s) {
-	//
-	// if (!s.isReusedBy(article.getTitle())) article.setFullParse(this);
-	//
-	// if (!article.isFullParse()) {
-	//
-	// List<Section<?>> storedNamespaceDefinitions = (List<Section<?>>)
-	// KnowWEUtils.getObjectFromLastVersion(
-	// article, s, PACKAGEDEFS_SNAPSHOT_KEY);
-	//
-	// List<Section<?>> nodes = new LinkedList<Section<?>>();
-	// for (Section<?> nsDef : storedNamespaceDefinitions) {
-	// nsDef.getAllNodesPostOrder(nodes);
-	// }
-	// for (Section<?> node : nodes) {
-	// if (node.isReusedBy(article.getTitle())) {
-	// SectionStore lastStore =
-	// KnowWEEnvironment.getInstance().getArticleManager(
-	// article.getWeb()).getTypeStore().getLastSectionStore(
-	// article.getTitle(),
-	// node.getID());
-	// if (lastStore != null) {
-	// // reuse last section store
-	// KnowWEEnvironment.getInstance().getArticleManager(
-	// article.getWeb()).getTypeStore().putSectionStore(
-	// article.getTitle(), node.getID(),
-	// lastStore);
-	// }
-	// }
-	// }
-	//
-	// TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
-	// Priority.createPrioritySortedList(nodes);
-	//
-	// for (Priority priority : prioMap.descendingKeySet()) {
-	// List<Section<? extends KnowWEObjectType>> prioList =
-	// prioMap.get(priority);
-	// for (Section<? extends KnowWEObjectType> section : prioList) {
-	// section.letSubtreeHandlersDestroy(article, priority);
-	// }
-	// }
-	//
-	// }
-	//
-	//
-	// }
-	//
-	// }
 }

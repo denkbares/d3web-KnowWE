@@ -30,7 +30,7 @@ public class SolutionTreeMarkup extends DefaultMarkupType {
 	static {
 		m = new DefaultMarkup("Solution");
 		m.addContentType(new SolutionsDashTree());
-		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_ENAME, false);
+		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME, false);
 	}
 
 	public SolutionTreeMarkup() {

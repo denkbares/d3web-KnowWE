@@ -125,6 +125,7 @@ public class KnowWEArticleManager {
 	}
 
 	public Set<String> getTitles() {
+		// TODO: Slow for big Wikis
 		return new HashSet<String>(articleMap.keySet());
 	}
 
