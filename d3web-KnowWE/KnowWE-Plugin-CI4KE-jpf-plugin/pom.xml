@@ -49,7 +49,7 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-JSPWiki-Connector</artifactId>
+			<artifactId>KnowWE-JSPWiki-Connector-jpf-plugin</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
