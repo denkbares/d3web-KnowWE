@@ -89,18 +89,6 @@
 		<parameter id="scope" value="root" />
 	</extension>
 	
-	
-	
-	
-
-	
-
-	
-
-
-	
-
-	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="VerbatimType">
 		<parameter id="class"

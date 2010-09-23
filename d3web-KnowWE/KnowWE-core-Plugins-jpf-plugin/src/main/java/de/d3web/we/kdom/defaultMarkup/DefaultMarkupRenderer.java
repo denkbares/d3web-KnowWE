@@ -34,43 +34,12 @@ import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMNotice;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.KDOMWarning;
+import de.d3web.we.tools.Tool;
+import de.d3web.we.tools.ToolUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDomRenderer<T> {
-
-	public static class Tool {
-
-		private final String iconPath;
-		private final String title;
-		private final String description;
-		private final String actionURL;
-
-		public Tool(String iconPath, String title, String description, String actionURL) {
-			super();
-			this.iconPath = iconPath;
-			this.title = title;
-			this.description = description;
-			this.actionURL = actionURL;
-		}
-
-		public String getIconPath() {
-			return iconPath;
-		}
-
-		public String getTitle() {
-			return title;
-		}
-
-		public String getDescription() {
-			return description;
-		}
-
-		public String getActionURL() {
-			return actionURL;
-		}
-
-	}
 
 	private final String iconPath;
 
@@ -80,10 +49,6 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 
 	public DefaultMarkupRenderer(String iconPath) {
 		this.iconPath = iconPath;
-	}
-
-	public Tool[] getTools(KnowWEArticle article, Section<T> section, KnowWEUserContext user) {
-		return null;
 	}
 
 	@Override
@@ -97,7 +62,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		if (this.iconPath != null) {
 			icon = "<img class='markupIcon' src='" + this.iconPath + "'></img> ";
 		}
-		Tool[] tools = getTools(article, section, user);
+		Tool[] tools = ToolUtils.getTools(article, section, user);
 		boolean hasTools = tools != null && tools.length > 0;
 		boolean hasMenu = hasTools;
 		boolean hasToolbar = false;
@@ -107,7 +72,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 			toolbarHtml += " | <div class='markupTools'> ";
 			for (Tool tool : tools) {
 				toolbarHtml +=
-						" <a href=\"" + tool.getActionURL() + "\">" +
+						" <a href=\"javascript:" + tool.getJSAction() + ";undefined;\">" +
 								"<img " +
 								"title=\"" + tool.getDescription() + "\" " +
 								"src=\"" + tool.getIconPath() + "\"></img>" +
@@ -129,7 +94,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 			for (Tool tool : tools) {
 				menuHtml += "<div class='markupMenuItem'>" +
 						"<a class='markupMenuItem'" +
-						" href=\"" + tool.getActionURL() + "\"" +
+						" href=\"javascript:" + tool.getJSAction() + ";undefined;\"" +
 						" title=\"" + tool.getDescription() + "\">" +
 						"<img src=\"" + tool.getIconPath() + "\"></img>" +
 						" " + tool.getTitle() + 

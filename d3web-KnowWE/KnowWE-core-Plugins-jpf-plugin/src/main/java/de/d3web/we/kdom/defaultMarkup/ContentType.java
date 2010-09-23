@@ -63,7 +63,7 @@ public class ContentType extends DefaultAbstractKnowWEObjectType {
 	 */
 	@Override
 	public String getName() {
-		return this.markup.getName() + "@content";
+		return "content";
 	}
 
 	/**

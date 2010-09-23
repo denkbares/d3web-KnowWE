@@ -2,8 +2,6 @@ package de.d3web.we.kdom.kopic;
 
 import java.util.List;
 
-import de.d3web.we.action.DownloadKnowledgeBase;
-import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.AnnotationType;
@@ -51,31 +49,4 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 		}
 	}
 
-//	@Override
-//	public Tool[] getTools(KnowWEArticle article, Section<KnowledgeBaseType> section, KnowWEUserContext user) {
-//		String kbName = DefaultMarkupType.getContent(section).trim();
-//		String url = "javascript:window.location='action/DownloadKnowledgeBase" +
-//				"?" + KnowWEAttributes.TOPIC + "=" + article.getTitle() +
-//				"&" + KnowWEAttributes.WEB + "=" + article.getWeb() +
-//				"&" + DownloadKnowledgeBase.PARAM_FILENAME + "=" + kbName + ".d3web'";
-//		Tool download = new Tool(
-//				"KnowWEExtension/images/save_edit.gif",
-//				"Download",
-//				"Download the whole knowledge base into a single file for deployment.",
-//				url
-//				);
-//
-//		String runURL = "action/InitWiki" +
-//				"?user=" + user.getUsername() +
-//				"&" + KnowWEAttributes.WEB + "=" + article.getWeb() +
-//				"&" + KnowWEAttributes.TOPIC + "=" + article.getTitle() +
-//				"&lang=de";
-//		Tool run = new Tool(
-//				"KnowWEExtension/images/run.gif",
-//				"Run Interview",
-//				"Starts a new interview with that knowledge base.",
-//				"javascript:window.open('"+runURL+"');undefined;");
-//		return new Tool[] {
-//				download, run };
-//	}
 }
