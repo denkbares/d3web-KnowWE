@@ -44,6 +44,7 @@ import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.taghandler.AbstractTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.we.wisec.util.Criteria;
+import de.d3web.wisec.model.RatedSubstance;
 import de.d3web.wisec.writers.SubstanceInfoWriter;
 
 /**
@@ -58,9 +59,14 @@ import de.d3web.wisec.writers.SubstanceInfoWriter;
  * The rating of a substance is the weighted sum of each criteria. If a criteria
  * is not defined the weight is 0.
  * 
+ * TODO: THIS TAGHANDLER IS DEPRECATED! It has been replaced by
+ * WISECRankingFormTagHandler and WISECRankingAction. It is only kept in the
+ * project to avoid breaking the demo, but should removed sooner or later!
+ * 
  * @author Sebastian Furth
  * @created 15.06.2010
  */
+@Deprecated
 public class WISECRankingTagHandler extends AbstractTagHandler {
 
 	public WISECRankingTagHandler() {
@@ -381,73 +387,6 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 
 		return "<a href='Wiki.jsp?page=" + SubstanceInfoWriter.getWikiFileNameFor(substance) + "'>"
 				+ substance + "</a>";
-
-	}
-
-	/**
-	 * Private class which encapsulates the name of a substance and it's current
-	 * rating.
-	 * 
-	 * @author Sebastian Furth
-	 * @created 15.06.2010
-	 */
-	private class RatedSubstance implements Comparable<RatedSubstance> {
-
-		private final String substance;
-		private double score = 0;
-
-		// used for one criteria
-		private double intermediateScore = 0;
-		private int intermediateCounter = 0;
-
-		public RatedSubstance(String substance) {
-			if (substance == null) throw new IllegalArgumentException();
-
-			this.substance = substance;
-		}
-
-		public double getScore() {
-			return score;
-		}
-
-		/*
-		 * Adds a value to the intermediate score
-		 */
-		public void addValue(double value) {
-			if (value != 0) {
-				this.intermediateScore += value;
-				this.intermediateCounter++;
-			}
-		}
-
-		/*
-		 * Updates the real score at the end of the criteria processing
-		 */
-		public void updateScore() {
-			if (intermediateCounter > 0) {
-				score += intermediateScore / intermediateCounter;
-				intermediateScore = 0;
-				intermediateCounter = 0;
-			}
-		}
-
-		public String getSubstance() {
-			return substance;
-		}
-
-		@Override
-		public int compareTo(RatedSubstance o) {
-			// We return the reversed values by purpose to get the correct
-			// sorting order!
-			if (this.score < o.score) return 1;
-			if (this.score > o.score) return -1;
-			return this.substance.compareTo(o.substance);
-		}
-
-		@Override
-		public String toString() {
-			return substance + " (" + score + ")";
-		}
 
 	}
 
