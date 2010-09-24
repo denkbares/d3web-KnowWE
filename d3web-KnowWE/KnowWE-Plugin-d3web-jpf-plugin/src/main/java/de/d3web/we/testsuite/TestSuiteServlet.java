@@ -24,9 +24,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import de.d3web.empiricaltesting.TestSuite;
-import de.d3web.empiricaltesting.caseconverter.CaseObjectToKnOffice;
-import de.d3web.empiricaltesting.caseconverter.CaseObjectToTestSuiteXML;
 import de.d3web.empiricaltesting.casevisualization.dot.DDBuilder;
+import de.d3web.empiricaltesting.writer.TestSuiteKnOfficeWriter;
+import de.d3web.empiricaltesting.writer.TestSuiteXMLWriter;
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
 import de.d3web.we.core.KnowWEAttributes;
@@ -94,7 +94,7 @@ public class TestSuiteServlet extends AbstractAction {
 		if (filename.endsWith(".txt")) {
 
 			// Get the file content
-			CaseObjectToKnOffice c = new CaseObjectToKnOffice();
+			TestSuiteKnOfficeWriter c = new TestSuiteKnOfficeWriter();
 			ByteArrayOutputStream bstream = c.getByteArrayOutputStream(t.getRepository());
 
 			// Response
@@ -110,7 +110,7 @@ public class TestSuiteServlet extends AbstractAction {
 		else if (filename.endsWith(".xml")) {
 
 			// Get the file content
-			CaseObjectToTestSuiteXML c = new CaseObjectToTestSuiteXML();
+			TestSuiteXMLWriter c = new TestSuiteXMLWriter();
 			ByteArrayOutputStream bstream = c.getByteArrayOutputStream(t.getRepository());
 
 			// Response
