@@ -40,10 +40,10 @@
  	/*-moz-box-shadow: 0 0 1px gray; -webkit-box-shadow: 0 0 1px gray; box-shadow-bottom: 0 0 1px gray;*/} 
 	
 /* styling of the questionnaire div */
-#quickinterview .pointRight { background: transparent url(../images/arrow_right.png) no-repeat 10px 8px; cursor: pointer;}
+#quickinterview .pointRight { background: transparent url(../images/triangleRight.png) no-repeat 10px 5px; cursor: pointer;}
 	
 /* styling of the questionnaire div */
-#quickinterview .pointDown { background: transparent url(../images/arrow_down.png) no-repeat 10px 8px;  cursor: pointer;} 
+#quickinterview .pointDown { background: transparent url(../images/triangleDown.png) no-repeat 10px 5px;  cursor: pointer;} 
 
 /* some declaration regarding as well questions as well as answers */
  #quickinterview #qablock { min-height: 21px;  margin-right: 10px; background-color: white; margin-bottom: 3px;

@@ -66,6 +66,7 @@ KNOWWE.plugin.quicki = function(){
     
 	var mcanswervals = '';
 	var quickiruns = false;
+	var questionnaireVis = ' ';
 	
 	 return {
         /**
@@ -147,7 +148,32 @@ KNOWWE.plugin.quicki = function(){
                  _KE.add('click', element, KNOWWE.plugin.quicki.enableQAnswers);
              });  
         	 
+        	 KNOWWE.plugin.quicki.restoreQuestionnaireVis();
         }, 
+        restoreQuestionnaireVis : function(){
+        	
+        	var qs = questionnaireVis.split('###');
+        	for (var i = 0; i < qs.length; i++) {
+        		
+        		var qsplit = qs[i].split(';');
+        		var qid = qsplit[0];
+        		qid = qid.replace(/ /g, '');
+        		var qvis = qsplit[1];
+        		        		
+        		var group = '#group_' + qid;
+        		var groupEl = _KS(group);
+        		var questionnaire = _KS('#'+qid);
+        		
+        		if(qvis==0){
+        			groupEl.style.display = 'none'; 
+        			KNOWWE.plugin.quicki.toggleImage(1, questionnaire);       
+        		} else if (qvis ==1 ){
+        			groupEl.style.display = 'block'; 
+        			KNOWWE.plugin.quicki.toggleImage(0, questionnaire);       
+        		}
+        	}
+        	//KNOWWE.plugin.quicki.showRefreshed;
+        },
         // TODO
         checkRuns: function(){
         	var runElement = _KS('#quickireset');
@@ -209,7 +235,6 @@ KNOWWE.plugin.quicki = function(){
             		mcanswervals = mcanswervals.replace(toreplace, '');
             	}
         	}
-            alert(mcanswervals);
         },
         /**
          * Function: answerMCCollectSend
@@ -512,14 +537,42 @@ KNOWWE.plugin.quicki = function(){
         	var questionnaire = _KE.target(event); 	
         	var group = _KS('#group_' + questionnaire.id);
         	
-        	if(group.style.display=='block'){
-            	group.style.display = 'none';     
-            	KNOWWE.plugin.quicki.toggleImage(1, questionnaire);            	
-            } else if (group.style.display=='none'){     
-            	group.style.display = 'block';
+        	if(group.style.display=='block'){ 
+        		
+            	group.style.display = 'none';    
+            	var replacer = questionnaire.id + ';0###';
+            	var containsIndex = questionnaireVis.indexOf(questionnaire.id);
+            		
+            	if(containsIndex!=-1){
+            		var toreplace = questionnaireVis.substring(containsIndex, 
+                		containsIndex + questionnaire.id.length + 5);
+                	questionnaireVis = questionnaireVis.replace(toreplace, replacer);
+                }            		
+            	else {
+            		questionnaireVis = questionnaireVis + replacer;
+            	}
+            
+            	KNOWWE.plugin.quicki.toggleImage(1, questionnaire);       
+            	
+            } else if (group.style.display=='none'){   
+          		
+            	group.style.display = 'block';	
+          		
+            	var replacer = questionnaire.id + ';1###';
+            	var containsIndex = questionnaireVis.indexOf(questionnaire.id);
+            		
+            	if(containsIndex!=-1){
+            		var toreplace = questionnaireVis.substring(containsIndex, 
+                		containsIndex + questionnaire.id.length + 5);
+                	questionnaireVis = questionnaireVis.replace(toreplace, replacer);
+                }            		
+            	else {
+            		questionnaireVis = questionnaireVis + replacer;
+            	}
+            	
             	KNOWWE.plugin.quicki.toggleImage(0, questionnaire);   
             } 
-          	KNOWWE.plugin.quicki.showRefreshed;
+        	KNOWWE.plugin.quicki.showRefreshed;
         },
         /**
          * TODO
