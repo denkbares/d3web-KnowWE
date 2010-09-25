@@ -139,6 +139,7 @@ KNOWWE.plugin.solutionpanel = function(){
                 new _KA( options ).send();
                 KNOWWE.core.rerendercontent.update();
                 KNOWWE.plugin.d3web.rerenderquestionsheet.update();
+                KNOWWE.plugin.quicki.showRefreshed();
             }   
         },
         /**
