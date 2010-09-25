@@ -140,6 +140,7 @@ KNOWWE.plugin.solutionpanel = function(){
                 KNOWWE.core.rerendercontent.update();
                 KNOWWE.plugin.d3web.rerenderquestionsheet.update();
                 KNOWWE.plugin.quicki.showRefreshed();
+                OneQuestionDialog.showRefreshed();
             }   
         },
         /**
