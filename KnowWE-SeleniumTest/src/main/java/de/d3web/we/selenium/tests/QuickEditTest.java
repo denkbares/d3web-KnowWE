@@ -121,7 +121,7 @@ public class QuickEditTest extends KnowledgeTestCase {
 		refreshAndWait();
 		String sectionID = kopicID + "/SetCoveringList-section/SetCoveringList-section_content";
 		openQuickEdit(sectionID);
-		openQuickEdit("Quick-Edit-Test/RootType/Kopic/Kopic_content/Solutions-section/Solutions-section_content");
+		openQuickEdit(kopicID + "/Solutions-section/Solutions-section_content");
 		assertFalse("Quick-Edit button still present.", selenium.isElementPresent(sectionID + QEB));
 		assertTrue("Save button is not existing.", selenium.isElementPresent(sectionID + ACCEPT));
 		assertTrue("Cancel button is not existing.", selenium.isElementPresent(sectionID + CANCEL));
