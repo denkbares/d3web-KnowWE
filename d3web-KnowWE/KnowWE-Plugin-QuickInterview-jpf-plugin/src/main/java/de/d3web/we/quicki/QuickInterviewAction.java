@@ -78,7 +78,7 @@ public class QuickInterviewAction extends AbstractAction {
 
 		D3webKnowledgeService knowledgeServiceInTopic = D3webModule.getAD3webKnowledgeServiceInTopic(
 				web, topic);
-		if (knowledgeServiceInTopic == null) return rb.getString("KnowWE.QuickInterview.error");
+		if (knowledgeServiceInTopic == null) return rb.getString("KnowWE.quicki.error");
 		String kbid = knowledgeServiceInTopic.getId();
 		// String kbid = topic+".."+KnowWEEnvironment.generateDefaultID(topic);
 

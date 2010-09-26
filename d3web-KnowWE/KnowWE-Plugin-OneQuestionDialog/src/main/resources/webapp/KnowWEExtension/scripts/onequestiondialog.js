@@ -28,6 +28,57 @@ var OneQuestionDialog = {};
  * old.
  */
 OneQuestionDialog.sendQuestion = function(element) {
+	
+	var question = _KS('#oqdquestion');
+	var questionId = question.getElement('input').value;
+	
+	var tableBodyEl = question.parentNode.nextSibling.firstChild;
+	var trs = tableBodyEl.childNodes;
+	
+	var web = 'default_web';
+	var namespace = KNOWWE.helper.gup('page');
+	
+	var answerId = '';
+	var answerValue = '';
+	
+	var type = trs[0].getElement('input').type;
+	
+	// oc questions
+	if (type == 'radio') {
+		for (var i = 0; i < trs.length; i++) {
+			var td = trs[i].getElement('td');
+			if (td.firstChild.checked) {
+				answerId = td.lastChild.value;
+				break;
+			}
+		}
+	}
+		
+	// mc questions
+	else if (type == 'checkbox') {
+		for (var i = 0; i < trs.length; i++) {
+			var td = trs[i].getElement('td');
+			if (td.firstChild.checked) {
+				answerId += td.lastChild.value + '#####';
+			}
+		}
+		answerId = answerId.substring(0, answerId.lastIndexOf('#####'));
+	} 
+	
+	// text
+	else if (type == 'text') {
+		answerValue = trs[0].getElement('td').lastChild.value;
+	}
+		
+	if (answerId != '') {
+		OneQuestionDialog.sendInput(web, namespace, questionId, 'undefined', question, questionId, {ValueID: answerId});
+	} else {
+		OneQuestionDialog.sendInput(web, namespace, questionId, 'undefined', question, questionId,{ValueNum: answerValue});	
+	}
+	
+}
+
+/* OLD STRUCTURE OneQuestionDialog.sendQuestion = function(element) {
 	var div = OneQuestionDialog.findParentDiv(element);
 	var question = div.getElement('p').textContent;;
 	var questionId = div.getElement('p').getElement('input').value;
@@ -69,7 +120,7 @@ OneQuestionDialog.sendQuestion = function(element) {
 		OneQuestionDialog.sendInput(web, namespace, questionId, 'undefined', question, questionId,{ValueNum: answerValue});	
 	}
 	
-}
+}*/
 
 /**
  * returns the parentDiv of an element or null
@@ -186,7 +237,7 @@ OneQuestionDialog.insertNewQuestion = function(response) {
  */
 OneQuestionDialog.getPrevious = function(element) {
 	var div = OneQuestionDialog.findParentDiv(element);
-	var question = div.getElement('p').textContent;;
+	var question = div.getElement('p').textContent;
 	var questionId = div.getElement('p').getElement('input').value;
 	
 	return OneQuestionDialog.getNewQuestion(question, questionId, 'previous');
@@ -197,13 +248,25 @@ OneQuestionDialog.getPrevious = function(element) {
  * the function which is called, after a question is answered
  */
 OneQuestionDialog.newQuestionAfterUpdate = function() {
-	var element = $('oqdbutton');
+	/* OLD
+	 * var element = $('oqdbutton');
+	 
 	if (!element)
 		return; 
 	
 	var div = OneQuestionDialog.findParentDiv(element);
 	var question = div.getElement('p').textContent;;
 	var questionId = div.getElement('p').getElement('input').value;
+	
+	*/
+	
+	var element = $('oqdbutton');
+	 
+	if (!element)
+		return; 
+	
+	var question = _KS('#oqdquestion');
+	var questionId = question.getElement('input').value;
 	
 	OneQuestionDialog.getNewQuestion(question, questionId, 'next');
 }
@@ -215,4 +278,28 @@ OneQuestionDialog.submitOnEnter = function(element, e) {
 	  }
 }
 
+//window.addEvent('domready', KNOWWE.helper.observer.subscribe( 'update', OneQuestionDialog.newQuestionAfterUpdate));
+
+OneQuestionDialog.showRefreshed = function(){
+	var params = {
+	        action : 'OneQuestionDialogAction',
+	        KWiki_Topic : KNOWWE.helper.gup('page'),
+	        type: 'next'
+	    }
+
+	    var options = {
+	        url : KNOWWE.core.util.getURL ( params ),
+	        loader : true,
+	        response : {
+	            action : 'none',
+	            fn : function(){
+	    			OneQuestionDialog.insertNewQuestion(this);
+	            }
+	        }
+	    }
+	    new _KA( options ).send();
+}
+
+
 window.addEvent('domready', KNOWWE.helper.observer.subscribe( 'update', OneQuestionDialog.newQuestionAfterUpdate));
+

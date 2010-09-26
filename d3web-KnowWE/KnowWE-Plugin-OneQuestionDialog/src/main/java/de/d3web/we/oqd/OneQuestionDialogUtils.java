@@ -44,6 +44,8 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  */
 public class OneQuestionDialogUtils {
 
+	private static KnowWEUserContext kwuser;
+
 	/**
 	 * gets a session from a topic and a web
 	 * 
@@ -53,6 +55,9 @@ public class OneQuestionDialogUtils {
 	 * @return the session
 	 */
 	public static Session getSession(String topic, String web, KnowWEUserContext user) {
+
+		kwuser = user;
+
 		/*
 		 * D3webKnowledgeService knowledgeService =
 		 * D3webModule.getAD3webKnowledgeServiceInTopic( web, topic);
@@ -134,11 +139,23 @@ public class OneQuestionDialogUtils {
 		List<Choice> answers = OneQuestionDialogUtils.getAllAlternatives(o);
 
 		StringBuilder html = new StringBuilder();
-		html.append("<p class=\"oqdquestion\">");
+
+		html.append("<div class='oqdheadline'>");
+
+		html.append("<div class=\"oqdquestion\" id='oqdquestion'>");
 		html.append(o.getName());
 		html.append("<input type=\"hidden\" name=\"" + o.getId() + "\" value=\"" + o.getId()
 				+ "\">");
-		html.append("</p>");
+		html.append("</div>");
+
+		// MF: moved send button to head
+		html.append("<div id=\"oqdbutton\" class=\"oqdbutton\" onclick=\"return OneQuestionDialog.sendQuestion(this)\" "
+				+ "title='"
+				+ D3webModule.getKwikiBundle_d3web(kwuser).getString("KnowWE.OQD.send")
+				+ "'>");
+		html.append("</div>");
+
+		html.append("</div>");
 		html.append("<table>");
 
 		if (!type.equals("text")) {
@@ -162,14 +179,16 @@ public class OneQuestionDialogUtils {
 			html.append("</td>");
 			html.append("</tr>");
 		}
-		html.append("<tr>");
-		html.append("<td>");
-		html.append("<div id=\"oqdbutton\" class=\"oqdbutton\" onclick=\"return OneQuestionDialog.sendQuestion(this)\">");
-		html.append("</div>");
-		// html.append("<div class=\"oqdprevious\" onclick=\"return OneQuestionDialog.getPrevious(this)\">");
-		// html.append("</div>");
-		html.append("</td>");
-		html.append("</tr>");
+		/*
+		 * html.append("<tr>"); html.append("<td>"); html.append(
+		 * "<div id=\"oqdbutton\" class=\"oqdbutton\" onclick=\"return OneQuestionDialog.sendQuestion(this)\" "
+		 * + "title='" +
+		 * D3webModule.getKwikiBundle_d3web(kwuser).getString("KnowWE.OQD.send")
+		 * + "'>"); html.append("</div>"); // html.append(
+		 * "<div class=\"oqdprevious\" onclick=\"return OneQuestionDialog.getPrevious(this)\">"
+		 * ); // html.append("</div>"); html.append("</td>");
+		 * html.append("</tr>");
+		 */
 		html.append("</table>");
 
 		return html.toString();

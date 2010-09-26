@@ -45,7 +45,7 @@ public class QuickInterviewTagHandler extends AbstractTagHandler {
 
 	@Override
 	public String getDescription(KnowWEUserContext user) {
-		return D3webModule.getKwikiBundle_d3web(user).getString("KnowWE.QuickInterview.description");
+		return D3webModule.getKwikiBundle_d3web(user).getString("KnowWE.quicki.description");
 	}
 
 	/*
