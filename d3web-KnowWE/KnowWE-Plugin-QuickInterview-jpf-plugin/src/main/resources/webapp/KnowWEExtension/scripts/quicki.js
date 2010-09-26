@@ -646,6 +646,8 @@ KNOWWE.plugin.quicki = function(){
          */
         showRefreshed : function ( ){
         	
+        	// needed to avoid endless calls in case quicki is reloaded
+        	// due to a session clearing from solution panel
         	if(!_KS('#quickinterview'))
         		return;
         	

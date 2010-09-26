@@ -332,7 +332,8 @@ public class QuickInterviewRenderer {
 		// 10 for standard margin and 30 for indenting further than the triangle
 		int d = 30 + depth * 10;
 
-		sb.append("\n<div id='qablock' style='display: block; margin-left: " + d + "px;'>");
+		sb.append("\n<div class='qablock' id='qablock' style='display: block; margin-left: " + d
+				+ "px;'>");
 
 		// width of the question front section, i.e. total width - identation
 		int w = 200 - d;

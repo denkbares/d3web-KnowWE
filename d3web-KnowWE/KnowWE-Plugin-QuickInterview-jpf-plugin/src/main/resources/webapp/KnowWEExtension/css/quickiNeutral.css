@@ -46,30 +46,32 @@
 #quickinterview .pointDown { background: transparent url(../images/triangleDown.png) no-repeat 10px 5px;  cursor: pointer;} 
 
 /* some declaration regarding as well questions as well as answers */
- #quickinterview #qablock { min-height: 21px;  margin-right: 10px; background-color: white; margin-bottom: 3px;
+ #quickinterview .qablock { min-height: 21px;  margin-right: 10px; background-color: white; margin-bottom: 3px;
  	/*-moz-box-shadow: 0 1px 0 black; -webkit-box-shadow: 0 1px 0 black; box-shadow-bottom: 0 1px 0 black; */}
+ 	
+#quickinterview .qablock:hover {background: #dcdcdc; font-size: 1.05em; }
 
 /* styling of the front part of the qablock that displays the question name */
-#quickinterview .question { clear: both; float: left; background-color: white; font-weight: normal; padding: 0 5px 0 0;}
+#quickinterview .question { clear: both; float: left; background-color: transparent; font-weight: normal; padding: 0 5px 0 0;}
 
 /* styling for indicated questions/questionnaires */
 #quickinterview .indicated { border: 2px solid #ACC0D6; padding: 3px 0 0 0; }
 
 /* the separator between the answers */
-#quickinterview .answerseparator { float: left; background: white url(../images/ballWhite_s.png); height: 18px; width: 18px;
+#quickinterview .answerseparator { float: left; background: transparent url(../images/ballWhite_s.png); height: 18px; width: 18px;
 	 background-repeat: no-repeat; background-position: center center;  padding: 0 5px;}
 
 /* answer styling */
-#quickinterview .answer { float: left; background-color: white;; padding: 0 5px 0 5px; cursor: pointer;}
+#quickinterview .answer { float: left; background-color: transparent; padding: 0 5px 0 5px; cursor: pointer;}
 
 /* answer active syling */
-#quickinterview .answerClicked { float: left; background-color: white;; border: 2px  solid #ACC0D6;  padding: 0 5px 0 5px;cursor: pointer; }
+#quickinterview .answerClicked { float: left; background-color: transparent; border: 2px  solid #ACC0D6;  padding: 0 5px 0 5px;cursor: pointer; }
 
 
 /* answer mc styling */
-#quickinterview .answerMC { float: left; background-color: white;; padding: 0 5px 0 5px; cursor: pointer;}
+#quickinterview .answerMC { float: left; background-color: transparent; padding: 0 5px 0 5px; cursor: pointer;}
 
-#quickinterview .answerMCClicked { float: left; background-color: white;; border: 2px solid #ACC0D6;  padding: 0 5px 0 5px; cursor: pointer;}
+#quickinterview .answerMCClicked { float: left; background-color: transparent; border: 2px solid #ACC0D6;  padding: 0 5px 0 5px; cursor: pointer;}
 
 
 /* answer unknown styling */
@@ -104,7 +106,7 @@
 #quickinterview .invisible { display: block; clear: both; width:100%; height: 2px; background-color: transparent;}
 
 /* styling of interview elements that occur repeated times */
-#quickinterview .alreadyDefined { background-color:  white; font-color: #666; color: #666; clear: both;
+#quickinterview .alreadyDefined { background-color:  transparent; font-color: #666; color: #666; clear: both;
 	margin-right: 10px; padding: 2px; }
 
 /* the reset button in the interview header */
