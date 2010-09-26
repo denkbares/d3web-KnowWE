@@ -281,6 +281,9 @@ OneQuestionDialog.submitOnEnter = function(element, e) {
 //window.addEvent('domready', KNOWWE.helper.observer.subscribe( 'update', OneQuestionDialog.newQuestionAfterUpdate));
 
 OneQuestionDialog.showRefreshed = function(){
+	if(!_KS('#onequestiondialog'));
+		return;
+	
 	var params = {
 	        action : 'OneQuestionDialogAction',
 	        KWiki_Topic : KNOWWE.helper.gup('page'),

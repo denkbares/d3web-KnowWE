@@ -64,36 +64,17 @@ KNOWWE.plugin.quicki = function(){
  */
 KNOWWE.plugin.quicki = function(){
     
-	var mcanswervals = '';
-	var quickiruns = false;
-	var questionnaireVis = ' ';
+	var mcanswervals = '';      // for collecting the values of MC answers
+	var quickiruns = false;     // flag whether QuickI runs a session
+	var questionnaireVis = ' '; // for storing questionnaire visibility states
+	var questionsVis = ' ';		// for storing question visibility states
 	
-	 return {
-        /**
-         * Function: init
-         */
-		 // TODO
-        init : function( doReset ){
-            
-        	// reset highlighting of elements if doReset is true
-        	if(doReset){
-        		_KS('.answerClicked').each(function(element){
-            		element.className = "answer";
-                });
-        		
-        		_KS('.input').each(function(element){
-            		element.value="";
-                });
-        		
-        	} else {
-        		alert("only reset now");
-        	}
-        },
-        /**
-         * Function: initAction
+	return {
+		/**
+         * Function: initialize
          * 		add the click events and corresponding functions to interview elments
          */
-        initAction : function (){
+        initialize : function (){
         	
         	_KS('.answer').each(function(element){
         		_KE.add('click', element, KNOWWE.plugin.quicki.answerClicked);                
@@ -119,10 +100,9 @@ KNOWWE.plugin.quicki = function(){
                 _KE.add('click', element, KNOWWE.plugin.quicki.toggleQuestionnaireVisibility);
         	});
         	
-        	// TODO
-        	// _KS('.question').each(function(element){
-            //    _KE.add('click', element, KNOWWE.plugin.quicki.toggleQuestionVisibility);
-        	// });
+        	_KS('.question').each(function(element){
+        		_KE.add('click', element, KNOWWE.plugin.quicki.toggleQuestionVisibility);
+        	});
         	
         	_KS('.num-ok').each(function( element ){
         		_KE.add('click', element, KNOWWE.plugin.quicki.numAnswerClicked);
@@ -142,48 +122,52 @@ KNOWWE.plugin.quicki = function(){
         	
             _KE.add('click', _KS('#quickireset'), KNOWWE.plugin.quicki.quickIReset);
           
+        	// TODO
+        	//_KS('.qquickanswers').each(function( element ){
+                //_KE.add('click', element, KNOWWE.plugin.quicki.enableQAnswers);
+            //});  
         	 
-        	 // TODO
-        	 _KS('.qquickanswers').each(function( element ){
-                 _KE.add('click', element, KNOWWE.plugin.quicki.enableQAnswers);
-             });  
-        	 
+        	/**
+        	 * restore visibility states of elements after reloading
+        	 * the page (e.g. after sending answer val via AJAX)
+        	 */
         	 KNOWWE.plugin.quicki.restoreQuestionnaireVis();
-        }, 
+        },
+        /**
+         * Function: restoreQuestionnaireVis
+         * 		restores the visibility states of questionnaires 
+         * 		after reloading the page, eg. after an automatic
+         * 		AJAX refresh
+         */
         restoreQuestionnaireVis : function(){
         	
+        	// split questionnaireVis storage into questionnaire;vis
+        	// elments
         	var qs = questionnaireVis.split('###');
         	for (var i = 0; i < qs.length; i++) {
-        		
+        	
+        		// split into questionnaire id and visibility
         		var qsplit = qs[i].split(';');
         		var qid = qsplit[0];
-        		qid = qid.replace(/ /g, '');
+        		qid = qid.replace(/ /g, ''); // remove spaces
         		var qvis = qsplit[1];
         		        		
-        		var group = '#group_' + qid;
-        		var groupEl = _KS(group);
+        		var groupEl = _KS('#group_' + qid);
         		var questionnaire = _KS('#'+qid);
         		
+        		// 0 means set style and image to invisible
         		if(qvis==0){
         			groupEl.style.display = 'none'; 
         			KNOWWE.plugin.quicki.toggleImage(1, questionnaire);       
-        		} else if (qvis ==1 ){
+        		} 
+        		// 1 means set style and image to be visible = unfolded
+        		else if (qvis ==1 ){
         			groupEl.style.display = 'block'; 
         			KNOWWE.plugin.quicki.toggleImage(0, questionnaire);       
         		}
         	}
-        	//KNOWWE.plugin.quicki.showRefreshed;
         },
-        // TODO
-        checkRuns: function(){
-        	var runElement = _KS('#quickireset');
-        	if(quickiruns==false){
-        		runElement.className='.norun';
-        		quickiruns=true;
-        	} else {
-        		runElement.className='.reset';
-        	}
-        },
+        
         /**
          * Function: toggleAnswerMC
          * 		toggles the highlighting of MC answers
@@ -205,7 +189,6 @@ KNOWWE.plugin.quicki = function(){
          * 		event - the event fired by the mc answer val that was clicked
          */
         answerMCCollect : function( event ) {
-        	//KNOWWE.plugin.quicki.checkRuns();
             var el = _KE.target(event); 	// get the clicked element
             _KE.cancel( event );
            
@@ -222,10 +205,8 @@ KNOWWE.plugin.quicki = function(){
             	if(mcanswervals.indexOf(toreplace)==-1){
             		mcanswervals += oid;
                     mcanswervals += "#####"
-           		
             	}
             } 
-            
             // already clicked. Thus value needs to be removed
             else if (el.className=='answerMCClicked'){
             	el.className='answerMC';
@@ -251,9 +232,6 @@ KNOWWE.plugin.quicki = function(){
         	mcvals = mcanswervals.substring(0, mcanswervals.length-5);
         	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
                 	{ValueID: mcvals});
-        	
-        	// finally, reset answervals collector
-        	//mcanswervals = '';
         },
         /**
          * Function: answerClicked
@@ -263,7 +241,6 @@ KNOWWE.plugin.quicki = function(){
          *     event - The user click event on an answer.
          */
         answerClicked : function( event ) {
-        	//KNOWWE.plugin.quicki.checkRuns();
             var el = _KE.target(event); 	// get the clicked element
             if(el.className.toLowerCase() == "answerunknown") return;
             if(el.className.toLowerCase() == "answermc") return;
@@ -327,14 +304,13 @@ KNOWWE.plugin.quicki = function(){
              	{ValueID: 'MaU'});
         },
         /**
-         * Function: numAnswer
+         * Function: numAnswerClicked
          * 		Handles the input of num-values
          * 
          * Parameters:
          * 		event - the event firing the action
          */
         numAnswerClicked : function (event) {
-        	//KNOWWE.plugin.quicki.checkRuns();
         	event = new Event( event ).stopPropagation();
             var bttn = (_KE.target( event ).className == 'num-ok');            
             var key = (event.code == 13);
@@ -386,14 +362,11 @@ KNOWWE.plugin.quicki = function(){
             		 	_KS('#' + rel.oid + "_errormsg").innerHTML=errormessage;
 
                 	 	// refresh quicki display
-            		 	KNOWWE.plugin.quicki.refreshAjax();
-            		 	
+            		 	KNOWWE.plugin.quicki.showRefreshed();
             	 	} 
             	} 
-            
             	// else just try to get the value and set it as finding
             	else {
-        
             		// send KNOWWE request as SingleFindingAction with given value
                 	KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
                 		{ValueNum: inputtext});
@@ -621,27 +594,17 @@ KNOWWE.plugin.quicki = function(){
         	// the div with id "auickinterview"
         	var id = 'quickinterview';
             var options = {
-        			url : KNOWWE.core.util.getURL( params ),
-        			response : {
-        				 action : 'insert',
-                         ids : [ id ],					// to re-insert a freshly created interview
-                         fn : function(){
-                        	 KNOWWE.plugin.quicki.resetRun();
-                        	 KNOWWE.plugin.quicki.initAction();
-                    		 KNOWWE.plugin.solutionpanel.clearSolutionstate(); 	// clear solutionpanel
-                    	 }	
-        			}
+        		url : KNOWWE.core.util.getURL( params ),
+        		response : {
+        			action : 'insert',
+                    ids : [ id ],					// to re-insert a freshly created interview
+                    fn : function(){
+                    	KNOWWE.plugin.quicki.initialize();
+                    	KNOWWE.plugin.solutionpanel.clearSolutionstate(); 	// clear solutionpanel
+                    }	
+        		}
         	}
-        	
             new _KA( options ).send();
-        },
-        resetRun: function(){
-        	quickiruns = false;
-        },
-        // TODO
-        enableQAnswers : function ( event ) {
-        	//TODO switch between quick answering and non q-a
-        	alert("toggle quick answering");
         },
         /**
          * Function: send
@@ -682,6 +645,10 @@ KNOWWE.plugin.quicki = function(){
          * 		QuickInterviewAction 
          */
         showRefreshed : function ( ){
+        	
+        	if(!_KS('#quickinterview'))
+        		return;
+        	
         	 var params = {
                      namespace : KNOWWE.helper.gup( 'page' ),
                      action : 'QuickInterviewAction'
@@ -694,23 +661,7 @@ KNOWWE.plugin.quicki = function(){
                 	 action : 'insert',
                      ids : [ id ],	
                 	 fn : function(){
-                		 KNOWWE.plugin.quicki.initAction();
-                	 }	
-                 }
-        	 }
-             new _KA( options ).send();
-        }, 
-        refreshAjax : function ( ){
-        	 var params = {
-                     namespace : KNOWWE.helper.gup( 'page' ),
-                     action : 'none'
-             }
-        	 
-             var options = {
-                 url : KNOWWE.core.util.getURL( params ),
-                 response : {	
-                	 fn : function(){
-                		 KNOWWE.plugin.quicki.initAction();
+                		 KNOWWE.plugin.quicki.initialize();
                 	 }	
                  }
         	 }
