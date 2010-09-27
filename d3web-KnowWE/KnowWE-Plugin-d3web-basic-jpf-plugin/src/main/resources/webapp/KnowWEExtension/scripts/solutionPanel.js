@@ -139,8 +139,12 @@ KNOWWE.plugin.solutionpanel = function(){
                 new _KA( options ).send();
                 KNOWWE.core.rerendercontent.update();
                 KNOWWE.plugin.d3web.rerenderquestionsheet.update();
-                KNOWWE.plugin.quicki.showRefreshed();
-                OneQuestionDialog.showRefreshed();
+                if (typeof KNOWWE.plugin.quicki == "undefined" || !KNOWWE.plugin.quicki) {
+                } else {KNOWWE.plugin.quicki.showRefreshed();}
+               
+                 if (typeof  OneQuestionDialog == "undefined" || !OneQuestionDialog || 
+                		 OneQuestionDialog.showRefreshed == "undefined" || !OneQuestionDialog.showRefreshed ) {} 
+                 else {OneQuestionDialog.showRefreshed();}
             }   
         },
         /**

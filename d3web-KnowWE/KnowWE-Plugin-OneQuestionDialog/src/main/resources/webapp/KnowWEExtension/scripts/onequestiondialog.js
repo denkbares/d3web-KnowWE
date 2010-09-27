@@ -19,6 +19,16 @@
 
 var OneQuestionDialog = {};
 
+/**
+ * The KNOWWE.plugin global namespace object. If KNOWWE.plugin is already defined, the
+ * existing KNOWWE.plugin object will not be overwritten so that defined namespaces
+ * are preserved.
+ */
+if (typeof OneQuestionDialog == "undefined" || !OneQuestionDialog) {
+	    OneQuestionDialog = function(){
+	         return {  }
+	    }
+}
 
 /**
  * The function, which is called after a click on the button.
@@ -304,5 +314,15 @@ OneQuestionDialog.showRefreshed = function(){
 }
 
 
-window.addEvent('domready', KNOWWE.helper.observer.subscribe( 'update', OneQuestionDialog.newQuestionAfterUpdate));
+// better way for initializing. Avoids mootools JS error
+(function init(){ 
+    if( KNOWWE.helper.loadCheck( ['Wiki.jsp'] )){
+        window.addEvent( 'domready', function(){
+        	
+        	 KNOWWE.helper.observer.subscribe( 'update', OneQuestionDialog.newQuestionAfterUpdate);
+        });
+    }
+}());
+
+//window.addEvent('domready', KNOWWE.helper.observer.subscribe( 'update', OneQuestionDialog.newQuestionAfterUpdate));
 
