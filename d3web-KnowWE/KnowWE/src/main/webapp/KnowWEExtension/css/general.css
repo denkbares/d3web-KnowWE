@@ -962,6 +962,7 @@ td.invalidTimeStamp:hover div.invalidTimeStamp {
 	border-left:	1px solid #DDD; 
 	border-bottom:	1px solid #DDD; 
 	border-bottom-left-radius: 10px;
+	-moz-border-radius-bottomleft: 10px;
 	background-color: white; 
 	white-space:	nowrap;
 }
