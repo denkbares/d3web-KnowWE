@@ -90,7 +90,11 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 	private boolean postDestroy;
 
+	private boolean postPreDestroy;
+
 	private boolean postDestroyFullParse;
+
+	private boolean postPreDestroyFullParse;
 
 	private boolean secondBuild;
 	
@@ -144,7 +148,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		// clear KnowWETypeStorage before re-parsing data
 		clearTypeStore(rootType, title);
 
-		build(text, title, rootType, web, startTime);
+		startTime = build(text, title, rootType, web, startTime);
 
 		if (this.postDestroyFullParse) {
 			this.secondBuild = true;
@@ -164,8 +168,11 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		lastVersion = null;
 	}
 
-	private void build(String text, String title, KnowWEObjectType rootType,
+	private long build(String text, String title, KnowWEObjectType rootType,
 			String web, long startTime) {
+
+		this.postPreDestroy = false;
+		this.postDestroy = false;
 
 		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
 
@@ -205,18 +212,18 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		// ============ Precompile =============
 		// destroy (precompile)
 		if (!this.fullParse && this.lastVersion != null) lastVersion.reviseIterator.reset();
-		destroyTilPriority(Priority.PRECOMPILE_LOW);
+		destroy(Priority.PRECOMPILE_LOW);
+		this.postPreDestroy = true;
 
 		// create (precompile)
 		reviseIterator = new ReviseIterator();
 		reviseIterator.addRootSectionToRevise(sec);
 		create(Priority.PRECOMPILE_LOW);
-
 		EventManager.getInstance().fireEvent(new PreCompileFinishedEvent(this));
 
 		// ============ Compile =============
 		// destroy (compile)
-		destroyTilPriority(Priority.LOWEST);
+		destroy(Priority.LOWEST);
 		this.postDestroy = true;
 
 
@@ -232,6 +239,10 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		startTime = System.currentTimeMillis();
 
 		// create (compile)
+		if (this.postPreDestroyFullParse) {
+			reviseIterator = new ReviseIterator();
+			reviseIterator.addRootSectionToRevise(sec);
+		}
 		create(Priority.LOWEST);
 
 		Logger.getLogger(this.getClass().getName()).log(
@@ -271,10 +282,10 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 							+ "ms <-");
 			startTime = System.currentTimeMillis();
 		}
-
+		return startTime;
 	}
 
-	private void destroyTilPriority(Priority p) {
+	private void destroy(Priority p) {
 		if (!this.fullParse && this.lastVersion != null) {
 			lastVersion.reviseIterator.setIteratorStop(p);
 			while (lastVersion.reviseIterator.hasNext()) {
@@ -553,17 +564,19 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 	public void setFullParse(SubtreeHandler<?> source) {
 		if (!this.fullParse) {
-			sec.clearCompiledRecursively();
+			sec.setNotCompiledByRecursively(title);
 			EventManager.getInstance().fireEvent(new FullParseEvent(this));
+
+			if (this.postPreDestroy) this.postPreDestroyFullParse = true;
+			if (this.postDestroy) this.postDestroyFullParse = true;
+
 		}
 		handlersUnableToDestroy.add(source.getClass().isAnonymousClass()
 				? source.getClass().getName().substring(
 						source.getClass().getName().lastIndexOf(".") + 1)
 				: source.getClass().getSimpleName());
 
-		if (!this.postDestroyFullParse && !this.fullParse && this.postDestroy) {
-			this.postDestroyFullParse = true;
-		}
+
 		this.fullParse = true;
 	}
 

@@ -136,7 +136,7 @@ public abstract class AnswerDefinition
 					.get().getQuestionSection(s);
 
 			// if having error somewhere, do nothing and report error
-			if (qDef.hasErrorInSubtree()) {
+			if (qDef.hasErrorInSubtree(article)) {
 				return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
 						"no valid question - " + name,
 						this.getClass()));

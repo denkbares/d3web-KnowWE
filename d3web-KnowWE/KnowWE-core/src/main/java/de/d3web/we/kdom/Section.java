@@ -1286,16 +1286,16 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	}
 
 	/**
-	 * Method that looks (recursively down) for this section whether some error
-	 * has been stored in that subtree
+	 * Method that looks (recursively down) for this section whether some errors
+	 * has been stored in that subtree for the given article.
 	 * 
 	 * @return
 	 */
-	public boolean hasErrorInSubtree() {
+	public boolean hasErrorInSubtree(KnowWEArticle article) {
 		Collection<KDOMError> s = KDOMReportMessage.getErrors(article, this);
 		if (s != null && s.size() > 0) return true;
 		for (Section<?> child : children) {
-			boolean err = child.hasErrorInSubtree();
+			boolean err = child.hasErrorInSubtree(article);
 			if (err) return true;
 		}
 
@@ -1581,7 +1581,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			Set<String> referencedPackages = KnowWEEnvironment.getInstance().getPackageManager(
 					article.getWeb()).getReferencedPackages(article.getTitle());
 
-			if (referencedPackages.contains(article.getTitle())) return true;
+			if (referencedPackages.contains(article.getTitle())
+					|| referencedPackages.contains(KnowWEPackageManager.THIS)) return true;
 
 			for (String name : getPackageNames()) {
 				if (referencedPackages.contains(name)) return true;
@@ -1621,7 +1622,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 				setCompiledBy(article.getTitle(), handler, true);
 				// System.out.println(handler.getClass().getSimpleName());
 				// System.out.println(handler.getClass().getSimpleName() + " "
-				// + (System.currentTimeMillis() - time));
+				// + (System.currentTimeMillis() - time) + " " +
+				// getOriginalText());
 			}
 			catch (Throwable e) {
 				e.printStackTrace();

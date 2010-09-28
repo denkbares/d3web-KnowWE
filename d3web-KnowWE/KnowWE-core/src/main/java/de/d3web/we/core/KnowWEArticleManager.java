@@ -121,12 +121,11 @@ public class KnowWEArticleManager {
 	}
 
 	public Collection<KnowWEArticle> getArticles() {
-		return articleMap.values();
+		return Collections.unmodifiableCollection(articleMap.values());
 	}
 
 	public Set<String> getTitles() {
-		// TODO: Slow for big Wikis
-		return new HashSet<String>(articleMap.keySet());
+		return Collections.unmodifiableSet(articleMap.keySet());
 	}
 
 	/**

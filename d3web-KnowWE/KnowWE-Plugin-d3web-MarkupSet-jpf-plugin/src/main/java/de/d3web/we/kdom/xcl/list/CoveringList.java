@@ -209,7 +209,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 					return result;
 				}
 
-				if (s.hasErrorInSubtree()) {
+				if (s.hasErrorInSubtree(article)) {
 					return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
 							D3webModule.getKwikiBundle_d3web()
 									.getString("KnowWE.xcllist.relationfail")));

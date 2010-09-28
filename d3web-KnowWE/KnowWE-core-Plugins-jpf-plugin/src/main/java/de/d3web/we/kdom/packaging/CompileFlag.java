@@ -169,7 +169,9 @@ public class CompileFlag extends DefaultMarkupType {
 
 			String headerSuffix = KnowWEEnvironment.getInstance().getArticleManager(
 					article.getWeb()).getTitles().contains(packageName)
+					|| packageName.equals(KnowWEPackageManager.THIS)
 					? (sec.getTitle().equals(packageName)
+							|| packageName.equals(KnowWEPackageManager.THIS)
 							? " (Compiling this article)"
 							: " (Names of articles besides the name of this one are disallowed)")
 					: " ("

@@ -122,7 +122,7 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 
 		if (answerSec != null || numCondSec != null) {
 
-			if (s.hasErrorInSubtree()) {
+			if (s.hasErrorInSubtree(article)) {
 				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
 						D3webModule.getKwikiBundle_d3web().
 								getString("KnowWE.rulesNew.indicationnotcreated")));

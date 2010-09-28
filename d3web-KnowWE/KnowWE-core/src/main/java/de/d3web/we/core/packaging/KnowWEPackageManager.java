@@ -48,6 +48,8 @@ public class KnowWEPackageManager implements EventListener {
 
 	public static final String DEFAULT_PACKAGE = "default";
 
+	public static final String THIS = "this";
+
 	private final String web;
 
 	/**
@@ -56,12 +58,6 @@ public class KnowWEPackageManager implements EventListener {
 	 */
 	private final Map<String, LinkedList<Section<?>>> packageDefinitionsMap =
 			new HashMap<String, LinkedList<Section<?>>>();
-
-	/**
-	 * For each article, you get all Sections in the wiki belonging to a package
-	 */
-	private final Map<String, Map<String, LinkedList<Section<?>>>> packageDefinitionsByArticleMap =
-			new HashMap<String, Map<String, LinkedList<Section<?>>>>();
 
 	/**
 	 * For each article, you get all Sections of type PackageReference defined
@@ -91,9 +87,15 @@ public class KnowWEPackageManager implements EventListener {
 		return web;
 	}
 
+	private boolean isDisallowedPackageName(String packageName) {
+		return packageName.equals(THIS)
+				|| KnowWEEnvironment.getInstance().getArticleManager(
+						web).getTitles().contains(packageName);
+	}
+
 	public void registerPackageDefinition(Section<?> s) {
 		for (String packageName : s.getPackageNames()) {
-			if (packageName.equals(s.getTitle())) continue;
+			if (isDisallowedPackageName(packageName)) continue;
 			LinkedList<Section<?>> packageList = packageDefinitionsMap.get(packageName);
 			if (packageList == null) {
 				packageList = new LinkedList<Section<?>>();
@@ -106,9 +108,7 @@ public class KnowWEPackageManager implements EventListener {
 
 	public boolean unregisterPackageDefinition(Section<?> s) {
 		for (String packageName : s.getPackageNames()) {
-
-			if (packageName.equals(s.getTitle())) continue;
-
+			if (isDisallowedPackageName(packageName)) continue;
 			LinkedList<Section<?>> packageList = packageDefinitionsMap.get(packageName);
 			if (packageList != null) {
 				boolean removed = packageList.remove(s);
@@ -158,40 +158,8 @@ public class KnowWEPackageManager implements EventListener {
 
 	public void registerPackageReference(KnowWEArticle article, Section<? extends PackageReference> s) {
 		
-		if (s.get().getPackagesToReferTo(s).contains(article.getTitle())
-				&& !getPackageReferences(article).contains(s)) {
-			if (!AUTOCOMPILE_ARTICLE) {
+		List<String> packagesToReferTo = s.get().getPackagesToReferTo(s);
 
-				// If the PackageReference aims at the article it is defined in
-				// and autocompile is deactivated, the reused-flags need to be
-				// reset. If for example only the PackageReference was added to
-				// the article and all other Sections could be reused, all these
-				// reused-flags are set to true although no SubtreeHandlers have
-				// created yet.
-
-				Set<String> referencedPackages = getReferencedPackages(article.getTitle());
-
-				Set<Section<?>> alreadyReferenced = new HashSet<Section<?>>();
-				for (String incPack : referencedPackages) {
-					List<Section<?>> packDefs = getPackageDefinitions(incPack);
-					for (Section<?> packDef : packDefs) {
-						List<Section<?>> tempNodes = new LinkedList<Section<?>>();
-						packDef.getAllNodesPostOrder(tempNodes);
-						alreadyReferenced.addAll(tempNodes);
-					}
-				}
-				List<Section<?>> allNodesPostOrder = article.getAllNodesPostOrder();
-				for (Section<?> node : allNodesPostOrder) {
-					if (!alreadyReferenced.contains(node)) {
-						node.setReusedByRecursively(article.getTitle(), false);
-					}
-				}
-			}
-			else {
-				return;
-			}
-		}
-		
 		HashSet<Section<? extends PackageReference>> packageReferences =
 				packageReferenceMap.get(article.getTitle());
 		if (packageReferences == null) {
@@ -206,14 +174,8 @@ public class KnowWEPackageManager implements EventListener {
 			referencedPackages = new HashSet<String>();
 			referencedPackagesMap.put(article.getTitle(), referencedPackages);
 		}
-		Set<String> titles = KnowWEEnvironment.getInstance().getArticleManager(article.getWeb()).getTitles();
-		List<String> packagesToReferTo = s.get().getPackagesToReferTo(s);
 		for (String packageToReferTo : packagesToReferTo) {
-			// ArticleNames are disallowed as packageNames
-			// TODO: Render error message!
-			if (packageToReferTo.equals(s.getTitle()) || !titles.contains(packageToReferTo)) {
-				referencedPackages.add(packageToReferTo);
-			}
+			referencedPackages.add(packageToReferTo);
 		}
 	}
 
@@ -226,19 +188,12 @@ public class KnowWEPackageManager implements EventListener {
 			if (removed) {
 				// set all Sections that were referenced by this
 				// PackageReference to reused = false for the given article
-				Collection<String> referencedPackages = s.get().getPackagesToReferTo(s);
-				for (String referencedPackage : referencedPackages) {
-					// ArticleNames are disallowed as packageNames
-					if (!referencedPackage.equals(s.getTitle())
-							&& KnowWEEnvironment.getInstance().getArticleManager(
-							article.getWeb()).getTitles().contains(
-							referencedPackage)) {
-						continue;
-					}
+				Collection<String> packagesToReferTo = s.get().getPackagesToReferTo(s);
+				for (String packageToReferTo : packagesToReferTo) {
 					boolean stillReferenced = false;
 					for (Section<? extends PackageReference> packReference : packageReferences) {
 						if (packReference.get().getPackagesToReferTo(packReference).contains(
-								referencedPackage)) {
+								packageToReferTo)) {
 							stillReferenced = true;
 							break;
 						}
@@ -248,15 +203,16 @@ public class KnowWEPackageManager implements EventListener {
 					// article
 					if (!stillReferenced) {
 						// also remove package from referencedPackagesMap
-						referencedPackagesMap.get(article.getTitle()).remove(referencedPackage);
+						referencedPackagesMap.get(article.getTitle()).remove(packageToReferTo);
 
 						List<Section<?>> packageDefinitions;
-						if (referencedPackage.equals(article.getTitle())) {
+						if (packageToReferTo.equals(article.getTitle()) 
+								|| (packageToReferTo.equals(THIS))) {
 							packageDefinitions = new ArrayList<Section<?>>(1);
 							packageDefinitions.add(article.getSection());
 						}
 						else {
-							packageDefinitions = getPackageDefinitions(referencedPackage);
+							packageDefinitions = getPackageDefinitions(packageToReferTo);
 						}
 						for (Section<?> packageDef : packageDefinitions) {
 							packageDef.setReusedByRecursively(article.getTitle(), false);
@@ -285,12 +241,9 @@ public class KnowWEPackageManager implements EventListener {
 	 */
 	public Set<String> getArticlesReferingTo(String packageName) {
 		Set<String> matchingArticles = new HashSet<String>();
-		for (String article : packageReferenceMap.keySet()) {
-			for (Section<? extends PackageReference> packageReference : packageReferenceMap.get(article)) {
-				if (packageReference.get().getPackagesToReferTo(packageReference).contains(
-						packageName)) {
-					matchingArticles.add(article);
-				}
+		for (String article : referencedPackagesMap.keySet()) {
+			if (referencedPackagesMap.get(article).contains(packageName)) {
+				matchingArticles.add(article);
 			}
 		}
 		return Collections.unmodifiableSet(matchingArticles);
@@ -301,8 +254,10 @@ public class KnowWEPackageManager implements EventListener {
 		for (String packageName : section.getPackageNames()) {
 			matchingArticles.addAll(getArticlesReferingTo(packageName));
 		}
-		if (AUTOCOMPILE_ARTICLE
-				|| getReferencedPackages(section.getTitle()).contains(section.getTitle())) {
+		HashSet<String> referencedPackages = referencedPackagesMap.get(section.getTitle());
+		if (AUTOCOMPILE_ARTICLE 
+				|| (referencedPackages != null && referencedPackages.contains(section.getTitle()))
+				|| (referencedPackages != null && referencedPackages.contains(THIS))) {
 			matchingArticles.add(section.getTitle());
 		}
 		return matchingArticles;
@@ -362,7 +317,7 @@ public class KnowWEPackageManager implements EventListener {
 		}
 	}
 
-	public void updatePackageReferences(KnowWEArticle article) {
+	public void updateReferingArticles(KnowWEArticle article) {
 
 		Set<String> articlesToRevise = new HashSet<String>();
 
@@ -370,8 +325,8 @@ public class KnowWEPackageManager implements EventListener {
 			for (Section<? extends PackageReference> packReference : referencesSet) {
 				List<String> packagesToReference = packReference.get().getPackagesToReferTo(
 						packReference);
-				for (String pack : packagesToReference) {
-					if (changedPackages.contains(pack) && !article.getTitle().equals(pack)) {
+				for (String packagName : packagesToReference) {
+					if (changedPackages.contains(packagName) && !article.getTitle().equals(packagName)) {
 						articlesToRevise.add(packReference.getTitle());
 					}
 				}
@@ -406,7 +361,7 @@ public class KnowWEPackageManager implements EventListener {
 			cleanForArticle(((FullParseEvent) event).getArticle());
 		}
 		else if (event instanceof UpdatingDependenciesEvent) {
-			updatePackageReferences(((UpdatingDependenciesEvent) event).getArticle());
+			updateReferingArticles(((UpdatingDependenciesEvent) event).getArticle());
 		}
 		else if (event instanceof PreCompileFinishedEvent) {
 			updateReusedStates(((PreCompileFinishedEvent) event).getArticle());
