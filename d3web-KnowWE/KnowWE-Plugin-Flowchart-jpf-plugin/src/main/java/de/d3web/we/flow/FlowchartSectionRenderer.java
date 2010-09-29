@@ -116,7 +116,15 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer {
 		else {
 			StringBuilder buffy = new StringBuilder();
 			buffy.append("\n{{{");
+			buffy.append(KnowWEUtils.maskHTML(
+			"<div style='cursor: pointer;' " +
+					"onclick='window.open(\""
+					+ createEditURL(sec.getID(), topic)
+					+ "\", \""
+					+ sec.getID().replaceAll("[^\\w]", "_")
+					+ "\")'>"));
 			DelegateRenderer.getInstance().render(article, sec, user, buffy);
+			buffy.append(KnowWEUtils.maskHTML(" </div>"));
 			buffy.append("}}}\n");
 			return buffy.toString();
 		}

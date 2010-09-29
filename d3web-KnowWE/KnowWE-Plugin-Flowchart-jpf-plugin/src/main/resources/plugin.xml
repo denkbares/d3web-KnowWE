@@ -4,6 +4,7 @@
 	
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
+		<import plugin-id="d3web-DiaFlux" />
 		<import plugin-id="KnowWE-Plugin-d3web" />
 	</requires>
 	
