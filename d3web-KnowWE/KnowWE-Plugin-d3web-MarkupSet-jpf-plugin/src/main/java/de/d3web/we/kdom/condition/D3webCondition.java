@@ -19,7 +19,7 @@
  */
 package de.d3web.we.kdom.condition;
 
-import de.d3web.core.inference.condition.TerminalCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -31,8 +31,8 @@ import de.d3web.we.kdom.Section;
  * @created 26.07.2010
  * @param <T>
  */
-public abstract class D3webTerminalCondition<T extends KnowWEObjectType> extends DefaultAbstractKnowWEObjectType {
+public abstract class D3webCondition<T extends KnowWEObjectType> extends DefaultAbstractKnowWEObjectType {
 
-	public abstract TerminalCondition getTerminalCondition(KnowWEArticle article, Section<T> s);
+	public abstract Condition getCondition(KnowWEArticle article, Section<T> s);
 
 }

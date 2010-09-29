@@ -29,6 +29,7 @@ import de.d3web.core.inference.condition.CondNumGreater;
 import de.d3web.core.inference.condition.CondNumGreaterEqual;
 import de.d3web.core.inference.condition.CondNumLess;
 import de.d3web.core.inference.condition.CondNumLessEqual;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
@@ -58,7 +59,7 @@ import de.d3web.we.utils.SplitUtility;
  * @author Jochen
  * 
  */
-public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
+public class NumericalFinding extends D3webCondition<NumericalFinding> {
 
 	private static String[] comparators = {
 			"<=", ">=", "==", "=", "<", ">", };
@@ -106,7 +107,7 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 	}
 
 	@Override
-	public TerminalCondition getTerminalCondition(KnowWEArticle article, Section<NumericalFinding> s) {
+	public Condition getCondition(KnowWEArticle article, Section<NumericalFinding> s) {
 		Section<QuestionReference> qRef = s.findSuccessor(QuestionReference.class);
 
 		Section<Number> numberSec = s.findSuccessor(Number.class);

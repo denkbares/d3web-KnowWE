@@ -23,6 +23,7 @@ package de.d3web.we.kdom.condition;
 import java.util.List;
 
 import de.d3web.core.inference.condition.CondEqual;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.session.values.ChoiceValue;
@@ -50,7 +51,7 @@ import de.d3web.we.utils.SplitUtility;
  * @author Jochen
  * 
  */
-public class Finding extends D3webTerminalCondition<Finding> {
+public class Finding extends D3webCondition<Finding> {
 
 	@Override
 	protected void init() {
@@ -78,7 +79,7 @@ public class Finding extends D3webTerminalCondition<Finding> {
 	}
 
 	@Override
-	public TerminalCondition getTerminalCondition(KnowWEArticle article, Section<Finding> s) {
+	public Condition getCondition(KnowWEArticle article, Section<Finding> s) {
 
 		Section<QuestionReference> qRef = s.findSuccessor(QuestionReference.class);
 

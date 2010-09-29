@@ -22,7 +22,7 @@ package de.d3web.we.kdom.condition;
 import java.util.List;
 
 import de.d3web.core.inference.condition.CondNumIn;
-import de.d3web.core.inference.condition.TerminalCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
@@ -35,7 +35,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.utils.SplitUtility;
 
-public class NumericalIntervallFinding extends D3webTerminalCondition<NumericalFinding> {
+public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> {
 
 	public NumericalIntervallFinding() {
 		this.setSectionFinder(new NumericalIntervallFinder());
@@ -47,7 +47,7 @@ public class NumericalIntervallFinding extends D3webTerminalCondition<NumericalF
 	}
 
 	@Override
-	public TerminalCondition getTerminalCondition(KnowWEArticle article, Section<NumericalFinding> s) {
+	public Condition getCondition(KnowWEArticle article, Section<NumericalFinding> s) {
 		Section<QuestionReference> qRef = s.findSuccessor(QuestionReference.class);
 
 		Section<Intervall> intervall = s.findSuccessor(Intervall.class);

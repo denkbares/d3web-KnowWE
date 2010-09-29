@@ -103,9 +103,9 @@ public class KDOMConditionFactory {
 		if (c.get().isTerminal(c)) {
 			Section<? extends TerminalCondition> terminal = c.get().getTerminal(c);
 
-			Section<? extends D3webTerminalCondition> termChild = terminal.findChildOfType(D3webTerminalCondition.class);
+			Section<? extends D3webCondition> termChild = terminal.findChildOfType(D3webCondition.class);
 
-			Condition cond = termChild.get().getTerminalCondition(article, termChild);
+			Condition cond = termChild.get().getCondition(article, termChild);
 
 			return cond;
 		}
