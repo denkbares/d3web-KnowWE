@@ -51,12 +51,13 @@ public class OneQuestionDialogTagHandler extends AbstractTagHandler {
 		// web, topic);
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user.getHttpRequest());
 
-		//if the OQDialog is in the LeftMenu, the topic is 'LeftMenu',
-		// but then no KB is found. Set to article.
-		if (topic.equalsIgnoreCase("LeftMenu")) { 
-			topic = user.getUrlParameterMap().get("page");
+		// if the OQDialog is not in the main article (e.g. LeftMenu),
+		// then no KB is found. Set to article.
+		String articleName = user.getUrlParameterMap().get("page");
+		if (!topic.equalsIgnoreCase(articleName)) {
+			topic = articleName;
 		}
-		
+
 		D3webKnowledgeService knowledgeServiceInTopic = D3webModule.getAD3webKnowledgeServiceInTopic(
 				web, topic);
 		if (knowledgeServiceInTopic == null) return rb.getString("KnowWE.quicki.error");
@@ -67,7 +68,7 @@ public class OneQuestionDialogTagHandler extends AbstractTagHandler {
 
 		OneQuestionDialogHistory.getInstance().addInterviewObject(o);
 
-		String html = "<h3 class=\"oneQuestionDialog\">One Question Dialog</h3>";
+		String html = "<h3 class=\"oneQuestionDialog\">Dialog</h3>";
 
 		if (o == null) {
 			return html
