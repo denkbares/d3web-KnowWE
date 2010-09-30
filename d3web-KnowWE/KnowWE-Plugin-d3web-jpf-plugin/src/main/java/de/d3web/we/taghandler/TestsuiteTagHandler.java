@@ -43,8 +43,8 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class TestsuiteTagHandler extends AbstractTagHandler {
 
-	private Map<String, Section<TestsuiteSection>> testsuites = new HashMap<String, Section<TestsuiteSection>>();
-	private DecimalFormat formatter = new DecimalFormat("0.00");
+	private final Map<String, Section<TestsuiteSection>> testsuites = new HashMap<String, Section<TestsuiteSection>>();
+	private final DecimalFormat formatter = new DecimalFormat("0.00");
 	private String topic;
 	private String web;
 	private String article;
@@ -97,7 +97,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append(rb.getString("KnowWE.Testsuite.headline"));
 		html.append("</h3>");
 		html.append(renderTestsuiteResult(t));
-		html.append("</div>");
+		html.append("</div>\n");
 
 		return html.toString();
 	}
@@ -118,7 +118,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append("</p>");
 		html.append("</div>");
 		html.append("</fieldset>");
-		html.append("</div>");
+		html.append("</div>\n");
 
 		return html.toString();
 
@@ -160,11 +160,11 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append(" ");
 		html.append(rb.getString("KnowWE.Testsuite.testsuitesfound2"));
 		html.append("</p>");
-		html.append("</div>");
+		html.append("</div>\n");
 
 		// Form
 		html.append(renderSelectTestsuites());
-		html.append("</div>");
+		html.append("</div>\n");
 
 		return html.toString();
 	}
@@ -224,7 +224,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append(renderExtend());
 
 		// Close Tags
-		html.append("</fieldset>");
+		html.append("</fieldset>\n");
 
 		return html.toString();
 	}
@@ -244,7 +244,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		// Dropdown Listbox
 		html.append("<div id='testsuite-extend-panel' class='hidden'>");
 		html.append(renderSelectTestsuites());
-		html.append("</div>");
+		html.append("</div>\n");
 
 		return html.toString();
 	}
@@ -280,7 +280,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append(rb.getString("KnowWE.Testsuite.notconsistent"));
 		html.append("<br /><br />");
 		html.append("</p>");
-		html.append("</div>");
+		html.append("</div>\n");
 
 		html.append(renderNotConsistentDetails(t));
 
@@ -309,7 +309,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append("<p style='margin-left:22px'>");
 		html.append(findInconsistentRTC(t));
 		html.append("</p>");
-		html.append("</div>");
+		html.append("</div>\n");
 
 		return html.toString();
 	}
@@ -357,7 +357,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append(renderExtend());
 
 		// Close Tags
-		html.append("</fieldset>");
+		html.append("</fieldset>\n");
 
 		return html.toString();
 	}
@@ -377,7 +377,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		// Table containing details
 		html.append("<div id='testsuite-detail-panel' class='hidden'>");
 		html.append(renderDetailResultTable(t));
-		html.append("</div>");
+		html.append("</div>\n");
 
 		return html.toString();
 	}
@@ -457,7 +457,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		StringBuilder html = new StringBuilder();
 
 		// Clear floating
-		html.append("<div style='clear:both'></div>");
+		html.append("<div style='clear:both'></div>\n");
 
 		// Dropdownlistbox
 		html.append("<form action='' method='get'>");
@@ -487,7 +487,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 
 		// Close Tags
 		html.append("</fieldset>");
-		html.append("</form>");
+		html.append("</form>\n");
 
 		return html.toString();
 	}
@@ -567,7 +567,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append("'>");
 		html.append(rb.getString("KnowWE.Testsuite.downloadpdf"));
 		html.append("</a>");
-		html.append("</div>");
+		html.append("</div>\n");
 
 		return html.toString();
 	}
@@ -589,7 +589,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append("'>");
 		html.append(rb.getString("KnowWE.Testsuite.downloaddot"));
 		html.append("</a>");
-		html.append("</div>");
+		html.append("</div>\n");
 
 		return html.toString();
 	}
