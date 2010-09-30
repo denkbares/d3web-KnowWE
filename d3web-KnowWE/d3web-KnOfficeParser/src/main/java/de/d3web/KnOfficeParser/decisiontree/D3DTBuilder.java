@@ -167,11 +167,11 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			if (currentQuestion instanceof QuestionYN) {
 				QuestionYN cq = (QuestionYN) currentQuestion;
 				if (name.equalsIgnoreCase("ja") || name.equalsIgnoreCase("yes")) {
-					answer = cq.yes;
+					answer = cq.getAnswerChoiceYes();
 				}
 				else if (name.equalsIgnoreCase("nein")
 						|| name.equalsIgnoreCase("no")) {
-					answer = cq.no;
+					answer = cq.getAnswerChoiceNo();
 				}
 				else {
 					errors.add(MessageKnOfficeGenerator.createWrongYNAnswer(

@@ -232,10 +232,10 @@ public class D3webConditionBuilder implements ConditionBuilder {
 			if (qc instanceof QuestionYN) {
 				QuestionYN qyn = (QuestionYN) qc;
 				if ((value.equalsIgnoreCase("ja")) || (value.equalsIgnoreCase("yes"))) {
-					answer = qyn.yes;
+					answer = qyn.getAnswerChoiceYes();
 				}
 				else if ((value.equalsIgnoreCase("nein")) || (value.equalsIgnoreCase("no"))) {
-					answer = qyn.no;
+					answer = qyn.getAnswerChoiceNo();
 				}
 				else {
 					errors.add(MessageKnOfficeGenerator.createWrongYNAnswer(

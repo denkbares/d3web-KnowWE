@@ -226,10 +226,10 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 			QuestionYN qyn = (QuestionYN) currentquestion;
 			Choice ac;
 			if (answer == null || answer.equalsIgnoreCase("ja") || answer.equalsIgnoreCase("yes")) {
-				ac = qyn.yes;
+				ac = qyn.getAnswerChoiceYes();
 			}
 			else if (answer.equalsIgnoreCase("nein") || answer.equalsIgnoreCase("no")) {
-				ac = qyn.no;
+				ac = qyn.getAnswerChoiceNo();
 			}
 			else {
 				errors.add(MessageKnOfficeGenerator.createAnswerNotYNException(file, line, column,
