@@ -56,6 +56,10 @@ public class QuickInterviewTagHandler extends AbstractTagHandler {
 	@Override
 	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 
+		if (topic.equalsIgnoreCase("LeftMenu")) {
+			topic = user.getUrlParameterMap().get("page");
+		}
+
 		String iv = QuickInterviewAction.callQuickInterviewRenderer(topic, user.getUsername(),
 				user.getHttpRequest(), web, user);
 		if (iv == null) return null;

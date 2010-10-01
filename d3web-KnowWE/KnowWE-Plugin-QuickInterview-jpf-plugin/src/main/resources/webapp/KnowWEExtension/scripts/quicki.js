@@ -100,9 +100,9 @@ KNOWWE.plugin.quicki = function(){
                 _KE.add('click', element, KNOWWE.plugin.quicki.toggleQuestionnaireVisibility);
         	});
         	
-        	_KS('.question').each(function(element){
-        		_KE.add('click', element, KNOWWE.plugin.quicki.toggleQuestionVisibility);
-        	});
+        	//_KS('.question').each(function(element){
+        		//_KE.add('click', element, KNOWWE.plugin.quicki.toggleQuestionVisibility);
+        	//});
         	
         	_KS('.num-ok').each(function( element ){
         		_KE.add('click', element, KNOWWE.plugin.quicki.numAnswerClicked);
@@ -141,9 +141,13 @@ KNOWWE.plugin.quicki = function(){
          */
         restoreQuestionnaireVis : function(){
         	
+
+        	alert(questionnaireVis);
+        	
         	// split questionnaireVis storage into questionnaire;vis
         	// elments
         	var qs = questionnaireVis.split('###');
+        	
         	for (var i = 0; i < qs.length; i++) {
         	
         		// split into questionnaire id and visibility
@@ -560,7 +564,7 @@ KNOWWE.plugin.quicki = function(){
         toggleQuestionVisibility : function( event ){
         	      
         	// get the clicked element, i.e., the questionnaire
-        	var question = _KE.target(event); 	
+        	/*var question = _KE.target(event); 	
         	var group = _KS('#group_' + question.id);
         	
         	if(group.style.display=='block'){
@@ -568,7 +572,7 @@ KNOWWE.plugin.quicki = function(){
             } else if (group.style.display=='none'){     
             	group.style.display = 'block';
             } 
-          	KNOWWE.plugin.quicki.showRefreshed;
+          	KNOWWE.plugin.quicki.showRefreshed;*/
         },
         /**
          * Function quickIReset 
