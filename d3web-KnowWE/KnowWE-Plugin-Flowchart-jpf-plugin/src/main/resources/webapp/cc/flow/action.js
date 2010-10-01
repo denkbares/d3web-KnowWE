@@ -29,10 +29,11 @@ Action.prototype.getDisplayText = function() {
 	if (this.markup == 'NOP')		return '---';
 	if (this.valueString == "ERFRAGE")	return 'fragen';
 	if (this.valueString == "INSTANT")	return 'immer fragen';
-	if (this.valueString == "P7")		return 'etabliert';
-	if (this.valueString == "N7")		return 'ausgeschlossen';
-	if (this.valueString == "YES")		return 'ja';
-	if (this.valueString == "NO")		return 'nein';
+	if (this.valueString == "P7")		return 'established';
+	if (this.valueString == "N7")		return 'excluded';
+	if (this.valueString == "YES")		return 'yes';
+	if (this.valueString == "NO")		return 'no';
+	if (this.valueString == "P4")		return 'suspected';
 	if (this.valueString == "()")		return 'Formel: f(x)='; // nur leere Formel so anzeigen
 	return this.valueString;
 }
@@ -1055,21 +1056,20 @@ ActionPane.prototype.render = function() {
 
 	var valueText = null;
 	var valueError = null;
-	if (this.action && !this.action.isDecision()) {
+	//Hack for displaying waiting time (startnode) in Wait Nodes
+	valueText = this.action.getDisplayText();
+	if (this.action.isFlowCall()) {
+		if (this.action.expression.startsWith('CALL[Warten') || this.action.expression.startsWith('CALL[Wait'))
+			valueText = this.action.getDisplayText();
+		else
+			valueText = null;
+	} else if (this.action.isIndication()) {
 //		valueText = this.action.getDisplayText(); // zeigt ZusatzInfo an (fragen/ immer fragen,...)
 		valueText = ' ';
-		
-		//Hack for displaying waiting time (startnode) in Wait Nodes
-		if (this.action.isFlowCall()) {
-			if (this.action.expression.startsWith('CALL[Warten') || this.action.expression.startsWith('CALL[Wait'))
-			valueText = this.action.getDisplayText();
-		}
-			
-		
-		
-		valueError = this.action.getError();
 	}
 	
+	valueError = this.action.getError();
+
 	var object;
 	var dom = Builder.node('div', {
 		className: 'ActionPane',

@@ -440,7 +440,7 @@ Flowchart.prototype.toXML = function(includePreview) {
 	return xml;
 }
 
-Flowchart.prototype.toPreviewHTML = function(node) {
+Flowchart.prototype.toPreviewHTML = function(node) { 
 	//return node.innerHTML;
 	if (node.nodeName == '#text') return node.data;
 	if (node.style.display == 'none') return '';
@@ -453,12 +453,16 @@ Flowchart.prototype.toPreviewHTML = function(node) {
 	// for nodes we have a problem: padding is not taken nto consideration
 	// therefore allow width+padding not to be more than parent's width - 2
 
-	if (node.parentNode.hasClassName('Node') && (node.hasClassName('start') || node.hasClassName('exit') || node.hasClassName('flowchart') || node.hasClassName('action') || node.hasClassName('question'))) {
+	if (node.parentNode.hasClassName('Node') && (node.hasClassName('start') || node.hasClassName('exit') || node.hasClassName('flowchart') || node.hasClassName('action') || node.hasClassName('question') || node.hasClassName('comment'))) {
 		size.width = Element.getWidth(node.parentNode)-14;
 		size.height += 2; 
 	}
-	if (node.parentNode.hasClassName('Node') && (node.hasClassName('start') || node.hasClassName('exit'))) {
-		size.width += 2;
+	if (node.parentNode.hasClassName('Node') && (node.hasClassName('start') || node.hasClassName('exit') || node.hasClassName('comment'))) {
+		if (node.hasClassName('exit'))
+			size.width += 2;
+		else 
+			size.width += 4;
+			
 	}
 	// for nodes we want to have the fixed size in addition to the style
 	var attributes = ['position', 'display', 'visibility', 'left', 'right', 'top', 'bottom', 'overflow'];
