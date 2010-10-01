@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.List;
 
 import de.d3web.abstraction.ActionSetValue;
-import de.d3web.abstraction.formula.FormulaExpression;
 import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
@@ -175,9 +174,7 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 				Double d = Double.parseDouble(argument);
 				ActionSetValue action = new ActionSetValue();
 				action.setQuestion(q);
-				FormulaExpression formulaExpression = new FormulaExpression(q,
-						new FormulaNumber(d));
-				action.setValue(formulaExpression);
+				action.setValue(new FormulaNumber(d));
 
 				Rule r = RuleFactory.createRule(newRuleID, action, cond, null, null);
 				if (r != null) {

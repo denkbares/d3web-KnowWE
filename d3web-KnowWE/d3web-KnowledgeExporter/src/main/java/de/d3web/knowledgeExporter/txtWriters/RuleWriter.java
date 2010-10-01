@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import de.d3web.abstraction.ActionQuestionSetter;
-import de.d3web.abstraction.formula.FormulaExpression;
+import de.d3web.abstraction.formula.FormulaElement;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
@@ -182,9 +182,8 @@ public class RuleWriter extends TxtKnowledgeWriter {
 					s.append("" + quote(((Value) value).getValue().toString()));
 				}
 			}
-			else if (value instanceof FormulaExpression) {
-				FormulaExpression exp = (FormulaExpression) value;
-				s.append("" + exp.getFormulaElement().toString());
+			else if (value instanceof FormulaElement) {
+				s.append("" + value.toString());
 			}
 		}
 		else if (a instanceof ActionNextQASet) {

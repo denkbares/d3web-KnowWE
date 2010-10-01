@@ -28,7 +28,7 @@ import junit.framework.TestCase;
 import utils.KBCreationTestUtil;
 import utils.MyTestArticleManager;
 import de.d3web.abstraction.ActionQuestionSetter;
-import de.d3web.abstraction.formula.FormulaExpression;
+import de.d3web.abstraction.formula.FormulaElement;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.PSMethod;
@@ -271,24 +271,18 @@ public class RulesTest extends TestCase {
 							loadedAction.getValue().getClass());
 
 					// FormulaExpression specific tests
-					if (createdAction.getValue() instanceof FormulaExpression) {
-						FormulaExpression createdFormula =
-								(FormulaExpression) createdAction.getValue();
-						FormulaExpression loadedFormula =
-								(FormulaExpression) loadedAction.getValue();
-
-						// Compare Question of FormulaExpression
-						assertEquals("FormulaExpression of " + createdRule.getId()
-								+ " has wrong QuestionNum",
-								createdFormula.getQuestionNum(),
-								loadedFormula.getQuestionNum());
+					if (createdAction.getValue() instanceof FormulaElement) {
+						FormulaElement createdFormula =
+								(FormulaElement) createdAction.getValue();
+						FormulaElement loadedFormula =
+								(FormulaElement) loadedAction.getValue();
 
 						// Compare FormulaExpression formula (sorry for the
 						// toString() comparison)
 						assertEquals("FormulaExpression of " + createdRule.getId()
 								+ " has wrong FormulaElement",
-								createdFormula.getFormulaElement().toString(),
-								loadedFormula.getFormulaElement().toString());
+								createdFormula.toString(),
+								loadedFormula.toString());
 					}
 
 				}

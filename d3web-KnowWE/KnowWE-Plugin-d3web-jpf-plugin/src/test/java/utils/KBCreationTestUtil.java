@@ -21,12 +21,9 @@
 package utils;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.d3web.abstraction.formula.FormulaExpression;
 import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.abstraction.formula.Operator;
 import de.d3web.abstraction.formula.Operator.Operation;
@@ -68,7 +65,6 @@ import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.StateRating;
 import de.d3web.empiricaltesting.TestSuite;
 import de.d3web.scoring.Score;
-import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelationType;
 
@@ -91,8 +87,6 @@ import de.d3web.xcl.XCLRelationType;
 public class KBCreationTestUtil {
 
 	public static final String KBCREATION_ARTICLE_FILE = "src/test/resources/KBCreationTest.txt";
-
-	private final Collection<KnowWEArticle> articles = new HashSet<KnowWEArticle>();
 
 	private static KBCreationTestUtil instance = new KBCreationTestUtil();
 	private KnowledgeBase createdKB;
@@ -397,8 +391,7 @@ public class KBCreationTestUtil {
 		String ruleID = createdKBM.createRuleID();
 		QuestionNum q2 = (QuestionNum) createdKBM.findQuestion("Num. Mileage evaluation");
 		FormulaNumber fn1 = new FormulaNumber(110.0);
-		FormulaExpression f1 = new FormulaExpression(q2, fn1);
-		RuleFactory.createSetValueRule(ruleID, q2, f1, c1);
+		RuleFactory.createSetValueRule(ruleID, q2, fn1, c1);
 
 		// Create Rule R5:
 		// - Driving [mc]
@@ -409,8 +402,7 @@ public class KBCreationTestUtil {
 		ruleID = createdKBM.createRuleID();
 		QuestionNum q3 = (QuestionNum) createdKBM.findQuestion("Num. Mileage evaluation");
 		FormulaNumber fn2 = new FormulaNumber(20.0);
-		FormulaExpression f2 = new FormulaExpression(q3, fn2);
-		RuleFactory.createSetValueRule(ruleID, q3, new Object[] { f2 }, c2);
+		RuleFactory.createSetValueRule(ruleID, q3, new Object[] { fn2 }, c2);
 	}
 
 	/**
@@ -483,8 +475,7 @@ public class KBCreationTestUtil {
 		Operator d = new Operator(new QNumWrapper(q11), new QNumWrapper(q12), Operation.Div);
 		FormulaNumber fn = new FormulaNumber(100.0);
 		Operator m = new Operator(d, fn, Operation.Mult);
-		FormulaExpression f = new FormulaExpression(q3, m);
-		RuleFactory.createSetValueRule(ruleID, q3, f, c1);
+		RuleFactory.createSetValueRule(ruleID, q3, m, c1);
 
 		// Create Rule R9:
 		// IF "Num. Mileage evaluation" > 130
@@ -506,8 +497,7 @@ public class KBCreationTestUtil {
 		QuestionNum qnum = (QuestionNum) createdKBM.findQuestion("Real mileage  /100km");
 		FormulaNumber fn2 = new FormulaNumber(2.0);
 		Operator add = new Operator(new QNumWrapper(qnum), fn2, Operation.Add);
-		FormulaExpression f2 = new FormulaExpression(qnum, add);
-		RuleFactory.createSetValueRule(ruleID, qnum, f2, conditionIf4);
+		RuleFactory.createSetValueRule(ruleID, qnum, add, conditionIf4);
 
 		// Create Rule R11:
 		// IF Driving = insufficient power on full load
@@ -520,9 +510,8 @@ public class KBCreationTestUtil {
 		FormulaNumber fn3 = new FormulaNumber(2.0);
 		Operator addition = new Operator(new QNumWrapper(questionFormula), fn3, Operation.Add);
 		QuestionNum questionThen = (QuestionNum) createdKBM.findQuestion("Real mileage  /100km");
-		FormulaExpression f3 = new FormulaExpression(questionThen, addition);
 		ruleID = createdKBM.createRuleID();
-		RuleFactory.createSetValueRule(ruleID, questionThen, f3, conditionIf5);
+		RuleFactory.createSetValueRule(ruleID, questionThen, addition, conditionIf5);
 
 		// Create Rule R12:
 		// IF Driving = insufficient power on partial load
@@ -535,9 +524,8 @@ public class KBCreationTestUtil {
 		FormulaNumber fn4 = new FormulaNumber(1.0);
 		Operator subtraction = new Operator(new QNumWrapper(questionFormula2), fn4, Operation.Sub);
 		QuestionNum questionThen2 = (QuestionNum) createdKBM.findQuestion("Real mileage  /100km");
-		FormulaExpression f4 = new FormulaExpression(questionThen2, subtraction);
 		ruleID = createdKBM.createRuleID();
-		RuleFactory.createSetValueRule(ruleID, questionThen2, f4, conditionIf6);
+		RuleFactory.createSetValueRule(ruleID, questionThen2, subtraction, conditionIf6);
 
 	}
 

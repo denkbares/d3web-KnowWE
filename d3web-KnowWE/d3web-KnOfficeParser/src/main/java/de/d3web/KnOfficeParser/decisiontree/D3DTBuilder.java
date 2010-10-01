@@ -40,7 +40,6 @@ import de.d3web.KnOfficeParser.util.DefaultD3webLexerErrorHandler;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.KnOfficeParser.util.Scorefinder;
-import de.d3web.abstraction.formula.FormulaExpression;
 import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
@@ -407,13 +406,12 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 						continue;
 					}
 					FormulaNumber num = new FormulaNumber(d);
-					FormulaExpression e = new FormulaExpression(q, num);
 					if (set) {
-						RuleFactory.createSetValueRule(newRuleID, q, e, cond);
+						RuleFactory.createSetValueRule(newRuleID, q, num, cond);
 					}
 					else {
 						RuleFactory.createSetValueRule(newRuleID, q,
-								new Object[] { e }, cond);
+								new Object[] { num }, cond);
 					}
 				}
 				else {

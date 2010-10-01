@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -40,7 +40,7 @@ import de.d3web.KnOfficeParser.util.DefaultD3webLexerErrorHandler;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.KnOfficeParser.util.Scorefinder;
-import de.d3web.abstraction.formula.FormulaExpression;
+import de.d3web.abstraction.formula.FormulaElement;
 import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.abstraction.formula.FormulaNumberElement;
 import de.d3web.abstraction.formula.Operator;
@@ -65,9 +65,9 @@ import de.d3web.scoring.Score;
 
 /**
  * Adapterklasse um d3 Regeln zu erstellen
- *
+ * 
  * @author Markus Friedrich
- *
+ * 
  */
 public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 
@@ -95,14 +95,14 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		private final Condition ifcond;
 		private final Condition exceptcond;
 		private Choice answers;
-		private FormulaExpression formula;
+		private FormulaElement formula;
 		private ArrayList<QASet> qcons;
 		private Score score;
 		private Solution diag;
 
 		public MyRule(ruletype type, Question question,
 				Condition ifcond, Condition exceptcond,
-				Choice answers, FormulaExpression formula,
+				Choice answers, FormulaElement formula,
 				ArrayList<QASet> qcons) {
 			super();
 			this.type = type;
@@ -447,14 +447,13 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		if (currentquestion instanceof QuestionNum) {
 			QuestionNum qnum = (QuestionNum) currentquestion;
 
-			FormulaExpression formula;
+			FormulaElement formula;
 			if (op.equals("=")) {
-				formula = new FormulaExpression(qnum, formulaStack.pop());
+				formula = formulaStack.pop();
 			}
 			else if (op.equals("+=")) {
-				FormulaNumberElement fne = new Operator(new QNumWrapper(qnum),
+				formula = new Operator(new QNumWrapper(qnum),
 						formulaStack.pop(), Operation.Add);
-				formula = new FormulaExpression(qnum, fne);
 			}
 			else {
 				formula = null;
