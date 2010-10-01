@@ -24,6 +24,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * 
@@ -33,6 +34,16 @@ import de.d3web.we.kdom.Section;
  */
 public abstract class D3webCondition<T extends KnowWEObjectType> extends DefaultAbstractKnowWEObjectType {
 
-	public abstract Condition getCondition(KnowWEArticle article, Section<T> s);
+	private static final String COND_STORE_KEY = "cond-store-key";
+
+	public Condition getCondition(KnowWEArticle article, Section<T> s) {
+		return (Condition) KnowWEUtils.getStoredObject(article, s, COND_STORE_KEY);
+	}
+	
+	
+	protected void storeCondition(KnowWEArticle art, Condition c, Section<? extends D3webCondition> section) {
+		KnowWEUtils.storeSectionInfo(section, COND_STORE_KEY, c);
+	}
+
 
 }

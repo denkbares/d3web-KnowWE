@@ -19,19 +19,24 @@
  */
 package de.d3web.we.kdom.condition;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
-import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.message.NoSuchObjectError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.QuestionReference;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 
 /**
  * Implements the CondKnown Condition to be used as child type in
@@ -53,7 +58,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR7));
 
 		QuestionReference question = new QuestionReference();
-		question.setSectionFinder(new SectionFinder() {
+		question.setSectionFinder(new ISectionFinder() {
 
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
@@ -62,9 +67,11 @@ public class CondKnown extends D3webCondition<CondKnown> {
 			}
 		});
 		this.addChildType(question);
+		this.addSubtreeHandler(new CondKnownCreateHandler());
 	}
 
-	class CondKnownFinder extends SectionFinder {
+
+	class CondKnownFinder implements ISectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
@@ -80,17 +87,43 @@ public class CondKnown extends D3webCondition<CondKnown> {
 
 	}
 
-	@Override
-	public Condition getCondition(KnowWEArticle article, Section<CondKnown> s) {
-		Section<QuestionReference> qRef = s.findSuccessor(QuestionReference.class);
-		if (qRef != null) {
-			Question q = qRef.get().getTermObject(article, qRef);
+	class CondKnownCreateHandler extends D3webSubtreeHandler<CondKnown> {
 
-			if (q != null) {
-				return new de.d3web.core.inference.condition.CondKnown(q);
-			}
+		@Override
+		public boolean needsToCreate(KnowWEArticle article, Section<CondKnown> s) {
+			return getCondition(article, s) == null;
 		}
-		return null;
+
+		@Override
+		public boolean needsToDestroy(KnowWEArticle article, Section<CondKnown> s) {
+			return s.isOrHasSuccessorNotReusedBy(article.getTitle());
+		}
+
+		@Override
+		public void destroy(KnowWEArticle article, Section<CondKnown> s) {
+			storeCondition(article,
+					null, s);
+		}
+
+		@Override
+		public Collection<de.d3web.we.kdom.report.KDOMReportMessage> create(KnowWEArticle article, Section<CondKnown> s) {
+
+			Section<QuestionReference> qRef = s.findSuccessor(QuestionReference.class);
+			if (qRef != null) {
+				Question q = qRef.get().getTermObject(article, qRef);
+
+				if (q != null) {
+					storeCondition(article,
+							new de.d3web.core.inference.condition.CondKnown(q), s);
+				}
+				else {
+					return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(""));
+					
+				}
+			}
+			return new ArrayList<KDOMReportMessage>(0);
+		}
+
 	}
 
 }
