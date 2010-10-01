@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import de.d3web.abstraction.ActionQuestionSetter;
+import de.d3web.abstraction.ActionSetValue;
 import de.d3web.abstraction.formula.FormulaElement;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.Rule;
@@ -53,31 +53,21 @@ public class RuleWriter extends TxtKnowledgeWriter {
 
 	private final String string_if;
 	private final String string_then;
-	private final String string_or;
-	private final String string_and;
 	private final String string_not;
 	private final String string_except;
 	private final String string_kontext;
-	private final String string_minmax;
 	private final String string_instant;
 	private final String string_hide;
-	private final String string_known;
-	private final String string_unknown;
 
 	public RuleWriter(KnowledgeManager manager) {
 		super(manager);
 		string_if = KnowledgeManager.getResourceBundle().getString("ruleWriter.if");
 		string_then = KnowledgeManager.getResourceBundle().getString("ruleWriter.then");
-		string_or = KnowledgeManager.getResourceBundle().getString("ruleWriter.or");
-		string_and = KnowledgeManager.getResourceBundle().getString("ruleWriter.and");
 		string_not = KnowledgeManager.getResourceBundle().getString("ruleWriter.not");
 		string_except = KnowledgeManager.getResourceBundle().getString("ruleWriter.except");
 		string_kontext = KnowledgeManager.getResourceBundle().getString("ruleWriter.kontext");
-		string_minmax = KnowledgeManager.getResourceBundle().getString("ruleWriter.minmax");
 		string_instant = KnowledgeManager.getResourceBundle().getString("ruleWriter.instant");
 		string_hide = KnowledgeManager.getResourceBundle().getString("ruleWriter.hide");
-		string_known = KnowledgeManager.getResourceBundle().getString("ruleWriter.known");
-		string_unknown = KnowledgeManager.getResourceBundle().getString("ruleWriter.unknown");
 
 		// string_known =
 		// de.d3web.textParser.complexRule.ComplexRuleConfiguration.BEKANNT;
@@ -87,20 +77,15 @@ public class RuleWriter extends TxtKnowledgeWriter {
 	@Override
 	public String writeText() {
 		StringBuffer s = new StringBuffer();
-		Collection rules = manager.getAllRules();
+		Collection<Rule> rules = manager.getAllRules();
 
-		for (Iterator iter = rules.iterator(); iter.hasNext();) {
-			Object element = iter.next();
-			if (element instanceof Rule) {
-				Rule rule = (Rule) element;
-				if (!manager.isDone(rule)) {
-					if (isValidRule(rule)) {
-						appendRule(rule, s);
-					}
-
+		for (Iterator<Rule> iter = rules.iterator(); iter.hasNext();) {
+			Rule rule = iter.next();
+			if (!manager.isDone(rule)) {
+				if (isValidRule(rule)) {
+					appendRule(rule, s);
 				}
 			}
-
 		}
 
 		return s.toString();
@@ -152,9 +137,9 @@ public class RuleWriter extends TxtKnowledgeWriter {
 			s.append(" = ");
 			s.append(action.getScore().toString());
 		}
-		else if (a instanceof ActionQuestionSetter) {
+		else if (a instanceof ActionSetValue) {
 
-			ActionQuestionSetter action = (ActionQuestionSetter) a;
+			ActionSetValue action = (ActionSetValue) a;
 			Question q = action.getQuestion();
 			if (q == null) {
 				// Ganze Regel wird dann nicht rausgeschrieben
@@ -170,9 +155,9 @@ public class RuleWriter extends TxtKnowledgeWriter {
 			if (value instanceof Value) {
 				if (value instanceof MultipleChoiceValue) {
 					MultipleChoiceValue mcv = (MultipleChoiceValue) value;
-					List<Choice> choices = (List<Choice>) mcv.getValue();
+					List<?> choices = (List<?>) mcv.getValue();
 					for (int i = 0; i < choices.size(); i++) {
-						s.append(choices.get(i).getName());
+						s.append(((Choice) choices.get(i)).getName());
 						if (i < choices.size() - 1) {
 							s.append(" ; ");
 						}
@@ -193,9 +178,9 @@ public class RuleWriter extends TxtKnowledgeWriter {
 			}
 
 			ActionNextQASet nQASet = (ActionNextQASet) a;
-			List l = nQASet.getQASets();
-			for (Iterator iter = l.iterator(); iter.hasNext();) {
-				QASet element = (QASet) iter.next();
+			List<QASet> l = nQASet.getQASets();
+			for (Iterator<QASet> iter = l.iterator(); iter.hasNext();) {
+				QASet element = iter.next();
 				s.append(quote(element.toString()) + " ; ");
 			}
 			s.replace(s.length() - 2, s.length() - 1, "");
@@ -245,15 +230,4 @@ public class RuleWriter extends TxtKnowledgeWriter {
 	private String quote(String s) {
 		return VerbalizationManager.quoteIfNecessary(s);
 	}
-
-	private boolean stringContainsAny(String s, String[] words) {
-		for (int i = 0; i < words.length; i++) {
-			if (s.contains(words[i]) || s.contains(words[i].toUpperCase())
-					|| s.contains(words[i].toLowerCase())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 }

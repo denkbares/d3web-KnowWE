@@ -27,7 +27,7 @@ import java.util.Iterator;
 import junit.framework.TestCase;
 import utils.KBCreationTestUtil;
 import utils.MyTestArticleManager;
-import de.d3web.abstraction.ActionQuestionSetter;
+import de.d3web.abstraction.ActionSetValue;
 import de.d3web.abstraction.formula.FormulaElement;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.KnowledgeSlice;
@@ -253,10 +253,10 @@ public class RulesTest extends TestCase {
 						createdRule.getAction().getClass(), loadedRule.getAction().getClass());
 
 				// ActionSetValue specific tests
-				if (createdRule.getAction() instanceof ActionQuestionSetter) {
+				if (createdRule.getAction() instanceof ActionSetValue) {
 
-					ActionQuestionSetter createdAction = (ActionQuestionSetter) createdRule.getAction();
-					ActionQuestionSetter loadedAction = (ActionQuestionSetter) loadedRule.getAction();
+					ActionSetValue createdAction = (ActionSetValue) createdRule.getAction();
+					ActionSetValue loadedAction = (ActionSetValue) loadedRule.getAction();
 
 					// Compare questions
 					assertEquals("ActionSetValue of " + createdRule.getId()

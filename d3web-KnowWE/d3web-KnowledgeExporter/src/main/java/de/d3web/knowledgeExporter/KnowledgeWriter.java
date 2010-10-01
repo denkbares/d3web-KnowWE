@@ -23,15 +23,15 @@ package de.d3web.knowledgeExporter;
 import java.io.File;
 import java.io.IOException;
 
-import de.d3web.abstraction.ActionQuestionSetter;
-import de.d3web.core.inference.Rule;
+import de.d3web.abstraction.ActionSetValue;
 import de.d3web.core.inference.PSAction;
-import de.d3web.core.inference.condition.Condition;
+import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondQuestion;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.kernel.verbalizer.ConditionVerbalizer;
 import de.d3web.scoring.ActionHeuristicPS;
 import de.d3web.scoring.Score;
@@ -76,8 +76,8 @@ public abstract class KnowledgeWriter {
 				return false;
 			}
 		}
-		if (a instanceof ActionQuestionSetter) {
-			Question q = ((ActionQuestionSetter) a).getQuestion();
+		if (a instanceof ActionSetValue) {
+			Question q = ((ActionSetValue) a).getQuestion();
 			if (q == null) {
 				return false;
 			}

@@ -57,9 +57,7 @@ import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.indication.inference.PSMethodUserSelected;
-import de.d3web.kernel.dialogcontrol.DistributedControllerFactory;
 import de.d3web.kernel.dialogcontrol.ExternalClient;
-import de.d3web.kernel.dialogcontrol.ExternalProxy;
 import de.d3web.kernel.dialogcontrol.controllers.QASetManager;
 import de.d3web.kernel.dialogcontrol.controllers.QASetManagerManagement;
 import de.d3web.kernel.psMethods.delegate.PSMethodDelegate;
@@ -207,15 +205,6 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		session = SessionFactory.createSession(base);
 		((DefaultSession) session).addUsedPSMethod(PSMethodDelegate.getInstance());
 
-	}
-
-	private DistributedControllerFactory getControllerFactory() {
-		ExternalClient external = new DefaultExternalClient(this);
-		ExternalProxy proxy = new ExternalProxy();
-		proxy.addClient(external);
-		DistributedControllerFactory factory = new DistributedControllerFactory(
-				proxy);
-		return factory;
 	}
 
 	private void initConnection() {

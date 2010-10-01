@@ -33,9 +33,6 @@ import de.d3web.kernel.dialogcontrol.controllers.DialogController;
 import de.d3web.kernel.dialogcontrol.controllers.InvalidQASetRequestException;
 import de.d3web.kernel.dialogcontrol.controllers.MQDialogController;
 import de.d3web.kernel.dialogcontrol.controllers.OQDialogController;
-import de.d3web.kernel.psMethods.delegate.AbstractActionDelegate;
-import de.d3web.kernel.psMethods.delegate.ActionDelegate;
-import de.d3web.kernel.psMethods.delegate.ActionInstantDelegate;
 import de.d3web.kernel.psMethods.delegate.PSMethodDelegate;
 
 public class DistributedDialogController implements DialogController {
@@ -54,18 +51,7 @@ public class DistributedDialogController implements DialogController {
 		Boolean external = (Boolean) no.getProperties().getProperty(Property.EXTERNAL);
 		String targetNamespace = (String) no.getProperties().getProperty(Property.FOREIGN_NAMESPACE);
 		if (psm instanceof PSMethodDelegate) {
-			AbstractActionDelegate action = (AbstractActionDelegate) rule.getAction();
-			if (action.getTargetNamespace() != null
-					&& !action.getTargetNamespace().trim().equals("")) {
-				targetNamespace = action.getTargetNamespace();
-			}
-			if (action instanceof ActionInstantDelegate) {
-				proxy.delegateInstantly(targetNamespace, no.getId(), action.isTemporary(),
-						rule.getComment());
-			}
-			else if (action instanceof ActionDelegate) {
-				proxy.delegate(targetNamespace, no.getId(), action.isTemporary(), rule.getComment());
-			}
+			throw new IllegalArgumentException("This psm should not propergate any more.");
 		}
 		else if (external != null && external.booleanValue()) {
 			if (psm instanceof PSMethodInit) {
