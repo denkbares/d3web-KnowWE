@@ -90,8 +90,15 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 				new RuleHighlightingRenderer()));
 		List<KnowWEObjectType> termConds = new ArrayList<KnowWEObjectType>();
 
-
 		// add all the various allowed TerminalConditions here
+		try {
+			// TODO remove this evil workaround
+			// when updating KnowWE architecture
+			termConds.add((KnowWEObjectType) Class.forName("cc.knowwe.tdb.EvalCondition").newInstance());
+		}
+		catch (Throwable e) {
+			e.printStackTrace();
+		}
 		termConds.add(new Finding());
 		termConds.add(new CondKnown());
 		termConds.add(new NumericalFinding());
@@ -136,7 +143,6 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 			Section<CompositeCondition> cond = s.findSuccessor(CompositeCondition.class);
 
 			Condition d3Cond = KDOMConditionFactory.createCondition(article, cond);
-
 
 			Section<D3webRuleAction> action = s.findSuccessor(D3webRuleAction.class);
 			if (action == null) {
