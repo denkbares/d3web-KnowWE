@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SyntaxError;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
@@ -82,7 +83,7 @@ public final class MessageUtils {
 	 * @param localizedMessage the message of the syntax error
 	 * @return
 	 */
-	public static KDOMReportMessage syntaxError(String localizedMessage) {
+	public static KDOMError syntaxError(String localizedMessage) {
 		return new SyntaxError(localizedMessage);
 	}
 

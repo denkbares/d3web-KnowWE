@@ -47,7 +47,7 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 	}
 
 	@Override
-	public Condition getCondition(KnowWEArticle article, Section<NumericalFinding> s) {
+	protected Condition createCondition(KnowWEArticle article, Section<NumericalFinding> s) {
 		Section<QuestionReference> qRef = s.findSuccessor(QuestionReference.class);
 
 		Section<Intervall> intervall = s.findSuccessor(Intervall.class);

@@ -19,11 +19,15 @@
  */
 package de.d3web.we.kdom.condition;
 
+import java.util.Collection;
+
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -36,14 +40,54 @@ public abstract class D3webCondition<T extends KnowWEObjectType> extends Default
 
 	private static final String COND_STORE_KEY = "cond-store-key";
 
-	public Condition getCondition(KnowWEArticle article, Section<T> s) {
-		return (Condition) KnowWEUtils.getStoredObject(article, s, COND_STORE_KEY);
-	}
-	
-	
-	protected void storeCondition(KnowWEArticle art, Condition c, Section<? extends D3webCondition> section) {
-		KnowWEUtils.storeSectionInfo(section, COND_STORE_KEY, c);
+	public D3webCondition() {
+		this.addSubtreeHandler(new CondCreateHandler());
 	}
 
+	public final Condition getCondition(KnowWEArticle article, Section<T> s) {
+		return (Condition) KnowWEUtils.getStoredObject(article, s, COND_STORE_KEY);
+	}
+
+	private void storeCondition(KnowWEArticle article, Condition condition, Section<T> section) {
+		KnowWEUtils.storeObject(article, section, COND_STORE_KEY, condition);
+	}
+
+	/**
+	 * Creates the condition for the requested section in the specified article.
+	 * 
+	 * @created 02.10.2010
+	 * @param article to create the condition for
+	 * @param section the section of this condition
+	 * @return the newly created condition
+	 */
+	protected abstract Condition createCondition(KnowWEArticle article, Section<T> section);
+
+	class CondCreateHandler extends D3webSubtreeHandler<T> {
+
+		@Override
+		public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
+			return getCondition(article, s) == null;
+		}
+
+		@Override
+		public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
+			return s.isOrHasSuccessorNotReusedBy(article.getTitle());
+		}
+
+		@Override
+		public void destroy(KnowWEArticle article, Section<T> s) {
+			storeCondition(article, null, s);
+			KDOMReportMessage.clearMessages(article, s, getClass());
+		}
+
+		@Override
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<T> section) {
+			Condition condition = createCondition(article, section);
+			storeCondition(article, condition, section);
+			// do not overwrite existing messages
+			return null;
+		}
+
+	}
 
 }

@@ -79,7 +79,7 @@ public class Finding extends D3webCondition<Finding> {
 	}
 
 	@Override
-	public Condition getCondition(KnowWEArticle article, Section<Finding> s) {
+	protected Condition createCondition(KnowWEArticle article, Section<Finding> s) {
 
 		Section<QuestionReference> qRef = s.findSuccessor(QuestionReference.class);
 
