@@ -19,13 +19,10 @@
 package de.d3web.we.wisec.action;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.MalformedQueryException;
@@ -39,6 +36,7 @@ import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
 import de.d3web.we.core.semantic.SPARQLUtil;
 import de.d3web.we.wisec.util.Criteria;
+import de.d3web.we.wisec.util.WISECUtil;
 import de.d3web.wisec.model.RatedSubstance;
 import de.d3web.wisec.writers.SubstanceInfoWriter;
 
@@ -196,8 +194,6 @@ public class WISECRankingAction extends AbstractAction {
 	 */
 	private String renderSubstances(List<RatedSubstance> sortedSubstances, double numberSubstances, HashMap<String, Double> underlyingData, boolean printinfo) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
 
-		DecimalFormat df = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(
-				new Locale("en", "US")));
 		StringBuilder result = new StringBuilder();
 		result.append("<div class=\"zebra-table\"><table class=\"wikitable\" border=\"1\"><tr class=\"odd\"><th>Substance</th>");
 		result.append(printinfo ? "<th>Score *</th>" : "<th>Score</th>");
@@ -213,7 +209,7 @@ public class WISECRankingAction extends AbstractAction {
 			// result.append(generateLink(KnowWEUtils.urldecode(rs.getSubstance())));
 			result.append(generateLink(rs.getSubstance()));
 			result.append("</td><td>");
-			result.append(df.format(rs.getScore()));
+			result.append(WISECUtil.format(rs.getScore()));
 			result.append("</td><td>");
 			result.append(getListOccurences(rs.getSubstance()));
 			result.append("</td></tr>\n");

@@ -74,10 +74,11 @@ public class SubstanceListWriter extends WISECWriter {
 				else ConverterUtils.clean(value);
 				writer.write("|| " + criteria + " | " + value + " \n");
 			}
+			writer.write("-");
 			sourceID = list.info.get("Source_ID");
 			if (sourceID != null) {
 				writeKnowledge(writer, "\n" +
-						"@ListID: " + list.getId() + "\n\n" +
+						"@ListID: " + list.getId() + "\n" +
 						"@SourceID: " + sourceID + "\n" +
 						"%\n");
 			}

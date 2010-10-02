@@ -80,6 +80,16 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="WISECSubstanceScoringTagHandler">
+	 	<parameter id="class"
+			value="de.d3web.we.wisec.taghandler.WISECSubstanceScoringTagHandler" />
+		<parameter id="name" value="WISECSubstanceScoringTagHandler" />
+		<parameter id="description" value="TagHandler WISECSubstanceScoringTagHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="ShowSubstancesHandler">
 	 	<parameter id="class"
 			value="de.d3web.we.wisec.taghandler.ShowSubstancesHandler" />

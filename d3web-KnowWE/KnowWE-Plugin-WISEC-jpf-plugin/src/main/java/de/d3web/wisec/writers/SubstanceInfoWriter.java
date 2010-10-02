@@ -20,13 +20,10 @@ package de.d3web.wisec.writers;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import de.d3web.we.wisec.util.Criteria;
@@ -162,55 +159,10 @@ public class SubstanceInfoWriter extends WISECWriter {
 
 	private void writeCriteriaScoring(String substance, StringBuffer b) {
 
-		double totalScore = 0;
-		DecimalFormat df = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(
-				new Locale("en", "US")));
-		Collection<SubstanceList> lists = this.model.getSubstanceListsContaining(substance);
-
-		b.append("!! Criteria Scoring\n\n");
-		b.append("|| Criteria || Lists || Scoring || On Lists\n");
-
-		for (String criteriaGroup : Criteria.getCriteriaGroups()) {
-
-			b.append("|| " + criteriaGroup + "|| || || \n");
-			double criteriaScore = 0;
-
-			for (String criteria : Criteria.getCriteriasFor(criteriaGroup)) {
-				int count = 0;
-				double sum = 0;
-				b.append("| " + criteria + " | ");
-				for (SubstanceList list : lists) {
-					String value = list.criteria.get(criteria);
-					if (value != null && !value.isEmpty()) {
-						count++;
-						sum += Double.valueOf(value);
-						b.append(" [" + value + "|"
-								+ ConverterUtils.cleanWikiLinkSpaces(SubstanceListWriter.getWikiFileNameFor(list.getId()))
-								+ "]");
-					}
-				}
-				if (count > 0) {
-					double score = sum / count;
-					totalScore += score;
-					criteriaScore += score;
-					b.append("| " + ConverterUtils.colorizeText(score));
-				}
-				else {
-					b.append("| 0 ");
-				}
-				// number of lists
-				b.append("| " + count);
-				b.append("\n");
-			}
-
-			b.append("|| Intermediate score || || || " + df.format(criteriaScore));
-			b.append("\n");
-
-		}
-
-		if (totalScore != 0) {
-			b.append("\n!Total score: " + df.format(totalScore));
-		}
+		b.append("\n");
+		b.append("[{KnowWEPlugin wisec-substance-scoring, substance=");
+		b.append(substance);
+		b.append("}]\n");
 
 	}
 
