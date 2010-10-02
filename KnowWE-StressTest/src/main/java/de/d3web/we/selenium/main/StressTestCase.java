@@ -33,9 +33,9 @@ public class StressTestCase extends KnowWETestCase {
 	@Override
 	public void setUp() throws Exception {
 		setUp(bundle.getString("KnowWE.SeleniumStressTest.url"),
-				bundle.getString("KnowWE.SeleniumStressTest.browser")// ,
-		// bundle.getString("KnowWE.SeleniumStressTest.server"),
-		// Integer.parseInt(bundle.getString("KnowWE.SeleniumStressTest.port"))
+			  bundle.getString("KnowWE.SeleniumStressTest.browser"),
+		      bundle.getString("KnowWE.SeleniumStressTest.server"),
+		      Integer.parseInt(bundle.getString("KnowWE.SeleniumStressTest.port"))
 		);
 	}
 }
