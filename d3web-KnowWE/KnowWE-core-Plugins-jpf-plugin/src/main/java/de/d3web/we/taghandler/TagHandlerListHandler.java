@@ -23,6 +23,7 @@ package de.d3web.we.taghandler;
 import java.util.Collection;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -80,8 +81,9 @@ public class TagHandlerListHandler extends AbstractTagHandler {
 			}
 			catch (Exception e) {
 				description = "Fehler";
-				System.out.println("Error by getting information:");
-				System.out.println(e.getStackTrace());
+				Logger.getLogger(this.getClass().getName()).warning(
+						"Unable to get description for TagHandler: " + th.getClass() + " ("
+								+ e.getMessage() + ")");
 			}
 			html.append("<TR><TD>" + name + "</TD><TD>" + example + "</TD><TD>"
 					+ description + "</TD></TR> \n"); // \n only to avoid
