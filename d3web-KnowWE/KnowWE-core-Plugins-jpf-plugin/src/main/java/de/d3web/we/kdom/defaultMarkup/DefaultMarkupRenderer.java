@@ -66,7 +66,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		boolean hasTools = tools != null && tools.length > 0;
 		boolean hasMenu = hasTools;
 		boolean hasToolbar = false;
-		
+
 		String toolbarHtml = "";
 		if (hasToolbar) {
 			toolbarHtml += " | <div class='markupTools'> ";
@@ -81,23 +81,23 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 			}
 			toolbarHtml += "</div>";
 		}
-		
+
 		string.append(KnowWEUtils.maskHTML(
-				"<div id='header_"+id+"' " +
-				"class='markupHeader "+(hasMenu ? "markupMenuIndicator" : "")+"'>" + 
-				icon + 
-				name + 
-				toolbarHtml + 
-				"\n"));
+				"<div id='header_" + id + "' " +
+						"class='markupHeader " + (hasMenu ? "markupMenuIndicator" : "") + "'>" +
+						icon +
+						name +
+						toolbarHtml +
+						"\n"));
 		if (hasMenu) {
-			String menuHtml = "<div id='menu_"+id+"' class=markupMenu>";
+			String menuHtml = "<div id='menu_" + id + "' class=markupMenu>";
 			for (Tool tool : tools) {
 				menuHtml += "<div class='markupMenuItem'>" +
 						"<a class='markupMenuItem'" +
 						" href=\"javascript:" + tool.getJSAction() + ";undefined;\"" +
 						" title=\"" + tool.getDescription() + "\">" +
 						"<img src=\"" + tool.getIconPath() + "\"></img>" +
-						" " + tool.getTitle() + 
+						" " + tool.getTitle() +
 						"</a>" +
 						"</div>";
 			}
@@ -108,10 +108,10 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		string.append(KnowWEUtils.maskHTML("</div>"));
 
 		if (hasMenu) {
-			//string.append(KnowWEUtils.maskHTML("<script>Wiki.makeMenuFx('parent_"+id+"', 'menu_"+id+"');</script>"));
+			// string.append(KnowWEUtils.maskHTML("<script>Wiki.makeMenuFx('parent_"+id+"', 'menu_"+id+"');</script>"));
 			string.append(KnowWEUtils.maskHTML("\n<script>\n" +
 					"var makeMenuFx = function() {" +
-					"var a=$('header_"+id+"'),c=$('menu_"+id+"');" +
+					"var a=$('header_" + id + "'),c=$('menu_" + id + "');" +
 					"if(!a||!c){}\n" +
 					"var b=c.effect(\"opacity\",{wait:false}).set(0);" +
 					"a.adopt(c).set({href:\"#\",events:{" +
@@ -121,7 +121,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 					"makeMenuFx();" +
 					"</script>\n"));
 		}
-		
+
 		// render pre-formatted box
 		// string.append("{{{\n");
 		string.append(KnowWEUtils.maskHTML("<div id=\"" + id + "\" class='markupText'>"));
@@ -190,13 +190,13 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 
 		Class<? extends KDOMReportMessage> type = messages.iterator().next().getClass();
 		String className = "";
-		if (type.equals(KDOMNotice.class)) {
+		if (KDOMNotice.class.isAssignableFrom(type)) {
 			className = "information";
 		}
-		else if (type.equals(KDOMWarning.class)) {
+		else if (KDOMWarning.class.isAssignableFrom(type)) {
 			className = "warning";
 		}
-		else if (type.equals(KDOMError.class)) {
+		else if (KDOMError.class.isAssignableFrom(type)) {
 			className = "error";
 		}
 
@@ -205,8 +205,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 			string.append(error.getVerbalization());
 			string.append("\n");
 		}
-		string.append("\n");
-		string.append(KnowWEUtils.maskHTML("</span>"));
+		string.append(KnowWEUtils.maskHTML("</span>\n"));
 	}
 
 	private static void renderMessageBlock(Message[] messages, StringBuilder string) {
