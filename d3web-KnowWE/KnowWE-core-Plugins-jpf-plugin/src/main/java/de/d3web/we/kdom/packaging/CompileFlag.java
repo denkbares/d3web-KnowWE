@@ -29,7 +29,6 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
-import de.d3web.we.kdom.packaging.SinglePackageReference.SinglePackageReferenceRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
@@ -55,7 +54,6 @@ public class CompileFlag extends DefaultMarkupType {
 	static class CompileFlagRenderer extends KnowWEDomRenderer<CompileFlag> {
 
 		@Override
-		@SuppressWarnings("unchecked")
 		public void render(KnowWEArticle article,
 				Section<CompileFlag> sec,
 				KnowWEUserContext user,
@@ -73,7 +71,7 @@ public class CompileFlag extends DefaultMarkupType {
 			for (Section<?> child : packageReferences) {
 				if (child.get() instanceof SinglePackageReference) {
 					((SinglePackageReferenceRenderer) child.get().getRenderer()).render(article,
-							(Section<SinglePackageReference>) child, user, string);
+							child, user, string);
 				}
 			}
 			string.append(KnowWEUtils.maskHTML("</div></div>"));
