@@ -10,7 +10,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
-import de.d3web.we.kdom.packaging.CompileFlag.SinglePackageReference;
+import de.d3web.we.kdom.packaging.SinglePackageReference;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 

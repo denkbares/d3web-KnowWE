@@ -23,11 +23,11 @@ package de.d3web.we.kdom.kopic.renderer;
 import java.util.Collection;
 
 import de.d3web.report.Message;
+import de.d3web.we.core.packaging.PackageRenderUtils;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.packaging.PackageRenderUtils;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;

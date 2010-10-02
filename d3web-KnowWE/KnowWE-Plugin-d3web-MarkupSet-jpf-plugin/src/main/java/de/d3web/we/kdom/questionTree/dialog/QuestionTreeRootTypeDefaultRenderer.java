@@ -20,11 +20,11 @@
 
 package de.d3web.we.kdom.questionTree.dialog;
 
+import de.d3web.we.core.packaging.PackageRenderUtils;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
-import de.d3web.we.kdom.packaging.PackageRenderUtils;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;

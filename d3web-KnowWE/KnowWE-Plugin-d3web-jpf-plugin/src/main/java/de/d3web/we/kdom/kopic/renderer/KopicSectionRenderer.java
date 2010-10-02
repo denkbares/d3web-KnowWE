@@ -26,11 +26,11 @@ import java.util.List;
 
 import de.d3web.report.Message;
 import de.d3web.we.basic.D3webModule;
+import de.d3web.we.core.packaging.PackageRenderUtils;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.TextLine;
-import de.d3web.we.kdom.packaging.PackageRenderUtils;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
