@@ -18,7 +18,10 @@
  */
 package de.d3web.we.wisec.taghandler;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
@@ -79,9 +82,15 @@ public class WISECSubstanceScoringTagHandler extends AbstractTagHandler {
 				try {
 					TupleQueryResult result = SPARQLUtil.executeTupleQuery(createCriteriaQuery(
 						substance, criteria));
-					processCriteria(html, result, criteria, groupScore);
+					if (result != null) {
+						processCriteria(html, result, criteria, groupScore);
+					}
+					else {
+						String msg = "Query result is null for substance \"" + substance + "\".";
+						Logger.getLogger(this.getClass().getName()).severe(msg);
+					}
 				}
-				catch (QueryEvaluationException e) {
+				catch (Exception e) {
 					return "Unexpected exception during the rendering of the criteria scoring: "
 							+ e.getMessage();
 				}
@@ -114,7 +123,8 @@ public class WISECSubstanceScoringTagHandler extends AbstractTagHandler {
 		html.append("</tr>\n");
 	}
 
-	private String createCriteriaQuery(String substance, String criteria) {
+	private String createCriteriaQuery(String substance, String criteria) throws UnsupportedEncodingException {
+		substance = URLEncoder.encode(substance, "UTF-8");
 		return "SELECT ?list ?score " +
 				"WHERE { " +
 				"<http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#" + substance
@@ -183,9 +193,12 @@ public class WISECSubstanceScoringTagHandler extends AbstractTagHandler {
 	}
 
 	private void appendFooter(StringBuilder html, double score) {
-		html.append("</table>\n\n");
-		html.append("!Total score: ");
+		html.append("<tr class=\"odd\">");
+		html.append("<th colspan=\"4\"><h3>Total score: ");
 		html.append(WISECUtil.format(score));
+		html.append("</h3></th>");
+		html.append("</tr>\n");
+		html.append("</table>\n\n");
 	}
 
 }

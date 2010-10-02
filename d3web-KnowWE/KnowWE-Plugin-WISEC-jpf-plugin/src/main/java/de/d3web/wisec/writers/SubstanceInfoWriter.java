@@ -158,12 +158,10 @@ public class SubstanceInfoWriter extends WISECWriter {
 	}
 
 	private void writeCriteriaScoring(String substance, StringBuffer b) {
-
 		b.append("\n");
 		b.append("[{KnowWEPlugin wisec-substance-scoring, substance=");
 		b.append(substance);
 		b.append("}]\n");
-
 	}
 
 	private void writeCASReferences(String substance, StringBuffer b) {
