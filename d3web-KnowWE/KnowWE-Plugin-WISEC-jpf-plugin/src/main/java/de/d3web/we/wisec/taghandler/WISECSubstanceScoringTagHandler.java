@@ -140,9 +140,9 @@ public class WISECSubstanceScoringTagHandler extends AbstractTagHandler {
 		html.append("<td>");
 		while (result.hasNext()) {
 			BindingSet binding = result.next();
-			String list = binding.getValue("list").stringValue();
+			String list = getListName(binding.getValue("list").stringValue());
 			String score = binding.getValue("score").stringValue();
-			html.append("<a href=\"");
+			html.append("<a href=\"Wiki.jsp?page=");
 			html.append(SubstanceListWriter.getWikiFileNameFor(list));
 			html.append("\"> ");
 			html.append(score);
@@ -167,6 +167,11 @@ public class WISECSubstanceScoringTagHandler extends AbstractTagHandler {
 		html.append("</td>\n");
 
 		html.append("</tr>\n");
+	}
+
+	private String getListName(String list) {
+		int start = list.lastIndexOf("#") + 1;
+		return list.substring(start);
 	}
 
 	private void appendIntermediateScore(StringBuilder html, double groupScore) {
