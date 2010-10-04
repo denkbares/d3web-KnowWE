@@ -205,7 +205,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 			string.append(error.getVerbalization());
 			string.append("\n");
 		}
-		string.append(KnowWEUtils.maskHTML("</span>\n"));
+		string.append(KnowWEUtils.maskHTML("</span>"));
 	}
 
 	private static void renderMessageBlock(Message[] messages, StringBuilder string) {
