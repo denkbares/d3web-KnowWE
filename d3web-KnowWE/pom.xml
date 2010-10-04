@@ -85,6 +85,9 @@
 				<artifactId>maven-clover2-plugin</artifactId>
 				<version>3.0.2</version>
 				<configuration>
+					<generatePdf>true</generatePdf>
+					<generateHtml>true</generateHtml>
+					<generateXml>true</generateXml>				
 					<license><![CDATA[nrqQXAFjxdRRPQOSKOOEOvHIrnNhOJArLOsnknIHocNlqk
 									mi2KTnu3O2OFOgc7xNpMqgmU2KEa3EV2PMKJyrvsDdSe<i
 									ormQsXMMrrrOPQQPmMqSwNNQnmqNpQRMOQsvvxwVxTuSOO
@@ -125,6 +128,11 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.clover.encoding>UTF-8</maven.clover.encoding>
+		<sonar.core.codeCoveragePlugin>clover</sonar.core.codeCoveragePlugin>
+		<sonar.clover.version>3.0.2</sonar.clover.version>
+		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+		<sonar.surefire.reportsPath>target/surefire-reports</sonar.surefire.reportsPath>
+		<sonar.clover.reportPath>target/site/clover/clover.xml</sonar.clover.reportPath>
 		<versionatorVersion>1.4</versionatorVersion>
 		<d3webCoreVersion>0.2-SNAPSHOT</d3webCoreVersion>
 	</properties>
