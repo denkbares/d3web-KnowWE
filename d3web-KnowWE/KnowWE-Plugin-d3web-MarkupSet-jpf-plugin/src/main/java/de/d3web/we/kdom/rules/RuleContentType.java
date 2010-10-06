@@ -94,7 +94,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		try {
 			// TODO remove this evil workaround
 			// when updating KnowWE architecture
-			termConds.add((KnowWEObjectType) Class.forName("cc.knowwe.tdb.EvalCondition").newInstance());
+			termConds.add((KnowWEObjectType) Class.forName("cc.knowwe.tdb.EvalConditionType").newInstance());
 		}
 		catch (Throwable e) {
 			e.printStackTrace();

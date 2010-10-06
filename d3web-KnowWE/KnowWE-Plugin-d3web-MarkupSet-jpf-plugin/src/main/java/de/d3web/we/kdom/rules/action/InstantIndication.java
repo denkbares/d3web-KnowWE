@@ -24,7 +24,6 @@ import java.util.List;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.indication.ActionContraIndication;
 import de.d3web.indication.ActionInstantIndication;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -51,7 +50,7 @@ public class InstantIndication extends BracketsAction<InstantIndication> {
 	}
 
 	@Override
-	public PSAction getAction(KnowWEArticle article, Section<InstantIndication> s) {
+	public PSAction createAction(KnowWEArticle article, Section<InstantIndication> s) {
 		Section<QuestionReference> qSec = s.findSuccessor(QuestionReference.class);
 		Question termObject = qSec.get().getTermObject(article, qSec);
 

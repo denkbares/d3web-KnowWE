@@ -130,7 +130,7 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 	}
 
 	@Override
-	public PSAction getAction(KnowWEArticle article, Section<SolutionValueAssignment> s) {
+	public PSAction createAction(KnowWEArticle article, Section<SolutionValueAssignment> s) {
 		Section<SolutionReference> solutionRef = s.findSuccessor(SolutionReference.class);
 		Section<ScorePoint> scoreRef = s.findSuccessor(ScorePoint.class);
 		Solution solution = solutionRef.get().getTermObject(article, solutionRef);

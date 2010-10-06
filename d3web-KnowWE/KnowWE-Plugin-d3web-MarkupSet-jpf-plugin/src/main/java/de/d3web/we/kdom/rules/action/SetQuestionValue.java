@@ -133,7 +133,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 	}
 
 	@Override
-	public PSAction getAction(KnowWEArticle article, Section<SetQuestionValue> s) {
+	public PSAction createAction(KnowWEArticle article, Section<SetQuestionValue> s) {
 		Section<QuestionReference> qref = s.findSuccessor(QuestionReference.class);
 		Question q = qref.get().getTermObject(article, qref);
 		Section<AnswerReference> aref = s.findSuccessor(AnswerReference.class);

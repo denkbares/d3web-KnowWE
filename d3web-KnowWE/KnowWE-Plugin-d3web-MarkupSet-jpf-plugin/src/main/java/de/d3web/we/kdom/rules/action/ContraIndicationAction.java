@@ -54,7 +54,7 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 	}
 
 	@Override
-	public PSAction getAction(KnowWEArticle article, Section<ContraIndicationAction> s) {
+	public PSAction createAction(KnowWEArticle article, Section<ContraIndicationAction> s) {
 		Section<QuestionReference> qSec = s.findSuccessor(QuestionReference.class);
 		Question termObject = qSec.get().getTermObject(article, qSec);
 

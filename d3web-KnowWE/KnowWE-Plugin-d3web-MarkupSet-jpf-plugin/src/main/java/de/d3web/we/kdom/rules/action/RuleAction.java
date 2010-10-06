@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.rules.action;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 
 public class RuleAction extends DefaultAbstractKnowWEObjectType {
@@ -28,6 +29,15 @@ public class RuleAction extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 		sectionFinder = new AllTextSectionFinder();
+		try {
+			// TODO remove this evil workaround
+			// when updating KnowWE architecture
+			this.childrenTypes.add((KnowWEObjectType) Class.forName(
+					"cc.knowwe.tdb.EvalAssignActionType").newInstance());
+		}
+		catch (Throwable e) {
+			e.printStackTrace();
+		}
 		this.childrenTypes.add(new SolutionValueAssignment());
 		this.childrenTypes.add(new SetQuestionValue());
 		this.childrenTypes.add(new ContraIndicationAction());

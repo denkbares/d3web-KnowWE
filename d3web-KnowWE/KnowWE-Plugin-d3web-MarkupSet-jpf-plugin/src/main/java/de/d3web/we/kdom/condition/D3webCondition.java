@@ -62,7 +62,7 @@ public abstract class D3webCondition<T extends KnowWEObjectType> extends Default
 	 */
 	protected abstract Condition createCondition(KnowWEArticle article, Section<T> section);
 
-	class CondCreateHandler extends D3webSubtreeHandler<T> {
+	private class CondCreateHandler extends D3webSubtreeHandler<T> {
 
 		@Override
 		public boolean needsToCreate(KnowWEArticle article, Section<T> s) {

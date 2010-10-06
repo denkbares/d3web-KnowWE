@@ -28,21 +28,16 @@ import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.indication.ActionIndication;
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NoSuchObjectError;
-import de.d3web.we.kdom.report.message.RelationCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.QuestionnaireReference;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.terminology.TerminologyHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -93,7 +88,7 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 	}
 
 	@Override
-	public PSAction getAction(KnowWEArticle article, Section<QASetIndicationAction> s) {
+	public PSAction createAction(KnowWEArticle article, Section<QASetIndicationAction> s) {
 		ActionIndication a = new ActionIndication();
 		List<QASet> qasets = new ArrayList<QASet>();
 		a.setQASets(qasets);
