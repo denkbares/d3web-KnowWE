@@ -45,7 +45,8 @@ public class PSMethodDelegate extends PSMethodAdapter {
 	public void propagate(Session session, Collection<PropagationEntry> changes) {
 
 		for (PropagationEntry propagationEntry : changes) {
-
+			// do not handle strategic changes
+			if (propagationEntry.isStrategic()) continue;
 			KnowledgeSlice slices = ((NamedObject) propagationEntry.getObject()).getKnowledge(
 					this.getClass(), MethodKind.FORWARD);
 
