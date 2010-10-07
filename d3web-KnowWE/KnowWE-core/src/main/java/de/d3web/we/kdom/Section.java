@@ -40,7 +40,6 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.SectionCreatedEvent;
-import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.basic.EmbracedType;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.filter.SectionFilter;
@@ -732,7 +731,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	public String verbalize() {
 		StringBuffer buffi = new StringBuffer();
 		String simpleName = this.getObjectType().getClass().getSimpleName();
-		if (simpleName.equals(AnonymousType.class.getSimpleName())) {
+		if (simpleName.contains("nonymous")) {
 			simpleName = simpleName += "(" + this.getObjectType().getName() + ")";
 		}
 		buffi.append(simpleName);
