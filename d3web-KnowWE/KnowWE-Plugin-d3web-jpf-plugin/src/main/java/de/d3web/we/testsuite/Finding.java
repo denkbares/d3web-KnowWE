@@ -32,7 +32,7 @@ import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.renderer.ObjectInfoLinkRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.utils.SplitUtility;
+import de.d3web.we.kdom.util.SplitUtility;
 
 public class Finding extends DefaultAbstractKnowWEObjectType {
 

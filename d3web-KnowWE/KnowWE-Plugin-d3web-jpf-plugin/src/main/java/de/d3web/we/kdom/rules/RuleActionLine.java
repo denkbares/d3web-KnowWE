@@ -28,12 +28,12 @@ import java.util.regex.Pattern;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.basic.LineBreak;
 import de.d3web.we.kdom.rule.Then;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.type.AnonymousType;
 
 public class RuleActionLine extends DefaultAbstractKnowWEObjectType {
 
