@@ -49,7 +49,7 @@ public class SearchTimeEventsAction extends DeprecatedAbstractKnowWEAction {
 			int startIndexNum = 0;
 			
 			try {
-				endIndexNum = Integer.parseInt(count);
+				endIndexNum = Integer.parseInt(endIndex);
 			}
 			catch (NumberFormatException e) {
 				// TODO
