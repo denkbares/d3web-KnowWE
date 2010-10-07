@@ -36,16 +36,27 @@ public class SearchTimeEventsAction extends DeprecatedAbstractKnowWEAction {
 
 		String from = null;
 		String to = null;
-		String count = null;
+		String endIndex = null;
+		String startIndex = null;
 
 		if (parameterMap.containsKey("from") && parameterMap.containsKey("to")) {
 			from = parameterMap.get("from");
 			to = parameterMap.get("to");
-			count = parameterMap.get("count");
-
-			int countNum = 20;
+			endIndex = parameterMap.get("endIndex");
+			startIndex = parameterMap.get("startIndex");
+			
+			int endIndexNum = 20;
+			int startIndexNum = 0;
+			
 			try {
-				countNum = Integer.parseInt(count);
+				endIndexNum = Integer.parseInt(count);
+			}
+			catch (NumberFormatException e) {
+				// TODO
+			}
+			
+			try {
+				startIndexNum = Integer.parseInt(startIndex);
 			}
 			catch (NumberFormatException e) {
 				// TODO
@@ -60,9 +71,11 @@ public class SearchTimeEventsAction extends DeprecatedAbstractKnowWEAction {
 				int cnt = 0;
 				for (TimeEvent timeEvent : events) {
 					cnt++;
-					if (cnt > countNum) break;
-					result.append(TimeLineEventRenderer.renderToHTML(timeEvent,
-							false));
+					if (cnt > startIndexNum) { 
+						if (cnt > endIndexNum) break;
+						result.append(TimeLineEventRenderer.renderToHTML(timeEvent,
+								false));
+					}
 				}
 			}
 

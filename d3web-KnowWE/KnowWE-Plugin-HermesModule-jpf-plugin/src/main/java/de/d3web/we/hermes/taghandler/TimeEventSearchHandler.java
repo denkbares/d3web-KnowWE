@@ -53,7 +53,7 @@ public class TimeEventSearchHandler extends AbstractTagHandler {
 				"<input type=\"hidden\" name=\"formname\" value=\"testform\"/>";
 		s += "<p>Start Index: <input id='startIndexTimeline' type='text' value='" + startIndex
 				+ "'/> " +
-				"Anzahl Einträge: <input id='hermesSearchResultCount' type='text' value='"
+				"End Index: <input id='hermesSearchResultCount' type='text' value='"
 				+ noEntries + "'/></p>";
 		s += "<p>Von: <input id='hermesSearchFrom'  type='text' value='" + startTimeString + "'/> "
 				+
@@ -61,8 +61,15 @@ public class TimeEventSearchHandler extends AbstractTagHandler {
 		s += "<p><input onclick='sendTimeEventSearchRequest()' type='button' value='Anzeigen'/></p>";
 		s += "</form>";
 
+		s += "<p><input onclick='sendTimeEventBackSearchRequest()' type='button' value='vorherige Seite'/>";
+		s += "<input onclick='sendTimeEventNextSearchRequest()' type='button' value='nächste Seite'/></p>";
+
+		
 		s += "</div>";
 		s += "<div id='hermesSearchResult'></div>";
+		
+		s += "<div><p><input onclick='sendTimeEventBackSearchRequest()' type='button' value='vorherige Seite'/>";
+		s += "<input onclick='sendTimeEventNextSearchRequest()' type='button' value='nächste Seite'/></p></div>";
 		return s;
 	}
 

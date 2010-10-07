@@ -19,6 +19,20 @@ KNOWWE.plugin.hermes = function() {
     return {}
 }();
 
+function sendTimeEventNextSearchRequest() {
+	scroll(0,0);
+	document.getElementById("startIndexTimeline").value = parseInt(document.getElementById("startIndexTimeline").value)+20;
+	document.getElementById("endIndexTimeLine").value = parseInt(document.getElementById("endIndexTimeLine").value)+20;
+	sendTimeEventSearchRequest();
+}
+
+function sendTimeEventBackSearchRequest() {
+	scroll(0,1000000);
+	document.getElementById("startIndexTimeline").value = parseInt(document.getElementById("startIndexTimeline").value) - 20;
+	document.getElementById("endIndexTimeLine").value = parseInt(document.getElementById("endIndexTimeLine").value) - 20;
+	sendTimeEventSearchRequest();
+}
+
 /**
  * save new input.
  */
@@ -27,11 +41,11 @@ function sendTimeEventSearchRequest() {
     var searchFrom = document.getElementById("hermesSearchFrom");
     var searchTo = document.getElementById("hermesSearchTo");
     var startIndex = document.getElementById("startIndexTimeline");
-    var resultCount = document.getElementById("hermesSearchResultCount");
+    var endIndex = document.getElementById("endIndexTimeLine");
 
     var params = {
         action : 'SearchTimeEventsAction',
-        count : resultCount.value,
+        count : endIndexTimeLine.value,
         from : searchFrom.value,
         to : searchTo.value,
         startIndex : startIndex.value
