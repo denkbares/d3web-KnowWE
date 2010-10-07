@@ -42,13 +42,13 @@ public class TimeLineEventRenderer {
 		String styleTag = "";
 
 		if (te.getImportance() == 1) {
-			styleTag = " style=\"color: red; ";
+			styleTag = " style=\"color: #AA2244; ";
 		}
 		else if (te.getImportance() == 2) {
-			styleTag = " style=\"color: #FABE30; ";
+			styleTag = " style=\"color: #BBAA00; ";
 		}
 		else if (te.getImportance() == 3) {
-			styleTag = " style=\"color: green; ";
+			styleTag = " style=\"color: #338888; ";
 		}
 
 		styleTag += " background-color: transparent;\"";
