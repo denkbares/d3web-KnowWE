@@ -57,13 +57,13 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.StringEnumChecker;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.kdom.util.SplitUtility;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.object.QuestionDefinition.QuestionType;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
-import de.d3web.we.utils.SplitUtility;
 
 /**
  * QuestionLine of the QuestionTree, here Questions can be defined

@@ -35,9 +35,9 @@ import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.util.SplitUtility;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
-import de.d3web.we.utils.SplitUtility;
 
 /**
  * @author Johannes Dienst
