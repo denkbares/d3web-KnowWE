@@ -786,13 +786,12 @@ KNOWWE.core.renaming = function(){
                 ContextPrevious : _KS('#renamePreviousInputContext').value,
                 ContextAfter : _KS('#renameAfterInputContext').value,
                 CaseSensitive :_KS('#search-sensitive').checked
-                //method getSelectedSections() is located in TreeView.js (TreeView.js should be included here eventually)
-                //crashes request
-                //SelectedSections : JSON.stringify(getSelectedSections())
             }
             
             var options = {
                 url : KNOWWE.core.util.getURL(params),
+                //method getSelectedSections() is located in TreeView.js (TreeView.js should be included here eventually)
+                data : "SelectedSections=" + JSON.stringify(getSelectedSections()),
                 response : {
                     ids : ['rename-result'],
                     fn : function(){
