@@ -31,7 +31,6 @@ import java.util.regex.Pattern;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.constraint.AtMostOneFindingConstraint;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.ExclusiveType;
@@ -42,7 +41,8 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.utils.SplitUtility;
+import de.d3web.we.kdom.type.AnonymousType;
+import de.d3web.we.kdom.util.SplitUtility;
 
 /**
  * This class defines a KDOM-Schema to parse composite conditions as known from

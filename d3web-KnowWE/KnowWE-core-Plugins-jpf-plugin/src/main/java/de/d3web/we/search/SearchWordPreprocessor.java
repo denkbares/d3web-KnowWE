@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import de.d3web.we.utils.SplitUtility;
+import de.d3web.we.kdom.util.SplitUtility;
 
 /**
  * 

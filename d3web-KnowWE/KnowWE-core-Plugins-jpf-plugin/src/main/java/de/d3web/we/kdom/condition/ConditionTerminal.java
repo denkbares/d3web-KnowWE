@@ -27,11 +27,11 @@ import java.util.List;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.UnexpectedSequence;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.kdom.type.AnonymousType;
 
 /**
  * The TerminalCondition type of the CompositeCondition
