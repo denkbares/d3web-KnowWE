@@ -22,6 +22,7 @@ package de.d3web.we.kdom.rules;
 
 import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
@@ -48,6 +49,7 @@ public class RulesMarkup extends DefaultMarkupType {
 
 	public RulesMarkup() {
 		super(m);
+		this.setCustomRenderer(new DefaultMarkupRenderer<RulesMarkup>(
+				"KnowWEExtension/d3web/icon/rule24.png"));
 	}
-
 }

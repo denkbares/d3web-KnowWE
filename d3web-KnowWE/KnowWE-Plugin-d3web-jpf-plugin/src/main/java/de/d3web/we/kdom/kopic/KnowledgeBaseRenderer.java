@@ -38,31 +38,35 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 		String version = KnowledgeBaseType.getAnnotation(section,
 				KnowledgeBaseType.ANNOTATION_VERSION);
 
+		// render title line
 		string.append(KnowWEUtils.maskHTML("<b>" + title + "</b>"));
 		if (id != null) {
 			string.append(" (").append(id).append(")");
 		}
-
 		string.append("\n");
+
+		// render information block
 		if (version != null || author != null || comment != null) {
-			string.append(KnowWEUtils.maskHTML("<p style='padding-top:0.5em;'>"));
+			string.append(KnowWEUtils.maskHTML("<div style='padding-top:1em;'>"));
+
+			if (version != null) {
+				string.append(KnowWEUtils.maskHTML("<img src='KnowWEExtension/d3web/icon/date16.png'></img> "));
+				string.append(version).append("\n");
+			}
+			if (author != null) {
+				string.append(KnowWEUtils.maskHTML("<img src='KnowWEExtension/d3web/icon/author16.png'></img> "));
+				string.append(author).append("\n");
+			}
+			if (comment != null) {
+				string.append(KnowWEUtils.maskHTML("<img src='KnowWEExtension/d3web/icon/comment16.png'></img> "));
+				string.append(comment).append("\n");
+			}
+
+			string.append(KnowWEUtils.maskHTML("</div>"));
 		}
 
-		if (version != null) {
-			string.append(KnowWEUtils.maskHTML("<img src='KnowWEExtension/d3web/icon/date16.png'></img> "));
-			string.append(version).append("\n");
-		}
-		if (author != null) {
-			string.append(KnowWEUtils.maskHTML("<img src='KnowWEExtension/d3web/icon/author16.png'></img> "));
-			string.append(author).append("\n");
-		}
-		if (comment != null) {
-			string.append(KnowWEUtils.maskHTML("<img src='KnowWEExtension/d3web/icon/comment16.png'></img> "));
-			string.append(comment).append("\n");
-		}
-
-		string.append("\n");
-		string.append(KnowWEUtils.maskHTML("<p style='padding-top:0.5em;'>"));
+		// render used packages and their erroneous pages
+		string.append(KnowWEUtils.maskHTML("<div style='padding-top:1em;'>"));
 		// string.append(KnowWEUtils.maskHTML("<hr>\n"));
 		List<Section<? extends AnnotationType>> compileSections = DefaultMarkupType.getAnnotationSections(
 				section, KnowledgeBaseType.ANNOTATION_COMPILE);
@@ -71,6 +75,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 			String packageName = compileSection.getOriginalText().trim();
 			renderCompile(article, packageName, string);
 		}
+		string.append(KnowWEUtils.maskHTML("</div>"));
 	}
 
 	private void renderCompile(KnowWEArticle article, String packageName, StringBuilder string) {
