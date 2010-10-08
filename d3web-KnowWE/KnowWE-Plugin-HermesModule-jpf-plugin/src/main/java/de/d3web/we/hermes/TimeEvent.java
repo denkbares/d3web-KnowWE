@@ -20,17 +20,22 @@
 
 package de.d3web.we.hermes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TimeEvent implements Comparable<TimeEvent> {
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	private int importance;
 
-	private String title;
+	private final String title;
 	private String description;
-	private List<String> sources;
-	private String textOriginNode;
-	private String topic;
+	private List<String> sources = new ArrayList<String>();
+	private final String textOriginNode;
+	private final String topic;
 
 	public String getTopic() {
 		return topic;
@@ -49,6 +54,32 @@ public class TimeEvent implements Comparable<TimeEvent> {
 		if (time != null) {
 			this.time = new TimeStamp(time);
 		}
+	}
+
+	/**
+	 * Allows to instanciate TimeEvents directly from the markup. Other data is
+	 * added later.
+	 * 
+	 * @param title
+	 * @param textOriginNode
+	 * @param topic
+	 */
+	public TimeEvent(String title, String textOriginNode, String topic) {
+		this.textOriginNode = textOriginNode;
+		this.topic = topic;
+		this.title = title;
+	}
+
+	public void setImportance(int importance) {
+		this.importance = importance;
+	}
+
+	public void addSource(String src) {
+		this.sources.add(src);
+	}
+
+	public void setTime(TimeStamp time) {
+		this.time = time;
 	}
 
 	public String getDescription() {

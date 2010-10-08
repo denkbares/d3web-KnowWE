@@ -55,7 +55,7 @@ public class PointInTime {
 		description = "";
 		if (timeS.contains("x")) description += "ca. ";
 		if (timeS.contains("b")) description += "bis ";
-		if (timeS.contains("e")) description += "seit ";
+		if (timeS.contains("r")) description += "seit ";
 
 		if (timeS.contains("c")) description += "Anfang (des) ";
 		if (timeS.contains("e")) description += "Ende (des) ";
