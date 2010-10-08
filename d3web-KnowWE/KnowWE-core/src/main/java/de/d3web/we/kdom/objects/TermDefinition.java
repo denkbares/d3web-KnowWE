@@ -20,9 +20,17 @@
 
 package de.d3web.we.kdom.objects;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -50,6 +58,14 @@ public abstract class TermDefinition<TermObject>
 		}
 		this.termObjectClass = termObjectClass;
 		this.key = termObjectClass.getName() + "_STORE_KEY";
+	}
+
+	public TermDefinition(Class<TermObject> termObjectClass, boolean register) {
+		this(termObjectClass);
+		if (register) {
+			this.addSubtreeHandler(Priority.HIGHER,
+					new TermDefinitionRegistrationHandler());
+		}
 	}
 
 	public Class<TermObject> getTermObjectClass() {
@@ -88,6 +104,44 @@ public abstract class TermDefinition<TermObject>
 	 */
 	public void storeTermObject(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> s, TermObject q) {
 		KnowWEUtils.storeSectionInfo(article, s, key, q);
+	}
+
+	/**
+	 * 
+	 * This handler registers this Term globally when the Section is found.
+	 * 
+	 * @author Jochen
+	 * @created 08.10.2010
+	 */
+	class TermDefinitionRegistrationHandler extends SubtreeHandler<TermDefinition<TermObject>> {
+
+
+		@Override
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<TermDefinition<TermObject>> s) {
+
+			boolean alreadyExisting = KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(
+					article, s.get().getTermName(s));
+
+			if (alreadyExisting) {
+
+				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
+						s.get().getName()
+								+ ": " + s.get().getTermName(s)));
+			}
+			else {
+				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
+						article, s);
+			}
+
+			return new ArrayList<KDOMReportMessage>(0);
+		}
+
+		@Override
+		public void destroy(KnowWEArticle article, Section<TermDefinition<TermObject>> s) {
+			KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
+					article, s);
+		}
+
 	}
 
 }
