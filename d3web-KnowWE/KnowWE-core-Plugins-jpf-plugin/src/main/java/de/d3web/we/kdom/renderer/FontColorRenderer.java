@@ -25,6 +25,7 @@ import java.util.Map;
 
 public class FontColorRenderer extends StyleRenderer {
 
+	public static String COLOR0 = "color:rgb(0, 0, 0)";
 	public static String COLOR1 = "color:rgb(40, 40, 160)";
 	public static String COLOR2 = "color:rgb(255, 0, 0)";
 	public static String COLOR3 = "color:rgb(0, 128, 0)";

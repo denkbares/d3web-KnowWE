@@ -35,6 +35,7 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.QuestionReference;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * Implements the CondKnown Condition to be used as child type in
@@ -53,7 +54,15 @@ public class CondKnown extends D3webCondition<CondKnown> {
 	@Override
 	protected void init() {
 		this.sectionFinder = new CondKnownFinder();
-		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR7));
+		this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7) {
+
+			@Override
+			protected void renderContent(KnowWEArticle article, Section section, KnowWEUserContext user, StringBuilder string) {
+				StringBuilder buffer = new StringBuilder();
+				super.renderContent(article, section, user, buffer);
+				string.append(buffer.toString().replace("[", "~[").replace("]", "~]"));
+			}
+		});
 
 		QuestionReference question = new QuestionReference();
 		question.setSectionFinder(new ISectionFinder() {

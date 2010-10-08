@@ -56,6 +56,11 @@ public class JSPWikiConnectorAttachment implements ConnectorAttachment {
 	}
 
 	@Override
+	public long getSize() {
+		return attachment.getSize();
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (o == null || !(o instanceof JSPWikiConnectorAttachment)) return false;
 		JSPWikiConnectorAttachment other = (JSPWikiConnectorAttachment) o;

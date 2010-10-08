@@ -42,7 +42,7 @@ public class StyleRenderer extends KnowWEDomRenderer {
 	}
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section section, KnowWEUserContext user, StringBuilder string) {
 		string.append(KnowWEUtils.maskHTML("<span"));
 		if (cssClass != null) {
 			string.append(" class='").append(cssClass).append("'");
@@ -51,8 +51,22 @@ public class StyleRenderer extends KnowWEDomRenderer {
 			string.append(" style='").append(cssStyle).append("'");
 		}
 		string.append(KnowWEUtils.maskHTML(">"));
-		DelegateRenderer.getInstance().render(article, sec, user, string);
+		renderContent(article, section, user, string);
 		string.append(KnowWEUtils.maskHTML("</span>"));
+	}
+
+	/**
+	 * Renders the content that will automatically be styled in the correct way.
+	 * You may overwrite it for special purposes.
+	 * 
+	 * @created 06.10.2010
+	 * @param article the article to render for
+	 * @param section the section to be rendered
+	 * @param user the user to render for
+	 * @param string the buffer to render into
+	 */
+	protected void renderContent(KnowWEArticle article, Section section, KnowWEUserContext user, StringBuilder string) {
+		DelegateRenderer.getInstance().render(article, section, user, string);
 	}
 
 	public String getCssStyle() {

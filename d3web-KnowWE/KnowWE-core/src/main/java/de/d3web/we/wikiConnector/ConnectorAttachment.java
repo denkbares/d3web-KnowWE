@@ -30,5 +30,7 @@ public interface ConnectorAttachment {
 
 	public Date getDate();
 
+	public long getSize();
+
 	public InputStream getInputStream() throws IOException;
 }

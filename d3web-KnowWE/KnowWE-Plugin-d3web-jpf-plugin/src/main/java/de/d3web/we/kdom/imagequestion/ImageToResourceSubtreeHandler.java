@@ -19,21 +19,19 @@
  */
 package de.d3web.we.kdom.imagequestion;
 
-import java.io.IOException;
 import java.util.Collection;
 
-import java.util.logging.Logger;
-
-import de.d3web.core.io.WikiAttachmentResource;
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.Resource;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.we.kdom.kopic.WikiAttachmentResource;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.wikiConnector.ConnectorAttachment;
 
 /**
@@ -42,11 +40,10 @@ import de.d3web.we.wikiConnector.ConnectorAttachment;
  * @author Johannes Dienst
  * 
  */
-public class ImageToResourceSubtreeHandler extends SubtreeHandler {
+public class ImageToResourceSubtreeHandler extends D3webSubtreeHandler<ImageToResourceType> {
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ImageToResourceType> s) {
 		KnowledgeBaseManagement kbm =
 				D3webModule.getKnowledgeRepresentationHandler(
 						article.getWeb()).getKBM(article.getTitle());
@@ -58,20 +55,10 @@ public class ImageToResourceSubtreeHandler extends SubtreeHandler {
 				KnowWEEnvironment.getInstance().getWikiConnector().getAttachments();
 		for (ConnectorAttachment att : attachments) {
 			if (att.getFileName().equalsIgnoreCase(imageName)) {
+				// TODO no special sub-folder should be used!
 				String path = "multimedia/" + att.getFileName();
-				try {
-					WikiAttachmentResource res =
-							new WikiAttachmentResource(att.getInputStream(), path);
-					kb.addResouce(res);
-				}
-				catch (IOException e) {
-					Logger.getLogger(ImageToResourceSubtreeHandler.class.getName())
-							.warning(
-									"Could not store attachment"
-											+ att.getFileName()
-											+ " to knowledgebase : "
-											+ e.getMessage());
-				}
+				Resource res = new WikiAttachmentResource(path, att);
+				kb.addResouce(res);
 			}
 		}
 		return null;

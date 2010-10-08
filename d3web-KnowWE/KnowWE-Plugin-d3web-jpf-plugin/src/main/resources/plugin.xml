@@ -27,6 +27,17 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="Resource">
+		<parameter id="class" value="de.d3web.we.kdom.kopic.ResourceType" />
+		<parameter id="name" value="Resource" />
+		<parameter id="description"
+			value="Adds a binary resource file to the knowledge base archive" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="6" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="KnowledgeBase">
 		<parameter id="class" value="de.d3web.we.kdom.kopic.KnowledgeBaseType" />
 		<parameter id="name" value="KnowledgeBase" />
