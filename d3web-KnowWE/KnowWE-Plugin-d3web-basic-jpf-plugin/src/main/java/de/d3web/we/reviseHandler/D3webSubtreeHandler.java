@@ -55,11 +55,11 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 			if (s.isReusedBy(article.getTitle())) {
 				if ((KnowWEUtils.getTerminologyHandler(
 						article.getWeb()).areTermDefinitionsModifiedFor(article))) {
-					article.setFullParse(this);
+					article.setFullParse(this.getClass());
 				}
 			}
 			else {
-				article.setFullParse(this);
+				article.setFullParse(this.getClass());
 			}
 		}
 		return super.needsToCreate(article, s);
@@ -84,7 +84,7 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 
 	@Override
 	public void destroy(KnowWEArticle article, Section<T> s) {
-		article.setFullParse(this);
+		article.setFullParse(this.getClass());
 		return;
 	}
 

@@ -76,7 +76,7 @@ public abstract class PackageCompileType extends DefaultAbstractKnowWEObjectType
 
 		@Override
 		public void destroy(KnowWEArticle article, Section<PackageCompileType> s) {
-			article.setFullParse(this);
+			article.setFullParse(this.getClass());
 		}
 
 	}

@@ -34,6 +34,7 @@ import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
+import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
@@ -65,9 +66,14 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
 				Section<QuestionnaireDefinition> qcSec) {
 
+			if (KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(article, qcSec)) {
+				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(article,
+						qcSec);
+				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
+						qcSec.get().getTermName(qcSec)));
+			}
+
 			KnowledgeBaseManagement mgn = getKBM(article);
-			// ReviseSubtreeHandler will be called again with a correct mgn
-			if (mgn == null) return null;
 
 			String name = qcSec.getOriginalText();
 
@@ -75,8 +81,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 
 			if (o != null) {
 				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedWarning(
-						o.getClass()
-								.getSimpleName()));
+						o.getClass().getSimpleName()));
 			}
 			else {
 				Section<? extends DashTreeElement> dashTreeFather = DashTreeUtils

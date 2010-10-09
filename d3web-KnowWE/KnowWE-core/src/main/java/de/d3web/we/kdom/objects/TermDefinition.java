@@ -122,15 +122,13 @@ public abstract class TermDefinition<TermObject>
 			boolean alreadyExisting = KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(
 					article, s.get().getTermName(s));
 
-			if (alreadyExisting) {
+			KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
+					article, s);
 
+			if (alreadyExisting) {
 				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
 						s.get().getName()
 								+ ": " + s.get().getTermName(s)));
-			}
-			else {
-				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
-						article, s);
 			}
 
 			return new ArrayList<KDOMReportMessage>(0);

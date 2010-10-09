@@ -45,7 +45,6 @@ import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.store.KnowWESectionInfoStorage;
 import de.d3web.we.kdom.store.SectionStore;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.validation.KDOMValidator;
 
 /**
@@ -100,7 +99,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	
 	private ReviseIterator reviseIterator;
 
-	private final Set<String> handlersUnableToDestroy = new HashSet<String>();
+	private final Set<String> classesCausingFullParse = new HashSet<String>();
 
 	public static KnowWEArticle createArticle(String text, String title, KnowWEObjectType rootType,
 			String web) {
@@ -155,13 +154,13 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			build(text, title, rootType, web, startTime);
 		}
 
-		// if a SubtreeHandlers uses KnowWEArticle#setFullParse(boolean,
-		// SubtreeHandler) he prevents incremental updating
-		if (!defFullParse && !handlersUnableToDestroy.isEmpty()) {
+		// if for example a SubtreeHandlers uses
+		// KnowWEArticle#setFullParse(Class) he prevents incremental updating
+		if (!defFullParse && !classesCausingFullParse.isEmpty()) {
 			Logger.getLogger(this.getClass().getName()).log(
-					Level.INFO, "The following SubtreeHandlers " +
-							"prevent inrememental updating:\n" +
-							handlersUnableToDestroy.toString());
+					Level.INFO, "The following classes " +
+							"caused a full parse:\n" +
+							classesCausingFullParse.toString());
 		}
 
 		// prevent memory leak
@@ -239,7 +238,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		startTime = System.currentTimeMillis();
 
 		// create (compile)
-		if (this.postPreDestroyFullParse) {
+		if (this.postPreDestroyFullParse && !this.secondBuild) {
 			reviseIterator = new ReviseIterator();
 			reviseIterator.addRootSectionToRevise(sec);
 		}
@@ -562,7 +561,13 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return this.reviseIterator;
 	}
 
-	public void setFullParse(SubtreeHandler<?> source) {
+	/**
+	 * Causes an full parse for this article.
+	 * 
+	 * @created 09.10.2010
+	 * @param source is just for tracking...
+	 */
+	public void setFullParse(Class<?> source) {
 		if (!this.fullParse) {
 			sec.setNotCompiledByRecursively(title);
 			EventManager.getInstance().fireEvent(new FullParseEvent(this));
@@ -571,10 +576,10 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			if (this.postDestroy) this.postDestroyFullParse = true;
 
 		}
-		handlersUnableToDestroy.add(source.getClass().isAnonymousClass()
-				? source.getClass().getName().substring(
-						source.getClass().getName().lastIndexOf(".") + 1)
-				: source.getClass().getSimpleName());
+		classesCausingFullParse.add(source.isAnonymousClass()
+				? source.getName().substring(
+						source.getName().lastIndexOf(".") + 1)
+				: source.getSimpleName());
 
 
 		this.fullParse = true;

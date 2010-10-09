@@ -26,8 +26,8 @@ import java.util.List;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.we.kdom.IncrementalConstraints;
@@ -39,6 +39,7 @@ import de.d3web.we.kdom.renderer.ObjectInfoLinkRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
+import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
@@ -164,10 +165,17 @@ public abstract class SolutionDefinition
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
 				Section<SolutionDefinition> solutionSection) {
 
+			if (KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(article,
+					solutionSection)) {
+				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(article,
+						solutionSection);
+				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
+						solutionSection.get().getTermName(solutionSection)));
+			}
+
 			String name = solutionSection.get().getTermName(solutionSection);
 
 			KnowledgeBaseManagement mgn = getKBM(article);
-			if (mgn == null) return null;
 
 			IDObject o = mgn.findSolution(name);
 

@@ -135,29 +135,40 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	/**
 	 * Allows to register a new term
 	 * 
-	 * @param r
+	 * @param d
 	 * 
 	 * @param <TermObject>
 	 */
-	public <TermObject> void registerTermDefinition(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> r) {
-		TermIdentifier termName = new TermIdentifier(article, r);
-		TermReferenceLog<TermObject> termRefLog = getTermReferenceLog(article, r);
+	public <TermObject> void registerTermDefinition(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> d) {
+		TermIdentifier termName = new TermIdentifier(article, d);
+		TermReferenceLog<TermObject> termRefLog = getTermReferenceLog(article, d);
 		if (termRefLog != null) {
 			if (termRefLog.termDefiningSection != null) {
-				// this should not happen, because before creating a new term
-				// one should check whether the name is already in use
-				Logger.getLogger(this.getClass().getName())
-						.log(Level.WARNING, "Tried to register new term that already exists: '" +
-								termName + "'!");
-				// now registration will be ignored
-				return;
+				if (termRefLog.termDefiningSection == d || termRefLog.getRedundantDefinitions().contains(d)) {
+					// this should not happen, because before creating a new
+					// term
+					// one should check whether the name is already in use
+					Logger.getLogger(this.getClass().getName())
+							.log(Level.WARNING, "Tried to register same TermDefinition twice: '" +
+									termName + "'!");
+					// now registration will be ignored
+					return;
+				}
+				else if (termRefLog.termDefiningSection.compareTo(d) < 0) {
+					termRefLog.addRedundantTermDefinition(d);
+					return;
+				}
+				else {
+					termRefLog.termDefiningSection.setReusedBy(article.getTitle(), false);
+					article.setFullParse(this.getClass());
+				}
 			}
-			else {
-				setTermReferencesToNotReused(article, r);
+			for (Section<?> termRef : termRefLog.getReferences()) {
+				termRef.setReusedBy(article.getTitle(), false);
 			}
 		}
 		getTermReferenceLogsMap(article.getTitle()).put(termName,
-				new TermReferenceLog<TermObject>(r.get().getTermObjectClass(), r));
+				new TermReferenceLog<TermObject>(d.get().getTermObjectClass(), d));
 		modifiedTermDefinitions.put(article.getTitle(), true);
 	}
 
@@ -277,27 +288,35 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		return new HashSet<Section<? extends TermReference<TermObject>>>(0);
 	}
 
-	public <TermObject> void setTermReferencesToNotReused(KnowWEArticle article,
-			Section<? extends TermDefinition<TermObject>> r) {
+	// public <TermObject> void setTermReferencesToNotReused(KnowWEArticle
+	// article,
+	// Section<? extends TermDefinition<TermObject>> r) {
+	//
+	// Set<Section<? extends TermReference<TermObject>>> refs =
+	// getTermReferenceSections(
+	// article, r);
+	//
+	// for (Section<?> ref : refs) {
+	// ref.setReusedBy(article.getTitle(), false);
+	// }
+	// }
 
-		Set<Section<? extends TermReference<TermObject>>> refs = getTermReferenceSections(
-				article, r);
+	public <TermObject> void unregisterTermDefinition(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> d) {
+		TermReferenceLog<TermObject> termRefLog = getTermReferenceLog(article, d);
+		if (termRefLog != null) {
+			if (d == termRefLog.termDefiningSection) {
+				termRefLog.termDefiningSection = null;
+				for (Section<?> termDef : termRefLog.getRedundantDefinitions()) {
+					termDef.setReusedBy(article.getTitle(), false);
+				}
+				for (Section<?> termRef : termRefLog.getReferences()) {
+					termRef.setReusedBy(article.getTitle(), false);
+				}
+			}
+			else {
+				termRefLog.getRedundantDefinitions().remove(d);
+			}
 
-		for (Section<?> ref : refs) {
-			ref.setReusedBy(article.getTitle(), false);
-			// Section<?> father = ref;
-			// while (father != null) {
-			// father.setReusedBy(article.getTitle(), false);
-			// father = father.getFather();
-			// }
-		}
-	}
-
-	public <TermObject> void unregisterTermDefinition(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> r) {
-		setTermReferencesToNotReused(article, r);
-		TermReferenceLog<TermObject> termRef = getTermReferenceLog(article, r);
-		if (termRef != null) {
-			termRef.termDefiningSection = null;
 		}
 		modifiedTermDefinitions.put(article.getTitle(), true);
 	}
@@ -346,7 +365,11 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 
 		private Section<? extends TermDefinition<TermObject>> termDefiningSection;
 
-		private final Set<Section<? extends TermReference<TermObject>>> termReferingSections = new HashSet<Section<? extends TermReference<TermObject>>>();
+		private final Set<Section<? extends TermDefinition<TermObject>>> redundantTermDefiningSections =
+				new HashSet<Section<? extends TermDefinition<TermObject>>>();
+
+		private final Set<Section<? extends TermReference<TermObject>>> termReferingSections =
+				new HashSet<Section<? extends TermReference<TermObject>>>();
 
 		private final Class<TermObject> termObjectClass;
 
@@ -360,6 +383,14 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 
 		public Class<TermObject> getTermObjectClass() {
 			return this.termObjectClass;
+		}
+
+		public void addRedundantTermDefinition(Section<? extends TermDefinition<TermObject>> d) {
+			redundantTermDefiningSections.add(d);
+		}
+
+		public Set<Section<? extends TermDefinition<TermObject>>> getRedundantDefinitions() {
+			return redundantTermDefiningSections;
 		}
 
 		public void addTermReference(Section<? extends TermReference<TermObject>> r) {

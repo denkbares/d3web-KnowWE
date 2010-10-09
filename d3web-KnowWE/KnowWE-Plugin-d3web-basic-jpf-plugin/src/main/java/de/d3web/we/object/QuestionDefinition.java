@@ -71,16 +71,19 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
 				Section<QuestionDefinition> sec) {
 
+			if (KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(article, sec)) {
+				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(article,
+						sec);
+				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
+						sec.get().getTermName(sec)));
+			}
+
 			Section<QuestionDefinition> qidSection = (sec);
 
 			String name = qidSection.get().getTermName(qidSection);
 
 			KnowledgeBaseManagement mgn = getKBM(article);
 
-			if (KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(article, sec)) {
-				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
-						sec.get().getTermName(sec)));
-			}
 
 			Section<? extends QASetDefinition> parentQASetSection =
 					sec.get().getParentQASetSection(sec);

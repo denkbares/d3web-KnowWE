@@ -130,6 +130,13 @@ public abstract class AnswerDefinition
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
 				Section<AnswerDefinition> s) {
 
+			if (KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(article, s)) {
+				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(article,
+						s);
+				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
+						s.get().getTermName(s)));
+			}
+
 			String name = s.get().getTermName(s);
 
 			Section<? extends QuestionDefinition> qDef = s
@@ -142,7 +149,7 @@ public abstract class AnswerDefinition
 						this.getClass()));
 			}
 
-			KnowWEUtils.storeSectionInfo(article, s,
+			KnowWEUtils.storeObject(article, s,
 					AnswerDefinition.QUESTION_FOR_ANSWER_KEY, qDef);
 
 			Question q = qDef.get().getTermObject(article, qDef);
