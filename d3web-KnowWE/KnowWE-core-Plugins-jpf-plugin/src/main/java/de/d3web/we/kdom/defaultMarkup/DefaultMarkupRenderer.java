@@ -57,11 +57,6 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		String id = section.getID();
 		string.append(KnowWEUtils.maskHTML("<div id=\"" + id + "\" class='defaultMarkup'>\n"));
 
-		String name = "<span>" + section.getObjectType().getName() + "</span>";
-		String icon = "";
-		if (this.iconPath != null) {
-			icon = "<img class='markupIcon' src='" + this.iconPath + "'></img> ";
-		}
 		Tool[] tools = ToolUtils.getTools(article, section, user);
 		boolean hasTools = tools != null && tools.length > 0;
 		boolean hasMenu = hasTools;
@@ -84,11 +79,11 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 
 		string.append(KnowWEUtils.maskHTML(
 				"<div id='header_" + id + "' " +
-						"class='markupHeader " + (hasMenu ? "markupMenuIndicator" : "") + "'>" +
-						icon +
-						name +
-						toolbarHtml +
-						"\n"));
+						"class='markupHeader " + (hasMenu ? "markupMenuIndicator" : "") + "'>"));
+		renderHeader(article, section, user, string);
+		string.append(KnowWEUtils.maskHTML(toolbarHtml));
+		string.append("\n");
+
 		if (hasMenu) {
 			String menuHtml = "<div id='menu_" + id + "' class=markupMenu>";
 			for (Tool tool : tools) {
@@ -141,6 +136,31 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		string.append(KnowWEUtils.maskHTML("</div>\n")); // class=markupText
 		string.append(KnowWEUtils.maskHTML("</div>\n")); // class=defaultMarkup
 
+	}
+
+	protected void renderHeader(KnowWEArticle article, Section<T> section, KnowWEUserContext user, StringBuilder string) {
+		// render icon
+		if (this.iconPath != null) {
+			string.append(KnowWEUtils.maskHTML(
+					"<img class='markupIcon' src='" +
+							getHeaderIcon(article, section, user) +
+							"'></img> "));
+			;
+		}
+
+		// render heading
+		string.append(KnowWEUtils.maskHTML(
+				"<span>" +
+						getHeaderName(article, section, user) +
+						"</span>"));
+	}
+
+	protected String getHeaderName(KnowWEArticle article, Section<T> section, KnowWEUserContext user) {
+		return section.getObjectType().getName();
+	}
+
+	protected String getHeaderIcon(KnowWEArticle article, Section<T> section, KnowWEUserContext user) {
+		return this.iconPath;
 	}
 
 	protected void renderContents(KnowWEArticle article, Section<T> section, KnowWEUserContext user, StringBuilder string) {
