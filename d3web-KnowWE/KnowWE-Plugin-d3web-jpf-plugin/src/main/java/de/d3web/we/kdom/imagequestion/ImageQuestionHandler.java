@@ -19,7 +19,6 @@
  */
 package de.d3web.we.kdom.imagequestion;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Choice;
@@ -60,7 +57,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class ImageQuestionHandler extends AbstractTagHandler {
 
 	private static final String config_knowledgebase_path =
-			"kbResources/";
+		"kbResources/";
 
 	/**
 	 * Nearly every method in this class needs: topic, web and the
@@ -69,6 +66,8 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	private String topic;
 	private String web;
 	private KnowWEUserContext user;
+	private String width;
+	private String height;
 
 	public ImageQuestionHandler() {
 		super("imagequestionhandler");
@@ -77,7 +76,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	@Override
 	public String getDescription(KnowWEUserContext user) {
 		return D3webModule.getKwikiBundle_d3web(user).
-				getString("KnowWE.ImageQuestionHandler.Description");
+		getString("KnowWE.ImageQuestionHandler.Description");
 	}
 
 	@Override
@@ -119,9 +118,11 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		Question q = kbm.findQuestion(questionID);
 		List props = (List) q.getProperties().getProperty(Property.IMAGE_QUESTION_INFO);
 		String imageName = (String) props.get(0);
+		this.width = (String) props.get(1);
+		this.height = (String) props.get(2);
 
 		List<AnswerRegion> answerRegions =
-				this.buildAnswerRegions((List) props.get(1));
+			this.buildAnswerRegions((List) props.get(3));
 
 		// Layout is: Picture | Checkboxes with labels
 		StringBuffer renderedImage = new StringBuffer();
@@ -134,9 +135,9 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		}
 		catch (IOException e) {
 			Logger.getLogger(ImageQuestionHandler.class.getName())
-					.warning(
-							"Error in rendering method of ImageQuestionHandler : "
-									+ e.getMessage());
+			.warning(
+					"Error in rendering method of ImageQuestionHandler : "
+					+ e.getMessage());
 		}
 
 		// Render DIV only if it is not RerenderingAction
@@ -149,12 +150,12 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		}
 		buffi.append(
 				"<table id=\"imagetable_" + q.getId() + "\"><tr><td>"
-						+ renderedImage.toString()
-						+ "</td>"
-						+ "<td>"
-						+ renderedCheckBoxes.toString()
-						+ "</td>"
-						+ "</tr></table>");
+				+ renderedImage.toString()
+				+ "</td>"
+				+ "<td>"
+				+ renderedCheckBoxes.toString()
+				+ "</td>"
+				+ "</tr></table>");
 		if (renderDIV) buffi.append("</div>");
 
 		return buffi.toString();
@@ -199,14 +200,14 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	private void renderQuestionImage(StringBuffer buffi,
 			String questionImage, Question q, List<AnswerRegion> answerRegs,
 			KnowledgeBase kb)
-			throws IOException {
+	throws IOException {
 
 		buffi.append("<div id=\"" + q.getId() + "\" class=\"questionImage\"");
 
 		String path = KnowWEEnvironment.getInstance().getKnowWEExtensionPath()
-				+ ImageQuestionHandler.config_knowledgebase_path
-				+ this.topic + "PP" + KnowWEEnvironment.generateDefaultID(this.topic)
-				+ "/multimedia/" + questionImage;
+		+ ImageQuestionHandler.config_knowledgebase_path
+		+ this.topic + "PP" + KnowWEEnvironment.generateDefaultID(this.topic)
+		+ "/multimedia/" + questionImage;
 		path = path.replaceAll("KnowWEExtension", "");
 		File imgFile = new File(path);
 
@@ -217,23 +218,26 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		// Resource input = kb.getResource("multimedia/"+questionImage);
 		// File bla = new File(pathName);
 
-		BufferedImage img = ImageIO.read(imgFile.toURI().toURL());
+		//		BufferedImage img = ImageIO.read(imgFile.toURI().toURL());
 
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("position: relative;");
-		buffer.append("width: " + img.getWidth() + "px;");
-		buffer.append("height: " + img.getHeight() + "px;");
+		buffer.append("width: " + this.width + ";");
+		buffer.append("height: " + this.height + ";");
 
 		buffer.append("margin-left: auto;");
 		buffer.append("margin-right: auto;");
 
 		String relImagePath = ImageQuestionHandler.config_knowledgebase_path
-								+ this.topic + "PP"
-				+ KnowWEEnvironment.generateDefaultID(this.topic)
-								+ "/multimedia/"
-								+ questionImage;
-		// String relImagePath =
-		// "../../../StreamImageResourceAction/"+questionImage;
+		+ this.topic + "PP"
+		+ KnowWEEnvironment.generateDefaultID(this.topic)
+		+ "/multimedia/"
+		+ questionImage;
+
+		relImagePath =
+			"../KnowWE/action/StreamImageToResourceAction/"
+			+ questionImage +
+			"?topic="+ topic + "&web=" + web + "&imagename=" + questionImage;
 		buffer.append("background-image:url(" + relImagePath + ");");
 		buffi.append(" style=\"" + buffer.toString() + "\">");
 
@@ -257,15 +261,15 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	 * @throws IOException
 	 */
 	private String renderAnswerRegion(AnswerRegion answerRegion,
-				KnowledgeBase kb, Question q) {
+			KnowledgeBase kb, Question q) {
 
 		// Is the Answer in the KnowledgeBase
 		Choice answer = kb.searchAnswerChoice(answerRegion.getAnswerID());
 
 		if (answer == null) {
 			Logger.getLogger(ImageQuestionHandler.class.getName())
-					.warning(
-							"The Answer ID was not found in the knowledge base : ");
+			.warning(
+			"The Answer ID was not found in the knowledge base : ");
 			return "";
 		}
 
@@ -295,8 +299,9 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		// insert a transparent gif (so that Internet Explorer can be supported)
 		String imageName = answer.getId();
 		buffi.append("<img");
-		buffi.append(" class=\"qImageHover\" alt=\"space\"");
-		buffi.append(" src=\"images/spacer.gif\"");
+		buffi.append(" class=\"qImageHover\" alt=\"\"");
+		buffi.append(" src=\"" + KnowWEEnvironment.getInstance().getKnowWEExtensionPath()
+				+ "/d3web/icon/spacer.gif\"");
 		buffi.append(" width=\"" + answerRegion.getWidth() + "\"");
 		buffi.append(" height=\"" + answerRegion.getHeight() + "\"");
 		buffi.append(" title=\"" + imageName + "\" ");
@@ -441,7 +446,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 			else buffi.append("type=\"radio\"");
 			buffi.append(" class=\"answerRegion2\" ");
 			buffi.append(this.buildRelAttributeString(
-							answerID, q.getId()));
+					answerID, q.getId()));
 
 			Value value = session.getBlackboard().getValue(q);
 			if (isAnsweredinCase(value, new ChoiceValue(ans.get(i)))) buffi.append(" checked");

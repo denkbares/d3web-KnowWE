@@ -496,6 +496,17 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="ImageToResourceType">
+		<parameter id="class"
+			value="de.d3web.we.kdom.imagequestion.ImageToResourceType" />
+		<parameter id="name" value="ImageToResourceType" />
+		<parameter id="description" value="KnowWEObjectType ImageToResourceType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="AdminPanelHandler">
@@ -540,6 +551,15 @@
 		<parameter id="class" value="de.d3web.we.action.ImageQuestionAction" />
 		<parameter id="name" value="ImageQuestionAction" />
 		<parameter id="description" value="Action ImageQuestionAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="StreamImageToResourceAction">
+		<parameter id="class" value="de.d3web.we.action.StreamImageToResourceAction" />
+		<parameter id="name" value="StreamImageToResourceAction" />
+		<parameter id="description" value="Action StreamImageToResourceAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
