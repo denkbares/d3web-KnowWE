@@ -29,7 +29,7 @@ public class TimeEvent implements Comparable<TimeEvent> {
 		this.description = description;
 	}
 
-	private int importance;
+	private Integer importance;
 
 	private final String title;
 	private String description;
@@ -86,7 +86,7 @@ public class TimeEvent implements Comparable<TimeEvent> {
 		return description;
 	}
 
-	public int getImportance() {
+	public Integer getImportance() {
 		return importance;
 	}
 

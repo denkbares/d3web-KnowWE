@@ -9,9 +9,12 @@ import java.util.regex.Pattern;
 
 import de.d3web.we.hermes.TimeEvent;
 import de.d3web.we.hermes.TimeStamp;
+import de.d3web.we.hermes.kdom.conceptMining.LocationOccurrence;
+import de.d3web.we.hermes.kdom.conceptMining.PersonOccurrence;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
@@ -24,6 +27,7 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotation;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.kdom.type.AnonymousTypeInvisible;
@@ -64,6 +68,8 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(SourceType);
 
 		this.childrenTypes.add(DescriptionType);
+
+		this.addSubtreeHandler(Priority.LOW, new TimeEventOWLCompiler());
 	}
 
 	/**
@@ -299,6 +305,16 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 
 	private static class Description extends DefaultAbstractKnowWEObjectType {
 		public Description() {
+			SemanticAnnotation semanticAnnotation = new SemanticAnnotation();
+
+			// first grab annotated concepts
+			this.childrenTypes.add(semanticAnnotation);
+
+			// then search for un-annotated concepts
+			this.childrenTypes.add(new PersonOccurrence());
+			this.childrenTypes.add(new LocationOccurrence());
+
+			// for testing only
 			this.setCustomRenderer(new KnowWEDomRenderer<KnowWEObjectType>() {
 
 				@Override
