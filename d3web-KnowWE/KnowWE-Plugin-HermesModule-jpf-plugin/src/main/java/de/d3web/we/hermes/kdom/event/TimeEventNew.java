@@ -111,10 +111,10 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 			this.sectionFinder = cf;
 
 			// check for correct importance value
-			this.addSubtreeHandler(new SubtreeHandler<DateType>() {
+			this.addSubtreeHandler(new TimeEventAttributeHandler<DateType>() {
 
 				@Override
-				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<DateType> s) {
+				public Collection<KDOMReportMessage> createAttribute(KnowWEArticle article, Section<DateType> s) {
 					TimeStamp t = DateType.getTimeStamp(s);
 					if (false /* t is invalid */) { // TODO: set appropriate error
 						return Arrays.asList((KDOMReportMessage) new InvalidNumberError(
@@ -136,7 +136,7 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 		static TimeStamp getTimeStamp(Section<DateType> s) {
 			return new TimeStamp(s.getOriginalText()); // one could
 			// possibly
-			// cache ths
+			// cache the
 			// object in
 			// sectionInfoStore..
 		}
@@ -240,10 +240,10 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 			this.sectionFinder = cf;
 
 			// check for correct importance value
-			this.addSubtreeHandler(new SubtreeHandler<ImportanceType>() {
+			this.addSubtreeHandler(new TimeEventAttributeHandler<ImportanceType>() {
 
 				@Override
-				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ImportanceType> s) {
+				protected Collection<KDOMReportMessage> createAttribute(KnowWEArticle article, Section<ImportanceType> s) {
 					Integer i = ImportanceType.getImportance(s);
 					if (i == null || i < 1 || i > 3) {
 						return Arrays.asList((KDOMReportMessage) new InvalidNumberError(
@@ -254,8 +254,9 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 						Section<TimeEventNew> teSection = s.findAncestorOfType(TimeEventNew.class);
 						TimeEvent te = TimeEventNew.getEvent(teSection);
 						if (te != null) te.setImportance(i);
+						return new ArrayList<KDOMReportMessage>(0);
 					}
-					return new ArrayList<KDOMReportMessage>(0);
+
 				}
 			});
 
@@ -283,10 +284,10 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 					9999, 1);
 
 			// add source value
-			this.addSubtreeHandler(new SubtreeHandler<Source>() {
+			this.addSubtreeHandler(new TimeEventAttributeHandler<Source>() {
 
 				@Override
-				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<Source> s) {
+				public Collection<KDOMReportMessage> createAttribute(KnowWEArticle article, Section<Source> s) {
 					String name = Source.getSourceName(s);
 
 					Section<TimeEventNew> teSection = s.findAncestorOfType(TimeEventNew.class);
@@ -333,10 +334,10 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 			this.sectionFinder = f;
 
 			// check for correct importance value
-			this.addSubtreeHandler(new SubtreeHandler<Description>() {
+			this.addSubtreeHandler(new TimeEventAttributeHandler<Description>() {
 
 				@Override
-				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<Description> s) {
+				public Collection<KDOMReportMessage> createAttribute(KnowWEArticle article, Section<Description> s) {
 					Section<TimeEventNew> teSection = s.findAncestorOfType(TimeEventNew.class);
 					TimeEvent event = TimeEventNew.getEvent(teSection);
 					if (event != null) event.setDescription(s.getOriginalText());
