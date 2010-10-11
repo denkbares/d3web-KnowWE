@@ -221,6 +221,7 @@ public class DPSEnvironment {
 		if (threaded) {
 			new Thread(new Runnable() {
 
+				@Override
 				public void run() {
 					saveAll();
 				}
@@ -295,7 +296,7 @@ public class DPSEnvironment {
 		}
 	}
 
-	public void addService(KnowledgeService service, String clusterID, boolean initialize, boolean useDPS) {
+	public void addService(KnowledgeService service, String clusterID, boolean initialize) {
 		KnowledgeService oldService = getService(service.getId());
 		if (oldService != null) {
 			removeService(oldService);
@@ -329,14 +330,6 @@ public class DPSEnvironment {
 						terminologyServer.getStorage());
 
 				tb.addLocalAlignments(las);
-
-				if (useDPS) {
-					Collection<GlobalAlignment> gas = tb.alignGlobal(eachAccess, service.getId(),
-							terminologyServer.getStorage());
-					tb.addGlobalAlignments(gas);
-					saveAll();
-				}
-
 			}
 		}
 	}

@@ -20,8 +20,6 @@
 
 package de.d3web.we.basic;
 
-import java.util.ResourceBundle;
-
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.core.DPSEnvironment;
@@ -45,9 +43,6 @@ public class DistributedRegistrationManager {
 
 	public void registerKnowledgeBase(KnowledgeBaseManagement kbm, String topic, String webname) {
 
-		boolean useDPS = ResourceBundle.getBundle("KnowWE_config").getString("dps.active").equals(
-				"true");
-
 		KnowledgeBase base = kbm.getKnowledgeBase();
 
 		base.setId(topic + ".."
@@ -56,7 +51,7 @@ public class DistributedRegistrationManager {
 		KnowledgeService service = new D3webKnowledgeService(base,
 				base.getId());
 
-		env.addService(service, null, true, useDPS);
+		env.addService(service, null, true);
 
 		for (Broker broker : env.getBrokers()) {
 			broker.register(service);
