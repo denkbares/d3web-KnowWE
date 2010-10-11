@@ -20,8 +20,6 @@
 
 package de.d3web.kernel.dialogcontrol.controllers;
 
-import java.util.List;
-
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.knowledge.terminology.NamedObject;
@@ -39,23 +37,6 @@ import de.d3web.core.session.Session;
  * @author Christian Betz
  */
 public interface QASetManager {
-
-	/**
-	 * @return the main QASet agenda
-	 */
-	public List getQASetQueue();
-
-	/**
-	 * @return List of all QContainers, that have been (partially) processed
-	 *         during answering the case (system-indicated and user-selected
-	 *         ones)
-	 */
-	public List getProcessedContainers();
-
-	/**
-	 * @return true iff there is a valid QASet the manager can move forward to
-	 */
-	public boolean hasNextQASet();
 
 	/**
 	 * @see PSMethod#propagate(Session, NamedObject, Object[])

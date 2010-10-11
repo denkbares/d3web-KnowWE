@@ -28,7 +28,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.d3web.core.inference.KnowledgeSlice;
-import de.d3web.core.inference.PSMethodInit;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.IDObject;
@@ -38,7 +37,6 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.DefaultSession;
@@ -53,11 +51,7 @@ import de.d3web.core.session.interviewmanager.EmptyForm;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
-import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.indication.inference.PSMethodUserSelected;
-import de.d3web.kernel.dialogcontrol.ExternalClient;
-import de.d3web.kernel.dialogcontrol.controllers.QASetManager;
-import de.d3web.kernel.dialogcontrol.controllers.QASetManagerManagement;
 import de.d3web.kernel.psMethods.delegate.PSMethodDelegate;
 import de.d3web.scoring.inference.PSMethodHeuristic;
 import de.d3web.we.basic.Information;
@@ -70,58 +64,6 @@ import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.inference.PSMethodXCL;
 
 public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
-
-	private class DefaultExternalClient extends ExternalClient {
-
-		private final KnowledgeServiceSession kss;
-
-		public DefaultExternalClient(KnowledgeServiceSession kss) {
-			super();
-			this.kss = kss;
-		}
-
-		@Override
-		public void init() {
-			// nothing to initialize...
-		}
-
-		@Override
-		public void delegate(String targetNamespace, String id,
-				boolean temporary, String comment) {
-			Information info = new Information(kss.getNamespace(), id, null,
-					getTerminologyType(id), InformationType.ExternalInformation);
-			List<Information> infos = new ArrayList<Information>();
-			infos.add(info);
-			broker.delegate(infos, targetNamespace, temporary, false, comment,
-					kss);
-			/*
-			 * solution: let the DDcontroller look at the action of the rule...
-			 * after last one: execute!
-			 */
-		}
-
-		@Override
-		public void delegateInstanly(String targetNamespace, String id,
-				boolean temporary, String comment) {
-			Information info = new Information(kss.getNamespace(), id, null,
-					getTerminologyType(id), InformationType.ExternalInformation);
-			List<Information> infos = new ArrayList<Information>();
-			infos.add(info);
-			broker.delegate(infos, targetNamespace, temporary, true, comment,
-					kss);
-		}
-
-		@Override
-		public void executeDelegation() {
-			// normally: already done
-
-			/*
-			 * solution: let the DDcontroller look at the action of the rule...
-			 * after last one: execute!
-			 */
-		}
-
-	}
 
 	private class XCLModelValueListener implements KBOEventListener {
 
@@ -150,7 +92,6 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 
 		@Override
 		public void notify(IEventSource source, Session session) {
-			if (session != session) return;
 
 			XCLModel model = (XCLModel) source;
 			List<Object> values = new ArrayList<Object>();
@@ -315,22 +256,6 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 				requestedDiagnoses.add((Solution) ido);
 			}
 		}
-
-		// [TODO]: no idea if this is correct:
-		if (requestedDiagnoses.isEmpty()) {
-			for (QASet set : requestedFindings) {
-				QASetManager m = QASetManagerManagement.getInstance().getQASetManager(session);
-				m.propagate(set, null,
-						PSMethodStrategic.getInstance());
-			}
-		}
-		else {
-			for (QASet set : base.getInitQuestions()) {
-				QASetManagerManagement.getInstance().getQASetManager(session).propagate(set, null,
-						PSMethodInit.getInstance());
-			}
-		}
-
 	}
 
 	private Value getAnswers(QuestionNum qn, List values) {
@@ -357,25 +282,6 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 						return answer;
 					}
 				}
-			}
-		}
-		return UndefinedValue.getInstance();
-	}
-
-	private Value getStatesForSolution(List<?> values) {
-		if (values.size() == 1) {
-			SolutionState state = (SolutionState) values.get(0);
-			if (state.equals(SolutionState.ESTABLISHED)) {
-				return new Rating(State.ESTABLISHED);
-			}
-			else if (state.equals(SolutionState.SUGGESTED)) {
-				return new Rating(State.SUGGESTED);
-			}
-			else if (state.equals(SolutionState.EXCLUDED)) {
-				return new Rating(State.EXCLUDED);
-			}
-			else if (state.equals(SolutionState.UNCLEAR)) {
-				return new Rating(State.UNCLEAR);
 			}
 		}
 		return UndefinedValue.getInstance();

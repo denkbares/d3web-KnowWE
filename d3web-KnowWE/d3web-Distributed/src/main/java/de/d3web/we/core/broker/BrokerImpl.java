@@ -21,7 +21,6 @@
 package de.d3web.we.core.broker;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
@@ -35,8 +34,6 @@ public class BrokerImpl implements Broker {
 
 	private final DPSEnvironment environment;
 
-	private final String userID;
-
 	private DPSSession session;
 
 	private DialogControl dialogControl;
@@ -48,7 +45,6 @@ public class BrokerImpl implements Broker {
 	public BrokerImpl(DPSEnvironment environment, String userID, DialogControl dialogControl) {
 		super();
 		this.environment = environment;
-		this.userID = userID;
 		this.dialogControl = dialogControl;
 		session = new DPSSession(environment);
 		delegateStack = new Stack<KnowledgeServiceSession>();
@@ -56,6 +52,7 @@ public class BrokerImpl implements Broker {
 		session.getBlackboard().initializeClusterManagers(this);
 	}
 
+	@Override
 	public void update(Information info) {
 		session.getBlackboard().update(info);
 		ServiceAction action = new InformAllServicesAction(info, session, environment);
@@ -63,56 +60,12 @@ public class BrokerImpl implements Broker {
 		action.run();
 	}
 
+	@Override
 	public Information request(Information requestInfo, KnowledgeServiceSession serviceSession) {
 		return session.getBlackboard().inspect(requestInfo);
 	}
 
-	public void delegate(List<Information> infos, String targetNamespace, boolean temporary, boolean instantly, String comment, KnowledgeServiceSession kss) {
-		if (!temporary) {
-			finished(kss);
-		}
-		else {
-			// hmmmm: muss jemand, der delegiert, aktiv/sichtbar sein? oder
-			// später werden?
-			// activate(kss);
-		}
-		KnowledgeServiceSession targetKSS = session.getServiceSession(targetNamespace);
-		List<Information> requestedInfos = new ArrayList<Information>();
-		List<KnowledgeServiceSession> targetKSSs = new ArrayList<KnowledgeServiceSession>();
-		if (targetKSS == null) {
-			for (Information info : infos) {
-				Collection<Information> alignedInfos = environment.getAlignedInformation(info);
-				for (Information alignedInfo : alignedInfos) {
-					if (alignedInfo.getNamespace().equals(targetNamespace)) {
-						requestedInfos.add(alignedInfo);
-						if (!targetKSSs.contains(session.getServiceSession(alignedInfo.getNamespace()))) {
-							targetKSSs.add(session.getServiceSession(alignedInfo.getNamespace()));
-						}
-					}
-				}
-			}
-			// [TODO] select best.. or send all
-		}
-		else {
-			targetKSSs.add(targetKSS);
-			// get infos for that kss:
-			for (Information info : infos) {
-				Collection<Information> alignedInfos = environment.getAlignedInformation(info);
-				for (Information alignedInfo : alignedInfos) {
-					if (alignedInfo.getNamespace().equals(targetNamespace)) {
-						requestedInfos.add(alignedInfo);
-					}
-				}
-			}
-		}
-		for (KnowledgeServiceSession each : targetKSSs) {
-			each.request(requestedInfos);
-			if (!each.isFinished()) {
-				activate(each, kss, false, instantly, comment);
-			}
-		}
-	}
-
+	@Override
 	public void finished(KnowledgeServiceSession kss) {
 		dialogControl.finished(kss);
 		/*
@@ -139,6 +92,7 @@ public class BrokerImpl implements Broker {
 	 * comment); }
 	 */
 
+	@Override
 	public void activate(KnowledgeServiceSession kss, KnowledgeServiceSession reason, boolean userIndicated, boolean instantly, String comment) {
 		if (kss == null) return;
 		dialogControl.delegate(kss, reason, userIndicated, instantly, comment);
@@ -150,6 +104,7 @@ public class BrokerImpl implements Broker {
 		 */
 	}
 
+	@Override
 	public void register(KnowledgeService service) {
 		KnowledgeServiceSession serviceSession = environment.createServiceSession(service.getId(),
 				this);
@@ -157,10 +112,12 @@ public class BrokerImpl implements Broker {
 		serviceSession.processInit();
 	}
 
+	@Override
 	public void signoff(KnowledgeService service) {
 		session.removeServiceSession(service.getId());
 	}
 
+	@Override
 	public DPSSession getSession() {
 		return session;
 	}
@@ -169,12 +126,14 @@ public class BrokerImpl implements Broker {
 		this.session = session;
 	}
 
+	@Override
 	public void clearDPSSession() {
 		session.clear(this);
 		dialogControl.clear();
 		delegateStack.clear();
 	}
 
+	@Override
 	public DialogControl getDialogControl() {
 		return dialogControl;
 	}
@@ -197,6 +156,7 @@ public class BrokerImpl implements Broker {
 		}
 	}
 
+	@Override
 	public void processInit() {
 		for (KnowledgeServiceSession each : session.getServiceSessions()) {
 			each.processInit();

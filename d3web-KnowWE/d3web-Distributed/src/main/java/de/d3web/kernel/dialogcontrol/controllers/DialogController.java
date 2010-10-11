@@ -20,7 +20,6 @@
 
 package de.d3web.kernel.dialogcontrol.controllers;
 
-import de.d3web.core.knowledge.terminology.QASet;
 
 /**
  * The dialogs view on the dialogcontrolling-part of the case! <br>
@@ -30,76 +29,4 @@ import de.d3web.core.knowledge.terminology.QASet;
  */
 public interface DialogController extends QASetManager {
 
-	/**
-	 * @return if the QASet is a valid one for current DC.
-	 **/
-	public boolean isValidForDC(QASet q);
-
-	/**
-	 * @return current QASet - the QASet the controller points on
-	 */
-	public QASet getCurrentQASet() throws InvalidQASetRequestException;
-
-	/**
-	 * @return true, if there is any QASet that can be answered in the current
-	 *         case
-	 */
-	public boolean hasNewestQASet();
-
-	/**
-	 * @return true, if there is a QASet the controller can go back to
-	 */
-	public boolean hasPreviousQASet();
-
-	/**
-	 * moves to the next new QASet (unanswered, activated)
-	 * 
-	 * @return newest QASet
-	 */
-	public QASet moveToNewestQASet();
-
-	/**
-	 * moves to the next QASet (e.g. on history) even if it has already been
-	 * answered
-	 * 
-	 * @return next QASet
-	 */
-	public QASet moveToNextQASet();
-
-	/**
-	 * moves to the previous QASet (e.g. on history)
-	 * 
-	 * @return previous QASet
-	 */
-	public QASet moveToPreviousQASet();
-
-	/**
-	 * Returns the next remaining QASet (e.g. on qaSetQueue) even if the current
-	 * QASet hasn't been answered completely. The currentQASet, newestQASet and
-	 * nextQASet will not be changed by this method. Multiple method-calls are
-	 * iterating the nextQASet's, until "moveToNewestQASet" is called (then, the
-	 * nextRemainingQASet is the QASet that comes after the currentQASet).
-	 * 
-	 * @return QASet
-	 * @deprecated Das ist natürlich Quatsch mit Soße. Besser wäre es doch wohl,
-	 *             dafür einen DialogController zu verwenden, dem es egal ist,
-	 *             ob ein QContainer komplett beantwortet ist.
-	 */
-	@Deprecated
-	public QASet moveToNextRemainingQASet();
-
-	/**
-	 * jumps to QASet q and activates it
-	 * 
-	 * @return the QASet the controller has jumped to
-	 */
-	public QASet moveToQASet(QASet q);
-
-	/**
-	 * jumps to Question q or to QContainer that is parent of q (depending on
-	 * DialogController type)
-	 * 
-	 * @return the QASet the controller has jumped to
-	 */
-	public QASet moveToQuestion(QASet q);
 }
