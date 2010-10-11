@@ -46,6 +46,7 @@ import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
+import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
@@ -59,13 +60,13 @@ import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
 import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
-import de.d3web.core.knowledge.terminology.info.Properties;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.AnswerFactory;
 import de.d3web.core.manage.IDObjectManagement;
@@ -212,11 +213,11 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			}
 			// answer is the default answer
 			if (def) {
-				setAnswerPropertytoCurrentQuestion(answer, Property.DEFAULT);
+				setAnswerPropertytoCurrentQuestion(answer, BasicProperties.DEFAULT);
 			}
 			// the question is initialised with this answer
 			if (init) {
-				setAnswerPropertytoCurrentQuestion(answer, Property.INIT);
+				setAnswerPropertytoCurrentQuestion(answer, BasicProperties.INIT);
 			}
 		}
 		// Link
@@ -246,8 +247,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 
 	private void setAnswerPropertytoCurrentQuestion(Choice answer,
 			Property property) {
-		Properties properties = currentQuestion.getProperties();
-		Object defproperty = properties.getProperty(property);
+		InfoStore infoStore = currentQuestion.getInfoStore();
+		Object defproperty = infoStore.getValue(property);
 		if (defproperty != null) {
 			if (defproperty instanceof String) {
 				String s = (String) defproperty;
@@ -260,7 +261,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		else {
 			defproperty = answer.getId();
 		}
-		properties.setProperty(property, defproperty);
+		infoStore.addValue(property, defproperty);
 	}
 
 	private void addQcontainerIndication(String name, String ref,
@@ -372,7 +373,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 				}
 				else if (t.second instanceof Choice) {
 					Choice ac = (Choice) t.second;
-					ac.getProperties().setProperty(Property.EXPLANATION, text);
+					ac.getInfoStore().addValue(BasicProperties.EXPLANATION, text);
 				}
 				else {
 					errors.add(MessageKnOfficeGenerator
@@ -586,13 +587,13 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 					file, line, linetext, name, type));
 			return;
 		}
+		InfoStore infoStore = currentQuestion.getInfoStore();
 		if (currentQuestion instanceof QuestionNum) {
-			Properties prop = currentQuestion.getProperties();
 			if (upperbound != null && lowerbound != null) {
 				if (lowerbound <= upperbound) {
 					NumericalInterval range = new NumericalInterval(lowerbound,
 							upperbound);
-					prop.setProperty(Property.QUESTION_NUM_RANGE, range);
+					infoStore.addValue(BasicProperties.QUESTION_NUM_RANGE, range);
 				}
 				else {
 					errors.add(MessageKnOfficeGenerator
@@ -600,17 +601,16 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 				}
 			}
 			if (unit != null) {
-				prop.setProperty(Property.UNIT, unit);
+				infoStore.addValue(BasicProperties.UNIT, unit);
 			}
 		}
 		else if (unit != null || lowerbound != null || upperbound != null) {
 			errors.add(MessageKnOfficeGenerator
 					.createUnitAndRangeOnlyAtNumWarning(file, line, linetext));
 		}
-		Properties prop = currentQuestion.getProperties();
 		// Setzen wenn die Frage abstrakt ist
 		if (abs) {
-			prop.setProperty(Property.ABSTRACTION_QUESTION, Boolean.TRUE);
+			infoStore.addValue(BasicProperties.ABSTRACTION_QUESTION, Boolean.TRUE);
 		}
 		// Setzen des langen Fragetextes
 		if (longname != null) {
@@ -779,21 +779,18 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			content = content.substring(1, content.length() - 1);
 		}
 
-		MMInfoStorage mmis;
 		DCMarkup dcm = new DCMarkup();
 		dcm.setContent(DCElement.TITLE, title);
 		dcm.setContent(DCElement.SUBJECT, subject);
 		dcm.setContent(DCElement.SOURCE, o.getId());
 		if (language != null) dcm.setContent(DCElement.LANGUAGE, language);
 		MMInfoObject mmi = new MMInfoObject(dcm, content);
-		if (o.getProperties().getProperty(Property.MMINFO) == null) {
+
+		MMInfoStorage mmis = (MMInfoStorage) o.getInfoStore().getValue(BasicProperties.MMINFO);
+		if (mmis == null) {
 			mmis = new MMInfoStorage();
+			o.getInfoStore().addValue(BasicProperties.MMINFO, mmis);
 		}
-		else {
-			mmis = (MMInfoStorage) o.getProperties().getProperty(
-					Property.MMINFO);
-		}
-		o.getProperties().setProperty(Property.MMINFO, mmis);
 		mmis.addMMInfo(mmi);
 	}
 

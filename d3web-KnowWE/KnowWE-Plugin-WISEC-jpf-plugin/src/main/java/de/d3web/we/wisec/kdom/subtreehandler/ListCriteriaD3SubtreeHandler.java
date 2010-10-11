@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.terminology.QuestionOC;
-import de.d3web.core.knowledge.terminology.info.Property;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -88,7 +88,7 @@ public class ListCriteriaD3SubtreeHandler extends D3webSubtreeHandler<ListCriter
 						"active", "inactive" });
 
 		// Make created Question abstract
-		q.getProperties().setProperty(Property.ABSTRACTION_QUESTION, Boolean.TRUE);
+		q.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION, Boolean.TRUE);
 	}
 
 	private void createD3ObjectsUsingKDom(Section<ListCriteriaType> section,

@@ -34,12 +34,12 @@ import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionYN;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
 import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.ChoiceValue;
@@ -270,8 +270,7 @@ public class FindingHTMLWriter {
 	}
 
 	public static String getPrompt(Question q) {
-		MMInfoStorage storage = (MMInfoStorage) q.getProperties()
-				.getProperty(Property.MMINFO);
+		MMInfoStorage storage = (MMInfoStorage) q.getInfoStore().getValue(BasicProperties.MMINFO);
 		if (storage != null) {
 			DCMarkup dcMarkup = new DCMarkup();
 			dcMarkup.setContent(DCElement.SOURCE, q.getId());

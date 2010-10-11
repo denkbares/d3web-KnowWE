@@ -31,13 +31,12 @@ import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
 import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
-import de.d3web.core.knowledge.terminology.info.Properties;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.AnswerFactory;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Value;
@@ -165,8 +164,8 @@ public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 			List<Question> questions = new LinkedList<Question>();
 			collectQuestions(currentQContainer, questions);
 			for (Question q : questions) {
-				Properties properties = q.getProperties();
-				MMInfoStorage mmis = (MMInfoStorage) properties.getProperty(Property.MMINFO);
+				MMInfoStorage mmis = (MMInfoStorage) q.getInfoStore().getValue(
+						BasicProperties.MMINFO);
 				if (mmis != null) {
 					DCMarkup markup = new DCMarkup();
 					markup.setContent(DCElement.SUBJECT,

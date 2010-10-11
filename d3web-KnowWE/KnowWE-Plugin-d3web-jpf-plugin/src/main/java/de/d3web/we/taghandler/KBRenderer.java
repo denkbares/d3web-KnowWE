@@ -28,14 +28,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.RuleSet;
 import de.d3web.core.inference.condition.Condition;
+import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Choice;
@@ -48,17 +50,19 @@ import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
 import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
-import de.d3web.core.knowledge.terminology.info.Properties;
 import de.d3web.core.knowledge.terminology.info.Property;
+import de.d3web.core.knowledge.terminology.info.Property.Autosave;
 import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.utilities.Triple;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
-import de.d3web.kernel.verbalizer.Verbalizer;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
+import de.d3web.kernel.verbalizer.Verbalizer;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
@@ -191,8 +195,7 @@ public class KBRenderer extends AbstractTagHandler {
 										.getStoredObject(rule.getWeb(), topic,
 												rule.getID(),
 												"RULE_STORE_KEY");
-								if (kbRuleId != null)
-									idMap.put(kbRuleId.getId(), rule.getID());
+								if (kbRuleId != null) idMap.put(kbRuleId.getId(), rule.getID());
 							}
 
 							for (Section<BulletContentType> bullet : allBulletContentTypes) {
@@ -353,7 +356,8 @@ public class KBRenderer extends AbstractTagHandler {
 					}
 				}
 			}
-		} else {
+		}
+		else {
 			text.append("<p class=\"box error\">"
 					+ rb.getString("KnowWE.KBRenderer.error") + "</p>");
 		}
@@ -365,14 +369,12 @@ public class KBRenderer extends AbstractTagHandler {
 	 * Returns all children in an hierarchically view from a given list of
 	 * terminology objects.
 	 * 
-	 * @param nodes
-	 *            the nodes from which you want to have all children displayed.
-	 * @param save
-	 *            List for saving already visited nodes, to avoid an infinite
-	 *            loop in case of periodic appearing objects
-	 * @param depth
-	 *            the depth of the recursion, which is needed for the
-	 *            hierarchically view.
+	 * @param nodes the nodes from which you want to have all children
+	 *        displayed.
+	 * @param save List for saving already visited nodes, to avoid an infinite
+	 *        loop in case of periodic appearing objects
+	 * @param depth the depth of the recursion, which is needed for the
+	 *        hierarchically view.
 	 * @return all children from the given objects, including their properties.
 	 */
 	private String getAll(TerminologyObject[] nodes,
@@ -382,18 +384,17 @@ public class KBRenderer extends AbstractTagHandler {
 		StringBuffer property = new StringBuffer();
 		for (TerminologyObject t1 : nodes) {
 			if (t1 instanceof NamedObject
-					&& ((NamedObject) t1).getProperties() != null) {
+					&& ((NamedObject) t1).getInfoStore() != null) {
 				// Append the prompt for questions
 				if (t1 instanceof Question && getPrompt((Question) t1) != null) {
 					prompt.append("&#126; " + getPrompt((Question) t1));
 				}
 				// Append the properties
-				Properties rUnit = ((NamedObject) t1).getProperties();
-				Set<Property> sUnit = rUnit.getKeys();
-				for (Property p1 : sUnit) {
-					if (p1.getName() != "mminfo") {
-						property.append(" " + p1.getName() + ": "
-								+ rUnit.getProperty(p1));
+				InfoStore rUnit = t1.getInfoStore();
+				for (Triple<Property, Locale, Object> p1 : rUnit.entries()) {
+					if (p1.getA().hasState(Autosave.mminfo)) {
+						property.append(" " + p1.getA().getName() + ": "
+								+ rUnit.getClass());
 					}
 				}
 			}
@@ -410,7 +411,8 @@ public class KBRenderer extends AbstractTagHandler {
 									+ "</span>"
 									+ "<span style=\"color: rgb(125, 80, 102);\"> [mc] "
 									+ property + " </span><br/>");
-				} else {
+				}
+				else {
 					result
 							.append("<span style=\"color: rgb(0, 128, 0);\">"
 									+ t1.toString()
@@ -427,22 +429,26 @@ public class KBRenderer extends AbstractTagHandler {
 					result.append("<span style=\"color: rgb(0, 0, 255);\">"
 							+ c1.toString() + "</span><br/>");
 				}
-			} else if (t1 instanceof QuestionText) {
+			}
+			else if (t1 instanceof QuestionText) {
 				result.append("<span style=\"color: rgb(0, 128, 0);\">"
 						+ t1.getName() + " " + prompt + "</span>"
 						+ "<span style=\"color: rgb(125, 80, 102);\"> [text] "
 						+ property + " </span><br/>");
-			} else if (t1 instanceof QuestionNum) {
+			}
+			else if (t1 instanceof QuestionNum) {
 				result.append("<span style=\"color: rgb(0, 128, 0);\">"
 						+ t1.getName() + " " + prompt + "</span>"
 						+ "<span style=\"color: rgb(125, 80, 102);\"> [num] "
 						+ property + " </span><br/>");
-			} else if (t1 instanceof QuestionDate) {
+			}
+			else if (t1 instanceof QuestionDate) {
 				result.append("<span style=\"color: rgb(0, 128, 0);\">"
 						+ t1.getName() + " " + prompt
 						+ "<span style=\"color: rgb(125, 80, 102);\"> [date] "
 						+ property + " </span><br/>");
-			} else if (t1 instanceof Solution) {
+			}
+			else if (t1 instanceof Solution) {
 				result.append("<span style=\"color: rgb(150, 110, 120);\">"
 						+ VerbalizationManager.getInstance().verbalize(t1,
 								RenderingFormat.HTML) + "</span><br/>");
@@ -474,13 +480,11 @@ public class KBRenderer extends AbstractTagHandler {
 	/**
 	 * Returns the prompt for a given question.
 	 * 
-	 * @param q
-	 *            Question
+	 * @param q Question
 	 * @return the prompt of the question.
 	 */
 	public static String getPrompt(Question q) {
-		MMInfoStorage storage = (MMInfoStorage) q.getProperties().getProperty(
-				Property.MMINFO);
+		MMInfoStorage storage = (MMInfoStorage) q.getInfoStore().getValue(BasicProperties.MMINFO);
 		if (storage != null) {
 			DCMarkup dcMarkup = new DCMarkup();
 			dcMarkup.setContent(DCElement.SOURCE, q.getId());
@@ -508,7 +512,8 @@ public class KBRenderer extends AbstractTagHandler {
 				Integer i1 = Integer.parseInt(o1.getId().substring(1));
 				Integer i2 = Integer.parseInt(o2.getId().substring(1));
 				return i1.compareTo(i2);
-			} catch (NumberFormatException e) {
+			}
+			catch (NumberFormatException e) {
 				// shouldn't happen, fallback...
 				return o1.getId().compareTo(o2.getId());
 			}

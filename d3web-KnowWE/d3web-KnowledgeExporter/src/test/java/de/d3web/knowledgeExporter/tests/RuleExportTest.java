@@ -20,14 +20,21 @@
 
 package de.d3web.knowledgeExporter.tests;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import de.d3web.knowledgeExporter.KnowledgeManager;
 import de.d3web.knowledgeExporter.txtWriters.RuleWriter;
+import de.d3web.plugin.test.InitPluginManager;
 
 public class RuleExportTest extends KnowledgeExporterTest {
 
 	protected RuleWriter writer;
+
+	@Override
+	protected void setUp() throws IOException {
+		InitPluginManager.init();
+	}
 
 	public void testSimpleRules() {
 		String diagnosis = "answer 1\n answer 2\n answer 3";
@@ -149,7 +156,7 @@ public class RuleExportTest extends KnowledgeExporterTest {
 	// private void setUpKB(String diagnosis, String initQuestion, String
 	// questions, String rules) {
 	// initialize();
-	//		
+	//
 	// TextParserResource ressource;
 	//
 	// if (questions != null) {
@@ -172,10 +179,10 @@ public class RuleExportTest extends KnowledgeExporterTest {
 	// output = kbTxtInterpreter.interpreteKBTextReaders(input, "JUnit-KB",
 	// false, false);
 	// kb = kbTxtInterpreter.getKnowledgeBase();
-	//		
+	//
 	// setUpWriter();
 	// }
-	//	
+	//
 	// public void initialize() {
 	// kbTxtInterpreter = new KBTextInterpreter();
 	// input = new HashMap<String, TextParserResource>();

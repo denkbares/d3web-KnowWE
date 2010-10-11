@@ -23,6 +23,7 @@ package de.d3web.knowledgeExporter.xlsWriters;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import jxl.Cell;
@@ -31,20 +32,22 @@ import jxl.write.WritableSheet;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 import de.d3web.core.inference.KnowledgeSlice;
+import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.terminology.Choice;
-import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
 import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
-import de.d3web.core.knowledge.terminology.info.Properties;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.core.utilities.Triple;
 import de.d3web.knowledgeExporter.KnowledgeManager;
 import de.d3web.shared.Abnormality;
 import de.d3web.shared.AbstractAbnormality;
@@ -177,18 +180,14 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 					abnorm = true;
 				}
 			}
-			for (Property p : q.getProperties().getKeys()) {
-				if (p.equals(Property.MMINFO)) {
-					MMInfoStorage storage = (MMInfoStorage) q.getProperties().getProperty(
-							Property.MMINFO);
-					if (storage != null) {
-						DCMarkup markup = new DCMarkup();
-						markup.setContent(DCElement.SUBJECT, MMInfoSubject.PROMPT.getName());
-						Set<MMInfoObject> infoObjects = storage.getMMInfo(markup);
-						if (!infoObjects.isEmpty()) {
-							prompt = true;
-						}
-					}
+			MMInfoStorage storage = (MMInfoStorage) q.getInfoStore().getValue(
+					BasicProperties.MMINFO);
+			if (storage != null) {
+				DCMarkup markup = new DCMarkup();
+				markup.setContent(DCElement.SUBJECT, MMInfoSubject.PROMPT.getName());
+				Set<MMInfoObject> infoObjects = storage.getMMInfo(markup);
+				if (!infoObjects.isEmpty()) {
+					prompt = true;
 				}
 			}
 			if (q instanceof QuestionChoice) {
@@ -224,32 +223,22 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 		}
 	}
 
-	private boolean[] checkProperties(Object o) {
+	private boolean[] checkProperties(IDObject o) {
 		boolean[] check = new boolean[2];
-		Properties properties = null;
-		if (o instanceof NamedObject) {
-			properties = ((NamedObject) o).getProperties();
-		}
-		else if (o instanceof Choice) {
-			properties = ((Choice) o).getProperties();
-		}
-		for (Property p : properties.getKeys()) {
-			if (p.equals(Property.MMINFO)) {
-				MMInfoStorage storage = (MMInfoStorage) properties.getProperty(Property.MMINFO);
-				if (storage != null) {
-					DCMarkup markup = new DCMarkup();
-					markup.setContent(DCElement.SUBJECT, MMInfoSubject.PROMPT.getName());
-					Set<MMInfoObject> infoObjects = storage.getMMInfo(markup);
-					if (!infoObjects.isEmpty()) {
-						check[0] = true;
-					}
-					markup = new DCMarkup();
-					markup.setContent(DCElement.SUBJECT, MMInfoSubject.LINK.getName());
-					infoObjects = storage.getMMInfo(markup);
-					if (!infoObjects.isEmpty()) {
-						check[1] = true;
-					}
-				}
+		InfoStore infoStore = o.getInfoStore();
+		MMInfoStorage storage = (MMInfoStorage) infoStore.getValue(BasicProperties.MMINFO);
+		if (storage != null) {
+			DCMarkup markup = new DCMarkup();
+			markup.setContent(DCElement.SUBJECT, MMInfoSubject.PROMPT.getName());
+			Set<MMInfoObject> infoObjects = storage.getMMInfo(markup);
+			if (!infoObjects.isEmpty()) {
+				check[0] = true;
+			}
+			markup = new DCMarkup();
+			markup.setContent(DCElement.SUBJECT, MMInfoSubject.LINK.getName());
+			infoObjects = storage.getMMInfo(markup);
+			if (!infoObjects.isEmpty()) {
+				check[1] = true;
 			}
 		}
 		return check;
@@ -291,24 +280,12 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 		}
 	}
 
-	private void writeQClassesSheet() {
-		WritableSheet qcSheet = wb.createSheet(KnowledgeManager.getResourceBundle().getString(
-				"qclasses"), 2);
-	}
-
-	private void writeMMInfos(Object object, WritableSheet sheet, int row)
+	private void writeMMInfos(IDObject object, WritableSheet sheet, int row)
 			throws RowsExceededException, WriteException {
-
-		Properties props = null;
-		if (object instanceof NamedObject) {
-			props = ((NamedObject) object).getProperties();
-		}
-		else if (object instanceof Choice) {
-			props = ((Choice) object).getProperties();
-		}
-		for (Property p : props.getKeys()) {
-			if (p.equals(Property.MMINFO)) {
-				MMInfoStorage storage = (MMInfoStorage) props.getProperty(Property.MMINFO);
+		InfoStore infoStore = object.getInfoStore();
+		for (Triple<Property, Locale, Object> p : infoStore.entries()) {
+			if (p.getA().equals(BasicProperties.MMINFO)) {
+				MMInfoStorage storage = (MMInfoStorage) p.getC();
 				if (storage != null) {
 					for (Iterator<MMInfoSubject> subjects = MMInfoSubject.getIterator(); subjects.hasNext();) {
 						MMInfoSubject subject = subjects.next();
@@ -328,9 +305,10 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 				}
 			}
 			else {
-				Object value = props.getProperty(p);
+				Object value = p.getC();
 				if (value != null) {
-					sheet.addCell(new Label(getColumn(p.getName(), sheet), row, value.toString()));
+					sheet.addCell(new Label(getColumn(p.getA().getName(), sheet), row,
+							value.toString()));
 				}
 			}
 		}

@@ -26,9 +26,9 @@ import java.util.List;
 
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
@@ -40,6 +40,7 @@ import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
+import de.d3web.we.kdom.questionTree.QuestionLine.QuestionTypeDeclaration;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -60,8 +61,8 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.util.SplitUtility;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
-import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.object.QuestionDefinition.QuestionType;
+import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 
@@ -136,7 +137,6 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		}
 
 		@Override
-		@SuppressWarnings("unchecked")
 		public Section<? extends QASetDefinition> getParentQASetSection(Section<? extends QuestionDefinition> qdef) {
 			Section<? extends DashTreeElementContent> fdtec = DashTreeUtils.getFatherDashTreeElementContent(qdef);
 			if (fdtec != null) {
@@ -289,8 +289,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 							// for example lower > upper
 							NumericalInterval interval = new NumericalInterval(lower,
 									upper);
-							question.getProperties().setProperty(
-									Property.QUESTION_NUM_RANGE,
+							question.getInfoStore().addValue(BasicProperties.QUESTION_NUM_RANGE,
 									interval);
 							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
 									D3webModule.getKwikiBundle_d3web()
@@ -415,8 +414,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 											.getString("KnowWE.questiontree.onlyfornumerical"),
 									this.getClass()));
 						}
-						question.getProperties().setProperty(
-								Property.UNIT, s.get().getUnit(s));
+						question.getInfoStore().addValue(BasicProperties.UNIT, s.get().getUnit(s));
 						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
 								D3webModule.getKwikiBundle_d3web()
 										.getString("KnowWE.questiontree.setunit")));
@@ -461,8 +459,8 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 					if (qDef != null) {
 
 						Question question = qDef.get().getTermObject(article, qDef);
-						question.getProperties().setProperty(
-								Property.ABSTRACTION_QUESTION, true);
+						question.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION,
+								Boolean.TRUE);
 						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
 								D3webModule.getKwikiBundle_d3web()
 										.getString("KnowWE.questiontree.abstractquestion")));

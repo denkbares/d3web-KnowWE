@@ -25,7 +25,6 @@ import java.util.List;
 
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.core.knowledge.terminology.info.Property;
 
 public class D3webNamedObjectTerminologyHandler extends LocalTerminologyHandler<TerminologyObject, TerminologyObject> {
 
@@ -33,6 +32,7 @@ public class D3webNamedObjectTerminologyHandler extends LocalTerminologyHandler<
 		super();
 	}
 
+	@Override
 	protected List<TerminologyObject> fifo(TerminologyObject no) {
 		List<TerminologyObject> queue = new ArrayList<TerminologyObject>();
 		queue.add(no);
@@ -41,8 +41,7 @@ public class D3webNamedObjectTerminologyHandler extends LocalTerminologyHandler<
 		for (TerminologyObject object : queue) {
 			// TODO: remove this, when getInfoStore is active
 			if (object instanceof NamedObject) {
-				NamedObject nob = (NamedObject) object;
-				Boolean privat = (Boolean) nob.getProperties().getProperty(Property.PRIVATE);
+				Boolean privat = false;
 				if (privat == null || !privat) {
 					result.add(object);
 				}
@@ -70,6 +69,7 @@ public class D3webNamedObjectTerminologyHandler extends LocalTerminologyHandler<
 		fifo(newToExpand, result);
 	}
 
+	@Override
 	public D3webNamedObjectTerminologyHandler newInstance() {
 		return new D3webNamedObjectTerminologyHandler();
 	}

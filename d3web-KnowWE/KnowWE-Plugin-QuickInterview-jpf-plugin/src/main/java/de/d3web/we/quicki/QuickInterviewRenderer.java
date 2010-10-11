@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import de.d3web.core.knowledge.Indication;
-import de.d3web.core.knowledge.InterviewObject;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Choice;
@@ -41,8 +39,8 @@ import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.ChoiceValue;
@@ -496,15 +494,15 @@ public class QuickInterviewRenderer {
 		Double rangeMax = Double.MAX_VALUE;
 		Double rangeMin = Double.MIN_VALUE;
 
-		if (q.getProperties().getProperty(Property.QUESTION_NUM_RANGE) != null) {
-			NumericalInterval range = (NumericalInterval) q.getProperties().getProperty(
-					Property.QUESTION_NUM_RANGE);
+		Object rangeValue = q.getInfoStore().getValue(BasicProperties.QUESTION_NUM_RANGE);
+		if (rangeValue != null) {
+			NumericalInterval range = (NumericalInterval) rangeValue;
 			rangeMax = range.getRight();
 			rangeMin = range.getLeft();
 		}
-
-		if (q.getProperties().getProperty(Property.UNIT) != null) {
-			unit = q.getProperties().getProperty(Property.UNIT).toString();
+		Object questionUnit = q.getInfoStore().getValue(BasicProperties.UNIT);
+		if (questionUnit != null) {
+			unit = questionUnit.toString();
 		}
 
 		// assemble the JS call
@@ -745,19 +743,5 @@ public class QuickInterviewRenderer {
 		else {
 			return sessionValue.equals(value);
 		}
-	}
-
-	private static Set<TerminologyObject> getNextIndicated() {
-
-		Set<TerminologyObject> nextIndicated = new HashSet<TerminologyObject>();
-
-		for (TerminologyObject to : session.getBlackboard().getInterviewObjects()) {
-
-			if (session.getBlackboard().getIndication((InterviewObject) to).getState().equals(
-					Indication.State.INDICATED)) {
-				nextIndicated.add(to);
-			}
-		}
-		return nextIndicated;
 	}
 }

@@ -30,16 +30,15 @@ import java.util.regex.Pattern;
 import de.d3web.KnOfficeParser.KnOfficeParameterSet;
 import de.d3web.KnOfficeParser.KnOfficeParser;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
-import de.d3web.core.knowledge.terminology.Choice;
+import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.terminology.IDObject;
-import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
 import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.report.Message;
 
@@ -110,7 +109,7 @@ public class TxtAttributeTableBuilder extends TxtTableBuilder implements KnOffic
 				DCMarkup markup = new DCMarkup();
 
 				// IDObject kbObject = null;
-				Object kbObject = null;
+				IDObject kbObject = null;
 
 				if (name != null) {
 					if (id != null) {
@@ -132,7 +131,7 @@ public class TxtAttributeTableBuilder extends TxtTableBuilder implements KnOffic
 					}
 				}
 				if (lineOk && kbObject instanceof Question && answerString != null) {
-					kbObject = idom.findValue((Question) kbObject, answerString).getValue();
+					kbObject = (IDObject) idom.findValue((Question) kbObject, answerString).getValue();
 					if (kbObject == null) {
 						messages.add(MessageKnOfficeGenerator.createErrorMSG("objectNotFound",
 								null,
@@ -140,7 +139,7 @@ public class TxtAttributeTableBuilder extends TxtTableBuilder implements KnOffic
 						lineOk = false;
 					}
 				}
-				if (lineOk) markup.setContent(DCElement.SOURCE, ((IDObject) kbObject).getId());
+				if (lineOk) markup.setContent(DCElement.SOURCE, (kbObject).getId());
 
 				// retrieve MMInfoSubject
 				String subjectString = cells.get(1).toString().trim();
@@ -200,22 +199,11 @@ public class TxtAttributeTableBuilder extends TxtTableBuilder implements KnOffic
 
 				// retrieve MMInfoStorage from kbObject
 				MMInfoStorage storage = null;
-				if (kbObject instanceof NamedObject) {
-					storage = (MMInfoStorage) ((NamedObject) kbObject).getProperties().getProperty(
-							Property.MMINFO);
-					if (storage == null) {
-						storage = new MMInfoStorage();
-						((NamedObject) kbObject).getProperties().setProperty(Property.MMINFO,
-								storage);
-					}
-				}
-				else if (kbObject instanceof Choice) {
-					storage = (MMInfoStorage) ((Choice) kbObject).getProperties().getProperty(
-							Property.MMINFO);
-					if (storage == null) {
-						storage = new MMInfoStorage();
-						((Choice) kbObject).getProperties().setProperty(Property.MMINFO, storage);
-					}
+				InfoStore infoStore = kbObject.getInfoStore();
+				storage = (MMInfoStorage) (infoStore.getValue(BasicProperties.MMINFO));
+				if (storage == null) {
+					storage = new MMInfoStorage();
+					infoStore.addValue(BasicProperties.MMINFO, storage);
 				}
 
 				// write MMInfoStorage

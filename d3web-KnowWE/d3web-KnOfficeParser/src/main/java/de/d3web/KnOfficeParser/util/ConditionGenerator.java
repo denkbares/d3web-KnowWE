@@ -30,16 +30,16 @@ import de.d3web.core.inference.condition.CondNumLess;
 import de.d3web.core.inference.condition.CondNumLessEqual;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.report.Message;
 
 public class ConditionGenerator {
 
 	public static TerminalCondition condNum(QuestionNum qnum, String op, Double d, List<Message> errors, int line, String linetext, String file) {
 		TerminalCondition c;
-		NumericalInterval range = (NumericalInterval) qnum.getProperties()
-				.getProperty(Property.QUESTION_NUM_RANGE);
+		NumericalInterval range = (NumericalInterval) qnum.getInfoStore().getValue(
+				BasicProperties.QUESTION_NUM_RANGE);
 		if (op.equals("<")) {
 			c = new CondNumLess(qnum, d);
 			if (range != null && d <= range.getLeft()) {
@@ -83,8 +83,8 @@ public class ConditionGenerator {
 	}
 
 	public static TerminalCondition condNum(QuestionNum qnum, Double a, Double b, List<Message> errors, int line, String linetext, String file) {
-		NumericalInterval range = (NumericalInterval) qnum.getProperties().getProperty(
-				Property.QUESTION_NUM_RANGE);
+		NumericalInterval range = (NumericalInterval) qnum.getInfoStore().getValue(
+				BasicProperties.QUESTION_NUM_RANGE);
 		if (a > b) {
 			errors.add(MessageKnOfficeGenerator.createIntervallRangeError(file, line, linetext));
 			return null;

@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -42,13 +42,13 @@ import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
-import de.d3web.core.knowledge.terminology.info.Property;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.report.Message;
 
 /**
  * This builder handles Questionnaires/QContainers.
- *
+ * 
  * @author Markus Friedrich
  * @author Alex Legler
  */
@@ -73,7 +73,7 @@ public class QuestionnaireBuilder implements DashTBuilder, KnOfficeParser {
 
 	/**
 	 * Internal class representing a QContainer in the hierarchy
-	 *
+	 * 
 	 * @author Alex Legler
 	 */
 	class Node {
@@ -87,7 +87,7 @@ public class QuestionnaireBuilder implements DashTBuilder, KnOfficeParser {
 
 		/**
 		 * Creates a new Node.
-		 *
+		 * 
 		 * @param content Name of the questionnaire
 		 * @param order The initial questionnaire order ([X] in the markup)
 		 * @param description An optional description
@@ -226,10 +226,9 @@ public class QuestionnaireBuilder implements DashTBuilder, KnOfficeParser {
 	 */
 	private void finish() {
 		processNode(cacheTree, null);
-		
-		if (startQContainers.isEmpty())
-			return;
-		
+
+		if (startQContainers.isEmpty()) return;
+
 		List<Integer> initQuestionsIndices = new ArrayList<Integer>(startQContainers.keySet());
 		Collections.sort(initQuestionsIndices);
 
@@ -241,15 +240,15 @@ public class QuestionnaireBuilder implements DashTBuilder, KnOfficeParser {
 
 		// add previous init questions to new list
 		questions.addAll(idom.getKnowledgeBase().getInitQuestions());
-		
-		//set new list
+
+		// set new list
 		idom.getKnowledgeBase().setInitQuestions(questions);
 
 	}
 
 	/**
 	 * Adds a single node to the KBM.
-	 *
+	 * 
 	 * @param n Node to process
 	 * @param parent Parent node (if applicable)
 	 */
@@ -263,9 +262,8 @@ public class QuestionnaireBuilder implements DashTBuilder, KnOfficeParser {
 								? idom.getKnowledgeBase().getRootQASet()
 								: parent);
 
-				if (child.getDescription() != null) q.getProperties().setProperty(
-						Property.EXPLANATION,
-						child.getDescription());
+				if (child.getDescription() != null) q.getInfoStore().addValue(
+						BasicProperties.EXPLANATION, child.getDescription());
 
 				if (child.getOrder() > 0) {
 					if (startQContainers.keySet().contains(child.getOrder())) errors.add(MessageKnOfficeGenerator.createAmbiguousOrderError(

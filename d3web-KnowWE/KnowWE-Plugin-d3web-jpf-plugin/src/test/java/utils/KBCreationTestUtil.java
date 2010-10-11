@@ -36,6 +36,7 @@ import de.d3web.core.inference.condition.CondNot;
 import de.d3web.core.inference.condition.CondNumGreater;
 import de.d3web.core.inference.condition.CondOr;
 import de.d3web.core.inference.condition.Condition;
+import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
@@ -47,13 +48,13 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
 import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.values.ChoiceValue;
@@ -169,8 +170,7 @@ public class KBCreationTestUtil {
 
 		Solution p3 = new Solution("P3");
 		p3.setName("Leaking air intake system");
-		p3.getProperties().setProperty(Property.EXPLANATION,
-				"The air intake system is leaking.");
+		p3.getInfoStore().addValue(BasicProperties.EXPLANATION, "The air intake system is leaking.");
 		p1.addChild(p3);
 		createdKB.add(p3);
 
@@ -203,7 +203,7 @@ public class KBCreationTestUtil {
 
 		QContainer qc3 = new QContainer("QC3");
 		qc3.setName("Air filter");
-		qc3.getProperties().setProperty(Property.EXPLANATION,
+		qc3.getInfoStore().addValue(BasicProperties.EXPLANATION,
 				"Here you can enter your observations concerning the air filter.");
 		qc1.addChild(qc3);
 		createdKB.add(qc3);
@@ -259,16 +259,16 @@ public class KBCreationTestUtil {
 		// - "Average mileage /100km" [num] {liter} (0 30) #Q1337
 		Question q1 = new QuestionNum("Q1337");
 		q1.setName("Average mileage /100km");
-		q1.getProperties().setProperty(Property.UNIT, "liter");
-		q1.getProperties().setProperty(Property.QUESTION_NUM_RANGE,
-				new NumericalInterval(0, 30));
+		InfoStore infoStore = q1.getInfoStore();
+		infoStore.addValue(BasicProperties.UNIT, "liter");
+		q1.getInfoStore().addValue(BasicProperties.QUESTION_NUM_RANGE, new NumericalInterval(0, 30));
 		createdKB.add(q1);
 		qc1.addChild(q1);
 
 		// Add question:
 		// -- "Num. Mileage evaluation" [num] <abstract>
 		Question q2 = createdKBM.createQuestionNum("Num. Mileage evaluation", q1);
-		q2.getProperties().setProperty(Property.ABSTRACTION_QUESTION, Boolean.TRUE);
+		q2.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION, Boolean.TRUE);
 
 		// Add question:
 		// --- Mileage evaluation [oc] <abstract>
@@ -277,7 +277,7 @@ public class KBCreationTestUtil {
 		Question q3 = createdKBM.createQuestionOC("Mileage evaluation", q2,
 				new String[] {
 						"normal", "increased" });
-		q3.getProperties().setProperty(Property.ABSTRACTION_QUESTION, Boolean.TRUE);
+		q3.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION, Boolean.TRUE);
 
 		// Add question:
 		// - "Real mileage  /100km" [num]
@@ -720,7 +720,7 @@ public class KBCreationTestUtil {
 		dcm.setContent(DCElement.SOURCE, o.getId());
 		MMInfoObject mmi = new MMInfoObject(dcm, content);
 		mmis = new MMInfoStorage();
-		o.getProperties().setProperty(Property.MMINFO, mmis);
+		o.getInfoStore().addValue(BasicProperties.MMINFO, mmis);
 		mmis.addMMInfo(mmi);
 
 	}

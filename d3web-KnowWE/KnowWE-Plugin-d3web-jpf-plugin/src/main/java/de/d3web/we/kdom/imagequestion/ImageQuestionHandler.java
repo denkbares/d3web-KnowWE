@@ -33,7 +33,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionOC;
-import de.d3web.core.knowledge.terminology.info.Property;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
@@ -100,7 +100,6 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		return this.render(topic, user, values, web, false);
 	}
 
-	@SuppressWarnings("unchecked")
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web, boolean renderDIV) {
 
@@ -116,13 +115,13 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		String questionID = values.get("question");
 		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance(kb);
 		Question q = kbm.findQuestion(questionID);
-		List props = (List) q.getProperties().getProperty(Property.IMAGE_QUESTION_INFO);
+		List<?> props = (List<?>) q.getInfoStore().getValue(BasicProperties.IMAGE_QUESTION_INFO);
 		String imageName = (String) props.get(0);
 		this.width = (String) props.get(1);
 		this.height = (String) props.get(2);
 
 		List<AnswerRegion> answerRegions =
-			this.buildAnswerRegions((List) props.get(3));
+				this.buildAnswerRegions((List<?>) props.get(3));
 
 		// Layout is: Picture | Checkboxes with labels
 		StringBuffer renderedImage = new StringBuffer();
@@ -168,7 +167,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<AnswerRegion> buildAnswerRegions(List answerRegions) {
+	private List<AnswerRegion> buildAnswerRegions(List<?> answerRegions) {
 		List<AnswerRegion> buildAR = new ArrayList<AnswerRegion>();
 		List<String> attributes = null;
 		for (int i = 0; i < answerRegions.size(); i++) {

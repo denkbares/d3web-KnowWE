@@ -34,7 +34,6 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.utilities.ISetMap;
 import de.d3web.utilities.SetMap;
@@ -52,6 +51,7 @@ public class D3webTermFactory implements TermFactory<TerminologyObject, Terminol
 
 	public static final String DEFAULT_QUESTIONNAIRE_NAME = "Standardfragebogen";
 
+	@Override
 	public Term getTerm(TerminologyObject object, TerminologyType type, GlobalTerminology gt) {
 		Term term = gt.getTerm(object.getName(), null);
 		if (term == null) {
@@ -62,6 +62,7 @@ public class D3webTermFactory implements TermFactory<TerminologyObject, Terminol
 		return term;
 	}
 
+	@Override
 	public List<GlobalAlignment> getAlignableTerms(TerminologyObject no, String idString, GlobalTerminology gt) {
 		List<GlobalAlignment> result = new ArrayList<GlobalAlignment>();
 		GlobalTerminologyHandler handler = AlignmentUtilRepository.getInstance().getGlobalTerminogyHandler(
@@ -89,7 +90,7 @@ public class D3webTermFactory implements TermFactory<TerminologyObject, Terminol
 		else {
 			return null;
 		}
-		Boolean privat = (Boolean) no.getProperties().getProperty(Property.PRIVATE);
+		Boolean privat = false;
 		if (privat != null && privat) return new SetMap<TerminologyObject, Term>();
 		if (alreadyDone.contains(no)) {
 			return new SetMap<TerminologyObject, Term>();
@@ -144,8 +145,7 @@ public class D3webTermFactory implements TermFactory<TerminologyObject, Terminol
 	}
 
 	private boolean isIntegrable(NamedObject no) {
-		Boolean b = (Boolean) no.getProperties().getProperty(Property.FOREIGN);
-		if (b == null) return true;
+		Boolean b = false;
 		return !b;
 	}
 
@@ -171,6 +171,7 @@ public class D3webTermFactory implements TermFactory<TerminologyObject, Terminol
 		}
 	}
 
+	@Override
 	public ISetMap<TerminologyObject, Term> addTerminology(LocalTerminologyAccess<TerminologyObject> localTerminology, String idString, GlobalTerminology globalTerminology) {
 		TerminologyObject child = localTerminology.getHandler().iterator().next();
 		return addTerminology(child, idString, globalTerminology, null, new HashSet<NamedObject>());

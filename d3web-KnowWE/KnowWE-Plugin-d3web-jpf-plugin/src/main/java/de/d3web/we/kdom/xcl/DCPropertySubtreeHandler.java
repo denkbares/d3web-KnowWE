@@ -23,11 +23,11 @@ import java.util.Collection;
 import java.util.logging.Level;
 
 import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
 import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -49,6 +49,7 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
  */
 public class DCPropertySubtreeHandler extends D3webSubtreeHandler {
 
+	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 
 		KnowledgeBaseManagement kbm = getKBM(article);
@@ -70,12 +71,11 @@ public class DCPropertySubtreeHandler extends D3webSubtreeHandler {
 	 */
 	private void storeMMInfo(Section s, NamedObject obj) {
 
-		MMInfoStorage mminfo = (MMInfoStorage) obj.getProperties().getProperty(
-				Property.MMINFO);
+		MMInfoStorage mminfo = (MMInfoStorage) obj.getInfoStore().getValue(BasicProperties.MMINFO);
 
 		if (mminfo == null) {
 			mminfo = new MMInfoStorage();
-			obj.getProperties().setProperty(Property.MMINFO, mminfo);
+			obj.getInfoStore().addValue(BasicProperties.MMINFO, mminfo);
 		}
 		String subject = s.findChildOfType(DCPropertyNameType.class).getOriginalText().toLowerCase();
 

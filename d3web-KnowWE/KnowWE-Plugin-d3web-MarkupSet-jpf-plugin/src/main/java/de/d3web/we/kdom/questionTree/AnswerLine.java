@@ -23,8 +23,9 @@ package de.d3web.we.kdom.questionTree;
 import java.util.Arrays;
 import java.util.Collection;
 
+import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.knowledge.terminology.info.Property;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -58,9 +59,9 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
 
 			@Override
-			protected boolean condition(String text, Section father) {
+			protected boolean condition(String text, Section<?> father) {
 
-				Section dashTreeElement = father.getFather();
+				Section<?> dashTreeElement = father.getFather();
 				if (dashTreeElement.getObjectType() instanceof DashTreeElement) {
 					Section<? extends DashTreeElement> dashFather = DashTreeUtils
 							.getFatherDashTreeElement(dashTreeElement);
@@ -114,15 +115,16 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 
 						String answerName = aDef.get().getTermObject(article, aDef).getName();
 
-						Object p = question.getProperties().getProperty(Property.INIT);
+						InfoStore infoStore = question.getInfoStore();
+						Object p = infoStore.getValue(BasicProperties.INIT);
 
 						if (p == null) {
-							question.getProperties().setProperty(Property.INIT, answerName);
+							infoStore.addValue(BasicProperties.INIT, answerName);
 						}
 						else {
 							if (p instanceof String) {
 								String newValue = ((String) p).concat(";" + answerName);
-								question.getProperties().setProperty(Property.INIT, newValue);
+								infoStore.addValue(BasicProperties.INIT, newValue);
 							}
 
 						}

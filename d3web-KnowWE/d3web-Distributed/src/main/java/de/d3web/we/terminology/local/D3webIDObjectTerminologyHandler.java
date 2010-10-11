@@ -28,8 +28,6 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
-import de.d3web.core.knowledge.terminology.info.PropertiesContainer;
-import de.d3web.core.knowledge.terminology.info.Property;
 
 public class D3webIDObjectTerminologyHandler extends LocalTerminologyHandler<IDObject, IDObject> {
 
@@ -40,16 +38,7 @@ public class D3webIDObjectTerminologyHandler extends LocalTerminologyHandler<IDO
 		List<IDObject> result = new ArrayList<IDObject>();
 		fifo(queue, result);
 		for (IDObject object : queue) {
-			if (object instanceof PropertiesContainer) {
-				Boolean privat = (Boolean) ((PropertiesContainer) object).getProperties().getProperty(
-						Property.PRIVATE);
-				if (privat == null || !privat) {
-					result.add(object);
-				}
-			}
-			else {
-				result.add(object);
-			}
+			result.add(object);
 		}
 		return result;
 	}

@@ -26,10 +26,10 @@ import java.util.ResourceBundle;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
@@ -77,10 +77,9 @@ public class QuestionSheetHandler extends AbstractTagHandler {
 
 			html.append("<ul>");
 			for (Question question : questions) {
-				if (question.getProperties().getProperty(Property.ABSTRACTION_QUESTION) != null
-						&& question.getProperties().getProperty(Property.ABSTRACTION_QUESTION) instanceof Boolean
-						&& ((Boolean) question.getProperties().getProperty(
-								Property.ABSTRACTION_QUESTION)).booleanValue()) {
+				Object value = question.getInfoStore().getValue(
+						BasicProperties.ABSTRACTION_QUESTION);
+				if (value != null && value instanceof Boolean && ((Boolean) value).booleanValue()) {
 					// dont show abstract questions
 					continue;
 				}

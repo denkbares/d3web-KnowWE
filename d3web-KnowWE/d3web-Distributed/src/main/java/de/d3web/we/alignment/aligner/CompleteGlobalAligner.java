@@ -33,7 +33,6 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.Unknown;
@@ -55,6 +54,7 @@ import de.d3web.we.terminology.term.TermInfoType;
 
 public class CompleteGlobalAligner implements GlobalAligner<NamedObject> {
 
+	@Override
 	public List<GlobalAlignment> align(Term term, NamedObject object, String idString) {
 		List<GlobalAlignment> result = new ArrayList<GlobalAlignment>();
 
@@ -68,7 +68,7 @@ public class CompleteGlobalAligner implements GlobalAligner<NamedObject> {
 			if (!(type instanceof NoAlignType)) {
 				GlobalAlignment globalAlignment = new GlobalAlignment(term,
 						new IdentifiableInstance(idString, object.getId(), null), type);
-				Object obj = object.getProperties().getProperty(Property.FOREIGN);
+				Object obj = Boolean.FALSE;
 				if (obj != null && obj instanceof Boolean && ((Boolean) obj).booleanValue()) {
 					globalAlignment.setProperty("visible", Boolean.FALSE);
 				}

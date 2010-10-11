@@ -30,12 +30,12 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
 import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.logging.Logging;
@@ -88,8 +88,8 @@ public class QuestionTreeTest extends TestCase {
 						Arrays.equals(expected.getChildren(), actual.getChildren()));
 				// Test Properties (Abstraction, MMINFO)
 				assertEquals("Question " + expected.getName() + " should be abstract.",
-						expected.getProperties().getProperty(Property.ABSTRACTION_QUESTION),
-						actual.getProperties().getProperty(Property.ABSTRACTION_QUESTION));
+						expected.getInfoStore().getValue(BasicProperties.ABSTRACTION_QUESTION),
+						actual.getInfoStore().getValue(BasicProperties.ABSTRACTION_QUESTION));
 
 				// Test Question Type
 				assertEquals("Question " + expected.getName() + " has wrong type.",
@@ -105,11 +105,11 @@ public class QuestionTreeTest extends TestCase {
 
 				if (expected instanceof QuestionNum) {
 					assertEquals("Question " + expected.getName() + " has wrong unit.",
-							expected.getProperties().getProperty(Property.UNIT),
-							actual.getProperties().getProperty(Property.UNIT));
+							expected.getInfoStore().getValue(BasicProperties.UNIT),
+							actual.getInfoStore().getValue(BasicProperties.UNIT));
 					assertEquals("Question " + expected.getName() + " has wrong range.",
-							expected.getProperties().getProperty(Property.QUESTION_NUM_RANGE),
-							actual.getProperties().getProperty(Property.QUESTION_NUM_RANGE));
+							expected.getInfoStore().getValue(BasicProperties.QUESTION_NUM_RANGE),
+							actual.getInfoStore().getValue(BasicProperties.QUESTION_NUM_RANGE));
 				}
 
 			}
@@ -131,10 +131,10 @@ public class QuestionTreeTest extends TestCase {
 		Question createdQuestion = createdKB.searchQuestion("Q1");
 
 		// Get MMInfoStorage of question
-		MMInfoStorage loadedStorage = (MMInfoStorage) loadedQuestion.getProperties().getProperty(
-				Property.MMINFO);
-		MMInfoStorage createdStorage = (MMInfoStorage) createdQuestion.getProperties().getProperty(
-				Property.MMINFO);
+		MMInfoStorage loadedStorage = (MMInfoStorage) loadedQuestion.getInfoStore().getValue(
+				BasicProperties.MMINFO);
+		MMInfoStorage createdStorage = (MMInfoStorage) createdQuestion.getInfoStore().getValue(
+				BasicProperties.MMINFO);
 		assertNotNull("Question " + loadedQuestion.getName() + " has no MMInfoStorage.",
 				loadedStorage);
 		assertNotNull("Question " + createdQuestion.getName() + " has no MMInfoStorage.",

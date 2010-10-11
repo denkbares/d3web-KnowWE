@@ -38,7 +38,7 @@ import de.d3web.KnOfficeParser.util.DefaultD3webLexerErrorHandler;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.knowledge.terminology.info.Property;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.report.Message;
@@ -117,7 +117,7 @@ public class SolutionsBuilder implements DashTBuilder, KnOfficeParser {
 
 		// saves the description of the solution if available
 		if (diagDescription != null) {
-			newDiag.getProperties().setProperty(Property.EXPLANATION, diagDescription);
+			newDiag.getInfoStore().addValue(BasicProperties.EXPLANATION, diagDescription);
 		}
 
 		// save created diagnosis in HashMap with dashes representing the key

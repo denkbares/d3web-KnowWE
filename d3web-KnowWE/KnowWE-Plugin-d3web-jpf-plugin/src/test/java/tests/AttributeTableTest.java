@@ -27,12 +27,12 @@ import utils.KBCreationTestUtil;
 import utils.MyTestArticleManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
 import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.kdom.KnowWEArticle;
 
@@ -61,10 +61,10 @@ public class AttributeTableTest extends TestCase {
 		Solution createdDiag = createdKB.searchSolution("P1");
 
 		// Get MMInfoStorage of diagnoses
-		MMInfoStorage loadedStorage = (MMInfoStorage) loadedDiag.getProperties().getProperty(
-				Property.MMINFO);
-		MMInfoStorage createdStorage = (MMInfoStorage) createdDiag.getProperties().getProperty(
-				Property.MMINFO);
+		MMInfoStorage loadedStorage = (MMInfoStorage) loadedDiag.getInfoStore().getValue(
+				BasicProperties.MMINFO);
+		MMInfoStorage createdStorage = (MMInfoStorage) createdDiag.getInfoStore().getValue(
+				BasicProperties.MMINFO);
 		assertNotNull("Diagnosis " + loadedDiag.getName() + " has no MMInfoStorage.", loadedStorage);
 		assertNotNull("Diagnosis " + createdDiag.getName() + " has no MMInfoStorage.",
 				createdStorage);

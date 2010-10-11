@@ -25,11 +25,11 @@ import java.util.Set;
 
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
 import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.D3webModule;
@@ -195,12 +195,11 @@ public class QuestionDashTreeOnlyAnswersRenderer extends CustomRenderer {
 			if (answerSec != null) {
 				c = answerSec.get().getTermObject(article, answerSec);
 				if (c != null) {
-					mminfo = (MMInfoStorage) c.getProperties().getProperty(Property.MMINFO);
-					;
+					mminfo = (MMInfoStorage) c.getInfoStore().getValue(BasicProperties.MMINFO);
 				}
 			}
 			if (o != null) {
-				mminfo = (MMInfoStorage) o.getProperties().getProperty(Property.MMINFO);
+				mminfo = (MMInfoStorage) o.getInfoStore().getValue(BasicProperties.MMINFO);
 
 			}
 			if (mminfo != null) {

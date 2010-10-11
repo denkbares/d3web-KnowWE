@@ -40,8 +40,6 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.knowledge.terminology.info.PropertiesContainer;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.DefaultSession;
 import de.d3web.core.session.IEventSource;
@@ -263,21 +261,6 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			value = getAnswers((QuestionNum) object, theValues);
 			// values.addAll(getAnswers((QuestionNum) object,
 			// info.getValues()));
-		}
-		else if (object instanceof Solution) {
-			PropertiesContainer pc = (PropertiesContainer) object;
-			Boolean external = (Boolean) pc.getProperties().getProperty(
-					Property.EXTERNAL);
-			if (info.getInformationType().equals(
-					InformationType.SolutionInformation)) {
-				if (external != null && external) {
-					value = getStatesForSolution(info.getValues());
-				}
-			}
-			else {
-				// see ClusterSolutionManager
-				// values.addAll(getValuesForDiagnosis(info.getValues()));
-			}
 		}
 
 		TerminologyObject vo = null;

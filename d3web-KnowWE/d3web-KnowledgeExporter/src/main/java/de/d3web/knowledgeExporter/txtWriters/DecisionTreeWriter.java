@@ -55,8 +55,8 @@ import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.indication.ActionIndication;
 import de.d3web.indication.ActionNextQASet;
 import de.d3web.indication.inference.PSMethodStrategic;
@@ -108,8 +108,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 	private String getQuestionIntervall(Question q) {
 		String result = "";
 		if (q instanceof QuestionNum) {
-			Object o = q.getProperties().getProperty(
-					Property.QUESTION_NUM_RANGE);
+			Object o = q.getInfoStore().getValue(BasicProperties.QUESTION_NUM_RANGE);
 			if (o instanceof Collection<?>) {
 				Collection<?> coll = (Collection<?>) o;
 				if (coll.size() > 1) {
@@ -184,7 +183,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 	private String getQuestionUnitString(Question q) {
 		if (q instanceof QuestionNum) {
 			QuestionNum numQ = ((QuestionNum) q);
-			Object o = numQ.getProperties().getProperty(Property.UNIT);
+			Object o = numQ.getInfoStore().getValue(BasicProperties.UNIT);
 			if (o != null) {
 				return " {" + o.toString() + "}";
 			}
@@ -438,8 +437,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 	// }
 
 	private boolean isAbstractionQuestion(Question q) {
-		Boolean b = (Boolean) q.getProperties().getProperty(
-				Property.ABSTRACTION_QUESTION);
+		Boolean b = (Boolean) q.getInfoStore().getValue(BasicProperties.ABSTRACTION_QUESTION);
 		return (b != null) ? b : false;
 	}
 

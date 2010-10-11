@@ -102,16 +102,4 @@ public interface DialogController extends QASetManager {
 	 * @return the QASet the controller has jumped to
 	 */
 	public QASet moveToQuestion(QASet q);
-
-	/**
-	 * 
-	 * @return MQDialogController, if existent
-	 */
-	public MQDialogController getMQDialogcontroller();
-
-	/**
-	 * 
-	 * @return OQDialogController, if existent
-	 */
-	public OQDialogController getOQDialogcontroller();
 }

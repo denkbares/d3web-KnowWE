@@ -24,14 +24,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
 import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.session.Session;
 import de.d3web.scoring.Score;
 import de.d3web.we.basic.D3webModule;
@@ -46,7 +45,6 @@ public class D3webUtils {
 	public static de.d3web.core.knowledge.terminology.Question getQuestion(KnowledgeServiceSession kss, String qid) {
 		if (kss instanceof D3webKnowledgeServiceSession) {
 			D3webKnowledgeServiceSession session = ((D3webKnowledgeServiceSession) kss);
-			KnowledgeBase kb = session.getBaseManagement().getKnowledgeBase();
 			return session.getBaseManagement().findQuestion(qid);
 
 		}
@@ -98,21 +96,17 @@ public class D3webUtils {
 			content = content.substring(1, content.length() - 1);
 		}
 
-		MMInfoStorage mmis;
 		DCMarkup dcm = new DCMarkup();
 		dcm.setContent(DCElement.TITLE, title);
 		dcm.setContent(DCElement.SUBJECT, subject);
 		dcm.setContent(DCElement.SOURCE, o.getId());
 		if (language != null) dcm.setContent(DCElement.LANGUAGE, language);
 		MMInfoObject mmi = new MMInfoObject(dcm, content);
-		if (o.getProperties().getProperty(Property.MMINFO) == null) {
+		MMInfoStorage mmis = (MMInfoStorage) o.getInfoStore().getValue(BasicProperties.MMINFO);
+		if (mmis == null) {
 			mmis = new MMInfoStorage();
+			o.getInfoStore().addValue(BasicProperties.MMINFO, mmis);
 		}
-		else {
-			mmis = (MMInfoStorage) o.getProperties().getProperty(
-					Property.MMINFO);
-		}
-		o.getProperties().setProperty(Property.MMINFO, mmis);
 		mmis.addMMInfo(mmi);
 	}
 
@@ -180,10 +174,6 @@ public class D3webUtils {
 		}
 		return sessions;
 	}
-
-
-
-
 
 	public static Score getScoreForString(String argument) {
 		Score score = null;
