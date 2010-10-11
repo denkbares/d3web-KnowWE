@@ -73,7 +73,7 @@ public class ReviseIterator {
 	}
 	
 	public boolean hasNext() {
-		return !priorityMap.get(currentPriority).isEmpty();
+		return currentPriority.compareTo(stop) >= 0 && !priorityMap.get(currentPriority).isEmpty();
 	}
 
 	private void nextPriority() {
