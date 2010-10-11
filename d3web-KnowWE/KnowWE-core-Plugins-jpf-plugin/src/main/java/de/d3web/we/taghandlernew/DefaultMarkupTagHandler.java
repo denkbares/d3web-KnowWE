@@ -68,23 +68,19 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class DefaultMarkupTagHandler extends DefaultMarkupType {
 
 	public DefaultMarkupTagHandler() {
-		super(m);
+		super(MARKUP);
 	}
 
-	public DefaultMarkupTagHandler(DefaultMarkup markup) {
-		super(markup);
-	}
-
-	private static DefaultMarkup m = null;
+	private static final DefaultMarkup MARKUP;
 
 	static {
-		m = new DefaultMarkup("KnowWEPlugin");
-		m.addContentType(new DefaultTagHandlerTypeContent());
-		m.addAnnotation("Taghandlername", true);
+		MARKUP = new DefaultMarkup("KnowWEPlugin");
+		MARKUP.addContentType(new DefaultTagHandlerTypeContent());
+		MARKUP.addAnnotation("Taghandlername", true);
 	}
 
 	@Override
-	public KnowWEDomRenderer getRenderer() {
+	public KnowWEDomRenderer<DefaultMarkupTagHandler> getRenderer() {
 		return new DefaultTagRenderer();
 	}
 
@@ -94,7 +90,8 @@ public class DefaultMarkupTagHandler extends DefaultMarkupType {
 	 * @author Johannes Dienst
 	 * 
 	 */
-	private class DefaultTagRenderer extends KnowWEDomRenderer {
+	private class DefaultTagRenderer extends
+	KnowWEDomRenderer<DefaultMarkupTagHandler> {
 
 		@SuppressWarnings("unchecked")
 		@Override
@@ -113,9 +110,9 @@ public class DefaultMarkupTagHandler extends DefaultMarkupType {
 				 */
 				Map<String, String> attValues = null;
 				Object storedValues = KnowWEEnvironment.getInstance()
-						.getArticleManager(sec.getWeb()).getTypeStore()
-						.getStoredObject(sec.getTitle(), markupContent.getID(),
-								TagHandlerAttributeSubTreeHandler.ATTRIBUTE_MAP);
+				.getArticleManager(sec.getWeb()).getTypeStore()
+				.getStoredObject(sec.getTitle(), markupContent.getID(),
+						TagHandlerAttributeSubTreeHandler.ATTRIBUTE_MAP);
 				if (storedValues != null) {
 					if (storedValues instanceof Map) {
 						attValues = (Map<String, String>) storedValues;
@@ -126,7 +123,7 @@ public class DefaultMarkupTagHandler extends DefaultMarkupType {
 				// Render the Taghandler with its attValues
 				String taghandlerName = DefaultMarkupType.getAnnotation(sec, "taghandlername");
 				HashMap<String, TagHandler> defaultTagHandlers =
-						KnowWEEnvironment.getInstance().getDefaultTagHandlers();
+					KnowWEEnvironment.getInstance().getDefaultTagHandlers();
 				TagHandler handler = defaultTagHandlers.get(taghandlerName);
 
 				if (handler != null) {
@@ -141,7 +138,7 @@ public class DefaultMarkupTagHandler extends DefaultMarkupType {
 							.maskHTML("<div><p class='info box'>"));
 					string.append(KnowWEUtils.maskHTML(KnowWEEnvironment
 							.getInstance().getKwikiBundle(user).getString(
-									"KnowWE.Taghandler.notFoundError")
+							"KnowWE.Taghandler.notFoundError")
 							+ "</p></div>"));
 				}
 			}
