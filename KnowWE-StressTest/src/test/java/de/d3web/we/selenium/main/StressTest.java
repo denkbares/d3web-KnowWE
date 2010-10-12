@@ -20,6 +20,7 @@ package de.d3web.we.selenium.main;
 
 import junit.framework.TestSuite;
 import de.d3web.we.selenium.tests.KBChangeStressTest;
+import de.d3web.we.selenium.tests.TimeLineStressTest;
 
 /**
  * This test is called every night by the build on the Hudson server. It
@@ -43,6 +44,7 @@ public class StressTest extends TestSuite {
 	public static TestSuite suite() throws Exception {
 		TestSuite mainSuite = new StressTest();
 		mainSuite.addTestSuite(KBChangeStressTest.class);
+		mainSuite.addTestSuite(TimeLineStressTest.class);
 		return mainSuite;
 	}
 }

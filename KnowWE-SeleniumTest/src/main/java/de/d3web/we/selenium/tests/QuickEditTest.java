@@ -36,6 +36,7 @@ public class QuickEditTest extends KnowledgeTestCase {
 	final String CANCEL = rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test.button_cancel");
 	final String ACCEPT = rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test.button_save");
 	final String QEB = rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test.button_QuickEdit");
+	final String QEA = rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test.EditorArea");
 	final String kopicID = rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test.KopicID");
 	final String tableID = rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test.TableID");
 	final String attTableID = rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test.AttributeTableID");
@@ -251,11 +252,9 @@ public class QuickEditTest extends KnowledgeTestCase {
 	 */
 	private void quickEditAdd(String sectionID, String newText) {
 		openQuickEdit(sectionID);
-		doSelActionAndWait("//div[@id='" + sectionID + "']//textarea[@id='" + sectionID
-				+ "/default-edit-area']",
-				"type", selenium.getValue("//div[@id='" + sectionID + "']//textarea[@id='"
-						+ sectionID + "/default-edit-area']")
-						+ newText);
+		doSelActionAndWait("//div[@id='" + sectionID + "']//textarea[@id='" + sectionID + QEA
+				+ "']", "type", selenium.getValue("//div[@id='" + sectionID + "']//textarea[@id='"
+				+ sectionID + QEA + "']") + newText);
 		doSelActionAndWait(sectionID + ACCEPT, "click");
 		waitForElement(sectionID + QEB);
 	}

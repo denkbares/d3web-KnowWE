@@ -20,6 +20,8 @@ package de.d3web.we.selenium.main;
 
 import java.util.ResourceBundle;
 
+import com.thoughtworks.selenium.SeleniumException;
+
 /**
  * Class for StressTests on KnowWE with Selenium.
  * 
@@ -30,12 +32,40 @@ public class StressTestCase extends KnowWETestCase {
 
 	final protected ResourceBundle bundle = ResourceBundle.getBundle("KnowWE-Stress-Test");
 
+	final protected long testDuration = Long.parseLong(bundle.getString("KnowWE.SeleniumStressTest.duration"));
+
+	// QuickEdit Variables
+	final protected String CANCEL = rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test.button_cancel");
+	final protected String ACCEPT = rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test.button_save");
+	final protected String QEB = rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test.button_QuickEdit");
+
 	@Override
 	public void setUp() throws Exception {
 		setUp(bundle.getString("KnowWE.SeleniumStressTest.url"),
-			  bundle.getString("KnowWE.SeleniumStressTest.browser"),
-		      bundle.getString("KnowWE.SeleniumStressTest.server"),
-		      Integer.parseInt(bundle.getString("KnowWE.SeleniumStressTest.port"))
+				bundle.getString("KnowWE.SeleniumStressTest.browser"),
+				bundle.getString("KnowWE.SeleniumStressTest.server"),
+				Integer.parseInt(bundle.getString("KnowWE.SeleniumStressTest.port"))
 		);
+	}
+
+	/**
+	 * Checks page and wiki loading (still working or down).
+	 * 
+	 * @created 13.10.2010
+	 * @param url Address of the page within the wiki which should be checked.
+	 */
+	protected void pageCheck(String url) {
+		try {
+			open(url);
+		}
+		catch (SeleniumException se) {
+			try {
+				open(bundle.getString("KnowWE.SeleniumStressTest.url"));
+			}
+			catch (SeleniumException se2) {
+				fail("Main-Page load timed out (whole server down).");
+			}
+			fail("KB-Page load timed out (this page is down).");
+		}
 	}
 }
