@@ -35,6 +35,7 @@ import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.tagging.TaggingMangler;
@@ -55,7 +56,9 @@ public class SemanticCoreTest {
 	@Before
 	public void setUp() throws Exception {
 		InitPluginManager.init();
-
+		//Enfore Autocompile:
+		KnowWEPackageManager.overrideAutocompileArticle(true);	
+		
 		RootType.getInstance().addChildType(new SemanticAnnotation());
 
 		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());

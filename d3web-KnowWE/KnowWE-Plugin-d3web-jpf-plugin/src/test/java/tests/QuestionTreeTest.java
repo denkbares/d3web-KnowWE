@@ -37,6 +37,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfoObject;
 import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.plugin.test.InitPluginManager;
+import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.logging.Logging;
 
@@ -53,6 +54,8 @@ public class QuestionTreeTest extends TestCase {
 	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
+		//Enfore Autocompile
+		KnowWEPackageManager.overrideAutocompileArticle(true);
 	}
 
 	public void testNumberOfQuestions() {

@@ -41,6 +41,7 @@ import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.scoring.ActionHeuristicPS;
 import de.d3web.scoring.inference.PSMethodHeuristic;
+import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.KnowWEArticle;
 
 /**
@@ -59,6 +60,8 @@ public class RulesTest extends TestCase {
 	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
+		//Enfore Autocompile
+		KnowWEPackageManager.overrideAutocompileArticle(true);
 	}
 
 	public void testHeuristicRules() {

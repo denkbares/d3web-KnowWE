@@ -75,7 +75,7 @@ public class KnowWEPackageManager implements EventListener {
 
 	private final Set<String> changedPackages = new HashSet<String>();
 
-	public static boolean AUTOCOMPILE_ARTICLE = ResourceBundle.getBundle("KnowWE_config").getString(
+	private static boolean autocompileArticleEnabled = ResourceBundle.getBundle("KnowWE_config").getString(
 			"packaging.autocompileArticle").contains("true");
 
 	public KnowWEPackageManager(String web) {
@@ -95,7 +95,9 @@ public class KnowWEPackageManager implements EventListener {
 
 	public void registerPackageDefinition(Section<?> s) {
 		for (String packageName : s.getPackageNames()) {
-			if (isDisallowedPackageName(packageName)) continue;
+			if (isDisallowedPackageName(packageName)) {
+				continue;
+			}
 			LinkedList<Section<?>> packageList = packageDefinitionsMap.get(packageName);
 			if (packageList == null) {
 				packageList = new LinkedList<Section<?>>();
@@ -108,12 +110,18 @@ public class KnowWEPackageManager implements EventListener {
 
 	public boolean unregisterPackageDefinition(Section<?> s) {
 		for (String packageName : s.getPackageNames()) {
-			if (isDisallowedPackageName(packageName)) continue;
+			if (isDisallowedPackageName(packageName)) {
+				continue;
+			}
 			LinkedList<Section<?>> packageList = packageDefinitionsMap.get(packageName);
 			if (packageList != null) {
 				boolean removed = packageList.remove(s);
-				if (removed) changedPackages.add(packageName);
-				if (packageList.isEmpty()) packageDefinitionsMap.remove(packageName);
+				if (removed) {
+					changedPackages.add(packageName);
+				}
+				if (packageList.isEmpty()) {
+					packageDefinitionsMap.remove(packageName);
+				}
 				return removed;
 			}
 		}
@@ -125,7 +133,9 @@ public class KnowWEPackageManager implements EventListener {
 				packageDefinitionsMap.values())) {
 			List<Section<?>> sectionsToRemove = new ArrayList<Section<?>>();
 			for (Section<?> sec : list) {
-				if (sec.getTitle().equals(article.getTitle())) sectionsToRemove.add(sec);
+				if (sec.getTitle().equals(article.getTitle())) {
+					sectionsToRemove.add(sec);
+				}
 			}
 			for (Section<?> sec : sectionsToRemove) {
 				unregisterPackageDefinition(sec);
@@ -136,7 +146,9 @@ public class KnowWEPackageManager implements EventListener {
 			List<Section<? extends PackageReference>> sectionsToRemove =
 					new ArrayList<Section<? extends PackageReference>>();
 			for (Section<? extends PackageReference> sec : set) {
-				if (sec.getTitle().equals(article.getTitle())) sectionsToRemove.add(sec);
+				if (sec.getTitle().equals(article.getTitle())) {
+					sectionsToRemove.add(sec);
+				}
 			}
 			for (Section<? extends PackageReference> sec : sectionsToRemove) {
 				unregisterPackageReference(article, sec);
@@ -150,10 +162,30 @@ public class KnowWEPackageManager implements EventListener {
 		if (packageDefs != null) {
 			Collections.sort(packageDefs);
 			return Collections.unmodifiableList(new ArrayList<Section<?>>(packageDefs));
-		}
-		else {
+		} else
 			return Collections.unmodifiableList(new ArrayList<Section<?>>(0));
-		}
+	}
+
+	/**
+	 * Override the Autocompile-article switch of KnowWE_config. This should
+	 * only be used during unittests!
+	 * 
+	 * @param autocompileArticleEnabled whether autocompile of articles should
+	 *        be enabled or disabled
+	 * @created 12.10.2010
+	 */
+	public static void overrideAutocompileArticle(boolean autocompileArticleEnabled) {
+		KnowWEPackageManager.autocompileArticleEnabled = autocompileArticleEnabled;
+	}
+
+	/**
+	 * Returns whether Autocompiling of articles is enabled or not.
+	 * 
+	 * @created 12.10.2010
+	 * @return
+	 */
+	public static boolean isAutocompileArticleEnabled() {
+		return autocompileArticleEnabled;
 	}
 
 	public void registerPackageReference(KnowWEArticle article, Section<? extends PackageReference> s) {
@@ -206,7 +238,7 @@ public class KnowWEPackageManager implements EventListener {
 						referencedPackagesMap.get(article.getTitle()).remove(packageToReferTo);
 
 						List<Section<?>> packageDefinitions;
-						if (packageToReferTo.equals(article.getTitle()) 
+						if (packageToReferTo.equals(article.getTitle())
 								|| (packageToReferTo.equals(THIS))) {
 							packageDefinitions = new ArrayList<Section<?>>(1);
 							packageDefinitions.add(article.getSection());
@@ -255,7 +287,7 @@ public class KnowWEPackageManager implements EventListener {
 			matchingArticles.addAll(getArticlesReferingTo(packageName));
 		}
 		HashSet<String> referencedPackages = referencedPackagesMap.get(section.getTitle());
-		if (AUTOCOMPILE_ARTICLE 
+		if (autocompileArticleEnabled
 				|| (referencedPackages != null && referencedPackages.contains(section.getTitle()))
 				|| (referencedPackages != null && referencedPackages.contains(THIS))) {
 			matchingArticles.add(section.getTitle());
@@ -337,7 +369,9 @@ public class KnowWEPackageManager implements EventListener {
 
 		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
 		for (String title : articlesToRevise) {
-			if (title.equals(article.getTitle())) continue;
+			if (title.equals(article.getTitle())) {
+				continue;
+			}
 			KnowWEArticle newArt = KnowWEArticle.createArticle(
 					env.getArticle(article.getWeb(), title).getSection().getOriginalText(), title,
 					env.getRootType(), web, false);
