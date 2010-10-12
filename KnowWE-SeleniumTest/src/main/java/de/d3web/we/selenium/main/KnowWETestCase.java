@@ -189,6 +189,8 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		if (selMethodName.equals("click")) selenium.click(locator);
 		else if (selMethodName.equals("select")) selenium.select(locator, value);
 		else if (selMethodName.equals("type")) selenium.type(locator, value);
+		else if (selMethodName.equals("check")) selenium.check(locator);
+		else if (selMethodName.equals("uncheck")) selenium.uncheck(locator);
 		else {
 			try {
 				throw new IllegalSeleniumMethod(
@@ -243,6 +245,35 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		catch (InterruptedException ie) {
 			ie.printStackTrace();
 		}
+	}
+
+	/**
+	 * This method opens the current wiki page in edit mode, gets the editorarea
+	 * content and returns it. This content is used to compare the wiki page
+	 * before the editing and after some changes.
+	 * 
+	 * @created 30.09.2010
+	 */
+	protected String getWikiPageContent() {
+		loadAndWait(B_EDIT);
+		String str = selenium.getText(EA);
+		loadAndWait(B_SAVE);
+		return str;
+	}
+
+	/**
+	 * This method opens the current wiki page in edit mode, and sets the wiki
+	 * page content stored in the Selenium test properties file. Use this method
+	 * to ensure the wiki page text is the expected text before running the test
+	 * case.
+	 * 
+	 * @created 30.09.2010
+	 */
+	protected void resetWikiPageContent(String page) {
+		loadAndWait(B_EDIT);
+		selenium.type(EA, "");
+		selenium.type(EA, page);
+		loadAndWait(B_SAVE);
 	}
 
 	/**
