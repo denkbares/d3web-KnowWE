@@ -20,6 +20,9 @@
 
 package de.d3web.we.kdom.rules.action;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
@@ -36,7 +39,8 @@ public class RuleAction extends DefaultAbstractKnowWEObjectType {
 					"cc.knowwe.tdb.EvalAssignActionType").newInstance());
 		}
 		catch (Throwable e) {
-			e.printStackTrace();
+			Logger.getLogger("KnowWE").log(Level.INFO,
+					"cc.knowwe.tdb.EvalAssignActionType is not attached");
 		}
 		this.childrenTypes.add(new SolutionValueAssignment());
 		this.childrenTypes.add(new SetQuestionValue());

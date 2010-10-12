@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.Rule;
@@ -97,7 +99,8 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 			termConds.add((KnowWEObjectType) Class.forName("cc.knowwe.tdb.EvalConditionType").newInstance());
 		}
 		catch (Throwable e) {
-			e.printStackTrace();
+			Logger.getLogger("KnowWE").log(Level.INFO,
+					"cc.knowwe.tdb.EvalConditionType is not attached");
 		}
 		termConds.add(new Finding());
 		termConds.add(new CondKnown());
