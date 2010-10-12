@@ -297,10 +297,14 @@ public class RenamingToolTest extends KnowledgeTestCase {
 		doSelActionAndWait(SEARCH_INPUT, "type", "charm");
 		doSelActionAndWait(REPLACE_INPUT, "type", "AAAAAAAAAAAA");
 
+		// open up the first hierarchy of the search tree:
 		doSelActionAndWait("//td[@id='ygtvt1']", "click");
+		// open up the second hierarchy of the search tree:
 		doSelActionAndWait("//td[@id='ygtvt2']", "click");
-		doSelActionAndWait("//span[@id='ygtvlabelel1']", "click");
-		doSelActionAndWait("//span[@id='ygtvlabelel303']", "click");
+		// deselect ALL elements:
+		doSelActionAndWait("//span[text()='alle Bereiche']", "click");
+		// select only 'SetCoveringList-section':
+		doSelActionAndWait("//span[text()='SetCoveringList-section']", "click");
 
 		doSelActionAndWait(PREVIEW, "click");
 
