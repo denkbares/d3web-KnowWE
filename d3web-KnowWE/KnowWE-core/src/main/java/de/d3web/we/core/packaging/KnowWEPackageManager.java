@@ -75,7 +75,7 @@ public class KnowWEPackageManager implements EventListener {
 
 	private final Set<String> changedPackages = new HashSet<String>();
 
-	public static final boolean AUTOCOMPILE_ARTICLE = ResourceBundle.getBundle("KnowWE_config").getString(
+	public static boolean AUTOCOMPILE_ARTICLE = ResourceBundle.getBundle("KnowWE_config").getString(
 			"packaging.autocompileArticle").contains("true");
 
 	public KnowWEPackageManager(String web) {
