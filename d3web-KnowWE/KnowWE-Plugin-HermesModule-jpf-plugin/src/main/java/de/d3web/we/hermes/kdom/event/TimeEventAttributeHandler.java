@@ -23,13 +23,22 @@ public abstract class TimeEventAttributeHandler<T extends KnowWEObjectType> exte
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<T> s) {
 		if (s.getFather().hasErrorInSubtree(article)) {
 			return new ArrayList<KDOMReportMessage>(0);
-		}else {
+		}
+		else {
 			createAttribute(article, s);
 		}
 		return null;
 	}
 
 	protected abstract Collection<KDOMReportMessage> createAttribute(KnowWEArticle article, Section<T> s);
-		
 
+	@Override
+	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
+		return true;
+	}
+
+	@Override
+	public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
+		return true;
+	}
 }
