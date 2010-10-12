@@ -81,73 +81,39 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 	 * @param s
 	 * @return
 	 */
-	public static TimeEvent getEvent(Section<TimeEventNew> s) {
-		Section<TitleType> titleSection = s.findSuccessor(TitleType.class);
-		if (titleSection != null) {
-			return titleSection.get().getTermObject(s.getArticle(), titleSection);
+	public static TimeEvent createTimeEvent(Section<TimeEventNew> s) {
+		String titleS = null;
+		Section<TitleType> title = s.findSuccessor(TitleType.class);
+		if (title != null) titleS = title.get().getTermName(title);
+		
+		String dateS = null;
+		Section<DateType> date = s.findSuccessor(DateType.class);
+		if (date != null) dateS = date.getOriginalText();
+		
+		Integer impI = null;
+		Section<ImportanceType> imp = s.findSuccessor(ImportanceType.class);
+		if (imp != null) impI = imp.get().getImportance(imp);
+		
+		String descS = null;
+		Section<Description> desc = s.findSuccessor(Description.class);
+		if (desc != null) descS = desc.getOriginalText();
+
+		List<Section<Source>> sources = s.findChildrenOfType(Source.class);
+		List<String> sourceStrings = new ArrayList<String>();
+		for (Section<Source> src : sources) {
+			sourceStrings.add(Source.getSourceName(src));
 		}
-		return null;
+		
+		return new TimeEvent(titleS, descS, impI, sourceStrings, dateS, s.getID(),
+				s.getArticle().getTitle());
 	}
 
-	private static class DateType extends DefaultAbstractKnowWEObjectType {
-
-		public DateType() {
-			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR6));
-			ConstraintSectionFinder cf = new ConstraintSectionFinder(
-					new ISectionFinder() {
-
-						@Override
-						public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
-							StringFragment firstNonEmptyLineContent = SplitUtility.getFirstNonEmptyLineContent(text);
-							if (firstNonEmptyLineContent != null) {
-								return SectionFinderResult.createSingleItemResultList(
-										firstNonEmptyLineContent.getStart(),
-										firstNonEmptyLineContent.getEnd());
-							}
-							return null;
-						}
-					});
-			cf.addConstraint(SingleChildConstraint.getInstance());
-			this.sectionFinder = cf;
-
-			// check for correct importance value
-			this.addSubtreeHandler(new TimeEventAttributeHandler<DateType>() {
-
-				@Override
-				public Collection<KDOMReportMessage> createAttribute(KnowWEArticle article, Section<DateType> s) {
-					TimeStamp t = DateType.getTimeStamp(s);
-					if (false /* t is invalid */) { // TODO: set appropriate error
-						return Arrays.asList((KDOMReportMessage) new InvalidNumberError(
-								s.get().getName()
-										+ ": " + s.getOriginalText()));
-					}
-					else {
-						Section<TimeEventNew> teSection = s.findAncestorOfType(TimeEventNew.class);
-						TimeEvent te = TimeEventNew.getEvent(teSection);
-						if (te != null) te.setTime(t);
-					}
-					return new ArrayList<KDOMReportMessage>(0);
-				}
-
-			});
-
-		}
-
-		static TimeStamp getTimeStamp(Section<DateType> s) {
-			return new TimeStamp(s.getOriginalText()); // one could
-			// possibly
-			// cache the
-			// object in
-			// sectionInfoStore..
-		}
-	}
-
-	private static class TitleType extends TermDefinition<TimeEvent> {
+	private static class TitleType extends TermDefinition<String> {
 		Pattern newline = Pattern.compile("\\r?\\n");
 
 		public TitleType() {
 			// true says that this name is registered as globally unique term
-			super(TimeEvent.class, true);
+			super(String.class, true);
 
 			// renderer (for testing only)
 			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR1));
@@ -182,17 +148,69 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<TitleType> s) {
 					TimeEvent e = new TimeEvent(s.get().getTermName(s), s.getID(),
 							article.getTitle());
-					s.get().storeTermObject(article, s, e);
+					s.get().storeTermObject(article, s, s.getOriginalText());
 					return new ArrayList<KDOMReportMessage>(0);
 				}
 			});
 		}
+
 
 		@Override
 		public String getTermName(Section s) {
 			return s.getOriginalText();
 		}
 	}
+
+
+	private static class DateType extends DefaultAbstractKnowWEObjectType {
+
+		public DateType() {
+			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR6));
+			ConstraintSectionFinder cf = new ConstraintSectionFinder(
+					new ISectionFinder() {
+
+						@Override
+						public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
+							StringFragment firstNonEmptyLineContent = SplitUtility.getFirstNonEmptyLineContent(text);
+							if (firstNonEmptyLineContent != null) {
+								return SectionFinderResult.createSingleItemResultList(
+										firstNonEmptyLineContent.getStart(),
+										firstNonEmptyLineContent.getEnd());
+							}
+							return null;
+						}
+					});
+			cf.addConstraint(SingleChildConstraint.getInstance());
+			this.sectionFinder = cf;
+
+			// check for correct importance value
+			this.addSubtreeHandler(new TimeEventAttributeHandler<DateType>() {
+
+				@Override
+				public Collection<KDOMReportMessage> createAttribute(KnowWEArticle article, Section<DateType> s) {
+					TimeStamp t = DateType.getTimeStamp(s);
+					if (false /* t is invalid */) { // TODO: set appropriate error
+						return Arrays.asList((KDOMReportMessage) new InvalidNumberError(
+								s.get().getName()
+										+ ": " + s.getOriginalText()));
+					}
+					return new ArrayList<KDOMReportMessage>(0);
+				}
+
+			});
+
+		}
+
+		static TimeStamp getTimeStamp(Section<DateType> s) {
+			return new TimeStamp(s.getOriginalText()); // one could
+			// possibly
+			// cache the
+			// object in
+			// sectionInfoStore..
+		}
+	}
+
+
 
 	private static class ImportanceType extends DefaultAbstractKnowWEObjectType {
 		Pattern embracedNumbers = Pattern.compile("\\(\\s*\\d*\\s*\\)");
@@ -250,12 +268,8 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 								s.get().getName()
 										+ ": " + s.getOriginalText()));
 					}
-					else {
-						Section<TimeEventNew> teSection = s.findAncestorOfType(TimeEventNew.class);
-						TimeEvent te = TimeEventNew.getEvent(teSection);
-						if (te != null) te.setImportance(i);
-						return new ArrayList<KDOMReportMessage>(0);
-					}
+
+					return new ArrayList<KDOMReportMessage>(0);
 
 				}
 			});
@@ -282,21 +296,6 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR3));
 			this.sectionFinder = new RegexSectionFinder("(QUELLE:.*)\\r?\\n",
 					9999, 1);
-
-			// add source value
-			this.addSubtreeHandler(new TimeEventAttributeHandler<Source>() {
-
-				@Override
-				public Collection<KDOMReportMessage> createAttribute(KnowWEArticle article, Section<Source> s) {
-					String name = Source.getSourceName(s);
-
-					Section<TimeEventNew> teSection = s.findAncestorOfType(TimeEventNew.class);
-					TimeEvent te = TimeEventNew.getEvent(teSection);
-					te.addSource(name);
-
-					return new ArrayList<KDOMReportMessage>(0);
-				}
-			});
 		}
 
 		static String getSourceName(Section<Source> s) {
@@ -332,18 +331,6 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 					new AllTextFinderTrimmed());
 			f.addConstraint(SingleChildConstraint.getInstance());
 			this.sectionFinder = f;
-
-			// check for correct importance value
-			this.addSubtreeHandler(new TimeEventAttributeHandler<Description>() {
-
-				@Override
-				public Collection<KDOMReportMessage> createAttribute(KnowWEArticle article, Section<Description> s) {
-					Section<TimeEventNew> teSection = s.findAncestorOfType(TimeEventNew.class);
-					TimeEvent event = TimeEventNew.getEvent(teSection);
-					if (event != null) event.setDescription(s.getOriginalText());
-					return new ArrayList<KDOMReportMessage>(0);
-				}
-			});
 		}
 	}
 }

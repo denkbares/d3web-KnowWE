@@ -29,7 +29,7 @@ public class TimeEventOWLCompiler extends OwlSubtreeHandler<TimeEventNew> {
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<TimeEventNew> s) {
 
-		TimeEvent event = TimeEventNew.getEvent(s);
+		TimeEvent event = TimeEventNew.createTimeEvent(s);
 		if (s.hasErrorInSubtree(article) || event == null) {
 			return new ArrayList<KDOMReportMessage>(0);
 		}

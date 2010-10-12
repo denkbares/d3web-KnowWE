@@ -32,13 +32,16 @@ public abstract class TimeEventAttributeHandler<T extends KnowWEObjectType> exte
 
 	protected abstract Collection<KDOMReportMessage> createAttribute(KnowWEArticle article, Section<T> s);
 
-	@Override
-	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
-		return true;
-	}
-
-	@Override
-	public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
-		return true;
-	}
+	// @Override
+	// public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
+	// return super.needsToCreate(article, s)
+	// || DashTreeUtils.isChangeInAncestorSubtree(article, s, 1);
+	// }
+	//
+	// @Override
+	// public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
+	// return super.needsToDestroy(article, s)
+	// || DashTreeUtils.isChangeInAncestorSubtree(article, s, 1);
+	//
+	// }
 }
