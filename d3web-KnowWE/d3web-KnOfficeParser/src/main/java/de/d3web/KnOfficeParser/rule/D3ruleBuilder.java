@@ -23,6 +23,8 @@ package de.d3web.KnOfficeParser.rule;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
@@ -59,7 +61,7 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.report.Message;
 import de.d3web.scoring.Score;
 
@@ -94,7 +96,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		private Question question;
 		private final Condition ifcond;
 		private final Condition exceptcond;
-		private Choice answers;
+		private Value value;
 		private FormulaElement formula;
 		private ArrayList<QASet> qcons;
 		private Score score;
@@ -102,14 +104,14 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 
 		public MyRule(ruletype type, Question question,
 				Condition ifcond, Condition exceptcond,
-				Choice answers, FormulaElement formula,
+				Value answers, FormulaElement formula,
 				ArrayList<QASet> qcons) {
 			super();
 			this.type = type;
 			this.question = question;
 			this.ifcond = ifcond;
 			this.exceptcond = exceptcond;
-			this.answers = answers;
+			this.value = answers;
 			this.formula = formula;
 			this.qcons = qcons;
 		}
@@ -171,8 +173,20 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 					rule.ifcond, rule.exceptcond);
 		}
 		else if (rule.type == ruletype.supress) {
+			Choice[] theAnswers = null;
+			if (rule.value instanceof MultipleChoiceValue) {
+				Collection<?> col = (Collection<?>) rule.value.getValue();
+				List<Choice> choices = new LinkedList<Choice>();
+				for (Object o : col) {
+					choices.add((Choice) o);
+				}
+				theAnswers = choices.toArray(new Choice[choices.size()]);
+			}
+			else {
+				theAnswers = new Choice[] { (Choice) rule.value.getValue() };
+			}
 			newRule = RuleFactory.createSuppressAnswerRule(newRuleID,
-					(QuestionChoice) rule.question, new Choice[] { rule.answers }, rule.ifcond,
+					(QuestionChoice) rule.question, theAnswers, rule.ifcond,
 					rule.exceptcond);
 		}
 		else if (rule.type == ruletype.setvalue) {
@@ -180,9 +194,9 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				newRule = RuleFactory.createSetValueRule(newRuleID, rule.question,
 						rule.formula, rule.ifcond, rule.exceptcond);
 			}
-			else if (rule.answers != null) {
+			else if (rule.value != null) {
 				newRule = RuleFactory.createSetValueRule(newRuleID, rule.question,
-						new ChoiceValue(rule.answers), rule.ifcond, rule.exceptcond);
+						rule.value, rule.ifcond, rule.exceptcond);
 			}
 			else {
 				// TODO add error message
@@ -194,9 +208,9 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				// RuleFactory.createAddValueRule(newRuleID, rule.question,
 				// rule.formula, rule.ifcond, rule.exceptcond);
 			}
-			else if (rule.answers != null) {
+			else if (rule.value != null) {
 				newRule = RuleFactory.createSetValueRule(newRuleID, rule.question,
-						new ChoiceValue(rule.answers), rule.ifcond, rule.exceptcond);
+						rule.value, rule.ifcond, rule.exceptcond);
 			}
 			else {
 				// TODO add error message
@@ -386,11 +400,11 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		else {
 			if (q instanceof QuestionChoice) {
 				QuestionChoice qc = (QuestionChoice) q;
-				ArrayList<Choice> alist = new ArrayList<Choice>();
+				ArrayList<Value> alist = new ArrayList<Value>();
 				for (String s : anames) {
 					Value a = idom.findValue(qc, s);
 					if (a != null) {
-						alist.add((Choice) a.getValue());
+						alist.add(a);
 					}
 					else {
 						errors.add(MessageKnOfficeGenerator
@@ -594,8 +608,6 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				}
 			}
 
-			Choice a = (Choice) answer.getValue();
-
 			Condition ifcond;
 			Condition exceptcond;
 			if (except) {
@@ -610,12 +622,12 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			if (ifcond == null) return;
 			if (add) {
 				addRule(new MyRule(ruletype.addvalue, currentquestion, ifcond,
-						exceptcond, a, null, null));
+						exceptcond, answer, null, null));
 
 			}
 			else {
 				addRule(new MyRule(ruletype.setvalue, currentquestion, ifcond,
-						exceptcond, a, null, null));
+						exceptcond, answer, null, null));
 			}
 		}
 	}

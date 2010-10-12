@@ -30,7 +30,6 @@ import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.utilities.SetMap;
 import de.d3web.we.alignment.aligner.CompleteGlobalAligner;
 import de.d3web.we.alignment.aligner.GlobalAligner;
-import de.d3web.we.alignment.aligner.LocalAligner;
 import de.d3web.we.alignment.method.AlignMethod;
 import de.d3web.we.alignment.method.StringAlignMethod;
 import de.d3web.we.terminology.global.DefaultGlobalTerminologyHandler;
@@ -51,7 +50,6 @@ public class AlignmentUtilRepository {
 	private AlignmentUtilRepository() {
 		super();
 		globalAligners = new SetMap<Class, GlobalAligner>();
-		localAligners = new SetMap<Class, LocalAligner>();
 		methods = new SetMap<Class, AlignMethod>();
 		localTerminologyHandler = new HashMap<Class, LocalTerminologyHandler>();
 		globalTerminologyHandler = new HashMap<Class, GlobalTerminologyHandler>();
@@ -83,7 +81,6 @@ public class AlignmentUtilRepository {
 	}
 
 	private SetMap<Class, GlobalAligner> globalAligners;
-	private SetMap<Class, LocalAligner> localAligners;
 	private SetMap<Class, AlignMethod> methods;
 	private Map<Class, LocalTerminologyHandler> localTerminologyHandler;
 	private Map<Class, GlobalTerminologyHandler> globalTerminologyHandler;
@@ -104,34 +101,8 @@ public class AlignmentUtilRepository {
 		return result;
 	}
 
-	public Collection<GlobalAligner> getGlobalAligners() {
-		return globalAligners.getAllValues();
-	}
-
-	public Collection<LocalAligner> getLocalAligners(Class context) {
-		Set<LocalAligner> result = localAligners.get(context);
-		Class bestContext = Object.class;
-		if (result == null) {
-			for (Class key : localAligners.keySet()) {
-				if (key.isAssignableFrom(context) && bestContext.isAssignableFrom(key)) {
-					result = localAligners.get(key);
-					bestContext = key;
-				}
-			}
-		}
-		return result;
-	}
-
-	public Collection<LocalAligner> getLocalAligners() {
-		return localAligners.getAllValues();
-	}
-
 	public Collection<AlignMethod> getMethods(Class context) {
 		return methods.get(context);
-	}
-
-	public Collection<AlignMethod> getMethods() {
-		return methods.getAllValues();
 	}
 
 	public LocalTerminologyHandler getLocalTerminogyHandler(Object terminology) {
@@ -181,20 +152,6 @@ public class AlignmentUtilRepository {
 			for (Class key : termFactory.keySet()) {
 				if (key.isAssignableFrom(context) && bestContext.isAssignableFrom(key)) {
 					result = termFactory.get(key);
-					bestContext = key;
-				}
-			}
-		}
-		return result;
-	}
-
-	public TermUpdater getTermUpdater(Class<? extends Object> context) {
-		TermUpdater result = termUpdater.get(context);
-		Class bestContext = Object.class;
-		if (result == null) {
-			for (Class key : termUpdater.keySet()) {
-				if (key.isAssignableFrom(context) && bestContext.isAssignableFrom(key)) {
-					result = termUpdater.get(key);
 					bestContext = key;
 				}
 			}

@@ -29,21 +29,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.d3web.core.knowledge.terminology.QContainer;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.utilities.ISetMap;
 import de.d3web.utilities.SetMap;
 import de.d3web.we.alignment.AlignmentFilter;
 import de.d3web.we.alignment.AlignmentUtilRepository;
 import de.d3web.we.alignment.GlobalAlignment;
 import de.d3web.we.alignment.LocalAlignment;
-import de.d3web.we.alignment.aligner.LocalAligner;
 import de.d3web.we.basic.IdentifiableInstance;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.terminology.global.GlobalTerminology;
 import de.d3web.we.terminology.local.LocalTerminologyAccess;
-import de.d3web.we.terminology.local.LocalTerminologyHandler;
 import de.d3web.we.terminology.local.LocalTerminologyStorage;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermFactory;
@@ -215,19 +211,6 @@ public class TerminologyBroker {
 	public Collection<LocalAlignment> alignLocal(LocalTerminologyAccess terminology, String idString,
 			LocalTerminologyStorage storage) {
 		Collection<LocalAlignment> result = new ArrayList<LocalAlignment>();
-		Collection<LocalAligner> aligners = AlignmentUtilRepository
-				.getInstance().getLocalAligners(terminology.getContext());
-		if (aligners == null) return result;
-		Collection<Class> efilters = new ArrayList<Class>();
-		efilters.add(QContainer.class);
-		efilters.add(Solution.class);
-		LocalTerminologyHandler localHandler = terminology.getHandler(
-				new ArrayList(), efilters);
-		for (Object object : localHandler) {
-			for (LocalAligner aligner : aligners) {
-				result.addAll(aligner.align(storage, object, idString));
-			}
-		}
 		return result;
 	}
 

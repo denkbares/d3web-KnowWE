@@ -217,46 +217,6 @@ public class DPSEnvironment {
 		}
 	}
 
-	public synchronized void saveAll(boolean threaded) {
-		if (threaded) {
-			new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					saveAll();
-				}
-			}).start();
-		}
-		else {
-			saveAll();
-		}
-	}
-
-	private void saveAll() {
-		try {
-			File dir = getMetaDataLocation();
-			File symptomGTFile = new File(dir, symptomTerminology);
-			File diagnosisGTFile = new File(dir, diagnosisTerminology);
-			File localAlignmentFile = new File(dir, localAlignments);
-			File globalAlignmentFile = new File(dir, globalAlignments);
-			File clustersFile = new File(dir, clustersLocation);
-			TerminologyPersistenceHandler.getInstance().saveSymptomTerminology(
-					terminologyServer.getGlobalTerminology(TerminologyType.symptom), symptomGTFile);
-			TerminologyPersistenceHandler.getInstance().saveSolutionTerminology(
-					terminologyServer.getGlobalTerminology(TerminologyType.diagnosis),
-					diagnosisGTFile);
-			AlignmentPersistenceHandler.getInstance().saveLocalAlignments(
-					terminologyServer.getLocalAlignments(), localAlignmentFile.toURI().toURL());
-			AlignmentPersistenceHandler.getInstance().saveGlobalAlignments(
-					terminologyServer.getGlobalAlignments(), globalAlignmentFile.toURI().toURL());
-			FriendlyServiceClusterPersistenceHandler.getInstance().saveClusterInformation(clusters,
-					clustersFile.toURI().toURL());
-		}
-		catch (Exception e) {
-			Logger.getLogger(getClass().getName()).warning("Error: Cannot save: " + e.getMessage());
-		}
-	}
-
 	private File getMetaDataLocation() throws URISyntaxException {
 		File dir = new File(new File(environmentLocation.toURI()), metaInfoLocation);
 		dir.mkdirs();
@@ -377,14 +337,6 @@ public class DPSEnvironment {
 		return clusters.get(cluster);
 	}
 
-	public Collection<KnowledgeServiceSession> createServiceSessions(Broker broker) {
-		Collection<KnowledgeServiceSession> result = new ArrayList<KnowledgeServiceSession>();
-		for (String id : services.keySet()) {
-			result.add(createServiceSession(id, broker));
-		}
-		return result;
-	}
-
 	public KnowledgeServiceSession createServiceSession(String id, Broker broker) {
 		KnowledgeService service = services.get(id);
 		if (service != null) {
@@ -414,13 +366,4 @@ public class DPSEnvironment {
 	public Collection<Broker> getBrokers() {
 		return brokers.values();
 	}
-
-	public void remove(String userID) {
-		brokers.remove(userID);
-	}
-
-	public URL getEnvironmentLocation() {
-		return environmentLocation;
-	}
-
 }

@@ -49,8 +49,6 @@ public interface Blackboard {
 
 	List<Information> getOriginalUserInformation();
 
-	void setAllInformation(List<Information> infos);
-
 	Map<Term, SolutionState> getGlobalSolutions();
 
 	ISetMap<Term, Information> getAssumptions();

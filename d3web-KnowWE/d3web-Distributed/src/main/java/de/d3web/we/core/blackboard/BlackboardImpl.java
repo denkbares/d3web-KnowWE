@@ -64,6 +64,7 @@ public class BlackboardImpl implements Blackboard {
 				new DefaultGlobalSolutionStrategy());
 	}
 
+	@Override
 	public void initializeClusterManagers(Broker broker) {
 		clusterManagers = new HashMap<String, ClusterSolutionManager>();
 		for (String each : environment.getClusters()) {
@@ -72,6 +73,7 @@ public class BlackboardImpl implements Blackboard {
 		}
 	}
 
+	@Override
 	public Information inspect(Information info) {
 		Information bestInfo = null;
 		bestInfo = getBestInfo(info);
@@ -115,6 +117,7 @@ public class BlackboardImpl implements Blackboard {
 		return null;
 	}
 
+	@Override
 	public void update(Information info) {
 		InformationType infoType = info.getInformationType();
 		removeOldInformation(info);
@@ -169,19 +172,6 @@ public class BlackboardImpl implements Blackboard {
 		allInformation.add(info);
 	}
 
-	private boolean checkInfoForClusters(Information origin) {
-		if (origin.getInformationType().equals(
-				InformationType.HeuristicInferenceInformation)
-				|| origin.getInformationType().equals(
-						InformationType.SetCoveringInferenceInformation)) {
-			if (origin.getTerminologyType().equals(TerminologyType.diagnosis)) {
-				return !environment.getFriendlyServices(origin.getNamespace())
-						.isEmpty();
-			}
-		}
-		return false;
-	}
-
 	private void removeOldInformation(Information info) {
 		Collection<Information> toRemove = new ArrayList<Information>();
 		for (Information each : allInformation) {
@@ -194,6 +184,7 @@ public class BlackboardImpl implements Blackboard {
 		originalUserInformation.removeAll(toRemove);
 	}
 
+	@Override
 	public void clear(Broker broker) {
 		allInformation.clear();
 		inferenceMap.clear();
@@ -203,43 +194,32 @@ public class BlackboardImpl implements Blackboard {
 		initializeClusterManagers(broker);
 	}
 
+	@Override
 	public List<Information> getOriginalUserInformation() {
 		return originalUserInformation;
 	}
 
+	@Override
 	public Map<Term, SolutionState> getGlobalSolutions() {
 		return globalSolutionManager.getGlobalSolutions();
 	}
 
+	@Override
 	public ISetMap<Term, Information> getAssumptions() {
 		return globalSolutionManager.getAssumptions();
 	}
 
+	@Override
 	public List<Information> getAllInformation() {
 		return allInformation;
 	}
 
-	public void setAllInformation(List<Information> infos) {
-		alignedUserInformation = new ArrayList<Information>();
-		allInformation = infos;
-		for (Information information : infos) {
-			if (information.getInformationType() != null
-					&& information.getInformationType().equals(
-							InformationType.OriginalUserInformation)) {
-				originalUserInformation.add(information);
-			}
-			else if (information.getInformationType() != null
-					&& information.getInformationType().equals(
-							InformationType.AlignedUserInformation)) {
-				alignedUserInformation.add(information);
-			}
-		}
-	}
-
+	@Override
 	public Collection<Information> getInferenceInformation(Term term) {
 		return inferenceMap.get(term);
 	}
 
+	@Override
 	public void removeInformation(String namespace) {
 		removeInfo(allInformation, namespace);
 		for (Term each : inferenceMap.keySet()) {
