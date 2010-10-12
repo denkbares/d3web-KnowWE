@@ -142,7 +142,7 @@ KNOWWE.plugin.quicki = function(){
         restoreQuestionnaireVis : function(){
         	
 
-        	alert(questionnaireVis);
+        	//alert(questionnaireVis);
         	
         	// split questionnaireVis storage into questionnaire;vis
         	// elments
