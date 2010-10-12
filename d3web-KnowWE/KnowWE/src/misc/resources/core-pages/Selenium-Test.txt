@@ -6,7 +6,7 @@
 
 !Stress-Tests
 
-[Markup(Car-Diagnosis)]
+[Markup-Car-Diagnosis]
 
 [TimeLineEntries]
 
