@@ -51,7 +51,7 @@ public class DistributedRegistrationManager {
 		KnowledgeService service = new D3webKnowledgeService(base,
 				base.getId());
 
-		env.addService(service, null, true);
+		env.addService(service);
 
 		for (Broker broker : env.getBrokers()) {
 			broker.register(service);

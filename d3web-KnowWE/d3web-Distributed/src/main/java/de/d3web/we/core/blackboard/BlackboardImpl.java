@@ -23,7 +23,6 @@ package de.d3web.we.core.blackboard;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,8 +50,6 @@ public class BlackboardImpl implements Blackboard {
 
 	private GlobalSolutionManager globalSolutionManager;
 
-	private Map<String, ClusterSolutionManager> clusterManagers;
-
 	public BlackboardImpl(DPSEnvironment environment) {
 		super();
 		this.environment = environment;
@@ -62,15 +59,6 @@ public class BlackboardImpl implements Blackboard {
 		inferenceMap = new SetMap<Term, Information>();
 		globalSolutionManager = new GlobalSolutionManager(environment,
 				new DefaultGlobalSolutionStrategy());
-	}
-
-	@Override
-	public void initializeClusterManagers(Broker broker) {
-		clusterManagers = new HashMap<String, ClusterSolutionManager>();
-		for (String each : environment.getClusters()) {
-			clusterManagers.put(each, new ClusterSolutionManager(environment,
-					broker, each));
-		}
 	}
 
 	@Override
@@ -131,42 +119,11 @@ public class BlackboardImpl implements Blackboard {
 				&& TerminologyType.diagnosis.equals(info.getTerminologyType())) {
 			globalSolutionManager.update(info);
 		}
-		else {
-			// clusters:
-			if (info.getInformationType().equals(
-					InformationType.HeuristicInferenceInformation)
-					|| info.getInformationType().equals(
-							InformationType.SetCoveringInferenceInformation)
-							|| info.getInformationType().equals(
-									InformationType.XCLInferenceInformation)) {
-				if (info.getTerminologyType().equals(TerminologyType.diagnosis)) {
-					String clusterID = environment.getCluster(info
-							.getNamespace());
-					if (clusterID != null) {
-						ClusterSolutionManager manager = clusterManagers.get(clusterID);
-						if (manager != null) {
-							manager.update(info);
-						}
-					}
-				}
-			}
-		}
+
 		if (info.getInformationType().equals(InformationType.HeuristicInferenceInformation)
 				|| info.getInformationType().equals(InformationType.SetCoveringInferenceInformation)
 				|| info.getInformationType().equals(InformationType.CaseBasedInferenceInformation)
 					|| info.getInformationType().equals(InformationType.XCLInferenceInformation)) {
-			List<Term> solutionTerms = environment.getTerminologyServer().getBroker().getAlignedTerms(
-					info.getIdentifiableObjectInstance());
-			for (Term eachTerm : new ArrayList<Term>(solutionTerms)) {
-				Collection<Information> dummy = inferenceMap.get(eachTerm);
-				if (dummy == null) continue;
-				for (Information eachInfo : new ArrayList<Information>(dummy)) {
-					if (eachInfo.equalsNamespaces(info)) {
-						inferenceMap.remove(eachTerm, eachInfo);
-					}
-				}
-			}
-			inferenceMap.addAll(solutionTerms, info);
 		}
 
 		allInformation.add(info);
@@ -191,7 +148,6 @@ public class BlackboardImpl implements Blackboard {
 		originalUserInformation.clear();
 		alignedUserInformation.clear();
 		globalSolutionManager.clear();
-		initializeClusterManagers(broker);
 	}
 
 	@Override

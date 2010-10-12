@@ -29,7 +29,6 @@ import java.util.Map;
 import de.d3web.utilities.ISetMap;
 import de.d3web.utilities.SetMap;
 import de.d3web.we.basic.Information;
-import de.d3web.we.basic.InformationType;
 import de.d3web.we.basic.SolutionState;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.terminology.term.Term;
@@ -60,15 +59,6 @@ public class GlobalSolutionManager {
 	public void update(Information info) {
 		if (info.getValues() == null || info.getValues().isEmpty()) return;
 		List<Term> solutionTerms = new ArrayList<Term>();
-		if (InformationType.SolutionInformation.equals(info.getInformationType())) {
-			solutionTerms = environment.getTerminologyServer().getBroker().getAlignedTerms(
-					info.getIdentifiableObjectInstance());
-		}
-		else if (InformationType.ClusterInformation.equals(info.getInformationType())) {
-			Term term = environment.getTerminologyServer().getGlobalTerminology(
-					info.getTerminologyType()).getTerm(info.getObjectID(), null);
-			solutionTerms.add(term);
-		}
 		for (Term eachTerm : solutionTerms) {
 			if (eachTerm == null) continue;
 			updateTerm(eachTerm, info);

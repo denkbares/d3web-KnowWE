@@ -20,8 +20,6 @@
 
 package de.d3web.we.core.broker;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 import de.d3web.we.basic.Information;
@@ -40,23 +38,18 @@ public class BrokerImpl implements Broker {
 
 	private Stack<KnowledgeServiceSession> delegateStack;
 
-	private List<BrokerActionListener> actionListeners;
-
 	public BrokerImpl(DPSEnvironment environment, String userID, DialogControl dialogControl) {
 		super();
 		this.environment = environment;
 		this.dialogControl = dialogControl;
 		session = new DPSSession(environment);
 		delegateStack = new Stack<KnowledgeServiceSession>();
-		actionListeners = new ArrayList<BrokerActionListener>();
-		session.getBlackboard().initializeClusterManagers(this);
 	}
 
 	@Override
 	public void update(Information info) {
 		session.getBlackboard().update(info);
 		ServiceAction action = new InformAllServicesAction(info, session, environment);
-		informListeners(action);
 		action.run();
 	}
 
@@ -140,20 +133,6 @@ public class BrokerImpl implements Broker {
 
 	public void setDialogControl(DialogControl dialogControl) {
 		this.dialogControl = dialogControl;
-	}
-
-	public void addActionListener(BrokerActionListener actionListener) {
-		actionListeners.add(actionListener);
-	}
-
-	public void removeActionListeners(BrokerActionListener actionListener) {
-		actionListeners.remove(actionListener);
-	}
-
-	private void informListeners(ServiceAction action) {
-		for (BrokerActionListener each : actionListeners) {
-			each.actionPerformed(action);
-		}
 	}
 
 	@Override

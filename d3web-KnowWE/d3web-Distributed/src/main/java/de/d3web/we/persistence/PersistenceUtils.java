@@ -35,8 +35,6 @@ import de.d3web.we.alignment.type.NumericalIdentityAlignType;
 import de.d3web.we.alignment.type.SolutionIdentityAlignType;
 import de.d3web.we.basic.IdentifiableInstance;
 import de.d3web.we.basic.TerminologyType;
-import de.d3web.we.terminology.TerminologyServer;
-import de.d3web.we.terminology.global.GlobalTerminology;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermInfoType;
 
@@ -88,23 +86,6 @@ public class PersistenceUtils {
 		writeTermInfoMap(writer, term, withInfos);
 		writer.writeCharacters("\n");
 		if (withEndTag) writer.writeEndElement();
-	}
-
-	public static Term getExistingTerm(XMLStreamReader parser, TerminologyServer ts, TerminologyType termType) throws XMLStreamException, ClassNotFoundException {
-		// Term tag already parsed
-		Term term = new Term(termType);
-		parser.nextTag();
-		parseTermInfoMap(parser, term);
-		parser.nextTag();
-		for (GlobalTerminology gt : ts.getGlobalTerminologies()) {
-			Term newTerm = gt.getTerm((String) term.getInfo(TermInfoType.TERM_NAME),
-					term.getInfo(TermInfoType.TERM_VALUE));
-			if (newTerm != null) {
-				return newTerm;
-			}
-		}
-
-		return null;
 	}
 
 	public static Term getTerm(XMLStreamReader parser, boolean tree, TerminologyType termType) throws XMLStreamException, ClassNotFoundException {

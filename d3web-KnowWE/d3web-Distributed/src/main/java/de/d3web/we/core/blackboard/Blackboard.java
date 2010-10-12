@@ -53,8 +53,6 @@ public interface Blackboard {
 
 	ISetMap<Term, Information> getAssumptions();
 
-	void initializeClusterManagers(Broker broker);
-
 	void removeInformation(String namespace);
 
 }

@@ -39,7 +39,6 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.session.DefaultSession;
 import de.d3web.core.session.IEventSource;
 import de.d3web.core.session.KBOEventListener;
 import de.d3web.core.session.Session;
@@ -52,7 +51,6 @@ import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.indication.inference.PSMethodUserSelected;
-import de.d3web.kernel.psMethods.delegate.PSMethodDelegate;
 import de.d3web.scoring.inference.PSMethodHeuristic;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.InformationType;
@@ -142,8 +140,6 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	private void initCase() {
 		// DistributedControllerFactory factory = getControllerFactory();
 		session = SessionFactory.createSession(base);
-		((DefaultSession) session).addUsedPSMethod(PSMethodDelegate.getInstance());
-
 	}
 
 	private void initConnection() {
