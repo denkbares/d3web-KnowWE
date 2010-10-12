@@ -25,19 +25,6 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 
 public class TimeEventOWLCompiler extends OwlSubtreeHandler<TimeEventNew> {
 
-	@Override
-	public boolean needsToCreate(KnowWEArticle article, Section<TimeEventNew> s) {
-		return s.getTitle().equals(article.getTitle())
-		 		&& (super.needsToCreate(article, s)
-							|| s.isOrHasSuccessorNotReusedBy(article.getTitle()));
-	}
-
-	@Override
-	public boolean needsToDestroy(KnowWEArticle article, Section<TimeEventNew> s) {
-		return s.getTitle().equals(article.getTitle())
-				&& (super.needsToCreate(article, s)
-					|| s.isOrHasSuccessorNotReusedBy(article.getTitle()));
-	}
 
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<TimeEventNew> s) {
