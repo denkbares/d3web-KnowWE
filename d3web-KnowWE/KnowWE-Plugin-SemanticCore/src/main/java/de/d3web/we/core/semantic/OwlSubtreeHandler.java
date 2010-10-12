@@ -50,14 +50,16 @@ public abstract class OwlSubtreeHandler<T extends KnowWEObjectType> extends
 	// Sections
 	@Override
 	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
-		return super.needsToCreate(article, s)
-				&& s.getTitle().equals(article.getTitle());
+		return s.getTitle().equals(article.getTitle())
+				&& (super.needsToCreate(article, s)
+						|| s.isOrHasSuccessorNotReusedBy(article.getTitle()));
 	}
 
 	@Override
 	public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
-		return super.needsToDestroy(article, s) 
-				&& s.getTitle().equals(article.getTitle());
+		return s.getTitle().equals(article.getTitle())
+				&& (super.needsToDestroy(article, s)
+						|| s.isOrHasSuccessorNotReusedBy(article.getTitle()));
 	}
 
 	@Override
