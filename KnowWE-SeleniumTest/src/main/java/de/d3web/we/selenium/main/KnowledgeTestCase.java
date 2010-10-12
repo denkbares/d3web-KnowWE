@@ -161,7 +161,7 @@ public abstract class KnowledgeTestCase extends KnowWETestCase {
 				for (int i = 0; i < actCategoryInput.length && loopRepeatCounter < MAXLOOP; i++) {
 					// -> Radio button part
 					actInputLocator = RADIO_LOC + actCategoryInput[i] + "]";
-					if (selenium.isElementPresent(actInputLocator)) {
+					if (waitForElement(actInputLocator)) {
 						doSelActionAndWait(actInputLocator, "click");
 
 						// Check if input was accepted
@@ -184,7 +184,7 @@ public abstract class KnowledgeTestCase extends KnowWETestCase {
 					}
 					// -> Check boxes part(semanomc: ...multiple choice)
 					actInputLocator = CBOX_LOC + actCategoryInput[i] + "]";
-					if (selenium.isElementPresent(actInputLocator)) {
+					if (waitForElement(actInputLocator)) {
 						doSelActionAndWait(actInputLocator, "click");
 						// CheckBoxes need some special treatment
 						threadSleep(sleepTime);
