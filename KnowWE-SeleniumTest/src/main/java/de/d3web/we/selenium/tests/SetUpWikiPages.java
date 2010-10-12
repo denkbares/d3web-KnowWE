@@ -130,5 +130,11 @@ public class SetUpWikiPages extends KnowWETestCase {
 		open("Edit.jsp?page=TimeLineEntries");
 		doSelActionAndWait(EA, "type", rb.getString("KnowWE.SeleniumTest.TimeLineEntries"));
 		loadAndWait(B_SAVE);
+		
+		// Renaming-Tool-Test Page
+		open("Edit.jsp?page=Renaming-Tool-Test");
+		doSelActionAndWait(EA, "type", rb.getString("KnowWE.SeleniumTest.Renaming"));
+		loadAndWait(B_SAVE);		
+		
 	}
 }

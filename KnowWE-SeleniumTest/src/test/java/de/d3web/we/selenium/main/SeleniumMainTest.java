@@ -26,6 +26,7 @@ import de.d3web.we.selenium.tests.CalendarTest;
 import de.d3web.we.selenium.tests.CarDiagnosisTest;
 import de.d3web.we.selenium.tests.CommentTest;
 import de.d3web.we.selenium.tests.QuickEditTest;
+import de.d3web.we.selenium.tests.RenamingToolTest;
 
 /**
  * This TestClass organizes the Selenium test of KnowWE2. Therefore you need to
@@ -70,6 +71,7 @@ public class SeleniumMainTest extends TestSuite {
 		mainSuite.addTestSuite(CarDiagnosisTest.class);
 		mainSuite.addTestSuite(CommentTest.class);
 		mainSuite.addTestSuite(QuickEditTest.class);
+		mainSuite.addTestSuite(RenamingToolTest.class);
 
 		return mainSuite;
 	}
