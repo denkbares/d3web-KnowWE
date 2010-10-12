@@ -19,7 +19,6 @@
  */
 package de.d3web.we.kdom.imagequestion;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +39,7 @@ import de.d3web.core.session.Value;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.UndefinedValue;
+import de.d3web.multimedia.io.ImageQuestionStore;
 import de.d3web.we.action.SetSingleFindingAction;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -56,8 +56,8 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  */
 public class ImageQuestionHandler extends AbstractTagHandler {
 
-	private static final String config_knowledgebase_path =
-		"kbResources/";
+	public static final String TAGHANDLER_ANNOTATION =
+			"question";
 
 	/**
 	 * Nearly every method in this class needs: topic, web and the
@@ -66,8 +66,9 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	private String topic;
 	private String web;
 	private KnowWEUserContext user;
-	private String width;
-	private String height;
+
+	// private String width;
+	// private String height;
 
 	public ImageQuestionHandler() {
 		super("imagequestionhandler");
@@ -76,7 +77,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	@Override
 	public String getDescription(KnowWEUserContext user) {
 		return D3webModule.getKwikiBundle_d3web(user).
-		getString("KnowWE.ImageQuestionHandler.Description");
+				getString("KnowWE.ImageQuestionHandler.Description");
 	}
 
 	@Override
@@ -112,31 +113,26 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		KnowledgeBase kb = service.getBase();
 
 		// Read out the properties
-		String questionID = values.get("question");
+		String questionID = values.get(ImageQuestionHandler.TAGHANDLER_ANNOTATION);
 		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance(kb);
 		Question q = kbm.findQuestion(questionID);
-		List<?> props = (List<?>) q.getInfoStore().getValue(BasicProperties.IMAGE_QUESTION_INFO);
-		String imageName = (String) props.get(0);
-		this.width = (String) props.get(1);
-		this.height = (String) props.get(2);
-
-		List<AnswerRegion> answerRegions =
-				this.buildAnswerRegions((List<?>) props.get(3));
+		ImageQuestionStore store = (ImageQuestionStore) q.getInfoStore().getValue(
+				BasicProperties.IMAGE_QUESTION_INFO);
 
 		// Layout is: Picture | Checkboxes with labels
 		StringBuffer renderedImage = new StringBuffer();
 		StringBuffer renderedCheckBoxes = new StringBuffer();
 		try {
-			this.renderQuestionImage(renderedImage, imageName, q, answerRegions, kb);
+			this.renderQuestionImage(renderedImage, store, q, kb);
 			this.renderQuestionChoiceColumns(
 					renderedCheckBoxes, D3webUtils.getSession(topic, user, web),
-					q, answerRegions);
+					q);
 		}
 		catch (IOException e) {
 			Logger.getLogger(ImageQuestionHandler.class.getName())
-			.warning(
-					"Error in rendering method of ImageQuestionHandler : "
-					+ e.getMessage());
+					.warning(
+							"Error in rendering method of ImageQuestionHandler : "
+									+ e.getMessage());
 		}
 
 		// Render DIV only if it is not RerenderingAction
@@ -149,12 +145,12 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		}
 		buffi.append(
 				"<table id=\"imagetable_" + q.getId() + "\"><tr><td>"
-				+ renderedImage.toString()
-				+ "</td>"
-				+ "<td>"
-				+ renderedCheckBoxes.toString()
-				+ "</td>"
-				+ "</tr></table>");
+						+ renderedImage.toString()
+						+ "</td>"
+						+ "<td>"
+						+ renderedCheckBoxes.toString()
+						+ "</td>"
+						+ "</tr></table>");
 		if (renderDIV) buffi.append("</div>");
 
 		return buffi.toString();
@@ -166,12 +162,11 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	 * @param answerRegions
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	private List<AnswerRegion> buildAnswerRegions(List<?> answerRegions) {
+	private List<AnswerRegion> buildAnswerRegions(List<List<String>> answerRegions) {
 		List<AnswerRegion> buildAR = new ArrayList<AnswerRegion>();
 		List<String> attributes = null;
 		for (int i = 0; i < answerRegions.size(); i++) {
-			attributes = (List<String>) answerRegions.get(i);
+			attributes = answerRegions.get(i);
 			String answerID = attributes.get(0);
 			int xStart = Integer.parseInt(attributes.get(1));
 			int xEnd = Integer.parseInt(attributes.get(2));
@@ -187,60 +182,37 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	 * Renders a DIV with the question image of a given ImageQuestion. It also
 	 * includes the AnswerRegions.
 	 * 
-	 * TODO: The Image should be loaded from the jar as Resource.
-	 * 
 	 * @param buffi
-	 * @param questionImage
+	 * @param store
 	 * @param q
-	 * @param answerRegs
 	 * @param kb
 	 * @throws IOException
 	 */
 	private void renderQuestionImage(StringBuffer buffi,
-			String questionImage, Question q, List<AnswerRegion> answerRegs,
+			ImageQuestionStore store, Question q,
 			KnowledgeBase kb)
-	throws IOException {
+			throws IOException {
 
 		buffi.append("<div id=\"" + q.getId() + "\" class=\"questionImage\"");
 
-		String path = KnowWEEnvironment.getInstance().getKnowWEExtensionPath()
-		+ ImageQuestionHandler.config_knowledgebase_path
-		+ this.topic + "PP" + KnowWEEnvironment.generateDefaultID(this.topic)
-		+ "/multimedia/" + questionImage;
-		path = path.replaceAll("KnowWEExtension", "");
-		File imgFile = new File(path);
-
-		// TODO: Does not work, because the image is not loaded in the
-		// knowledge as a resource
-		// FileInputStream stream = new FileInputStream(imgFile);
-		// List<Resource> res = kb.getResources();
-		// Resource input = kb.getResource("multimedia/"+questionImage);
-		// File bla = new File(pathName);
-
-		//		BufferedImage img = ImageIO.read(imgFile.toURI().toURL());
-
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("position: relative;");
-		buffer.append("width: " + this.width + ";");
-		buffer.append("height: " + this.height + ";");
+		buffer.append("width: " + store.getWidth() + ";");
+		buffer.append("height: " + store.getHeight() + ";");
 
 		buffer.append("margin-left: auto;");
 		buffer.append("margin-right: auto;");
 
-		String relImagePath = ImageQuestionHandler.config_knowledgebase_path
-		+ this.topic + "PP"
-		+ KnowWEEnvironment.generateDefaultID(this.topic)
-		+ "/multimedia/"
-		+ questionImage;
-
-		relImagePath =
-			"../KnowWE/action/StreamImageToResourceAction/"
-			+ questionImage +
-			"?topic="+ topic + "&web=" + web + "&imagename=" + questionImage;
+		String relImagePath =
+				"../KnowWE/action/StreamImageToResourceAction/"
+						+ store.getFile() +
+						"?topic=" + topic + "&web=" + web + "&imagename=" + store.getFile();
 		buffer.append("background-image:url(" + relImagePath + ");");
 		buffi.append(" style=\"" + buffer.toString() + "\">");
 
 		// render AnswerRegions
+		List<AnswerRegion> answerRegs =
+				this.buildAnswerRegions(store.getAnswerRegions());
 		for (AnswerRegion region : answerRegs) {
 			String t = renderAnswerRegion(region, kb, q);
 			buffi.append(t);
@@ -250,10 +222,9 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 
 	/**
 	 * Renders the Answer Regions for a picture. The Answer Regions are
-	 * clickable and visible if if the checkbox for the answerRegion is checked.
+	 * clickable and visible if the checkbox for the answerRegion is checked.
 	 * 
 	 * @param answerRegion
-	 * @param hover
 	 * @param kb
 	 * @param q
 	 * @return
@@ -267,8 +238,8 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 
 		if (answer == null) {
 			Logger.getLogger(ImageQuestionHandler.class.getName())
-			.warning(
-			"The Answer ID was not found in the knowledge base : ");
+					.warning(
+							"The Answer ID was not found in the knowledge base : ");
 			return "";
 		}
 
@@ -278,6 +249,8 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		StringBuffer buffi = new StringBuffer();
 
 		buffi.append("<a id=\"region_" + answerID + "\"");
+
+		buffi.append(" " + this.buildRelAttributeString(answerID, q.getId()));
 
 		buffi.append(" class=\"answerRegion");
 		// if region is aleady answered --> insert another styleclass
@@ -338,9 +311,8 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	 * Checks if this AnswerChoice is currently set. Works for QuestionOC and
 	 * QuestionMC which are used in ImageQuestions.
 	 * 
-	 * @param specAns
+	 * @param answerID
 	 * @param q
-	 * @param session
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -357,7 +329,8 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 			}
 		}
 
-		Session session = D3webUtils.getSession(this.topic, this.user, this.web);
+		Session session = D3webUtils.getSession(this.topic, this.user,
+				this.web);
 		Value answer = session.getBlackboard().getValue(q);
 		boolean contains = false;
 		if (!(answer instanceof UndefinedValue)) {
@@ -378,10 +351,9 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	 * @param buffi
 	 * @param session
 	 * @param q
-	 * @param answerRegions
 	 */
 	private void renderQuestionChoiceColumns(StringBuffer buffi, Session session,
-			Question q, List<AnswerRegion> answerRegions) {
+			Question q) {
 
 		// new Table for Checkboxes an labels
 		buffi.append("<table><tr>");
