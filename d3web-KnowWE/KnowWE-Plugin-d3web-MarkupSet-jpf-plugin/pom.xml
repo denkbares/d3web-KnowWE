@@ -10,6 +10,34 @@
   <name>KnowWE-Plugin-d3web-MarkupSet-jpf-plugin</name>
   <version>0.2-SNAPSHOT</version>
   <description>A set of markups for terminology, decision trees, rules and covering lists</description>
+  
+  	<build>
+		<defaultGoal>package</defaultGoal>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>build-classpath</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/dependencies</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+							<pathSeparator>;</pathSeparator>
+							<outputFile>target/dependencies/output.txt</outputFile>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+  
   <dependencies>
   	<dependency>
   		<groupId>de.uniwue.d3web</groupId>
@@ -37,5 +65,17 @@
 			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
+  			<dependency>
+  				<groupId>de.uniwue.d3web</groupId>
+  				<artifactId>d3web-EmpiricalTesting</artifactId>
+  				<version>0.2-SNAPSHOT</version>
+  				<scope>compile</scope>
+  			</dependency>
+  			<dependency>
+  				<groupId>de.uniwue.d3web</groupId>
+  				<artifactId>KnowWE-Plugin-d3web-jpf-plugin</artifactId>
+  				<version>0.2-SNAPSHOT</version>
+  				<scope>compile</scope>
+  			</dependency>
   </dependencies>
 </project>
