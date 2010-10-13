@@ -29,8 +29,6 @@ public interface Broker {
 
 	void update(Information info);
 
-	void processInit();
-
 	Information request(Information requestInfo, KnowledgeServiceSession serviceSession);
 
 	void register(KnowledgeService service);

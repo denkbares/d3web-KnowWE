@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import de.d3web.utilities.ISetMap;
-import de.d3web.we.alignment.LocalAlignment;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.broker.Broker;
@@ -97,11 +96,6 @@ public class DPSEnvironment {
 			TerminologyBroker tb = terminologyServer.getBroker();
 			ISetMap<Object, Term> map = tb.addTerminology(eachType, eachAccess,
 						service.getId(), terminologyServer.getStorage());
-
-			Collection<LocalAlignment> las = tb.alignLocal(eachAccess, service.getId(),
-						terminologyServer.getStorage());
-
-			tb.addLocalAlignments(las);
 		}
 	}
 

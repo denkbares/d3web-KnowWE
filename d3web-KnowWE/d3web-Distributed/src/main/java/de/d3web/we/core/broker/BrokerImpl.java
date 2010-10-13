@@ -135,12 +135,4 @@ public class BrokerImpl implements Broker {
 		this.dialogControl = dialogControl;
 	}
 
-	@Override
-	public void processInit() {
-		for (KnowledgeServiceSession each : session.getServiceSessions()) {
-			each.processInit();
-		}
-		getDialogControl().clear();
-	}
-
 }
