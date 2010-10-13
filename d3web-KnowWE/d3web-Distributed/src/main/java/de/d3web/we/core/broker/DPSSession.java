@@ -42,7 +42,7 @@ public class DPSSession {
 		super();
 		this.environment = environment;
 		id = new UID().toString();
-		blackboard = new BlackboardImpl(environment);
+		blackboard = new BlackboardImpl();
 		serviceSessions = new HashMap<String, KnowledgeServiceSession>();
 	}
 
@@ -96,9 +96,4 @@ public class DPSSession {
 	public String getId() {
 		return id;
 	}
-
-	public DPSEnvironment getEnvironment() {
-		return environment;
-	}
-
 }

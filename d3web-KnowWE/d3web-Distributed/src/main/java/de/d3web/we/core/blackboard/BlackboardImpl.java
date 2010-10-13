@@ -32,13 +32,10 @@ import de.d3web.we.basic.Information;
 import de.d3web.we.basic.InformationType;
 import de.d3web.we.basic.SolutionState;
 import de.d3web.we.basic.TerminologyType;
-import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.terminology.term.Term;
 
 public class BlackboardImpl implements Blackboard {
-
-	private final DPSEnvironment environment;
 
 	private List<Information> originalUserInformation;
 
@@ -50,24 +47,19 @@ public class BlackboardImpl implements Blackboard {
 
 	private GlobalSolutionManager globalSolutionManager;
 
-	public BlackboardImpl(DPSEnvironment environment) {
+	public BlackboardImpl() {
 		super();
-		this.environment = environment;
 		originalUserInformation = new ArrayList<Information>();
 		alignedUserInformation = new ArrayList<Information>();
 		allInformation = new ArrayList<Information>();
 		inferenceMap = new SetMap<Term, Information>();
-		globalSolutionManager = new GlobalSolutionManager(environment,
-				new DefaultGlobalSolutionStrategy());
+		globalSolutionManager = new GlobalSolutionManager(new DefaultGlobalSolutionStrategy());
 	}
 
 	@Override
 	public Information inspect(Information info) {
 		Information bestInfo = null;
 		bestInfo = getBestInfo(info);
-		if (bestInfo == null) {
-			bestInfo = getBestAlignedInfo(info);
-		}
 		return bestInfo;
 	}
 
@@ -82,27 +74,6 @@ public class BlackboardImpl implements Blackboard {
 		}
 		return null;
 
-	}
-
-	private Information getBestAlignedInfo(Information origin) {
-		List<Information> infoHistory = new ArrayList<Information>(
-				allInformation);
-		Collection<Information> alignedInfos = environment
-				.getAlignedInformation(origin);
-		Collections.reverse(infoHistory);
-		for (Information historyInfo : infoHistory) {
-			for (Information alignedInfo : alignedInfos) {
-				if (historyInfo.equalsNamespaces(alignedInfo)) {
-					for (Information alignedHistoryInfo : environment
-							.getAlignedInformation(historyInfo)) {
-						if (alignedHistoryInfo.equalsNamespaces(origin)) {
-							return alignedHistoryInfo;
-						}
-					}
-				}
-			}
-		}
-		return null;
 	}
 
 	@Override

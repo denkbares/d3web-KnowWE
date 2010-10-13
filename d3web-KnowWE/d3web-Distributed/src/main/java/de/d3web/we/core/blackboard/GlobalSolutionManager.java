@@ -30,7 +30,6 @@ import de.d3web.utilities.ISetMap;
 import de.d3web.utilities.SetMap;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.SolutionState;
-import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.terminology.term.Term;
 
 public class GlobalSolutionManager {
@@ -38,11 +37,9 @@ public class GlobalSolutionManager {
 	private Map<Term, SolutionState> solutionsMap;
 	private ISetMap<Term, Information> assumptionMap;
 	private GlobalSolutionStrategy strategy;
-	private DPSEnvironment environment;
 
-	public GlobalSolutionManager(DPSEnvironment environment, GlobalSolutionStrategy strategy) {
+	public GlobalSolutionManager(GlobalSolutionStrategy strategy) {
 		super();
-		this.environment = environment;
 		this.strategy = strategy;
 		solutionsMap = new HashMap<Term, SolutionState>();
 		assumptionMap = new SetMap<Term, Information>();

@@ -21,7 +21,6 @@
 package de.d3web.we.core.utils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -32,24 +31,6 @@ import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.NumValue;
 
 public class ConverterUtils {
-
-	public static List<String> toIdStringList(Collection<? extends IDObject> idObjects) {
-		List<String> result = new ArrayList<String>();
-		for (IDObject idObject : idObjects) {
-			result.add(idObject.getId());
-		}
-		return result;
-	}
-
-	public static List<String> toIdStringList(Object[] idObjects) {
-		List<String> result = new ArrayList<String>();
-		for (Object idObject : idObjects) {
-			if (idObject instanceof IDObject) {
-				result.add(((IDObject) idObject).getId());
-			}
-		}
-		return result;
-	}
 
 	public static List<Object> toValueList(Value givenValue, Session session) {
 		List<Object> result = new ArrayList<Object>();

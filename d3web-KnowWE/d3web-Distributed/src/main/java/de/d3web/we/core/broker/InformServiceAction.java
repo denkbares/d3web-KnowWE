@@ -24,7 +24,7 @@ import de.d3web.we.basic.Information;
 import de.d3web.we.basic.InformationType;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 
-public class InformServiceAction implements ServiceAction {
+public class InformServiceAction implements Runnable {
 
 	private final Information info;
 	private final DPSSession session;
@@ -35,6 +35,7 @@ public class InformServiceAction implements ServiceAction {
 		this.session = session;
 	}
 
+	@Override
 	public void run() {
 		KnowledgeServiceSession serviceSession = session.getServiceSession(info.getNamespace());
 		if (serviceSession != null) {

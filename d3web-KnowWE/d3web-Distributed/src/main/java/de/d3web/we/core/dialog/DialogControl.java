@@ -36,13 +36,7 @@ public interface DialogControl {
 
 	List<Dialog> getHistory();
 
-	void cancelDelegate(KnowledgeServiceSession kss);
-
 	void clear();
-
-	public boolean isUserInterventionNeeded();
-
-	boolean isDialogSwitchNeeded();
 
 	Dialog getNextActiveDialog();
 

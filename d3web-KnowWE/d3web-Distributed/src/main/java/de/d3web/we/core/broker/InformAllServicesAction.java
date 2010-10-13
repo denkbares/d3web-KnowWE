@@ -27,7 +27,7 @@ import de.d3web.we.basic.InformationType;
 import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.DPSEnvironment;
 
-public class InformAllServicesAction implements ServiceAction {
+public class InformAllServicesAction implements Runnable {
 
 	private final Information info;
 	private final DPSEnvironment environment;
@@ -68,9 +68,4 @@ public class InformAllServicesAction implements ServiceAction {
 		}
 		return true;
 	}
-
-	public final Information getInfo() {
-		return info;
-	}
-
 }

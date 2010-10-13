@@ -350,17 +350,6 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		return SolutionState.CONFLICT;
 	}
 
-	public TerminologyType getTerminologyType(String id) {
-		IDObject ido = base.search(id);
-		if (ido instanceof Solution) {
-			return TerminologyType.diagnosis;
-		}
-		else if (ido instanceof QASet) {
-			return TerminologyType.symptom;
-		}
-		return null;
-	}
-
 	private InformationType getInfoType(Object context) {
 		InformationType result = null;
 		if (context.equals(Object.class)) {
@@ -372,14 +361,6 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			result = InformationType.HeuristicInferenceInformation;
 		}
 		return result;
-	}
-
-	public boolean isInstantly() {
-		return instantly;
-	}
-
-	public void setInstantly(boolean instantly) {
-		this.instantly = instantly;
 	}
 
 	public Session getSession() {
@@ -399,9 +380,4 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	public KnowledgeBaseManagement getBaseManagement() {
 		return baseManagement;
 	}
-
-	public String getId() {
-		return id;
-	}
-
 }

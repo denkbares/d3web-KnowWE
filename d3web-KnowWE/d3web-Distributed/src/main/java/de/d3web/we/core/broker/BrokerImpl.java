@@ -49,7 +49,7 @@ public class BrokerImpl implements Broker {
 	@Override
 	public void update(Information info) {
 		session.getBlackboard().update(info);
-		ServiceAction action = new InformAllServicesAction(info, session, environment);
+		InformAllServicesAction action = new InformAllServicesAction(info, session, environment);
 		action.run();
 	}
 

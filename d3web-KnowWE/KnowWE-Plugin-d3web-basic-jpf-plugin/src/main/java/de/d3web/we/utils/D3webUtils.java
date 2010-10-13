@@ -42,16 +42,6 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class D3webUtils {
 
-	public static de.d3web.core.knowledge.terminology.Question getQuestion(KnowledgeServiceSession kss, String qid) {
-		if (kss instanceof D3webKnowledgeServiceSession) {
-			D3webKnowledgeServiceSession session = ((D3webKnowledgeServiceSession) kss);
-			return session.getBaseManagement().findQuestion(qid);
-
-		}
-
-		return null;
-	}
-
 	static ArrayList<String> possibleScorePoints;
 
 	public static List<String> getPossibleScores() {
