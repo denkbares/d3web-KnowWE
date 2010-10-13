@@ -48,6 +48,18 @@ import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
  *         The service of this manager is, that for a given term the definition
  *         and the references can be asked for. Obviously, this only works if
  *         the terms are registered here.
+ *         <p/>
+ * 
+ *         TODOs:
+ *         <p/>
+ *         1. Add more class-checks!! Right now it is possible to override
+ *         TermReferenceLogs with other Logs with the same term name but a
+ *         different TermObject-class. Maybe it should be possible to store all
+ *         TermReferenceLogs with the same term name but different
+ *         TermObject-classes?
+ *         <p/>
+ *         2. This should not be a KnowledgerepresentationHandler. Stuff in the
+ *         initArticle(...)-method can be done using e.g. a FullParseEvent.
  * 
  * 
  * 
