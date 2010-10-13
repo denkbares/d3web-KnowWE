@@ -44,10 +44,9 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	 * Checking for a Section with an KnowWEObjectType implementing
 	 * KnowWETermMarker is necessary for the compatibility with
 	 * KnowWEObjectTypes that do not use KnowWETerms. If the KnowWEObjectType of
-	 * the Section does not implement KnowWETermMarker, needsToCreate() will
-	 * always return true, if there are modifications to the defined terms.
-	 * TermDefinition, TermReference and KnowWETerm already implement
-	 * KnowWETermMarker, so there is no need to implement again.
+	 * the Section does not implement KnowWETermMarker, needsToCreate() might
+	 * force a full parse. TermDefinition, TermReference and KnowWETerm already
+	 * implement KnowWETermMarker, so there is no need to implement again.
 	 */
 	@Override
 	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
@@ -55,10 +54,17 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 			if (s.isReusedBy(article.getTitle())) {
 				if ((KnowWEUtils.getTerminologyHandler(
 						article.getWeb()).areTermDefinitionsModifiedFor(article))) {
+					// There are TermDefinitions but no TermReferences
+					// => since Knowledge referencing to these Definitions will
+					// not be aware of the changes to the Definitions, we need
+					// force a full parse.
 					article.setFullParse(this.getClass());
 				}
 			}
 			else {
+				// Maybe there are changes to the terminology... since we do not
+				// know, we need to force a full parse, because there could be
+				// TermReferences unaware of the changes to the terminology.
 				article.setFullParse(this.getClass());
 			}
 		}
@@ -69,8 +75,8 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	 * Checking for a Section with an KnowWEObjectType implementing
 	 * KnowWETermMarker is necessary for the compatibility with
 	 * KnowWEObjectTypes that do not use KnowWETerms. If the KnowWEObjectType of
-	 * the Section does not implement KnowWETermMarker, needsToDestroy() will
-	 * always return true, if there are modifications to the defined terms.
+	 * the Section does not implement KnowWETermMarker, it might not be notified
+	 * of the changes to the TermDefinitions, so we destroy anyway.
 	 * TermDefinition, TermReference and KnowWETerm already implement
 	 * KnowWETermMarker, so there is no need to implement again.
 	 */
