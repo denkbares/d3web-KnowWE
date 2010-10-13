@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) ${year} denkbares GmbH, Germany
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.kopic;
 
 import java.util.Collection;
@@ -13,6 +32,32 @@ import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 
+/**
+ * This class defines the knowledge base markup. With this, you can specify a
+ * knowledge base that will be compiled from names package definitions, found on
+ * of all wiki articles.
+ * <p>
+ * As the content of the markup you must specify the knowledge base name. The
+ * markup also supports the following annotations.
+ * <ul>
+ * <li><b>id:</b> a unique textual id of the knowledge base.
+ * <li><b>version:</b> the current version of the knowledge base.
+ * <li><b>author:</b> the responsible person/authority/company owning the
+ * copyright of the knowledge base.
+ * <li><b>comment:</b> some additional textual description on the knowledge
+ * base.
+ * <li><b>uses:</b> a package name that is searched for compiling.
+ * </ul>
+ * Please note that you must have at least one package defined. If you want to
+ * compile your knowledge base from several packages, use multiple "@uses: ..."
+ * annotations. You may specify "this" or "default" as special package names.
+ * The package name "default" may be used to compile all wiki content that have
+ * no explicitly defined package. The package name "this" may be used to compile
+ * the contents of this article, ignoring their package declaration.
+ * 
+ * @author volker_belli
+ * @created 13.10.2010
+ */
 public class KnowledgeBaseType extends DefaultMarkupType {
 
 	public static final String ANNOTATION_ID = "id";
