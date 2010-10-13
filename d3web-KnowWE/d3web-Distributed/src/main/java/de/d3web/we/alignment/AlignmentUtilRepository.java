@@ -20,18 +20,11 @@
 
 package de.d3web.we.alignment;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.utilities.SetMap;
-import de.d3web.we.alignment.aligner.CompleteGlobalAligner;
-import de.d3web.we.alignment.aligner.GlobalAligner;
-import de.d3web.we.alignment.method.AlignMethod;
-import de.d3web.we.alignment.method.StringAlignMethod;
 import de.d3web.we.terminology.global.DefaultGlobalTerminologyHandler;
 import de.d3web.we.terminology.global.GlobalTerminology;
 import de.d3web.we.terminology.global.GlobalTerminologyHandler;
@@ -49,8 +42,6 @@ public class AlignmentUtilRepository {
 
 	private AlignmentUtilRepository() {
 		super();
-		globalAligners = new SetMap<Class, GlobalAligner>();
-		methods = new SetMap<Class, AlignMethod>();
 		localTerminologyHandler = new HashMap<Class, LocalTerminologyHandler>();
 		globalTerminologyHandler = new HashMap<Class, GlobalTerminologyHandler>();
 		termUpdater = new HashMap<Class, TermUpdater>();
@@ -60,12 +51,6 @@ public class AlignmentUtilRepository {
 	}
 
 	private void initialize() {
-		globalAligners.add(NamedObject.class, new CompleteGlobalAligner());
-
-		// localAligners.add(NamedObject.class, new D3webLocalAligner());
-
-		methods.add(String.class, new StringAlignMethod());
-
 		localTerminologyHandler.put(NamedObject.class, new D3webNamedObjectTerminologyHandler());
 		localTerminologyHandler.put(IDObject.class, new D3webIDObjectTerminologyHandler());
 
@@ -80,30 +65,10 @@ public class AlignmentUtilRepository {
 		return instance;
 	}
 
-	private SetMap<Class, GlobalAligner> globalAligners;
-	private SetMap<Class, AlignMethod> methods;
 	private Map<Class, LocalTerminologyHandler> localTerminologyHandler;
 	private Map<Class, GlobalTerminologyHandler> globalTerminologyHandler;
 	private Map<Class, TermUpdater> termUpdater;
 	private Map<Class, TermFactory> termFactory;
-
-	public Collection<GlobalAligner> getGlobalAligners(Class context) {
-		Set<GlobalAligner> result = globalAligners.get(context);
-		Class bestContext = Object.class;
-		if (result == null) {
-			for (Class key : globalAligners.keySet()) {
-				if (key.isAssignableFrom(context) && bestContext.isAssignableFrom(key)) {
-					result = globalAligners.get(key);
-					bestContext = key;
-				}
-			}
-		}
-		return result;
-	}
-
-	public Collection<AlignMethod> getMethods(Class context) {
-		return methods.get(context);
-	}
 
 	public LocalTerminologyHandler getLocalTerminogyHandler(Object terminology) {
 		LocalTerminologyHandler result = getLocalTerminogyHandler(terminology.getClass());
@@ -123,12 +88,6 @@ public class AlignmentUtilRepository {
 			}
 		}
 		return (LocalTerminologyHandler) result.newInstance();
-	}
-
-	public GlobalTerminologyHandler getGlobalTerminogyHandler(GlobalTerminology terminology) {
-		GlobalTerminologyHandler result = getGlobalTerminogyHandler(terminology.getClass());
-		result.setTerminology(terminology);
-		return result;
 	}
 
 	public GlobalTerminologyHandler getGlobalTerminogyHandler(Class context) {

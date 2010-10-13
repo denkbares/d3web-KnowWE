@@ -20,11 +20,8 @@
 
 package de.d3web.we.action;
 
-import java.util.List;
-
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.basic.DPSEnvironmentManager;
-import de.d3web.we.basic.IdentifiableInstance;
 import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
@@ -43,21 +40,6 @@ public class SemanticAnnotationAction extends DeprecatedAbstractKnowWEAction {
 
 	public SemanticAnnotationAction() {
 		questionWriter = new FindingHTMLWriter();
-	}
-
-	public static IdentifiableInstance getII(DPSEnvironment dpse, String namespace,
-			Term term) {
-		IdentifiableInstance ii = null;
-		List<IdentifiableInstance> iis = dpse.getTerminologyServer()
-				.getBroker().getAlignedIdentifiableInstances(term);
-		if (iis != null && !iis.isEmpty()) {
-			for (IdentifiableInstance instance : iis) {
-				if (instance.getNamespace().equals(namespace)) {
-					ii = instance;
-				}
-			}
-		}
-		return ii;
 	}
 
 	public static Term getTerm(DPSEnvironment dpse, String termName) {
@@ -111,10 +93,7 @@ public class SemanticAnnotationAction extends DeprecatedAbstractKnowWEAction {
 		Broker broker = dpse.getBroker(user);
 
 		if (id == null) {
-			id = getIDForName(termName, dpse, namespace).getObjectId();
-			if (id == null) {
-				return null;
-			}
+			return null;
 		}
 		StringBuffer sb = new StringBuffer();
 
@@ -146,23 +125,4 @@ public class SemanticAnnotationAction extends DeprecatedAbstractKnowWEAction {
 		return sb.toString();
 
 	}
-
-	public static IdentifiableInstance getIDForName(String termName, DPSEnvironment dpse, String namespace) {
-		Term term = null;
-
-		term = getTerm(dpse, termName);
-
-		IdentifiableInstance ii = null;
-		if (term != null) {
-			ii = getII(dpse, namespace, term);
-		}
-		if (ii == null) {
-			return null;
-			// return "Question not found in KB: " + termName;
-		}
-
-		return ii;
-
-	}
-
 }

@@ -25,7 +25,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import de.d3web.we.alignment.Alignment;
 import de.d3web.we.alignment.NumericalIdentity;
 import de.d3web.we.alignment.SolutionIdentity;
 import de.d3web.we.alignment.type.AbstractAlignType;
@@ -95,35 +94,6 @@ public class PersistenceUtils {
 		parseTermInfoMap(parser, term);
 		if (!tree) parser.nextTag();
 		return term;
-	}
-
-	public static void parseAlignmentProperties(XMLStreamReader parser, Alignment alignment) throws XMLStreamException {
-		int event = parser.nextTag();
-		event = parser.nextTag();
-		if (event == XMLStreamConstants.START_ELEMENT
-				&& parser.getLocalName().equals("AlignmentProperties")) {
-			while ((parser.nextTag()) == XMLStreamConstants.START_ELEMENT) {
-				if (parser.getLocalName().equals("Property")) {
-					String key = parser.getAttributeValue(0);
-					Boolean value = Boolean.valueOf(parser.getAttributeValue(1));
-					alignment.setProperty(key, value);
-				}
-			}
-		}
-	}
-
-	public static void writeAlignmentProperties(XMLStreamWriter writer, Alignment alignment) throws XMLStreamException {
-		writer.writeStartElement("AlignmentProperties");
-		writer.writeCharacters("\n");
-		for (String key : alignment.getPropertiesMap().keySet()) {
-			Boolean value = alignment.getProperty(key);
-			writer.writeStartElement("Property");
-			writer.writeAttribute("key", key);
-			writer.writeAttribute("value", value.toString());
-			writer.writeEndElement();
-			writer.writeCharacters("\n");
-		}
-		writer.writeEndElement();
 	}
 
 	public static void parseTermInfoMap(XMLStreamReader parser, Term term) throws XMLStreamException, ClassNotFoundException {

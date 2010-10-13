@@ -90,9 +90,6 @@ public class SolutionLogAction extends DeprecatedAbstractKnowWEAction {
 		if (term == null) {
 			return "<font color='red'> Problem with Character encoding (Umlauts?)</font>";
 		}
-		List<IdentifiableInstance> iis = dpse.getTerminologyServer().getBroker().getAlignedIdentifiableInstances(
-				term);
-
 		List<Information> allInfo = broker.getSession().getBlackboard()
 				.getAllInformation();
 
@@ -111,14 +108,6 @@ public class SolutionLogAction extends DeprecatedAbstractKnowWEAction {
 				if (info.getInformationType().equals(InformationType.ClusterInformation)
 						&& term.getInfo(TermInfoType.TERM_NAME).equals(info.getObjectID())) {
 					neededInfo.add(info);
-				}
-				else {
-					for (IdentifiableInstance ii : iis) {
-						if (ii.getNamespace().equals(info.getNamespace())
-								&& ii.getObjectId().equals(info.getObjectID())) {
-							neededInfo.add(info);
-						}
-					}
 				}
 			}
 		}
@@ -228,15 +217,15 @@ public class SolutionLogAction extends DeprecatedAbstractKnowWEAction {
 	// private String getObjectText(Information info, KnowWEParameterMap map) {
 	// StringBuffer result = new StringBuffer();
 	// DPSEnvironment env = KnowWEUtils.getDPSE(map);
-	//		
+	//
 	// LocalTerminologyAccess terminology =
 	// env.getTerminologyServer().getStorage().getTerminology(info.getTerminologyType(),
 	// info.getNamespace());
-	//		
+	//
 	// IdentifiableInstance iio = info.getIdentifiableObjectInstance();
-	//			
+	//
 	// Object ido = terminology.getObject(iio.getObjectId(), null);
-	//		
+	//
 	// if(ido instanceof NamedObject) {
 	// result.append(((NamedObject)ido).getText());
 	// }

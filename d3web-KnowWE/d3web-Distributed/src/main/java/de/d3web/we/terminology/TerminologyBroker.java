@@ -23,12 +23,10 @@ package de.d3web.we.terminology;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import de.d3web.utilities.ISetMap;
 import de.d3web.utilities.SetMap;
-import de.d3web.we.alignment.AlignmentFilter;
 import de.d3web.we.basic.IdentifiableInstance;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.TerminologyType;
@@ -44,15 +42,6 @@ public class TerminologyBroker {
 	public TerminologyBroker() {
 		super();
 		globalTerminologies = new HashMap<TerminologyType, GlobalTerminology>();
-	}
-
-	public List<IdentifiableInstance> getAlignedIdentifiableInstances(Term term) {
-		return getAlignedIdentifiableInstances(term, null);
-	}
-
-	public List<IdentifiableInstance> getAlignedIdentifiableInstances(Term term, AlignmentFilter filter) {
-		List<IdentifiableInstance> result = new ArrayList<IdentifiableInstance>();
-		return result;
 	}
 
 	public ISetMap<IdentifiableInstance, IdentifiableInstance> getAlignmentMap(
