@@ -27,8 +27,6 @@ import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 
 public interface Broker {
 
-	void update(Information info);
-
 	Information request(Information requestInfo, KnowledgeServiceSession serviceSession);
 
 	void register(KnowledgeService service);

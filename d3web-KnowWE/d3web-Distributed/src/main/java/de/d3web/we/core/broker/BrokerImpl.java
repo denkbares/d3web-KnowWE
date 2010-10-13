@@ -47,13 +47,6 @@ public class BrokerImpl implements Broker {
 	}
 
 	@Override
-	public void update(Information info) {
-		session.getBlackboard().update(info);
-		InformAllServicesAction action = new InformAllServicesAction(info, session, environment);
-		action.run();
-	}
-
-	@Override
 	public Information request(Information requestInfo, KnowledgeServiceSession serviceSession) {
 		return session.getBlackboard().inspect(requestInfo);
 	}

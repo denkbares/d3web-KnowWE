@@ -224,7 +224,6 @@ public class WISECFindingSetEventListener implements EventListener {
 		Information info = new Information(namespace, counterQuestion.getId(), newValueList,
 				TerminologyType.symptom, InformationType.ExternalInformation);
 		kss.inform(info);
-		broker.update(info);
 	}
 
 }

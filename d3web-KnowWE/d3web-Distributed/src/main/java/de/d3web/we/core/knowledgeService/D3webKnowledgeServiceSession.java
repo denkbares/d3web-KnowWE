@@ -21,13 +21,10 @@
 package de.d3web.we.core.knowledgeService;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.IDObject;
@@ -36,13 +33,9 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
-import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.session.IEventSource;
-import de.d3web.core.session.KBOEventListener;
 import de.d3web.core.session.Session;
-import de.d3web.core.session.SessionEventListener;
 import de.d3web.core.session.SessionFactory;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.blackboard.DefaultFact;
@@ -54,67 +47,9 @@ import de.d3web.indication.inference.PSMethodUserSelected;
 import de.d3web.scoring.inference.PSMethodHeuristic;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.InformationType;
-import de.d3web.we.basic.SolutionState;
-import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.utils.ConverterUtils;
-import de.d3web.xcl.XCLModel;
-import de.d3web.xcl.inference.PSMethodXCL;
 
 public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
-
-	private class XCLModelValueListener implements KBOEventListener {
-
-		private final D3webKnowledgeServiceSession kss;
-		private final Broker broker;
-		/**
-		 * Map for interpolation of the scores. Keys are precentages, values are
-		 * assigned scores.
-		 */
-		private final Map<Double, Integer> percentagesToScores = new LinkedHashMap<Double, Integer>();
-
-		public XCLModelValueListener(D3webKnowledgeServiceSession kss,
-				Broker broker) {
-			super();
-			this.kss = kss;
-			this.broker = broker;
-			percentagesToScores.put(0.00, 0);
-			// percentagesToScores.put(0.10, 2);
-			// percentagesToScores.put(0.20, 5);
-			// percentagesToScores.put(0.40, 10);
-			// percentagesToScores.put(0.60, 20);
-			// percentagesToScores.put(0.80, 40);
-			// percentagesToScores.put(0.95, 80);
-			percentagesToScores.put(1.00, 100);
-		}
-
-		@Override
-		public void notify(IEventSource source, Session session) {
-
-			XCLModel model = (XCLModel) source;
-			List<Object> values = new ArrayList<Object>();
-			List<Object> xclInferenceValues = new ArrayList<Object>();
-			Rating xclstate = model.getState(session);
-			Double precision = model.getInferenceTrace(session).getScore();
-			Double support = model.getInferenceTrace(session).getSupport();
-			xclInferenceValues.add(precision);
-			xclInferenceValues.add(support);
-			values = new ArrayList<Object>();
-			values.add(getLocalSolutionState(xclstate));
-
-			broker.update(new Information(kss.getNamespace(), model
-					.getSolution().getId(), values, TerminologyType.diagnosis,
-					InformationType.SolutionInformation));
-			if (xclInferenceValues.size() > 0) {
-				broker.update(new Information(kss.getNamespace(), model
-						.getSolution().getId(), xclInferenceValues,
-						TerminologyType.diagnosis,
-						InformationType.XCLInferenceInformation));
-			}
-
-		}
-
-	}
 
 	private final KnowledgeBase base;
 	private final KnowledgeBaseManagement baseManagement;
@@ -122,7 +57,6 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	private final Broker broker;
 	private Session session;
 
-	private boolean instantly = true;
 	private final List<TerminologyObject> toChange;
 
 	public D3webKnowledgeServiceSession(KnowledgeBase base, Broker broker,
@@ -134,7 +68,6 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		baseManagement = KnowledgeBaseManagement.createInstance(base);
 		toChange = new ArrayList<TerminologyObject>();
 		initCase();
-		initConnection();
 	}
 
 	private void initCase() {
@@ -142,29 +75,9 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		session = SessionFactory.createSession(base);
 	}
 
-	private void initConnection() {
-		session.addListener(new SessionEventListener() {
-
-			@Override
-			public void notify(Session source, TerminologyObject o, Object context) {
-				maybeNotifyBroker(o, source, context);
-			}
-		});
-
-		// also listen to XCL knowledge
-		for (KnowledgeSlice slice : base
-				.getAllKnowledgeSlicesFor(PSMethodXCL.class)) {
-			if (slice instanceof XCLModel) {
-				((XCLModel) slice).addListener(new XCLModelValueListener(this,
-						broker));
-			}
-		}
-	}
-
 	@Override
 	public void clear() {
 		initCase();
-		initConnection();
 	}
 
 	@Override
@@ -283,84 +196,9 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		return UndefinedValue.getInstance();
 	}
 
-	protected void maybeNotifyBroker(TerminologyObject valuedObject,
-			Session session, Object context) {
-		// do not inform anyone about some things that were told you by the
-		// broker...
-		if (toChange.contains(valuedObject)) {
-			toChange.remove(valuedObject);
-			return;
-		}
-		InformationType infoType = getInfoType(context);
-
-		if (valuedObject instanceof Question) {
-			Question question = (Question) valuedObject;
-			if (instantly) {
-				broker.update(new Information(id, question.getId(),
-						ConverterUtils.toValueList(session.getBlackboard().getValue(question),
-								session), TerminologyType.symptom, infoType));
-			}
-			else {
-				// mag ich grad net
-			}
-		}
-		else if (valuedObject instanceof Solution) {
-			Solution diagnosis = (Solution) valuedObject;
-			if (instantly) {
-				List<SolutionState> solutionList = new ArrayList<SolutionState>();
-				solutionList.add(getLocalSolutionState(session.getBlackboard().getRating(
-						diagnosis)));
-				List<Rating> inferenceList = new ArrayList<Rating>();
-				inferenceList.add(session.getBlackboard().getRating(diagnosis));
-				broker.update(new Information(id, diagnosis.getId(),
-						solutionList, TerminologyType.diagnosis,
-						InformationType.SolutionInformation));
-				broker.update(new Information(id, diagnosis.getId(),
-						inferenceList, TerminologyType.diagnosis,
-						InformationType.HeuristicInferenceInformation));
-			}
-			else {
-				// mag ich grad net
-			}
-		}
-
-		if (isFinished()) {
-			broker.finished(this);
-		}
-	}
-
 	@Override
 	public boolean isFinished() {
 		return session.getInterview().nextForm().equals(EmptyForm.getInstance());
-	}
-
-	private SolutionState getLocalSolutionState(Rating state) {
-		if (state.equals(new Rating(Rating.State.ESTABLISHED))) {
-			return SolutionState.ESTABLISHED;
-		}
-		else if (state.equals(new Rating(Rating.State.SUGGESTED))) {
-			return SolutionState.SUGGESTED;
-		}
-		else if (state.equals(new Rating(Rating.State.EXCLUDED))) {
-			return SolutionState.EXCLUDED;
-		}
-		else if (state.equals(new Rating(Rating.State.UNCLEAR))) {
-			return SolutionState.UNCLEAR;
-		}
-		return SolutionState.CONFLICT;
-	}
-
-	private InformationType getInfoType(Object context) {
-		InformationType result = null;
-		if (context.equals(Object.class)) {
-			// Dialog did it!
-			result = InformationType.OriginalUserInformation;
-		}
-		else {
-			// Kernel did it!
-			result = InformationType.HeuristicInferenceInformation;
-		}
-		return result;
 	}
 
 	public Session getSession() {

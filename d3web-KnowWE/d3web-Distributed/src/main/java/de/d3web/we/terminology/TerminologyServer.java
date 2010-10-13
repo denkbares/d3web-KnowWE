@@ -20,12 +20,6 @@
 
 package de.d3web.we.terminology;
 
-import java.util.Collection;
-
-import de.d3web.utilities.ISetMap;
-import de.d3web.we.basic.IdentifiableInstance;
-import de.d3web.we.basic.Information;
-import de.d3web.we.basic.InformationType;
 import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.terminology.global.GlobalTerminology;
 import de.d3web.we.terminology.local.LocalTerminologyStorage;
@@ -47,15 +41,6 @@ public class TerminologyServer {
 
 	public GlobalTerminology getGlobalTerminology(TerminologyType type) {
 		return broker.getGlobalTerminology(type);
-	}
-
-	public Collection<Information> getAlignedInformation(Information info) {
-		ISetMap<IdentifiableInstance, IdentifiableInstance> map = broker.getAlignmentMap(info);
-		InformationType infoType = info.getInformationType();
-		if (InformationType.OriginalUserInformation.equals(infoType)) {
-			infoType = InformationType.AlignedUserInformation;
-		}
-		return Information.toInformation(map, info, infoType);
 	}
 
 	public TerminologyBroker getBroker() {

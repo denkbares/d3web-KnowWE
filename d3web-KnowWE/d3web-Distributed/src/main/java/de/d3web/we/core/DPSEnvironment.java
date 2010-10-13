@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import de.d3web.utilities.ISetMap;
-import de.d3web.we.basic.Information;
 import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.broker.BrokerImpl;
@@ -133,10 +132,6 @@ public class DPSEnvironment {
 			return service.createSession(broker);
 		}
 		return null;
-	}
-
-	public Collection<Information> getAlignedInformation(Information info) {
-		return terminologyServer.getAlignedInformation(info);
 	}
 
 	public TerminologyServer getTerminologyServer() {
