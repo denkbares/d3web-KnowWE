@@ -20,14 +20,11 @@
 
 package de.d3web.we.core.broker;
 
-import de.d3web.we.basic.Information;
 import de.d3web.we.core.dialog.DialogControl;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 
 public interface Broker {
-
-	Information request(Information requestInfo, KnowledgeServiceSession serviceSession);
 
 	void register(KnowledgeService service);
 

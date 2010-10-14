@@ -42,9 +42,6 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.we.basic.DPSEnvironmentManager;
-import de.d3web.we.basic.Information;
-import de.d3web.we.basic.InformationType;
-import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
@@ -221,9 +218,6 @@ public class WISECFindingSetEventListener implements EventListener {
 		// Set the new value
 		List<Object> newValueList = new LinkedList<Object>();
 		newValueList.add(newValue);
-		Information info = new Information(namespace, counterQuestion.getId(), newValueList,
-				TerminologyType.symptom, InformationType.ExternalInformation);
-		kss.inform(info);
 	}
 
 }

@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.d3web.we.core.DPSEnvironment;
-import de.d3web.we.core.blackboard.Blackboard;
-import de.d3web.we.core.blackboard.BlackboardImpl;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 
@@ -35,19 +33,13 @@ public class DPSSession {
 
 	private final DPSEnvironment environment;
 	private final String id;
-	private Blackboard blackboard;
 	private Map<String, KnowledgeServiceSession> serviceSessions;
 
 	public DPSSession(DPSEnvironment environment) {
 		super();
 		this.environment = environment;
 		id = new UID().toString();
-		blackboard = new BlackboardImpl();
 		serviceSessions = new HashMap<String, KnowledgeServiceSession>();
-	}
-
-	public Blackboard getBlackboard() {
-		return blackboard;
 	}
 
 	public Collection<KnowledgeServiceSession> getServiceSessions() {
@@ -73,12 +65,9 @@ public class DPSSession {
 
 	public void removeServiceSession(String id) {
 		serviceSessions.remove(id);
-		blackboard.removeInformation(id);
 	}
 
 	public void clear(Broker broker) {
-		getBlackboard().clear(broker);
-
 		/*
 		 * HOTFIX : reinit all d3webKnowledgeServiceSessions to update changed
 		 * knowledgebases

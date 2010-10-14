@@ -22,7 +22,6 @@ package de.d3web.we.core.broker;
 
 import java.util.Stack;
 
-import de.d3web.we.basic.Information;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.dialog.DialogControl;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
@@ -47,11 +46,6 @@ public class BrokerImpl implements Broker {
 	}
 
 	@Override
-	public Information request(Information requestInfo, KnowledgeServiceSession serviceSession) {
-		return session.getBlackboard().inspect(requestInfo);
-	}
-
-	@Override
 	public void activate(KnowledgeServiceSession kss, KnowledgeServiceSession reason, boolean userIndicated, boolean instantly, String comment) {
 		if (kss == null) return;
 		dialogControl.delegate(kss, reason, userIndicated, instantly, comment);
@@ -68,7 +62,6 @@ public class BrokerImpl implements Broker {
 		KnowledgeServiceSession serviceSession = environment.createServiceSession(service.getId(),
 				this);
 		session.addServiceSession(service.getId(), serviceSession);
-		serviceSession.processInit();
 	}
 
 	@Override
