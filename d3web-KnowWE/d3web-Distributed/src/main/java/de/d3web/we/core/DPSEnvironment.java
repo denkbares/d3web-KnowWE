@@ -31,7 +31,6 @@ import java.util.logging.Logger;
 import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.broker.BrokerImpl;
-import de.d3web.we.core.dialog.DistributedDialogControl;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.terminology.TerminologyServer;
@@ -100,7 +99,7 @@ public class DPSEnvironment {
 	}
 
 	public Broker createBroker(String userID) {
-		Broker result = new BrokerImpl(this, userID, new DistributedDialogControl());
+		Broker result = new BrokerImpl(this, userID);
 		for (KnowledgeService each : services.values()) {
 			result.register(each);
 		}

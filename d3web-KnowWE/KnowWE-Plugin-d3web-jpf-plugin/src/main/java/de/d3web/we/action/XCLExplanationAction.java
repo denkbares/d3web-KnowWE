@@ -38,8 +38,8 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
-import de.d3web.kernel.verbalizer.Verbalizer;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
+import de.d3web.kernel.verbalizer.Verbalizer;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -86,9 +86,6 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 		String id = parameterMap.get(KnowWEAttributes.SESSION_ID);
 		String solutionid = parameterMap.get(KnowWEAttributes.TERM);
 		Broker broker = D3webModule.getBroker(parameterMap);
-		broker.activate(broker.getSession().getServiceSession(id), null, true,
-				false, null);
-		broker.getDialogControl().showNextActiveDialog();
 		KnowledgeServiceSession serviceSession = broker.getSession()
 				.getServiceSession(id);
 

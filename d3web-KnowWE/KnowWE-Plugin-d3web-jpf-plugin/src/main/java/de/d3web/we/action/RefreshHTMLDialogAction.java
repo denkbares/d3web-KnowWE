@@ -64,9 +64,6 @@ public class RefreshHTMLDialogAction extends DeprecatedAbstractKnowWEAction {
 		// String kbid = topic+".."+KnowWEEnvironment.generateDefaultID(topic);
 
 		Broker broker = D3webModule.getBroker(user, web);
-		broker.activate(broker.getSession().getServiceSession(kbid), null, true,
-				false, null);
-		broker.getDialogControl().showNextActiveDialog();
 		KnowledgeServiceSession serviceSession = broker.getSession()
 				.getServiceSession(kbid);
 		Session session = null;

@@ -23,7 +23,6 @@ package de.d3web.we.core.broker;
 import java.util.Stack;
 
 import de.d3web.we.core.DPSEnvironment;
-import de.d3web.we.core.dialog.DialogControl;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 
@@ -33,28 +32,13 @@ public class BrokerImpl implements Broker {
 
 	private DPSSession session;
 
-	private DialogControl dialogControl;
-
 	private Stack<KnowledgeServiceSession> delegateStack;
 
-	public BrokerImpl(DPSEnvironment environment, String userID, DialogControl dialogControl) {
+	public BrokerImpl(DPSEnvironment environment, String userID) {
 		super();
 		this.environment = environment;
-		this.dialogControl = dialogControl;
 		session = new DPSSession(environment);
 		delegateStack = new Stack<KnowledgeServiceSession>();
-	}
-
-	@Override
-	public void activate(KnowledgeServiceSession kss, KnowledgeServiceSession reason, boolean userIndicated, boolean instantly, String comment) {
-		if (kss == null) return;
-		dialogControl.delegate(kss, reason, userIndicated, instantly, comment);
-		/*
-		 * if(delegateStack.isEmpty() || !delegateStack.peek().equals(kss)) {
-		 * if(instantly) { delegateStack.push(kss); } else {
-		 * delegateStack.insertElementAt(kss, 0); }
-		 * dialogControl.delegate(kss.getNamespace(), instantly, comment); }
-		 */
 	}
 
 	@Override
@@ -81,17 +65,7 @@ public class BrokerImpl implements Broker {
 	@Override
 	public void clearDPSSession() {
 		session.clear(this);
-		dialogControl.clear();
 		delegateStack.clear();
-	}
-
-	@Override
-	public DialogControl getDialogControl() {
-		return dialogControl;
-	}
-
-	public void setDialogControl(DialogControl dialogControl) {
-		this.dialogControl = dialogControl;
 	}
 
 }

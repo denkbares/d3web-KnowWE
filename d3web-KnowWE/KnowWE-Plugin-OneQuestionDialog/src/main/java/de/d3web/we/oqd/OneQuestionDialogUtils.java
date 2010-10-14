@@ -70,9 +70,6 @@ public class OneQuestionDialogUtils {
 		String kbid = knowledgeServiceInTopic.getId();
 
 		Broker broker = D3webModule.getBroker(user.getUserName(), web);
-		broker.activate(broker.getSession().getServiceSession(kbid), null, true,
-				false, null);
-		broker.getDialogControl().showNextActiveDialog();
 
 		KnowledgeServiceSession serviceSession = broker.getSession()
 				.getServiceSession(kbid);

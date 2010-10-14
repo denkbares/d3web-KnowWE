@@ -143,9 +143,6 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 		String kbid = knowledgeServiceInTopic.getId();
 
 		Broker broker = D3webModule.getBroker(user, web);
-		broker.activate(broker.getSession().getServiceSession(kbid), null, true, false,
-				null);
-		broker.getDialogControl().showNextActiveDialog();
 		KnowledgeServiceSession serviceSession = broker.getSession().getServiceSession(
 				kbid);
 		Session c = null;

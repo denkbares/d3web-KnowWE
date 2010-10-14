@@ -20,9 +20,7 @@
 
 package de.d3web.we.core.broker;
 
-import de.d3web.we.core.dialog.DialogControl;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
-import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 
 public interface Broker {
 
@@ -33,9 +31,5 @@ public interface Broker {
 	DPSSession getSession();
 
 	void clearDPSSession();
-
-	void activate(KnowledgeServiceSession kss, KnowledgeServiceSession reason, boolean userIndicated, boolean instantly, String comment);
-
-	DialogControl getDialogControl();
 
 }

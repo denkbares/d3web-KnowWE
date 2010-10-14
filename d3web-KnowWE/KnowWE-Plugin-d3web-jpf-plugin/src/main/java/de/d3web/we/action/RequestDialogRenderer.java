@@ -57,8 +57,6 @@ public class RequestDialogRenderer extends DeprecatedAbstractKnowWEAction {
 		String jumpId = parameterMap.get(KnowWEAttributes.JUMP_ID);
 		String id = parameterMap.get(KnowWEAttributes.SESSION_ID);
 		Broker broker = D3webModule.getBroker(parameterMap);
-		broker.activate(broker.getSession().getServiceSession(id), null, true, false, null);
-		broker.getDialogControl().showNextActiveDialog();
 		KnowledgeServiceSession serviceSession = broker.getSession().getServiceSession(id);
 		if (serviceSession instanceof D3webKnowledgeServiceSession) {
 			// String web = (String) BasicUtils.getModelAttribute(model,
