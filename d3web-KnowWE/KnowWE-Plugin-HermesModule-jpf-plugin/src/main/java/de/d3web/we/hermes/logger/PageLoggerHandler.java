@@ -44,7 +44,7 @@ public class PageLoggerHandler implements PageAppendHandler {
 								+ "/tmp/Pagelogger.log", true));
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String uhrzeit = sdf.format(new Date(System.currentTimeMillis()));
-				buffy.append(uhrzeit + ";" + user.getUsername() + ";" + user.getPage() + "\n");
+				buffy.append(uhrzeit + ";" + user.getUserName() + ";" + user.getTopic() + "\n");
 				buffy.close();
 			}
 			catch (IOException e) {

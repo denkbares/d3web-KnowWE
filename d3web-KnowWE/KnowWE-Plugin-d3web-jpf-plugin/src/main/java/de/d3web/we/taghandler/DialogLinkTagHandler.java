@@ -43,7 +43,7 @@ public class DialogLinkTagHandler extends AbstractTagHandler {
 
 	@Override
 	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
-		return generateDialogLink(user.getUsername(), user.getHttpRequest(), topic,
+		return generateDialogLink(user.getUserName(), user.getHttpRequest(), topic,
 				values.get("page"));
 	}
 

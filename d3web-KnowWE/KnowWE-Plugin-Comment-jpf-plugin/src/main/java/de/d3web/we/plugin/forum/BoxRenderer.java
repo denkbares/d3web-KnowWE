@@ -72,7 +72,7 @@ public class BoxRenderer extends KnowWEDomRenderer {
 
 		if (name == null || date == null) {
 
-			if (name == null) name = user.getUsername();
+			if (name == null) name = user.getUserName();
 
 			if (date == null) date = ForumRenderer.getDate();
 

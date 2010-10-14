@@ -37,7 +37,7 @@ public class SetTimeEventFilterLevelHandler extends AbstractTagHandler {
 			Map<String, String> values, String web) {
 
 		Integer currentLevel = HermesUserManagement.getInstance().getEventFilterLevelForUser(
-				user.getUsername());
+				user.getUserName());
 		int currInt = -1;
 		if (currentLevel != null) {
 			currInt = currentLevel.intValue();
@@ -50,16 +50,16 @@ public class SetTimeEventFilterLevelHandler extends AbstractTagHandler {
 		buffy.append("<br>");
 
 		// quick & dirty
-		wrappBoldIf("<a href=\"\" onclick=\"sendFilterLevel('0','" + user.getUsername()
+		wrappBoldIf("<a href=\"\" onclick=\"sendFilterLevel('0','" + user.getUserName()
 				+ "')\">  0  </a>", buffy, currInt, 0);
 
-		wrappBoldIf("<a href=\"\" onclick=\"sendFilterLevel('1','" + user.getUsername()
+		wrappBoldIf("<a href=\"\" onclick=\"sendFilterLevel('1','" + user.getUserName()
 				+ "')\"> 1  </a>", buffy, currInt, 1);
 
-		wrappBoldIf("<a href=\"\" onclick=\"sendFilterLevel('2','" + user.getUsername()
+		wrappBoldIf("<a href=\"\" onclick=\"sendFilterLevel('2','" + user.getUserName()
 				+ "')\"> 2  </a>", buffy, currInt, 2);
 
-		wrappBoldIf("<a href=\"\" onclick=\"sendFilterLevel('3','" + user.getUsername()
+		wrappBoldIf("<a href=\"\" onclick=\"sendFilterLevel('3','" + user.getUserName()
 				+ "')\"> 3  </a>", buffy, currInt, 3);
 
 		return buffy.toString();

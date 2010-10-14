@@ -267,7 +267,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		KnowWEObjectType objectType = section.getObjectType();
 		if (renderer == null) {
 			renderer = RendererManager.getInstance().getRenderer(objectType,
-					user.getUsername(), section.getTitle());
+					user.getUserName(), section.getTitle());
 		}
 		if (renderer == null) {
 			renderer = objectType.getRenderer();

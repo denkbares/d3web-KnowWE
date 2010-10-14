@@ -112,7 +112,7 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 				+ "<img rel=\"{type: '" + conceptName
 				+ "', id: '" + arg0.getID()
 				+ "', termName: '" + conceptName
-				+ "', user:'" + arg1.getUsername()
+				+ "', user:'" + arg1.getUserName()
 				+ "'}\" class=\"conceptLink pointer\" id='"
 				+ arg0.getID()
 				+ "' src='KnowWEExtension/images/question.gif' width='12' /> "

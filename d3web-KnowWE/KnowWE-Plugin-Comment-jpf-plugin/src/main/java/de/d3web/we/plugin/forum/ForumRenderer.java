@@ -126,7 +126,7 @@ public class ForumRenderer extends KnowWEDomRenderer {
 			section0.getObjectType().getRenderer().render(article, section0, user, string);
 
 			boolean canEditPage = false;
-			if (user.getUsername() != "Guest") { // causes endless loop
+			if (user.getUserName() != "Guest") { // causes endless loop
 
 				// check edit-permission
 				canEditPage = KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(

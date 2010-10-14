@@ -124,7 +124,7 @@ public class TimeEventTypeRenderer extends KnowWEDomRenderer<TimeEventType> {
 
 	private int getFilterLevel(KnowWEUserContext user) {
 		Integer impFilterLevel = HermesUserManagement.getInstance()
-				.getEventFilterLevelForUser(user.getUsername());
+				.getEventFilterLevelForUser(user.getUserName());
 		int filterLevel = 3;
 		if (impFilterLevel != null) {
 			filterLevel = impFilterLevel.intValue();

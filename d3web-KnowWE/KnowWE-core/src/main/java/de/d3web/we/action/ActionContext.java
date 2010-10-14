@@ -149,7 +149,7 @@ public class ActionContext {
 
 	public KnowWEUserContext getWikiContext() {
 		if (map != null) return this.map.getWikiContext();
-		Logger.getLogger(this.getClass().getName()).info(
+		Logger.getLogger(this.getClass().getName()).warning(
 				"No WikiContext found. getWikiContext() works only for KnowWEActions not for Servlets. Returned null.");
 		return null;
 	}

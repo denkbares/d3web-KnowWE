@@ -37,7 +37,7 @@ public class SettingsModeRenderer extends KnowWEDomRenderer {
 
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
-		if (sec.hasQuickEditModeSet(user.getUsername())) {
+		if (sec.hasQuickEditModeSet(user.getUserName())) {
 			quickEditRenderer.render(article, sec, user, string);
 			return;
 		}

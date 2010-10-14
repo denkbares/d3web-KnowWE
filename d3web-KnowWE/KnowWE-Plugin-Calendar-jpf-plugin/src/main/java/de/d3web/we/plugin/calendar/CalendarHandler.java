@@ -187,7 +187,7 @@ public class CalendarHandler extends AbstractTagHandler {
 		String js = "<script type=text/javascript src=KnowWEExtension/scripts/CalendarPlugin.js></script>\n";
 
 		// load Action once after server restart (javascript-failure)
-		if (user.getUsername() != "Guest" && firstStart) {
+		if (user.getUserName() != "Guest" && firstStart) {
 			js += "<script>loadAction('" + today.getDate() + "')</script>\n";
 			firstStart = false;
 		}

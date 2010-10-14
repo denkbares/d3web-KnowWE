@@ -100,7 +100,7 @@ public class QuestionSheetHandler extends AbstractTagHandler {
 				markup.setContent(DCElement.SOURCE, question.getId());
 				markup.setContent(DCElement.SUBJECT, MMInfoSubject.PROMPT.getName());
 				String rendered = KnowWEUtils.getRenderedInput(question.getId(),
-						question.getName(), service.getId(), user.getUsername(), "Question",
+						question.getName(), service.getId(), user.getUserName(), "Question",
 						question.getName(), "");
 				html.append("<li class=\"pointer\"><img src=\"KnowWEExtension/images/arrow_right.png\" border=\"0\"/>"
 						+ " " + rendered + answerstring + "</li>\n"); // \n only

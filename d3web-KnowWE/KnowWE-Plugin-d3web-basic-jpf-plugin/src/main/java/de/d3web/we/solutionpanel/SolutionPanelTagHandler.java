@@ -128,8 +128,8 @@ public class SolutionPanelTagHandler extends AbstractTagHandler {
 	private String createDropdownList(KnowWEUserContext user, String web, ResourceBundle rb) {
 		StringBuilder b = new StringBuilder();
 		int index;
-		if (getSelectedMap(web).get(user.getUsername()) != null) {
-			index = getSelectedMap(web).get(user.getUsername());
+		if (getSelectedMap(web).get(user.getUserName()) != null) {
+			index = getSelectedMap(web).get(user.getUserName());
 		}
 		else {
 			index = 0;
@@ -153,7 +153,7 @@ public class SolutionPanelTagHandler extends AbstractTagHandler {
 				}
 			}
 		}
-		getArticleNamesMap(web).put(user.getUsername(), nameList);
+		getArticleNamesMap(web).put(user.getUserName(), nameList);
 		b.append("</select>  ");
 		return b.toString();
 	}

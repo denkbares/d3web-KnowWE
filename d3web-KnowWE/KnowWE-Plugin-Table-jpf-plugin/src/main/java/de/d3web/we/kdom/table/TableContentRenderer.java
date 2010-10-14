@@ -51,12 +51,12 @@ public class TableContentRenderer extends KnowWEDomRenderer {
 		DelegateRenderer.getInstance().render(article, sec, user, b);
 
 		buffi.append(getOpeningTag(sec));
-		if (!sec.hasQuickEditModeSet(user.getUsername())) {
+		if (!sec.hasQuickEditModeSet(user.getUserName())) {
 			buffi.append(generateQuickEdit(sec.getID(),
 					rb.getString("KnowWE.TableContentRenderer.setQE")));
 		}
 
-		if (sec.hasQuickEditModeSet(user.getUsername())) {
+		if (sec.hasQuickEditModeSet(user.getUserName())) {
 
 			// adds the buttons for addRow/addCol
 			buffi.append("<table style='border:1px solid #999999; float: left' class='wikitable knowwetable' border='1'><tbody>");

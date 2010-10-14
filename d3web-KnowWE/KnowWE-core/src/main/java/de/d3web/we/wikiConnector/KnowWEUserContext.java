@@ -24,16 +24,65 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Context of the current wiki user and its current wiki context, such as
+ * current page, current web. You may also use this class to access the current
+ * request details.
+ * 
+ * @author Jochen Reutelshöfer, volker_belli
+ * @created 14.10.2010
+ */
 public interface KnowWEUserContext {
 
+	/**
+	 * Returns whether the user has administration rights.
+	 * 
+	 * @created 14.10.2010
+	 * @return user is an admin or not
+	 */
 	public boolean userIsAdmin();
 
-	public String getUsername();
+	/**
+	 * Returns the name of the current user.
+	 * 
+	 * @created 14.10.2010
+	 * @return the user name
+	 */
+	public String getUserName();
 
-	public String getPage();
+	/**
+	 * Returns the topic of the article the user is currently visiting.
+	 * 
+	 * @created 14.10.2010
+	 * @return the article's topic
+	 */
+	public String getTopic();
 
+	/**
+	 * Returns the web of the user's is currently visiting. It is the web the
+	 * article belongs to.
+	 * 
+	 * @created 14.10.2010
+	 * @return the article's web
+	 */
+	public String getWeb();
+
+	/**
+	 * Returns the http request with which the user is currently accessing the
+	 * wiki server.
+	 * 
+	 * @created 14.10.2010
+	 * @return the user's http request
+	 */
 	public HttpServletRequest getHttpRequest();
 
+	/**
+	 * Returns the parameter map of the http request with which the user is
+	 * currently accessing the wiki server.
+	 * 
+	 * @created 14.10.2010
+	 * @return the user's http request parameters
+	 */
 	public Map<String, String> getUrlParameterMap();
 
 }

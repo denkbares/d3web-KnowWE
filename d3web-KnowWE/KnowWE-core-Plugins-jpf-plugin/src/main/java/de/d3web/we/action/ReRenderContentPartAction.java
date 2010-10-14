@@ -66,7 +66,7 @@ public class ReRenderContentPartAction extends DeprecatedAbstractKnowWEAction {
 
 			KnowWEObjectType type = secWithNodeID.getObjectType();
 			KnowWEDomRenderer renderer = RendererManager.getInstance().getRenderer(type,
-					user.getUsername(), topic);
+					user.getUserName(), topic);
 
 			if (renderer != null) {
 				renderer.render(article, secWithNodeID, user, b);

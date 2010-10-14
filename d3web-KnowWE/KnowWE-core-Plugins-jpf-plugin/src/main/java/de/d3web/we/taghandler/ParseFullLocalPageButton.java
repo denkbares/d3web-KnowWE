@@ -39,7 +39,7 @@ public class ParseFullLocalPageButton extends AbstractTagHandler {
 	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 
 		// might be placed in 'secondary' pages (i.e., leftmenu, moremenu...)
-		String theMainTopic = user.getPage();
+		String theMainTopic = user.getTopic();
 
 		String baseURL = KnowWEEnvironment.getInstance().getWikiConnector().getBaseUrl();
 

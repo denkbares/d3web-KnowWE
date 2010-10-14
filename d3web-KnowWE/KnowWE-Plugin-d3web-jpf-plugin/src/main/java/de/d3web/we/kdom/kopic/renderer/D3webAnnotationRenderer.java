@@ -73,7 +73,7 @@ public class D3webAnnotationRenderer extends KnowWEDomRenderer {
 					D3webModule.
 							getAD3webKnowledgeServiceInTopic(sec.getWeb(), sec.getTitle());
 
-		String middle = renderline(sec, user.getUsername(), question, text, service);
+		String middle = renderline(sec, user.getUserName(), question, text, service);
 
 		if (middle != null) {
 			string.append(middle);

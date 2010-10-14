@@ -60,7 +60,7 @@ public class QuickInterviewTagHandler extends AbstractTagHandler {
 			topic = user.getUrlParameterMap().get("page");
 		}
 
-		String iv = QuickInterviewAction.callQuickInterviewRenderer(topic, user.getUsername(),
+		String iv = QuickInterviewAction.callQuickInterviewRenderer(topic, user.getUserName(),
 				user.getHttpRequest(), web, user);
 		if (iv == null) return null;
 

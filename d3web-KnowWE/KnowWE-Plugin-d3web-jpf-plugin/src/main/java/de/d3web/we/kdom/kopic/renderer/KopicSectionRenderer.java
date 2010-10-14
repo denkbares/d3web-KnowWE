@@ -116,7 +116,7 @@ public class KopicSectionRenderer extends KnowWEDomRenderer {
 									+ m.getLineNo())
 							+ KnowWEUtils.maskHTML("\n"));
 			if (m.getMessageType().equals(Message.ERROR)) {
-				insertErrorRenderer(lines, m, user.getUsername());
+				insertErrorRenderer(lines, m, user.getUserName());
 			}
 		}
 		return result.toString();

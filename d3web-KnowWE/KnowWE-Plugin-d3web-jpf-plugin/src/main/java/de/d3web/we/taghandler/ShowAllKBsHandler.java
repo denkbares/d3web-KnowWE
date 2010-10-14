@@ -139,7 +139,7 @@ public class ShowAllKBsHandler extends AbstractTagHandler {
 						rules.size(),
 						qCount,
 						KnowWEEnvironment.unmaskHTML(DialogLinkTagHandler.generateDialogLink(
-								user.getUsername(), user.getHttpRequest(), topic, id)) };
+								user.getUserName(), user.getHttpRequest(), topic, id)) };
 				for (Object object : tblContent) {
 					html.append("<td>" + object + "</td>");
 				}

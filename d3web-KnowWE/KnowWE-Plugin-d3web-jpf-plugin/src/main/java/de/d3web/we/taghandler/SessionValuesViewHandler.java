@@ -55,7 +55,7 @@ public class SessionValuesViewHandler extends AbstractTagHandler {
 		return "<div class='panel'>"
 				+ "<h3>Values</h3><div id='sessionvalues-panel'>"
 				+ "<input type='hidden' id='sessionvalues-user' value='"
-				+ user.getUsername()
+				+ user.getUserName()
 				+ "'/>"
 				+ "<input type='hidden' id='sessionvalues-topic' value='"
 				+ topic

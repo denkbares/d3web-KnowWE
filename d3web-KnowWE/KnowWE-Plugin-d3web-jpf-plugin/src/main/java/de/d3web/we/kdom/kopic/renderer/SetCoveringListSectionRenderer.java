@@ -60,7 +60,7 @@ public class SetCoveringListSectionRenderer extends KnowWEDomRenderer {
 					string.append(m.getMessageType() + ": " + m.getMessageText() + " Line: "
 							+ m.getLineNo() + KnowWEUtils.maskHTML("<br>"));
 					if (m.getMessageType().equals(Message.ERROR)) {
-						insertErrorRenderer(sec, m, user.getUsername());
+						insertErrorRenderer(sec, m, user.getUserName());
 					}
 				}
 				string.append("}}}");

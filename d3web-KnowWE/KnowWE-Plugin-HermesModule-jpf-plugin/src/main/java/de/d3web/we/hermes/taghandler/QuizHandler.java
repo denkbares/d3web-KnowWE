@@ -84,7 +84,7 @@ public class QuizHandler extends AbstractTagHandler {
 			to = null;
 		}
 
-		QuizSession session = QuizSessionManager.getInstance().getSession(user.getUsername());
+		QuizSession session = QuizSessionManager.getInstance().getSession(user.getUserName());
 		// if (session != null) {
 		// if (to != null) session.setTo(to);
 		// if (from != null) session.setFrom(from);
@@ -98,7 +98,7 @@ public class QuizHandler extends AbstractTagHandler {
 				+ "</span>"
 				+ "</div><div id=\"quiz-question\" style=\"margin:1em;\">";
 
-		html += renderQuizPanel(user.getUsername(), session, kdomid);
+		html += renderQuizPanel(user.getUserName(), session, kdomid);
 		html += "</div></div>";
 
 		return html;

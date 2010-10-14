@@ -113,16 +113,16 @@ public class CommentRenderer extends KnowWEDomRenderer {
 					saveContent.append("<forum" + (title == "" ? "" : " name=\"" + title + "\" ")
 							+ "ref=\"Wiki.jsp?page=" + sec.getTitle() + "#"
 							+ pageName.replace(" ", "+") + "\">\n");
-					saveContent.append("<box name=" + user.getUsername() + "; date="
+					saveContent.append("<box name=" + user.getUserName() + "; date="
 							+ ForumRenderer.getDate() + ">" + commentContent + "</box>\n</forum>");
 
 					instance.getWikiConnector().createWikiPage(pageName, saveContent.toString(),
-							user.getUsername());
+							user.getUserName());
 
 				}
 				else { // page exists ==> add a new box:
 
-					String save = "<box name=\"" + user.getUsername() + "\"; date=\""
+					String save = "<box name=\"" + user.getUserName() + "\"; date=\""
 									+ ForumRenderer.getDate()
 							+ "\">--> A new comment to this topic on page ["
 									+ sec.getTitle() + "]:\\\\ \\\\" + commentContent
@@ -176,7 +176,7 @@ public class CommentRenderer extends KnowWEDomRenderer {
 					saveContent.append("<box name=System; date=" + ForumRenderer.getDate() + ">"
 							+ commentContent + "</box>\n</forum>");
 					instance.getWikiConnector().createWikiPage(pageName, saveContent.toString(),
-							user.getUsername());
+							user.getUserName());
 				}
 
 			}

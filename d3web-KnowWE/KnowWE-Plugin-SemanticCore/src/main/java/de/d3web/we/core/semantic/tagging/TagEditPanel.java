@@ -38,8 +38,8 @@ public class TagEditPanel extends AbstractTagHandler {
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 		TaggingMangler tm = TaggingMangler.getInstance();
-		topic = user.getPage();
-		ArrayList<String> tags = tm.getPageTags(user.getPage());
+		topic = user.getTopic();
+		ArrayList<String> tags = tm.getPageTags(user.getTopic());
 		String output = "<p>";
 		output += "Tags (<span id=\"tagpanedit\" style='text-decoration:underline;'>edit</span>):";
 		output += "<span id=\"tagspan\">";
@@ -58,7 +58,7 @@ public class TagEditPanel extends AbstractTagHandler {
 		output += "<script type=\"text/javascript\">";
 		output += "var myIPE=new SilverIPE('tagpanedit','tagspan','KnowWE.jsp',{parameterName:'tagtag',highlightColor: '#ffff77',"
 				+ "additionalParameters:{tagaction:\"set\",action:\"TagHandlingAction\","
-				+ KnowWEAttributes.TOPIC + ":\"" + user.getPage() + "\"} });";
+				+ KnowWEAttributes.TOPIC + ":\"" + user.getTopic() + "\"} });";
 		output += "</script>";
 		output += "</p>";
 		return KnowWEUtils.maskHTML(output);

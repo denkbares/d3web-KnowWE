@@ -118,7 +118,7 @@ public class D3webUtils {
 	public static Session getSession(String topic, KnowWEUserContext user, String web) {
 
 		String sessionId = topic + ".." + KnowWEEnvironment.generateDefaultID(topic);
-		Broker broker = D3webModule.getBroker(user.getUsername(), web);
+		Broker broker = D3webModule.getBroker(user.getUserName(), web);
 		KnowledgeServiceSession kss = broker.getSession().getServiceSession(sessionId);
 		Session session = null;
 

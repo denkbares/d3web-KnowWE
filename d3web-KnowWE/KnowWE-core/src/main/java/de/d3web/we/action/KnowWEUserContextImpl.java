@@ -30,7 +30,6 @@ public class KnowWEUserContextImpl implements KnowWEUserContext {
 
 	private String user;
 	private Map<String, String> params;
-	private String page;
 
 	public KnowWEUserContextImpl(String user, Map<String, String> parameters) {
 		this.user = user;
@@ -38,12 +37,18 @@ public class KnowWEUserContextImpl implements KnowWEUserContext {
 	}
 
 	@Override
-	public String getUsername() {
+	public String getUserName() {
 		return user;
 	}
 
-	public String getPage() {
-		return page;
+	@Override
+	public String getTopic() {
+		return null;
+	}
+
+	@Override
+	public String getWeb() {
+		return null;
 	}
 
 	@Override
@@ -59,7 +64,6 @@ public class KnowWEUserContextImpl implements KnowWEUserContext {
 
 	@Override
 	public HttpServletRequest getHttpRequest() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

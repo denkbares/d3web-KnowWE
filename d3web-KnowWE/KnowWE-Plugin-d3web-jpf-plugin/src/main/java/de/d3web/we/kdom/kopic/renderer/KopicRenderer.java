@@ -35,7 +35,7 @@ public class KopicRenderer extends KnowWEDomRenderer {
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		String title = "Knowledge "
-						+ generateLinkIcons(user.getUsername(), article.getTitle(),
+						+ generateLinkIcons(user.getUserName(), article.getTitle(),
 								KnowWEEnvironment.generateDefaultID(
 										article.getTitle()), article.getWeb(), false, sec.getID());
 		StringBuilder b = new StringBuilder();

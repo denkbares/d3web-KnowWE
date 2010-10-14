@@ -67,7 +67,7 @@ public class RenderRestrictionEnd extends DefaultMarkupType {
 				// hide content (i.e., remove from rendered StringBuffer)
 				if (group != null
 						&& !KnowWEEnvironment.getInstance().getWikiConnector().userIsMemberOfGroup(
-								user.getUsername(), group, user.getHttpRequest())) {
+								user.getUserName(), group, user.getHttpRequest())) {
 					String toFind = RenderRestrictionStart.createString(group);
 					int index = string.indexOf(toFind);
 					if (index > -1) {

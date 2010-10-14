@@ -74,8 +74,8 @@ public class SetQuickEditFlagAction extends DeprecatedAbstractKnowWEAction {
 				connector.setPageLocked(topic, user);
 			}
 			UserSettingsManager.getInstance().setQuickEditFlag(nodeID, user, topic, inPre);
-			String result = this.rerenderKDOMElement(web, topic, new KnowWEUserContextImpl(user,
-					parameterMap), nodeID);
+			String result = this.rerenderKDOMElement(web, topic, parameterMap.getWikiContext(),
+					nodeID);
 
 			// Pushing the result through the JSPWiki rendering pipeline when QE
 			// is being closed and QE isn't within a pre-environment

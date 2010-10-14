@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ecyrd.jspwiki.WikiContext;
 
+import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class JSPWikiUserContext implements KnowWEUserContext {
@@ -44,19 +45,27 @@ public class JSPWikiUserContext implements KnowWEUserContext {
 		this.context = context;
 	}
 
+	@Override
 	public HttpServletRequest getHttpRequest() {
 		return context.getHttpRequest();
 	}
 
-	public String getPage() {
+	@Override
+	public String getTopic() {
 		return context.getPage().getName();
+	}
+
+	@Override
+	public String getWeb() {
+		return this.urlParameter.get(KnowWEAttributes.WEB);
 	}
 
 	public void setUrlParameter(Map<String, String> urlParameter) {
 		this.urlParameter = urlParameter;
 	}
 
-	public String getUsername() {
+	@Override
+	public String getUserName() {
 		return context.getWikiSession().getUserPrincipal().getName();
 	}
 
@@ -79,14 +88,5 @@ public class JSPWikiUserContext implements KnowWEUserContext {
 	public Map<String, String> getUrlParameterMap() {
 		return urlParameter;
 	}
-
-	// public static JSPWikiUserContext getUserByName( String name ) {
-	//		
-	// Map<String, String> urlParam = null; //TODO: get URLParam & wikiContext
-	// by name
-	// WikiContext wikiContext = null;
-	//		
-	// return new JSPWikiUserContext (wikiContext, urlParam);
-	// }
 
 }

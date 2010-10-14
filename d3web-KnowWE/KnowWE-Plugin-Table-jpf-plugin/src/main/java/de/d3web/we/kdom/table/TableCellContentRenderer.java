@@ -106,7 +106,7 @@ public class TableCellContentRenderer extends KnowWEDomRenderer<TableCellContent
 
 	protected void generateContent(String sectionText, Section<TableCellContent> sec,
 			KnowWEUserContext user, String sectionID, StringBuilder html) {
-		if (sec.hasQuickEditModeSet(user.getUsername())) {
+		if (sec.hasQuickEditModeSet(user.getUserName())) {
 			Section father = sec.findAncestorOfType(Table.class);
 			String[] values = null;
 			String size = null, rows = null, cols = null;

@@ -21,7 +21,8 @@ public class PackageRenderUtils {
 			else if (compilingArticles.size() == 1) {
 				String title = compilingArticles.iterator().next();
 				if (!title.equals(compilingArticle.getTitle())) {
-					string.append("Compiled and rendered for Article: " + title + "\n\n");
+					// string.append("Compiled and rendered for Article: " +
+					// title + "\n\n");
 					compilingArticle = KnowWEEnvironment.getInstance().getArticle(article.getWeb(),
 							title);
 				}
