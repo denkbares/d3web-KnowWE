@@ -26,6 +26,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -81,6 +82,18 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 			kbms.put(title, kbm);
 		}
 		return kbm;
+	}
+
+	/**
+	 * Returns an array of all topics of this web that owns a compiled d3web
+	 * knowledge base.
+	 * 
+	 * @created 14.10.2010
+	 * @return all topics with a compiled d3web knowledge base
+	 */
+	public String[] getKnowledgeTopics() {
+		Set<String> keySet = kbms.keySet();
+		return keySet.toArray(new String[keySet.size()]);
 	}
 
 	/**
