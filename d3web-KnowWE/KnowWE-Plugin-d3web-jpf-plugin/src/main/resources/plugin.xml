@@ -517,6 +517,15 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="ImageQuestionSetAction">
+		<parameter id="class" value="de.d3web.we.action.ImageQuestionSetAction" />
+		<parameter id="name" value="ImageQuestionSetAction" />
+		<parameter id="description" value="Action ImageQuestionSetAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="StreamImageToResourceAction">
 		<parameter id="class" value="de.d3web.we.action.StreamImageToResourceAction" />
 		<parameter id="name" value="StreamImageToResourceAction" />

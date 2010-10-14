@@ -315,9 +315,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	 * @param q
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	private boolean currentAnswerIsSet(String answerID,
-			Question q) {
+	private boolean currentAnswerIsSet(String answerID, Question q) {
 
 		Value value = null;
 		if (q instanceof QuestionChoice) {
@@ -334,6 +332,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		Value answer = session.getBlackboard().getValue(q);
 		boolean contains = false;
 		if (!(answer instanceof UndefinedValue)) {
+			@SuppressWarnings("unchecked")
 			Set<Value> values = (Set<Value>) answer.getValue();
 			for (Value val : values) {
 				if (val.equals(value)) {

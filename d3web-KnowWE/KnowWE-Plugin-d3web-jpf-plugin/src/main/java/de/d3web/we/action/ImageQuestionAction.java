@@ -33,7 +33,7 @@ import de.d3web.we.kdom.imagequestion.ImageQuestionHandler;
  */
 public class ImageQuestionAction extends AbstractAction {
 
-	private final AbstractAction action = new SetSingleFindingAction();
+	private final AbstractAction action = new ImageQuestionSetAction();
 
 	@Override
 	public void execute(ActionContext context) throws IOException {
