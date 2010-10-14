@@ -75,7 +75,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 
 			KnowledgeBaseManagement mgn = getKBM(article);
 
-			String name = qcSec.getOriginalText();
+			String name = qcSec.get().getTermName(qcSec);
 
 			IDObject o = mgn.findQContainer(name);
 
