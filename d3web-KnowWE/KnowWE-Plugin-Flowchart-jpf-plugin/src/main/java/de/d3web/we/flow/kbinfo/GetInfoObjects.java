@@ -39,6 +39,11 @@ import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.diaFlux.flow.EndNode;
+import de.d3web.diaFlux.flow.Flow;
+import de.d3web.diaFlux.flow.FlowSet;
+import de.d3web.diaFlux.flow.StartNode;
+import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.basic.DPSEnvironmentManager;
 import de.d3web.we.core.DPSEnvironment;
@@ -168,12 +173,13 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 			appendChilds(web, d3Service, qsets.toArray(new TerminologyObject[qsets.size()]), buffer);
 			appendChilds(web, d3Service, base.getRootSolution(), buffer);
 			// TODO: append flowcharts out of knowledge base here
-			List<Section<FlowchartType>> flowcharts = ManagerUtils.getFlowcharts(web, d3Service);
-			for (Section<FlowchartType> flowchart : flowcharts) {
-				FlowchartType type = flowchart.getObjectType();
-				buffer.append("\t\t<child>");
-				buffer.append(service.getId() + "/" + type.getFlowchartID(flowchart));
-				buffer.append("</child>\n");
+			FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
+			if (flowSet != null) {
+				for (Flow flow : flowSet.getFlows()) {
+					buffer.append("\t\t<child>");
+					buffer.append(service.getId() + "/" + flow.getId());
+					buffer.append("</child>\n");
+				}
 			}
 		}
 		buffer.append("\t</article>\n");
@@ -193,17 +199,27 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 			appendInfoObject(web, service, (QContainer) object, buffer);
 		}
 		else {
+			// TODO: why ist a "Flow" not an IDObject?
 			// if not inside knowledge base
 			// look for a flowchart th the article
-			List<Section<FlowchartType>> flowcharts = ManagerUtils.getFlowcharts(web, service);
-			for (Section<FlowchartType> flowchart : flowcharts) {
-				FlowchartType type = flowchart.getObjectType();
-				String id = type.getFlowchartID(flowchart);
-				if (id.equalsIgnoreCase(objectID)) {
-					appendInfoObject(web, service, flowchart, buffer);
+			FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
+			if (flowSet != null) {
+				Flow flow = flowSet.get(objectID);
+				if (flow != null) {
+					appendInfoObject(web, service, flow, buffer);
 					return;
 				}
 			}
+			// List<Section<FlowchartType>> flowcharts =
+			// ManagerUtils.getFlowcharts(web, service);
+			// for (Section<FlowchartType> flowchart : flowcharts) {
+			// FlowchartType type = flowchart.getObjectType();
+			// String id = type.getFlowchartID(flowchart);
+			// if (id.equalsIgnoreCase(objectID)) {
+			// appendInfoObject(web, service, flowchart, buffer);
+			// return;
+			// }
+			// }
 			buffer.append("<unknown id='" + objectID + "'></unknown>");
 		}
 	}
@@ -287,6 +303,25 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		}
 		for (int i = 0; i < exitNames.length; i++) {
 			buffer.append("\t\t<exit>").append(encodeXML(exitNames[i])).append("</exit>\n");
+		}
+		buffer.append("\t</flowchart>\n");
+	}
+
+	private static void appendInfoObject(String web, D3webKnowledgeService service, Flow flow, StringBuffer buffer) {
+		String name = flow.getName();
+		String id = flow.getId();
+		List<StartNode> startNodes = flow.getStartNodes();
+		List<EndNode> exitNodes = flow.getExitNodes();
+
+		buffer.append("\t<flowchart");
+		buffer.append(" id='").append(service.getId()).append("/").append(id).append("'");
+		buffer.append(" name='").append(encodeXML(name)).append("'");
+		buffer.append(">\n");
+		for (StartNode node : startNodes) {
+			buffer.append("\t\t<start>").append(encodeXML(node.getName())).append("</start>\n");
+		}
+		for (EndNode node : exitNodes) {
+			buffer.append("\t\t<exit>").append(encodeXML(node.getName())).append("</exit>\n");
 		}
 		buffer.append("\t</flowchart>\n");
 	}

@@ -99,6 +99,7 @@ public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
 				// and ignore all names we have already found
 				D3webKnowledgeService d3Service = (D3webKnowledgeService) service;
 				KnowledgeBase base = d3Service.getBase();
+				if (base == null) continue;
 
 				// add article for a knowledge base
 				if (classes.contains("article")) {
@@ -112,18 +113,15 @@ public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
 
 				// add Flowcharts
 				if (classes.contains("flowchart")) {
-
 					FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
-
 					if (flowSet != null) {
 						for (Flow flow : flowSet.getFlows()) {
 							if (matches(flow.getName(), phrases)) {
-								result.add(d3Service.getId() + "/" + flow.getName());
+								result.add(d3Service.getId() + "/" + flow.getId());
 							}
 
 						}
 					}
-
 				}
 
 				List<NamedObject> allKBObjects = new LinkedList<NamedObject>();
