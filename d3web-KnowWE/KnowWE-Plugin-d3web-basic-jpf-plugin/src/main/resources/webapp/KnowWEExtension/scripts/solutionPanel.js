@@ -108,11 +108,6 @@ KNOWWE.plugin.solutionpanel = function(){
                                 _KE.add('click', element, KNOWWE.plugin.solutionpanel.showExplanation);
                             });
                         }
-                        if(_KS('.show-solutions-log').length != 0){
-                            _KS('.show-solutions-log').each(function(element){
-                                _KE.add('click', element, KNOWWE.plugin.solutionpanel.showSolutionLog);
-                            });
-                        }
                     }
                 }
             }
@@ -187,31 +182,6 @@ KNOWWE.plugin.solutionpanel = function(){
             });
             return false;
         },
-        /**
-         * Functions: showSolutionLog
-         * Shows detail information about ...
-         */
-        showSolutionLog : function( event ){
-            var rel = eval("(" + _KE.target( event ).parentNode.getAttribute('rel') + ")");
-            if( !rel ) return false;
-            
-            var params = {
-                action : 'SolutionLogAction',
-                KWikiTerm : rel.term,
-                KWikiWeb : rel.web,
-                KWikiUser : rel.user
-            }
-            
-            event = new Event( event );
-            KNOWWE.helper.window.open({
-                url : KNOWWE.core.util.getURL(params),
-                left : event.page.x, 
-                top : event.page.y,
-                screenX : event.client.x,
-                screenY : event.client.y
-            });
-            return false;
-        }        
     }   
 }();
 
