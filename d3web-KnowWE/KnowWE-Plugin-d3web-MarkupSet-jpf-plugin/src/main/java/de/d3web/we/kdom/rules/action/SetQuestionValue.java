@@ -137,6 +137,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 		Section<QuestionReference> qref = s.findSuccessor(QuestionReference.class);
 		Question q = qref.get().getTermObject(article, qref);
 		Section<AnswerReference> aref = s.findSuccessor(AnswerReference.class);
+		if (aref == null) return null;
 		Choice c = aref.get().getTermObject(article, aref);
 
 		if (q != null && c != null) {

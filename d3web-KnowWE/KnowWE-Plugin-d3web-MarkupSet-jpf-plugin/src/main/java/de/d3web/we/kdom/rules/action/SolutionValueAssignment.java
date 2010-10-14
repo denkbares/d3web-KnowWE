@@ -32,6 +32,7 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.auxiliary.Equals;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
+import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -105,19 +106,15 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 					if (start >= end - 1) return null;
 				}
 				text = text.substring(start, end);
-				String[] textArr = text.split(" ");
 
-				String searchMe = textArr[textArr.length - 1];
-
-				if (possibleScorePoints.contains(searchMe)) {
-					while (text.charAt(start) == ' ' || text.charAt(start) == '"') {
-						start++;
-						if (start >= end - 1) return null;
+				for (String score : possibleScorePoints) {
+					String trim = text.trim();
+					if (trim.endsWith(score)) {
+						return new AllTextFinderTrimmed().lookForSections(text, father,
+								type);
 					}
-					List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-					result.add(new SectionFinderResult(start, end));
-					return result;
 				}
+
 			}
 
 			return null;
@@ -133,6 +130,7 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 	public PSAction createAction(KnowWEArticle article, Section<SolutionValueAssignment> s) {
 		Section<SolutionReference> solutionRef = s.findSuccessor(SolutionReference.class);
 		Section<ScorePoint> scoreRef = s.findSuccessor(ScorePoint.class);
+		if (scoreRef == null || solutionRef == null) return null;
 		Solution solution = solutionRef.get().getTermObject(article, solutionRef);
 		Score score = D3webUtils.getScoreForString(scoreRef.getOriginalText());
 		if (solution == null || score == null) return null;
