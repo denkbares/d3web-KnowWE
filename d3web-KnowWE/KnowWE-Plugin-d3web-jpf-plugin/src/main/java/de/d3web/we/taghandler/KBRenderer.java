@@ -30,9 +30,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.RuleSet;
@@ -61,11 +61,11 @@ import de.d3web.core.knowledge.terminology.info.Property.Autosave;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.utilities.Triple;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
-import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
 import de.d3web.kernel.verbalizer.Verbalizer;
+import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
+import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.bulletLists.BulletContentType;
 import de.d3web.we.kdom.rule.ConditionActionRule;
@@ -91,9 +91,11 @@ public class KBRenderer extends AbstractTagHandler {
 	@Override
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
-		D3webKnowledgeService service = D3webModule
-				.getAD3webKnowledgeServiceInTopic(web, topic);
-
+		
+		D3webKnowledgeHandler knowledgeRepresentationHandler = D3webModule.getKnowledgeRepresentationHandler(KnowWEEnvironment.DEFAULT_WEB);
+		KnowledgeBaseManagement knowledgeBaseManagement = knowledgeRepresentationHandler.getKBM(topic);
+		KnowledgeBase kb = knowledgeBaseManagement.getKnowledgeBase();
+		
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
 
 		StringBuilder text = new StringBuilder(
@@ -101,8 +103,7 @@ public class KBRenderer extends AbstractTagHandler {
 						+ rb.getString("KnowWE.KBRenderer.header") + "</h3>");
 		text.append("<div>");
 		text.append("<p>");
-		if (service != null) {
-			KnowledgeBase kb = service.getBase();
+		if (kb != null) {
 
 			/*
 			 * Render Solutions
