@@ -308,7 +308,7 @@ public class QuickInterviewRenderer {
 
 		buffi.append("<div id='" + container.getId() + "' " +
 				clazz + " style='margin-left: " + margin + "px; display: block'; >");
-		buffi.append(" " + container.getName() + " ");
+		buffi.append(container.getName());
 		buffi.append("</div>");
 	}
 
@@ -737,11 +737,7 @@ public class QuickInterviewRenderer {
 	 */
 	private static boolean isAnsweredinCase(Value sessionValue, Value value) {
 		// test for MC values separately
-		if (sessionValue instanceof MultipleChoiceValue) {
-			return ((MultipleChoiceValue) sessionValue).contains(value);
-		}
-		else {
-			return sessionValue.equals(value);
-		}
+		if (sessionValue instanceof MultipleChoiceValue) return ((MultipleChoiceValue) sessionValue).contains(value);
+		else return sessionValue.equals(value);
 	}
 }
