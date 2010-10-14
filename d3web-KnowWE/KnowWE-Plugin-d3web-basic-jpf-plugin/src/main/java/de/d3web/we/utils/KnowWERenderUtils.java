@@ -27,7 +27,6 @@ import java.util.ResourceBundle;
 
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.basic.IdentifiableInstance;
-import de.d3web.we.terminology.term.Term;
 
 public class KnowWERenderUtils {
 
@@ -137,20 +136,4 @@ public class KnowWERenderUtils {
 				+ ii.getNamespace() + "&KWikiUser=" + user + "&KWikiWeb=" + web;
 		return link;
 	}
-
-	public static StringBuffer getButtomLink(Term term, String usagePrefix, StringBuffer inner) {
-		StringBuffer sb = new StringBuffer();
-		// String exactPrefix =
-		// KWikiUtils.replaceUmlaut(((String)term.getInfo(TermInfoType.TERM_NAME)))
-		// + usagePrefix;
-		sb.append("<div KWikiPopupLinksDiv=\"KWikiPopupLinksDiv\" id='"
-				+ usagePrefix
-				+ "Popup' class='patternToolBar' style='position:absolute;top:16px;right:0px;visibility:hidden;overflow:visible;'>");
-		sb.append("<table>");
-		sb.append(inner);
-		sb.append("</table>");
-		sb.append("</div>");
-		return sb;
-	}
-
 }

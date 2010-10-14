@@ -52,33 +52,6 @@ public class BrokerImpl implements Broker {
 	}
 
 	@Override
-	public void finished(KnowledgeServiceSession kss) {
-		dialogControl.finished(kss);
-		/*
-		 * if(delegateStack.isEmpty()) return; KnowledgeServiceSession current =
-		 * delegateStack.peek(); //[TODO]: only last element? maybe also
-		 * elements in between? if(current != null && kss.equals(current)) {
-		 * delegateStack.pop(); dialogControl.finished(); removeFinished(); }
-		 * else { delegateStack.remove(kss);
-		 * dialogControl.finsished(kss.getNamespace()); }
-		 */
-	}
-
-	/*
-	 * private void removeFinished() { //[TODO]Peter: refactor!!!!
-	 * KnowledgeServiceSession last = null; while(!delegateStack.isEmpty()) {
-	 * KnowledgeServiceSession current = delegateStack.peek();
-	 * if(current.isFinished()) { delegateStack.pop(); dialogControl.finished();
-	 * } if(current.equals(last)) { return; } last = current; } }
-	 */
-	/*
-	 * public void activate(String namespace, boolean instantly, String comment)
-	 * { KnowledgeServiceSession kss =
-	 * getSession().getServiceSession(namespace); activate(kss, instantly,
-	 * comment); }
-	 */
-
-	@Override
 	public void activate(KnowledgeServiceSession kss, KnowledgeServiceSession reason, boolean userIndicated, boolean instantly, String comment) {
 		if (kss == null) return;
 		dialogControl.delegate(kss, reason, userIndicated, instantly, comment);

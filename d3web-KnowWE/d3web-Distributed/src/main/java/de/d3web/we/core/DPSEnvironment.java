@@ -28,17 +28,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import de.d3web.utilities.ISetMap;
 import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.broker.BrokerImpl;
 import de.d3web.we.core.dialog.DistributedDialogControl;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
-import de.d3web.we.terminology.TerminologyBroker;
 import de.d3web.we.terminology.TerminologyServer;
 import de.d3web.we.terminology.local.LocalTerminologyAccess;
-import de.d3web.we.terminology.term.Term;
 
 public class DPSEnvironment {
 
@@ -91,10 +88,6 @@ public class DPSEnvironment {
 		for (TerminologyType eachType : service.getTerminologies().keySet()) {
 			LocalTerminologyAccess eachAccess = service.getTerminologies().get(eachType);
 			terminologyServer.getStorage().register(service.getId(), eachType, eachAccess);
-
-			TerminologyBroker tb = terminologyServer.getBroker();
-			ISetMap<Object, Term> map = tb.addTerminology(eachType, eachAccess,
-						service.getId(), terminologyServer.getStorage());
 		}
 	}
 

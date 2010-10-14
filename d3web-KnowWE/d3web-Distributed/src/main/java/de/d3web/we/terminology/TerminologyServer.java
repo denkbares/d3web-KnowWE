@@ -21,7 +21,6 @@
 package de.d3web.we.terminology;
 
 import de.d3web.we.basic.TerminologyType;
-import de.d3web.we.terminology.global.GlobalTerminology;
 import de.d3web.we.terminology.local.LocalTerminologyStorage;
 
 public class TerminologyServer {
@@ -29,22 +28,12 @@ public class TerminologyServer {
 	public TerminologyServer() {
 		super();
 		storage = new LocalTerminologyStorage();
-		broker = new TerminologyBroker();
 	}
 
 	private LocalTerminologyStorage storage;
-	private TerminologyBroker broker;
 
 	public void removeTerminology(String idString, TerminologyType type) {
 		storage.signoff(idString, type);
-	}
-
-	public GlobalTerminology getGlobalTerminology(TerminologyType type) {
-		return broker.getGlobalTerminology(type);
-	}
-
-	public TerminologyBroker getBroker() {
-		return broker;
 	}
 
 	public LocalTerminologyStorage getStorage() {

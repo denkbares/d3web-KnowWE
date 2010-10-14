@@ -25,11 +25,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import de.d3web.utilities.ISetMap;
-import de.d3web.utilities.SetMap;
 import de.d3web.we.basic.Information;
 import de.d3web.we.core.broker.Broker;
-import de.d3web.we.terminology.term.Term;
 
 public class BlackboardImpl implements Blackboard {
 
@@ -37,13 +34,10 @@ public class BlackboardImpl implements Blackboard {
 
 	private List<Information> allInformation;
 
-	private ISetMap<Term, Information> inferenceMap;
-
 	public BlackboardImpl() {
 		super();
 		originalUserInformation = new ArrayList<Information>();
 		allInformation = new ArrayList<Information>();
-		inferenceMap = new SetMap<Term, Information>();
 	}
 
 	@Override
@@ -69,7 +63,6 @@ public class BlackboardImpl implements Blackboard {
 	@Override
 	public void clear(Broker broker) {
 		allInformation.clear();
-		inferenceMap.clear();
 		originalUserInformation.clear();
 	}
 
@@ -79,21 +72,8 @@ public class BlackboardImpl implements Blackboard {
 	}
 
 	@Override
-	public List<Information> getAllInformation() {
-		return allInformation;
-	}
-
-	@Override
-	public Collection<Information> getInferenceInformation(Term term) {
-		return inferenceMap.get(term);
-	}
-
-	@Override
 	public void removeInformation(String namespace) {
 		removeInfo(allInformation, namespace);
-		for (Term each : inferenceMap.keySet()) {
-			removeInfo(inferenceMap.get(each), namespace);
-		}
 		removeInfo(originalUserInformation, namespace);
 	}
 

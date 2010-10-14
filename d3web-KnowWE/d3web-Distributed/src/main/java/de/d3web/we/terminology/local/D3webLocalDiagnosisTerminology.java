@@ -21,10 +21,7 @@
 package de.d3web.we.terminology.local;
 
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.we.alignment.AlignmentUtilRepository;
-import de.d3web.we.terminology.term.TerminologyHandler;
 
 public class D3webLocalDiagnosisTerminology implements LocalTerminologyAccess<NamedObject> {
 
@@ -39,16 +36,4 @@ public class D3webLocalDiagnosisTerminology implements LocalTerminologyAccess<Na
 	public NamedObject getObject(String objectId, String valueId) {
 		return kbm.findSolution(objectId);
 	}
-
-	@Override
-	public TerminologyHandler<NamedObject, NamedObject> getHandler() {
-		Object root = kbm.getKnowledgeBase().getRootSolution();
-		return AlignmentUtilRepository.getInstance().getLocalTerminogyHandler(root);
-	}
-
-	@Override
-	public Class getContext() {
-		return Solution.class;
-	}
-
 }

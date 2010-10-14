@@ -39,8 +39,6 @@ public interface Broker {
 
 	void activate(KnowledgeServiceSession kss, KnowledgeServiceSession reason, boolean userIndicated, boolean instantly, String comment);
 
-	void finished(KnowledgeServiceSession kss);
-
 	DialogControl getDialogControl();
 
 }

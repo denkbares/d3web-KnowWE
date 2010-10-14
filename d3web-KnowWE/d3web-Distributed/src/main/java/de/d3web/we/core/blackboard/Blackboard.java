@@ -20,12 +20,10 @@
 
 package de.d3web.we.core.blackboard;
 
-import java.util.Collection;
 import java.util.List;
 
 import de.d3web.we.basic.Information;
 import de.d3web.we.core.broker.Broker;
-import de.d3web.we.terminology.term.Term;
 
 /**
  * 
@@ -37,10 +35,6 @@ public interface Blackboard {
 	Information inspect(Information info);
 
 	void clear(Broker broker);
-
-	List<Information> getAllInformation();
-
-	Collection<Information> getInferenceInformation(Term term);
 
 	List<Information> getOriginalUserInformation();
 

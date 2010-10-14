@@ -20,14 +20,8 @@
 
 package de.d3web.we.terminology.local;
 
-import de.d3web.we.terminology.term.TerminologyHandler;
-
 public interface LocalTerminologyAccess<E> {
 
-	public Class getContext();
-
 	public E getObject(String objectId, String valueId);
-
-	public TerminologyHandler<E, E> getHandler();
 
 }
