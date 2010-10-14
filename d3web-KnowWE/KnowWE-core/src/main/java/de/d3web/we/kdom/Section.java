@@ -1616,8 +1616,13 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		if (handler.needsToCreate(article, this) && isMatchingPackageName(article, handler)) {
 			try {
 				// long time = System.currentTimeMillis();
-				KDOMReportMessage.storeMessages(article, this, handler.getClass(), handler.create(
-						article, this));
+				Collection<KDOMReportMessage> msgs = handler.create(
+						article, this);
+				// a message should know its origin:
+				for (KDOMReportMessage m : msgs) {
+					m.setSection(this);
+				}
+				KDOMReportMessage.storeMessages(article, this, handler.getClass(), msgs);
 				setCompiledBy(article.getTitle(), handler, true);
 				// System.out.println(handler.getClass().getSimpleName());
 				// System.out.println(handler.getClass().getSimpleName() + " "

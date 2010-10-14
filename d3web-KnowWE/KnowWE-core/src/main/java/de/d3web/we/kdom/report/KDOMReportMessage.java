@@ -44,6 +44,32 @@ import de.d3web.we.utils.KnowWEUtils;
 public abstract class KDOMReportMessage {
 
 	/**
+	 * the section which is origin of the message
+	 */
+	private Section<?> section = null;
+
+	
+	/**
+	 * allows to set the originating section
+	 * 
+	 * @created 14.10.2010
+	 * @param s
+	 */
+	public void setSection(Section<?> s) {
+		section = s;
+	}
+
+	/**
+	 * returns the section where this message has been created from
+	 * 
+	 * @created 14.10.2010
+	 * @return
+	 */
+	public Section<?> getSection() {
+		return section;
+	}
+
+	/**
 	 * return the verbalization of this message. Will be rendered into the wiki
 	 * page by the given MessageRenderer of the KnowWEObjectType of the section
 	 * 
