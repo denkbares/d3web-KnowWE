@@ -32,8 +32,6 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
-import de.d3web.we.core.knowledgeService.KnowledgeService;
-import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 
 public class QuestionStateReportAction extends DeprecatedAbstractKnowWEAction {
 
@@ -63,14 +61,14 @@ public class QuestionStateReportAction extends DeprecatedAbstractKnowWEAction {
 		DPSEnvironment env = DPSEnvironmentManager.getInstance().getEnvironments(web);
 		Broker broker = env.getBroker(user);
 
-		KnowledgeServiceSession kss = broker.getSession().getServiceSession(namespace);
-		KnowledgeService service = env.getService(namespace);
+		D3webKnowledgeServiceSession kss = broker.getSession().getServiceSession(namespace);
+		D3webKnowledgeService service = env.getService(namespace);
 		Question q = null;
 		if (service instanceof D3webKnowledgeService) {
 
 			if (questionID != null) {
 
-				QASet set = ((D3webKnowledgeService) service).getBase()
+				QASet set = (service).getBase()
 						.searchQASet(questionID);
 				if (set instanceof Question) {
 
@@ -80,7 +78,7 @@ public class QuestionStateReportAction extends DeprecatedAbstractKnowWEAction {
 
 			if (questionName != null) {
 
-				List<Question> questionList = ((D3webKnowledgeService) service).getBase().getQuestions();
+				List<Question> questionList = (service).getBase().getQuestions();
 				for (Question question : questionList) {
 					if (question.getName().equals(questionName)) {
 
@@ -98,7 +96,7 @@ public class QuestionStateReportAction extends DeprecatedAbstractKnowWEAction {
 		if (kss instanceof de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession
 				&& q != null) {
 
-			D3webKnowledgeServiceSession d3kss = ((D3webKnowledgeServiceSession) kss);
+			D3webKnowledgeServiceSession d3kss = (kss);
 			de.d3web.core.session.Session case1 = d3kss.getSession();
 			List<? extends Question> answeredQuestions = case1.getBlackboard().getAnsweredQuestions();
 			if (answeredQuestions.contains(q)) {

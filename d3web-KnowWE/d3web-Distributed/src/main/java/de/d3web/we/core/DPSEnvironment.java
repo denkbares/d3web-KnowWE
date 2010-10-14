@@ -22,43 +22,32 @@ package de.d3web.we.core;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.broker.BrokerImpl;
-import de.d3web.we.core.knowledgeService.KnowledgeService;
-import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
-import de.d3web.we.terminology.TerminologyServer;
-import de.d3web.we.terminology.local.LocalTerminologyAccess;
+import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
+import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 
 public class DPSEnvironment {
 
-	private URL environmentLocation;
-	private TerminologyServer terminologyServer;
-	private Map<String, de.d3web.we.core.knowledgeService.KnowledgeService> services;
+	private final URL environmentLocation;
+	private Map<String, D3webKnowledgeService> services;
 	private Map<String, Broker> brokers;
 
 	public DPSEnvironment(URL url) {
 		super();
-		setEnvironmentLocation(url);
-		terminologyServer = new TerminologyServer();
-		services = new HashMap<String, KnowledgeService>();
+		environmentLocation = url;
+		services = new HashMap<String, D3webKnowledgeService>();
 		brokers = new HashMap<String, Broker>();
 		initialize();
 	}
 
-	public void setEnvironmentLocation(URL url) {
-		environmentLocation = url;
-	}
-
 	private void clear() {
-		terminologyServer = new TerminologyServer();
-		services = new HashMap<String, KnowledgeService>();
+		services = new HashMap<String, D3webKnowledgeService>();
 		brokers = new HashMap<String, Broker>();
 	}
 
@@ -76,58 +65,42 @@ public class DPSEnvironment {
 		}
 	}
 
-	public void addService(KnowledgeService service) {
-		KnowledgeService oldService = getService(service.getId());
+	public void addService(D3webKnowledgeService service) {
+		D3webKnowledgeService oldService = getService(service.getId());
 		if (oldService != null) {
 			removeService(oldService);
 		}
 
 		services.put(service.getId(), service);
 
-		for (TerminologyType eachType : service.getTerminologies().keySet()) {
-			LocalTerminologyAccess eachAccess = service.getTerminologies().get(eachType);
-			terminologyServer.getStorage().register(service.getId(), eachType, eachAccess);
-		}
 	}
 
-	public void removeService(KnowledgeService service) {
-		Map<TerminologyType, LocalTerminologyAccess> map = service.getTerminologies();
-		for (TerminologyType type : new ArrayList<TerminologyType>(map.keySet())) {
-			terminologyServer.removeTerminology(service.getId(), type);
-		}
+	public void removeService(D3webKnowledgeService service) {
 		services.remove(service.getId());
 	}
 
 	public Broker createBroker(String userID) {
 		Broker result = new BrokerImpl(this, userID);
-		for (KnowledgeService each : services.values()) {
+		for (D3webKnowledgeService each : services.values()) {
 			result.register(each);
 		}
 		return result;
 	}
 
-	public KnowledgeService getService(String id) {
+	public D3webKnowledgeService getService(String id) {
 		return services.get(id);
 	}
 
-	public Collection<KnowledgeService> getServices() {
+	public Collection<D3webKnowledgeService> getServices() {
 		return services.values();
 	}
 
-	public Collection<String> getFriendlyServices(String serviceId) {
-		return new ArrayList<String>();
-	}
-
-	public KnowledgeServiceSession createServiceSession(String id, Broker broker) {
-		KnowledgeService service = services.get(id);
+	public D3webKnowledgeServiceSession createServiceSession(String id, Broker broker) {
+		D3webKnowledgeService service = services.get(id);
 		if (service != null) {
 			return service.createSession(broker);
 		}
 		return null;
-	}
-
-	public TerminologyServer getTerminologyServer() {
-		return terminologyServer;
 	}
 
 	public Broker getBroker(String userID) {

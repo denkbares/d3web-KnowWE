@@ -37,7 +37,6 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
-import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.xcl.CoveringListSection;
 
@@ -143,12 +142,12 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 		String kbid = knowledgeServiceInTopic.getId();
 
 		Broker broker = D3webModule.getBroker(user, web);
-		KnowledgeServiceSession serviceSession = broker.getSession().getServiceSession(
+		D3webKnowledgeServiceSession serviceSession = broker.getSession().getServiceSession(
 				kbid);
 		Session c = null;
 
 		if (serviceSession instanceof D3webKnowledgeServiceSession) {
-			c = ((D3webKnowledgeServiceSession) serviceSession).getSession();
+			c = (serviceSession).getSession();
 		}
 
 		if (serviceSession == null) {
@@ -157,7 +156,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 					+ KnowWEEnvironment.generateDefaultID(KnowWEEnvironment.WIKI_FINDINGS);
 			serviceSession = broker.getSession().getServiceSession(kbid);
 			if (serviceSession instanceof D3webKnowledgeServiceSession) {
-				c = ((D3webKnowledgeServiceSession) serviceSession).getSession();
+				c = (serviceSession).getSession();
 			}
 		}
 

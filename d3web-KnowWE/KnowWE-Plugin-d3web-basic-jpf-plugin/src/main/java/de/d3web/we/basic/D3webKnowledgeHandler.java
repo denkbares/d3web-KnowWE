@@ -34,7 +34,7 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.knowledgeService.KnowledgeService;
+import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 
@@ -104,7 +104,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	public void initArticle(KnowWEArticle art) {
 		DPSEnvironment env = D3webModule.getDPSE(web);
 		String id = art.getTitle() + ".." + KnowWEEnvironment.generateDefaultID(art.getTitle());
-		KnowledgeService service = env.getService(id);
+		D3webKnowledgeService service = env.getService(id);
 		if (service != null) {
 			env.removeService(service);
 			for (Broker broker : env.getBrokers()) {

@@ -20,13 +20,13 @@
 
 package de.d3web.we.core.broker;
 
-import de.d3web.we.core.knowledgeService.KnowledgeService;
+import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 
 public interface Broker {
 
-	void register(KnowledgeService service);
+	void register(D3webKnowledgeService service);
 
-	void signoff(KnowledgeService service);
+	void signoff(D3webKnowledgeService service);
 
 	DPSSession getSession();
 

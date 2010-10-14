@@ -38,7 +38,6 @@ import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
-import de.d3web.we.core.knowledgeService.KnowledgeService;
 
 public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
 
@@ -92,12 +91,12 @@ public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
 		List<String> result = new LinkedList<String>();
 
 		// the examine objects inside the articles
-		for (KnowledgeService service : env.getServices()) {
+		for (D3webKnowledgeService service : env.getServices()) {
 			if (service instanceof D3webKnowledgeService) {
 				// for each found knowledgebase, iterate through their objects
 				// and search for the given names
 				// and ignore all names we have already found
-				D3webKnowledgeService d3Service = (D3webKnowledgeService) service;
+				D3webKnowledgeService d3Service = service;
 				KnowledgeBase base = d3Service.getBase();
 				if (base == null) continue;
 
@@ -171,7 +170,7 @@ public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
 		return true;
 	}
 
-	private static String createResultEntry(KnowledgeService service, KnowledgeBase base, NamedObject object) {
+	private static String createResultEntry(D3webKnowledgeService service, KnowledgeBase base, NamedObject object) {
 		// create a unique name for the object to be recovered easily
 		return service.getId() + "/" + object.getId();
 	}

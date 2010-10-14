@@ -38,7 +38,6 @@ import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
-import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.taghandler.DialogLinkTagHandler;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
@@ -55,16 +54,17 @@ public class KnowledgeSummerizeAction extends DeprecatedAbstractKnowWEAction {
 	//
 	// Map<String,String> map = new HashMap<String, String>();
 	// map.put(KnowWEAttributes.WEB, web);
-	//		
+	//
 	// java.io.PrintWriter out = getHtmlPrintWriter(model);
 	// out.print(perform(map));
-	//		
+	//
 	// }
 
-	public class KnowledgeServiceComparator implements Comparator<KnowledgeService> {
+	public class D3webKnowledgeServiceComparator implements Comparator<D3webKnowledgeService> {
 
-		public int compare(KnowledgeService o1, KnowledgeService o2) {
-			if (o1 instanceof KnowledgeService && o2 instanceof KnowledgeService) {
+		@Override
+		public int compare(D3webKnowledgeService o1, D3webKnowledgeService o2) {
+			if (o1 instanceof D3webKnowledgeService && o2 instanceof D3webKnowledgeService) {
 				return (o1).getId().compareTo((o2).getId());
 			}
 			return 0;
@@ -82,7 +82,7 @@ public class KnowledgeSummerizeAction extends DeprecatedAbstractKnowWEAction {
 		String web = parameterMap.get(KnowWEAttributes.WEB);
 		String user = parameterMap.getUser();
 		String topic = parameterMap.getTopic();
-		List<KnowledgeService> ks = new ArrayList<KnowledgeService>(
+		List<D3webKnowledgeService> ks = new ArrayList<D3webKnowledgeService>(
 				DPSEnvironmentManager.getInstance().getEnvironments(web).getServices());
 		Collections.sort(ks, new KDComparator());
 		StringBuffer html = new StringBuffer();
@@ -120,9 +120,9 @@ public class KnowledgeSummerizeAction extends DeprecatedAbstractKnowWEAction {
 		boolean even = false;
 		for (Iterator iterator = ks.iterator(); iterator.hasNext();) {
 			even = !even;
-			KnowledgeService service = (KnowledgeService) iterator.next();
+			D3webKnowledgeService service = (D3webKnowledgeService) iterator.next();
 			if (service instanceof D3webKnowledgeService) {
-				D3webKnowledgeService d3Service = (D3webKnowledgeService) service;
+				D3webKnowledgeService d3Service = service;
 				String id = d3Service.getId();
 				String[] parts = id.split("\\.\\.");
 				if (parts.length == 1) {
@@ -193,10 +193,10 @@ public class KnowledgeSummerizeAction extends DeprecatedAbstractKnowWEAction {
 		return html.toString();
 	}
 
-	class KDComparator implements Comparator<KnowledgeService> {
+	class KDComparator implements Comparator<D3webKnowledgeService> {
 
 		@Override
-		public int compare(KnowledgeService arg0, KnowledgeService arg1) {
+		public int compare(D3webKnowledgeService arg0, D3webKnowledgeService arg1) {
 			return arg0.getId().compareTo(arg1.getId());
 
 		}

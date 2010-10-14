@@ -37,7 +37,7 @@ import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.we.core.broker.Broker;
 
-public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
+public class D3webKnowledgeServiceSession {
 
 	private final KnowledgeBase base;
 	private final KnowledgeBaseManagement baseManagement;
@@ -63,7 +63,6 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		session = SessionFactory.createSession(base);
 	}
 
-	@Override
 	public void clear() {
 		initCase();
 	}
@@ -97,7 +96,6 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		return UndefinedValue.getInstance();
 	}
 
-	@Override
 	public boolean isFinished() {
 		return session.getInterview().nextForm().equals(EmptyForm.getInstance());
 	}
@@ -111,7 +109,6 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		return base.getSolutions().toString();
 	}
 
-	@Override
 	public String getNamespace() {
 		return id;
 	}

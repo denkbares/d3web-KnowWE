@@ -38,7 +38,6 @@ import de.d3web.we.basic.D3webModule;
 import de.d3web.we.basic.DPSEnvironmentManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
-import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
@@ -57,7 +56,7 @@ public class ShowAllKBsHandler extends AbstractTagHandler {
 
 	@Override
 	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
-		List<KnowledgeService> ks = new ArrayList<KnowledgeService>(
+		List<D3webKnowledgeService> ks = new ArrayList<D3webKnowledgeService>(
 				DPSEnvironmentManager.getInstance().getEnvironments(web).getServices());
 		Collections.sort(ks, new KDComparator());
 		StringBuffer html = new StringBuffer();
@@ -91,11 +90,11 @@ public class ShowAllKBsHandler extends AbstractTagHandler {
 		html.append("</tr></thead><tbody>");
 
 		boolean even = false;
-		for (Iterator<KnowledgeService> iterator = ks.iterator(); iterator.hasNext();) {
+		for (Iterator<D3webKnowledgeService> iterator = ks.iterator(); iterator.hasNext();) {
 			even = !even;
-			KnowledgeService service = iterator.next();
+			D3webKnowledgeService service = iterator.next();
 			if (service instanceof D3webKnowledgeService) {
-				D3webKnowledgeService d3Service = (D3webKnowledgeService) service;
+				D3webKnowledgeService d3Service = service;
 				String id = d3Service.getId();
 				String[] parts = id.split("\\.\\.");
 				if (parts.length == 1) {
@@ -166,10 +165,10 @@ public class ShowAllKBsHandler extends AbstractTagHandler {
 		return html.toString();
 	}
 
-	class KDComparator implements Comparator<KnowledgeService> {
+	class KDComparator implements Comparator<D3webKnowledgeService> {
 
 		@Override
-		public int compare(KnowledgeService arg0, KnowledgeService arg1) {
+		public int compare(D3webKnowledgeService arg0, D3webKnowledgeService arg1) {
 			return arg0.getId().compareTo(arg1.getId());
 
 		}

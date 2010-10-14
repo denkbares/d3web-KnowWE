@@ -37,7 +37,6 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
-import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
@@ -144,7 +143,7 @@ public class D3webModule {
 	 * @param web
 	 * @return
 	 */
-	public static Collection<KnowledgeService> getKnowledgeServices(String web) {
+	public static Collection<D3webKnowledgeService> getKnowledgeServices(String web) {
 		DPSEnvironment env = DPSEnvironmentManager.getInstance()
 				.getEnvironment(web, defaultJarsPath);
 		return env.getServices();
@@ -161,11 +160,11 @@ public class D3webModule {
 			String web, String topic) {
 		DPSEnvironment env = DPSEnvironmentManager.getInstance()
 				.getEnvironment(web, defaultJarsPath);
-		Collection<KnowledgeService> coll = env.getServices();
-		for (KnowledgeService knowledgeService : coll) {
+		Collection<D3webKnowledgeService> coll = env.getServices();
+		for (D3webKnowledgeService knowledgeService : coll) {
 			if (knowledgeService.getId().startsWith(topic + "..")) {
 				if (knowledgeService instanceof D3webKnowledgeService) {
-					return (D3webKnowledgeService) knowledgeService;
+					return knowledgeService;
 				}
 			}
 		}

@@ -35,7 +35,6 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
-import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class QuickInterviewAction extends AbstractAction {
@@ -84,13 +83,13 @@ public class QuickInterviewAction extends AbstractAction {
 
 		Broker broker = D3webModule.getBroker(user, web);
 
-		KnowledgeServiceSession serviceSession = broker.getSession()
+		D3webKnowledgeServiceSession serviceSession = broker.getSession()
 				.getServiceSession(kbid);
 		Session session = null;
 
 		if (serviceSession instanceof D3webKnowledgeServiceSession) {
 
-			session = ((D3webKnowledgeServiceSession) serviceSession).getSession();
+			session = (serviceSession).getSession();
 			return QuickInterviewRenderer.renderInterview(session, web, usercontext);
 		}
 
@@ -99,7 +98,7 @@ public class QuickInterviewAction extends AbstractAction {
 					+ KnowWEEnvironment.generateDefaultID(KnowWEEnvironment.WIKI_FINDINGS);
 			serviceSession = broker.getSession().getServiceSession(kbid);
 			if (serviceSession instanceof D3webKnowledgeServiceSession) {
-				session = ((D3webKnowledgeServiceSession) serviceSession).getSession();
+				session = (serviceSession).getSession();
 				return QuickInterviewRenderer.renderInterview(session, web, usercontext);
 			}
 		}

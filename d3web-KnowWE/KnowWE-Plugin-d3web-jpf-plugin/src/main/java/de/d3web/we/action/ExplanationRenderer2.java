@@ -33,7 +33,6 @@ import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
-import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.utils.ProblemSolverType;
 
 public class ExplanationRenderer2 extends DeprecatedAbstractKnowWEAction {
@@ -108,9 +107,9 @@ public class ExplanationRenderer2 extends DeprecatedAbstractKnowWEAction {
 		String namespace = map.get(KnowWEAttributes.NAMESPACE);
 		DPSEnvironment dpse = D3webModule.getDPSE(map);
 
-		KnowledgeService ks = dpse.getService(namespace);
+		D3webKnowledgeService ks = dpse.getService(namespace);
 		if (ks instanceof D3webKnowledgeService) {
-			D3webKnowledgeService d3 = (D3webKnowledgeService) ks;
+			D3webKnowledgeService d3 = ks;
 			Solution diag = d3.getBase().searchSolution(id);
 			if (diag != null) {
 				KnowledgeSlice heu = diag.getKnowledge(PSMethodHeuristic.class,

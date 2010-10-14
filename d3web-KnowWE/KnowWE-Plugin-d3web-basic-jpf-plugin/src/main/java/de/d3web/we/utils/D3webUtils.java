@@ -37,7 +37,6 @@ import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
-import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class D3webUtils {
@@ -119,12 +118,12 @@ public class D3webUtils {
 
 		String sessionId = topic + ".." + KnowWEEnvironment.generateDefaultID(topic);
 		Broker broker = D3webModule.getBroker(user.getUserName(), web);
-		KnowledgeServiceSession kss = broker.getSession().getServiceSession(sessionId);
+		D3webKnowledgeServiceSession kss = broker.getSession().getServiceSession(sessionId);
 		Session session = null;
 
 		if (kss instanceof D3webKnowledgeServiceSession) {
 
-			D3webKnowledgeServiceSession d3webKSS = (D3webKnowledgeServiceSession) kss;
+			D3webKnowledgeServiceSession d3webKSS = kss;
 			session = d3webKSS.getSession();
 		}
 		return session;
@@ -137,12 +136,12 @@ public class D3webUtils {
 
 		String sessionId = topic + ".." + KnowWEEnvironment.generateDefaultID(topic);
 		Broker broker = D3webModule.getBroker(user, web);
-		KnowledgeServiceSession kss = broker.getSession().getServiceSession(sessionId);
+		D3webKnowledgeServiceSession kss = broker.getSession().getServiceSession(sessionId);
 		Session session = null;
 
 		if (kss instanceof D3webKnowledgeServiceSession) {
 
-			D3webKnowledgeServiceSession d3webKSS = (D3webKnowledgeServiceSession) kss;
+			D3webKnowledgeServiceSession d3webKSS = kss;
 			session = d3webKSS.getSession();
 		}
 		return session;
@@ -151,15 +150,15 @@ public class D3webUtils {
 	public static Collection<Session> getSessions(String user, String web) {
 
 		Broker broker = D3webModule.getBroker(user, web);
-		Collection<KnowledgeServiceSession> ksss = broker.getSession().getServiceSessions();
+		Collection<D3webKnowledgeServiceSession> ksss = broker.getSession().getServiceSessions();
 
 		Collection<Session> sessions = new ArrayList<Session>();
 
-		for (KnowledgeServiceSession kss : ksss) {
+		for (D3webKnowledgeServiceSession kss : ksss) {
 
 			if (kss instanceof D3webKnowledgeServiceSession) {
 
-				sessions.add(((D3webKnowledgeServiceSession) kss).getSession());
+				sessions.add((kss).getSession());
 			}
 		}
 		return sessions;

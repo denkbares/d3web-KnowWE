@@ -23,8 +23,8 @@ package de.d3web.we.core.broker;
 import java.util.Stack;
 
 import de.d3web.we.core.DPSEnvironment;
-import de.d3web.we.core.knowledgeService.KnowledgeService;
-import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
+import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
+import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 
 public class BrokerImpl implements Broker {
 
@@ -32,24 +32,25 @@ public class BrokerImpl implements Broker {
 
 	private DPSSession session;
 
-	private Stack<KnowledgeServiceSession> delegateStack;
+	private Stack<D3webKnowledgeServiceSession> delegateStack;
 
 	public BrokerImpl(DPSEnvironment environment, String userID) {
 		super();
 		this.environment = environment;
 		session = new DPSSession(environment);
-		delegateStack = new Stack<KnowledgeServiceSession>();
+		delegateStack = new Stack<D3webKnowledgeServiceSession>();
 	}
 
 	@Override
-	public void register(KnowledgeService service) {
-		KnowledgeServiceSession serviceSession = environment.createServiceSession(service.getId(),
+	public void register(D3webKnowledgeService service) {
+		D3webKnowledgeServiceSession serviceSession = environment.createServiceSession(
+				service.getId(),
 				this);
 		session.addServiceSession(service.getId(), serviceSession);
 	}
 
 	@Override
-	public void signoff(KnowledgeService service) {
+	public void signoff(D3webKnowledgeService service) {
 		session.removeServiceSession(service.getId());
 	}
 

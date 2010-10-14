@@ -49,7 +49,6 @@ import de.d3web.we.basic.DPSEnvironmentManager;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
-import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
 
@@ -129,7 +128,7 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 
 		// String web = parameterMap.getWeb();
 		DPSEnvironment env = DPSEnvironmentManager.getInstance().getEnvironments(web);
-		KnowledgeService service = env.getService(serviceID);
+		D3webKnowledgeService service = env.getService(serviceID);
 
 		if (service == null) {
 			// it is possible (and allowed) that an article has no
@@ -143,11 +142,11 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		}
 		else if (service instanceof D3webKnowledgeService) {
 			// look for an object inside the knowledgebase
-			appendInfoObject(web, (D3webKnowledgeService) service, objectID, buffer);
+			appendInfoObject(web, service, objectID, buffer);
 		}
 	}
 
-	private static void appendInfoObject(String web, KnowledgeService service, StringBuffer buffer) {
+	private static void appendInfoObject(String web, D3webKnowledgeService service, StringBuffer buffer) {
 		String id = service.getId();
 		// filters KnowWE-Doc from object tree
 		if (id.startsWith("Doc ")) return;
@@ -161,7 +160,7 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		// Q000
 		// as well as the flowcharts
 		if (service instanceof D3webKnowledgeService) {
-			D3webKnowledgeService d3Service = (D3webKnowledgeService) service;
+			D3webKnowledgeService d3Service = service;
 			KnowledgeBase base = d3Service.getBase();
 			List<TerminologyObject> qsets = new LinkedList<TerminologyObject>();
 			for (TerminologyObject object : base.getRootQASet().getChildren()) {

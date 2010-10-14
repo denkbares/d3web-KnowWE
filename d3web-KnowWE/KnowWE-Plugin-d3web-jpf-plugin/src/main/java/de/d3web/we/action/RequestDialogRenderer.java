@@ -31,7 +31,6 @@ import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
-import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 
 public class RequestDialogRenderer extends DeprecatedAbstractKnowWEAction {
 
@@ -57,7 +56,7 @@ public class RequestDialogRenderer extends DeprecatedAbstractKnowWEAction {
 		String jumpId = parameterMap.get(KnowWEAttributes.JUMP_ID);
 		String id = parameterMap.get(KnowWEAttributes.SESSION_ID);
 		Broker broker = D3webModule.getBroker(parameterMap);
-		KnowledgeServiceSession serviceSession = broker.getSession().getServiceSession(id);
+		D3webKnowledgeServiceSession serviceSession = broker.getSession().getServiceSession(id);
 		if (serviceSession instanceof D3webKnowledgeServiceSession) {
 			// String web = (String) BasicUtils.getModelAttribute(model,
 			// KnowWEAttributes.WEB, String.class, true);
@@ -69,7 +68,7 @@ public class RequestDialogRenderer extends DeprecatedAbstractKnowWEAction {
 			}
 			// KnowledgeServiceSession kss =
 			// broker.getSession().getServiceSession(id);
-			D3webKnowledgeServiceSession d3webKSS = (D3webKnowledgeServiceSession) serviceSession;
+			D3webKnowledgeServiceSession d3webKSS = serviceSession;
 
 			// add the case to a map and save it in application scope
 			Map<String, Session> sessionToCaseMap = (Map) parameterMap.getSession().getServletContext().getAttribute(

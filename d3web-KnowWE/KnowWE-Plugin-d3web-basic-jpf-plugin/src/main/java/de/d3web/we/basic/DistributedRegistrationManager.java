@@ -26,7 +26,6 @@ import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
-import de.d3web.we.core.knowledgeService.KnowledgeService;
 
 public class DistributedRegistrationManager {
 
@@ -48,7 +47,7 @@ public class DistributedRegistrationManager {
 		base.setId(topic + ".."
 				+ KnowWEEnvironment.generateDefaultID(topic));
 		DPSEnvironment env = D3webModule.getDPSE(webname);
-		KnowledgeService service = new D3webKnowledgeService(base,
+		D3webKnowledgeService service = new D3webKnowledgeService(base,
 				base.getId());
 
 		env.addService(service);

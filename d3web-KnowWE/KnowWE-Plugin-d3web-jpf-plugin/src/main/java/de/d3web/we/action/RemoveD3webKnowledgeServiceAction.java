@@ -25,7 +25,7 @@ import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.knowledgeService.KnowledgeService;
+import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 
 public class RemoveD3webKnowledgeServiceAction extends DeprecatedAbstractKnowWEAction {
 
@@ -34,7 +34,7 @@ public class RemoveD3webKnowledgeServiceAction extends DeprecatedAbstractKnowWEA
 		String baseID = map.get(KnowWEAttributes.KNOWLEDGEBASE_ID);
 		if (baseID == null) return "no kbid to remove knowledge service";
 		DPSEnvironment env = D3webModule.getDPSE(map);
-		KnowledgeService service = env.getService(baseID);
+		D3webKnowledgeService service = env.getService(baseID);
 		if (service == null) return "no service found for id: " + baseID;
 		env.removeService(service);
 		for (Broker broker : env.getBrokers()) {

@@ -32,7 +32,6 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
-import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.HTMLDialogRenderer;
 
 public class RefreshHTMLDialogAction extends DeprecatedAbstractKnowWEAction {
@@ -64,12 +63,12 @@ public class RefreshHTMLDialogAction extends DeprecatedAbstractKnowWEAction {
 		// String kbid = topic+".."+KnowWEEnvironment.generateDefaultID(topic);
 
 		Broker broker = D3webModule.getBroker(user, web);
-		KnowledgeServiceSession serviceSession = broker.getSession()
+		D3webKnowledgeServiceSession serviceSession = broker.getSession()
 				.getServiceSession(kbid);
 		Session session = null;
 
 		if (serviceSession instanceof D3webKnowledgeServiceSession) {
-			session = ((D3webKnowledgeServiceSession) serviceSession).getSession();
+			session = (serviceSession).getSession();
 			return HTMLDialogRenderer.renderDialog(session, web);
 		}
 
@@ -78,7 +77,7 @@ public class RefreshHTMLDialogAction extends DeprecatedAbstractKnowWEAction {
 					+ KnowWEEnvironment.generateDefaultID(KnowWEEnvironment.WIKI_FINDINGS);
 			serviceSession = broker.getSession().getServiceSession(kbid);
 			if (serviceSession instanceof D3webKnowledgeServiceSession) {
-				session = ((D3webKnowledgeServiceSession) serviceSession).getSession();
+				session = (serviceSession).getSession();
 				return HTMLDialogRenderer.renderDialog(session, web);
 			}
 		}

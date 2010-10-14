@@ -26,31 +26,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.d3web.we.core.DPSEnvironment;
-import de.d3web.we.core.knowledgeService.KnowledgeService;
-import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
+import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
+import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 
 public class DPSSession {
 
 	private final DPSEnvironment environment;
 	private final String id;
-	private Map<String, KnowledgeServiceSession> serviceSessions;
+	private Map<String, D3webKnowledgeServiceSession> serviceSessions;
 
 	public DPSSession(DPSEnvironment environment) {
 		super();
 		this.environment = environment;
 		id = new UID().toString();
-		serviceSessions = new HashMap<String, KnowledgeServiceSession>();
+		serviceSessions = new HashMap<String, D3webKnowledgeServiceSession>();
 	}
 
-	public Collection<KnowledgeServiceSession> getServiceSessions() {
+	public Collection<D3webKnowledgeServiceSession> getServiceSessions() {
 		return serviceSessions.values();
 	}
 
-	public KnowledgeServiceSession getServiceSession(String id) {
+	public D3webKnowledgeServiceSession getServiceSession(String id) {
 		return serviceSessions.get(id);
 	}
 
-	public String getServiceId(KnowledgeServiceSession serviceSession) {
+	public String getServiceId(D3webKnowledgeServiceSession serviceSession) {
 		for (String id : serviceSessions.keySet()) {
 			if (serviceSessions.get(id).equals(serviceSession)) {
 				return id;
@@ -59,7 +59,7 @@ public class DPSSession {
 		return null;
 	}
 
-	public void addServiceSession(String id, KnowledgeServiceSession serviceSession) {
+	public void addServiceSession(String id, D3webKnowledgeServiceSession serviceSession) {
 		serviceSessions.put(id, serviceSession);
 	}
 
@@ -73,10 +73,10 @@ public class DPSSession {
 		 * knowledgebases
 		 */
 		java.util.Set<String> serviceIDs = serviceSessions.keySet();
-		serviceSessions = new HashMap<String, KnowledgeServiceSession>();
+		serviceSessions = new HashMap<String, D3webKnowledgeServiceSession>();
 		for (String string : serviceIDs) {
 			removeServiceSession(string);
-			KnowledgeService service = environment.getService(string);
+			D3webKnowledgeService service = environment.getService(string);
 			addServiceSession(service.getId(), service.createSession(broker));
 		}
 

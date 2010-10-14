@@ -20,16 +20,15 @@
 
 package de.d3web.we.action;
 
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.session.Session;
 import de.d3web.we.basic.DPSEnvironmentManager;
-import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
-import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
-import de.d3web.we.terminology.local.LocalTerminologyAccess;
 
 public class SemanticAnnotationAction extends DeprecatedAbstractKnowWEAction {
 
@@ -74,24 +73,16 @@ public class SemanticAnnotationAction extends DeprecatedAbstractKnowWEAction {
 		}
 		StringBuffer sb = new StringBuffer();
 
-		LocalTerminologyAccess<?> access = dpse.getTerminologyServer()
-				.getStorage().getTerminology(TerminologyType.getType(type),
-						namespace);
-
-		if (access == null) {
-			return "no access to terminlogy server";
-		}
-		Object obj = access.getObject(id, null);
+		D3webKnowledgeServiceSession kss = broker.getSession()
+				.getServiceSession(namespace);
+		Session session = kss.getSession();
+		TerminologyObject obj = session.getKnowledgeBase().search(id);
 		if (obj instanceof Question) {
 
 			if (user != null) {
-				KnowledgeServiceSession kss = broker.getSession()
-						.getServiceSession(namespace);
-				if (kss instanceof D3webKnowledgeServiceSession) {
-					sb.append(questionWriter.getHTMLString((Question) obj,
-							((D3webKnowledgeServiceSession) kss).getSession(),
+				sb.append(questionWriter.getHTMLString((Question) obj,
+							session,
 							namespace, webname, topic, targetUrlPrefix));
-				}
 			}
 			else {
 				sb.append(questionWriter.getHTMLString((Question) obj, null,

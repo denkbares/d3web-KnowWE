@@ -25,14 +25,14 @@ import java.util.List;
 
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.knowledgeService.KnowledgeService;
+import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 
 public class ManagerUtils {
 
-	public static KnowWEArticle getArticle(String web, KnowledgeService service) {
+	public static KnowWEArticle getArticle(String web, D3webKnowledgeService service) {
 		KnowWEEnvironment knowWEEnv = KnowWEEnvironment.getInstance();
 		KnowWEArticleManager articleManager = knowWEEnv.getArticleManager(web);
 		if (articleManager == null) return null;
@@ -44,7 +44,7 @@ public class ManagerUtils {
 		return article;
 	}
 
-	public static List<Section<FlowchartType>> getFlowcharts(String web, KnowledgeService service) {
+	public static List<Section<FlowchartType>> getFlowcharts(String web, D3webKnowledgeService service) {
 		KnowWEArticle article = ManagerUtils.getArticle(web, service);
 		List<Section<FlowchartType>> result = new LinkedList<Section<FlowchartType>>();
 		if (article != null) {

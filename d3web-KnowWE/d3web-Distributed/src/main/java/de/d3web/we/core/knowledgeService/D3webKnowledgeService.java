@@ -20,20 +20,10 @@
 
 package de.d3web.we.core.knowledgeService;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.IDObject;
-import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.broker.Broker;
-import de.d3web.we.terminology.local.D3webLocalDiagnosisTerminology;
-import de.d3web.we.terminology.local.D3webLocalSymptomTerminology;
-import de.d3web.we.terminology.local.LocalTerminologyAccess;
 
-public class D3webKnowledgeService implements KnowledgeService {
+public class D3webKnowledgeService {
 
 	private KnowledgeBase base;
 
@@ -49,21 +39,11 @@ public class D3webKnowledgeService implements KnowledgeService {
 		return id;
 	}
 
-	public KnowledgeServiceSession createSession(Broker broker) {
+	public D3webKnowledgeServiceSession createSession(Broker broker) {
 		return new D3webKnowledgeServiceSession(base, broker, id);
 	}
 
-	public Map<TerminologyType, LocalTerminologyAccess> getTerminologies() {
-		Map<TerminologyType, LocalTerminologyAccess> result = new HashMap<TerminologyType, LocalTerminologyAccess>();
-		LocalTerminologyAccess<IDObject> symptom = new D3webLocalSymptomTerminology(
-				KnowledgeBaseManagement.createInstance(base));
-		LocalTerminologyAccess<NamedObject> diagnosis = new D3webLocalDiagnosisTerminology(
-				KnowledgeBaseManagement.createInstance(base));
-		result.put(TerminologyType.symptom, symptom);
-		result.put(TerminologyType.diagnosis, diagnosis);
-		return result;
-	}
-
+	@Override
 	public String toString() {
 		return "d3web Service " + getId();
 	}

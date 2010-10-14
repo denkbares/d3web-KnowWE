@@ -45,7 +45,6 @@ import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
-import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.xcl.InferenceTrace;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
@@ -86,7 +85,7 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 		String id = parameterMap.get(KnowWEAttributes.SESSION_ID);
 		String solutionid = parameterMap.get(KnowWEAttributes.TERM);
 		Broker broker = D3webModule.getBroker(parameterMap);
-		KnowledgeServiceSession serviceSession = broker.getSession()
+		D3webKnowledgeServiceSession serviceSession = broker.getSession()
 				.getServiceSession(id);
 
 		if (serviceSession instanceof D3webKnowledgeServiceSession) {
@@ -98,7 +97,7 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 			// namespace = parameterMap.get(KnowWEAttributes.NAMESPACE);
 			// }
 
-			D3webKnowledgeServiceSession d3webKSS = (D3webKnowledgeServiceSession) serviceSession;
+			D3webKnowledgeServiceSession d3webKSS = serviceSession;
 			KnowledgeBaseManagement baseManagement = d3webKSS.getBaseManagement();
 
 			Session c = d3webKSS.getSession();
