@@ -44,11 +44,10 @@ public class D3webTermFactory implements TermFactory<TerminologyObject, Terminol
 
 	public static final String DEFAULT_QUESTIONNAIRE_NAME = "Standardfragebogen";
 
-	@Override
-	public Term getTerm(TerminologyObject object, TerminologyType type, GlobalTerminology gt) {
+	private Term getTerm(TerminologyObject object, TerminologyType type, GlobalTerminology gt) {
 		Term term = gt.getTerm(object.getName(), null);
 		if (term == null) {
-			term = new Term(gt.getType());
+			term = new Term();
 			term.setInfo(TermInfoType.TERM_NAME, object.getName());
 			gt.addTerm(term);
 		}
@@ -82,12 +81,6 @@ public class D3webTermFactory implements TermFactory<TerminologyObject, Terminol
 				parentTerm = getTerm(no, globalTerminology.getType(), globalTerminology);
 				// parentTerm.addAlignments(getAlignments(no, idString,
 				// parentTerm));
-				if (oldParentTerm == null) {
-					globalTerminology.addRoot(parentTerm);
-				}
-				else {
-					oldParentTerm.addChild(parentTerm);
-				}
 			}
 			else if (no instanceof Question) {
 				getTerm(no, globalTerminology.getType(), globalTerminology);
@@ -109,20 +102,20 @@ public class D3webTermFactory implements TermFactory<TerminologyObject, Terminol
 
 	private void createAnswerTerms(Question question, GlobalTerminology globalTerminology) {
 		Term valueTerm = null;
-		valueTerm = new Term(globalTerminology.getType());
+		valueTerm = new Term();
 		valueTerm.setInfo(TermInfoType.TERM_NAME, D3webAlignUtils.getText(question));
 		valueTerm.setInfo(TermInfoType.TERM_VALUE, D3webAlignUtils.getText(Unknown.getInstance()));
 		globalTerminology.addTerm(valueTerm);
 		if (question instanceof QuestionChoice) {
 			for (Choice each : ((QuestionChoice) question).getAllAlternatives()) {
-				valueTerm = new Term(globalTerminology.getType());
+				valueTerm = new Term();
 				valueTerm.setInfo(TermInfoType.TERM_NAME, D3webAlignUtils.getText(question));
 				valueTerm.setInfo(TermInfoType.TERM_VALUE, D3webAlignUtils.getText(each));
 				globalTerminology.addTerm(valueTerm);
 			}
 		}
 		else if (question instanceof QuestionNum) {
-			valueTerm = new Term(globalTerminology.getType());
+			valueTerm = new Term();
 			valueTerm.setInfo(TermInfoType.TERM_NAME, D3webAlignUtils.getText(question));
 			valueTerm.setInfo(TermInfoType.TERM_VALUE, new NumericalIdentity());
 			globalTerminology.addTerm(valueTerm);

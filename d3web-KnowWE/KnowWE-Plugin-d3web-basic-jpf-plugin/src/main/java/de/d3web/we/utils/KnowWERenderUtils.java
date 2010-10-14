@@ -20,19 +20,14 @@
 
 package de.d3web.we.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.basic.DPSEnvironmentManager;
 import de.d3web.we.basic.IdentifiableInstance;
-import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.terminology.term.Term;
-import de.d3web.we.terminology.term.TermInfoType;
 
 public class KnowWERenderUtils {
 
@@ -79,23 +74,6 @@ public class KnowWERenderUtils {
 		return link;
 	}
 
-	public static StringBuffer getKopicLinks(String web, Term term, String iconURL, String usagePrefix, boolean withTitle, boolean asButton) {
-		ResourceBundle rb = D3webModule.getKwikiBundle_d3web();
-		StringBuffer sb = new StringBuffer();
-		DPSEnvironment dpse = DPSEnvironmentManager.getInstance().getEnvironments(web);
-		// DPSEnvironment dpse = KnowWEUtils.getEnvironment(model);
-		// String web = (String) BasicUtils.getModelAttribute(model,
-		// KnowWEAttributes.WEB, String.class, true);
-		String exactPrefix = KnowWEUtils.replaceUmlaut(((String) term.getInfo(TermInfoType.TERM_NAME)))
-				+ usagePrefix;
-		if (asButton) {
-			sb.append("<tr>");
-			sb.append("<td>");
-			sb.append("<div class='patternButton' style='clear:left; text-align:left; width:100%; overflow:visible;'>");
-		}
-		return sb;
-	}
-
 	public static String getLinkToKopic(IdentifiableInstance ii, String web) {
 		String namespace = ii.getNamespace().split("\\.\\.")[0];
 		String link = "Wiki.jsp?page=" + namespace;
@@ -110,25 +88,6 @@ public class KnowWERenderUtils {
 		return result;
 	}
 
-	public static StringBuffer getDialogLinks(String user, String web, Term term, String iconURL, String usagePrefix, boolean withTitle, boolean asButton) {
-		ResourceBundle rb = D3webModule.getKwikiBundle_d3web();
-		StringBuffer sb = new StringBuffer();
-		// String user = (String) BasicUtils.getModelAttribute(model,
-		// KnowWEAttributes.USER, String.class, true);
-		// String web = (String) BasicUtils.getModelAttribute(model,
-		// KnowWEAttributes.WEB, String.class, true);
-		DPSEnvironment dpse = DPSEnvironmentManager.getInstance().getEnvironments(web);
-		// DPSEnvironment dpse = KnowWEUtils.getEnvironment(model);
-		String exactPrefix = KnowWEUtils.replaceUmlaut(((String) term.getInfo(TermInfoType.TERM_NAME)))
-				+ usagePrefix;
-		if (asButton) {
-			sb.append("<tr>");
-			sb.append("<td>");
-			sb.append("<div class='patternButton' style='clear:left; text-align:left; width:100%; overflow:visible;'>");
-		}
-		return sb;
-	}
-
 	public static String getLinkToDialog(IdentifiableInstance ii, String user, String web) {
 		String link = knowweUrlPrefix
 				+ "?renderer=KWiki_dialog&action=KWiki_requestDialog&KWikisessionid="
@@ -140,79 +99,6 @@ public class KnowWERenderUtils {
 		List<String> result = new ArrayList<String>();
 		for (IdentifiableInstance ii : iis) {
 			result.add(getLinkToDialog(ii, user, web));
-		}
-		return result;
-	}
-
-	public static StringBuffer getSolutionLogLinks(String user, String web, Term term, String iconURL, boolean withTitle, boolean asButton) {
-		ResourceBundle rb = D3webModule.getKwikiBundle_d3web();
-		StringBuffer sb = new StringBuffer();
-		// String user = (String) BasicUtils.getModelAttribute(model,
-		// KnowWEAttributes.USER, String.class, true);
-		// String web = (String) BasicUtils.getModelAttribute(model,
-		// KnowWEAttributes.WEB, String.class, true);
-		String link = "#";
-		try {
-			link = "javascript:kwiki_window('"
-					+ knowweUrlPrefix
-					+ "?renderer=KWiki_solutionLog&KWikiUser="
-					+ user
-					+ "&KWikiWeb="
-					+ web
-					+ "&KWikiTerm="
-					+ URLEncoder.encode((String) term.getInfo(TermInfoType.TERM_NAME), "ISO-8859-1")
-					+ "')";
-		}
-		catch (UnsupportedEncodingException e) {
-
-		}
-		if (asButton) {
-			sb.append("<tr>");
-			sb.append("<td>");
-			sb.append("<div class='patternButton' style='clear:left; text-align:left; width:100%; overflow:visible;'>");
-		}
-		sb.append("<a href=\"" + link + "\">");
-		sb.append("<img border='0' style='margin-left:1px;margin-right:1px' src=\"");
-		sb.append(iconURL);
-		sb.append("application_view_list.png");
-		sb.append("\" border=0");
-		sb.append(" title=\"");
-		sb.append(rb.getString("KnowWE.solution.log.show"));
-		sb.append("\" />");
-		if (withTitle) sb.append(rb.getString("KnowWE.solution.log"));
-		sb.append("</a>");
-		if (asButton) {
-			sb.append("</div>");
-			sb.append("</td>");
-			sb.append("</tr>");
-		}
-		return sb;
-	}
-
-	public static StringBuffer getExplanationLinks(String user, String web, Term term, String iconURL, String usagePrefix, boolean withTitle, boolean asButton) {
-		ResourceBundle rb = D3webModule.getKwikiBundle_d3web();
-		StringBuffer sb = new StringBuffer();
-		// String user = (String) BasicUtils.getModelAttribute(model,
-		// KnowWEAttributes.USER, String.class, true);
-		// String web = (String) BasicUtils.getModelAttribute(model,
-		// KnowWEAttributes.WEB, String.class, true);
-		// DPSEnvironment dpse = KnowWEUtils.getEnvironment(model);
-		DPSEnvironment dpse = DPSEnvironmentManager.getInstance().getEnvironments(web);
-
-		String exactPrefix = KnowWEUtils.replaceUmlaut(((String) term.getInfo(TermInfoType.TERM_NAME)))
-				+ usagePrefix;
-		if (asButton) {
-			sb.append("<tr>");
-			sb.append("<td>");
-			sb.append("<div class='patternButton' style='clear:left; text-align:left; width:100%; overflow:visible;'>");
-		}
-		return sb;
-	}
-
-	public static List<String> getLinksToExplanations(List<IdentifiableInstance> iis, String user, String web) {
-		List<String> result = new ArrayList<String>();
-		for (IdentifiableInstance ii : iis) {
-			result.add(getLinkToExplanation(ii, user, web));
 		}
 		return result;
 	}
@@ -234,25 +120,6 @@ public class KnowWERenderUtils {
 				+ ii.getNamespace() + "&KWikiExplain=" + ii.getObjectId() + "&KWikisessionid="
 				+ ii.getNamespace() + "&KWikiUser=" + user + "&KWikiWeb=" + web;
 		return link;
-	}
-
-	public static StringBuffer getClarificationLinks(String user, String web, Term term, String iconURL, String usagePrefix, boolean withTitle, boolean asButton) {
-		ResourceBundle rb = D3webModule.getKwikiBundle_d3web();
-		StringBuffer sb = new StringBuffer();
-		// String user = (String) BasicUtils.getModelAttribute(model,
-		// KnowWEAttributes.USER, String.class, true);
-		// String web = (String) BasicUtils.getModelAttribute(model,
-		// KnowWEAttributes.WEB, String.class, true);
-		DPSEnvironment dpse = DPSEnvironmentManager.getInstance().getEnvironments(web);
-
-		String exactPrefix = KnowWEUtils.replaceUmlaut(((String) term.getInfo(TermInfoType.TERM_NAME)))
-				+ usagePrefix;
-		if (asButton) {
-			sb.append("<tr>");
-			sb.append("<td>");
-			sb.append("<div class='patternButton' style='clear:left; text-align:left; width:100%; overflow:visible;'>");
-		}
-		return sb;
 	}
 
 	public static List<String> getLinksToClarifications(List<IdentifiableInstance> iis, String user, String web) {

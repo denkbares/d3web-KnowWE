@@ -20,15 +20,10 @@
 
 package de.d3web.we.terminology;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.d3web.utilities.ISetMap;
-import de.d3web.utilities.SetMap;
-import de.d3web.we.basic.IdentifiableInstance;
-import de.d3web.we.basic.Information;
 import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.terminology.global.GlobalTerminology;
 import de.d3web.we.terminology.local.LocalTerminologyAccess;
@@ -42,42 +37,6 @@ public class TerminologyBroker {
 	public TerminologyBroker() {
 		super();
 		globalTerminologies = new HashMap<TerminologyType, GlobalTerminology>();
-	}
-
-	public ISetMap<IdentifiableInstance, IdentifiableInstance> getAlignmentMap(
-			Information info) {
-		IdentifiableInstance iio = info.getIdentifiableObjectInstance();
-		Collection<IdentifiableInstance> iivs = info
-				.getIdentifiableValueInstances();
-		IdentifiableInstance DUMMY = new IdentifiableInstance("dummy", "dummy",
-				"dummy");
-
-		ISetMap<IdentifiableInstance, IdentifiableInstance> result = new SetMap<IdentifiableInstance, IdentifiableInstance>(
-				false);
-		result.addAll(getLocalIIOVMap(iio, iivs, DUMMY));
-		result.addAll(getGlobalIIOVMap(iio, iivs, info, DUMMY));
-		// [TODO]: find better solution for empty values.. dummy
-		result.removeAll(new ArrayList<IdentifiableInstance>(result.keySet()), DUMMY);
-		return result;
-	}
-
-	private ISetMap<IdentifiableInstance, IdentifiableInstance> getGlobalIIOVMap(
-			IdentifiableInstance iio, Collection<IdentifiableInstance> iivs,
-			Information info, IdentifiableInstance dummy) {
-		ISetMap<IdentifiableInstance, IdentifiableInstance> result = new SetMap<IdentifiableInstance, IdentifiableInstance>(
-				false);
-
-		return result;
-
-	}
-
-	private ISetMap<IdentifiableInstance, IdentifiableInstance> getLocalIIOVMap(
-			IdentifiableInstance iio, Collection<IdentifiableInstance> iivs,
-			IdentifiableInstance dummy) {
-		ISetMap<IdentifiableInstance, IdentifiableInstance> result = new SetMap<IdentifiableInstance, IdentifiableInstance>(
-				false);
-
-		return result;
 	}
 
 	public GlobalTerminology getGlobalTerminology(TerminologyType type) {
@@ -95,9 +54,4 @@ public class TerminologyBroker {
 		ISetMap<Object, Term> result = gt.addTerminology(terminology, idString);
 		return result;
 	}
-
-	public Collection<GlobalTerminology> getGlobalTerminologies() {
-		return globalTerminologies.values();
-	}
-
 }

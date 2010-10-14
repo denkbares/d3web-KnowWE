@@ -20,14 +20,12 @@
 
 package de.d3web.we.terminology.local;
 
-import java.util.Collection;
-
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QASet;
-import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.alignment.AlignmentUtilRepository;
+import de.d3web.we.terminology.term.TerminologyHandler;
 
 public class D3webLocalSymptomTerminology implements LocalTerminologyAccess<IDObject> {
 
@@ -38,6 +36,7 @@ public class D3webLocalSymptomTerminology implements LocalTerminologyAccess<IDOb
 		this.kbm = kbm;
 	}
 
+	@Override
 	public IDObject getObject(String objectId, String valueId) {
 		IDObject result = null;
 		result = kbm.findQContainer(objectId);
@@ -55,18 +54,13 @@ public class D3webLocalSymptomTerminology implements LocalTerminologyAccess<IDOb
 		return result;
 	}
 
-	public LocalTerminologyHandler<IDObject, IDObject> getHandler(Collection<Class> include, Collection<Class> exclude) {
-		LocalTerminologyHandler result = getHandler();
-		result.setFilters(include);
-		result.setExclusiveFilters(exclude);
-		return result;
-	}
-
-	public LocalTerminologyHandler<IDObject, IDObject> getHandler() {
+	@Override
+	public TerminologyHandler<IDObject, IDObject> getHandler() {
 		Object root = kbm.getKnowledgeBase().getRootQASet();
 		return AlignmentUtilRepository.getInstance().getLocalTerminogyHandler(root);
 	}
 
+	@Override
 	public Class getContext() {
 		return QASet.class;
 	}

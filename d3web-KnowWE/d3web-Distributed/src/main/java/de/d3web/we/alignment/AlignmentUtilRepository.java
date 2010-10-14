@@ -30,11 +30,9 @@ import de.d3web.we.terminology.global.GlobalTerminology;
 import de.d3web.we.terminology.global.GlobalTerminologyHandler;
 import de.d3web.we.terminology.local.D3webIDObjectTerminologyHandler;
 import de.d3web.we.terminology.local.D3webNamedObjectTerminologyHandler;
-import de.d3web.we.terminology.local.LocalTerminologyHandler;
 import de.d3web.we.terminology.term.D3webTermFactory;
-import de.d3web.we.terminology.term.D3webTermUpdater;
 import de.d3web.we.terminology.term.TermFactory;
-import de.d3web.we.terminology.term.TermUpdater;
+import de.d3web.we.terminology.term.TerminologyHandler;
 
 public class AlignmentUtilRepository {
 
@@ -42,11 +40,9 @@ public class AlignmentUtilRepository {
 
 	private AlignmentUtilRepository() {
 		super();
-		localTerminologyHandler = new HashMap<Class, LocalTerminologyHandler>();
+		localTerminologyHandler = new HashMap<Class, TerminologyHandler>();
 		globalTerminologyHandler = new HashMap<Class, GlobalTerminologyHandler>();
-		termUpdater = new HashMap<Class, TermUpdater>();
 		termFactory = new HashMap<Class, TermFactory>();
-
 		initialize();
 	}
 
@@ -56,8 +52,6 @@ public class AlignmentUtilRepository {
 
 		globalTerminologyHandler.put(GlobalTerminology.class, new DefaultGlobalTerminologyHandler());
 
-		termUpdater.put(NamedObject.class, new D3webTermUpdater());
-
 		termFactory.put(NamedObject.class, new D3webTermFactory());
 	}
 
@@ -65,19 +59,18 @@ public class AlignmentUtilRepository {
 		return instance;
 	}
 
-	private Map<Class, LocalTerminologyHandler> localTerminologyHandler;
+	private Map<Class, TerminologyHandler> localTerminologyHandler;
 	private Map<Class, GlobalTerminologyHandler> globalTerminologyHandler;
-	private Map<Class, TermUpdater> termUpdater;
 	private Map<Class, TermFactory> termFactory;
 
-	public LocalTerminologyHandler getLocalTerminogyHandler(Object terminology) {
-		LocalTerminologyHandler result = getLocalTerminogyHandler(terminology.getClass());
+	public TerminologyHandler getLocalTerminogyHandler(Object terminology) {
+		TerminologyHandler result = getLocalTerminogyHandler(terminology.getClass());
 		result.setTerminology(terminology);
 		return result;
 	}
 
-	public LocalTerminologyHandler getLocalTerminogyHandler(Class context) {
-		LocalTerminologyHandler result = localTerminologyHandler.get(context);
+	public TerminologyHandler getLocalTerminogyHandler(Class context) {
+		TerminologyHandler result = localTerminologyHandler.get(context);
 		Class bestContext = Object.class;
 		if (result == null) {
 			for (Class key : localTerminologyHandler.keySet()) {
@@ -87,7 +80,7 @@ public class AlignmentUtilRepository {
 				}
 			}
 		}
-		return (LocalTerminologyHandler) result.newInstance();
+		return result.newInstance();
 	}
 
 	public GlobalTerminologyHandler getGlobalTerminogyHandler(Class context) {

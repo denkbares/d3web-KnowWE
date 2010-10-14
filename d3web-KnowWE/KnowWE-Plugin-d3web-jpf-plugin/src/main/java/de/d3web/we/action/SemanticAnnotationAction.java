@@ -29,9 +29,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
-import de.d3web.we.terminology.global.GlobalTerminology;
 import de.d3web.we.terminology.local.LocalTerminologyAccess;
-import de.d3web.we.terminology.term.Term;
 
 public class SemanticAnnotationAction extends DeprecatedAbstractKnowWEAction {
 
@@ -40,27 +38,6 @@ public class SemanticAnnotationAction extends DeprecatedAbstractKnowWEAction {
 
 	public SemanticAnnotationAction() {
 		questionWriter = new FindingHTMLWriter();
-	}
-
-	public static Term getTerm(DPSEnvironment dpse, String termName) {
-		Term result = null;
-		for (GlobalTerminology each : dpse.getTerminologyServer().getBroker()
-				.getGlobalTerminologies()) {
-			result = each.getTerm(termName, null);
-			if (result != null) {
-				return result;
-			}
-		}
-		if (result == null) {
-			for (GlobalTerminology each : dpse.getTerminologyServer().getBroker()
-					.getGlobalTerminologies()) {
-				result = each.getTerm(termName, null);
-				if (result != null) {
-					return result;
-				}
-			}
-		}
-		return result;
 	}
 
 	@SuppressWarnings("deprecation")

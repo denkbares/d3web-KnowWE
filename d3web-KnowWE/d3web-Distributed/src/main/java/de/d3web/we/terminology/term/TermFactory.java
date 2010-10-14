@@ -21,13 +21,10 @@
 package de.d3web.we.terminology.term;
 
 import de.d3web.utilities.ISetMap;
-import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.terminology.global.GlobalTerminology;
 import de.d3web.we.terminology.local.LocalTerminologyAccess;
 
 public interface TermFactory<T, E> {
-
-	public Term getTerm(E object, TerminologyType type, GlobalTerminology gt);
 
 	public ISetMap<E, Term> addTerminology(LocalTerminologyAccess<E> localTerminology, String idString, GlobalTerminology globalTerminology);
 }

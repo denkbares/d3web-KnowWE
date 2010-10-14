@@ -28,8 +28,9 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.we.terminology.term.TerminologyHandler;
 
-public class D3webIDObjectTerminologyHandler extends LocalTerminologyHandler<IDObject, IDObject> {
+public class D3webIDObjectTerminologyHandler extends TerminologyHandler<IDObject, IDObject> {
 
 	@Override
 	protected List<IDObject> fifo(IDObject no) {
@@ -47,7 +48,7 @@ public class D3webIDObjectTerminologyHandler extends LocalTerminologyHandler<IDO
 		if (toExpand == null || toExpand.isEmpty()) return;
 		List<IDObject> newToExpand = new ArrayList<IDObject>();
 		for (IDObject each : toExpand) {
-			if (checkFilter(each) && !result.contains(each)) {
+			if (!result.contains(each)) {
 				result.add(each);
 				if (each instanceof NamedObject) {
 					NamedObject no = (NamedObject) each;
@@ -74,15 +75,4 @@ public class D3webIDObjectTerminologyHandler extends LocalTerminologyHandler<IDO
 	public D3webIDObjectTerminologyHandler newInstance() {
 		return new D3webIDObjectTerminologyHandler();
 	}
-
-	@Override
-	public IDObject getTerminologicalObject(String id) {
-		for (IDObject ido : this) {
-			if (ido.getId().equals(id)) {
-				return ido;
-			}
-		}
-		return null;
-	}
-
 }

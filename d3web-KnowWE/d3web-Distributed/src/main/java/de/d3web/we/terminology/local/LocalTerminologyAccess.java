@@ -20,7 +20,7 @@
 
 package de.d3web.we.terminology.local;
 
-import java.util.Collection;
+import de.d3web.we.terminology.term.TerminologyHandler;
 
 public interface LocalTerminologyAccess<E> {
 
@@ -28,8 +28,6 @@ public interface LocalTerminologyAccess<E> {
 
 	public E getObject(String objectId, String valueId);
 
-	public LocalTerminologyHandler<E, E> getHandler(Collection<Class> include, Collection<Class> exclude);
-
-	public LocalTerminologyHandler<E, E> getHandler();
+	public TerminologyHandler<E, E> getHandler();
 
 }

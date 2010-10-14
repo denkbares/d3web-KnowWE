@@ -244,18 +244,6 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
-		id="WikiSolutionsTagHandler">
-		<parameter id="class"
-			value="de.d3web.we.taghandler.WikiSolutionsTagHandler" />
-		<parameter id="name" value="WikiSolutionsTagHandler" />
-		<parameter id="description" value="TagHandler WikiSolutionsTagHandler" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="script" value="KnowWE-plugin-d3web.js" />
-		<parameter id="script" value="silveripe.0.2.js" />
-	</extension>
-
-	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="ObjectInfoTagHandler">
 		<parameter id="class" value="de.d3web.we.taghandler.ObjectInfoTagHandler" />
 		<parameter id="name" value="ObjectInfoTagHandler" />

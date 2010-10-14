@@ -25,8 +25,9 @@ import java.util.List;
 
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.we.terminology.term.TerminologyHandler;
 
-public class D3webNamedObjectTerminologyHandler extends LocalTerminologyHandler<TerminologyObject, TerminologyObject> {
+public class D3webNamedObjectTerminologyHandler extends TerminologyHandler<TerminologyObject, TerminologyObject> {
 
 	public D3webNamedObjectTerminologyHandler() {
 		super();
@@ -54,7 +55,7 @@ public class D3webNamedObjectTerminologyHandler extends LocalTerminologyHandler<
 		if (toExpand == null || toExpand.isEmpty()) return;
 		List<TerminologyObject> newToExpand = new ArrayList<TerminologyObject>();
 		for (TerminologyObject each : toExpand) {
-			if (checkFilter(each) && !result.contains(each)) {
+			if (!result.contains(each)) {
 				// if(!each.getText().equals("P000") &&
 				// !each.getText().equals("Q000")) {
 				result.add(each);
@@ -73,15 +74,4 @@ public class D3webNamedObjectTerminologyHandler extends LocalTerminologyHandler<
 	public D3webNamedObjectTerminologyHandler newInstance() {
 		return new D3webNamedObjectTerminologyHandler();
 	}
-
-	@Override
-	public TerminologyObject getTerminologicalObject(String id) {
-		for (TerminologyObject no : this) {
-			if (no.getId().equals(id)) {
-				return no;
-			}
-		}
-		return null;
-	}
-
 }

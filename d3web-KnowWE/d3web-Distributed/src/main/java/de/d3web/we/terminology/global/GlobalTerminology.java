@@ -34,14 +34,11 @@ import de.d3web.we.terminology.term.TermInfoType;
 public class GlobalTerminology {
 
 	private TerminologyType type;
-	private Term realRoot;
 	private Collection<Term> terms;
 
 	public GlobalTerminology(TerminologyType type) {
 		super();
 		this.type = type;
-		this.realRoot = new Term(type);
-		realRoot.setInfo(TermInfoType.TERM_NAME, "ROOT");
 		terms = new TreeSet<Term>();
 	}
 
@@ -53,18 +50,6 @@ public class GlobalTerminology {
 		TermFactory termFactory = AlignmentUtilRepository.getInstance().getTermFactory(
 				terminology.getContext());
 		return termFactory.addTerminology(terminology, idString, this);
-	}
-
-	public Collection<Term> getRoots() {
-		return realRoot.getChildren();
-	}
-
-	public void addRoot(Term term) {
-		realRoot.addChild(term);
-	}
-
-	public Term getRoot() {
-		return realRoot;
 	}
 
 	public Term getTerm(String name, Object value) {
