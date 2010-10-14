@@ -65,11 +65,6 @@ KNOWWE.plugin.solutionpanel = function(){
                 _KE.add('click', el, this.updateSolutionstate);
             }
             
-            el = _KS('#sstate-findings');
-            if( el ){
-                _KE.add('click', el, this.showFindings);
-            }
-            
             el = _KS('#sstate-clear'); 
             if( el ){
                 _KE.add('click', el, this.clearSolutionstate);
@@ -136,25 +131,6 @@ KNOWWE.plugin.solutionpanel = function(){
                 KNOWWE.plugin.d3web.rerenderquestionsheet.update();
                 KNOWWE.helper.observer.notify('update');
             }   
-        },
-        /**
-         * Function: showFindings
-         * Shows the findings in an extra popup window.
-         */
-        showFindings : function( event ){
-            var params = {
-                action : 'UserFindingsAction',
-                KWikiWeb : 'default_web'
-            }
-            
-            event = new Event( event );
-            KNOWWE.helper.window.open({
-                url : KNOWWE.core.util.getURL(params),
-                left : event.page.x, 
-                top : event.page.y,
-                screenX : event.client.x,
-                screenY : event.client.y
-            });
         },
         /**
          * Functions: showExplanation

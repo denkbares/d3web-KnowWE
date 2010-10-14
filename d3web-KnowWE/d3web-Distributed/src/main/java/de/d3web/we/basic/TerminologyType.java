@@ -22,7 +22,7 @@ package de.d3web.we.basic;
 
 public enum TerminologyType {
 
-	symptom("symptom"), diagnosis("diagnosis"), local("local");
+	symptom("symptom"), diagnosis("diagnosis");
 
 	private final String idString;
 
@@ -43,6 +43,7 @@ public enum TerminologyType {
 		return null;
 	}
 
+	@Override
 	public String toString() {
 		return getIdString();
 	}

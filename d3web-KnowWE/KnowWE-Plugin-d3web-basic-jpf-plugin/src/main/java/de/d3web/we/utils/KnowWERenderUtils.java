@@ -20,24 +20,11 @@
 
 package de.d3web.we.utils;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.basic.IdentifiableInstance;
 
 public class KnowWERenderUtils {
-
-	public static final Comparator<IdentifiableInstance> iiNamespceComparator = new Comparator<IdentifiableInstance>() {
-
-		@Override
-		public int compare(IdentifiableInstance o1, IdentifiableInstance o2) {
-			return o1.getNamespace().compareTo(o2.getNamespace());
-		}
-
-	};
 
 	public static StringBuffer getTopicLink(String web, String name, String iconURL, String usagePrefix, boolean withTitle, boolean asButton) {
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web();
@@ -73,67 +60,5 @@ public class KnowWERenderUtils {
 		return link;
 	}
 
-	public static String getLinkToKopic(IdentifiableInstance ii, String web) {
-		String namespace = ii.getNamespace().split("\\.\\.")[0];
-		String link = "Wiki.jsp?page=" + namespace;
-		return link;
-	}
-
-	public static List<String> getLinksToKopics(List<IdentifiableInstance> iis, String web) {
-		List<String> result = new ArrayList<String>();
-		for (IdentifiableInstance ii : iis) {
-			result.add(getLinkToKopic(ii, web));
-		}
-		return result;
-	}
-
-	public static String getLinkToDialog(IdentifiableInstance ii, String user, String web) {
-		String link = knowweUrlPrefix
-				+ "?renderer=KWiki_dialog&action=KWiki_requestDialog&KWikisessionid="
-				+ ii.getNamespace() + "&KWikiUser=" + user + "&KWikiWeb=" + web;
-		return link;
-	}
-
-	public static List<String> getLinksToDialogs(List<IdentifiableInstance> iis, String user, String web) {
-		List<String> result = new ArrayList<String>();
-		for (IdentifiableInstance ii : iis) {
-			result.add(getLinkToDialog(ii, user, web));
-		}
-		return result;
-	}
-
-	public static String getLinkToExplanation(IdentifiableInstance ii, String user, String web, ProblemSolverType type) {
-		String link = knowweUrlPrefix
-				+ "?renderer=KWiki_explain&action=KWiki_prepareDialog&KWikiNamespace="
-				+ ii.getNamespace() + "&KWikiExplain=" + ii.getObjectId() + "&KWikisessionid="
-				+ ii.getNamespace() + "&KWikiUser=" + user + "&KWikiWeb=" + web
-				+ "&ProblemSolverType=" + type.getIdString();
-		return link;
-	}
-
 	public static final String knowweUrlPrefix = "KnowWE.jsp";
-
-	public static String getLinkToExplanation(IdentifiableInstance ii, String user, String web) {
-		String link = knowweUrlPrefix
-				+ "?renderer=KWiki_explain&action=KWiki_prepareDialog&KWikiNamespace="
-				+ ii.getNamespace() + "&KWikiExplain=" + ii.getObjectId() + "&KWikisessionid="
-				+ ii.getNamespace() + "&KWikiUser=" + user + "&KWikiWeb=" + web;
-		return link;
-	}
-
-	public static List<String> getLinksToClarifications(List<IdentifiableInstance> iis, String user, String web) {
-		List<String> result = new ArrayList<String>();
-		for (IdentifiableInstance ii : iis) {
-			result.add(getLinkToClarification(ii, user, web));
-		}
-		return result;
-	}
-
-	public static String getLinkToClarification(IdentifiableInstance ii, String user, String web) {
-		String link = knowweUrlPrefix
-				+ "?renderer=diagnosisClarification&action=KWiki_prepareDialog&KWikiNamespace="
-				+ ii.getNamespace() + "&diagId=" + ii.getObjectId() + "&KWikisessionid="
-				+ ii.getNamespace() + "&KWikiUser=" + user + "&KWikiWeb=" + web;
-		return link;
-	}
 }

@@ -22,15 +22,9 @@ package de.d3web.we.basic;
 
 public enum InformationType {
 
-	OriginalUserInformation("OriginalUserInformation"),
-	AlignedUserInformation("AlignedUserInformation"),
 	HeuristicInferenceInformation("HeuristicInferenceInformation"),
-	SetCoveringInferenceInformation("SetCoveringInferenceInformation"),
-	XCLInferenceInformation("XCLInferenceInformation"),
 	SolutionInformation("SolutionInformation"),
-	ExternalInformation("ExternalInformation"),
-	ClusterInformation("ClusterInformation"),
-	CaseBasedInferenceInformation("CaseBasedInferenceInformation");
+	ExternalInformation("ExternalInformation");
 
 	private final String idString;
 

@@ -77,11 +77,6 @@ public class SolutionPanelTagHandler extends AbstractTagHandler {
 				+ "<img src='KnowWEExtension/images/progress_stop.gif' id='sstate-clear' class='pointer' title='"
 				+ rb.getString("KnowWE.Solutions.clear")
 				+ "' />\n"
-				// +
-				// "<img src='KnowWEExtension/images/application_view_list_big.png' id='sstate-findings' class='pointer' title='"
-				// + rb.getString("KnowWE.Solutions.findings")
-				// + "' />\n"
-				// + "</p>"
 				+ "<div id='solutionPanelResults'></div>"
 				+ "</div>"
 				+ "</div>";

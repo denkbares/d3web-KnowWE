@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.we.terminology.term.TerminologyHandler;
 
 public class D3webNamedObjectTerminologyHandler extends TerminologyHandler<TerminologyObject, TerminologyObject> {
@@ -40,13 +39,7 @@ public class D3webNamedObjectTerminologyHandler extends TerminologyHandler<Termi
 		List<TerminologyObject> result = new ArrayList<TerminologyObject>();
 		fifo(queue, result);
 		for (TerminologyObject object : queue) {
-			// TODO: remove this, when getInfoStore is active
-			if (object instanceof NamedObject) {
-				Boolean privat = false;
-				if (privat == null || !privat) {
-					result.add(object);
-				}
-			}
+			result.add(object);
 		}
 		return result;
 	}
