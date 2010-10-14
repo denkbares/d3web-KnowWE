@@ -183,6 +183,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * @return a list a tags for this topic
 	 */
 	public ArrayList<String> getPageTags(String pagename) {
+		if (pagename == null) return null;
 		String topicenc = pagename;
 		try {
 			topicenc = URLEncoder.encode(pagename, "UTF-8");

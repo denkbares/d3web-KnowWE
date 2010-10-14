@@ -43,11 +43,13 @@ public class TagEditPanel extends AbstractTagHandler {
 		String output = "<p>";
 		output += "Tags (<span id=\"tagpanedit\" style='text-decoration:underline;'>edit</span>):";
 		output += "<span id=\"tagspan\">";
-		for (String cur : tags) {
-			// output += cur + " ";
-			output += " <a href =\"Wiki.jsp?page=TagSearch&query=" + cur
-					+ "&ok=Find!&start=0&maxitems=20\" >" + cur + "</a>";
+		if (tags != null) {
+			for (String cur : tags) {
+				// output += cur + " ";
+				output += " <a href =\"Wiki.jsp?page=TagSearch&query=" + cur
+						+ "&ok=Find!&start=0&maxitems=20\" >" + cur + "</a>";
 
+			}
 		}
 
 		if (output.trim().length() == 0) {
