@@ -164,7 +164,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	}
 
 	public static <T extends KnowWEObjectType> Section<T> createSection(String text, T o, Section<? extends KnowWEObjectType> father, int beginIndexOfFather, KnowWEArticle article, SectionID id, boolean isExpanded) {
-		Section<T> s = new Section<T>(text, o, father, beginIndexOfFather, article, id, isExpanded);
+		Section<T> s = new Section<T>(text, o, father, beginIndexOfFather, article, id,
+				isExpanded);
 		EventManager.getInstance().fireEvent(new SectionCreatedEvent(s));
 		return s;
 	}
@@ -176,11 +177,14 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * Important: parses itself recursively by getting the allowed childrenTypes
 	 * of the local type
 	 * 
-	 * @param text the part of (article-source) text of the node
-	 * @param objectType type of the node
+	 * @param text
+	 *            the part of (article-source) text of the node
+	 * @param objectType
+	 *            type of the node
 	 * @param father
 	 * @param beginIndexFather
-	 * @param article is the article this section is hooked in
+	 * @param article
+	 *            is the article this section is hooked in
 	 */
 	private Section(String text, T objectType, Section<? extends KnowWEObjectType> father,
 			int beginIndexFather, KnowWEArticle article, SectionID sectionID,
@@ -373,7 +377,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	/**
 	 * Setter method for boolean variable is Dirty.
 	 * 
-	 * @param invalidated New value for section's variable isDirty
+	 * @param invalidated
+	 *            New value for section's variable isDirty
 	 */
 	public void setDirty(boolean invalidated) {
 		this.isDirty = invalidated;
@@ -470,10 +475,10 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @return the list of child nodes
 	 */
 	public List<Section<? extends KnowWEObjectType>> getChildren() {
-//		if (objectType instanceof Include) {
-//			return KnowWEEnvironment.getInstance().getIncludeManager(getWeb())
-//					.getChildrenForSection((Section<Include>) this);
-//		}
+		// if (objectType instanceof Include) {
+		// return KnowWEEnvironment.getInstance().getIncludeManager(getWeb())
+		// .getChildrenForSection((Section<Include>) this);
+		// }
 		// else
 		return this.children;
 
@@ -497,7 +502,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * return the list of child nodes matching a filter
 	 * 
 	 * @return
-	 * @param filter the filter to be matched
+	 * @param filter
+	 *            the filter to be matched
 	 */
 	public List<Section<? extends KnowWEObjectType>> getChildren(SectionFilter filter) {
 		ArrayList<Section<? extends KnowWEObjectType>> list = new ArrayList<Section<? extends KnowWEObjectType>>();
@@ -845,7 +851,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 				&& (!(this.getObjectType() instanceof PlainText))) {
 			s = this;
 			for (Section<? extends KnowWEObjectType> sec : getChildren()) {
-				Section<? extends KnowWEObjectType> sub = sec.findSmallestNodeContaining(start, end);
+				Section<? extends KnowWEObjectType> sub = sec.findSmallestNodeContaining(
+						start, end);
 				if (sub != null && (!(s.getObjectType() instanceof PlainText))) {
 					s = sub;
 				}
@@ -881,7 +888,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 		if (father == null) return null;
 
-		if (clazz.isAssignableFrom(father.getObjectType().getClass())) return (Section<OT>) father;
+		if (clazz.isAssignableFrom(father.getObjectType().getClass()))
+			return (Section<OT>) father;
 
 		return father != null ? father.findAncestorOfType(clazz) : null;
 	}
@@ -976,7 +984,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	public <OT extends KnowWEObjectType> List<Section<OT>> findChildrenOfType(Class<OT> clazz) {
 		List<Section<OT>> result = new ArrayList<Section<OT>>();
 		for (Section<?> s : this.getChildren())
-			if (clazz.isAssignableFrom(s.getObjectType().getClass())) result.add((Section<OT>) s);
+			if (clazz.isAssignableFrom(s.getObjectType().getClass()))
+				result.add((Section<OT>) s);
 		return result;
 	}
 
@@ -991,7 +1000,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	public <OT extends KnowWEObjectType> List<Section<OT>> findChildrenOfType(OT t) {
 		List<Section<OT>> result = new ArrayList<Section<OT>>();
 		for (Section<? extends KnowWEObjectType> s : this.getChildren())
-			if (t.getClass().isAssignableFrom(s.getObjectType().getClass())) result.add((Section<OT>) s);
+			if (t.getClass().isAssignableFrom(s.getObjectType().getClass()))
+				result.add((Section<OT>) s);
 		return result;
 	}
 
@@ -1079,7 +1089,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			// only replace the finding by this Section, if this Section is not
 			// reused
 			// but the Section already in the map is reused
-			if (tmp == null || (tmp.isOrHasReusedSuccessor && !this.isOrHasReusedSuccessor)) {
+			if (tmp == null
+					|| (tmp.isOrHasReusedSuccessor && !this.isOrHasReusedSuccessor)) {
 				found.put((this).getOriginalText(), (Section<OT>) this);
 			}
 		}
@@ -1102,7 +1113,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			// only replace the finding by this Section, if this Section is not
 			// reused
 			// but the Section already in the map is reused
-			if (tmp == null || (tmp.isOrHasReusedSuccessor && !this.isOrHasReusedSuccessor)) {
+			if (tmp == null
+					|| (tmp.isOrHasReusedSuccessor && !this.isOrHasReusedSuccessor)) {
 				found.put(this.getOriginalText(), (Section<OT>) this);
 			}
 		}
@@ -1263,12 +1275,14 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	/**
 	 * @param buffi
-	 * @param followSharedChildren if false, the text from for example includes
-	 *        will not be included. this is necessary if you want just the text
-	 *        of a wikipage having generated.
+	 * @param followSharedChildren
+	 *            if false, the text from for example includes will not be
+	 *            included. this is necessary if you want just the text of a
+	 *            wikipage having generated.
 	 */
 	public void collectTextsFromLeaves(StringBuilder buffi, boolean followSharedChildren) {
-		if (!this.getChildren().isEmpty() && (followSharedChildren ? true : possiblySharedChildren)) {
+		if (!this.getChildren().isEmpty()
+				&& (followSharedChildren ? true : possiblySharedChildren)) {
 			for (Section<?> s : this.getChildren()) {
 				if (s != null) {
 					s.collectTextsFromLeaves(buffi, followSharedChildren);
@@ -1573,7 +1587,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	private boolean isMatchingPackageName(KnowWEArticle article, SubtreeHandler<?> h) {
 
-		if (h.isIgnoringPackageCompile() || KnowWEPackageManager.isAutocompileArticleEnabled()) {
+		if (h.isIgnoringPackageCompile()
+				|| KnowWEPackageManager.isAutocompileArticleEnabled()) {
 			return true;
 		}
 		else {
@@ -1581,7 +1596,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 					article.getWeb()).getReferencedPackages(article.getTitle());
 
 			if (referencedPackages.contains(article.getTitle())
-					|| referencedPackages.contains(KnowWEPackageManager.THIS)) return true;
+					|| referencedPackages.contains(KnowWEPackageManager.THIS))
+				return true;
 
 			for (String name : getPackageNames()) {
 				if (referencedPackages.contains(name)) return true;
@@ -1613,14 +1629,17 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	@SuppressWarnings("unchecked")
 	public final void letSubtreeHandlerCreate(KnowWEArticle article, SubtreeHandler handler) {
-		if (handler.needsToCreate(article, this) && isMatchingPackageName(article, handler)) {
+		if (handler.needsToCreate(article, this)
+				&& isMatchingPackageName(article, handler)) {
 			try {
 				// long time = System.currentTimeMillis();
 				Collection<KDOMReportMessage> msgs = handler.create(
 						article, this);
 				// a message should know its origin:
-				for (KDOMReportMessage m : msgs) {
-					m.setSection(this);
+				if (msgs != null) {
+					for (KDOMReportMessage m : msgs) {
+						m.setSection(this);
+					}
 				}
 				KDOMReportMessage.storeMessages(article, this, handler.getClass(), msgs);
 				setCompiledBy(article.getTitle(), handler, true);
@@ -1631,7 +1650,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			}
 			catch (Throwable e) {
 				e.printStackTrace();
-				String text = "Unexpected internal error in subtree handler '" + handler + "' : "
+				String text = "Unexpected internal error in subtree handler '" + handler
+						+ "' : "
 						+ e.toString();
 				Message msg = new Message(text);
 
