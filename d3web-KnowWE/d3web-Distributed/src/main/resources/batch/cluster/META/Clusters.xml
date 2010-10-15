@@ -1,8 +1,0 @@
-<Clusters>
-	<Cluster id="TestCluster">
-		<Service id="part1"/>
-		<Service id="part2"/>
-		<Service id="part3"/>
-		<Service id="part4"/>
-	</Cluster>
-</Clusters>
