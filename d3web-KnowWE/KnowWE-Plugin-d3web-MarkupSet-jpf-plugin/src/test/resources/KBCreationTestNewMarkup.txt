@@ -43,9 +43,6 @@ Observations
 - "Real mileage  /100km" [num]
 - Driving [mc]
 -- insufficient power on partial load
-// Rule R4
---- "Num. Mileage evaluation" SET (110)
--- insufficient power on full load
 // Rule R5
 --- "Num. Mileage evaluation" (20)
 -- unsteady idle speed

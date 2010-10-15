@@ -47,8 +47,8 @@ import de.d3web.we.kdom.KnowWEArticle;
  * This test also covers the rules that are created "automatically" in the
  * DecisionTree.
  * 
- * TODO: Commented some assertions out. Because the new
- * Markup makes them fail. Johannes
+ * TODO: Commented some assertions out. Because the new Markup makes them fail.
+ * Johannes
  * 
  * @author Sebastian Furth
  * @see KBCreationTestUtil to modify the KB against which everything is tested
@@ -63,7 +63,8 @@ public class RulesTest extends TestCase {
 	}
 
 	/**
-	 * TODO: Number of rules is wrong. Should be 3 instead of only 2.
+	 * TODO: Something goes completely wrong with the creation and parsing of
+	 * the rules. Johannes
 	 * 
 	 * @created 13.10.2010
 	 */
@@ -154,7 +155,7 @@ public class RulesTest extends TestCase {
 	}
 
 	/**
-	 * Rule should be 7 instead of 3.
+	 * 
 	 * 
 	 * @created 13.10.2010
 	 */

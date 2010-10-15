@@ -95,15 +95,15 @@ public class XCLTest extends TestCase {
 			XCLRelation createdRelation;
 			XCLRelation loadedRelation;
 
-			// // Check Contradicting Relations
-			// createdRelation = (XCLRelation)
-			// createdXCLModel.getContradictingRelations().toArray()[0];
-			// loadedRelation = (XCLRelation)
-			// loadedXCLModel.getContradictingRelations().toArray()[0];
+			// Check Contradicting Relations
+			createdRelation = (XCLRelation)
+					createdXCLModel.getContradictingRelations().toArray()[0];
+			loadedRelation = (XCLRelation)
+					loadedXCLModel.getContradictingRelations().toArray()[0];
 			// assertEquals("Contradicting Relation is wrong.",
 			// createdRelation.getConditionedFinding(),
 			// loadedRelation.getConditionedFinding());
-			//
+
 			// // Check Necessary Relations
 			// createdRelation = (XCLRelation)
 			// createdXCLModel.getNecessaryRelations().toArray()[0];
