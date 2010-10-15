@@ -51,108 +51,133 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		this.iconPath = iconPath;
 	}
 
-	@Override
-	public void render(KnowWEArticle article, Section<T> section, KnowWEUserContext user, StringBuilder string) {
+	public static String renderToolbar(Tool[] tools) {
+		String toolbarHtml = " | <div class='markupTools'> ";
+		for (Tool tool : tools) {
+			toolbarHtml +=
+					" <a href=\"javascript:" + tool.getJSAction() + ";undefined;\">" +
+							"<img " +
+							"title=\"" + tool.getDescription() + "\" " +
+							"src=\"" + tool.getIconPath() + "\"></img>" +
+							"</a>";
 
-		String id = section.getID();
-		string.append(KnowWEUtils.maskHTML("<div id=\"" + id + "\" class='defaultMarkup'>\n"));
+		}
+		toolbarHtml += "</div>";
+		return toolbarHtml;
+	}
 
-		Tool[] tools = ToolUtils.getTools(article, section, user);
+	public static String renderMenu(Tool[] tools, String id) {
+		String menuHtml = "<div id='menu_" + id + "' class=markupMenu>";
+		for (Tool tool : tools) {
+			menuHtml += "<div class='markupMenuItem'>" +
+					"<a class='markupMenuItem'" +
+					" href=\"javascript:" + tool.getJSAction() + ";undefined;\"" +
+					" title=\"" + tool.getDescription() + "\">" +
+					"<img src=\"" + tool.getIconPath() + "\"></img>" +
+					" " + tool.getTitle() +
+					"</a>" +
+					"</div>";
+		}
+		menuHtml += "</div>";
+		return menuHtml;
+	}
+
+	public static String renderMenuAnimation(String id) {
+		return "\n<script>\n" +
+				"var makeMenuFx = function() {" +
+				"var a=$('header_" + id + "'),c=$('menu_" + id + "');" +
+				"if(!a||!c){}\n" +
+				"var b=c.effect(\"opacity\",{wait:false}).set(0);" +
+				"a.adopt(c).set({href:\"#\",events:{" +
+				"mouseout:function(){b.start(0)}," +
+				"mouseover:function(){b.start(0.9)}}});" +
+				"};" +
+				"makeMenuFx();" +
+				"</script>\n";
+	}
+
+	public static String renderHeader(String iconPath, String title) {
+		String result = "";
+		// render icon
+		if (iconPath != null) {
+			result = "<img class='markupIcon' src='" + iconPath + "'></img> ";
+		}
+
+		// render heading
+		result += "<span>" + title + "</span>";
+		return KnowWEUtils.maskHTML(result);
+	}
+
+	public static void renderDefaultMarkupStyled(String header, String content, String sectionID, Tool[] tools, StringBuilder string) {
+
+		string.append(KnowWEUtils.maskHTML("<div id=\"" + sectionID + "\" class='defaultMarkup'>\n"));
+
 		boolean hasTools = tools != null && tools.length > 0;
 		boolean hasMenu = hasTools;
 		boolean hasToolbar = false;
 
 		String toolbarHtml = "";
 		if (hasToolbar) {
-			toolbarHtml += " | <div class='markupTools'> ";
-			for (Tool tool : tools) {
-				toolbarHtml +=
-						" <a href=\"javascript:" + tool.getJSAction() + ";undefined;\">" +
-								"<img " +
-								"title=\"" + tool.getDescription() + "\" " +
-								"src=\"" + tool.getIconPath() + "\"></img>" +
-								"</a>";
-
-			}
-			toolbarHtml += "</div>";
+			toolbarHtml = renderToolbar(tools);
 		}
 
 		string.append(KnowWEUtils.maskHTML(
-				"<div id='header_" + id + "' " +
+				"<div id='header_" + sectionID + "' " +
 						"class='markupHeader " + (hasMenu ? "markupMenuIndicator" : "") + "'>"));
-		renderHeader(article, section, user, string);
+		string.append(header);
 		string.append(KnowWEUtils.maskHTML(toolbarHtml));
 		string.append("\n");
 
 		if (hasMenu) {
-			String menuHtml = "<div id='menu_" + id + "' class=markupMenu>";
-			for (Tool tool : tools) {
-				menuHtml += "<div class='markupMenuItem'>" +
-						"<a class='markupMenuItem'" +
-						" href=\"javascript:" + tool.getJSAction() + ";undefined;\"" +
-						" title=\"" + tool.getDescription() + "\">" +
-						"<img src=\"" + tool.getIconPath() + "\"></img>" +
-						" " + tool.getTitle() +
-						"</a>" +
-						"</div>";
-			}
-			menuHtml += "</div>";
+			String menuHtml = renderMenu(tools, sectionID);
 			string.append(KnowWEUtils.maskHTML(menuHtml));
 		}
 
 		string.append(KnowWEUtils.maskHTML("</div>"));
 
 		if (hasMenu) {
-			// string.append(KnowWEUtils.maskHTML("<script>Wiki.makeMenuFx('parent_"+id+"', 'menu_"+id+"');</script>"));
-			string.append(KnowWEUtils.maskHTML("\n<script>\n" +
-					"var makeMenuFx = function() {" +
-					"var a=$('header_" + id + "'),c=$('menu_" + id + "');" +
-					"if(!a||!c){}\n" +
-					"var b=c.effect(\"opacity\",{wait:false}).set(0);" +
-					"a.adopt(c).set({href:\"#\",events:{" +
-					"mouseout:function(){b.start(0)}," +
-					"mouseover:function(){b.start(0.9)}}});" +
-					"};" +
-					"makeMenuFx();" +
-					"</script>\n"));
+			string.append(KnowWEUtils.maskHTML(renderMenuAnimation(sectionID)));
 		}
 
 		// render pre-formatted box
-		// string.append("{{{\n");
-		string.append(KnowWEUtils.maskHTML("<div id=\"" + id + "\" class='markupText'>"));
-		article = PackageRenderUtils.checkArticlesCompiling(article,
-				section, string);
+		string.append(KnowWEUtils.maskHTML("<div id=\"" + sectionID + "\" class='markupText'>"));
+
+		// render content
+		string.append(content);
+
+		// and close the box(es)
+		string.append(KnowWEUtils.maskHTML("</div>\n")); // class=markupText
+		string.append(KnowWEUtils.maskHTML("</div>\n")); // class=defaultMarkup
+	}
+
+	@Override
+	public void render(KnowWEArticle article, Section<T> section, KnowWEUserContext user, StringBuilder buffer) {
+		String id = section.getID();
+		Tool[] tools = ToolUtils.getTools(article, section, user);
+
+		// render Header
+		StringBuilder header = new StringBuilder();
+		renderHeader(article, section, user, header);
+
+		// create content
+		StringBuilder content = new StringBuilder();
+		article = PackageRenderUtils.checkArticlesCompiling(article, section, content);
 
 		// add an anchor to enable direct link to the section
 		String anchorName = KnowWEUtils.getAnchor(section);
-		string.append(KnowWEUtils.maskHTML("<a name='" + anchorName + "'></a>"));
+		content.append(KnowWEUtils.maskHTML("<a name='" + anchorName + "'></a>"));
 
 		// render messages and content
-		renderMessages(article, section, string);
-		renderContents(article, section, user, string);
+		renderMessages(article, section, content);
+		renderContents(article, section, user, content);
 
-		// and close the box
-		// string.append("}}}\n");
-		string.append(KnowWEUtils.maskHTML("</div>\n")); // class=markupText
-		string.append(KnowWEUtils.maskHTML("</div>\n")); // class=defaultMarkup
-
+		renderDefaultMarkupStyled(header.toString(), content.toString(), id, tools, buffer);
 	}
 
 	protected void renderHeader(KnowWEArticle article, Section<T> section, KnowWEUserContext user, StringBuilder string) {
-		// render icon
-		if (this.iconPath != null) {
-			string.append(KnowWEUtils.maskHTML(
-					"<img class='markupIcon' src='" +
-							getHeaderIcon(article, section, user) +
-							"'></img> "));
-			;
-		}
-
-		// render heading
-		string.append(KnowWEUtils.maskHTML(
-				"<span>" +
-						getHeaderName(article, section, user) +
-						"</span>"));
+		String icon = getHeaderIcon(article, section, user);
+		String title = getHeaderName(article, section, user);
+		string.append(renderHeader(icon, title));
 	}
 
 	protected String getHeaderName(KnowWEArticle article, Section<T> section, KnowWEUserContext user) {

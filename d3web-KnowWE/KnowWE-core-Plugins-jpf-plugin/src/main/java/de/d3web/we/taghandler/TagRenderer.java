@@ -58,7 +58,7 @@ public class TagRenderer extends KnowWEDomRenderer {
 						buffi.append(KnowWEUtils.maskHTML("<div id=\"" + elem.toLowerCase() + "\">"));
 						TagHandler handler = defaultTagHandlers.get(elem.toLowerCase());
 						String resultText =
-								handler.render(sec.getWeb(), sec.getTitle(), user, attValues);
+								handler.render(article, sec, user, attValues);
 						buffi.append(resultText).append(" \n");
 						buffi.append(KnowWEUtils.maskHTML("</div>"));
 					}

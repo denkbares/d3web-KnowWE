@@ -128,7 +128,7 @@ public class DefaultMarkupTagHandler extends DefaultMarkupType {
 
 				if (handler != null) {
 					String rendered = handler.render(
-							article.getWeb(), article.getTitle(), user, attValues);
+							article, sec, user, attValues);
 					string.append(rendered);
 				}
 

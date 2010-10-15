@@ -22,6 +22,8 @@ package de.d3web.we.taghandler;
 
 import java.util.Map;
 
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.Section;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -51,13 +53,13 @@ public interface TagHandler {
 	 * Renders the tag handler into a wiki markup string. The resulting string
 	 * is rendered into the wiki page as wiki markup.
 	 * 
-	 * @param web the web where the tag handler is included.
-	 * @param topic the topic of the page where the tag handler is included.
+	 * @param topic the article the tag handler is rendered for.
+	 * @param section the section where the tag handler is used.
 	 * @param user the user context for this request
 	 * @param parameters the parameters of the tag handler invocation
 	 * @return the resulting wiki markup text
 	 */
-	public String render(String web, String topic, KnowWEUserContext user, Map<String, String> parameters);
+	public String render(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext, Map<String, String> parameters);
 
 	/**
 	 * Returns an usage example of this tag handler.

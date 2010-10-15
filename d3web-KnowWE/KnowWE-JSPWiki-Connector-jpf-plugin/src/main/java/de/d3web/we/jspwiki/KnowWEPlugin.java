@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -145,42 +144,18 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	}
 
 	@Override
-	public String execute(WikiContext context, Map params)
-			throws PluginException {
-		String result = "tag not found or error";
-
+	public String execute(WikiContext context, Map params) throws PluginException {
 		try {
-			JSPWikiUserContext userContext = new JSPWikiUserContext(context,
-					parseRequestVariables(context));
-			String topic = context.getPage().getName();
 			if (context.getCommand().getRequestContext().equals(
 					WikiContext.VIEW)) {
 				initKnowWEEnvironmentIfNeeded(context.getEngine());
-				// There are sometimes non-String-values in the params map.
-				// Therefore we remove them before hand it over
-				Map<String, String> cleanParams = new HashMap<String, String>();
-				for (Map.Entry<?, ?> entry : (Set<Map.Entry<?, ?>>) params
-						.entrySet()) {
-					if (entry.getKey() instanceof String
-							&& entry.getValue() instanceof String) {
-						cleanParams.put((String) entry.getKey(), (String) entry
-								.getValue());
-					}
-				}
-				result = KnowWEEnvironment.getInstance().renderTags(
-						cleanParams, topic, userContext,
-						KnowWEEnvironment.DEFAULT_WEB);
 			}
 		}
 		catch (Throwable t) {
 			System.out.println("****Exception EXECUTE***");
-			System.out.println("****Exception EXECUTE***");
-			System.out.println("****Exception EXECUTE***");
 			t.printStackTrace();
 		}
-
-		return result;
-		// return "KnowWEplugin";
+		return "";
 	}
 
 	@Override

@@ -24,32 +24,43 @@ import java.util.Map;
 
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
+import de.d3web.we.tools.Tool;
+import de.d3web.we.tools.ToolUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
- * @author Jochen
+ * A bas class for tag handlers having their rendered wiki markup content
+ * integrated in a section like for DefaultMarkupTypes. It automatically support
+ * the tool extensions, identically to DefaultMarkupType.
  * 
- *         An abstract implementation of the TagHandler Interface handling the
- *         tagName in lowercase.
- * 
+ * @author volker_belli
+ * @created 15.10.2010
  */
-public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
+public abstract class AbstractDefaultStyledTagHandler extends AbstractTagHandler {
 
-	public AbstractHTMLTagHandler(String name) {
+	public AbstractDefaultStyledTagHandler(String name) {
 		super(name);
 	}
 
 	@Override
 	public final String render(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext, Map<String, String> parameters) {
-		return KnowWEUtils.maskHTML(renderHTML(article.getTitle(), userContext, parameters,
-				article.getWeb()));
+		String content = renderContent(article, section, userContext, parameters);
+		String sectionID = section.getID();
+		Tool[] tools = ToolUtils.getTools(article, section, userContext);
+
+		StringBuilder buffer = new StringBuilder();
+		DefaultMarkupRenderer.renderDefaultMarkupStyled(
+				getTagName(), content, sectionID, tools, buffer);
+		return buffer.toString();
 	}
 
 	/**
-	 * Renders the tag handler into a html string. The resulting html string is
-	 * rendered into the wiki page as html. This method mus be overwritten by
-	 * the deriving classes to produce their output html.
+	 * Renders the content of the handler into wiki markup. The resulting markup
+	 * text is rendered into the wiki page as usual wiki markup enterey by the
+	 * user, but it is integrated in a DefaultMarkupType-Styled section. This
+	 * method must be overwritten by the deriving classes to produce their
+	 * output wiki markup.
 	 * 
 	 * @param web the web where the tag handler is included.
 	 * @param topic the topic of the page where the tag handler is included.
@@ -57,6 +68,6 @@ public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 	 * @param parameters the parameters of the tag handler invocation
 	 * @return the resulting wiki markup text
 	 */
-	public abstract String renderHTML(String topic, KnowWEUserContext user, Map<String, String> parameters, String web);
+	public abstract String renderContent(KnowWEArticle article, Section<?> section, KnowWEUserContext user, Map<String, String> parameters);
 
 }
