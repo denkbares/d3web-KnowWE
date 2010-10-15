@@ -204,6 +204,12 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 				}
 			}
 		}
+
+		if ((warnings != null && warnings.size() > 0) || (notices != null && notices.size() > 0)
+				|| (errors != null && errors.size() > 0)) {
+			builder.append(KnowWEUtils.maskHTML("<a name=\"" + subSection.getID()
+					+ "\"></a>"));
+		}
 	}
 
 	private void renderMessagesPre(Section<?> subSection, KnowWEUserContext user, StringBuilder builder, KnowWEArticle article) {
