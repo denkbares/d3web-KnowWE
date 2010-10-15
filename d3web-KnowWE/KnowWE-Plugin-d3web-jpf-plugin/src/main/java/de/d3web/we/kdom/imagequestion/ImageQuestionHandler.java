@@ -44,7 +44,7 @@ import de.d3web.we.action.SetSingleFindingAction;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -54,7 +54,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Johannes Dienst
  * 
  */
-public class ImageQuestionHandler extends AbstractTagHandler {
+public class ImageQuestionHandler extends AbstractHTMLTagHandler {
 
 	public static final String TAGHANDLER_ANNOTATION =
 			"question";
@@ -81,7 +81,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 		return this.render(topic, user, values, web, true);
 	}

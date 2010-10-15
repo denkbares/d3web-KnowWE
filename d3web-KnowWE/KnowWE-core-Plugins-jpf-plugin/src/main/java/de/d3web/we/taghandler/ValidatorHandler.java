@@ -27,7 +27,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.validation.KDOMValidator;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class ValidatorHandler extends AbstractTagHandler {
+public class ValidatorHandler extends AbstractHTMLTagHandler {
 
 	public ValidatorHandler() {
 		super("validateKDOM");
@@ -40,7 +40,7 @@ public class ValidatorHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(web, topic);
 		KDOMValidator.getTagHandlerInstance().validateArticle(article);
 		String header = "<div id=\"validator-panel\" class=\"panel\"><h3>"

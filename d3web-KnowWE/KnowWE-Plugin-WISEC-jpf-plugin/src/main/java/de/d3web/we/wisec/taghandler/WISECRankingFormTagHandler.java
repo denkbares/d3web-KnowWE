@@ -21,7 +21,7 @@ package de.d3web.we.wisec.taghandler;
 import java.util.Map;
 
 import de.d3web.we.core.KnowWERessourceLoader;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -33,7 +33,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Sebastian Furth
  * @created 14/09/2010
  */
-public class WISECRankingFormTagHandler extends AbstractTagHandler {
+public class WISECRankingFormTagHandler extends AbstractHTMLTagHandler {
 
 	/**
 	 * @param name
@@ -60,7 +60,7 @@ public class WISECRankingFormTagHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 
 		StringBuilder html = new StringBuilder();

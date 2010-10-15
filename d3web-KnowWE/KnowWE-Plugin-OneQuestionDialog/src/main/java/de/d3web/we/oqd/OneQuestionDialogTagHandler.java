@@ -26,7 +26,7 @@ import de.d3web.core.session.Session;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -34,7 +34,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Florian Ziegler
  * @created 16.08.2010
  */
-public class OneQuestionDialogTagHandler extends AbstractTagHandler {
+public class OneQuestionDialogTagHandler extends AbstractHTMLTagHandler {
 
 	public OneQuestionDialogTagHandler() {
 		super("onequestiondialog");
@@ -45,7 +45,7 @@ public class OneQuestionDialogTagHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 		// D3webKnowledgeService knowledgeService =
 		// D3webModule.getAD3webKnowledgeServiceInTopic(
 		// web, topic);

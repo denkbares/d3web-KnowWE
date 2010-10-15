@@ -76,7 +76,7 @@ import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
 import de.d3web.xcl.inference.PSMethodXCL;
 
-public class KBRenderer extends AbstractTagHandler {
+public class KBRenderer extends AbstractHTMLTagHandler {
 
 	public KBRenderer() {
 		super("renderKnowledge");
@@ -89,7 +89,7 @@ public class KBRenderer extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 		
 		D3webKnowledgeHandler knowledgeRepresentationHandler = D3webModule.getKnowledgeRepresentationHandler(KnowWEEnvironment.DEFAULT_WEB);

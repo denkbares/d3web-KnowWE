@@ -35,10 +35,10 @@ import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.hermes.maps.Placemark;
 import de.d3web.we.hermes.util.TimeEventSPARQLUtils;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class ShowMapHandler extends AbstractTagHandler {
+public class ShowMapHandler extends AbstractHTMLTagHandler {
 
 	private static final String LOCATIONS_FOR_TOPIC = "SELECT  ?long ?lat WHERE { <URI> lns:hasLatitude ?lat . <URI> lns:hasLongitude ?long .}";
 
@@ -47,7 +47,7 @@ public class ShowMapHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 		double latitude = 0;
 		double longitude = 0;

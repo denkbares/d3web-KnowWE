@@ -29,7 +29,7 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -37,7 +37,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  *
  * @author Florian Ziegler
  */
-public class FlowchartStateTagHandler extends AbstractTagHandler {
+public class FlowchartStateTagHandler extends AbstractHTMLTagHandler {
 
 	private final KnowWEDomRenderer<KnowWEObjectType> renderer;
 
@@ -47,7 +47,7 @@ public class FlowchartStateTagHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 
 		KnowWEArticleManager artManager = KnowWEEnvironment.getInstance().getArticleManager(web);

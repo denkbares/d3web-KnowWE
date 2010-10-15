@@ -42,7 +42,7 @@ import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.sparql.SparqlDelegateRenderer;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -57,7 +57,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author M. Freiberg
  * @date July 2010
  */
-public class FAQTagHandler extends AbstractTagHandler {
+public class FAQTagHandler extends AbstractHTMLTagHandler {
 
 	private static ResourceBundle kwikiBundle = ResourceBundle
 			.getBundle("KnowWE_messages");
@@ -89,7 +89,7 @@ public class FAQTagHandler extends AbstractTagHandler {
 	 * assembles the HTML String that is rendered into the page based on the
 	 * SPARQL query
 	 */
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 
 		String querystring = SPARQL_BASE;

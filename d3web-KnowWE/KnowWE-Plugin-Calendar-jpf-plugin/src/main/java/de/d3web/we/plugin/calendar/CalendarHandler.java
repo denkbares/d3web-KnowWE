@@ -30,10 +30,10 @@ import java.util.ResourceBundle;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class CalendarHandler extends AbstractTagHandler {
+public class CalendarHandler extends AbstractHTMLTagHandler {
 
 	protected static DateType day = new DateType();
 	private static boolean firstStart = true;
@@ -178,7 +178,7 @@ public class CalendarHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 
 		DateType today = new DateType();
 

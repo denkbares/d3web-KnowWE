@@ -466,14 +466,15 @@ public class KnowWEEnvironment {
 
 	private void initTagHandler(TagHandler tagHandler) {
 		String tagName = tagHandler.getTagName();
+		String key = tagName.toLowerCase();
 
-		if (tagHandlers.containsKey(tagName)) {
+		if (tagHandlers.containsKey(key)) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"TagHandler for tag '" + tagName
 							+ "' had already been added.");
 		}
 		else {
-			this.tagHandlers.put(tagName, tagHandler);
+			this.tagHandlers.put(key, tagHandler);
 		}
 	}
 
@@ -509,10 +510,10 @@ public class KnowWEEnvironment {
 			KnowWEUserContext user, String web) {
 
 		// First asking KnowWEDefaultTagHandlers
-		String key = params.get("_cmdline").split("=")[0].trim();
-		if (this.tagHandlers.containsKey(key.toLowerCase())) {
-			return this.tagHandlers.get(key.toLowerCase()).render(topic, user,
-					params, web);
+		String key = params.get("_cmdline").split("=")[0].trim().toLowerCase();
+		if (this.tagHandlers.containsKey(key)) {
+			TagHandler handler = this.tagHandlers.get(key);
+			return handler.render(web, topic, user, params);
 		}
 
 		// // Then asking Modules in given order for TagHandlers

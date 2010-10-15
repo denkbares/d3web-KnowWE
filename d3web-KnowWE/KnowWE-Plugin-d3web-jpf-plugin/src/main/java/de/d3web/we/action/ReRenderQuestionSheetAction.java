@@ -28,7 +28,7 @@ public class ReRenderQuestionSheetAction extends DeprecatedAbstractKnowWEAction 
 	@Override
 	public String perform(KnowWEParameterMap map) {
 
-		return QuestionSheetHandler.getInstance().render(map.getTopic(), map.getWikiContext(),
+		return QuestionSheetHandler.getInstance().renderHTML(map.getTopic(), map.getWikiContext(),
 				null, map.getWeb());
 
 	}

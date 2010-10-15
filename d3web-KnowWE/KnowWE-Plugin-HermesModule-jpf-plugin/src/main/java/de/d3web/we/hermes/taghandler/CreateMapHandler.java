@@ -24,11 +24,11 @@ import java.util.Collections;
 import java.util.Map;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class CreateMapHandler extends AbstractTagHandler {
+public class CreateMapHandler extends AbstractHTMLTagHandler {
 
 	// Google Maps API Key for http://hermeswiki.informatik.uni-wuerzburg.de
 	private static final String apiKey = "ABQIAAAAb3JzCPOo-PmQupF8WKTY_BQhTDteWOscIBEFxr5sPfw40-jPhhS0zVcy-utMHpbsLwjf1yApcwxvXg";
@@ -38,7 +38,7 @@ public class CreateMapHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 		String text = "<script type='text/javascript' src='http://maps.google.com/maps?file=api&v=2.x&key="
 				+ apiKey

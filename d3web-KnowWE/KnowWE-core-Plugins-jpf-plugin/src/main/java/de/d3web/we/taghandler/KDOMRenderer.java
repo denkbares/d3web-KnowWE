@@ -26,7 +26,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.visitor.RenderKDOMVisitor;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class KDOMRenderer extends AbstractTagHandler {
+public class KDOMRenderer extends AbstractHTMLTagHandler {
 
 	public KDOMRenderer() {
 		super("renderKDOM");
@@ -39,7 +39,7 @@ public class KDOMRenderer extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 		RenderKDOMVisitor v = new RenderKDOMVisitor();
 		v.visit(KnowWEEnvironment.getInstance().getArticle(web, topic)
 				.getSection());

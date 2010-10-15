@@ -34,7 +34,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Johannes Dienst
  * 
  */
-public class KnowWETypeActivationHandler extends AbstractTagHandler {
+public class KnowWETypeActivationHandler extends AbstractHTMLTagHandler {
 
 	/**
 	 * Constructor.
@@ -50,7 +50,7 @@ public class KnowWETypeActivationHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 		List<KnowWEObjectType> types = KnowWEEnvironment.getInstance().getAllKnowWEObjectTypes();
 		StringBuilder html = new StringBuilder();
 

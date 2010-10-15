@@ -44,10 +44,10 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.sparql.SparqlDelegateRenderer;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class TimeLineHandler extends AbstractTagHandler {
+public class TimeLineHandler extends AbstractHTMLTagHandler {
 
 	public TimeLineHandler() {
 		super("zeitlinie");
@@ -60,7 +60,7 @@ public class TimeLineHandler extends AbstractTagHandler {
 	private static final String TIME_AFTER = "nach";
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 
 		boolean asList = false;

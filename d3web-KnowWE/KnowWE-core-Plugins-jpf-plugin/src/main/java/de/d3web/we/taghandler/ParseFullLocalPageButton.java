@@ -26,7 +26,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class ParseFullLocalPageButton extends AbstractTagHandler {
+public class ParseFullLocalPageButton extends AbstractHTMLTagHandler {
 
 	public ParseFullLocalPageButton() {
 		super("fullParse");
@@ -36,7 +36,7 @@ public class ParseFullLocalPageButton extends AbstractTagHandler {
 	static final String text = "full-parse";
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 
 		// might be placed in 'secondary' pages (i.e., leftmenu, moremenu...)
 		String theMainTopic = user.getTopic();

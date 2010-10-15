@@ -41,7 +41,7 @@ import de.d3web.we.kdom.sparql.DefaultSparqlRenderer;
 import de.d3web.we.kdom.sparql.SparqlDelegateRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class RenderClassMembersHandler extends AbstractTagHandler {
+public class RenderClassMembersHandler extends AbstractHTMLTagHandler {
 
 	public RenderClassMembersHandler() {
 		super("listClassMembers");
@@ -50,7 +50,7 @@ public class RenderClassMembersHandler extends AbstractTagHandler {
 	private static final String TIME_SPARQL = "SELECT ?x WHERE { ?x rdf:type CLASS .} ORDER BY ASC(?x)";
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 
 		String className = values.get("class");

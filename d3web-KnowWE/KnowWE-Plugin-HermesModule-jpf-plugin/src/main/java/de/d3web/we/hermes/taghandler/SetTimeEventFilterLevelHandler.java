@@ -23,17 +23,17 @@ package de.d3web.we.hermes.taghandler;
 import java.util.Map;
 
 import de.d3web.we.hermes.HermesUserManagement;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class SetTimeEventFilterLevelHandler extends AbstractTagHandler {
+public class SetTimeEventFilterLevelHandler extends AbstractHTMLTagHandler {
 
 	public SetTimeEventFilterLevelHandler() {
 		super("filterEventLevel");
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 
 		Integer currentLevel = HermesUserManagement.getInstance().getEventFilterLevelForUser(

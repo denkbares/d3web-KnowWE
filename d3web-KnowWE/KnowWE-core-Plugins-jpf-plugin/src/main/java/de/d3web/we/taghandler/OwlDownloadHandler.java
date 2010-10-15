@@ -25,7 +25,7 @@ import java.util.Map;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class OwlDownloadHandler extends AbstractTagHandler {
+public class OwlDownloadHandler extends AbstractHTMLTagHandler {
 
 	public static final String KEY_OWL = "owlfile";
 
@@ -40,7 +40,7 @@ public class OwlDownloadHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 		String prefix = "";
 		String result = "";
 		String icon = "<img src=\"KnowWEExtension/images/disk.png\" title=\"Owl download\" /></img>";

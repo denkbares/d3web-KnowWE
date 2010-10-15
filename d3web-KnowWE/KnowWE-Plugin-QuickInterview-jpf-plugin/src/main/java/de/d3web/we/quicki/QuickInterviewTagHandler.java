@@ -24,10 +24,10 @@ import java.util.Map;
 
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWERessourceLoader;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class QuickInterviewTagHandler extends AbstractTagHandler {
+public class QuickInterviewTagHandler extends AbstractHTMLTagHandler {
 
 	/**
 	 * Create the TagHandler --> "quickInterview" defines the "name" of the tag,
@@ -54,7 +54,7 @@ public class QuickInterviewTagHandler extends AbstractTagHandler {
 	 * returns the interview-HTML-String
 	 */
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 
 		if (topic.equalsIgnoreCase("LeftMenu")) {
 			topic = user.getUrlParameterMap().get("page");

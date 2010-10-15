@@ -40,7 +40,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  *         Used to Generate WikiPages out of a TemplateType {@link TemplateType}
  *         {@link TemplateGenerationAction}
  */
-public class TemplateTagHandler extends AbstractTagHandler {
+public class TemplateTagHandler extends AbstractHTMLTagHandler {
 
 	public TemplateTagHandler() {
 		super("copytemplate");
@@ -53,7 +53,7 @@ public class TemplateTagHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 
 		ResourceBundle rb = KnowWEEnvironment.getInstance()

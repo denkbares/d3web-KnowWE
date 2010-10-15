@@ -43,7 +43,7 @@ import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
 
-public class ShowAllKBsHandler extends AbstractTagHandler {
+public class ShowAllKBsHandler extends AbstractHTMLTagHandler {
 
 	public ShowAllKBsHandler() {
 		super("showAllKBs");
@@ -55,7 +55,7 @@ public class ShowAllKBsHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 		List<D3webKnowledgeService> ks = new ArrayList<D3webKnowledgeService>(
 				DPSEnvironmentManager.getInstance().getEnvironments(web).getServices());
 		Collections.sort(ks, new KDComparator());

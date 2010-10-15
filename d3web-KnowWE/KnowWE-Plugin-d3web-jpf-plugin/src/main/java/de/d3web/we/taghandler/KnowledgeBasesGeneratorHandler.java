@@ -38,7 +38,7 @@ import de.d3web.we.wikiConnector.KnowWEWikiConnector;
  * @author Johannes Dienst
  * 
  */
-public class KnowledgeBasesGeneratorHandler extends AbstractTagHandler {
+public class KnowledgeBasesGeneratorHandler extends AbstractHTMLTagHandler {
 
 	public KnowledgeBasesGeneratorHandler() {
 		super("KnowledgeBasesUploader");
@@ -51,7 +51,7 @@ public class KnowledgeBasesGeneratorHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
 

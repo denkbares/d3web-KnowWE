@@ -24,18 +24,18 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
-public class VersionCountTagHandler extends AbstractTagHandler {
+public class VersionCountTagHandler extends AbstractHTMLTagHandler {
 
 	public VersionCountTagHandler() {
 		super("versionCounts");
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 		KnowWEWikiConnector connector = KnowWEEnvironment.getInstance()
 				.getWikiConnector();

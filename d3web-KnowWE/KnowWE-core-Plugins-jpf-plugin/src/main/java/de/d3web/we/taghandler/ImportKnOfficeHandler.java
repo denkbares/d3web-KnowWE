@@ -26,7 +26,7 @@ import java.util.ResourceBundle;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class ImportKnOfficeHandler extends AbstractTagHandler {
+public class ImportKnOfficeHandler extends AbstractHTMLTagHandler {
 
 	public static final String KEY_SOLUTIONS = "solutions";
 	public static final String KEY_WIKIPAGE = "wikipage";
@@ -55,7 +55,7 @@ public class ImportKnOfficeHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 
 		ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle(user);
 

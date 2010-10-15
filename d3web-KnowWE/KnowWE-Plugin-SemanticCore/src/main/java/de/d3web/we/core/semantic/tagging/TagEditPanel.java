@@ -24,18 +24,18 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import de.d3web.we.core.KnowWEAttributes;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class TagEditPanel extends AbstractTagHandler {
+public class TagEditPanel extends AbstractHTMLTagHandler {
 
 	public TagEditPanel() {
 		super("tageditpanel");
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 		TaggingMangler tm = TaggingMangler.getInstance();
 		topic = user.getTopic();

@@ -28,7 +28,7 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
 import de.d3web.we.core.semantic.SPARQLUtil;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.we.wisec.util.Criteria;
 import de.d3web.we.wisec.util.WISECUtil;
@@ -43,7 +43,7 @@ import de.d3web.wisec.writers.SubstanceListWriter;
  * @author Sebastian Furth
  * @created 02/10/2010
  */
-public class WISECSubstanceScoringTagHandler extends AbstractTagHandler {
+public class WISECSubstanceScoringTagHandler extends AbstractHTMLTagHandler {
 
 	public WISECSubstanceScoringTagHandler() {
 		super("wisec-substance-scoring");
@@ -61,7 +61,7 @@ public class WISECSubstanceScoringTagHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 
 		String substance = values.get("substance");
 		if (substance == null || substance.isEmpty()) {

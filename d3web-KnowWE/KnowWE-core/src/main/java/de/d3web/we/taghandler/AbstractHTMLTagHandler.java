@@ -20,7 +20,9 @@
 
 package de.d3web.we.taghandler;
 
-import de.d3web.we.core.KnowWEEnvironment;
+import java.util.Map;
+
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -30,28 +32,28 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  *         tagName in lowercase.
  * 
  */
-public abstract class AbstractTagHandler implements TagHandler {
+public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 
-	private String name = null;
-
-	public AbstractTagHandler(String name) {
-		this.name = name;
+	public AbstractHTMLTagHandler(String name) {
+		super(name);
 	}
 
 	@Override
-	public String getTagName() {
-		return name.toLowerCase();
+	public final String render(String web, String topic, KnowWEUserContext userContext, Map<String, String> parameters) {
+		return KnowWEUtils.maskHTML(renderHTML(topic, userContext, parameters, web));
 	}
 
-	@Override
-	public String getExampleString() {
-		return "[{KnowWEPlugin " + getTagName() + "}]";
-	}
-
-	@Override
-	public String getDescription(KnowWEUserContext user) {
-		return KnowWEEnvironment.getInstance().getKwikiBundle(user).getString(
-				"KnowWE.Taghandler.standardDescription");
-	}
+	/**
+	 * Renders the tag handler into a html string. The resulting html string is
+	 * rendered into the wiki page as html. This method mus be overwritten by
+	 * the deriving classes to produce their output html.
+	 * 
+	 * @param web the web where the tag handler is included.
+	 * @param topic the topic of the page where the tag handler is included.
+	 * @param user the user context for this request
+	 * @param parameters the parameters of the tag handler invocation
+	 * @return the resulting wiki markup text
+	 */
+	public abstract String renderHTML(String topic, KnowWEUserContext user, Map<String, String> parameters, String web);
 
 }

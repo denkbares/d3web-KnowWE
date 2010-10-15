@@ -37,7 +37,7 @@ import de.d3web.we.kdom.search.SearchOption;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class ObjectInfoTagHandler extends AbstractTagHandler {
+public class ObjectInfoTagHandler extends AbstractHTMLTagHandler {
 
 	private String topic;
 	private KnowWEUserContext user;
@@ -49,7 +49,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values,
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values,
 			String web) {
 
 		StringBuffer buffy = new StringBuffer();

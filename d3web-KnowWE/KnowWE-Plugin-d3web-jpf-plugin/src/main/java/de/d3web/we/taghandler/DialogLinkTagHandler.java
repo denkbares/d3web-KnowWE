@@ -30,7 +30,7 @@ import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class DialogLinkTagHandler extends AbstractTagHandler {
+public class DialogLinkTagHandler extends AbstractHTMLTagHandler {
 
 	public DialogLinkTagHandler() {
 		super("dialogLink");
@@ -42,7 +42,7 @@ public class DialogLinkTagHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 		return generateDialogLink(user.getUserName(), user.getHttpRequest(), topic,
 				values.get("page"));
 	}

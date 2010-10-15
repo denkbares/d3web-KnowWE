@@ -35,7 +35,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Johannes Dienst
  * 
  */
-public class KnowWEObjectTypeBrowserHandler extends AbstractTagHandler {
+public class KnowWEObjectTypeBrowserHandler extends AbstractHTMLTagHandler {
 
 	public KnowWEObjectTypeBrowserHandler() {
 		super("TypeBrowser");
@@ -48,7 +48,7 @@ public class KnowWEObjectTypeBrowserHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 
 		String typeName = null;
 		Map<String, String> par = user.getUrlParameterMap();

@@ -91,7 +91,7 @@ public class DefaultMarkupTagHandler extends DefaultMarkupType {
 	 * 
 	 */
 	private class DefaultTagRenderer extends
-	KnowWEDomRenderer<DefaultMarkupTagHandler> {
+			KnowWEDomRenderer<DefaultMarkupTagHandler> {
 
 		@SuppressWarnings("unchecked")
 		@Override
@@ -110,9 +110,9 @@ public class DefaultMarkupTagHandler extends DefaultMarkupType {
 				 */
 				Map<String, String> attValues = null;
 				Object storedValues = KnowWEEnvironment.getInstance()
-				.getArticleManager(sec.getWeb()).getTypeStore()
-				.getStoredObject(sec.getTitle(), markupContent.getID(),
-						TagHandlerAttributeSubTreeHandler.ATTRIBUTE_MAP);
+						.getArticleManager(sec.getWeb()).getTypeStore()
+						.getStoredObject(sec.getTitle(), markupContent.getID(),
+								TagHandlerAttributeSubTreeHandler.ATTRIBUTE_MAP);
 				if (storedValues != null) {
 					if (storedValues instanceof Map) {
 						attValues = (Map<String, String>) storedValues;
@@ -123,13 +123,13 @@ public class DefaultMarkupTagHandler extends DefaultMarkupType {
 				// Render the Taghandler with its attValues
 				String taghandlerName = DefaultMarkupType.getAnnotation(sec, "taghandlername");
 				HashMap<String, TagHandler> defaultTagHandlers =
-					KnowWEEnvironment.getInstance().getDefaultTagHandlers();
+						KnowWEEnvironment.getInstance().getDefaultTagHandlers();
 				TagHandler handler = defaultTagHandlers.get(taghandlerName);
 
 				if (handler != null) {
-					String rendered = handler.render(sec.getTitle(), user,
-							attValues, article.getWeb());
-					string.append(KnowWEUtils.maskHTML(rendered));
+					String rendered = handler.render(
+							article.getWeb(), article.getTitle(), user, attValues);
+					string.append(rendered);
 				}
 
 				// Taghandler not found
@@ -138,7 +138,7 @@ public class DefaultMarkupTagHandler extends DefaultMarkupType {
 							.maskHTML("<div><p class='info box'>"));
 					string.append(KnowWEUtils.maskHTML(KnowWEEnvironment
 							.getInstance().getKwikiBundle(user).getString(
-							"KnowWE.Taghandler.notFoundError")
+									"KnowWE.Taghandler.notFoundError")
 							+ "</p></div>"));
 				}
 			}

@@ -41,7 +41,7 @@ import de.d3web.we.testsuite.TestsuiteSection;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class TestsuiteTagHandler extends AbstractTagHandler {
+public class TestsuiteTagHandler extends AbstractHTMLTagHandler {
 
 	private final Map<String, Section<TestsuiteSection>> testsuites = new HashMap<String, Section<TestsuiteSection>>();
 	private final DecimalFormat formatter = new DecimalFormat("0.00");
@@ -60,7 +60,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 
 		this.topic = topic;
 		this.web = web;

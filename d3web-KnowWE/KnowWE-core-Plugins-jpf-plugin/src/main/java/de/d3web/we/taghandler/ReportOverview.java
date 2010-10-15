@@ -56,7 +56,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author smark
  * @created 12.10.2010
  */
-public class ReportOverview extends AbstractTagHandler {
+public class ReportOverview extends AbstractHTMLTagHandler {
 
 	/**
 	 * Constructor of the ReportOverview TagHandler. If you want to change the
@@ -78,7 +78,7 @@ public class ReportOverview extends AbstractTagHandler {
 	 * @return
 	 */
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 		
 		String reportType = values.get("report");
 		if( reportType == null || reportType == "") {

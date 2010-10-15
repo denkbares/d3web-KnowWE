@@ -38,7 +38,7 @@ import org.openrdf.repository.RepositoryException;
 import common.Logger;
 
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.we.wisec.util.Criteria;
 import de.d3web.we.wisec.util.WISECUtil;
@@ -65,7 +65,7 @@ import de.d3web.wisec.writers.SubstanceInfoWriter;
  * @created 15.06.2010
  */
 @Deprecated
-public class WISECRankingTagHandler extends AbstractTagHandler {
+public class WISECRankingTagHandler extends AbstractHTMLTagHandler {
 
 	public WISECRankingTagHandler() {
 		super("wisec-ranking");
@@ -83,7 +83,7 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 
 		HashMap<String, RatedSubstance> ratedSubstances = new HashMap<String, RatedSubstance>();

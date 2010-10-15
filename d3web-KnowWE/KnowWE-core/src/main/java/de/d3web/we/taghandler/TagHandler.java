@@ -48,15 +48,32 @@ public interface TagHandler {
 	public String getTagName();
 
 	/**
-	 * The resulting String is rendered into the Wiki-page It can (in most cases
-	 * should) contain final HTML.
+	 * Renders the tag handler into a wiki markup string. The resulting string
+	 * is rendered into the wiki page as wiki markup.
 	 * 
-	 * @param topic
-	 * @param user
-	 * @param value
-	 * @param web
-	 * @return
+	 * @param web the web where the tag handler is included.
+	 * @param topic the topic of the page where the tag handler is included.
+	 * @param user the user context for this request
+	 * @param parameters the parameters of the tag handler invocation
+	 * @return the resulting wiki markup text
 	 */
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web);
+	public String render(String web, String topic, KnowWEUserContext user, Map<String, String> parameters);
+
+	/**
+	 * Returns an usage example of this tag handler.
+	 * 
+	 * @created 15.10.2010
+	 * @return an example usage string
+	 */
+	String getExampleString();
+
+	/**
+	 * Returns a description of the tag handler's synopsis.
+	 * 
+	 * @created 15.10.2010
+	 * @param user the current user the description is for
+	 * @return a description of the tag handler
+	 */
+	String getDescription(KnowWEUserContext user);
 
 }

@@ -32,7 +32,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Sebastian Furth
  * @created 06.06.2010
  */
-public class SessionValuesViewHandler extends AbstractTagHandler {
+public class SessionValuesViewHandler extends AbstractHTMLTagHandler {
 
 	public SessionValuesViewHandler() {
 		super("sessionvalues");
@@ -49,7 +49,7 @@ public class SessionValuesViewHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 
 		return "<div class='panel'>"

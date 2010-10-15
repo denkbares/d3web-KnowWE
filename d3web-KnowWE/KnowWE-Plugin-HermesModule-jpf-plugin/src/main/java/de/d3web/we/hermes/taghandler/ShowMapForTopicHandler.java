@@ -25,17 +25,17 @@ import java.util.Map;
 
 import de.d3web.we.hermes.maps.Placemark;
 import de.d3web.we.hermes.util.TimeEventSPARQLUtils;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class ShowMapForTopicHandler extends AbstractTagHandler {
+public class ShowMapForTopicHandler extends AbstractHTMLTagHandler {
 
 	public ShowMapForTopicHandler() {
 		super("showMapForTopic");
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 
 		String givenTopic = values.get("topic");

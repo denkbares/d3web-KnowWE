@@ -35,7 +35,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.core.semantic.tagging.TaggingMangler;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -44,7 +44,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  *         Wikis darstellt.
  * 
  */
-public class StatsHandler extends AbstractTagHandler {
+public class StatsHandler extends AbstractHTMLTagHandler {
 
 	/**
 	 * @param name
@@ -82,7 +82,7 @@ public class StatsHandler extends AbstractTagHandler {
 	 * java.lang.String, java.lang.String, java.lang.String)
 	 */
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 		UpperOntology uo = UpperOntology.getInstance();
 		StringBuffer buffy = new StringBuffer();

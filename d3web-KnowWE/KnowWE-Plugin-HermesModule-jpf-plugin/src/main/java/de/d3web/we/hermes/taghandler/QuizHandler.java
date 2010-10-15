@@ -25,10 +25,10 @@ import java.util.Map;
 import de.d3web.we.hermes.quiz.QuizPanelRenderer;
 import de.d3web.we.hermes.quiz.QuizSession;
 import de.d3web.we.hermes.quiz.QuizSessionManager;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class QuizHandler extends AbstractTagHandler {
+public class QuizHandler extends AbstractHTMLTagHandler {
 
 	public QuizHandler() {
 		super("hermesquiz");
@@ -36,7 +36,7 @@ public class QuizHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 
 		String kdomid = values.get("kdomid");

@@ -24,10 +24,10 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class TagSearchHandler extends AbstractTagHandler {
+public class TagSearchHandler extends AbstractHTMLTagHandler {
 
 	private ResourceBundle rb;
 
@@ -61,7 +61,7 @@ public class TagSearchHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 
 		rb = KnowWEEnvironment.getInstance()

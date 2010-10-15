@@ -26,17 +26,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class TagCloud extends AbstractTagHandler {
+public class TagCloud extends AbstractHTMLTagHandler {
 
 	public TagCloud() {
 		super("tagcloud");
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 		HashMap<String, Integer> weightedlist = TaggingMangler.getInstance().getCloudList(8, 20);
 		String output = "<p>";

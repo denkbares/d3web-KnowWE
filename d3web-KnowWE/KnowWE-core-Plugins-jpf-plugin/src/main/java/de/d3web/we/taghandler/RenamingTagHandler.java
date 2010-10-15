@@ -52,7 +52,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * This class handles the appearance of the ReanmingTool tag.
  * </p>
  */
-public class RenamingTagHandler extends AbstractTagHandler {
+public class RenamingTagHandler extends AbstractHTMLTagHandler {
 
 	public RenamingTagHandler() {
 		super("RenamingTool");
@@ -71,7 +71,7 @@ public class RenamingTagHandler extends AbstractTagHandler {
 	 * </p>
 	 */
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 		StringBuffer html = new StringBuffer();
 
 		ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle(user);

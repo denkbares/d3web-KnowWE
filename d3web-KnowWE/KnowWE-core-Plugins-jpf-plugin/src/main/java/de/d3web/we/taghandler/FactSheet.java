@@ -47,7 +47,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author kazamatzuri
  * 
  */
-public class FactSheet extends AbstractTagHandler {
+public class FactSheet extends AbstractHTMLTagHandler {
 
 	/**
 	 * @param name
@@ -63,7 +63,7 @@ public class FactSheet extends AbstractTagHandler {
 	 * java.lang.String, java.lang.String, java.lang.String)
 	 */
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 		UpperOntology uo = UpperOntology.getInstance();
 		String querystring = "PREFIX ns: <" + uo.getBaseNS() + "> \n";
 		querystring += "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";

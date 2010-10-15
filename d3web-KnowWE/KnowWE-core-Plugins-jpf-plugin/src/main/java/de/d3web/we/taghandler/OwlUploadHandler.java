@@ -29,7 +29,7 @@ import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class OwlUploadHandler extends AbstractTagHandler {
+public class OwlUploadHandler extends AbstractHTMLTagHandler {
 
 	public static final String KEY_DELETE_OWL = "owldelete";
 
@@ -46,7 +46,7 @@ public class OwlUploadHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 
 		ResourceBundle rb = KnowWEEnvironment.getInstance()

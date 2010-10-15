@@ -33,7 +33,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * 
  * @author Alex Legler
  */
-public class VersionTagHandler extends AbstractTagHandler {
+public class VersionTagHandler extends AbstractHTMLTagHandler {
 
 	public VersionTagHandler() {
 		super("version");
@@ -46,7 +46,7 @@ public class VersionTagHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 		ResourceBundle rb;
 
 		try {

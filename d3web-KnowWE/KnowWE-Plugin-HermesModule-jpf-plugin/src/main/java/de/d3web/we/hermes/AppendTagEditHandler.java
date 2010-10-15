@@ -34,7 +34,7 @@ public class AppendTagEditHandler implements PageAppendHandler {
 	@Override
 	public String getDataToAppend(String topic, String web, KnowWEUserContext user) {
 		return "\\\\[{If group='Editoren'\n\n"
-				+ tagHandler.render(topic, user, new HashMap<String, String>(), web) + "}]";
+				+ tagHandler.render(web, topic, user, new HashMap<String, String>()) + "}]";
 	}
 
 	@Override

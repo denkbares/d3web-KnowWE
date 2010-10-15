@@ -31,7 +31,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.core.semantic.SPARQLUtil;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
-import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -40,7 +40,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Jochen
  * @created 19.08.2010
  */
-public class ShowSubstancesHandler extends AbstractTagHandler {
+public class ShowSubstancesHandler extends AbstractHTMLTagHandler {
 
 	private static final String QUERY = "SELECT ?substance WHERE { ?substance rdf:type w:Substance } ORDER BY ?substance";
 
@@ -49,7 +49,7 @@ public class ShowSubstancesHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 		ISemanticCore sc = SemanticCoreDelegator.getInstance();
 
 		String querystring = QUERY;

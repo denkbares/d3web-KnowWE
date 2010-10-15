@@ -35,14 +35,14 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Max Diez
  * 
  */
-public class TagHandlerListHandler extends AbstractTagHandler {
+public class TagHandlerListHandler extends AbstractHTMLTagHandler {
 
 	public TagHandlerListHandler() {
 		super("taghandlerlist");
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 		Collection<TagHandler> coll = KnowWEEnvironment.getInstance()
 				.getDefaultTagHandlers().values();
@@ -72,12 +72,9 @@ public class TagHandlerListHandler extends AbstractTagHandler {
 			String example = "no example available";
 			String description = "no description available";
 			try {
-				if (th instanceof AbstractTagHandler) {
-					name = ((AbstractTagHandler) th).getName();
-					example = ((AbstractTagHandler) th).getExampleString();
-					description = ((AbstractTagHandler) th)
-							.getDescription(user);
-				}
+				name = th.getTagName();
+				example = th.getExampleString();
+				description = th.getDescription(user);
 			}
 			catch (Exception e) {
 				description = "Fehler";

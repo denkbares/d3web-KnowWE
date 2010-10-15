@@ -37,7 +37,7 @@ import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class QuestionSheetHandler extends AbstractTagHandler {
+public class QuestionSheetHandler extends AbstractHTMLTagHandler {
 
 	public static QuestionSheetHandler instance = null;
 
@@ -59,7 +59,7 @@ public class QuestionSheetHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 
 		Session session = D3webUtils.getSession(topic, user, web);
 
