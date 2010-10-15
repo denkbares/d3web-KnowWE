@@ -107,77 +107,91 @@ public class ImageQuestionSetAction extends AbstractAction {
 				}
 			}
 
-			// Ok this is really really ugly, i know.
-			// Johannes
-			if (value != null) {
-				if (question instanceof QuestionMC && !value.equals(Unknown.getInstance())) {
+			// Some tests of values here
+			if (value == null) return;
+			if (!(question instanceof QuestionMC)) return;
+			if (value.equals(Unknown.getInstance())) return;
 
-					Fact mcFact = blackboard.getValueFact(question);
-					Value answer = session.getBlackboard().getValue(question);
+			// Initialisation of needed Variables
+			Fact mcFact = blackboard.getValueFact(question);
+			Value answer = session.getBlackboard().getValue(question);
+			Collection<ChoiceValue> mcValcol = null;
+			final ArrayList<ChoiceValue> toAddList = new ArrayList<ChoiceValue>();
+			if (answer != null && !(answer.getValue() instanceof String)) {
+				mcValcol = (Collection<ChoiceValue>) answer.getValue();
+			}
 
-					// Initialise this here for better readability of the code.
-					Collection<ChoiceValue> mcValcol = null;
-					ArrayList<ChoiceValue> toAddList = null;
-					boolean contains = false;
-					if ((answer != null) && !(answer.getValue() instanceof String)) {
-						Set<Value> values = (Set<Value>) answer.getValue();
-						contains = values.containsAll((Collection<ChoiceValue>)
-								((MultipleChoiceValue) value).getValue());
-						mcValcol = (Collection<ChoiceValue>) answer.getValue();
-						toAddList = new ArrayList<ChoiceValue>();
-					}
-
-					/*
-					 * the ChoiceValue is in the MultipleChoiceValue Remove it
-					 * by deleting it from the Collection of the old
-					 * MultipleChoiceValue and create a new one
-					 */
-					if (contains) {
-						mcValcol.removeAll((Collection<ChoiceValue>)
+			/*
+			 * the ChoiceValue is in the MultipleChoiceValue Remove it by
+			 * deleting it from the Collection of the old MultipleChoiceValue
+			 * and create a new one
+			 */
+			if (valueContained(answer, value)) {
+				mcValcol.removeAll((Collection<ChoiceValue>)
 								value.getValue());
 
-						for (ChoiceValue val : mcValcol)
-							toAddList.add(val);
+				for (ChoiceValue val : mcValcol)
+					toAddList.add(val);
 
-						Value toAdd = new MultipleChoiceValue(toAddList);
-						blackboard.removeValueFact(mcFact);
-						blackboard.addValueFact(new DefaultFact(question,
+				Value toAdd = new MultipleChoiceValue(toAddList);
+				blackboard.removeValueFact(mcFact);
+				blackboard.addValueFact(new DefaultFact(question,
 								toAdd, PSMethodUserSelected.getInstance(),
 										PSMethodUserSelected.getInstance()));
-					}
 
-					/*
-					 * The ChoiceValue is not contained in the
-					 * MultipleChoiceValue 1. If mcFact is not null: Add the
-					 * ChoiceValue to a new MultipleChoiceValue by creating a
-					 * new one containing also the old ones 2. If nothing was
-					 * added before mcFact is null: Add it to blackboard
-					 */
-					if (!contains) {
-						if (mcFact != null) {
-							mcValcol.addAll((Collection<ChoiceValue>) value.getValue());
+				EventManager.getInstance().fireEvent(
+								new FindingSetEvent(question, value, namespace, web, user));
+				return;
+			}
 
-							for (ChoiceValue val : mcValcol)
-								toAddList.add(val);
-							Value toAdd = new MultipleChoiceValue(toAddList);
+			/*
+			 * The ChoiceValue is not contained in the MultipleChoiceValue 1. If
+			 * mcFact is not null: Add the ChoiceValue to a new
+			 * MultipleChoiceValue by creating a new one containing also the old
+			 * ones 2. If nothing was added before mcFact is null: Add it to
+			 * blackboard
+			 */
+			if (!valueContained(answer, value)) {
+				if (mcFact != null) {
+					mcValcol.addAll((Collection<ChoiceValue>) value.getValue());
 
-							blackboard.addValueFact(new DefaultFact(question,
+					for (ChoiceValue val : mcValcol)
+						toAddList.add(val);
+					Value toAdd = new MultipleChoiceValue(toAddList);
+
+					blackboard.addValueFact(new DefaultFact(question,
 									toAdd, PSMethodUserSelected.getInstance(),
 											PSMethodUserSelected.getInstance()));
-						}
-						else {
-							blackboard.addValueFact(new DefaultFact(question,
+				}
+				else {
+					blackboard.addValueFact(new DefaultFact(question,
 									value, PSMethodUserSelected.getInstance(),
 											PSMethodUserSelected.getInstance()));
-						}
-
-						EventManager.getInstance().fireEvent(
-								new FindingSetEvent(question, value, namespace, web, user));
-					}
 				}
 
+				EventManager.getInstance().fireEvent(
+								new FindingSetEvent(question, value, namespace, web, user));
 			}
+
 		}
 
+	}
+
+	/**
+	 * Checks if <b>value</b> is contained in MultipleChoiceValue from
+	 * <b>answer</b>.
+	 * 
+	 * @created 15.10.2010
+	 * @param answer
+	 * @param value
+	 * @return
+	 */
+	private boolean valueContained(Value answer, Value value) {
+		if ((answer != null) && !(answer.getValue() instanceof String)) {
+			Set<Value> values = (Set<Value>) answer.getValue();
+			return values.containsAll((Collection<ChoiceValue>)
+					((MultipleChoiceValue) value).getValue());
+		}
+		return false;
 	}
 }
