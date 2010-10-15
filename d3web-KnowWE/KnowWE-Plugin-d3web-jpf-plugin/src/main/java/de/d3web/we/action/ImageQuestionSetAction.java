@@ -43,7 +43,6 @@ import de.d3web.core.session.values.Unknown;
 import de.d3web.indication.inference.PSMethodUserSelected;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEAttributes;
-import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.FindingSetEvent;
 import de.d3web.we.utils.D3webUtils;
@@ -63,18 +62,17 @@ public class ImageQuestionSetAction extends AbstractAction {
 	@Override
 	public void execute(ActionContext context) throws IOException {
 
-		KnowWEParameterMap parameterMap = context.getKnowWEParameterMap();
 		@SuppressWarnings("deprecation")
-		String namespace = java.net.URLDecoder.decode(parameterMap
-				.get(KnowWEAttributes.SEMANO_NAMESPACE));
+		String namespace = java.net.URLDecoder.decode(context
+				.getParameter(KnowWEAttributes.SEMANO_NAMESPACE));
 
-		String objectid = parameterMap.get(KnowWEAttributes.SEMANO_OBJECT_ID);
-		String valueid = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_ID);
-		String valuenum = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_NUM);
-		String valuedate = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_DATE);
-		String topic = parameterMap.getTopic();
-		String user = parameterMap.get(KnowWEAttributes.USER);
-		String web = parameterMap.get(KnowWEAttributes.WEB);
+		String objectid = context.getParameter(KnowWEAttributes.SEMANO_OBJECT_ID);
+		String valueid = context.getParameter(KnowWEAttributes.SEMANO_VALUE_ID);
+		String valuenum = context.getParameter(KnowWEAttributes.SEMANO_VALUE_NUM);
+		String valuedate = context.getParameter(KnowWEAttributes.SEMANO_VALUE_DATE);
+		String topic = context.getWikiContext().getTopic();
+		String user = context.getWikiContext().getUserName();
+		String web = context.getWikiContext().getWeb();
 
 		if (namespace == null || objectid == null) {
 			return;
