@@ -10,6 +10,9 @@
 		<library id="de.d3web" path="." type="code">
 			<export prefix="*" />
 		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
 	</runtime>
 	
 	<!-- commented out
@@ -555,6 +558,7 @@
 		<parameter id="scope" value="root" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
+		<parameter id="css" value="defaultMarkup.css" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"

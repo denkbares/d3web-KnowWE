@@ -462,6 +462,7 @@ public class KnowWEEnvironment {
 		manager.registerHandler(new TerminologyHandler(web));
 
 		Plugins.initJS();
+		Plugins.initCSS();
 	}
 
 	private void initTagHandler(TagHandler tagHandler) {

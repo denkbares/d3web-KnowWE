@@ -48,6 +48,7 @@ public class Plugins {
 	public static final String EXTENDED_POINT_KnowWEAction = "Action";
 	public static final String EXTENDED_POINT_KnowledgeRepresentationHandler = "KnowledgeRepresentationHandler";
 	public static final String EXTENDED_POINT_KnowWEObjectType = "KnowWEObjectType";
+	public static final String EXTENDED_POINT_ToolProvider = "ToolProvider";
 	public static final String EXTENDED_POINT_TagHandler = "TagHandler";
 	public static final String EXTENDED_POINT_PageAppendHandler = "PageAppendHandler";
 	public static final String EXTENDED_POINT_Instantiation = "Instantiation";
@@ -212,18 +213,35 @@ public class Plugins {
 	 */
 	public static void initJS() {
 		LinkedList<String> files = new LinkedList<String>();
-		getStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+		addStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_PageAppendHandler));
-		getStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+		addStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_KnowWEObjectType));
-		getStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+		addStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_TagHandler));
+		addStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_ToolProvider));
 		for (String s : files) {
 			KnowWERessourceLoader.getInstance().add(s, KnowWERessourceLoader.RESOURCE_SCRIPT);
 		}
 	}
 
-	private static void getStripts(LinkedList<String> files, Extension[] extensions) {
+	public static void initCSS() {
+		LinkedList<String> files = new LinkedList<String>();
+		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_PageAppendHandler));
+		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_KnowWEObjectType));
+		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_TagHandler));
+		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_ToolProvider));
+		for (String s : files) {
+			KnowWERessourceLoader.getInstance().add(s, KnowWERessourceLoader.RESOURCE_STYLESHEET);
+		}
+	}
+
+	private static void addStripts(LinkedList<String> files, Extension[] extensions) {
 		for (Extension e : extensions) {
 			List<String> scripts = e.getParameters("script");
 			if (scripts != null) {
@@ -233,4 +251,16 @@ public class Plugins {
 			}
 		}
 	}
+
+	private static void addCSS(LinkedList<String> files, Extension[] extensions) {
+		for (Extension e : extensions) {
+			List<String> scripts = e.getParameters("css");
+			if (scripts != null) {
+				for (String s : scripts) {
+					files.add(s);
+				}
+			}
+		}
+	}
+
 }
