@@ -31,12 +31,10 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import de.d3web.we.core.DPSEnvironment;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
@@ -122,12 +120,11 @@ public class D3webModule {
 				// System.exit(1);
 			}
 		}
-		DPSEnvironmentManager.getInstance().setWebEnvironmentLocation(webPath);
 		File[] files = path.listFiles();
 		if (files != null) {
 			for (File each : files) {
 				if (each.isDirectory()) {
-					DPSEnvironmentManager.getInstance().createEnvironment(
+					WikiEnvironmentManager.getInstance().createEnvironment(
 							each.getName());
 					// initArticleManager(each.getName());
 
@@ -138,67 +135,53 @@ public class D3webModule {
 	}
 
 	/**
-	 * returns all KnowledgeServices for a given web.
-	 * 
-	 * @param web
-	 * @return
-	 */
-	public static Collection<D3webKnowledgeService> getKnowledgeServices(String web) {
-		DPSEnvironment env = DPSEnvironmentManager.getInstance()
-				.getEnvironment(web, defaultJarsPath);
-		return env.getServices();
-	}
-
-	/**
 	 * Returns a KnowledgeService for a given article name
 	 * 
 	 * @param web
 	 * @param topic
 	 * @return
 	 */
-	public static D3webKnowledgeService getAD3webKnowledgeServiceInTopic(
+	public static KnowledgeBase getAD3webKnowledgeServiceInTopic(
 			String web, String topic) {
-		DPSEnvironment env = DPSEnvironmentManager.getInstance()
+		WikiEnvironment env = WikiEnvironmentManager.getInstance()
 				.getEnvironment(web, defaultJarsPath);
-		Collection<D3webKnowledgeService> coll = env.getServices();
-		for (D3webKnowledgeService knowledgeService : coll) {
+		Collection<KnowledgeBase> coll = env.getServices();
+		for (KnowledgeBase knowledgeService : coll) {
 			if (knowledgeService.getId().startsWith(topic + "..")) {
-				if (knowledgeService instanceof D3webKnowledgeService) {
-					return knowledgeService;
-				}
+				return knowledgeService;
 			}
 		}
 
 		return null;
 	}
 
-	public static Broker getBroker(java.util.Map<String, String> parameterMap) {
+	public static SessionBroker getBroker(java.util.Map<String, String> parameterMap) {
 		String user = parameterMap.get(KnowWEAttributes.USER);
 		String web = parameterMap.get(KnowWEAttributes.WEB);
 
 		return getBroker(user, web);
 	}
 
-	public static Broker getBroker(String user, String web) {
-		DPSEnvironment env = DPSEnvironmentManager.getInstance()
+	public static SessionBroker getBroker(String user, String web) {
+		WikiEnvironment env = WikiEnvironmentManager.getInstance()
 				.getEnvironments(web);
-		Broker broker = env.getBroker(user);
+		SessionBroker broker = env.getBroker(user);
 		return broker;
 	}
 
-	public static DPSEnvironment getDPSE(
+	public static WikiEnvironment getDPSE(
 			java.util.Map<String, String> parameterMap) {
 		// String user = parameterMap.get(KnowWEAttributes.USER);
 		String web = parameterMap.get(KnowWEAttributes.WEB);
 
-		DPSEnvironment env = DPSEnvironmentManager.getInstance()
+		WikiEnvironment env = WikiEnvironmentManager.getInstance()
 				.getEnvironments(web);
 		return env;
 	}
 
-	public static DPSEnvironment getDPSE(String web) {
+	public static WikiEnvironment getDPSE(String web) {
 
-		DPSEnvironment env = DPSEnvironmentManager.getInstance()
+		WikiEnvironment env = WikiEnvironmentManager.getInstance()
 				.getEnvironments(web);
 		return env;
 	}

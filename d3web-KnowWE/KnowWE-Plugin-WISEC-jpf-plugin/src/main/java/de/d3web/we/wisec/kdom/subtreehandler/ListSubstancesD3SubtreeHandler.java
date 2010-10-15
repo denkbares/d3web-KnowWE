@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.we.basic.DistributedRegistrationManager;
+import de.d3web.we.basic.WikiEnvironmentManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -139,7 +139,7 @@ public class ListSubstancesD3SubtreeHandler extends D3webSubtreeHandler<ListSubs
 			if (kbm.findQuestion(sgn) == null) {
 				kbm.createQuestionOC(sgn, kbm.findQContainer("Substances"), new String[] {
 						"included", "excluded" });
-				DistributedRegistrationManager.getInstance().registerKnowledgeBase(kbm,
+				WikiEnvironmentManager.registerKnowledgeBase(kbm,
 						globalsArticle.getTitle(), globalsArticle.getWeb());
 			}
 		}

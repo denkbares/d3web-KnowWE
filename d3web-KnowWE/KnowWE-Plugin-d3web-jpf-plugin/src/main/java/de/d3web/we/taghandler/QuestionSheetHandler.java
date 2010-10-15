@@ -32,7 +32,6 @@ import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -63,7 +62,7 @@ public class QuestionSheetHandler extends AbstractHTMLTagHandler {
 
 		Session session = D3webUtils.getSession(topic, user, web);
 
-		D3webKnowledgeService service = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
+		KnowledgeBase kb = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
 
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
 
@@ -71,8 +70,7 @@ public class QuestionSheetHandler extends AbstractHTMLTagHandler {
 		html.append("<div id=\"questionsheet-panel\" class=\"panel\"><h3>"
 				+ rb.getString("KnowWE.QuestionSheet.header") + "</h3>");
 
-		if (service != null) {
-			KnowledgeBase kb = service.getBase();
+		if (kb != null) {
 			List<Question> questions = kb.getQuestions();
 
 			html.append("<ul>");
@@ -100,7 +98,7 @@ public class QuestionSheetHandler extends AbstractHTMLTagHandler {
 				markup.setContent(DCElement.SOURCE, question.getId());
 				markup.setContent(DCElement.SUBJECT, MMInfoSubject.PROMPT.getName());
 				String rendered = KnowWEUtils.getRenderedInput(question.getId(),
-						question.getName(), service.getId(), user.getUserName(), "Question",
+						question.getName(), kb.getId(), user.getUserName(), "Question",
 						question.getName(), "");
 				html.append("<li class=\"pointer\"><img src=\"KnowWEExtension/images/arrow_right.png\" border=\"0\"/>"
 						+ " " + rendered + answerstring + "</li>\n"); // \n only

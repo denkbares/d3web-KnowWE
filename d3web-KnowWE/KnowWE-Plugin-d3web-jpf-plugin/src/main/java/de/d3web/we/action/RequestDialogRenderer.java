@@ -27,10 +27,9 @@ import javax.servlet.http.HttpSession;
 
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.D3webModule;
+import de.d3web.we.basic.SessionBroker;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 
 public class RequestDialogRenderer extends DeprecatedAbstractKnowWEAction {
 
@@ -53,36 +52,25 @@ public class RequestDialogRenderer extends DeprecatedAbstractKnowWEAction {
 	}
 
 	public void prepareDialog(KnowWEParameterMap parameterMap) {
-		String jumpId = parameterMap.get(KnowWEAttributes.JUMP_ID);
 		String id = parameterMap.get(KnowWEAttributes.SESSION_ID);
-		Broker broker = D3webModule.getBroker(parameterMap);
-		D3webKnowledgeServiceSession serviceSession = broker.getSession().getServiceSession(id);
-		if (serviceSession instanceof D3webKnowledgeServiceSession) {
-			// String web = (String) BasicUtils.getModelAttribute(model,
-			// KnowWEAttributes.WEB, String.class, true);
-			// model.setAttribute(KnowWEAttributes.WEB, web, model.getWebApp());
-			String namespace;
-			namespace = parameterMap.get(KnowWEAttributes.TARGET);
-			if (namespace == null) {
-				namespace = parameterMap.get(KnowWEAttributes.NAMESPACE);
-			}
-			// KnowledgeServiceSession kss =
-			// broker.getSession().getServiceSession(id);
-			D3webKnowledgeServiceSession d3webKSS = serviceSession;
-
-			// add the case to a map and save it in application scope
-			Map<String, Session> sessionToCaseMap = (Map) parameterMap.getSession().getServletContext().getAttribute(
-					"sessionToCaseMap");
-			if (sessionToCaseMap == null) {
-				sessionToCaseMap = new HashMap<String, Session>();
-			}
-			HttpSession s = parameterMap.getSession();
-			String sID = s.getId();
-			sessionToCaseMap.put(sID, d3webKSS.getSession());
-			parameterMap.getSession().getServletContext().setAttribute("sessionToCaseMap",
-					sessionToCaseMap);
-
+		SessionBroker broker = D3webModule.getBroker(parameterMap);
+		Session serviceSession = broker.getServiceSession(id);
+		String namespace;
+		namespace = parameterMap.get(KnowWEAttributes.TARGET);
+		if (namespace == null) {
+			namespace = parameterMap.get(KnowWEAttributes.NAMESPACE);
 		}
+		// add the case to a map and save it in application scope
+		Map<String, Session> sessionToCaseMap = (Map) parameterMap.getSession().getServletContext().getAttribute(
+					"sessionToCaseMap");
+		if (sessionToCaseMap == null) {
+			sessionToCaseMap = new HashMap<String, Session>();
+		}
+		HttpSession s = parameterMap.getSession();
+		String sID = s.getId();
+		sessionToCaseMap.put(sID, serviceSession);
+		parameterMap.getSession().getServletContext().setAttribute("sessionToCaseMap",
+					sessionToCaseMap);
 	}
 
 }

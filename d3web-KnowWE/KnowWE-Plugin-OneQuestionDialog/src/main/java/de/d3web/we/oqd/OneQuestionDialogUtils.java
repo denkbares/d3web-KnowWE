@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.core.knowledge.InterviewObject;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionMC;
@@ -30,10 +31,8 @@ import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.D3webModule;
+import de.d3web.we.basic.SessionBroker;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -64,33 +63,21 @@ public class OneQuestionDialogUtils {
 		 * return SessionFactory.createSession(knowledgeService.getBase());
 		 */
 
-		D3webKnowledgeService knowledgeServiceInTopic = D3webModule.getAD3webKnowledgeServiceInTopic(
+		KnowledgeBase knowledgeServiceInTopic = D3webModule.getAD3webKnowledgeServiceInTopic(
 				web, topic);
 		String kbid = knowledgeServiceInTopic.getId();
 
-		Broker broker = D3webModule.getBroker(user.getUserName(), web);
+		SessionBroker broker = D3webModule.getBroker(user.getUserName(), web);
 
-		D3webKnowledgeServiceSession serviceSession = broker.getSession()
-				.getServiceSession(kbid);
-		Session session = null;
+		Session session = broker.getServiceSession(kbid);
 
-		if (serviceSession instanceof D3webKnowledgeServiceSession) {
-
-			session = (serviceSession).getSession();
-			return session;
-		}
-
-		if (serviceSession == null) {
+		if (session == null) {
 			kbid = KnowWEEnvironment.WIKI_FINDINGS + ".."
 					+ KnowWEEnvironment.generateDefaultID(KnowWEEnvironment.WIKI_FINDINGS);
-			serviceSession = broker.getSession().getServiceSession(kbid);
-			if (serviceSession instanceof D3webKnowledgeServiceSession) {
-				session = (serviceSession).getSession();
-				return session;
-			}
-		}
+			session = broker.getServiceSession(kbid);
 
-		return null;
+		}
+		return session;
 	}
 
 	/**

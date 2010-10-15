@@ -45,10 +45,9 @@ import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.flow.StartNode;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
-import de.d3web.we.basic.DPSEnvironmentManager;
-import de.d3web.we.core.DPSEnvironment;
+import de.d3web.we.basic.WikiEnvironment;
+import de.d3web.we.basic.WikiEnvironmentManager;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
 
@@ -76,9 +75,8 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		 * 
 		 * DSPEnvironment: Verwaltung fuer diagnostischen
 		 * Problemlï¿½sungsservices, fï¿½r alle Wissensbasen dieses Webs (z.B.
-		 * unter anderem d3web-Services (D3webKnowledgeService)). Ein Service
-		 * entspricht einer Wissensbasis der jeweiligen Engine (z.B. unter
-		 * anderem d3web).
+		 * unter anderem d3web-Services (KnowledgeBase)). Ein Service entspricht
+		 * einer Wissensbasis der jeweiligen Engine (z.B. unter anderem d3web).
 		 * 
 		 * KnowledgeService Service fuer eine Wissensbasis fuer eine Wiki-Seite.
 		 * Der Zugriff erfolgt ueber das DSPEnvironmentï¿½ber eine
@@ -86,8 +84,8 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		 * erzeugt wird). Das bedeutet, fuer jede Wiki-Seite gibt es aktuell
 		 * genau (maximal) eine Wissenbasis fuer genau (maximal) eine Engine.
 		 * 
-		 * D3webKnowledgeService: Implementierung des KnowledgeServices fuer
-		 * d3web. Hierueber erhaelt man Zugriff auf die d3web Wissensbasis der
+		 * KnowledgeBase: Implementierung des KnowledgeServices fuer d3web.
+		 * Hierueber erhaelt man Zugriff auf die d3web Wissensbasis der
 		 * jeweiligen Wiki-Seite.
 		 */
 
@@ -127,8 +125,8 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		String objectID = (pos == -1) ? null : id.substring(pos + 1);
 
 		// String web = parameterMap.getWeb();
-		DPSEnvironment env = DPSEnvironmentManager.getInstance().getEnvironments(web);
-		D3webKnowledgeService service = env.getService(serviceID);
+		WikiEnvironment env = WikiEnvironmentManager.getInstance().getEnvironments(web);
+		KnowledgeBase service = env.getService(serviceID);
 
 		if (service == null) {
 			// it is possible (and allowed) that an article has no
@@ -140,14 +138,12 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 			// we want to have the article itself
 			appendInfoObject(web, service, buffer);
 		}
-		else if (service instanceof D3webKnowledgeService) {
-			// look for an object inside the knowledgebase
-			appendInfoObject(web, service, objectID, buffer);
-		}
+		// look for an object inside the knowledgebase
+		appendInfoObject(web, service, objectID, buffer);
 	}
 
-	private static void appendInfoObject(String web, D3webKnowledgeService service, StringBuffer buffer) {
-		String id = service.getId();
+	private static void appendInfoObject(String web, KnowledgeBase base, StringBuffer buffer) {
+		String id = base.getId();
 		// filters KnowWE-Doc from object tree
 		if (id.startsWith("Doc ")) return;
 		//
@@ -159,43 +155,38 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		// children of an article are all Solutions of P000 and all QSets of
 		// Q000
 		// as well as the flowcharts
-		if (service instanceof D3webKnowledgeService) {
-			D3webKnowledgeService d3Service = service;
-			KnowledgeBase base = d3Service.getBase();
-			List<TerminologyObject> qsets = new LinkedList<TerminologyObject>();
-			for (TerminologyObject object : base.getRootQASet().getChildren()) {
-				// avoid top level questions ==> implicit imports
-				if (!(object instanceof Question)) {
-					qsets.add(object);
-				}
+		List<TerminologyObject> qsets = new LinkedList<TerminologyObject>();
+		for (TerminologyObject object : base.getRootQASet().getChildren()) {
+			// avoid top level questions ==> implicit imports
+			if (!(object instanceof Question)) {
+				qsets.add(object);
 			}
-			appendChilds(web, d3Service, qsets.toArray(new TerminologyObject[qsets.size()]), buffer);
-			appendChilds(web, d3Service, base.getRootSolution(), buffer);
-			// TODO: append flowcharts out of knowledge base here
-			FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
-			if (flowSet != null) {
-				for (Flow flow : flowSet.getFlows()) {
-					buffer.append("\t\t<child>");
-					buffer.append(service.getId() + "/" + flow.getId());
-					buffer.append("</child>\n");
-				}
+		}
+		appendChilds(web, base, qsets.toArray(new TerminologyObject[qsets.size()]), buffer);
+		appendChilds(web, base, base.getRootSolution(), buffer);
+		// TODO: append flowcharts out of knowledge base here
+		FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
+		if (flowSet != null) {
+			for (Flow flow : flowSet.getFlows()) {
+				buffer.append("\t\t<child>");
+				buffer.append(base.getId() + "/" + flow.getId());
+				buffer.append("</child>\n");
 			}
 		}
 		buffer.append("\t</article>\n");
 	}
 
-	private static void appendInfoObject(String web, D3webKnowledgeService service, String objectID, StringBuffer buffer) {
-		KnowledgeBase base = service.getBase();
+	private static void appendInfoObject(String web, KnowledgeBase base, String objectID, StringBuffer buffer) {
 		IDObject object = base.search(objectID);
 
 		if (object instanceof Solution) {
-			appendInfoObject(web, service, (Solution) object, buffer);
+			appendInfoObject(web, base, (Solution) object, buffer);
 		}
 		else if (object instanceof Question) {
-			appendInfoObject(web, service, (Question) object, buffer);
+			appendInfoObject(web, base, (Question) object, buffer);
 		}
 		else if (object instanceof QContainer) {
-			appendInfoObject(web, service, (QContainer) object, buffer);
+			appendInfoObject(web, base, (QContainer) object, buffer);
 		}
 		else {
 			// TODO: why ist a "Flow" not an IDObject?
@@ -205,7 +196,7 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 			if (flowSet != null) {
 				Flow flow = flowSet.get(objectID);
 				if (flow != null) {
-					appendInfoObject(web, service, flow, buffer);
+					appendInfoObject(web, base, flow, buffer);
 					return;
 				}
 			}
@@ -223,7 +214,7 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		}
 	}
 
-	private static void appendInfoObject(String web, D3webKnowledgeService service, Solution object, StringBuffer buffer) {
+	private static void appendInfoObject(String web, KnowledgeBase service, Solution object, StringBuffer buffer) {
 		buffer.append("\t<solution");
 		buffer.append(" id='").append(service.getId()).append("/").append(object.getId()).append(
 				"'");
@@ -233,7 +224,7 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		buffer.append("\t</solution>\n");
 	}
 
-	private static void appendInfoObject(String web, D3webKnowledgeService service, Question object, StringBuffer buffer) {
+	private static void appendInfoObject(String web, KnowledgeBase service, Question object, StringBuffer buffer) {
 		buffer.append("\t<question");
 		buffer.append(" id='").append(service.getId()).append("/").append(object.getId()).append(
 				"'");
@@ -275,7 +266,7 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		buffer.append("\t</question>\n");
 	}
 
-	private static void appendInfoObject(String web, D3webKnowledgeService service, QContainer object, StringBuffer buffer) {
+	private static void appendInfoObject(String web, KnowledgeBase service, QContainer object, StringBuffer buffer) {
 		buffer.append("\t<qset");
 		buffer.append(" id='").append(service.getId()).append("/").append(object.getId()).append(
 				"'");
@@ -286,7 +277,7 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 	}
 
 	// TODO change
-	private static void appendInfoObject(String web, D3webKnowledgeService service, Section flowchart, StringBuffer buffer) {
+	private static void appendInfoObject(String web, KnowledgeBase service, Section flowchart, StringBuffer buffer) {
 		FlowchartType type = (FlowchartType) flowchart.getObjectType();
 		String name = FlowchartType.getFlowchartName(flowchart);
 		String id = type.getFlowchartID(flowchart);
@@ -306,7 +297,7 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		buffer.append("\t</flowchart>\n");
 	}
 
-	private static void appendInfoObject(String web, D3webKnowledgeService service, Flow flow, StringBuffer buffer) {
+	private static void appendInfoObject(String web, KnowledgeBase service, Flow flow, StringBuffer buffer) {
 		String name = flow.getName();
 		String id = flow.getId();
 		List<StartNode> startNodes = flow.getStartNodes();
@@ -325,11 +316,11 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		buffer.append("\t</flowchart>\n");
 	}
 
-	private static void appendChilds(String web, D3webKnowledgeService service, NamedObject object, StringBuffer buffer) {
+	private static void appendChilds(String web, KnowledgeBase service, NamedObject object, StringBuffer buffer) {
 		appendChilds(web, service, object.getChildren(), buffer);
 	}
 
-	private static void appendChilds(String web, D3webKnowledgeService service, TerminologyObject[] childs, StringBuffer buffer) {
+	private static void appendChilds(String web, KnowledgeBase service, TerminologyObject[] childs, StringBuffer buffer) {
 		for (TerminologyObject child : childs) {
 			buffer.append("\t\t<child>");
 			buffer.append(service.getId() + "/" + child.getId());

@@ -35,9 +35,8 @@ import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.RuleSet;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.basic.DPSEnvironmentManager;
+import de.d3web.we.basic.WikiEnvironmentManager;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
@@ -56,8 +55,8 @@ public class ShowAllKBsHandler extends AbstractHTMLTagHandler {
 
 	@Override
 	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
-		List<D3webKnowledgeService> ks = new ArrayList<D3webKnowledgeService>(
-				DPSEnvironmentManager.getInstance().getEnvironments(web).getServices());
+		List<KnowledgeBase> ks = new ArrayList<KnowledgeBase>(
+				WikiEnvironmentManager.getInstance().getEnvironments(web).getServices());
 		Collections.sort(ks, new KDComparator());
 		StringBuffer html = new StringBuffer();
 		int cnt = ks.size();
@@ -90,48 +89,46 @@ public class ShowAllKBsHandler extends AbstractHTMLTagHandler {
 		html.append("</tr></thead><tbody>");
 
 		boolean even = false;
-		for (Iterator<D3webKnowledgeService> iterator = ks.iterator(); iterator.hasNext();) {
+		for (Iterator<KnowledgeBase> iterator = ks.iterator(); iterator.hasNext();) {
 			even = !even;
-			D3webKnowledgeService service = iterator.next();
-			if (service instanceof D3webKnowledgeService) {
-				D3webKnowledgeService d3Service = service;
-				String id = d3Service.getId();
-				String[] parts = id.split("\\.\\.");
-				if (parts.length == 1) {
-					parts = new String[] {
+			KnowledgeBase kb = iterator.next();
+			String id = kb.getId();
+			String[] parts = id.split("\\.\\.");
+			if (parts.length == 1) {
+				parts = new String[] {
 							parts[0], "" };
-				}
-				KnowledgeBase kb = d3Service.getBase();
-				Collection<KnowledgeSlice> all = kb.getAllKnowledgeSlices();
-				int xclCount = 0;
-				HashSet<Rule> rules = new HashSet<Rule>();
-				for (Iterator<KnowledgeSlice> iter = all.iterator(); iter.hasNext();) {
-					KnowledgeSlice element = iter.next();
-					if (element instanceof de.d3web.xcl.XCLModel) {
-						Map<XCLRelationType, Collection<XCLRelation>> map = ((XCLModel) element).getTypedRelations();
-						for (java.util.Map.Entry<XCLRelationType, Collection<XCLRelation>> entry : map.entrySet()) {
-							xclCount += entry.getValue().size();
-						}
+			}
 
-					}
-					if (element instanceof RuleSet) {
-						RuleSet rs = (RuleSet) element;
-						rules.addAll(rs.getRules());
+			Collection<KnowledgeSlice> all = kb.getAllKnowledgeSlices();
+			int xclCount = 0;
+			HashSet<Rule> rules = new HashSet<Rule>();
+			for (Iterator<KnowledgeSlice> iter = all.iterator(); iter.hasNext();) {
+				KnowledgeSlice element = iter.next();
+				if (element instanceof de.d3web.xcl.XCLModel) {
+					Map<XCLRelationType, Collection<XCLRelation>> map = ((XCLModel) element).getTypedRelations();
+					for (java.util.Map.Entry<XCLRelationType, Collection<XCLRelation>> entry : map.entrySet()) {
+						xclCount += entry.getValue().size();
 					}
 
 				}
-				allSCcnt += xclCount;
-				allRuleCnt += rules.size();
-				int qCount = kb.getQuestions().size();
-
-				if (even) {
-					html.append("<tr class=\"even\">");
-				}
-				else {
-					html.append("<tr>");
+				if (element instanceof RuleSet) {
+					RuleSet rs = (RuleSet) element;
+					rules.addAll(rs.getRules());
 				}
 
-				Object[] tblContent = {
+			}
+			allSCcnt += xclCount;
+			allRuleCnt += rules.size();
+			int qCount = kb.getQuestions().size();
+
+			if (even) {
+				html.append("<tr class=\"even\">");
+			}
+			else {
+				html.append("<tr>");
+			}
+
+			Object[] tblContent = {
 						"<a href=\"Wiki.jsp?page=" + parts[0] + "#" + parts[1] + "\">"
 								+ id.substring(0, id.indexOf("..")) + "</a>",
 						xclCount,
@@ -139,16 +136,10 @@ public class ShowAllKBsHandler extends AbstractHTMLTagHandler {
 						qCount,
 						KnowWEEnvironment.unmaskHTML(DialogLinkTagHandler.generateDialogLink(
 								user.getUserName(), user.getHttpRequest(), topic, id)) };
-				for (Object object : tblContent) {
-					html.append("<td>" + object + "</td>");
-				}
-				html.append("</tr>");
-
+			for (Object object : tblContent) {
+				html.append("<td>" + object + "</td>");
 			}
-			else {
-				html.append("<tr colspan=\"" + tblHeader.length + "\"><p class=\"error box\">"
-						+ rb.getString("KnowWE.KnowledgeSummerize.error.service") + "</p></tr>");
-			}
+			html.append("</tr>");
 			html.append(" \n"); // \n only to avoid hmtl-code being cut by
 								// JspWiki (String.length > 10000)
 		}
@@ -165,10 +156,10 @@ public class ShowAllKBsHandler extends AbstractHTMLTagHandler {
 		return html.toString();
 	}
 
-	class KDComparator implements Comparator<D3webKnowledgeService> {
+	class KDComparator implements Comparator<KnowledgeBase> {
 
 		@Override
-		public int compare(D3webKnowledgeService arg0, D3webKnowledgeService arg1) {
+		public int compare(KnowledgeBase arg0, KnowledgeBase arg1) {
 			return arg0.getId().compareTo(arg1.getId());
 
 		}

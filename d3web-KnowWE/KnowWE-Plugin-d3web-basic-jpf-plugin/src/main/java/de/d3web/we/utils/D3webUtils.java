@@ -34,9 +34,8 @@ import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.session.Session;
 import de.d3web.scoring.Score;
 import de.d3web.we.basic.D3webModule;
+import de.d3web.we.basic.SessionBroker;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class D3webUtils {
@@ -117,16 +116,8 @@ public class D3webUtils {
 	public static Session getSession(String topic, KnowWEUserContext user, String web) {
 
 		String sessionId = topic + ".." + KnowWEEnvironment.generateDefaultID(topic);
-		Broker broker = D3webModule.getBroker(user.getUserName(), web);
-		D3webKnowledgeServiceSession kss = broker.getSession().getServiceSession(sessionId);
-		Session session = null;
-
-		if (kss instanceof D3webKnowledgeServiceSession) {
-
-			D3webKnowledgeServiceSession d3webKSS = kss;
-			session = d3webKSS.getSession();
-		}
-		return session;
+		SessionBroker broker = D3webModule.getBroker(user.getUserName(), web);
+		return broker.getServiceSession(sessionId);
 	}
 
 	/**
@@ -135,33 +126,13 @@ public class D3webUtils {
 	public static Session getSession(String topic, String user, String web) {
 
 		String sessionId = topic + ".." + KnowWEEnvironment.generateDefaultID(topic);
-		Broker broker = D3webModule.getBroker(user, web);
-		D3webKnowledgeServiceSession kss = broker.getSession().getServiceSession(sessionId);
-		Session session = null;
-
-		if (kss instanceof D3webKnowledgeServiceSession) {
-
-			D3webKnowledgeServiceSession d3webKSS = kss;
-			session = d3webKSS.getSession();
-		}
-		return session;
+		SessionBroker broker = D3webModule.getBroker(user, web);
+		return broker.getServiceSession(sessionId);
 	}
 
 	public static Collection<Session> getSessions(String user, String web) {
-
-		Broker broker = D3webModule.getBroker(user, web);
-		Collection<D3webKnowledgeServiceSession> ksss = broker.getSession().getServiceSessions();
-
-		Collection<Session> sessions = new ArrayList<Session>();
-
-		for (D3webKnowledgeServiceSession kss : ksss) {
-
-			if (kss instanceof D3webKnowledgeServiceSession) {
-
-				sessions.add((kss).getSession());
-			}
-		}
-		return sessions;
+		SessionBroker broker = D3webModule.getBroker(user, web);
+		return broker.getServiceSessions();
 	}
 
 	public static Score getScoreForString(String argument) {

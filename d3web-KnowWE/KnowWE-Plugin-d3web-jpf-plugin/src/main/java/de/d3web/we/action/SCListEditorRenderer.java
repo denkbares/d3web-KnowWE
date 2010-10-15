@@ -26,10 +26,9 @@ import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.core.DPSEnvironment;
+import de.d3web.we.basic.WikiEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 
 public class SCListEditorRenderer extends DeprecatedAbstractKnowWEAction {
 
@@ -67,13 +66,12 @@ public class SCListEditorRenderer extends DeprecatedAbstractKnowWEAction {
 
 		StringBuffer sb = new StringBuffer();
 
-		DPSEnvironment dpse = D3webModule.getDPSE(map);
+		WikiEnvironment dpse = D3webModule.getDPSE(map);
 		String namespace = map.get(KnowWEAttributes.SEMANO_NAMESPACE);
 		// String type = map.get(KnowWEAttributes.SEMANO_TERM_TYPE);
 		// String user = map.get(KnowWEAttributes.USER);
 
-		KnowledgeBase base = ((D3webKnowledgeService) (dpse
-				.getService(namespace))).getBase();
+		KnowledgeBase base = dpse.getService(namespace);
 		if (namespace == null) {
 			return null;
 		}

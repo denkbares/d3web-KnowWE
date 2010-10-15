@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -21,6 +21,7 @@ package de.d3web.we.testcase;
 import java.io.IOException;
 import java.util.List;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -30,7 +31,6 @@ import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 
 /**
  * @author Florian Ziegler
@@ -50,10 +50,10 @@ public class GetNewQuickEditAnswersAction extends AbstractAction {
 		String topic = map.getTopic();
 		String element = context.getParameter("element");
 
-		D3webKnowledgeService knowledgeService = D3webModule.getAD3webKnowledgeServiceInTopic(
+		KnowledgeBase knowledgeService = D3webModule.getAD3webKnowledgeServiceInTopic(
 				web, topic);
-		List<Question> questions = knowledgeService.getBase().getQuestions();
-		List<Solution> solutions = knowledgeService.getBase().getSolutions();
+		List<Question> questions = knowledgeService.getQuestions();
+		List<Solution> solutions = knowledgeService.getSolutions();
 
 		context.setContentType("text/plain; charset=UTF-8");
 

@@ -20,22 +20,16 @@
 
 package de.d3web.we.action;
 
-import java.io.File;
-
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.core.KnowWEAttributes;
+import de.d3web.we.basic.SessionBroker;
 import de.d3web.we.core.KnowWEParameterMap;
 
-public class DeleteSessionAction extends DeprecatedAbstractKnowWEAction {
+public class ClearSessionAction extends DeprecatedAbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap map) {
-		String dir = D3webModule.getSessionPath(map);
-		String sessionFileName = map.get(KnowWEAttributes.SESSION_FILE);
-		File session = new File(dir, sessionFileName);
-		if (!session.delete()) {
-			session.deleteOnExit();
-		}
+		SessionBroker broker = D3webModule.getBroker(map);
+		broker.clear();
 		return "done";
 	}
 

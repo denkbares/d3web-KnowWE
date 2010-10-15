@@ -22,16 +22,16 @@ package de.d3web.we.action;
 
 import java.util.List;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
-import de.d3web.we.basic.DPSEnvironmentManager;
-import de.d3web.we.core.DPSEnvironment;
+import de.d3web.we.basic.WikiEnvironment;
+import de.d3web.we.basic.WikiEnvironmentManager;
+import de.d3web.we.basic.SessionBroker;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 
 public class QuestionStateReportAction extends DeprecatedAbstractKnowWEAction {
 
@@ -58,32 +58,27 @@ public class QuestionStateReportAction extends DeprecatedAbstractKnowWEAction {
 
 		String result = "Error on finding question state -wrong id/name ?";
 
-		DPSEnvironment env = DPSEnvironmentManager.getInstance().getEnvironments(web);
-		Broker broker = env.getBroker(user);
+		WikiEnvironment env = WikiEnvironmentManager.getInstance().getEnvironments(web);
+		SessionBroker broker = env.getBroker(user);
 
-		D3webKnowledgeServiceSession kss = broker.getSession().getServiceSession(namespace);
-		D3webKnowledgeService service = env.getService(namespace);
+		Session session = broker.getServiceSession(namespace);
+		KnowledgeBase base = env.getService(namespace);
 		Question q = null;
-		if (service instanceof D3webKnowledgeService) {
 
-			if (questionID != null) {
+		if (questionID != null) {
+			QASet set = base.searchQASet(questionID);
+			if (set instanceof Question) {
 
-				QASet set = (service).getBase()
-						.searchQASet(questionID);
-				if (set instanceof Question) {
-
-					q = ((Question) set);
-				}
+				q = ((Question) set);
 			}
+		}
 
-			if (questionName != null) {
+		if (questionName != null) {
+			List<Question> questionList = base.getQuestions();
+			for (Question question : questionList) {
+				if (question.getName().equals(questionName)) {
 
-				List<Question> questionList = (service).getBase().getQuestions();
-				for (Question question : questionList) {
-					if (question.getName().equals(questionName)) {
-
-						q = question;
-					}
+					q = question;
 				}
 			}
 		}
@@ -93,14 +88,11 @@ public class QuestionStateReportAction extends DeprecatedAbstractKnowWEAction {
 		//
 		// }
 
-		if (kss instanceof de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession
-				&& q != null) {
+		if (q != null) {
 
-			D3webKnowledgeServiceSession d3kss = (kss);
-			de.d3web.core.session.Session case1 = d3kss.getSession();
-			List<? extends Question> answeredQuestions = case1.getBlackboard().getAnsweredQuestions();
+			List<? extends Question> answeredQuestions = session.getBlackboard().getAnsweredQuestions();
 			if (answeredQuestions.contains(q)) {
-				Value theanswer = case1.getBlackboard().getValue(q);
+				Value theanswer = session.getBlackboard().getValue(q);
 				result = "#" + q.getName() + ":";
 				if (theanswer != null) {
 					result += theanswer.getValue().toString() + ";";

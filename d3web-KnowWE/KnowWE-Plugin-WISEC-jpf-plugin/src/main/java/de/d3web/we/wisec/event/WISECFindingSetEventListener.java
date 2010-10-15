@@ -39,12 +39,11 @@ import common.Logger;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.NumValue;
-import de.d3web.we.basic.DPSEnvironmentManager;
-import de.d3web.we.core.DPSEnvironment;
-import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
+import de.d3web.we.basic.WikiEnvironment;
+import de.d3web.we.basic.WikiEnvironmentManager;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.event.Event;
 import de.d3web.we.event.EventListener;
@@ -192,10 +191,9 @@ public class WISECFindingSetEventListener implements EventListener {
 		if (accumulatedValue == 0) return;
 
 		// Get the KnowledgeServiceSession
-		DPSEnvironment env = DPSEnvironmentManager.getInstance().getEnvironments(web);
-		Broker broker = env.getBroker(user);
-		D3webKnowledgeServiceSession kss =
-				(D3webKnowledgeServiceSession) broker.getSession().getServiceSession(namespace);
+		WikiEnvironment env = WikiEnvironmentManager.getInstance().getEnvironments(web);
+		Session kss =
+				env.getBroker(user).getServiceSession(namespace);
 		if (kss == null) {
 			Logger.getLogger(this.getClass()).error(
 					"Unable to get KnowledgeServiceSession for namespace: " + namespace);
@@ -203,7 +201,8 @@ public class WISECFindingSetEventListener implements EventListener {
 		}
 
 		// Search the Counter-Question (P, B, Aqua_Tox etc.)
-		Question counterQuestion = kss.getBaseManagement().findQuestion(criteria);
+		Question counterQuestion = KnowledgeBaseManagement.createInstance(kss.getKnowledgeBase()).findQuestion(
+				criteria);
 		if (counterQuestion == null) {
 			Logger.getLogger(this.getClass()).error(
 					"Counter-Question: " + criteria + " was not found! No value set!");
@@ -211,7 +210,7 @@ public class WISECFindingSetEventListener implements EventListener {
 		}
 
 		// Get the old value
-		Value oldValue = kss.getSession().getBlackboard().getValue(counterQuestion);
+		Value oldValue = kss.getBlackboard().getValue(counterQuestion);
 		double oldNumValue = oldValue instanceof NumValue ? (Double) oldValue.getValue() : 0;
 		NumValue newValue = new NumValue(oldNumValue + accumulatedValue);
 

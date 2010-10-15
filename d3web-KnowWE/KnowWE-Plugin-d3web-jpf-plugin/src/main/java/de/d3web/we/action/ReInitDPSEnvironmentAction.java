@@ -23,8 +23,8 @@ package de.d3web.we.action;
 import java.util.ResourceBundle;
 
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.basic.DPSEnvironmentManager;
-import de.d3web.we.core.DPSEnvironment;
+import de.d3web.we.basic.WikiEnvironment;
+import de.d3web.we.basic.WikiEnvironmentManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 
@@ -37,7 +37,7 @@ public class ReInitDPSEnvironmentAction extends DeprecatedAbstractKnowWEAction {
 
 		long time1 = System.currentTimeMillis();
 		String web = parameterMap.get(KnowWEAttributes.WEB);
-		DPSEnvironment dpse = DPSEnvironmentManager.getInstance().getEnvironments(web);
+		WikiEnvironment dpse = WikiEnvironmentManager.getInstance().getEnvironments(web);
 		dpse.reInitialize();
 		// ((GlobalTerminologyRenderer)
 		// model.getWebApp().getRenderer("KWiki_globalTerminology")).reInitialize(model,

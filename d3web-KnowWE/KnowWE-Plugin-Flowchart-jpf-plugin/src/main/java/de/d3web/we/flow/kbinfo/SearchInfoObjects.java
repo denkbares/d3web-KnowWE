@@ -33,11 +33,10 @@ import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
-import de.d3web.we.basic.DPSEnvironmentManager;
-import de.d3web.we.core.DPSEnvironment;
+import de.d3web.we.basic.WikiEnvironment;
+import de.d3web.we.basic.WikiEnvironmentManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 
 public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
 
@@ -86,76 +85,71 @@ public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
 		classes = new HashSet<String>();
 		classes.addAll(Arrays.asList(classesString.toLowerCase().split(",")));
 
-		DPSEnvironment env = DPSEnvironmentManager.getInstance().getEnvironments(web);
+		WikiEnvironment env = WikiEnvironmentManager.getInstance().getEnvironments(web);
 		Set<String> foundNames = new HashSet<String>();
 		List<String> result = new LinkedList<String>();
 
 		// the examine objects inside the articles
-		for (D3webKnowledgeService service : env.getServices()) {
-			if (service instanceof D3webKnowledgeService) {
-				// for each found knowledgebase, iterate through their objects
-				// and search for the given names
-				// and ignore all names we have already found
-				D3webKnowledgeService d3Service = service;
-				KnowledgeBase base = d3Service.getBase();
-				if (base == null) continue;
+		for (KnowledgeBase base : env.getServices()) {
+			// for each found knowledgebase, iterate through their objects
+			// and search for the given names
+			// and ignore all names we have already found
 
-				// add article for a knowledge base
-				if (classes.contains("article")) {
-					if (matches(d3Service.getId().toLowerCase(), phrases)) {
-						// we do not have to avoid duplicates here (!)
-						// so do not use foundNames,
-						// therefore we can directly add to the result
-						result.add(d3Service.getId());
-					}
+			// add article for a knowledge base
+			if (classes.contains("article")) {
+				if (matches(base.getId().toLowerCase(), phrases)) {
+					// we do not have to avoid duplicates here (!)
+					// so do not use foundNames,
+					// therefore we can directly add to the result
+					result.add(base.getId());
 				}
-
-				// add Flowcharts
-				if (classes.contains("flowchart")) {
-					FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
-					if (flowSet != null) {
-						for (Flow flow : flowSet.getFlows()) {
-							if (matches(flow.getName(), phrases)) {
-								result.add(d3Service.getId() + "/" + flow.getId());
-							}
-
-						}
-					}
-				}
-
-				List<NamedObject> allKBObjects = new LinkedList<NamedObject>();
-
-				// add Diagnosis
-				if (classes.contains("solution")) {
-					allKBObjects.addAll(base.getSolutions());
-				}
-				// add QContainers (QSet)
-				if (classes.contains("qset")) {
-					allKBObjects.addAll(base.getQContainers());
-				}
-				// add Questions
-				if (classes.contains("question")) {
-					// ignore all questions that are toplevel, because
-					// the are lazy created as implicit import
-					// TODO: define better mechanism with university and
-					// implement well
-					for (Question question : base.getQuestions()) {
-						if (!Arrays.asList(question.getParents()).contains(base.getRootQASet())) {
-							allKBObjects.add(question);
-						}
-					}
-				}
-				// search all objects
-				for (NamedObject object : allKBObjects) {
-					String name = object.getName().toLowerCase();
-					if (!foundNames.contains(name) && matches(name, phrases)) {
-						foundNames.add(name);
-						result.add(createResultEntry(service, base, object));
-					}
-				}
-				// stop if we have enough matches
-				if (result.size() > maxCount) break;
 			}
+
+			// add Flowcharts
+			if (classes.contains("flowchart")) {
+				FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
+				if (flowSet != null) {
+					for (Flow flow : flowSet.getFlows()) {
+						if (matches(flow.getName(), phrases)) {
+							result.add(base.getId() + "/" + flow.getId());
+						}
+
+					}
+				}
+			}
+
+			List<NamedObject> allKBObjects = new LinkedList<NamedObject>();
+
+			// add Diagnosis
+			if (classes.contains("solution")) {
+				allKBObjects.addAll(base.getSolutions());
+			}
+			// add QContainers (QSet)
+			if (classes.contains("qset")) {
+				allKBObjects.addAll(base.getQContainers());
+			}
+			// add Questions
+			if (classes.contains("question")) {
+				// ignore all questions that are toplevel, because
+				// the are lazy created as implicit import
+				// TODO: define better mechanism with university and
+				// implement well
+				for (Question question : base.getQuestions()) {
+					if (!Arrays.asList(question.getParents()).contains(base.getRootQASet())) {
+						allKBObjects.add(question);
+					}
+				}
+			}
+			// search all objects
+			for (NamedObject object : allKBObjects) {
+				String name = object.getName().toLowerCase();
+				if (!foundNames.contains(name) && matches(name, phrases)) {
+					foundNames.add(name);
+					result.add(createResultEntry(base, object));
+				}
+			}
+			// stop if we have enough matches
+			if (result.size() > maxCount) break;
 		}
 
 		return result;
@@ -170,9 +164,9 @@ public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
 		return true;
 	}
 
-	private static String createResultEntry(D3webKnowledgeService service, KnowledgeBase base, NamedObject object) {
+	private static String createResultEntry(KnowledgeBase base, NamedObject object) {
 		// create a unique name for the object to be recovered easily
-		return service.getId() + "/" + object.getId();
+		return base.getId() + "/" + object.getId();
 	}
 
 	private static String encodeXML(String text) {

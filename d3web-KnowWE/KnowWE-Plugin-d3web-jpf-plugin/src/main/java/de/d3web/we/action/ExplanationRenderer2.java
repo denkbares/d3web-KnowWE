@@ -26,13 +26,13 @@ import java.util.Map;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.MethodKind;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.scoring.inference.PSMethodHeuristic;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.core.DPSEnvironment;
+import de.d3web.we.basic.WikiEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.utils.ProblemSolverType;
 
 public class ExplanationRenderer2 extends DeprecatedAbstractKnowWEAction {
@@ -105,18 +105,15 @@ public class ExplanationRenderer2 extends DeprecatedAbstractKnowWEAction {
 	private List<ProblemSolverType> getProblemSolverTypes(Map<String, String> map, String id) {
 		List<ProblemSolverType> result = new ArrayList<ProblemSolverType>();
 		String namespace = map.get(KnowWEAttributes.NAMESPACE);
-		DPSEnvironment dpse = D3webModule.getDPSE(map);
+		WikiEnvironment dpse = D3webModule.getDPSE(map);
 
-		D3webKnowledgeService ks = dpse.getService(namespace);
-		if (ks instanceof D3webKnowledgeService) {
-			D3webKnowledgeService d3 = ks;
-			Solution diag = d3.getBase().searchSolution(id);
-			if (diag != null) {
-				KnowledgeSlice heu = diag.getKnowledge(PSMethodHeuristic.class,
+		KnowledgeBase base = dpse.getService(namespace);
+		Solution diag = base.searchSolution(id);
+		if (diag != null) {
+			KnowledgeSlice heu = diag.getKnowledge(PSMethodHeuristic.class,
 						MethodKind.BACKWARD);
-				if (heu != null) {
-					result.add(ProblemSolverType.heuristic);
-				}
+			if (heu != null) {
+				result.add(ProblemSolverType.heuristic);
 			}
 		}
 		return result;

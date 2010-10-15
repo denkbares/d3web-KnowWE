@@ -25,16 +25,15 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
 import de.d3web.we.basic.D3webModule;
+import de.d3web.we.basic.SessionBroker;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class QuickInterviewAction extends AbstractAction {
@@ -75,34 +74,24 @@ public class QuickInterviewAction extends AbstractAction {
 
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(request);
 
-		D3webKnowledgeService knowledgeServiceInTopic = D3webModule.getAD3webKnowledgeServiceInTopic(
+		KnowledgeBase knowledgeServiceInTopic = D3webModule.getAD3webKnowledgeServiceInTopic(
 				web, topic);
 		if (knowledgeServiceInTopic == null) return rb.getString("KnowWE.quicki.error");
 		String kbid = knowledgeServiceInTopic.getId();
 		// String kbid = topic+".."+KnowWEEnvironment.generateDefaultID(topic);
 
-		Broker broker = D3webModule.getBroker(user, web);
+		SessionBroker broker = D3webModule.getBroker(user, web);
 
-		D3webKnowledgeServiceSession serviceSession = broker.getSession()
-				.getServiceSession(kbid);
-		Session session = null;
+		Session session = broker.getServiceSession(kbid);
 
-		if (serviceSession instanceof D3webKnowledgeServiceSession) {
-
-			session = (serviceSession).getSession();
+		if (session != null) {
 			return QuickInterviewRenderer.renderInterview(session, web, usercontext);
 		}
-
-		if (serviceSession == null) {
+		else {
 			kbid = KnowWEEnvironment.WIKI_FINDINGS + ".."
 					+ KnowWEEnvironment.generateDefaultID(KnowWEEnvironment.WIKI_FINDINGS);
-			serviceSession = broker.getSession().getServiceSession(kbid);
-			if (serviceSession instanceof D3webKnowledgeServiceSession) {
-				session = (serviceSession).getSession();
-				return QuickInterviewRenderer.renderInterview(session, web, usercontext);
-			}
+			session = broker.getServiceSession(kbid);
+			return QuickInterviewRenderer.renderInterview(session, web, usercontext);
 		}
-
-		return null;
 	}
 }

@@ -23,12 +23,11 @@ package de.d3web.we.action;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.session.Session;
-import de.d3web.we.basic.DPSEnvironmentManager;
-import de.d3web.we.core.DPSEnvironment;
+import de.d3web.we.basic.WikiEnvironment;
+import de.d3web.we.basic.WikiEnvironmentManager;
+import de.d3web.we.basic.SessionBroker;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 
 public class SemanticAnnotationAction extends DeprecatedAbstractKnowWEAction {
 
@@ -64,18 +63,16 @@ public class SemanticAnnotationAction extends DeprecatedAbstractKnowWEAction {
 
 		namespace = java.net.URLDecoder.decode(namespace);
 
-		DPSEnvironment dpse = DPSEnvironmentManager.getInstance()
+		WikiEnvironment dpse = WikiEnvironmentManager.getInstance()
 				.getEnvironments(webname);
-		Broker broker = dpse.getBroker(user);
+		SessionBroker broker = dpse.getBroker(user);
 
 		if (id == null) {
 			return null;
 		}
 		StringBuffer sb = new StringBuffer();
 
-		D3webKnowledgeServiceSession kss = broker.getSession()
-				.getServiceSession(namespace);
-		Session session = kss.getSession();
+		Session session = broker.getServiceSession(namespace);
 		TerminologyObject obj = session.getKnowledgeBase().search(id);
 		if (obj instanceof Question) {
 

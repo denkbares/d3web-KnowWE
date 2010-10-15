@@ -31,10 +31,7 @@ import java.util.Set;
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 
@@ -102,13 +99,13 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	 */
 	@Override
 	public void initArticle(KnowWEArticle art) {
-		DPSEnvironment env = D3webModule.getDPSE(web);
+		WikiEnvironment env = D3webModule.getDPSE(web);
 		String id = art.getTitle() + ".." + KnowWEEnvironment.generateDefaultID(art.getTitle());
-		D3webKnowledgeService service = env.getService(id);
+		KnowledgeBase service = env.getService(id);
 		if (service != null) {
 			env.removeService(service);
-			for (Broker broker : env.getBrokers()) {
-				broker.signoff(service);
+			for (SessionBroker broker : env.getBrokers()) {
+				broker.removeServiceSession(service.getId());
 			}
 		}
 		if (art.isFullParse()) {
@@ -125,7 +122,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	public void finishArticle(KnowWEArticle art) {
 		KnowledgeBaseManagement kbm = this.getKBM(art.getTitle());
 		if (!isEmpty(kbm)) {
-			DistributedRegistrationManager.getInstance().registerKnowledgeBase(kbm,
+			WikiEnvironmentManager.registerKnowledgeBase(kbm,
 					art.getTitle(), art.getWeb());
 		}
 	}

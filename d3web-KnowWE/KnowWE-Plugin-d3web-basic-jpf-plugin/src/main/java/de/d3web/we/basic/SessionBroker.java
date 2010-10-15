@@ -18,48 +18,36 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.core.broker;
+package de.d3web.we.basic;
 
-import java.rmi.server.UID;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.d3web.we.core.DPSEnvironment;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
+import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.session.Session;
+import de.d3web.core.session.SessionFactory;
 
-public class DPSSession {
+public class SessionBroker {
 
-	private final DPSEnvironment environment;
-	private final String id;
-	private Map<String, D3webKnowledgeServiceSession> serviceSessions;
+	private final WikiEnvironment environment;
+	private Map<String, Session> serviceSessions;
 
-	public DPSSession(DPSEnvironment environment) {
+	public SessionBroker(WikiEnvironment environment) {
 		super();
 		this.environment = environment;
-		id = new UID().toString();
-		serviceSessions = new HashMap<String, D3webKnowledgeServiceSession>();
+		serviceSessions = new HashMap<String, Session>();
 	}
 
-	public Collection<D3webKnowledgeServiceSession> getServiceSessions() {
+	public Collection<Session> getServiceSessions() {
 		return serviceSessions.values();
 	}
 
-	public D3webKnowledgeServiceSession getServiceSession(String id) {
+	public Session getServiceSession(String id) {
 		return serviceSessions.get(id);
 	}
 
-	public String getServiceId(D3webKnowledgeServiceSession serviceSession) {
-		for (String id : serviceSessions.keySet()) {
-			if (serviceSessions.get(id).equals(serviceSession)) {
-				return id;
-			}
-		}
-		return null;
-	}
-
-	public void addServiceSession(String id, D3webKnowledgeServiceSession serviceSession) {
+	public void addServiceSession(String id, Session serviceSession) {
 		serviceSessions.put(id, serviceSession);
 	}
 
@@ -67,22 +55,18 @@ public class DPSSession {
 		serviceSessions.remove(id);
 	}
 
-	public void clear(Broker broker) {
+	public void clear() {
 		/*
 		 * HOTFIX : reinit all d3webKnowledgeServiceSessions to update changed
 		 * knowledgebases
 		 */
 		java.util.Set<String> serviceIDs = serviceSessions.keySet();
-		serviceSessions = new HashMap<String, D3webKnowledgeServiceSession>();
+		serviceSessions = new HashMap<String, Session>();
 		for (String string : serviceIDs) {
 			removeServiceSession(string);
-			D3webKnowledgeService service = environment.getService(string);
-			addServiceSession(service.getId(), service.createSession(broker));
+			KnowledgeBase service = environment.getService(string);
+			addServiceSession(service.getId(), SessionFactory.createSession(service));
 		}
 
-	}
-
-	public String getId() {
-		return id;
 	}
 }

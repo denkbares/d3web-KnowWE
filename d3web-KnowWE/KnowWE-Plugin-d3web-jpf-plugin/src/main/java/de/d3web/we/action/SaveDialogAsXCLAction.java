@@ -30,13 +30,11 @@ import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.we.basic.D3webModule;
+import de.d3web.we.basic.SessionBroker;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.xcl.CoveringListSection;
 
@@ -132,32 +130,22 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 	 * @return
 	 */
 	private Session getSession(String web, String topic, String user) {
-		D3webKnowledgeService knowledgeServiceInTopic = D3webModule.getAD3webKnowledgeServiceInTopic(
+		KnowledgeBase knowledgeServiceInTopic = D3webModule.getAD3webKnowledgeServiceInTopic(
 				web, topic);
-		D3webKnowledgeService service = D3webModule.getAD3webKnowledgeServiceInTopic(web,
+		KnowledgeBase service = D3webModule.getAD3webKnowledgeServiceInTopic(web,
 				topic);
-		service.getBase();
 
 		if (knowledgeServiceInTopic == null) return null;
 		String kbid = knowledgeServiceInTopic.getId();
 
-		Broker broker = D3webModule.getBroker(user, web);
-		D3webKnowledgeServiceSession serviceSession = broker.getSession().getServiceSession(
+		SessionBroker broker = D3webModule.getBroker(user, web);
+		Session c = broker.getServiceSession(
 				kbid);
-		Session c = null;
-
-		if (serviceSession instanceof D3webKnowledgeServiceSession) {
-			c = (serviceSession).getSession();
-		}
-
-		if (serviceSession == null) {
+		if (c == null) {
 			kbid = KnowWEEnvironment.WIKI_FINDINGS
 					+ ".."
 					+ KnowWEEnvironment.generateDefaultID(KnowWEEnvironment.WIKI_FINDINGS);
-			serviceSession = broker.getSession().getServiceSession(kbid);
-			if (serviceSession instanceof D3webKnowledgeServiceSession) {
-				c = (serviceSession).getSession();
-			}
+			c = broker.getServiceSession(kbid);
 		}
 
 		return c;
@@ -171,10 +159,10 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 	 * @return
 	 */
 	private Solution findSolution(String web, String topic, String solution) {
-		D3webKnowledgeService ks = D3webModule.getAD3webKnowledgeServiceInTopic(web,
+		KnowledgeBase base = D3webModule.getAD3webKnowledgeServiceInTopic(web,
 				topic);
 
-		Solution d = getKBM(ks.getBase()).findSolution(solution);
+		Solution d = getKBM(base).findSolution(solution);
 		return d;
 	}
 

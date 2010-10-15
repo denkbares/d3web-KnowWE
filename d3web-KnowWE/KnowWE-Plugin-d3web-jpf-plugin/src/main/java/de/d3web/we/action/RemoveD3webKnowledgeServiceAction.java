@@ -20,12 +20,13 @@
 
 package de.d3web.we.action;
 
+import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.session.Session;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.core.DPSEnvironment;
+import de.d3web.we.basic.WikiEnvironment;
+import de.d3web.we.basic.SessionBroker;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 
 public class RemoveD3webKnowledgeServiceAction extends DeprecatedAbstractKnowWEAction {
 
@@ -33,14 +34,15 @@ public class RemoveD3webKnowledgeServiceAction extends DeprecatedAbstractKnowWEA
 	public String perform(KnowWEParameterMap map) {
 		String baseID = map.get(KnowWEAttributes.KNOWLEDGEBASE_ID);
 		if (baseID == null) return "no kbid to remove knowledge service";
-		DPSEnvironment env = D3webModule.getDPSE(map);
-		D3webKnowledgeService service = env.getService(baseID);
+		WikiEnvironment env = D3webModule.getDPSE(map);
+		KnowledgeBase service = env.getService(baseID);
 		if (service == null) return "no service found for id: " + baseID;
 		env.removeService(service);
-		for (Broker broker : env.getBrokers()) {
-			broker.signoff(service);
+		for (SessionBroker broker : env.getBrokers()) {
+			Session serviceSession = env.createServiceSession(
+					service.getId());
+			broker.addServiceSession(service.getId(), serviceSession);
 		}
-		// KnowledgeBaseRepository.getInstance().removeKnowledgeBase(baseID);
 		return "done";
 	}
 

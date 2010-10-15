@@ -33,11 +33,10 @@ import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.RuleSet;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.basic.DPSEnvironmentManager;
+import de.d3web.we.basic.WikiEnvironmentManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.taghandler.DialogLinkTagHandler;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
@@ -60,18 +59,6 @@ public class KnowledgeSummerizeAction extends DeprecatedAbstractKnowWEAction {
 	//
 	// }
 
-	public class D3webKnowledgeServiceComparator implements Comparator<D3webKnowledgeService> {
-
-		@Override
-		public int compare(D3webKnowledgeService o1, D3webKnowledgeService o2) {
-			if (o1 instanceof D3webKnowledgeService && o2 instanceof D3webKnowledgeService) {
-				return (o1).getId().compareTo((o2).getId());
-			}
-			return 0;
-		}
-
-	}
-
 	public String perform(String web) {
 		KnowWEParameterMap map = new KnowWEParameterMap(KnowWEAttributes.WEB, web);
 		return perform(map);
@@ -82,8 +69,8 @@ public class KnowledgeSummerizeAction extends DeprecatedAbstractKnowWEAction {
 		String web = parameterMap.get(KnowWEAttributes.WEB);
 		String user = parameterMap.getUser();
 		String topic = parameterMap.getTopic();
-		List<D3webKnowledgeService> ks = new ArrayList<D3webKnowledgeService>(
-				DPSEnvironmentManager.getInstance().getEnvironments(web).getServices());
+		List<KnowledgeBase> ks = new ArrayList<KnowledgeBase>(
+				WikiEnvironmentManager.getInstance().getEnvironments(web).getServices());
 		Collections.sort(ks, new KDComparator());
 		StringBuffer html = new StringBuffer();
 		StringBuffer htmlBuffi1 = new StringBuffer();
@@ -118,48 +105,45 @@ public class KnowledgeSummerizeAction extends DeprecatedAbstractKnowWEAction {
 		html.append("</tr></thead><tbody>");
 
 		boolean even = false;
-		for (Iterator iterator = ks.iterator(); iterator.hasNext();) {
+		for (Iterator<KnowledgeBase> iterator = ks.iterator(); iterator.hasNext();) {
 			even = !even;
-			D3webKnowledgeService service = (D3webKnowledgeService) iterator.next();
-			if (service instanceof D3webKnowledgeService) {
-				D3webKnowledgeService d3Service = service;
-				String id = d3Service.getId();
-				String[] parts = id.split("\\.\\.");
-				if (parts.length == 1) {
-					parts = new String[] {
+			KnowledgeBase kb = iterator.next();
+			String id = kb.getId();
+			String[] parts = id.split("\\.\\.");
+			if (parts.length == 1) {
+				parts = new String[] {
 							parts[0], "" };
-				}
-				KnowledgeBase kb = d3Service.getBase();
-				Collection<KnowledgeSlice> all = kb.getAllKnowledgeSlices();
-				int xclCount = 0;
-				int ruleCount = 0;
-				for (Iterator<KnowledgeSlice> iter = all.iterator(); iter.hasNext();) {
-					KnowledgeSlice element = iter.next();
-					if (element instanceof de.d3web.xcl.XCLModel) {
-						Map<XCLRelationType, Collection<XCLRelation>> map = ((XCLModel) element).getTypedRelations();
-						for (java.util.Map.Entry<XCLRelationType, Collection<XCLRelation>> entry : map.entrySet()) {
-							xclCount += entry.getValue().size();
-						}
-
-					}
-					if (element instanceof RuleSet) {
-						RuleSet rs = (RuleSet) element;
-						ruleCount += rs.getRules().size();
+			}
+			Collection<KnowledgeSlice> all = kb.getAllKnowledgeSlices();
+			int xclCount = 0;
+			int ruleCount = 0;
+			for (Iterator<KnowledgeSlice> iter = all.iterator(); iter.hasNext();) {
+				KnowledgeSlice element = iter.next();
+				if (element instanceof de.d3web.xcl.XCLModel) {
+					Map<XCLRelationType, Collection<XCLRelation>> map = ((XCLModel) element).getTypedRelations();
+					for (java.util.Map.Entry<XCLRelationType, Collection<XCLRelation>> entry : map.entrySet()) {
+						xclCount += entry.getValue().size();
 					}
 
 				}
-				allSCcnt += xclCount;
-				allRuleCnt += ruleCount;
-				int qCount = kb.getQuestions().size();
-
-				if (even) {
-					html.append("<tr class=\"even\">");
-				}
-				else {
-					html.append("<tr>");
+				if (element instanceof RuleSet) {
+					RuleSet rs = (RuleSet) element;
+					ruleCount += rs.getRules().size();
 				}
 
-				Object[] tblContent = {
+			}
+			allSCcnt += xclCount;
+			allRuleCnt += ruleCount;
+			int qCount = kb.getQuestions().size();
+
+			if (even) {
+				html.append("<tr class=\"even\">");
+			}
+			else {
+				html.append("<tr>");
+			}
+
+			Object[] tblContent = {
 						"<a href=\"Wiki.jsp?page=" + parts[0] + "#" + parts[1] + "\">"
 								+ id.substring(0, id.indexOf("..")) + "</a>",
 						xclCount,
@@ -167,16 +151,10 @@ public class KnowledgeSummerizeAction extends DeprecatedAbstractKnowWEAction {
 						qCount,
 						KnowWEEnvironment.unmaskHTML(DialogLinkTagHandler.generateDialogLink(user,
 								parameterMap.getRequest(), topic, id)) };
-				for (Object object : tblContent) {
-					html.append("<td>" + object + "</td>");
-				}
-				html.append("</tr>");
-
+			for (Object object : tblContent) {
+				html.append("<td>" + object + "</td>");
 			}
-			else {
-				html.append("<tr colspan=\"" + tblHeader.length + "\"><p class=\"error box\">"
-						+ rb.getString("KnowWE.KnowledgeSummerize.error.service") + "</p></tr>");
-			}
+			html.append("</tr>");
 			html.append(" \n"); // \n only to avoid hmtl-code being cut by
 								// JspWiki (String.length > 10000)
 		}
@@ -193,10 +171,10 @@ public class KnowledgeSummerizeAction extends DeprecatedAbstractKnowWEAction {
 		return html.toString();
 	}
 
-	class KDComparator implements Comparator<D3webKnowledgeService> {
+	class KDComparator implements Comparator<KnowledgeBase> {
 
 		@Override
-		public int compare(D3webKnowledgeService arg0, D3webKnowledgeService arg1) {
+		public int compare(KnowledgeBase arg0, KnowledgeBase arg1) {
 			return arg0.getId().compareTo(arg1.getId());
 
 		}

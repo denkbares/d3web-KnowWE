@@ -114,7 +114,7 @@ KNOWWE.plugin.solutionpanel = function(){
          */
         clearSolutionstate : function(){
             var params = {
-                action : 'ClearDPSSessionAction',
+                action : 'ClearSessionAction',
                 KWikiWeb : 'default_web'
             }
             var id = 'solutionPanelResults';

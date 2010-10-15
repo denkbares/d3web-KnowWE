@@ -25,7 +25,6 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.AnnotationObject;
@@ -69,9 +68,8 @@ public class D3webAnnotationRenderer extends KnowWEDomRenderer {
 			new StandardAnnotationRenderer().render(article, sec, user, string);
 		}
 
-		D3webKnowledgeService service =
-					D3webModule.
-							getAD3webKnowledgeServiceInTopic(sec.getWeb(), sec.getTitle());
+		KnowledgeBase service = D3webModule.getAD3webKnowledgeServiceInTopic(sec.getWeb(),
+				sec.getTitle());
 
 		String middle = renderline(sec, user.getUserName(), question, text, service);
 
@@ -84,9 +82,8 @@ public class D3webAnnotationRenderer extends KnowWEDomRenderer {
 	}
 
 	private String renderline(Section sec, String user, String question,
-			String text, D3webKnowledgeService service) {
-		if (service != null && question != null) {
-			KnowledgeBase kb = service.getBase();
+			String text, KnowledgeBase kb) {
+		if (kb != null && question != null) {
 			question = question.trim();
 			Question q = KnowledgeBaseManagement.createInstance(kb)
 					.findQuestion(question);
@@ -102,7 +99,7 @@ public class D3webAnnotationRenderer extends KnowWEDomRenderer {
 				// }
 				String s = "<a href=\"#" + sec.getID() + "\"></a>"
 						+ KnowWEUtils.getRenderedInput(q.getId(), q.getName(),
-								service.getId(), user, "Annotation", text, op);
+								kb.getId(), user, "Annotation", text, op);
 				String masked = KnowWEEnvironment.maskHTML(s);
 				return masked;
 			}

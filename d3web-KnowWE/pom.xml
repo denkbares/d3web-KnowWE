@@ -141,7 +141,6 @@
 		<module>d3web-KnOfficeParser</module>
 		<module>d3web-TiRex</module>
 		<module>d3web-KnowledgeExporter</module>
-		<module>d3web-Distributed</module>
 		<module>KnowWE</module>
 		<module>KnowWE-core</module>
 		<module>KnowWE-JSPWiki-Connector-jpf-plugin</module>

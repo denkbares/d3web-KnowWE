@@ -43,7 +43,6 @@ import de.d3web.multimedia.io.ImageQuestionStore;
 import de.d3web.we.action.SetSingleFindingAction;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -109,8 +108,7 @@ public class ImageQuestionHandler extends AbstractHTMLTagHandler {
 		this.web = web;
 		this.user = user;
 
-		D3webKnowledgeService service = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
-		KnowledgeBase kb = service.getBase();
+		KnowledgeBase kb = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
 
 		// Read out the properties
 		String questionID = values.get(ImageQuestionHandler.TAGHANDLER_ANNOTATION);

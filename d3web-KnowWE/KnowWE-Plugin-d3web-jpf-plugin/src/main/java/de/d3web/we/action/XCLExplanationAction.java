@@ -41,10 +41,9 @@ import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
 import de.d3web.kernel.verbalizer.Verbalizer;
 import de.d3web.we.basic.D3webModule;
+import de.d3web.we.basic.SessionBroker;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.xcl.InferenceTrace;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
@@ -84,47 +83,40 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 
 		String id = parameterMap.get(KnowWEAttributes.SESSION_ID);
 		String solutionid = parameterMap.get(KnowWEAttributes.TERM);
-		Broker broker = D3webModule.getBroker(parameterMap);
-		D3webKnowledgeServiceSession serviceSession = broker.getSession()
-				.getServiceSession(id);
+		SessionBroker broker = D3webModule.getBroker(parameterMap);
+		this.currentCase = broker.getServiceSession(id);
 
-		if (serviceSession instanceof D3webKnowledgeServiceSession) {
+		// String namespace;
+		//
+		// namespace = parameterMap.get(KnowWEAttributes.TARGET);
+		// if (namespace == null) {
+		// namespace = parameterMap.get(KnowWEAttributes.NAMESPACE);
+		// }
 
-			// String namespace;
-			//
-			// namespace = parameterMap.get(KnowWEAttributes.TARGET);
-			// if (namespace == null) {
-			// namespace = parameterMap.get(KnowWEAttributes.NAMESPACE);
-			// }
+		KnowledgeBaseManagement baseManagement = KnowledgeBaseManagement.createInstance(this.currentCase.getKnowledgeBase());
 
-			D3webKnowledgeServiceSession d3webKSS = serviceSession;
-			KnowledgeBaseManagement baseManagement = d3webKSS.getBaseManagement();
+		this.kbId = this.currentCase.getKnowledgeBase().getId();
 
-			Session c = d3webKSS.getSession();
-			this.currentCase = c;
-			this.kbId = c.getKnowledgeBase().getId();
+		// Question q;
+		// AbstractCondition c;
+		// c.eval(c);
+		Solution solution = baseManagement.findSolution(solutionid);
+		if (solution == null) {
+			return rb.getString("xclrenderer.nosolution") + solutionid;
+		}
 
-			// Question q;
-			// AbstractCondition c;
-			// c.eval(c);
-			Solution solution = baseManagement.findSolution(solutionid);
-			if (solution == null) {
-				return rb.getString("xclrenderer.nosolution") + solutionid;
-			}
-
-			Collection<KnowledgeSlice> models = c.getKnowledgeBase()
+		Collection<KnowledgeSlice> models = this.currentCase.getKnowledgeBase()
 					.getAllKnowledgeSlicesFor(PSMethodXCL.class);
-			for (KnowledgeSlice knowledgeSlice : models) {
-				if (knowledgeSlice instanceof XCLModel) {
-					if (((XCLModel) knowledgeSlice).getSolution().equals(
+		for (KnowledgeSlice knowledgeSlice : models) {
+			if (knowledgeSlice instanceof XCLModel) {
+				if (((XCLModel) knowledgeSlice).getSolution().equals(
 							solution)) {
-						InferenceTrace trace = ((XCLModel) knowledgeSlice)
-								.getInferenceTrace(c);
-						if (trace == null) {
-							return rb.getString("xclrenderer.notrace");
-						}
-						return verbalizeTrace(trace, solution.getName());
+					InferenceTrace trace = ((XCLModel) knowledgeSlice)
+								.getInferenceTrace(this.currentCase);
+					if (trace == null) {
+						return rb.getString("xclrenderer.notrace");
 					}
+					return verbalizeTrace(trace, solution.getName());
 				}
 			}
 		}
