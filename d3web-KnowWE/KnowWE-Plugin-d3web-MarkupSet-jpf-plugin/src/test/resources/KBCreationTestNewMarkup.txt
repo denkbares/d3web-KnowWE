@@ -11,7 +11,6 @@ Observations [1]
 - Idle speed system
 - Air filter ~ "Here you can enter your observations concerning the air filter."
 - Ignition timing
-Technical Examinations
 </Questionnaires-section>
 
 %%Solution
@@ -35,7 +34,7 @@ Observations
 -- invisible
 // Rule R3
 --- &REF Fuel
-- "Average mileage /100km" [num] {liter} (0 30) #Q1337
+- "Average mileage /100km" [num] {liter} (0 30)
 -- "Num. Mileage evaluation" [num] <abstract>
 --- Mileage evaluation [oc] <abstract>
 ---- normal
@@ -43,6 +42,9 @@ Observations
 - "Real mileage  /100km" [num]
 - Driving [mc]
 -- insufficient power on partial load
+// Rule R4
+--- "Num. Mileage evaluation" (110)
+-- insufficient power on full load
 // Rule R5
 --- "Num. Mileage evaluation" (20)
 -- unsteady idle speed
@@ -71,7 +73,7 @@ THEN Mileage evaluation = increased
 
 // Rule R10
 IF Driving = unsteady idle speed
-THEN "Real mileage  /100km" += ( 2 )
+THEN "Real mileage  /100km" = ( 2 )
 
 // Rule R11
 IF Driving = insufficient power on full load
@@ -82,8 +84,7 @@ IF Driving = insufficient power on partial load
 THEN "Real mileage  /100km" = ("Average mileage /100km" - 1)
 
 // Rule R13
-IF Exhaust fumes = black
-EXCEPT Fuel = diesel
+IF (Exhaust fumes = black) //EXCEPT Fuel = diesel
 THEN Mechanical problem = P7
 
 // Rule R14

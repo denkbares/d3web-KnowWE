@@ -86,23 +86,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 		}
 	}
 
-	private class SetValueSectionFinder extends SectionFinder {
 
-		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
-
-			// Formula Expressions
-			// TODO Could also find AddQuestion Value!
-			if (text.contains("(") && text.contains(")")) {
-				List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-				result.add(new SectionFinderResult(text.indexOf("(") + 1,
-									text.lastIndexOf(")")));
-				return result;
-			}
-
-			return null;
-		}
-	}
 
 	public class WordSectionFinder extends SectionFinder {
 

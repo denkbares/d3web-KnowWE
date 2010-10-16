@@ -43,6 +43,7 @@ public class RuleAction extends DefaultAbstractKnowWEObjectType {
 					"cc.knowwe.tdb.EvalAssignActionType is not attached");
 		}
 		this.childrenTypes.add(new SolutionValueAssignment());
+		this.childrenTypes.add(new SetQNumFormulaAction());
 		this.childrenTypes.add(new SetQuestionValue());
 		this.childrenTypes.add(new ContraIndicationAction());
 		this.childrenTypes.add(new InstantIndication());

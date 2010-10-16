@@ -25,16 +25,21 @@ import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.InvalidNumberError;
+import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 public class Number extends DefaultAbstractKnowWEObjectType {
 
-	@Override
-	protected void init() {
+	public Number() {
+		this.setSectionFinder(new NumberFinder());
+		// NumberChecker only makes sense if NumberFinder is overwritten..
 		this.addSubtreeHandler(new NumberChecker());
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR7));
 	}
@@ -50,16 +55,36 @@ public class Number extends DefaultAbstractKnowWEObjectType {
 		return null;
 	}
 
-	class NumberChecker extends SubtreeHandler {
+	// only one of them NumberFinder/NumberChecker makes sense to have for one
+	// Number-type
+
+	class NumberFinder implements ISectionFinder {
+
+		@Override
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
+			String trim = text.trim();
+			try {
+				Double.parseDouble(trim);
+				return new AllTextFinderTrimmed().lookForSections(text, father, type);
+			}
+			catch (Exception e) {
+				return null;
+			}
+		}
+
+	}
+
+	class NumberChecker extends SubtreeHandler<Number> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
+			String trim = s.getOriginalText().trim();
 			try {
-				Double.parseDouble(s.getOriginalText().trim());
+				Double.parseDouble(trim);
 			}
 			catch (Exception e) {
-				msgs.add(new InvalidNumberError(s.getOriginalText().trim()));
+				msgs.add(new InvalidNumberError(trim));
 			}
 			return msgs;
 		}
