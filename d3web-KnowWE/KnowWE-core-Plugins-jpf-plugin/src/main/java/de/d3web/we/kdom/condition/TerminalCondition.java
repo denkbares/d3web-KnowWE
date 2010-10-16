@@ -49,21 +49,26 @@ import de.d3web.we.kdom.type.AnonymousType;
  */
 public class TerminalCondition extends DefaultAbstractKnowWEObjectType {
 
-	@Override
-	protected void init() {
+	private static final String DEFAULT_typeName = "UnrecognizedTerminalCondition";
+	
+	private static final String DEFAULT_messageText = "no valid TerminalCondition: ";
+
+	public TerminalCondition() {
+		this(DEFAULT_typeName, DEFAULT_messageText);
+	}
+
+	public TerminalCondition(String typename, final String messageText) {
 		this.sectionFinder = new AllTextFinderTrimmed();
 
 		// last: Anything left is an UnrecognizedTC throwing an error
-		AnonymousType unrecognizedCond = new AnonymousType(
-				"UnrecognizedTerminalCondition");
+		AnonymousType unrecognizedCond = new AnonymousType(typename);
 		unrecognizedCond.setSectionFinder(new AllTextFinderTrimmed());
 		unrecognizedCond.addSubtreeHandler(new SubtreeHandler<TerminalCondition>() {
 
 			@Override
 			public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 				return Arrays.asList((KDOMReportMessage) new UnexpectedSequence(
-						"no valid TerminalCondition: "
-								+ s.getOriginalText()));
+						messageText	+ s.getOriginalText()));
 			}
 		});
 
