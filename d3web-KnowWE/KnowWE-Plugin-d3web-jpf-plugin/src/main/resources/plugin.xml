@@ -309,29 +309,10 @@
 		/> <parameter id="priority" value="5" /> </extension> -->
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="KnowledgeSummerizeAction">
-		<parameter id="class" value="de.d3web.we.action.KnowledgeSummerizeAction" />
-		<parameter id="name" value="KnowledgeSummerizeAction" />
-		<parameter id="description" value="Action KnowledgeSummerizeAction" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="RequestDialogRenderer">
 		<parameter id="class" value="de.d3web.we.action.RequestDialogRenderer" />
 		<parameter id="name" value="RequestDialogRenderer" />
 		<parameter id="description" value="Action RequestDialogRenderer" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="ReInitDPSEnvironmentAction">
-		<parameter id="class"
-			value="de.d3web.we.action.ReInitDPSEnvironmentAction" />
-		<parameter id="name" value="ReInitDPSEnvironmentAction" />
-		<parameter id="description" value="Action ReInitDPSEnvironmentAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
@@ -467,15 +448,6 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
-	</extension>
-
-	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
-		id="AdminPanelHandler">
-		<parameter id="class" value="de.d3web.we.taghandler.AdminPanelHandler" />
-		<parameter id="name" value="AdminPanelHandler" />
-		<parameter id="description" value="TagHandler AdminPanelHandler" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
