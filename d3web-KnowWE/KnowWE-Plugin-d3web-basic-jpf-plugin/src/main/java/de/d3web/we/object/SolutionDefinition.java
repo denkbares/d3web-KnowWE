@@ -39,7 +39,6 @@ import de.d3web.we.kdom.renderer.ObjectInfoLinkRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
-import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
@@ -51,7 +50,7 @@ import de.d3web.xcl.inference.PSMethodXCL;
 
 /**
  * 
- * Type for the definition of questions
+ * Type for the definition of solution
  * 
  * @author Jochen/Albrecht
  * @created 26.07.2010
@@ -169,7 +168,7 @@ public abstract class SolutionDefinition
 					solutionSection)) {
 				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(article,
 						solutionSection);
-				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
+				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedWarning(
 						solutionSection.get().getTermName(solutionSection)));
 			}
 
@@ -199,7 +198,8 @@ public abstract class SolutionDefinition
 									+ " " + s.getName()));
 				}
 				else {
-					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(name,
+					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+							name,
 							this.getClass()));
 				}
 
