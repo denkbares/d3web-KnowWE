@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.QContainer;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -31,10 +32,14 @@ import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
+import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.report.message.RelationCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
+import de.d3web.we.kdom.sectionFinder.EmbracedContentFinder;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 
@@ -44,7 +49,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 	protected void init() {
 
 		initSectionFinder();
-
+		this.childrenTypes.add(new InitNumber());
 		this.childrenTypes.add(new QuestionTreeQuestionnaireDefinition());
 		this.addSubtreeHandler(new CreateSubQuestionnaireRelationHandler());
 
@@ -143,6 +148,75 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 				return false;
 			}
 		};
+	}
+
+	static class InitNumber extends DefaultAbstractKnowWEObjectType {
+
+		public static final char BOUNDS_OPEN = '{';
+		public static final char BOUNDS_CLOSE = '}';
+
+		public InitNumber() {
+
+			this.setSectionFinder(new EmbracedContentFinder(BOUNDS_OPEN, BOUNDS_CLOSE));
+
+			this.addSubtreeHandler(new SubtreeHandler<InitNumber>() {
+
+				/**
+				 * creates the bound-property for a bound-definition
+				 * 
+				 * @param article
+				 * @param s
+				 * @return
+				 */
+				@Override
+				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<InitNumber> s) {
+
+					Double number = s.get().getNumber(s);
+					if (number == null) {
+						// if the numbers cannot be found throw error
+						return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+															"invalid number",
+								this.getClass()));
+					}
+
+					Section<QuestionnaireDefinition> qDef = s.getFather().findSuccessor(
+							QuestionnaireDefinition.class);
+
+					if (qDef != null) {
+
+						QContainer questionnaire = qDef.get().getTermObject(article, qDef);
+
+						questionnaire.getInfoStore().addValue(
+									BasicProperties.INIT,
+									number);
+						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+									"Init property set"));
+
+					}
+					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+							"KnowWE.questiontree.numerical",
+							this.getClass()));
+				}
+			});
+
+		}
+
+		public Double getNumber(Section<InitNumber> s) {
+			String originalText = s.getOriginalText();
+			String content = originalText.substring(1, originalText.length() - 1).trim();
+
+			Double d = null;
+			try {
+				d = Double.parseDouble(content);
+				return d;
+			}
+			catch (Exception e) {
+
+			}
+
+			return null;
+		}
+
 	}
 
 }
