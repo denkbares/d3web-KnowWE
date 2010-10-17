@@ -78,101 +78,95 @@ public class ImageQuestionSetAction extends AbstractAction {
 			return;
 		}
 
-		KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(web).getKBM(
-					topic);
+		// Necessary for FindingSetEvent
+		KnowledgeBaseManagement kbm =
+				D3webModule.getKnowledgeRepresentationHandler(web).getKBM(topic);
+		Question question = kbm.findQuestion(objectid);
+
+		if (question == null) return;
+
+		Value value = null;
+		if (valueid != null) {
+			value = kbm.findValue(question, valueid);
+		}
+		else if (valuenum != null) {
+			value = new NumValue(Double.parseDouble(valuenum));
+
+			// TODO set valuedate in Attributes
+		}
+		else if (valuedate != null) {
+			final DateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+			try {
+				Date date = format.parse(valuedate);
+				value = new DateValue(date);
+			}
+			catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+
+		// Some tests of values here
+		if (value == null) return;
+		if (!(question instanceof QuestionMC)) return;
+		if (value.equals(Unknown.getInstance())) return;
+
+		// Initialisation of needed Variables
 		Session session = D3webUtils.getSession(topic, user, web);
 		Blackboard blackboard = session.getBlackboard();
+		Fact mcFact = blackboard.getValueFact(question);
+		Value answer = session.getBlackboard().getValue(question);
+		Collection<ChoiceValue> mcValcol = null;
+		final ArrayList<ChoiceValue> toAddList = new ArrayList<ChoiceValue>();
 
-		// Necessary for FindingSetEvent
-		Question question = kbm.findQuestion(objectid);
-		if (question != null) {
+		if (answer != null && !(answer.getValue() instanceof String)) {
+			mcValcol = (Collection<ChoiceValue>) answer.getValue();
+		}
 
-			Value value = null;
-			if (valueid != null) {
-				value = kbm.findValue(question, valueid);
-			}
-			else if (valuenum != null) {
-				value = new NumValue(Double.parseDouble(valuenum));
-
-				// TODO set valuedate in Attributes
-			}
-			else if (valuedate != null) {
-				final DateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-				try {
-					Date date = format.parse(valuedate);
-					value = new DateValue(date);
-				}
-				catch (ParseException e) {
-					e.printStackTrace();
-				}
-			}
-
-			// Some tests of values here
-			if (value == null) return;
-			if (!(question instanceof QuestionMC)) return;
-			if (value.equals(Unknown.getInstance())) return;
-
-			// Initialisation of needed Variables
-			Fact mcFact = blackboard.getValueFact(question);
-			Value answer = session.getBlackboard().getValue(question);
-			Collection<ChoiceValue> mcValcol = null;
-			final ArrayList<ChoiceValue> toAddList = new ArrayList<ChoiceValue>();
-			if (answer != null && !(answer.getValue() instanceof String)) {
-				mcValcol = (Collection<ChoiceValue>) answer.getValue();
-			}
-
-			/*
-			 * the ChoiceValue is in the MultipleChoiceValue Remove it by
-			 * deleting it from the Collection of the old MultipleChoiceValue
-			 * and create a new one
-			 */
-			if (valueContained(answer, value)) {
-				mcValcol.removeAll((Collection<ChoiceValue>)
+		/*
+		 * the ChoiceValue is in the MultipleChoiceValue Remove it by deleting
+		 * it from the Collection of the old MultipleChoiceValue and create a
+		 * new one
+		 */
+		if (valueContained(answer, value)) {
+			mcValcol.removeAll((Collection<ChoiceValue>)
 								value.getValue());
+
+			for (ChoiceValue val : mcValcol)
+				toAddList.add(val);
+
+			Value toAdd = new MultipleChoiceValue(toAddList);
+			blackboard.removeValueFact(mcFact);
+			blackboard.addValueFact(new DefaultFact(question,
+								toAdd, PSMethodUserSelected.getInstance(),
+										PSMethodUserSelected.getInstance()));
+
+			EventManager.getInstance().fireEvent(
+								new FindingSetEvent(question, value, namespace, web, user));
+			return;
+		}
+
+		/*
+		 * The ChoiceValue is not contained in the MultipleChoiceValue 1. If
+		 * mcFact is not null: Add the ChoiceValue to a new MultipleChoiceValue
+		 * by creating a new one containing also the old ones2. If nothing was
+		 * added before mcFact is null: Add it to blackboard
+		 */
+		if (!valueContained(answer, value)) {
+			if (mcFact != null) {
+				mcValcol.addAll((Collection<ChoiceValue>) value.getValue());
 
 				for (ChoiceValue val : mcValcol)
 					toAddList.add(val);
 
-				Value toAdd = new MultipleChoiceValue(toAddList);
-				blackboard.removeValueFact(mcFact);
-				blackboard.addValueFact(new DefaultFact(question,
-								toAdd, PSMethodUserSelected.getInstance(),
-										PSMethodUserSelected.getInstance()));
-
-				EventManager.getInstance().fireEvent(
-								new FindingSetEvent(question, value, namespace, web, user));
-				return;
+				value = new MultipleChoiceValue(toAddList);
 			}
 
-			/*
-			 * The ChoiceValue is not contained in the MultipleChoiceValue 1. If
-			 * mcFact is not null: Add the ChoiceValue to a new
-			 * MultipleChoiceValue by creating a new one containing also the old
-			 * ones 2. If nothing was added before mcFact is null: Add it to
-			 * blackboard
-			 */
-			if (!valueContained(answer, value)) {
-				if (mcFact != null) {
-					mcValcol.addAll((Collection<ChoiceValue>) value.getValue());
-
-					for (ChoiceValue val : mcValcol)
-						toAddList.add(val);
-					Value toAdd = new MultipleChoiceValue(toAddList);
-
-					blackboard.addValueFact(new DefaultFact(question,
-									toAdd, PSMethodUserSelected.getInstance(),
-											PSMethodUserSelected.getInstance()));
-				}
-				else {
-					blackboard.addValueFact(new DefaultFact(question,
+			blackboard.addValueFact(new DefaultFact(question,
 									value, PSMethodUserSelected.getInstance(),
 											PSMethodUserSelected.getInstance()));
-				}
 
-				EventManager.getInstance().fireEvent(
+			EventManager.getInstance().fireEvent(
 								new FindingSetEvent(question, value, namespace, web, user));
-			}
-
 		}
 
 	}
@@ -186,6 +180,7 @@ public class ImageQuestionSetAction extends AbstractAction {
 	 * @param value
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	private boolean valueContained(Value answer, Value value) {
 		if ((answer != null) && !(answer.getValue() instanceof String)) {
 			Set<Value> values = (Set<Value>) answer.getValue();
