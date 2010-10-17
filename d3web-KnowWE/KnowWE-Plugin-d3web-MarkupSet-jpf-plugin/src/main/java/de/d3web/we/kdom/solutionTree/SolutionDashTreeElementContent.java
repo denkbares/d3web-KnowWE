@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
@@ -30,6 +31,7 @@ import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
+import de.d3web.we.kdom.questionTree.ObjectDescription;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.RelationCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -49,10 +51,14 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
  */
 public class SolutionDashTreeElementContent extends DashTreeElementContent implements KnowWETermMarker {
 
-	// private static String STORE_KEY_SOLUTION = "solution-object";
 
 	public SolutionDashTreeElementContent() {
 		this.addSubtreeHandler(new CreateSubSolutionRelationHandler());
+
+		// add description-type via '~'
+		this.addChildType(new ObjectDescription(BasicProperties.EXPLANATION));
+
+		// add solution-Def type
 		SolutionTreeSolutionDefinition solutionDef = new SolutionTreeSolutionDefinition();
 		ConstraintSectionFinder f = new ConstraintSectionFinder(new AllTextFinderTrimmed());
 		f.addConstraint(SingleChildConstraint.getInstance());

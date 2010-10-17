@@ -6,12 +6,12 @@ is assembled. Otherwise the tests will fail!
 Please be careful when editing this article because the order
 of the elements does matter in the tests (especially the IDs).
 
-<Questionnaires-section>
-Observations [1]
+%%questionnaires
+Observations {1}
 - Idle speed system
 - Air filter ~ "Here you can enter your observations concerning the air filter."
 - Ignition timing
-</Questionnaires-section>
+%
 
 %%Solution
 Mechanical problem

@@ -45,11 +45,17 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 
 public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
 
-	@Override
-	protected void init() {
+	public QClassLine() {
 
 		initSectionFinder();
+
+		// at first the init-number
 		this.childrenTypes.add(new InitNumber());
+
+		// add description-type via '~'
+		this.addChildType(new ObjectDescription(BasicProperties.EXPLANATION));
+
+		// finally the rest is QuestionniareDefinition
 		this.childrenTypes.add(new QuestionTreeQuestionnaireDefinition());
 		this.addSubtreeHandler(new CreateSubQuestionnaireRelationHandler());
 
