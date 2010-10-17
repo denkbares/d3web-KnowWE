@@ -34,7 +34,6 @@ import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
-import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
@@ -69,7 +68,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 			if (KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(article, qcSec)) {
 				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(article,
 						qcSec);
-				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
+				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedWarning(
 						qcSec.get().getTermName(qcSec)));
 			}
 
