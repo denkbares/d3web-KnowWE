@@ -21,6 +21,7 @@
 package de.d3web.we.taghandler;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.Collections;
@@ -37,17 +38,17 @@ import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.testsuite.TestsuiteSection;
+import de.d3web.we.testsuite.TestSuiteType;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class TestsuiteTagHandler extends AbstractHTMLTagHandler {
 
-	private final Map<String, Section<TestsuiteSection>> testsuites = new HashMap<String, Section<TestsuiteSection>>();
+	private final Map<String, Section<TestSuiteType>> testsuites = new HashMap<String, Section<TestSuiteType>>();
 	private final DecimalFormat formatter = new DecimalFormat("0.00");
 	private String topic;
 	private String web;
-	private String article;
+	private String source;
 	private ResourceBundle rb;
 
 	public TestsuiteTagHandler() {
@@ -59,6 +60,7 @@ public class TestsuiteTagHandler extends AbstractHTMLTagHandler {
 		return D3webModule.getKwikiBundle_d3web(user).getString("KnowWE.Testsuite.description");
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 
@@ -67,13 +69,20 @@ public class TestsuiteTagHandler extends AbstractHTMLTagHandler {
 		this.rb = D3webModule.getKwikiBundle_d3web(user);
 
 		Map<String, String> urlParameterMap = user.getUrlParameterMap();
-		String article = urlParameterMap.get("article");
+		String source = urlParameterMap.get("source");
 
-		if (article != null && testsuites.containsKey(article)) {
+		try {
+			source = source != null ? URLDecoder.decode(source, "UTF-8") : null;
+		}
+		catch (UnsupportedEncodingException e1) {
+			source = URLDecoder.decode(source);
+		}
 
-			this.article = article;
+		if (source != null && testsuites.containsKey(source)) {
 
-			TestSuite t = loadTestSuite(article);
+			this.source = source;
+
+			TestSuite t = loadTestSuite(source);
 
 			if (t != null) {
 
@@ -459,15 +468,22 @@ public class TestsuiteTagHandler extends AbstractHTMLTagHandler {
 		// Clear floating
 		html.append("<div style='clear:both'></div>\n");
 
-		// Dropdownlistbox
+
 		html.append("<form action='' method='get'>");
 		html.append("<fieldset>");
 		html.append("<div class='left'>");
+
+		// Hidden field for page parameter
+		html.append("<input type=\"hidden\" name=\"page\" value=\"");
+		html.append(topic);
+		html.append("\" />");
+
+		// Dropdownlistbox
 		html.append("<label for='article'>Testsuite</label>");
-		html.append("<select id='article' name='article' value='' tabindex='1' class='field' title=''/>");
+		html.append("<select id='article' name='source' value='' tabindex='1' class='field' title=''/>");
 		for (String a : testsuites.keySet()) {
 			html.append("<option value='");
-			html.append(a);
+			html.append(urlencode(a));
 			html.append("'>");
 			html.append(a);
 			html.append("</option>");
@@ -477,9 +493,6 @@ public class TestsuiteTagHandler extends AbstractHTMLTagHandler {
 
 		// Run Button
 		html.append("<div>");
-		html.append("<input type=\"hidden\" name=\"page\" value=\"");
-		html.append(urlencode(topic));
-		html.append("\" />");
 		html.append("<input type='submit' value='");
 		html.append(rb.getString("KnowWE.Testsuite.runbutton"));
 		html.append("' class='button' />");
@@ -493,9 +506,9 @@ public class TestsuiteTagHandler extends AbstractHTMLTagHandler {
 	}
 
 	private TestSuite loadTestSuite(String article) {
-		Section<TestsuiteSection> s = testsuites.get(article);
+		Section<TestSuiteType> s = testsuites.get(article);
 		return (TestSuite) KnowWEUtils.getStoredObject(web, article, s.getID(),
-				TestsuiteSection.TESTSUITEKEY);
+				TestSuiteType.TESTSUITEKEY);
 	}
 
 	private void loadArticlesContainingTestSuites() {
@@ -504,7 +517,7 @@ public class TestsuiteTagHandler extends AbstractHTMLTagHandler {
 
 		while (iterator.hasNext()) {
 			KnowWEArticle article = iterator.next();
-			Section<TestsuiteSection> s = article.getSection().findSuccessor(TestsuiteSection.class);
+			Section<TestSuiteType> s = article.getSection().findSuccessor(TestSuiteType.class);
 			if (s != null) testsuites.put(article.getTitle(), s);
 		}
 	}
@@ -556,13 +569,13 @@ public class TestsuiteTagHandler extends AbstractHTMLTagHandler {
 		html.append("<div>");
 		html.append("<img src='KnowWEExtension/images/arrow_right.png' width='9' height='15' style='margin-left:2px' />");
 		html.append("<a style='margin-left:5px' href='action/TestSuiteServlet?type=visualization&KWiki_Topic=");
-		html.append(article);
+		html.append(source);
 		html.append("&web=");
 		html.append(web);
 		html.append("&nodeID=");
-		html.append(testsuites.get(article).getID());
+		html.append(testsuites.get(source).getID());
 		html.append("&filename=");
-		html.append(article);
+		html.append(source);
 		html.append("_Visualization.pdf");
 		html.append("'>");
 		html.append(rb.getString("KnowWE.Testsuite.downloadpdf"));
@@ -578,13 +591,13 @@ public class TestsuiteTagHandler extends AbstractHTMLTagHandler {
 		html.append("<div>");
 		html.append("<img src='KnowWEExtension/images/arrow_right.png' width='9' height='15' style='margin-left:2px' />");
 		html.append("<a style='margin-left:5px' href='action/TestSuiteServlet?type=visualization&KWiki_Topic=");
-		html.append(article);
+		html.append(source);
 		html.append("&web=");
 		html.append(web);
 		html.append("&nodeID=");
-		html.append(testsuites.get(article).getID());
+		html.append(testsuites.get(source).getID());
 		html.append("&filename=");
-		html.append(article);
+		html.append(source);
 		html.append("_Visualization.dot");
 		html.append("'>");
 		html.append(rb.getString("KnowWE.Testsuite.downloaddot"));
@@ -594,6 +607,7 @@ public class TestsuiteTagHandler extends AbstractHTMLTagHandler {
 		return html.toString();
 	}
 
+	@SuppressWarnings("deprecation")
 	private String urlencode(String text) {
 		try {
 			return URLEncoder.encode(text, "UTF-8");

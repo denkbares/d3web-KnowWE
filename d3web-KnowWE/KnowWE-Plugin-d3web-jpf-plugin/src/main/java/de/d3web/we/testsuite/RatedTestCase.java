@@ -26,7 +26,7 @@ import java.util.List;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.util.SplitUtility;
 
@@ -39,10 +39,10 @@ public class RatedTestCase extends DefaultAbstractKnowWEObjectType {
 		this.sectionFinder = new RatedTestCaseSectionFinder();
 	}
 
-	public class RatedTestCaseSectionFinder extends SectionFinder {
+	public class RatedTestCaseSectionFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			List<String> cases = SplitUtility.splitUnquoted(text, ";");

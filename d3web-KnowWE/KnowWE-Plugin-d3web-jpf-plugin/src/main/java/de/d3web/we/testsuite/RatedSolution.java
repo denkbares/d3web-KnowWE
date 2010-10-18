@@ -27,7 +27,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.decisionTree.SolutionID;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.util.SplitUtility;
 
@@ -41,10 +41,10 @@ public class RatedSolution extends DefaultAbstractKnowWEObjectType {
 		this.sectionFinder = new RatedSolutionSectionFinder();
 	}
 
-	public class RatedSolutionSectionFinder extends SectionFinder {
+	public class RatedSolutionSectionFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			List<String> findings = SplitUtility.splitUnquoted(text, ",");

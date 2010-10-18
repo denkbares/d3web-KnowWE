@@ -27,7 +27,7 @@ import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.testsuite.TestsuiteSection;
+import de.d3web.we.testsuite.TestSuiteType;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class TestsuiteRunner extends AbstractCITest {
@@ -39,12 +39,12 @@ public class TestsuiteRunner extends AbstractCITest {
 		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticleManager(
 				KnowWEEnvironment.
 				DEFAULT_WEB).getArticle(monitoredArticleTitle);
-		Section<TestsuiteSection> section = article.getSection().findSuccessor(
-				TestsuiteSection.class);
+		Section<TestSuiteType> section = article.getSection().findSuccessor(
+				TestSuiteType.class);
 
 		if (section != null) {
 			TestSuite suite = (TestSuite) KnowWEUtils.getStoredObject(section,
-					TestsuiteSection.TESTSUITEKEY);
+					TestSuiteType.TESTSUITEKEY);
 			if (suite != null) {
 				if (!suite.isConsistent()) {// testsuite is not consistent!
 					return new CITestResult(TestResultType.FAILED, "Testsuite is not consistent!");

@@ -29,7 +29,6 @@ import de.d3web.we.kdom.table.attributes.AttributeTableSection;
 import de.d3web.we.kdom.table.xcl.CoveringTableSection;
 import de.d3web.we.kdom.xcl.CoveringListSection;
 import de.d3web.we.kdom.xml.XMLContent;
-import de.d3web.we.testsuite.TestsuiteSection;
 
 public class KopicContent extends XMLContent {
 
@@ -39,7 +38,6 @@ public class KopicContent extends XMLContent {
 		childrenTypes.add(new QuestionnairesSection());
 		childrenTypes.add(new QuestionsSection());
 		childrenTypes.add(new AttributeTableSection());
-		childrenTypes.add(new TestsuiteSection());
 		childrenTypes.add(new CoveringTableSection());
 		childrenTypes.add(new CoveringListSection());
 		childrenTypes.add(new RulesSection());

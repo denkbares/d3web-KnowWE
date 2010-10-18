@@ -116,10 +116,3 @@ Damaged idle speed system  {
     Exhaust fumes = black,
 }
 </SetCoveringList-section>
-
-<Testsuite-section>
-STC1 {
-	Driving = everything is fine :
-	Other problem (established);
-}
-</Testsuite-section>

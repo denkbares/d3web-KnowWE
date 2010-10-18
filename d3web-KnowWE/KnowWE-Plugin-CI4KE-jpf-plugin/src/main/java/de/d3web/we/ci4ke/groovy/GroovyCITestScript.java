@@ -34,7 +34,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.xcl.XCLRelation;
 import de.d3web.we.kdom.xcl.XCList;
-import de.d3web.we.testsuite.TestsuiteSection;
+import de.d3web.we.testsuite.TestSuiteType;
 import de.d3web.we.utils.KnowWEUtils;
 
 public abstract class GroovyCITestScript extends Script implements CITest {
@@ -61,11 +61,11 @@ public abstract class GroovyCITestScript extends Script implements CITest {
 	}
 
 	public TestSuite getTestSuite() {
-		Section<TestsuiteSection> section = getArticle().getSection().
-				findSuccessor(TestsuiteSection.class);
+		Section<TestSuiteType> section = getArticle().getSection().
+				findSuccessor(TestSuiteType.class);
 		if (section != null) {
 			TestSuite suite = (TestSuite) KnowWEUtils.getStoredObject(section,
-					TestsuiteSection.TESTSUITEKEY);
+					TestSuiteType.TESTSUITEKEY);
 			return suite;
 		}
 		return null;

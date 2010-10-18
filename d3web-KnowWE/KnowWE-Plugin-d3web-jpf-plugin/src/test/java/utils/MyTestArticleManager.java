@@ -28,7 +28,7 @@ import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.testsuite.TestsuiteSection;
+import de.d3web.we.testsuite.TestSuiteType;
 import de.d3web.we.utils.KnowWEUtils;
 import dummies.KnowWETestWikiConnector;
 
@@ -89,11 +89,11 @@ public class MyTestArticleManager {
 		// Load TestSuite
 		// TODO: HOTFIX!! I don't think this is the proper way to get the
 		// TestsuiteSection...
-		Section<TestsuiteSection> s = article.getSection().getChildren().get(0).findChildOfType(
-				TestsuiteSection.class);
+		Section<TestSuiteType> s = article.getSection().getChildren().get(0).findChildOfType(
+				TestSuiteType.class);
 		return (TestSuite) KnowWEUtils.getStoredObject("default_web",
 				"KBCreationTest",
-				s.getID(), "TestsuiteSection_Testsuite");
+				s.getID(), TestSuiteType.TESTSUITEKEY);
 	}
 
 	/**

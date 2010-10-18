@@ -45,11 +45,16 @@ public class TestSuiteServlet extends AbstractAction {
 
 		// Load the TestSuite
 		TestSuite t = (TestSuite) KnowWEUtils.getStoredObject(web, topic, nodeID,
-				TestsuiteSection.TESTSUITEKEY);
+				TestSuiteType.TESTSUITEKEY);
 
-		if (type.equals("visualization")) generateVisualization(context, t, filename);
-		else if (type.equals("case")) generateCaseFile(context, t, filename);
-
+		if (t != null) {
+			if (type.equals("visualization")) generateVisualization(context, t, filename);
+			else if (type.equals("case")) generateCaseFile(context, t, filename);
+		}
+		else {
+			context.getWriter().write(
+					"Error: There is no test suite to download. Probably exist errors in your test suite.");
+		}
 	}
 
 	private void generateVisualization(ActionContext context, TestSuite t, String filename) throws IOException {

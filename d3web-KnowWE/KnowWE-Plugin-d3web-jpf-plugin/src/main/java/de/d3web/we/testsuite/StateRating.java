@@ -28,7 +28,7 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class StateRating extends DefaultAbstractKnowWEObjectType {
@@ -43,10 +43,10 @@ public class StateRating extends DefaultAbstractKnowWEObjectType {
 		return new FontColorRenderer(FontColorRenderer.COLOR3);
 	}
 
-	class StateRatingSectionFinder extends SectionFinder {
+	class StateRatingSectionFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 
