@@ -171,6 +171,12 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 					return;
 				}
 				else {
+					// A TermDefinition was added before another already
+					// existing TermDefinition with the same term... as a rule,
+					// the first appearance of a TermDefinition has to be the
+					// actual one the TermReferences are connected to...
+					// because we are already past the destroy step, we need a
+					// full reparse.
 					termRefLog.termDefiningSection.setReusedBy(article.getTitle(), false);
 					article.setFullParse(this.getClass());
 				}
