@@ -43,9 +43,12 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public interface TagHandler {
 
 	/**
-	 * Ought to return lowercase!
+	 * The name of the tag handler.
+	 * <p>
+	 * In contrast to previous KnowWE version this name should be defined as
+	 * camel case. There is no need to define it in lower cases any longer.
 	 * 
-	 * @return name in lowercase
+	 * @return the name of this tag handler
 	 */
 	public String getTagName();
 

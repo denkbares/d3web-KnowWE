@@ -66,18 +66,18 @@ public class Strings {
 	 * <p>
 	 * If this <code>String</code> object represents an empty character
 	 * sequence, or the first character of character sequence represented by
-	 * this <code>String</code> object has a code greater than <code>'&#92;u0020'</code> (the space
-	 * character), then a reference to this <code>String</code> object is
-	 * returned.
+	 * this <code>String</code> object has a code greater than
+	 * <code>'&#92;u0020'</code> (the space character), then a reference to this
+	 * <code>String</code> object is returned.
 	 * <p>
-	 * Otherwise, if there is no character with a code greater than <code>'&#92;u0020'</code> in
-	 * the string, then a new <code>String</code> object representing an empty
-	 * string is created and returned.
+	 * Otherwise, if there is no character with a code greater than
+	 * <code>'&#92;u0020'</code> in the string, then a new <code>String</code>
+	 * object representing an empty string is created and returned.
 	 * <p>
 	 * Otherwise, let <i>k</i> be the index of the first character in the string
-	 * whose code is greater than <code>'&#92;u0020'</code>. A new <code>String</code> object is
-	 * created, representing the substring of this string that begins with the
-	 * character at index <i>k</i>, the result of
+	 * whose code is greater than <code>'&#92;u0020'</code>. A new
+	 * <code>String</code> object is created, representing the substring of this
+	 * string that begins with the character at index <i>k</i>, the result of
 	 * <code>this.substring(<i>k</i>)</code>.
 	 * <p>
 	 * This method may be used to trim whitespace (as defined above) from the
@@ -96,4 +96,29 @@ public class Strings {
 		return (pos == 0) ? text : text.substring(pos);
 	}
 
+	/**
+	 * Tests if the specified text string starts with the specified prefix.
+	 * 
+	 * 
+	 * @created 18.10.2010
+	 * @param text the text string to be checked
+	 * @param prefix the prefix to be looked for
+	 * @return <code>true</code> if the character sequence represented by the
+	 *         argument is a prefix of the character sequence represented by the
+	 *         specified text string; <code>false</code> otherwise. Note also
+	 *         that <code>true</code> will be returned if the argument is an
+	 *         empty string or is equal to this <code>String</code> object as
+	 *         determined by the {@link #equals(Object)} method.
+	 * @throws NullPointerException if any of the specified strings is null
+	 */
+	public static boolean startWithIgnoreCase(String text, String prefix) {
+		int length = prefix.length();
+		if (length > text.length()) return false;
+		for (int i = 0; i < length; i++) {
+			char tc = Character.toLowerCase(text.charAt(i));
+			char pc = Character.toLowerCase(prefix.charAt(i));
+			if (tc != pc) return false;
+		}
+		return true;
+	}
 }

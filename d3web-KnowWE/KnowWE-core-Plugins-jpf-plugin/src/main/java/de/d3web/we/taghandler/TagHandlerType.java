@@ -21,10 +21,9 @@
 package de.d3web.we.taghandler;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.MultiSectionFinder;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.knowwe.plugin.Plugins;
 
 public class TagHandlerType extends DefaultAbstractKnowWEObjectType {
 
@@ -35,7 +34,14 @@ public class TagHandlerType extends DefaultAbstractKnowWEObjectType {
 
 		childrenTypes.add(new TagHandlerTypeStartSymbol());
 		childrenTypes.add(new TagHandlerTypeEndSymbol());
-		childrenTypes.add(new TagHandlerTypeContent());
+		for (TagHandler tagHandler : Plugins.getTagHandlers()) {
+			childrenTypes.add(new TagHandlerTypeContent(tagHandler.getTagName()));
+		}
+	}
+
+	@Override
+	public String getName() {
+		return "KnowWEPlugin";
 	}
 
 	@Override

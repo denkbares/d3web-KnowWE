@@ -20,8 +20,14 @@
 
 package de.d3web.we.taghandler;
 
+import java.util.List;
+
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.utils.Strings;
 
 /**
  * A taghandler can have attributes specified in this schema: %%KnowWEPlugin
@@ -33,10 +39,32 @@ import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
  */
 public class TagHandlerTypeContent extends DefaultAbstractKnowWEObjectType {
 
+	private class PrefixedSectionFinder extends AllTextSectionFinder {
+
+		@Override
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+			if (Strings.startWithIgnoreCase(text, tagHandlerName)) {
+				return super.lookForSections(text, father, type);
+			}
+			return null;
+		}
+	}
+
+	private final String tagHandlerName;
+
+	public TagHandlerTypeContent(String name) {
+		this.tagHandlerName = name;
+	}
+
 	@Override
 	protected void init() {
-		this.sectionFinder = new AllTextSectionFinder();
+		this.sectionFinder = new PrefixedSectionFinder();
 		this.addSubtreeHandler(new TagHandlerAttributeSubTreeHandler());
+	}
+
+	@Override
+	public String getName() {
+		return this.tagHandlerName;
 	}
 
 }
