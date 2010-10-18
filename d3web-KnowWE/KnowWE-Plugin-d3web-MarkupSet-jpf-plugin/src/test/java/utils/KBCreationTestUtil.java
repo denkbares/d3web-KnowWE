@@ -87,7 +87,7 @@ import de.d3web.xcl.XCLRelationType;
  */
 public class KBCreationTestUtil {
 
-	public static final String KBCREATION_ARTICLE_FILE = "src/test/resources/KBCreationTest.txt";
+	public static final String KBCREATION_ARTICLE_FILE = "src/test/resources/KBCreationTestNewMarkup.txt";
 
 	private static KBCreationTestUtil instance = new KBCreationTestUtil();
 	private KnowledgeBase createdKB;

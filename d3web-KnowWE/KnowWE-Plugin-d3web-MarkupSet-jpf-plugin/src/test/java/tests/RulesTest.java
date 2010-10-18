@@ -75,7 +75,7 @@ public class RulesTest extends TestCase {
 	void foobar() {
 		// load KnowledgeBases
 		KnowWEArticle art = MyTestArticleManager
-				.getArticle("src/test/resources/KBCreationTestNewMarkup.txt");
+				.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
@@ -86,8 +86,8 @@ public class RulesTest extends TestCase {
 				getRulesInHashMap(createdKB, PSMethodHeuristic.class);
 
 		// Check number of rules
-		// assertEquals("Wrong number of rules for PSMethodHeuristic.",
-		// createdRules.size(), loadedRules.size());
+		assertEquals("Wrong number of rules for PSMethodHeuristic.",
+				createdRules.size(), loadedRules.size());
 
 		Rule createdRule;
 		Rule loadedRule;
@@ -104,7 +104,8 @@ public class RulesTest extends TestCase {
 						createdRule.getCondition().getClass(), loadedRule.getCondition().getClass());
 
 				// Compare Conditions
-				assertEquals("Rule " + createdRule.getId() + " has wrong condition.",
+				assertEquals("Rule " + createdRule.getId() +
+						" has wrong condition.",
 						createdRule.getCondition(), loadedRule.getCondition());
 
 				// Check if there is an exception condition
@@ -168,7 +169,7 @@ public class RulesTest extends TestCase {
 	void foobar2() {
 		// load KnowledgeBases
 		KnowWEArticle art = MyTestArticleManager
-				.getArticle("src/test/resources/KBCreationTestNewMarkup.txt");
+				.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
@@ -179,8 +180,8 @@ public class RulesTest extends TestCase {
 				getRulesInHashMap(createdKB, PSMethodStrategic.class);
 
 		// Check number of rules
-		// assertEquals("Wrong number of rules for PSMethodNextQASet.",
-		// createdRules.size(), loadedRules.size());
+		assertEquals("Wrong number of rules for PSMethodNextQASet.",
+				createdRules.size(), loadedRules.size());
 
 		Rule createdRule;
 		Rule loadedRule;
@@ -248,7 +249,7 @@ public class RulesTest extends TestCase {
 	void foobar3() {
 		// load KnowledgeBases
 		KnowWEArticle art = MyTestArticleManager
-				.getArticle("src/test/resources/KBCreationTestNewMarkup.txt");
+				.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
@@ -259,8 +260,8 @@ public class RulesTest extends TestCase {
 				getRulesInHashMap(createdKB, PSMethodAbstraction.class);
 
 		// Check number of rules
-		// assertEquals("Wrong number of rules for PSMethodQuestionSetter.",
-		// createdRules.size(), loadedRules.size());
+		assertEquals("Wrong number of rules for PSMethodQuestionSetter.",
+				createdRules.size(), loadedRules.size());
 
 		Rule createdRule;
 		Rule loadedRule;

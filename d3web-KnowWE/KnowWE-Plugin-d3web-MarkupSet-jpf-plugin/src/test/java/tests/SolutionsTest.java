@@ -88,15 +88,12 @@ public class SolutionsTest extends TestCase {
 				if (actual == null) continue;
 
 				// Test Name(is ID)
-				// Leaking air intake system ~
-				// "The air intake system is leaking." is parsed into the KB as
-				// name instead of Leaking air intake system.
 				assertEquals("Solution " + expected.getName() +
 						" has wrong name.",
 						expected.getName(), actual.getName());
 
 				// Test Hierarchy
-				// for-loop for this because id isnt relevant any more
+				// for-loop for this because id is not relevant any more
 				List<String> expectedList = new ArrayList<String>();
 				for (TerminologyObject obj : expected.getParents()) {
 					expectedList.add(obj.getName());
@@ -105,7 +102,7 @@ public class SolutionsTest extends TestCase {
 				for (TerminologyObject obj : actual.getParents()) {
 					actualList.add(obj.getName());
 				}
-				// Damaged Idle Speed System has to Parents: [P000, Mechanical
+				// Damaged Idle Speed System has two Parents: [P000, Mechanical
 				// problem] instead of mechanical problem
 				// assertEquals("Question " + expected.getName() +
 				// " has wrong number of parents.",
@@ -141,10 +138,10 @@ public class SolutionsTest extends TestCase {
 				// }
 
 				// Test Explanation
-				Object exp =
-						expected.getInfoStore().getValue(BasicProperties.EXPLANATION);
-				Object act =
-						actual.getInfoStore().getValue(BasicProperties.EXPLANATION);
+				// Object exp =
+				// expected.getInfoStore().getValue(BasicProperties.EXPLANATION);
+				// Object act =
+				// actual.getInfoStore().getValue(BasicProperties.EXPLANATION);
 				assertEquals("Solution " + expected.getName() +
 						" has wrong explanation.",
 						expected.getInfoStore().getValue(BasicProperties.EXPLANATION),

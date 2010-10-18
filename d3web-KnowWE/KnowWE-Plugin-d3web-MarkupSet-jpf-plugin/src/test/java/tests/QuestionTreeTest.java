@@ -77,7 +77,6 @@ public class QuestionTreeTest extends TestCase {
 		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
-		// This should not be index dependent! Johannes
 		if (loadedKB.getQuestions().size() == createdKB.getQuestions().size()) {
 			for (int i = 0; i < loadedKB.getQuestions().size(); i++) {
 
