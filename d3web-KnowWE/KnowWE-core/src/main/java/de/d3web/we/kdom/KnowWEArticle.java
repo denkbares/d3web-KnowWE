@@ -197,6 +197,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 		startTime = System.currentTimeMillis();
 
+
 		if (this.fullParse) {
 			EventManager.getInstance().fireEvent(new FullParseEvent(this));
 		}
@@ -231,24 +232,12 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		env.getKnowledgeRepresentationManager(web)
 				.initArticle(this);
 
-		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINE,
-				"<- Initialized Knowledge Manager in "
-						+ (System.currentTimeMillis() - startTime) + "ms <-");
-		startTime = System.currentTimeMillis();
-
 		// create (compile)
 		if (this.postPreDestroyFullParse && !this.secondBuild) {
 			reviseIterator = new ReviseIterator();
 			reviseIterator.addRootSectionToRevise(sec);
 		}
 		create(Priority.LOWEST);
-
-		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINE,
-				"<- Built Knowledge in "
-						+ (System.currentTimeMillis() - startTime) + "ms <-");
-		startTime = System.currentTimeMillis();
 
 		// ============ Postcompile =============
 		
@@ -263,8 +252,9 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.FINE,
-				"<- Registered Knowledge in "
+				"<- Built Knowledge in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
+		startTime = System.currentTimeMillis();
 
 		// ============ Validate KDOM =============
 		if (KDOMValidator.getResourceBundle().getString("validator.active")
