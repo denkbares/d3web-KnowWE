@@ -30,7 +30,7 @@ public class QuestionTreeRootType extends QuestionTree {
 	private static DefaultMarkup m = null;
 
 	static {
-		m = new DefaultMarkup("QuestionTree");
+		m = new DefaultMarkup("Question");
 		m.addContentType(new QuestionDashTree());
 		m.addAnnotation("dialog", false);
 		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME, false);

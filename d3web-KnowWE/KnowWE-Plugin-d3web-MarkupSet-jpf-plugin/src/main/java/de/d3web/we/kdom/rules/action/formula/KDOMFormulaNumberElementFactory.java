@@ -66,6 +66,7 @@ public class KDOMFormulaNumberElementFactory {
 			Section<CompositeFormula> compositeChild1 = div1.findChildOfType(CompositeFormula.class);
 			FormulaNumberElement operand1 = createExpression(article, compositeChild1);
 
+			if (operand0 == null || operand1 == null) return null;
 			// put together with operation
 			Operator op = new Operator(operand0, operand1, Operator.Operation.Div);
 
@@ -93,6 +94,7 @@ public class KDOMFormulaNumberElementFactory {
 			Section<CompositeFormula> compositeChild1 = mult1.findChildOfType(CompositeFormula.class);
 			FormulaNumberElement operand1 = createExpression(article, compositeChild1);
 
+			if (operand0 == null || operand1 == null) return null;
 			// put together with operation
 			Operator op = new Operator(operand0, operand1, Operator.Operation.Mult);
 
@@ -120,6 +122,7 @@ public class KDOMFormulaNumberElementFactory {
 			Section<CompositeFormula> compositeChild1 = add1.findChildOfType(CompositeFormula.class);
 			FormulaNumberElement operand1 = createExpression(article, compositeChild1);
 
+			if (operand0 == null || operand1 == null) return null;
 			// put together with operation
 			Operator op = new Operator(operand0, operand1, Operator.Operation.Add);
 
@@ -147,6 +150,7 @@ public class KDOMFormulaNumberElementFactory {
 			Section<CompositeFormula> compositeChild1 = sub1.findChildOfType(CompositeFormula.class);
 			FormulaNumberElement operand1 = createExpression(article, compositeChild1);
 
+			if (operand0 == null || operand1 == null) return null;
 			// put together with operation
 			Operator op = new Operator(operand0, operand1, Operator.Operation.Sub);
 

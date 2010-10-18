@@ -7,7 +7,7 @@ Please be careful when editing this article because the order
 of the elements does matter in the tests (especially the IDs).
 
 %%questionnaires
-Observations {1}
+Observations #1
 - Idle speed system
 - Air filter ~ "Here you can enter your observations concerning the air filter."
 - Ignition timing
@@ -20,7 +20,7 @@ Mechanical problem
 Other problem
 %
 
-%%questionTree
+%%question
 Observations
 - Exhaust fumes ~ "What is the color of the exhaust fumes?" [oc]
 -- black

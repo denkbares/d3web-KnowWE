@@ -38,7 +38,7 @@ import de.d3web.we.kdom.report.message.RelationCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
-import de.d3web.we.kdom.sectionFinder.EmbracedContentFinder;
+import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
@@ -118,6 +118,8 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 							questionniareDef);
 					// here the actual taxonomic relation is established
 					superQuasetionniare.addChild(localQuestionnaire);
+					localQuestionnaire.addParent(superQuasetionniare);
+
 					return Arrays.asList((KDOMReportMessage) new RelationCreatedMessage(
 							s.getClass().getSimpleName()
 									+ " " + localQuestionnaire.getName() + "sub-questionnaire of "
@@ -158,12 +160,14 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 
 	static class InitNumber extends DefaultAbstractKnowWEObjectType {
 
-		public static final char BOUNDS_OPEN = '{';
-		public static final char BOUNDS_CLOSE = '}';
+		// public static final char BOUNDS_OPEN = '{';
+		// public static final char BOUNDS_CLOSE = '}';
 
 		public InitNumber() {
 
-			this.setSectionFinder(new EmbracedContentFinder(BOUNDS_OPEN, BOUNDS_CLOSE));
+			this.setSectionFinder(new RegexSectionFinder("#\\d*"));
+			// this.setSectionFinder(new EmbracedContentFinder(BOUNDS_OPEN,
+			// BOUNDS_CLOSE));
 
 			this.addSubtreeHandler(new SubtreeHandler<InitNumber>() {
 
@@ -209,7 +213,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 
 		public Double getNumber(Section<InitNumber> s) {
 			String originalText = s.getOriginalText();
-			String content = originalText.substring(1, originalText.length() - 1).trim();
+			String content = originalText.replace("#", "").trim();
 
 			Double d = null;
 			try {
