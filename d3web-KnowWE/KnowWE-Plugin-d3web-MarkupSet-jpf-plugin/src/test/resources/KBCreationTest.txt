@@ -6,6 +6,8 @@ is assembled. Otherwise the tests will fail!
 Please be careful when editing this article because the order
 of the elements does matter in the tests (especially the IDs).
 
+%%compile this
+
 <Questionnaires-section>
 Observations [1]
 - Idle speed system
