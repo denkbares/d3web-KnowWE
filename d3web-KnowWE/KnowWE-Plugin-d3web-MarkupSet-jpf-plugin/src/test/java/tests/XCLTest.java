@@ -56,7 +56,7 @@ public class XCLTest extends TestCase {
 	public void testNumberOfXCLModels() {
 		// load KnowledgeBases
 		KnowWEArticle art = MyTestArticleManager
-				.getArticle("src/test/resources/KBCreationTestNewMarkup.txt");
+				.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
@@ -70,7 +70,7 @@ public class XCLTest extends TestCase {
 
 		// load KnowledgeBases
 		KnowWEArticle art = MyTestArticleManager
-				.getArticle("src/test/resources/KBCreationTestNewMarkup.txt");
+				.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
