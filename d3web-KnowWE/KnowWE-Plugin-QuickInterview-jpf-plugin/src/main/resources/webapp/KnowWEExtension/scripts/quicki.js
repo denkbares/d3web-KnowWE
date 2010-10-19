@@ -92,7 +92,7 @@ KNOWWE.plugin.quicki = function(){
                 _KE.add('click', element, KNOWWE.plugin.quicki.answerMCCollect);
         	});
         	
-        	_KS('.MCButton').each(function(element){
+        	_KS('.mcbutton').each(function(element){
                 _KE.add('click', element, KNOWWE.plugin.quicki.answerMCCollectSend);
         	});
         	
@@ -234,6 +234,7 @@ KNOWWE.plugin.quicki = function(){
             
         	var rel = eval("(" + el.getAttribute('rel') + ")");
         	mcvals = mcanswervals.substring(0, mcanswervals.length-5);
+        	alert("set Mc");
         	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
                 	{ValueID: mcvals});
         },
@@ -247,6 +248,7 @@ KNOWWE.plugin.quicki = function(){
         answerClicked : function( event ) {
             var el = _KE.target(event); 	// get the clicked element
             if(el.className.toLowerCase() == "answerunknown") return;
+            if(el.className.toLowerCase() == "answerunknownclicked") return;
             if(el.className.toLowerCase() == "answermc") return;
             if(el.className.toLowerCase() == "answermcclicked") return;
             var retract = false;
@@ -265,7 +267,7 @@ KNOWWE.plugin.quicki = function(){
             // thus send value unknown
             if(retract){
             	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
-                    	{ValueID: "MaU"});
+                    	{ValueID: "Ma_Undefined"});
             }
             else {
             	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
@@ -294,19 +296,22 @@ KNOWWE.plugin.quicki = function(){
             	if(numfield) {
                     numfield.value = "";
             	}      
-            } else {
-            	KNOWWE.plugin.quicki.toggleAnswerHighlightingAfterUnknown(questionID);  
-            }
-            
-            if(el.className=='answerunknown'){
-            	el.className = 'answerunknownClicked';
-            } else {
-            	el.className = 'answerunknown';
-            }
+            } 
+         	
+			if(el.className=='answerunknownClicked'){
+				//el.className="answerunknown";
+				KNOWWE.plugin.quicki.toggleAnswerHighlightingAfterUnknown(questionID);  
+				KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
+			             	{ValueID: 'Ma_Undefined'});
+			} else if (el.className=="answerunknown"){
+				//el.className="answerunknownClicked";
+				KNOWWE.plugin.quicki.toggleAnswerHighlightingAfterUnknown(questionID);  
+				KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
+			             	{ValueID: 'MaU'});
+			}
+            KNOWWE.plugin.quicki.toggleAnswerHighlightingAfterUnknown(questionID);  
                
-            KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
-             	{ValueID: 'MaU'});
-        },
+         },
         /**
          * Function: numAnswerClicked
          * 		Handles the input of num-values
@@ -443,6 +448,9 @@ KNOWWE.plugin.quicki = function(){
          */
         toggleAnswerHighlighting : function( answerEl, type, retract ){
         	
+        	if(answerEl.className.toLowerCase() == "answerunknownclicked") return;
+        	if(answerEl.className.toLowerCase() == "answerunknown") return;               
+        	
         	var relClicked = eval("(" +  answerEl.getAttribute('rel') + ")");        	
         	
         	// if clicked q is a oc q, already clicked answer alternatives need to be de-highlighted
@@ -488,15 +496,16 @@ KNOWWE.plugin.quicki = function(){
          *		questionID - id of the question that was clicked with unknown
          */
         toggleAnswerHighlightingAfterUnknown : function( questionID){
-        	
+
         	_KS('.answerClicked').each(function(element){
         		
     			var relElement =  eval("(" +  element.getAttribute('rel') + ")");
     			if (relElement.qid==questionID){
-    				
-    				if(element.className!='answerunknown'){
-    					element.className = 'answer';
-    				} 	
+    					
+    				if (element.className!="answerunknownClicked"){
+    					element.className="answer";
+    	    					
+    				}
     			}
             });
         }, 

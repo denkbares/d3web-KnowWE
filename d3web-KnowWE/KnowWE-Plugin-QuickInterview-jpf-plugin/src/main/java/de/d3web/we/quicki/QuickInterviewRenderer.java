@@ -452,7 +452,7 @@ public class QuickInterviewRenderer {
 				cssclass = "answerClicked";
 			}
 
-			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ",
+			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + "",
 					cssclass, jscall, null, spanid, ""));
 
 			sb.append("<div class='answerseparator'> | </div>");
@@ -549,7 +549,7 @@ public class QuickInterviewRenderer {
 		// TODO: do not insert a newline here, breaks functionality
 		sb.append("<input type='button' value='ok' class='num-ok' />");
 
-		sb.append("<div class='answerseparator'></div>");
+		sb.append("<div class='answerseparator'> | </div>");
 
 		renderAnswerUnknown(q, "num", sb);
 
@@ -608,9 +608,8 @@ public class QuickInterviewRenderer {
 				+ "size='18' "
 				+ jscall + " />");
 		sb.append("<input type='button' value='ok' class='date-ok' /> ");
-		// "<div class='dateformatdesc'>()</div>");
 
-		sb.append("<div class='answerseparator'></div>");
+		sb.append("<div class='answerseparator'> | </div>");
 		renderAnswerUnknown(q, "num", sb);
 	}
 
@@ -641,12 +640,14 @@ public class QuickInterviewRenderer {
 					+ "}\" ";
 
 			Value value = session.getBlackboard().getValue(q);
+			System.out.println("sess:" + value);
+			System.out.println(isAnsweredinCase(value, new ChoiceValue(choice)));
 			if (value != null && UndefinedValue.isNotUndefinedValue(value)
 					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
 				cssclass = "answerMCClicked";
 			}
 			String spanid = q.getId() + "_" + choice.getId();
-			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ", cssclass,
+			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + "", cssclass,
 					jscall, null, spanid, ""));
 			sb.append("<div class='answerseparator'> | </div>");
 			// sb.append("\n<div class='answerseparator'></div>");
@@ -660,7 +661,7 @@ public class QuickInterviewRenderer {
 				+ "qid:'" + q.getId() + "', "
 				+ "type:'mc', "
 				+ "}\" ";
-		sb.append("<button type='button' " + jscall + " >OK</button>");
+		sb.append("<button class='mcbutton' type='button' " + jscall + " >OK</button>");
 
 		sb.append("</div>");
 	}
@@ -683,6 +684,14 @@ public class QuickInterviewRenderer {
 				+ "qid:'" + q.getId() + "'"
 				+ "}\" ";
 		String cssclass = "answerunknown";
+
+		Value value = session.getBlackboard().getValue(q);
+		if (value != null && value.equals(Unknown.getInstance()) ) {
+			cssclass = "answerunknownClicked";
+		}
+		else if (value != null && !value.equals(Unknown.getInstance())) {
+			cssclass = "answerunknown";
+		}
 		String spanid = q.getId() + "_" + Unknown.getInstance().getId();
 		String title = "title=' " + rb.getString("KnowWE.quicki.unknown") + " '";
 		sb.append(getEnclosingTagOnClick("div", "unknown", cssclass, jscall, null, spanid, title));

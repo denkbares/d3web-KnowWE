@@ -58,33 +58,33 @@
 #quickinterview .indicated { border: 2px solid #ACC0D6; padding: 3px 0 0 0; }
 
 /* the separator between the answers */
-#quickinterview .answerseparator { float: left; padding: 2px 2px; border: none;}
+#quickinterview .answerseparator { float: left; padding: 2px 3px; border: none;}
 
 
 /* answer styling */
-#quickinterview .answer { float: left; background-color: transparent; padding: 2px 5px 2px 5px; cursor: pointer;}
+#quickinterview .answer { float: left; background-color: transparent; padding: 2px 0 2px 0; cursor: pointer;}
 
 /* answer active syling */
 #quickinterview .answerClicked { float: left; background-color: transparent; border-top: 2px  solid #ACC0D6;
-	border-bottom: 2px  solid #ACC0D6; padding: 0 5px 0 5px;cursor: pointer; }
+	border-bottom: 2px  solid #ACC0D6; padding: 0 0 0 0; cursor: pointer; }
 
 
 /* answer mc styling */
-#quickinterview .answerMC { float: left; background-color: transparent; padding: 2px 5px 2px 5px; cursor: pointer;}
+#quickinterview .answerMC { float: left; background-color: transparent; padding: 2px 0; cursor: pointer;}
 
 #quickinterview .answerMCClicked { float: left; background-color: transparent; border-top: 2px  solid #ACC0D6;
-	border-bottom: 2px  solid #ACC0D6;  padding: 0 5px 0 5px; cursor: pointer;}
+	border-bottom: 2px  solid #ACC0D6;  padding: 0 0; cursor: pointer;}
 
 
 /* answer unknown styling */
-#quickinterview .answerunknown { padding: 2px 5px; cursor: pointer; float: left; display: inline;}
+#quickinterview .answerunknown { padding: 2px 0; cursor: pointer; float: left; display: inline;}
 	 
 /* answer unknown styling clicked */
-#quickinterview .answerunknownClicked {padding: 2px 5px; cursor: pointer;
+#quickinterview .answerunknownClicked {padding: 0 0; cursor: pointer;
 	 border-bottom: 2px #ACC0D6 solid; border-top: 2px #ACC0D6 solid; float: left; display: inline;}
 	 
 /* styling of input box */
-#quickinterview .numinput { height: 12px; float: left; margin-left: 5px; cursor: pointer; }
+#quickinterview .numinput { height: 12px; float: left; margin-left: 0; cursor: pointer; }
 
 #quickinterview .inputrangeerror {color: red; height: 12px; float: left; margin-left: 5px; cursor: pointer; }
 
@@ -97,7 +97,7 @@
 #quickinterview .unit{ margin: 0 5px; float: left; cursor: default; }
 
 /* styling of input box date answers */
-#quickinterview .inputdate { height: 12px; float: left; margin-left: 5px; cursor: pointer; }
+#quickinterview .inputdate { height: 12px; float: left; margin-left: 0; cursor: pointer; }
 
 /* styling of input box button date answers */
 #quickinterview .date-ok{ height: 20px; margin: 0 5px; float: left; padding-top: 5px;cursor: pointer; }
@@ -116,7 +116,7 @@
 #quickinterview .reset {background-image: url(../images/progress_stop.gif); height: 20px; width: 20px; float: right; margin-right: 30px;
 	background-repeat: no-repeat; background-position: center center; background-color: transparent; cursor: pointer; }
 	
-#quickinterview .mcbutton{float: left;}
+#quickinterview .mcbutton{float: left; margin-left: 5px;}
 
 /* the enable-quick answers button in the interview header */ 
 #quickinterview .qquickanswers {background-image: url(../images/smartmode_co.gif); height: 20px; width: 20px; float: right;
