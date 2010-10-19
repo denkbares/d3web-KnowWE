@@ -20,14 +20,10 @@
 
 package de.d3web.we.taghandler;
 
-import java.util.List;
+import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.utils.Strings;
+import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
 /**
  * A taghandler can have attributes specified in this schema: %%KnowWEPlugin
@@ -39,26 +35,14 @@ import de.d3web.we.utils.Strings;
  */
 public class TagHandlerTypeContent extends DefaultAbstractKnowWEObjectType {
 
-	private class PrefixedSectionFinder extends AllTextSectionFinder {
-
-		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
-			if (Strings.startWithIgnoreCase(text, tagHandlerName)) {
-				return super.lookForSections(text, father, type);
-			}
-			return null;
-		}
-	}
-
 	private final String tagHandlerName;
 
 	public TagHandlerTypeContent(String name) {
 		this.tagHandlerName = name;
-	}
 
-	@Override
-	protected void init() {
-		this.sectionFinder = new PrefixedSectionFinder();
+		int flags = Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL;
+		String regex = "\\A\\s*" + Pattern.quote(name) + "(\\s+.*)?\\s*\\z";
+		this.sectionFinder = new RegexSectionFinder(Pattern.compile(regex, flags), 0);
 		this.addSubtreeHandler(new TagHandlerAttributeSubTreeHandler());
 	}
 
