@@ -455,7 +455,8 @@ public class QuickInterviewRenderer {
 			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ",
 					cssclass, jscall, null, spanid, ""));
 
-			sb.replace(sb.length() - 6, sb.length(), " | </div>");
+			sb.append("<div class='answerseparator'> | </div>");
+
 
 			// System.out.println(getEnclosingTagOnClick("div", "" +
 			// choice.getName() + " ",
@@ -647,8 +648,7 @@ public class QuickInterviewRenderer {
 			String spanid = q.getId() + "_" + choice.getId();
 			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ", cssclass,
 					jscall, null, spanid, ""));
-
-			sb.replace(sb.length() - 6, sb.length(), " |</div>");
+			sb.append("<div class='answerseparator'> | </div>");
 			// sb.append("\n<div class='answerseparator'></div>");
 		}
 
@@ -660,7 +660,7 @@ public class QuickInterviewRenderer {
 				+ "qid:'" + q.getId() + "', "
 				+ "type:'mc', "
 				+ "}\" ";
-		sb.append("<button type='button' class='MCButton' " + jscall + " >OK</button>");
+		sb.append("<button type='button' " + jscall + " >OK</button>");
 
 		sb.append("</div>");
 	}
