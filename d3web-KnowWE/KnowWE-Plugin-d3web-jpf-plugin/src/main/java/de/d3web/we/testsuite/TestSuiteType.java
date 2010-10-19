@@ -112,9 +112,19 @@ public class TestSuiteType extends DefaultMarkupType {
 		 * Because the knowledge base is in another article we need this method.
 		 */
 		private KnowledgeBaseManagement loadKBM(KnowWEArticle a, Section<TestSuiteType> s) {
-			String source = getAnnotation(s, KBSOURCE);
-			KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(a.getWeb(), source);
-			return getKBM(article);
+			// We need this for the JUNIT Tests!
+			KnowledgeBaseManagement kbm = getKBM(a);
+
+			// Normal behavior, because in general the test suite is in another
+			// article
+			if (kbm == null) {
+				String source = getAnnotation(s, KBSOURCE);
+				KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(a.getWeb(),
+						source);
+				kbm = getKBM(article);
+			}
+
+			return kbm;
 		}
 
 	}

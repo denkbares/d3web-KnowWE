@@ -117,13 +117,10 @@ Damaged idle speed system  {
 }
 </SetCoveringList-section>
 
-Old MarkUp doesn't exist any more for the test suite.
-
 %%TestSuite
 STC1 {
 	Driving = everything is fine :
 	Other problem (established);
 }
-@package default
-@KnowledgeBase KBCreationTestNewMarkup
+@KnowledgeBase KBCreationTest
 /%

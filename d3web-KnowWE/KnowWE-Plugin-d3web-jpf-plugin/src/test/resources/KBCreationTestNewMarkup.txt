@@ -122,6 +122,5 @@ STC1 {
 	Driving = everything is fine :
 	Other problem (established);
 }
-@package default
 @KnowledgeBase KBCreationTestNewMarkup
 /%

@@ -89,8 +89,7 @@ public class MyTestArticleManager {
 		// Load TestSuite
 		// TODO: HOTFIX!! I don't think this is the proper way to get the
 		// TestsuiteSection...
-		Section<TestSuiteType> s = article.getSection().getChildren().get(0).findChildOfType(
-				TestSuiteType.class);
+		Section<TestSuiteType> s = article.getSection().findSuccessor(TestSuiteType.class);
 		return (TestSuite) KnowWEUtils.getStoredObject("default_web",
 				"KBCreationTest",
 				s.getID(), TestSuiteType.TESTSUITEKEY);
