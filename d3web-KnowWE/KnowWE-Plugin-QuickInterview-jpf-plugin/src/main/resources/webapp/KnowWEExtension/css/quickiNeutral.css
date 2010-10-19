@@ -49,7 +49,7 @@
  #quickinterview .qablock { min-height: 21px;  margin-right: 10px; background-color: white; margin-bottom: 3px;
  	/*-moz-box-shadow: 0 1px 0 black; -webkit-box-shadow: 0 1px 0 black; box-shadow-bottom: 0 1px 0 black; */}
  	
-#quickinterview .qablock:hover {background: #dcdcdc; font-size: 1.05em; }
+/*#quickinterview .qablock:hover {background: #dcdcdc; font-size: 1.05em; }*/
 
 /* styling of the front part of the qablock that displays the question name */
 #quickinterview .question { clear: both; float: left; background-color: transparent; font-weight: normal; padding: 0 5px 0 0;}
@@ -58,8 +58,9 @@
 #quickinterview .indicated { border: 2px solid #ACC0D6; padding: 3px 0 0 0; }
 
 /* the separator between the answers */
-#quickinterview .answerseparator { float: left; background: transparent url(../images/ballWhite_s.png); height: 18px; width: 18px;
-	 background-repeat: no-repeat; background-position: center center;  padding: 0 5px;}
+/*#quickinterview .answerseparator { float: left; background: transparent url(../images/ballWhite_s.png); height: 6px; width: 6px;
+	 background-repeat: no-repeat; background-position: center center;  padding: 0 2px;}
+*/
 
 /* answer styling */
 #quickinterview .answer { float: left; background-color: transparent; padding: 0 5px 0 5px; cursor: pointer;}
@@ -75,13 +76,13 @@
 
 
 /* answer unknown styling */
-#quickinterview .answerunknown { background: transparent url(../images/questionMark.png); height: 18px; width: 18px; float: left;
+/*#quickinterview .answerunknown { background: transparent url(../images/questionMark.png); height: 18px; width: 18px; float: left;
 	 background-repeat: no-repeat; background-position: center center;  padding: 0 5px; cursor: pointer;}
-	 
+*/	 
 /* answer unknown styling clicked */
-#quickinterview .answerunknownClicked { background: transparent url(../images/questionMark.png); height: 18px; width: 18px; float: left;
+/*#quickinterview .answerunknownClicked { background: transparent url(../images/questionMark.png); height: 18px; width: 18px; float: left;
 	 background-repeat: no-repeat; background-position: center center; padding: 0 5px; cursor: pointer;
-	 border: 2px #ACC0D6 solid;}
+	 border: 2px #ACC0D6 solid;}*/
 	 
 /* styling of input box */
 #quickinterview .numinput { height: 12px; float: left; margin-left: 5px; cursor: pointer; }

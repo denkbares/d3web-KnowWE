@@ -455,12 +455,14 @@ public class QuickInterviewRenderer {
 			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ",
 					cssclass, jscall, null, spanid, ""));
 
+			sb.replace(sb.length() - 6, sb.length(), " | </div>");
+
 			// System.out.println(getEnclosingTagOnClick("div", "" +
 			// choice.getName() + " ",
 			// cssclass, jscall, null, spanid));
 
 			// for having a separator between answer alternatives (img, text...)
-			sb.append("\n<div class='answerseparator'></div>");
+			// sb.append("\n<div class='answerseparator'></div>");
 		}
 
 		renderAnswerUnknown(q, "oc", sb);
@@ -645,7 +647,9 @@ public class QuickInterviewRenderer {
 			String spanid = q.getId() + "_" + choice.getId();
 			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + " ", cssclass,
 					jscall, null, spanid, ""));
-			sb.append("\n<div class='answerseparator'></div>");
+
+			sb.replace(sb.length() - 6, sb.length(), " |</div>");
+			// sb.append("\n<div class='answerseparator'></div>");
 		}
 
 		// also render the unknown alternative for choice questions
@@ -681,7 +685,7 @@ public class QuickInterviewRenderer {
 		String cssclass = "answerunknown";
 		String spanid = q.getId() + "_" + Unknown.getInstance().getId();
 		String title = "title=' " + rb.getString("KnowWE.quicki.unknown") + " '";
-		sb.append(getEnclosingTagOnClick("div", "", cssclass, jscall, null, spanid, title));
+		sb.append(getEnclosingTagOnClick("div", "unknown", cssclass, jscall, null, spanid, title));
 	}
 
 	/**
