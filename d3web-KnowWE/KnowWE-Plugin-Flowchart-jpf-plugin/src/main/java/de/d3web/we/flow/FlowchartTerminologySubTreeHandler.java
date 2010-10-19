@@ -137,7 +137,7 @@ public class FlowchartTerminologySubTreeHandler extends D3webSubtreeHandler {
 
 	private void createRules(Flow flow, QuestionMC startQ, KnowledgeBaseManagement kbm) {
 
-		for (Choice answer : startQ.getAlternatives()) {
+		for (Choice answer : startQ.getAllAlternatives()) {
 
 			Rule rule = new Rule("FCIndication_" + startQ + "_" + answer.getName(),
 					FluxSolver.class);

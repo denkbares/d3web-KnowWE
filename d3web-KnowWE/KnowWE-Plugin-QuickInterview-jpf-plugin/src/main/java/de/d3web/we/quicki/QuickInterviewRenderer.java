@@ -355,7 +355,7 @@ public class QuickInterviewRenderer {
 			renderOCChoiceAnswers(q, list, sb);
 		}
 		else if (q instanceof QuestionMC) {
-			List<Choice> list = ((QuestionMC) q).getAlternatives();
+			List<Choice> list = ((QuestionMC) q).getAllAlternatives();
 			MultipleChoiceValue mcVal = MultipleChoiceValue.fromChoices(list);
 			renderMCChoiceAnswers(q, mcVal, sb);
 		}
