@@ -95,7 +95,7 @@ public class QuestionTreeTest extends TestCase {
 						expected.getName(), actual.getName());
 
 				// Test Hierarchy: Parents
-				// for-loop for this because id isnt relevant any more
+				// for-loop for this because ID isnt relevant any more
 				List<String> expectedList = new ArrayList<String>();
 				for (TerminologyObject obj : expected.getParents()) {
 					expectedList.add(obj.getName());
@@ -109,10 +109,10 @@ public class QuestionTreeTest extends TestCase {
 						" has wrong number of parents.",
 						expectedList.size(), actualList.size());
 
-				// Commented Out because Average Mileage /100 has P000 as parent
-				// and not Observations
+				// Commented Out because Other has ... as Parents
+				// and not ...
 				// for (String t : expectedList) {
-				// boolean boo = expectedParents.contains(t);
+				// boolean boo = expectedList.contains(t);
 				// assertTrue("Question " + expected.getName() +
 				// " has wrong parents.",
 				// actualList.contains(t));
@@ -132,7 +132,7 @@ public class QuestionTreeTest extends TestCase {
 				// " has wrong number of children.",
 				// expectedList.size(), actualList.size());
 
-				// Driving should have "insufficient power on partial load"
+				// Driving should have "Other
 				// as children and not null
 				// for (String t : expectedList) {
 				// boolean boo = actualList.contains(t);
@@ -162,14 +162,17 @@ public class QuestionTreeTest extends TestCase {
 					for (Choice obj : ((QuestionChoice) actual).getAllAlternatives()) {
 						actualList.add(obj.getName());
 					}
-					// answer alternative "insufficient power on full load" is
-					// missing in question Driving
-					// for (String t : expectedList) {
-					// boolean boo = actualList.contains(t);
-					// assertTrue("Question " + expected.getName()
-					// + " has different answer alternatives.",
-					// actualList.contains(t));
-					// }
+
+					assertEquals("Question " + expected.getName() +
+							" has wrong number of answer alternatives.",
+							expectedList.size(), actualList.size());
+
+					for (String t : expectedList) {
+						boolean boo = actualList.contains(t);
+						assertTrue("Question " + expected.getName()
+								+ " has different answer alternatives.",
+								actualList.contains(t));
+					}
 
 				}
 
