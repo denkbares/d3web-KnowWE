@@ -63,7 +63,7 @@ public class QuestionTreeTest extends TestCase {
 
 	public void testNumberOfQuestions() {
 		KnowWEArticle art = MyTestArticleManager
-				.getArticle("src/test/resources/KBCreationTestNewMarkup.txt");
+				.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 		assertEquals("Number of Questions differ.", createdKB.getQuestions().size(),
@@ -73,7 +73,7 @@ public class QuestionTreeTest extends TestCase {
 	public void testQuestions() {
 
 		KnowWEArticle art = MyTestArticleManager
-				.getArticle("src/test/resources/KBCreationTestNewMarkup.txt");
+				.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
@@ -195,7 +195,7 @@ public class QuestionTreeTest extends TestCase {
 	public void testMMInfo() {
 
 		KnowWEArticle art = MyTestArticleManager
-				.getArticle("src/test/resources/KBCreationTestNewMarkup.txt");
+				.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 

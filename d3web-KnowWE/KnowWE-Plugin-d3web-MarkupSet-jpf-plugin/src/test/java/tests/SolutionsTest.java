@@ -56,7 +56,7 @@ public class SolutionsTest extends TestCase {
 	public void testNumberOfSolutions() {
 
 		KnowWEArticle art = MyTestArticleManager
-				.getArticle("src/test/resources/KBCreationTestNewMarkup.txt");
+				.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
@@ -67,7 +67,7 @@ public class SolutionsTest extends TestCase {
 	public void testSolutions() {
 
 		KnowWEArticle art = MyTestArticleManager
-				.getArticle("src/test/resources/KBCreationTestNewMarkup.txt");
+				.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
