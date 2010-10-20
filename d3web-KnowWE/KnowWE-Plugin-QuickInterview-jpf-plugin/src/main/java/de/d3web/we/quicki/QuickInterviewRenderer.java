@@ -334,18 +334,36 @@ public class QuickInterviewRenderer {
 				+ "px;'>");
 
 		// width of the question front section, i.e. total width - identation
-		int w = 200 - d;
+		int w = 320 - d;
 
-		// render the first cell displaying the Question in a separate div,
-		// then call method for rendering a question's answers in another div
-		sb.append("\n<div id='" + q.getId() + "' " +
-				"parent='" + parent.getId() + "' " +
-				"class='question' " +
-				"style='width: " + w + "px; display: inline-block;' >"
-				+ q.getName() + "</div>");
+		String divText = q.getName();
+		if (q.getName().length() > 35) {
+			divText = q.getName().substring(0, 34) + "...";
 
-		// TODO Maybe render abstraction questions otherwise once I know how to
-		// distinguish them
+			// Question Text > 35 chars --> display shortened,
+			// render the first cell displaying the Question in a separate div,
+			// then call method for rendering a question's answers in another
+			// div
+			sb.append("\n<div id='" + q.getId() + "' " +
+					"parent='" + parent.getId() + "' " +
+					"class='questionTT' " +
+					"style='width: " + w + "px; display: inline-block;' title='" + q.getName()
+					+ "' >"
+					+ divText + "</div>");
+
+		}
+		else {
+			// Question Text < 35 chars --> display the whole no tooltip
+			// render the first cell displaying the Question in a separate div,
+			// then call method for rendering a question's answers in another
+			// div
+			sb.append("\n<div id='" + q.getId() + "' " +
+					"parent='" + parent.getId() + "' " +
+					"class='question' " +
+					"style='width: " + w + "px; display: inline-block;' >"
+					+ divText + "</div>");
+		}
+
 		// q.getProperties().getProperty(Property.ABSTRACTION_QUESTION);
 		// if (isQuestionAbstraction(q)) {
 		// renderChoicesAbstract(q);
@@ -640,8 +658,6 @@ public class QuickInterviewRenderer {
 					+ "}\" ";
 
 			Value value = session.getBlackboard().getValue(q);
-			System.out.println("sess:" + value);
-			System.out.println(isAnsweredinCase(value, new ChoiceValue(choice)));
 			if (value != null && UndefinedValue.isNotUndefinedValue(value)
 					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
 				cssclass = "answerMCClicked";

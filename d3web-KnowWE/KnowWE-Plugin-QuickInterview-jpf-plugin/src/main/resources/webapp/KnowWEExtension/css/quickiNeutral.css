@@ -54,6 +54,9 @@
 /* styling of the front part of the qablock that displays the question name */
 #quickinterview .question { clear: both; float: left; background-color: transparent; font-weight: normal; padding: 0 5px 0 0;}
 
+/* styling of the front part of the qablock that displays the question name */
+#quickinterview .questionTT { clear: both; float: left; background-color: transparent; font-weight: normal; padding: 0 5px 0 0; cursor: pointer;}
+
 /* styling for indicated questions/questionnaires */
 #quickinterview .indicated { border: 2px solid #ACC0D6; padding: 3px 0 0 0; }
 

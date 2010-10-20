@@ -57,17 +57,16 @@ KNOWWE.plugin.quicki = function(){
 }();
 
 
+var mcanswervals = '';      // for collecting the values of MC answers
+var quickiruns = false;     // flag whether QuickI runs a session
+var questionnaireVis = ''; // for storing questionnaire visibility states
+var questionsVis = '';		// for storing question visibility states
 
 /**
  * Namespace: KNOWWE.plugin.quicki
  * The quick interview (quicki) namespace.
  */
 KNOWWE.plugin.quicki = function(){
-    
-	var mcanswervals = '';      // for collecting the values of MC answers
-	var quickiruns = false;     // flag whether QuickI runs a session
-	var questionnaireVis = ' '; // for storing questionnaire visibility states
-	var questionsVis = ' ';		// for storing question visibility states
 	
 	return {
 		/**
@@ -140,9 +139,6 @@ KNOWWE.plugin.quicki = function(){
          * 		AJAX refresh
          */
         restoreQuestionnaireVis : function(){
-        	
-
-        	//alert(questionnaireVis);
         	
         	// split questionnaireVis storage into questionnaire;vis
         	// elments
