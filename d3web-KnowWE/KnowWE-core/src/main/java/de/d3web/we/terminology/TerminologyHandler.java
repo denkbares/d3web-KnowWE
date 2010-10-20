@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.NotUniqueKnowWETerm;
@@ -152,6 +153,19 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	 * @param <TermObject>
 	 */
 	public <TermObject> void registerTermDefinition(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> d) {
+		registerTermDefinition(article, d, Priority.DEFAULT);
+	}
+
+	/**
+	 * Allows to register a new term.
+	 * 
+	 * @param d is the term defining section.
+	 * @param p is the priority this definition has... definitions with high
+	 *        priority override definitions with lower priority.
+	 * 
+	 * @param <TermObject>
+	 */
+	public <TermObject> void registerTermDefinition(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> d, Priority p) {
 		TermIdentifier termName = new TermIdentifier(article, d);
 		TermReferenceLog<TermObject> termRefLog = getTermReferenceLog(article, d);
 		if (termRefLog != null) {
