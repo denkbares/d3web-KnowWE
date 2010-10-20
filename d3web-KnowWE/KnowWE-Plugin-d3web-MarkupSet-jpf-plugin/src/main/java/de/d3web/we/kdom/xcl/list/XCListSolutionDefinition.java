@@ -20,8 +20,13 @@
 
 package de.d3web.we.kdom.xcl.list;
 
+import de.d3web.we.kdom.Priority;
 import de.d3web.we.object.SolutionDefinition;
 
 public class XCListSolutionDefinition extends SolutionDefinition {
+
+	public XCListSolutionDefinition() {
+		super(Priority.HIGHER);
+	}
 
 }
