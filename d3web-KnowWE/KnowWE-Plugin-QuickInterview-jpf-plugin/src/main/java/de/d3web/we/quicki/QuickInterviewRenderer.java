@@ -26,6 +26,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
@@ -515,6 +517,12 @@ public class QuickInterviewRenderer {
 			}
 		}
 
+		Pattern pattern = Pattern.compile("(.0)$");
+		Matcher matcher = pattern.matcher(value);
+		if (matcher.find()) {
+			value = value.substring(0, value.indexOf("."));
+		}
+
 		String id = q.getId();
 		String unit = "";
 		Double rangeMax = Double.MAX_VALUE;
@@ -570,7 +578,7 @@ public class QuickInterviewRenderer {
 		sb.append("<div class='unit'>" + unit + "</div>");
 
 		// TODO: do not insert a newline here, breaks functionality
-		sb.append("<input type='button' value='ok' class='num-ok' />");
+		sb.append("<input type='button' value='OK' class='num-ok' />");
 
 		sb.append("<div class='answerseparator'> | </div>");
 
@@ -630,7 +638,7 @@ public class QuickInterviewRenderer {
 				+ "value='" + value + "' "
 				+ "size='18' "
 				+ jscall + " />");
-		sb.append("<input type='button' value='ok' class='date-ok' /> ");
+		sb.append("<input type='button' value='OK' class='date-ok' /> ");
 
 		sb.append("<div class='answerseparator'> | </div>");
 		renderAnswerUnknown(q, "num", sb);
