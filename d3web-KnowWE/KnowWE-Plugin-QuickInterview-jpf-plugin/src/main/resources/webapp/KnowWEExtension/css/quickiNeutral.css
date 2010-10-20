@@ -48,8 +48,11 @@
 /* some declaration regarding as well questions as well as answers */
  #quickinterview .qablock { min-height: 21px;  margin-right: 10px; background-color: white; margin-bottom: 3px;
  	/*-moz-box-shadow: 0 1px 0 black; -webkit-box-shadow: 0 1px 0 black; box-shadow-bottom: 0 1px 0 black; */}
- 	
-/*#quickinterview .qablock:hover {background: #dcdcdc; font-size: 1.05em; }*/
+
+/* abstraction questions */
+#quickinterview .qablockAbstract{ color: #999; }
+ 	 
+#quickinterview .qablock:hover, .qablockAbstract:hover {background: #f5f5f5;}
 
 /* styling of the front part of the qablock that displays the question name */
 #quickinterview .question { clear: both; float: left; background-color: transparent; font-weight: normal; padding: 0 5px 0 0;}
@@ -57,12 +60,13 @@
 /* styling of the front part of the qablock that displays the question name */
 #quickinterview .questionTT { clear: both; float: left; background-color: transparent; font-weight: normal; padding: 0 5px 0 0; cursor: pointer;}
 
+#quickinterview .tdquestion{ width: 320;}
+
 /* styling for indicated questions/questionnaires */
 #quickinterview .indicated { border: 2px solid #ACC0D6; padding: 3px 0 0 0; }
 
 /* the separator between the answers */
 #quickinterview .answerseparator { float: left; padding: 2px 3px; border: none;}
-
 
 /* answer styling */
 #quickinterview .answer { float: left; background-color: transparent; padding: 2px 0 2px 0; cursor: pointer;}
@@ -71,13 +75,12 @@
 #quickinterview .answerClicked { float: left; background-color: transparent; border-top: 2px  solid #ACC0D6;
 	border-bottom: 2px  solid #ACC0D6; padding: 0 0 0 0; cursor: pointer; }
 
-
 /* answer mc styling */
 #quickinterview .answerMC { float: left; background-color: transparent; padding: 2px 0; cursor: pointer;}
 
+/* answer mcs when clicked */
 #quickinterview .answerMCClicked { float: left; background-color: transparent; border-top: 2px  solid #ACC0D6;
 	border-bottom: 2px  solid #ACC0D6;  padding: 0 0; cursor: pointer;}
-
 
 /* answer unknown styling */
 #quickinterview .answerunknown { padding: 2px 0; cursor: pointer; float: left; display: inline;}
@@ -89,7 +92,8 @@
 /* styling of input box */
 #quickinterview .numinput { height: 12px; float: left; margin-left: 0; cursor: pointer; }
 
-#quickinterview .inputrangeerror {color: red; height: 12px; float: left; margin-left: 5px; cursor: pointer; }
+/* error message when input is out of range */
+#quickinterview .inputrangeerror {color: red; height: 12px; float: left; margin-left: 5px; cursor:pointer; }
 
 #quickinterview .errormsg {color: red; float: left; margin-left: 5px; cursor: default; }
 
@@ -124,6 +128,5 @@
 /* the enable-quick answers button in the interview header */ 
 #quickinterview .qquickanswers {background-image: url(../images/smartmode_co.gif); height: 20px; width: 20px; float: right;
 	margin-right: 15px; background-repeat: no-repeat; background-position: center center; background-color: transparent; }
-	
-/*#quickinterview .questionabstract{font-color: orange; color: orange;}*/
+
 	

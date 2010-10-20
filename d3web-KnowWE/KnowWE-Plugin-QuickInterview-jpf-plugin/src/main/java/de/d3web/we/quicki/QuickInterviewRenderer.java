@@ -329,10 +329,18 @@ public class QuickInterviewRenderer {
 		// calculate indentation depth & resulting width of the question display
 		// 10 for standard margin and 30 for indenting further than the triangle
 		int d = 30 + depth * 10;
+		
+		String qablockCSS = "qablock";
+		
+		if (q.getInfoStore().getValue(BasicProperties.ABSTRACTION_QUESTION) != null
+				&& q.getInfoStore().getValue(BasicProperties.ABSTRACTION_QUESTION).equals(true)) {
+			qablockCSS = "qablockAbstract";
+		}
 
-		sb.append("\n<div class='qablock' id='qablock' style='display: block; margin-left: " + d
+		sb.append("\n<div class='"+qablockCSS+"' id='qablock' style='display: block; margin-left: " + d
 				+ "px;'>");
 
+		sb.append("<table><tr><td class='tdquestion'>");
 		// width of the question front section, i.e. total width - identation
 		int w = 320 - d;
 
@@ -363,11 +371,8 @@ public class QuickInterviewRenderer {
 					"style='width: " + w + "px; display: inline-block;' >"
 					+ divText + "</div>");
 		}
+		sb.append("</td><td>");
 
-		// q.getProperties().getProperty(Property.ABSTRACTION_QUESTION);
-		// if (isQuestionAbstraction(q)) {
-		// renderChoicesAbstract(q);
-		// } else
 		if (q instanceof QuestionOC) {
 			List<Choice> list = ((QuestionChoice) q).getAllAlternatives();
 			renderOCChoiceAnswers(q, list, sb);
@@ -387,7 +392,7 @@ public class QuickInterviewRenderer {
 		else if (q instanceof QuestionText) {
 			renderTextAnswers(q, sb);
 		}
-
+		sb.append("</td></tr></table>");
 		sb.append("</div>");
 	}
 
@@ -555,7 +560,7 @@ public class QuickInterviewRenderer {
 		}
 
 		// assemble the input field
-		sb.append("<input class='numinput'  style='display: inline;' id='input_" + id
+		sb.append("<input class='numinput' id='input_" + id
 				+ "' type='text' "
 				+ "value='" + value + "' "
 				+ "size='7' "

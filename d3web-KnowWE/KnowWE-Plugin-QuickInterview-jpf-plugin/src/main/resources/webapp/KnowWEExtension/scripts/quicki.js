@@ -57,16 +57,18 @@ KNOWWE.plugin.quicki = function(){
 }();
 
 
-var mcanswervals = '';      // for collecting the values of MC answers
-var quickiruns = false;     // flag whether QuickI runs a session
-var questionnaireVis = ''; // for storing questionnaire visibility states
-var questionsVis = '';		// for storing question visibility states
 
 /**
  * Namespace: KNOWWE.plugin.quicki
  * The quick interview (quicki) namespace.
  */
 KNOWWE.plugin.quicki = function(){
+	
+
+	var mcanswervals = '';      // for collecting the values of MC answers
+	var quickiruns = false;     // flag whether QuickI runs a session
+	var questionnaireVis = ''; // for storing questionnaire visibility states
+	var questionsVis = '';		// for storing question visibility states
 	
 	return {
 		/**
@@ -230,7 +232,6 @@ KNOWWE.plugin.quicki = function(){
             
         	var rel = eval("(" + el.getAttribute('rel') + ")");
         	mcvals = mcanswervals.substring(0, mcanswervals.length-5);
-        	alert("set Mc");
         	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
                 	{ValueID: mcvals});
         },
@@ -323,15 +324,17 @@ KNOWWE.plugin.quicki = function(){
             // check, if either button was clicked or enter was pressed
             if( !(key || bttn) ) return false;
             
-            _KE.target( event ).previousSibling.previousSibling.className = 'numinput';
+            //_KE.target( event ).previousSibling.previousSibling.className = 'numinput';
             
             var rel = null;
+          
             if(key){				// if enter was pressed
-                rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")");
+                rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")"); // TODO check
             } else {				// if button was clicked
                 rel = eval("(" + _KE.target( event ).previousSibling.previousSibling.getAttribute('rel') + ")");
             }
             if( !rel ) return;
+  
             
             var inputtext = 'inputTextNotFound';	// default input
             
