@@ -25,6 +25,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="Hermes.js" />
+		<parameter id="css" value="hermes.css" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
@@ -36,6 +37,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="Hermes.js" />
+		<parameter id="css" value="hermes.css" />
 	</extension>
 	
 		<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
@@ -47,6 +49,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="Hermes.js" />
+		<parameter id="css" value="hermes.css" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
@@ -58,6 +61,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="Hermes.js" />
+		<parameter id="css" value="hermes.css" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
@@ -69,6 +73,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="Hermes.js" />
+		<parameter id="css" value="hermes.css" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
@@ -80,6 +85,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="Hermes.js" />
+		<parameter id="css" value="hermes.css" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
@@ -91,6 +97,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="Hermes.js" />
+		<parameter id="css" value="hermes.css" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
@@ -102,6 +109,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="Hermes.js" />
+		<parameter id="css" value="hermes.css" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
@@ -113,6 +121,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="Hermes.js" />
+		<parameter id="css" value="hermes.css" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
@@ -124,6 +133,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="Hermes.js" />
+		<parameter id="css" value="hermes.css" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
@@ -135,6 +145,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="Hermes.js" />
+		<parameter id="css" value="hermes.css" />
 		<!-- This is done in Html in CreateMapHandler
 		<parameter id="script" value="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=0" />
 		<parameter id="script" value="CreateMap.js" />
@@ -151,6 +162,7 @@
 		<parameter id="priority" value="3.9" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="Hermes.js" />
+		<parameter id="css" value="hermes.css" />
 	</extension>
 	
 		<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
@@ -163,6 +175,7 @@
 		<parameter id="priority" value="4" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="Hermes.js" />
+		<parameter id="css" value="hermes.css" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
@@ -175,6 +188,7 @@
 		<parameter id="priority" value="3.8" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="Hermes.js" />
+		<parameter id="css" value="hermes.css" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
@@ -187,6 +201,7 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="Hermes.js" />
+		<parameter id="css" value="hermes.css" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
@@ -199,6 +214,7 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="Hermes.js" />
+		<parameter id="css" value="hermes.css" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
@@ -270,6 +286,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="Hermes.js" />
+		<parameter id="css" value="hermes.css" />
 	</extension>
 	
 	<!-- Uncomment this to turn Page access logger on -->
