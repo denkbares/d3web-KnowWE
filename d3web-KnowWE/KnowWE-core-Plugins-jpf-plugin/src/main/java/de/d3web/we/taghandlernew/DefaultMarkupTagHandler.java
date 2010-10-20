@@ -51,8 +51,10 @@ import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.taghandler.TagHandler;
 import de.d3web.we.taghandler.TagHandlerAttributeSubTreeHandler;
+import de.d3web.we.taghandler.TagHandlerTypeContent;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.knowwe.plugin.Plugins;
 
 /**
  * This class replaces the old TagHandlerType. It uses the
@@ -67,6 +69,8 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  */
 public class DefaultMarkupTagHandler extends DefaultMarkupType {
 
+	private static final String TAG_HANDLER_NAME = "TagHandlerName";
+
 	public DefaultMarkupTagHandler() {
 		super(MARKUP);
 	}
@@ -75,8 +79,13 @@ public class DefaultMarkupTagHandler extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("KnowWEPlugin");
-		MARKUP.addContentType(new DefaultTagHandlerTypeContent());
-		MARKUP.addAnnotation("Taghandlername", true);
+		MARKUP.addAnnotation(TAG_HANDLER_NAME, true);
+		for (TagHandler tagHandler : Plugins.getTagHandlers()) {
+			TagHandlerTypeContent subType = new TagHandlerTypeContent(tagHandler.getTagName());
+			// MARKUP.addContentType(subType);
+			MARKUP.addAnnotationType(TAG_HANDLER_NAME, subType);
+		}
+		// MARKUP.addContentType(new DefaultTagHandlerTypeContent());
 	}
 
 	@Override

@@ -53,6 +53,15 @@ public interface TagHandler {
 	public String getTagName();
 
 	/**
+	 * Returns if the tag handler needs to be updated automatically when the
+	 * session has changed.
+	 * 
+	 * @created 20.10.2010
+	 * @return the auto update flag
+	 */
+	public boolean requiresAutoUpdate();
+
+	/**
 	 * Renders the tag handler into a wiki markup string. The resulting string
 	 * is rendered into the wiki page as wiki markup.
 	 * 

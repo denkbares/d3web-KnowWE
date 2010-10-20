@@ -43,11 +43,16 @@ public abstract class AbstractDefaultStyledTagHandler extends AbstractTagHandler
 		super(name);
 	}
 
+	public AbstractDefaultStyledTagHandler(String name, boolean autoUpdate) {
+		super(name, autoUpdate);
+	}
+
 	@Override
 	public final String render(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext, Map<String, String> parameters) {
 		String content = renderContent(article, section, userContext, parameters);
+		Section<TagHandlerTypeContent> tagNameSection = section.findSuccessor(TagHandlerTypeContent.class);
 		String sectionID = section.getID();
-		Tool[] tools = ToolUtils.getTools(article, section, userContext);
+		Tool[] tools = ToolUtils.getTools(article, tagNameSection, userContext);
 
 		StringBuilder buffer = new StringBuilder();
 		DefaultMarkupRenderer.renderDefaultMarkupStyled(

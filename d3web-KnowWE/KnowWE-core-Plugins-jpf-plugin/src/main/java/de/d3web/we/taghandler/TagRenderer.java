@@ -36,14 +36,25 @@ public class TagRenderer extends KnowWEDomRenderer {
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		Section attrContent = sec.findChildOfType(TagHandlerTypeContent.class);
-		KnowWEObjectType type = attrContent.getObjectType();
+		if (attrContent == null) {
+			string.append(KnowWEUtils
+					.maskHTML("<div><p class='info box'>"));
+			string.append(KnowWEUtils.maskHTML(KnowWEEnvironment
+					.getInstance().getKwikiBundle(user).getString(
+							"KnowWE.Taghandler.notFoundError")
+					+ "</p></div>"));
+			return;
+		}
 
 		StringBuilder buffi = new StringBuilder();
 
+		KnowWEObjectType type = attrContent.getObjectType();
+
 		if (type instanceof TagHandlerTypeContent) {
 			Map<String, String> attValues = null; // ((TagHandlerTypeContent)type).getValuesForSections().get(attrContent);
+			String id = sec.getID();
 			Object storedValues = KnowWEEnvironment.getInstance().getArticleManager(sec.getWeb()).getTypeStore().getStoredObject(
-					sec.getTitle(), sec.getID(), TagHandlerAttributeSubTreeHandler.ATTRIBUTE_MAP);
+					sec.getTitle(), id, TagHandlerAttributeSubTreeHandler.ATTRIBUTE_MAP);
 			if (storedValues != null) {
 				if (storedValues instanceof Map) {
 					attValues = (Map<String, String>) storedValues;
@@ -51,26 +62,32 @@ public class TagRenderer extends KnowWEDomRenderer {
 			}
 
 			if (attValues != null) {
-				attValues.put("kdomid", sec.getID());
+				attValues.put("kdomid", id);
 				for (String elem : attValues.keySet()) {
 					HashMap<String, TagHandler> defaultTagHandlers = KnowWEEnvironment.getInstance().getDefaultTagHandlers();
-					if (defaultTagHandlers.containsKey(elem.toLowerCase())) {
-						buffi.append(KnowWEUtils.maskHTML("<div id=\"" + elem.toLowerCase() + "\">"));
-						TagHandler handler = defaultTagHandlers.get(elem.toLowerCase());
+					String key = elem.toLowerCase();
+					if (defaultTagHandlers.containsKey(key)) {
+						TagHandler handler = defaultTagHandlers.get(key);
+						boolean autoUpdate = handler.requiresAutoUpdate();
+						if (autoUpdate) {
+							// buffi.append(KnowWEUtils.maskHTML(
+							// "<span class=\"ReRenderSectionMarker\"" +
+							// " id=\"" + id + "\"" +
+							// " rel=\"{id:'" + id +
+							// "'}\"" +
+							// ">"));
+						}
+						buffi.append(KnowWEUtils.maskHTML("<div id=\"" + key + "\">"));
 						String resultText =
 								handler.render(article, sec, user, attValues);
 						buffi.append(resultText).append(" \n");
 						buffi.append(KnowWEUtils.maskHTML("</div>"));
+						if (autoUpdate) {
+							// buffi.append(KnowWEUtils.maskHTML("</span>"));
+						}
 					}
 				}
-				if (buffi.length() == 0) {
-					buffi.append(KnowWEUtils
-							.maskHTML("<div><p class='info box'>"));
-					buffi.append(KnowWEUtils.maskHTML(KnowWEEnvironment
-							.getInstance().getKwikiBundle(user).getString(
-									"KnowWE.Taghandler.notFoundError")
-							+ "</p></div>"));
-				}
+
 			}
 			string.append(buffi.toString());
 		}

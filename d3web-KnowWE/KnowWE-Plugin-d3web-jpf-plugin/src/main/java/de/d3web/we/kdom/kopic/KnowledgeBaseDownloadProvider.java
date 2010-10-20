@@ -33,7 +33,7 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext) {
-		// and provide both downlaod and refresh as tools
+		// and provide both download and refresh as tools
 		Tool download = getDownloadTool(article, section, userContext);
 		Tool refresh = getRefreshTool(article, section, userContext);
 		return new Tool[] {

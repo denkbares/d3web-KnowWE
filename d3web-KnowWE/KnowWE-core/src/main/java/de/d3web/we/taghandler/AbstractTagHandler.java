@@ -32,15 +32,26 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  */
 public abstract class AbstractTagHandler implements TagHandler {
 
-	private String name = null;
+	private final String name;
+	private final boolean autoUpdate;
 
 	public AbstractTagHandler(String name) {
+		this(name, false);
+	}
+
+	public AbstractTagHandler(String name, boolean autoUpdate) {
 		this.name = name;
+		this.autoUpdate = autoUpdate;
 	}
 
 	@Override
 	public String getTagName() {
-		return name.toLowerCase();
+		return name;
+	}
+
+	@Override
+	public boolean requiresAutoUpdate() {
+		return autoUpdate;
 	}
 
 	@Override
