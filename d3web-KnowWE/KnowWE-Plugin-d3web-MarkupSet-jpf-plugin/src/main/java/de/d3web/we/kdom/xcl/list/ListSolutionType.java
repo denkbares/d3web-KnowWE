@@ -84,6 +84,13 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType implements
 	class XCLModelCreator extends D3webSubtreeHandler<ListSolutionType> {
 
 		@Override
+		public boolean needsToCreate(KnowWEArticle article, Section<ListSolutionType> s) {
+			return super.needsToCreate(article, s)
+					|| !s.findSuccessor(SolutionDefinition.class).isReusedBy(
+							article.getTitle());
+		}
+
+		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ListSolutionType> s) {
 
 			Section<SolutionDefinition> solutionDef = s.findSuccessor(SolutionDefinition.class);

@@ -102,11 +102,13 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 				if (solutionDef != null) {
 					Solution superSolution = solutionDef.get().getTermObject(article, solutionDef);
 					// here the actual taxonomic relation is established
-					superSolution.addChild(localSolution);
-					KnowledgeBaseManagement mgn = getKBM(article);
+
 					// remove this solution if already registered as child of
 					// root
+					KnowledgeBaseManagement mgn = getKBM(article);
 					mgn.getKnowledgeBase().getRootSolution().removeChild(localSolution);
+					superSolution.addChild(localSolution);
+
 					return Arrays.asList((KDOMReportMessage) new RelationCreatedMessage(
 							s.getClass().getSimpleName()
 									+ " " + localSolution.getName() + "sub-solution of "
