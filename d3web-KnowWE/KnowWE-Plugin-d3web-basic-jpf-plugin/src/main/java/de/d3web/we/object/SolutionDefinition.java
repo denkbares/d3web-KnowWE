@@ -60,10 +60,14 @@ public abstract class SolutionDefinition
 		implements IncrementalConstraints {
 
 	public SolutionDefinition() {
+		this(Priority.HIGHEST);
+	}
+	
+	public SolutionDefinition(Priority p) {
 		super(Solution.class);
 		this.setCustomRenderer(new SolutionIDHighlightingRenderer());
 		// this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR4));
-		this.addSubtreeHandler(Priority.HIGHEST, new CreateSolutionHandler());
+		this.addSubtreeHandler(p, new CreateSolutionHandler());
 	}
 
 	@Override
