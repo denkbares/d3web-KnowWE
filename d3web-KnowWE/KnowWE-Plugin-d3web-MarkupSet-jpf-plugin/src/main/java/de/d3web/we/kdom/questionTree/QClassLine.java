@@ -21,6 +21,7 @@ package de.d3web.we.kdom.questionTree;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
@@ -39,7 +40,6 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 
@@ -169,7 +169,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 			// this.setSectionFinder(new EmbracedContentFinder(BOUNDS_OPEN,
 			// BOUNDS_CLOSE));
 
-			this.addSubtreeHandler(new SubtreeHandler<InitNumber>() {
+			this.addSubtreeHandler(new D3webSubtreeHandler<InitNumber>() {
 
 				/**
 				 * creates the bound-property for a bound-definition
@@ -199,6 +199,11 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 						questionnaire.getInfoStore().addValue(
 									BasicProperties.INIT,
 									number);
+
+						// TODO solve generics issue
+						List initQuestions = getKBM(article).getKnowledgeBase().getInitQuestions();
+						initQuestions.add(questionnaire);
+
 						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
 									"Init property set"));
 

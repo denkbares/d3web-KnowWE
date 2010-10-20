@@ -109,14 +109,12 @@ public class QuestionTreeTest extends TestCase {
 						" has wrong number of parents.",
 						expectedList.size(), actualList.size());
 
-				// Commented Out because Other has ... as Parents
-				// and not ...
-				// for (String t : expectedList) {
-				// boolean boo = expectedList.contains(t);
-				// assertTrue("Question " + expected.getName() +
-				// " has wrong parents.",
-				// actualList.contains(t));
-				// }
+				for (String t : expectedList) {
+					boolean boo = expectedList.contains(t);
+					assertTrue("Question " + expected.getName() +
+							" has wrong parents.",
+							actualList.contains(t));
+				}
 
 				// Test Hierarchy: Test children
 				expectedList = new ArrayList<String>();
@@ -128,18 +126,18 @@ public class QuestionTreeTest extends TestCase {
 					actualList.add(obj.getName());
 				}
 
-				// assertEquals("Question " + expected.getName() +
-				// " has wrong number of children.",
-				// expectedList.size(), actualList.size());
+				assertEquals("Question " + expected.getName() +
+						" has wrong number of children.",
+						expectedList.size(), actualList.size());
 
 				// Driving should have "Other
 				// as children and not null
-				// for (String t : expectedList) {
-				// boolean boo = actualList.contains(t);
-				// assertTrue("Question " + expected.getName() +
-				// " has wrong children.",
-				// actualList.contains(t));
-				// }
+				for (String t : expectedList) {
+					boolean boo = actualList.contains(t);
+					assertTrue("Question " + expected.getName() +
+							" has wrong children.",
+							actualList.contains(t));
+				}
 
 				// Test Properties (Abstraction, MMINFO)
 				assertEquals("Question " + expected.getName() +

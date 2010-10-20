@@ -8,11 +8,12 @@ of the elements does matter in the tests (especially the IDs).
 
 %%compile this
 
-%%questionnaires
+%%Questionnaire
 Observations #1
 - Idle speed system
 - Air filter ~ "Here you can enter your observations concerning the air filter."
 - Ignition timing
+Technical Examinations
 %
 
 %%Solution
@@ -54,7 +55,7 @@ Observations
 // Rule R6
 --- Other problem (P7)
 // Rule R7
----- Other [text]
+--- Other [text]
 
 Technical Examinations
 - "Idle speed system o.k.?" [yn]

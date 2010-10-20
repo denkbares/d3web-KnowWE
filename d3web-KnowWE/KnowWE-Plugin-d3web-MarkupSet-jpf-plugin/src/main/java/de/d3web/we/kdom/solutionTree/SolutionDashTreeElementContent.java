@@ -24,6 +24,7 @@ import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
+import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
@@ -50,7 +51,6 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
  * 
  */
 public class SolutionDashTreeElementContent extends DashTreeElementContent implements KnowWETermMarker {
-
 
 	public SolutionDashTreeElementContent() {
 		this.addSubtreeHandler(new CreateSubSolutionRelationHandler());
@@ -103,6 +103,10 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 					Solution superSolution = solutionDef.get().getTermObject(article, solutionDef);
 					// here the actual taxonomic relation is established
 					superSolution.addChild(localSolution);
+					KnowledgeBaseManagement mgn = getKBM(article);
+					// remove this solution if already registered as child of
+					// root
+					mgn.getKnowledgeBase().getRootSolution().removeChild(localSolution);
 					return Arrays.asList((KDOMReportMessage) new RelationCreatedMessage(
 							s.getClass().getSimpleName()
 									+ " " + localSolution.getName() + "sub-solution of "

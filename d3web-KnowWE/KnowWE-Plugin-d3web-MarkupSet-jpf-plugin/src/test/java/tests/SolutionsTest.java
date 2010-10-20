@@ -102,11 +102,10 @@ public class SolutionsTest extends TestCase {
 				for (TerminologyObject obj : actual.getParents()) {
 					actualList.add(obj.getName());
 				}
-				// Damaged Idle Speed System has two Parents: [P000, Mechanical
-				// problem] instead of mechanical problem
-				// assertEquals("Question " + expected.getName() +
-				// " has wrong number of parents.",
-				// expectedList.size(), actualList.size());
+
+				assertEquals("Question " + expected.getName() +
+						" has wrong number of parents.",
+						expectedList.size(), actualList.size());
 				for (String t : expectedList) {
 					boolean boo = expectedList.contains(t);
 					assertTrue("Question " + expected.getName() +
@@ -124,24 +123,18 @@ public class SolutionsTest extends TestCase {
 					actualList.add(obj.getName());
 				}
 
-				// assertEquals("Question " + expected.getName() +
-				// " has wrong number of children.",
-				// expectedList.size(), actualList.size());
+				assertEquals("Question " + expected.getName() +
+						" has wrong number of children.",
+						expectedList.size(), actualList.size());
 
-				// Root has all Solutions as children. should only have
-				// Mechanical Problems and Other Problems
-				// for (String t : expectedList) {
-				// boolean boo = actualList.contains(t);
-				// assertTrue("Question " + expected.getName() +
-				// " has wrong children.",
-				// actualList.contains(t));
-				// }
+				for (String t : expectedList) {
+					boolean boo = actualList.contains(t);
+					assertTrue("Question " + expected.getName() +
+							" has wrong children.",
+							actualList.contains(t));
+				}
 
 				// Test Explanation
-				// Object exp =
-				// expected.getInfoStore().getValue(BasicProperties.EXPLANATION);
-				// Object act =
-				// actual.getInfoStore().getValue(BasicProperties.EXPLANATION);
 				assertEquals("Solution " + expected.getName() +
 						" has wrong explanation.",
 						expected.getInfoStore().getValue(BasicProperties.EXPLANATION),

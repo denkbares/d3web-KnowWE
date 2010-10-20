@@ -21,13 +21,14 @@
 package tests;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
 import utils.KBCreationTestUtil;
 import utils.MyTestArticleManager;
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.plugin.test.InitPluginManager;
@@ -51,25 +52,15 @@ public class QuestionnaireTest extends TestCase {
 		KnowWEPackageManager.overrideAutocompileArticle(true);
 	}
 
-	// public void testNumberOfQuestionnaires() {
-	//
-	// }
-
-	void foobar() {
+	public void testNumberOfQuestionnaires() {
 		KnowWEArticle art = MyTestArticleManager.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
-		List<QContainer> loaded = loadedKB.getQContainers();
-		List<QContainer> created = createdKB.getQContainers();
 		assertEquals("Number of Qestionnaires differ.", createdKB.getQContainers().size(),
 				loadedKB.getQContainers().size());
 	}
 
-	// public void testQuestionnaires() {
-	//
-	// }
-
-	void foobar2() {
+	public void testQuestionnaires() {
 
 		KnowWEArticle art = MyTestArticleManager.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
@@ -83,17 +74,56 @@ public class QuestionnaireTest extends TestCase {
 				QContainer expected = createdKB.getQContainers().get(i);
 				QContainer actual = loadedKB.getQContainers().get(i);
 
-				// Test Name & ID
+				// Test Name & ID(ID is outdated. But it does not make problems
+				// here)
+				// So I let it in. Johannes
 				assertEquals("QContainer " + expected.getName() + " has wrong ID.",
 						expected.getId(), actual.getId());
 				assertEquals("QContainer " + expected.getName() + " has wrong name.",
 						expected.getName(), actual.getName());
 
 				// Test Hierarchy
-				assertTrue("QContainer " + expected.getName() + " has wrong parents.",
-						Arrays.equals(expected.getParents(), actual.getParents()));
-				assertTrue("QContainer " + expected.getName() + " has wrong children.",
-						Arrays.equals(expected.getChildren(), actual.getChildren()));
+				List<String> expectedList = new ArrayList<String>();
+				for (TerminologyObject obj : expected.getParents()) {
+					expectedList.add(obj.getName());
+				}
+				List<String> actualList = new ArrayList<String>();
+				for (TerminologyObject obj : actual.getParents()) {
+					actualList.add(obj.getName());
+				}
+
+				assertEquals("QContainer " + expected.getName() +
+						" has wrong number of parents.",
+						expectedList.size(), actualList.size());
+
+				// Parents
+				for (String t : expectedList) {
+					boolean boo = actualList.contains(t);
+					assertTrue("QContainer " + expected.getName() +
+							" has wrong parents.",
+							actualList.contains(t));
+				}
+
+				// Children
+				expectedList = new ArrayList<String>();
+				for (TerminologyObject obj : expected.getChildren()) {
+					expectedList.add(obj.getName());
+				}
+				actualList = new ArrayList<String>();
+				for (TerminologyObject obj : actual.getChildren()) {
+					actualList.add(obj.getName());
+				}
+
+				assertEquals("QContainer " + expected.getName() +
+						" has wrong number of children.",
+						expectedList.size(), actualList.size());
+
+				for (String t : expectedList) {
+					boolean boo = actualList.contains(t);
+					assertTrue("QContainer " + expected.getName() +
+							" has wrong children.",
+							actualList.contains(t));
+				}
 
 				// Test Explanation
 				assertEquals("QContainer " + expected.getName() + " has wrong explanation.",
