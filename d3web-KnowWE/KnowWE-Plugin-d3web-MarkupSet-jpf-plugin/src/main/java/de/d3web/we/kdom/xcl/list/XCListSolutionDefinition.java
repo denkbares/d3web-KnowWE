@@ -26,7 +26,7 @@ import de.d3web.we.object.SolutionDefinition;
 public class XCListSolutionDefinition extends SolutionDefinition {
 
 	public XCListSolutionDefinition() {
-		super(Priority.HIGHEST);
+		super(Priority.HIGHER);
 	}
 
 }

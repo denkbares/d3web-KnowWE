@@ -60,33 +60,32 @@ public class ReviseIterator {
 	}
 
 	public SectionPriorityTuple next() {
-		if (priorityMap.get(currentPriority).isEmpty()) {
-			throw new NoSuchElementException();
-		}
+		if (!hasNext()) throw new NoSuchElementException();
 
-		SectionPriorityTuple tuple = new SectionPriorityTuple(
+		return new SectionPriorityTuple(
 				priorityMap.get(currentPriority).removeFirst(),
 				Priority.getPriority(currentPriority.intValue()));
-
-		nextPriority();
-		return tuple;
 	}
 	
 	public boolean hasNext() {
-		return currentPriority.compareTo(stop) >= 0 && !priorityMap.get(currentPriority).isEmpty();
-	}
+		if (!priorityMap.get(currentPriority).isEmpty()) return true;
 
-	private void nextPriority() {
-		while (priorityMap.get(currentPriority).isEmpty()
-				&& Priority.decrement(currentPriority) != null
+		// switch to lower priority if possible
+		while (Priority.decrement(currentPriority) != null
 				&& currentPriority.compareTo(stop) > 0) {
 			currentPriority = Priority.decrement(currentPriority);
+			if (!priorityMap.get(currentPriority).isEmpty()) return true;
 		}
+
+		return false;
 	}
 
 	public void setIteratorStop(Priority stop) {
 		this.stop = stop;
-		nextPriority();
+	}
+
+	public Priority getCurrentPriority() {
+		return Priority.getPriority(currentPriority.intValue());
 	}
 
 	public List<Section<?>> getAllSections() {

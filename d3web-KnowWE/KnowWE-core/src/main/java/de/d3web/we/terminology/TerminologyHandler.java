@@ -146,68 +146,58 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	}
 
 	/**
-	 * Allows to register a new term
-	 * 
-	 * @param d
-	 * 
-	 * @param <TermObject>
-	 */
-	public <TermObject> void registerTermDefinition(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> d) {
-		registerTermDefinition(article, d, Priority.DEFAULT);
-	}
-
-	/**
 	 * Allows to register a new term.
 	 * 
 	 * @param d is the term defining section.
-	 * @param p is the priority this definition has... definitions with high
-	 *        priority override definitions with lower priority.
-	 * 
 	 * @param <TermObject>
 	 */
-	public <TermObject> void registerTermDefinition(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> d, Priority p) {
+	public <TermObject> void registerTermDefinition(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> d) {
+		Priority p = article.getReviseIterator().getCurrentPriority();
 		TermIdentifier termName = new TermIdentifier(article, d);
 		TermReferenceLog<TermObject> termRefLog = getTermReferenceLog(article, d);
 		if (termRefLog != null) {
 			if (termRefLog.termDefiningSection != null) {
 				if (termRefLog.termDefiningSection == d || termRefLog.getRedundantDefinitions().contains(d)) {
-					// this should not happen, because before creating a new
-					// term
-					// one should check whether the name is already in use
+					// this should not happen
 					Logger.getLogger(this.getClass().getName())
 							.log(Level.WARNING, "Tried to register same TermDefinition twice: '" +
 									termName + "'!");
 					// now registration will be ignored
 					return;
 				}
-				else if (termRefLog.termDefiningSection.compareTo(d) < 0) {
+				else if (termRefLog.priorityOfDefiningSection.compareTo(p) > 0
+							|| (termRefLog.priorityOfDefiningSection.compareTo(p) == 0
+									&& termRefLog.termDefiningSection.compareTo(d) > 0)) {
+					// If there is already a definition with higher priority or
+					// the same priority but further up in the article, this
+					// definition is redundant.
 					termRefLog.addRedundantTermDefinition(d);
 					return;
 				}
 				else {
 					// A TermDefinition was added before another already
-					// existing TermDefinition with the same term... as a rule,
-					// the first appearance of a TermDefinition has to be the
-					// actual one the TermReferences are connected to...
-					// because we are already past the destroy step, we need a
-					// full reparse.
+					// existing or with higher priority than the existing
+					// TermDefinition with the same term.... because
+					// we are already past the destroy step, we need a full
+					// reparse.
 					termRefLog.termDefiningSection.setReusedBy(article.getTitle(), false);
 					article.setFullParse(this.getClass());
 				}
+
 			}
 			for (Section<?> termRef : termRefLog.getReferences()) {
 				termRef.setReusedBy(article.getTitle(), false);
 			}
 		}
 		getTermReferenceLogsMap(article.getTitle()).put(termName,
-				new TermReferenceLog<TermObject>(d.get().getTermObjectClass(), d));
+				new TermReferenceLog<TermObject>(d.get().getTermObjectClass(), d, p));
 		modifiedTermDefinitions.put(article.getTitle(), true);
 	}
 
 	public <TermObject> void registerTermReference(KnowWEArticle article, Section<? extends TermReference<TermObject>> r) {
 		TermReferenceLog<TermObject> refLog = getTermReferenceLog(article, r);
 		if (refLog == null) {
-			refLog = new TermReferenceLog<TermObject>(r.get().getTermObjectClass(), null);
+			refLog = new TermReferenceLog<TermObject>(r.get().getTermObjectClass(), null, null);
 			getTermReferenceLogsMap(article.getTitle()).put(new TermIdentifier(article, r), refLog);
 		}
 		refLog.addTermReference(r);
@@ -337,13 +327,14 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		TermReferenceLog<TermObject> termRefLog = getTermReferenceLog(article, d);
 		if (termRefLog != null) {
 			if (d == termRefLog.termDefiningSection) {
-				termRefLog.termDefiningSection = null;
 				for (Section<?> termDef : termRefLog.getRedundantDefinitions()) {
 					termDef.setReusedBy(article.getTitle(), false);
 				}
 				for (Section<?> termRef : termRefLog.getReferences()) {
 					termRef.setReusedBy(article.getTitle(), false);
 				}
+				getTermReferenceLogsMap(article.getTitle()).remove(
+						new TermIdentifier(article, d));
 			}
 			else {
 				termRefLog.getRedundantDefinitions().remove(d);
@@ -395,7 +386,9 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	 */
 	class TermReferenceLog<TermObject> {
 
-		private Section<? extends TermDefinition<TermObject>> termDefiningSection;
+		private final Priority priorityOfDefiningSection;
+
+		private final Section<? extends TermDefinition<TermObject>> termDefiningSection;
 
 		private final Set<Section<? extends TermDefinition<TermObject>>> redundantTermDefiningSections =
 				new HashSet<Section<? extends TermDefinition<TermObject>>>();
@@ -405,10 +398,11 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 
 		private final Class<TermObject> termObjectClass;
 
-		public TermReferenceLog(Class<TermObject> termObjectClass, Section<? extends TermDefinition<TermObject>> d) {
+		public TermReferenceLog(Class<TermObject> termObjectClass, Section<? extends TermDefinition<TermObject>> d, Priority p) {
 			if (termObjectClass == null) {
 				throw new IllegalArgumentException("termObjectClass can not be null");
 			}
+			this.priorityOfDefiningSection = p;
 			this.termObjectClass = termObjectClass;
 			this.termDefiningSection = d;
 		}
