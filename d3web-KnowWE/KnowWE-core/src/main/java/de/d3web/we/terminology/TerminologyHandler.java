@@ -167,7 +167,7 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 				}
 				else if (termRefLog.priorityOfDefiningSection.compareTo(p) > 0
 							|| (termRefLog.priorityOfDefiningSection.compareTo(p) == 0
-									&& termRefLog.termDefiningSection.compareTo(d) > 0)) {
+									&& termRefLog.termDefiningSection.compareTo(d) < 0)) {
 					// If there is already a definition with higher priority or
 					// the same priority but further up in the article, this
 					// definition is redundant.
