@@ -233,7 +233,7 @@ KNOWWE.plugin.quicki = function(){
         	var rel = eval("(" + el.getAttribute('rel') + ")");
         	mcvals = mcanswervals.substring(0, mcanswervals.length-5);
         	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
-                	{ValueID: mcvals});
+                	{action: 'SetSingleFindingAction', ValueID: mcvals});
         },
         /**
          * Function: answerClicked
@@ -263,12 +263,13 @@ KNOWWE.plugin.quicki = function(){
             // if it is already highlighted it should now be deactivated and value retracted
             // thus send value unknown
             if(retract){
+            	// we need to call a retract action here!
             	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
-                    	{ValueID: "Ma_Undefined"});
+                    	{action: 'RetractSingleFindingAction', ValueID: rel.oid});
             }
             else {
             	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
-                    	{ValueID: rel.oid});
+                    	{action: 'SetSingleFindingAction', ValueID: rel.oid});
             }
         },
         /**
@@ -280,7 +281,7 @@ KNOWWE.plugin.quicki = function(){
          *     event - The user click event on an answer.
          */
         answerUnknownClicked : function( event ) {
-        	//KNOWWE.plugin.quicki.checkRuns();
+        	
             var el = _KE.target(event); 	// get the clicked element
            
             var rel = eval("(" + el.getAttribute('rel') + ")");
@@ -296,15 +297,13 @@ KNOWWE.plugin.quicki = function(){
             } 
          	
 			if(el.className=='answerunknownClicked'){
-				//el.className="answerunknown";
-				KNOWWE.plugin.quicki.toggleAnswerHighlightingAfterUnknown(questionID);  
-				KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
-			             	{ValueID: 'Ma_Undefined'});
+				// do nothing caus Unknown can only be taken back if another val is set
 			} else if (el.className=="answerunknown"){
 				//el.className="answerunknownClicked";
-				KNOWWE.plugin.quicki.toggleAnswerHighlightingAfterUnknown(questionID);  
+				
 				KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
-			             	{ValueID: 'MaU'});
+			             	{action: 'SetSingleFindingAction', ValueID: 'MaU'});
+				el.className="answerunknownClicked"
 			}
             KNOWWE.plugin.quicki.toggleAnswerHighlightingAfterUnknown(questionID);  
                
@@ -377,7 +376,7 @@ KNOWWE.plugin.quicki = function(){
             	else {
             		// send KNOWWE request as SingleFindingAction with given value
                 	KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
-                		{ValueNum: inputtext});
+                		{action: 'SetSingleFindingAction', ValueNum: inputtext});
             	}
             }
         },
@@ -414,7 +413,7 @@ KNOWWE.plugin.quicki = function(){
             
             // send KNOWWE request as SingleFindingAction with given value
             KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
-            		{ValueDate: inputtext});
+            		{action: 'SetSingleFindingAction', ValueDate: inputtext});
         },
         /**
          * Function: toggleImage
@@ -503,7 +502,6 @@ KNOWWE.plugin.quicki = function(){
     					
     				if (element.className!="answerunknownClicked"){
     					element.className="answer";
-    	    					
     				}
     			}
             });
@@ -634,8 +632,7 @@ KNOWWE.plugin.quicki = function(){
                 KWikiWeb : web,
                 namespace : namespace,
                 ObjectID : oid,
-                TermName : termName,
-                action : 'SetSingleFindingAction'
+                TermName : termName
             }
             
             pDefault = KNOWWE.helper.enrich( params, pDefault );
