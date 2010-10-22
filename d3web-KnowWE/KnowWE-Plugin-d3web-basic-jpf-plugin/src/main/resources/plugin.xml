@@ -56,24 +56,17 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
-		id="StyledSolutionsPanelHandler">
-		<parameter id="class" value="de.d3web.we.solutionpanel.StyledSolutionsPanelHandler" />
-		<parameter id="name" value="StyledSolutionsPanelHandler" />
-		<parameter id="description" value="A styled view of the derived solutions." />
+
+	<extension 
+		plugin-id="KnowWEExtensionPoints" 
+		point-id="KnowWEObjectType"
+		id="ShowSolutionsType">
+		<parameter id="class" value="de.d3web.we.solutionpanel.ShowSolutionsType" />
+		<parameter id="name" value="ShowSolutionsType" />
+		<parameter id="description" value="KnowWEObjectType to display the derived solutions and abstractions of the current user session." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
-		id="StyledSolutionPanelToolProvider">
-		<parameter id="class" value="de.d3web.we.solutionpanel.StyledSolutionPanelToolProvider" />
-		<parameter id="name" value="StyledSolutionPanelToolProvider" />
-		<parameter id="description"
-			value="Offers some common tools for the styled solution panel." />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="scope" value="StyledSolutions" />
-	</extension>
 </plugin>

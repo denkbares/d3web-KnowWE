@@ -30,7 +30,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * A tool provider to add some appropriate actions to the
- * {@link StyledSolutionsPanelHandler}, e.g., clear case, refresh.
+ * {@link SolutionsPanelRenderer}, e.g., clear case, refresh.
  * 
  * @author Joachim Baumeister (denkbares GmbH)
  * @created 19.10.2010

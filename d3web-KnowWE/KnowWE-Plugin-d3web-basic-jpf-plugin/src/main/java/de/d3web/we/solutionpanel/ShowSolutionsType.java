@@ -1,0 +1,107 @@
+/*
+ * Copyright (C) 2010 denkbares GmbH
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+package de.d3web.we.solutionpanel;
+
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.we.kdom.renderer.ReRenderSectionMarkerRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+
+/**
+ * 
+ * @author Joachim Baumeister (denkbares GmbH)
+ * @created 22.10.2010
+ */
+public class ShowSolutionsType extends DefaultMarkupType {
+
+	private static final String ANNOTATION_MASTER = "master";
+	private static final String ANNOTATION_ABSTRACTIONS = "show_abstractions";
+	private static final String ANNOTATION_SUGGESTED = "show_suggested";
+	private static final String ANNOTATION_ESTABLISHED = "show_established";
+	private static final String ANNOTATION_EXCLUDED = "show_excluded";
+
+	public enum BoolValue {
+		TRUE, FALSE
+	};
+
+	private static final DefaultMarkup MARKUP;
+	static {
+		MARKUP = new DefaultMarkup("ShowSolutions");
+		MARKUP.addAnnotation(ANNOTATION_MASTER, true);
+		MARKUP.addAnnotation(ANNOTATION_ESTABLISHED, false, BoolValue.values());
+		MARKUP.addAnnotation(ANNOTATION_SUGGESTED, false, BoolValue.values());
+		MARKUP.addAnnotation(ANNOTATION_EXCLUDED, false, BoolValue.values());
+		MARKUP.addAnnotation(ANNOTATION_ABSTRACTIONS, false, BoolValue.values());
+	}
+
+	public ShowSolutionsType() {
+		super(MARKUP);
+		this.setCustomRenderer(this.getRenderer());
+	}
+
+	public static String getText(Section<?> sec) {
+		assert sec.getObjectType() instanceof ShowSolutionsType;
+		return DefaultMarkupType.getContent(sec);
+	}
+
+	public static String getMaster(Section<?> section) {
+		assert section.getObjectType() instanceof ShowSolutionsType;
+		return DefaultMarkupType.getAnnotation(section, ANNOTATION_MASTER);
+	}
+
+	public static boolean shouldShowEstablished(Section<?> section) {
+		return shouldShow(section, ANNOTATION_ESTABLISHED);
+	}
+
+	public static boolean shouldShowSuggested(Section<?> section) {
+		return shouldShow(section, ANNOTATION_SUGGESTED);
+	}
+
+	public static boolean shouldShowExcluded(Section<?> section) {
+		return shouldShow(section, ANNOTATION_EXCLUDED);
+	}
+
+	public static boolean shouldShowAbstractions(Section<?> section) {
+		return shouldShow(section, ANNOTATION_ABSTRACTIONS);
+	}
+
+	private static boolean shouldShow(Section<?> section, String annotation) {
+		assert section.getObjectType() instanceof ShowSolutionsType;
+		String value = DefaultMarkupType.getAnnotation(section, annotation);
+		if (!MARKUP.getAnnotation(annotation).matches(value)) return false;
+		else return convert(BoolValue.valueOf(value.toUpperCase()));
+	}
+
+	private static boolean convert(BoolValue value) {
+		if (value == BoolValue.TRUE) {
+			return true;
+		}
+		else {
+			return false;
+		}
+
+	}
+
+	@Override
+	public KnowWEDomRenderer<ShowSolutionsType> getRenderer() {
+		return new ReRenderSectionMarkerRenderer<ShowSolutionsType>(new SolutionsPanelRenderer());
+	}
+
+}

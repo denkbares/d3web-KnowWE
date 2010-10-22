@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Rating;
@@ -36,7 +35,7 @@ import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.taghandler.AbstractDefaultStyledTagHandler;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -45,51 +44,44 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * Displays a configurable pane presenting derived solutions and abstractions.
  * The following options are available:
  * <ul>
- * <li>show_master_name (default = false)
- * <li>show_established (default = true)
- * <li>show_suggested (default = false)
- * <li>show_excluded (default = false)
- * <li>show_abstractions (default = false)
+ * <li>@show_established: true/false
+ * <li>@show_suggested: true/false
+ * <li>@show_excluded: true/false
+ * <li>@show_abstractions: true/false
+ * <li>@master: Name of the article with the knowledge base
  * </ul>
  * 
  * @author Joachim Baumeister (denkbares GmbH)
  * @created 15.10.2010
  */
-public class StyledSolutionsPanelHandler extends AbstractDefaultStyledTagHandler {
+public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsType> {
 
-	public StyledSolutionsPanelHandler() {
-		super("StyledSolutions", true);
+	public SolutionsPanelRenderer() {
+		// TODO: here we can also add an icon for the renderer
+		super();
 	}
 
 	@Override
-	public String renderContent(KnowWEArticle article, Section<?> section, KnowWEUserContext user, Map<String, String> parameters) {
-		String id = section.getID();
-		StringBuffer content = new StringBuffer();
+	protected void renderContents(KnowWEArticle article, Section<ShowSolutionsType> section, KnowWEUserContext user, StringBuilder string) {
+		string.append(ShowSolutionsType.getText(section) + "\n");
 
-		String masterArticleName = paramValueOf(parameters, "master");
+		String masterArticleName = ShowSolutionsType.getMaster(section);
 		Session session = getSessionFor(masterArticleName, article.getWeb(), user);
-
 		if (session == null) {
-			content.append("No knowledge base for: " + masterArticleName + "\n\n");
-			content.append(parameters.toString() + "\n");
+			string.append("No knowledge base for: " + masterArticleName + "\n");
 		}
 		else {
-			if (paramHasValue(parameters, "show_master_name", "true")) {
-				content.append("__" + masterArticleName + "__\n\n");
-			}
-			content.append(renderSolutions(parameters, session));
-			content.append(renderAbstractions(parameters, session));
+			string.append(renderSolutions(section, session));
+			string.append(renderAbstractions(section, session));
 		}
-
-		return content.toString();
 	}
 
 	/**
 	 * Renders the derived abstractions when panel opted for it.
 	 */
-	private StringBuffer renderAbstractions(Map<String, String> parameters, Session session) {
+	private StringBuffer renderAbstractions(Section<?> section, Session session) {
 		StringBuffer buffer = new StringBuffer();
-		if (paramHasValue(parameters, "show_abstractions", "true")) {
+		if (ShowSolutionsType.shouldShowAbstractions(section)) {
 			List<Question> abstractions = new ArrayList<Question>();
 			for (Question question : session.getBlackboard().getAnsweredQuestions()) {
 				Boolean isAbstract = (Boolean) question.getInfoStore().getValue(
@@ -115,20 +107,20 @@ public class StyledSolutionsPanelHandler extends AbstractDefaultStyledTagHandler
 	/**
 	 * Renders the derived solutions when panel opted for it.
 	 */
-	private StringBuffer renderSolutions(Map<String, String> parameters, final Session session) {
+	private StringBuffer renderSolutions(Section<?> section, final Session session) {
 		StringBuffer content = new StringBuffer();
 		List<Solution> allSolutions = new ArrayList<Solution>();
 
 		// collect the solutions to be presented
 		// --- established solutions are presented by default and have to be
 		// --- opted out
-		if (!paramHasValue(parameters, "show_established", "false")) {
+		if (ShowSolutionsType.shouldShowEstablished(section)) {
 			allSolutions.addAll(session.getBlackboard().getSolutions(State.ESTABLISHED));
 		}
-		if (paramHasValue(parameters, "show_suggested", "true")) {
+		if (ShowSolutionsType.shouldShowSuggested(section)) {
 			allSolutions.addAll(session.getBlackboard().getSolutions(State.SUGGESTED));
 		}
-		if (paramHasValue(parameters, "show_excluded", "true")) {
+		if (ShowSolutionsType.shouldShowExcluded(section)) {
 			allSolutions.addAll(session.getBlackboard().getSolutions(State.EXCLUDED));
 		}
 
@@ -170,7 +162,7 @@ public class StyledSolutionsPanelHandler extends AbstractDefaultStyledTagHandler
 		}
 		content.append(solution.getName());
 
-		content.append("\n");
+		content.append(br() + "\n");
 	}
 
 	private String renderImage(String filename, String altText) {
@@ -188,7 +180,11 @@ public class StyledSolutionsPanelHandler extends AbstractDefaultStyledTagHandler
 		// buffer.append("* ");
 		buffer.append(renderImage("KnowWEExtension/images/fsp_abstraction.gif", "Abstraction"));
 		buffer.append(question.getName() + " = "
-				+ formatValue(session.getBlackboard().getValue(question)) + "\n");
+				+ formatValue(session.getBlackboard().getValue(question)) + br() + "\n");
+	}
+
+	private String br() {
+		return "";
 	}
 
 	/**
@@ -216,20 +212,6 @@ public class StyledSolutionsPanelHandler extends AbstractDefaultStyledTagHandler
 		}
 		else {
 			return value.toString();
-		}
-	}
-
-	private boolean paramHasValue(Map<String, String> parameters, String key, String value) {
-		return paramValueOf(parameters, key).equalsIgnoreCase(value);
-	}
-
-	private String paramValueOf(Map<String, String> parameters, String key) {
-		String value = parameters.get(key);
-		if (value == null) {
-			return "";
-		}
-		else {
-			return value;
 		}
 	}
 
