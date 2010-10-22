@@ -99,7 +99,8 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 		string.append(KnowWEUtils.maskHTML("<a name=\"" + sec.getID() + "\"></a>"));
 
 		string.append(KnowWEUtils.maskHTML("<div id=\"" + sec.getID() + "\" style=\"width: 100%\">"));
-		if (sec.getArticle().equals(article)) {
+		if (sec.getArticle().equals(article) || KnowWEEnvironment.getInstance().getPackageManager(
+				article.getWeb()).getArticlesReferingTo(sec).contains(article.getTitle())) {
 			string.append(KnowWEUtils.maskHTML(this.generateQuickEdit("Quickedit "
 					+ sec.getObjectType().getName() + " Section", sec.getID(), isEditable, user,
 					isInline)));
