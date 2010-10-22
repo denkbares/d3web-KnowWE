@@ -356,7 +356,7 @@ KNOWWE.plugin.quicki = function(){
                 	 	
             	 		// send KNOWWE request as SingleFindingAction with given value
                     	KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
-                    		{ValueNum: inputtext});
+                    		{action: 'SetSingleFindingAction', ValueNum: inputtext});
 
             	 	} else {
 
