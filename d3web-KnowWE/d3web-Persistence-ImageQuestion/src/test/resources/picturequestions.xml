@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Questions>
+	<Question ID="QGelenkstatus">
+		<QuestionImage file="StrichBe.png" height="1px" width="1px" align="center" answersPosition="right" showRegionOnMouseOver="true">  
+			<AnswerRegion answerID="QGelenkstatusA15" xStart="1" xEnd="2" yStart="3" yEnd="4" />
+			<AnswerRegion answerID="QGelenkstatusA16" xStart="5" xEnd="6" yStart="7" yEnd="8" />
+		</QuestionImage> 
+	</Question>
+	<Question ID="QGelenkstatus2">
+		<QuestionImage file="StrichBe2.png" height="1px" width="1px" align="center" answersPosition="right" showRegionOnMouseOver="true">  
+			<AnswerRegion answerID="QGelenkstatusA17" xStart="1" xEnd="2" yStart="3" yEnd="4" />
+			<AnswerRegion answerID="QGelenkstatusA18" xStart="5" xEnd="6" yStart="7" yEnd="8" />
+		</QuestionImage> 
+	</Question>
+</Questions>

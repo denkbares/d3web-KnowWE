@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="d3web-Persistence-ImageQuestion" version="0.0.1">
+	
+	<requires>
+		<import plugin-id="KnowledgePersistenceExtensionPoints" />
+	</requires>
+	
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	<extension plugin-id="KnowledgePersistenceExtensionPoints" point-id="KnowledgeReader"
+		id="ImageQuestionPersistenceHandler">
+		<parameter id="class"
+			value="de.d3web.multimedia.io.ImageQuestionPersistenceHandler" />
+		<parameter id="name" value="ImageQuestionPersistenceHandler" />
+		<parameter id="description" value="KnowledgeReader for Picture Questions." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="filename" value="kb/imagequestions.xml" />
+	</extension>
+	
+	<extension plugin-id="KnowledgePersistenceExtensionPoints" point-id="KnowledgeWriter"
+		id="ImageQuestionPersistenceHandler.Writer">
+		<parameter id="class"
+			value="de.d3web.multimedia.io.ImageQuestionPersistenceHandler" />
+		<parameter id="name" value="ImageQuestionPersistenceHandler" />
+		<parameter id="description" value="KnowledgeWriter for Picture Questions" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="filename" value="kb/imagequestions.xml" />
+	</extension>
+	
+</plugin>
