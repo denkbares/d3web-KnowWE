@@ -66,9 +66,6 @@ public class ImageQuestionHandler extends AbstractHTMLTagHandler {
 	private String web;
 	private KnowWEUserContext user;
 
-	// private String width;
-	// private String height;
-
 	public ImageQuestionHandler() {
 		super("imagequestionhandler");
 	}
@@ -111,7 +108,8 @@ public class ImageQuestionHandler extends AbstractHTMLTagHandler {
 		KnowledgeBase kb = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
 
 		// Read out the properties
-		String questionID = values.get(ImageQuestionHandler.TAGHANDLER_ANNOTATION);
+		String questionID =
+				values.get(ImageQuestionHandler.TAGHANDLER_ANNOTATION);
 		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance(kb);
 		Question q = kbm.findQuestion(questionID);
 		ImageQuestionStore store = (ImageQuestionStore) q.getInfoStore().getValue(
@@ -270,8 +268,12 @@ public class ImageQuestionHandler extends AbstractHTMLTagHandler {
 		String imageName = answer.getId();
 		buffi.append("<img");
 		buffi.append(" class=\"qImageHover\" alt=\"\"");
-		buffi.append(" src=\"" + KnowWEEnvironment.getInstance().getKnowWEExtensionPath()
-				+ "/d3web/icon/spacer.gif\"");
+		// buffi.append(" src=\"" +
+		// KnowWEEnvironment.getInstance().getKnowWEExtensionPath()
+		// + "/d3web/icon/spacer.gif\"");
+		buffi.append(" src=\""
+				+ "KnowWEExtension/d3web/icon/spacer.gif\"");
+
 		buffi.append(" width=\"" + answerRegion.getWidth() + "\"");
 		buffi.append(" height=\"" + answerRegion.getHeight() + "\"");
 		buffi.append(" title=\"" + imageName + "\" ");
