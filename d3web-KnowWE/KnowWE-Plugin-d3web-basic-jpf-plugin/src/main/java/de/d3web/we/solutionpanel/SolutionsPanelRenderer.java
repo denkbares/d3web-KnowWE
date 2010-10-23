@@ -151,27 +151,37 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 		// TODO: look for internationalization and only print getName,
 		// when no intlz is available
 		// content.append("* ");
-		if (session.getBlackboard().getRating(solution).hasState(State.ESTABLISHED)) {
+
+		Rating solutionRating = session.getBlackboard().getRating(solution);
+		String stateName = solutionRating.toString();
+
+		if (solutionRating.hasState(State.ESTABLISHED)) {
 			content.append(renderImage("KnowWEExtension/images/fsp_established.gif", "Established"));
 		}
-		else if (session.getBlackboard().getRating(solution).hasState(State.SUGGESTED)) {
+		else if (solutionRating.hasState(State.SUGGESTED)) {
 			content.append(renderImage("KnowWEExtension/images/fsp_suggested.gif", "Suggested"));
 		}
-		else if (session.getBlackboard().getRating(solution).hasState(State.EXCLUDED)) {
+		else if (solutionRating.hasState(State.EXCLUDED)) {
 			content.append(renderImage("KnowWEExtension/images/fsp_excluded.gif", "Excluded"));
 		}
+		// render span for better testability
+		content.append(mask("<span class=\"SOLUTION-" + stateName + "\">"));
 		content.append(solution.getName());
+		content.append(mask("</span>"));
 
 		content.append(br() + "\n");
 	}
 
 	private String renderImage(String filename, String altText) {
-		return KnowWEUtils
-				.maskHTML(" <img src='" + filename
+		return mask(" <img src='" + filename
 						+ "' id='sstate-update' class='pointer'"
 							+ " align='top' alt='" + altText + "'"
 							+ " title='" + altText + "' "
 						+ "/> ");
+	}
+
+	private String mask(String string) {
+		return KnowWEUtils.maskHTML(string);
 	}
 
 	private void addListItem(StringBuffer buffer, Question question, Session session) {
@@ -179,8 +189,10 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 		// when no intlz is available
 		// buffer.append("* ");
 		buffer.append(renderImage("KnowWEExtension/images/fsp_abstraction.gif", "Abstraction"));
+		buffer.append(mask("<span class=\"ABSTRACTION\">"));
 		buffer.append(question.getName() + " = "
-				+ formatValue(session.getBlackboard().getValue(question)) + br() + "\n");
+				+ formatValue(session.getBlackboard().getValue(question)));
+		buffer.append(mask("</span>") + br() + "\n");
 	}
 
 	private String br() {
