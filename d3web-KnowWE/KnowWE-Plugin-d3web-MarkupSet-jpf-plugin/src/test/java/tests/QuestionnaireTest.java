@@ -66,8 +66,6 @@ public class QuestionnaireTest extends TestCase {
 		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
-		List<QContainer> loaded = loadedKB.getQContainers();
-		List<QContainer> created = createdKB.getQContainers();
 		if (loadedKB.getQContainers().size() == createdKB.getQContainers().size()) {
 			for (int i = 0; i < loadedKB.getQContainers().size(); i++) {
 
@@ -98,7 +96,6 @@ public class QuestionnaireTest extends TestCase {
 
 				// Parents
 				for (String t : expectedList) {
-					boolean boo = actualList.contains(t);
 					assertTrue("QContainer " + expected.getName() +
 							" has wrong parents.",
 							actualList.contains(t));
@@ -119,7 +116,6 @@ public class QuestionnaireTest extends TestCase {
 						expectedList.size(), actualList.size());
 
 				for (String t : expectedList) {
-					boolean boo = actualList.contains(t);
 					assertTrue("QContainer " + expected.getName() +
 							" has wrong children.",
 							actualList.contains(t));

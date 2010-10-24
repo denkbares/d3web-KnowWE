@@ -38,8 +38,6 @@ import de.d3web.xcl.inference.PSMethodXCL;
 /**
  * This class tests whether the XCLModels are created as expected.
  * 
- * TODO: Commented some assertions out in testXCLModels(). Because the new
- * Markup makes them fail. Johannes
  * 
  * @author Sebastian Furth
  * @see KBCreationTestUtil to modify the KB against which everything is tested

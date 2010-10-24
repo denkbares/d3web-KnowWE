@@ -46,8 +46,6 @@ import de.d3web.we.logging.Logging;
 /**
  * This class tests whether the Questions are created as expected.
  * 
- * TODO: Commented some assertions out. Because the new Markup makes them fail.
- * Johannes
  * 
  * @author Sebastian Furth
  * @see KBCreationTestUtil to modify the KB against which everything is tested
@@ -110,7 +108,6 @@ public class QuestionTreeTest extends TestCase {
 						expectedList.size(), actualList.size());
 
 				for (String t : expectedList) {
-					boolean boo = expectedList.contains(t);
 					assertTrue("Question " + expected.getName() +
 							" has wrong parents.",
 							actualList.contains(t));
@@ -133,7 +130,6 @@ public class QuestionTreeTest extends TestCase {
 				// Driving should have "Other
 				// as children and not null
 				for (String t : expectedList) {
-					boolean boo = actualList.contains(t);
 					assertTrue("Question " + expected.getName() +
 							" has wrong children.",
 							actualList.contains(t));
@@ -166,7 +162,6 @@ public class QuestionTreeTest extends TestCase {
 							expectedList.size(), actualList.size());
 
 					for (String t : expectedList) {
-						boolean boo = actualList.contains(t);
 						assertTrue("Question " + expected.getName()
 								+ " has different answer alternatives.",
 								actualList.contains(t));

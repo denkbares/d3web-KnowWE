@@ -38,8 +38,6 @@ import de.d3web.we.logging.Logging;
 /**
  * This class tests whether the Diagnoses are created as expected.
  * 
- * TODO: Commented some assertions out. Because the new Markup makes them fail.
- * Johannes
  * 
  * @author Sebastian Furth
  * @see KBCreationTestUtil to modify the KB against which everything is tested
@@ -107,7 +105,6 @@ public class SolutionsTest extends TestCase {
 						" has wrong number of parents.",
 						expectedList.size(), actualList.size());
 				for (String t : expectedList) {
-					boolean boo = expectedList.contains(t);
 					assertTrue("Question " + expected.getName() +
 							" has wrong parents.",
 							actualList.contains(t));
@@ -128,7 +125,6 @@ public class SolutionsTest extends TestCase {
 						expectedList.size(), actualList.size());
 
 				for (String t : expectedList) {
-					boolean boo = actualList.contains(t);
 					assertTrue("Question " + expected.getName() +
 							" has wrong children.",
 							actualList.contains(t));
