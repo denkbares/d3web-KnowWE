@@ -100,27 +100,27 @@ public class XCLTest extends TestCase {
 					createdXCLModel.getContradictingRelations().toArray()[0];
 			loadedRelation = (XCLRelation)
 					loadedXCLModel.getContradictingRelations().toArray()[0];
-			// assertEquals("Contradicting Relation is wrong.",
-			// createdRelation.getConditionedFinding(),
-			// loadedRelation.getConditionedFinding());
+			assertEquals("Contradicting Relation is wrong.",
+					createdRelation.getConditionedFinding(),
+					loadedRelation.getConditionedFinding());
 
 			// // Check Necessary Relations
-			// createdRelation = (XCLRelation)
-			// createdXCLModel.getNecessaryRelations().toArray()[0];
-			// loadedRelation = (XCLRelation)
-			// loadedXCLModel.getNecessaryRelations().toArray()[0];
-			// assertEquals("Necessary Relation is wrong.",
-			// createdRelation.getConditionedFinding(),
-			// loadedRelation.getConditionedFinding());
+			createdRelation = (XCLRelation)
+					createdXCLModel.getNecessaryRelations().toArray()[0];
+			loadedRelation = (XCLRelation)
+					loadedXCLModel.getNecessaryRelations().toArray()[0];
+			assertEquals("Necessary Relation is wrong.",
+					createdRelation.getConditionedFinding(),
+					loadedRelation.getConditionedFinding());
 
 			// // Check Sufficient Relations
-			// createdRelation = (XCLRelation)
-			// createdXCLModel.getSufficientRelations().toArray()[0];
-			// loadedRelation = (XCLRelation)
-			// loadedXCLModel.getSufficientRelations().toArray()[0];
-			// assertEquals("Sufficient Relation is wrong.",
-			// createdRelation.getConditionedFinding(),
-			// loadedRelation.getConditionedFinding());
+			createdRelation = (XCLRelation)
+					createdXCLModel.getSufficientRelations().toArray()[0];
+			loadedRelation = (XCLRelation)
+					loadedXCLModel.getSufficientRelations().toArray()[0];
+			assertEquals("Sufficient Relation is wrong.",
+					createdRelation.getConditionedFinding(),
+					loadedRelation.getConditionedFinding());
 
 			// Check "normal" Relation with custom weight
 			createdRelation = (XCLRelation) createdXCLModel.getRelations().toArray()[0];
@@ -131,12 +131,12 @@ public class XCLTest extends TestCase {
 			if (loadedRelation.getWeight() <= 1) {
 				loadedRelation = (XCLRelation) loadedXCLModel.getRelations().toArray()[1];
 			}
-			// assertEquals("Relation is wrong.",
-			// createdRelation.getConditionedFinding(),
-			// loadedRelation.getConditionedFinding());
-			// assertEquals("Relation has wrong weight.",
-			// createdRelation.getWeight(),
-			// loadedRelation.getWeight());
+			assertEquals("Relation is wrong.",
+					createdRelation.getConditionedFinding(),
+					loadedRelation.getConditionedFinding());
+			assertEquals("Relation has wrong weight.",
+					createdRelation.getWeight(),
+					loadedRelation.getWeight());
 
 			// Check "normal" Relation with default weight (1)
 			createdRelation = (XCLRelation) createdXCLModel.getRelations().toArray()[1];

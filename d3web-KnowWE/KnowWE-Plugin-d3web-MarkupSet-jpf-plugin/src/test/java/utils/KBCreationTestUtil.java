@@ -239,7 +239,7 @@ public class KBCreationTestUtil {
 		// -- black
 		// -- blue
 		// -- invisible
-		Question q0 = createdKBM.createQuestionOC("Exhaust fumes", qc1,
+		Question q0 = createdKBM.createQuestionOC("Q1", "Exhaust fumes", qc1,
 				new String[] {
 						"black", "blue", "invisible" });
 
@@ -252,36 +252,34 @@ public class KBCreationTestUtil {
 		// --- Fuel [oc]
 		// ---- diesel
 		// ---- unleaded gasoline
-		createdKBM.createQuestionOC("Fuel", q0, new String[] {
+		createdKBM.createQuestionOC("Q0b", "Fuel", q0, new String[] {
 				"diesel", "unleaded gasoline" });
 
 		// Add question:
 		// - "Average mileage /100km" [num] {liter} (0 30) #Q1337
-		Question q1 = new QuestionNum("Q1337");
-		q1.setName("Average mileage /100km");
+		Question q1 = createdKBM.createQuestionNum("Q1", "Average mileage /100km", qc1);
+		// q1.setName("Average mileage /100km");
 		InfoStore infoStore = q1.getInfoStore();
 		infoStore.addValue(BasicProperties.UNIT, "liter");
 		q1.getInfoStore().addValue(BasicProperties.QUESTION_NUM_RANGE, new NumericalInterval(0, 30));
-		createdKB.add(q1);
-		qc1.addChild(q1);
 
 		// Add question:
 		// -- "Num. Mileage evaluation" [num] <abstract>
-		Question q2 = createdKBM.createQuestionNum("Num. Mileage evaluation", q1);
+		Question q2 = createdKBM.createQuestionNum("Q2", "Num. Mileage evaluation", q1);
 		q2.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION, Boolean.TRUE);
 
 		// Add question:
 		// --- Mileage evaluation [oc] <abstract>
 		// ---- normal
 		// ---- increased
-		Question q3 = createdKBM.createQuestionOC("Mileage evaluation", q2,
+		Question q3 = createdKBM.createQuestionOC("Q5", "Mileage evaluation", q2,
 				new String[] {
 						"normal", "increased" });
 		q3.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION, Boolean.TRUE);
 
 		// Add question:
 		// - "Real mileage  /100km" [num]
-		createdKBM.createQuestionNum("Real mileage  /100km", qc1);
+		createdKBM.createQuestionNum("Q3b", "Real mileage  /100km", qc1);
 
 		// Add question:
 		// - Driving [mc]
@@ -289,7 +287,7 @@ public class KBCreationTestUtil {
 		// -- insufficient power on full load
 		// -- unsteady idle speed
 		// -- everything is fine
-		Question q4 = createdKBM.createQuestionMC("Driving", qc1,
+		Question q4 = createdKBM.createQuestionMC("Q7", "Driving", qc1,
 				new String[] {
 						"insufficient power on partial load",
 						"insufficient power on full load",
@@ -298,14 +296,16 @@ public class KBCreationTestUtil {
 
 		// Add question:
 		// ---- Other [text]
-		createdKBM.createQuestionText("Other", q4);
+		createdKBM.createQuestionText("QText", "Other", q4);
 
 		// Get second QContainer and add Question
 		// Technical Examinations
 		QContainer qc2 = createdKBM.findQContainer("Technical Examinations");
 		// - "Idle speed system o.k.?" [yn]
-		createdKBM.createQuestionYN("Idle speed system o.k.?", qc2);
-
+		// createdKBM.createQuestionYN("Q9", "Idle speed system o.k.?", qc2);
+		createdKBM.createQuestionYN("Q9", "Idle speed system o.k.?", null, null, qc2);
+		Question bla = createdKBM.findQuestion("Idle speed system o.k.?");
+		System.out.println();
 	}
 
 	/**
