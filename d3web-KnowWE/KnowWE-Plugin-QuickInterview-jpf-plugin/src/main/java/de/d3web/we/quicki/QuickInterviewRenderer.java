@@ -319,45 +319,47 @@ public class QuickInterviewRenderer {
 	 * question first, and the answers afterwards.
 	 * 
 	 * @created 20.07.2010
-	 * @param q the question to be rendered
+	 * @param question the question to be rendered
 	 * @param depth the depth of the recursion - for calculating identation
 	 * @param parent the parent element
 	 * @param sb
 	 * @return HTML-String representation for one QA-Block
 	 */
-	private static void getQABlockRendering(Question q, int depth,
-			TerminologyObject parent, StringBuffer sb) {
+	private static void getQABlockRendering(Question question, int depth, TerminologyObject parent, StringBuffer sb) {
 
 		// calculate indentation depth & resulting width of the question display
 		// 10 for standard margin and 30 for indenting further than the triangle
 		int d = 30 + depth * 10;
-		
+
 		String qablockCSS = "qablock";
-		
-		if (q.getInfoStore().getValue(BasicProperties.ABSTRACTION_QUESTION) != null
-				&& q.getInfoStore().getValue(BasicProperties.ABSTRACTION_QUESTION).equals(true)) {
+
+		if (question.getInfoStore().getValue(BasicProperties.ABSTRACTION_QUESTION) != null
+				&& question.getInfoStore().getValue(BasicProperties.ABSTRACTION_QUESTION).equals(
+						true)) {
 			qablockCSS = "qablockAbstract";
 		}
 
-		sb.append("\n<div class='"+qablockCSS+"' id='qablock' style='display: block; margin-left: " + d
+		sb.append("\n<div class='" + qablockCSS
+				+ "' id='qablock' style='display: block; margin-left: " + d
 				+ "px;'>");
 
 		sb.append("<table><tr><td class='tdquestion'>");
 		// width of the question front section, i.e. total width - identation
 		int w = 320 - d;
 
-		String divText = q.getName();
-		if (q.getName().length() > 35) {
-			divText = q.getName().substring(0, 34) + "...";
+		String divText = question.getName();
+		if (question.getName().length() > 35) {
+			divText = question.getName().substring(0, 34) + "...";
 
 			// Question Text > 35 chars --> display shortened,
 			// render the first cell displaying the Question in a separate div,
 			// then call method for rendering a question's answers in another
 			// div
-			sb.append("\n<div id='" + q.getId() + "' " +
+			sb.append("\n<div id='" + question.getId() + "' " +
 					"parent='" + parent.getId() + "' " +
 					"class='questionTT' " +
-					"style='width: " + w + "px; display: inline-block;' title='" + q.getName()
+					"style='width: " + w + "px; display: inline-block;' title='"
+					+ question.getName()
 					+ "' >"
 					+ divText + "</div>");
 
@@ -367,7 +369,7 @@ public class QuickInterviewRenderer {
 			// render the first cell displaying the Question in a separate div,
 			// then call method for rendering a question's answers in another
 			// div
-			sb.append("\n<div id='" + q.getId() + "' " +
+			sb.append("\n<div id='" + question.getId() + "' " +
 					"parent='" + parent.getId() + "' " +
 					"class='question' " +
 					"style='width: " + w + "px; display: inline-block;' >"
@@ -375,24 +377,25 @@ public class QuickInterviewRenderer {
 		}
 		sb.append("</td><td>");
 
-		if (q instanceof QuestionOC) {
-			List<Choice> list = ((QuestionChoice) q).getAllAlternatives();
-			renderOCChoiceAnswers(q, list, sb);
+		if (question instanceof QuestionOC) {
+			List<Choice> list = ((QuestionChoice) question).getAllAlternatives();
+			renderOCChoiceAnswers(question, list, sb);
 		}
-		else if (q instanceof QuestionMC) {
-			List<Choice> list = ((QuestionMC) q).getAllAlternatives();
+		else if (question instanceof QuestionMC) {
+			QuestionMC questionMC = (QuestionMC) question;
+			List<Choice> list = questionMC.getAllAlternatives();
 			MultipleChoiceValue mcVal = MultipleChoiceValue.fromChoices(list);
-			renderMCChoiceAnswers(q, mcVal, sb);
+			renderMCChoiceAnswers(questionMC, mcVal, sb);
 		}
-		else if (q instanceof QuestionNum) {
-			renderNumAnswers(q, sb);
+		else if (question instanceof QuestionNum) {
+			renderNumAnswers(question, sb);
 		}
 
-		else if (q instanceof QuestionDate) {
-			renderDateAnswers(q, sb);
+		else if (question instanceof QuestionDate) {
+			renderDateAnswers(question, sb);
 		}
-		else if (q instanceof QuestionText) {
-			renderTextAnswers(q, sb);
+		else if (question instanceof QuestionText) {
+			renderTextAnswers(question, sb);
 		}
 		sb.append("</td></tr></table>");
 		sb.append("</div>");
@@ -481,7 +484,6 @@ public class QuickInterviewRenderer {
 					cssclass, jscall, null, spanid, ""));
 
 			sb.append("<div class='answerseparator'> | </div>");
-
 
 			// System.out.println(getEnclosingTagOnClick("div", "" +
 			// choice.getName() + " ",
@@ -657,10 +659,10 @@ public class QuickInterviewRenderer {
 	 * @param namespace
 	 * @return
 	 */
-	private static void renderMCChoiceAnswers(Question q, MultipleChoiceValue mcval, StringBuffer sb) {
+	private static void renderMCChoiceAnswers(QuestionChoice q, MultipleChoiceValue mcval, StringBuffer sb) {
 
 		sb.append("\n<div class='answers' style='display: inline;'>");
-		for (Choice choice : mcval.asChoiceList()) {
+		for (Choice choice : mcval.asChoiceList(q)) {
 
 			String cssclass = "answerMC";
 			String jscall = " rel=\"{oid:'" + choice.getId() + "', "
@@ -715,7 +717,7 @@ public class QuickInterviewRenderer {
 		String cssclass = "answerunknown";
 
 		Value value = session.getBlackboard().getValue(q);
-		if (value != null && value.equals(Unknown.getInstance()) ) {
+		if (value != null && value.equals(Unknown.getInstance())) {
 			cssclass = "answerunknownClicked";
 		}
 		else if (value != null && !value.equals(Unknown.getInstance())) {

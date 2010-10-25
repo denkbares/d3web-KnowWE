@@ -90,6 +90,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 				"var b=c.effect(\"opacity\",{wait:false}).set(0);" +
 				"a.adopt(c).set({href:\"#\",events:{" +
 				"mouseout:function(){b.start(0)}," +
+				"click:function(){b.start(0.9)}," +
 				"mouseover:function(){b.start(0.9)}}});" +
 				"};" +
 				"makeMenuFx();" +

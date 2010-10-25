@@ -57,6 +57,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
+import de.d3web.core.session.values.ChoiceID;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.empiricaltesting.Finding;
@@ -670,9 +671,7 @@ public class KBCreationTestUtil {
 		// Create Finding
 		Question q = createdKBM.findQuestion("Driving");
 		Choice a = createdKBM.findChoice((QuestionChoice) q, "everything is fine");
-		List<ChoiceValue> answers = new LinkedList<ChoiceValue>();
-		answers.add(new ChoiceValue(a));
-		Finding f = new Finding(q, new MultipleChoiceValue(answers));
+		Finding f = new Finding(q, new MultipleChoiceValue(new ChoiceID(a)));
 
 		// Create RatedSolution
 		Solution d = createdKBM.findSolution("Other problem");

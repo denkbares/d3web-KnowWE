@@ -34,6 +34,7 @@ import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
+import de.d3web.core.session.values.ChoiceID;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
@@ -82,7 +83,7 @@ public class FindingXMLWriter {
 			theID = ((ChoiceValue) theAnswer).getAnswerChoiceID();
 		}
 		else if (theAnswer instanceof MultipleChoiceValue) {
-			theID = ((MultipleChoiceValue) theAnswer).getAnswerChoicesID();
+			theID = ChoiceID.encodeChoiceIDs(((MultipleChoiceValue) theAnswer).getChoiceIDs());
 		}
 
 		sb.append("<Answer ID='" + theID + "'");

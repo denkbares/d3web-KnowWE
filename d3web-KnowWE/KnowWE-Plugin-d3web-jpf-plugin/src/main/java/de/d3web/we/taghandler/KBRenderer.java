@@ -30,9 +30,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.RuleSet;
@@ -61,8 +61,8 @@ import de.d3web.core.knowledge.terminology.info.Property.Autosave;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.utilities.Triple;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
-import de.d3web.kernel.verbalizer.Verbalizer;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
+import de.d3web.kernel.verbalizer.Verbalizer;
 import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -91,11 +91,11 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	@Override
 	public String renderHTML(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
-		
+
 		D3webKnowledgeHandler knowledgeRepresentationHandler = D3webModule.getKnowledgeRepresentationHandler(KnowWEEnvironment.DEFAULT_WEB);
 		KnowledgeBaseManagement knowledgeBaseManagement = knowledgeRepresentationHandler.getKBM(topic);
 		KnowledgeBase kb = knowledgeBaseManagement.getKnowledgeBase();
-		
+
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
 
 		StringBuilder text = new StringBuilder(
@@ -255,7 +255,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			kbm.sortQContainers(questions);
 			boolean appendedQuestionHeadline = false;
 			for (QContainer q1 : questions) {
-				if (!q1.getName().equals("Q000")) {
+				if (q1.getName() != null && !q1.getName().equals("Q000")) {
 					if (!appendedQuestionHeadline) {
 						if (appendedSolutionsHeadline || appendedRulesHeadline) {
 							text.append("<br/>");

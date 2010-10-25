@@ -118,10 +118,16 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 					Fact mcFact = blackboard.getValueFact(question);
 
 					// remove old mc value if any
-					if (mcFact != null) {
-						blackboard.removeValueFact(mcFact);
 
-					}
+					// vb: should be comment out, see below:
+					// that is wrong and even not possible
+					// because this may be a merged fact.
+					// old facts are automatically overwrtitten
+					// by setting new ones from the same source!
+					// if (mcFact != null) {
+					// blackboard.removeValueFact(mcFact);
+					//
+					// }
 				}
 
 				blackboard.addValueFact(new DefaultFact(question,

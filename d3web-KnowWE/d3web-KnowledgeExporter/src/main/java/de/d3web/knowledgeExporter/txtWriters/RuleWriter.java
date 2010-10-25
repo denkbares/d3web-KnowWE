@@ -198,10 +198,10 @@ public class RuleWriter extends TxtKnowledgeWriter {
 			s.append(" =");
 			s.append(" [");
 			boolean first = true;
-			for (Object o : asa.getSuppress()) {
+			for (Choice choice : asa.getSuppress()) {
 				if (!first) s.append(";");
 				first = false;
-				Choice answer = (Choice) o;
+				Choice answer = choice;
 				s.append("\"" + answer.toString() + "\"");
 			}
 			s.append("]");

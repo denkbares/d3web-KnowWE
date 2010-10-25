@@ -25,13 +25,11 @@ package de.d3web.we.flow.persistence;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import de.d3web.abstraction.ActionSetValue;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.INode;
@@ -54,6 +52,7 @@ public class ExitNodeHandler extends AbstractNodeHandler {
 		super(ExitType.getInstance(), null);
 	}
 
+	@Override
 	public boolean canCreateNode(KnowWEArticle article,
 			KnowledgeBaseManagement kbm, Section nodeSection) {
 
@@ -62,6 +61,7 @@ public class ExitNodeHandler extends AbstractNodeHandler {
 		return nodeInfo != null;
 	}
 
+	@Override
 	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm,
 			Section nodeSection, Section flowSection, String id, List<Message> errors) {
 
@@ -94,10 +94,10 @@ public class ExitNodeHandler extends AbstractNodeHandler {
 		}
 
 		// HOTFIX
-		List<ChoiceValue> values = new LinkedList<ChoiceValue>();
-		values.add(new ChoiceValue(answer));
+		List<Choice> values = new LinkedList<Choice>();
+		values.add(answer);
 
-		action.setValue(new MultipleChoiceValue(values));
+		action.setValue(MultipleChoiceValue.fromChoices(values));
 		//
 
 		return FlowFactory.getInstance().createEndNode(id, endNodeName, action);

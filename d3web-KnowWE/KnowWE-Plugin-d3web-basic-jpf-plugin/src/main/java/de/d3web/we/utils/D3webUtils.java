@@ -98,18 +98,6 @@ public class D3webUtils {
 		mmis.addMMInfo(mmi);
 	}
 
-	// public static Choice getAnswer(KnowledgeServiceSession kss, String aid,
-	// String qid) {
-	// Question q = getQuestion(kss, qid);
-	// if(q != null) {
-	// D3webKnowledgeServiceSession session =
-	// ((D3webKnowledgeServiceSession)kss);
-	// KnowledgeBase kb = session.getBaseManagement().getKnowledgeBase();
-	// return (Choice) session.getBaseManagement().findAnswer(q, aid);
-	// }
-	// return null;
-	// }
-
 	/**
 	 * Gets the Session Object.
 	 */

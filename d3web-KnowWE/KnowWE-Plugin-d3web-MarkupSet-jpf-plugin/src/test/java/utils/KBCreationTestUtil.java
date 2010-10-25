@@ -57,6 +57,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
+import de.d3web.core.session.values.ChoiceID;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.empiricaltesting.Finding;
@@ -575,31 +576,6 @@ public class KBCreationTestUtil {
 		ruleID = createdKBM.createRuleID();
 		RuleFactory.createHeuristicPSRule(ruleID, diag, Score.N7, condOr);
 
-		// Create rule R15:
-		// IF NOT Exhaust fumes = black OR NOT Fuel = unleaded gasoline
-		// THEN Mechanical problem = N7
-		// QuestionChoice questionIf4 = (QuestionChoice)
-		// createdKBM.findQuestion("Fuel");
-		// Choice answerIf4 = createdKBM.findChoice(questionIf4,
-		// "unleaded gasoline");
-		// CondEqual conditionIf4 = new CondEqual(questionIf4, new ChoiceValue(
-		// answerIf4));
-		// CondNot condNot4 = new CondNot(conditionIf4);
-		//
-		// QuestionChoice questionIf5 = (QuestionChoice)
-		// createdKBM.findQuestion("Exhaust fumes");
-		// Choice answerIf5 = createdKBM.findChoice(questionIf5, "black");
-		// CondEqual conditionIf5 = new CondEqual(questionIf5, new ChoiceValue(
-		// answerIf5));
-		// CondNot condNot5 = new CondNot(conditionIf5);
-		//
-		// List<Condition> conditions2 = new LinkedList<Condition>();
-		// conditions2.add(condNot5);
-		// conditions2.add(condNot4);
-		// CondOr condOr1 = new CondOr(conditions);
-		//
-		// ruleID = createdKBM.createRuleID();
-		// RuleFactory.createHeuristicPSRule(ruleID, diag, Score.N7, condOr1);
 	}
 
 	/**
@@ -695,9 +671,7 @@ public class KBCreationTestUtil {
 		// Create Finding
 		Question q = createdKBM.findQuestion("Driving");
 		Choice a = createdKBM.findChoice((QuestionChoice) q, "everything is fine");
-		List<ChoiceValue> answers = new LinkedList<ChoiceValue>();
-		answers.add(new ChoiceValue(a));
-		Finding f = new Finding(q, new MultipleChoiceValue(answers));
+		Finding f = new Finding(q, new MultipleChoiceValue(new ChoiceID(a)));
 
 		// Create RatedSolution
 		Solution d = createdKBM.findSolution("Other problem");

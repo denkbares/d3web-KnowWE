@@ -250,7 +250,7 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 							return;
 						}
 						else {
-							currentanswer = (Choice) idom.addChoiceAnswer(qc, answer);
+							currentanswer = idom.addChoiceAnswer(qc, answer);
 						}
 					}
 					else {

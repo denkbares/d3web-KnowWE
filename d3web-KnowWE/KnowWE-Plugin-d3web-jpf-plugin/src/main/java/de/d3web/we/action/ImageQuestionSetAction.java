@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
+import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.manage.KnowledgeBaseManagement;
@@ -115,11 +116,11 @@ public class ImageQuestionSetAction extends AbstractAction {
 		Blackboard blackboard = session.getBlackboard();
 		Fact mcFact = blackboard.getValueFact(question);
 		Value answer = session.getBlackboard().getValue(question);
-		Collection<ChoiceValue> mcValcol = null;
-		final ArrayList<ChoiceValue> toAddList = new ArrayList<ChoiceValue>();
+		Collection<Choice> mcValcol = null;
+		final ArrayList<Choice> toAddList = new ArrayList<Choice>();
 
-		if (answer != null && !(answer.getValue() instanceof String)) {
-			mcValcol = (Collection<ChoiceValue>) answer.getValue();
+		if (answer != null && answer instanceof MultipleChoiceValue) {
+			mcValcol = ((MultipleChoiceValue) answer).asChoiceList((QuestionMC) question);
 		}
 
 		/*
@@ -128,13 +129,12 @@ public class ImageQuestionSetAction extends AbstractAction {
 		 * new one
 		 */
 		if (valueContained(answer, value)) {
-			mcValcol.removeAll((Collection<ChoiceValue>)
-								value.getValue());
+			mcValcol.removeAll(((MultipleChoiceValue) value).asChoiceList((QuestionMC) question));
 
-			for (ChoiceValue val : mcValcol)
+			for (Choice val : mcValcol)
 				toAddList.add(val);
 
-			Value toAdd = new MultipleChoiceValue(toAddList);
+			Value toAdd = MultipleChoiceValue.fromChoices(toAddList);
 			blackboard.removeValueFact(mcFact);
 			blackboard.addValueFact(new DefaultFact(question,
 								toAdd, PSMethodUserSelected.getInstance(),
@@ -153,12 +153,12 @@ public class ImageQuestionSetAction extends AbstractAction {
 		 */
 		if (!valueContained(answer, value)) {
 			if (mcFact != null) {
-				mcValcol.addAll((Collection<ChoiceValue>) value.getValue());
+				mcValcol.addAll(((MultipleChoiceValue) value).asChoiceList((QuestionMC) question));
 
-				for (ChoiceValue val : mcValcol)
+				for (Choice val : mcValcol)
 					toAddList.add(val);
 
-				value = new MultipleChoiceValue(toAddList);
+				value = MultipleChoiceValue.fromChoices(toAddList);
 			}
 
 			blackboard.addValueFact(new DefaultFact(question,

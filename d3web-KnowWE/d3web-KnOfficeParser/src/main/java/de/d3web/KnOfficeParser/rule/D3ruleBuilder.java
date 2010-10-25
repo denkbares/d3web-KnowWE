@@ -61,6 +61,8 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.Value;
+import de.d3web.core.session.values.ChoiceID;
+import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.report.Message;
 import de.d3web.scoring.Score;
@@ -175,15 +177,15 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		else if (rule.type == ruletype.supress) {
 			Choice[] theAnswers = null;
 			if (rule.value instanceof MultipleChoiceValue) {
-				Collection<?> col = (Collection<?>) rule.value.getValue();
+				Collection<ChoiceID> col = ((MultipleChoiceValue) rule.value).getChoiceIDs();
 				List<Choice> choices = new LinkedList<Choice>();
-				for (Object o : col) {
-					choices.add((Choice) o);
+				for (ChoiceID o : col) {
+					choices.add(o.getChoice((QuestionChoice) rule.question));
 				}
 				theAnswers = choices.toArray(new Choice[choices.size()]);
 			}
-			else {
-				theAnswers = new Choice[] { (Choice) rule.value.getValue() };
+			else if (rule.value instanceof ChoiceValue) {
+				theAnswers = new Choice[] { ((ChoiceValue) rule.value).getChoice((QuestionChoice) rule.question) };
 			}
 			newRule = RuleFactory.createSuppressAnswerRule(newRuleID,
 					(QuestionChoice) rule.question, theAnswers, rule.ifcond,

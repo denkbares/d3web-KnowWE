@@ -32,7 +32,7 @@ import de.d3web.core.session.Value;
 import de.d3web.core.session.blackboard.Blackboard;
 import de.d3web.core.session.blackboard.DefaultFact;
 import de.d3web.core.session.blackboard.Fact;
-import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.core.session.values.ChoiceID;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.Unknown;
@@ -99,13 +99,14 @@ public class SetFindingAction extends DeprecatedAbstractKnowWEAction {
 					if (question instanceof QuestionMC && !value.equals(Unknown.getInstance())) {
 						Fact mcFact = blackboard.getValueFact(question);
 						if (mcFact != null && !mcFact.getValue().equals(Unknown.getInstance())) {
-							MultipleChoiceValue mcv = ((MultipleChoiceValue) mcFact.getValue());
-							Collection<ChoiceValue> thisMcv = (Collection<ChoiceValue>) ((MultipleChoiceValue) value).getValue();
-							for (ChoiceValue cv : (Collection<ChoiceValue>) mcv.getValue()) {
-								if (!thisMcv.contains(cv)) {
-									thisMcv.add(cv);
+							MultipleChoiceValue oldMCValue = ((MultipleChoiceValue) mcFact.getValue());
+							Collection<ChoiceID> thisMCValue = ((MultipleChoiceValue) value).getChoiceIDs();
+							for (ChoiceID cv : oldMCValue.getChoiceIDs()) {
+								if (!thisMCValue.contains(cv)) {
+									thisMCValue.add(cv);
 								}
 							}
+							value = new MultipleChoiceValue(thisMCValue);
 						}
 					}
 

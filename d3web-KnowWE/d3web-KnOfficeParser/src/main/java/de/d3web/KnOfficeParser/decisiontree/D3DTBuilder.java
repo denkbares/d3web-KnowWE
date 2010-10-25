@@ -415,8 +415,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 								new Object[] { num }, cond);
 					}
 				}
-				else {
-					Choice a = (Choice) idom.findValue(q, value).getValue();
+				else if (q instanceof QuestionChoice) {
+					Choice a = ((ChoiceValue) idom.findValue(q, value)).getChoice((QuestionChoice) q);
 					if (set) {
 						RuleFactory.createSetValueRule(newRuleID, q,
 								new Object[] { a }, cond);

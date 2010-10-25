@@ -27,6 +27,7 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.ChoiceValue;
@@ -94,7 +95,7 @@ public class QuestionnaireValuesViewAction extends AbstractAction {
 		}
 		else if (v instanceof MultipleChoiceValue) {
 			result.append(": ");
-			List<Choice> choices = ((MultipleChoiceValue) v).asChoiceList();
+			List<Choice> choices = ((MultipleChoiceValue) v).asChoiceList((QuestionChoice) question);
 			if (choices.size() > 0) {
 				for (Choice choice : choices) {
 					result.append(choice);
