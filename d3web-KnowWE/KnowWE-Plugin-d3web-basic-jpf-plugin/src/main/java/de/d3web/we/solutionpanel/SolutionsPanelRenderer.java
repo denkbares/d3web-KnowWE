@@ -165,9 +165,9 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 			content.append(renderImage("KnowWEExtension/images/fsp_excluded.gif", "Excluded"));
 		}
 		// render span for better testability
-		content.append(mask("<span class=\"SOLUTION-" + stateName + "\">"));
+		// content.append(mask("<span class=\"SOLUTION-" + stateName + "\">"));
 		content.append(solution.getName());
-		content.append(mask("</span>"));
+		// content.append(mask("</span>"));
 
 		content.append(br() + "\n");
 	}
