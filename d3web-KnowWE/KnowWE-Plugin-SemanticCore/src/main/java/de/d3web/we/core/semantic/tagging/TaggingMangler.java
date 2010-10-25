@@ -41,7 +41,7 @@ import de.d3web.we.search.KnowWESearchProvider;
 import de.d3web.we.search.SearchTerm;
 
 /**
- * Centralised management of tags. Takes care of adding/removing tags. And
+ * Centralized management of tags. Takes care of adding/removing tags. And
  * answers tag-queries.
  * 
  * @author Fabian Haupt
@@ -279,18 +279,6 @@ public class TaggingMangler implements KnowWESearchProvider {
 
 	}
 
-	// /**
-	// * clears all tags from a topic
-	// *
-	// * @param topic
-	// */
-	// public void clearAllTags(String topic) {
-	// // i know .. slow and such..find some time to do this better
-	// for (String cur : getPageTags(topic))
-	// removeTag(topic, cur);
-	//
-	// }
-
 	/**
 	 * sets tags to tag and replaces old ones
 	 * 
@@ -406,28 +394,31 @@ public class TaggingMangler implements KnowWESearchProvider {
 			return renderResults(pages);
 		}
 		else {
-			return ("no query");
+			return ("No query.");
 		}
 	}
 
+	@Override
 	public String renderResults(Collection<GenericSearchResult> pages) {
+		if (pages.size() == 0) {
+			return "No pages.";
+		}
+
 		StringBuffer html = new StringBuffer();
+		html.append("<ul>\n");
 		for (GenericSearchResult cur : pages) {
 			String link = "<a target='_blank' href=\"Wiki.jsp?page="
 					+ cur.getPagename() + "\">" + cur.getPagename() + "</a>";
 
 			// String score = cur.getScore() + "";
 			html.append("<div class='left'>");
-			html.append("<b>" + link + "</b>");
+			// html.append("<b>" + link + "</b>");
+			html.append("<li>" + link + "</li>");
 			// " (Score:" + score + ")");
-			html.append("</div><br>");
+			html.append("</div><br>\n");
 
 		}
-
-		if (pages.size() == 0) {
-			return null;
-		}
-
+		html.append("</ul>\n");
 		return html.toString();
 	}
 

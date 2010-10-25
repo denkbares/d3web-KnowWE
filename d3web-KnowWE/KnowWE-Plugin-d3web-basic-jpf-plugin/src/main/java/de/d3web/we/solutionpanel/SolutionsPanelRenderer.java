@@ -164,7 +164,6 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 		else if (solutionRating.hasState(State.EXCLUDED)) {
 			content.append(renderImage("KnowWEExtension/images/fsp_excluded.gif", "Excluded"));
 		}
-		// render span for better testability
 		// content.append(mask("<span class=\"SOLUTION-" + stateName + "\">"));
 		content.append(solution.getName());
 		// content.append(mask("</span>"));

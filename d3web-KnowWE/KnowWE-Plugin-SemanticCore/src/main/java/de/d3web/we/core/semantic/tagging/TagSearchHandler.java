@@ -44,12 +44,16 @@ public class TagSearchHandler extends AbstractHTMLTagHandler {
 				+ "?page=TagSearch\" "
 				+ "class=\"wikiform\" "
 				+ "id=\"searchform2\" name=\"searchform2\" accept-charset=\"UTF-8\">"
-				+ "<p>"
+					+ "<p>"
+				+ rb.getString("KnowWE.TagSearch.find")
+				+ ": "
 				+ "<input type=\"hidden\" name=\"page\" id=\"page\" value=\"TagSearch\" />"
 				+
 						"<input type=\"text\" name=\"query\" id=\"tagquery\" value=\"\" size=\"32\" />"
-				+ "<input type=\"submit\" name=\"ok\" id=\"ok\" value=\"Find!\" />"
-				+ "<input type=\"submit\" name=\"go\" id=\"go\" value=\"Go!\" />"
+				// +
+				// "<input type=\"submit\" name=\"ok\" id=\"ok\" value=\"Find!\" />"
+				// +
+				// "<input type=\"submit\" name=\"go\" id=\"go\" value=\"Go!\" />"
 				+ "<input type=\"hidden\" name=\"start\" id=\"start\" value=\"0\" />"
 				+ "<input type=\"hidden\" name=\"maxitems\" id=\"maxitems\" value=\"20\" />"
 				+
@@ -80,15 +84,15 @@ public class TagSearchHandler extends AbstractHTMLTagHandler {
 		StringBuffer html = new StringBuffer();
 		html.append("<script type=\"text/javascript\" src=\"" + baseurl
 				+ "KnowWEExtension/scripts/tagsearch.js\"></script>");
-		html.append("<div class=\"panel\"><h3>"
+		html.append("<h3>"
 				+ rb.getString("KnowWE.TagSearch.headline") + ": "
 				+ (querystring == null ? "none" : querystring) + "</h3>");
-		html.append(getForm(baseurl));
 		html.append("<div id=\"searchResult2\" >");
 		html.append(TaggingMangler.getInstance().getResultPanel(querystring));
 
 		html.append("</div>");
-		html.append("</div>");
+		// html.append("</div>");
+		html.append(getForm(baseurl));
 		return html.toString();
 
 	}
