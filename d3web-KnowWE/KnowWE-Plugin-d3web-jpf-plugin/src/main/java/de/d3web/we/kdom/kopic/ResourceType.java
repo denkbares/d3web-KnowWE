@@ -36,9 +36,9 @@ import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
  * folder.
  * <p>
  * This markup allows to specify the content of the knowledge base resource
- * either as the content block of the markup (useful for texual content) as well
- * as to specify an attachment to take the content from. To user this latter
- * functionality use the "src" annotation to specify the attachments as <br>
+ * either as the content block of the markup (useful for textual content) as
+ * well as to specify an attachment to take the content from. To user this
+ * latter functionality use the "src" annotation to specify the attachments as <br>
  * <code>@src = &lt;article&gt;/&lt;filename&gt;</code>. <br>
  * or <br>
  * <code>@src = &lt;filename&gt;</code> <br>
