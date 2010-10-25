@@ -252,7 +252,7 @@ public class KBCreationTestUtil {
 		// --- Fuel [oc]
 		// ---- diesel
 		// ---- unleaded gasoline
-		createdKBM.createQuestionOC("Q0b", "Fuel", q0, new String[] {
+		createdKBM.createQuestionOC("Q2", "Fuel", q0, new String[] {
 				"diesel", "unleaded gasoline" });
 
 		// Add question:

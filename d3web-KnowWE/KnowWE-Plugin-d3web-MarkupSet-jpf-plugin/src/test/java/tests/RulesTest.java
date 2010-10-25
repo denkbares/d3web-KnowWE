@@ -63,16 +63,9 @@ public class RulesTest extends TestCase {
 	}
 
 	/**
-	 * TODO: Something goes completely wrong with the creation and parsing of
-	 * the rules. Johannes
-	 * 
-	 * @created 13.10.2010
+	 * TODO: Expand this to check if brackets are parsed right.
 	 */
 	public void testHeuristicRules() {
-	}
-
-	// commented out...
-	void foobar() {
 		// load KnowledgeBases
 		KnowWEArticle art = MyTestArticleManager
 				.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
@@ -163,10 +156,10 @@ public class RulesTest extends TestCase {
 	 * 
 	 * @created 13.10.2010
 	 */
-	public void testNextQASetRules() {
-	}
+	// public void testNextQASetRules() {
+	// }
 
-	void foobar2() {
+	void foobar1() {
 		// load KnowledgeBases
 		KnowWEArticle art = MyTestArticleManager
 				.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
@@ -243,10 +236,10 @@ public class RulesTest extends TestCase {
 	 * 
 	 * @created 13.10.2010
 	 */
-	public void testSetValueRules() {
-	}
+	// public void testSetValueRules() {
+	// }
 
-	void foobar3() {
+	void foobar2() {
 		// load KnowledgeBases
 		KnowWEArticle art = MyTestArticleManager
 				.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
@@ -278,9 +271,9 @@ public class RulesTest extends TestCase {
 						createdRule.getCondition().getClass(), loadedRule.getCondition().getClass());
 
 				// Compare Conditions
-				// assertEquals("Rule " + createdRule.getId() +
-				// " has wrong condition.",
-				// createdRule.getCondition(), loadedRule.getCondition());
+				assertEquals("Rule " + createdRule.getId() +
+						" has wrong condition.",
+						createdRule.getCondition(), loadedRule.getCondition());
 
 				// Compare ActionTypes
 				assertEquals("Rule " + createdRule.getId() + " has wrong actiontype.",

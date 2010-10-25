@@ -91,7 +91,7 @@ IF (Exhaust fumes = black) //EXCEPT Fuel = diesel
 THEN Mechanical problem = P7
 
 // Rule R14
-IF NOT Fuel = unleaded gasoline OR NOT Exhaust fumes = black
+IF (NOT Exhaust fumes = black) OR (NOT Fuel = unleaded gasoline)
 THEN Mechanical problem = N7
 
 // Rule R15
