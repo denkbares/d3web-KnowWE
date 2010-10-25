@@ -95,6 +95,10 @@ IF (NOT Exhaust fumes = black) OR (NOT Fuel = unleaded gasoline)
 THEN Mechanical problem = N7
 
 // Rule R15
+//IF NOT Exhaust fumes = black OR NOT Fuel = unleaded gasoline
+//THEN Mechanical problem = N7
+
+// Rule R15
 IF Driving = unsteady idle speed
 THEN Technical Examinations
 

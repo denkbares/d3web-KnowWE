@@ -553,7 +553,7 @@ public class KBCreationTestUtil {
 		RuleFactory.createHeuristicPSRule(ruleID, diag, Score.P7, conditionIf, conditionExc);
 
 		// Create rule R14:
-		// IF NOT Fuel = unleaded gasoline OR NOT Exhaust fumes = black
+		// IF (NOT Fuel = unleaded gasoline) OR (NOT Exhaust fumes = black)
 		// THEN Mechanical problem = N7
 		QuestionChoice questionIf2 = (QuestionChoice) createdKBM.findQuestion("Fuel");
 		Choice answerIf2 = createdKBM.findChoice(questionIf2, "unleaded gasoline");
@@ -575,6 +575,31 @@ public class KBCreationTestUtil {
 		ruleID = createdKBM.createRuleID();
 		RuleFactory.createHeuristicPSRule(ruleID, diag, Score.N7, condOr);
 
+		// Create rule R15:
+		// IF NOT Exhaust fumes = black OR NOT Fuel = unleaded gasoline
+		// THEN Mechanical problem = N7
+		// QuestionChoice questionIf4 = (QuestionChoice)
+		// createdKBM.findQuestion("Fuel");
+		// Choice answerIf4 = createdKBM.findChoice(questionIf4,
+		// "unleaded gasoline");
+		// CondEqual conditionIf4 = new CondEqual(questionIf4, new ChoiceValue(
+		// answerIf4));
+		// CondNot condNot4 = new CondNot(conditionIf4);
+		//
+		// QuestionChoice questionIf5 = (QuestionChoice)
+		// createdKBM.findQuestion("Exhaust fumes");
+		// Choice answerIf5 = createdKBM.findChoice(questionIf5, "black");
+		// CondEqual conditionIf5 = new CondEqual(questionIf5, new ChoiceValue(
+		// answerIf5));
+		// CondNot condNot5 = new CondNot(conditionIf5);
+		//
+		// List<Condition> conditions2 = new LinkedList<Condition>();
+		// conditions2.add(condNot5);
+		// conditions2.add(condNot4);
+		// CondOr condOr1 = new CondOr(conditions);
+		//
+		// ruleID = createdKBM.createRuleID();
+		// RuleFactory.createHeuristicPSRule(ruleID, diag, Score.N7, condOr1);
 	}
 
 	/**
