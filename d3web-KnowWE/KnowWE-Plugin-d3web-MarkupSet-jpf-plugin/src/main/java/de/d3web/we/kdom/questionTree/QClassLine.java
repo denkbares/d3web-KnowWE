@@ -21,7 +21,6 @@ package de.d3web.we.kdom.questionTree;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
@@ -33,6 +32,7 @@ import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.report.message.RelationCreatedMessage;
@@ -107,14 +107,16 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 			Section<? extends DashTreeElementContent> fatherContent = DashTreeUtils.getFatherDashTreeElementContent(
 					s);
 			Section<QuestionnaireDefinition> localQuestionniareDef = s.findSuccessor(QuestionnaireDefinition.class);
-			QContainer localQuestionnaire = localQuestionniareDef.get().getTermObject(article,
+			QContainer localQuestionnaire = localQuestionniareDef.get().getTermObject(
+					article,
 					localQuestionniareDef);
 
 			if (fatherContent != null && localQuestionnaire != null) {
 
 				Section<QuestionnaireDefinition> questionniareDef = fatherContent.findSuccessor(QuestionnaireDefinition.class);
 				if (questionniareDef != null) {
-					QContainer superQuasetionniare = questionniareDef.get().getTermObject(article,
+					QContainer superQuasetionniare = questionniareDef.get().getTermObject(
+							article,
 							questionniareDef);
 					// here the actual taxonomic relation is established
 					superQuasetionniare.addChild(localQuestionnaire);
@@ -122,7 +124,8 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 
 					return Arrays.asList((KDOMReportMessage) new RelationCreatedMessage(
 							s.getClass().getSimpleName()
-									+ " " + localQuestionnaire.getName() + "sub-questionnaire of "
+									+ " " + localQuestionnaire.getName()
+									+ "sub-questionnaire of "
 									+ superQuasetionniare.getName()));
 				}
 			}
@@ -160,14 +163,11 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 
 	static class InitNumber extends DefaultAbstractKnowWEObjectType {
 
-		// public static final char BOUNDS_OPEN = '{';
-		// public static final char BOUNDS_CLOSE = '}';
+
 
 		public InitNumber() {
 
 			this.setSectionFinder(new RegexSectionFinder("#\\d*"));
-			// this.setSectionFinder(new EmbracedContentFinder(BOUNDS_OPEN,
-			// BOUNDS_CLOSE));
 
 			this.addSubtreeHandler(new D3webSubtreeHandler<InitNumber>() {
 
@@ -181,7 +181,8 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 				@Override
 				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<InitNumber> s) {
 
-					Double number = s.get().getNumber(s);
+					Integer number = new Integer(((s.get().getNumber(
+							s)).intValue()));
 					if (number == null) {
 						// if the numbers cannot be found throw error
 						return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
@@ -196,21 +197,42 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 
 						QContainer questionnaire = qDef.get().getTermObject(article, qDef);
 
-						questionnaire.getInfoStore().addValue(
-									BasicProperties.INIT,
+						boolean alreadyInitDefined = getKBM(article).getKnowledgeBase().removeInitQuestion(
+								questionnaire);
+						// check whether there is already some init-number
+						// registered for this QASet
+						if (alreadyInitDefined) {
+							// do nothing and throw error iff
+							return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
+									"Init priority for object already defined"));
+						}
+						else {
+							// else register init value
+							getKBM(article).getKnowledgeBase().addInitQuestion(
+									questionnaire,
 									number);
 
-						// TODO solve generics issue
-						List initQuestions = getKBM(article).getKnowledgeBase().getInitQuestions();
-						initQuestions.add(questionnaire);
-
-						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
 									"Init property set"));
+						}
 
 					}
 					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
 							"KnowWE.questiontree.numerical",
 							this.getClass()));
+				}
+
+				@Override
+				public void destroy(KnowWEArticle article, Section<InitNumber> s) {
+					Section<QuestionnaireDefinition> qDef = s.getFather().findSuccessor(
+							QuestionnaireDefinition.class);
+
+					if (qDef != null) {
+						// remove init number value from registration in KB
+						QContainer questionnaire = qDef.get().getTermObject(article, qDef);
+						getKBM(article).getKnowledgeBase().removeInitQuestion(
+								questionnaire);
+					}
 				}
 			});
 
