@@ -44,6 +44,7 @@ import de.d3web.we.kdom.condition.Finding;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.kdom.condition.NumericalFinding;
 import de.d3web.we.kdom.condition.NumericalIntervallFinding;
+import de.d3web.we.kdom.condition.SolutionStateCond;
 import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.renderer.ReRenderSectionMarkerRenderer;
@@ -102,6 +103,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 			Logger.getLogger("KnowWE").log(Level.INFO,
 					"cc.knowwe.tdb.EvalConditionType is not attached");
 		}
+		termConds.add(new SolutionStateCond());
 		termConds.add(new Finding());
 		termConds.add(new CondKnown());
 		termConds.add(new NumericalFinding());
@@ -231,6 +233,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		KnowWEDomRenderer exceptionRenderer = FontColorBackgroundRenderer.getRenderer(
 				highlightMarker, FontColorRenderer.COLOR5, null);
 
+
 		/**
 		 * Renders the Rule with highlighting.
 		 * 
@@ -253,7 +256,8 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 				try {
 					if (r.hasFired(session)) this.greenRenderer.render(article, sec, user,
 							newContent);
-					else this.exceptionRenderer.render(article, sec, user, newContent);
+					else DelegateRenderer.getInstance().render(article, sec, user,
+							newContent);
 					// this.redRenderer.render(article, sec, user, string);
 				}
 				catch (Exception e) {

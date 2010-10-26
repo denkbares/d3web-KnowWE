@@ -30,6 +30,7 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -142,5 +143,12 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 		return null;
 	}
 
-
+	/**
+	 * Helper class allowing to search the KDOM for sections of this type
+	 * 
+	 * @author Jochen
+	 * @created 26.10.2010
+	 */
+	class Comparator extends DefaultAbstractKnowWEObjectType {
+	}
 }

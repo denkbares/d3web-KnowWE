@@ -27,7 +27,6 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.session.values.ChoiceValue;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -37,6 +36,7 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.kdom.util.SplitUtility;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
@@ -53,13 +53,12 @@ import de.d3web.we.object.QuestionReference;
  */
 public class Finding extends D3webCondition<Finding> {
 
-	@Override
-	protected void init() {
+	public Finding() {
 
 		this.sectionFinder = new FindingFinder();
 
 		// comparator
-		Comparator comparator = new Comparator();
+		AnonymousType comparator = new AnonymousType("equals");
 		comparator.setSectionFinder(new RegexSectionFinder("="));
 		this.childrenTypes.add(comparator);
 
@@ -137,6 +136,3 @@ class FindingFinder implements ISectionFinder {
 
 }
 
-class Comparator extends DefaultAbstractKnowWEObjectType {
-
-}
