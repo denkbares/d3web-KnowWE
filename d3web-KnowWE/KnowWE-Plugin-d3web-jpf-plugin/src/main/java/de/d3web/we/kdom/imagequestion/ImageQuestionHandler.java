@@ -36,6 +36,7 @@ import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
+import de.d3web.core.session.values.ChoiceID;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.UndefinedValue;
@@ -317,11 +318,11 @@ public class ImageQuestionHandler extends AbstractHTMLTagHandler {
 	 */
 	private boolean currentAnswerIsSet(String answerID, Question q) {
 
-		Value value = null;
+		ChoiceID value = null;
 		if (q instanceof QuestionChoice) {
 			for (Choice choice : ((QuestionChoice) q).getAllAlternatives()) {
 				if (choice.getId().equals(answerID)) {
-					value = new ChoiceValue(choice);
+					value = new ChoiceID(choice);
 					break;
 				}
 			}
@@ -333,8 +334,9 @@ public class ImageQuestionHandler extends AbstractHTMLTagHandler {
 		boolean contains = false;
 		if (!(answer instanceof UndefinedValue)) {
 			@SuppressWarnings("unchecked")
-			Set<Value> values = (Set<Value>) answer.getValue();
-			for (Value val : values) {
+			// TODO This works?: Johannes
+			Set<ChoiceID> values = (Set<ChoiceID>) answer.getValue();
+			for (ChoiceID val : values) {
 				if (val.equals(value)) {
 					contains = true;
 				}
