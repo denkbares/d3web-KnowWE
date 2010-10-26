@@ -154,6 +154,12 @@ public class SemanticCore implements ISemanticCore {
 						+ System.getProperty("line.separator");
 			}
 			output += "[{KnowWEPlugin OwlImport}]";
+			// add global compile context for OWL statements
+			output += System.getProperty("line.separator")
+					+ System.getProperty("line.separator")
+					+ "%%Compile owldefault\n"
+					+ System.getProperty("line.separator");
+
 			wiki.createWikiPage("SemanticSettings", output, "semanticcore");
 		}
 		else {
