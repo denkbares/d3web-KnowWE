@@ -111,6 +111,8 @@ class FindingFinder implements ISectionFinder {
 			// if the value is a number this is not taken as a Finding (but left
 			// for NumericalFinding)
 			List<String> list = SplitUtility.splitUnquoted(text, "=");
+			// Hotfix for AOB when there is nothing behind the "="
+			if (list.size() < 2) return null;
 			String answer = list.get(1);
 			boolean isNumber = false;
 			try {
