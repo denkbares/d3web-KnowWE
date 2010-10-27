@@ -94,17 +94,32 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 	}
 
 	public static String renderMenuAnimation(String id) {
-		return "\n<script>\n" +
-				"var makeMenuFx = function() {" +
-				"var a=$('header_" + id + "'),c=$('menu_" + id + "');" +
+		return "<script>\n" +
+				"var makeMenuFx = function() {\n" +
+				"var a=$('header_" + id + "'),c=$('menu_" + id + "');\n" +
 				"if(!a||!c){}\n" +
-				"var b=c.effect(\"opacity\",{wait:false}).set(0);" +
+				"var b=c.effect(\"opacity\",{wait:false}).set(0);\n" +
 				"a.adopt(c).set({href:\"#\",events:{" +
-				"mouseout:function(){b.start(0)}," +
-				"click:function(){b.start(0.9)}," +
-				"mouseover:function(){b.start(0.9)}}});" +
+				"mouseout:function(){b.start(0);}," +
+				"click:function(){b.start(0.9);}," +
+				"mouseover:function(){b.start(0.9);}}});" +
 				"};" +
 				"makeMenuFx();" +
+				"</script>\n";
+	}
+
+	public static String renderHeaderAnimation(String id) {
+		return "<script>\n" +
+				"var makeHeaderFx = function() {\n" +
+				"var a=$('header_" + id + "');\n" +
+				"var b=a.effect(\"opacity\",{wait:false}).set(0.2);\n" +
+				"var d=a.effect(\"max-width\",{wait:false}).set(35);\n" +
+				"a.set({href:\"#\",events:{" +
+				"mouseout:function(){b.start(0.2);d.start(35);}," +
+				"click:function(){b.start(1);d.start(250);}," +
+				"mouseover:function(){b.start(1);d.start(250);}}});" +
+				"};" +
+				"makeHeaderFx();" +
 				"</script>\n";
 	}
 
@@ -122,7 +137,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 
 	public static void renderDefaultMarkupStyled(String header, String content, String sectionID, Tool[] tools, StringBuilder string) {
 
-		string.append(KnowWEUtils.maskHTML("<div id=\"" + sectionID + "\" class='defaultMarkup'>\n"));
+		string.append(KnowWEUtils.maskHTML("<div id=\"" + sectionID + "\" class='defaultMarkupFrame'>\n"));
 
 		boolean hasTools = tools != null && tools.length > 0;
 		boolean hasMenu = hasTools;
@@ -134,33 +149,40 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		}
 
 		string.append(KnowWEUtils.maskHTML(
-				"<div id='header_" + sectionID + "' " +
-						"class='markupHeader" + (hasMenu ? " markupMenuIndicator" : "") + "'>"));
+				"<div id='header_" + sectionID + "' " + "class='markupHeaderFrame'>"));
+		string.append(KnowWEUtils.maskHTML("<div class='markupHeader'>"));
 		string.append(header);
+		if (hasMenu) {
+			string.append(KnowWEUtils.maskHTML("<span class='markupMenuIndicator' />"));
+		}
 		string.append(KnowWEUtils.maskHTML(toolbarHtml));
-		string.append("\n");
+		// string.append("\n");
+		string.append(KnowWEUtils.maskHTML("</div>")); // class=markupHeader
 
 		if (hasMenu) {
 			String menuHtml = renderMenu(tools, sectionID);
 			string.append(KnowWEUtils.maskHTML(menuHtml));
 		}
 
-		string.append(KnowWEUtils.maskHTML("</div>"));
-
-		if (hasMenu) {
-			string.append(KnowWEUtils.maskHTML(renderMenuAnimation(sectionID)));
-		}
+		string.append(KnowWEUtils.maskHTML("</div>")); // class=markupHeaderFrame
 
 		// render pre-formatted box
-		string.append(KnowWEUtils.maskHTML("<div id=\"content_" + sectionID
-				+ "\" class='markupText'>"));
+		string.append(KnowWEUtils.maskHTML("<div id=\"box_" + sectionID + "\" class='defaultMarkup'>"));
+		string.append(KnowWEUtils.maskHTML("<div id=\"content_" + sectionID + "\" class='markupText'>"));
 
 		// render content
 		string.append(content);
 
 		// and close the box(es)
-		string.append(KnowWEUtils.maskHTML("</div>\n")); // class=markupText
-		string.append(KnowWEUtils.maskHTML("</div>\n")); // class=defaultMarkup
+		string.append(KnowWEUtils.maskHTML("</div>")); // class=markupText
+		string.append(KnowWEUtils.maskHTML("</div>")); // class=defaultMarkup
+		string.append(KnowWEUtils.maskHTML("</div>"));
+
+		if (hasMenu) {
+			string.append(KnowWEUtils.maskHTML(renderMenuAnimation(sectionID)));
+		}
+		string.append(KnowWEUtils.maskHTML(renderHeaderAnimation(sectionID)));
+
 	}
 
 	@Override
