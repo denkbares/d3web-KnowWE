@@ -34,7 +34,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.xcl.XCLRelation;
 import de.d3web.we.kdom.xcl.XCList;
-import de.d3web.we.testsuite.TestSuiteType;
+import de.d3web.we.testsuite.kdom.TestSuiteType;
 import de.d3web.we.utils.KnowWEUtils;
 
 public abstract class GroovyCITestScript extends Script implements CITest {

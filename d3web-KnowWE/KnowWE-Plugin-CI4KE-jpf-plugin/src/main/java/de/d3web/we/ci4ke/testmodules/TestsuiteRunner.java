@@ -27,7 +27,7 @@ import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.testsuite.TestSuiteType;
+import de.d3web.we.testsuite.kdom.TestSuiteType;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class TestsuiteRunner extends AbstractCITest {

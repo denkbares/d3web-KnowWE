@@ -26,8 +26,8 @@ import java.util.List;
 
 import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.abstraction.formula.Operator;
-import de.d3web.abstraction.formula.Operator.Operation;
 import de.d3web.abstraction.formula.QNumWrapper;
+import de.d3web.abstraction.formula.Operator.Operation;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
@@ -46,8 +46,8 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
@@ -57,15 +57,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.core.session.values.ChoiceID;
 import de.d3web.core.session.values.ChoiceValue;
-import de.d3web.core.session.values.MultipleChoiceValue;
-import de.d3web.empiricaltesting.Finding;
-import de.d3web.empiricaltesting.RatedSolution;
-import de.d3web.empiricaltesting.RatedTestCase;
-import de.d3web.empiricaltesting.SequentialTestCase;
-import de.d3web.empiricaltesting.StateRating;
-import de.d3web.empiricaltesting.TestSuite;
 import de.d3web.scoring.Score;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelationType;
@@ -92,7 +84,6 @@ public class KBCreationTestUtil {
 
 	private static KBCreationTestUtil instance = new KBCreationTestUtil();
 	private KnowledgeBase createdKB;
-	private TestSuite createdTS;
 	private KnowledgeBaseManagement createdKBM;
 
 	/**
@@ -123,15 +114,6 @@ public class KBCreationTestUtil {
 	}
 
 	/**
-	 * Returns the TestSuite which was created manually.
-	 * 
-	 * @return TestSuite
-	 */
-	public TestSuite getCreatedTS() {
-		return createdTS;
-	}
-
-	/**
 	 * Creates the Knowledge against which the loaded KnowledgeBase will be
 	 * tested.
 	 */
@@ -145,7 +127,6 @@ public class KBCreationTestUtil {
 		createAttributeTable();
 		createRules();
 		createXCLModels();
-		createTestSuite();
 
 	}
 
@@ -659,45 +640,6 @@ public class KBCreationTestUtil {
 		Choice a5 = createdKBM.findChoice((QuestionChoice) q5, "black");
 		CondEqual c5 = new CondEqual(q5, new ChoiceValue(a5));
 		XCLModel.insertXCLRelation(createdKB, c5, d, XCLRelationType.explains);
-
-	}
-
-	/**
-	 * Creats a TestSuite similar to the one which is created in the
-	 * KnowWEArticle
-	 */
-	private void createTestSuite() {
-
-		// Create Finding
-		Question q = createdKBM.findQuestion("Driving");
-		Choice a = createdKBM.findChoice((QuestionChoice) q, "everything is fine");
-		Finding f = new Finding(q, new MultipleChoiceValue(new ChoiceID(a)));
-
-		// Create RatedSolution
-		Solution d = createdKBM.findSolution("Other problem");
-		StateRating sr = new StateRating(new Rating(State.ESTABLISHED));
-		RatedSolution rs = new RatedSolution(d, sr);
-
-		// Add Finding and RatedSolution to RatedTestCase
-		RatedTestCase rtc = new RatedTestCase();
-		rtc.add(f);
-		rtc.addExpected(rs);
-		rtc.setName("STC1_RTC1");
-
-		// Add RatedTestCase to SequentialTestCase
-		SequentialTestCase stc = new SequentialTestCase();
-		stc.add(rtc);
-		stc.setName("STC1");
-
-		// Add SequentialTestCase to the repository
-		List<SequentialTestCase> repository = new ArrayList<SequentialTestCase>();
-		repository.add(stc);
-
-		// Create testSuite
-		TestSuite t = new TestSuite();
-		t.setKb(createdKB);
-		t.setRepository(repository);
-		createdTS = t;
 
 	}
 
