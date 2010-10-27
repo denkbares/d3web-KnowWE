@@ -26,7 +26,6 @@ import de.d3web.we.kdom.dashTree.solutions.SolutionsSection;
 import de.d3web.we.kdom.decisionTree.QuestionsSection;
 import de.d3web.we.kdom.rules.RulesSection;
 import de.d3web.we.kdom.table.attributes.AttributeTableSection;
-import de.d3web.we.kdom.table.xcl.CoveringTableSection;
 import de.d3web.we.kdom.xcl.CoveringListSection;
 import de.d3web.we.kdom.xml.XMLContent;
 
@@ -38,7 +37,6 @@ public class KopicContent extends XMLContent {
 		childrenTypes.add(new QuestionnairesSection());
 		childrenTypes.add(new QuestionsSection());
 		childrenTypes.add(new AttributeTableSection());
-		childrenTypes.add(new CoveringTableSection());
 		childrenTypes.add(new CoveringListSection());
 		childrenTypes.add(new RulesSection());
 		childrenTypes.add(new BulletScoring());
