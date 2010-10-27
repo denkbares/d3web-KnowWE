@@ -46,11 +46,10 @@ public class ObjectTypeTreeHandler extends AbstractTagHandler {
 	public String render(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext, Map<String, String> parameters) {
 		KnowWEObjectType t = KnowWEEnvironment.getInstance().getRootType();
 
-		return "%%collapsebox-closed\n!ObjectType Tree\n" + visitNode(t, 1, new HashSet<String>())
-				+ "\n/%";
+		return visitNode(t, 1, new HashSet<String>(), false);
 	}
 
-	private String visitNode(KnowWEObjectType t, int level, HashSet<String> visitedNodes) {
+	private String visitNode(KnowWEObjectType t, int level, HashSet<String> visitedNodes, boolean doNotRecurse) {
 		// The anti-cycle strategy is rather simple:
 		// Maintain a list of already visited types with the associated classes
 		visitedNodes.add(t.getName() + t.getClass().getCanonicalName());
@@ -61,7 +60,7 @@ public class ObjectTypeTreeHandler extends AbstractTagHandler {
 		sb.append("%%(text-decoration: underline) ");
 
 		// Create an anchor to be able to jump to the first occurrence
-		sb.append(KnowWEUtils.maskHTML("<span id=\"" + t.getName() + "\">"));
+		sb.append(KnowWEUtils.maskHTML("<span id=\"objecttype-" + t.getName() + "\">"));
 		sb.append(t.getName());
 		sb.append(KnowWEUtils.maskHTML("</span>"));
 
@@ -73,17 +72,24 @@ public class ObjectTypeTreeHandler extends AbstractTagHandler {
 				+ t.getRenderer().getClass().getSimpleName() + "__%% \n");
 
 		for (KnowWEObjectType child_type : t.getAllowedChildrenTypes()) {
-			if (visitedNodes.contains(child_type.getName()
-					+ child_type.getClass().getCanonicalName())) {
+			if (doNotRecurse) {
 				sb.append(asterisks(level + 1));
-				sb.append(KnowWEUtils.maskHTML("<a href=\"#"
+				sb.append(KnowWEUtils.maskHTML("<a href=\"#objecttype-"
 						+ child_type.getName()
 						+ "\" style=\"color: grey !important; text-decoration: underline\" title=\"Go to first occurrence\">"));
 				sb.append(child_type.getName());
 				sb.append(KnowWEUtils.maskHTML("</a>\n"));
+
 			}
 			else {
-				sb.append(visitNode(child_type, level + 1, visitedNodes));
+				if (visitedNodes.contains(child_type.getName()
+						+ child_type.getClass().getCanonicalName())) {
+
+					sb.append(visitNode(child_type, level + 1, visitedNodes, true));
+				}
+				else {
+					sb.append(visitNode(child_type, level + 1, visitedNodes, false));
+				}
 			}
 		}
 
