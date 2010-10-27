@@ -163,7 +163,13 @@
 					<artifactId>KnowWE-Plugin-Flowchart-jpf-plugin</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
-				</dependency>		
+				</dependency>	
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-TestSuite-jpf-plugin</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>	
 			</dependencies>
 		</profile>
 
@@ -353,6 +359,25 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-QuickInterview-jpf-plugin</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		
+		<!-- TestSuite plugin -->
+		<profile>
+			<id>testsuite</id>
+			<activation>
+				<property>
+					<name>testsuite-plugin</name>
+				</property>
+			</activation>
+
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-TestSuite-jpf-plugin</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
