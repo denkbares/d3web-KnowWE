@@ -22,14 +22,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.empiricaltesting.TestSuite;
 import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.testsuite.TestSuiteType;
-import de.d3web.we.utils.KnowWEUtils;
 import dummies.KnowWETestWikiConnector;
 
 /**
@@ -78,22 +74,6 @@ public class MyTestArticleManager {
 
 	}
 
-
-	/**
-	 * 
-	 * @created 01.09.2010
-	 * @param article
-	 * @return
-	 */
-	public static TestSuite findTestSuite(KnowWEArticle article) {
-		// Load TestSuite
-		// TODO: HOTFIX!! I don't think this is the proper way to get the
-		// TestsuiteSection...
-		Section<TestSuiteType> s = article.getSection().findSuccessor(TestSuiteType.class);
-		return (TestSuite) KnowWEUtils.getStoredObject("default_web",
-				"KBCreationTest",
-				s.getID(), TestSuiteType.TESTSUITEKEY);
-	}
 
 	/**
 	 * 
