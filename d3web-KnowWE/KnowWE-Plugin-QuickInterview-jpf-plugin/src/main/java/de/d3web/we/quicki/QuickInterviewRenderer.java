@@ -662,7 +662,9 @@ public class QuickInterviewRenderer {
 	private static void renderMCChoiceAnswers(QuestionChoice q, MultipleChoiceValue mcval, StringBuffer sb) {
 
 		sb.append("\n<div class='answers' style='display: inline;'>");
+
 		for (Choice choice : mcval.asChoiceList(q)) {
+
 
 			String cssclass = "answerMC";
 			String jscall = " rel=\"{oid:'" + choice.getId() + "', "
@@ -681,7 +683,6 @@ public class QuickInterviewRenderer {
 			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + "", cssclass,
 					jscall, null, spanid, ""));
 			sb.append("<div class='answerseparator'> | </div>");
-			// sb.append("\n<div class='answerseparator'></div>");
 		}
 
 		// also render the unknown alternative for choice questions

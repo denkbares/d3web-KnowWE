@@ -340,6 +340,11 @@ KNOWWE.plugin.quicki = function(){
             // get the provided value if any is provided
             if(_KS('#input_' + rel.oid)) {
                 inputtext = _KS('#input_' + rel.oid).value; 
+                
+                // enabling float value input also with "," instead of "."
+                if(inputtext.indexOf(",")!=-1){
+                	inputtext = inputtext.replace(",", ".");
+                }
     	 		
                 // if range is given, validate range
                 if(rel.rangeMin!='NaN' && rel.rangeMax!='NaN'){
