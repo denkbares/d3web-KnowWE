@@ -22,14 +22,12 @@ KNOWWE.plugin.hermes = function() {
 function sendTimeEventNextSearchRequest() {
 	scroll(0,0);
 	document.getElementById("startIndexTimeline").value = parseInt(document.getElementById("startIndexTimeline").value)+20;
-	document.getElementById("endIndexTimeLine").value = parseInt(document.getElementById("endIndexTimeLine").value)+20;
 	sendTimeEventSearchRequest();
 }
 
 function sendTimeEventBackSearchRequest() {
 	scroll(0,1000000);
 	document.getElementById("startIndexTimeline").value = parseInt(document.getElementById("startIndexTimeline").value) - 20;
-	document.getElementById("endIndexTimeLine").value = parseInt(document.getElementById("endIndexTimeLine").value) - 20;
 	sendTimeEventSearchRequest();
 }
 
@@ -41,11 +39,11 @@ function sendTimeEventSearchRequest() {
     var searchFrom = document.getElementById("hermesSearchFrom");
     var searchTo = document.getElementById("hermesSearchTo");
     var startIndex = document.getElementById("startIndexTimeline");
-    var endIndex = document.getElementById("endIndexTimeLine");
+    var resultCount = document.getElementById("hermesSearchResultCount");
 
     var params = {
         action : 'SearchTimeEventsAction',
-        count : endIndexTimeLine.value,
+        count : resultCount.value,
         from : searchFrom.value,
         to : searchTo.value,
         startIndex : startIndex.value

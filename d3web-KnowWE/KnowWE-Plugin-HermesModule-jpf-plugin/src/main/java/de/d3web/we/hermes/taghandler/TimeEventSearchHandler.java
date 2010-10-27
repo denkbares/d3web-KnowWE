@@ -38,7 +38,7 @@ public class TimeEventSearchHandler extends AbstractHTMLTagHandler {
 	}
 
 	private String generateForms(String topic) {
-		int startIndex = 0;
+		int startIndex = 1;
 		int noEntries = 20;
 		String startTimeString = "-10000";
 		String endTimeString = "2008";
@@ -53,7 +53,7 @@ public class TimeEventSearchHandler extends AbstractHTMLTagHandler {
 				"<input type=\"hidden\" name=\"formname\" value=\"testform\"/>";
 		s += "<p>Start Index: <input id='startIndexTimeline' type='text' value='" + startIndex
 				+ "'/> " +
-				"End Index: <input id='hermesSearchResultCount' type='text' value='"
+				"Anzahl: <input id='hermesSearchResultCount' type='text' value='"
 				+ noEntries + "'/></p>";
 		s += "<p>Von: <input id='hermesSearchFrom'  type='text' value='" + startTimeString + "'/> "
 				+
