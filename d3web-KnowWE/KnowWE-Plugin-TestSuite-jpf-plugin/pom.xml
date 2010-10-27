@@ -58,6 +58,13 @@
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-d3web-jpf-plugin</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-EmpiricalTesting</artifactId>
 			<version>${d3webCoreVersion}</version>
 			<scope>compile</scope>
@@ -68,13 +75,6 @@
 			<version>6.0.20</version>
 			<type>jar</type>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Plugin-d3web-jpf-plugin</artifactId>
-			<version>${project.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>
