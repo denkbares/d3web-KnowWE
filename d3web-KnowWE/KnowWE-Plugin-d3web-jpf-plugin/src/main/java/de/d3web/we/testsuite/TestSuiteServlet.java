@@ -30,22 +30,21 @@ import de.d3web.empiricaltesting.writer.TestSuiteXMLWriter;
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
 import de.d3web.we.core.KnowWEAttributes;
-import de.d3web.we.utils.KnowWEUtils;
 
 public class TestSuiteServlet extends AbstractAction {
 
 	@Override
 	public void execute(ActionContext context) throws IOException {
 		String filename = context.getParameter("filename");
-		;
-		String nodeID = context.getParameter("nodeID");
 		String topic = context.getParameter(KnowWEAttributes.TOPIC);
 		String web = context.getParameter("web");
 		String type = context.getParameter("type");
 
 		// Load the TestSuite
-		TestSuite t = (TestSuite) KnowWEUtils.getStoredObject(web, topic, nodeID,
-				TestSuiteType.TESTSUITEKEY);
+		//TestSuite t = (TestSuite) KnowWEUtils.getStoredObject(web, topic, nodeID,
+		// TestSuiteType.TESTSUITEKEY);
+		
+		TestSuite t = TestSuiteUtils.loadTestSuite(topic, web);
 
 		if (t != null) {
 			if (type.equals("visualization")) generateVisualization(context, t, filename);

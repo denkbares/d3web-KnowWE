@@ -69,6 +69,11 @@ public class TestSuiteType extends DefaultMarkupType {
 	private class TestSuiteSubTreeHandler extends D3webSubtreeHandler<TestSuiteType> {
 
 		@Override
+		public boolean isIgnoringPackageCompile() {
+			return true;
+		}
+
+		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<TestSuiteType> s) {
 
 			KnowledgeBaseManagement kbm = loadKBM(article, s);

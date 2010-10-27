@@ -36,6 +36,17 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="/TestSuiteType" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="TestSuiteResultToolProvider">
+		<parameter id="class" value="de.d3web.we.testsuite.TestSuiteResultToolProvider" />
+		<parameter id="name" value="TestSuiteResultToolProvider" />
+		<parameter id="description"
+			value="Offers download buttons to download visualizations of test suites as single files." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="/TestSuiteResultType" />
+	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="Resource">
@@ -145,18 +156,16 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
-
+	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
-		id="CoveringTableSection">
-		<parameter id="class"
-			value="de.d3web.we.kdom.table.xcl.CoveringTableSection" />
-		<parameter id="name" value="CoveringTableSection" />
-		<parameter id="description" value="KnowWEObjectType CoveringTableSection" />
+		id="TestSuiteResultType">
+		<parameter id="class" 
+			value="de.d3web.we.testsuite.TestSuiteResultType" />
+		<parameter id="name" value="TestSuiteResultType" />
+		<parameter id="description" value="KnowWEObjectType TestSuiteResultType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
-		<parameter id="script" value="KnowWE-plugin-d3web.js" />
-		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
@@ -264,15 +273,14 @@
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
-		id="TestsuiteTagHandler">
-		<parameter id="class" value="de.d3web.we.taghandler.TestsuiteTagHandler" />
-		<parameter id="name" value="TestsuiteTagHandler" />
-		<parameter id="description" value="TagHandler TestsuiteTagHandler" />
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="TestSuiteRunAction">
+		<parameter id="class"
+			value="de.d3web.we.testsuite.TestSuiteRunAction" />
+		<parameter id="name" value="TestSuiteRunAction" />
+		<parameter id="description" value="Action TestSuiteRunAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="script" value="KnowWE-plugin-d3web.js" />
-		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
