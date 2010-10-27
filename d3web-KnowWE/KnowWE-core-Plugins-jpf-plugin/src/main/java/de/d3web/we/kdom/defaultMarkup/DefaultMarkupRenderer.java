@@ -43,12 +43,23 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 
 	private final String iconPath;
 
+	private final boolean renderCompileWarnings;
+
 	public DefaultMarkupRenderer() {
-		this(null);
+		this(null, true);
+	}
+
+	public DefaultMarkupRenderer(boolean renderCompileWarnings) {
+		this(null, renderCompileWarnings);
 	}
 
 	public DefaultMarkupRenderer(String iconPath) {
+		this(iconPath, true);
+	}
+
+	public DefaultMarkupRenderer(String iconPath, boolean renderCompileWarnings) {
 		this.iconPath = iconPath;
+		this.renderCompileWarnings = renderCompileWarnings;
 	}
 
 	public static String renderToolbar(Tool[] tools) {
@@ -163,7 +174,9 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 
 		// create content
 		StringBuilder content = new StringBuilder();
-		article = PackageRenderUtils.checkArticlesCompiling(article, section, content);
+		if (this.renderCompileWarnings) {
+			article = PackageRenderUtils.checkArticlesCompiling(article, section, content);
+		}
 
 		// add an anchor to enable direct link to the section
 		String anchorName = KnowWEUtils.getAnchor(section);
