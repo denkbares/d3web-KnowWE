@@ -1245,9 +1245,9 @@ KNOWWE.core.rerendercontent = function(){
         execute : function( url, id, action) {
             var options = {
                 url : url,
-                action : action,
                 response : {
                     ids : [ id ],
+                    action : action,
                     fn : function(){
                         KNOWWE.core.actions.init();
                         Collapsible.render( _KS('#page'), KNOWWE.helper.gup('page'));

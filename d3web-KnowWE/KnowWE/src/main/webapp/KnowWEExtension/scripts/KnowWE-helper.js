@@ -429,6 +429,9 @@ KNOWWE.helper.ajax = function ( options ) {
                         document.getElementById( oDefault.create.id ).insertBefore( el, document.getElementById( oDefault.create.id ).childNodes[0]);
                     } 
                     break;
+                case 'replaceElement':
+                    KNOWWE.core.util.replaceElement( ids, http.responseText);
+                    break;                    
                 case 'replace':
                     KNOWWE.core.util.replace( ids, http.responseText);
                     break;                    
@@ -469,7 +472,7 @@ KNOWWE.helper.ajax = function ( options ) {
             var encoding = (oDefault.encoding) ? '; charset=' + oDefault.encoding : '';
             headers.set('Content-type', '"application/x-www-form-urlencoded' + encoding + '"');
         }
-        headers.set('Content-length', oDefault.data.length);
+//        headers.set('Content-length', oDefault.data.length);
         
         http.open( oDefault.method.toUpperCase(), oDefault.url, oDefault.async );
         

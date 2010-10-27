@@ -124,7 +124,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 
 		string.append(KnowWEUtils.maskHTML(
 				"<div id='header_" + sectionID + "' " +
-						"class='markupHeader " + (hasMenu ? "markupMenuIndicator" : "") + "'>"));
+						"class='markupHeader" + (hasMenu ? " markupMenuIndicator" : "") + "'>"));
 		string.append(header);
 		string.append(KnowWEUtils.maskHTML(toolbarHtml));
 		string.append("\n");
@@ -141,7 +141,8 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		}
 
 		// render pre-formatted box
-		string.append(KnowWEUtils.maskHTML("<div id=\"" + sectionID + "\" class='markupText'>"));
+		string.append(KnowWEUtils.maskHTML("<div id=\"content_" + sectionID
+				+ "\" class='markupText'>"));
 
 		// render content
 		string.append(content);
@@ -194,8 +195,12 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		Section<?> first = subsecs.get(0);
 		Section<?> last = subsecs.get(subsecs.size() - 1);
 		for (Section<?> subsec : subsecs) {
-			if (subsec == first && subsec.getObjectType() instanceof PlainText) continue;
-			if (subsec == last && subsec.getObjectType() instanceof PlainText) continue;
+			if (subsec == first && subsec.getObjectType() instanceof PlainText) {
+				continue;
+			}
+			if (subsec == last && subsec.getObjectType() instanceof PlainText) {
+				continue;
+			}
 			subsec.getObjectType().getRenderer().render(article, subsec, user, string);
 		}
 	}
@@ -276,7 +281,9 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		for (Message error : messages) {
 			string.append(error.getMessageText());
 			int lineNo = error.getLineNo();
-			if (displayLineNo && lineNo > 0) string.append(" Line: " + lineNo);
+			if (displayLineNo && lineNo > 0) {
+				string.append(" Line: " + lineNo);
+			}
 			string.append("\n");
 		}
 		string.append(KnowWEUtils.maskHTML("</span>"));

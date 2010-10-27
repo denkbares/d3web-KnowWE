@@ -5,6 +5,7 @@ import java.util.Set;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.utils.KnowWEUtils;
 
 public class PackageRenderUtils {
 
@@ -16,7 +17,10 @@ public class PackageRenderUtils {
 					article.getWeb()).getArticlesReferingTo(s);
 
 			if (compilingArticles.size() > 1) {
-				string.append("Articles compiling this Section: " + compilingArticles + "\n\n");
+				// string.append("Articles compiling this Section: " +
+				// compilingArticles);
+				string.append(KnowWEUtils.maskHTML("<span class=\"info\">Articles compiling this Section: "
+						+ compilingArticles + "</span>"));
 			}
 			else if (compilingArticles.size() == 1) {
 				String title = compilingArticles.iterator().next();
@@ -28,7 +32,8 @@ public class PackageRenderUtils {
 				}
 			}
 			else {
-				string.append("This Section is not compiled in any article!\n\n");
+				// string.append("This Section is not compiled in any article!\n\n");
+				string.append(KnowWEUtils.maskHTML("<span class=\"warning\">This Section is not compiled in any article!</span>"));
 			}
 		}
 		return compilingArticle;

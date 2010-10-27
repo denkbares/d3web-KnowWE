@@ -50,12 +50,13 @@ public class ReRenderSectionMarkerRenderer<T extends KnowWEObjectType> extends K
 		Boolean ajaxAction = user.getUrlParameterMap().containsKey("action");
 		if (!ajaxAction) {
 			string.append(KnowWEUtils
-					.maskHTML("<span class=\"ReRenderSectionMarker\"" + " id=\""
-							+ sec.getID() + "\"" + " rel=\"{id:'" + sec.getID()
+					.maskHTML("<div class=\"ReRenderSectionMarker\" rel=\"{id:'" + sec.getID()
 							+ "'}\">"));
 		}
 		renderer.render(article, sec, user, string);
-		if (!ajaxAction) string.append(KnowWEUtils.maskHTML("</span>"));
+		if (!ajaxAction) {
+			string.append(KnowWEUtils.maskHTML("</div>"));
+		}
 	}
 
 }
