@@ -30,6 +30,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.indication.ActionIndication;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NoSuchObjectError;
@@ -59,9 +60,9 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 			public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AnonymousType> s) {
 				TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
 				String termName = s.getOriginalText().trim();
-				if (terminologyHandler.isDefinedTerm(article, termName)) {
-					Section<? extends TermDefinition> termDefinitionSection = terminologyHandler.getTermDefinitionSection(
-							article, termName);
+				if (terminologyHandler.isDefinedTerm(article, termName, KnowWETerm.LOCAL)) {
+					Section<? extends TermDefinition> termDefinitionSection = terminologyHandler.getTermDefiningSection(
+							article, termName, KnowWETerm.LOCAL);
 					Class objectClazz = termDefinitionSection.get().getTermObjectClass();
 					if (Question.class.isAssignableFrom(objectClazz)) {
 						s.setType(new QuestionReference());

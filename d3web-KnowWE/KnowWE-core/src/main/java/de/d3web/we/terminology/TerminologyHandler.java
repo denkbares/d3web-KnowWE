@@ -24,11 +24,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
@@ -78,6 +80,10 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	private final Map<String, Map<TermIdentifier, TermReferenceLog>> termReferenceLogsMaps =
 			new HashMap<String, Map<TermIdentifier, TermReferenceLog>>();
 
+	@SuppressWarnings("unchecked")
+	private final Map<TermIdentifier, TermReferenceLog> globalTermReferenceLogs =
+			new HashMap<TermIdentifier, TermReferenceLog>();
+
 	// private static TerminologyHandler instance = null;
 	//
 	// public static TerminologyHandler getInstance() {
@@ -103,7 +109,10 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<TermIdentifier, TermReferenceLog> getTermReferenceLogsMap(String title) {
+	private Map<TermIdentifier, TermReferenceLog> getTermReferenceLogsMap(String title, int termScope) {
+		if (termScope == KnowWETerm.GLOBAL) {
+			return this.globalTermReferenceLogs;
+		}
 		Map<TermIdentifier, TermReferenceLog> tmap = termReferenceLogsMaps.get(title);
 		if (tmap == null) {
 			tmap = new HashMap<TermIdentifier, TermReferenceLog>();
@@ -115,7 +124,8 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	@SuppressWarnings("unchecked")
 	private <TermObject> TermReferenceLog<TermObject> getTermReferenceLog(KnowWEArticle article,
 			Section<? extends KnowWETerm<TermObject>> r) {
-		TermReferenceLog refLog = getTermReferenceLogsMap(article.getTitle()).get(
+		TermReferenceLog refLog = getTermReferenceLogsMap(article.getTitle(),
+				r.get().getTermScope()).get(
 				new TermIdentifier(article, r));
 		if (refLog != null && refLog.getTermObjectClass().equals(r.get().getTermObjectClass())) {
 			return refLog;
@@ -125,14 +135,26 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		}
 	}
 
-	private TermReferenceLog<?> getTermReferenceLog(KnowWEArticle article, String termName) {
-		return getTermReferenceLogsMap(article.getTitle()).get(new TermIdentifier(termName));
+	private TermReferenceLog<?> getTermReferenceLog(KnowWEArticle article, String termName, int termScope) {
+		return getTermReferenceLogsMap(article.getTitle(), termScope).get(
+				new TermIdentifier(article, termName));
 	}
 
 	@SuppressWarnings("unchecked")
 	private void removeTermReferenceLogsForArticle(KnowWEArticle article) {
-		termReferenceLogsMaps.put(article.getTitle(),
-				new HashMap<TermIdentifier, TermReferenceLog>());
+		Map<TermIdentifier, TermReferenceLog> logs = getTermReferenceLogsMap(article.getTitle(),
+				KnowWETerm.LOCAL);
+		for (TermReferenceLog log : new LinkedList<TermReferenceLog>(logs.values())) {
+			this.unregisterTermDefinition(article, log.termDefiningSection);
+		}
+
+		logs = getTermReferenceLogsMap(article.getTitle(),
+				KnowWETerm.GLOBAL);
+		for (TermReferenceLog log : new LinkedList<TermReferenceLog>(logs.values())) {
+			if (log.termDefiningSection.getArticle().getTitle().equals(article.getTitle())) {
+				this.unregisterTermDefinition(article, log.termDefiningSection);
+			}
+		}
 	}
 
 	public void initArticle(KnowWEArticle article) {
@@ -152,8 +174,9 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	 * @param <TermObject>
 	 */
 	public <TermObject> void registerTermDefinition(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> d) {
+
 		Priority p = article.getReviseIterator().getCurrentPriority();
-		TermIdentifier termName = new TermIdentifier(article, d);
+		TermIdentifier termIdentifier = new TermIdentifier(article, d);
 		TermReferenceLog<TermObject> termRefLog = getTermReferenceLog(article, d);
 		if (termRefLog != null) {
 			if (termRefLog.termDefiningSection != null) {
@@ -161,7 +184,7 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 					// this should not happen
 					Logger.getLogger(this.getClass().getName())
 							.log(Level.WARNING, "Tried to register same TermDefinition twice: '" +
-									termName + "'!");
+									termIdentifier + "'!");
 					// now registration will be ignored
 					return;
 				}
@@ -180,16 +203,30 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 					// TermDefinition with the same term.... because
 					// we are already past the destroy step, we need a full
 					// reparse.
-					termRefLog.termDefiningSection.setReusedBy(article.getTitle(), false);
-					article.setFullParse(this.getClass());
-				}
 
-			}
-			for (Section<?> termRef : termRefLog.getReferences()) {
-				termRef.setReusedBy(article.getTitle(), false);
+					if (d.get().getTermScope() == KnowWETerm.GLOBAL) {
+						KnowWEArticleManager artMan = KnowWEEnvironment.getInstance().getArticleManager(
+								article.getWeb());
+						artMan.addAllArticlesToRefresh(termRefLog.termDefiningSection.getReusedBySet());
+						termRefLog.termDefiningSection.clearReusedBySet();
+						for (Section<?> termDef : termRefLog.getRedundantDefinitions()) {
+							artMan.addAllArticlesToRefresh(termDef.getReusedBySet());
+							termDef.clearReusedBySet();
+						}
+						for (Section<?> termRef : termRefLog.getReferences()) {
+							artMan.addAllArticlesToRefresh(termRef.getReusedBySet());
+							termRef.clearReusedBySet();
+						}
+					}
+					if (termRefLog.termDefiningSection.getArticle().getTitle().equals(
+							article.getTitle())) {
+						article.setFullParse(this.getClass());
+						return;
+					}
+				}
 			}
 		}
-		getTermReferenceLogsMap(article.getTitle()).put(termName,
+		getTermReferenceLogsMap(article.getTitle(), d.get().getTermScope()).put(termIdentifier,
 				new TermReferenceLog<TermObject>(d.get().getTermObjectClass(), d, p));
 		modifiedTermDefinitions.put(article.getTitle(), true);
 	}
@@ -198,7 +235,8 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		TermReferenceLog<TermObject> refLog = getTermReferenceLog(article, r);
 		if (refLog == null) {
 			refLog = new TermReferenceLog<TermObject>(r.get().getTermObjectClass(), null, null);
-			getTermReferenceLogsMap(article.getTitle()).put(new TermIdentifier(article, r), refLog);
+			getTermReferenceLogsMap(article.getTitle(), r.get().getTermScope()).put(
+					new TermIdentifier(article, r), refLog);
 		}
 		refLog.addTermReference(r);
 	}
@@ -206,8 +244,8 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	/**
 	 * Returns whether a term is defined through an TermDefinition
 	 */
-	public boolean isDefinedTerm(KnowWEArticle article, String termName) {
-		TermReferenceLog<?> termRef = getTermReferenceLog(article, termName);
+	public boolean isDefinedTerm(KnowWEArticle article, String termName, int termScope) {
+		TermReferenceLog<?> termRef = getTermReferenceLog(article, termName, termScope);
 		if (termRef != null) {
 			return termRef.termDefiningSection != null;
 		}
@@ -218,8 +256,8 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	 * Returns whether there are TermReferences for this Term, but no
 	 * TermDefinition
 	 */
-	public boolean isUndefinedTerm(KnowWEArticle article, String termName) {
-		TermReferenceLog<?> termRef = getTermReferenceLog(article, termName);
+	public boolean isUndefinedTerm(KnowWEArticle article, String termName, int termScope) {
+		TermReferenceLog<?> termRef = getTermReferenceLog(article, termName, termScope);
 		if (termRef != null) {
 			return termRef.termDefiningSection == null;
 		}
@@ -234,10 +272,10 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public Section<? extends TermDefinition> getTermDefinitionSection(
-			KnowWEArticle article, String termName) {
+	public Section<? extends TermDefinition> getTermDefiningSection(
+			KnowWEArticle article, String termName, int termScope) {
 
-		TermReferenceLog refLog = getTermReferenceLog(article, termName);
+		TermReferenceLog refLog = getTermReferenceLog(article, termName, termScope);
 
 		if (refLog != null) {
 			return refLog.termDefiningSection;
@@ -247,8 +285,9 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<Section<? extends TermReference>> getTermReferenceSections(KnowWEArticle article, String termName) {
-		TermReferenceLog refLog = getTermReferenceLog(article, termName);
+	public Set<Section<? extends TermReference>> getTermReferenceSections(KnowWEArticle article,
+			String termName, int termScope) {
+		TermReferenceLog refLog = getTermReferenceLog(article, termName, termScope);
 
 		if (refLog != null) {
 			return refLog.getReferences();
@@ -287,7 +326,7 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	 * @param s
 	 * @return
 	 */
-	public <TermObject> Section<? extends TermDefinition<TermObject>> getTermDefinitionSection(
+	public <TermObject> Section<? extends TermDefinition<TermObject>> getTermDefiningSection(
 			KnowWEArticle article, Section<? extends KnowWETerm<TermObject>> r) {
 
 		TermReferenceLog<TermObject> refLog = getTermReferenceLog(article, r);
@@ -327,13 +366,34 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		TermReferenceLog<TermObject> termRefLog = getTermReferenceLog(article, d);
 		if (termRefLog != null) {
 			if (d == termRefLog.termDefiningSection) {
-				for (Section<?> termDef : termRefLog.getRedundantDefinitions()) {
-					termDef.setReusedBy(article.getTitle(), false);
+
+				if (d.get().getTermScope() == KnowWETerm.GLOBAL) {
+					KnowWEArticleManager artMan = KnowWEEnvironment.getInstance().getArticleManager(
+							article.getWeb());
+
+					artMan.addAllArticlesToRefresh(termRefLog.termDefiningSection.getReusedBySet());
+					termRefLog.termDefiningSection.clearReusedBySet();
+
+					for (Section<?> termDef : termRefLog.getRedundantDefinitions()) {
+						artMan.addAllArticlesToRefresh(termDef.getReusedBySet());
+						termDef.clearReusedBySet();
+					}
+
+					for (Section<?> termRef : termRefLog.getReferences()) {
+						artMan.addAllArticlesToRefresh(termRef.getReusedBySet());
+						termRef.clearReusedBySet();
+					}
+
 				}
-				for (Section<?> termRef : termRefLog.getReferences()) {
-					termRef.setReusedBy(article.getTitle(), false);
+				else {
+					for (Section<?> termDef : termRefLog.getRedundantDefinitions()) {
+						termDef.setReusedBy(article.getTitle(), false);
+					}
+					for (Section<?> termRef : termRefLog.getReferences()) {
+						termRef.setReusedBy(article.getTitle(), false);
+					}
 				}
-				getTermReferenceLogsMap(article.getTitle()).remove(
+				getTermReferenceLogsMap(article.getTitle(), d.get().getTermScope()).remove(
 						new TermIdentifier(article, d));
 			}
 			else {
@@ -444,8 +504,8 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 			}
 		}
 
-		public TermIdentifier(String termName) {
-			termIdentifier = termName;
+		public TermIdentifier(KnowWEArticle article, String termName) {
+			this.termIdentifier = termName;
 		}
 
 		@Override

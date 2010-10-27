@@ -322,6 +322,13 @@ public class SemanticCore implements ISemanticCore {
 		return new ArrayList<Statement>();
 	}
 
+	private void removeStatementsofSingleSection(
+			Section<? extends KnowWEObjectType> sec) {
+		WeakHashMap<Section, List<Statement>> temp = statementcache.get(sec
+				.getArticle().getTitle());
+		if (temp != null) temp.remove(sec);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -429,7 +436,17 @@ public class SemanticCore implements ISemanticCore {
 		}
 
 		return allstatements;
+	}
 
+	public void removeSectionStatementsRecursive(
+			Section<? extends KnowWEObjectType> s) {
+
+		removeStatementsofSingleSection(s);
+
+		// walk over all children
+		for (Section<? extends KnowWEObjectType> current : s.getChildren()) {
+			removeSectionStatementsRecursive(current);
+		}
 	}
 
 	/*
@@ -504,6 +521,8 @@ public class SemanticCore implements ISemanticCore {
 		// }
 
 		List<Statement> sectionStatementsRecursive = getSectionStatementsRecursive(sec);
+
+		removeSectionStatementsRecursive(sec);
 
 		RepositoryConnection con = uo.getConnection();
 

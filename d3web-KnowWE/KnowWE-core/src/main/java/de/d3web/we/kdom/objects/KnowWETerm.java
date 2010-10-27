@@ -31,7 +31,15 @@ import de.d3web.we.kdom.Section;
  */
 public interface KnowWETerm<TermObject> extends KnowWETermMarker {
 
+	public static final int LOCAL = 0;
+
+	public static final int GLOBAL = 1;
+
 	public String getTermName(Section<? extends KnowWETerm<TermObject>> s);
 
 	public Class<TermObject> getTermObjectClass();
+
+	public int getTermScope();
+
+	public void setTermScope(int termScope);
 }

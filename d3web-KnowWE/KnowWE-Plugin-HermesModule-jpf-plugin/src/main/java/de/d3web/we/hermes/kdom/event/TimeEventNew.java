@@ -18,6 +18,7 @@ import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
+import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -114,6 +115,7 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 		public TitleType() {
 			// true says that this name is registered as globally unique term
 			super(String.class, true);
+			this.setTermScope(KnowWETerm.GLOBAL);
 
 			// renderer (for testing only)
 			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR1));

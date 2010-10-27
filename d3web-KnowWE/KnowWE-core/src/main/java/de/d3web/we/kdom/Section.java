@@ -1445,6 +1445,10 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		}
 	}
 
+	public void clearReusedBySet() {
+		this.reusedBy = null;
+	}
+
 	/**
 	 * This method has the purpose to clear the reused states of all Sections
 	 * that could not be reused by the incremental update. Call this method on

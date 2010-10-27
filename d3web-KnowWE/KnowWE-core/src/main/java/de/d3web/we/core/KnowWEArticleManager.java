@@ -26,10 +26,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,6 +61,8 @@ public class KnowWEArticleManager {
 	 * moment.
 	 */
 	private final Set<String> sectionizingArticles = new HashSet<String>();
+
+	private Set<String> articlesToRefresh = new TreeSet<String>();
 
 	/**
 	 * List that keeps track of all articles that are updating their
@@ -261,6 +265,16 @@ public class KnowWEArticleManager {
 
 		EventManager.getInstance().fireEvent(new UpdatingDependenciesEvent(article));
 
+		for (String title : new LinkedList<String>(articlesToRefresh)) {
+			if (updatingArticles.contains(title)) continue;
+			KnowWEArticle newArt = KnowWEArticle.createArticle(
+					articleMap.get(title).getSection().getOriginalText(), title,
+					KnowWEEnvironment.getInstance().getRootType(), web, false);
+
+			saveUpdatedArticle(newArt);
+		}
+		this.articlesToRefresh = new TreeSet<String>();
+
 		updatingArticles.remove(article.getTitle());
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.FINE,
@@ -312,6 +326,14 @@ public class KnowWEArticleManager {
 
 	public Set<String> getDependenciesUpdatingArticles() {
 		return Collections.unmodifiableSet(this.updatingArticles);
+	}
+
+	public void addArticleToRefresh(String title) {
+		this.articlesToRefresh.add(title);
+	}
+
+	public void addAllArticlesToRefresh(Collection<String> titles) {
+		this.articlesToRefresh.addAll(titles);
 	}
 
 }

@@ -31,6 +31,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.terminology.TerminologyHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -51,6 +52,8 @@ public abstract class TermDefinition<TermObject>
 	protected String key;
 
 	protected Class<TermObject> termObjectClass;
+
+	private int termScope = KnowWETerm.LOCAL;
 
 	public TermDefinition(Class<TermObject> termObjectClass) {
 		if (termObjectClass == null) {
@@ -80,7 +83,7 @@ public abstract class TermDefinition<TermObject>
 	public TermObject getTermObject(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> s) {
 		// in case the of duplicate definitions, get the one that has actually
 		// created the TermObject
-		Section<?> s2 = KnowWEUtils.getTerminologyHandler(article.getWeb()).getTermDefinitionSection(
+		Section<?> s2 = KnowWEUtils.getTerminologyHandler(article.getWeb()).getTermDefiningSection(
 				article, s);
 		return (TermObject) KnowWEUtils.getStoredObject(article, s2 != null ? s2 : s, key);
 	}
@@ -103,7 +106,17 @@ public abstract class TermDefinition<TermObject>
 	 * needed for the further compilation process
 	 */
 	public void storeTermObject(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> s, TermObject q) {
-		KnowWEUtils.storeSectionInfo(article, s, key, q);
+		KnowWEUtils.storeObject(article, s, key, q);
+	}
+
+	@Override
+	public int getTermScope() {
+		return this.termScope;
+	}
+
+	@Override
+	public void setTermScope(int termScope) {
+		this.termScope = termScope;
 	}
 
 	/**
@@ -119,13 +132,17 @@ public abstract class TermDefinition<TermObject>
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<TermDefinition<TermObject>> s) {
 
-			boolean alreadyExisting = KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(
-					article, s.get().getTermName(s));
+			TerminologyHandler tHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
 
-			KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
-					article, s);
+			Section<? extends TermDefinition> before = tHandler.getTermDefiningSection(
+					article, s.get().getTermName(s), getTermScope());
 
-			if (alreadyExisting) {
+			tHandler.registerTermDefinition(article, s);
+
+			Section<? extends TermDefinition> after = tHandler.getTermDefiningSection(
+					article, s.get().getTermName(s), getTermScope());
+
+			if (before == after) {
 				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
 						s.get().getName()
 								+ ": " + s.get().getTermName(s)));

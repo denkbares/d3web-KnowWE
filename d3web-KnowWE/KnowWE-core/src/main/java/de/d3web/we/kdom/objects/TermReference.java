@@ -49,6 +49,8 @@ public abstract class TermReference<TermObject>
 		extends DefaultAbstractKnowWEObjectType
 		implements KnowWETerm<TermObject> {
 
+	private int termScope = KnowWETerm.LOCAL;
+
 	protected Class<TermObject> termObjectClass;
 
 	public TermReference(Class<TermObject> termObjectClass) {
@@ -69,7 +71,7 @@ public abstract class TermReference<TermObject>
 	 */
 	public final TermObject getTermObject(KnowWEArticle article, Section<? extends TermReference<TermObject>> s) {
 		Section<? extends TermDefinition<TermObject>> objectDefinition = KnowWEUtils.getTerminologyHandler(
-				article.getWeb()).getTermDefinitionSection(article, s);
+				article.getWeb()).getTermDefiningSection(article, s);
 		if (objectDefinition != null) {
 			TermObject c = objectDefinition.get().getTermObject(article, objectDefinition);
 			if (c != null && c.toString().equals(objectDefinition.get().getTermName(s))) {
@@ -85,6 +87,16 @@ public abstract class TermReference<TermObject>
 	 */
 	public TermObject getTermObjectFallback(KnowWEArticle article, Section<? extends TermReference<TermObject>> s) {
 		return null;
+	}
+
+	@Override
+	public int getTermScope() {
+		return this.termScope;
+	}
+
+	@Override
+	public void setTermScope(int termScope) {
+		this.termScope = termScope;
 	}
 
 	class TermRegistrationHandler extends SubtreeHandler<TermReference<TermObject>> {

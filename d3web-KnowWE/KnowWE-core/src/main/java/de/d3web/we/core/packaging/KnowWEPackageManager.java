@@ -351,33 +351,20 @@ public class KnowWEPackageManager implements EventListener {
 
 	public void updateReferingArticles(KnowWEArticle article) {
 
-		Set<String> articlesToRevise = new HashSet<String>();
-
 		for (HashSet<Section<? extends PackageReference>> referencesSet : packageReferenceMap.values()) {
 			for (Section<? extends PackageReference> packReference : referencesSet) {
 				List<String> packagesToReference = packReference.get().getPackagesToReferTo(
 						packReference);
 				for (String packagName : packagesToReference) {
 					if (changedPackages.contains(packagName) && !article.getTitle().equals(packagName)) {
-						articlesToRevise.add(packReference.getTitle());
+						KnowWEEnvironment.getInstance().getArticleManager(article.getWeb()).addArticleToRefresh(
+								packReference.getTitle());
 					}
 				}
 			}
 		}
 
 		changedPackages.clear();
-
-		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
-		for (String title : articlesToRevise) {
-			if (title.equals(article.getTitle())) {
-				continue;
-			}
-			KnowWEArticle newArt = KnowWEArticle.createArticle(
-					env.getArticle(article.getWeb(), title).getSection().getOriginalText(), title,
-					env.getRootType(), web, false);
-
-			env.getArticleManager(web).saveUpdatedArticle(newArt);
-		}
 	}
 
 	@Override
