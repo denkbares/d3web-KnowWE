@@ -579,8 +579,7 @@ public class QuickInterviewRenderer {
 		// print the units
 		sb.append("<div class='unit'>" + unit + "</div>");
 
-		// TODO: do not insert a newline here, breaks functionality
-		sb.append("<input type='button' value='OK' class='num-ok' />");
+		// sb.append("<input type='button' value='OK' class='num-ok' />");
 
 		sb.append("<div class='answerseparator'> | </div>");
 
@@ -640,7 +639,8 @@ public class QuickInterviewRenderer {
 				+ "value='" + value + "' "
 				+ "size='18' "
 				+ jscall + " />");
-		sb.append("<input type='button' value='OK' class='date-ok' /> ");
+
+		// sb.append("<input type='button' value='OK' class='date-ok' /> ");
 
 		sb.append("<div class='answerseparator'> | </div>");
 		renderAnswerUnknown(q, "num", sb);

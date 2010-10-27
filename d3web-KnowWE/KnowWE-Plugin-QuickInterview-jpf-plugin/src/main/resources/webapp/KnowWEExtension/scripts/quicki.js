@@ -105,17 +105,17 @@ KNOWWE.plugin.quicki = function(){
         		//_KE.add('click', element, KNOWWE.plugin.quicki.toggleQuestionVisibility);
         	//});
         	
-        	_KS('.num-ok').each(function( element ){
-        		_KE.add('click', element, KNOWWE.plugin.quicki.numAnswerClicked);
-            });  
+        	//_KS('.num-ok').each(function( element ){
+        		//_KE.add('click', element, KNOWWE.plugin.quicki.numAnswerClicked);
+            //});  
         	
         	_KS('.numinput').each(function( element ){
         		_KE.add('keydown', element, KNOWWE.plugin.quicki.numAnswerClicked);
             });  
         	
-        	_KS('.date-ok').each(function( element ){
-        		_KE.add('click', element, KNOWWE.plugin.quicki.dateAnswerClicked);
-            });  
+        	//_KS('.date-ok').each(function( element ){
+        		//_KE.add('click', element, KNOWWE.plugin.quicki.dateAnswerClicked);
+            //});  
         	
         	_KS('.inputdate').each(function( element ){
         		_KE.add('keydown', element, KNOWWE.plugin.quicki.dateAnswerClicked);
@@ -329,9 +329,7 @@ KNOWWE.plugin.quicki = function(){
           
             if(key){				// if enter was pressed
                 rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")"); // TODO check
-            } else {				// if button was clicked
-                rel = eval("(" + _KE.target( event ).previousSibling.previousSibling.getAttribute('rel') + ")");
-            }
+            } 
             if( !rel ) return;
   
             
@@ -366,7 +364,8 @@ KNOWWE.plugin.quicki = function(){
             	 	} else {
 
             	 		// not within range: toggle css for red display...
-            		 	_KE.target( event ).previousSibling.previousSibling.className = 'inputrangeerror';
+            		 	//_KE.target( event ).className = 'inputrangeerror';
+            		 	_KE.target( event ).value = inputtext;
             		 	
             		 	// and display error message
             		 	var errormessage = 'Input needs to be a number between ' + rel.rangeMin + ' and ' + rel.rangeMax + '!';
@@ -374,7 +373,7 @@ KNOWWE.plugin.quicki = function(){
             		 	_KS('#' + rel.oid + "_errormsg").innerHTML=errormessage;
 
                 	 	// refresh quicki display
-            		 	KNOWWE.plugin.quicki.showRefreshed();
+            		 	// KNOWWE.plugin.quicki.showRefreshed();
             	 	} 
             	} 
             	// else just try to get the value and set it as finding
