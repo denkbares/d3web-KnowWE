@@ -162,13 +162,13 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 			else {
 				for (Section<?> redTermDef : new ArrayList<Section<?>>(
 						log.getRedundantDefinitions())) {
-					if (redTermDef.getArticle().getTitle().equals(article.getTitle())) {
+					if (redTermDef.getTitle().equals(article.getTitle())) {
 						log.getRedundantDefinitions().remove(redTermDef);
 					}
 				}
 				for (Section<?> termRef : new ArrayList<Section<?>>(
 						log.getReferences())) {
-					if (termRef.getArticle().getTitle().equals(article.getTitle())) {
+					if (termRef.getTitle().equals(article.getTitle())) {
 						log.getReferences().remove(termRef);
 					}
 				}

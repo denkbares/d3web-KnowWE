@@ -68,6 +68,7 @@ public class ReviseIterator {
 	}
 	
 	public boolean hasNext() {
+		if (currentPriority.compareTo(stop) < 0) return false;
 		if (!priorityMap.get(currentPriority).isEmpty()) return true;
 
 		// switch to lower priority if possible
