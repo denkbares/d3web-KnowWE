@@ -59,7 +59,7 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 			@Override
 			public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AnonymousType> s) {
 				TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
-				String termName = s.getOriginalText().trim();
+				String termName = KnowWEUtils.trimQuotes(s.getOriginalText());
 				if (terminologyHandler.isDefinedTerm(article, termName, KnowWETerm.LOCAL)) {
 					Section<? extends TermDefinition> termDefinitionSection = terminologyHandler.getTermDefiningSection(
 							article, termName, KnowWETerm.LOCAL);
