@@ -44,7 +44,7 @@ public class TestSuiteRunnerRenderer extends DefaultMarkupRenderer<TestSuiteRunn
 	private MessageFormat formatter;
 
 	public TestSuiteRunnerRenderer() {
-		super("KnowWEExtension/d3web/icon/testsuite24.png");
+		super("KnowWEExtension/d3web/icon/testsuite24.png", false);
 	}
 
 	@Override

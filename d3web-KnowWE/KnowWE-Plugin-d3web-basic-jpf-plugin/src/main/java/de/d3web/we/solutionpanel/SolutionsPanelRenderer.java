@@ -58,7 +58,7 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 
 	public SolutionsPanelRenderer() {
 		// TODO: here we can also add an icon for the renderer
-		super();
+		super(false);
 	}
 
 	@Override
@@ -132,9 +132,7 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 				Rating rating1 = session.getBlackboard().getRating(o1);
 				Rating rating2 = session.getBlackboard().getRating(o2);
 				int comparison = rating2.compareTo(rating1);
-				if (comparison == 0) {
-					return o1.getName().compareTo(o2.getName());
-				}
+				if (comparison == 0) return o1.getName().compareTo(o2.getName());
 				return comparison;
 			}
 		});
@@ -164,9 +162,10 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 		else if (solutionRating.hasState(State.EXCLUDED)) {
 			content.append(renderImage("KnowWEExtension/images/fsp_excluded.gif", "Excluded"));
 		}
-		// content.append(mask("<span class=\"SOLUTION-" + stateName + "\">"));
+		// render span for better testability
+		content.append(mask("<span class=\"SOLUTION-" + stateName + "\">"));
 		content.append(solution.getName());
-		// content.append(mask("</span>"));
+		content.append(mask("</span>"));
 
 		content.append(br() + "\n");
 	}
@@ -211,19 +210,11 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 
 		if (value instanceof NumValue) {
 			Double numValue = (Double) value.getValue();
-			if (Math.abs(numValue - Math.round(numValue)) > 0) {
-				return numValue.toString();
-			}
-			else {
-				return "" + Math.round(numValue);
-			}
+			if (Math.abs(numValue - Math.round(numValue)) > 0) return numValue.toString();
+			else return "" + Math.round(numValue);
 		}
-		else if (value instanceof Unknown || value instanceof UndefinedValue) {
-			return "-";
-		}
-		else {
-			return value.toString();
-		}
+		else if (value instanceof Unknown || value instanceof UndefinedValue) return "-";
+		else return value.toString();
 	}
 
 	private Session getSessionFor(String articleName, String webName, KnowWEUserContext user) {

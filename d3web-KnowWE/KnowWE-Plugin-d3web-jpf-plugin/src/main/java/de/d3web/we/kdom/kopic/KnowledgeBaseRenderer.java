@@ -49,7 +49,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<KnowledgeBaseType> {
 
 	public KnowledgeBaseRenderer() {
-		super("KnowWEExtension/d3web/icon/knowledgebase24.png");
+		super("KnowWEExtension/d3web/icon/knowledgebase24.png", false);
 	}
 
 	@Override
