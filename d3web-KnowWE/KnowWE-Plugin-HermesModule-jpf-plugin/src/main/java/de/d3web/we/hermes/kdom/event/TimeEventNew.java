@@ -109,7 +109,7 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 				s.getArticle().getTitle());
 	}
 
-	private static class TitleType extends TermDefinition<String> {
+	public static class TitleType extends TermDefinition<String> {
 		Pattern newline = Pattern.compile("\\r?\\n");
 
 		public TitleType() {
@@ -164,7 +164,7 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 	}
 
 
-	private static class DateType extends DefaultAbstractKnowWEObjectType {
+	public static class DateType extends DefaultAbstractKnowWEObjectType {
 
 		public DateType() {
 			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR6));
@@ -214,7 +214,7 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 
 
 
-	private static class ImportanceType extends DefaultAbstractKnowWEObjectType {
+	public static class ImportanceType extends DefaultAbstractKnowWEObjectType {
 		Pattern embracedNumbers = Pattern.compile("\\(\\s*\\d*\\s*\\)");
 
 		// Pattern embracedNumbers = Pattern.compile("1");
@@ -293,7 +293,7 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 		}
 	}
 
-	private static class Source extends DefaultAbstractKnowWEObjectType {
+	public static class Source extends DefaultAbstractKnowWEObjectType {
 		public Source() {
 			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR3));
 			this.sectionFinder = new RegexSectionFinder("(QUELLE:.*)\\r?\\n",
@@ -305,7 +305,7 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 		}
 	}
 
-	private static class Description extends DefaultAbstractKnowWEObjectType {
+	public static class Description extends DefaultAbstractKnowWEObjectType {
 		public Description() {
 			SemanticAnnotation semanticAnnotation = new SemanticAnnotation();
 
