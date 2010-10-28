@@ -11,6 +11,12 @@ import de.d3web.we.hermes.TimeEvent;
 import de.d3web.we.hermes.TimeStamp;
 import de.d3web.we.hermes.kdom.conceptMining.LocationOccurrence;
 import de.d3web.we.hermes.kdom.conceptMining.PersonOccurrence;
+import de.d3web.we.hermes.kdom.event.renderer.TimeEventDateRenderer;
+import de.d3web.we.hermes.kdom.event.renderer.TimeEventDescRenderer;
+import de.d3web.we.hermes.kdom.event.renderer.TimeEventImpRenderer;
+import de.d3web.we.hermes.kdom.event.renderer.TimeEventRenderer;
+import de.d3web.we.hermes.kdom.event.renderer.TimeEventSrcRenderer;
+import de.d3web.we.hermes.kdom.event.renderer.TimeEventTitleRenderer;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -69,6 +75,8 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(SourceType);
 
 		this.childrenTypes.add(DescriptionType);
+		
+		this.setCustomRenderer(new TimeEventRenderer());
 
 		this.addSubtreeHandler(Priority.LOW, new TimeEventOWLCompiler());
 	}
@@ -117,8 +125,8 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 			super(String.class, true);
 			this.setTermScope(KnowWETerm.GLOBAL);
 
-			// renderer (for testing only)
-			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR1));
+			// renderer
+			this.setCustomRenderer(new TimeEventTitleRenderer());
 
 			// SectionFinder for Title
 			ConstraintSectionFinder cf = new ConstraintSectionFinder(
@@ -167,7 +175,7 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 	public static class DateType extends DefaultAbstractKnowWEObjectType {
 
 		public DateType() {
-			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR6));
+			this.setCustomRenderer(new TimeEventDateRenderer());
 			ConstraintSectionFinder cf = new ConstraintSectionFinder(
 					new ISectionFinder() {
 
@@ -220,7 +228,7 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 		// Pattern embracedNumbers = Pattern.compile("1");
 
 		public ImportanceType() {
-			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR2));
+			this.setCustomRenderer(new TimeEventImpRenderer());
 
 			// SectionFinder taking the last number in brackets
 			ConstraintSectionFinder cf = new ConstraintSectionFinder(
@@ -278,7 +286,7 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 
 		}
 
-		static Integer getImportance(Section<ImportanceType> s) {
+		public static Integer getImportance(Section<ImportanceType> s) {
 			String number = s.getOriginalText().replaceAll("\\(", "").replaceAll("\\)",
 					"").trim();
 			Integer i = null;
@@ -295,7 +303,7 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 
 	public static class Source extends DefaultAbstractKnowWEObjectType {
 		public Source() {
-			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR3));
+			this.setCustomRenderer(new TimeEventSrcRenderer());
 			this.sectionFinder = new RegexSectionFinder("(QUELLE:.*)\\r?\\n",
 					9999, 1);
 		}
@@ -316,19 +324,9 @@ public class TimeEventNew extends DefaultAbstractKnowWEObjectType {
 			this.childrenTypes.add(new PersonOccurrence());
 			this.childrenTypes.add(new LocationOccurrence());
 
-			// for testing only
-			this.setCustomRenderer(new KnowWEDomRenderer<KnowWEObjectType>() {
-
-				@Override
-				public void render(KnowWEArticle article, Section<KnowWEObjectType> sec, KnowWEUserContext user, StringBuilder string) {
-					string.append(KnowWEUtils.maskHTML("<b>"));
-					string.append(sec.getOriginalText());
-					string.append(KnowWEUtils.maskHTML("</b>"));
-					string.append(KnowWEUtils.maskHTML("<br>"));
-					string.append(KnowWEUtils.maskHTML("<br>"));
-
-				}
-			});
+			// renderer
+			this.setCustomRenderer(new TimeEventDescRenderer());
+			
 			ConstraintSectionFinder f = new ConstraintSectionFinder(
 					new AllTextFinderTrimmed());
 			f.addConstraint(SingleChildConstraint.getInstance());
