@@ -22,6 +22,7 @@ package de.d3web.we.terminology;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -145,14 +146,32 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		Map<TermIdentifier, TermReferenceLog> logs = getTermReferenceLogsMap(article.getTitle(),
 				KnowWETerm.LOCAL);
 		for (TermReferenceLog log : new LinkedList<TermReferenceLog>(logs.values())) {
-			this.unregisterTermDefinition(article, log.termDefiningSection);
+			if (log.termDefiningSection != null) {
+				this.unregisterTermDefinition(article, log.termDefiningSection);
+			}
 		}
+		termReferenceLogsMaps.remove(article.getTitle());
 
 		logs = getTermReferenceLogsMap(article.getTitle(),
 				KnowWETerm.GLOBAL);
 		for (TermReferenceLog log : new LinkedList<TermReferenceLog>(logs.values())) {
-			if (log.termDefiningSection.getArticle().getTitle().equals(article.getTitle())) {
+			if (log.termDefiningSection != null &&
+					log.termDefiningSection.getArticle().getTitle().equals(article.getTitle())) {
 				this.unregisterTermDefinition(article, log.termDefiningSection);
+			}
+			else {
+				for (Section<?> redTermDef : new ArrayList<Section<?>>(
+						log.getRedundantDefinitions())) {
+					if (redTermDef.getArticle().getTitle().equals(article.getTitle())) {
+						log.getRedundantDefinitions().remove(redTermDef);
+					}
+				}
+				for (Section<?> termRef : new ArrayList<Section<?>>(
+						log.getReferences())) {
+					if (termRef.getArticle().getTitle().equals(article.getTitle())) {
+						log.getReferences().remove(termRef);
+					}
+				}
 			}
 		}
 	}

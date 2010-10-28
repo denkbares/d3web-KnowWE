@@ -21,12 +21,12 @@
 package de.d3web.we.core;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -265,7 +265,7 @@ public class KnowWEArticleManager {
 
 		EventManager.getInstance().fireEvent(new UpdatingDependenciesEvent(article));
 
-		for (String title : new LinkedList<String>(articlesToRefresh)) {
+		for (String title : new ArrayList<String>(articlesToRefresh)) {
 			if (updatingArticles.contains(title)) continue;
 			KnowWEArticle newArt = KnowWEArticle.createArticle(
 					articleMap.get(title).getSection().getOriginalText(), title,
