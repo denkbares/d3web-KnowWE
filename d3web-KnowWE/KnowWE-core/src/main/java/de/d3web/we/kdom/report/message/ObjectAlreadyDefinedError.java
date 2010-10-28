@@ -20,19 +20,31 @@
 
 package de.d3web.we.kdom.report.message;
 
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.report.KDOMError;
 
 public class ObjectAlreadyDefinedError extends KDOMError {
 
-	private String text;
+	private final String text;
+	private Section<? extends TermDefinition> definition = null;
 
 	public ObjectAlreadyDefinedError(String text) {
 		this.text = text;
 	}
+	
+	public ObjectAlreadyDefinedError(String text, Section<? extends TermDefinition> s) {
+		this(text);
+		definition = s;
+	}
 
 	@Override
 	public String getVerbalization() {
-		return "Object already defined: " + text;
+		String result = "Object already defined: " + text;
+		if (definition != null) {
+			result += " in :" + definition.getTitle();
+		}
+		return result;
 	}
 
 }

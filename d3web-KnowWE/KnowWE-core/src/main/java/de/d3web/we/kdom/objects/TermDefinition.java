@@ -145,7 +145,7 @@ public abstract class TermDefinition<TermObject>
 			if (before == after) {
 				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
 						s.get().getName()
-								+ ": " + s.get().getTermName(s)));
+								+ ": " + s.get().getTermName(s), before));
 			}
 
 			return new ArrayList<KDOMReportMessage>(0);
