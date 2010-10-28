@@ -20,24 +20,24 @@
 
 package de.d3web.we.kdom.table.attributes;
 
-import de.d3web.KnOfficeParser.txttable.TxtAttributeTableBuilder;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.table.TableCellSeparator;
-import de.d3web.we.kdom.table.TableLineSectionFinder;
-import de.d3web.we.kdom.table.TableLineRenderer;
+import de.d3web.we.kdom.table.TableLine;
 
-public class AttributeTableLine extends DefaultAbstractKnowWEObjectType {
+public class AttributeTableLine extends TableLine {
 
-	public AttributeTableLine(TxtAttributeTableBuilder builder) {
-		this.sectionFinder = new TableLineSectionFinder(builder);
-		this.childrenTypes.add(new AttributeTableCell(builder));
-		this.childrenTypes.add(new TableCellSeparator(builder));
-		init();
+	public AttributeTableLine() {
+		childrenTypes.add(0, new AttributeTableCell());
 	}
 
-	@Override
-	protected void init() {
-		this.setCustomRenderer(new TableLineRenderer());
-	}
+// public AttributeTableLine(TxtAttributeTableBuilder builder) {
+	// this.sectionFinder = new TableLineSectionFinder(builder);
+	// this.childrenTypes.add(new AttributeTableCell(builder));
+	// this.childrenTypes.add(new TableCellSeparator(builder));
+	// init();
+	// }
+	//
+	// @Override
+	// protected void init() {
+	// this.setCustomRenderer(new TableLineRenderer());
+	// }
 
 }

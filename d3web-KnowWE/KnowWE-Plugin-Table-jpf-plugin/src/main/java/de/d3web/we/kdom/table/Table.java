@@ -20,15 +20,8 @@
 
 package de.d3web.we.kdom.table;
 
-import java.util.Collection;
-
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.xml.XMLContent;
 
 /**
@@ -37,8 +30,8 @@ import de.d3web.we.kdom.xml.XMLContent;
  * </p>
  * 
  * * This class is used to extend KnowWE with in-view editable tables. The
- * markup for this feature is the following: e.g: &lt;table&gt; | cell 1 | cell
- * 2 &lt;/table&gt;
+ * markup for this feature is the following: e.g: | cell 1 | cell 2 or || header
+ * cell | normal cell;
  * 
  * Now all tables will be prefixed with a button called "QuickEditFlag". This
  * buttons enabled a quick edit mode for the table. If selected, each cell will
@@ -69,27 +62,13 @@ import de.d3web.we.kdom.xml.XMLContent;
  */
 public abstract class Table extends DefaultAbstractKnowWEObjectType {
 
-	/**
-	 * Attribute name for the default values of each cell.
-	 */
-	public static final String ATT_VALUES = "default";
-
-	/**
-	 * Attribute name for the width of each cell.
-	 */
-	public static final String ATT_WIDTH = "width";
-
-	/**
-	 * Attribute name. Lets the user specify columns and row that are non
-	 * editable.
-	 */
-	public static final String ATT_NOEDIT_COLUMN = "column";
-	public static final String ATT_NOEDIT_ROW = "row";
-
 	private final TableAttributesProvider tableAttributesProvider;
 
 	public Table(TableAttributesProvider tableAttributesProvider) {
 		this.tableAttributesProvider = tableAttributesProvider;
+		this.childrenTypes.add(new TableLine());
+		this.sectionFinder = new AllTextSectionFinder();
+		this.setCustomRenderer(new TableRenderer());
 	}
 
 	public TableAttributesProvider getTableAttributesProvider() {
@@ -100,25 +79,4 @@ public abstract class Table extends DefaultAbstractKnowWEObjectType {
 		return false;
 	}
 
-	@Override
-	protected void init() {
-		childrenTypes.add(new TableLine());
-		this.sectionFinder = new AllTextSectionFinder();
-		this.setCustomRenderer(new TableContentRenderer());
-		this.addSubtreeHandler(new TableSubTreeHandler());
-	}
-
-	private class TableSubTreeHandler extends SubtreeHandler {
-
-		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section sec) {
-			Section<?> s = sec;
-			Section<TableLine> headerLine = s.findSuccessor(TableLine.class);
-			AbstractKnowWEObjectType solutionHeaderType = new TableHeaderLine();
-			if (headerLine != null) {
-				headerLine.setType(solutionHeaderType);
-			}
-			return null;
-		}
-	}
 }

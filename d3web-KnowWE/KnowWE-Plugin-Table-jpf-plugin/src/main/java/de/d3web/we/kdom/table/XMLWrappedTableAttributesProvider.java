@@ -35,10 +35,8 @@ public class XMLWrappedTableAttributesProvider implements TableAttributesProvide
 		Section<AbstractXMLObjectType> xml = s.findAncestorOfType(AbstractXMLObjectType.class);
 		if (xml != null) {
 			Map<String, String> map = AbstractXMLObjectType.getAttributeMapFor(xml);
-			String str = map.get(Table.ATT_VALUES);
+			String str = map.get(TableAttributesProvider.ATT_VALUES);
 			if (str != null) return str.split(",");
-			// return
-			// AbstractXMLObjectType.getAttributeMapFor(xml).get(Table.ATT_VALUES).split(",");
 		}
 		return null;
 	}
@@ -47,7 +45,8 @@ public class XMLWrappedTableAttributesProvider implements TableAttributesProvide
 	public String getNoEditColumnAttribute(Section<Table> s) {
 		Section<AbstractXMLObjectType> xml = s.findAncestorOfType(AbstractXMLObjectType.class);
 		if (xml != null) {
-			return AbstractXMLObjectType.getAttributeMapFor(xml).get(Table.ATT_NOEDIT_COLUMN);
+			return AbstractXMLObjectType.getAttributeMapFor(xml).get(
+					TableAttributesProvider.ATT_NOEDIT_COLUMN);
 		}
 		return null;
 	}
@@ -56,7 +55,8 @@ public class XMLWrappedTableAttributesProvider implements TableAttributesProvide
 	public String getNoEditRowAttribute(Section<Table> s) {
 		Section<AbstractXMLObjectType> xml = s.findAncestorOfType(AbstractXMLObjectType.class);
 		if (xml != null) {
-			return AbstractXMLObjectType.getAttributeMapFor(xml).get(Table.ATT_NOEDIT_ROW);
+			return AbstractXMLObjectType.getAttributeMapFor(xml).get(
+					TableAttributesProvider.ATT_NOEDIT_ROW);
 		}
 		return null;
 	}
@@ -65,7 +65,8 @@ public class XMLWrappedTableAttributesProvider implements TableAttributesProvide
 	public String getWidthAttribute(Section<Table> s) {
 		Section<AbstractXMLObjectType> xml = s.findAncestorOfType(AbstractXMLObjectType.class);
 		if (xml != null) {
-			return AbstractXMLObjectType.getAttributeMapFor(xml).get(Table.ATT_WIDTH);
+			return AbstractXMLObjectType.getAttributeMapFor(xml).get(
+					TableAttributesProvider.ATT_WIDTH);
 		}
 		return null;
 	}

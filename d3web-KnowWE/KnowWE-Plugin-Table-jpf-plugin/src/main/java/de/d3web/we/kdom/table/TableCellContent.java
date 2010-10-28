@@ -21,29 +21,27 @@
 package de.d3web.we.kdom.table;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 
 public class TableCellContent extends DefaultAbstractKnowWEObjectType {
 
-	@Override
-	protected void init() {
-		sectionFinder = new AllTextSectionFinder();
+	public TableCellContent() {
+		this.sectionFinder = new AllTextSectionFinder();
+		this.setCustomRenderer(new TableCellContentRenderer());
 	}
 
-	/**
-	 * <p>
-	 * Returns the renderer for the TableCellContent.
-	 * </p>
-	 * 
-	 * @return {@link KnowWEDomRenderer}
-	 * @see TableCellContentRenderer
-	 */
-	@Override
-	public KnowWEDomRenderer getRenderer() {
-		// HOTFIX getRenderer shouldnt be overriden!!
-		if (customRenderer != null) return customRenderer;
-
-		return new TableCellContentRenderer();
+	public static boolean isTableHeadContent(Section<? extends TableCellContent> s) {
+		Section<? extends TableCell> cell = s.findAncestorOfType(TableCell.class);
+		return TableCell.isTableHead(cell);
 	}
+
+	public static int getRow(Section<? extends TableCellContent> section) {
+		return TableUtils.getRow(section);
+	}
+
+	public static int getCol(Section<? extends TableCellContent> section) {
+		return TableUtils.getColumn(section);
+	}
+
 }

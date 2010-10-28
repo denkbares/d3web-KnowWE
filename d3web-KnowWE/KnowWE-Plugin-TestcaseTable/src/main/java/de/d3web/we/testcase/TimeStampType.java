@@ -20,20 +20,30 @@ package de.d3web.we.testcase;
 
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
 /**
- *
- * @author Florian Ziegler
+ * 
+ * @author Florian Ziegler / Sebastian Furth
  * @created 12.08.2010
  */
-public class TimeStampType extends AbstractKnowWEObjectType {
+public class TimeStampType extends DefaultAbstractKnowWEObjectType {
 
-	private static Pattern timeStampPattern = Pattern.compile("(((\\d+h\\s*)?(\\d+m\\s*)?)?(\\d+s)?)?(\\d*ms)?");
+	private static String HOUR = "\\d+h\\s*";
+	private static String MINUTE = "\\d+m\\s*";
+	private static String SECOND = "\\d+s\\s*";
+	private static String MILLIS = "\\d+ms\\s*";
+	private static String pattern = "(" + HOUR + "|" + HOUR + MINUTE + "|" + HOUR + MINUTE + SECOND
+			+ "|" + HOUR + MINUTE + SECOND + MILLIS + ")";
+	private static Pattern timeStampPattern = Pattern.compile(pattern);
 
-	@Override
-	protected void init() {
-
+	public TimeStampType() {
+		/*
+		 * Comment (Sebastian Furth): added SectionFinder because otherwise
+		 * every cell in the table is a TimeStamp. Burn me if i was wrong ;)
+		 */
+		sectionFinder = new RegexSectionFinder(pattern);
 	}
 
 	@Override

@@ -31,16 +31,16 @@ import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
- * This is a renderer for the TableContent. It wraps the <code>Table</code> tag
- * into an own DIV and delegates the rendering of each
- * <code>TableCellContent</code> to its own renderer.
+ * This is a renderer for the Table. It wraps the <code>Table</code> tag into an
+ * own DIV and delegates the rendering of each <code>TableCellContent</code> to
+ * its own renderer.
  * 
  * @author smark
  */
-public class TableContentRenderer extends KnowWEDomRenderer {
+public class TableRenderer extends KnowWEDomRenderer<Table> {
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section<Table> sec, KnowWEUserContext user, StringBuilder string) {
 
 		final ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle(user);
 
@@ -115,7 +115,7 @@ public class TableContentRenderer extends KnowWEDomRenderer {
 		return "";
 	}
 
-	protected String getOpeningTag(Section sec) {
+	protected String getOpeningTag(Section<?> sec) {
 		return "<div class=\"table-edit\" id=\"" + sec.getID() + "\">";
 	}
 

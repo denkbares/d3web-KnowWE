@@ -85,9 +85,13 @@ public class TableCellContentRenderer extends KnowWEDomRenderer<TableCellContent
 		StringBuilder html = new StringBuilder();
 
 		boolean sort = TableUtils.sortTest(sec);
+		boolean tablehead = TableCellContent.isTableHeadContent(sec);
 
 		if (sort) {
 			html.append("<th class=\"sort\">");
+		}
+		else if (tablehead) {
+			html.append("<th>");
 		}
 		else {
 			html.append("<td>");
@@ -95,7 +99,7 @@ public class TableCellContentRenderer extends KnowWEDomRenderer<TableCellContent
 
 		generateContent(sectionText, sec, user, sectionID, html);
 
-		if (sort) {
+		if (sort || tablehead) {
 			html.append("</th>");
 		}
 		else {
@@ -107,7 +111,7 @@ public class TableCellContentRenderer extends KnowWEDomRenderer<TableCellContent
 	protected void generateContent(String sectionText, Section<TableCellContent> sec,
 			KnowWEUserContext user, String sectionID, StringBuilder html) {
 		if (sec.hasQuickEditModeSet(user.getUserName())) {
-			Section father = sec.findAncestorOfType(Table.class);
+			Section<Table> father = sec.findAncestorOfType(Table.class);
 			String[] values = null;
 			String size = null, rows = null, cols = null;
 
@@ -141,7 +145,7 @@ public class TableCellContentRenderer extends KnowWEDomRenderer<TableCellContent
 		}
 	}
 
-	protected String translateTextForView(String sectionText, Section sec) {
+	protected String translateTextForView(String sectionText, Section<?> sec) {
 		// can be overriden by subclasses
 		return sectionText;
 	}

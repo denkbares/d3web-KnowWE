@@ -23,14 +23,13 @@ package de.d3web.we.kdom.table;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -48,44 +47,41 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  */
 public class TableCellStart extends DefaultAbstractKnowWEObjectType {
 
-	@Override
-	protected void init() {
+	public TableCellStart() {
 		sectionFinder = new TableCellStartSectionFinder();
 	}
 
-	public class TableCellStartSectionFinder extends SectionFinder {
+	public class TableCellStartSectionFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
-			int index = text.indexOf("|") + 1;
-			if (index == -1) return null;
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
+
+			if (!text.startsWith("|")) {
+				return null;
+			}
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			result.add(new SectionFinderResult(0, index));
+			result.add(new SectionFinderResult(0, 1));
 			return result;
 		}
 	}
 
 	/**
-	 * Returns the renderer for the <code>TableContent</code>.
+	 * Returns the renderer for the <code>TableCellStart</code>.
+	 * 
+	 * This renderer actually renders nothing, but it hides the ugly "||".
 	 */
 	@Override
-	public KnowWEDomRenderer getRenderer() {
+	public KnowWEDomRenderer<TableCellStart> getRenderer() {
 
-		/**
-		 * This is a renderer for the TableContent. I wraps the
-		 * <code>Table</code> tag into an own DIV and delegates the rendering of
-		 * each <code>TableCellContent</code> to its own renderer.
-		 * 
-		 * @author smark
-		 */
-		class TableCellStartRenderer extends KnowWEDomRenderer {
+		class TableCellStartRenderer extends KnowWEDomRenderer<TableCellStart> {
 
 			@Override
-			public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
-				string.append(KnowWEEnvironment.maskHTML(""));
+			public void render(KnowWEArticle article, Section<TableCellStart> sec, KnowWEUserContext user, StringBuilder string) {
+				string.append("");
 			}
 		}
+
 		return new TableCellStartRenderer();
 	}
 }

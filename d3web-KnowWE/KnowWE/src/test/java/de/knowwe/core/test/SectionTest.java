@@ -22,12 +22,12 @@ package de.knowwe.core.test;
 
 import java.io.IOException;
 
+import junit.framework.TestCase;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import dummies.KnowWETestWikiConnector;
-import junit.framework.TestCase;
 
 /**
  * Class for testing some functionality of class Section.
@@ -70,10 +70,10 @@ public class SectionTest extends TestCase {
 		// First some initial sectionizing test
 		Section headerSec = checkChildsTillLine(article, 0, false);
 		checkCellContents(headerSec, new String[] {
-				" ", "Apple", "Lemon", "Coconut" });
+				" ", "Apple", "Lemon", "Coconut\n" });
 		Section lineSec = checkChildsTillLine(article, 1, false);
 		checkCellContents(lineSec, new String[] {
-				"sweetness", "+", "-", "hm" });
+				"sweetness", "+", "-", "hm\n" });
 
 		// Testing setOriginalTextSetLeaf for a node being not a leaf
 		String newHeader = "| |Football|Soccer|Rugby\n";
@@ -92,14 +92,12 @@ public class SectionTest extends TestCase {
 		// Testing setOriginalTextSetLeaf for nodes being a leaf
 		String lineText = lineSec.getOriginalText();
 		String[] newLine = new String[] {
-				"speed", "0", "+", "+" };
+				"speed", "0", "+", "+\n" };
 		for (int i = 0; i < newLine.length; i++) {
 			article.getSection().setOriginalTextSetLeaf(
 					((Section) ((Section) lineSec.getChildren().get(i)).getChildren().get(1)).getID(),
 					newLine[i]);
 		}
-		article.getSection().setOriginalTextSetLeaf(
-				((Section) lineSec.getChildren().get(newLine.length)).getID(), "\n");
 		assertEquals("OrignialText from parent changed by changing childs (befor save)",
 				lineText, lineSec.getOriginalText());
 		checkChildsTillLine(article, 1, true); // isDirty = true?!
@@ -117,10 +115,10 @@ public class SectionTest extends TestCase {
 		// Sectionizing test for new article
 		headerSec = checkChildsTillLine(article, 0, false);
 		checkCellContents(headerSec, new String[] {
-				" ", "Football", "Soccer", "Rugby" });
+				" ", "Football", "Soccer", "Rugby\n" });
 		lineSec = checkChildsTillLine(article, 1, false);
 		checkCellContents(lineSec, new String[] {
-				"speed", "0", "+", "+" });
+				"speed", "0", "+", "+\n" });
 	}
 
 	/**
@@ -180,7 +178,7 @@ public class SectionTest extends TestCase {
 			Section actSec = sec;
 
 			assertEquals("Node with new content wasn't split up into childs",
-					5, actSec.getChildren().size());
+					4, actSec.getChildren().size());
 			// TableCell #i
 			actSec = (Section) actSec.getChildren().get(i);
 			assertEquals(actSec + ": ", 2, actSec.getChildren().size());

@@ -20,71 +20,71 @@
 
 package de.d3web.we.kdom.table.attributes;
 
-import java.util.ArrayList;
-import java.util.List;
+import de.d3web.we.kdom.table.TableCell;
 
-import de.d3web.KnOfficeParser.txttable.TxtAttributeTableBuilder;
-import de.d3web.KnOfficeParser.txttable.TxtTableParser;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.table.TableCellContentRenderer;
-import de.d3web.we.kdom.table.TableCellSectionFinder;
-import de.d3web.we.kdom.table.TableUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+public class AttributeTableCell extends TableCell {
 
-public class AttributeTableCell extends DefaultAbstractKnowWEObjectType {
-
-	public AttributeTableCell(TxtAttributeTableBuilder builder) {
-		this.sectionFinder = new TableCellSectionFinder(builder);
-		this.setCustomRenderer(new TxtAttributeTableCellRenderer());
+	public AttributeTableCell() {
+		childrenTypes.add(2, new AttributeTableCellContent());
 	}
 
-	protected class TxtAttributeTableCellRenderer extends TableCellContentRenderer {
-
-		@Override
-		public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
-			string.append(wrappContent(TxtTableParser.compile(sec.getOriginalText()), sec, user));
-		}
-
-		/**
-		 * Returns the column of the table in which the current cell occurs.
-		 * 
-		 * @param section current section
-		 * @return
-		 */
-		protected int getColumn(Section section) {
-			Section tableLine = section.findAncestorOfType(AttributeTableLine.class);
-			List<Section> tmpSections = new ArrayList<Section>();
-			TableUtils.getCertainSections(tableLine, AttributeTableCell.class.getName(),
-					tmpSections);
-
-			return tmpSections.indexOf(section) + 1;
-		}
-
-		/**
-		 * Returns the row of the table in which the current cell occurs.
-		 * 
-		 * @param section current section
-		 * @return
-		 */
-		protected int getRow(Section section) {
-			Section tableContent = section.findAncestorOfType(AttributeTableContent.class);
-
-			List<Section> sections = new ArrayList<Section>();
-			TableUtils.getCertainSections(tableContent, AttributeTableLine.class.getName(),
-					sections);
-
-			int row = -1;
-			for (int i = 0; i < sections.size(); i++) {
-				List<Section> tmpSections = new ArrayList<Section>();
-				TableUtils.getCertainSections(sections.get(i), AttributeTableCell.class.getName(),
-						tmpSections);
-				if (tmpSections.contains(section)) row = i;
-			}
-			return row + 1;
-		}
-
-	}
+	// public AttributeTableCell(TxtAttributeTableBuilder builder) {
+	// this.sectionFinder = new TableCellSectionFinder(builder);
+	// this.setCustomRenderer(new TxtAttributeTableCellRenderer());
+	// }
+	//
+	// protected class TxtAttributeTableCellRenderer extends
+	// TableCellContentRenderer {
+	//
+	// @Override
+	// public void render(KnowWEArticle article, Section sec, KnowWEUserContext
+	// user, StringBuilder string) {
+	// string.append(wrappContent(TxtTableParser.compile(sec.getOriginalText()),
+	// sec, user));
+	// }
+	//
+	// /**
+	// * Returns the column of the table in which the current cell occurs.
+	// *
+	// * @param section current section
+	// * @return
+	// */
+	// protected int getColumn(Section<?> section) {
+	// Section<AttributeTableLine> tableLine =
+	// section.findAncestorOfType(AttributeTableLine.class);
+	// List<Section<AttributeTableCell>> tmpSections = new
+	// ArrayList<Section<AttributeTableCell>>();
+	// tableLine.findSuccessorsOfType(AttributeTableCell.class, tmpSections);
+	//
+	// return tmpSections.indexOf(section) + 1;
+	// }
+	//
+	// /**
+	// * Returns the row of the table in which the current cell occurs.
+	// *
+	// * @param section current section
+	// * @return
+	// */
+	// protected int getRow(Section<?> section) {
+	// Section<AttributeTableContent> tableContent =
+	// section.findAncestorOfType(AttributeTableContent.class);
+	//
+	// List<Section<AttributeTableLine>> lines = new
+	// ArrayList<Section<AttributeTableLine>>();
+	// tableContent.findSuccessorsOfType(AttributeTableLine.class, lines);
+	//
+	// // TODO: Refactor
+	//
+	// int row = -1;
+	// for (int i = 0; i < lines.size(); i++) {
+	// List<Section<AttributeTableCell>> tmpSections = new
+	// ArrayList<Section<AttributeTableCell>>();
+	// lines.get(i).findSuccessorsOfType(AttributeTableCell.class, tmpSections);
+	// if (tmpSections.contains(section)) row = i;
+	// }
+	// return row;
+	// }
+	//
+	// }
 
 }

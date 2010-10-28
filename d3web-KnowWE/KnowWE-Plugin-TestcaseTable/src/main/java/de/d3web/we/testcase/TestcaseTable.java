@@ -21,7 +21,6 @@
 package de.d3web.we.testcase;
 
 import de.d3web.we.kdom.table.Table;
-import de.d3web.we.kdom.table.TableLine;
 
 /**
  * @author Florian Ziegler
@@ -30,19 +29,12 @@ public class TestcaseTable extends Table {
 
 	public TestcaseTable() {
 		super(new TestcaseTableAttributesProvider());
-
+		this.childrenTypes.add(0, new TestcaseTableLine());
 	}
 
 	@Override
 	public boolean isSortable() {
 		return true;
-	}
-
-	@Override
-	public void init() {
-		super.init();
-		this.childrenTypes.clear();
-		this.childrenTypes.add(new TableLine(new TestcaseTableColHeaderCellContent()));
 	}
 
 }

@@ -20,16 +20,16 @@
 
 package de.d3web.we.kdom.table;
 
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 /**
@@ -38,20 +38,31 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
  * This class represents a cell of a WIKI table. Each cell has a start and a
  * content area.
  * 
- * @author smark
+ * @author smark, Sebastian Furth
  * @see AbstractKnowWEObjectType
  * @see TableCellStart
  * @see TableCell
  */
 public class TableCell extends DefaultAbstractKnowWEObjectType {
 
-	@Override
-	protected void init() {
-		// sectionFinder = new AllTextFinder(this);
+	public TableCell() {
 		sectionFinder = new TableCellSectionFinder();
-
+		childrenTypes.add(new TableHeadStart());
 		childrenTypes.add(new TableCellStart());
 		childrenTypes.add(new TableCellContent());
+	}
+
+	/**
+	 * Returns for a TableCell whether it is a TableHead or not. Therefore it is
+	 * checked if the TableCell has a child of type TableHeadStart
+	 * 
+	 * @author Sebastian Furth
+	 * @created 19/10/2010
+	 * @param tableCell the table cell which will be checked
+	 * @return true if table head, otherwise false.
+	 */
+	public static boolean isTableHead(Section<? extends TableCell> tableCell) {
+		return tableCell.findChildOfType(TableHeadStart.class) != null;
 	}
 
 	/**
@@ -62,68 +73,28 @@ public class TableCell extends DefaultAbstractKnowWEObjectType {
 	 * appearance of special markup e.g. links. The parser takes therefore this
 	 * special markup into account and handles it.
 	 * 
-	 * @author smark
-	 * @see SectionFinder
+	 * @author smark, Sebastian Furth
+	 * @see ISectionFinder
 	 */
-	public class TableCellSectionFinder extends SectionFinder {
+	public class TableCellSectionFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
-			ArrayList<SectionFinderResult> resultRegex = new ArrayList<SectionFinderResult>();
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
 
-			StringBuilder cell = new StringBuilder();
-			CharacterIterator it = new StringCharacterIterator(text);
-			boolean newCell = false, hasLinkOpen = false;
-			int start = -1, end = -1;
+			final String CELLSTART = "\\|{1,2}\\s*";
+			final String JSPLINK = "(\\[.+\\|?.*\\])";
+			final String CHARCLASSES = "\\s\\d\\w";
+			final String SPECIALCHARS = "-_:;!§€@%&#='´`°äöüÄÖÜß}\\$\\{\\(\\\\\\+\\)\\?\\<\\>\\^";
+			
+			String regex = CELLSTART + "(" + JSPLINK + "|[" + CHARCLASSES + SPECIALCHARS + "]*)";
+			Pattern pattern = Pattern.compile(regex);
 
-			for (char ch = it.first(); ch != CharacterIterator.DONE; ch = it.next()) {
-				switch (ch) {
-				case '[':
-					hasLinkOpen = true;
-					cell.append(ch);
-					break;
-				case ']':
-					cell.append(ch);
-					hasLinkOpen = false;
-					break;
-				case '|':
-					if (newCell) {
-						if (hasLinkOpen) {
-							hasLinkOpen = false;
-							cell.append(ch);
-						}
-						else {
-							end = it.getIndex();
-							newCell = false;
-						}
-					}
-					else {
-						newCell = true;
-						start = it.getIndex();
-					}
+			Matcher tagMatcher = pattern.matcher(text);
+			List<SectionFinderResult> resultRegex = new LinkedList<SectionFinderResult>();
 
-					break;
-				case '\n':
-				case '\r':
-					end = it.getIndex();
-					break;
-				default:
-					cell.append(ch);
-					break;
-				}
-
-				// TODO Hotfix for #28
-				if (!newCell && start > -1) {
-					resultRegex.add(new SectionFinderResult(start, end));
-					newCell = true;
-					start = it.getIndex();
-					cell = new StringBuilder();
-				}
+			while (tagMatcher.find()) {
+				resultRegex.add(new SectionFinderResult(tagMatcher.start(), tagMatcher.end()));
 			}
-
-			// TODO Hotfix for #28
-			if (start > -1 && end > -1) resultRegex.add(new SectionFinderResult(start, end));
-
 			return resultRegex;
 		}
 	}

@@ -20,47 +20,55 @@
 
 package de.d3web.we.kdom.table;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 /**
  * TableLine.
  * 
  * Represents a line of a WIKI table.
  * 
+ * @author smark, Sebastian Furth
+ * 
  */
 public class TableLine extends DefaultAbstractKnowWEObjectType {
 
-	protected AbstractKnowWEObjectType colHeaderType;
-
 	public TableLine() {
-		this(new TableColumnHeaderCellContent());
-	}
-
-	public TableLine(TableCellContent colHeaderType) {
-		this.colHeaderType = colHeaderType;
-	}
-
-	@Override
-	protected void init() {
 		childrenTypes.add(new TableCell());
 		sectionFinder = new TableLineSectionFinder();
-		this.addSubtreeHandler(0, Priority.DEFAULT, new TableLineHandler());
 		setCustomRenderer(new TableLineRenderer());
+	}
+
+	/**
+	 * Returns for a TableLine whether it is a TableHeadLine or not. Therefore
+	 * it is checked if the TableCell has only childs which are TableHead cells
+	 * 
+	 * @author Sebastian Furth
+	 * @created 19/10/2010
+	 * @param tableLine the table line which will be checked
+	 * @return true if table head line, otherwise false.
+	 */
+	public static boolean isHeaderLine(Section<TableLine> tableLine) {
+
+		List<Section<TableCell>> cells = new LinkedList<Section<TableCell>>();
+		tableLine.findSuccessorsOfType(TableCell.class, cells);
+
+		boolean isHeaderLine = true;
+		for (Section<TableCell> cell : cells) {
+			if (!TableCell.isTableHead(cell)) {
+				isHeaderLine = false;
+			}
+		}
+
+		return isHeaderLine;
 	}
 
 	/**
@@ -69,47 +77,28 @@ public class TableLine extends DefaultAbstractKnowWEObjectType {
 	 * with content are important (line break after Table tag had been rendered
 	 * as cell).
 	 * 
-	 * @author smark
-	 * @see SectionFinder
+	 * @author smark, Sebastian Furth
+	 * @see ISectionFinder
 	 */
-	public class TableLineSectionFinder extends SectionFinder {
+	public class TableLineSectionFinder implements ISectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section father, KnowWEObjectType type) {
-			String lineRegex = ".+(\\r?\\n)";
-			Pattern linePattern = Pattern.compile(lineRegex, Pattern.MULTILINE);
+				Section<?> father, KnowWEObjectType type) {
+
+			String lineRegex = "\\s*(\\|{1,2}.*)+\\r?\\n?";
+			Pattern linePattern = Pattern.compile(lineRegex);
 
 			Matcher tagMatcher = linePattern.matcher(text);
-			ArrayList<SectionFinderResult> resultRegex = new ArrayList<SectionFinderResult>();
+			List<SectionFinderResult> resultRegex = new LinkedList<SectionFinderResult>();
 
 			while (tagMatcher.find()) {
-				resultRegex.add(new SectionFinderResult(tagMatcher.start(),
-						tagMatcher.end()));
+				resultRegex.add(new SectionFinderResult(tagMatcher.start(), tagMatcher.end()));
 			}
 			return resultRegex;
 		}
 	}
 
-	private class TableLineHandler extends SubtreeHandler {
 
-		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
-			Section<TableCell> colHeaderCell = s.findSuccessor(TableCell.class);
-			if (colHeaderCell != null) {
 
-				Section content = colHeaderCell
-						.findChildOfType(TableCellContent.class);
-				if (content != null) {
-
-					content.setType(TableLine.this.colHeaderType);
-				}
-			}
-			return null;
-		}
-	}
-
-	public AbstractKnowWEObjectType getColHeaderType() {
-		return colHeaderType;
-	}
 }

@@ -35,6 +35,23 @@ import de.d3web.we.kdom.Section;
 public interface TableAttributesProvider {
 
 	/**
+	 * Attribute name for the default values of each cell.
+	 */
+	public static final String ATT_VALUES = "default";
+
+	/**
+	 * Attribute name for the width of each cell.
+	 */
+	public static final String ATT_WIDTH = "width";
+
+	/**
+	 * Attribute name. Lets the user specify columns and row that are non
+	 * editable.
+	 */
+	public static final String ATT_NOEDIT_COLUMN = "column";
+	public static final String ATT_NOEDIT_ROW = "row";
+
+	/**
 	 * width style of the generated input-element in quick-edit
 	 * 
 	 * @param s

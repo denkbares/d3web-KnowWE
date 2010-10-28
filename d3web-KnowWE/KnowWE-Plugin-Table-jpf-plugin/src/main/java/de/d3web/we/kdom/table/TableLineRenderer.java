@@ -34,10 +34,10 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * 
  * @author smark
  */
-public class TableLineRenderer extends KnowWEDomRenderer {
+public class TableLineRenderer extends KnowWEDomRenderer<TableLine> {
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section<TableLine> sec, KnowWEUserContext user, StringBuilder string) {
 		StringBuilder b = new StringBuilder();
 		StringBuilder buffi = new StringBuilder();
 		DelegateRenderer.getInstance().render(article, sec, user, b);

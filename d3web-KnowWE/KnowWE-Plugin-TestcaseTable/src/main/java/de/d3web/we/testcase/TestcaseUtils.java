@@ -31,11 +31,9 @@ import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.basic.PlainText;
-import de.d3web.we.kdom.table.Table;
-import de.d3web.we.kdom.table.TableCell;
 import de.d3web.we.kdom.table.TableCellContent;
-import de.d3web.we.kdom.table.TableHeaderLine;
+import de.d3web.we.kdom.table.TableLine;
+import de.d3web.we.kdom.table.TableUtils;
 
 /**
  * @author Florian Ziegler
@@ -46,19 +44,20 @@ public class TestcaseUtils {
 	 * @param s the current Section (Cell)
 	 * @return the alternatives for the current Cell
 	 */
-	public static String[] getKnowledge(Section<?> s) {
+	public static String[] getKnowledge(Section<? extends TableCellContent> s) {
 
 		KnowledgeBase knowledgeService = D3webModule.getAD3webKnowledgeServiceInTopic(
 				s.getWeb(), s.getTitle());
 		List<Question> questions = knowledgeService.getQuestions();
 		List<Solution> solutions = knowledgeService.getSolutions();
 
-		if (s.getObjectType() instanceof TestcaseTableColHeaderCellContent) {
+		if (s.getObjectType() instanceof TestcaseTableCellContent) {
 			return null;
 		}
 
 		if (s.getObjectType() instanceof TableCellContent) {
-			if (s.getFather().getFather().getObjectType() instanceof TableHeaderLine) {
+			Section<TableLine> line = s.findAncestorOfExactType(TableLine.class);
+			if (TableLine.isHeaderLine(line)) {
 				return getHeaderAlternatives(s, questions, solutions);
 			}
 			else {
@@ -101,7 +100,7 @@ public class TestcaseUtils {
 	 * @param questions all questions of the knowledgeBase
 	 * @return answer alternatives
 	 */
-	public static String[] getSimpleTableCellAlternatives(Section<?> s,
+	public static String[] getSimpleTableCellAlternatives(Section<? extends TableCellContent> s,
 			List<Question> questions, List<Solution> solutions) {
 
 		if (questions == null) {
@@ -109,13 +108,12 @@ public class TestcaseUtils {
 		}
 
 		List<String> temp = new ArrayList<String>();
+		String text = TableUtils.getColumnHeadingForCellContent(s);
 
-		Section<PlainText> columnHeader = getMatchingColumnHeader(s);
-		if (columnHeader == null) {
+		if (text == null) {
 			return null;
 		}
 
-		String text = columnHeader.getOriginalText().trim();
 		// find the matching question for the LineHeader
 		// and add its answers
 		for (Question q : questions) {
@@ -149,44 +147,4 @@ public class TestcaseUtils {
 		return temp.toArray(new String[temp.size()]);
 	}
 
-	/**
-	 * returns the TableHeaderCell's PlainText section which is on top of the
-	 * given Section
-	 * 
-	 * @created 26.06.2010
-	 * @param s, the given section
-	 * @return PlainText section
-	 */
-	@SuppressWarnings("unchecked")
-	private static Section<PlainText> getMatchingColumnHeader(Section<?> s) {
-		String id = s.getID();
-		String cellNumber = id.substring(id.indexOf("/TableLine"));
-		cellNumber = cellNumber.substring(cellNumber.indexOf("/TableCell") + 10);
-		int number = Integer.valueOf(cellNumber.substring(0, cellNumber.indexOf("/")));
-
-		Section<? extends Table> table = (Section<? extends Table>) s.getFather().getFather().getFather();
-		if (table == null) {
-			return null;
-		}
-
-		Section<TableHeaderLine> tableHeaderLine = table.findChildOfType(
-				TableHeaderLine.class);
-		if (tableHeaderLine == null || tableHeaderLine.getChildren() == null
-				|| tableHeaderLine.getChildren().size() < 1) {
-			return null;
-		}
-
-		Section<TableCellContent> colHeader = ((Section<TableCell>) tableHeaderLine.getChildren().get(
-				number - 1)).findChildOfType(
-				TableCellContent.class);
-		if (colHeader == null) {
-			return null;
-		}
-
-		Section<PlainText> headerText = (Section<PlainText>) colHeader.getChildren().get(0);
-		if (headerText == null) {
-			return null;
-		}
-		return headerText;
-	}
 }

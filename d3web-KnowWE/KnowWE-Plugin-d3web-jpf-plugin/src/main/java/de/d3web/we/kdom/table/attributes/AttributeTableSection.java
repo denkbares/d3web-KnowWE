@@ -20,8 +20,8 @@
 
 package de.d3web.we.kdom.table.attributes;
 
-import de.d3web.we.kdom.kopic.renderer.KopicSectionRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.XMLContent;
 
 public class AttributeTableSection extends AbstractXMLObjectType {
 
@@ -33,12 +33,7 @@ public class AttributeTableSection extends AbstractXMLObjectType {
 
 	@Override
 	protected void init() {
-		childrenTypes.add(new AttributeTableContent());
-		this.setCustomRenderer(new TxtAttributeTableRenderer());
-	}
-
-	protected class TxtAttributeTableRenderer extends KopicSectionRenderer {
-
+		childrenTypes.add(new XMLContent(new AttributeTable()));
 	}
 
 }

@@ -25,17 +25,17 @@ import de.d3web.we.kdom.table.TableCellContent;
  * @author Florian Ziegler
  * @created 10.08.2010
  */
-public class TestcaseTableColHeaderCellContent extends TableCellContent {
+public class TestcaseTableCellContent extends TableCellContent {
 
 	@Override
 	protected void init() {
-		setCustomRenderer(new TestcaseTableColHeaderCellContentRenderer());
-		childrenTypes.add(new TimeStampType());
+		setCustomRenderer(new TestcaseTableCellContentRenderer());
+		childrenTypes.add(0, new TimeStampType());
 	}
 
 	@Override
 	public KnowWEDomRenderer getRenderer() {
-		return new TestcaseTableColHeaderCellContentRenderer();
+		return new TestcaseTableCellContentRenderer();
 	}
 
 }
