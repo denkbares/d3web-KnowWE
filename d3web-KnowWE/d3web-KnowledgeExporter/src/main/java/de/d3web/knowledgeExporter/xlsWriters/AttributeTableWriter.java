@@ -283,7 +283,7 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 	private void writeMMInfos(IDObject object, WritableSheet sheet, int row)
 			throws RowsExceededException, WriteException {
 		InfoStore infoStore = object.getInfoStore();
-		for (Triple<Property, Locale, Object> p : infoStore.entries()) {
+		for (Triple<Property<?>, Locale, Object> p : infoStore.entries()) {
 			if (p.getA().equals(BasicProperties.MMINFO)) {
 				MMInfoStorage storage = (MMInfoStorage) p.getC();
 				if (storage != null) {

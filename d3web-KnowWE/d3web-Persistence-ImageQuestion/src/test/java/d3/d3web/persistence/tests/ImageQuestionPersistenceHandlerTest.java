@@ -1,4 +1,5 @@
 package d3.d3web.persistence.tests;
+
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
@@ -19,8 +20,6 @@ package d3.d3web.persistence.tests;
  * site: http://www.fsf.org.
  */
 
-
-
 import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedInputStream;
@@ -37,7 +36,6 @@ import de.d3web.core.io.progress.DummyProgressListener;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
-import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.multimedia.io.ImageQuestionPersistenceHandler;
 import de.d3web.multimedia.io.ImageQuestionStore;
 import de.d3web.persistence.tests.utils.XMLTag;
@@ -79,7 +77,7 @@ public class ImageQuestionPersistenceHandlerTest {
 
 		// Question 1
 		Question q1 = kb.searchQuestion("QGelenkstatus");
-		ImageQuestionStore util= (ImageQuestionStore) q1.getInfoStore().getValue(BasicProperties.IMAGE_QUESTION_INFO);
+		ImageQuestionStore util = q1.getInfoStore().getValue(ImageQuestionStore.IMAGE_QUESTION_INFO);
 		String imageName = util.getFile();
 		String height = util.getHeight();
 		String width = util.getWidth();
@@ -110,10 +108,10 @@ public class ImageQuestionPersistenceHandlerTest {
 		// The assertions: AnswerRegion 2
 		attributes = answerRegions.get(1);
 		answerID = attributes.get(0);
-		xStart = Integer.parseInt( attributes.get(1) );
-		xEnd = Integer.parseInt( attributes.get(2) );
-		yStart = Integer.parseInt( attributes.get(3) );
-		yEnd = Integer.parseInt( attributes.get(4) );
+		xStart = Integer.parseInt(attributes.get(1));
+		xEnd = Integer.parseInt(attributes.get(2));
+		yStart = Integer.parseInt(attributes.get(3));
+		yEnd = Integer.parseInt(attributes.get(4));
 		assertEquals("QGelenkstatusA16", answerID);
 		assertEquals(5, xStart);
 		assertEquals(6, xEnd);
@@ -121,7 +119,7 @@ public class ImageQuestionPersistenceHandlerTest {
 		assertEquals(8, yEnd);
 
 		Question q2 = kb.searchQuestion("QGelenkstatus2");
-		util = (ImageQuestionStore) q2.getInfoStore().getValue(BasicProperties.IMAGE_QUESTION_INFO);
+		util = q2.getInfoStore().getValue(ImageQuestionStore.IMAGE_QUESTION_INFO);
 		imageName = util.getFile();
 		height = util.getHeight();
 		width = util.getWidth();
@@ -139,10 +137,10 @@ public class ImageQuestionPersistenceHandlerTest {
 		// The assertions: AnswerRegion 1
 		attributes = (List<String>) answerRegions.get(0);
 		answerID = attributes.get(0);
-		xStart = Integer.parseInt( attributes.get(1) );
-		xEnd = Integer.parseInt( attributes.get(2) );
-		yStart = Integer.parseInt( attributes.get(3) );
-		yEnd = Integer.parseInt( attributes.get(4) );
+		xStart = Integer.parseInt(attributes.get(1));
+		xEnd = Integer.parseInt(attributes.get(2));
+		yStart = Integer.parseInt(attributes.get(3));
+		yEnd = Integer.parseInt(attributes.get(4));
 		assertEquals("QGelenkstatusA17", answerID);
 		assertEquals(1, xStart);
 		assertEquals(2, xEnd);
@@ -153,10 +151,10 @@ public class ImageQuestionPersistenceHandlerTest {
 		// The assertions: AnswerRegion 2
 		attributes = (List<String>) answerRegions.get(1);
 		answerID = (String) attributes.get(0);
-		xStart = Integer.parseInt( attributes.get(1) );
-		xEnd = Integer.parseInt( attributes.get(2) );
-		yStart = Integer.parseInt( attributes.get(3) );
-		yEnd = Integer.parseInt( attributes.get(4) );
+		xStart = Integer.parseInt(attributes.get(1));
+		xEnd = Integer.parseInt(attributes.get(2));
+		yStart = Integer.parseInt(attributes.get(3));
+		yEnd = Integer.parseInt(attributes.get(4));
 		assertEquals("QGelenkstatusA18", answerID);
 		assertEquals(5, xStart);
 		assertEquals(6, xEnd);

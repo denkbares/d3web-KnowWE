@@ -392,7 +392,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				}
 				// Append the properties
 				InfoStore rUnit = t1.getInfoStore();
-				for (Triple<Property, Locale, Object> p1 : rUnit.entries()) {
+				for (Triple<Property<?>, Locale, Object> p1 : rUnit.entries()) {
 					if (p1.getA().hasState(Autosave.mminfo)) {
 						property.append(" " + p1.getA().getName() + ": "
 								+ rUnit.getClass());

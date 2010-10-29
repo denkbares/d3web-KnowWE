@@ -37,7 +37,6 @@ import de.d3web.core.io.utilities.XMLUtil;
 import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.knowledge.terminology.info.BasicProperties;
 
 /**
  * PersistenceHandler for PictureQuestion used in the
@@ -89,7 +88,7 @@ public class ImageQuestionPersistenceHandler implements KnowledgeReader, Knowled
 					// answerRegions
 					store.setAnswerRegions(readAnswerRegions(atts.get(0)));
 
-					infoStore.addValue(BasicProperties.IMAGE_QUESTION_INFO, store);
+					infoStore.addValue(ImageQuestionStore.IMAGE_QUESTION_INFO, store);
 				}
 			}
 		}
@@ -101,7 +100,7 @@ public class ImageQuestionPersistenceHandler implements KnowledgeReader, Knowled
 	public int getEstimatedSize(KnowledgeBase knowledgeBase) {
 		int count = 0;
 		for (Question q : knowledgeBase.getQuestions()) {
-			if (q.getInfoStore().getValue(BasicProperties.IMAGE_QUESTION_INFO) != null) count++;
+			if (q.getInfoStore().getValue(ImageQuestionStore.IMAGE_QUESTION_INFO) != null) count++;
 		}
 		return count;
 	}
@@ -119,7 +118,7 @@ public class ImageQuestionPersistenceHandler implements KnowledgeReader, Knowled
 
 		for (Question q : questions) {
 			ImageQuestionStore store = (ImageQuestionStore) q.getInfoStore().getValue(
-					BasicProperties.IMAGE_QUESTION_INFO);
+					ImageQuestionStore.IMAGE_QUESTION_INFO);
 
 			if (store != null) {
 				Element question = doc.createElement("Question");

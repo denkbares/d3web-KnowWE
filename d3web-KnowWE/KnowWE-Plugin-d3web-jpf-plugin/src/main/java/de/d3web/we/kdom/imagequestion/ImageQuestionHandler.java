@@ -32,7 +32,6 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionOC;
-import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
@@ -114,7 +113,7 @@ public class ImageQuestionHandler extends AbstractHTMLTagHandler {
 		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance(kb);
 		Question q = kbm.findQuestion(questionID);
 		ImageQuestionStore store = (ImageQuestionStore) q.getInfoStore().getValue(
-				BasicProperties.IMAGE_QUESTION_INFO);
+				ImageQuestionStore.IMAGE_QUESTION_INFO);
 
 		// Layout is: Picture | Checkboxes with labels
 		StringBuffer renderedImage = new StringBuffer();
