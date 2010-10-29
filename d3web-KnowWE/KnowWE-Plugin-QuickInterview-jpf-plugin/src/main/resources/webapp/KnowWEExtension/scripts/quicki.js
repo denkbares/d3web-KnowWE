@@ -310,6 +310,7 @@ KNOWWE.plugin.quicki = function(){
 				KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
 			             	{action: 'SetSingleFindingAction', ValueID: 'MaU'});
 				el.className="answerunknownClicked"
+				mcanswervals = "";
 			}
             KNOWWE.plugin.quicki.toggleAnswerHighlightingAfterUnknown(questionID);  
                
