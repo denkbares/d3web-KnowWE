@@ -219,17 +219,18 @@ KNOWWE.plugin.quicki = function(){
             else if (el.className=='answerMCClicked'){
             	el.className='answerMC';
             	
+            	var mcvalsOld = mcanswervals.substring(0, mcanswervals.length-5);
+            	
+            	
             	// if value is alerady contained, remove it
             	if(mcanswervals.indexOf(toreplace)!=-1){
             		mcanswervals = mcanswervals.replace(toreplace, '');
             	}
             	
             	if(mcanswervals == ""){
-            		mcvals = mcanswervals.substring(0, mcanswervals.length-5);
-            		alert(mcvals);
             		// we need to call a retract action here!
                 	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
-                        	{action: 'RetractSingleFindingAction', ValueID: mcvals});
+                        	{action: 'RetractSingleFindingAction', ValueID: mcvalsOld});
             	} else {
             		// get the newly assembled, complete mc fact
                 	mcvals = mcanswervals.substring(0, mcanswervals.length-5);
@@ -239,26 +240,6 @@ KNOWWE.plugin.quicki = function(){
             
             	}
         	}
-        },
-        /**
-         * Function: answerMCCollectSend
-         * 		sends the mcvalues that were collected into a variable at one glance
-         * 
-         * Parameters:	
-         * 		event - the event fired by the mcval send-confirm button
-         */
-        answerMCCollectSend : function(  ) {
-        	 /*var el = _KE.target(event); 	// get the clicked element
-             _KE.cancel( event );
-            
-        	var rel = eval("(" + el.getAttribute('rel') + ")");
-        	mcvals = mcanswervals.substring(0, mcanswervals.length-5);
-        	
-        	
-        	
-        	// else, set the newly assembled fact
-        	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
-                	{action: 'SetSingleFindingAction', ValueID: mcvals});*/
         },
         /**
          * Function: answerClicked
@@ -621,6 +602,7 @@ KNOWWE.plugin.quicki = function(){
         	
         	var resetBttn = _KE.target(event); 	// get the clicked element 
             var rel = eval("(" + resetBttn.getAttribute('rel') + ")");
+            mcanswervals = '';
         	
             // call reset action with necessary parameters
         	var params = {

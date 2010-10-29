@@ -663,8 +663,6 @@ public class QuickInterviewRenderer {
 
 		sb.append("\n<div class='answers' style='display: inline;'>");
 
-		System.out.println(q);
-		System.out.println(mcval.toString());
 		for (Choice choice : mcval.asChoiceList(q)) {
 
 
@@ -677,6 +675,7 @@ public class QuickInterviewRenderer {
 					+ "}\" ";
 
 			Value value = session.getBlackboard().getValue(q);
+
 			if (value != null && UndefinedValue.isNotUndefinedValue(value)
 					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
 				cssclass = "answerMCClicked";
@@ -695,7 +694,8 @@ public class QuickInterviewRenderer {
 				+ "qid:'" + q.getId() + "', "
 				+ "type:'mc', "
 				+ "}\" ";
-		sb.append("<button class='mcbutton' type='button' " + jscall + " >OK</button>");
+		// sb.append("<button class='mcbutton' type='button' " + jscall +
+		// " >OK</button>");
 
 		sb.append("</div>");
 	}
