@@ -23,19 +23,18 @@ package tests;
 import java.util.List;
 
 import junit.framework.TestCase;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.basic.LineBreak;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.LineSectionFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.SentenceSectionFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinder;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationProperty;
 import de.d3web.we.kdom.table.TableCell;
 import de.d3web.we.kdom.table.TableCellStart;
+import de.d3web.we.kdom.table.TableHeadStart;
 import de.d3web.we.kdom.table.TableLine;
 
 /**
@@ -96,11 +95,11 @@ public class KnowWESectionFinderTest extends TestCase {
 	}
 
 	// public void testFindingFinder() {
-	//		
+	//
 	// }
 
 	// public void testFindingsFinder() {
-	//		
+	//
 	// }
 
 	/**
@@ -135,11 +134,11 @@ public class KnowWESectionFinderTest extends TestCase {
 	}
 
 	// public void testQuestionFinder() {
-	//		
+	//
 	// }
 
 	// public void testRatedSolutionFinder() {
-	//		
+	//
 	// }
 
 	public void testRegexSectionFinder() {
@@ -173,13 +172,13 @@ public class KnowWESectionFinderTest extends TestCase {
 
 		// assertEquals(WRONG_SECOND_START, 57, results.get(1).getStart());
 		// assertEquals(WRONG_SECOND_END, 70, results.get(1).getEnd());
-		//		
+		//
 		// assertEquals(WRONG_THIRD_START, 70, results.get(2).getStart());
 		// assertEquals(WRONG_THIRD_END, 99, results.get(2).getEnd());
 	}
 
 	// public void testStateRatingFinder() {
-	//		
+	//
 	// }
 
 	// TODO: Should this only find the first occurrence
@@ -193,7 +192,7 @@ public class KnowWESectionFinderTest extends TestCase {
 
 		// assertEquals(WRONG_SECOND_START, 14, results.get(1).getStart());
 		// assertEquals(WRONG_SECOND_END, 17, results.get(1).getEnd());
-		//		
+		//
 		// assertEquals(WRONG_THIRD_START, 31, results.get(2).getStart());
 		// assertEquals(WRONG_THIRD_END, 34, results.get(2).getEnd());
 	}
@@ -202,52 +201,55 @@ public class KnowWESectionFinderTest extends TestCase {
 	 * Last finding sould be 71/72 not 71/71
 	 */
 	public void testTableCellSectionFinder() {
-		String text = "<Table default=\"+,-,0\" width=\"100\" row=\"1\" column=\"1\">"
-					+ "|                        | Apple "
-					+ "| sweetness              |   +   "
-					+ "</Table>";
+		String text = "|                        | Apple "
+					+ "| sweetness              |   +   ";
 
 		TableCell.TableCellSectionFinder f = new TableCell().new TableCellSectionFinder();
 		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 
-		assertEquals(WRONG_FIRST_START, 54, results.get(0).getStart());
-		assertEquals(WRONG_FIRST_END, 79, results.get(0).getEnd());
+		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
+		assertEquals(WRONG_FIRST_END, 25, results.get(0).getEnd());
 
-		assertEquals(WRONG_SECOND_START, 79, results.get(1).getStart());
-		assertEquals(WRONG_SECOND_END, 87, results.get(1).getEnd());
+		assertEquals(WRONG_SECOND_START, 25, results.get(1).getStart());
+		assertEquals(WRONG_SECOND_END, 33, results.get(1).getEnd());
 
-		assertEquals(WRONG_THIRD_START, 87, results.get(2).getStart());
-		assertEquals(WRONG_THIRD_END, 112, results.get(2).getEnd());
+		assertEquals(WRONG_THIRD_START, 33, results.get(2).getStart());
+		assertEquals(WRONG_THIRD_END, 58, results.get(2).getEnd());
 
-		// assertEquals(WRONG_FOURTH_START, 112, results.get(3).getStart());
-		// assertEquals(WRONG_FOURTH_END, 112, results.get(3).getEnd());
+		assertEquals(WRONG_FOURTH_START, 58, results.get(3).getStart());
+		assertEquals(WRONG_FOURTH_END, 66, results.get(3).getEnd());
 	}
 
-	// TODO: Should this only find the first occurrence
 	public void testTableCellStartFinder() {
-		String text = "<Table default=\"+,-,0\" width=\"100\" row=\"1\" column=\"1\">"
-					+ "|                        | Apple "
-					+ "| sweetness              |   +   "
-					+ "</Table>";
+		String text = "| Apple ";
 		TableCellStart.TableCellStartSectionFinder f =
 				new TableCellStart().new TableCellStartSectionFinder();
 		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
-		assertEquals(WRONG_FIRST_END, 55, results.get(0).getEnd());
+		assertEquals(WRONG_FIRST_END, 1, results.get(0).getEnd());
 	}
 
-	// TODO What should this find
+	public void testTableHeadStartFinder() {
+		String text = "|| Apple ";
+		TableHeadStart.TableCellStartSectionFinder f =
+				new TableHeadStart().new TableCellStartSectionFinder();
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
+		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
+		assertEquals(WRONG_FIRST_END, 2, results.get(0).getEnd());
+	}
+
 	public void testTableLineSectionFinder() {
-		String text = "<Table default=\"+,-,0\" width=\"100\" row=\"1\" column=\"1\">"
-					+ "|                        | Apple \r \n"
-					+ "| sweetness              |   +   "
-					+ "</Table>";
+		String text = "|                        | Apple \r \n"
+					+ "| sweetness              |   +   ";
 		TableLine.TableLineSectionFinder f =
 				new TableLine().new TableLineSectionFinder();
 		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 
-		// assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
-		// assertEquals(WRONG_FIRST_END, 55, results.get(0).getEnd());
+		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
+		assertEquals(WRONG_FIRST_END, 34, results.get(0).getEnd());
+
+		assertEquals(WRONG_FIRST_START, 34, results.get(1).getStart());
+		assertEquals(WRONG_FIRST_END, 69, results.get(1).getEnd());
 	}
 
 	// TODO What does that
