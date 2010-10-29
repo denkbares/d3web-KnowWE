@@ -44,9 +44,12 @@ public class TimeEventRenderer extends KnowWEDomRenderer<TimeEventNew> {
 	@Override
 	public void render(KnowWEArticle article, Section<TimeEventNew> sec,
 			KnowWEUserContext user, StringBuilder result) {
-		
-		int eventImportanceLevel = 3;
-		eventImportanceLevel = ImportanceType.getImportance(sec.findChildOfType(ImportanceType.class));
+
+		int eventImportanceLevel = -1;
+		Section<ImportanceType> childOfType = sec.findChildOfType(ImportanceType.class);
+		if (childOfType != null) {
+			eventImportanceLevel = ImportanceType.getImportance(childOfType);
+		}
 
 		// check filter Level
 		int filterLevel = getFilterLevel(user);
@@ -54,18 +57,24 @@ public class TimeEventRenderer extends KnowWEDomRenderer<TimeEventNew> {
 			// do NOT render TimeEvent at all
 			return;
 		}
-		
+
 		result.append("%%collapsebox-closed \n! ");
-		
+
 		// change color of title depending on importance
-		String style = "color:rgb(20, 200, 102)";
+		String style = "color:black";
 		if (eventImportanceLevel == 1) {
 			style = "color:rgb(255, 0, 102)";
 		}
 		if (eventImportanceLevel == 2) {
 			style = "color:rgb(235, 235, 20)";
 		}
-		String imp = KnowWEUtils.maskHTML("<span style='" + style + "'>");//Span-Tag closes in TimeEventTitleRenderer
+		if (eventImportanceLevel == 3) {
+			style = "color:rgb(20, 200, 102)";
+		}
+		String imp = KnowWEUtils.maskHTML("<span style='" + style + "'>");// Span-Tag
+		// closes
+		// in
+		// TimeEventTitleRenderer
 
 		result.append(imp);
 		DelegateRenderer.getInstance().render(article, sec, user, result);

@@ -172,7 +172,7 @@
 		<parameter id="name" value="TimeEventNew" />
 		<parameter id="description" value="KnowWEObjectType TimeEventNew" />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="4" />
+		<parameter id="priority" value="3" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="Hermes.js" />
 		<parameter id="css" value="hermes.css" />

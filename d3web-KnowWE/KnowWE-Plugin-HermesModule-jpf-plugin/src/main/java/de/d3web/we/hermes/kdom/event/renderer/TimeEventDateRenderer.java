@@ -42,6 +42,9 @@ public class TimeEventDateRenderer extends KnowWEDomRenderer<TimeEventNew> {
 	public void render(KnowWEArticle article, Section<TimeEventNew> sec,
 			KnowWEUserContext user, StringBuilder result) {
 		String date = "no date found";
+		if (result.charAt(result.length() - 1) == '\n') {
+			result.deleteCharAt(result.length() - 1);
+		}
 		if (sec != null)
 			date = sec.getOriginalText();
 		if (date.startsWith("\r\n"))
