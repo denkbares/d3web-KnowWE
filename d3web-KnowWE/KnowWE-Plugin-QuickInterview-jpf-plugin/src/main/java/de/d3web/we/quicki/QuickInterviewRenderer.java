@@ -663,6 +663,8 @@ public class QuickInterviewRenderer {
 
 		sb.append("\n<div class='answers' style='display: inline;'>");
 
+		System.out.println(q);
+		System.out.println(mcval.toString());
 		for (Choice choice : mcval.asChoiceList(q)) {
 
 

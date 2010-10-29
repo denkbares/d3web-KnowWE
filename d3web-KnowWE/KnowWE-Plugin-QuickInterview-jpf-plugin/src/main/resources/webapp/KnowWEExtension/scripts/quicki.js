@@ -93,9 +93,9 @@ KNOWWE.plugin.quicki = function(){
                 _KE.add('click', element, KNOWWE.plugin.quicki.answerMCCollect);
         	});
         	
-        	_KS('.mcbutton').each(function(element){
-                _KE.add('click', element, KNOWWE.plugin.quicki.answerMCCollectSend);
-        	});
+        	//_KS('.mcbutton').each(function(element){
+               // _KE.add('click', element, KNOWWE.plugin.quicki.answerMCCollectSend);
+        	//});
         	
         	_KS('.questionnaire').each(function(element){
                 _KE.add('click', element, KNOWWE.plugin.quicki.toggleQuestionnaireVisibility);
@@ -169,20 +169,7 @@ KNOWWE.plugin.quicki = function(){
         		}
         	}
         },
-        
-        /**
-         * Function: toggleAnswerMC
-         * 		toggles the highlighting of MC answers
-         * 
-         * Parameters:
-         * 		element - the clicked mc answer element
-         */
-        toggleAnswerMC: function( element ){
-        	
-        	
-        	
-        },
-        /**
+         /**
          * Function: answerMCCollect
          * 		collects given mc answer vals into a variable for sending them later
          * 		as ONE MultipleChoiceValue
@@ -193,13 +180,25 @@ KNOWWE.plugin.quicki = function(){
         answerMCCollect : function( event ) {
             var el = _KE.target(event); 	// get the clicked element
             _KE.cancel( event );
+            
+            // TODO new algorithm for mc vals:
+        	// if a not highlighted answer is clicked it is
+        	// 	- highlighted
+        	//  - we fetch all already highlighted answers and set those as one new mc fact
+        	//	- during each setting, the last-set-fact is stored
+        	// if an answer already answered is clicked it is
+        	// 	- de-highlighted
+        	// 	- again all selected answers are fetched (i.e. minus the clicked one)
+        	//	- and set as a mc fact
+
+        	// if mcanswervals is empty, retract the last fact
            
             var rel = eval("(" + el.getAttribute('rel') + ")");
             if( !rel ) return;
             var oid = rel.oid;
             var toreplace = oid + "#####";
         	            
-            // not yet clicked, thus collect values
+            /* not yet clicked, thus highlight, store, collect all highlighted, and send */
             if(el.className=='answerMC'){
             	el.className='answerMCClicked';
             	
@@ -208,14 +207,36 @@ KNOWWE.plugin.quicki = function(){
             		mcanswervals += oid;
                     mcanswervals += "#####"
             	}
+            	// get the newly assembled, complete mc fact
+            	mcvals = mcanswervals.substring(0, mcanswervals.length-5);
+            	// and send it
+            	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
+                    	{action: 'SetSingleFindingAction', ValueID: mcvals});
+            	
             } 
-            // already clicked. Thus value needs to be removed
+            /* already clicked, thus de-highlight, update store, collect all highlighted,
+               ask if store is empty, accordingly send or retract */
             else if (el.className=='answerMCClicked'){
             	el.className='answerMC';
             	
             	// if value is alerady contained, remove it
             	if(mcanswervals.indexOf(toreplace)!=-1){
             		mcanswervals = mcanswervals.replace(toreplace, '');
+            	}
+            	
+            	if(mcanswervals == ""){
+            		mcvals = mcanswervals.substring(0, mcanswervals.length-5);
+            		alert(mcvals);
+            		// we need to call a retract action here!
+                	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
+                        	{action: 'RetractSingleFindingAction', ValueID: mcvals});
+            	} else {
+            		// get the newly assembled, complete mc fact
+                	mcvals = mcanswervals.substring(0, mcanswervals.length-5);
+                	// and send it
+                	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
+                        	{action: 'SetSingleFindingAction', ValueID: mcvals});
+            
             	}
         	}
         },
@@ -226,14 +247,18 @@ KNOWWE.plugin.quicki = function(){
          * Parameters:	
          * 		event - the event fired by the mcval send-confirm button
          */
-        answerMCCollectSend : function( event ) {
-        	 var el = _KE.target(event); 	// get the clicked element
+        answerMCCollectSend : function(  ) {
+        	 /*var el = _KE.target(event); 	// get the clicked element
              _KE.cancel( event );
             
         	var rel = eval("(" + el.getAttribute('rel') + ")");
         	mcvals = mcanswervals.substring(0, mcanswervals.length-5);
+        	
+        	
+        	
+        	// else, set the newly assembled fact
         	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
-                	{action: 'SetSingleFindingAction', ValueID: mcvals});
+                	{action: 'SetSingleFindingAction', ValueID: mcvals});*/
         },
         /**
          * Function: answerClicked
