@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.d3web.core.knowledge.Indication.State;
+import de.d3web.core.knowledge.InterviewObject;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Choice;
@@ -181,6 +183,12 @@ public class QuickInterviewRenderer {
 		// if init questionnaire: all contained elements are to be displayed
 		String display = init ? "display: block;" : "display: none;";
 
+		if (!init && isIndicated(topContainer)) {
+			System.out.println(topContainer.getName() + " " + isIndicated(topContainer));
+			display = "display: block;";
+			init = true;
+		}
+
 		// group all following questionnaires/questions for easily hiding them
 		// blockwise later
 		buffer.append("\n<div id='group_" + topContainer.getId() + "' class='group' style='"
@@ -191,9 +199,13 @@ public class QuickInterviewRenderer {
 		// process all children, depending on element type branch into
 		// corresponding recursion
 		for (TerminologyObject qcontainerchild : topContainer.getChildren()) {
-
+			
 			init = inits.contains(qcontainerchild) ? true : false;
-
+			if (!init && isIndicated(topContainer)) {
+				display = "display: block;";
+				init = true;
+			}
+			
 			if (qcontainerchild instanceof QContainer) {
 				getInterviewElementsRenderingRecursively(
 						qcontainerchild, buffer, processedTOs, depth, init);
@@ -307,9 +319,15 @@ public class QuickInterviewRenderer {
 		String clazz = show // decide class for rendering expand-icon
 				? "class='questionnaire pointDown'"
 				: "class='questionnaire pointRight'";
+		
+		String style = "style='margin-left: " + margin + "px; display: block;'";
 
-		buffi.append("<div id='" + container.getId() + "' " +
-				clazz + " style='margin-left: " + margin + "px; display: block'; >");
+		if (!show && isIndicated(container)) {
+			clazz = "class='questionnaire pointDown' ";
+		}
+
+		buffi.append("<div id='" + container.getId() + "' " + clazz + style + " >");
+		
 		buffi.append(container.getName());
 		buffi.append("</div>");
 	}
@@ -786,5 +804,34 @@ public class QuickInterviewRenderer {
 		// test for MC values separately
 		if (sessionValue instanceof MultipleChoiceValue) return ((MultipleChoiceValue) sessionValue).contains(value);
 		else return sessionValue.equals(value);
+	}
+
+	/**
+	 * Checks, whether the given TerminologyObject is currently indicated or
+	 * not.
+	 * 
+	 * @created 30.10.2010
+	 * @param to the TerminologyObject to be checked.
+	 * @param bb
+	 * @return true, if the given TerminologyObject is indicated.
+	 */
+	private static boolean isIndicated(TerminologyObject to) {
+
+		// check whether object itself is currently indicated
+		if (session.getBlackboard().getIndication((InterviewObject) to).getState() == State.INDICATED) {
+			return true;
+		}
+
+		// checks if any of the objects children just is indicated; then the
+		// object itself needs to be displayed
+		else {
+			if (to.getChildren().length != 0) {
+				for (TerminologyObject tochild : to.getChildren()) {
+					return isIndicated(tochild);
+				}
+			}
+		}
+
+		return false;
 	}
 }
