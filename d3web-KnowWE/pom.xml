@@ -140,9 +140,9 @@
 		<module>KnowWE</module>
 		<module>KnowWE-core</module>
 		<module>KnowWE-JSPWiki-Connector-jpf-plugin</module>
+		<module>KnowWE-Plugin-Flowchart-jpf-plugin</module>
 		<module>KnowWE-Plugin-QuickInterview-jpf-plugin</module>
 		<module>KnowWE-Plugin-d3web-basic-jpf-plugin</module>
-		<module>KnowWE-Plugin-OneQuestionDialog</module>
 		<module>KnowWE-Plugin-KDOMParseUtils</module>
 		<module>KnowWE-Plugin-d3web-MarkupSet-jpf-plugin</module>
 	</modules>
