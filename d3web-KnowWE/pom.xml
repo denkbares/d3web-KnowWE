@@ -137,35 +137,14 @@
 		<d3webCoreVersion>0.2-SNAPSHOT</d3webCoreVersion>
 	</properties>
 	<modules>
-		<module>d3web-Report</module>
-		<module>d3web-KnOfficeParser</module>
-		<module>d3web-TiRex</module>
-		<module>d3web-KnowledgeExporter</module>
 		<module>KnowWE</module>
 		<module>KnowWE-core</module>
 		<module>KnowWE-JSPWiki-Connector-jpf-plugin</module>
-		<module>KnowWE-Plugin-d3web-jpf-plugin</module>
-		<module>KnowWE-Plugin-Comment-jpf-plugin</module>
-		<module>KnowWE-Plugin-Calendar-jpf-plugin</module>
-		<module>KnowWE-Plugin-HermesModule-jpf-plugin</module>
-		<module>KnowWE-Plugin-Flowchart-jpf-plugin</module>
-		<module>KnowWE-ExtensionPoints-jpf-plugin</module>
-		<module>KnowWE-core-Plugins-jpf-plugin</module>
-		<module>KnowWE-Plugin-WISEC-jpf-plugin</module>
-		<module>KnowWE-Plugin-CI4KE-jpf-plugin</module>
-		<module>KnowWE-Plugin-FAQ-jpf-plugin</module>
-		<module>KnowWE-Plugin-SemanticCore</module>
 		<module>KnowWE-Plugin-QuickInterview-jpf-plugin</module>
 		<module>KnowWE-Plugin-d3web-basic-jpf-plugin</module>
-		<module>KnowWE-Plugin-XML</module>
-		<module>KnowWEPlugin-SemanticCore-Tests</module>
 		<module>KnowWE-Plugin-OneQuestionDialog</module>
 		<module>KnowWE-Plugin-KDOMParseUtils</module>
-		<module>KnowWE-Plugin-Table-jpf-plugin</module>
-		<module>KnowWE-Plugin-TestcaseTable</module>
 		<module>KnowWE-Plugin-d3web-MarkupSet-jpf-plugin</module>
-		<module>d3web-Persistence-ImageQuestion</module>
-		<module>KnowWE-Plugin-TestSuite-jpf-plugin</module>
 	</modules>
 	<repositories>
 		<repository>
