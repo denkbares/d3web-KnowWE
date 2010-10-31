@@ -182,16 +182,16 @@ public class QuickInterviewRenderer {
 
 		// if init questionnaire: all contained elements are to be displayed
 		String display = init ? "display: block;" : "display: none;";
-
+		String clazz = "";
 		if (!init && isIndicated(topContainer)) {
-			System.out.println(topContainer.getName() + " " + isIndicated(topContainer));
 			display = "display: block;";
+			clazz = "class='group indicated'";
 			init = true;
 		}
 
 		// group all following questionnaires/questions for easily hiding them
 		// blockwise later
-		buffer.append("\n<div id='group_" + topContainer.getId() + "' class='group' style='"
+		buffer.append("\n<div id='group_" + topContainer.getId() + "' " + clazz + " style='"
 				+ display + "' >");
 
 		depth++;
@@ -202,7 +202,6 @@ public class QuickInterviewRenderer {
 			
 			init = inits.contains(qcontainerchild) ? true : false;
 			if (!init && isIndicated(topContainer)) {
-				display = "display: block;";
 				init = true;
 			}
 			
@@ -323,7 +322,7 @@ public class QuickInterviewRenderer {
 		String style = "style='margin-left: " + margin + "px; display: block;'";
 
 		if (!show && isIndicated(container)) {
-			clazz = "class='questionnaire pointDown' ";
+			clazz = "class='questionnaire pointDown indicated' ";
 		}
 
 		buffi.append("<div id='" + container.getId() + "' " + clazz + style + " >");

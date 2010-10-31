@@ -68,7 +68,7 @@ KNOWWE.plugin.quicki = function(){
 	var mcanswervals = '';      // for collecting the values of MC answers
 	var quickiruns = false;     // flag whether QuickI runs a session
 	var questionnaireVis = ''; // for storing questionnaire visibility states
-	var questionsVis = '';		// for storing question visibility states
+	var questionVis = '';		// for storing question visibility states
 	
 	return {
 		/**
@@ -93,10 +93,6 @@ KNOWWE.plugin.quicki = function(){
                 _KE.add('click', element, KNOWWE.plugin.quicki.answerMCCollect);
         	});
         	
-        	//_KS('.mcbutton').each(function(element){
-               // _KE.add('click', element, KNOWWE.plugin.quicki.answerMCCollectSend);
-        	//});
-        	
         	_KS('.questionnaire').each(function(element){
                 _KE.add('click', element, KNOWWE.plugin.quicki.toggleQuestionnaireVisibility);
         	});
@@ -105,31 +101,29 @@ KNOWWE.plugin.quicki = function(){
         		//_KE.add('click', element, KNOWWE.plugin.quicki.toggleQuestionVisibility);
         	//});
         	
-        	//_KS('.num-ok').each(function( element ){
-        		//_KE.add('click', element, KNOWWE.plugin.quicki.numAnswerClicked);
-            //});  
-        	
         	_KS('.numinput').each(function( element ){
         		_KE.add('keydown', element, KNOWWE.plugin.quicki.numAnswerClicked);
             });  
-        	
-        	//_KS('.date-ok').each(function( element ){
-        		//_KE.add('click', element, KNOWWE.plugin.quicki.dateAnswerClicked);
-            //});  
         	
         	_KS('.inputdate').each(function( element ){
         		_KE.add('keydown', element, KNOWWE.plugin.quicki.dateAnswerClicked);
             }); 
         	
+        	/* removing indicated elements from the storages; this ensures that indicated
+        	 * questions are always displayed expanded, even after e.g. the user previously
+        	 * collapsed a (part of) such a questionnaire tree. */
+        	_KS('.indicated').each(function( element ){
+        		var ids = questionnaireVis.indexOf(element.id);
+        		var torep = questionnaireVis.substring(ids, ids + element.id.length + 1 + 5);
+        		if (questionnaireVis.indexOf(torep)!=-1){
+        			questionnaireVis = questionnaireVis.replace(torep, "");
+        		}
+            }); 
+        	
             _KE.add('click', _KS('#quickireset'), KNOWWE.plugin.quicki.quickIReset);
           
-        	// TODO
-        	//_KS('.qquickanswers').each(function( element ){
-                //_KE.add('click', element, KNOWWE.plugin.quicki.enableQAnswers);
-            //});  
-        	 
-        	/**
-        	 * restore visibility states of elements after reloading
+            
+        	/* restore visibility states of elements after reloading
         	 * the page (e.g. after sending answer val via AJAX)
         	 */
         	 KNOWWE.plugin.quicki.restoreQuestionnaireVis();
@@ -169,6 +163,39 @@ KNOWWE.plugin.quicki = function(){
         		}
         	}
         },
+        /**
+         * Function: restoreQuestionVis
+         * 		restores the visibility states of questions 
+         */
+        restoreQuestionVis : function(){
+        	
+        	// split questionVis storage
+        	var qs = questionVis.split('###');
+        	
+        	for (var i = 0; i < qs.length; i++) {
+        	
+        		// split into question id and visibility
+        		var qsplit = qs[i].split(';');
+        		var qid = qsplit[0];
+        		qid = qid.replace(/ /g, ''); // remove spaces
+        		var qvis = qsplit[1];
+        		        	
+        		// TODO check what we need to get here: the table???
+        		var groupEl = _KS('#group_' + qid);
+        		var questionnaire = _KS('#'+qid);
+        		
+        		// 0 means set style and image to invisible
+        		if(qvis==0){
+        			groupEl.style.display = 'none'; 
+        			KNOWWE.plugin.quicki.toggleImage(1, questionnaire);       
+        		} 
+        		// 1 means set style and image to be visible = unfolded
+        		else if (qvis ==1 ){
+        			groupEl.style.display = 'block'; 
+        			KNOWWE.plugin.quicki.toggleImage(0, questionnaire);       
+        		}
+        	}
+        },
          /**
          * Function: answerMCCollect
          * 		collects given mc answer vals into a variable for sending them later
@@ -190,7 +217,6 @@ KNOWWE.plugin.quicki = function(){
         	// 	- de-highlighted
         	// 	- again all selected answers are fetched (i.e. minus the clicked one)
         	//	- and set as a mc fact
-
         	// if mcanswervals is empty, retract the last fact
            
             var rel = eval("(" + el.getAttribute('rel') + ")");
@@ -207,28 +233,28 @@ KNOWWE.plugin.quicki = function(){
             		mcanswervals += oid;
                     mcanswervals += "#####"
             	}
-            	// get the newly assembled, complete mc fact
+            	// get the newly assembled, complete mc fact without the last "#####"
             	mcvals = mcanswervals.substring(0, mcanswervals.length-5);
             	// and send it
             	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
                     	{action: 'SetSingleFindingAction', ValueID: mcvals});
             	
             } 
-            /* already clicked, thus de-highlight, update store, collect all highlighted,
-               ask if store is empty, accordingly send or retract */
+            /* already clicked mc answer */
             else if (el.className=='answerMCClicked'){
             	el.className='answerMC';
             	
+            	// save mcvalues
             	var mcvalsOld = mcanswervals.substring(0, mcanswervals.length-5);
-            	
             	
             	// if value is alerady contained, remove it
             	if(mcanswervals.indexOf(toreplace)!=-1){
             		mcanswervals = mcanswervals.replace(toreplace, '');
             	}
             	
+            	// if mcanswerval storage is empty after last removal
             	if(mcanswervals == ""){
-            		// we need to call a retract action here!
+            		// we need to call a retract action 
                 	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
                         	{action: 'RetractSingleFindingAction', ValueID: mcvalsOld});
             	} else {
@@ -237,7 +263,6 @@ KNOWWE.plugin.quicki = function(){
                 	// and send it
                 	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
                         	{action: 'SetSingleFindingAction', ValueID: mcvals});
-            
             	}
         	}
         },
@@ -255,6 +280,8 @@ KNOWWE.plugin.quicki = function(){
             if(el.className.toLowerCase() == "answermc") return;
             if(el.className.toLowerCase() == "answermcclicked") return;
             var retract = false;
+            
+            // if already clicked, it needs to be de-highlighted and val retracted
             if(el.className == 'answerClicked'){
             	retract = true;
             }
@@ -267,12 +294,11 @@ KNOWWE.plugin.quicki = function(){
             KNOWWE.plugin.quicki.toggleAnswerHighlighting(el, type, retract);
             
             // if it is already highlighted it should now be deactivated and value retracted
-            // thus send value unknown
             if(retract){
-            	// we need to call a retract action here!
             	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
                     	{action: 'RetractSingleFindingAction', ValueID: rel.oid});
             }
+            // otherwise send the value
             else {
             	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
                     	{action: 'SetSingleFindingAction', ValueID: rel.oid});
@@ -289,12 +315,11 @@ KNOWWE.plugin.quicki = function(){
         answerUnknownClicked : function( event ) {
         	
             var el = _KE.target(event); 	// get the clicked element
-           
             var rel = eval("(" + el.getAttribute('rel') + ")");
             var questionID = rel.qid;
           
+            // handle num input fields
             if( rel.type=='num') {
-            	
             	var numfield = _KS('#input_' + rel.qid);
             	// clear input field
             	if(numfield) {
@@ -302,15 +327,16 @@ KNOWWE.plugin.quicki = function(){
             	}      
             } 
          	
+            // do nothing caus Unknown can only be taken back if another val is set
 			if(el.className=='answerunknownClicked'){
-				// do nothing caus Unknown can only be taken back if another val is set
-			} else if (el.className=="answerunknown"){
-				//el.className="answerunknownClicked";
 				
+			} else if (el.className=="answerunknown"){
 				KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
 			             	{action: 'SetSingleFindingAction', ValueID: 'MaU'});
-				el.className="answerunknownClicked"
-				mcanswervals = "";
+				
+				// TODO: check if those are correct and needed at all
+				el.className="answerunknownClicked"; // change the highlightung
+				mcanswervals = ""; // reset the mcanswerval storage
 			}
             KNOWWE.plugin.quicki.toggleAnswerHighlightingAfterUnknown(questionID);  
                
@@ -323,23 +349,15 @@ KNOWWE.plugin.quicki = function(){
          * 		event - the event firing the action
          */
         numAnswerClicked : function (event) {
-        	event = new Event( event ).stopPropagation();
-            var bttn = (_KE.target( event ).className == 'num-ok');            
+        	event = new Event( event ).stopPropagation();     
             var key = (event.code == 13);
             
             // check, if either button was clicked or enter was pressed
-            if( !(key || bttn) ) return false;
+            if( !key ) return false;
             
-            //_KE.target( event ).previousSibling.previousSibling.className = 'numinput';
-            
-            var rel = null;
-          
-            if(key){				// if enter was pressed
-                rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")"); // TODO check
-            } 
+            var rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")"); 
             if( !rel ) return;
   
-            
             var inputtext = 'inputTextNotFound';	// default input
             
             // get the provided value if any is provided
@@ -369,18 +387,12 @@ KNOWWE.plugin.quicki = function(){
                     		{action: 'SetSingleFindingAction', ValueNum: inputtext});
 
             	 	} else {
-
-            	 		// not within range: toggle css for red display...
-            		 	//_KE.target( event ).className = 'inputrangeerror';
             		 	_KE.target( event ).value = inputtext;
             		 	
             		 	// and display error message
             		 	var errormessage = 'Input needs to be a number between ' + rel.rangeMin + ' and ' + rel.rangeMax + '!';
             		 	_KS('#' + rel.oid + "_errormsg").className='errormsg';
             		 	_KS('#' + rel.oid + "_errormsg").innerHTML=errormessage;
-
-                	 	// refresh quicki display
-            		 	// KNOWWE.plugin.quicki.showRefreshed();
             	 	} 
             	} 
             	// else just try to get the value and set it as finding
@@ -399,20 +411,13 @@ KNOWWE.plugin.quicki = function(){
          * 		event - the event firing the action
          */
         dateAnswerClicked : function (event) {
-        	//KNOWWE.plugin.quicki.checkRuns();
-        	event = new Event( event ).stopPropagation();
-            var bttn = (_KE.target( event ).className == 'date-ok');            
+        	event = new Event( event ).stopPropagation();         
             var key = (event.code == 13);
             
             // check, if either button was clicked or enter was pressed
-            if( !(key || bttn) ) return false;
+            if( !key) return false;
             
-            var rel = null;
-            if(key){				// if enter was pressed
-                rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")");
-            } else {				// if button was clicked
-                rel = eval("(" + _KE.target( event ).previousSibling.getAttribute('rel') + ")");
-            }
+            var rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")");
             if( !rel ) return;
             
             var inputtext = 'inputTextNotFound';	// default input
