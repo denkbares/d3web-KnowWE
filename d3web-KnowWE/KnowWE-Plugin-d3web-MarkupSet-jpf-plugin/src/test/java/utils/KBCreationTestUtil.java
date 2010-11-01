@@ -26,8 +26,8 @@ import java.util.List;
 
 import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.abstraction.formula.Operator;
-import de.d3web.abstraction.formula.QNumWrapper;
 import de.d3web.abstraction.formula.Operator.Operation;
+import de.d3web.abstraction.formula.QNumWrapper;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
@@ -46,8 +46,8 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Rating.State;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
@@ -186,7 +186,7 @@ public class KBCreationTestUtil {
 		QContainer qc3 = new QContainer("QC3");
 		qc3.setName("Air filter");
 		qc3.getInfoStore().addValue(BasicProperties.EXPLANATION,
-				"Here you can enter your observations concerning the air filter.");
+		"Here you can enter your observations concerning the air filter.");
 		qc1.addChild(qc3);
 		createdKB.add(qc3);
 
@@ -223,12 +223,12 @@ public class KBCreationTestUtil {
 		// -- invisible
 		Question q0 = createdKBM.createQuestionOC("Q1", "Exhaust fumes", qc1,
 				new String[] {
-						"black", "blue", "invisible" });
+				"black", "blue", "invisible" });
 
 		// Add MMInfo to Question "Exhaust fumes":
 		// "What is the color of the exhaust fumes?"
 		addMMInfo(q0, "LT", MMInfoSubject.PROMPT.getName(),
-				"What is the color of the exhaust fumes?");
+		"What is the color of the exhaust fumes?");
 
 		// Add question:
 		// --- Fuel [oc]
@@ -239,7 +239,7 @@ public class KBCreationTestUtil {
 
 		// Add question:
 		// - "Average mileage /100km" [num] {liter} (0 30) #Q1337
-		Question q1 = createdKBM.createQuestionNum("Q1", "Average mileage /100km", qc1);
+		Question q1 = createdKBM.createQuestionNum("Q16", "Average mileage /100km", qc1);
 		// q1.setName("Average mileage /100km");
 		InfoStore infoStore = q1.getInfoStore();
 		infoStore.addValue(BasicProperties.UNIT, "liter");
@@ -247,7 +247,7 @@ public class KBCreationTestUtil {
 
 		// Add question:
 		// -- "Num. Mileage evaluation" [num] <abstract>
-		Question q2 = createdKBM.createQuestionNum("Q2", "Num. Mileage evaluation", q1);
+		Question q2 = createdKBM.createQuestionNum("Q15", "Num. Mileage evaluation", q1);
 		q2.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION, Boolean.TRUE);
 
 		// Add question:
@@ -256,7 +256,7 @@ public class KBCreationTestUtil {
 		// ---- increased
 		Question q3 = createdKBM.createQuestionOC("Q5", "Mileage evaluation", q2,
 				new String[] {
-						"normal", "increased" });
+				"normal", "increased" });
 		q3.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION, Boolean.TRUE);
 
 		// Add question:
@@ -271,10 +271,10 @@ public class KBCreationTestUtil {
 		// -- everything is fine
 		Question q4 = createdKBM.createQuestionMC("Q7", "Driving", qc1,
 				new String[] {
-						"insufficient power on partial load",
-						"insufficient power on full load",
-						"unsteady idle speed",
-						"everything is fine" });
+				"insufficient power on partial load",
+				"insufficient power on full load",
+				"unsteady idle speed",
+		"everything is fine" });
 
 		// Add question:
 		// ---- Other [text]
@@ -286,8 +286,6 @@ public class KBCreationTestUtil {
 		// - "Idle speed system o.k.?" [yn]
 		// createdKBM.createQuestionYN("Q9", "Idle speed system o.k.?", qc2);
 		createdKBM.createQuestionYN("Q9", "Idle speed system o.k.?", null, null, qc2);
-		Question bla = createdKBM.findQuestion("Idle speed system o.k.?");
-		System.out.println();
 	}
 
 	/**
