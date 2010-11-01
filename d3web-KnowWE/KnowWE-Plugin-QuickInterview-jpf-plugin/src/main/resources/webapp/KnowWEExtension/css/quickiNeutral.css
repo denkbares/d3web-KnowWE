@@ -97,8 +97,8 @@
 
 #quickinterview .errormsg {color: red; float: left; margin-left: 5px; cursor: default; padding: 2px 0;}
 
-/* styling of input box button */
-#quickinterview .num-ok{ height: 20px; margin: 0 5px; float: left; cursor: pointer;}
+/* styling of hidden div for submitting num-values */
+#quickinterview .num-ok{ float: left; /* height: 20px; margin: 0 5px; cursor: pointer; */}
 
 /* styling of input box button */
 #quickinterview .unit{ margin: 0 5px; float: left; cursor: default; }

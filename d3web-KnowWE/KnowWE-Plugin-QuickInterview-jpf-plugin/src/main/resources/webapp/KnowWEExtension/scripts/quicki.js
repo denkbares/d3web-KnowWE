@@ -101,6 +101,11 @@ KNOWWE.plugin.quicki = function(){
         		//_KE.add('click', element, KNOWWE.plugin.quicki.toggleQuestionVisibility);
         	//});
         	
+        	// add click-event for divs with class='num-ok' to submit numValues
+        	_KS('.num-ok').each(function( element ){
+        		_KE.add('click', element, KNOWWE.plugin.quicki.numAnswerClicked);
+            });
+        	
         	_KS('.numinput').each(function( element ){
         		_KE.add('keydown', element, KNOWWE.plugin.quicki.numAnswerClicked);
             });  
@@ -349,14 +354,20 @@ KNOWWE.plugin.quicki = function(){
          * 		event - the event firing the action
          */
         numAnswerClicked : function (event) {
-        	event = new Event( event ).stopPropagation();     
-            var key = (event.code == 13);
+        	event = new Event( event ).stopPropagation();
+        	//this (hidden) div is for submitting numValues by click-event
+        	var div = (_KE.target( event ).className == 'num-ok');
+        	var key = (event.code == 13);
             
-            // check, if either button was clicked or enter was pressed
-            if( !key ) return false;
+            // check, if either the div was clicked or enter was pressed
+        	if( !(key || div) ) return false;
             
-            var rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")"); 
-            if( !rel ) return;
+            if(key){				// if enter was pressed
+                rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")");
+            } else {				// if div was clicked
+                rel = eval("(" + _KE.target( event ).previousSibling.previousSibling.getAttribute('rel') + ")");
+            }
+            if( !rel ) return;            
   
             var inputtext = 'inputTextNotFound';	// default input
             

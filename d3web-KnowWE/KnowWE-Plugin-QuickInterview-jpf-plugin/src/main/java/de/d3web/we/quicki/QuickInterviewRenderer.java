@@ -598,6 +598,11 @@ public class QuickInterviewRenderer {
 
 		// sb.append("<input type='button' value='OK' class='num-ok' />");
 
+		// M.Ochlast: i added this (hidden) div to re-enable submitting of
+		// numValues by "clicking". This workaround is neccessary for KnowWE
+		// Systemtests (there is no Return-Key emulation possible).
+		sb.append("<div id='num-ok_" + id + "' class='num-ok'></div>");
+
 		sb.append("<div class='answerseparator'> | </div>");
 
 		renderAnswerUnknown(q, "num", sb);
@@ -817,17 +822,11 @@ public class QuickInterviewRenderer {
 	private static boolean isIndicated(TerminologyObject to) {
 
 		// check whether object itself is currently indicated
-		if (session.getBlackboard().getIndication((InterviewObject) to).getState() == State.INDICATED) {
-			return true;
-		}
-
-		// checks if any of the objects children just is indicated; then the
-		// object itself needs to be displayed
+		if (session.getBlackboard().getIndication((InterviewObject) to).getState() == State.INDICATED) return true;
 		else {
 			if (to.getChildren().length != 0) {
-				for (TerminologyObject tochild : to.getChildren()) {
+				for (TerminologyObject tochild : to.getChildren())
 					return isIndicated(tochild);
-				}
 			}
 		}
 
