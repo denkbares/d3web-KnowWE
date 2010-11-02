@@ -139,6 +139,7 @@
 	<modules>
 		<module>KnowWE</module>
 		<module>KnowWE-core</module>
+		<module>KnowWE-ExtensionPoints-jpf-plugin</module>
 		<module>KnowWE-JSPWiki-Connector-jpf-plugin</module>
 		<module>KnowWE-Plugin-Flowchart-jpf-plugin</module>
 		<module>KnowWE-Plugin-QuickInterview-jpf-plugin</module>
