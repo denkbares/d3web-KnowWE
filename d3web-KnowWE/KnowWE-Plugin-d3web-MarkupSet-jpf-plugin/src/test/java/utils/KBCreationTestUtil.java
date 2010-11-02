@@ -124,7 +124,6 @@ public class KBCreationTestUtil {
 		createSolutions();
 		createQuestionnaires();
 		createQuestions();
-		createAttributeTable();
 		createRules();
 		createXCLModels();
 
@@ -186,7 +185,7 @@ public class KBCreationTestUtil {
 		QContainer qc3 = new QContainer("QC3");
 		qc3.setName("Air filter");
 		qc3.getInfoStore().addValue(BasicProperties.EXPLANATION,
-		"Here you can enter your observations concerning the air filter.");
+				"Here you can enter your observations concerning the air filter.");
 		qc1.addChild(qc3);
 		createdKB.add(qc3);
 
@@ -223,12 +222,12 @@ public class KBCreationTestUtil {
 		// -- invisible
 		Question q0 = createdKBM.createQuestionOC("Q1", "Exhaust fumes", qc1,
 				new String[] {
-				"black", "blue", "invisible" });
+						"black", "blue", "invisible" });
 
 		// Add MMInfo to Question "Exhaust fumes":
 		// "What is the color of the exhaust fumes?"
 		addMMInfo(q0, "LT", MMInfoSubject.PROMPT.getName(),
-		"What is the color of the exhaust fumes?");
+				"What is the color of the exhaust fumes?");
 
 		// Add question:
 		// --- Fuel [oc]
@@ -256,7 +255,7 @@ public class KBCreationTestUtil {
 		// ---- increased
 		Question q3 = createdKBM.createQuestionOC("Q5", "Mileage evaluation", q2,
 				new String[] {
-				"normal", "increased" });
+						"normal", "increased" });
 		q3.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION, Boolean.TRUE);
 
 		// Add question:
@@ -271,10 +270,10 @@ public class KBCreationTestUtil {
 		// -- everything is fine
 		Question q4 = createdKBM.createQuestionMC("Q7", "Driving", qc1,
 				new String[] {
-				"insufficient power on partial load",
-				"insufficient power on full load",
-				"unsteady idle speed",
-		"everything is fine" });
+						"insufficient power on partial load",
+						"insufficient power on full load",
+						"unsteady idle speed",
+						"everything is fine" });
 
 		// Add question:
 		// ---- Other [text]
@@ -286,21 +285,6 @@ public class KBCreationTestUtil {
 		// - "Idle speed system o.k.?" [yn]
 		// createdKBM.createQuestionYN("Q9", "Idle speed system o.k.?", qc2);
 		createdKBM.createQuestionYN("Q9", "Idle speed system o.k.?", null, null, qc2);
-	}
-
-	/**
-	 * Creates MMInfo similar to the info from an AttributeTable
-	 */
-	private void createAttributeTable() {
-
-		// Get the Diagnosis which will get the MMInfo
-		Solution d = createdKBM.findSolution("Mechanical problem");
-
-		// Add MMInfo which is similar to the MMInfo created from the
-		// AttributeTable
-		// | Mechanical problem | info | description | some problem description
-		addMMInfo(d, "description", MMInfoSubject.INFO.getName(), "some problem description");
-
 	}
 
 	/**
