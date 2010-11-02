@@ -114,7 +114,7 @@ jspwiki.baseURL=http://localhost:8080/KnowWE/
 #  Note that if you're upgrading from JSPWiki 1.x, then you need to remove the
 #  "com.ecyrd.jspwiki." part from the beginning of the path.
 #
-jspwiki.pageProvider = FileSystemProvider
+jspwiki.pageProvider = VersioningFileProvider
 
 #
 #  Set to true, if you want to cache page data into memory.  This is
