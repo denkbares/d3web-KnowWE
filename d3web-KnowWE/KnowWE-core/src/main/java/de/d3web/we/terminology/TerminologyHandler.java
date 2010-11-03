@@ -23,6 +23,7 @@ package de.d3web.we.terminology;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -435,6 +436,58 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 			return false;
 		}
 		return modifiedTermDefinitions.get(article.getTitle());
+	}
+
+	/**
+	 * Returns all global terms of the given class (e.g. Question, String,...).
+	 * 
+	 * @created 03.11.2010
+	 */
+	public Collection<String> getAllGlobalTermsOfType(Class<?> termClass) {
+		return getAllTerms(null, KnowWETerm.GLOBAL, termClass);
+	}
+
+	/**
+	 * Returns all global terms.
+	 * 
+	 * @created 03.11.2010
+	 */
+	public Collection<String> getAllGlobalTerms() {
+		return getAllTerms(null, KnowWETerm.GLOBAL, null);
+	}
+
+	/**
+	 * Returns all local terms of the given class (e.g. Question, String,...),
+	 * that are compiled in the article with the given title.
+	 * 
+	 * @created 03.11.2010
+	 */
+	public Collection<String> getAllLocalTermsOfType(String title, Class<?> termClass) {
+		return getAllTerms(title, KnowWETerm.LOCAL, termClass);
+	}
+
+	/**
+	 * Returns all local terms that are compiled in the article with the given
+	 * title.
+	 * 
+	 * @created 03.11.2010
+	 */
+	public Collection<String> getAllLocalTerms(String title) {
+		return getAllTerms(title, KnowWETerm.LOCAL, null);
+	}
+
+	@SuppressWarnings("unchecked")
+	public Collection<String> getAllTerms(String title, int scope, Class<?> termClass) {
+		Collection<TermReferenceLog> logs = getTermReferenceLogsMap(title, scope).values();
+		Collection<String> terms = new HashSet<String>();
+		for (TermReferenceLog tl : logs) {
+			if (tl.termDefiningSection != null
+					&& (termClass == null || tl.getClass().isAssignableFrom(termClass))) {
+				terms.add(new TermIdentifier(tl.termDefiningSection.getArticle(),
+						tl.termDefiningSection).toString());
+			}
+		}
+		return terms;
 	}
 
 	@Override
