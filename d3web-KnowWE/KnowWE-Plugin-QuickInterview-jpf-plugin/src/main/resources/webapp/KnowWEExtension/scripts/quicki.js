@@ -47,7 +47,7 @@ if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
 }
 
 /**
- * The KNOWWE.plugin.solutionpanel global namespace object. If KNOWWE.plugin.quicki is already defined, the
+ * The KNOWWE.plugin.quicki global namespace object. If KNOWWE.plugin.quicki is already defined, the
  * existing KNOWWE.plugin.quicki object will not be overwritten so that defined namespaces
  * are preserved.
  */
@@ -638,7 +638,8 @@ KNOWWE.plugin.quicki = function(){
                     ids : [ id ],					// to re-insert a freshly created interview
                     fn : function(){
                     	KNOWWE.plugin.quicki.initialize();
-                    	KNOWWE.plugin.solutionpanel.clearSolutionstate(); 	// clear solutionpanel
+                    	KNOWWE.plugin.solutionpanel.clearSolutionstate(); 	// clear (old) solutionpanel
+                    	KNOWWE.core.rerendercontent.update(); //Clear new SolutionPanel
                     }	
         		}
         	}
