@@ -65,6 +65,7 @@ import de.d3web.we.object.QuestionDefinition.QuestionType;
 import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
+import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * QuestionLine of the QuestionTree, here Questions can be defined
@@ -383,7 +384,9 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 		public String getUnit(Section<NumUnit> s) {
 			String originalText = s.getOriginalText();
-			return originalText.substring(1, originalText.length() - 1).trim();
+			originalText = originalText.substring(1, originalText.length() - 1);
+			originalText = KnowWEUtils.trimQuotes(originalText);
+			return originalText;
 		}
 
 		public NumUnit() {
