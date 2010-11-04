@@ -27,11 +27,14 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
-public abstract class D3webRuleAction<T extends KnowWEObjectType> extends DefaultAbstractKnowWEObjectType {
+public abstract class D3webRuleAction<T extends KnowWEObjectType>
+		extends DefaultAbstractKnowWEObjectType
+		implements KnowWETermMarker {
 
 	private static final String ACTION_STORE_KEY = "action-store-key";
 
@@ -61,12 +64,13 @@ public abstract class D3webRuleAction<T extends KnowWEObjectType> extends Defaul
 
 		@Override
 		public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
-			return getAction(article, s) == null;
+			return super.needsToCreate(article, s) || getAction(article, s) == null;
 		}
 
 		@Override
 		public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
-			return s.isOrHasSuccessorNotReusedBy(article.getTitle());
+			return super.needsToDestroy(article, s)
+					|| s.isOrHasSuccessorNotReusedBy(article.getTitle());
 		}
 
 		@Override
