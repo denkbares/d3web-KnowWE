@@ -65,17 +65,17 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  */
 public class QuickInterviewRenderer {
 
-	private static String namespace = "";
+	private final String namespace;
 
-	private static String web = "";
+	private final String web;
 
-	private static Session session = null;
+	private final Session session;
 
-	private static KnowledgeBase kb = null;
+	private final KnowledgeBase kb;
 
-	private static List<? extends QASet> inits = null;
+	private final List<? extends QASet> inits;
 
-	private static ResourceBundle rb;
+	private final ResourceBundle rb;
 
 	/**
 	 * Assembles and returns the HTML representation of the interview.
@@ -86,18 +86,27 @@ public class QuickInterviewRenderer {
 	 * @return the String representation of the interview
 	 */
 	public static String renderInterview(Session c, String webb, KnowWEUserContext user) {
+		// removed all static items and creating an instance instead
+		// otherwise parallel access from different users will make
+		// the rendering process fail
+		return new QuickInterviewRenderer(c, webb, user).render();
+	}
 
-		// Assembles the Interview
-		StringBuffer buffi = new StringBuffer();
-
+	public QuickInterviewRenderer(Session c, String webb, KnowWEUserContext user) {
 		// insert specific CSS
 		// buffi.append("<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/quicki.css' />");
+		this.kb = c.getKnowledgeBase();
+		this.session = c;
+		this.web = webb;
+		this.namespace = kb.getId();
+		this.rb = D3webModule.getKwikiBundle_d3web(user);
+		// get all elements of InitQuestionnaire
+		this.inits = kb.getInitQuestions();
+	}
 
-		kb = c.getKnowledgeBase();
-		session = c;
-		web = webb;
-		namespace = kb.getId();
-		rb = D3webModule.getKwikiBundle_d3web(user);
+	public String render() {
+		// Assembles the Interview
+		StringBuffer buffi = new StringBuffer();
 
 		// Map all processed TerminologyObjects already in interview table,
 		// avoids endless recursion in cyclic hierarchies
@@ -105,9 +114,6 @@ public class QuickInterviewRenderer {
 
 		// add plugin header
 		getInterviewPluginHeader(buffi);
-
-		// get all elements of InitQuestionnaire
-		inits = kb.getInitQuestions();
 
 		// call method for getting interview elements recursively
 		// start with root QASet and go DFS strategy
@@ -124,7 +130,7 @@ public class QuickInterviewRenderer {
 	 * @created 15.07.2010
 	 * @return the plugin header HTML String
 	 */
-	private static void getInterviewPluginHeader(StringBuffer html) {
+	private void getInterviewPluginHeader(StringBuffer html) {
 
 		// assemble JS string
 		String relAt = " rel=\"{"
@@ -156,7 +162,7 @@ public class QuickInterviewRenderer {
 	 * @param init flag for signalling whether the processed element was in the
 	 *        init questionnaire
 	 */
-	private static void getInterviewElementsRenderingRecursively(TerminologyObject topContainer,
+	private void getInterviewElementsRenderingRecursively(TerminologyObject topContainer,
 			StringBuffer buffer, Set<TerminologyObject> processedTOs, int depth, boolean init) {
 
 		// just do not display the rooty root
@@ -199,12 +205,12 @@ public class QuickInterviewRenderer {
 		// process all children, depending on element type branch into
 		// corresponding recursion
 		for (TerminologyObject qcontainerchild : topContainer.getChildren()) {
-			
+
 			init = inits.contains(qcontainerchild) ? true : false;
 			if (!init && isIndicated(topContainer)) {
 				init = true;
 			}
-			
+
 			if (qcontainerchild instanceof QContainer) {
 				getInterviewElementsRenderingRecursively(
 						qcontainerchild, buffer, processedTOs, depth, init);
@@ -217,7 +223,7 @@ public class QuickInterviewRenderer {
 		buffer.append("</div>"); // close the grouping div
 	}
 
-	private static void getEmptyQuestionnaireRendering(QContainer container, int depth, StringBuffer buffi,
+	private void getEmptyQuestionnaireRendering(QContainer container, int depth, StringBuffer buffi,
 			boolean show) {
 		int margin = 10 + depth * 10; // calculate identation
 
@@ -256,7 +262,7 @@ public class QuickInterviewRenderer {
 	 * @param init flag for displaying whether processed element is contained in
 	 *        an init questionnaire
 	 */
-	private static void getQuestionsRecursively(Question topQuestion, StringBuffer sb,
+	private void getQuestionsRecursively(Question topQuestion, StringBuffer sb,
 			Set<TerminologyObject> processedTOs, int depth, TerminologyObject parent, boolean init) {
 
 		// if already contained in interview, get already-defined rendering and
@@ -291,7 +297,7 @@ public class QuickInterviewRenderer {
 	 * @param sb StringBuffer to append the div to
 	 * @param depth indicator for the indentation depth
 	 */
-	private static void getAlreadyDefinedRendering(TerminologyObject element, StringBuffer sb, int depth) {
+	private void getAlreadyDefinedRendering(TerminologyObject element, StringBuffer sb, int depth) {
 
 		int margin = 30 + depth * 10;
 		sb.append("<div id='" + element.getId() + "' " +
@@ -311,14 +317,14 @@ public class QuickInterviewRenderer {
 	 * @param buffi
 	 * @return the HTML of a questionnaire div
 	 */
-	private static void getQuestionnaireRendering(QASet container, int depth, boolean show, StringBuffer buffi) {
+	private void getQuestionnaireRendering(QASet container, int depth, boolean show, StringBuffer buffi) {
 
 		int margin = 10 + depth * 10; // calculate identation
 
 		String clazz = show // decide class for rendering expand-icon
 				? "class='questionnaire pointDown'"
 				: "class='questionnaire pointRight'";
-		
+
 		String style = "style='margin-left: " + margin + "px; display: block;'";
 
 		if (!show && isIndicated(container)) {
@@ -326,7 +332,7 @@ public class QuickInterviewRenderer {
 		}
 
 		buffi.append("<div id='" + container.getId() + "' " + clazz + style + " >");
-		
+
 		buffi.append(container.getName());
 		buffi.append("</div>");
 	}
@@ -342,7 +348,7 @@ public class QuickInterviewRenderer {
 	 * @param sb
 	 * @return HTML-String representation for one QA-Block
 	 */
-	private static void getQABlockRendering(Question question, int depth, TerminologyObject parent, StringBuffer sb) {
+	private void getQABlockRendering(Question question, int depth, TerminologyObject parent, StringBuffer sb) {
 
 		// calculate indentation depth & resulting width of the question display
 		// 10 for standard margin and 30 for indenting further than the triangle
@@ -418,7 +424,7 @@ public class QuickInterviewRenderer {
 		sb.append("</div>");
 	}
 
-	private static void renderTextAnswers(Question q, StringBuffer sb) {
+	private void renderTextAnswers(Question q, StringBuffer sb) {
 		String value = "";
 
 		// if answer has already been answered write value into the field
@@ -470,7 +476,7 @@ public class QuickInterviewRenderer {
 	 * @param list the list of possible choices
 	 * @return the HTML representation of one choice questions
 	 */
-	private static void renderOCChoiceAnswers(Question q, List<Choice> list, StringBuffer sb) {
+	private void renderOCChoiceAnswers(Question q, List<Choice> list, StringBuffer sb) {
 
 		// go through all choices = answer alternatives
 		for (Choice choice : list) {
@@ -520,7 +526,7 @@ public class QuickInterviewRenderer {
 	 * @param q the question to which numerical answers are attached
 	 * @return the String for rendering numerical answer field
 	 */
-	private static void renderNumAnswers(Question q, StringBuffer sb) {
+	private void renderNumAnswers(Question q, StringBuffer sb) {
 
 		String value = "";
 
@@ -619,7 +625,7 @@ public class QuickInterviewRenderer {
 	 * @param q the date-question
 	 * @param sb the String Buffer, the HTML is attached to
 	 */
-	private static void renderDateAnswers(Question q, StringBuffer sb) {
+	private void renderDateAnswers(Question q, StringBuffer sb) {
 
 		String value = "";
 
@@ -681,12 +687,11 @@ public class QuickInterviewRenderer {
 	 * @param namespace
 	 * @return
 	 */
-	private static void renderMCChoiceAnswers(QuestionChoice q, MultipleChoiceValue mcval, StringBuffer sb) {
+	private void renderMCChoiceAnswers(QuestionChoice q, MultipleChoiceValue mcval, StringBuffer sb) {
 
 		sb.append("\n<div class='answers' style='display: inline;'>");
 
 		for (Choice choice : mcval.asChoiceList(q)) {
-
 
 			String cssclass = "answerMC";
 			String jscall = " rel=\"{oid:'" + choice.getId() + "', "
@@ -731,7 +736,7 @@ public class QuickInterviewRenderer {
 	 * @param q the question, to which unknown is added
 	 * @return the HTML representation
 	 */
-	private static void renderAnswerUnknown(Question q, String type, StringBuffer sb) {
+	private void renderAnswerUnknown(Question q, String type, StringBuffer sb) {
 
 		String jscall = " rel=\"{oid: '" + Unknown.getInstance().getId() + "', "
 				+ "web:'" + web + "', "
@@ -769,7 +774,7 @@ public class QuickInterviewRenderer {
 	 *         "{oid:'MaU',web:'default_web',ns:'FAQ Devel..FAQ Devel_KB',qid:'Q2'}"
 	 *         class="answercell" id="span_Q2_MaU" > MaU </span>
 	 */
-	private static String getEnclosingTagOnClick(String tag, String text,
+	private String getEnclosingTagOnClick(String tag, String text,
 			String cssclass, String onclick, String onmouseover, String id, String title) {
 		StringBuffer sub = new StringBuffer();
 		sub.append("<" + tag);
@@ -804,7 +809,7 @@ public class QuickInterviewRenderer {
 	 * @return true if the given session value contains the checked value (MC
 	 *         Questions) or if the session value equals the value
 	 */
-	private static boolean isAnsweredinCase(Value sessionValue, Value value) {
+	private boolean isAnsweredinCase(Value sessionValue, Value value) {
 		// test for MC values separately
 		if (sessionValue instanceof MultipleChoiceValue) return ((MultipleChoiceValue) sessionValue).contains(value);
 		else return sessionValue.equals(value);
@@ -819,7 +824,7 @@ public class QuickInterviewRenderer {
 	 * @param bb
 	 * @return true, if the given TerminologyObject is indicated.
 	 */
-	private static boolean isIndicated(TerminologyObject to) {
+	private boolean isIndicated(TerminologyObject to) {
 
 		// check whether object itself is currently indicated
 		if (session.getBlackboard().getIndication((InterviewObject) to).getState() == State.INDICATED) return true;

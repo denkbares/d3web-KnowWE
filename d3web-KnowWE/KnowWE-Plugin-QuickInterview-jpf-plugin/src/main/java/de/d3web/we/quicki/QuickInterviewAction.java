@@ -84,14 +84,11 @@ public class QuickInterviewAction extends AbstractAction {
 
 		Session session = broker.getServiceSession(kbid);
 
-		if (session != null) {
-			return QuickInterviewRenderer.renderInterview(session, web, usercontext);
-		}
-		else {
+		if (session == null) {
 			kbid = KnowWEEnvironment.WIKI_FINDINGS + ".."
 					+ KnowWEEnvironment.generateDefaultID(KnowWEEnvironment.WIKI_FINDINGS);
 			session = broker.getServiceSession(kbid);
-			return QuickInterviewRenderer.renderInterview(session, web, usercontext);
 		}
+		return QuickInterviewRenderer.renderInterview(session, web, usercontext);
 	}
 }

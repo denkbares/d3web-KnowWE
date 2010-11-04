@@ -31,8 +31,6 @@ import de.d3web.report.Message;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.DefaultErrorRenderer;
-import de.d3web.we.kdom.report.DefaultNoticeRenderer;
-import de.d3web.we.kdom.report.DefaultWarningRenderer;
 import de.d3web.we.kdom.report.MessageRenderer;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
@@ -151,6 +149,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		return subtreeHandler;
 	}
 
+	@Override
 	public final List<SubtreeHandler<? extends KnowWEObjectType>> getSubtreeHandlers(Priority p) {
 		List<SubtreeHandler<? extends KnowWEObjectType>> handlers = subtreeHandler.get(p);
 		if (handlers == null) {
@@ -341,6 +340,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#deactivateType()
 	 */
+	@Override
 	public void deactivateType() {
 		isActivated = false;
 	}
@@ -350,6 +350,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#activateType()
 	 */
+	@Override
 	public void activateType() {
 		isActivated = true;
 	}
@@ -359,10 +360,12 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#getActivationStatus()
 	 */
+	@Override
 	public boolean getActivationStatus() {
 		return isActivated;
 	}
 
+	@Override
 	public void findTypeInstances(Class clazz, List<KnowWEObjectType> instances) {
 		boolean foundNew = false;
 		if (this.getClass().equals(clazz)) {
@@ -453,16 +456,19 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		return getDefaultRenderer();
 	}
 
+	@Override
 	public MessageRenderer getErrorRenderer() {
-		return DefaultErrorRenderer.getInstance();
+		return DefaultErrorRenderer.INSTANCE_ERROR;
 	}
 
-	public de.d3web.we.kdom.report.MessageRenderer getNoticeRenderer() {
-		return DefaultNoticeRenderer.getInstance();
+	@Override
+	public MessageRenderer getNoticeRenderer() {
+		return DefaultErrorRenderer.INSTANCE_NOTE;
 	}
 
-	public de.d3web.we.kdom.report.MessageRenderer getWarningRenderer() {
-		return DefaultWarningRenderer.getInstance();
+	@Override
+	public MessageRenderer getWarningRenderer() {
+		return DefaultErrorRenderer.INSTANCE_WARNING;
 	}
 
 	protected KnowWEDomRenderer getDefaultRenderer() {

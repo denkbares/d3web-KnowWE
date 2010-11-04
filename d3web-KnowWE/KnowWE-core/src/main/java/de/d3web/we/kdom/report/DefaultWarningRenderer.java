@@ -39,28 +39,37 @@ public class DefaultWarningRenderer implements MessageRenderer {
 	public static DefaultWarningRenderer getInstance() {
 		if (instance == null) {
 			instance = new DefaultWarningRenderer();
-
 		}
-
 		return instance;
 	}
 
+	private final String cssClass = "KDDOMWarning";
+	private final String cssStyle = "color:#CFCF00;text-decoration:underline;";
+
 	@Override
-	public String preRenderMessage(KDOMReportMessage notice, KnowWEUserContext user) {
-		// does do nothing --> happens post
-		return "";
+	public String postRenderMessage(KDOMReportMessage m, KnowWEUserContext user) {
+		return KnowWEUtils.maskHTML("</span>");
 	}
 
 	@Override
-	public String postRenderMessage(KDOMReportMessage notice, KnowWEUserContext user) {
+	public String preRenderMessage(KDOMReportMessage m, KnowWEUserContext user) {
+		StringBuilder string = new StringBuilder();
 
-		StringBuffer buffy = new StringBuffer();
+		string.append(KnowWEUtils.maskHTML("<span"));
+		if (m.getVerbalization() != null) {
+			string.append(" title='").append(
+					m.getVerbalization().replace('\'', '"')).append("'");
+		}
+		if (cssClass != null) {
+			string.append(" class='").append(cssClass).append("'");
+		}
+		if (cssStyle != null) {
+			string.append(" style='").append(cssStyle).append("'");
+		}
 
-		buffy.append(" <img style='vertical-align:middle;' height='12' src='KnowWEExtension/images/lo.gif'");
+		string.append(KnowWEUtils.maskHTML(">"));
 
-		buffy.append(" title='" + notice.getVerbalization() + "'>");
-
-		return KnowWEUtils.maskHTML(buffy.toString());
-
+		return string.toString();
 	}
+
 }

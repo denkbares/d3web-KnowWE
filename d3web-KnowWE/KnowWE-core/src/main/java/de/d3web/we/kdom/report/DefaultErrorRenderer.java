@@ -34,19 +34,22 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  */
 public class DefaultErrorRenderer implements MessageRenderer {
 
-	private static DefaultErrorRenderer instance = null;
+	public static final DefaultErrorRenderer INSTANCE_ERROR = new DefaultErrorRenderer(
+			"KDDOMError", "color:red;text-decoration:underline;");
 
-	public static DefaultErrorRenderer getInstance() {
-		if (instance == null) {
-			instance = new DefaultErrorRenderer();
+	public static final DefaultErrorRenderer INSTANCE_WARNING = new DefaultErrorRenderer(
+			"KDDOMWarning", "color:#CFCF00;text-decoration:underline;");
 
-		}
+	public static final DefaultErrorRenderer INSTANCE_NOTE = new DefaultErrorRenderer(
+			"KDDOMNotice", null);
 
-		return instance;
+	private final String cssClass;
+	private final String cssStyle;
+
+	private DefaultErrorRenderer(String cssClass, String cssStyle) {
+		this.cssClass = cssClass;
+		this.cssStyle = cssStyle;
 	}
-
-	private final String cssClass = "KDDOMError";
-	private final String cssStyle = "color:red;text-decoration:underline;";
 
 	@Override
 	public String postRenderMessage(KDOMReportMessage m, KnowWEUserContext user) {
@@ -58,8 +61,10 @@ public class DefaultErrorRenderer implements MessageRenderer {
 		StringBuilder string = new StringBuilder();
 
 		string.append(KnowWEUtils.maskHTML("<span"));
-		if (m.getVerbalization() != null) {
-			string.append(" title='").append(m.getVerbalization()).append("'");
+		String tooltip = m.getVerbalization();
+		if (tooltip != null) {
+			string.append(" title='").append(
+					tooltip.replace('\'', '"')).append("'");
 		}
 		if (cssClass != null) {
 			string.append(" class='").append(cssClass).append("'");
