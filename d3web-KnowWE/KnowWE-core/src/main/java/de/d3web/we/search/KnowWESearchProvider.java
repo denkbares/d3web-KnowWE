@@ -66,7 +66,7 @@ public interface KnowWESearchProvider {
 	 * @param results
 	 * @return
 	 */
-	public abstract String renderResults(Collection<GenericSearchResult> results);
+	public abstract String renderResults(Collection<GenericSearchResult> results, String queryString);
 
 	/**
 	 * OPTIONAL: (may return null/empty collection) To provide a set of helpful

@@ -28,8 +28,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
@@ -47,7 +47,6 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.search.GenericSearchResult;
 import de.d3web.we.search.KnowWESearchProvider;
 import de.d3web.we.search.SearchTerm;
-
 
 public class JSPWikiSearchConnector implements KnowWESearchProvider {
 
@@ -190,7 +189,7 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 	}
 
 	@Override
-	public String renderResults(Collection<GenericSearchResult> results) {
+	public String renderResults(Collection<GenericSearchResult> results, String queryString) {
 		StringBuffer resultBuffy = new StringBuffer();
 
 		if (results.size() == 0) {
@@ -235,7 +234,6 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 		return resultBuffy.toString();
 	}
 
-
 	@Override
 	public Collection<SearchTerm> getAllTerms() {
 		// Plaintext-search does not generate terms...
@@ -253,6 +251,5 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 }
