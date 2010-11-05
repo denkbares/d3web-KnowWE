@@ -20,7 +20,6 @@ package de.d3web.we.flow;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +33,6 @@ import de.d3web.diaFlux.flow.INode;
 import de.d3web.diaFlux.flow.INodeData;
 import de.d3web.diaFlux.flow.ISupport;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
-import de.d3web.diaFlux.inference.Entry;
 import de.d3web.diaFlux.inference.IPath;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -66,6 +64,7 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 		List<Section<FlowchartType>> flows = new ArrayList<Section<FlowchartType>>();
 
 		article.getSection().findSuccessorsOfType(FlowchartType.class, flows);
+
 
 
 		if (flows.isEmpty()) {
@@ -120,7 +119,7 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 		FlowSet set = DiaFluxUtils.getFlowSet(theCase);
 
 		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) theCase.getCaseObject(set);
-		Collection<IPath> pathes = caseObject.getPathes();
+		Collection<IPath> pathes = caseObject.getActivePathes();
 
 		StringBuilder builder = new StringBuilder();
 
@@ -134,18 +133,15 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 
 		for (IPath path : pathes) {
 
-			Iterator<? extends Entry> it = path.iterator();
 			builder.append(++i + ". Path: " + path + "<br/>");
 
-			while (it.hasNext()) {
-				Entry entry = it.next();
+			for (INode node : path.getActiveNodes()) {
 
-				builder.append(entry);
-				builder.append("  -  ");
-				builder.append(DiaFluxUtils.getNodeData(entry.getNode(), theCase));
+				builder.append(DiaFluxUtils.getNodeData(node, theCase));
 				builder.append("<br/>");
 
 			}
+
 			builder.append("<br/>");
 			builder.append("<br/>");
 
@@ -168,9 +164,10 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 
 		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) session.getCaseObject(flowSet);
 
-		for (IPath path : caseObject.getPathes()) {
+		for (IPath path : caseObject.getActivePathes()) {
 
-			preview = highlightPath(preview, flowID, path, session);
+			if (path.getFlow().getId().equals(flowID)) preview = highlightPath(preview, flowID,
+					path, session);
 
 		}
 
@@ -182,16 +179,10 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 		String[] nodes = preview.split("<DIV class=\"Node\" id=\"");
 		String[] edges = preview.split("<DIV class=\"Rule\" id=\"");
 
-		Iterator<? extends Entry> it = path.iterator();
 
-		while (it.hasNext()) {
+		for (INode node : path.getActiveNodes()) {
 
-			Entry pathEntry = it.next();
-
-			INode node = pathEntry.getNode();
-
-			// TODO
-			if (!node.getFlow().getId().equals(flowID)) return preview;
+			// if (!node.getFlow().getId().equals(flowID)) return preview;
 
 			String nodeId = node.getID();
 			for (int i = 1; i < nodes.length; i++) {
@@ -279,8 +270,9 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 	}
 
 	private boolean isDebug(Map<String, String> urlParameterMap) {
-		String debug = urlParameterMap.get("debug");
-		return debug != null && debug.equals("true");
+		// String debug = urlParameterMap.get("debug");
+		// return debug != null && debug.equals("true");
+		return true;
 	}
 
 
