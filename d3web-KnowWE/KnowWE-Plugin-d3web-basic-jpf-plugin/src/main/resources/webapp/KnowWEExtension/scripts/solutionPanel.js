@@ -53,6 +53,8 @@ KNOWWE.plugin.solutionpanel = function(){
  * The solutionpanel namespace.
  */
 KNOWWE.plugin.solutionpanel = function(){
+	var nodeID = 'ShowSolutions';
+	
     return {
         /**
          * Function: init
@@ -60,12 +62,12 @@ KNOWWE.plugin.solutionpanel = function(){
          * correct action.
          */
         init : function(){
-        	var el = _KS('#sstate-update');
+        	var el = _KS('#sstate-update'); //TODO delete? not used anymore
             if( el ){
                 _KE.add('click', el, this.updateSolutionstate);
             }
             
-            el = _KS('#sstate-clear'); 
+            el = _KS('#sstate-clear'); //TODO delete? not used anymore
             if( el ){
                 _KE.add('click', el, this.clearSolutionstate);
             }
@@ -117,20 +119,25 @@ KNOWWE.plugin.solutionpanel = function(){
                 action : 'ClearSessionAction',
                 KWikiWeb : 'default_web'
             }
-            var id = 'solutionPanelResults';
-            var options = {
-                url : KNOWWE.core.util.getURL( params ),
-                response : {
-                    action : 'insert',
-                    ids : [ id ]
-                }
+            var defaultFrames = _KS('.defaultMarkupFrame');
+            var size = defaultFrames.length;
+            for(var i = 0; i < size; i++) {
+            	
+            	if( defaultFrames[i].id && defaultFrames[i].id.indexOf(nodeID) != -1) {
+            		var id = defaultFrames[i].id;
+		            var options = {
+		                url : KNOWWE.core.util.getURL( params ),
+		                response : {
+		                    action : 'none',
+		                    ids : [ id ]
+		                }
+		            }
+		            new _KA( options ).send();
+		            KNOWWE.core.rerendercontent.update();
+		            KNOWWE.plugin.d3web.rerenderquestionsheet.update();
+		            KNOWWE.helper.observer.notify('update'); 
+            	}
             }
-            if( _KS('#solutionPanelResults') ) {
-                new _KA( options ).send();
-                KNOWWE.core.rerendercontent.update();
-                KNOWWE.plugin.d3web.rerenderquestionsheet.update();
-                KNOWWE.helper.observer.notify('update');
-            }   
         },
         /**
          * Functions: showExplanation
