@@ -1225,7 +1225,9 @@ KNOWWE.core.rerendercontent = function(){
                         action : 'ReRenderContentPartAction',
                         KWikiWeb : 'default_web',
                         KdomNodeId : rel.id,
-                        KWiki_Topic : KNOWWE.helper.gup('page'),
+                        //works for now, but when the IDs change it breaks again
+                        KWiki_Topic : rel.id.substring(0, rel.id.indexOf('/')), 
+                        //KWiki_Topic : KNOWWE.helper.gup('page'),
                         ajaxToHTML : "render",
                         inPre : KNOWWE.helper.tagParent(_KS('#' + rel.id), 'pre') != document 
                     }           
@@ -1302,7 +1304,7 @@ var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
                 _KE.add('click', _KS('#testsuite2-show-extend'), KNOWWE.core.util.form.showExtendedPanel);
             }
             setTimeout(function(){KNOWWE.helper.observer.notify('onload')}, 50);
-            setTimeout(function(){KNOWWE.helper.observer.notify('update')}, 50);
+            //setTimeout(function(){KNOWWE.helper.observer.notify('update')}, 50);
         });
     };
 }());
