@@ -51,20 +51,21 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	@Override
 	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
 		if (!(s.get() instanceof KnowWETermMarker)) {
-			if (s.isReusedBy(article.getTitle())) {
-				if ((KnowWEUtils.getTerminologyHandler(
-						article.getWeb()).areTermDefinitionsModifiedFor(article))) {
-					// There are TermDefinitions but no TermReferences
-					// => since Knowledge referencing to these Definitions will
-					// not be aware of the changes to the Definitions, we need
-					// force a full parse.
-					article.setFullParse(this.getClass());
-				}
-			}
-			else {
-				// Maybe there are changes to the terminology... since we do not
-				// know, we need to force a full parse, because there could be
-				// TermReferences unaware of the changes to the terminology.
+			// This D3webSubtreeHandler compiles d3web knowledge without
+			// regarding TermDefinitions or TermReferences (the section does not
+			// implement KnowWETermMarker).
+			// So if the Section has changed, we need a full parse, because it
+			// is possible, that new terminology gets added without notifying
+			// references.
+			// If there already are registered changes to the terminology, we
+			// also need a full parse, even if the Section hasn't changed: In
+			// this case it is possible, that the knowledge in this Section is
+			// references to the changed definitions, so the knowledge in this
+			// Section is affected and needs to be compiled again. Since we are
+			// past destroying and are no longer able to just remove knowledge
+			// from the knowledge base, a simple "create" might not be enough.
+			if (!s.isReusedBy(article.getTitle()) || KnowWEUtils.getTerminologyHandler(
+						article.getWeb()).areTermDefinitionsModifiedFor(article)) {
 				article.setFullParse(this.getClass());
 			}
 		}
