@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
-import utils.KBTestUtil;
 import utils.KBTestUtilNewMarkup;
 import utils.MyTestArticleManager;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -38,12 +37,12 @@ import de.d3web.we.logging.Logging;
 
 /**
  * This class tests whether the Diagnoses are created as expected.
- *
- *
+ * 
+ * 
  * @author Sebastian Furth
- * @see KBTestUtil to modify the KB against which everything is tested
+ * @see KBTestUtilNewMarkup to modify the KB against which everything is tested
  * @see KBCreationTest.txt to modify the Article which is tested
- *
+ * 
  */
 public class SolutionsTest extends TestCase {
 

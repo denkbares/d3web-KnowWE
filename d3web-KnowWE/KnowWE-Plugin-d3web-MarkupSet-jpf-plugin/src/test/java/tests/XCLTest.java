@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.Collection;
 
 import junit.framework.TestCase;
-import utils.KBTestUtil;
 import utils.KBTestUtilNewMarkup;
 import utils.MyTestArticleManager;
 import de.d3web.core.inference.KnowledgeSlice;
@@ -38,12 +37,12 @@ import de.d3web.xcl.inference.PSMethodXCL;
 
 /**
  * This class tests whether the XCLModels are created as expected.
- *
- *
+ * 
+ * 
  * @author Sebastian Furth
- * @see KBTestUtil to modify the KB against which everything is tested
+ * @see KBTestUtilNewMarkup to modify the KB against which everything is tested
  * @see KBCreationTest.txt to modify the Article which is tested
- *
+ * 
  */
 public class XCLTest extends TestCase {
 
