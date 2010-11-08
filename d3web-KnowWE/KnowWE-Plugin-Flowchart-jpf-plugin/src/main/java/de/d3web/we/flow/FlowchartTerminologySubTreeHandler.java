@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -25,21 +25,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.condition.CondEqual;
-import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.session.values.ChoiceValue;
-import de.d3web.diaFlux.IndicateFlowAction;
 import de.d3web.diaFlux.NoopAction;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.IEdge;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.diaFlux.flow.Node;
-import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.report.Message;
 import de.d3web.we.flow.type.ExitType;
 import de.d3web.we.flow.type.NodeType;
@@ -55,7 +49,7 @@ import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 
 /**
- * 
+ *
  * @author Reinhard Hatko Created on: 12.10.2009
  */
 public class FlowchartTerminologySubTreeHandler extends D3webSubtreeHandler {
@@ -126,7 +120,7 @@ public class FlowchartTerminologySubTreeHandler extends D3webSubtreeHandler {
 
 		QuestionMC startQ = createQuestion(flowQC, flow.getName() + "_" + STARTNODES_QUESTION_NAME,
 				flow.getStartNodes(), kbm);
-		createRules(flow, startQ, kbm);
+		// createRules(flow, startQ, kbm);
 
 		createQuestion(flowQC, flow.getName() + "_" + EXITNODES_QUESTION_NAME, flow.getExitNodes(),
 				kbm);
@@ -135,19 +129,21 @@ public class FlowchartTerminologySubTreeHandler extends D3webSubtreeHandler {
 
 	}
 
-	private void createRules(Flow flow, QuestionMC startQ, KnowledgeBaseManagement kbm) {
 
-		for (Choice answer : startQ.getAllAlternatives()) {
-
-			Rule rule = new Rule("FCIndication_" + startQ + "_" + answer.getName(),
-					FluxSolver.class);
-
-			rule.setAction(new IndicateFlowAction(flow.getName(), answer.getName()));
-			rule.setCondition(new CondEqual(startQ, new ChoiceValue(answer)));
-
-		}
-
-	}
+	// private void createRules(Flow flow, QuestionMC startQ,
+	// KnowledgeBaseManagement kbm) {
+	//
+	// for (Choice answer : startQ.getAllAlternatives()) {
+	//
+	// Rule rule = new Rule("FCIndication_" + startQ + "_" + answer.getName(),
+	// FluxSolver.class);
+	//
+	// rule.setAction(new IndicateFlowAction(flow.getName(), answer.getName()));
+	// rule.setCondition(new CondEqual(startQ, new ChoiceValue(answer)));
+	//
+	// }
+	//
+	// }
 
 	private QuestionMC createQuestion(QContainer flowQC, String name,
 			List<? extends Node> nodes, KnowledgeBaseManagement kbm) {
