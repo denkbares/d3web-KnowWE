@@ -56,11 +56,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Plugin-d3web-basic-jpf-plugin</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<artifactId>KnowWE-core</artifactId>
+			<version>${project.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
+
 
 </project>

@@ -21,9 +21,6 @@ package utils;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.we.basic.D3webKnowledgeHandler;
-import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import dummies.KnowWETestWikiConnector;
@@ -69,16 +66,6 @@ public class MyTestArticleManager {
 		return getInstance().articles.get(filename);
 	}
 
-	/**
-	 *
-	 * @created 01.09.2010
-	 * @param article
-	 */
-	public static KnowledgeBase getKnowledgeBase(KnowWEArticle article) {
-		// Load KnowledgeBase
-		D3webKnowledgeHandler d3Handler = D3webModule.getKnowledgeRepresentationHandler("default_web");
-		return d3Handler.getKBM(article.getTitle()).getKnowledgeBase();
-	}
 
 	/**
 	 *

@@ -146,6 +146,7 @@
 		<module>KnowWE-Plugin-d3web-basic-jpf-plugin</module>
 		<module>KnowWE-Plugin-KDOMParseUtils</module>
 		<module>KnowWE-Plugin-d3web-MarkupSet-jpf-plugin</module>
+		<module>KnowWE-GlobalTestUtils</module>
 	</modules>
 	<repositories>
 		<repository>
