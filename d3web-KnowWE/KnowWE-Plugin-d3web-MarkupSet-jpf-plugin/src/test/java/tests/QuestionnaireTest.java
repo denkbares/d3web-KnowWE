@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
-import utils.KBCreationTestUtil;
+import utils.KBTestUtilNewMarkup;
 import utils.MyTestArticleManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
@@ -38,9 +38,9 @@ import de.d3web.we.logging.Logging;
 
 /**
  * This class tests whether the Questionnaires are created as expected.
- * 
+ *
  * @author Sebastian Furth
- * @see KBCreationTestUtil to modify the KB against which everything is tested
+ * @see KBTestUtilNewMarkup to modify the KB against which everything is tested
  * @see KBCreationTest.txt to modify the Article which is tested
  */
 public class QuestionnaireTest extends TestCase {
@@ -53,18 +53,18 @@ public class QuestionnaireTest extends TestCase {
 	}
 
 	public void testNumberOfQuestionnaires() {
-		KnowWEArticle art = MyTestArticleManager.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
-		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
-		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
+		KnowWEArticle art = MyTestArticleManager.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
+		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
+		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
 		assertEquals("Number of Qestionnaires differ.", createdKB.getQContainers().size(),
 				loadedKB.getQContainers().size());
 	}
 
 	public void testQuestionnaires() {
 
-		KnowWEArticle art = MyTestArticleManager.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
-		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
-		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
+		KnowWEArticle art = MyTestArticleManager.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
+		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
+		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
 
 		if (loadedKB.getQContainers().size() == createdKB.getQContainers().size()) {
 			for (int i = 0; i < loadedKB.getQContainers().size(); i++) {

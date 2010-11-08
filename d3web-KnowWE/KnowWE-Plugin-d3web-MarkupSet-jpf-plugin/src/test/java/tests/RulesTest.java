@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
-import utils.KBCreationTestUtil;
+import utils.KBTestUtilNewMarkup;
 import utils.MyTestArticleManager;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.KnowledgeSlice;
@@ -43,17 +43,17 @@ import de.d3web.we.kdom.KnowWEArticle;
 
 /**
  * This class tests whether the Rules are created as expected.
- * 
+ *
  * This test also covers the rules that are created "automatically" in the
  * DecisionTree.
- * 
+ *
  * TODO: Commented some assertions out. Because the new Markup makes them fail.
  * Johannes
- * 
+ *
  * @author Sebastian Furth
- * @see KBCreationTestUtil to modify the KB against which everything is tested
+ * @see KBTestUtilNewMarkup to modify the KB against which everything is tested
  * @see KBCreationTest.txt to modify the Article which is tested
- * 
+ *
  */
 public class RulesTest extends TestCase {
 
@@ -68,9 +68,9 @@ public class RulesTest extends TestCase {
 	public void testHeuristicRules() {
 		// load KnowledgeBases
 		KnowWEArticle art = MyTestArticleManager
-				.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
-		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
-		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
+				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
+		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
+		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
 
 		// load Rules in HashMaps (necessary because they are unsorted)
 		HashMap<String, Rule> loadedRules =
@@ -152,8 +152,8 @@ public class RulesTest extends TestCase {
 	}
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @created 13.10.2010
 	 */
 	// public void testNextQASetRules() {
@@ -162,9 +162,9 @@ public class RulesTest extends TestCase {
 	void foobar1() {
 		// load KnowledgeBases
 		KnowWEArticle art = MyTestArticleManager
-				.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
-		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
-		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
+				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
+		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
+		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
 
 		// load Rules in HashMaps (necessary because they are unsorted)
 		HashMap<String, Rule> loadedRules =
@@ -233,7 +233,7 @@ public class RulesTest extends TestCase {
 
 	/**
 	 * Rule should be 7 instead of 2
-	 * 
+	 *
 	 * @created 13.10.2010
 	 */
 	// public void testSetValueRules() {
@@ -242,9 +242,9 @@ public class RulesTest extends TestCase {
 	void foobar2() {
 		// load KnowledgeBases
 		KnowWEArticle art = MyTestArticleManager
-				.getArticle(KBCreationTestUtil.KBCREATION_ARTICLE_FILE);
-		KnowledgeBase loadedKB = MyTestArticleManager.getKnowledgeBase(art);
-		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
+				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
+		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
+		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
 
 		// load Rules in HashMaps (necessary because they are unsorted)
 		HashMap<String, Rule> loadedRules =
@@ -346,7 +346,7 @@ public class RulesTest extends TestCase {
 	 * Stores Rules in a HashMap. We have to do this, because otherwise they are
 	 * not comparable because the collection in the KB is accessible only
 	 * through an iterator and not sorted.
-	 * 
+	 *
 	 * @param kb KnowledgeBase
 	 * @param PSMethod PSMethod
 	 * @return HashMap<String, RuleComplex>
