@@ -30,7 +30,7 @@ import utils.MyTestArticleManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.knowledge.terminology.info.BasicProperties;
+import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.logging.Logging;
@@ -133,8 +133,8 @@ public class SolutionsTest extends TestCase {
 				// Test Explanation
 				assertEquals("Solution " + expected.getName() +
 						" has wrong explanation.",
-						expected.getInfoStore().getValue(BasicProperties.EXPLANATION),
-						actual.getInfoStore().getValue(BasicProperties.EXPLANATION));
+						expected.getInfoStore().getValue(MMInfo.DESCRIPTION),
+						actual.getInfoStore().getValue(MMInfo.DESCRIPTION));
 			}
 		}
 		else {

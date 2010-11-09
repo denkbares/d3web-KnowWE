@@ -54,9 +54,6 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.scoring.Score;
-import de.d3web.we.basic.D3webKnowledgeHandler;
-import de.d3web.we.basic.D3webModule;
-import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelationType;
 
@@ -76,30 +73,18 @@ import de.d3web.xcl.XCLRelationType;
  * @see KnowledgeBaseCreationTest
  * 
  */
-public class KBTestUtilNewMarkup {
+public class KBCreationTestUtil {
 
 	public static final String KBCREATION_ARTICLE_FILE = "src/test/resources/KBCreationTestNewMarkup.txt";
 
-	private static KBTestUtilNewMarkup instance = new KBTestUtilNewMarkup();
+	private static KBCreationTestUtil instance = new KBCreationTestUtil();
 	private KnowledgeBase createdKB;
 	private KnowledgeBaseManagement createdKBM;
 
 	/**
-	 * Returns the KnowledgeBase of a specific article
-	 * 
-	 * @created 01.09.2010
-	 * @param article
-	 */
-	public KnowledgeBase getKnowledgeBase(KnowWEArticle article) {
-		// Load KnowledgeBase
-		D3webKnowledgeHandler d3Handler = D3webModule.getKnowledgeRepresentationHandler("default_web");
-		return d3Handler.getKBM(article.getTitle()).getKnowledgeBase();
-	}
-
-	/**
 	 * Private Constructor insures noninstantiabilty.
 	 */
-	private KBTestUtilNewMarkup() {
+	private KBCreationTestUtil() {
 
 		createGoldenKnowledge();
 
@@ -110,7 +95,7 @@ public class KBTestUtilNewMarkup {
 	 * 
 	 * @return KBCreationTestKBStorage
 	 */
-	public static KBTestUtilNewMarkup getInstance() {
+	public static KBCreationTestUtil getInstance() {
 		return instance;
 	}
 

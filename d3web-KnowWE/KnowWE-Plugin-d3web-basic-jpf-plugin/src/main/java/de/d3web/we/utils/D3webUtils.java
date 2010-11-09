@@ -26,11 +26,6 @@ import java.util.List;
 
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.core.knowledge.terminology.info.BasicProperties;
-import de.d3web.core.knowledge.terminology.info.DCElement;
-import de.d3web.core.knowledge.terminology.info.DCMarkup;
-import de.d3web.core.knowledge.terminology.info.MMInfoObject;
-import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.session.Session;
 import de.d3web.scoring.Score;
 import de.d3web.we.basic.D3webModule;
@@ -62,40 +57,6 @@ public class D3webUtils {
 			possibleScorePoints.add("suggested");
 		}
 		return possibleScorePoints;
-	}
-
-	/**
-	 * 
-	 * Adds a MMInfo DCMarkup to the NamedObject
-	 * 
-	 * @param o
-	 * @param title
-	 * @param subject
-	 * @param content
-	 * @param language
-	 */
-	public static void addMMInfo(NamedObject o, String title, String subject,
-			String content, String language) {
-		if (o == null) return;
-		if (content == null) return;
-
-		if (content.startsWith("\"") && content.endsWith("\"")
-				&& content.length() > 1) {
-			content = content.substring(1, content.length() - 1);
-		}
-
-		DCMarkup dcm = new DCMarkup();
-		dcm.setContent(DCElement.TITLE, title);
-		dcm.setContent(DCElement.SUBJECT, subject);
-		dcm.setContent(DCElement.SOURCE, o.getId());
-		if (language != null) dcm.setContent(DCElement.LANGUAGE, language);
-		MMInfoObject mmi = new MMInfoObject(dcm, content);
-		MMInfoStorage mmis = (MMInfoStorage) o.getInfoStore().getValue(BasicProperties.MMINFO);
-		if (mmis == null) {
-			mmis = new MMInfoStorage();
-			o.getInfoStore().addValue(BasicProperties.MMINFO, mmis);
-		}
-		mmis.addMMInfo(mmi);
 	}
 
 	/**

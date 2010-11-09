@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.QContainer;
-import de.d3web.core.knowledge.terminology.info.BasicProperties;
+import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -53,7 +53,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 		this.childrenTypes.add(new InitNumber());
 
 		// add description-type via '~'
-		this.addChildType(new ObjectDescription(BasicProperties.EXPLANATION));
+		this.addChildType(new ObjectDescription(MMInfo.DESCRIPTION));
 
 		// finally the rest is QuestionniareDefinition
 		this.childrenTypes.add(new QuestionTreeQuestionnaireDefinition());
@@ -162,8 +162,6 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 	}
 
 	static class InitNumber extends DefaultAbstractKnowWEObjectType {
-
-
 
 		public InitNumber() {
 

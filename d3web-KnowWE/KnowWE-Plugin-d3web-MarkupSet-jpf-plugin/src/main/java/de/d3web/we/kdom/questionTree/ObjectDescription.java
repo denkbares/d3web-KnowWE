@@ -4,8 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.core.knowledge.terminology.info.BasicProperties;
-import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
+import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
@@ -20,7 +19,6 @@ import de.d3web.we.kdom.sectionFinder.MatchUntilEndFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.util.SplitUtility;
-import de.d3web.we.utils.D3webUtils;
 
 /**
  * A type to allow for the definition of (extended) question-text for a question
@@ -36,11 +34,7 @@ public class ObjectDescription extends DefaultAbstractKnowWEObjectType {
 
 	private static final String QTEXT_START_SYMBOL = "~";
 
-	public ObjectDescription() {
-		this(BasicProperties.MMINFO);
-	}
-
-	public ObjectDescription(final Property prop) {
+	public ObjectDescription(final Property<?> prop) {
 		this.sectionFinder = new MatchUntilEndFinder(new StringSectionFinderUnquoted(
 					QTEXT_START_SYMBOL));
 
@@ -66,10 +60,8 @@ public class ObjectDescription extends DefaultAbstractKnowWEObjectType {
 						// if its MMINFO then it a question, so set text as
 						// prompt
 						String objectDescriptionText = ObjectDescription.getObjectDescriptionText(sec);
-						if (prop.equals(BasicProperties.MMINFO)) {
-							D3webUtils.addMMInfo(object, "LT",
-									MMInfoSubject.PROMPT.getName(),
-									objectDescriptionText, null);
+						if (prop.equals(MMInfo.PROMPT)) {
+							object.getInfoStore().addValue(MMInfo.PROMPT, objectDescriptionText);
 							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
 									D3webModule.getKwikiBundle_d3web()
 											.getString(

@@ -21,15 +21,11 @@
 package de.d3web.we.kdom.questionTree.dialog;
 
 import java.util.List;
-import java.util.Set;
 
+import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.core.knowledge.terminology.info.BasicProperties;
-import de.d3web.core.knowledge.terminology.info.DCElement;
-import de.d3web.core.knowledge.terminology.info.DCMarkup;
-import de.d3web.core.knowledge.terminology.info.MMInfoObject;
-import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
+import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.D3webModule;
@@ -190,27 +186,20 @@ public class QuestionDashTreeOnlyAnswersRenderer extends CustomRenderer {
 			Section<AnswerDefinition> answerSec = section.findSuccessor(AnswerDefinition.class);
 			Choice c = null;
 
-			MMInfoStorage mminfo = null;
-
+			InfoStore infoStore = null;
 			if (answerSec != null) {
 				c = answerSec.get().getTermObject(article, answerSec);
 				if (c != null) {
-					mminfo = (MMInfoStorage) c.getInfoStore().getValue(BasicProperties.MMINFO);
+					infoStore = c.getInfoStore();
 				}
 			}
 			if (o != null) {
-				mminfo = (MMInfoStorage) o.getInfoStore().getValue(BasicProperties.MMINFO);
+				infoStore = o.getInfoStore();
 
 			}
-			if (mminfo != null) {
-				DCMarkup markup = new DCMarkup();
-				markup.setContent(DCElement.TITLE, "description");
-				Set<MMInfoObject> result = mminfo.getMMInfo(markup);
+			if (infoStore != null) {
 
-				String attr = "";
-				for (MMInfoObject infoObject : result) {
-					attr = infoObject.getContent();
-				}
+				String attr = infoStore.getValue(MMInfo.DESCRIPTION);
 
 				String imgAlt = D3webModule.getKwikiBundle_d3web(user).getString(
 						"KnowWE.QuestionDashTree.image.altdescription");

@@ -34,11 +34,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
-import de.d3web.core.knowledge.terminology.info.DCElement;
-import de.d3web.core.knowledge.terminology.info.DCMarkup;
-import de.d3web.core.knowledge.terminology.info.MMInfoObject;
-import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
-import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
+import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.logging.Logging;
@@ -199,39 +195,16 @@ public class QuestionTreeTest extends TestCase {
 		Question loadedQuestion = loadedKB.searchQuestion("Q1");
 		Question createdQuestion = createdKB.searchQuestion("Q1");
 
-		// Get MMInfoStorage of question
-		MMInfoStorage loadedStorage = (MMInfoStorage)
-				loadedQuestion.getInfoStore().getValue(BasicProperties.MMINFO);
-		MMInfoStorage createdStorage = (MMInfoStorage)
-				createdQuestion.getInfoStore().getValue(BasicProperties.MMINFO);
-		assertNotNull("Question " + loadedQuestion.getName() +
-				" has no MMInfoStorage.",
-				loadedStorage);
-		assertNotNull("Question " + createdQuestion.getName() +
-				" has no MMInfoStorage.",
-				createdStorage);
-
-		// Create DCMarkup
-		DCMarkup markup = new DCMarkup();
-		markup.setContent(DCElement.SOURCE, loadedQuestion.getId());
-		markup.setContent(DCElement.TITLE, "LT");
-		markup.setContent(DCElement.SUBJECT, MMInfoSubject.PROMPT.getName());
+		String loadedPrompt = loadedQuestion.getInfoStore().getValue(MMInfo.PROMPT);
+		String createdPrompt = createdQuestion.getInfoStore().getValue(MMInfo.PROMPT);
 
 		// Get MMInfoObject for created DCMarkup
-		MMInfoObject loadedMMInfo = (MMInfoObject)
-				loadedStorage.getMMInfo(markup).toArray()[0];
-		MMInfoObject createdMMInfo = (MMInfoObject)
-				createdStorage.getMMInfo(markup).toArray()[0];
-		assertNotNull("Question " + loadedQuestion.getName() + " has no MMInfo.",
-				loadedMMInfo);
-		assertNotNull("Question " + createdQuestion.getName() + " has no MMInfo.",
-				createdMMInfo);
+		assertNotNull("Question " + loadedQuestion.getName() + " has no MMInfo.", loadedPrompt);
+		assertNotNull("Question " + createdQuestion.getName() + " has no MMInfo.", createdPrompt);
 
 		// Compare content of MMInfoObject
-		assertEquals("Content of MMInfoObject of Diagnosis " +
-				createdQuestion.getName()
-				+ " differs.",
-				createdMMInfo.getContent(), loadedMMInfo.getContent());
+		assertEquals("Content of MMInfoObject of Diagnosis " + createdQuestion.getName()
+				+ " differs.", loadedPrompt, createdPrompt);
 
 	}
 

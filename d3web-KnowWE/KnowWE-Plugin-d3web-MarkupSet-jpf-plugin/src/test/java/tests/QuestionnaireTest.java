@@ -30,7 +30,7 @@ import utils.MyTestArticleManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.QContainer;
-import de.d3web.core.knowledge.terminology.info.BasicProperties;
+import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -123,8 +123,8 @@ public class QuestionnaireTest extends TestCase {
 
 				// Test Explanation
 				assertEquals("QContainer " + expected.getName() + " has wrong explanation.",
-						expected.getInfoStore().getValue(BasicProperties.EXPLANATION),
-						actual.getInfoStore().getValue(BasicProperties.EXPLANATION));
+						expected.getInfoStore().getValue(MMInfo.DESCRIPTION),
+						actual.getInfoStore().getValue(MMInfo.DESCRIPTION));
 			}
 		}
 		else {

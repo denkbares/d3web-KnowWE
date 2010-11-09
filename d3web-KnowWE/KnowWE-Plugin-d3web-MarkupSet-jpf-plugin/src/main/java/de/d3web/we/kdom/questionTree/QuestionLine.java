@@ -27,7 +27,7 @@ import java.util.List;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
-import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
+import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
 import de.d3web.we.basic.D3webModule;
@@ -64,7 +64,6 @@ import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.object.QuestionDefinition.QuestionType;
 import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -511,9 +510,8 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 						Question question = qDef.get().getTermObject(article, qDef);
 
 						if (question != null) {
-							D3webUtils.addMMInfo(question, "LT",
-									MMInfoSubject.PROMPT.getName(),
-									QuestionText.getQuestionText(sec), null);
+							question.getInfoStore().addValue(MMInfo.PROMPT,
+									QuestionText.getQuestionText(sec));
 							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
 									D3webModule.getKwikiBundle_d3web()
 											.getString("KnowWE.questiontree.questiontextcreated")));

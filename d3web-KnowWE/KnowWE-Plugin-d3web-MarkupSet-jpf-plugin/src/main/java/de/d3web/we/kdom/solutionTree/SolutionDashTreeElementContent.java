@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.knowledge.terminology.info.BasicProperties;
+import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -56,7 +56,7 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 		this.addSubtreeHandler(new CreateSubSolutionRelationHandler());
 
 		// add description-type via '~'
-		this.addChildType(new ObjectDescription(BasicProperties.EXPLANATION));
+		this.addChildType(new ObjectDescription(MMInfo.DESCRIPTION));
 
 		// add solution-Def type
 		SolutionTreeSolutionDefinition solutionDef = new SolutionTreeSolutionDefinition();
