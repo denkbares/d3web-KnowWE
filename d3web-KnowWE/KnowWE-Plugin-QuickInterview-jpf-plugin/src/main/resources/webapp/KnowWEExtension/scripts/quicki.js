@@ -718,7 +718,7 @@ KNOWWE.plugin.quicki = function(){
 (function init(){ 
     if( KNOWWE.helper.loadCheck( ['Wiki.jsp'] )){
         window.addEvent( 'domready', function(){
-        	
+        	KNOWWE.plugin.quicki.initialize();
         	KNOWWE.helper.observer.subscribe( 'update', KNOWWE.plugin.quicki.showRefreshed);
         });
     }

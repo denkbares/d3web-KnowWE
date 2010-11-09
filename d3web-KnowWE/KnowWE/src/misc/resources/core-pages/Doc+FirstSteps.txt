@@ -1,0 +1,24 @@
+[{TableOfContents title='Doc First Steps in KnowWE (a wiki) - TOC'}]
+
+!__STILL TO DO!__
+!1. The wiki principle
+
+!2. Creating new pages
+
+!3. Modifying existing pages
+
+!Conflicts
+
+If someone happens to edit the same page as you at the same time, JSPWiki will prevent you from doing changes and show a conflict page instead. Sorry to say, but the first one to make changes wins...
+
+__A word of warning:__ If you use the Back button of your browser to go into the Edit page, you will almost certainly get a conflict. This is because the browser thinks its still editing an earlier copy of the page.
+
+!Deleting pages
+
+TODO?!
+
+!Adding new pages
+
+Create a link that points to a new (not existing) page using its [WikiName].
+Click that new link, which should now have a question mark (?) suffix and
+you will get an editor for the new page. -- [Asser]

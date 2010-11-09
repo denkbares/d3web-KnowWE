@@ -1,0 +1,149 @@
+[{TableOfContents title='Questions - TOC'}]
+
+!!1. Definition 
+Questions contained in a knowledge base are defined in a so-called ''question tree''. Thereby it is essential to always define all the questions, follow up questions, and abstraction questions the system should know. 
+\\
+A question tree describes not only the questions to be used, but rather their (hierarchical) ordering within questionnaires as well as potential follow up questions. 
+
+!! 2. Syntax
+!A. Basics
+A question tree is generally defined with the '''Question''' tag. To define questionnaires to further categorize and order the questions, this section is divided into separate sections, whereas the sections are set off against each other by blank lines. At the beginning of each section then the name of the questionnaire is placed in the first line. Subsequently the structure of the questions is defined. Thereby the number of hyphens at the beginning of each line corresponds with the hierarchic depth of the questions.
+{{{%%Question
+Quest A
+- question1  
+-- answer1
+-- answer2 
+
+Quest B ...
+%}}} 
+The previous listing demonstrates the basic syntax of a question tree. There, 2 questionnaires (''Quest A'' and ''Quest B'') are defined; ''Quest A'' contains one question which in turn provides 2 answer possibilities.
+
+!B. Supported Question Types 
+The type of a question is defined in square brackets next to the question name. Currently, the following question types are supported: 
+
+|| Symbol || Type 
+| [[text] | __textual question __
+| [[oc] | one-choice question: exactly one answer from a given answer range is to be chosen by the user. Every answer alternative of such a question has to be defined in a separate line subsequent to the question (indented by a further hyphen, see example). 
+| [[mc] | multiple-choice question: here, the user can chose more than one answer from the given answer alternatives. Definition: see one-choice question. 
+| [[num] | numerical question: the numerical answer value is entered by the user. For numerical questions it is possible to additionally define the unit (in curly braces) and the range of values (in parentheses) - see example below.
+| [[yn] | yes/no question: special case of a one-choice question with given answers yes and no 
+| <abstract> | abstraction question: an abstraction question (similar to abstraction rules) is not displayed within a dialog for the user to answer it; rather its answer value is derived from previously provided answers. It is essential that the abstraction flag is the last declaration in a line.
+
+__Question Types: Example__\\
+{{{%%Question 
+- one choice question1 [oc] 
+-- answer1 
+-- answer2 
+- yes no question [yn]
+-- yes
+-- no
+- multiple choice question 2 [mc]
+-- answer 3
+-- answer 4
+- numerical question 3 [num] {numQuestion_unit} (lowerBound upperBound)
+- numerical question 4 [num] {numQuestion_unit} (lowerBound upperBound) <abstract>
+- textual question 5 [text]
+%}}}
+
+!C. Indication mechanisms
+__Indication of follow up questions and -questionnaires__
+\\
+Follow up questions or follow up questionnaires---that is questions/questionnaires that are to be presented depending on a certain answer of a different question---can also be defined in the question tree. Therefore, the name of the follow-up question is simply written in the line right after the answer (hierarchically one level deeper than the answer, indicated through an additional hyphen).
+{{{- Year of construction? [num]
+-- >= 1995
+--- Does your car have ABS?  [yn]
+-- < 1995}}}
+In the example the follow up question ''Does your car have ABS?'' is only presented to the user, if the previous question ''Year of construction?'' was answered with a value ''>= 1995''. 
+\\
+
+The indication of questionnaires is analog, only instead of a question name, a questionnaire name is written in the line following the answer. 
+
+\\
+__Indication caused by established solutions__\\
+
+The indication of questionnaires can also be initiated by derived diagnoses. Therefore, the particular questionnaire (or also more than one) has to be defined in the line following a diagnosis derivation. 
+{{{- Does your car make trouble? [yn]
+-- yes
+--- Problem (P7)
+---- Air intake system
+---- Ignition timing
+---- Air filter
+---- Battery
+--- no
+---- perfect(P7)}}}
+The previous example shows the indication of the questionnaires ''Air intake system'', ''Ignition timing'', ''Air filter'' and ''Battery'', which is caused by the derivation of the superordinate diagnosis ''Problem''.
+
+\\
+__Repeated indication__\\
+
+If a question is to be indicated multiple times, it still has to be defined  (with type and answer alternatives) only once, the first time it is used. At a later point, the keyword __&REF__ can be used in order to reference to the question without having to define it again. If the original definition of the question contains follow up questions, those are also included when the referencing question is used later on.
+{{{questionnaire1
+- question1 [oc]
+-- answer0
+--- question2 [oc]
+---- answer3
+---- answer4
+-- answer1
+-- answer2
+--- &REF question2
+...}}}
+The example shows, that ''question 2'' is completely defined the first time needed---after ''answer 0''---and then is referenced later on as a follow up question for ''answer2''. 
+
+!D. Derivation mechanisms
+__Derivation of solutions__\\
+
+Through the use of solution derivation within the question tree it becomes a __decision tree__, as now decisions (that is, solutions) are derived. The solution that is to be derived simply has to be defined (along with the score points that it is to be assigned) in the line succeeding the corresponding answer. An overview of possible score points is presented on the page [Doc DiagnosisRule].
+{{{- Exhaust pipe color evaluation [oc]
+-- abnormal
+--- Clogged air filter (P5)
+-- normal
+--- Engine noises [oc]
+...}}}
+The previous listing shows the derivation of the diagnosis ''Clogged air filter'' with the score points P5, if the question ''Exhaust pipe color evaluation'' was answered with abnormal.
+
+\\
+__Derivation of criterion abstractions__\\
+
+Similar to diagnoses, also numerical criterion abstractions (symptom-interpretations) can be evaluated numerically. Here, a value can be newly set or added to the present value. 
+{{{questionnaire
+- SymptomInterpretation1 [num] <abstract>
+- question1 [oc]
+-- answer1
+--- SymptomInterpretation1 SET (-5)
+-- answer2
+--- SymptomInterpretation2 (-5)  }}}
+When using the __SET__ keyword, as after ''answer1'', the value is set completely new, thus the old one is overwritten. __Without SET__, as after answer2, the given value is added to a potentially existing value. 
+
+!E. Detailed (longer) texts for questions
+Often it is helpful if a question has a short name, but a more detailed question text that provides some more information. The question text then is shown to the user for example in the dialog or in question sheets, whereas the question name is used in rules and other knowledge components. In KnowWE, such an extended question text is added with the __tilde__ symbol after the question name as shown in the following:
+{{{- Exhaust fumes ~ What is the color of the exhaust fumes? [oc]
+-- black
+-- blue
+- Fuel ~ What kind of fuel does the car need? [oc]
+...}}}
+When defining rules, the above questions then would be used as follows:
+{{{IF (Exhaust fumes = black AND Fuel = unleaded gasoline)
+THEN Clogged air filter = P5}}}
+
+
+!F. Definition of Initial Questionnaires
+
+With respect to the user dialog, questionnaires are not indicated by default. The markup allows for the definition of so-called ''init questionnaires'', i.e., questionnaires that are presented at the beginning of every problem-solving session. The order of the init questionnaires is defined by a hash sign {{{#}}} following by a number indicating the order of the respective questionnaire.
+With the following markup, the initial questionnaires '''(questionnaire1, questionnaire3, questionnaire2)''' are defined:
+
+{{{
+%%Question
+questionnaire1 #1
+- Question 1 [num]
+- Question 2 [num]
+
+questionnaire2 #3
+- Question 5 [num]
+- Question 6 [num]
+
+questionnaire3 #2
+- Question 3 [num]
+- Question 4 [num]
+%
+}}}
+<tags>Documentation question </tags>

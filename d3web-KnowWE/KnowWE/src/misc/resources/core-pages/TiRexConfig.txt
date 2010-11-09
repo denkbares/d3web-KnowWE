@@ -1,8 +1,0 @@
-In the following 3 pages the TiRex can be configured:
-
-
-[TiRexSettings] : contains general matching settings
-
-[TiRexSynonyms] : contains synonym lists
-
-[TiRexConvRegex] : contains regular expressions to recognize numerical relations

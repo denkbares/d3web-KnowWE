@@ -1,3 +1,0 @@
-<forum name="Selenium-Comment" ref="Wiki.jsp?page=Selenium-Test#Selenium-Comment">
-<box name=Guest; date=23.11.2009 14:45>Comments on this Test?</box>
-</forum>

@@ -1,0 +1,58 @@
+!!! Damaged idle speed system
+adapted from Wikipedia
+
+
+!! General
+----
+Idle speed is the minimum operating speed (generally measured in revolutions per minute, or rpm, of the crankshaft) of a combustion engine. 
+
+At idle speed, the engine generates enough power to run reasonably smoothly and operate its ancillaries (water pump, alternator, and, if equipped, other accessories such as power steering), but usually not enough to perform useful work, such as moving an automobile. 
+
+For a passenger-car engine, idle speed is customarily between 600 rpm and 1,000 rpm.
+
+!! Typical Symptoms
+----
+
+Frequent symptoms which occur if the idle speed system is damaged are a barely starting engine as well as a low or unsteady idle speed.
+
+!! Repair Instructions
+----
+In most cases a problem with the idle speed system can easily fixed by raising the idle speed. This will ensure that the engine generates enough power to run smoothly and operate the accessories. 
+
+In particular this is necessary if the engine is operating a large number of energy-hungry accessories such as air conditioning. 
+
+Due to most newer engines and especially air conditioning-equipped engines have an automatic adjust feature the idle speed can only be adjusted with a computer system. This computer system is available in almost every garage.
+
+In some cases it is also helpful to clean the intake system. 
+
+%%Rule
+IF "Check: Idle speed system." = ok
+THEN Damaged idle speed system = N7
+
+IF "Check: Idle speed system." = not ok
+THEN Damaged idle speed system = P7
+
+IF NOT (Engine start = engine barely starts)
+THEN Damaged idle speed system = N5
+
+IF Engine start = engine barely starts
+THEN Damaged idle speed system = P5
+
+IF NOT (Driving = unsteady idle speed) 
+THEN Damaged idle speed system = N1
+
+IF Driving = unsteady idle speed
+THEN Damaged idle speed system = P1
+
+IF NOT (Driving = low idle speed) 
+THEN Damaged idle speed system = N4
+
+IF Driving = low idle speed
+THEN Damaged idle speed system = P4
+
+@package: demo
+%
+
+
+
+

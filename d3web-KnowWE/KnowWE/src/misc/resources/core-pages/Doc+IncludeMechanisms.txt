@@ -1,0 +1,63 @@
+\\
+\\+++++++++++++++++++++++++++++++++++++++
+\\
+__Please note: The include mechanism is deprecated. Please use [compile & packages|Doc PackageCompile] right now.__
+\\
+\\+++++++++++++++++++++++++++++++++++++++
+\\
+
+[{TableOfContents title='Include Mechanisms - TOC'}]
+
+!!1. Definition
+KnowWE provides the possibility to include sections of existing wiki/KnowWE pages into KnowWE pages. This enables the modular development of formal content (knowledge).
+
+
+In KnowWE, there are two different inclusion mechanisms: on the basis of the sections' object types, as well as of the sections' IDs. 
+In general, includes are xml tags. The name of the tag is 'include', attributes are 'src' and 'highlighting'; the latter, 'highlighting', is optional. The basic structure is as follows:
+%%prettify 
+{{{
+< include src=“articleName/sectionID_or_objectType“ />
+}}}
+/%
+
+
+During the process of article rendering, the include tags are replaced by the referenced section of the defined article. Thereby it is essential, that the includes are ''unambiguous''.
+
+!!2. Syntax
+!A. Include by Object Type
+The necessary requirement for including by object types is that there exists only one section with the specified object type in the referenced article---otherwise the include will fail. In the case that there exists more than one section with the referenced object type within an article, only the inclusion using the unique ID of the section is possible.
+{{{
+< include src=“TestArticle/CoveringListSection“ />
+< include src=“TestArticle/QuestionnairesSection“ />
+< include src=“TestArticle/QuestionsSection“ />
+< include src=“TestArticle/RulesSection“ />
+< include src=“TestArticle/SolutionsSection“ />
+}}}
+As the example shows, inclusion by object type simply names the article where knowledge is already defined (here: ''TestArticle''), as well as the desired object type, in the ''src'' attribute. The example lists the most common object types, a more detailed description is provided on the page [Doc ObjectTypes| Doc ObjectTypes].
+
+!B. Include by ID
+Inclusion via the sections' unique IDs is necessary if there exists more than one section of the same object type. Basically, it works similarly to the inclusion by object type. Instead of the section's object type, however, __@id=__ followed by the actual ID is defined in the ''src'' attribute. 
+{{{< include src=“TestArticle/@id=abc“ />}}}
+The previous example shows the inclusion of the section with the ID ''abc'' from the ''TestArticle''.
+
+!C. How to get the object type or ID
+* The common object types that are most likely to be included into a KnowWE page are shown in the above example in section A. A more detailed description of object types can be found on the page [Doc ObjectTypes| Doc ObjectTypes]
+* If you want to include an xml section, but you do not know its ID or the exact spelling of its object type, you can assign it your own ID. This is also described on the page [Doc ObjectTypes| Doc ObjectTypes] in the section about ''XML object types''.
+* It is possible to examine the underlying KDOM tree data structure of the article, where object types and IDs of every section are displayed. Therefore, the following code has to be appended to the article you want to inspect:
+{{{[{KnowWEPlugin renderKDOM}]}}}
+This tag renders the underlying KDOM structure or the article, along with all its sections and their object types and/or IDs.
+* ''Note that IDs, that are not specifically set as an attribute value in XML sections, might change if an article is modified.''
+
+!D. Include without highlighting
+If an include should for some reason not automatically be highlighted as such, the value of the attribute ''highlighting'' in the include tag simply has to be set to false:
+{{{
+< include src=“TestArtikel/@id=abc“ highlighting="false" />}}}
+Then the included section is not highlighted as such (that is, the source-path is not displayed) but it is just rendered like any other knowledge component that was directly entered on that page. The following 2 screenshots show the same included section. In the first case, the section was also highlighted as an inclusion, in the second case highlighting was deactivated:
+[{Image src='Bild 2.png' width='100%' height='..' align='left|center|right' style='..' class='..' }]
+[{Image src='Bild 3.png' width='100%' height='..' align='left|center|right' style='..' class='..' }]
+
+
+!E. Including only the content of an XML object type
+To include an xml section from another article, yet not the complete section but only the content without the xml tags, ___content__ has to be added to the ID or object type in the include tag. The syntax then is as follwos:
+{{{< include src=“TestArticle/QuestionsSection_content“ />}}}
+
