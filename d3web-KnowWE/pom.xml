@@ -133,7 +133,7 @@
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.surefire.reportsPath>target/surefire-reports</sonar.surefire.reportsPath>
 		<sonar.clover.reportPath>target/site/clover/clover.xml</sonar.clover.reportPath>
-		<versionatorVersion>1.4</versionatorVersion>
+		<versionatorVersion>1.5</versionatorVersion>
 		<d3webCoreVersion>0.2-SNAPSHOT</d3webCoreVersion>
 	</properties>
 	<modules>
