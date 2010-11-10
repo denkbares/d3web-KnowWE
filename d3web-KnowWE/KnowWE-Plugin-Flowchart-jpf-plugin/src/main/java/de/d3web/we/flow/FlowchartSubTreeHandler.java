@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -68,8 +68,8 @@ import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 
 /**
- * 
- * 
+ *
+ *
  * @author Reinhard Hatko
  * @created on: 12.10.2009
  */
@@ -93,8 +93,9 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 
 		KnowledgeBaseManagement kbm = getKBM(article);
+		Section flowcontent = ((AbstractXMLObjectType) s.getObjectType()).getContentChild(s);
 
-		if (kbm == null) {
+		if (kbm == null || flowcontent == null) {
 			return null;
 		}
 
@@ -119,6 +120,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 		for (final Message message : errors) {
 			msgs.add(new KDOMWarning() {
 
+				@Override
 				public String getVerbalization() {
 					return message.getMessageText();
 				}
@@ -293,38 +295,38 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 		return null;
 	}
 
-	//	
+	//
 	// private List<INode> createNodes(KnowWEArticle article, String flowName,
 	// List<Section> nodeSections, List<Message> errors) {
-	//		
+	//
 	// List<INode> result = new ArrayList<INode>();
-	//		
+	//
 	// for (Section section : nodeSections) {
-	//			
+	//
 	// Section nodeContent = (Section) section.getChildren().get(1);
 	// // Section
 	// // of
 	// // NodeContentType
-	//			
+	//
 	// // get the important info
 	// List<Section> children = nodeContent.getChildren(new SectionFilter() {
-	//				
+	//
 	// public boolean accept(Section section) {
 	// return section.getObjectType() != PositionType.getInstance()
 	// && section.getObjectType() != PlainText.getInstance();
 	// }
 	// });
-	//			
+	//
 	// // Assert.assertEquals(section +
 	// // " has the wrong number of children.",1, children.size());
-	//			
+	//
 	// if (children.size() != 1) continue;
-	//			
+	//
 	// Section nodeinfo = children.get(0);
-	//			
+	//
 	// String id =
 	// AbstractXMLObjectType.getAttributeMapFor(section).get("fcid");
-	//			
+	//
 	// if (nodeinfo.getObjectType() == StartType.getInstance()) {
 	// result.add(createStartNode(id, nodeinfo, errors));
 	// } else if (nodeinfo.getObjectType() == ExitType.getInstance()) {
@@ -344,17 +346,17 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 	// errors.add(new Message("Unknown node type: " +
 	// nodeinfo.getObjectType()));
 	// }
-	//			
+	//
 	// }
-	//		
+	//
 	// return result;
 	// }
 
 	// private INode createSnapshotNode(KnowWEArticle article, String id,
 	// Section nodeinfo, List<Message> errors) {
-	//		
+	//
 	// // SnapshotAction action = new SnapshotAction();
-	//		
+	//
 	// // return FlowFactory.getInstance().createNode(id, action);
 	// return new SnapshotNode(id);
 	// }
@@ -366,10 +368,10 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 	//
 	// INode node = FlowFactory.getInstance().createActionNode(id, action);
 	// String string = getXMLContentText(nodeinfo);
-	//		
+	//
 	// node.setName("Comment: " + string);
-	//		
-	//		
+	//
+	//
 	// return node;
 	// }
 
@@ -397,7 +399,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 
 	// private PSAction createCallFlowAction(KnowWEArticle article, Section
 	// section, String string, List<Message> errors) {
-	//		
+	//
 	// int nodenameStart = string.indexOf('(');
 	// int nodenameEnd = string.indexOf(')');
 	//
@@ -405,7 +407,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 	// String nodeName = string.substring(nodenameStart + 1, nodenameEnd);
 	//
 	// return new ComposedNodeAction(flowName, nodeName);
-	//		
+	//
 	// //old version using terminology
 	// KnowledgeBaseManagement kbm = getKBM(article);
 	//
@@ -452,7 +454,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 	// //TODO: HOTFIX
 	// List<ChoiceValue> values = new LinkedList<ChoiceValue>();
 	// values.add(new ChoiceValue(answer));
-	//		
+	//
 	// action.setValue(new MultipleChoiceValue(values));
 	// //
 	// return action;
@@ -542,10 +544,10 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 	// //HOTFIX
 	// List<ChoiceValue> values = new LinkedList<ChoiceValue>();
 	// values.add(new ChoiceValue(answer));
-	//	
+	//
 	// action.setValue(new MultipleChoiceValue(values));
 	// //
-	//		
+	//
 	// return FlowFactory.getInstance().createEndNode(id, name, action);
 	// }
 
