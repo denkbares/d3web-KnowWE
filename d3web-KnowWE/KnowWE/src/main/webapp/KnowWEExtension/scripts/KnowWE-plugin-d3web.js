@@ -42,19 +42,6 @@ KNOWWE.plugin.d3web.actions = function(){
          * d3web plugin functionality.
          */ 
         init : function(){
-            //init KnowledgeBasesGenerator
-            if(_KS('#KnowledgeBasesGenerator')) {
-                var els = _KS('#KnowledgeBasesGenerator input[type=button]');
-                for (var i = 0; i < els.length; i++){
-                    _KE.add('click', els[i], KNOWWE.plugin.d3web.actions.doKbGenerating); 
-                }
-            }
-            //add generate kb button action
-            if(_KS('.generate-kb').length != 0){
-                _KS('.generate-kb').each(function( element ){
-                    _KE.add('click', element, KNOWWE.plugin.d3web.actions.doKbGenerating);
-                });
-            }
             //add highlight xcl
             if(_KS('.highlight-xcl-relation').length != 0){
                 _KS('.highlight-xcl-relation').each(function( element ){
@@ -67,30 +54,6 @@ KNOWWE.plugin.d3web.actions = function(){
                     _KE.add('click', element, KNOWWE.plugin.d3web.actions.highlightRule);
                 });
             } 
-        },
-        /**
-         * Function: doKbGenerating
-         * Adds a specified knowledgebase in jar format.
-         * 
-         * Parameters:
-         *     event - The event from the create knowledgebase button. 
-         */
-        doKbGenerating : function( event ) {
-            var jarfile = eval( "(" + _KE.target(event).getAttribute('rel') + ")").jar;
-
-            var params = {
-                action : 'GenerateKBAction',
-                NewKBName : _KS('#' + jarfile ).value,
-                AttachmentName : jarfile
-            }
-            
-            var options = {
-                url : KNOWWE.core.util.getURL( params ),
-                response : {
-                    ids : ['GeneratingInfo']
-                }
-            }
-            new _KA( options ).send();
         },
         /**
          * Function: doTiRexToXCL
