@@ -27,9 +27,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -60,12 +60,24 @@ public class KnowWEParameterMap extends HashMap<String, String> {
 			while ((paramNames.hasMoreElements())) {
 				String name = paramNames.nextElement();
 
-				String value = "";
+				String value = rq.getParameter(name);
 				try {
-					value = URLDecoder.decode(rq.getParameter(name), "UTF-8");
+					value = URLDecoder.decode(value, "UTF-8");
 				}
 				catch (UnsupportedEncodingException e1) {
-					value = rq.getParameter(name);
+					// UTF-8 is not supported
+					// log it and use parameter value 'as is'
+					Logger.getLogger(getClass().getName()).warning(
+							"UTF-8 decoding is not supported.");
+				}
+				catch (IllegalArgumentException e1) {
+					// string seems to be not an utf8 encoding
+					// (invalid bit sequence)
+					// log it and use parameter value 'as is'
+					Logger.getLogger(getClass().getName()).warning(
+							"Parameter '" + name +
+									"' in request '" + rq.getPathInfo() +
+									"' has non-UTF-8 encoding. ");
 				}
 				this.put(name, value);
 			}
