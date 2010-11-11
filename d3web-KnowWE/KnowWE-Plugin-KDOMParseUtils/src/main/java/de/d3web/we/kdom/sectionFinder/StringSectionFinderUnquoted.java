@@ -20,8 +20,6 @@
 
 package de.d3web.we.kdom.sectionFinder;
 
-import java.util.List;
-
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.util.SplitUtility;

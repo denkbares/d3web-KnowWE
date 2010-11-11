@@ -62,7 +62,7 @@ Technical Examinations
 %
 
 <AttributeTable-section>
-| Mechanical problem | info | description | some problem description
+| Mechanical problem | description | description | some problem description
 </AttributeTable-section>
 
 %%Rule

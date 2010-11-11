@@ -38,7 +38,7 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 	</extension>
 	
-		<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="QuestionnairesDashTree">
 		<parameter id="class"
 			value="de.d3web.we.kdom.questionnaireTree.QuestionnaireTreeMarkup" />
@@ -74,6 +74,17 @@
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
-	</extension>	
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="PropertyMarkup">
+		<parameter id="class"
+			value="de.knowwe.d3web.property.PropertyMarkup" />
+		<parameter id="name" value="PropertyMarkup" />
+		<parameter id="description" value="Markup to add properties to IDObjects (optional language and country specific)" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="7.0" />
+		<parameter id="scope" value="root" />
+	</extension>
 
 </plugin>
