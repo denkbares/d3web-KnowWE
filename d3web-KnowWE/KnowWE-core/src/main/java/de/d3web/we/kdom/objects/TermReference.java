@@ -20,7 +20,6 @@
 
 package de.d3web.we.kdom.objects;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -29,6 +28,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NoSuchObjectError;
+import de.d3web.we.kdom.report.message.ObjectFound;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -61,6 +61,7 @@ public abstract class TermReference<TermObject>
 		this.addSubtreeHandler(new TermRegistrationHandler());
 	}
 
+	@Override
 	public Class<TermObject> getTermObjectClass() {
 		return this.termObjectClass;
 	}
@@ -112,7 +113,11 @@ public abstract class TermReference<TermObject>
 						+ ": " + s.get().getTermName(s)));
 			}
 
-			return new ArrayList<KDOMReportMessage>(0);
+			// TODO: give meaningful information about the object
+			// e.g. type, range, where it has been defined, ...
+			// this functionality should be included automatically in
+			// "ObjectFound"
+			return Arrays.asList((KDOMReportMessage) new ObjectFound(s.get().getName()));
 		}
 
 		@Override
