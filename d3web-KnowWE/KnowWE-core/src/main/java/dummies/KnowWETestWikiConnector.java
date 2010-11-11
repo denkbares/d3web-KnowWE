@@ -54,7 +54,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	 *
 	 * THIS METHOD NEEDS TO BE UPDATED IF THIS CLASS IS MOVED TO ANOTHER
 	 * PROJECT, PACKAGE ETC.
-	 * 
+	 *
 	 * @author Sebastian Furth
 	 * @return relative Path to KnowWEExtensions
 	 */
@@ -65,6 +65,8 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 		String filePathToThisClass = this.getClass().getResource(filename).getPath();
 		// Delete the filename
 		String path = filePathToThisClass.substring(0, filePathToThisClass.lastIndexOf("/"));
+		// Delete the project .jar from the file (for Hudsons sake)
+		path = path.replaceAll("KnowWE-core-0.2-SNAPSHOT.jar!", "");
 		// Now go up in the folder hierarchy and change to the KnowWE-folder
 		String hackedPath = path + "/../../../../KnowWE/src/main/webapp/KnowWEExtension/";
 		return hackedPath;
