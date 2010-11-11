@@ -52,27 +52,16 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	 * This returns a path, that enables the use of this connector in tests of
 	 * projects.
 	 *
-	 * THIS METHOD NEEDS TO BE UPDATED IF THIS CLASS IS MOVED TO ANOTHER
-	 * PROJECT, PACKAGE ETC.
-	 *
 	 * @author Sebastian Furth
 	 * @return relative Path to KnowWEExtensions
 	 */
 	public String getHackedPath() {
-		String clazz = getClass().getName();
-		String filename = clazz.substring(clazz.lastIndexOf(".") + 1) + ".class";
-		// The absolute file path to the .class-File of THIS class!
-		String filePathToThisClass = this.getClass().getResource(filename).getPath();
-		// Delete the filename
-		String path = filePathToThisClass.substring(0, filePathToThisClass.lastIndexOf("/"));
-		// Delete some stuff from the file path (mostly for Hudsons sake...)
-		path = path.replaceAll("/KnowWE-core-0.2-SNAPSHOT.jar!", "");
-		path = path.replaceAll("/classes", "");
-		path = path.replaceAll("/dummies", "");
-		// Now go up in the folder hierarchy and change to the KnowWE-folder
-		String hackedPath = path + "/../../KnowWE/src/main/webapp/KnowWEExtension/";
+		String hackedPath = System.getProperty("user.dir");
+		hackedPath = hackedPath.replaceAll("Research", "d3web-KnowWE");
+		hackedPath += "/../KnowWE/src/main/webapp/KnowWEExtension/";
 		return hackedPath;
 	}
+
 
 	@Override
 	public String appendContentToPage(String topic, String pageContent) {

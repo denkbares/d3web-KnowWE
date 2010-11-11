@@ -344,7 +344,6 @@ public class KnowWEEnvironment {
 			if (wiki instanceof KnowWETestWikiConnector) {
 				KnowWETestWikiConnector connector = (KnowWETestWikiConnector) wiki;
 				knowweExtensionPath = connector.getHackedPath();
-				System.out.println(knowweExtensionPath);
 			}
 
 			rootTypes = RootType.getInstance();
