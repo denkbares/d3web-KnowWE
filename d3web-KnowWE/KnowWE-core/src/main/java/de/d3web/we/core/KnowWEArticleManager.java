@@ -144,7 +144,7 @@ public class KnowWEArticleManager {
 	 *        node
 	 * @return
 	 */
-	public String replaceKDOMNodes(KnowWEParameterMap map, String title,
+	public String replaceKDOMNodesSaveAndBuild(KnowWEParameterMap map, String title,
 			Map<String, String> nodesMap) {
 		// String user = map.getUser();
 		String web = map.getWeb();
@@ -252,7 +252,7 @@ public class KnowWEArticleManager {
 	 * @param topic
 	 * @return
 	 */
-	public KnowWEDomParseReport saveUpdatedArticle(KnowWEArticle article) {
+	public KnowWEDomParseReport registerArticle(KnowWEArticle article) {
 
 		// store new article
 		articleMap.put(article.getTitle(), article);
@@ -273,7 +273,7 @@ public class KnowWEArticleManager {
 					articleMap.get(title).getSection().getOriginalText(), title,
 					KnowWEEnvironment.getInstance().getRootType(), web, false);
 
-			saveUpdatedArticle(newArt);
+			registerArticle(newArt);
 		}
 		this.articlesToRefresh = new TreeSet<String>();
 
@@ -305,7 +305,7 @@ public class KnowWEArticleManager {
 	 * @param article The article to delete
 	 */
 	public void deleteArticle(KnowWEArticle article) {
-		KnowWEEnvironment.getInstance().processAndUpdateArticle("", "",
+		KnowWEEnvironment.getInstance().buildAndRegisterArticle("", "",
 				article.getTitle(), web, true);
 
 		articleMap.remove(article.getTitle());

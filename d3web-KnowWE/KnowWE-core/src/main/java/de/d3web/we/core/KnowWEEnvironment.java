@@ -508,18 +508,18 @@ public class KnowWEEnvironment {
 	 */
 	public String processAndUpdateArticle(String username, String content,
 			String topic, String web) {
-		return processAndUpdateArticle(username, content, topic, web, false);
+		return buildAndRegisterArticle(username, content, topic, web, false);
 
 	}
 
-	public String processAndUpdateArticle(String username, String content,
+	public String buildAndRegisterArticle(String username, String content,
 			String topic, String web, boolean fullParse) {
 
 		// create article with the new content
 		KnowWEArticle article = KnowWEArticle.createArticle(content, topic, KnowWEEnvironment
 				.getInstance().getRootType(), web);
 
-		return this.getArticleManager(web).saveUpdatedArticle(
+		return this.getArticleManager(web).registerArticle(
 				article).getHTML();
 	}
 
@@ -535,7 +535,7 @@ public class KnowWEEnvironment {
 	public void processAndUpdateArticleJunit(String username, String content,
 			String topic, String web, KnowWEObjectType rootType) {
 		this.rootTypes = rootType;
-		this.articleManagers.get(web).saveUpdatedArticle(
+		this.articleManagers.get(web).registerArticle(
 				KnowWEArticle.createArticle(content, topic, rootType, web));
 	}
 

@@ -274,7 +274,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 							KnowWEEnvironment.getInstance().getRootType(),
 							KnowWEEnvironment.DEFAULT_WEB, fullParse);
 					KnowWEEnvironment.getInstance().getArticleManager(
-							"default_web").saveUpdatedArticle(article);
+							"default_web").registerArticle(article);
 				}
 			}
 			else {
@@ -286,7 +286,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 					// after
 					// server-start article is stored in manager
 					KnowWEEnvironment.getInstance().getArticleManager(
-							"default_web").saveUpdatedArticle(article);
+							"default_web").registerArticle(article);
 				}
 			}
 
@@ -371,7 +371,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 						KnowWEEnvironment.getInstance().getRootType(),
 						KnowWEEnvironment.DEFAULT_WEB);
 				KnowWEEnvironment.getInstance().getArticleManager(
-						"default_web").saveUpdatedArticle(article);
+						"default_web").registerArticle(article);
 			}
 
 		}
