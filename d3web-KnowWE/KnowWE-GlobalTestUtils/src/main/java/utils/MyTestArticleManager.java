@@ -84,7 +84,7 @@ public class MyTestArticleManager {
 		// Create Article
 		KnowWEArticle article = KnowWEArticle.createArticle(content, topic,
 				KnowWEEnvironment.getInstance().getRootType(), "default_web");
-		KnowWEEnvironment.getInstance().getArticleManager("default_web").saveUpdatedArticle(
+		KnowWEEnvironment.getInstance().getArticleManager("default_web").registerArticle(
 				article);
 		return article;
 	}
