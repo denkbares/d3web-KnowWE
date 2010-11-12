@@ -153,6 +153,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 	}
 
+	@Override
 	public boolean storeAttachment(String wikiPage, File attachmentFile) {
 		try {
 			if (!isPageLocked(wikiPage)) {
@@ -167,9 +168,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 				undoPageLocked(wikiPage);
 				return true;
 			}
-			else {
-				return false;
-			}
+			else return false;
 		}
 		catch (ProviderException e) {
 			return false;
@@ -247,14 +246,13 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		}
 
 		for (Attachment p : attList) {
-			if (p.getFileName().equals(name)) {
-				return p;
-			}
+			if (p.getFileName().equals(name)) return p;
 		}
 
 		return null;
 	}
 
+	@Override
 	public java.util.Map<String, String> getAllArticles(String web) {
 		Map<String, String> result = new HashMap<String, String>();
 		Collection<WikiPage> pages = null;
@@ -287,6 +285,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		return result;
 	}
 
+	@Override
 	public String createWikiPage(String topic, String content, String author) {
 
 		WikiPage wp = new WikiPage(this.engine, topic);
@@ -357,9 +356,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	public boolean doesPageExist(String topic) {
 
 		// Check if a Page with the chosen Topic already exists.
-		if (this.engine.pageExists(topic)) {
-			return true;
-		}
+		if (this.engine.pageExists(topic)) return true;
 		return false;
 	}
 
@@ -594,9 +591,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 		if (lock == null) return false;
 
-		if (lock.getLocker().equals(user)) {
-			return true;
-		}
+		if (lock.getLocker().equals(user)) return true;
 		return false;
 	}
 
@@ -637,6 +632,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		return context.getContextPath();
 	}
 
+	@Override
 	public Locale getLocale(HttpServletRequest request) {
 
 		WikiContext wikiContext = new WikiContext(this.engine, request,
@@ -645,6 +641,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		return Preferences.getLocale(wikiContext);
 	}
 
+	@Override
 	public Locale getLocale() {
 
 		WikiContext wikiContext = new WikiContext(this.engine, this.engine
@@ -658,18 +655,16 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		try {
 			List<String> attachmentList = new LinkedList<String>();
 
-			Collection<Attachment> attList = this.engine.getAttachmentManager()
-					.getAllAttachments();
+			// this list is in fact a Collection<Attachment>,
+			// the conversion is typesafe!
+			@SuppressWarnings("unchecked")
+			Collection<Attachment> attList = this.engine.getAttachmentManager().
+					listAttachments(this.engine.getPage(pageName));
 
-			// This is damn inefficient - How can I grab all Attachment for a
-			// specific page???
-			for (Attachment p : attList) {
-
-				if (p.getParentName().equals(pageName)) {
-					attachmentList.add(p.getFileName());
-				}
-
+			for (Attachment att : attList) {
+				attachmentList.add(att.getFileName());
 			}
+
 			return attachmentList;
 		}
 		catch (ProviderException e) {
@@ -730,9 +725,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		Principal[] princ = context.getWikiSession().getRoles();
 
 		for (Principal p : princ) {
-			if (p.getName().equals(groupname)) {
-				return true;
-			}
+			if (p.getName().equals(groupname)) return true;
 		}
 
 		return false;
