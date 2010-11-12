@@ -59,9 +59,9 @@ public class SectionTest extends TestCase {
 		 * Build an Article and register it at env.
 		 */
 		String content = "!!Table\n\n<Table default=\"+,-,0\" width=\"100\" row=\"1\" column=\"1\" cell=\"2,2\">\n| |Apple|Lemon|Coconut\n|sweetness|+|-|hm\n|grows in central europe|+|+|-\n|size|-|+|+\n</Table>";
-		env.saveArticle(web, "Test_Article", content, null);
-		env.buildAndRegisterArticle("testuser", content, "Test_Article", web, false);
-		KnowWEArticle article = env.getArticle(web, "Test_Article");
+		String title = "Test_Article";
+		env.buildAndRegisterArticle("testuser", content, title, web, false);
+		KnowWEArticle article = env.getArticle(web, title);
 
 		/**
 		 * Beginning the test
@@ -84,7 +84,7 @@ public class SectionTest extends TestCase {
 		assertEquals("New text wasn't saved to orgingialtext from" + headerSec.getID(),
 				newHeader, newHeaderSec.getOriginalText());
 
-		article = KnowWEEnvironment.getInstance().getArticle(web, "Test_Article");
+		article = KnowWEEnvironment.getInstance().getArticle(web, title);
 		assertEquals(content, article.getSection().getOriginalText());
 		assertNotSame(content, article.collectTextsFromLeaves());
 		checkChildsTillLine(article, 0, true); // isDirty = true?!
@@ -108,8 +108,9 @@ public class SectionTest extends TestCase {
 		article.getSection().collectTextsFromLeaves(buddy);
 		assertEquals("Two methdos collectTextsFromLeaves() with different results",
 				article.collectTextsFromLeaves(), buddy.toString());
-		env.getWikiConnector().saveArticle("Test_Article", buddy.toString(), null, true);
-		article = env.getArticle(web, "Test_Article");
+		env.buildAndRegisterArticle("testuser", buddy.toString(), title,
+				web);
+		article = env.getArticle(web, title);
 		assertNotSame(content, article.getSection().getOriginalText());
 		assertTrue(article.getSection().getOriginalText().contains(newHeader));
 

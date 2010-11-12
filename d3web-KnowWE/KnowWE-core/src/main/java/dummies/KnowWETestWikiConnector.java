@@ -33,9 +33,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.we.action.KnowWEActionDispatcher;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.wikiConnector.ConnectorAttachment;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
@@ -147,18 +145,19 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	}
 
 	@Override
-	public boolean saveArticle(String name, String text, KnowWEParameterMap map) {
+	public boolean writeArticleToWikiEnginePersistence(String name, String text, KnowWEParameterMap map) {
 		return true;
 	}
 
-	@Override
-	public boolean saveArticle(String name, String text, KnowWEParameterMap map, boolean fullParse) {
-		KnowWEEnvironment.getInstance().getArticleManager(
-				KnowWEEnvironment.DEFAULT_WEB).registerArticle(
-						KnowWEArticle.createArticle(text, name, KnowWEEnvironment.getInstance()
-								.getRootType(), KnowWEEnvironment.DEFAULT_WEB, fullParse));
-		return true;
-	}
+	// @Override
+	// public boolean writeArticleToWikiEnginePersistence(String name, String
+	// text, KnowWEParameterMap map, boolean fullParse) {
+	// KnowWEEnvironment.getInstance().getArticleManager(
+	// KnowWEEnvironment.DEFAULT_WEB).registerArticle(
+	// KnowWEArticle.createArticle(text, name, KnowWEEnvironment.getInstance()
+	// .getRootType(), KnowWEEnvironment.DEFAULT_WEB, fullParse));
+	// return true;
+	// }
 
 	@Override
 	public boolean setPageLocked(String articlename, String user) {

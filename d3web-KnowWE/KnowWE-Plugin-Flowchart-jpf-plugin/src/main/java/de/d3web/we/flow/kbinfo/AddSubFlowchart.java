@@ -191,7 +191,8 @@ public class AddSubFlowchart extends AbstractAction {
 
 		KnowWEParameterMap map = new KnowWEParameterMap(KnowWEAttributes.WEB, sec.getWeb());
 
-		instance.saveArticle(sec.getWeb(), sec.getTitle(), text, map);
+		instance.getWikiConnector().writeArticleToWikiEnginePersistence(sec.getTitle(),
+				text, map);
 
 		String flowID = name;
 

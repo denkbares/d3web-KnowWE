@@ -83,7 +83,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	}
 
 	@Override
-	public boolean saveArticle(String name, String text, KnowWEParameterMap map) {
+	public boolean writeArticleToWikiEnginePersistence(String name, String text, KnowWEParameterMap map) {
 		try {
 			HttpServletRequest req = map.getRequest();
 			WikiContext context = engine.createContext(req, WikiContext.EDIT);
@@ -102,10 +102,11 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		}
 	}
 
-	@Override
-	public boolean saveArticle(String name, String text, KnowWEParameterMap map, boolean fullParse) {
-		return saveArticle(name, text, map);
-	}
+	// @Override
+	// public boolean writeArticleToWikiEnginePersistence(String name, String
+	// text, KnowWEParameterMap map, boolean fullParse) {
+	// return writeArticleToWikiEnginePersistence(name, text, map);
+	// }
 
 	@Override
 	public LinkedList<String> getJarAttachments() {

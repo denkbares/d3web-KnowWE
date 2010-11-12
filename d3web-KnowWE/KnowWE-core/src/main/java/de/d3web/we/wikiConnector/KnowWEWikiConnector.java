@@ -94,7 +94,7 @@ public interface KnowWEWikiConnector {
 	 * @param map
 	 * @return
 	 */
-	public boolean saveArticle(String name, String text, KnowWEParameterMap map);
+	public boolean writeArticleToWikiEnginePersistence(String name, String text, KnowWEParameterMap map);
 
 	/**
 	 * Saves the article (persistently) into the connected wiki
@@ -106,7 +106,8 @@ public interface KnowWEWikiConnector {
 	 *        for KnowWETestWikiConnector working)
 	 * @return
 	 */
-	public boolean saveArticle(String name, String text, KnowWEParameterMap map, boolean fullParse);
+	// public boolean writeArticleToWikiEnginePersistence(String name, String
+	// text, KnowWEParameterMap map, boolean fullParse);
 
 	/**
 	 * Returns a list of all jar attachment files of the wiki

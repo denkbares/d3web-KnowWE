@@ -155,13 +155,11 @@ public class KnowWEArticleManager {
 		appendTextReplaceNode(root, nodesMap, newText);
 
 		String newArticleSourceText = newText.toString();
-		KnowWEEnvironment.getInstance().saveArticle(web, title,
-				newArticleSourceText, map);
+		KnowWEEnvironment.getInstance().getWikiConnector().writeArticleToWikiEnginePersistence(
+				title, newArticleSourceText, map);
 		KnowWEEnvironment.getInstance().buildAndRegisterArticle(map.getUser(),
 				newArticleSourceText, title, web);
-		// saveUpdatedArticle(new KnowWEArticle(newArticleSourceText,
-		// articleName,
-		// KnowWEEnvironment.getInstance().getRootTypes(), this.web));
+
 		return "done";
 	}
 

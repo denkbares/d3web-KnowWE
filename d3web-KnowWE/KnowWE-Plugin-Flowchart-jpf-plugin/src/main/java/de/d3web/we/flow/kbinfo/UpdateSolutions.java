@@ -92,7 +92,8 @@ public class UpdateSolutions extends AbstractAction {
 
 		// save the new article
 		String newText = firstPart + newSolutionsSection + lastPart;
-		instance.saveArticle(sec.getWeb(), sec.getTitle(), newText, map);
+		instance.getWikiConnector().writeArticleToWikiEnginePersistence(sec.getTitle(),
+				newText, map);
 
 		// remove leading and ending quotes
 		solutionText = UpdateQuestions.removeLeadingAndClosingQuotes(solutionText);

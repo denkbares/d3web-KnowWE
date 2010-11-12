@@ -576,21 +576,7 @@ public class KnowWEEnvironment {
 	// return res.hasErrors();
 	// }
 
-	/**
-	 *
-	 * Writes a modified article to the wiki engine using the wikiConnector
-	 *
-	 * @param web
-	 * @param name
-	 * @param articleText
-	 * @param map
-	 * @return
-	 */
-	public boolean saveArticle(String web, String name, String articleText,
-			KnowWEParameterMap map) {
-		return this.wikiConnector.saveArticle(name, articleText, map);
 
-	}
 
 	/**
 	 *
