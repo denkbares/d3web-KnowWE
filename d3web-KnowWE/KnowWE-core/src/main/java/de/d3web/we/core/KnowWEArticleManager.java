@@ -157,7 +157,7 @@ public class KnowWEArticleManager {
 		String newArticleSourceText = newText.toString();
 		KnowWEEnvironment.getInstance().saveArticle(web, title,
 				newArticleSourceText, map);
-		KnowWEEnvironment.getInstance().processAndUpdateArticle(map.getUser(),
+		KnowWEEnvironment.getInstance().buildAndRegisterArticle(map.getUser(),
 				newArticleSourceText, title, web);
 		// saveUpdatedArticle(new KnowWEArticle(newArticleSourceText,
 		// articleName,

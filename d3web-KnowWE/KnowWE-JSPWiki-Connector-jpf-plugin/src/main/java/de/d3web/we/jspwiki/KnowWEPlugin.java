@@ -170,7 +170,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		initKnowWEEnvironmentIfNeeded(wikiContext.getEngine());
 
 		// process this article in KnowWE
-		KnowWEEnvironment.getInstance().processAndUpdateArticle(user, content,
+		KnowWEEnvironment.getInstance().buildAndRegisterArticle(user, content,
 				topic, "default_web");
 	}
 
