@@ -113,7 +113,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 
 		Flow flow = FlowFactory.getInstance().createFlow(id, name, nodes, edges);
 
-		DiaFluxUtils.addFlow(flow, kbm.getKnowledgeBase(), article.getTitle());
+		DiaFluxUtils.addFlow(flow, kbm.getKnowledgeBase());
 
 		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 
