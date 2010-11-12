@@ -60,6 +60,7 @@ public class SectionTest extends TestCase {
 		 */
 		String content = "!!Table\n\n<Table default=\"+,-,0\" width=\"100\" row=\"1\" column=\"1\" cell=\"2,2\">\n| |Apple|Lemon|Coconut\n|sweetness|+|-|hm\n|grows in central europe|+|+|-\n|size|-|+|+\n</Table>";
 		env.saveArticle(web, "Test_Article", content, null);
+		env.buildAndRegisterArticle("testuser", content, "Test_Article", web, false);
 		KnowWEArticle article = env.getArticle(web, "Test_Article");
 
 		/**
