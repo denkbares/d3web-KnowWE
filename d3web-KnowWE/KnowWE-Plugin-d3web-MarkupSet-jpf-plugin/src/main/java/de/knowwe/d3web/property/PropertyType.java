@@ -18,9 +18,16 @@
  */
 package de.knowwe.d3web.property;
 
+import java.util.regex.Pattern;
+
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.object.ContentDefinition;
+import de.d3web.we.object.IDObjectReference;
+import de.d3web.we.object.LocaleDefinition;
+import de.d3web.we.object.PropertyReference;
 
 /**
  * Adds the PropertyReviseSubtreeHandler to the Property line
@@ -32,6 +39,38 @@ public class PropertyType extends DefaultAbstractKnowWEObjectType {
 
 	public PropertyType() {
 		setSectionFinder(new AllTextFinderTrimmed());
+		String quoted = "(?:\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\")";
+		// no " . and = allowed
+		String unquotedName = "(?:[^\".=])+";
+		String name = "(" + quoted + "|" + unquotedName + ")";
+		String language = "(\\.\\w{2}(?:\\.\\w{2})?)?";
+		String leftSide = name + "\\." + name + language;
+		// no " and = allowed, dots are allowed
+		String unquotedContent = "(?:[^\"=])+";
+		String content = "(" + quoted + "|" + unquotedContent + ")";
+		String pattern = leftSide + "\\s*=" + content;
+		Pattern p = Pattern.compile(pattern);
+
+		// Locale
+		LocaleDefinition ld = new LocaleDefinition();
+		ld.setSectionFinder(new RegexSectionFinder(p, 3));
+		this.childrenTypes.add(ld);
+
+		// Content
+		ContentDefinition cd = new ContentDefinition();
+		cd.setSectionFinder(new RegexSectionFinder(Pattern.compile("=" + content), 1));
+		this.childrenTypes.add(cd);
+
+		// Property
+		PropertyReference pr = new PropertyReference();
+		pr.setSectionFinder(new RegexSectionFinder(Pattern.compile("\\." + name), 1));
+		this.childrenTypes.add(pr);
+
+		// IDObject
+		IDObjectReference idor = new IDObjectReference();
+		idor.setSectionFinder(new RegexSectionFinder(Pattern.compile(name + "\\."), 1));
+		this.childrenTypes.add(idor);
+
 		addSubtreeHandler(Priority.LOW, new PropertyReviseSubtreeHandler());
 	}
 

@@ -23,12 +23,14 @@ import java.util.Locale;
 
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.object.ContentDefinition;
+import de.d3web.we.object.IDObjectReference;
+import de.d3web.we.object.LocaleDefinition;
+import de.d3web.we.object.PropertyReference;
 
 /**
  * Parses a line defining a property
@@ -42,25 +44,18 @@ public class PropertyReviseSubtreeHandler extends SubtreeHandler<PropertyType> {
 
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<PropertyType> s) {
-		KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(
-				article.getWeb()).getKBM(article.getTitle());
-		String[] split = s.getOriginalText().split("=");
-		if (split.length == 0) return null;
-		String[] split2 = split[0].split("[.]");
-		if (split2.length == 0) return null;
-		IDObject object = kbm.findIDObjectByName(split2[0].trim());
-		if (object == null) return null;
-		Property<Object> property = Property.getUntypedProperty(split2[1].trim());
-		String content = split[1].trim();
-		if (split2.length > 2) {
-			Locale locale;
-			String language = split2[2].trim();
-			if (split2.length == 3) {
-				locale = new Locale(language);
-			}
-			else {
-				locale = new Locale(language, split2[3].trim());
-			}
+		Section<IDObjectReference> idobjectSection = s.findSuccessor(IDObjectReference.class);
+		Section<PropertyReference> propertySection = s.findSuccessor(PropertyReference.class);
+		if (idobjectSection == null) return null;
+		IDObject object = idobjectSection.get().getTermObject(article, idobjectSection);
+		if (propertySection == null) return null;
+		Property<?> property = propertySection.get().getTermObject(article, propertySection);
+		Section<LocaleDefinition> localeSection = s.findSuccessor(LocaleDefinition.class);
+		Section<ContentDefinition> contentSection = s.findSuccessor(ContentDefinition.class);
+		if (contentSection == null) return null;
+		String content = contentSection.get().getTermObject(article, contentSection);
+		if (localeSection != null) {
+			Locale locale = localeSection.get().getTermObject(article, localeSection);
 			object.getInfoStore().addValue(property, locale, content);
 		}
 		else {
