@@ -77,7 +77,7 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Plugin-XML</artifactId>
+			<artifactId>KnowWE-XML</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
