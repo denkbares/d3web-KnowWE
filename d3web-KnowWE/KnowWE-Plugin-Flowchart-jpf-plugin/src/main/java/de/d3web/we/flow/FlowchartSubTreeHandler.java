@@ -45,6 +45,8 @@ import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.IEdge;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
+import de.d3web.diaFlux.inference.FlowchartProcessedCondition;
+import de.d3web.diaFlux.inference.NodeActiveCondition;
 import de.d3web.report.Message;
 import de.d3web.we.flow.persistence.CommentNodeHandler;
 import de.d3web.we.flow.persistence.ComposedNodeHandler;
@@ -196,38 +198,52 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 
 		String originalText = getXMLContentText(s);
 
-		InputStream stream = new ByteArrayInputStream(originalText.getBytes());
-		ANTLRInputStream input = null;
-		try {
-			input = new ANTLRInputStream(stream);
+		// TODO create Parsers for own Condition
+		if (originalText.startsWith("PROCESSED[")) {
+
+			String flowName = originalText.substring(10, originalText.length() - 1);
+			return new FlowchartProcessedCondition(flowName);
 		}
-		catch (IOException e) {
-			e.printStackTrace();
+		else if (originalText.startsWith("IS_ACTIVE[")) {
+			int nodenameStart = originalText.indexOf('(');
+			int nodenameEnd = originalText.indexOf(')');
+
+			String flowName = originalText.substring(10, nodenameStart);
+			String nodeName = originalText.substring(nodenameStart + 1, nodenameEnd);
+			return new NodeActiveCondition(flowName, nodeName);
 		}
-		DefaultLexer lexer = new DefaultLexer(input);
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		ComplexConditionSOLO parser = new ComplexConditionSOLO(tokens);
+		else {
 
-		RestrictedIDObjectManager idom = new RestrictedIDObjectManager(getKBM(article));
+			// for other Conditions use ANTLR parser
+			InputStream stream = new ByteArrayInputStream(originalText.getBytes());
+			ANTLRInputStream input = null;
+			try {
+				input = new ANTLRInputStream(stream);
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+			DefaultLexer lexer = new DefaultLexer(input);
+			CommonTokenStream tokens = new CommonTokenStream(lexer);
+			ComplexConditionSOLO parser = new ComplexConditionSOLO(tokens);
 
-		// For creating conditions in edges coming out from call nodes
-		// TODO explicitly create oc-question for all FCs
-		// idom.setLazyAnswers(true);
-		// idom.setLazyQuestions(true);
+			RestrictedIDObjectManager idom = new RestrictedIDObjectManager(getKBM(article));
 
-		D3webConditionBuilder builder = new D3webConditionBuilder("Parsed from article", errors,
-				idom);
+			D3webConditionBuilder builder = new D3webConditionBuilder("Parsed from article",
+					errors,
+					idom);
 
-		parser.setBuilder(builder);
-		try {
-			parser.complexcondition();
+			parser.setBuilder(builder);
+			try {
+				parser.complexcondition();
+			}
+			catch (RecognitionException e) {
+				e.printStackTrace();
+			}
+			Condition condition = builder.pop();
+
+			return condition;
 		}
-		catch (RecognitionException e) {
-			e.printStackTrace();
-		}
-		Condition condition = builder.pop();
-
-		return condition;
 	}
 
 	public static String getXMLContentText(Section s) {
@@ -295,268 +311,5 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 		return null;
 	}
 
-	//
-	// private List<INode> createNodes(KnowWEArticle article, String flowName,
-	// List<Section> nodeSections, List<Message> errors) {
-	//
-	// List<INode> result = new ArrayList<INode>();
-	//
-	// for (Section section : nodeSections) {
-	//
-	// Section nodeContent = (Section) section.getChildren().get(1);
-	// // Section
-	// // of
-	// // NodeContentType
-	//
-	// // get the important info
-	// List<Section> children = nodeContent.getChildren(new SectionFilter() {
-	//
-	// public boolean accept(Section section) {
-	// return section.getObjectType() != PositionType.getInstance()
-	// && section.getObjectType() != PlainText.getInstance();
-	// }
-	// });
-	//
-	// // Assert.assertEquals(section +
-	// // " has the wrong number of children.",1, children.size());
-	//
-	// if (children.size() != 1) continue;
-	//
-	// Section nodeinfo = children.get(0);
-	//
-	// String id =
-	// AbstractXMLObjectType.getAttributeMapFor(section).get("fcid");
-	//
-	// if (nodeinfo.getObjectType() == StartType.getInstance()) {
-	// result.add(createStartNode(id, nodeinfo, errors));
-	// } else if (nodeinfo.getObjectType() == ExitType.getInstance()) {
-	// result.add(createEndNode(
-	// article, id, flowName, nodeinfo, errors));
-	// } else if (nodeinfo.getObjectType() == ActionType.getInstance()) {
-	// result.add(createActionNode(
-	// article, id, nodeinfo, errors));
-	// } else if (nodeinfo.getObjectType() == CommentType.getInstance()) {
-	// result.add(createCommentNode(
-	// article, id, nodeinfo, errors));
-	// } else if (nodeinfo.getObjectType() == SnapshotType.getInstance()) {
-	// result.add(createSnapshotNode(
-	// article, id, nodeinfo, errors));
-	// }
-	// else {
-	// errors.add(new Message("Unknown node type: " +
-	// nodeinfo.getObjectType()));
-	// }
-	//
-	// }
-	//
-	// return result;
-	// }
-
-	// private INode createSnapshotNode(KnowWEArticle article, String id,
-	// Section nodeinfo, List<Message> errors) {
-	//
-	// // SnapshotAction action = new SnapshotAction();
-	//
-	// // return FlowFactory.getInstance().createNode(id, action);
-	// return new SnapshotNode(id);
-	// }
-
-	// private INode createCommentNode(KnowWEArticle article, String id,
-	// Section nodeinfo, List<Message> errors) {
-	//
-	// PSAction action = NoopAction.INSTANCE;
-	//
-	// INode node = FlowFactory.getInstance().createActionNode(id, action);
-	// String string = getXMLContentText(nodeinfo);
-	//
-	// node.setName("Comment: " + string);
-	//
-	//
-	// return node;
-	// }
-
-	// private INode createActionNode(KnowWEArticle article, String id, Section
-	// section, List<Message> errors) {
-	//
-	// PSAction action = NoopAction.INSTANCE;
-	// String string = getXMLContentText(section);
-	// if (string.startsWith("ERFRAGE") || string.startsWith("INSTANT")) {
-	// action = createQAindicationAction(article, section, string, errors);
-	// }
-	// else if (string.contains("=")) {
-	// action = createHeuristicScoreAction(article, section, string, errors);
-	// }
-	// else if (string.startsWith("CALL[")) {
-	// action = createCallFlowAction(article, section, string, errors);
-	// }
-	// else action = NoopAction.INSTANCE;
-	//
-	// INode node = FlowFactory.getInstance().createActionNode(id, action);
-	// node.setName(string);
-	// return node;
-	//
-	// }
-
-	// private PSAction createCallFlowAction(KnowWEArticle article, Section
-	// section, String string, List<Message> errors) {
-	//
-	// int nodenameStart = string.indexOf('(');
-	// int nodenameEnd = string.indexOf(')');
-	//
-	// String flowName = string.substring(5, nodenameStart);
-	// String nodeName = string.substring(nodenameStart + 1, nodenameEnd);
-	//
-	// return new ComposedNodeAction(flowName, nodeName);
-	//
-	// //old version using terminology
-	// KnowledgeBaseManagement kbm = getKBM(article);
-	//
-	// QContainer container = kbm.findQContainer(flowName + "_Questionnaire");
-	//
-	// if (container == null) {
-	// errors.add(new Message("Terminology not found for flow'" + flowName +
-	// "'"));
-	// return NoopAction.INSTANCE;
-	// }
-	//
-	// QuestionMC question = null;
-	//
-	// for (TerminologyObject child : container.getChildren()) {
-	//
-	// if (child.getName().equals(
-	// flowName + "_" +
-	// FlowchartTerminologySubTreeHandler.STARTNODES_QUESTION_NAME)) question =
-	// (QuestionMC) child;
-	// }
-	//
-	// if (question == null) {
-	// errors.add(new Message("No startnode question found for flow '" +
-	// flowName + "'."));
-	// return NoopAction.INSTANCE;
-	// }
-	//
-	// ActionSetValue action = FlowFactory.getInstance().createSetValueAction();
-	//
-	// action.setQuestion(question);
-	//
-	// Choice answer = null;
-	// for (Choice child : question.getAllAlternatives()) {
-	// if (child.getName().equals(nodeName)) answer = child;
-	//
-	// }
-	//
-	// if (answer == null) {
-	// errors.add(new Message("Startnode  '" + nodeName
-	// + "' not found in terminology of flow '" + flowName + "'."));
-	// return NoopAction.INSTANCE;
-	// }
-	//
-	// //TODO: HOTFIX
-	// List<ChoiceValue> values = new LinkedList<ChoiceValue>();
-	// values.add(new ChoiceValue(answer));
-	//
-	// action.setValue(new MultipleChoiceValue(values));
-	// //
-	// return action;
-	// }
-
-	// private PSAction createHeuristicScoreAction(KnowWEArticle article,
-	// Section section,
-	// String string, List<Message> errors) {
-	//
-	// String[] split = string.split("=");
-	// String solution = split[0].trim();
-	// String score = split[1].trim();
-	//
-	//
-	// ActionHeuristicPS action = new ActionHeuristicPS();
-	//
-	// if (solution.startsWith("\"")) // remove "
-	// solution = solution.substring(1, solution.length() - 1);
-	//
-	// KnowledgeBaseManagement kbm = getKBM(article);
-	// Solution diagnosis = kbm.findSolution(solution);
-	//
-	// if (diagnosis == null) {
-	// errors.add(new Message("Diagnosis not found: " + solution));
-	// }
-	//
-	// action.setSolution(diagnosis);
-	//
-	// if (score.contains("P7")) action.setScore(Score.P7);
-	// else action.setScore(Score.N7);
-	//
-	// return action;
-	// }
-
-	// private PSAction createQAindicationAction(KnowWEArticle article, Section
-	// section, String string, List<Message> errors) {
-	// String name = string.substring(8, string.length() - 1);
-	// KnowledgeBaseManagement kbm = getKBM(article);
-	// QASet findQuestion = kbm.findQuestion(name);
-	//
-	// if (findQuestion == null) findQuestion = kbm.findQContainer(name);
-	//
-	// if (findQuestion == null) {
-	// errors.add(new Message("Question not found: " + name));
-	// return NoopAction.INSTANCE;
-	// }
-	//
-	// List<QASet> qasets = new ArrayList<QASet>();
-	//
-	// qasets.add(findQuestion);
-	//
-	//
-	// ActionIndication action = new ActionIndication();
-	//
-	// action.setQASets(qasets);
-	//
-	// return action;
-	// }
-
-	// private INode createEndNode(KnowWEArticle article, String id, String
-	// flowName, Section section, List<Message> errors) {
-	// String name = ((Section) section.getChildren().get(1)).getOriginalText();
-	//
-	// ActionSetValue action = FlowFactory.getInstance().createSetValueAction();
-	//
-	// QuestionMC question = (QuestionMC) getKBM(article).findQuestion(
-	// flowName + "_" +
-	// FlowchartTerminologySubTreeHandler.EXITNODES_QUESTION_NAME);
-	//
-	// action.setQuestion(question);
-	//
-	// Choice answer = null;
-	// for (Choice child : question.getAllAlternatives()) {
-	// if (child.getName().equals(name)) {
-	// answer = child;
-	// break;
-	// }
-	//
-	// }
-	//
-	// if (answer == null) {
-	// errors.add(new Message("No startnode  '" + flowName +
-	// "' not found in terminology of flow '" + flowName +"'."));
-	// return null;
-	// }
-	//
-	// //HOTFIX
-	// List<ChoiceValue> values = new LinkedList<ChoiceValue>();
-	// values.add(new ChoiceValue(answer));
-	//
-	// action.setValue(new MultipleChoiceValue(values));
-	// //
-	//
-	// return FlowFactory.getInstance().createEndNode(id, name, action);
-	// }
-
-	// private INode createStartNode(String id, Section section, List<Message>
-	// errors) {
-	// String name = ((Section) section.getChildren().get(1)).getOriginalText();
-	//
-	// return FlowFactory.getInstance().createStartNode(id, name);
-	//
-	// }
 
 }

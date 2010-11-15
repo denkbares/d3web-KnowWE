@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.ValueObject;
 import de.d3web.core.session.CaseObjectSource;
 import de.d3web.core.session.Session;
 import de.d3web.diaFlux.flow.DiaFluxCaseObject;
@@ -72,7 +74,10 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 		}
 
 		// Debug
-		if (isDebug(user.getUrlParameterMap())) string.append(getPathendText(session));
+		if (isDebug(user.getUrlParameterMap())) {
+			string.append(getPathendText(session));
+			string.append(getBlackboardTable(session));
+		}
 		//
 
 		for (Section<FlowchartType> section : flows) {
@@ -112,35 +117,56 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 		return true;
 	}
 
-	private String getPathendText(Session theCase) {
+	private String getPathendText(Session session) {
 
-		if (theCase == null) return "";
+		if (session == null) return "";
 
-		FlowSet set = DiaFluxUtils.getFlowSet(theCase);
+		FlowSet set = DiaFluxUtils.getFlowSet(session);
 
-		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) theCase.getCaseObject(set);
+		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) session.getCaseObject(set);
 		Collection<IPath> pathes = caseObject.getActivePathes();
 
 		StringBuilder builder = new StringBuilder();
 
 		builder.append("<b>Current Pathes:</b>");
 		builder.append("<br/>");
-		builder.append(pathes);
-		builder.append("<br/>");
+		for (IPath path : pathes) {
+
+			builder.append("<b>" + path.getFlow().getName() + "</b>");
+			builder.append("<br/>");
+		}
+
 		builder.append("<br/>");
 
 		int i = 0;
 
 		for (IPath path : pathes) {
 
-			builder.append(++i + ". Path: " + path + "<br/>");
+			builder.append(++i + ". Path: " + path.getFlow().getName() + "<br/>");
+			builder.append("<table>");
 
 			for (INode node : path.getActiveNodes()) {
+				builder.append("<tr>");
 
-				builder.append(DiaFluxUtils.getNodeData(node, theCase));
-				builder.append("<br/>");
+				INodeData nodeData = DiaFluxUtils.getNodeData(node, session);
+				builder.append("<td>" + nodeData.getNode().getName() + "</td>");
+				builder.append("<td>");
+				builder.append("<ol>");
+
+				List<ISupport> supports = nodeData.getSupports();
+				for (ISupport support : supports) {
+					builder.append("<li>" + support + "</li>");
+
+				}
+
+				builder.append("</ol>");
+
+				builder.append("</td>");
+
+				builder.append("</tr>");
 
 			}
+			builder.append("</table>");
 
 			builder.append("<br/>");
 			builder.append("<br/>");
@@ -148,6 +174,34 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 		}
 
 		builder.append("<br/>");
+
+		return builder.toString();
+	}
+
+	private String getBlackboardTable(Session session) {
+
+		StringBuilder builder = new StringBuilder();
+
+		Collection<TerminologyObject> objects = new ArrayList<TerminologyObject>(
+				session.getBlackboard().getValuedObjects());
+		builder.append("Valued objects: " + objects.size());
+		builder.append("<table>");
+		builder.append("<tr>");
+		builder.append("<th>Object</th><th>Value</th>");
+
+		builder.append("</tr>");
+
+		for (TerminologyObject terminologyObject : objects) {
+
+			builder.append("<tr>");
+			builder.append("<td>" + terminologyObject.getName() + "</td>");
+			builder.append("<td>"
+					+ session.getBlackboard().getValue((ValueObject) terminologyObject) + "</td>");
+			builder.append("</tr>");
+
+		}
+
+		builder.append("</table>");
 
 		return builder.toString();
 	}

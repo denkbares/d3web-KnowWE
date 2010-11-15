@@ -171,11 +171,13 @@ Guard.createPossibleGuards = function(nodeModel) {
 		if (options.length > 0) {
 			result.push('Ergebnis abfragen');
 			for (var i=0; i<options.length; i++) {
-				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'_Exit" = "'+options[i]+'"', options[i]));
+//				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'_Exit" = "'+options[i]+'"', options[i]));
+				result.push(new Guard('KnOffice', 'IS_ACTIVE[' + infoObject.getName()+'('+options[i]+')]', options[i]));
 			}
 			result.push('Ergebnis ausschliessen');
 			for (var i=0; i<options.length; i++) {
-				result.push(new Guard('KnOffice', 'NICHT ("'+infoObject.getName()+'" = "'+options[i]+'")', '&ne; ' + options[i]));
+//				result.push(new Guard('KnOffice', 'NICHT ("'+infoObject.getName()+'" = "'+options[i]+'")', '&ne; ' + options[i]));
+				result.push(new Guard('KnOffice', 'NICHT(IS_ACTIVE[' + infoObject.getName()+'('+options[i]+')])', options[i]));
 			}
 		}
 		result.push('Allgemein');
