@@ -148,7 +148,7 @@
                 <module>KnowWE-Plugin-d3web-MarkupSet</module>-->
 		<module>KnowWE-Plugin-CI4KE</module>
 		<module>KnowWE-Plugin-SemanticCore</module>
-		<module>KnowWE-Plugin-TestSuite</module>
+                <!--		<module>KnowWE-Plugin-TestSuite</module>-->
 		<module>KnowWE-GlobalTestUtils</module>
 	</modules>
 	<repositories>
