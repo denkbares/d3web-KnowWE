@@ -16,6 +16,39 @@
 		</library>
 	</runtime>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="KnowledgeBaseDownloadProvider">
+		<parameter id="class" value="de.d3web.we.knowledgebase.KnowledgeBaseDownloadProvider" />
+		<parameter id="name" value="KnowledgeBaseDownloadProvider" />
+		<parameter id="description"
+			value="Offer a download button to download the knowledge base as an knowledge archive." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="/KnowledgeBase" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="KnowledgeBaseType">
+		<parameter id="class" value="de.d3web.we.knowledgebase.KnowledgeBaseType" />
+		<parameter id="name" value="KnowledgeBaseType" />
+		<parameter id="description"
+			value="Compiles and provides a master knowledge base." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="root" />
+	</extension>
+		
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="KBRenderer">
+		<parameter id="class" value="de.d3web.we.knowledgebase.KBRenderer" />
+		<parameter id="name" value="KBRenderer" />
+		<parameter id="description" value="TagHandler KBRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-plugin-d3web.js" />
+		<parameter id="script" value="silveripe.0.2.js" />
+	</extension>
+	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Instantiation"
 		id="d3webInstantiation">
 		<parameter id="class"

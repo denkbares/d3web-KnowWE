@@ -61,5 +61,11 @@
 			<version>0.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>d3web-Verbalizer</artifactId>
+			<version>${d3webCoreVersion}</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 </project>
