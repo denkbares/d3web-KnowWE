@@ -1,0 +1,13 @@
+#testsuite-run-link {
+	cursor: pointer;
+}
+
+#testsuite-failed-extend {
+	cursor: pointer;
+	margin-left: 7px;
+}
+
+#testsuite-detail-panel {
+	margin-left: 16px;
+	display: none;
+}

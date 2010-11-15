@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.uniwue.d3web</groupId>
   <artifactId>KnowWE-Plugin-KDOMParseUtils</artifactId>
-  <name>KnowWE-Plugin-KDOMParseUtils</name>
+  <name>KnowWE Plugin: KDOMParseUtils</name>
   <version>0.2-SNAPSHOT</version>
   <description>Some components helping to create KDOM parsers easily</description>
   <dependencies>

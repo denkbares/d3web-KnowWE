@@ -1,0 +1,182 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-SemanticCore" version="0.0.1">
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+	</requires>
+        	<runtime>
+		<library id="de.d3web" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Instantiation"
+		id="SemanticCoreDelegator">
+		<parameter id="class"
+			value="de.d3web.we.core.semantic.SemanticCoreDelegator" />
+		<parameter id="name" value="SemanticCoreDelegator" />
+		<parameter id="description" value="Instantiation SemanticCoreDelegator" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="2" />
+	</extension>
+	
+		<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="Extension">
+		<parameter id="class"
+			value="de.d3web.we.kdom.owlextension.Extension" />
+		<parameter id="name" value="Extension" />
+		<parameter id="description" value="KnowWEObjectType Extension" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+		<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="OwlProperties">
+		<parameter id="class"
+			value="de.d3web.we.kdom.owlextension.OwlProperties" />
+		<parameter id="name" value="OwlProperties" />
+		<parameter id="description" value="KnowWEObjectType OwlProperties" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+		<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="SemanticAnnotation">
+		<parameter id="class"
+			value="de.d3web.we.kdom.semanticAnnotation.SemanticAnnotation" />
+		<parameter id="name" value="SemanticAnnotation" />
+		<parameter id="description" value="KnowWEObjectType SemanticAnnotation" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="Info">
+		<parameter id="class"
+			value="de.d3web.we.kdom.semanticFactSheet.Info" />
+		<parameter id="name" value="Info" />
+		<parameter id="description" value="KnowWEObjectType Info" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+		<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="Namespaces">
+		<parameter id="class"
+			value="de.d3web.we.kdom.namespaces.Namespaces" />
+		<parameter id="name" value="Namespaces" />
+		<parameter id="description" value="KnowWEObjectType Namespaces" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+		<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="GroovySparqlRenderer">
+		<parameter id="class"
+			value="de.d3web.we.kdom.sparql.groovy.GroovySparqlRenderer" />
+		<parameter id="name" value="GroovySparqlRenderer" />
+		<parameter id="description" value="KnowWEObjectType GroovySparqlRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="Sparql">
+		<parameter id="class"
+			value="de.d3web.we.kdom.sparql.Sparql" />
+		<parameter id="name" value="Sparql" />
+		<parameter id="description" value="KnowWEObjectType Sparql" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+		<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="Tags">
+		<parameter id="class"
+			value="de.d3web.we.core.semantic.tagging.Tags" />
+		<parameter id="name" value="Tags" />
+		<parameter id="description" value="KnowWEObjectType Tags" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="EventListener"
+		id="SemanticCoreDelegatorEventListener">
+		<parameter id="class"
+			value="de.d3web.we.core.semantic.SemanticCoreDelegator" />
+		<parameter id="name" value="SemanticCoreDelegator" />
+		<parameter id="description" value="EventListener SemanticCoreDelegator" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+        <extension plugin-id="KnowWEExtensionPoints" point-id="SemanticCoreImpl" id="SemanticCoreImpl">
+                <parameter id="class" value="de.d3web.we.core.semantic.SemanticCore"/>
+                <parameter id="name" value="SemanticCoreImpl"/>
+                <parameter id="description" value="real core"/>
+                <parameter id="version"  value="0.0.1"/>
+                <parameter id="priority" value="5" />
+        </extension>
+        
+       <extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="TagCloud">
+		<parameter id="class"
+			value="de.d3web.we.core.semantic.tagging.TagCloud" />
+		<parameter id="name" value="TagCloud" />
+		<parameter id="description" value="TagHandler TagCloud" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+		<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="TagEditPanel">
+		<parameter id="class"
+			value="de.d3web.we.core.semantic.tagging.TagEditPanel" />
+		<parameter id="name" value="TagEditPanel" />
+		<parameter id="description" value="TagHandler TagEditPanel" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+		<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="TagHandlingAction">
+		<parameter id="class"
+			value="de.d3web.we.core.semantic.tagging.TagHandlingAction" />
+		<parameter id="name" value="TagHandlingAction" />
+		<parameter id="description" value="Action TagHandlingAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="TagSearchHandler">
+		<parameter id="class"
+			value="de.d3web.we.core.semantic.tagging.TagSearchHandler" />
+		<parameter id="name" value="TagSearchHandler" />
+		<parameter id="description" value="TagHandler TagSearchHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+		<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="StatsHandler">
+		<parameter id="class"
+			value="de.d3web.we.core.semantic.StatsHandler" />
+		<parameter id="name" value="StatsHandler" />
+		<parameter id="description" value="TagHandler StatsHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+        
+</plugin>
