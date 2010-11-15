@@ -376,7 +376,7 @@ public class KnowWEEnvironment {
 		if (libDir.exists()) {
 			List<File> pluginFiles = new ArrayList<File>();
 			for (File file : libDir.listFiles()) {
-				if (file.getName().contains("jpf-plugin")) {
+				if (file.getName().contains("KnowWE-Plugin-") || file.getName().contains("d3web-Plugin-")) {
 					pluginFiles.add(file);
 				}
 			}
