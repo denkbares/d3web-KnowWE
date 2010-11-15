@@ -21,6 +21,7 @@
 package dummies;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -63,7 +64,13 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 			hackedPath += "/..";
 		}
 		hackedPath += "/KnowWE-Resources/src/main/webapp/KnowWEExtension/";
-		return hackedPath;
+		File file = new File(hackedPath);
+		try {
+			return file.getCanonicalPath();
+		}
+		catch (IOException e) {
+			throw new Error(e);
+		}
 	}
 
 	@Override
