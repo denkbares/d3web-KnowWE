@@ -67,20 +67,12 @@ import de.d3web.we.utils.KnowWEUtils;
  */
 public class DefaultMarkupOwlHandler extends OwlSubtreeHandler<DefaultMarkupType> {
 
-	private final DefaultMarkupType defaultMarkupType;
 	private URI conceptURI = null;
-
-	DefaultMarkupOwlHandler(DefaultMarkupType defaultMarkupType) {
-		this.defaultMarkupType = defaultMarkupType;
-	}
-
-	private String getMarkupName() {
-		return this.defaultMarkupType.getMarkup().getName();
-	}
 
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<DefaultMarkupType> section) {
-
+		DefaultMarkup defaultMarkupType = section.get().getMarkup();
+		String markupName = defaultMarkupType.getName();
 		if (SemanticCoreDelegator.getInstance() == null) return null;
 
 		IntermediateOwlObject io = new IntermediateOwlObject();
@@ -92,7 +84,7 @@ public class DefaultMarkupOwlHandler extends OwlSubtreeHandler<DefaultMarkupType
 			URI superConceptURI = helper.createURI("DefaultMarkup");
 
 			// create a new class for this markup
-			this.conceptURI = helper.createlocalURI(getMarkupName());
+			this.conceptURI = helper.createlocalURI(markupName);
 			io.addStatement(helper.createStatement(
 					this.conceptURI,
 					RDFS.SUBCLASSOF,
@@ -109,7 +101,7 @@ public class DefaultMarkupOwlHandler extends OwlSubtreeHandler<DefaultMarkupType
 					io, helper);
 
 			// add annotation blocks as literal "hasXYZ"
-			for (Annotation annotation : this.defaultMarkupType.getMarkup().getAnnotations()) {
+			for (Annotation annotation : defaultMarkupType.getAnnotations()) {
 				String name = annotation.getName();
 				addStringLiteral(bnode,
 						"has" + name, DefaultMarkupType.getAnnotation(section, name),
@@ -129,7 +121,7 @@ public class DefaultMarkupOwlHandler extends OwlSubtreeHandler<DefaultMarkupType
 		catch (RepositoryException e) {
 			Logger.getLogger("DefaultMarkup").log(Level.SEVERE,
 					"cannot create concept for default markup '" +
-							getMarkupName() + "'", e);
+							markupName + "'", e);
 			msgs.add(new SimpleMessageError(e.getMessage()));
 			return msgs;
 		}

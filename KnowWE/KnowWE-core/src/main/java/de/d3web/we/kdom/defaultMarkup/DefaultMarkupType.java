@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -24,11 +24,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import de.d3web.plugin.Extension;
+import de.d3web.plugin.PluginManager;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 /**
  * This class represents a section of the top-level default markup. That markup
@@ -49,26 +53,26 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
  * terminated.
  * <p>
  * <b>Examples:</b>
- *
+ * 
  * <pre>
  * %%rule &lt;condition&gt; --> &lt;action&gt;
- *
+ * 
  * %%rule // define 2 rules in one block
  *   &lt;condition&gt; --> &lt;action&gt;
  *   &lt;condition&gt; --> &lt;action&gt;
  * /%
- *
+ * 
  * %%rule // use annotations
  *   &lt;condition&gt; --> &lt;action&gt;
  *   &lt;condition&gt; --> &lt;action&gt;
  *   &#64;lazy: create
  * /%
  * </pre>
- *
+ * 
  * <p>
  * The default mark-up forms a KDOM of the following structure. Please not that
  * there might be any PlainText section in between at any level:
- *
+ * 
  * <pre>
  * Section&lt;DefaultMarkupType&gt; // %%rule
  * |
@@ -88,11 +92,13 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
  * |
  * +--...
  * </pre>
- *
+ * 
  * @author Volker Belli
- *
+ * 
  */
 public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
+
+	private final static String DEFAULTMARKUPSUBTREEHANDLER_EXTENSIONPOINT = "DefaultMarkupSubtreeHandler";
 
 	private final static int FLAGS =
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL;
@@ -130,6 +136,7 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 
 	private final DefaultMarkup markup;
 
+	@SuppressWarnings("unchecked")
 	public DefaultMarkupType(DefaultMarkup markup) {
 		this.markup = markup;
 		Pattern pattern = getPattern(markup.getName());
@@ -142,8 +149,11 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 		}
 		this.childrenTypes.add(new UnknownAnnotationType());
 		this.addSubtreeHandler(Priority.PRECOMPILE_HIGH, new DefaultMarkupSubtreeHandler(markup));
-		// TODO:Markus
-		// this.addSubtreeHandler(new DefaultMarkupOwlHandler(this));
+		Extension[] extensions = PluginManager.getInstance().getExtensions("KnowWEExtensionPoints",
+				DEFAULTMARKUPSUBTREEHANDLER_EXTENSIONPOINT);
+		for (Extension e : extensions) {
+			this.addSubtreeHandler((SubtreeHandler<? extends KnowWEObjectType>) e.getNewInstance());
+		}
 	}
 
 	@Override
@@ -165,7 +175,7 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	 * Returns the contents of the default content block of the specified
 	 * section. If the section is not of type "DefaultMarkup" an
 	 * IllegalArgumentException is thrown.
-	 *
+	 * 
 	 * @param section the section to take the content block from
 	 * @return the contents of the content block, if the section is not null. An
 	 *         empty string otherwise.
@@ -182,7 +192,7 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	 * Returns the contents section of the default content block of the
 	 * specified section. If the section is not of type "DefaultMarkup" an
 	 * IllegalArgumentException is thrown.
-	 *
+	 * 
 	 * @param section the section to take the content section from
 	 * @return the content section
 	 * @throws IllegalArgumentException if the specified section is not of
@@ -200,7 +210,7 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	 * name. If the section is not of type "DefaultMarkup" an
 	 * IllegalArgumentException is thrown. If there is no annotation section
 	 * with the specified name, null is returned.
-	 *
+	 * 
 	 * @param section the section to be searched
 	 * @param name the name of the annotation
 	 * @return the content string of the annotation
@@ -218,7 +228,7 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	 * section is not of type "DefaultMarkup" an IllegalArgumentException is
 	 * thrown. If there is no annotation section with the specified name, null
 	 * is returned.
-	 *
+	 * 
 	 * @param section the section to be searched
 	 * @param name the name of the annotation
 	 * @return the annotation section
@@ -244,7 +254,7 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	 * not of type "DefaultMarkup" an IllegalArgumentException is thrown. If
 	 * there is no annotation section with the specified name, an empty list is
 	 * returned.
-	 *
+	 * 
 	 * @param section the section to be searched
 	 * @param name the name of the annotation
 	 * @return the list of annotation sections
@@ -269,7 +279,7 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	/**
 	 * Returns the pattern to match a default mark-up section of a specified
 	 * name.
-	 *
+	 * 
 	 * @param name the name of the section ("%%&lt;name&gt;")
 	 * @return the pattern to match the complete section
 	 */
