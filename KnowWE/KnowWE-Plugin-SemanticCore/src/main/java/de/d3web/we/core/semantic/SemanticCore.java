@@ -54,7 +54,6 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.semantic.tagging.TaggingMangler;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
