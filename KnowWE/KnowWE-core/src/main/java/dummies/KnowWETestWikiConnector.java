@@ -55,7 +55,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	 */
 	public String getHackedPath() {
 		String hackedPath = System.getProperty("user.dir");
-		hackedPath = hackedPath.replaceAll("Research", "d3web-KnowWE");
+		hackedPath = hackedPath.replaceAll("Research", "KnowWE");
 		hackedPath += "/../KnowWE/src/main/webapp/KnowWEExtension/";
 		return hackedPath;
 	}
