@@ -24,44 +24,11 @@
 	</extension>
 	
 		<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
-		id="Extension">
-		<parameter id="class"
-			value="de.d3web.we.kdom.owlextension.Extension" />
-		<parameter id="name" value="Extension" />
-		<parameter id="description" value="KnowWEObjectType Extension" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="4" />
-		<parameter id="scope" value="root" />
-	</extension>
-	
-		<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
-		id="OwlProperties">
-		<parameter id="class"
-			value="de.d3web.we.kdom.owlextension.OwlProperties" />
-		<parameter id="name" value="OwlProperties" />
-		<parameter id="description" value="KnowWEObjectType OwlProperties" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="4" />
-		<parameter id="scope" value="root" />
-	</extension>
-	
-		<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="SemanticAnnotation">
 		<parameter id="class"
 			value="de.d3web.we.kdom.semanticAnnotation.SemanticAnnotation" />
 		<parameter id="name" value="SemanticAnnotation" />
 		<parameter id="description" value="KnowWEObjectType SemanticAnnotation" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="4" />
-		<parameter id="scope" value="root" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
-		id="Info">
-		<parameter id="class"
-			value="de.d3web.we.kdom.semanticFactSheet.Info" />
-		<parameter id="name" value="Info" />
-		<parameter id="description" value="KnowWEObjectType Info" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="4" />
 		<parameter id="scope" value="root" />
@@ -73,28 +40,6 @@
 			value="de.d3web.we.kdom.namespaces.Namespaces" />
 		<parameter id="name" value="Namespaces" />
 		<parameter id="description" value="KnowWEObjectType Namespaces" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="4" />
-		<parameter id="scope" value="root" />
-	</extension>
-	
-		<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
-		id="GroovySparqlRenderer">
-		<parameter id="class"
-			value="de.d3web.we.kdom.sparql.groovy.GroovySparqlRenderer" />
-		<parameter id="name" value="GroovySparqlRenderer" />
-		<parameter id="description" value="KnowWEObjectType GroovySparqlRenderer" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="scope" value="root" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
-		id="Sparql">
-		<parameter id="class"
-			value="de.d3web.we.kdom.sparql.Sparql" />
-		<parameter id="name" value="Sparql" />
-		<parameter id="description" value="KnowWEObjectType Sparql" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="4" />
 		<parameter id="scope" value="root" />
@@ -117,7 +62,6 @@
                 <parameter id="version"  value="0.0.1"/>
                 <parameter id="priority" value="5" />
         </extension>
-
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="DefaultMarkupSubtreeHandler"
 		id="DefaultMarkupOwlHandler">
