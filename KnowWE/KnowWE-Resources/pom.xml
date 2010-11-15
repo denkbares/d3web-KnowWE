@@ -142,31 +142,31 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-QuickInterview-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-QuickInterview</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-d3web-basic-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-d3web-basic</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-CI4KE-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-CI4KE</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Flowchart-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-Flowchart</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>	
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-TestSuite-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-TestSuite</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>	
@@ -186,7 +186,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Comment-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-Comment</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -205,7 +205,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Calendar-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-Calendar</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -224,7 +224,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Drools-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-Drools</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -243,7 +243,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Refactoring-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-Refactoring</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -262,7 +262,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-CI4KE-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-CI4KE</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -282,7 +282,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-HermesModule-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-HermesModule</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -301,7 +301,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Flowchart-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-Flowchart</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -320,7 +320,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-WISEC-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-WISEC</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -339,7 +339,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-FAQ-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-FAQ</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -358,7 +358,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-QuickInterview-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-QuickInterview</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -377,7 +377,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-TestSuite-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-TestSuite</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -396,7 +396,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-OneQuestionDialog-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-OneQuestionDialog</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -415,8 +415,8 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-TestcaseTable-jpf-plugin</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<artifactId>KnowWE-Plugin-TestcaseTable</artifactId>
+					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
@@ -434,7 +434,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-d3web-basic-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-d3web-basic</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -452,7 +452,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-SemanticCore-jpf-plugin</artifactId>
+					<artifactId>KnowWE-Plugin-SemanticCore</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -621,15 +621,6 @@
 			<version>1.1.2</version>
 			<type>jar</type>
 		</dependency>
-		<!-- <dependency> <groupId>de.uniwue.d3web</groupId> <artifactId>d3web-Dialog2</artifactId> 
-			<version>${d3webCoreVersion}</version> <type>war</type> <scope>runtime</scope> 
-			</dependency> -->
-		<dependency>
-			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>d3web-TiRex</artifactId>
-			<version>${project.version}</version>
-			<scope>runtime</scope>
-		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-core</artifactId>
@@ -678,31 +669,31 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>d3web-Persistence-Basic-jpf-plugin</artifactId>
+			<artifactId>d3web-Plugin-Persistence-Basic</artifactId>
 			<version>${d3webCoreVersion}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>d3web-SharedKnowledgePersistence-jpf-plugin</artifactId>
+			<artifactId>d3web-Plugin-SharedKnowledgePersistence</artifactId>
 			<version>${d3webCoreVersion}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-core-Plugins-jpf-plugin</artifactId>
+			<artifactId>KnowWE-Plugins-Core</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Plugin-d3web-jpf-plugin</artifactId>
+			<artifactId>KnowWE-Plugin-d3web</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Plugin-SemanticCore-jpf-plugin</artifactId>
+			<artifactId>KnowWE-Plugin-SemanticCore</artifactId>
 			<version>${project.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
@@ -710,30 +701,27 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-SemanticCore-Tests</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-JSPWiki-Connector-jpf-plugin</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
+			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Plugin-d3web-basic-jpf-plugin</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<artifactId>KnowWE-Plugin-d3web-basic</artifactId>
+			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Plugin-d3web-MarkupSet-jpf-plugin</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<artifactId>KnowWE-Plugin-d3web-MarkupSet</artifactId>
+			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 
 	</dependencies>
-	<properties>
-		<netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
-	</properties>
 </project>

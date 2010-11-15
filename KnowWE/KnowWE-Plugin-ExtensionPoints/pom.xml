@@ -9,7 +9,7 @@
 	</parent>
 	
 	<groupId>de.uniwue.d3web</groupId>
-	<artifactId>KnowWE-ExtensionPoints-jpf-plugin</artifactId>
+	<artifactId>KnowWE-Plugin-ExtensionPoints</artifactId>
 	<name>KnowWE-ExtensionPoints</name>
 	<version>0.2-SNAPSHOT</version>
 	

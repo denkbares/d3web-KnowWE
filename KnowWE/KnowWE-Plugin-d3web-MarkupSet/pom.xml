@@ -7,8 +7,8 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.uniwue.d3web</groupId>
-	<artifactId>KnowWE-Plugin-d3web-MarkupSet-jpf-plugin</artifactId>
-	<name>KnowWE-Plugin-d3web-MarkupSet-jpf-plugin</name>
+	<artifactId>KnowWE-Plugin-d3web-MarkupSet</artifactId>
+	<name>KnowWE Plugin: d3web-MarkupSet</name>
 	<version>0.2-SNAPSHOT</version>
 	<description>A set of markups for terminology, decision trees, rules and covering lists</description>
 
@@ -42,7 +42,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-core-Plugins-jpf-plugin</artifactId>
+			<artifactId>KnowWE-Plugin-Core</artifactId>
 			<version>0.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
@@ -55,7 +55,7 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Plugin-d3web-basic-jpf-plugin</artifactId>
+			<artifactId>KnowWE-Plugin-d3web-basicplugin</artifactId>
 			<version>0.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
@@ -74,7 +74,7 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Plugin-d3web-jpf-plugin</artifactId>
+			<artifactId>KnowWE-Plugin-d3web</artifactId>
 			<version>0.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>

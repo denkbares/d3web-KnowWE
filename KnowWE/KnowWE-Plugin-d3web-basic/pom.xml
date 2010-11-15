@@ -9,7 +9,7 @@
 	</parent>
 	
 	<groupId>de.uniwue.d3web</groupId>
-	<artifactId>KnowWE-Plugin-d3web-basic-jpf-plugin</artifactId>
+	<artifactId>KnowWE-Plugin-d3web-basic</artifactId>
 	<version>0.2-SNAPSHOT</version>
 	<name>KnowWE-Plugin: d3web-basic</name>
 	<description> Contains basic componentes for using KnowWE with d3web, including the management of knowledge bases and a panel for displaying the currently established, suggested, excluded solutions</description>
@@ -24,7 +24,7 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-core-Plugins-jpf-plugin</artifactId>
+			<artifactId>KnowWE-Plugin-Core</artifactId>
 			<version>${project.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
@@ -57,7 +57,7 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>d3web-XCL-jpf-plugin</artifactId>
+			<artifactId>d3web-Plugin-XCL</artifactId>
 			<version>0.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>

@@ -9,8 +9,8 @@
 	</parent>
 	
 	<groupId>de.uniwue.d3web</groupId>
-	<artifactId>KnowWE-JSPWiki-Connector-jpf-plugin</artifactId>
-	<name>KnowWE-JSPWiki-Connector-jpf-plugin</name>
+	<artifactId>KnowWE-JSPWiki-Connector</artifactId>
+	<name>KnowWE Plugin: JSPWiki-Connector</name>
 	<version>0.2-SNAPSHOT</version>
 	
 	<dependencies>
