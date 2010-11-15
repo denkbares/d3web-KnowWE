@@ -144,7 +144,7 @@
 		<module>KnowWE-Plugin-Flowchart</module>
 		<module>KnowWE-Plugin-QuickInterview</module>
 		<module>KnowWE-Plugin-d3web-basic</module>
-		<module>KnowWE-Plugin-KDOMParseUtils</module>
+		<module>KnowWE-KDOMParseUtils</module>
 		<module>KnowWE-Plugin-d3web-MarkupSet</module>
 		<module>KnowWE-Plugin-CI4KE</module>
 		<module>KnowWE-Plugin-SemanticCore</module>
