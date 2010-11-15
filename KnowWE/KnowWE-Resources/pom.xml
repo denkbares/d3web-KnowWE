@@ -4,15 +4,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<artifactId>d3web-KnowWE</artifactId>
+		<artifactId>KnowWE</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
 		<version>0.2-SNAPSHOT</version>
 	</parent>
 
 	<groupId>de.uniwue.d3web</groupId>
-	<artifactId>KnowWE</artifactId>
+	<artifactId>KnowWE-Resources</artifactId>
 	<packaging>war</packaging>
-	<name>KnowWE</name>
+	<name>KnowWE-Resources</name>
 	<version>0.2-SNAPSHOT</version>
 
 	<build>
