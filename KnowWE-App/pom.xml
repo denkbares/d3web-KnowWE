@@ -7,7 +7,7 @@
 		<artifactId>KnowWE</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
 		<version>0.2-SNAPSHOT</version>
-                <relativePath>.../KnowWE/pom.xml</relativePath>
+		<relativePath>.../KnowWE/pom.xml</relativePath>
 	</parent>
 
 	<groupId>de.uniwue.d3web</groupId>
@@ -115,13 +115,19 @@
 					<artifactId>KnowWE-Plugin-Flowchart</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
-				</dependency>	
+				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-TestSuite</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
-				</dependency>	
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Version</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
 			</dependencies>
 		</profile>
 
@@ -316,7 +322,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
 		<!-- TestSuite plugin -->
 		<profile>
 			<id>testsuite</id>
@@ -354,7 +360,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
 		<!-- TestcaseTable plugin -->
 		<profile>
 			<id>testcasetable-plugin</id>
@@ -405,6 +411,24 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-SemanticCore</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<!-- Version Plugin -->
+		<profile>
+			<id>KnowWE-Plugin-Version</id>
+			<activation>
+				<property>
+					<name>version-plugin</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Version</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
