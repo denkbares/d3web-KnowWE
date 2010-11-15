@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -24,10 +24,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.renderer.StyleRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.rendering.StyleRenderer;
+import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
 public class UnknownAnnotationType extends DefaultAbstractKnowWEObjectType {
 
@@ -60,7 +60,7 @@ public class UnknownAnnotationType extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * Returns the name of the underlying annotation.
-	 * 
+	 *
 	 * @return the annotation's name
 	 */
 	public static String getName(Section<?> section) {
@@ -69,7 +69,7 @@ public class UnknownAnnotationType extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * Returns the content of the underlying annotation.
-	 * 
+	 *
 	 * @return the annotation's name
 	 */
 	public static String getContent(Section<?> section) {
@@ -79,7 +79,7 @@ public class UnknownAnnotationType extends DefaultAbstractKnowWEObjectType {
 	/**
 	 * Returns the content of the underlying annotation including the declring
 	 * name and the declared content.
-	 * 
+	 *
 	 * @return the annotation's name
 	 */
 	public static String getDeclaration(Section<?> section) {
