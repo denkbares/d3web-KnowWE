@@ -137,15 +137,15 @@
 		<d3webCoreVersion>0.2-SNAPSHOT</d3webCoreVersion>
 	</properties>
 	<modules>
-		<module>KnowWE</module>
+		<module>KnowWE-Resources</module>
 		<module>KnowWE-core</module>
-		<module>KnowWE-ExtensionPoints-jpf-plugin</module>
-		<module>KnowWE-JSPWiki-Connector-jpf-plugin</module>
-		<module>KnowWE-Plugin-Flowchart-jpf-plugin</module>
-		<module>KnowWE-Plugin-QuickInterview-jpf-plugin</module>
-		<module>KnowWE-Plugin-d3web-basic-jpf-plugin</module>
+		<module>KnowWE-Plugin-ExtensionPoints</module>
+		<module>KnowWE-Plugin-JSPWiki-Connector</module>
+		<module>KnowWE-Plugin-Flowchart</module>
+		<module>KnowWE-Plugin-QuickInterview</module>
+		<module>KnowWE-Plugin-d3web-basic</module>
 		<module>KnowWE-Plugin-KDOMParseUtils</module>
-		<module>KnowWE-Plugin-d3web-MarkupSet-jpf-plugin</module>
+		<module>KnowWE-Plugin-d3web-MarkupSet</module>
 		<module>KnowWE-GlobalTestUtils</module>
 	</modules>
 	<repositories>
@@ -191,9 +191,9 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/trunk/d3web-KnowWE</connection>
-		<developerConnection>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/trunk/d3web-KnowWE</developerConnection>
-		<url>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/trunk/d3web-KnowWE</url>
+		<connection>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/trunk/KnowWE</connection>
+		<developerConnection>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/trunk/KnowWE</developerConnection>
+		<url>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/trunk/KnowWE</url>
 	</scm>
 	<organization>
 		<name>Universität Würzburg</name>
