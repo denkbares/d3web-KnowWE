@@ -8,8 +8,8 @@
 	<version>0.2-SNAPSHOT</version>
 	<url>http://www.d3web.de/</url>
 	<issueManagement>
-		<system>Trac</system>
-		<url>https://isci.informatik.uni-wuerzburg.de/trac/</url>
+		<system>Bugzilla</system>
+		<url>https://tickets.denkbares.com/</url>
 	</issueManagement>
 	<ciManagement>
 		<system>Hudson</system>
@@ -87,12 +87,12 @@
 				<configuration>
 					<generatePdf>true</generatePdf>
 					<generateHtml>true</generateHtml>
-					<generateXml>true</generateXml>				
+					<generateXml>true</generateXml>
 					<license><![CDATA[nrqQXAFjxdRRPQOSKOOEOvHIrnNhOJArLOsnknIHocNlqk
 									mi2KTnu3O2OFOgc7xNpMqgmU2KEa3EV2PMKJyrvsDdSe<i
 									ormQsXMMrrrOPQQPmMqSwNNQnmqNpQRMOQsvvxwVxTuSOO
 									nRmnmqmUUnourvpummmmmmUUnourvpummmmmmUUBkltN5U
-									Unmmmm]]></license>				
+									Unmmmm]]></license>
 				</configuration>
 			</plugin>
 		</plugins>
