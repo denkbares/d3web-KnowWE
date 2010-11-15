@@ -43,19 +43,19 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Plugin-d3web-jpf-plugin</artifactId>
+			<artifactId>KnowWE-Plugin-d3web</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-JSPWiki-Connector-jpf-plugin</artifactId>
+			<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Plugin-TestSuite-jpf-plugin</artifactId>
+			<artifactId>KnowWE-Plugin-TestSuite</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
