@@ -212,8 +212,10 @@ public class QuickInterviewRenderer {
 			}
 
 			if (qcontainerchild instanceof QContainer) {
-				getInterviewElementsRenderingRecursively(
-						qcontainerchild, buffer, processedTOs, depth, init);
+				if (!processedTOs.contains(qcontainerchild)) {
+					getInterviewElementsRenderingRecursively(
+							qcontainerchild, buffer, processedTOs, depth, init);
+				}
 			}
 			else if (qcontainerchild instanceof Question) {
 				getQuestionsRecursively((Question) qcontainerchild, buffer,
