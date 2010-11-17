@@ -20,7 +20,6 @@
 
 package de.d3web.we.flow;
 
-import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -46,7 +45,9 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer {
 		String topic = sec.getArticle().getTitle();
 		String web = sec.getArticle().getWeb();
 
-		String content = createPreview(article, sec, user, web, topic, string);
+		StringBuilder content = new StringBuilder();
+		DefaultMarkupRenderer.renderMessages(article, sec, content);
+		content.append(createPreview(article, sec, user, web, topic));
 
 		// string.append("%%collapsebox-closed \n! ");
 		// string.append(title);
@@ -56,10 +57,10 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer {
 		String header = DefaultMarkupRenderer.renderHeader(
 				"KnowWEExtension/flowchart/icon/flowchart24.png", title);
 		DefaultMarkupRenderer.renderDefaultMarkupStyled(
-				header, content, sectionID, tools, string);
+				header, content.toString(), sectionID, tools, string);
 	}
 
-	private String createPreview(KnowWEArticle article, Section sec, KnowWEUserContext user, String web, String topic, StringBuilder builder) {
+	private String createPreview(KnowWEArticle article, Section<?> sec, KnowWEUserContext user, String web, String topic) {
 		// dirty xml parsing hack for quick results
 		String xml = sec.getOriginalText();
 		int startPos = xml.lastIndexOf("<preview mimetype=\"text/html\">");
@@ -107,30 +108,6 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer {
 			DelegateRenderer.getInstance().render(article, sec, user, buffy);
 			return buffy.toString();
 		}
-	}
-
-	private String generateQuickEditLink(String topic, String id, String web2, String user) {
-		String icon = " <img src=KnowWEExtension/images/pencil.png title='Start Flowchart Editor' onclick='setQuickEditFlag(\""
-				+ id
-				+ "\",\""
-				+ topic
-				+ "\");window.open(\""
-				+ createEditURL(id, topic)
-				+ "\", \""
-				+ id.replaceAll("[^\\w]", "_") + "\").focus();'></img>";
-
-		return KnowWEUtils
-				.maskHTML("<a>" + icon + "</a>");
-
-	}
-
-	private String createEditURL(String flowchartNodeID, String topic) {
-		return "FlowEditor.jsp?kdomID=" + flowchartNodeID + "&" + KnowWEAttributes.TOPIC + "="
-				+ topic;
-	}
-
-	protected String wrappContent(String string) {
-		return "\n{{{" + string + "}}}\n";
 	}
 
 }
