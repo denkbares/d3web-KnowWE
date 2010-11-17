@@ -531,8 +531,14 @@ public class KnowWEUtils {
 	}
 
 	public static String trimQuotes(String text) {
+		
 		String trimmed = text.trim();
 
+		if (trimmed.equals("\""))
+			return "";
+
+		// Heck, '"' starts AND ends with '"', but then this throws
+		// an StringIndexOutOfBoundsException because 1 > 0
 		if (trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
 			return trimmed.substring(1, trimmed.length() - 1).trim();
 		}
