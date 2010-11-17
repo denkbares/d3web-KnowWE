@@ -24,8 +24,11 @@ import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.tools.Tool;
+import de.d3web.we.tools.ToolUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -34,27 +37,25 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer {
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 
-		String title = "Diagnostic Flow '" + FlowchartType.getFlowchartName(sec) + "' ";
+		String sectionID = sec.getID();
+		Tool[] tools = ToolUtils.getTools(article, sec, user);
+
+		String name = FlowchartType.getFlowchartName(sec);
+		String title = "Flowchart: " + name;
 
 		String topic = sec.getArticle().getTitle();
 		String web = sec.getArticle().getWeb();
 
-		// String editLink = generateQuickEditLink(topic,sec.getId(), web,
-		// user.getUsername());
-		String content = createPreview(article, sec, user, web, topic, string); // wrappContent(SpecialDelegateRenderer.getInstance().render(sec,
-		// user,
-		// web,
-		// topic));
+		String content = createPreview(article, sec, user, web, topic, string);
 
-		// string.append("%%collapsebox-closed \n! " + title + editLink + " \n"
-		// + content + "/%\n");
-		string.append("%%collapsebox-closed \n! ");
-		string.append(title);
+		// string.append("%%collapsebox-closed \n! ");
+		// string.append(title);
 		// string.append(" \n");
-		// string.append(editLink);
-		string.append(" \n");
-		string.append(content);
-		string.append("/%\n");
+		// string.append(content);
+		// string.append("/%\n");
+		String header = DefaultMarkupRenderer.renderHeader(null, title);
+		DefaultMarkupRenderer.renderDefaultMarkupStyled(
+				header, content, sectionID, tools, string);
 	}
 
 	private String createPreview(KnowWEArticle article, Section sec, KnowWEUserContext user, String web, String topic, StringBuilder builder) {
@@ -63,7 +64,7 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer {
 		int startPos = xml.lastIndexOf("<preview mimetype=\"text/html\">");
 		int endPos = xml.lastIndexOf("</preview>");
 		if (startPos >= 0 && endPos >= 0) {
-			String preview = xml.substring(startPos + 43, endPos - 8);
+			String preview = xml.substring(startPos + 43, endPos - 8).trim();
 			return KnowWEUtils
 					.maskHTML(
 					"<div style='cursor: pointer;' " +
@@ -72,7 +73,7 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer {
 							+ "\", \""
 							+ sec.getID().replaceAll("[^\\w]", "_")
 							+ "\")'>"
-							+ "\r\n"
+							// + "\r\n"
 							+
 										// sec.getID() contains a '/' which is
 										// not allowed. FF
@@ -81,32 +82,32 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer {
 										// "onclick='window.open(\""+createEditURL(sec.getId(),
 										// topic)+"\", \""+sec.getId()+"\")'>"
 										// +"\r\n" +
-										"<link rel='stylesheet' type='text/css' href='cc/kbinfo/dropdownlist.css'></link>"
-							+ "\r\n"
+							"<link rel='stylesheet' type='text/css' href='cc/kbinfo/dropdownlist.css'></link>"
+							// + "\r\n"
 							+
 							"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objectselect.css'></link>"
-							+ "\r\n"
+							// + "\r\n"
 							+
 							"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objecttree.css'></link>"
-							+ "\r\n"
+							// + "\r\n"
 							+
 							"<link rel='stylesheet' type='text/css' href='cc/flow/flowchart.css'></link>"
-							+ "\r\n"
+							// + "\r\n"
 							+
 							"<link rel='stylesheet' type='text/css' href='cc/flow/floweditor.css'></link>"
-							+ "\r\n"
+							// + "\r\n"
 							+
 							"<link rel='stylesheet' type='text/css' href='cc/flow/guard.css'></link>"
-							+ "\r\n"
+							// + "\r\n"
 							+
 							"<link rel='stylesheet' type='text/css' href='cc/flow/node.css'></link>"
-							+ "\r\n"
+							// + "\r\n"
 							+
 							"<link rel='stylesheet' type='text/css' href='cc/flow/nodeeditor.css'></link>"
-							+ "\r\n"
+							// + "\r\n"
 							+
 							"<link rel='stylesheet' type='text/css' href='cc/flow/rule.css'></link>"
-							+ "\r\n"
+							// + "\r\n"
 							+
 							"<style type='text/css'>div, span, a { cursor: pointer !important; }</style>"
 							+
@@ -117,12 +118,12 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer {
 			StringBuilder buffy = new StringBuilder();
 			buffy.append("\n{{{");
 			buffy.append(KnowWEUtils.maskHTML(
-			"<div style='cursor: pointer;' " +
-					"onclick='window.open(\""
-					+ createEditURL(sec.getID(), topic)
-					+ "\", \""
-					+ sec.getID().replaceAll("[^\\w]", "_")
-					+ "\")'>"));
+					"<div style='cursor: pointer;' " +
+							"onclick='window.open(\""
+							+ createEditURL(sec.getID(), topic)
+							+ "\", \""
+							+ sec.getID().replaceAll("[^\\w]", "_")
+							+ "\")'>"));
 			DelegateRenderer.getInstance().render(article, sec, user, buffy);
 			buffy.append(KnowWEUtils.maskHTML(" </div>"));
 			buffy.append("}}}\n");
