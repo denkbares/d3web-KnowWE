@@ -53,7 +53,8 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer {
 		// string.append(" \n");
 		// string.append(content);
 		// string.append("/%\n");
-		String header = DefaultMarkupRenderer.renderHeader(null, title);
+		String header = DefaultMarkupRenderer.renderHeader(
+				"KnowWEExtension/flowchart/icon/flowchart24.png", title);
 		DefaultMarkupRenderer.renderDefaultMarkupStyled(
 				header, content, sectionID, tools, string);
 	}
@@ -67,21 +68,8 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer {
 			String preview = xml.substring(startPos + 43, endPos - 8).trim();
 			return KnowWEUtils
 					.maskHTML(
-					"<div style='cursor: pointer;' " +
-							"onclick='window.open(\""
-							+ createEditURL(sec.getID(), topic)
-							+ "\", \""
-							+ sec.getID().replaceAll("[^\\w]", "_")
-							+ "\")'>"
-							// + "\r\n"
+					"<div style='cursor: pointer;'>"
 							+
-										// sec.getID() contains a '/' which is
-										// not allowed. FF
-										// ignores it, IE doesnt open a new
-										// window
-										// "onclick='window.open(\""+createEditURL(sec.getId(),
-										// topic)+"\", \""+sec.getId()+"\")'>"
-										// +"\r\n" +
 							"<link rel='stylesheet' type='text/css' href='cc/kbinfo/dropdownlist.css'></link>"
 							// + "\r\n"
 							+
@@ -116,17 +104,7 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer {
 		}
 		else {
 			StringBuilder buffy = new StringBuilder();
-			buffy.append("\n{{{");
-			buffy.append(KnowWEUtils.maskHTML(
-					"<div style='cursor: pointer;' " +
-							"onclick='window.open(\""
-							+ createEditURL(sec.getID(), topic)
-							+ "\", \""
-							+ sec.getID().replaceAll("[^\\w]", "_")
-							+ "\")'>"));
 			DelegateRenderer.getInstance().render(article, sec, user, buffy);
-			buffy.append(KnowWEUtils.maskHTML(" </div>"));
-			buffy.append("}}}\n");
 			return buffy.toString();
 		}
 	}

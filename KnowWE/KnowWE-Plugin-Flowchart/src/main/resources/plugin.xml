@@ -88,5 +88,16 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="FlowchartEditProvider">
+		<parameter id="class" value="de.d3web.we.flow.type.FlowchartEditProvider" />
+		<parameter id="name" value="FlowchartEditProvider" />
+		<parameter id="description"
+			value="Offers a button to grapically edit the flowchart in a new window." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="/FlowchartType" />
+	</extension>
 	
 </plugin>
