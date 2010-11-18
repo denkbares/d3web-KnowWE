@@ -1642,7 +1642,9 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 				// a message should know its origin:
 				if (msgs != null) {
 					for (KDOMReportMessage m : msgs) {
-						m.setSection(this);
+						if (m != null) {
+							m.setSection(this);
+						}
 					}
 				}
 				KDOMReportMessage.storeMessages(article, this, handler.getClass(), msgs);
