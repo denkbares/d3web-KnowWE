@@ -4,7 +4,6 @@
 	
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
-		<import plugin-id="KnowWE-Plugin-d3web" />
 	</requires>
 	
 	<runtime>
