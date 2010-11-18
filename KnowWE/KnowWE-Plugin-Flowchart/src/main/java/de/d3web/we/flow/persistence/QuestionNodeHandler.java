@@ -28,15 +28,14 @@ import java.util.List;
 
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.diaFlux.NoopAction;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.indication.ActionIndication;
 import de.d3web.indication.ActionInstantIndication;
+import de.d3web.indication.ActionNextQASet;
 import de.d3web.report.Message;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
 import de.d3web.we.flow.type.ActionType;
-import de.d3web.we.flow.type.StartType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
@@ -86,7 +85,7 @@ public class QuestionNodeHandler extends AbstractNodeHandler {
 
 		qasets.add(findQuestion);
 
-		ActionIndication action;
+		ActionNextQASet action;
 		if (actionString.startsWith("ERFRAGE")) action = new ActionIndication();
 		else action = new ActionInstantIndication();
 
