@@ -197,5 +197,10 @@ public abstract class KDOMReportMessage {
 		}
 		return false;
 	}
+	
+	@Override
+	public String toString() {
+		return getVerbalization();
+	}
 
 }
