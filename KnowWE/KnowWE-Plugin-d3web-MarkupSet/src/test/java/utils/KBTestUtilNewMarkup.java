@@ -153,7 +153,6 @@ public class KBTestUtilNewMarkup {
 		p1.setName("Mechanical problem");
 		createdKB.getRootSolution().addChild(p1);
 		createdKB.add(p1);
-		p1.getInfoStore().addValue(MMInfo.DESCRIPTION, "some problem description");
 
 		Solution p2 = new Solution("P2");
 		p2.setName("Damaged idle speed system");

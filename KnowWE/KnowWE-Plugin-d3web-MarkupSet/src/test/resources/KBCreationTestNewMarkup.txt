@@ -61,10 +61,6 @@ Technical Examinations
 - "Idle speed system o.k.?" [yn]
 %
 
-<AttributeTable-section>
-| Mechanical problem | description | description | some problem description
-</AttributeTable-section>
-
 %%Rule
 // Rule R8
 IF "Average mileage /100km" > 0 AND KNOWN["Real mileage  /100km"]
