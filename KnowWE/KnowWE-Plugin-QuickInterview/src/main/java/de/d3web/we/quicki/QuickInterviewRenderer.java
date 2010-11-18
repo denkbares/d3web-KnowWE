@@ -44,6 +44,7 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
+import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
@@ -561,7 +562,7 @@ public class QuickInterviewRenderer {
 			rangeMax = range.getRight();
 			rangeMin = range.getLeft();
 		}
-		Object questionUnit = q.getInfoStore().getValue(BasicProperties.UNIT);
+		Object questionUnit = q.getInfoStore().getValue(MMInfo.UNIT);
 		if (questionUnit != null) {
 			unit = questionUnit.toString();
 		}

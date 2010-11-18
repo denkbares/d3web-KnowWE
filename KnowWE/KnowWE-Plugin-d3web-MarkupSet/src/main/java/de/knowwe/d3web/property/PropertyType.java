@@ -58,7 +58,7 @@ public class PropertyType extends DefaultAbstractKnowWEObjectType {
 
 		// Content
 		ContentDefinition cd = new ContentDefinition();
-		cd.setSectionFinder(new RegexSectionFinder(Pattern.compile("=" + content), 1));
+		cd.setSectionFinder(new RegexSectionFinder(Pattern.compile("=\\s*" + content), 1));
 		this.childrenTypes.add(cd);
 
 		// Property

@@ -250,7 +250,7 @@ public class KBTestUtilNewMarkup {
 		Question q1 = createdKBM.createQuestionNum("Q16", "Average mileage /100km", qc1);
 		// q1.setName("Average mileage /100km");
 		InfoStore infoStore = q1.getInfoStore();
-		infoStore.addValue(BasicProperties.UNIT, "liter");
+		infoStore.addValue(MMInfo.UNIT, "liter");
 		q1.getInfoStore().addValue(BasicProperties.QUESTION_NUM_RANGE, new NumericalInterval(0, 30));
 
 		// Add question:

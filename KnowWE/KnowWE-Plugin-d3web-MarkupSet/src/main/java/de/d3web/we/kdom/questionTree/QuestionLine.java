@@ -416,7 +416,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 											.getString("KnowWE.questiontree.onlyfornumerical"),
 									this.getClass()));
 						}
-						question.getInfoStore().addValue(BasicProperties.UNIT, s.get().getUnit(s));
+						question.getInfoStore().addValue(MMInfo.UNIT, s.get().getUnit(s));
 						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
 								D3webModule.getKwikiBundle_d3web()
 										.getString("KnowWE.questiontree.setunit")));
