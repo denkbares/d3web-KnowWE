@@ -21,6 +21,7 @@ package de.knowwe.d3web.property;
 import java.util.Collection;
 import java.util.Locale;
 
+import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -31,6 +32,7 @@ import de.d3web.we.object.ContentDefinition;
 import de.d3web.we.object.IDObjectReference;
 import de.d3web.we.object.LocaleDefinition;
 import de.d3web.we.object.PropertyReference;
+import de.d3web.we.utils.MessageUtils;
 
 /**
  * Parses a line defining a property
@@ -52,14 +54,35 @@ public class PropertyReviseSubtreeHandler extends SubtreeHandler<PropertyType> {
 		Property<?> property = propertySection.get().getTermObject(article, propertySection);
 		Section<LocaleDefinition> localeSection = s.findSuccessor(LocaleDefinition.class);
 		Section<ContentDefinition> contentSection = s.findSuccessor(ContentDefinition.class);
-		if (contentSection == null) return null;
+		if (contentSection == null) return MessageUtils.syntaxErrorAsList("Property value is missing for property "
+				+ property);
 		String content = contentSection.get().getTermObject(article, contentSection);
-		if (localeSection != null) {
-			Locale locale = localeSection.get().getTermObject(article, localeSection);
-			object.getInfoStore().addValue(property, locale, content);
+		if (content == null || content.trim().isEmpty()) {
+			return MessageUtils.syntaxErrorAsList("Property value is missing for property "
+					+ property);
 		}
-		else {
-			object.getInfoStore().addValue(property, content);
+		Locale locale = InfoStore.NO_LANGUAGE;
+		if (localeSection != null) {
+			locale = localeSection.get().getTermObject(article, localeSection);
+		}
+		Object value;
+		try {
+			value = property.parseValue(content);
+		}
+		catch (NoSuchMethodException e) {
+			return MessageUtils.syntaxErrorAsList("The property " + property
+						+ " is not supported by the %%Propery markup.");
+		}
+		catch (IllegalArgumentException e) {
+			return MessageUtils.syntaxErrorAsList("The property value \"" + content
+						+ "\" is not compatible with the property " + property);
+		}
+		try {
+			object.getInfoStore().addValue(property, locale, value);
+		}
+		catch (IllegalArgumentException e) {
+			return MessageUtils.syntaxErrorAsList("The property " + property +
+						" cannot be localized.");
 		}
 		return null;
 	}
