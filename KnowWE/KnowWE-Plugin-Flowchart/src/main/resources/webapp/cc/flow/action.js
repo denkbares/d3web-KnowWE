@@ -1057,16 +1057,15 @@ ActionPane.prototype.render = function() {
 	var valueText = null;
 	var valueError = null;
 	//Hack for displaying waiting time (startnode) in Wait Nodes
-	valueText = this.action.getDisplayText();
-	if (this.action.isFlowCall()) {
-		if (this.action.expression.startsWith('CALL[Warten') || this.action.expression.startsWith('CALL[Wait'))
-			valueText = this.action.getDisplayText();
-		else
-			valueText = null;
-	} else if (this.action.isIndication()) {
+	valueText = this.action.getDisplayText(); // zeigt ZusatzInfo an (fragen/ immer fragen,...)
+//	if (this.action.isFlowCall()) {
+//		if (this.action.expression.startsWith('CALL[Warten') || this.action.expression.startsWith('CALL[Wait'))
+//			valueText = this.action.getDisplayText();
+//		else
+//			valueText = null;
+//	} else if (this.action.isIndication()) {
 //		valueText = this.action.getDisplayText(); // zeigt ZusatzInfo an (fragen/ immer fragen,...)
-		valueText = ' ';
-	}
+//	}
 	
 	valueError = this.action.getError();
 

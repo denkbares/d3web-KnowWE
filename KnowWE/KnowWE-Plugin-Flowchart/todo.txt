@@ -1,0 +1,4 @@
+exception bei doppelklick auf prototyp
+
+leere menge an guards bei snapshot
+

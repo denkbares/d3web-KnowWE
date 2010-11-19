@@ -10,7 +10,7 @@ function NodeEditor(parent, nodeModel, style, onSuccess) {
 	this.tabItems = null;
 	
 	this.setVisible(true);
-	this.selectTab(nodeModel.start ? 1 : nodeModel.exit ? 2 : nodeModel.comment ? 3: 0);
+	this.selectTab(nodeModel.start ? 1 : nodeModel.exit ? 2 : nodeModel.comment ? 3: nodeModel.snapshot ? 4: 0);
 }
 
 // register key listener to handle ok / cancel hot keys 
@@ -65,6 +65,9 @@ NodeEditor.prototype.handleOk = function() {
 	}
 	else if (this.tabItems[3].className == 'commentTab_selected') {
 		this.nodeModel.comment = this.tabPanes[3].childNodes[2].value;
+	}
+	else if (this.tabItems[4].className == 'snapshotTab_selected') {
+		this.nodeModel.snapshot = this.tabPanes[4].childNodes[2].value;
 	}
 	else {
 		throw "invalid/unexpected tab pane layout";
@@ -150,12 +153,14 @@ NodeEditor.prototype.render = function() {
 		Builder.node('span', {className: 'actionTab', onclick: 'this.parentNode.parentNode.__nodeEditor.selectTab(0);'}),
 		Builder.node('span', {className: 'startTab', onclick: 'this.parentNode.parentNode.__nodeEditor.selectTab(1);'}),
 		Builder.node('span', {className: 'exitTab', onclick: 'this.parentNode.parentNode.__nodeEditor.selectTab(2);'}),
-	Builder.node('span', {className: 'commentTab', onclick: 'this.parentNode.parentNode.__nodeEditor.selectTab(3);'})];
+	Builder.node('span', {className: 'commentTab', onclick: 'this.parentNode.parentNode.__nodeEditor.selectTab(3);'}),
+	Builder.node('span', {className: 'snapshotTab', onclick: 'this.parentNode.parentNode.__nodeEditor.selectTab(4);'})];
 	this.tabPanes = [
 		this.renderActionPane(),
 		this.renderStartPane(),
 		this.renderExitPane(),
-		this.renderCommentPane()];
+		this.renderCommentPane(),
+		this.renderSnapshotPane()];
 		
 	var dom = Builder.node('div', {
 		className: 'NodeEditor',
@@ -231,6 +236,23 @@ NodeEditor.prototype.renderExitPane = function() {
 			value: this.nodeModel.exit ? this.nodeModel.exit : ''
 			})
 	]);
+	return dom;
+}
+
+NodeEditor.prototype.renderSnapshotPane = function() {
+	var dom = Builder.node('div', {
+		className: 'snapshotPane',
+		style: 'display: none;'
+	}, 
+	[
+	 'Snapshot:',
+	 Builder.node('br'),
+	 Builder.node('input', {
+		 className: 'value', 
+		 type: 'text',
+		 value: this.nodeModel.snapshot ? this.nodeModel.snapshot : ''
+	 })
+	 ]);
 	return dom;
 }
 

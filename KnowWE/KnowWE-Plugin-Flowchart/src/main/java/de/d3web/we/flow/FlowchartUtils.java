@@ -52,7 +52,7 @@ public class FlowchartUtils {
 	}
 
 	public static String createPreview(String version) {
-		return "<div style='zoom: 50%; cursor: pointer;'>" +
+		return "<div style='zoom: 50%'>" +
 				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/dropdownlist.css'></link>" +
 				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objectselect.css'></link>" +
 				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objecttree.css'></link>" +

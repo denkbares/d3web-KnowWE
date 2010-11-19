@@ -1,3 +1,25 @@
+.Rule {
+	position:absolute;
+	left: 0px;
+	top: 0px;
+	overflow: visible;
+}
+
+.Rule .added {
+	position:absolute;
+	background-color: #00BB00;
+	border-color: #00BB00;
+	border-width: 2px; 
+	border-style: solid;
+}
+
+.Rule .removed {
+	position:absolute;
+	background-color: #FF0000;
+	border-color: #FF0000;
+	border-width: 2px; 
+	border-style: solid;
+}
 
 .Rule .guard, .Rule .guard {
 	font-family: Arial, Helvetica;

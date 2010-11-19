@@ -198,6 +198,17 @@
 						</div>			
 					</div>			
 				</div>			
+				<div style="padding: 5px;">
+					<div id=snapshot_prototype class=NodePrototype>
+						<div class=Node style="position: relative; width: 120px;">
+							<div class=snapshot>
+								<div class=decorator></div>
+								<div class=title>new snapshot</div>
+								<div class=text>drag this element to add a new snapshot.</div>
+							</div>
+						</div>			
+					</div>			
+				</div>			
 			</div>
 		</div>
 		<div id=prototype_bottom class=rollup_bottom></div>
@@ -417,12 +428,12 @@
 	new Draggable('start_prototype', { ghosting: true, revert: true, reverteffect: revertIt, starteffect: null });
 	new Draggable('exit_prototype', { ghosting: true, revert: true, reverteffect: revertIt, starteffect: null });
 	new Draggable('comment_prototype', { ghosting: true, revert: true, reverteffect: revertIt, starteffect: null });
-//	new Draggable('fork_prototype', { ghosting: true, revert: true, reverteffect: revertIt, starteffect: null });
+	new Draggable('snapshot_prototype', { ghosting: true, revert: true, reverteffect: revertIt, starteffect: null });
 	$('decision_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {action: { markup: 'KnOffice', expression: ''}}); };
 	$('start_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {start: 'start'}); };
 	$('exit_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {exit: 'done'}); };
 	$('comment_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {comment: 'Kommentar'}); };
-//	$('fork_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {fork: 'fork'}); };
+	$('snapshot_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {snapshot: 'Snapshot'}); };
 	
 	function createActionNode(flowchart, left, top, nodeModel) {
 		nodeModel.position = {left: left, top: top};

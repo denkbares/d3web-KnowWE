@@ -453,12 +453,12 @@ Flowchart.prototype.toPreviewHTML = function(node) {
 	// for nodes we have a problem: padding is not taken nto consideration
 	// therefore allow width+padding not to be more than parent's width - 2
 
-	if (node.parentNode.hasClassName('Node') && (node.hasClassName('start') || node.hasClassName('exit') || node.hasClassName('flowchart') || node.hasClassName('action') || node.hasClassName('question') || node.hasClassName('comment'))) {
+	if (node.parentNode.hasClassName('Node') && (node.hasClassName('start') || node.hasClassName('exit') || node.hasClassName('flowchart') || node.hasClassName('action') || node.hasClassName('question') || node.hasClassName('comment') || node.hasClassName('snapshot'))) {
 		size.width = Element.getWidth(node.parentNode)-14;
 		size.height += 2; 
 	}
-	if (node.parentNode.hasClassName('Node') && (node.hasClassName('start') || node.hasClassName('exit') || node.hasClassName('comment'))) {
-		if (node.hasClassName('exit'))
+	if (node.parentNode.hasClassName('Node') && (node.hasClassName('start') || node.hasClassName('exit') || node.hasClassName('comment') || node.hasClassName('snapshot'))) {
+		if (node.hasClassName('exit') || node.hasClassName('snapshot'))
 			size.width += 2;
 		else 
 			size.width += 4;

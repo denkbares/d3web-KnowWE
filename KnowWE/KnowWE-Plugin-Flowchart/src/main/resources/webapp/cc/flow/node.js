@@ -247,13 +247,11 @@ Node.prototype.render = function() {
 			}.bind(this)
 		);
 	}
-	else if (this.nodeModel.fork) {
-		contentNode.className = 'fork';
-		contentNode.appendChild(Builder.node('div', {className: 'title'}, ['fork']));
-	
+	else if (this.nodeModel.snapshot) {
+		contentNode.className = 'snapshot';
+		contentNode.appendChild(Builder.node('div', {className: 'title'}, [this.nodeModel.snapshot]));
+		
 	}
-	
-	
 	else {
 		contentNode.className = 'decision';
 		contentNode.appendChild(Builder.node('div', {className: 'text'}, ['error: unexpected node model']));
@@ -365,6 +363,9 @@ Node.prototype.toXML = function() {
 	else if (this.nodeModel.comment) {
 		xml += '\t\t<comment>'+this.nodeModel.comment.escapeXML()+'</comment>\n';
 	}
+	else if (this.nodeModel.snapshot) {
+		xml += '\t\t<snapshot>'+this.nodeModel.snapshot.escapeXML()+'</snapshot>\n';
+	}
 	else if (this.nodeModel.action) {
 		var action = this.nodeModel.action;
 		xml += '\t\t<action markup="'+action.markup+'">' + 
@@ -382,7 +383,8 @@ Node.createFromXML = function(flowchart, xmlDom, pasteOptions) {
 		position: { left: 0, top: 0 },
 		start: KBInfo._getNodeValueIfExists(xmlDom, 'start'),
 		exit: KBInfo._getNodeValueIfExists(xmlDom, 'exit'),
-		comment: KBInfo._getNodeValueIfExists(xmlDom, 'comment')
+		comment: KBInfo._getNodeValueIfExists(xmlDom, 'comment'),
+		snapshot: KBInfo._getNodeValueIfExists(xmlDom, 'snapshot')
 	};
 	
 	var posDoms = xmlDom.getElementsByTagName('position');
