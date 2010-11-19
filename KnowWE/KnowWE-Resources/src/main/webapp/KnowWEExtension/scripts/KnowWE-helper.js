@@ -56,7 +56,8 @@ KNOWWE.helper = function(){
                     var r = a.slice(i + 1);
                     a.length = i;
                     if(r.length > 0)
-                        return a.push.apply( a, r );
+                        a.push.apply(a, r );
+                        return a;
                 }
             }
             return a;
@@ -288,6 +289,7 @@ KNOWWE.helper.event = function(){
          */
         add : function(eventType, object, handler){
             //if(!object.addEvent) return;
+            if(!object) return; //TODO throw error or log it
             $(object).addEvent( eventType, handler ); /* based on mootools */
         },
         /**
@@ -1757,6 +1759,48 @@ KNOWWE.helper.window = function(){
         }
     }
 }();
+
+/** 
+ * Class: KNOWWE.helper.cookie
+ * The KNOWWE cookie object.
+ * see http://www.quirksmode.org/js/cookies.html for more information.
+ */
+KNOWWE.helper.cookie = function() {
+	return {
+		/**
+		 * 
+		 */
+		create : function(name,value,days) {
+		    if (days) {
+		        var date = new Date();
+		        date.setTime(date.getTime()+(days*24*60*60*1000));
+		        var expires = "; expires="+date.toGMTString();
+		    }
+		    else var expires = "";
+		    document.cookie = name+"="+value+expires+"; path=/KnowWE";
+		},
+		/**
+		 * 
+		 */
+		read : function(name) {
+		    var nameEQ = name + "=";
+		    var ca = document.cookie.split(';');
+		    for(var i=0;i < ca.length;i++) {
+		        var c = ca[i];
+		        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+		    }
+		    return null;
+		},
+		/**
+		 * 
+		 */
+		erase : function(name) {
+		    KNOWWE.helper.cookie.create(name,"",-1);
+		}	
+	}
+}();
+
 
 if( !String.getBytes ){
      /**
