@@ -60,6 +60,23 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>de.uniwue.maven.plugins</groupId>
+				<artifactId>knowwe-versionator</artifactId>
+				<version>${versionatorVersion}</version>
+				<executions>
+					<execution>
+						<id>vers</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>versionate</goal>
+						</goals>
+						<configuration>
+							<targetDir>${project.build.directory}/${pom.artifactId}-${pom.version}/WEB-INF/classes/</targetDir>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>			
 		</plugins>
 	</build>
 
