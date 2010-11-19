@@ -9,9 +9,9 @@ So no need to build after changes in these files. Reloading the page is sufficie
 -->
 <project name="project" default="copyToBildDir">
 
-	<property name="flowchartDir" value="${basedir}/../../../../KnowWE-Plugin-Flowchart-jpf-plugin" />
+	<property name="flowchartDir" value="${basedir}/../../../../KnowWE-Plugin-Flowchart" />
 
-	<property name="buildDir"  value="${basedir}/../../../../KnowWE/target/KnowWE-0.2-SNAPSHOT"/>
+	<property name="buildDir"  value="${basedir}/../../../../../KnowWE-App/target/KnowWE-App-0.2-SNAPSHOT"/>
 	
 	<target name="copyToBildDir">
 
@@ -29,7 +29,7 @@ So no need to build after changes in these files. Reloading the page is sufficie
 		</copy>
 
 		<copy todir="${buildDir}/" verbose="true">
-			<fileset dir="${flowchartDir}/src/main/resources/webapp">
+			<fileset dir="${flowchartDir}/src/main/resources/webapp/">
 				<include name="**/*.jsp" />
 			</fileset>
 		</copy>
