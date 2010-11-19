@@ -47,6 +47,7 @@ public class RuleAction extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(new SetQuestionValue());
 		this.childrenTypes.add(new ContraIndicationAction());
 		this.childrenTypes.add(new InstantIndication());
+		this.childrenTypes.add(new RepeatedIndication());
 		this.childrenTypes.add(new QASetIndicationAction());
 
 	}
