@@ -21,6 +21,7 @@ package de.d3web.we.kdom.condition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondNot;
@@ -104,6 +105,11 @@ public class KDOMConditionFactory {
 			Section<? extends TerminalCondition> terminal = c.get().getTerminal(c);
 
 			Section<? extends D3webCondition> termChild = terminal.findChildOfType(D3webCondition.class);
+			
+			if (termChild == null) {
+				Logger.getLogger(KDOMConditionFactory.class.getName()).warning("Could not create Condition for: " + terminal.getFather());
+				return null;
+			}
 
 			Condition cond = termChild.get().getCondition(article, termChild);
 
