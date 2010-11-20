@@ -26,15 +26,26 @@ Action.prototype.getExpression = function() {
 }
 
 Action.prototype.getDisplayText = function() {
-	if (this.markup == 'NOP')		return '---';
+	if (this.markup == 'NOP')		return '';
 	if (this.valueString == "ERFRAGE")	return 'fragen';
-	if (this.valueString == "INSTANT")	return 'immer fragen';
+	if (this.valueString == "ALWAYS")	return 'immer fragen';
+	if (this.valueString == "INSTANT")	return 'sofort fragen';
 	if (this.valueString == "P7")		return 'established';
 	if (this.valueString == "N7")		return 'excluded';
 	if (this.valueString == "YES")		return 'yes';
 	if (this.valueString == "NO")		return 'no';
 	if (this.valueString == "P4")		return 'suspected';
-	if (this.valueString == "()")		return 'Formel: f(x)='; // nur leere Formel so anzeigen
+	if (this.valueString == "()" && this.markup == "KnOffice")		return 'Wert:'; // nur leere Formel so anzeigen
+	if (this.valueString == "eval()" && this.markup == "timeDB")		return 'Formel: f(x)='; // nur leere Formel so anzeigen
+	
+	if (this.isFormula()) { // nichtleere Formel
+		
+		var result = Action._extractFormulaExpression(this.markup, this.valueString);
+		
+		return (this.markup == "timeDB" ? ":= " : "= ") + result; 
+		
+	}
+	
 	return this.valueString;
 }
 
@@ -57,15 +68,16 @@ Action.prototype.getError = function() {
 
 Action.prototype.isIndication = function() {
 	return this.markup == 'KnOffice' && 
-		(this.valueString == 'ERFRAGE' || this.valueString == 'INSTANT');
+		(this.valueString == 'ERFRAGE' || this.valueString == 'INSTANT' || this.valueString == 'ALWAYS');
 }
 
 Action.prototype.isAssignment = function() {
-	return this.markup == 'KnOffice' && this.valueString != 'ERFRAGE' && this.valueString != 'INSTANT';
+	return this.markup == 'KnOffice' && this.valueString != 'ERFRAGE' && this.valueString != 'INSTANT' && this.valueString != 'ALWAYS';
 }
 
 Action.prototype.isFormula = function() {
-	return this.markup == 'KnOffice' && this.valueString && this.valueString.startsWith('(') && this.valueString.endsWith(')');
+	return this.markup == 'KnOffice' && this.valueString && this.valueString.startsWith('(') && this.valueString.endsWith(')') ||
+	this.markup == 'timeDB' && this.valueString && this.valueString.startsWith('eval(') && this.valueString.endsWith(')');
 }
 
 Action.prototype.isDecision = function() {
@@ -73,19 +85,42 @@ Action.prototype.isDecision = function() {
 }
 
 Action.prototype.isFlowCall = function() {
-	return this.markup == 'KnOffice' && this.expression.startsWith('CALL');
+	return this.markup == 'KnOffice' && this.expression.startsWith('CALL[');
 
 }
 
+Action._isFormulaString = function(string){
+	if (string.startsWith('(') && string.endsWith(')')) {
+		return true;
+	} else if (string.startsWith('eval(') && string.endsWith(')')) {
+		return true;
+	} else {
+		return false;
+	}
+	
+}
 
+Action._extractFormulaExpression = function(markup, formExpr){
+	
+	if (markup == 'KnOffice')
+		return formExpr.substring(1, formExpr.length-1);
+	else if (markup == 'timeDB')
+		return formExpr.substring(5, formExpr.length-1);
+	else
+		return '()';
+	
+}
 
 Action._createExpression = function(name, value) {
-	if (value.startsWith('(') && value.endsWith(')')) {
-		return '"' + name.escapeQuote() + '" = ' + value;
+	var result;
+	if (Action._isFormulaString(value)) {
+		result = '"' + name.escapeQuote() + '" = ' + value;
 	}
 	else {
-		return '"' + name.escapeQuote() + '" = "' + value.escapeQuote() + '"';
+		result = '"' + name.escapeQuote() + '" = "' + value.escapeQuote() + '"';
 	}
+	
+	return result;
 }
 
 Action.prototype._extractInfoObjectName = function(string) {
@@ -133,6 +168,7 @@ Action.prototype._extractInfoObjectName = function(string) {
 	return null;
 }
 
+//extracts the value from the expression
 Action.prototype._extractValueString = function(string) {
 	if (this.markup == 'NOP') {
 		return "";
@@ -148,8 +184,13 @@ Action.prototype._extractValueString = function(string) {
 	result = nameExpr.exec(string);
 	if (result && result.length > 1 && result[1]) return result[1];
 
-	// second.II try with brackets
+	// second.II try with brackets -> Value
 	nameExpr = /=\s*(\(.*\))\s*$/i;
+	result = nameExpr.exec(string);
+	if (result && result.length > 1 && result[1]) return result[1];
+	
+	// second.III try with brackets -> Formula
+	nameExpr = /=\s*(eval\(.*\))\s*$/i;
 	result = nameExpr.exec(string);
 	if (result && result.length > 1 && result[1]) return result[1];
 
@@ -188,7 +229,7 @@ Action.prototype._checkSemantic = function() {
 		if (clazz == KBInfo.Question && !infoObject.isAbstract()) return;
 		this.error = 'Dieser Objekttyp kann nicht erfragt werden';
 	}
-	else if (this.valueString == '()') {
+	else if (this.valueString == '()' || this.valueString == 'eval()') {
 		this.error = 'Es wurde noch keine Formel eingegeben';
 	}
 	else if (clazz == KBInfo.Solution) {
@@ -196,6 +237,10 @@ Action.prototype._checkSemantic = function() {
 		this.error = '"'+this.valueString+'" ist kein gueltiger Wert fuer eine Loesung';
 	}
 	else if (clazz == KBInfo.Question) {
+		
+		if (this.markup == "NOP")
+			return;
+		
 		switch (infoObject.getType()) {
 			case KBInfo.Question.TYPE_BOOL:
 				// for now we receive also choices for boolean questions 
@@ -234,6 +279,7 @@ Action.createPossibleActions = function(infoObject) {
 			//removed conversion to json-string @20091102
 			result.push(new Action('KnOffice', 'ERFRAGE['+name+']'));
 			result.push(new Action('KnOffice', 'INSTANT['+name+']'));
+			result.push(new Action('KnOffice', 'ALWAYS['+name+']'));
 		}
 		result.push('---- Wert abfragen ----');			
 		result.push(new Action('NOP', '"'+name.escapeQuote()+'"'));			
@@ -256,10 +302,11 @@ Action.createPossibleActions = function(infoObject) {
 				break;
 			// currently add no options for other values
 			case KBInfo.Question.TYPE_NUM:
+				result.push(new Action('timeDB', Action._createExpression(name, 'eval()', true)));
 			case KBInfo.Question.TYPE_DATE:
 			case KBInfo.Question.TYPE_TEXT:
 				// no choices possible, use edit field instead!
-				result.push(new Action('KnOffice', Action._createExpression(name, '()')));
+				result.push(new Action('KnOffice', Action._createExpression(name, '()', true)));
 				break;
 		}
 	}
@@ -294,6 +341,7 @@ Action.createPossibleActions = function(infoObject) {
 		//removed conversion to json-string @20091102
 		result.push(new Action('KnOffice', 'ERFRAGE['+name+']'));
 		result.push(new Action('KnOffice', 'INSTANT['+name+']'));
+		result.push(new Action('KnOffice', 'ALWAYS['+name+']'));
 	}
 	
 	return result;
@@ -339,7 +387,14 @@ ActionEditor.prototype.getNodeModel = function() {
 ActionEditor.prototype.getAction = function() {
 	this.handleValueSelected();
 	if (this.selectedAction && this.selectedAction.isFormula()) {
-		this.selectedAction.setValueString('('+this.dom.select('.input')[0].value+')');
+		
+		if (this.selectedAction.markup == 'timeDB') {
+			this.selectedAction.setValueString('eval('+this.dom.select('.input')[0].value+')');
+		} else {
+			this.selectedAction.setValueString('('+this.dom.select('.input')[0].value+')');
+			
+		}
+		
 	}
 	return this.selectedAction;
 }
@@ -353,6 +408,7 @@ ActionEditor.prototype.handleObjectSelected = function() {
 	this.refreshValueInput();
 }
 
+// Called after an Object has been selected in ObjectSelect
 ActionEditor.prototype.handleValueSelected = function() {
 	if (!this.isVisible()) return;
 	var selects = this.dom.select('.value select');
@@ -362,6 +418,8 @@ ActionEditor.prototype.handleValueSelected = function() {
 	this.updateInputField();
 }
 
+// Called after selecting an Action for the selected object
+// checks if the input field has to be shown for the formula
 ActionEditor.prototype.updateInputField = function() {
 	var input = this.dom.select('.input')[0];
 	if (this.selectedAction && this.selectedAction.isFormula()) {
@@ -401,9 +459,27 @@ ActionEditor.prototype.setVisible = function(visible) {
 	}
 }
 
+ActionEditor.prototype.getFormulaString = function() {
+
+	if (!this.selectedAction || !this.selectedAction.isFormula())
+		return '()';
+	
+	var formula = this.selectedAction.getValueString();
+	
+	return Action._extractFormulaExpression(this.selectedAction.markup, this.selectedAction.valueString)
+	
+//	if (this.selectedAction.markup == 'KnOffice')
+//		return formula.substring(1, formula.length-1);
+//	else if (this.selectedAction.markup == 'timeDB')
+//		return formula.substring(5, formula.length-1);
+//	else
+//		return '()';
+	
+}
+	
 ActionEditor.prototype.render = function() {
-	var formula = (this.selectedAction && this.selectedAction.isFormula()) ? this.selectedAction.getValueString() : '()';
-	formula = formula.substring(1, formula.length-1);
+	var formula = this.getFormulaString();
+	
 	var dom = Builder.node('div', {
 		className: 'ActionEditor',
 		style: this.style ? this.style : ''
@@ -471,422 +547,7 @@ function getElementsByClassName(class_name)
 }
 
 
-// replaces all occureneces of stringToFind with stringToReplace
-String.prototype.ReplaceAll = function(stringToFind,stringToReplace){
-    var temp = this;
-    var index = temp.indexOf(stringToFind);
-        while(index != -1){
-            temp = temp.replace(stringToFind,stringToReplace);
-            index = temp.indexOf(stringToFind);
-        }
-        return temp;
-    }
 
-//creates the Dropdown Menu, with the answer values
-ActionEditor.prototype.createQuestionDropdown = function(addedQuestionText, addedQuestionType, possibleAnswers) {
-	var name = addedQuestionText;	
-	var result = [];
-	
-	result.push('---- Frage stellen ----');			
-	// questions can be asked
-	result.push(new Action('KnOffice', 'ERFRAGE['+name+']'));
-	result.push(new Action('KnOffice', 'INSTANT['+name+']'));
-
-	result.push('---- Wert abfragen ----');			
-	result.push(new Action('NOP', '"'+name.escapeQuote()+'"'));			
-	result.push('---- Wert zuweisen ----');			
-	switch (addedQuestionType) {
-			// add yes/no value
-		case 'yn':
-			result.push(new Action('KnOffice', Action._createExpression(name, 'yes')));
-			result.push(new Action('KnOffice', Action._createExpression(name, 'no')));
-			break;
-			
-
-		case 'oc':
-		case 'mc':
-		case 'num':
-			for (var i = 0; i < possibleAnswers.length; i++) {
-				result.push(new Action('KnOffice', Action._createExpression(name, possibleAnswers[i])));
-			}
-			break;
-	}	
-	return result;
-}
-
-// sends the ajax request
-// @param action: AbstractAction which handles the equest
-// @param text: differs from action to action, must be something like
-// '&text=hallowelt' , can have more than one info
-ActionEditor.prototype.sendAjaxRequest = function (action, text) {
-	
-	var kdomID = window.location.search.substring(window.location.search.indexOf('kdomID=') + 7, window.location.search.indexOf('&'));
-	var pageName = window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
-
-	pageName = '&pageName=' + pageName;	
-	
-	var url = 'KnowCC.jsp?action=' + action + pageName + text;
-	
-	new Ajax.Request(url, {
-		method: 'get',
-		onSuccess: function(transport) {
-			var parser = new DOMParser();
-			var xml = parser.parseFromString(transport.responseText, "text/xml");
-
-			KBInfo._updateCache(xml);
-		},
-		onFailure: function() {
-			CCMessage.warn(
-				'AJAX Verbindungs-Fehler', 
-				'Eventuell werden einige Objekte anderer Wiki-Seiten nicht korrekt angezeigt. ' +
-				'In spaeteren Aktionen koennte auch das Speichern der Aenderungen fehlschlagen.');
-		},
-		onException: function(transport, exception) {
-			CCMessage.warn(
-				'AJAX interner Fehler',
-				exception
-				);
-		}
-	}); 
-}
-
-
-// AJAX-Request for adding questions and their answers to the article
-ActionEditor.prototype.updateQuestions = function(addedQuestionText, addedQuestionType, possibleAnswers) {
-
-		var answersToLine = '&answers=';
-		
-		if (addedQuestionType === 'yn') {
-			addedQuestionType = 'oc';
-			answersToLine += 'yes::no';
-		} else {
-			for (var i = 0; i < possibleAnswers.length; i++) {
-				if (i != possibleAnswers.length -1) {
-					answersToLine += possibleAnswers[i] + '::';
-				} else {
-					answersToLine += possibleAnswers[i];
-				}
-			}
-		}
-		
-		addedQuestionText = '&text=' + addedQuestionText;
-		addedQuestionType = '&type=' + addedQuestionType;
-		
-		var text = addedQuestionText + addedQuestionType + answersToLine;
-		var action = 'UpdateQuestions';
-		
-		ActionEditor.prototype.sendAjaxRequest(action, text);
-}
-
-// creates the Dropwdown menu for solutions
-ActionEditor.prototype.createSolutionDropdown = function(solutionText) {
-	var name = solutionText;	
-	var result = [];
-	
-	result.push('---- Loesung bewerten ----');			
-	result.push(new Action('KnOffice', Action._createExpression(name, 'P7')));
-	result.push(new Action('KnOffice', Action._createExpression(name, 'P6')));
-	result.push(new Action('KnOffice', Action._createExpression(name, 'P5')));
-	result.push(new Action('KnOffice', Action._createExpression(name, 'P4')));
-	result.push(new Action('KnOffice', Action._createExpression(name, 'P3')));
-	result.push(new Action('KnOffice', Action._createExpression(name, 'P2')));
-	result.push(new Action('KnOffice', Action._createExpression(name, 'P1')));
-	result.push(new Action('KnOffice', Action._createExpression(name, 'N1')));
-	result.push(new Action('KnOffice', Action._createExpression(name, 'N2')));
-	result.push(new Action('KnOffice', Action._createExpression(name, 'N3')));
-	result.push(new Action('KnOffice', Action._createExpression(name, 'N4')));
-	result.push(new Action('KnOffice', Action._createExpression(name, 'N5')));
-	result.push(new Action('KnOffice', Action._createExpression(name, 'N6')));
-	result.push(new Action('KnOffice', Action._createExpression(name, 'N7')));
-	
-	return result;
-}
-
-
-//AJAX-Request for adding solutions to the article
-ActionEditor.prototype.updateSolutions = function(solutionText) {
-
-	solutionText = '&text=' + solutionText;
-	var action = 'UpdateSolutions';
-	
-	ActionEditor.prototype.sendAjaxRequest(action, solutionText);	
-}
-
-
-ActionEditor.getQuestionType = function () {
-	var qType;
-	if (document.choseQuestionType.questionType[0].checked) {
-		qType = document.choseQuestionType.questionType[0].value;
-	} else if (document.choseQuestionType.questionType[1].checked) {
-		qType = document.choseQuestionType.questionType[1].value;
-	} else if (document.choseQuestionType.questionType[2].checked) {
-		qType = document.choseQuestionType.questionType[2].value;
-	} else if (document.choseQuestionType.questionType[3].checked) {
-		qType = document.choseQuestionType.questionType[3].value;
-	} else if (document.choseQuestionType.questionType[4].checked) {
-		qType = document.choseQuestionType.questionType[4].value;
-	} else if (document.choseQuestionType.questionType[5].checked) {
-		qType = document.choseQuestionType.questionType[5].value;
-	}
-	return qType;
-}
-
-ActionEditor.prototype.addSubFlow = function(exitNodes) {
-
-	var name = '&name=' + document.choseQuestionText.questionText.value;
-	
-	var nodesToLine = '&nodes=';
-	for (var i = 0; i < exitNodes.length; i++)  {
-		nodesToLine += exitNodes[i];
-		
-		if (i != exitNodes.length -1) {
-			nodesToLine += '::';
-		} 
-	}
-	
-	var action = 'AddSubFlowchart';
-	
-	ActionEditor.prototype.sendAjaxRequest(action, name + nodesToLine);
-
-}
-
-ActionEditor.prototype.createNewFlowchart = function() {
-	// recreate the OK-Button
-	var buttonGroup = document.getElementsByClassName('buttonGroup');
-	buttonGroup[0].childNodes[0].style.visibility = "visible";
-	
-	// create the new flowchart
-	var root = this.dom.select('.value')[0];
-	var qText = document.choseQuestionText.questionText.value;
-	var exitNodes = this.getAnswers();
-	
-	// escape special characters
-	for (var i = 0; i < exitNodes.length; i++) {
-		exitNodes[i] = ActionEditor.escapeSpecialCharacter(exitNodes[i]);
-	}
-	
-	
-	this.selectedAction = new Action('KnOffice', 'CALL[' + qText + '(Start)]');
-	this.addSubFlow(exitNodes);
-}
-
-// puts everything together, e.g. the question, the type and the answers
-// also calls the AJAX request
-ActionEditor.prototype.createNewQuestion = function() {
-	
-	// recreate the OK-Button
-	var buttonGroup = document.getElementsByClassName('buttonGroup');
-	buttonGroup[0].childNodes[0].style.visibility = "visible";
-
-	
-	// create the question
-	var root = this.dom.select('.value')[0];
-	var qText = document.choseQuestionText.questionText.value;
-	qText = qText.trim();
-	var qType = ActionEditor.getQuestionType();
-	var answers = this.getAnswers();
-	var actions;
-	
-	// if the object is a question, do the right ajax-request and create the dropdown
-	// also escape special characters
-	if (qType != "Solution") {
-		actions = this.createQuestionDropdown(qText, qType, answers);
-		
-		qText = ActionEditor.escapeSpecialCharacter(qText);
-		for (var i = 0; i < answers.length; i++) {
-			answers[i] = ActionEditor.escapeSpecialCharacter(answers[i]);
-		}
-		
-		this.updateQuestions(qText, qType, answers);
-	
-	// else it is a solution, do the right ajax-request and create the dropdown
-	} else {
-		actions = this.createSolutionDropdown(qText);
-		this.updateSolutions(ActionEditor.escapeSpecialCharacter(qText));
-	}
-	
-	this.selectableActions = [];
-	var valueToSelect = this.selectedAction ? this.selectedAction.getValueString() : '';
-	var indexToSelect = -1; // select first one if no match available
-	var isFormula = this.selectedAction ? this.selectedAction.isFormula() : false;
-	this.selectedAction = null;
-
-	if (!actions) {
-		root.innerHTML = '<i>Keine Aktionen verfuegbar</i>';
-		if (this.objectSelect) this.selectedAction = new Action('NOP', this.objectSelect.getValue());
-		return;
-	}
-
-	for (var i=0; i<actions.length; i++) {
-		var action = actions[i];
-		if (!Object.isString(action)) {
-			this.selectableActions.push(action);
-			// ein Wert wird dann selektiert wenn der Wert gleich ist 
-			// oder beides eine Formel ist (da dann der Wert in der Drop-Down-Liste leer ist)
-			// Ausserdem wird die erste Action gemerkt, da eventuell keine passende mehr nachfolgt
-			if ((indexToSelect == -1) 
-					|| (action.getValueString() == valueToSelect)
-					|| (action.getValueString() == '()' && isFormula)
-					) {
-				indexToSelect = i;
-				// bei Formeln der Wert uebernehmen
-				if (isFormula) {
-					this.selectedAction = Object.clone(action);
-					this.selectedAction.setValueString(valueToSelect);
-				}
-				else {
-					this.selectedAction = action;
-				}
-			}
-		}
-	}
-
-	var html = '<select ' +
-			'onchange="this.parentNode.parentNode.__ActionEditor.handleValueSelected(this);this.blur();" ' +
-			'onfocus="this.parentNode.parentNode.__ActionEditor.hasInputFocus = true;" ' +
-			'onblur="this.parentNode.parentNode.__ActionEditor.hasInputFocus = false;">';
-	for (var i=0, value=0; i<actions.length; i++) {
-		var action = actions[i];
-		if (Object.isString(action)) {
-			html +=  '<optgroup label="'+action+'"></optgroup>';
-		}
-		else {
-			html += '<option value=' + (value++) + 
-				(indexToSelect == i ? ' selected' : '') + 
-				'>' +
-				action.getDisplayText() + 
-				'</option>';
-		}
-	}
-	html += '</select>';
-	root.innerHTML = html + '<br \>';
-	this.updateInputField();
-}
-
-
-ActionEditor.escapeSpecialCharacter = function(text) {
-	// escape special characters ! / = ( ) { } [ ] * - . : ; > | 
-	// Verbindungs-Fehler: #
-	// heap space ` \ ^
-	// disappears: +
-	// bug: < &
-	
-	if ((text.indexOf('!') > -1) || (text.indexOf('/') > -1) || (text.indexOf('=') > -1) 
-			|| (text.indexOf('(') > -1) || (text.indexOf(')') > -1 || (text.indexOf('{') > -1)) 
-			|| (text.indexOf('}') > -1) || (text.indexOf('[') > -1) || (text.indexOf(']') > -1) 
-			|| (text.indexOf('*') > -1) || (text.indexOf('+') > -1) || (text.indexOf('-') > -1) 
-			|| (text.indexOf('.') > -1) || (text.indexOf(':') > -1) || (text.indexOf(';') > -1)
-			|| (text.indexOf('>') > -1) || (text.indexOf('|') > -1) || (text.indexOf(',') > -1)
-			|| (text.indexOf('#') > -1) || (text.indexOf('`') > -1) || (text.indexOf('\\') > -1)
-			|| (text.indexOf('^') > -1) || (text.indexOf('<') > -1) || (text.indexOf('&') > -1)) {
-		text = '"' + text + '"';
-	}
-	
-	// escape characters which cause bugs
-	text = text.ReplaceAll('%', '[FLOWCHART_PC]');
-	text = text.ReplaceAll('<', '[FLOWCHART_ST]');
-	text = text.ReplaceAll('&', '[FLOWCHART_AND]');
-	text = text.ReplaceAll('+', '[FLOWCHART_PLUS]');
-	text = text.ReplaceAll('^', '[FLOWCHART_CAP]');
-	text = text.ReplaceAll('\\', '[FLOWCHART_BACKSLASH]');
-	text = text.ReplaceAll('`', '[FLOWCHART_AG]');
-	text = text.ReplaceAll('#', '[FLOWCHART_HASH]')
-	text = text.ReplaceAll('ö', '[FLOWCHART_oe]')
-	text = text.ReplaceAll('Ö', '[FLOWCHART_OE]')
-	text = text.ReplaceAll('ä', '[FLOWCHART_ae]')
-	text = text.ReplaceAll('Ä', '[FLOWCHART_AE]')
-	text = text.ReplaceAll('ü', '[FLOWCHART_ue]')
-	text = text.ReplaceAll('Ü', '[FLOWCHART_UE]')
-	text = text.ReplaceAll('ß', '[FLOWCHART_SS]')
-	
-	return text;
-}
-
-// add additional answers to a question
-ActionEditor.prototype.addAnswer = function() {
-	var root = this.dom.select('.value')[0];
-	var questionText = document.choseQuestionText.questionText.value;
-	var questionType = ActionEditor.getQuestionType();
-	
-	// if its a yn question or a solution there is no need for custom answers
-	if (questionType === "yn" || questionType === "num" || questionType ===  "Solution") {
-		return this.createNewQuestion();
-		
-	// if a new Flowchart is to be created
-	} else if (questionType === "newFlowchart") {
-		var newAnswer = '<input type="text" size="30" name="answer"><br \>';
-		var buttonWeiter = '<input type="button" value="Weiter" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.createNewFlowchart()"';
-		var buttonOK = '<input type="button" value="Hinzufügen" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.answerValue()"';
-		root.innerHTML = '<i>Exit-Knoten für</i><br\>' + questionText + '<br\><i>hinzufügen</i><br\><form name="addAnswer" id="addAnswer" method="get">' + newAnswer + buttonOK + buttonWeiter + '</form><i>bisherige Exit-Knoten:</i>';
-		
-	// else if its a question with custom answers
-	} else {
-		var newAnswer = '<input type="text" size="30" name="answer"><br \>';
-		var buttonWeiter = '<input type="button" value="Weiter" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.createNewQuestion()"';
-		var buttonOK = '<input type="button" value="Hinzufügen" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.answerValue()"';
-		root.innerHTML = '<i>Antwortalternativen für</i><br\>' + questionText + ' [' + questionType + ']<br\><i>hinzufügen</i><br\><form name="addAnswer" id="addAnswer" method="get">' + newAnswer + buttonOK + buttonWeiter + '</form><i>bisherige Antworten:</i>';
-	}
-	document.addAnswer.answer.focus();
-}
-
-
-
-
-// TODO filter empty answers
-ActionEditor.prototype.answerValue = function() {
-	var root = this.dom.select('.value')[0];
-	var answer = document.addAnswer.answer.value;
-	if (!this.answers.contains(answer) && (answer !== '\s*') && (answer !== '')) {
-		this.answers.push(answer);
-		var count = this.answers.length -1;
-		root.innerHTML += '<br \>' + answer + '&nbsp;&nbsp;<input type="image" src="cc/image/kbinfo/no-object.gif" style="width:20px;height:20px" onclick="return this.parentNode.parentNode.__ActionEditor.removeAnswer(' + count + ')">'; 
-	}
-	
-	document.addAnswer.answer.focus();
-	return;
-}
-
-// removes the answer with the given position from the answers[]
-ActionEditor.prototype.removeAnswer = function(answer) {
-	
-	var root = this.dom.select('.value')[0];
-	var oldText = root.innerHTML;
-	var newText = oldText.substring(0, oldText.indexOf('<i>bisherige Vorschläge:</i>') + 28);
-	this.answers.splice(answer, 1);
-	
-	for (var i=0; i < this.answers.length; i++) {
-		newText += '<br \>' + this.answers[i] + '&nbsp;&nbsp;<input type="image" src="cc/image/kbinfo/no-object.gif" style="width:20px;height:20px" onclick="return this.parentNode.parentNode.__ActionEditor.removeAnswer(' + i + ')">'; 
-	}
-	
-	root.innerHTML = newText;
-}
-
-
-
-
-// asks the object type
-ActionEditor.prototype.askQuestionType = function() {
-
-	// remove the OK-Button
-	var buttonGroup = document.getElementsByClassName('buttonGroup');
-	buttonGroup[0].childNodes[0].style.visibility = "hidden";
-	
-	
-	// ask the question type
-	var root = this.dom.select('.value')[0];
-	var questionText = document.choseQuestionText.questionText.value;
-	var multipleChoice = '<input type="radio" id="mc" name="questionType" value="mc">Question [mc]<br>';
-	var oneChoice = '<input type="radio" id="oc" name="questionType" value="oc" checked>Question [oc]<br>';
-	var yn = '<input type="radio" id="yn" name="questionType" value="yn">Question [yn]<br>';
-	var num = '<input type="radio" id="num" name="questionType" value="num">Question [num]<br>';
-	var solution = '<input type="radio" id="Solution" name="questionType" value="Solution">Solution<br>';
-	var newFlowchart = '<input type="radio" id="newFlowchart" name="questionType" value="newFlowchart">Flowchart<br>';
-	var buttonOK = '<input type="button" value="Erstellen" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.addAnswer()"';
-
-	root.innerHTML = '<i>Bitte Objekttyp auswählen für</i><br\>' + questionText
-	+ '<br\><form name="choseQuestionType" id="choseQuestionType" method="get">' + oneChoice + multipleChoice  + yn  + num + solution + newFlowchart + "<br\>" + buttonOK + "</form>";
-	return;
-}
 
 ActionEditor.prototype.refreshValueInput = function() {
 	if (!this.isVisible()) return;
@@ -913,8 +574,9 @@ ActionEditor.prototype.refreshValueInput = function() {
 	var actions = Action.createPossibleActions(infoObject);
 	this.selectableActions = [];
 	var valueToSelect = this.selectedAction ? this.selectedAction.getValueString() : '';
+	var markupToSelect = this.selectedAction ? this.selectedAction.getMarkup() : '';
 	var indexToSelect = -1; // select first one if no match available
-	var isFormula = this.selectedAction ? this.selectedAction.isFormula() : false;
+	var isSelectFormula = this.selectedAction ? this.selectedAction.isFormula() : false;
 	this.selectedAction = null;
 
 	if (!actions) {
@@ -925,27 +587,39 @@ ActionEditor.prototype.refreshValueInput = function() {
 
 	for (var i=0; i<actions.length; i++) {
 		var action = actions[i];
-		if (!Object.isString(action)) {
-			this.selectableActions.push(action);
-			// ein Wert wird dann selektiert wenn der Wert gleich ist 
-			// oder beides eine Formel ist (da dann der Wert in der Drop-Down-Liste leer ist)
-			// Ausserdem wird die erste Action gemerkt, da eventuell keine passende mehr nachfolgt
-			if ((indexToSelect == -1) 
-					|| (action.getValueString() == valueToSelect)
-					|| (action.getValueString() == '()' && isFormula)
-					) {
-				indexToSelect = i;
-				// bei Formeln der Wert uebernehmen
-				if (isFormula) {
-					this.selectedAction = Object.clone(action);
-					this.selectedAction.setValueString(valueToSelect);
-				}
-				else {
-					this.selectedAction = action;
-				}
-				//if (isFormula) this.dom.select('.input')[0].value = valueToSelect;
-			}
+		if (Object.isString(action)) 
+			continue;
+		
+		var actionValueString = action.getValueString();
+		var actionMarkup = action.getMarkup();
+		this.selectableActions.push(action);
+		// ein Wert wird dann selektiert wenn der Wert gleich ist 
+		// oder beides eine Formel ist (da dann der Wert in der Drop-Down-Liste leer ist)
+		// Ausserdem wird die erste Action gemerkt, da eventuell keine passende mehr nachfolgt
+		
+		
+			
+		if (indexToSelect == -1 // noch keine Aktion ausgewählt -> nimm die erste
+			|| (actionValueString == valueToSelect // sonst muss markup und wert übereinstimmen
+				&& markupToSelect == actionMarkup)) {
+			
+			indexToSelect = i;
+		
+			this.selectedAction = action;
+		
+		
+		} else if (markupToSelect == actionMarkup 
+				&& action.isFormula() && isSelectFormula) {
+
+			indexToSelect = i;
+			
+			// bei Formeln der Wert uebernehmen
+			this.selectedAction = Object.clone(action);
+			this.selectedAction.setValueString(valueToSelect);
+
 		}
+				
+			
 	}
 
 	var html = '<select ' +
@@ -970,9 +644,15 @@ ActionEditor.prototype.refreshValueInput = function() {
 	this.updateInputField();
 }
 
+
+
+
+
 ActionEditor.prototype.destroy = function() {
 	this.setVisible(false);
 }
+
+
 
 
 /**
@@ -1056,8 +736,9 @@ ActionPane.prototype.render = function() {
 
 	var valueText = null;
 	var valueError = null;
-	//Hack for displaying waiting time (startnode) in Wait Nodes
 	valueText = this.action.getDisplayText(); // zeigt ZusatzInfo an (fragen/ immer fragen,...)
+
+	//Hack for displaying waiting time (startnode) in Wait Nodes
 //	if (this.action.isFlowCall()) {
 //		if (this.action.expression.startsWith('CALL[Warten') || this.action.expression.startsWith('CALL[Wait'))
 //			valueText = this.action.getDisplayText();
@@ -1092,4 +773,5 @@ ActionPane.prototype.render = function() {
 ActionPane.prototype.destroy = function() {
 	this.setVisible(false);
 }
+
 
