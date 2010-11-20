@@ -217,26 +217,7 @@
 		<div id=objects_content class=rollup_content style="display: visible;"></div>
 		<div id=objects_bottom class=rollup_bottom></div>
 
-		<div id=info_title class=rollup_title>Info</div>
-		<div id=info_content class=rollup_content style="display: none;">
-			<div style="max-height: 280px; overflow: auto;">
-				<ol>
-					<li><b>Start</b>: Startknoten des Flussdiagramms (eventuell benannt wenn mehrere vorhanden sind)
-					<li><b>Entscheidung Direkt</b>: 
-						<ol>
-							<li>Verwenden des Wertes einer Frage/Interpretation; bei oc/mc/bool die Alternativen; bei numerischen Werten ein Vergleich oder ein Intervallschema pro Linie (z.B.: = 20; <40; ]5 20]; [5 20]; �)
-							<li>Verwenden des Wertes einer Formel statt des Wertes einer einzelnen Frage/Interpretation; sonst wie oben
-						</ol>
-					<li><b>Entscheidung Indirekt</b>: Verwenden einer benannten Bedingungskette(�foo� WENN x>20; �bar� WENN y>20; �foobar� SONST;)
-					<li><b>Zuweisung</b>: Setzen des Wertes einer Interpretation; automatisch auch ein Entscheidungsknoten
-					<li><b>Dialog</b>: eine Frage oder mehrere Fragen oder einen Fragebogen stellen; bei einer Frage automatisch auch ein Entscheidungsknoten
-					<li><b>Loesungsbewertung</b>: Bewerten einer Loesung; automatisch auch ein Entscheidungsknoten mit den Etablierungsgraden als moeglichen Werte sowie 'io' (bestaetigt) und 'nio' (verworfen)
-					<li><b>Flussdiagramm</b>: wie Entscheidungsknoten mit moeglichen Exit-Knoten als Optionen (und moeglichen Start-Knoten als Aktivierungen)
-					<li><b>Exit</b>: Endknoten des Flussdiagramms (eventuell benannt wenn mehrere vorhanden sind)
-				</ol>
-			</div>
-		</div>
-		<div id=info_bottom class=rollup_bottom></div>
+
 	</td>
 	<td rowspan=2 valign=top>
 		<div class=toolbar>
@@ -339,10 +320,9 @@
 	// make rollups responsive
 	var prototypes = new Rollup('prototype_title', 'prototype_content');
 	var objects =  new Rollup('objects_title', 'objects_content');
-	var info = new Rollup('info_title', 'info_content');
 	// and group them to display only one at the same time 
 	// (can be comment out to enable independed toggle behaviour)
-	new RollupGroup([prototypes, objects, info]);
+	new RollupGroup([prototypes, objects]);
 
 	// initialize wiki tree tool
 	new ObjectTree('objects_content', null, 
@@ -383,7 +363,8 @@
 	
 	function _saveFlowchartText(xml, closeOnSuccess) {
 		var url = "KnowWE.jsp";
-		xml = encodeURI(xml);
+		// Do not uriencode content as it is POST'ed 
+		//xml = encodeURI(xml);
 		new Ajax.Request(url, {
 			method: 'post',
 			parameters: {
