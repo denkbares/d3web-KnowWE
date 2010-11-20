@@ -305,11 +305,11 @@ Rule.prototype.toXML = function() {
 	xml += '\t\t<target>'+this.targetNode.getNodeModel().fcid+'</target>\n';
 	if (this.guard && this.guard.getMarkup() != 'NOP') {
 		if (Object.isString(this.guard)) {
-			xml += '\t\t<guard>' + this.guard.escapeXML() + '</guard>\n';
+			xml += '\t\t<guard>' + this.guard + '</guard>\n';
 		}
 		else {
 			xml += '\t\t<guard markup="'+this.guard.getMarkup()+'">' +
-					this.guard.getConditionString().escapeXML()+
+					this.guard.getConditionString()+
 					'</guard>\n';
 		}
 	}

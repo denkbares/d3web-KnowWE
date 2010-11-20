@@ -369,7 +369,7 @@ Node.prototype.toXML = function() {
 	else if (this.nodeModel.action) {
 		var action = this.nodeModel.action;
 		xml += '\t\t<action markup="'+action.markup+'">' + 
-				(action.expression ? action.expression.escapeXML() : '') + 
+				(action.expression ? action.expression : '') + 
 				'</action>\n';
 	}
 	xml += '\t</node>\n';

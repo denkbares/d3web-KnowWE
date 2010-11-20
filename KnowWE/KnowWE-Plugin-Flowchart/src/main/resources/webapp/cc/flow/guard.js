@@ -181,8 +181,8 @@ Guard.createPossibleGuards = function(nodeModel) {
 			}
 		}
 		result.push('Allgemein');
-		result.push(new Guard('KnOffice', 'BEKANNT["'+infoObject.getName()+'"]', 'abgearbeitet'));
-		result.push(new Guard('NOP', ' ', ' '));
+		result.push(new Guard('KnOffice', 'PROCESSED[' + infoObject.getName()+']', 'abgearbeitet'));
+		//result.push(new Guard('NOP', ' ', ' ')); //does this make sense for FCs?
 	}
 	else if (infoObject.getClassInstance() == KBInfo.QSet) {
 		result.push('Allgemein');
