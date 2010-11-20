@@ -19,8 +19,10 @@ Guard.prototype.isPatternFor = function(other) {
 	regexp = regexp.replace(/\$\{[:\w]*\}/gi, '__ANY__');
 	regexp = RegExp.escape(regexp);
 	regexp = regexp.replace(/__ANY__/g, '.*');
-	regexp = eval('/^\s*'+regexp+'\s*$/');
-	return regexp.test(other.getConditionString());
+	var string = '/^\s*'+regexp+'\s*$/';
+	regexp = eval(string);
+	var test = regexp.test(other.getConditionString());
+	return test;
 }
 
 Guard.prototype.getMarkup = function() {
@@ -69,17 +71,32 @@ Guard.prototype.countVariables = function() {
 
 Guard.prototype.getValues = function(patternGuard) {
 	var pattern = patternGuard.getConditionString();
-	pattern = pattern.replace(/\$\{[:\w]*\}/gi, '__ANY__');
-	pattern = RegExp.escape(pattern);
-	pattern = pattern.replace(/__ANY__/g, '([^\\s]*)');
+	if (this.isFormula()){
+		
+		pattern = pattern.replace(/\$\{[:\w]*\}/gi, '__ANY__');
+		pattern = RegExp.escape(pattern);
+		pattern = pattern.replace(/__ANY__/g, '(.*)');
+		
+	} else {
+		pattern = pattern.replace(/\$\{[:\w]*\}/gi, '__ANY__');
+		pattern = RegExp.escape(pattern);
+		pattern = pattern.replace(/__ANY__/g, '([^\\s]*)');
+		
+	}
+	
 	var regexp = eval('/'+pattern+'/gi')
 	var result = regexp.exec(this.conditionString);
-	return result.slice(1);
+	var slice = result.slice(1);
+	return slice;
 }
 
 Guard.prototype.inject = function(values) {
 	this.conditionString = Guard.inject(this.conditionString, values);
 	this.displayHTML = Guard.inject(this.displayHTML, values);
+}
+
+Guard.prototype.isFormula = function() {
+	return this.markup == 'timeDB';
 }
 
 Guard.inject = function(text, values) {
@@ -135,6 +152,11 @@ Guard.createPossibleGuards = function(nodeModel) {
 				}
 				break;
 			// currently add no options for other values
+			case KBInfo.Question.TYPE_DATE:
+			case KBInfo.Question.TYPE_TEXT:
+				result.push('Formel');
+				result.push(new Guard('timeDB', 'eval(${formula})', 'f: ${formula}'));
+				break;
 			case KBInfo.Question.TYPE_NUM:
 				result.push('Wert abfragen');
 				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = ${num}', '= ${num}'));
@@ -149,12 +171,10 @@ Guard.createPossibleGuards = function(nodeModel) {
 				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" > ${num} UND "'+infoObject.getName()+'" <= ${num}', '] ${num} .. ${num} ]'));
 				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" > ${num} UND "'+infoObject.getName()+'" < ${num}', '] ${num} .. ${num} ['));
 				break;
-			case KBInfo.Question.TYPE_DATE:
-			case KBInfo.Question.TYPE_TEXT:
-				break;
 		}
 		result.push('Allgemein');
 		result.push(new Guard('KnOffice', 'BEKANNT["'+infoObject.getName()+'"]', 'bekannt'));
+		result.push(new Guard('KnOffice', 'NICHT[BEKANNT["'+infoObject.getName()+'"]]', 'nicht bekannt'));
 		result.push(new Guard('NOP', ' ', ' '));
 	}
 	else if (infoObject.getClassInstance() == KBInfo.Solution) {
@@ -171,12 +191,10 @@ Guard.createPossibleGuards = function(nodeModel) {
 		if (options.length > 0) {
 			result.push('Ergebnis abfragen');
 			for (var i=0; i<options.length; i++) {
-//				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'_Exit" = "'+options[i]+'"', options[i]));
 				result.push(new Guard('KnOffice', 'IS_ACTIVE[' + infoObject.getName()+'('+options[i]+')]', options[i]));
 			}
 			result.push('Ergebnis ausschliessen');
 			for (var i=0; i<options.length; i++) {
-//				result.push(new Guard('KnOffice', 'NICHT ("'+infoObject.getName()+'" = "'+options[i]+'")', '&ne; ' + options[i]));
 				result.push(new Guard('KnOffice', 'NICHT(IS_ACTIVE[' + infoObject.getName()+'('+options[i]+')])', options[i]));
 			}
 		}
