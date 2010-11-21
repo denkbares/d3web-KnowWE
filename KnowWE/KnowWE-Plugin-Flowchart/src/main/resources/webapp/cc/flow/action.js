@@ -206,9 +206,9 @@ Action.prototype._extractValueString = function(string) {
 	if (result && result.length > 3 && result[3]) return result[3];
 	
 	
-//	nameExpr = /^\s*"?(.*)"?\s*$/i;
-//	result = nameExpr.exec(string);
-//	if (result && result.length > 1 && result[1]) return 'ERFRAGE'; // we do have an implicit value	
+	nameExpr = /^\s*"?(.*)"?\s*$/i;
+	result = nameExpr.exec(string);
+	if (result && result.length > 1 && result[1]) return 'ERFRAGE'; // we do have an implicit value	
 
 	this.error = "Die Aktion kann nicht identifiziert werden.";
 	return null;
@@ -243,11 +243,6 @@ Action.prototype._checkSemantic = function() {
 		
 		switch (infoObject.getType()) {
 			case KBInfo.Question.TYPE_BOOL:
-				// for now we receive also choices for boolean questions 
-				// from the server so treat them similar to oc questions
-				//if (this.valueString == "YES" || this.valueString == "NO" || this.isFormula()) break;
-				//this.error = '"'+this.valueString+'" ist kein erlaubter Wert fuer eine Ja/Nein-Frage';
-				//break;
 			case KBInfo.Question.TYPE_OC:
 			case KBInfo.Question.TYPE_MC:
 				if (infoObject.getOptions().indexOf(this.valueString) >= 0) break;
@@ -277,7 +272,7 @@ Action.createPossibleActions = function(infoObject) {
 			result.push('---- Frage stellen ----');			
 			// questions can be asked
 			//removed conversion to json-string @20091102
-			result.push(new Action('KnOffice', 'ERFRAGE['+name+']'));
+			result.push(new Action('KnOffice', name));
 			result.push(new Action('KnOffice', 'INSTANT['+name+']'));
 			result.push(new Action('KnOffice', 'ALWAYS['+name+']'));
 		}
@@ -331,17 +326,14 @@ Action.createPossibleActions = function(infoObject) {
 		result.push('---- Startknoten aufrufen ----');			
 		var options = infoObject.getStartNames();
 		for (var i=0; i<options.length; i++) {
-//			result.push(new Action('KnOffice', Action._createExpression(name, options[i])));
-			
 			result.push(new Action('KnOffice', 'CALL[' + name + '(' + options[i] + ')' + ']'));
 		}
 	}
 	else if (infoObject.getClassInstance() == KBInfo.QSet) {
 		result.push('---- Fragebogen stellen ----');			
 		//removed conversion to json-string @20091102
-		result.push(new Action('KnOffice', 'ERFRAGE['+name+']'));
-		result.push(new Action('KnOffice', 'INSTANT['+name+']'));
-		result.push(new Action('KnOffice', 'ALWAYS['+name+']'));
+		result.push(new Action('KnOffice', name));
+
 	}
 	
 	return result;
