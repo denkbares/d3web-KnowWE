@@ -482,7 +482,7 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		Collection<String> terms = new HashSet<String>();
 		for (TermReferenceLog tl : logs) {
 			if (tl.termDefiningSection != null
-					&& (termClass == null || tl.getClass().isAssignableFrom(termClass))) {
+					&& (termClass == null || tl.getTermObjectClass().isAssignableFrom(termClass))) {
 				terms.add(new TermIdentifier(tl.termDefiningSection.getArticle(),
 						tl.termDefiningSection).toString());
 			}
