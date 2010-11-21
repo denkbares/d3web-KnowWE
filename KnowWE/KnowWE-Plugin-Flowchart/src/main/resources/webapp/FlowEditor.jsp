@@ -363,7 +363,6 @@
 	
 	function _saveFlowchartText(xml, closeOnSuccess) {
 		var url = "KnowWE.jsp";
-		xml = encodeURI(xml);
 		new Ajax.Request(url, {
 			method: 'post',
 			parameters: {
