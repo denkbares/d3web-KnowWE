@@ -245,13 +245,14 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		buffer.append("'");
 		buffer.append(">\n");
 		appendChilds(web, service, object, buffer);
-		if (object instanceof QuestionYN) { // workaround for german
-			// localization
-			buffer.append("\t\t<choice>").append(encodeXML("Ja")).append("</choice>\n");
-			buffer.append("\t\t<choice>").append(encodeXML("Nein")).append("</choice>\n");
-
-		}
-		else if (object instanceof QuestionChoice) {
+		// if (object instanceof QuestionYN) { // workaround for german
+		// // localization
+		// buffer.append("\t\t<choice>").append(encodeXML("Yes")).append("</choice>\n");
+		// buffer.append("\t\t<choice>").append(encodeXML("No")).append("</choice>\n");
+		//
+		// }
+		// else
+		if (object instanceof QuestionChoice) {
 			// TODO: choices are not considered in JS implementation of bool
 			// questions
 			for (Choice answer : ((QuestionChoice) object).getAllAlternatives()) {

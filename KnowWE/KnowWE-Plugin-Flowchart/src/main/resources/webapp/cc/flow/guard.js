@@ -135,8 +135,8 @@ Guard.createPossibleGuards = function(nodeModel) {
 			case KBInfo.Question.TYPE_BOOL:
 				// for now we receive also choices for boolean questions 
 				// from the server so treat them similar to oc questions
-				//result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = "YES"', 'ja'));
-				//result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = "NO"', 'nein'));
+//				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = "Yes"', 'ja'));
+//				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = "No"', 'nein'));
 				//break;
 			//add choices of oc/mc value
 			case KBInfo.Question.TYPE_OC:

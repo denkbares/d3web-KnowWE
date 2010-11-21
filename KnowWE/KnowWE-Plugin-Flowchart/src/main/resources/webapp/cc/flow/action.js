@@ -30,11 +30,11 @@ Action.prototype.getDisplayText = function() {
 	if (this.valueString == "ERFRAGE")	return 'fragen';
 	if (this.valueString == "ALWAYS")	return 'immer fragen';
 	if (this.valueString == "INSTANT")	return 'sofort fragen';
-	if (this.valueString == "P7")		return 'established';
-	if (this.valueString == "N7")		return 'excluded';
-	if (this.valueString == "YES")		return 'yes';
-	if (this.valueString == "NO")		return 'no';
-	if (this.valueString == "P4")		return 'suspected';
+	if (this.valueString == "P7")		return 'etabliert';
+	if (this.valueString == "N7")		return 'ausgeschlossen';
+	if (this.valueString == "YES")		return 'Ja';
+	if (this.valueString == "NO")		return 'Nein';
+	if (this.valueString == "P4")		return 'verdächtigt';
 	if (this.valueString == "()" && this.markup == "KnOffice")		return 'Wert:'; // nur leere Formel so anzeigen
 	if (this.valueString == "eval()" && this.markup == "timeDB")		return 'Formel: f(x)='; // nur leere Formel so anzeigen
 	
@@ -302,11 +302,11 @@ Action.createPossibleActions = function(infoObject) {
 				break;
 			// currently add no options for other values
 			case KBInfo.Question.TYPE_NUM:
-				result.push(new Action('timeDB', Action._createExpression(name, 'eval()', true)));
 			case KBInfo.Question.TYPE_DATE:
 			case KBInfo.Question.TYPE_TEXT:
 				// no choices possible, use edit field instead!
 				result.push(new Action('KnOffice', Action._createExpression(name, '()', true)));
+				result.push(new Action('timeDB', Action._createExpression(name, 'eval()', true)));
 				break;
 		}
 	}
