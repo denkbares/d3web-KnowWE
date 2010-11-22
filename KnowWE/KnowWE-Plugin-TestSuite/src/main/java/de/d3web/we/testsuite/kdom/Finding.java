@@ -27,13 +27,13 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.AnswerReferenceImpl;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.kdom.renderer.ObjectInfoLinkRenderer;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.kdom.util.SplitUtility;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
+import de.d3web.we.utils.SplitUtility;
+import de.knowwe.core.renderer.FontColorRenderer;
+import de.knowwe.core.renderer.ObjectInfoLinkRenderer;
 
 public class Finding extends DefaultAbstractKnowWEObjectType {
 
