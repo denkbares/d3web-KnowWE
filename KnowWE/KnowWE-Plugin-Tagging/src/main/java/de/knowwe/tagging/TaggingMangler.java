@@ -335,7 +335,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 				output += temptag.trim() + " ";
 			}
 		}
-		text += "<tags>" + output.trim() + "</tags>";
+		text += "%%tags\n" + output.trim() + "\n%";
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(asection.getID(), text);
 		ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB).replaceKDOMNodesSaveAndBuild(

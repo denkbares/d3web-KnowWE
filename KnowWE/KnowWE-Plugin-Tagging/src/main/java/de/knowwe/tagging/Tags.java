@@ -36,7 +36,6 @@ public class Tags extends DefaultMarkupType {
 
 	public Tags() {
 		super(m);
-		setNotRecyclable(true);
 	}
 
 	@Override
