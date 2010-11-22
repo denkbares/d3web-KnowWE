@@ -175,7 +175,7 @@ ObjectTree.prototype.renderTreeItem = function(infoObject, className, isVisible)
 				action = {markup: 'KnOffice', expression: 'CALL['+infoObject.getName()+'(' + startName + ')]' };
 			}
 			else {
-				action = {markup: 'KnOffice', expression: 'ERFRAGE['+infoObject.getName()+']' };
+				action = {markup: 'KnOffice', expression: infoObject.getName() };
 			}
 			var model = {
 				//id: 'mf'+(mfCounter++), 
