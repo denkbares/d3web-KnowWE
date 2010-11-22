@@ -41,7 +41,6 @@ import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.kdom.condition.NumericalFinding;
 import de.d3web.we.kdom.condition.NumericalIntervallFinding;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
-import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -70,9 +69,9 @@ import de.d3web.xcl.XCLRelationType;
 import de.d3web.xcl.inference.PSMethodXCL;
 import de.knowwe.core.CommentLineType;
 import de.knowwe.core.renderer.CommentRenderer;
+import de.knowwe.core.renderer.FontColorBackgroundRenderer;
 import de.knowwe.core.renderer.FontColorRenderer;
 import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
-
 
 /**
  * @author Jochen
@@ -222,7 +221,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 					if (solution != null) {
 						KnowledgeSlice xclModel = solution.getKnowledge(PSMethodXCL.class,
-							XCLModel.XCLMODEL);
+								XCLModel.XCLMODEL);
 
 						if (xclModel != null) {
 
@@ -343,6 +342,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 	class CoveringRelationRenderer extends KnowWEDomRenderer<CoveringRelation> {
 
 		public static final String KBID_KEY = "XCLRELATION_STORE_KEY";
+
 		@Override
 		public void render(KnowWEArticle article, Section<CoveringRelation> sec, KnowWEUserContext user, StringBuilder string) {
 

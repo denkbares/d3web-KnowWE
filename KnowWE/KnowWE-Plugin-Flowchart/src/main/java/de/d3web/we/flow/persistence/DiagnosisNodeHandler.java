@@ -51,6 +51,7 @@ public class DiagnosisNodeHandler extends AbstractNodeHandler {
 		super(ActionType.getInstance(), "KnOffice");
 	}
 
+	@Override
 	public boolean canCreateNode(KnowWEArticle article,
 			KnowledgeBaseManagement kbm, Section nodeSection) {
 
@@ -65,6 +66,7 @@ public class DiagnosisNodeHandler extends AbstractNodeHandler {
 		return actionString.contains("=");
 	}
 
+	@Override
 	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm,
 			Section nodeSection, Section flowSection, String id, List<Message> errors) {
 
@@ -93,7 +95,6 @@ public class DiagnosisNodeHandler extends AbstractNodeHandler {
 		}
 
 		action.setSolution(solution);
-
 
 		Score score = null;
 		try {

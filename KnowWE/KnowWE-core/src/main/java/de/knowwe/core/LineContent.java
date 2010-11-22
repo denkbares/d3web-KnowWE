@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2010 denkbares GmbH
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ * Computer Science VI, University of Wuerzburg
  * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -16,31 +17,30 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.d3web.property;
 
-import de.d3web.we.core.packaging.KnowWEPackageManager;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.core.TextLine;
+package de.knowwe.core;
 
-/**
- * Markup the add properties to an IDObject
- * 
- * @author Markus Friedrich (denkbares GmbH)
- * @created 10.11.2010
- */
-public class PropertyMarkup extends DefaultMarkupType {
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.renderer.DefaultTextLineRenderer;
 
-	private static DefaultMarkup m = null;
+public class LineContent extends DefaultAbstractKnowWEObjectType {
 
-	static {
-		m = new DefaultMarkup("Property");
-		m.addContentType(new TextLine(new PropertyType()));
-		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME, false);
+	private static LineContent instance = null;
+
+	public static LineContent getInstance() {
+		if (instance == null) {
+			instance = new LineContent();
+
+		}
+
+		return instance;
 	}
 
-	public PropertyMarkup() {
-		super(m);
-	}
+	@Override
+	protected void init() {
+		this.sectionFinder = new AllTextSectionFinder();
+		this.setCustomRenderer(new DefaultTextLineRenderer());
 
+	}
 }

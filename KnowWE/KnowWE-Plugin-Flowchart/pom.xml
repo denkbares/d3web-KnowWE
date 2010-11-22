@@ -67,13 +67,14 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Plugin-d3web</artifactId>
+			<artifactId>d3web-Plugin-DiaFlux</artifactId>
 			<version>${project.version}</version>
+			<type>jar</type>
 			<scope>compile</scope>
-		    </dependency>
+		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>d3web-Plugin-DiaFlux</artifactId>
+			<artifactId>KnowWE-Plugin-d3web-MarkupSet</artifactId>
 			<version>${project.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>

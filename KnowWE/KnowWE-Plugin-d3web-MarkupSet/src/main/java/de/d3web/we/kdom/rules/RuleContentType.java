@@ -45,7 +45,6 @@ import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.kdom.condition.NumericalFinding;
 import de.d3web.we.kdom.condition.NumericalIntervallFinding;
 import de.d3web.we.kdom.condition.SolutionStateCond;
-import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -61,6 +60,7 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.knowwe.core.renderer.FontColorBackgroundRenderer;
 import de.knowwe.core.renderer.FontColorRenderer;
 import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
 
@@ -221,18 +221,14 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		/**
 		 * Stores the Renderer used in <b>highlightRule<b>
 		 */
-		@SuppressWarnings("unchecked")
 		KnowWEDomRenderer greenRenderer = FontColorBackgroundRenderer.getRenderer(
 						highlightMarker, FontColorRenderer.COLOR5, "#33FF33");
 
-		@SuppressWarnings("unchecked")
 		KnowWEDomRenderer redRenderer = FontColorBackgroundRenderer.getRenderer(highlightMarker,
 				FontColorRenderer.COLOR5, "#FF9900");
 
-		@SuppressWarnings("unchecked")
 		KnowWEDomRenderer exceptionRenderer = FontColorBackgroundRenderer.getRenderer(
 				highlightMarker, FontColorRenderer.COLOR5, null);
-
 
 		/**
 		 * Renders the Rule with highlighting.
