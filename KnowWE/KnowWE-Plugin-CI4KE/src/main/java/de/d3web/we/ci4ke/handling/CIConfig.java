@@ -31,7 +31,7 @@ public final class CIConfig implements Cloneable {
 
 	public static final String CICONFIG_STORE_KEY = "CIConfig_Section_Store";
 
-	public static final CIConfig EMPTY_CONFIG = new CIConfig("", "",
+	public static final CIConfig DUMMY_CONFIG = new CIConfig("", "",
 			new HashMap<String, List<String>>(), CIBuildTriggers.onDemand);
 
 	private final String dashboardName;
@@ -66,12 +66,12 @@ public final class CIConfig implements Cloneable {
 	}
 
 	@Override
-	protected Object clone() throws CloneNotSupportedException {
-
+	public Object clone() throws CloneNotSupportedException {
 		CIConfig c = new CIConfig(this.dashboardName,
 				this.dashboardArticleTitle,
 				this.tests,
 				this.trigger);
 		return c;
 	}
+
 }

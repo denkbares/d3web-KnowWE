@@ -34,9 +34,9 @@ import de.d3web.we.ci4ke.handling.CITest;
 import de.d3web.we.ci4ke.handling.CITestResult;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 public class CIBuilder {
 
@@ -50,35 +50,20 @@ public class CIBuilder {
 	 * with the given ID
 	 * 
 	 * @param dashboardArticleTitle
-	 * @param dashboardID
+	 * @param dashboardName
 	 */
-	public CIBuilder(String dashboardArticleTitle, String dashboardID) {
+	public CIBuilder(String dashboardArticleTitle, String dashboardName) {
+		KnowWEArticle dashboardArticle = KnowWEEnvironment.getInstance().getArticleManager(
+				KnowWEEnvironment.DEFAULT_WEB).getArticle(dashboardArticleTitle);
 		Section<CIDashboardType> sec = CIUtilities.
-				findCIDashboardSection(dashboardArticleTitle, dashboardID);
+				findCIDashboardSection(dashboardArticleTitle, dashboardName);
 		if (sec == null) {
 			throw new IllegalArgumentException("No dashboard " +
-					"with the given ID found on this article!!");
+					"with the given Name found on this article!!");
 		}
-		this.config = (CIConfig) KnowWEUtils.getStoredObject(sec,
-				CIConfig.CICONFIG_STORE_KEY);
-	}
-
-	/**
-	 * This constructor searches all articles for the given dashboardID
-	 * 
-	 * @param dashboardID
-	 */
-	public CIBuilder(String dashboardID) {
-		Section<CIDashboardType> sec = CIUtilities.
-				findCIDashboardSection(dashboardID);
-		if (sec == null) {
-			throw new IllegalArgumentException("No dashboard with the given ID found!");
-		}
-		this.config = (CIConfig) KnowWEUtils.getStoredObject(sec,
+		this.config = (CIConfig) KnowWEUtils.getStoredObject(dashboardArticle, sec,
 				CIConfig.CICONFIG_STORE_KEY);
 
-		// Logger.getLogger(this.getClass().getName()).log(Level.INFO,
-		// ">>> constructed a new CIBuilder >>>");
 	}
 
 	/**
@@ -98,8 +83,6 @@ public class CIBuilder {
 	 * resultset - write the resultset to file (by PersistenceHandler)
 	 */
 	public void executeBuild() {
-
-		KnowWEWikiConnector conny = KnowWEEnvironment.getInstance().getWikiConnector();
 
 		Map<String, Class<? extends CITest>> testClasses =
 				CIUtilities.parseTestClasses(this.config.getTests().keySet());
@@ -182,37 +165,6 @@ public class CIBuilder {
 				this.config.getDashboardName(),
 				this.config.getDashboardArticleTitle());
 
-		// ------ TEST INCLUDES PARSEN --------
-
-		// Date executedDate = persi.getCurrentBuildExecutionDate();
-		// KnowWEArticle monitored = KnowWEEnvironment.getInstance().getArticle(
-		// KnowWEEnvironment.DEFAULT_WEB,
-		// this.config.getMonitoredArticleTitle());
-		//
-		// List<Section<Include>> list = new ArrayList<Section<Include>>();
-		// monitored.getSection().findSuccessorsOfType(Include.class, list);
-		// for (Section<Include> sec : list) {
-		// String targetArticle =
-		// Include.getIncludeAddress(sec).getTargetArticle();
-		// Map<Integer, Date> history =
-		// conny.getModificationHistory(targetArticle);
-		//
-		// int currentVersion = conny.getVersion(targetArticle);
-		// int lastVersion = 1;
-		//
-		// for (Map.Entry<Integer, Date> e : history.entrySet()) {
-		//
-		// if (e.getValue().before(executedDate)) {
-		// lastVersion = e.getKey();
-		// }
-		// }
-		// if (lastVersion < currentVersion) {
-		// resultset.addModifiedArticle(new
-		// ModifiedArticleWrapper(targetArticle,
-		// lastVersion, currentVersion));
-		// }
-		// }
-
-		persi.write(resultset);// , this.config.getMonitoredArticleTitle());
+		persi.write(resultset);
 	}
 }

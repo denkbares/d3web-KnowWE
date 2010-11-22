@@ -20,34 +20,27 @@
 
 package de.d3web.we.ci4ke.util;
 
-import groovy.lang.GroovyShell;
-
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.codehaus.groovy.control.CompilerConfiguration;
-
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
-import de.d3web.we.ci4ke.groovy.GroovyCITestScript;
-import de.d3web.we.ci4ke.groovy.GroovyCITestSubtreeHandler;
-import de.d3web.we.ci4ke.groovy.GroovyCITestType;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.d3web.we.ci4ke.handling.CITest;
 import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.handling.DynamicCITestManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 public class CIUtilities {
@@ -122,7 +115,9 @@ public class CIUtilities {
 			article.getSection().findSuccessorsOfType(CIDashboardType.class, list);
 
 			for (Section<CIDashboardType> sec : list) {
-				if (CIDashboardType.getAnnotation(sec, CIDashboardType.NAME_KEY).equals(dashboardName)) return sec;
+				if (CIDashboardType.getAnnotation(sec, CIDashboardType.NAME_KEY).equals(dashboardName)) {
+					return sec;
+				}
 			}
 		}
 		return null;
@@ -147,7 +142,9 @@ public class CIUtilities {
 		article.getSection().findSuccessorsOfType(CIDashboardType.class, list);
 		// iterate all sections and look for the given dashboard ID
 		for (Section<CIDashboardType> sec : list) {
-			if (CIDashboardType.getAnnotation(sec, CIDashboardType.NAME_KEY).equals(dashboardName)) return sec;
+			if (CIDashboardType.getAnnotation(sec, CIDashboardType.NAME_KEY).equals(dashboardName)) {
+				return sec;
+			}
 		}
 		return null;
 	}
@@ -164,19 +161,31 @@ public class CIUtilities {
 		Map<String, Class<? extends CITest>> classesMap =
 				new TreeMap<String, Class<? extends CITest>>();
 
-		Extension[] allTests = PluginManager.getInstance().
-				getExtensions("KnowWEExtensionPoints", "CITest");
+		List<Extension> allTests = Arrays.asList(PluginManager.getInstance().
+				getExtensions("KnowWEExtensionPoints", "CITest"));
+
 		for (String testClassName : testClassNames) {
+			boolean javaClassFound = false;
 			for (Extension e : allTests) {
 				if (testClassName.equals(e.getName())) {
 					try {
-						Class<?> testClass = Class.forName(e.getParameter("class"));
-						if (CITest.class.isAssignableFrom(testClass)) {
-							classesMap.put(testClassName, (Class<? extends CITest>) testClass);
+						Class<?> clazz = Class.forName(e.getParameter("class"));
+						if (CITest.class.isAssignableFrom(clazz)) {
+							classesMap.put(testClassName, (Class<? extends CITest>) clazz);
+							javaClassFound = true;
 						}
 					}
 					catch (ClassNotFoundException e1) {
 					}
+				}
+			}
+			// if no corresponding Java CITest Class was found, try to search
+			// for dynamically implemented CITests!
+			if (!javaClassFound) {
+				Class<? extends CITest> testClazz = DynamicCITestManager.
+						INSTANCE.getCITestClass(testClassName);
+				if (testClazz != null) {
+					classesMap.put(testClassName, testClazz);
 				}
 			}
 		}
@@ -247,43 +256,7 @@ public class CIUtilities {
 	// return classesMap;
 	// }
 
-	public static Class<? extends CITest> parseGroovyCITestSection(Section<GroovyCITestType> testSection) {
 
-		CompilerConfiguration cc = new CompilerConfiguration();
-		cc.setScriptBaseClass(GroovyCITestScript.class.getName());
-		GroovyShell shell = new GroovyShell(cc);
-
-		String groovycode = GroovyCITestSubtreeHandler.PREPEND
-				+ DefaultMarkupType.getContent(testSection);
-
-		@SuppressWarnings("unchecked")
-		Class<? extends CITest> clazz =
-				(Class<? extends CITest>) shell.parse(groovycode).getClass();
-
-		return clazz;
-
-	}
-
-	public static Map<String, Section<GroovyCITestType>> getAllGroovyCITestSections(String web) {
-		// return map
-		Map<String, Section<GroovyCITestType>> sectionsMap = new HashMap<String, Section<GroovyCITestType>>();
-		// a collection containing all wiki-articles
-		Collection<KnowWEArticle> allWikiArticles = KnowWEEnvironment.getInstance().
-						getArticleManager(web).getArticles();
-		// iterate over all articles
-		for (KnowWEArticle article : allWikiArticles) {
-			List<Section<GroovyCITestType>> sectionsList = new ArrayList<Section<GroovyCITestType>>();
-			// find all GroovyCITestType sections on this article...
-			article.getSection().findSuccessorsOfType(GroovyCITestType.class, sectionsList);
-			// ...and add them to our Map
-			for (Section<GroovyCITestType> section : sectionsList) {
-				// a GroovyCITest is uniquely identified by its name-annotation
-				String testName = DefaultMarkupType.getAnnotation(section, "name");
-				sectionsMap.put(testName, section);
-			}
-		}
-		return sectionsMap;
-	}
 
 	// RENDER - HELPERS
 
@@ -369,9 +342,15 @@ public class CIUtilities {
 	 * @return A string with the replacement done.
 	 */
 	public static final String replaceString(String orig, String src, String dest) {
-		if (orig == null) return null;
-		if (src == null || dest == null) throw new NullPointerException();
-		if (src.length() == 0) return orig;
+		if (orig == null) {
+			return null;
+		}
+		if (src == null || dest == null) {
+			throw new NullPointerException();
+		}
+		if (src.length() == 0) {
+			return orig;
+		}
 
 		StringBuffer res = new StringBuffer(orig.length() + 20); // Pure
 		// guesswork

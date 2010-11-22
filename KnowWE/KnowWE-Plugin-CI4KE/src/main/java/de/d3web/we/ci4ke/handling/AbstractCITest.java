@@ -38,7 +38,7 @@ public abstract class AbstractCITest implements CITest {
 	protected List<String> parameters;
 
 	public AbstractCITest() {
-		this.config = CIConfig.EMPTY_CONFIG;
+		this.config = CIConfig.DUMMY_CONFIG;
 		this.parameters = new ArrayList<String>();
 	}
 

@@ -37,18 +37,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>	
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
-		id="GroovyCITestType">
-		<parameter id="class"
-			value="de.d3web.we.ci4ke.groovy.GroovyCITestType" />
-		<parameter id="name" value="GroovyCITestType" />
-		<parameter id="description" value="KnowWEObjectType GroovyCITestType" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="scope" value="root" />
-	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="EventListener"
 		id="CIEventForwarder">
 		<parameter id="class"
