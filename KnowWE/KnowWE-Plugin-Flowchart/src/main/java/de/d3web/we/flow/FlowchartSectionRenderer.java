@@ -69,7 +69,7 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer {
 			String preview = xml.substring(startPos + 43, endPos - 8).trim();
 			return KnowWEUtils
 					.maskHTML(
-					"<div style='cursor: pointer;'>"
+					"<div>"
 							+
 							"<link rel='stylesheet' type='text/css' href='cc/kbinfo/dropdownlist.css'></link>"
 							// + "\r\n"
@@ -97,8 +97,6 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer {
 							+
 							"<link rel='stylesheet' type='text/css' href='cc/flow/rule.css'></link>"
 							// + "\r\n"
-							+
-							"<style type='text/css'>div, span, a { cursor: pointer !important; }</style>"
 							+
 							preview +
 							"</div>");
