@@ -48,6 +48,11 @@ public class TagsContent extends XMLContent {
 	private class TagsContentOWLSubTreeHandler extends OwlSubtreeHandler {
 
 		@Override
+		public boolean isIgnoringPackageCompile() {
+			return true;
+		}
+
+		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			String text = s.getOriginalText();
 			IntermediateOwlObject io = new IntermediateOwlObject();

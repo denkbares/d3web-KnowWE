@@ -20,16 +20,28 @@
 
 package de.knowwe.tagging;
 
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.rendering.NothingRenderer;
 
-public class Tags extends AbstractXMLObjectType {
+public class Tags extends DefaultMarkupType {
+
+	private static DefaultMarkup m = null;
+
+	static {
+		m = new DefaultMarkup("tags");
+		m.addContentType(new TagsContent());
+	}
 
 	public Tags() {
-		super("tags");
+		super(m);
+		setNotRecyclable(true);
 	}
 
 	@Override
-	protected void init() {
-		childrenTypes.add(new TagsContent());
+	protected KnowWEDomRenderer<?> getDefaultRenderer() {
+		// "This Section is not compiled in any article" will not be displayed
+		return NothingRenderer.getInstance();
 	}
 }
