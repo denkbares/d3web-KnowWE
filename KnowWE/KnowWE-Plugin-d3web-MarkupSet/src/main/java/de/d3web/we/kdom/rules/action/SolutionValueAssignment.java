@@ -36,6 +36,7 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.util.SplitUtility;
 import de.d3web.we.object.SolutionReference;
 import de.d3web.we.utils.D3webUtils;
 
@@ -97,19 +98,15 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
-			if (text.contains(" = ")) {
-
-				int start = 0;
-				int end = text.length();
-				while (text.charAt(end - 1) == ' ' || text.charAt(end - 1) == '"') {
-					end--;
-					if (start >= end - 1) return null;
-				}
-				text = text.substring(start, end);
-
+			// check for comparator
+			if (SplitUtility.containsUnquoted(text, "=")) {
+				// get right hand side of comparator
+				int index = SplitUtility.indexOfUnquoted(text, "=");
+				String rightHandSide = text.substring(index + 1).trim();
+				// scan right hand side for score symbol match
 				for (String score : possibleScorePoints) {
-					String trim = text.trim();
-					if (trim.endsWith(score)) {
+					if (rightHandSide.equals(score)) {
+						// ..and take all when match is found
 						return new AllTextFinderTrimmed().lookForSections(text, father,
 								type);
 					}
