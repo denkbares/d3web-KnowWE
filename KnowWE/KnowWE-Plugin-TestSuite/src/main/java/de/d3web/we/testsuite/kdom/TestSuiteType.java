@@ -76,7 +76,7 @@ public class TestSuiteType extends DefaultMarkupType {
 
 		@Override
 		public boolean isIgnoringPackageCompile() {
-			return false;
+			return true;
 		}
 
 		@Override
@@ -127,6 +127,10 @@ public class TestSuiteType extends DefaultMarkupType {
 					}
 
 				}
+			}
+			else {
+				messages.add(new SimpleMessageError("Unable to get knowledge base from article: "
+						+ getAnnotation(s, KBSOURCE)));
 			}
 
 			return messages;

@@ -1,8 +1,9 @@
-<Solutions-section>
+%%Solution
 Other problem
-</Solutions-section>
+@package test
+%
 
-<Questions-section>
+%%Question
 Observations
 - Driving [mc]
 -- insufficient power on partial load
@@ -12,15 +13,22 @@ Observations
 -- unsteady idle speed
 -- everything is fine
 --- Other problem (P7)
-</Questions-section>
+@package test
+%
+
+%%KnowledgeBase
+@comment just for a junit test
+@uses test
+/%
 
 %%TestSuite
 STC1 {
 	Driving = everything is fine :
 	Other problem (established);
 }
-@KnowledgeBase KBTest;
-/%
+@KnowledgeBase TestSuiteTest;
+@package test
+%
 
 %%TestSuiteRunner
 @TestSuite TestSuiteTest
