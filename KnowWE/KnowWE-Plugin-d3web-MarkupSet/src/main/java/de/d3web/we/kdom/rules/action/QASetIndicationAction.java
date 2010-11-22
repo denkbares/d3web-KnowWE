@@ -80,7 +80,7 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 				}
 
 				return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(
-						termName + "not found - expected was Question or Questionnaire"));
+						"Could not find '" + termName+ "' - expected was Question or Questionnaire"));
 			}
 		});
 
