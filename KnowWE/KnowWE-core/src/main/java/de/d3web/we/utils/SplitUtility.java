@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.util;
+package de.d3web.we.utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -262,6 +262,5 @@ public class SplitUtility {
 		return null;
 
 	}
-
 
 }

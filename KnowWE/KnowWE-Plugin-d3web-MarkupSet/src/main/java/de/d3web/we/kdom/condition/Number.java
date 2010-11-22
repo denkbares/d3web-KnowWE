@@ -27,13 +27,13 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.InvalidNumberError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.knowwe.core.renderer.FontColorRenderer;
 
 public class Number extends DefaultAbstractKnowWEObjectType {
 

@@ -27,11 +27,11 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.questionTree.QuestionTreeAnswerDefinition;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.CustomRenderer;
 import de.d3web.we.kdom.rendering.RenderingMode;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
  * QuestionTreeAnswerDefRenderer. Renders the

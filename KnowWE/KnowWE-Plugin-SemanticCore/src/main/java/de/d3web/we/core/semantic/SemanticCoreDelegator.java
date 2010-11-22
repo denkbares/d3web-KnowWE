@@ -81,8 +81,6 @@ public class SemanticCoreDelegator implements ISemanticCore, Instantiation, Even
 
 	}
 
-
-
 	/**
 	 * 
 	 * @return an instance, you're in trouble if it hasn't been initialized
@@ -255,9 +253,7 @@ public class SemanticCoreDelegator implements ISemanticCore, Instantiation, Even
 
 		SemanticCoreDelegator.initImpl(KnowWEEnvironment.getInstance());
 
-
 	}
-
 
 	public static List<ISemanticCore> getSemanticCoreImpl() {
 		Extension[] extensions =

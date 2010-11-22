@@ -38,8 +38,6 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
-import de.d3web.we.upload.KnOfficeUploadHandler;
-import de.d3web.we.upload.UploadManager;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -89,9 +87,6 @@ public class D3webModule {
 							+ File.separatorChar + ontfile));
 			loadData(context);
 		}
-
-		UploadManager.getInstance()
-				.registerHandler(new KnOfficeUploadHandler());
 	}
 
 	/**

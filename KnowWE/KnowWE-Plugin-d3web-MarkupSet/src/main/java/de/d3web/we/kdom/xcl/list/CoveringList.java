@@ -35,17 +35,13 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.basic.CommentLineType;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.Finding;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.kdom.condition.NumericalFinding;
 import de.d3web.we.kdom.condition.NumericalIntervallFinding;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
-import de.d3web.we.kdom.renderer.CommentRenderer;
 import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -72,6 +68,10 @@ import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
 import de.d3web.xcl.inference.PSMethodXCL;
+import de.knowwe.core.CommentLineType;
+import de.knowwe.core.renderer.CommentRenderer;
+import de.knowwe.core.renderer.FontColorRenderer;
+import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
 
 
 /**

@@ -22,9 +22,9 @@ package de.d3web.we.kdom.questionTree;
 
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.QuestionDefinition;
+import de.knowwe.core.dashtree.DashTreeUtils;
 
 public class QuestionTreeAnswerDefinition extends AnswerDefinition {
 

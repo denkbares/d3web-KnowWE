@@ -24,11 +24,12 @@ import java.util.List;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.kdom.questionTree.QuestionLine;
 import de.d3web.we.kdom.rendering.CustomRenderer;
 import de.d3web.we.kdom.rendering.RenderingMode;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
  * QuestionLineRenderer. Renders the {@link QuestionLine } in the collapsible

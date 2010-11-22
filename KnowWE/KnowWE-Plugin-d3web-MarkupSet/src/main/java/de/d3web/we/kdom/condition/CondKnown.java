@@ -27,7 +27,6 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NoSuchObjectError;
@@ -36,6 +35,7 @@ import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
  * Implements the CondKnown Condition to be used as child type in

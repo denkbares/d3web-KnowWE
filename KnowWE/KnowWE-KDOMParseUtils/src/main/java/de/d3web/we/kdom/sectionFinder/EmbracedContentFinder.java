@@ -24,7 +24,7 @@ import java.util.List;
 
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.util.SplitUtility;
+import de.d3web.we.utils.SplitUtility;
 
 /**
  * Finds stuff embraced (regarding quoted occurrences of the embracing signs)

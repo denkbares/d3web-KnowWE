@@ -101,4 +101,14 @@
 		<parameter id="scope" value="root" />
 	</extension>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="DownloadKnowledgeBase">
+		<parameter id="class"
+			value="de.knowwe.d3web.action.DownloadKnowledgeBase" />
+		<parameter id="name" value="DownloadKnowledgeBase" />
+		<parameter id="description" value="Downloads a specific d3web knowledge base archive of a named wiki article." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
 </plugin>

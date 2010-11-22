@@ -35,7 +35,6 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -47,11 +46,12 @@ import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.type.AnonymousType;
-import de.d3web.we.kdom.util.SplitUtility;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.utils.SplitUtility;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.knowwe.core.dashtree.DashTreeUtils;
 
 public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 

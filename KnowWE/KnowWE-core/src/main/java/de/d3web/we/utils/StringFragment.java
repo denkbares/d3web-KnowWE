@@ -1,4 +1,4 @@
-package de.d3web.we.kdom.util;
+package de.d3web.we.utils;
 
 public class StringFragment {
 

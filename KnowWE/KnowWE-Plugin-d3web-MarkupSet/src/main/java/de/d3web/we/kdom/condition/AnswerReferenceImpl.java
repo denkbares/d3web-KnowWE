@@ -21,7 +21,6 @@
 package de.d3web.we.kdom.condition;
 
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
 

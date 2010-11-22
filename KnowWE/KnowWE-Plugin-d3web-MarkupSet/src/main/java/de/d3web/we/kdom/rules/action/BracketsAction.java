@@ -18,27 +18,13 @@
  */
 package de.d3web.we.kdom.rules.action;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import de.d3web.core.inference.PSAction;
-import de.d3web.core.knowledge.terminology.QASet;
-import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.indication.ActionContraIndication;
-import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.KnowWETerm;
-import de.d3web.we.kdom.rules.action.ContraIndicationAction.QuestionReferenceInBrackets;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.type.AnonymousType;
-import de.d3web.we.kdom.util.SplitUtility;
-import de.d3web.we.object.QuestionReference;
-import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.utils.SplitUtility;
 
 /**
  * 

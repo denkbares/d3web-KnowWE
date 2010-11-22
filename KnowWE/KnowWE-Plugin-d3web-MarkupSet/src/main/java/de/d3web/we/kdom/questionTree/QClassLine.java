@@ -27,9 +27,6 @@ import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.dashTree.DashTreeElementContent;
-import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
@@ -42,6 +39,9 @@ import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.knowwe.core.dashtree.DashTreeElement;
+import de.knowwe.core.dashtree.DashTreeElementContent;
+import de.knowwe.core.dashtree.DashTreeUtils;
 
 public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
 

@@ -20,8 +20,8 @@
 
 package de.d3web.we.kdom.questionTree;
 
-import de.d3web.we.kdom.dashTree.DashTree;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
+import de.knowwe.core.dashtree.DashTree;
 
 public class QuestionDashTree extends DashTree {
 

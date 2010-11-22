@@ -25,7 +25,7 @@ import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.TermReference;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
  * 

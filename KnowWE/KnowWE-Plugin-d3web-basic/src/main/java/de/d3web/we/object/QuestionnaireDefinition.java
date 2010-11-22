@@ -29,9 +29,6 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.dashTree.DashTreeUtils;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
@@ -39,6 +36,9 @@ import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
+import de.knowwe.core.dashtree.DashTreeElement;
+import de.knowwe.core.dashtree.DashTreeUtils;
+import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
  * 

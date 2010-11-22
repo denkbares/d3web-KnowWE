@@ -30,15 +30,15 @@ import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalExcept
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.InvalidNumberError;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.knowwe.core.dashtree.DashTreeElement;
+import de.knowwe.core.dashtree.DashTreeUtils;
+import de.knowwe.core.renderer.FontColorRenderer;
 
 public class NumericCondLine extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
 

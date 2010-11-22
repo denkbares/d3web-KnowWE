@@ -33,8 +33,6 @@ import de.d3web.core.manage.RuleFactory;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.questionTree.NumericCondLine;
 import de.d3web.we.kdom.questionTree.QuestionDashTree;
@@ -48,6 +46,8 @@ import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.QuestionnaireReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
+import de.knowwe.core.dashtree.DashTreeElement;
+import de.knowwe.core.dashtree.DashTreeUtils;
 
 public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 

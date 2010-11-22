@@ -21,8 +21,8 @@ package de.d3web.we.solutionpanel;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
-import de.d3web.we.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
 
 /**
  * 

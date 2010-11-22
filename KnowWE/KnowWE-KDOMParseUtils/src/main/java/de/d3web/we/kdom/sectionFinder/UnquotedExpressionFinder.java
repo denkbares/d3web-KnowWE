@@ -25,7 +25,7 @@ import java.util.List;
 
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.util.SplitUtility;
+import de.d3web.we.utils.SplitUtility;
 
 /**
  * This SectionFinder finds the _all_ unquoted occurrence of the 'symbol' in the

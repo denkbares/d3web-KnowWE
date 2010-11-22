@@ -28,7 +28,7 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.kdom.util.SplitUtility;
+import de.d3web.we.utils.SplitUtility;
 
 public class RatedSolutions extends DefaultAbstractKnowWEObjectType {
 

@@ -40,8 +40,8 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.kdom.util.SplitUtility;
 import de.d3web.we.object.QuestionReference;
+import de.d3web.we.utils.SplitUtility;
 
 /**
  * A type implementing a cond-num TerminalCondition {@link TerminalCondition} It

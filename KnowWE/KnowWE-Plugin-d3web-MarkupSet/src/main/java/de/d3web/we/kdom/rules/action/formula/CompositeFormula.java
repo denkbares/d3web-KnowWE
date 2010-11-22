@@ -14,7 +14,7 @@ import de.d3web.we.kdom.condition.helper.BracedConditionContent;
 import de.d3web.we.kdom.condition.helper.CompCondLineEndComment;
 import de.d3web.we.kdom.condition.helper.ConjunctSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.util.SplitUtility;
+import de.d3web.we.utils.SplitUtility;
 
 public class CompositeFormula extends DefaultAbstractKnowWEObjectType {
 

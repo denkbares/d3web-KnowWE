@@ -26,11 +26,11 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.CustomRenderer;
 import de.d3web.we.kdom.rendering.RenderingMode;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
  * QuestionDefRenderer. Renders the {@link QuestionDefRenderer } in the

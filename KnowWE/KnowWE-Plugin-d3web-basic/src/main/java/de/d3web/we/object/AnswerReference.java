@@ -30,7 +30,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.NotUniqueKnowWETerm;
 import de.d3web.we.kdom.objects.TermReference;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
  * 

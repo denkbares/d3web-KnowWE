@@ -37,12 +37,9 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
-import de.d3web.we.kdom.dashTree.DashTreeElementContent;
-import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.questionTree.QuestionLine.QuestionTypeDeclaration;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
@@ -58,13 +55,16 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.StringEnumChecker;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
-import de.d3web.we.kdom.util.SplitUtility;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.object.QuestionDefinition.QuestionType;
 import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.utils.SplitUtility;
+import de.knowwe.core.dashtree.DashTreeElementContent;
+import de.knowwe.core.dashtree.DashTreeUtils;
+import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
  * QuestionLine of the QuestionTree, here Questions can be defined

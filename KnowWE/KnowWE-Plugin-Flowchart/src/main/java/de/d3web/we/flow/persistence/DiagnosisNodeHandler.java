@@ -28,7 +28,6 @@ import java.util.List;
 import de.d3web.KnOfficeParser.util.Scorefinder;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.session.blackboard.FactFactory;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.report.Message;

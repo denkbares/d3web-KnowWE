@@ -29,8 +29,6 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
-import de.d3web.we.kdom.dashTree.DashTreeElementContent;
-import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.questionTree.ObjectDescription;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -38,6 +36,8 @@ import de.d3web.we.kdom.report.message.RelationCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.object.SolutionDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.knowwe.core.dashtree.DashTreeElementContent;
+import de.knowwe.core.dashtree.DashTreeUtils;
 
 /**
  * @author Jochen

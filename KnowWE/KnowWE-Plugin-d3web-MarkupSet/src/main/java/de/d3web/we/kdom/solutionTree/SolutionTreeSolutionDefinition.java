@@ -22,8 +22,8 @@ package de.d3web.we.kdom.solutionTree;
 
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.object.SolutionDefinition;
+import de.knowwe.core.dashtree.DashTreeUtils;
 
 public class SolutionTreeSolutionDefinition extends SolutionDefinition {
 

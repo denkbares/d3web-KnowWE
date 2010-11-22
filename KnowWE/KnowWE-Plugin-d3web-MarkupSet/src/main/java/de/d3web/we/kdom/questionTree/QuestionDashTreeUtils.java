@@ -37,13 +37,13 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.FindingConditionBuilder;
-import de.d3web.we.kdom.dashTree.DashSubtree;
-import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.TermReference;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
+import de.knowwe.core.dashtree.DashSubtree;
+import de.knowwe.core.dashtree.DashTreeElement;
+import de.knowwe.core.dashtree.DashTreeUtils;
 
 public class QuestionDashTreeUtils {
 

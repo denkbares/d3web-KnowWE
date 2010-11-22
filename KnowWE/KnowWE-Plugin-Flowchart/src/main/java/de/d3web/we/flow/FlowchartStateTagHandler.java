@@ -27,10 +27,10 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
 
 /**
  * [{KnowWEPlugin Flowchart}]

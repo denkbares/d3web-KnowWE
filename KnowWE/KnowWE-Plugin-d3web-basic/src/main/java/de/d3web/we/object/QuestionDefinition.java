@@ -28,7 +28,6 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
@@ -36,6 +35,7 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.MessageUtils;
+import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
  * 
@@ -59,7 +59,6 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 	public abstract QuestionType getQuestionType(Section<QuestionDefinition> s);
 
-	@SuppressWarnings("unchecked")
 	public abstract Section<? extends QASetDefinition> getParentQASetSection(Section<? extends QuestionDefinition> qdef);
 
 	public abstract int getPosition(Section<QuestionDefinition> s);
@@ -83,7 +82,6 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			String name = qidSection.get().getTermName(qidSection);
 
 			KnowledgeBaseManagement mgn = getKBM(article);
-
 
 			Section<? extends QASetDefinition> parentQASetSection =
 					sec.get().getParentQASetSection(sec);

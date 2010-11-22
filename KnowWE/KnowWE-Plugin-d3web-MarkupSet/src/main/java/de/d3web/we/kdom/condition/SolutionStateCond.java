@@ -16,8 +16,8 @@ import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.type.AnonymousType;
-import de.d3web.we.kdom.util.SplitUtility;
 import de.d3web.we.object.SolutionReference;
+import de.d3web.we.utils.SplitUtility;
 
 /**
  * 

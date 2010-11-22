@@ -33,8 +33,6 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
-import de.d3web.we.kdom.dashTree.DashSubtree;
-import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.questionTree.QuestionTreeElementContent;
 import de.d3web.we.kdom.rendering.CustomRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
@@ -44,6 +42,8 @@ import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.knowwe.core.dashtree.DashSubtree;
+import de.knowwe.core.dashtree.DashTreeElement;
 
 /**
  * This renderer renders a collapsible/expandable decision tree. This tree is

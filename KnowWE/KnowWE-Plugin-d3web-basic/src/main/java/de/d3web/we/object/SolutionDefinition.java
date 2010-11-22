@@ -27,16 +27,14 @@ import java.util.List;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Rating.State;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.kdom.renderer.ObjectInfoLinkRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
@@ -49,6 +47,8 @@ import de.d3web.we.utils.MessageUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.inference.PSMethodXCL;
+import de.knowwe.core.renderer.FontColorRenderer;
+import de.knowwe.core.renderer.ObjectInfoLinkRenderer;
 
 /**
  * 
@@ -64,7 +64,7 @@ public abstract class SolutionDefinition
 	public SolutionDefinition() {
 		this(Priority.HIGHEST, true);
 	}
-	
+
 	public SolutionDefinition(Priority p, boolean alreadyDefinedWarning) {
 		super(Solution.class);
 		this.setCustomRenderer(new SolutionIDHighlightingRenderer());
@@ -165,7 +165,7 @@ public abstract class SolutionDefinition
 	}
 
 	static class CreateSolutionHandler extends D3webSubtreeHandler<SolutionDefinition> {
-		
+
 		private boolean alreadyDefinedWarning = true;
 
 		public CreateSolutionHandler(boolean alreadyDefinedWarning) {
@@ -180,11 +180,12 @@ public abstract class SolutionDefinition
 					solutionSection)) {
 				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(article,
 						solutionSection);
-				
+
 				if (this.alreadyDefinedWarning) {
 					return MessageUtils.asList((KDOMReportMessage) new ObjectAlreadyDefinedWarning(
 							solutionSection.get().getTermName(solutionSection)));
-				} else {
+				}
+				else {
 					return new ArrayList<KDOMReportMessage>(0);
 				}
 			}
