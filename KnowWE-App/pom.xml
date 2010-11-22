@@ -250,6 +250,24 @@
 			</dependencies>
 		</profile>
 
+		<!-- Continuous Integration plugin - Groovy addons -->
+		<profile>
+			<id>ci4ke-groovy-plugin</id>
+			<activation>
+				<property>
+					<name>ci4ke-groovy-plugin</name>
+				</property>
+			</activation>
+
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-CI4KE-Groovy-Addons</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 
 		<!-- Hermes Module -->
 		<profile>
