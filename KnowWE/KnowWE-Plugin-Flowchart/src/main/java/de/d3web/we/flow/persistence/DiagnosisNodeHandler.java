@@ -23,9 +23,10 @@
  */
 package de.d3web.we.flow.persistence;
 
+import java.io.IOException;
 import java.util.List;
 
-import de.d3web.KnOfficeParser.util.Scorefinder;
+import de.d3web.core.io.utilities.Util;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.diaFlux.flow.FlowFactory;
@@ -93,7 +94,14 @@ public class DiagnosisNodeHandler extends AbstractNodeHandler {
 
 		action.setSolution(solution);
 
-		Score score = Scorefinder.getScore(scoreString);
+
+		Score score = null;
+		try {
+			score = Util.getScore(scoreString);
+		}
+		catch (IOException e) {
+			// happens only for pp-rules
+		}
 
 		if (score == null) {
 			errors.add(new Message("Score not found: " + scoreString));
