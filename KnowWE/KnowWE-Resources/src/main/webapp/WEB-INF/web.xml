@@ -28,6 +28,14 @@
 		<servlet-name>ActionServlet</servlet-name>
 		<url-pattern>/action/*</url-pattern>
 	</servlet-mapping>
+	
+	<!-- Set JSP pages to UTF-8 by default.  -->
+	<jsp-config>
+    <jsp-property-group>
+        <url-pattern>*.jsp</url-pattern>
+        <page-encoding>UTF-8</page-encoding>
+    </jsp-property-group>
+	</jsp-config>
 
 	<!-- WikiServletFilter defines a servlet filter which filters all requests. 
 		It was introduced in JSPWiki 2.4. In 2.7/2.8, the WikiServlet filter also 
