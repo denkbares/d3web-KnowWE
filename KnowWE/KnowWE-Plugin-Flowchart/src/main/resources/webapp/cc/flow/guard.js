@@ -131,14 +131,10 @@ Guard.createPossibleGuards = function(nodeModel) {
 	var result = [];
 	if (infoObject.getClassInstance() == KBInfo.Question) {
 		switch (infoObject.getType()) {
-			//add choices of jn value
 			case KBInfo.Question.TYPE_BOOL:
 				// for now we receive also choices for boolean questions 
 				// from the server so treat them similar to oc questions
-//				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = "Yes"', 'ja'));
-//				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = "No"', 'nein'));
-				//break;
-			//add choices of oc/mc value
+				//add choices of oc/mc value
 			case KBInfo.Question.TYPE_OC:
 			case KBInfo.Question.TYPE_MC:
 				result.push('Wert abfragen');
@@ -179,8 +175,8 @@ Guard.createPossibleGuards = function(nodeModel) {
 	}
 	else if (infoObject.getClassInstance() == KBInfo.Solution) {
 		result.push('Anwender');
-		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = "io"', "io"));
-		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = "nio"', "nio"));		
+		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = confirmed', "confirmed"));
+		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = rejected', "rejected"));		
 		result.push('Herleitung');
 		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = "etabliert"', "etabliert"));
 		result.push('Allgemein');
@@ -193,10 +189,10 @@ Guard.createPossibleGuards = function(nodeModel) {
 			for (var i=0; i<options.length; i++) {
 				result.push(new Guard('KnOffice', 'IS_ACTIVE[' + infoObject.getName()+'('+options[i]+')]', options[i]));
 			}
-			result.push('Ergebnis ausschliessen');
-			for (var i=0; i<options.length; i++) {
-				result.push(new Guard('KnOffice', 'NICHT(IS_ACTIVE[' + infoObject.getName()+'('+options[i]+')])', options[i]));
-			}
+			//result.push('Ergebnis ausschliessen');
+			//for (var i=0; i<options.length; i++) {
+			//	result.push(new Guard('KnOffice', 'NICHT(IS_ACTIVE[' + infoObject.getName()+'('+options[i]+')])', '&ne; ' + options[i]));
+			//}
 		}
 		result.push('Allgemein');
 		result.push(new Guard('KnOffice', 'PROCESSED[' + infoObject.getName()+']', 'abgearbeitet'));

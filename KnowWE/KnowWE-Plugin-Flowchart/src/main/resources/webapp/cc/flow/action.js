@@ -111,13 +111,19 @@ Action._extractFormulaExpression = function(markup, formExpr){
 	
 }
 
-Action._createExpression = function(name, value) {
+Action._createExpression = function(name, value, isKeyword) {
 	var result;
 	if (Action._isFormulaString(value)) {
 		result = '"' + name.escapeQuote() + '" = ' + value;
-	}
+	} 
 	else {
-		result = '"' + name.escapeQuote() + '" = "' + value.escapeQuote() + '"';
+		if (isKeyword){ // dont add quotes on right side if keyword is present
+			result = '"' + name.escapeQuote() + '" = ' + value;
+		} else {
+			result = '"' + name.escapeQuote() + '" = "' + value.escapeQuote() + '"';
+		}
+		
+		
 	}
 	
 	return result;
@@ -306,21 +312,17 @@ Action.createPossibleActions = function(infoObject) {
 		}
 	}
 	else if (infoObject.getClassInstance() == KBInfo.Solution) {
-		result.push('---- Loesung bewerten ----');			
-		result.push(new Action('KnOffice', Action._createExpression(name, 'P7')));
-		result.push(new Action('KnOffice', Action._createExpression(name, 'P6')));
-		result.push(new Action('KnOffice', Action._createExpression(name, 'P5')));
-		result.push(new Action('KnOffice', Action._createExpression(name, 'P4')));
-		result.push(new Action('KnOffice', Action._createExpression(name, 'P3')));
-		result.push(new Action('KnOffice', Action._createExpression(name, 'P2')));
-		result.push(new Action('KnOffice', Action._createExpression(name, 'P1')));
-		result.push(new Action('KnOffice', Action._createExpression(name, 'N1')));
-		result.push(new Action('KnOffice', Action._createExpression(name, 'N2')));
-		result.push(new Action('KnOffice', Action._createExpression(name, 'N3')));
-		result.push(new Action('KnOffice', Action._createExpression(name, 'N4')));
-		result.push(new Action('KnOffice', Action._createExpression(name, 'N5')));
-		result.push(new Action('KnOffice', Action._createExpression(name, 'N6')));
-		result.push(new Action('KnOffice', Action._createExpression(name, 'N7')));
+		result.push('---- Loesung bewerten ----');
+		 
+		for (var i = 7; i > 1; i--){
+			result.push(new Action('KnOffice', Action._createExpression(name, 'P' + i, true)));
+			
+		}
+		for (var i = 1; i <= 7; i++){
+			result.push(new Action('KnOffice', Action._createExpression(name, 'N' + i, true)));
+			
+		}
+
 	}
 	else if (infoObject.getClassInstance() == KBInfo.Flowchart) {
 		result.push('---- Startknoten aufrufen ----');			
