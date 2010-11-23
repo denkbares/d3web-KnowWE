@@ -1,11 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="KnowWE-Plugin-d3web-basic" version="0.0.1">
-	
+
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
 	</requires>
-	
+
 	<runtime>
 		<library id="de.d3web" path="." type="code">
 			<export prefix="*" />
@@ -14,10 +14,11 @@
 			<export prefix="*" />
 		</library>
 	</runtime>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
 		id="KnowledgeBaseDownloadProvider">
-		<parameter id="class" value="de.d3web.we.knowledgebase.KnowledgeBaseDownloadProvider" />
+		<parameter id="class"
+			value="de.d3web.we.knowledgebase.KnowledgeBaseDownloadProvider" />
 		<parameter id="name" value="KnowledgeBaseDownloadProvider" />
 		<parameter id="description"
 			value="Offer a download button to download the knowledge base as an knowledge archive." />
@@ -25,7 +26,7 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="/KnowledgeBase" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="KnowledgeBaseType">
 		<parameter id="class" value="de.d3web.we.knowledgebase.KnowledgeBaseType" />
@@ -36,7 +37,7 @@
 		<parameter id="priority" value="9" />
 		<parameter id="scope" value="root" />
 	</extension>
-		
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="KBRenderer">
 		<parameter id="class" value="de.d3web.we.knowledgebase.KBRenderer" />
@@ -47,27 +48,26 @@
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Instantiation"
 		id="d3webInstantiation">
-		<parameter id="class"
-			value="de.knowwe.d3web.d3webInstantiation" />
+		<parameter id="class" value="de.knowwe.d3web.d3webInstantiation" />
 		<parameter id="name" value="d3webInstantiation" />
 		<parameter id="description" value="Instantiation d3webInstantiation" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowledgeRepresentationHandler"
 		id="D3webKnowledgeHandler">
-		<parameter id="class"
-			value="de.d3web.we.basic.D3webKnowledgeHandler" />
+		<parameter id="class" value="de.d3web.we.basic.D3webKnowledgeHandler" />
 		<parameter id="name" value="D3webKnowledgeHandler" />
-		<parameter id="description" value="KnowledgeRepresentationHandler D3webKnowledgeHandler" />
+		<parameter id="description"
+			value="KnowledgeRepresentationHandler D3webKnowledgeHandler" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="SolutionPanelTagHandler">
 		<parameter id="class"
@@ -77,8 +77,8 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="solutionPanel.js" />
-	</extension>	
-	
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SolutionsPanelAction">
 		<parameter id="class"
@@ -89,26 +89,34 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
-	<extension 
-		plugin-id="KnowWEExtensionPoints" 
-		point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="ShowSolutionsType">
 		<parameter id="class" value="de.d3web.we.solutionpanel.ShowSolutionsType" />
 		<parameter id="name" value="ShowSolutionsType" />
-		<parameter id="description" value="KnowWEObjectType to display the derived solutions and abstractions of the current user session." />
+		<parameter id="description"
+			value="KnowWEObjectType to display the derived solutions and abstractions of the current user session." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
-	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="DownloadKnowledgeBase">
-		<parameter id="class"
-			value="de.knowwe.d3web.action.DownloadKnowledgeBase" />
+		<parameter id="class" value="de.knowwe.d3web.action.DownloadKnowledgeBase" />
 		<parameter id="name" value="DownloadKnowledgeBase" />
-		<parameter id="description" value="Downloads a specific d3web knowledge base archive of a named wiki article." />
+		<parameter id="description"
+			value="Downloads a specific d3web knowledge base archive of a named wiki article." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="SetSingleFindingAction">
+		<parameter id="class" value="de.knowwe.d3web.action.SetSingleFindingAction" />
+		<parameter id="name" value="SetSingleFindingAction" />
+		<parameter id="description" value="Action SetSingleFindingAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 </plugin>
