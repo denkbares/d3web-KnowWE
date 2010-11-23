@@ -436,7 +436,7 @@ Flowchart.prototype.toXML = function(includePreview) {
 				'\t</preview>';
 	}
 
-	xml += '</flowchart>'
+	xml += '</flowchart>\n'
 	return xml;
 }
 
