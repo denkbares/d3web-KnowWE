@@ -53,11 +53,11 @@ public class KDOMValidator {
 
 	private static KDOMValidator tagHandlerInstance;
 
-	private Logger logger;
+	private final Logger logger;
 
 	private StringBuilder builder = new StringBuilder();
 
-	private String name;
+	private final String name;
 
 	private boolean logging = true;
 
@@ -125,6 +125,7 @@ public class KDOMValidator {
 		if (type.equals("FileHandler")) {
 			setCorrecting(true);
 			setLogging(true);
+			boolean logToConsole = false;
 			try {
 				FileHandler fh = new FileHandler(KnowWEEnvironment.getInstance().getContext()
 						.getRealPath("") + rb.getString("validator.logFile"));
@@ -134,10 +135,13 @@ public class KDOMValidator {
 				logger.setUseParentHandlers(false);
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				logToConsole = true;
+				log(Level.INFO,
+						e.getClass().getSimpleName()
+								+ " during Validator init, using default values.");
 			}
 			try {
-				if (rb.getString("validator.logToConsole").contains("true")) {
+				if (logToConsole || rb.getString("validator.logToConsole").contains("true")) {
 					logger.addHandler(new ConsoleHandler());
 				}
 				else {
@@ -160,7 +164,9 @@ public class KDOMValidator {
 				}
 			}
 			catch (MissingResourceException e) {
-				e.printStackTrace();
+				log(Level.INFO,
+						e.getClass().getSimpleName()
+								+ " during Validator init, using default values.");
 			}
 		}
 		if (type.equals("Sectionizer")) {
@@ -524,7 +530,7 @@ public class KDOMValidator {
 
 	private class ValidatorFormatter extends Formatter {
 
-		private String lineSeparator = (String) java.security.AccessController.doPrivileged(
+		private final String lineSeparator = java.security.AccessController.doPrivileged(
 				new sun.security.action.GetPropertyAction("line.separator"));
 
 		/**
@@ -533,6 +539,7 @@ public class KDOMValidator {
 		 * @param record the log record to be formatted.
 		 * @return a formatted log record
 		 */
+		@Override
 		public synchronized String format(LogRecord record) {
 			StringBuffer sb = new StringBuffer();
 
