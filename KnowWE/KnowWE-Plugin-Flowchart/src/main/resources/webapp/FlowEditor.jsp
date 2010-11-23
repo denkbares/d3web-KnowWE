@@ -307,10 +307,7 @@
 </tr>
 </table>
 
-
-<hr>
-<div id=message>message</div>
-<hr>
+<div id=message></div>
 
 <script>
 	// kbinfo initialization
