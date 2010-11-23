@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="com.ecyrd.jspwiki.*" %>
 <%@ page import="de.d3web.we.jspwiki.*" %>
 <%@ page import="java.util.*" %>
