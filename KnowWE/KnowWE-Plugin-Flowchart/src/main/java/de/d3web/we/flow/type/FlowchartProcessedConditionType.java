@@ -36,7 +36,13 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
  */
 public class FlowchartProcessedConditionType extends D3webCondition<FlowchartProcessedConditionType> {
 
-	public static final String REGEX = "PROCESSED\\[([^\\[])*\\]";
+	public static final String REGEX = "PROCESSED\\[([^\\]]*)\\]";
+
+	private final Pattern pattern;
+
+	public FlowchartProcessedConditionType() {
+		pattern = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
+	}
 
 	@Override
 	public void cleanStoredInfos(String articleName) {
@@ -51,11 +57,17 @@ public class FlowchartProcessedConditionType extends D3webCondition<FlowchartPro
 	@Override
 	protected Condition createCondition(KnowWEArticle article, Section<FlowchartProcessedConditionType> section) {
 
-		Matcher matcher = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE).matcher(
-				section.getOriginalText());
-		String flowName = matcher.group(1);
+		Matcher matcher = pattern.matcher(section.getOriginalText());
 
-		return new FlowchartProcessedCondition(flowName);
+		if (!matcher.matches()) {
+			return null;
+		}
+		else {
+			String flowName = matcher.group(1);
+
+			return new FlowchartProcessedCondition(flowName);
+		}
+
 	}
 
 

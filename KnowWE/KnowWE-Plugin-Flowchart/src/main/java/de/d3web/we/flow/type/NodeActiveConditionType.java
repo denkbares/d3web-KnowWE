@@ -37,6 +37,11 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 public class NodeActiveConditionType extends D3webCondition<NodeActiveConditionType> {
 
 	public static final String REGEX = "IS_ACTIVE\\[([^\\]]*)\\(([^)]*)\\)\\]";
+	private final Pattern pattern;
+
+	public NodeActiveConditionType() {
+		pattern = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
+	}
 
 	@Override
 	public void cleanStoredInfos(String articleName) {
@@ -51,15 +56,18 @@ public class NodeActiveConditionType extends D3webCondition<NodeActiveConditionT
 	@Override
 	protected Condition createCondition(KnowWEArticle article, Section<NodeActiveConditionType> section) {
 
-		Matcher matcher = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE).matcher(
-				section.getOriginalText());
+		Matcher matcher = pattern.matcher(section.getOriginalText());
 
-		matcher.matches();
+		if (!matcher.matches()) {
+			return null;
+		}
+		else {
+			String flowName = matcher.group(1);
+			String nodeName = matcher.group(2);
 
-		String flowName = matcher.group(1);
-		String nodeName = matcher.group(2);
+			return new NodeActiveCondition(flowName, nodeName);
+		}
 
-		return new NodeActiveCondition(flowName, nodeName);
 	}
 
 
