@@ -49,9 +49,9 @@ public class NodeHandlerManager implements NodeHandler {
 
 		HANDLERS = new ArrayList<NodeHandler>();
 
+		HANDLERS.add(new ActionNodeHandler());
 		HANDLERS.add(new StartNodeHandler());
 		HANDLERS.add(new ExitNodeHandler());
-		HANDLERS.add(new ActionNodeHandler());
 		HANDLERS.add(new CommentNodeHandler());
 		HANDLERS.add(new ComposedNodeHandler());
 		HANDLERS.add(new SnapshotNodeHandler());

@@ -31,6 +31,7 @@ import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.report.Message;
 import de.d3web.we.flow.type.ActionType;
+import de.d3web.we.flow.type.CallFlowActionType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rules.action.D3webRuleAction;
@@ -51,7 +52,8 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 
 		Section<D3webRuleAction> actionSection = nodeSection.findSuccessor(D3webRuleAction.class);
 
-		return actionSection != null;
+		return actionSection != null
+				&& actionSection.getObjectType().getClass() != CallFlowActionType.class;
 	}
 
 	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm,
@@ -68,7 +70,9 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 
 		PSAction action = ruleAction.get().getAction(article, ruleAction);
 
-		if (action == null) return null;
+		if (action == null) {
+			return null;
+		}
 
 		return FlowFactory.getInstance().createActionNode(id, action);
 
