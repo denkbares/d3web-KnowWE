@@ -23,6 +23,8 @@ package de.d3web.we.flow.kbinfo;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Choice;
@@ -164,7 +166,6 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		}
 		appendChilds(web, base, qsets.toArray(new TerminologyObject[qsets.size()]), buffer);
 		appendChilds(web, base, base.getRootSolution(), buffer);
-		// TODO: append flowcharts out of knowledge base here
 		FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
 		if (flowSet != null) {
 			for (Flow flow : flowSet.getFlows()) {
@@ -199,18 +200,12 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 					appendInfoObject(web, base, flow, buffer);
 					return;
 				}
+				else {
+					buffer.append("<unknown id='" + objectID + "'></unknown>");
+
+				}
 			}
-			// List<Section<FlowchartType>> flowcharts =
-			// ManagerUtils.getFlowcharts(web, service);
-			// for (Section<FlowchartType> flowchart : flowcharts) {
-			// FlowchartType type = flowchart.getObjectType();
-			// String id = type.getFlowchartID(flowchart);
-			// if (id.equalsIgnoreCase(objectID)) {
-			// appendInfoObject(web, service, flowchart, buffer);
-			// return;
-			// }
-			// }
-			buffer.append("<unknown id='" + objectID + "'></unknown>");
+
 		}
 	}
 
@@ -330,17 +325,6 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 	}
 
 	private static String encodeXML(String text) {
-		StringBuffer buffer = new StringBuffer();
-		for (int i = 0; i < text.length(); i++) {
-			char c = text.charAt(i);
-			if (c == ' ' || Character.isLetterOrDigit(c)) {
-				buffer.append(c);
-			}
-			else {
-				int code = c;
-				buffer.append("&#").append(code).append(";");
-			}
-		}
-		return buffer.toString();
+		return StringEscapeUtils.escapeXml(text);
 	}
 }
