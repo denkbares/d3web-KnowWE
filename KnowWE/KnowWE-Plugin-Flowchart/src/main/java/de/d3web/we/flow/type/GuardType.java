@@ -30,6 +30,7 @@ import de.d3web.we.kdom.condition.CondKnown;
 import de.d3web.we.kdom.condition.Finding;
 import de.d3web.we.kdom.condition.NumericalFinding;
 import de.d3web.we.kdom.condition.NumericalIntervallFinding;
+import de.d3web.we.kdom.condition.UserRatingConditionType;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 /**
@@ -58,6 +59,7 @@ public class GuardType extends AbstractXMLObjectType {
 		}
 
 		types.add(new NodeActiveConditionType());
+		types.add(new UserRatingConditionType());
 		types.add(new FlowchartProcessedConditionType());
 		types.add(new Finding());
 		types.add(new NumericalFinding());

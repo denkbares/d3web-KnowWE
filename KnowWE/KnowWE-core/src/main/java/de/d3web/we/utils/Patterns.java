@@ -58,15 +58,15 @@ public final class Patterns {
 	/**
 	 * RegEx for doublequoted (") strings.
 	 */
-	public static final String QUOTEDSTRING = "\"[^\"]*+\"";
+	public static final String QUOTEDSTRING = "(?:\"[^\"]*+\")";
 
 	/**
 	 * RegEx for legal identifier in d3web.
 	 */
 	public static final String D3IDENTIFIER =
-			QUOTEDSTRING + "|" + // anything quoted
+			"(?:" + QUOTEDSTRING + "|" + // anything quoted
 					WORDS + "|" + // or words separated by spaces
-					WORD; // or single word
+					WORD + ")"; // or single word
 
 	/**
 	 * RegEx for inline definition of diagnosis properties in an XCL.

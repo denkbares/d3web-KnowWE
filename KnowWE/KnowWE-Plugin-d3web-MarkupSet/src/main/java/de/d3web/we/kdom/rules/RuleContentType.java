@@ -45,6 +45,7 @@ import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.kdom.condition.NumericalFinding;
 import de.d3web.we.kdom.condition.NumericalIntervallFinding;
 import de.d3web.we.kdom.condition.SolutionStateCond;
+import de.d3web.we.kdom.condition.UserRatingConditionType;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -104,6 +105,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 					"cc.knowwe.tdb.EvalConditionType is not attached");
 		}
 		termConds.add(new SolutionStateCond());
+		termConds.add(new UserRatingConditionType());
 		termConds.add(new Finding());
 		termConds.add(new CondKnown());
 		termConds.add(new NumericalFinding());
