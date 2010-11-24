@@ -67,7 +67,20 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	}
 
 	public static boolean shouldShowEstablished(Section<?> section) {
-		return shouldShow(section, ANNOTATION_ESTABLISHED);
+		if (foundAnnotation(section, ANNOTATION_ESTABLISHED)) {
+			return shouldShow(section, ANNOTATION_ESTABLISHED);
+		}
+		// show established solutions by default, when no option was selected
+		else {
+			return true;
+		}
+	}
+
+	private static boolean foundAnnotation(Section<?> section, String annotation) {
+		assert section.getObjectType() instanceof ShowSolutionsType;
+		String value = DefaultMarkupType.getAnnotation(section, annotation);
+		if (!MARKUP.getAnnotation(annotation).matches(value)) return false;
+		else return true;
 	}
 
 	public static boolean shouldShowSuggested(Section<?> section) {
