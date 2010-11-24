@@ -30,7 +30,6 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.logging.Logging;
 
 /**
  * @author Florian Ziegler
@@ -74,17 +73,22 @@ public class AddSubFlowchart extends AbstractAction {
 		String before = "";
 		String after = "";
 		String[] surrounding = new String[2];
-		if (text.contains("<Kopic>")) {
-			before = text.substring(0, text.indexOf("<Kopic>"));
-			after = text.substring(text.indexOf("<Kopic>"));
+
+		if (text.contains("%%Question") && text.contains("%%Solution")) {
+			int first = text.indexOf("%%Question");
+			if (text.indexOf("%%Solution") < first) {
+				first = text.indexOf("%%Solution");
+			}
+			before = text.substring(0, first);
+			after = text.substring(first);
 		}
-		else if (text.contains("<Questions-section>")) {
-			before = text.substring(0, text.indexOf("<Questions-section>"));
-			after = text.substring(text.indexOf("<Questions-section>"));
+		else if (text.contains("%%Question")) {
+			before = text.substring(0, text.indexOf("%%Question"));
+			after = text.substring(text.indexOf("%%Question"));
 		}
-		else if (text.contains("<Solutions-section>")) {
-			before = text.substring(0, text.indexOf("<Solutions-section>"));
-			after = text.substring(text.indexOf("<Solutions-section>"));
+		else if (text.contains("%%Solution")) {
+			before = text.substring(0, text.indexOf("%%Solution"));
+			after = text.substring(text.indexOf("%%Solution"));
 		}
 		else {
 			before = text;
@@ -97,7 +101,8 @@ public class AddSubFlowchart extends AbstractAction {
 
 	@Override
 	public void execute(ActionContext context) throws IOException {
-		Logging.getInstance().addHandlerToLogger(Logging.getInstance().getLogger(), "AddSub.txt");
+		// Logging.getInstance().addHandlerToLogger(Logging.getInstance().getLogger(),
+		// "AddSub.txt");
 		// get everything important from the parameter map
 		String web = context.getParameter(KnowWEAttributes.WEB);
 
@@ -107,8 +112,8 @@ public class AddSubFlowchart extends AbstractAction {
 		nodesToLine = UpdateQuestions.revertSpecialCharacterEscape(nodesToLine);
 		String[] exits = nodesToLine.split("::");
 
-		Logging.getInstance().info(nodesToLine);
-		Logging.getInstance().info("" + nodesToLine.length());
+		// Logging.getInstance().info(nodesToLine);
+		// Logging.getInstance().info("" + nodesToLine.length());
 
 		// get everything to update the article
 		KnowWEArticleManager artManager = KnowWEEnvironment.getInstance().getArticleManager(web);
@@ -136,7 +141,7 @@ public class AddSubFlowchart extends AbstractAction {
 
 		// the html representation of the nodes
 
-		flowchart += "<flowchart fcid=\"" + id + "\" name=\"" + name
+		flowchart += "%%DiaFlux" + LINE_SEPARATOR + "<flowchart fcid=\"" + id + "\" name=\"" + name
 				+ "\" icon=\"sanduhr.gif\" width=\"750\" height=\"500\" idCounter=\""
 				+ numberOfNodes + "\">" + LINE_SEPARATOR + LINE_SEPARATOR;
 
@@ -182,7 +187,7 @@ public class AddSubFlowchart extends AbstractAction {
 		// the flowchart div part
 
 		preview += "</DIV>" + LINE_SEPARATOR + "\t\t]]>" + LINE_SEPARATOR +
-				"\t</preview></flowchart>" + LINE_SEPARATOR;
+				"\t</preview></flowchart>" + LINE_SEPARATOR + "%" + LINE_SEPARATOR;
 
 		flowchart += preview;
 

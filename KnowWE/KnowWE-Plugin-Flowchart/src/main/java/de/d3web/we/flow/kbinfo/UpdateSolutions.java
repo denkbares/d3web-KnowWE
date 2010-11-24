@@ -83,11 +83,11 @@ public class UpdateSolutions extends AbstractAction {
 		String oldText = article.getSection().getOriginalText();
 
 		// get everything for the new solution
-		String[] surroundings = UpdateQuestions.getRightInsertPosition(oldText, "Solutions");
+		String[] surroundings = UpdateQuestions.getRightInsertPosition(oldText, "Solution");
 		String firstPart = surroundings[0];
 		String lastPart = surroundings[1];
 		String currentSolutionsSection = UpdateQuestions.getCurrentSectionContent(oldText,
-				"Solutions");
+				"Solution");
 		String newSolutionsSection = this.addSolution(currentSolutionsSection, solutionText);
 
 		// save the new article

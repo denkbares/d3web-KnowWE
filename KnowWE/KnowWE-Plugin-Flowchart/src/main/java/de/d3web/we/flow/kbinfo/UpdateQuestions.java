@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -52,7 +52,6 @@ public class UpdateQuestions extends AbstractAction {
 		String answersToLine = context.getParameter("answers");
 		String[] answers = answersToLine.split("::");
 
-
 		// get everything to update the article
 		KnowWEArticleManager artManager = KnowWEEnvironment.getInstance().getArticleManager(web);
 		KnowWEArticle article = artManager.getArticle(pageName);
@@ -62,10 +61,10 @@ public class UpdateQuestions extends AbstractAction {
 		String oldText = article.getSection().getOriginalText();
 
 		// get everything fot the new Questions-section
-		String[] surroundings = getRightInsertPosition(oldText, "Questions");
+		String[] surroundings = getRightInsertPosition(oldText, "Question");
 		String firstPart = surroundings[0];
 		String lastPart = surroundings[1];
-		String currentQuestionSection = getCurrentSectionContent(oldText, "Questions");
+		String currentQuestionSection = getCurrentSectionContent(oldText, "Question");
 		String newQuestionsSection = addQuestion(currentQuestionSection, questionText,
 				questionType, answers);
 
@@ -118,7 +117,7 @@ public class UpdateQuestions extends AbstractAction {
 	/**
 	 * some special characters cause bugs, so the have to be escaped in
 	 * javascript. this method turns them back into normal special characters.
-	 *
+	 * 
 	 * @param text
 	 * @return
 	 */
@@ -144,7 +143,7 @@ public class UpdateQuestions extends AbstractAction {
 
 	/**
 	 * finds the right place for Solutions or Questions-section
-	 *
+	 * 
 	 * @param the article as string
 	 * @param sectionName Questions or Solutions
 	 * @return [0] everything before the new questions/solutions [1] everything
@@ -152,13 +151,13 @@ public class UpdateQuestions extends AbstractAction {
 	 */
 	public static String[] getRightInsertPosition(String article, String sectionName) {
 
-		if (!(sectionName.equals("Questions") || sectionName.equals("Solutions"))) {
-			throw new IllegalArgumentException("section must be either Questions or Solutions");
+		if (!(sectionName.equals("Question") || sectionName.equals("Solution"))) {
+			throw new IllegalArgumentException("section must be either Question or Solution");
 		}
 
 		String[] surrounding = new String[2];
-		String startTag = "<" + sectionName + "-section>";
-		String endTag = "</" + sectionName + "-section>";
+		String startTag = "%%" + sectionName;
+		String endTag = "%";
 
 		// if the arcticle already contains the section
 		if (article.contains(startTag)
@@ -166,21 +165,11 @@ public class UpdateQuestions extends AbstractAction {
 			surrounding[0] = article.substring(0, article
 					.indexOf(startTag) + startTag.length());
 			surrounding[1] = article.substring(article
-					.indexOf(endTag));
-
-			// if there is a Kopic Tag, insert Question-section directly after
-		}
-		else if (article.contains("<Kopic>") && article.contains("</Kopic>")) {
-			surrounding[0] = article.substring(0, article.indexOf("<Kopic>") + 7) + LINE_SEPARATOR
-					+ startTag + LINE_SEPARATOR;
-			surrounding[1] = LINE_SEPARATOR + endTag
-					+ article.substring(article.indexOf("<Kopic>") + 7);
-
-			// if Kopic as well as Question-section Tag are missing
+					.indexOf(endTag, article.indexOf(startTag) + 2));
 		}
 		else {
-			surrounding[0] = article + "<Kopic>" + LINE_SEPARATOR + startTag;
-			surrounding[1] = endTag + LINE_SEPARATOR + "</Kopic>";
+			surrounding[0] = article + LINE_SEPARATOR + startTag;
+			surrounding[1] = endTag;
 
 		}
 		return surrounding;
@@ -189,21 +178,23 @@ public class UpdateQuestions extends AbstractAction {
 
 	/**
 	 * returns the content of a questions or solutions-section
-	 *
+	 * 
 	 * @param article as string
 	 * @param sectionName
 	 */
 	public static String getCurrentSectionContent(String article, String sectionName) {
-		if (!(sectionName.equals("Questions") || sectionName.equals("Solutions"))) {
+		if (!(sectionName.equals("Question") || sectionName.equals("Solution"))) {
 			return "";
 		}
-		String startTag = "<" + sectionName + "-section>";
-		String endTag = "</" + sectionName + "-section>";
+		String startTag = "%%" + sectionName;
+		String endTag = "%";
+		String questionSection = "";
 
 		if (article.contains(startTag)
 				&& article.contains(endTag)) {
-			return article.substring(article.indexOf(startTag) + startTag.length(),
-					article.indexOf(endTag));
+			questionSection = article.substring(article.indexOf(startTag) + startTag.length());
+			questionSection = questionSection.substring(0, questionSection.indexOf(endTag, 2));
+			return questionSection;
 		}
 		return "";
 	}
