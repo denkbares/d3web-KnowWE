@@ -665,7 +665,7 @@
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-SemanticCore-Tests</artifactId>
 			<version>${project.version}</version>
-			<scope>compile</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
@@ -686,5 +686,12 @@
 			<scope>compile</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-Core-MarkupSet</artifactId>
+			<version>0.2-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 </project>

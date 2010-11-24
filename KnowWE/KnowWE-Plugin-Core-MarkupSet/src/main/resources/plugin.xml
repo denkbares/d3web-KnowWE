@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-Core-MarkupSet" version="0.0.1">
+	
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+	</requires>
+	
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="TagHandlerType">
+		<parameter id="class"
+			value="de.knowwe.core.taghandler.TagHandlerType" />
+		<parameter id="name" value="TagHandlerType" />
+		<parameter id="description" value="KnowWEObjectType TagHandlerType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="DefaultMarkupTagHandler">
+		<parameter id="class"
+			value="de.knowwe.core.taghandler.markup.TagHandlerMarkup" />
+		<parameter id="name" value="DefaultMarkupTagHandler" />
+		<parameter id="description" value="KnowWEObjectType DefaultMarkupTagHandler" />
+		<parameter id="scope" value="root" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="css" value="defaultMarkup.css" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="CompileFlag">
+		<parameter id="class"
+			value="de.knowwe.core.packaging.CompileFlag" />
+		<parameter id="name" value="CompileFlag" />
+		<parameter id="description" value="KnowWEObjectType CompileFlag" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5.0" />
+		<parameter id="scope" value="root" />
+		<parameter id="script" value="KnowWE-plugin-d3web.js" />
+		<parameter id="script" value="silveripe.0.2.js" />
+	</extension>
+	
+</plugin>
