@@ -364,7 +364,7 @@
 		new Ajax.Request(url, {
 			method: 'post',
 			parameters: {
-				action: 'ReplaceKDOMNodeAction',
+				action: 'SaveFlowchartAction',
 				KWiki_Topic: topic,			// article
 				TargetNamespace: nodeID,	// KDOM nodeID
 				KWikitext: xml				// content

@@ -87,6 +87,16 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="SaveFlowchartAction">
+		<parameter id="class"
+			value="de.d3web.we.flow.SaveFlowchartAction" />
+		<parameter id="name" value="SaveFlowchartAction" />
+		<parameter id="description" value="Action SaveFlowchartAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="UpdateSolutions">
 		<parameter id="class"
 			value="de.d3web.we.flow.kbinfo.UpdateSolutions" />
