@@ -121,7 +121,8 @@ public class KnowWEFacade {
 		Action actionInstance = context.getAction();
 
 		if (actionInstance == null) {
-			context.sendError(HttpServletResponse.SC_NOT_FOUND, "Unable to load action: \"" + action + "\"");
+			context.sendError(HttpServletResponse.SC_NOT_FOUND, "Unable to load action: \""
+					+ action + "\"");
 			context.getWriter().write("Unable to load action: \"" + action + "\"");
 			Logger.getLogger(this.getClass().getName()).warning(
 					"Unable to load action: \"" + action + "\"");
@@ -183,6 +184,7 @@ public class KnowWEFacade {
 	 * 
 	 */
 	public Action tryLoadingAction(String actionName) {
+		String originalName = actionName;
 		// check if action is fully qualified class name
 		if (!actionName.contains(".")) {
 			// if not, use d3web default package
@@ -191,6 +193,13 @@ public class KnowWEFacade {
 		List<Action> actions = Plugins.getKnowWEAction();
 		for (Action action : actions) {
 			if (action.getClass().getName().equals(actionName)) {
+				return action;
+			}
+		}
+		// if no action is found, search in other packages then the default
+		// package
+		for (Action action : actions) {
+			if (action.getClass().getName().endsWith(originalName)) {
 				return action;
 			}
 		}
