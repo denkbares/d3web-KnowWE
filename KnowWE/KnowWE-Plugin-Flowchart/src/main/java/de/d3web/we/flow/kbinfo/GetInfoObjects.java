@@ -50,8 +50,6 @@ import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.basic.WikiEnvironment;
 import de.d3web.we.basic.WikiEnvironmentManager;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.flow.type.FlowchartType;
-import de.d3web.we.kdom.Section;
 
 public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 
@@ -272,26 +270,6 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		buffer.append("\t</qset>\n");
 	}
 
-	// TODO change
-	private static void appendInfoObject(String web, KnowledgeBase service, Section flowchart, StringBuffer buffer) {
-		FlowchartType type = (FlowchartType) flowchart.getObjectType();
-		String name = FlowchartType.getFlowchartName(flowchart);
-		String id = type.getFlowchartID(flowchart);
-		String[] startNames = type.getStartNames(flowchart);
-		String[] exitNames = type.getExitNames(flowchart);
-
-		buffer.append("\t<flowchart");
-		buffer.append(" id='").append(service.getId()).append("/").append(id).append("'");
-		buffer.append(" name='").append(encodeXML(name)).append("'");
-		buffer.append(">\n");
-		for (int i = 0; i < startNames.length; i++) {
-			buffer.append("\t\t<start>").append(encodeXML(startNames[i])).append("</start>\n");
-		}
-		for (int i = 0; i < exitNames.length; i++) {
-			buffer.append("\t\t<exit>").append(encodeXML(exitNames[i])).append("</exit>\n");
-		}
-		buffer.append("\t</flowchart>\n");
-	}
 
 	private static void appendInfoObject(String web, KnowledgeBase service, Flow flow, StringBuffer buffer) {
 		String name = flow.getName();

@@ -36,11 +36,11 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
-		id="FlowchartType">
+		id="DiaFluxType">
 		<parameter id="class"
-			value="de.d3web.we.flow.type.FlowchartType" />
-		<parameter id="name" value="FlowchartType" />
-		<parameter id="description" value="KnowWEObjectType FlowchartType" />
+			value="de.d3web.we.flow.type.DiaFluxType" />
+		<parameter id="name" value="DiaFluxType" />
+		<parameter id="description" value="KnowWEObjectType DiaFluxType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
@@ -104,7 +104,7 @@
 			value="Offers a button to grapically edit the flowchart in a new window." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="scope" value="/FlowchartType" />
+		<parameter id="scope" value="/DiaFluxType" />
 	</extension>
 	
 </plugin>

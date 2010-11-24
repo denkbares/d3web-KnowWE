@@ -36,16 +36,21 @@ public class FlowchartEditProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext) {
 		Tool edit = getEditTool(article, section, userContext);
-		return new Tool[] { edit };
+		return edit != null ? new Tool[] { edit } : new Tool[] {};
 	}
 
 	private Tool getEditTool(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext) {
 		// tool to execute a full-parse onto the knowledge base
 		// may be removed in later releases (after moneypenny)
+
+		Section<FlowchartType> flowchart = section.findSuccessor(FlowchartType.class);
+
+		if (flowchart == null) return null;
+
 		String url =
-				"FlowEditor.jsp?kdomID=" + section.getID() + "&" +
+				"FlowEditor.jsp?kdomID=" + flowchart.getID() + "&" +
 						KnowWEAttributes.TOPIC + "=" + userContext.getTopic();
-		String winID = section.getID().replaceAll("[^\\w]", "_");
+		String winID = flowchart.getID().replaceAll("[^\\w]", "_");
 		String jsAction = "window.open('" + url + "', '" + winID + "');";
 		return new DefaultTool(
 				"KnowWEExtension/flowchart/icon/edit16.png",

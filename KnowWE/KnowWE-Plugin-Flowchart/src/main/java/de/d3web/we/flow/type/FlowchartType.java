@@ -20,8 +20,6 @@
 
 package de.d3web.we.flow.type;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import de.d3web.we.flow.FlowchartSectionRenderer;
@@ -32,7 +30,8 @@ import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 /**
- * @author Reinhard Hatko Created on: 09.10.2009
+ * @author Reinhard Hatko
+ * @created on: 09.10.2009
  */
 public class FlowchartType extends AbstractXMLObjectType {
 
@@ -72,43 +71,5 @@ public class FlowchartType extends AbstractXMLObjectType {
 		return id;
 	}
 
-	public String[] getStartNames(Section sec) {
-		List<Section<?>> startSections = new LinkedList<Section<?>>();
-		sec.findSuccessorsOfType(StartType.class, startSections);
-		return getSectionsContents(startSections);
-	}
-
-	public String[] getExitNames(Section sec) {
-		List<Section<?>> exitSections = new LinkedList<Section<?>>();
-		sec.findSuccessorsOfType(ExitType.class, exitSections);
-		return getSectionsContents(exitSections);
-	}
-
-	private static String[] getSectionsContents(List<Section<?>> sections) {
-		List<String> result = new LinkedList<String>();
-		for (Section start : sections) {
-			String content = getSectionContent(start);
-			if (content != null) {
-				result.add(content);
-			}
-		}
-		return result.toArray(new String[result.size()]);
-	}
-
-	private static String getSectionContent(Section<AbstractXMLObjectType> sec) {
-		String result = null;
-
-		List<Section<?>> children = sec.getChildren();
-		if (children.size() == 3) // HOTFIX for parser section returning
-		// enclosing xml-tags
-		return children.get(1).getOriginalText();
-
-		// Old mechanism
-		for (Section child : children) {
-			String text = child.getOriginalText();
-			result = (result == null) ? text : (result + text);
-		}
-		return result;
-	}
 
 }
