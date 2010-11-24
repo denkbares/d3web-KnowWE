@@ -113,6 +113,11 @@ public class FlowchartDiffProvider implements DiffProvider {
 				return "";
 			}
 
+			// first version is empty page. Diff is called when article is created
+			if (p1.equals("")) {
+				return "";
+			}
+
 			StringBuffer ret = new StringBuffer(rev.size() * 20); // Guessing
 			// how big
 			// it will
@@ -698,8 +703,8 @@ public class FlowchartDiffProvider implements DiffProvider {
 			implements RevisionVisitor {
 
 		private StringBuffer m_result = null;
-		private WikiContext m_context;
-		private ResourceBundle m_rb;
+		private final WikiContext m_context;
+		private final ResourceBundle m_rb;
 
 		private RevisionPrint(WikiContext ctx, StringBuffer sb) {
 			m_result = sb;
