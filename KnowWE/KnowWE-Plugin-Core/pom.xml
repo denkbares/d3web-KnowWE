@@ -7,9 +7,9 @@
 		<version>0.2-SNAPSHOT</version>
 	</parent>
 	<groupId>de.uniwue.d3web</groupId>
-	<artifactId>KnowWE-Plugin-Core-MarkupSet</artifactId>
+	<artifactId>KnowWE-Plugin-Core</artifactId>
 	<version>0.2-SNAPSHOT</version>
-	<name>KnowWE-Plugin-Core-MarkupSet</name>
+	<name>KnowWE-Plugin-Core</name>
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>

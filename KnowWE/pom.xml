@@ -151,7 +151,7 @@
 		<module>KnowWE-Plugin-TestSuite</module>
 		<module>KnowWE-GlobalTestUtils</module>
 		<module>KnowWE-Plugin-Tagging</module>
-		<module>KnowWE-Plugin-Core-MarkupSet</module>
+		<module>KnowWE-Plugin-Core</module>
 	</modules>
 	<repositories>
 		<repository>
