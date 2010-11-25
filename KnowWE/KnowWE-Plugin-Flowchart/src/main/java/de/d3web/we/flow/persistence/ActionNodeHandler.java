@@ -29,12 +29,14 @@ import de.d3web.core.inference.PSAction;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.INode;
+import de.d3web.diaFlux.flow.NOOPAction;
 import de.d3web.report.Message;
 import de.d3web.we.flow.type.ActionType;
 import de.d3web.we.flow.type.CallFlowActionType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rules.action.D3webRuleAction;
+import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 /**
  * @author Reinhard Hatko
@@ -44,7 +46,7 @@ import de.d3web.we.kdom.rules.action.D3webRuleAction;
 public class ActionNodeHandler extends AbstractNodeHandler {
 
 	public ActionNodeHandler() {
-		super(ActionType.getInstance(), "KnOffice");
+		super(ActionType.getInstance());
 	}
 
 	public boolean canCreateNode(KnowWEArticle article,
@@ -59,14 +61,19 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm,
 			Section nodeSection, Section flowSection, String id, List<Message> errors) {
 
+		Section<AbstractXMLObjectType> actionSection = getNodeInfo(nodeSection);
+		
+		String markup = getMarkup(actionSection);
+		
+		// avoids the creation of an ActionIndication by the 
+		// D3WebRuleActionParser
+		if (markup.equalsIgnoreCase("NOP")) {
+			// TODO problem because no Forward knowledge is present?
+			return FlowFactory.getInstance().createActionNode(id, NOOPAction.INSTANCE);
+		}
+
 		Section<D3webRuleAction> ruleAction = nodeSection.findSuccessor(D3webRuleAction.class);
-		// if (action == null) {
-		// return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
-		// D3webModule.getKwikiBundle_d3web().
-		// getString("KnowWE.rulesNew.notcreated")
-		// + " : no valid action found"
-		// ));
-		// }
+
 
 		PSAction action = ruleAction.get().getAction(article, ruleAction);
 

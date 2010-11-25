@@ -29,17 +29,21 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 /**
- * @author hatko
+ * @author Reinhard Hatko
  * 
  */
 public abstract class AbstractNodeHandler implements NodeHandler {
 
-	private final AbstractKnowWEObjectType type;
-	private final String markup;
+	protected final AbstractKnowWEObjectType type;
+	protected final String markup;
 
 	public AbstractNodeHandler(AbstractKnowWEObjectType type, String markup) {
 		this.type = type;
 		this.markup = markup;
+	}
+
+	public AbstractNodeHandler(AbstractKnowWEObjectType type) {
+		this(type, null);
 	}
 
 	protected Section<AbstractXMLObjectType> getNodeInfo(Section<?> nodeSection) {
@@ -47,20 +51,34 @@ public abstract class AbstractNodeHandler implements NodeHandler {
 
 		if (child == null) return null; // no child of expected type
 
-		if (markup == null || markup == "") return child; // no constraints of
-															// markup given,
-															// return true;
+		if (markup == null || markup == "") {
+			// no constraints of markup given
+			return child;
+		}
 
-		String actualMarkup = AbstractXMLObjectType.getAttributeMapFor(child).get("markup");
+		String actualMarkup = getMarkup(child);
 
-		if (markup.equalsIgnoreCase(actualMarkup)) return child;
-		else return null;
+		if (markup.equalsIgnoreCase(actualMarkup)) {
+			return child;
+		}
+		else {
+			return null;
+		}
 
+	}
+
+	protected String getMarkup(Section<AbstractXMLObjectType> child) {
+		return AbstractXMLObjectType.getAttributeMapFor(child).get("markup");
 	}
 
 	@Override
 	public KnowWEObjectType getObjectType() {
 		return type;
 	}
+
+	public AbstractKnowWEObjectType getType() {
+		return type;
+	}
+
 
 }
