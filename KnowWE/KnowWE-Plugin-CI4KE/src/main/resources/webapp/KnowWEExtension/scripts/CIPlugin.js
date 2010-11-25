@@ -54,10 +54,10 @@ function fctExecuteNewBuild( dashboardID ) {
             url : KNOWWE.core.util.getURL( params ),
             loader: true,
             response : {
-                ids : [ dashboardID + '-ci-dashboard'],
+                ids : [ dashboardID ],
                 action : 'insert',
                 fn : function() {
-					KNOWWE.core.util.addCollabsiblePluginHeader( dashboardID + '-ci-dashboard' );
+					KNOWWE.core.util.addCollabsiblePluginHeader( dashboardID );
 					makeCIBoxesCollapsible( dashboardID );
 				}
             }
@@ -94,7 +94,7 @@ function fctRefreshBuildList( dashboardID, indexFromBack, numberOfBuilds ) {
 function makeCIBoxesCollapsible( dashboardID ){
     var selector = "div .ci-collapsible-box";
     if ( dashboardID ) {
-    	selector = "#" + dashboardID + "-ci-dashboard " + selector;
+    	selector = "#" + dashboardID + selector;
     }    	
     
     var panels = _KS( selector );

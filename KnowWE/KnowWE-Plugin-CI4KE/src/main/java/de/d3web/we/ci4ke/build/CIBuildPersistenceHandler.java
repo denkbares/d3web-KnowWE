@@ -23,6 +23,7 @@ package de.d3web.we.ci4ke.build;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -50,7 +51,7 @@ public class CIBuildPersistenceHandler {
 	/**
 	 * All registered CIBuildPersistenceHandlers
 	 */
-	private static Map<String, CIBuildPersistenceHandler> handlers;
+	private static Map<String, CIBuildPersistenceHandler> handlers = new HashMap<String, CIBuildPersistenceHandler>();
 
 	/**
 	 * This File is pointing to our build File
@@ -85,9 +86,6 @@ public class CIBuildPersistenceHandler {
 	 * specific dashboardName-dashboardArticle-combination
 	 */
 	public static CIBuildPersistenceHandler getHandler(String dashboardName, String dashboardArticleTitle) {
-		if (handlers == null) {
-			handlers = new HashMap<String, CIBuildPersistenceHandler>();
-		}
 		CIBuildPersistenceHandler handler = handlers.get(dashboardName);
 		if (handler == null) {
 			handler = new CIBuildPersistenceHandler(dashboardName, dashboardArticleTitle);
@@ -120,10 +118,14 @@ public class CIBuildPersistenceHandler {
 	}
 
 	private static File initXMLFile(String dashboardName, String dashboardArticleTitle) throws IOException {
-		if (dashboardName == null || dashboardName.isEmpty()) throw new IllegalArgumentException(
-					"Parameter 'dashboardName' is null or empty!");
-		if (dashboardArticleTitle == null || dashboardArticleTitle.isEmpty()) throw new IllegalArgumentException(
-				"Parameter 'dashboardArticleTitle' is null or empty!");
+		if (dashboardName == null || dashboardName.isEmpty()) {
+			throw new IllegalArgumentException(
+						"Parameter 'dashboardName' is null or empty!");
+		}
+		if (dashboardArticleTitle == null || dashboardArticleTitle.isEmpty()) {
+			throw new IllegalArgumentException(
+					"Parameter 'dashboardArticleTitle' is null or empty!");
+		}
 
 		String buildFileName = URLEncoder.encode("results-" + dashboardName + ".xml", "UTF-8");
 		
@@ -190,7 +192,8 @@ public class CIBuildPersistenceHandler {
 	public void write(CIBuildResultset resultset) {
 
 		try {
-			Document xmlDocument = new SAXBuilder().build(xmlBuildFile);
+			// Document xmlDocument = new SAXBuilder().build(xmlBuildFile);
+
 			// xmlDocument.getRootElement().setAttribute(
 			// "monitoredArticle", monitoredArticleTitle);
 			// Start building the new <build>...</build> element
@@ -206,7 +209,10 @@ public class CIBuildPersistenceHandler {
 			// which defines the overall result of this build
 			TestResultType overallResult = resultset.getOverallResult();
 			build.setAttribute(CIBuilder.BUILD_RESULT, overallResult.name());
-			xmlDocument.getRootElement().setAttribute(CIBuilder.
+
+			// xmlDocument.getRootElement().setAttribute(CIBuilder.
+			// ACTUAL_BUILD_STATUS, overallResult.toString());
+			xmlJDomTree.getRootElement().setAttribute(CIBuilder.
 					ACTUAL_BUILD_STATUS, overallResult.toString());
 
 			Element tests = new Element("tests");
@@ -241,15 +247,16 @@ public class CIBuildPersistenceHandler {
 			// build.addContent(modifiedArticles);
 
 			// add the build-element to the JDOM Tree
-			xmlDocument.getRootElement().addContent(build);
+
+			// xmlDocument.getRootElement().addContent(build);
+			xmlJDomTree.getRootElement().addContent(build);
+
 			// and print it to file
 			XMLOutputter out = new XMLOutputter(Format.getPrettyFormat());
-			out.output(xmlDocument, new FileWriter(xmlBuildFile));
 
-		}
-		catch (JDOMException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// out.output(xmlDocument, new FileWriter(xmlBuildFile));
+			out.output(xmlJDomTree, new FileWriter(xmlBuildFile));
+
 		}
 		catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -323,6 +330,12 @@ public class CIBuildPersistenceHandler {
 	 */
 	public String renderBuildList(int indexFromBack, int numberOfBuilds) {
 
+		String dashboardNameEncoded = dashboardName;
+		try {
+			dashboardNameEncoded = URLEncoder.encode(dashboardName, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e1) {
+		}
 		String xpath = "builds/build[position() <= last() - " + indexFromBack +
 				" and position() > last() - " + (indexFromBack + numberOfBuilds) + "]";
 		List<?> builds = selectNodes(xpath);
@@ -353,7 +366,7 @@ public class CIBuildPersistenceHandler {
 				}
 				sb.append("<td><a onclick=\"");
 				sb.append("fctGetBuildDetails('" +
-						dashboardName + "','" + buildNr + "');\">");
+						dashboardNameEncoded + "','" + buildNr + "');\">");
 				// and the build date/time
 				s = e.getAttributeValue("executed");
 				if (s != null && !s.equals("")) {
@@ -372,7 +385,7 @@ public class CIBuildPersistenceHandler {
 			sb.append("<div style=\"float: left;\"><form name=\"ci-show-older-builds\">");
 			sb.append("<input type=\"button\" value=\"<--\" "
 					+ "name=\"submit\" class=\"button\" onclick=\"fctRefreshBuildList('"
-					+ dashboardName + "','" + (indexFromBack + numberOfBuilds) + "','"
+					+ dashboardNameEncoded + "','" + (indexFromBack + numberOfBuilds) + "','"
 					+ numberOfBuilds + "');\"/>");
 			sb.append("</form></div>");
 		}
@@ -382,7 +395,7 @@ public class CIBuildPersistenceHandler {
 			sb.append("<div style=\"float: right;\"><form name=\"ci-show-newer-builds\">");
 			sb.append("<input type=\"button\" value=\"-->\" "
 					+ "name=\"submit\" class=\"button\" onclick=\"fctRefreshBuildList('"
-					+ dashboardName + "','" + (indexFromBack - numberOfBuilds) + "','"
+					+ dashboardNameEncoded + "','" + (indexFromBack - numberOfBuilds) + "','"
 					+ numberOfBuilds + "');\"/>");
 			sb.append("</form></div>");
 		}

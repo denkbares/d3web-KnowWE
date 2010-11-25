@@ -31,16 +31,17 @@
 	}
 .ci-column-middle
 	{ 
-/*	border: thin solid #ff0000; */ 
 	float: left; 
-	width: 52%;
+	width: 100%;
 	}
+/*
 .ci-column-right
 	{ 
-/*	border: thin solid #0000ff; */ 
+	border: thin solid #0000ff; 
 	float: left; 
 	width: 47%;
 	}
+*/
 .ci-collapsible-box
 	{
 	border: thin solid #96BBD9;
@@ -68,7 +69,7 @@
 	}
 
 /* easy clearing */
-#ci-content-wrapper:after
+.ci-content-wrapper:after
 	{
 	content: '[DO NOT LEAVE IT IS NOT REAL]'; 
 	display: block; 
@@ -76,13 +77,14 @@
 	clear: both; 
 	visibility: hidden;
 	}
+/*
 #ci-content-wrapper
 	{
 	display: inline-block;
 	}
-/*\*/
 #ci-content-wrapper
 	{
 	display: block;
 	}
+*/
 /* end easy clearing */

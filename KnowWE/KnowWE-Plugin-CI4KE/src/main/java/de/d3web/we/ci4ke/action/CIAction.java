@@ -21,6 +21,7 @@
 package de.d3web.we.ci4ke.action;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
@@ -40,11 +41,16 @@ public class CIAction extends AbstractAction {
 		// ">>> execute Action angekommen! >>>");
 
 		String task = String.valueOf(context.getParameter("task"));
+
 		String dashboardID = String.valueOf(context.getParameter("id"));
+		dashboardID = URLDecoder.decode(dashboardID, "UTF-8");
+
 		String topic = context.getKnowWEParameterMap().getTopic();
 
-		if (task.equals("null") || dashboardID.equals("null")) throw new IOException(
-				"CIAction.execute(): Required parameters not set!");
+		if (task.equals("null") || dashboardID.equals("null")) {
+			throw new IOException(
+					"CIAction.execute(): Required parameters not set!");
+		}
 
 		StringBuffer buffy = new StringBuffer("");
 
@@ -70,7 +76,7 @@ public class CIAction extends AbstractAction {
 		else if (task.equals("getBuildDetails")) {
 
 			int selectedBuildNumber = Integer.parseInt(context.getParameter("nr"));
-			buffy.append(CIDashboardType.renderBuildDetails(dashboardID, topic, selectedBuildNumber));
+			buffy.append(CIDashboard.renderBuildDetails(dashboardID, topic, selectedBuildNumber));
 
 		}
 		else if (task.equals("refreshBuildList")) {

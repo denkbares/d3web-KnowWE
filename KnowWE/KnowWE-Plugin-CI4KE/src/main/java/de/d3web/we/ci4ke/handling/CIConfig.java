@@ -20,6 +20,8 @@
 
 package de.d3web.we.ci4ke.handling;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +53,15 @@ public final class CIConfig implements Cloneable {
 
 	public String getDashboardName() {
 		return dashboardName;
+	}
+
+	public String getDashboardNameEscaped() {
+		try {
+			return URLEncoder.encode(dashboardName, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e) {
+			return "";
+		}
 	}
 
 	public String getDashboardArticleTitle() {
