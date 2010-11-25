@@ -19,6 +19,7 @@
 package de.d3web.we.flow.type;
 
 import de.d3web.we.core.packaging.KnowWEPackageManager;
+import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -48,4 +49,16 @@ public class DiaFluxType extends DefaultMarkupType {
 		setCustomRenderer(new DiaFluxRenderer());
 	}
 
+	public static String getFlowchartName(Section<DefaultMarkupType> diaFluxSection) {
+
+		Section<FlowchartType> flowchart = diaFluxSection.findSuccessor(FlowchartType.class);
+
+		if (flowchart == null) {
+			return "";
+		}
+		else {
+			return FlowchartType.getFlowchartName(flowchart);
+		}
+
+	}
 }

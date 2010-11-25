@@ -35,7 +35,7 @@ import de.d3web.we.kdom.xml.AbstractXMLObjectType;
  */
 public class FlowchartType extends AbstractXMLObjectType {
 
-	protected KnowWEDomRenderer renderer = new FlowchartSectionRenderer();
+	protected KnowWEDomRenderer<FlowchartType> renderer = new FlowchartSectionRenderer();
 
 	public FlowchartType() {
 		super("flowchart");
@@ -43,33 +43,22 @@ public class FlowchartType extends AbstractXMLObjectType {
 
 	@Override
 	protected void init() {
-
 		this.childrenTypes.add(FlowchartContentType.getInstance());
 		addSubtreeHandler(Priority.DEFAULT, new FlowchartSubTreeHandler());
-
-		// setNotRecyclable(true);
 
 	}
 
 	@Override
-	public KnowWEDomRenderer getRenderer() {
+	public KnowWEDomRenderer<FlowchartType> getRenderer() {
 		return renderer;
 	}
 
-	public static String getFlowchartName(Section sec) {
+	public static String getFlowchartName(Section<FlowchartType> sec) {
 		Map<String, String> mapFor = AbstractXMLObjectType
 				.getAttributeMapFor(sec);
 		return mapFor.get("name");
 	}
 
-	public String getFlowchartID(Section sec) {
-		Map<String, String> mapFor = AbstractXMLObjectType
-				.getAttributeMapFor(sec);
-		String id = mapFor.get("id");
-		if (id == null) id = mapFor.get("name");
-		if (id == null) id = "sheet_01";
-		return id;
-	}
 
 
 }

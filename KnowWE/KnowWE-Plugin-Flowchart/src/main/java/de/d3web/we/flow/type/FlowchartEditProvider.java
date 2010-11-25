@@ -45,12 +45,11 @@ public class FlowchartEditProvider implements ToolProvider {
 
 		Section<FlowchartType> flowchart = section.findSuccessor(FlowchartType.class);
 
-		if (flowchart == null) return null;
-
+		String id = section.getID();
 		String url =
-				"FlowEditor.jsp?kdomID=" + flowchart.getID() + "&" +
+				"FlowEditor.jsp?kdomID=" + id + "&" +
 						KnowWEAttributes.TOPIC + "=" + userContext.getTopic();
-		String winID = flowchart.getID().replaceAll("[^\\w]", "_");
+		String winID = id.replaceAll("[^\\w]", "_");
 		String jsAction = "window.open('" + url + "', '" + winID + "');";
 		return new DefaultTool(
 				"KnowWEExtension/flowchart/icon/edit16.png",

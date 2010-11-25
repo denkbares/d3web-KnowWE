@@ -30,6 +30,9 @@ import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.flow.type.DiaFluxType;
+import de.d3web.we.flow.type.FlowchartType;
+import de.d3web.we.kdom.Section;
 
 /**
  * Receives a xml-encoded flowchart from the editor and replaces the old kdom
@@ -38,7 +41,6 @@ import de.d3web.we.core.KnowWEParameterMap;
  * @author Reinhard Hatko
  * @created 24.11.2010
  */
-// This class was copied from ReplaceKDOMNodeAction, as it is still in Research
 public class SaveFlowchartAction extends AbstractAction {
 
 	@Override
@@ -47,13 +49,41 @@ public class SaveFlowchartAction extends AbstractAction {
 
 		String web = map.getWeb();
 		String nodeID = map.get(KnowWEAttributes.TARGET);
-		String name = map.getTopic();
+		String topic = map.getTopic();
+
 		String newText = map.get(KnowWEAttributes.TEXT);
+
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
-		Map<String, String> nodesMap = new HashMap<String, String>();
-		nodesMap.put(nodeID, newText);
-		mgr.replaceKDOMNodesSaveAndBuild(map, name, nodesMap);
+		Section<DiaFluxType> diaFluxSection = (Section<DiaFluxType>) mgr.getArticle(topic).findSection(
+				nodeID);
+
+		Section<FlowchartType> flowchartSection = diaFluxSection.findSuccessor(FlowchartType.class);
+
+		// if flowchart is existing, replace flowchart
+		if (flowchartSection != null) {
+			save(map, topic, flowchartSection.getID(), newText);
+		}
+		else { // no flowchart, insert flowchart //TODO more convenient way??
+
+			StringBuilder builder = new StringBuilder("%%DiaFlux");
+			builder.append("\r\n");
+			builder.append(newText);
+
+			builder.append(diaFluxSection.getOriginalText().substring(9));
+
+			save(map, topic, nodeID, builder.toString());
+
+		}
 
 	}
+
+	private void save(KnowWEParameterMap map, String topic, String nodeID, String newText) {
+		Map<String, String> nodesMap = new HashMap<String, String>();
+		nodesMap.put(nodeID, newText);
+		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(map.getWeb());
+		mgr.replaceKDOMNodesSaveAndBuild(map, topic, nodesMap);
+
+	}
+
 
 }

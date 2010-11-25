@@ -433,7 +433,7 @@ Flowchart.prototype.toXML = function(includePreview) {
 				'\t\t<![CDATA[\n' +
 				this.toPreviewHTML(this.dom.select('.Flowchart')[0]) + '\n' +
 				'\t\t]]>\n' +
-				'\t</preview>';
+				'\t</preview>\n';
 	}
 
 	xml += '</flowchart>\n'

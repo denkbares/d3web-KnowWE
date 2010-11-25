@@ -21,6 +21,7 @@
 package de.d3web.we.flow;
 
 import java.util.List;
+import java.util.UUID;
 
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -29,6 +30,7 @@ import de.d3web.we.flow.kbinfo.GetInfoObjects;
 import de.d3web.we.flow.kbinfo.SearchInfoObjects;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 public class JSPHelper {
@@ -100,9 +102,41 @@ public class JSPHelper {
 		return buffer.toString();
 	}
 
-	public String getKDOMNodeContent(String kdomID) {
-		return KnowWEEnvironment.getInstance().getNodeData(parameterMap.getWeb(),
-				parameterMap.getTopic(), kdomID);
+	public String loadFlowchart(String kdomID) {
+		String web = parameterMap.getWeb();
+		String topic = parameterMap.getTopic();
+
+		Section<DefaultMarkupType> diaFluxSection = (Section<DefaultMarkupType>) KnowWEEnvironment.getInstance().getArticle(
+				web, topic).findSection(kdomID);
+
+		if (diaFluxSection == null) {
+			throw new IllegalArgumentException("Could not find flowchart at: "
+					+ kdomID);
+		}
+
+		Section<FlowchartType> flowchart = diaFluxSection.findSuccessor(FlowchartType.class);
+
+		if (flowchart == null) {
+			return getEmptyFlowchart();
+		}
+
+		String nodeData = KnowWEEnvironment.getInstance().getNodeData(web,
+				topic, kdomID);
+		return nodeData;
+	}
+
+	/**
+	 * 
+	 * @created 25.11.2010
+	 * @return
+	 */
+	private String getEmptyFlowchart() {
+		String id = UUID.randomUUID().toString();
+		return "<flowchart fcid=\"flow_"
+				+ id.substring(0, 8)
+				+ "\" name=\"New Flowchart\" icon=\"sanduhr.gif\" width=\"750\" height=\"500\" idCounter=\"1\">"
+				+
+				"</flowchart>";
 	}
 
 	public String getFlowchartID() {

@@ -21,8 +21,24 @@ class DiaFluxRenderer extends DefaultMarkupRenderer<DefaultMarkupType> {
 	protected String getHeaderName(KnowWEArticle article, Section<DefaultMarkupType> section, KnowWEUserContext user) {
 		Section<FlowchartType> flowchart = section.findSuccessor(FlowchartType.class);
 
-		String name = FlowchartType.getFlowchartName(flowchart);
-		return name;
+		if (flowchart == null) {
+			return "New flowchart";
+		}
+		else {
+			return FlowchartType.getFlowchartName(flowchart);
+		}
+	}
+
+	@Override
+	protected void renderContents(KnowWEArticle article, Section<DefaultMarkupType> section, KnowWEUserContext user, StringBuilder string) {
+
+		Section<FlowchartType> flowchart = section.findSuccessor(FlowchartType.class);
+
+		if (flowchart == null) {
+			string.append("No flowchart created yet. Use tool on the right.");
+		}
+
+		super.renderContents(article, section, user, string);
 	}
 
 

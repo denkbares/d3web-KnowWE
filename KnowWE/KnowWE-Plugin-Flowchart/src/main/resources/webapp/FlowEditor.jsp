@@ -1,5 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 
+<%@page import="de.d3web.we.kdom.Section"%>
+<%@page import="de.d3web.we.kdom.KnowWEArticle"%>
+<%@page import="de.d3web.we.flow.type.DiaFluxType"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="com.ecyrd.jspwiki.*" %>
 <%@ page import="de.d3web.we.jspwiki.*" %>
@@ -25,20 +28,27 @@
 	KnowWEParameterMap map = new KnowWEParameterMap(userContext, request, response, wiki.getServletContext(), env);
 	
 	map.put("KWikiUser",wikiContext.getWikiSession().getUserPrincipal().getName());
-	if(!map.containsKey("KWiki_Topic")) {
-		//map.put("KWiki_Topic", wikiContext.getPage().getName());
+	if(!map.containsKey(KnowWEAttributes.WEB)) {
+		map.put(KnowWEAttributes.WEB, "default_web");
 	}
+	String topic = map.getTopic();
+	String web = map.getWeb();
+	KnowWEArticle article = env.getArticle(web, topic);
 	
 	JSPHelper jspHelper = new JSPHelper(map);
+	String kdomID = map.get("kdomID");
+	Section diafluxSection = article.findSection(kdomID);
+	String title = DiaFluxType.getFlowchartName(diafluxSection);
 %>
 
 <script>
-	var topic = "<%= map.getTopic() %>";
-	var nodeID = "<%= map.get("kdomID") %>";
+	var topic = "<%= topic %>";
+	var nodeID = "<%= kdomID %>";
 </script>
 
 <html>
 <head>
+<title>Edit Flowchart: <%= title %></title>
 	<style type="text/css">
 		.toolbar .propertyTitle {
 			font-family: Arial,Helvetica;
@@ -129,24 +139,13 @@
 
 <xml id="ajaxKBInfo" style="display:none;">
 	<kbinfo>
-		<!-- flowchart name="Warten" id="sh_wait">
-			<start>30 sec</start>
-			<start>2 min</start>
-			<start>5 min</start>
-			<start>12h</start>
-			<start>1h</start>
-			<start>2h</start>
-			<start>10 min</start>
-			<exit>abgeblaufen</exit>
-			<exit>unterbrochen</exit>
-		</flowchart-->
-		
+
 	</kbinfo>
 </xml>
 
 
 <xml id="flowchartSource" style="display:none;">
-<%= jspHelper.getKDOMNodeContent(request.getParameter("kdomID")) %>
+<%= jspHelper.loadFlowchart(request.getParameter("kdomID")) %>
 </xml>
 
 <table>

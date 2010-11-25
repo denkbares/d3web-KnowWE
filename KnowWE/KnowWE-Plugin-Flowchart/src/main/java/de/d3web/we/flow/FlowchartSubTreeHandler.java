@@ -38,6 +38,7 @@ import de.d3web.report.Message;
 import de.d3web.we.flow.persistence.NodeHandler;
 import de.d3web.we.flow.persistence.NodeHandlerManager;
 import de.d3web.we.flow.type.EdgeType;
+import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.flow.type.GuardType;
 import de.d3web.we.flow.type.NodeType;
 import de.d3web.we.flow.type.OriginType;
@@ -45,6 +46,7 @@ import de.d3web.we.flow.type.TargetType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
@@ -57,12 +59,12 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
  * @author Reinhard Hatko
  * @created on: 12.10.2009
  */
-public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
+public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> {
 
 
 
 	@Override
-	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<FlowchartType> s) {
 
 		KnowledgeBaseManagement kbm = getKBM(article);
 		Section flowcontent = ((AbstractXMLObjectType) s.getObjectType()).getContentChild(s);
@@ -96,7 +98,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 		return msgs;
 	}
 
-	private List<IEdge> createEdges(KnowWEArticle article, Section flowSection, List<INode> nodes, List<Message> errors) {
+	private List<IEdge> createEdges(KnowWEArticle article, Section<FlowchartType> flowSection, List<INode> nodes, List<Message> errors) {
 		List<IEdge> result = new ArrayList<IEdge>();
 
 		List<Section> edgeSections = new ArrayList<Section>();
@@ -153,7 +155,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 
 			Section guardSection = content.findChildOfType(GuardType.class);
 			if (guardSection != null) {
-				Section compositionConditionSection = (Section) guardSection.getChildren().get(1);
+				Section<CompositeCondition> compositionConditionSection = (Section<CompositeCondition>) guardSection.getChildren().get(1);
 				condition = buildCondition(article, compositionConditionSection, errors);
 
 				if (condition == null) {
@@ -182,7 +184,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 
 
 
-	private Condition buildCondition(KnowWEArticle article, Section s, List<Message> errors) {
+	private Condition buildCondition(KnowWEArticle article, Section<CompositeCondition> s, List<Message> errors) {
 
 		return KDOMConditionFactory.createCondition(article, s);
 	}
@@ -196,7 +198,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 	}
 
 
-	private List<INode> createNodes(KnowWEArticle article, String flowName, Section flowSection, List<Message> errors) {
+	private List<INode> createNodes(KnowWEArticle article, String flowName, Section<FlowchartType> flowSection, List<Message> errors) {
 
 		List<INode> result = new ArrayList<INode>();
 		List<Section> nodeSections = new ArrayList<Section>();
