@@ -1777,7 +1777,7 @@ KNOWWE.helper.cookie = function() {
 		        var expires = "; expires="+date.toGMTString();
 		    }
 		    else var expires = "";
-		    document.cookie = name+"="+value+expires+"; path=/KnowWE";
+		    document.cookie = name+"="+value+expires+"; path=/";
 		},
 		/**
 		 * 
