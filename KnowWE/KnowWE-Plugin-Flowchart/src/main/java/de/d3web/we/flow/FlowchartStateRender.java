@@ -210,6 +210,8 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 
 		String preview = FlowchartUtils.extractPreview(section);
 
+		if (preview == null) return "";
+
 		if (session == null) return preview;
 
 		String flowID = AbstractXMLObjectType.getAttributeMapFor(section).get("fcid");
@@ -225,7 +227,7 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 
 		}
 
-		return FlowchartUtils.createPreview(preview);
+		return FlowchartUtils.createRenderablePreview(preview);
 	}
 
 	private String highlightPath(String preview, String flowID, IPath path, Session session) {

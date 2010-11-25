@@ -20,11 +20,13 @@
 package de.d3web.we.flow;
 
 import de.d3web.we.flow.type.FlowchartPreviewContentType;
+import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
 
 /**
  * 
- * @author Reinhard Hatko Created on: 09.12.2009
+ * @author Reinhard Hatko
+ * @created 09.12.2009
  */
 public class FlowchartUtils {
 
@@ -34,25 +36,26 @@ public class FlowchartUtils {
 	/**
 	 * extracts the preview of a section of Type FlowchartType
 	 */
-	public static String extractPreview(Section flowchartSection) {
+	public static String extractPreview(Section<FlowchartType> flowchartSection) {
 
 		Section previewsection = flowchartSection.findSuccessor(FlowchartPreviewContentType.class);
 
-		if (previewsection == null) return "";
+		if (previewsection == null) return null;
 
-		return extractPreview(previewsection.getOriginalText());
-	}
-
-	/**
-	 * extracts the preview of a flowchart string
-	 */
-	public static String extractPreview(String flowchart) {
+		String flowchart = previewsection.getOriginalText();
 
 		return flowchart.substring(flowchart.indexOf("<![CDATA[") + 9, flowchart.indexOf("]]>"));
 	}
 
-	public static String createPreview(String version) {
-		return "<div style='zoom: 50%'>" +
+	/**
+	 * Creates a preview from the HTML code saved in the article by including
+	 * necessary css-styles
+	 * 
+	 * @param preview
+	 * @return
+	 */
+	public static String createRenderablePreview(String preview) {
+		return "<div style='cursor: default !important;'>" +
 				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/dropdownlist.css'></link>" +
 				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objectselect.css'></link>" +
 				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objecttree.css'></link>" +
@@ -62,9 +65,25 @@ public class FlowchartUtils {
 				"<link rel='stylesheet' type='text/css' href='cc/flow/node.css'></link>" +
 				"<link rel='stylesheet' type='text/css' href='cc/flow/nodeeditor.css'></link>" +
 				"<link rel='stylesheet' type='text/css' href='cc/flow/rule.css'></link>" +
-				"<style type='text/css'>div, span, a { cursor: pointer !important; }</style>" +
-				version +
+				"<style type='text/css'>.Node { cursor: default !important; }</style>" +
+				preview +
 				"</div>";
+	}
+
+	/**
+	 * Creates a HTML representation of the preview.
+	 * 
+	 * @created 25.11.2010
+	 * @param flowSection
+	 * @return s the preview including styles, or null if no preview is present
+	 */
+	public static String createRenderablePreview(Section<FlowchartType> flowSection) {
+		String preview = extractPreview(flowSection);
+
+		if (preview == null) return null;
+
+		return createRenderablePreview(preview);
+
 	}
 
 }

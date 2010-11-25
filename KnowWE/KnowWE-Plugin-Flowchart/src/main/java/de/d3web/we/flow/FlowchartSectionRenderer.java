@@ -20,93 +20,40 @@
 
 package de.d3web.we.flow;
 
-import de.d3web.we.core.KnowWEAttributes;
+import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class FlowchartSectionRenderer extends KnowWEDomRenderer {
+/**
+ * 
+ * @author Reinhard Hatko
+ */
+public class FlowchartSectionRenderer extends KnowWEDomRenderer<FlowchartType> {
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
-
+	public void render(KnowWEArticle article, Section<FlowchartType> sec, KnowWEUserContext user, StringBuilder string) {
 
 		String topic = sec.getArticle().getTitle();
 		String web = sec.getArticle().getWeb();
 
-		String content = createPreview(article, sec, user, web, topic, string); // wrappContent(SpecialDelegateRenderer.getInstance().render(sec,
-		string.append(content);
+		string.append(createPreview(article, sec, user, web, topic, string));
 	}
 
-	private String createPreview(KnowWEArticle article, Section sec, KnowWEUserContext user, String web, String topic, StringBuilder builder) {
-		// dirty xml parsing hack for quick results
-		String xml = sec.getOriginalText();
-		int startPos = xml.lastIndexOf("<preview mimetype=\"text/html\">");
-		int endPos = xml.lastIndexOf("</preview>");
-		if (startPos >= 0 && endPos >= 0) {
-			String preview = xml.substring(startPos + 43, endPos - 8);
-			return KnowWEUtils
-					.maskHTML(
-					"<div>"
-							+
-										// sec.getID() contains a '/' which is
-										// not allowed. FF
-										// ignores it, IE doesnt open a new
-										// window
-										// "onclick='window.open(\""+createEditURL(sec.getId(),
-										// topic)+"\", \""+sec.getId()+"\")'>"
-										// +"\r\n" +
-										"<link rel='stylesheet' type='text/css' href='cc/kbinfo/dropdownlist.css'></link>"
-							+
-							"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objectselect.css'></link>"
-							+
-							"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objecttree.css'></link>"
-							+
-							"<link rel='stylesheet' type='text/css' href='cc/flow/flowchart.css'></link>"
-							+
-							"<link rel='stylesheet' type='text/css' href='cc/flow/floweditor.css'></link>"
-							+
-							"<link rel='stylesheet' type='text/css' href='cc/flow/guard.css'></link>"
-							+
-							"<link rel='stylesheet' type='text/css' href='cc/flow/node.css'></link>"
-							+
-							"<link rel='stylesheet' type='text/css' href='cc/flow/nodeeditor.css'></link>"
-							+
-							"<link rel='stylesheet' type='text/css' href='cc/flow/rule.css'></link>"
-							+ // overrides the move cursor on nodes
-							"<style type='text/css'>div, span, a { cursor: default !important; }</style>"
-							+
-							preview +
-							"</div>");
+	private String createPreview(KnowWEArticle article, Section<FlowchartType> sec, KnowWEUserContext user, String web, String topic, StringBuilder builder) {
+
+		String preview = FlowchartUtils.createRenderablePreview(sec);
+		
+		if (preview == null) {
+			return "No preview";
 		}
-		else { // TODO remove
-			StringBuilder buffy = new StringBuilder();
-			buffy.append("\n{{{");
-			buffy.append(KnowWEUtils.maskHTML(
-			"<div style='cursor: pointer;' " +
-					"onclick='window.open(\""
-					+ createEditURL(sec.getID(), topic)
-					+ "\", \""
-					+ sec.getID().replaceAll("[^\\w]", "_")
-					+ "\")'>"));
-			DelegateRenderer.getInstance().render(article, sec, user, buffy);
-			buffy.append(KnowWEUtils.maskHTML(" </div>"));
-			buffy.append("}}}\n");
-			return buffy.toString();
+		else {
+			return KnowWEUtils.maskHTML(preview);
 		}
+
 	}
 
-
-	private String createEditURL(String flowchartNodeID, String topic) {
-		return "FlowEditor.jsp?kdomID=" + flowchartNodeID + "&" + KnowWEAttributes.TOPIC + "="
-				+ topic;
-	}
-
-	protected String wrappContent(String string) {
-		return "\n{{{" + string + "}}}\n";
-	}
 
 }
