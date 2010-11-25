@@ -57,27 +57,47 @@ public class KnowWEParameterMap extends HashMap<String, String> {
 
 		Enumeration<String> paramNames = rq.getParameterNames();
 		if ((paramNames != null)) {
+
+			// TODO dirty hack, until double encoding issues are resolved
+			boolean saveFlowchart = false;
+			while ((paramNames.hasMoreElements())) {
+				String name = paramNames.nextElement();
+				String value = rq.getParameter(name);
+
+				if (name.equalsIgnoreCase("action")
+						&& value.equalsIgnoreCase("SaveFlowchartAction")) {
+					saveFlowchart = true;
+				}
+
+			}
+
+			paramNames = rq.getParameterNames();
 			while ((paramNames.hasMoreElements())) {
 				String name = paramNames.nextElement();
 
 				String value = rq.getParameter(name);
-				try {
-					value = URLDecoder.decode(value, "UTF-8");
-				}
-				catch (UnsupportedEncodingException e1) {
-					// UTF-8 is not supported
-					// log it and use parameter value 'as is'
-					Logger.getLogger(getClass().getName()).warning(
-							"UTF-8 decoding is not supported.");
-				}
-				catch (IllegalArgumentException e1) {
-					// string seems to be not an utf8 encoding
-					// (invalid bit sequence)
-					// log it and use parameter value 'as is'
-					Logger.getLogger(getClass().getName()).warning(
-							"Parameter '" + name +
-									"' in request '" + rq.getPathInfo() +
-									"' has non-UTF-8 encoding. ");
+
+				// do no double decoding for flowcharts
+				if (!saveFlowchart) {
+
+					try {
+						value = URLDecoder.decode(value, "UTF-8");
+					}
+					catch (UnsupportedEncodingException e1) {
+						// UTF-8 is not supported
+						// log it and use parameter value 'as is'
+						Logger.getLogger(getClass().getName()).warning(
+								"UTF-8 decoding is not supported.");
+					}
+					catch (IllegalArgumentException e1) {
+						// string seems to be not an utf8 encoding
+						// (invalid bit sequence)
+						// log it and use parameter value 'as is'
+						Logger.getLogger(getClass().getName()).warning(
+								"Parameter '" + name +
+										"' in request '" + rq.getPathInfo() +
+										"' has non-UTF-8 encoding. ");
+					}
 				}
 				this.put(name, value);
 			}
