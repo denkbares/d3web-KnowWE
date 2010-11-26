@@ -18,7 +18,10 @@
  */
 package de.d3web.we.ci4ke.handling;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -41,6 +44,31 @@ public final class DynamicCITestManager {
 		handlers.add(handler);
 	}
 
+	/**
+	 * Generates a Map of ALL dynamically integrated {@link CITest} by iterating
+	 * over all registered {@link DynamicCITestHandler}s.
+	 * 
+	 * @created 26.11.2010
+	 * @return
+	 */
+	public Map<String, Class<? extends CITest>> getAllDynamicCITestClasses() {
+		Map<String, Class<? extends CITest>> allDynamicCITests =
+				new HashMap<String, Class<? extends CITest>>();
+		for (DynamicCITestHandler handler : handlers) {
+			allDynamicCITests.putAll(handler.getAllCITestClasses());
+		}
+		return Collections.unmodifiableMap(allDynamicCITests);
+	}
+
+	/**
+	 * Gets a single {@link CITest} class from the registered handlers. The
+	 * first found class is returned, even if other classes with the same name
+	 * exist in other (later added) {@link DynamicCITestHandler}s.
+	 * 
+	 * @created 26.11.2010
+	 * @param testName
+	 * @return
+	 */
 	public Class<? extends CITest> getCITestClass(String testName) {
 		for (DynamicCITestHandler handler : handlers) {
 			Class<? extends CITest> clazz = handler.getCITestClass(testName);

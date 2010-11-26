@@ -42,6 +42,7 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
 
+import de.d3web.core.utilities.Pair;
 import de.d3web.we.ci4ke.handling.CITestResult;
 import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
 import de.d3web.we.ci4ke.util.CIUtilities;
@@ -217,9 +218,9 @@ public class CIBuildPersistenceHandler {
 
 			Element tests = new Element("tests");
 			// iterate over the testresults contained in the build-resultset
-			for (Map.Entry<String, CITestResult> entry : resultset.getResults().entrySet()) {
-				String testname = entry.getKey();
-				CITestResult testresult = entry.getValue();
+			for (Pair<String, CITestResult> resultPair : resultset.getResults()) {
+				String testname = resultPair.getA();
+				CITestResult testresult = resultPair.getB();
 
 				Element e = new Element("test");
 				e.setAttribute("name", testname);

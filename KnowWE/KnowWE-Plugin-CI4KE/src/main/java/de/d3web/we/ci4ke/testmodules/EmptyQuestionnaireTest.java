@@ -26,8 +26,12 @@ import de.d3web.we.ci4ke.handling.CITestResult;
 import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
 import de.d3web.we.core.KnowWEEnvironment;
 
-
 /**
+ * This CITest searches for empty questionnaires on an article. It needs one
+ * parameter for execution, eg.
+ * <p>
+ * \@test: EmptyQuestionnaireTest "Article - Master KB"
+ * </p>
  * 
  * @author Marc-Oliver Ochlast (denkbares GmbH)
  * @created 26.11.2010
@@ -43,10 +47,12 @@ public class EmptyQuestionnaireTest extends AbstractCITest {
 		String articleName = getParameter(0);
 		KnowledgeBase kb = D3webModule.getAD3webKnowledgeServiceInTopic(
 				KnowWEEnvironment.DEFAULT_WEB, articleName);
-		for (QASet qaset : kb.getQASets()) {
-			if (!qaset.isQuestionOrHasQuestions()) {
-				return new CITestResult(TestResultType.FAILED,
-						"Article " + articleName + " has empty questionnaires!");
+		if (kb != null) {
+			for (QASet qaset : kb.getQASets()) {
+				if (!qaset.isQuestionOrHasQuestions()) {
+					return new CITestResult(TestResultType.FAILED,
+							"Article " + articleName + " has empty questionnaires!");
+				}
 			}
 		}
 		return new CITestResult(TestResultType.SUCCESSFUL);

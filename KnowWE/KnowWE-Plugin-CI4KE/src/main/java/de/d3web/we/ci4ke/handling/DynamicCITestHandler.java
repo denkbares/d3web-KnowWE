@@ -18,6 +18,8 @@
  */
 package de.d3web.we.ci4ke.handling;
 
+import java.util.Map;
+
 /**
  * @author Marc-Oliver Ochlast (denkbares GmbH)
  * @created 22.11.2010
@@ -32,5 +34,13 @@ public interface DynamicCITestHandler {
 	 * @return
 	 */
 	public Class<? extends CITest> getCITestClass(String testName);
+
+	/**
+	 * Gets a Map of all dynamically implemented CITest Classes
+	 * 
+	 * @created 26.11.2010
+	 * @return
+	 */
+	public Map<String, Class<? extends CITest>> getAllCITestClasses();
 
 }

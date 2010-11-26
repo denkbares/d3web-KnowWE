@@ -22,11 +22,11 @@ package de.d3web.we.ci4ke.handling;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import de.d3web.core.utilities.Pair;
 import de.d3web.we.ci4ke.handling.CIDashboardType.CIBuildTriggers;
 
 public final class CIConfig implements Cloneable {
@@ -34,20 +34,22 @@ public final class CIConfig implements Cloneable {
 	public static final String CICONFIG_STORE_KEY = "CIConfig_Section_Store";
 
 	public static final CIConfig DUMMY_CONFIG = new CIConfig("", "",
-			new HashMap<String, List<String>>(), CIBuildTriggers.onDemand);
+			new ArrayList<Pair<String, List<String>>>(), CIBuildTriggers.onDemand);
 
 	private final String dashboardName;
 	private final String dashboardArticleTitle;
 
-	private final Map<String, List<String>> tests;
+	// private final Map<String, List<String>> tests;
+	private final List<Pair<String, List<String>>> tests;
+
 	private final CIBuildTriggers trigger;
 
 	public CIConfig(String dashboardName, String dashboardArticle,
-			Map<String, List<String>> tests, CIBuildTriggers trigger) {
+			List<Pair<String, List<String>>> tests, CIBuildTriggers trigger) {
 		super();
 		this.dashboardName = dashboardName;
 		this.dashboardArticleTitle = dashboardArticle;
-		this.tests = Collections.unmodifiableMap(tests);
+		this.tests = Collections.unmodifiableList(tests);
 		this.trigger = trigger;
 	}
 
@@ -68,8 +70,16 @@ public final class CIConfig implements Cloneable {
 		return dashboardArticleTitle;
 	}
 
-	public Map<String, List<String>> getTests() {
+	public List<Pair<String, List<String>>> getTests() {
 		return tests;
+	}
+
+	public List<String> getTestNames() {
+		List<String> testNames = new ArrayList<String>(tests.size());
+		for (Pair<String, List<String>> testAndParameters : tests) {
+			testNames.add(testAndParameters.getA());
+		}
+		return testNames;
 	}
 
 	public CIBuildTriggers getTrigger() {

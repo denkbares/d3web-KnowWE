@@ -22,14 +22,13 @@ package de.d3web.we.ci4ke.handling;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.d3web.core.utilities.Pair;
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
@@ -100,7 +99,9 @@ public class CIDashboardType extends DefaultMarkupType {
 					getAnnotation(s, TRIGGER_KEY));
 
 			// This map is used for storing tests and their parameter-list
-			Map<String, List<String>> tests = new HashMap<String, List<String>>();
+			// Map<String, List<String>> tests = new HashMap<String,
+			// List<String>>();
+			List<Pair<String, List<String>>> tests = new ArrayList<Pair<String, List<String>>>();
 
 			List<Section<? extends AnnotationType>> annotationSections =
 					DefaultMarkupType.getAnnotationSections(s, TEST_KEY);
@@ -125,7 +126,7 @@ public class CIDashboardType extends DefaultMarkupType {
 						}
 						testParamters.add(parameter);
 					}
-					tests.put(testName, testParamters);
+					tests.add(new Pair<String, List<String>>(testName, testParamters));
 				}
 			}
 

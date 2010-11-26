@@ -20,11 +20,12 @@
 
 package de.d3web.we.ci4ke.build;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
+import de.d3web.core.utilities.Pair;
 import de.d3web.we.ci4ke.handling.CITestResult;
 import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
 
@@ -36,71 +37,29 @@ import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
 public final class CIBuildResultset {
 
 	/**
-	 * The ID of the dashboard for which the build was made
-	 */
-	// private String dashboardID;
-
-	/**
 	 * time/date of build execution
 	 */
 	private final Date buildExecutionDate;
 
 	/**
-	 * the version number of the article which was testet
-	 */
-	// private int articleVersion;
-
-	/**
 	 * A Map of the names and results of the executed Tests.
 	 */
-	private final Map<String, CITestResult> results;
+	// private final Map<String, CITestResult> results;
 
-	/**
-	 * the articles which were modified before execution of this build
-	 */
-	// private final List<ModifiedArticleWrapper> modifiedArticles;
+	private final List<Pair<String, CITestResult>> results;
 
 	public CIBuildResultset() {
 		super();
-		// this.articleVersion = -1;
 		this.buildExecutionDate = new Date();
-		this.results = new HashMap<String, CITestResult>();
-		// this.modifiedArticles = new LinkedList<ModifiedArticleWrapper>();
+		this.results = new ArrayList<Pair<String, CITestResult>>();
 	}
-
-	// @Deprecated
-	// public CIBuildResultset(
-	// // String dashboardID,
-	// Date buildExecutionDate,
-	// Map<String, CITestResult> results) {
-	// super();
-	// // this.dashboardID = dashboardID;
-	// this.buildExecutionDate = buildExecutionDate;
-	// this.results = results;
-	// }
-	//
-	// @Deprecated
-	// public CIBuildResultset(
-	// // String dashboardID,
-	// Map<String, CITestResult> results) {
-	// super();
-	// // this.dashboardID = dashboardID;
-	// this.buildExecutionDate = new Date();
-	// this.results = results;
-	// }
-
-	// GETTERS
-
-	// public String getDashboardID() {
-	// return dashboardID;
-	// }
 
 	public Date getBuildExecutionDate() {
 		return buildExecutionDate;
 	}
 
-	public Map<String, CITestResult> getResults() {
-		return results;
+	public List<Pair<String, CITestResult>> getResults() {
+		return Collections.unmodifiableList(results);
 	}
 
 	/**
@@ -113,14 +72,11 @@ public final class CIBuildResultset {
 	public TestResultType getOverallResult() {
 
 		TestResultType overallResult = TestResultType.SUCCESSFUL;
-		Collection<CITestResult> resultValues = results.values();
-
-		if (results != null) {
-			for (CITestResult result : resultValues) {
-				if (result != null && result.getResultType().
-						compareTo(overallResult) > 0) {
-					overallResult = result.getResultType();
-				}
+		for (Pair<String, CITestResult> resultPair : results) {
+			CITestResult testResult = resultPair.getB();
+			if (testResult != null && testResult.getResultType().
+					compareTo(overallResult) > 0) {
+				overallResult = testResult.getResultType();
 			}
 		}
 		return overallResult;
@@ -128,13 +84,13 @@ public final class CIBuildResultset {
 
 	public String getTestresultMessages() {
 		StringBuffer sb = new StringBuffer();
-		for (Map.Entry<String, CITestResult> entry : results.entrySet()) {
-			String testname = entry.getKey();
-			CITestResult testresult = entry.getValue();
+		for (Pair<String, CITestResult> resultPair : results) {
+			String testName = resultPair.getA();
+			CITestResult testResult = resultPair.getB();
 
-			sb.append(testname + ": ");
-			if (testresult.getTestResultMessage().length() > 0) {
-				sb.append(testresult.getTestResultMessage());
+			sb.append(testName + ": ");
+			if (testResult.getTestResultMessage().length() > 0) {
+				sb.append(testResult.getTestResultMessage());
 			}
 			else {
 				sb.append("(no resultmessage)");
@@ -148,27 +104,10 @@ public final class CIBuildResultset {
 
 	public void addTestResult(String testname, CITestResult testResult) {
 		if (testname != null && !testname.isEmpty() && testResult != null) {
-			this.results.put(testname, testResult);
+			results.add(new Pair<String, CITestResult>(testname, testResult));
 		}
-		else throw new IllegalArgumentException("addTestResult() received illegal arguments!");
+		else {
+			throw new IllegalArgumentException("addTestResult() received illegal arguments!");
+		}
 	}
-
-	// public int getArticleVersion() {
-	// return articleVersion;
-	// }
-	//
-	// public void setArticleVersion(int articleVersion) {
-	// this.articleVersion = articleVersion;
-	// }
-
-	// public void addModifiedArticle(ModifiedArticleWrapper modified) {
-	// if (modified != null) {
-	// this.modifiedArticles.add(modified);
-	// }
-	// }
-	//
-	// public List<ModifiedArticleWrapper> getModifiedArticles() {
-	// return Collections.unmodifiableList(this.modifiedArticles);
-	// }
-
 }

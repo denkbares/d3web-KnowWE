@@ -20,13 +20,15 @@
 
 package de.d3web.we.ci4ke.build;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import de.d3web.core.utilities.Pair;
 import de.d3web.we.ci4ke.handling.CIConfig;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.d3web.we.ci4ke.handling.CIHookManager.CIHook;
@@ -84,22 +86,27 @@ public class CIBuilder {
 	 */
 	public void executeBuild() {
 
-		Map<String, Class<? extends CITest>> testClasses =
-				CIUtilities.parseTestClasses(this.config.getTests().keySet());
+		// Map<String, Class<? extends CITest>> testClasses =
+		// CIUtilities.parseTestClasses(this.config.getTests().keySet());
+		Map<String, Class<? extends CITest>> testClasses = CIUtilities.getAllCITestClasses();
 
-		Map<String, Future<CITestResult>> futureResults =
-				new HashMap<String, Future<CITestResult>>();
+		// Map<String, Future<CITestResult>> futureResults =
+		// new HashMap<String, Future<CITestResult>>();
+		List<Pair<String, Future<CITestResult>>> futureResults =
+				new ArrayList<Pair<String, Future<CITestResult>>>();
 
 		// Just for now, be build only in a single, parallel thread.
 		// Multithreaded building with more than one build thread has
 		// to be thought about.
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 
-		for (Map.Entry<String, Class<? extends CITest>> entry : testClasses.entrySet()) {
+		for (Pair<String, List<String>> testAndItsParameters : this.config.getTests()) {
 
-			String testname = entry.getKey();
-			Class<? extends CITest> clazz = entry.getValue();
+			String testName = testAndItsParameters.getA();
+			List<String> parameters = testAndItsParameters.getB();
 
+			Class<? extends CITest> clazz = testClasses.get(testName);
+			
 			CITest test = null;
 			try {
 				test = clazz.newInstance();
@@ -118,37 +125,30 @@ public class CIBuilder {
 				test.init(config);
 
 				// set the test paramterers
-				test.setParameters(config.getTests().get(testname));
+				test.setParameters(parameters);
 
 				// Submit this test for threaded execution!
 				// The result will arrive in the future...
 				Future<CITestResult> res = executor.submit(test);
 
 				// store this
-				futureResults.put(testname, res);
+				futureResults.add(new Pair<String, Future<CITestResult>>(testName, res));
 			}
+
 		}
-
-		// int monitoredArticleVersion = KnowWEEnvironment.getInstance().
-		// getWikiConnector().getVersion(this.config.getMonitoredArticleTitle());
-
-		// Logger.getLogger(this.getClass().getName()).log(Level.INFO,
-		// ">>> CIBuilder: testclasses parsed! >>>");
 
 		// Now collect the results
 		CIBuildResultset resultset = new CIBuildResultset();
 		// resultset.setArticleVersion(monitoredArticleVersion);
 
-		for (Map.Entry<String, Future<CITestResult>> entry : futureResults.entrySet()) {
+		for (Pair<String, Future<CITestResult>> runningTest : futureResults) {
 
-			String testname = entry.getKey();
-			Future<CITestResult> futureResult = entry.getValue();
+			String testname = runningTest.getA();
+			Future<CITestResult> futureResult = runningTest.getB();
 
 			try {
-
 				resultset.addTestResult(testname,
 							futureResult.get());
-
 			}
 			catch (InterruptedException e) {
 				// TODO Auto-generated catch block

@@ -26,6 +26,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -156,6 +157,7 @@ public class CIUtilities {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	public static Map<String, Class<? extends CITest>> parseTestClasses(Collection<String> testClassNames) {
 
 		Map<String, Class<? extends CITest>> classesMap =
@@ -196,67 +198,30 @@ public class CIUtilities {
 		// return parseTestClasses(list);
 	}
 
-	/**
-	 * TODO: Javadoc
-	 * 
-	 * @param testClassNames
-	 * @return
-	 */
-	// public static Map<String, Class<? extends CITest>> parseTestClasses(
-	// Collection<String> testClassNames) {
-	// // our returnMap
-	// Map<String, Class<? extends CITest>> classesMap =
-	// new TreeMap<String, Class<? extends CITest>>();
-	//
-	// // get all Sections containing a GroovyCITest
-	// Map<String, Section<GroovyCITestType>> groovyTestSections =
-	// getAllGroovyCITestSections(KnowWEEnvironment.DEFAULT_WEB);
-	//
-	// // the package prefix to find the
-	// String packagePrefix = "de.d3web.we.ci4ke.testmodules.";
-	//
-	// for (String c : testClassNames) {
-	//
-	// // a test can either be statically defined in a java class
-	// // or dynamically defined in a grovvy test section
-	// if (groovyTestSections.containsKey(c)) {
-	// // the current class name matches the name of a (groovy) test
-	// // section
-	// Section<GroovyCITestType> sec = groovyTestSections.get(c);
-	// // parse the content of the section into a groovy-script
-	// Class<? extends CITest> testClass = parseGroovyCITestSection(sec);
-	//
-	// classesMap.put(c, testClass);
-	//
-	// }
-	// else {
-	//
-	// // c is a "ordinary" java class. Try to load the class!
-	// Class<?> clazz = null;
-	// try {
-	// clazz = Class.forName(packagePrefix + c);
-	//
-	// // If our new class implements the CITest-interface...
-	// if (CITest.class.isAssignableFrom(clazz)) {
-	// // this cast is legit due to the type-checking
-	// // beforehand
-	// @SuppressWarnings("unchecked")
-	// Class<? extends CITest> testClass =
-	// (Class<? extends CITest>) clazz;
-	// classesMap.put(c, testClass);
-	// }
-	// }
-	// catch (ClassNotFoundException e) {
-	// // TODO Auto-generated catch block
-	// // e.printStackTrace();
-	//
-	// }
-	// }
-	// }
-	// return classesMap;
-	// }
+	public static Map<String, Class<? extends CITest>> getAllCITestClasses() {
+		Map<String, Class<? extends CITest>> classesMap =
+				new TreeMap<String, Class<? extends CITest>>();
 
+		List<Extension> allPluggedTests = Arrays.asList(PluginManager.getInstance().
+				getExtensions("KnowWEExtensionPoints", "CITest"));
 
+		for (Extension e : allPluggedTests) {
+			String testClassName = e.getName();
+			try {
+				Class<?> clazz = Class.forName(e.getParameter("class"));
+				if (CITest.class.isAssignableFrom(clazz)) {
+					classesMap.put(testClassName, clazz.asSubclass(CITest.class));
+				}
+			}
+			catch (ClassNotFoundException e1) {
+			}
+		}
+
+		// add all dynamically registered CITests:
+		classesMap.putAll(DynamicCITestManager.INSTANCE.getAllDynamicCITestClasses());
+
+		return Collections.unmodifiableMap(classesMap);
+	}
 
 	// RENDER - HELPERS
 

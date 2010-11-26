@@ -35,8 +35,10 @@ public class TestsuiteRunner extends AbstractCITest {
 	@Override
 	public CITestResult call() {
 
-		// String monitoredArticleTitle = config.getMonitoredArticleTitle();
-		String monitoredArticleTitle = config.getTests().get("TestsuiteRunner").get(0);
+		if (!checkIfParametersAreSufficient(1)) {
+			return numberOfParametersNotSufficientError(1);
+		}
+		String monitoredArticleTitle = getParameter(0);
 
 		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticleManager(
 				KnowWEEnvironment.
@@ -52,19 +54,28 @@ public class TestsuiteRunner extends AbstractCITest {
 					section.getArticle(), section, TestSuiteType.TESTSUITEKEY);
 
 			if (suite != null) {
-				if (!suite.isConsistent()) return new CITestResult(TestResultType.FAILED, "Testsuite is not consistent!");
-				else if (suite.totalRecall() == 1.0 && suite.totalPrecision() == 1.0) // passed!
-				return new CITestResult(TestResultType.SUCCESSFUL, "Testsuite passed!");
-				else return new CITestResult(TestResultType.FAILED,
-						"Testsuite failed! (Total Precision: " + suite.totalPrecision() +
-								", Total Recall: " + suite.totalRecall() + ")");
+				if (!suite.isConsistent()) {
+					return new CITestResult(TestResultType.FAILED, "Testsuite is not consistent!");
+				}
+				else if (suite.totalRecall() == 1.0 && suite.totalPrecision() == 1.0) {
+					return new CITestResult(TestResultType.SUCCESSFUL, "Testsuite passed!");
+				}
+				else {
+					return new CITestResult(TestResultType.FAILED,
+							"Testsuite failed! (Total Precision: " + suite.totalPrecision() +
+									", Total Recall: " + suite.totalRecall() + ")");
+				}
 			}
-			else return new CITestResult(TestResultType.ERROR,
-					"Error while retrieving Testsuite from Article '" + article.getTitle() + "' !");
+			else {
+				return new CITestResult(TestResultType.ERROR,
+						"Error while retrieving Testsuite from Article '" + article.getTitle() + "' !");
+			}
 
 		}
-		else return new CITestResult(TestResultType.ERROR,
-				"No Testsuite-Section found on Article '" + article.getTitle() + "' !");
+		else {
+			return new CITestResult(TestResultType.ERROR,
+					"No Testsuite-Section found on Article '" + article.getTitle() + "' !");
+		}
 	}
 
 }
