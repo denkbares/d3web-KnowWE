@@ -436,7 +436,7 @@ Flowchart.prototype.toXML = function(includePreview) {
 				'\t</preview>\n';
 	}
 
-	xml += '</flowchart>\n'
+	xml += '</flowchart>'
 	return xml;
 }
 
@@ -536,8 +536,8 @@ Flowchart.createFromXML = function(parent, xmlDom) {
 	
 	// direkt attributes
 	var id = xmlDom.getAttribute('fcid');
-	var width = xmlDom.getAttribute('width') | 650;
-	var height = xmlDom.getAttribute('height') | 400;
+	var width = xmlDom.getAttribute('width') || 650;
+	var height = xmlDom.getAttribute('height') || 400;
 	var name = xmlDom.getAttribute('name');
 	var icon = xmlDom.getAttribute('icon');
 	var idCounter = xmlDom.getAttribute('idCounter');
