@@ -21,10 +21,14 @@
 package de.d3web.we.ci4ke.handling;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
+import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEArticle;
 
 /**
  * An abstract implementation of a CITest, which implements the init(CIConfig)
@@ -99,5 +103,17 @@ public abstract class AbstractCITest implements CITest {
 				+ this.getClass().getSimpleName() + "' are not sufficient. Please specify "
 				+ numberOfParametersNeeded + " arguments!";
 		return new CITestResult(TestResultType.ERROR, errorMessage);
+	}
+
+	public Collection<KnowWEArticle> getArticlesMatchingPattern(Pattern pattern) {
+		List<KnowWEArticle> matchingArticles = new ArrayList<KnowWEArticle>();
+		for (KnowWEArticle article : KnowWEEnvironment.getInstance().
+				getArticleManager(KnowWEEnvironment.DEFAULT_WEB).getArticles()) {
+			String articleName = article.getTitle();
+			if (pattern.matcher(articleName).matches()) {
+				matchingArticles.add(article);
+			}
+		}
+		return Collections.unmodifiableCollection(matchingArticles);
 	}
 }

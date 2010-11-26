@@ -61,11 +61,11 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="CITest"
-		id="TestArticleContainsTODO">
+		id="TestArticlesContain">
 		<parameter id="class"
-			value="de.d3web.we.ci4ke.testmodules.TestArticleContainsTODO" />
-		<parameter id="name" value="TestArticleContainsTODO" />
-		<parameter id="description" value="CITest TestArticleContainsTODO" />
+			value="de.d3web.we.ci4ke.testmodules.TestArticlesContain" />
+		<parameter id="name" value="TestArticlesContain" />
+		<parameter id="description" value="CITest TestArticlesContain" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

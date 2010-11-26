@@ -22,41 +22,51 @@ package de.d3web.we.ci4ke.testmodules;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import de.d3web.we.ci4ke.handling.AbstractCITest;
 import de.d3web.we.ci4ke.handling.CITestResult;
 import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 
-public class TestArticleContainsTODO extends AbstractCITest {
+/**
+ * This test can search articles (specified by a regexp pattern) for a keyword.
+ * 
+ * @author Marc-Oliver Ochlast (denkbares GmbH)
+ * @created 26.11.2010
+ */
+public class TestArticlesContain extends AbstractCITest {
 
-	/**
-	 * This Test is successful, if and only if the given article does not
-	 * contain the word "T O D O" (in upper-case, without spaces).
-	 */
 	@Override
 	public CITestResult call() {
 
-		List<String> namesOfArticlesWhichContainTODO = new LinkedList<String>();
+		if (!checkIfParametersAreSufficient(2)) {
+			return numberOfParametersNotSufficientError(2);
+		}
 
-		// iterate over all KnowWEArticles in the given web
-		for (KnowWEArticle article : KnowWEEnvironment.getInstance().
-				getArticleManager(KnowWEEnvironment.DEFAULT_WEB).getArticles()) {
-			// if an article contains the word "T O D O" (in upper-case, without
-			// spaces)...
-			if (article.toString().contains("TODO"))
-			// ...add its name to the list
-			namesOfArticlesWhichContainTODO.add(article.getTitle());
+		String articlesPattern = getParameter(0);
+		String searchForKeyword = getParameter(1);
+		
+		Pattern pattern = Pattern.compile(articlesPattern);
+
+		List<String> namesOfArticlesWhichContainKeyword = new LinkedList<String>();
+
+		for (KnowWEArticle article : getArticlesMatchingPattern(pattern)) {
+			if (article.toString().contains(searchForKeyword)) {
+				namesOfArticlesWhichContainKeyword.add(article.getTitle());
+			}
 		}
 
 		// If at least one article was found, this test is FAILED
-		if (namesOfArticlesWhichContainTODO.size() > 0) return new CITestResult(
-				TestResultType.FAILED,
-					"<b>The following Articles contain a 'TODO': " +
-							de.d3web.we.utils.Strings.concat(", ",
-									namesOfArticlesWhichContainTODO) + "</b>");
-		else return new CITestResult(TestResultType.SUCCESSFUL);
+		if (namesOfArticlesWhichContainKeyword.size() > 0) {
+			return new CITestResult(TestResultType.FAILED,
+						"<b>The following articles contain the keyword '" +
+								searchForKeyword + "': " + de.d3web.we.utils.Strings.concat(", ",
+										namesOfArticlesWhichContainKeyword) + "</b>");
+		}
+		else {
+			return new CITestResult(TestResultType.SUCCESSFUL);
+		}
 
 	}
 }
