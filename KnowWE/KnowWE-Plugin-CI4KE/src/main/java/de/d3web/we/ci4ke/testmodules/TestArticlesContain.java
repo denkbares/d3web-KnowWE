@@ -52,7 +52,8 @@ public class TestArticlesContain extends AbstractCITest {
 		List<String> namesOfArticlesWhichContainKeyword = new LinkedList<String>();
 
 		for (KnowWEArticle article : getArticlesMatchingPattern(pattern)) {
-			if (article.toString().contains(searchForKeyword)) {
+			if (!article.getTitle().equals(config.getDashboardArticleTitle()) &&
+					article.toString().contains(searchForKeyword)) {
 				namesOfArticlesWhichContainKeyword.add(article.getTitle());
 			}
 		}
