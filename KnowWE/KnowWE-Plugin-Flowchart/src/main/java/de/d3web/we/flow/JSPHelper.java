@@ -121,7 +121,7 @@ public class JSPHelper {
 		}
 
 		String nodeData = KnowWEEnvironment.getInstance().getNodeData(web,
-				topic, kdomID);
+				topic, flowchart.getID());
 		return nodeData;
 	}
 
