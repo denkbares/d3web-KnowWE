@@ -106,35 +106,35 @@ public class CIBuilder {
 			List<String> parameters = testAndItsParameters.getB();
 
 			Class<? extends CITest> clazz = testClasses.get(testName);
-			
-			CITest test = null;
-			try {
-				test = clazz.newInstance();
+			if (clazz != null) {
+				CITest test = null;
+				try {
+					test = clazz.newInstance();
+				}
+				catch (InstantiationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				if (test != null) {
+					// init the test with the CIConfig
+					test.init(config);
+
+					// set the test paramterers
+					test.setParameters(parameters);
+
+					// Submit this test for threaded execution!
+					// The result will arrive in the future...
+					Future<CITestResult> res = executor.submit(test);
+
+					// store this
+					futureResults.add(new Pair<String, Future<CITestResult>>(testName, res));
+				}
 			}
-			catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			if (test != null) {
-				// init the test with the CIConfig
-				test.init(config);
-
-				// set the test paramterers
-				test.setParameters(parameters);
-
-				// Submit this test for threaded execution!
-				// The result will arrive in the future...
-				Future<CITestResult> res = executor.submit(test);
-
-				// store this
-				futureResults.add(new Pair<String, Future<CITestResult>>(testName, res));
-			}
-
 		}
 
 		// Now collect the results

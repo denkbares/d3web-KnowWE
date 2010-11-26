@@ -86,7 +86,7 @@ public class CIDashboard {
 
 		if (config.getTrigger().equals(CIDashboardType.CIBuildTriggers.onDemand)) {
 			html.append("<a href=\"#\" onclick=\"fctExecuteNewBuild('"
-					+ config.getDashboardNameEscaped() + "');\"");
+					+ config.getDashboardNameEscaped() + "');\">");
 			html.append("<img border=\"0\" align=\"right\" src='KnowWEExtension/ci4ke/images/22x22/clock.png' "
 					+ "alt='Schedule a build' title='Schedule a build'></a>");
 		}
