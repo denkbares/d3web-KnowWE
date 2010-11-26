@@ -61,6 +61,16 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="KDOMRenderer">
+		<parameter id="class"
+			value="de.knowwe.core.kdom.taghandler.KDOMRenderer" />
+		<parameter id="name" value="KDOMRenderer" />
+		<parameter id="description" value="TagHandler KDOMRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>	
+	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ReRenderContentPartAction">
 		<parameter id="class"

@@ -18,13 +18,35 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.visitor;
+package de.knowwe.core.kdom.taghandler;
 
-import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.Section;
+import java.util.Map;
 
-public interface Visitor {
+import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.visitor.RenderKDOMVisitor;
+import de.d3web.we.taghandler.AbstractHTMLTagHandler;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-	public void visit(Section<? extends KnowWEObjectType> s);
+public class KDOMRenderer extends AbstractHTMLTagHandler {
+
+	public KDOMRenderer() {
+		super("renderKDOM");
+	}
+
+	@Override
+	public String getDescription(KnowWEUserContext user) {
+		return KnowWEEnvironment.getInstance().getKwikiBundle(user).getString(
+				"KnowWE.KDOMRenderer.description");
+	}
+
+	@Override
+	public String renderHTML(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+		RenderKDOMVisitor v = new RenderKDOMVisitor();
+		v.visit(KnowWEEnvironment.getInstance().getArticle(web, topic)
+				.getSection());
+		String data = "<div><h3>KDOM:</h3><tt>"
+				+ v.getRenderedKDOM() + "</tt></div>";
+		return data;
+	}
 
 }

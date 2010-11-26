@@ -25,52 +25,50 @@ import java.util.List;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
+import de.d3web.we.utils.KnowWEUtils;
 
-public class CreateTextVisitor implements Visitor {
-
-	private static CreateTextVisitor instance;
-
-	public static synchronized CreateTextVisitor getInstance() {
-		if (instance == null) {
-			instance = new CreateTextVisitor();
-
-		}
-
-		return instance;
-	}
-
-	/**
-	 * prevent cloning
-	 */
-	@Override
-	public Object clone()
-			throws CloneNotSupportedException {
-		throw new CloneNotSupportedException();
-	}
+public class RenderKDOMVisitor implements Visitor {
 
 	private StringBuffer buffi;
 
 	@Override
 	public void visit(Section<? extends KnowWEObjectType> s) {
 		buffi = new StringBuffer();
-		renderSubtree(s, buffi);
-
+		renderSubtree(s, 0, buffi);
 	}
 
-	public String getText() {
+	public String getRenderedKDOM() {
 		return buffi.toString();
 	}
 
-	private void renderSubtree(Section<? extends KnowWEObjectType> s, StringBuffer buffi) {
-		if (s.getObjectType() instanceof PlainText) {
-			buffi.append(s.getOriginalText());
-		}
+	private void renderSubtree(Section<? extends KnowWEObjectType> s, int i, StringBuffer buffi) {
+		buffi.append(getDashes(i));
+		buffi.append(" <span style=\"color:black\" title=\"");
+		buffi.append(" ID: " + s.getID() + "\n");
+		buffi.append("\">");
+		buffi.append(KnowWEUtils.html_escape(s.verbalize()));
+		buffi.append("</span>\n <br />"); // \n only to avoid HTML-code being
+											// cut by JspWiki (String.length >
+											// 10000)
+		i++;
 		List<Section<? extends KnowWEObjectType>> children = s.getChildren();
+		if (children.size() == 1
+				&& children.get(0).getObjectType() instanceof PlainText) {
 
-		for (Section<? extends KnowWEObjectType> section : children) {
-			renderSubtree(section, buffi);
 		}
+		else {
+			for (Section<? extends KnowWEObjectType> section : children) {
+				renderSubtree(section, i, buffi);
+			}
+		}
+	}
 
+	private String getDashes(int cnt) {
+		StringBuffer dashes = new StringBuffer();
+		for (int i = 0; i < cnt; i++) {
+			dashes.append("-");
+		}
+		return dashes.toString();
 	}
 
 }
