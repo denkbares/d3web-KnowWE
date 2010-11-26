@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
+
 /**
  * An abstract implementation of a CITest, which implements the init(CIConfig)
  * and setParameters(List<String>) methods.
@@ -57,6 +59,45 @@ public abstract class AbstractCITest implements CITest {
 	}
 
 	public String getParameter(int index) {
-		return parameters.get(index);
+		try {
+			return parameters.get(index);
+		}
+		catch (IndexOutOfBoundsException outOfBoundsExcp) {
+			return null;
+		}
+	}
+
+	/**
+	 * Checks if the number of parameters specified for this test are
+	 * sufficient.
+	 * 
+	 * @created 26.11.2010
+	 * @param numberOfParameters the required number of parameters for this test
+	 * @return false, if this test has less than the required number of
+	 *         parameters specified
+	 */
+	public boolean checkIfParametersAreSufficient(int numberOfParameters) {
+		for(int i=0; i<numberOfParameters; i++) {
+			String parameter = getParameter(i);
+			if(parameter == null || parameter.trim().isEmpty()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * When the number of parameters are not sufficient, a test can generate a
+	 * appropriate error message with this method.
+	 * 
+	 * @created 26.11.2010
+	 * @param numberOfParametersNeeded the number of parameters this test needs
+	 * @return a {@link CITestResult}-Error Message
+	 */
+	public CITestResult numberOfParametersNotSufficientError(int numberOfParametersNeeded) {
+		String errorMessage = "The number of arguments for the test '"
+				+ this.getClass().getSimpleName() + "' are not sufficient. Please specify "
+				+ numberOfParametersNeeded + " arguments!";
+		return new CITestResult(TestResultType.ERROR, errorMessage);
 	}
 }

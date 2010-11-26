@@ -78,6 +78,16 @@
 		<parameter id="description" value="CITest TestsuiteRunner" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CITest"
+		id="EmptyQuestionnaireTest">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.testmodules.EmptyQuestionnaireTest" />
+		<parameter id="name" value="EmptyQuestionnaireTest" />
+		<parameter id="description" value="CITest EmptyQuestionnaireTest" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
 	</extension>	
 	
 </plugin>
