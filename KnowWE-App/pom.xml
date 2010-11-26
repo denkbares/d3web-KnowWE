@@ -141,12 +141,6 @@
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Version</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Tagging</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
@@ -452,24 +446,6 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-SemanticCore</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<!-- Version Plugin -->
-		<profile>
-			<id>KnowWE-Plugin-Version</id>
-			<activation>
-				<property>
-					<name>version-plugin</name>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Version</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
