@@ -19,6 +19,7 @@
 package de.d3web.we.testsuite.kdom;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -133,7 +134,12 @@ public class TestSuiteType extends DefaultMarkupType {
 						+ getAnnotation(s, KBSOURCE)));
 			}
 
-			return messages;
+			// TODO: There are rendering issues in Firefox - Fix them and
+			// activate messages again
+			// return messages;
+
+			// As long as the issue exist, don't return any messages!
+			return Collections.emptyList();
 		}
 
 		private void createSTCName(Section<SequentialTestCase> stcSection, int index, de.d3web.empiricaltesting.SequentialTestCase stc, List<KDOMReportMessage> messages) {

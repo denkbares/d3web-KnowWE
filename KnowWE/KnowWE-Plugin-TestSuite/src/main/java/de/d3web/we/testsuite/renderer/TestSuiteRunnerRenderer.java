@@ -33,7 +33,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * Renderer for the TestSuiteResultType.
- * 
+ *
  * @see TestSuiteRunnerType
  * @author Sebastian Furth (denkbares GmbH)
  * @created 25/10/2010
@@ -58,12 +58,12 @@ public class TestSuiteRunnerRenderer extends DefaultMarkupRenderer<TestSuiteRunn
 		String testSuiteArticleName = TestSuiteRunnerType.getTestSuite(section);
 		TestSuite testSuite = getTestSuiteFor(testSuiteArticleName, article.getWeb());
 		if (testSuite == null) {
-			string.append(mask("<img src=\"KnowWEExtension/d3web/icon/uses_error16.gif\" align=\"top\" /> "));
+			string.append(mask("<img src='KnowWEExtension/d3web/icon/uses_error16.gif' align='top' /> "));
 			string.append(loadMessage("KnowWE.Testsuite.notestsuitefound",
 					new Object[] { testSuiteArticleName }));
 		}
 		else {
-			string.append(mask("<div id=\"testsuite-result\" >"));
+			string.append(mask("<div id='testsuite-result' >"));
 			renderTestSuiteDescription(string, testSuiteArticleName, testSuite);
 			renderTestSuiteRun(string, testSuite);
 			string.append(mask("</div>\n"));
@@ -71,9 +71,9 @@ public class TestSuiteRunnerRenderer extends DefaultMarkupRenderer<TestSuiteRunn
 	}
 
 	private void renderTestSuiteDescription(StringBuilder string, String testSuiteTopic, TestSuite testSuite) {
-		string.append(mask("<img src=\"KnowWEExtension/d3web/icon/comment16.png\" align=\"top\" /> "));
-		String link = mask("<a href=\"Wiki.jsp?page=" + testSuiteTopic
-				+ "\"><span id=\"testsuite-topic\">"
+		string.append(mask("<img src='KnowWEExtension/d3web/icon/comment16.png' align='top' /> "));
+		String link = mask("<a href='Wiki.jsp?page=" + testSuiteTopic
+				+ "'><span id='testsuite-topic'>"
 				+ testSuiteTopic + "</span></a>");
 		string.append(loadMessage("KnowWE.Testsuite.testsuitesfound", new Object[] {
 				link, testSuite.getRepository().size() }));
@@ -82,12 +82,12 @@ public class TestSuiteRunnerRenderer extends DefaultMarkupRenderer<TestSuiteRunn
 
 	private void renderTestSuiteRun(StringBuilder string, TestSuite testSuite) {
 		String runText = rb.getString("KnowWE.Testsuite.runbutton");
-		string.append(mask("<p onclick=\"runTestSuite()\" id=\"testsuite-run-link\">"));
+		string.append(mask("<p onclick='runTestSuite()' id='testsuite-run-link'>"));
 		string.append(mask("<img "));
-		string.append("src=\"KnowWEExtension/d3web/icon/run24.png\" ");
-		string.append("alt=\"" + runText + "\" ");
-		string.append("title=\"" + runText + "\" ");
-		string.append("align=\"absmiddle\" ");
+		string.append("src='KnowWEExtension/d3web/icon/run24.png' ");
+		string.append("alt='" + runText + "' ");
+		string.append("title='" + runText + "' ");
+		string.append("align='absmiddle' ");
 		string.append(mask("/> "));
 		string.append(mask("<strong>" + runText + "</strong></p>"));
 	}
@@ -99,7 +99,7 @@ public class TestSuiteRunnerRenderer extends DefaultMarkupRenderer<TestSuiteRunn
 
 	/**
 	 * Loads the required test suite.
-	 * 
+	 *
 	 * @created 25/10/2010
 	 * @param article the article containing the test suite
 	 * @param web current web
