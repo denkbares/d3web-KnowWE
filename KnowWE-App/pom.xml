@@ -452,6 +452,24 @@
 			</dependencies>
 		</profile>
 
+		<!-- Shared Plugin -->
+		<profile>
+			<id>KnowWE-Plugin-Shared</id>
+			<activation>
+				<property>
+					<name>shared-plugin</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Shared</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
 		<profile>
 			<id>denkbares</id>
 			<dependencies>
