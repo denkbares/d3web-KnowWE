@@ -13,6 +13,11 @@
 	margin-right: 4px;
 }
 
+.GuardEditor input.formula{
+	width: 100px;
+	margin-right: 4px;
+}
+
 .FlowchartGroup .inputFocus {
 	position:	absolute;
 	overflow:	hidden;

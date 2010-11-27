@@ -43,7 +43,7 @@ Guard.prototype.getDisplayHTML = function(values) {
 
 Guard.prototype.lookupDisplayHTML = function(guardPatterns) {
 	if (!guardPatterns) return;
-	for (var i=0; i<guardPatterns.length; i++) {
+	for (var i=guardPatterns.length - 1; i>0; --i) {
 		var guard = guardPatterns[i];
 		if (Object.isString(guard)) continue;
 		if (guard.isPatternFor(this)) {
@@ -96,7 +96,13 @@ Guard.prototype.inject = function(values) {
 }
 
 Guard.prototype.isFormula = function() {
-	return this.markup == 'timeDB';
+	if (this.markup == 'timeDB'){
+		return true;
+	} else if (this.markup == 'KnOffice'){
+		return this.conditionString.startsWith('(') && this.conditionString.endsWith(')');
+	}
+	
+	return false;
 }
 
 Guard.inject = function(text, values) {
@@ -106,6 +112,7 @@ Guard.inject = function(text, values) {
 	}
 	return text;
 }
+
 
 Guard.createPossibleGuards = function(nodeModel) {
 	if (!nodeModel) return null;
@@ -131,76 +138,79 @@ Guard.createPossibleGuards = function(nodeModel) {
 	var result = [];
 	if (infoObject.getClassInstance() == KBInfo.Question) {
 		switch (infoObject.getType()) {
+		
 			case KBInfo.Question.TYPE_BOOL:
-				// for now we receive also choices for boolean questions 
-				// from the server so treat them similar to oc questions
-				//add choices of oc/mc value
 			case KBInfo.Question.TYPE_OC:
 			case KBInfo.Question.TYPE_MC:
-				result.push('Wert abfragen');
+				result.push('Test value');
 				var options = infoObject.getOptions();
 				for (var i=0; i<options.length; i++) {
 					result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = "'+options[i]+'"', options[i]));
 				}
-				result.push('Wert ausschliessen');
+				result.push('Exclude value');
 				for (var i=0; i<options.length; i++) {
-					result.push(new Guard('KnOffice', 'NICHT ("'+infoObject.getName()+'" = "'+options[i]+'")', '&ne; ' + options[i]));
+					result.push(new Guard('KnOffice', 'NOT("'+infoObject.getName()+'" = "'+options[i]+'")', '&ne; ' + options[i]));
 				}
+				result.push('Complex condition');
+				result.push(new Guard('KnOffice', '(${formula})', '${formula}'));
 				break;
 			// currently add no options for other values
 			case KBInfo.Question.TYPE_DATE:
 			case KBInfo.Question.TYPE_TEXT:
-				result.push('Formel');
-				result.push(new Guard('timeDB', 'eval(${formula})', 'f: ${formula}'));
-				break;
+				result.push('Formula');
+				result.push(new Guard('timeDB', 'eval(${formula})', '${formula}'));
+				break
 			case KBInfo.Question.TYPE_NUM:
-				result.push('Wert abfragen');
+				result.push('Formula');
+				result.push(new Guard('timeDB', 'eval(${formula})', '${formula}'));
+				result.push('Test value');
 				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = ${num}', '= ${num}'));
-				result.push(new Guard('KnOffice', 'NICHT ("'+infoObject.getName()+'" = ${num})', '&ne; ${num}'));
+				result.push(new Guard('KnOffice', 'NOT("'+infoObject.getName()+'" = ${num})', '&ne; ${num}'));
 				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" < ${num}', '&lt; ${num}'));
 				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" > ${num}', '&gt; ${num}'));
 				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" <= ${num}', '&le; ${num}'));
 				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" >= ${num}', '&ge; ${num}'));
-				result.push('Bereich abfragen');
-				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" >= ${num} UND "'+infoObject.getName()+'" <= ${num}', '[ ${num} .. ${num} ]'));
-				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" >= ${num} UND "'+infoObject.getName()+'" < ${num}', '[ ${num} .. ${num} ['));
-				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" > ${num} UND "'+infoObject.getName()+'" <= ${num}', '] ${num} .. ${num} ]'));
-				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" > ${num} UND "'+infoObject.getName()+'" < ${num}', '] ${num} .. ${num} ['));
+				result.push('Test interval');
+				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" >= ${num} AND "'+infoObject.getName()+'" <= ${num}', '[ ${num} .. ${num} ]'));
+				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" >= ${num} AND "'+infoObject.getName()+'" < ${num}', '[ ${num} .. ${num} ['));
+				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" > ${num} AND "'+infoObject.getName()+'" <= ${num}', '] ${num} .. ${num} ]'));
+				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" > ${num} AND "'+infoObject.getName()+'" < ${num}', '] ${num} .. ${num} ['));
 				break;
 		}
-		result.push('Allgemein');
-		result.push(new Guard('KnOffice', 'BEKANNT["'+infoObject.getName()+'"]', 'bekannt'));
-		result.push(new Guard('KnOffice', 'NICHT[BEKANNT["'+infoObject.getName()+'"]]', 'nicht bekannt'));
+		result.push('Common');
+		result.push(new Guard('KnOffice', 'KNOWN["'+infoObject.getName()+'"]', 'known'));
+		result.push(new Guard('KnOffice', 'NOT(KNOWN["'+infoObject.getName()+'"])', 'not known'));
 		result.push(new Guard('NOP', ' ', ' '));
 	}
 	else if (infoObject.getClassInstance() == KBInfo.Solution) {
-		result.push('Anwender');
+		result.push('User');
 		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = confirmed', "confirmed"));
 		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = rejected', "rejected"));		
-		result.push('Herleitung');
-		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = "etabliert"', "etabliert"));
-		result.push('Allgemein');
+		result.push('Derivation');
+		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = established', "establisehd"));
+		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = excluded', "excluded"));
+		result.push('Common');
 		result.push(new Guard('NOP', ' ', ' '));
 	}
 	else if (infoObject.getClassInstance() == KBInfo.Flowchart) {
 		var options = infoObject.getExitNames();
 		if (options.length > 0) {
-			result.push('Ergebnis abfragen');
+			result.push('Use result');
 			for (var i=0; i<options.length; i++) {
 				result.push(new Guard('KnOffice', 'IS_ACTIVE[' + infoObject.getName()+'('+options[i]+')]', options[i]));
 			}
-			//result.push('Ergebnis ausschliessen');
+			//result.push('Exclude result');
 			//for (var i=0; i<options.length; i++) {
 			//	result.push(new Guard('KnOffice', 'NICHT(IS_ACTIVE[' + infoObject.getName()+'('+options[i]+')])', '&ne; ' + options[i]));
 			//}
 		}
-		result.push('Allgemein');
-		result.push(new Guard('KnOffice', 'PROCESSED[' + infoObject.getName()+']', 'abgearbeitet'));
+		result.push('Common');
+		result.push(new Guard('KnOffice', 'PROCESSED[' + infoObject.getName()+']', 'processed'));
 		//result.push(new Guard('NOP', ' ', ' ')); //does this make sense for FCs?
 	}
 	else if (infoObject.getClassInstance() == KBInfo.QSet) {
-		result.push('Allgemein');
-		result.push(new Guard('KnOffice', 'BEKANNT["'+infoObject.getName()+'"]', 'beantwortet'));
+		result.push('Common');
+		result.push(new Guard('KnOffice', 'KNOWN["'+infoObject.getName()+'"]', 'known'));
 		result.push(new Guard('NOP', ' ', ' '));
 	}
 	
@@ -286,6 +296,7 @@ GuardEditor.prototype.getSelectedGuard = function() {
 }
 
 GuardEditor.prototype.handleValueSelected = function() {
+	if (!this.isVisible()) return;
 	this.updateFromUI();
 	this.updateInputField();
 	if (this.onChangeListener) this.onChangeListener(this.getGuard());
@@ -355,7 +366,7 @@ GuardEditor.prototype.setVisible = function(visible) {
 
 GuardEditor.prototype.render = function() {
 	var select = 
-		'<select class="guard GuardEditorEventHandler" ' +
+		'<select class="guard " ' +
 		(this.possibleGuards.length==0 ? 'style="display:none;" ' : '') +
 		'onchange="this.parentNode.parentNode.__GuardEditor.handleValueSelected();">';
 	for (var i=0; i<this.possibleGuards.length; i++) {
@@ -377,13 +388,14 @@ GuardEditor.prototype.render = function() {
 	}
 	
 	var selectParent, inputParent;
+	var inputclass = this.getGuard().isFormula() ? 'formula' : '';
 	var dom = Builder.node('div', {
-		className: 'GuardEditor'
+		className: 'GuardEditor '
 	}, 
 	[
 		selectParent = Builder.node('div', {className: 'value'}),	// value dropdown parent
 		inputParent = Builder.node('div', {className: 'input GuardEditorEventHandler'}, [
-			Builder.node('input', {	type: 'text', style: 'display: none;', onBlur: 'this.parentNode.parentNode.__GuardEditor.handleValueSelected();', value: this.values.length > 0 ? this.values[0] : ''}),
+			Builder.node('input', {	type: 'text', className: inputclass, style: 'display: none;', onBlur: 'this.parentNode.parentNode.__GuardEditor.handleValueSelected();', value: this.values.length > 0 ? this.values[0] : ''}),
 			Builder.node('input', {	type: 'text', style: 'display: none;', onBlur: 'this.parentNode.parentNode.__GuardEditor.handleValueSelected();', value: this.values.length > 1 ? this.values[1] : ''})
 		])
 	]);
@@ -394,13 +406,21 @@ GuardEditor.prototype.render = function() {
 
 // avoid handling key events while editing the edit fields or the select
 CCEvents.addClassListener('keydown', 'GuardEditorEventHandler', function(event) {
-	if (event.keyCode == Event.KEY_BACKSPACE || event.keyCode == Event.KEY_DELETE) {
-		event.nextHandler();
+	
+	switch(event.keyCode){
+	case Event.KEY_RETURN:
+		this.parentNode.__GuardEditor.handleValueSelected();
+	case Event.KEY_ESC: 
+		//if the editor is not hidden before setting the selection to null, the values are set by onBlurHandler
+		this.parentNode.__GuardEditor.setVisible(false); 
+		theFlowchart.setSelection(null);
+		return;
 	}
-	else {
-		event.defaultHandler();
-	}
+	
+	event.defaultHandler();	
 });
+
+
 
 GuardEditor.prototype.destroy = function() {
 	if (this._destroyed) return;
@@ -436,17 +456,23 @@ GuardPane.prototype.getDOM = function() {
 GuardPane.prototype.checkProblems = function(rule) {
 	this.problem = null;
 	if (!rule) {
-		this.problem = 'die Kante kann nicht ueberprueft werden';
+		this.problem = 'the edge can not be checked';
 		return;
 	}
 	var sourceModel = rule.getSourceNode().getNodeModel();
 	var targetModel = rule.getTargetNode().getNodeModel();
 	if (sourceModel && sourceModel.exit) {
-		this.problem = 'von einem Exit-Knoten duerfen keine Kanten weiterfuehren';
+		this.problem = 'no edges must leave an exit node';
 	}
 	if (targetModel && targetModel.start) {
-		this.problem = 'zu einem Start-Knoten duerfen keine Kanten hinfuehren';
+		this.problem = 'no edge must enter a start node';
 	}
+	
+	if (this.guard.isFormula() && (this.guard.getConditionString() == '()' ||  this.guard.getConditionString() == 'eval()')){
+		this.problem = 'empty formula';
+	}
+
+	
 	// TODO: check for problems with the guard for the source node here
 	if (this.isVisible) {
 		this.setVisible(false);
