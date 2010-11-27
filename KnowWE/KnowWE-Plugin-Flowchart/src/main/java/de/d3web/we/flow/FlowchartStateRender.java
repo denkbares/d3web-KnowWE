@@ -23,10 +23,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import de.d3web.core.knowledge.InterviewObject;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.ValueObject;
 import de.d3web.core.session.CaseObjectSource;
 import de.d3web.core.session.Session;
+import de.d3web.core.session.interviewmanager.Form;
 import de.d3web.diaFlux.flow.DiaFluxCaseObject;
 import de.d3web.diaFlux.flow.EdgeSupport;
 import de.d3web.diaFlux.flow.FlowSet;
@@ -43,6 +45,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.utils.D3webUtils;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 
@@ -71,12 +74,31 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 
 		if (flows.isEmpty()) {
 			string.append("No Flowcharts found in KB.");
+			return;
 		}
+
+		StringBuilder builder = new StringBuilder(2000);
 
 		// Debug
 		if (isDebug(user.getUrlParameterMap())) {
-			string.append(getPathendText(session));
-			string.append(getBlackboardTable(session));
+			builder.append("<b>active object:</b><br>");
+			List<InterviewObject> activeObjects = session.getInterview().getInterviewAgenda().getCurrentlyActiveObjects();
+			for (InterviewObject object : activeObjects) {
+
+				builder.append(object.getName() + "<br>");
+			}
+			
+			Form form = session.getInterview().nextForm();
+
+			InterviewObject nextForm = form.getInterviewObject();
+			
+			builder.append("<b>Next InterviewObject:</b>  " + (nextForm != null
+					? nextForm.getName()
+					: "null") + "<br>");
+			
+			builder.append(getPathendText(session));
+			builder.append(getBlackboardTable(session));
+			builder.append("\n");
 		}
 		//
 
@@ -85,21 +107,26 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 			Map<String, String> attributeMap = AbstractXMLObjectType.getAttributeMapFor(section);
 			String name = attributeMap.get("name");
 
-			string.append("<div>");
-			string.append("<h3>");
-			string.append("Diagnostic Flow '");
-			string.append(name);
-			string.append("'");
-			string.append("</h3>");
+			builder.append("<div>");
+			builder.append("<h3>");
+			builder.append("Diagnostic Flow '");
+			builder.append(name);
+			builder.append("'");
+			builder.append("</h3>");
 
 			if (isActive(section, session)) {
-				string.append(createPreviewWithHighlightedPath(section, session));
+				builder.append(createPreviewWithHighlightedPath(section, session));
 			}
 
-			string.append("</div>");
-			string.append("<p/><p/>");
+			builder.append("</div>");
+			builder.append("<p/><p/>");
+			builder.append("\n");
 
 		}
+
+		string.append(KnowWEUtils.maskHTML(builder.toString()));
+
+
 
 	}
 
@@ -126,7 +153,7 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) session.getCaseObject(set);
 		Collection<IPath> pathes = caseObject.getActivePathes();
 
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder(2000);
 
 		builder.append("<b>Current Pathes:</b>");
 		builder.append("<br/>");
@@ -137,7 +164,7 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 		}
 
 		builder.append("<br/>");
-
+		builder.append("\n");
 		int i = 0;
 
 		for (IPath path : pathes) {
@@ -164,12 +191,14 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 				builder.append("</td>");
 
 				builder.append("</tr>");
+				builder.append("\n");
 
 			}
 			builder.append("</table>");
 
 			builder.append("<br/>");
 			builder.append("<br/>");
+			builder.append("\n");
 
 		}
 
@@ -180,7 +209,7 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 
 	private String getBlackboardTable(Session session) {
 
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder(1000);
 
 		Collection<TerminologyObject> objects = new ArrayList<TerminologyObject>(
 				session.getBlackboard().getValuedObjects());
@@ -326,9 +355,10 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 	}
 
 	private boolean isDebug(Map<String, String> urlParameterMap) {
-		// String debug = urlParameterMap.get("debug");
-		// return debug != null && debug.equals("true");
-		return true;
+		String debug = urlParameterMap.get("debug");
+		return debug != null && debug.equals("true");
+		// // return true;
+		// return false;
 	}
 
 
