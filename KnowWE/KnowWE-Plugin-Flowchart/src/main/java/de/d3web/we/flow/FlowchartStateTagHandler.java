@@ -40,10 +40,12 @@ import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
 public class FlowchartStateTagHandler extends AbstractHTMLTagHandler {
 
 	private final KnowWEDomRenderer<KnowWEObjectType> renderer;
+	private final FlowchartStateRender stateRender;
 
 	public FlowchartStateTagHandler() {
-		super("flowchart");
-		renderer = new ReRenderSectionMarkerRenderer<KnowWEObjectType>(new FlowchartStateRender());
+		super("diaflux");
+		stateRender = new FlowchartStateRender();
+		renderer = new ReRenderSectionMarkerRenderer<KnowWEObjectType>(stateRender);
 	}
 
 	@Override
@@ -55,11 +57,17 @@ public class FlowchartStateTagHandler extends AbstractHTMLTagHandler {
 
 		StringBuilder string = new StringBuilder();
 
-		Section<KnowWEObjectType> section = (Section<KnowWEObjectType>) article.findSection(values.get("kdomid"));
+		String id = values.get("kdomid");
+		
+		// no id given at first rendering not triggered by ajax
+		if (id == null) {
+			stateRender.render(article, null, user, string);
+		}
+		else {
+			Section<KnowWEObjectType> section = (Section<KnowWEObjectType>) article.findSection(id);
 
-		renderer.render(article, section,
-				user,
-				string);
+			renderer.render(article, section, user, string);
+		}
 
 		return string.toString();
 
