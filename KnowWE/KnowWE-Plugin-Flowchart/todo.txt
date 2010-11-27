@@ -1,4 +1,32 @@
-exception bei doppelklick auf prototyp
-
 leere menge an guards bei snapshot
 
+focus bug
+
+Formel auch für Date/text?? Done
+Neues Icon für Date/Text
+
+
+Negation von flowchartprocessed
+
+IDOBject
+
+einheiten für numfragen
+
+
+Changes:
+
+Formula an Kanten von Num, Date und Text
+
+
+Irgendwann:
+Seite locken / auf locks testen
+Nutzerrechte
+
+
+Done:
+exception bei anlegen der Seite mit flowchart (diff)
+Fehler bei leeren Textknoten
+exception bei doppelklick auf prototyp
+node editor beenden beim speichern
+Formel: Backspace löscht Kante, Enter beendet editing nicht
+Drag und drop in combobox

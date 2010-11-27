@@ -197,7 +197,7 @@ NodeEditor.prototype.renderActionPane = function() {
 		style: 'display: none;'
 	}, 
 	[
-		"Objekt verwenden:",
+		"Use object:",
 	]);
 	return dom;
 }
@@ -208,7 +208,7 @@ NodeEditor.prototype.renderStartPane = function() {
 		style: 'display: none;'
 	}, 
 	[
-		'Startknoten:',
+		'Start node:',
 		Builder.node('br'),
 		Builder.node('input', {
 			className: 'value', 
@@ -225,7 +225,7 @@ NodeEditor.prototype.renderCommentPane = function() {
 		style: 'display: none;'
 	}, 
 	[
-	 'Kommentar:',
+	 'Comment:',
 	 Builder.node('br'),
 	 Builder.node('textarea', 
 			 this.nodeModel.comment ? this.nodeModel.comment: ''
@@ -241,7 +241,7 @@ NodeEditor.prototype.renderExitPane = function() {
 		style: 'display: none;'
 	}, 
 	[
-		'Endknoten:',
+		'Exit node:',
 		Builder.node('br'),
 		Builder.node('input', {
 			className: 'value', 

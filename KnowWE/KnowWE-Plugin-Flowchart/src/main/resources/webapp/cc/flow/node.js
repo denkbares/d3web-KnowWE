@@ -71,7 +71,9 @@ CCEvents.addClassListener('click', 'Node',
 );
 CCEvents.addClassListener('dblclick', 'Node', 
 	function(event) {
-		this.__node.edit();
+	//avoids error when dblclick on prototype
+		if (this.__node)
+			this.__node.edit();
 	}
 );
 

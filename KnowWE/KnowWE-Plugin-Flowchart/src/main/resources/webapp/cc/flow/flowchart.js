@@ -419,6 +419,7 @@ Flowchart.prototype.toXML = function(includePreview) {
 	
 	xml += '\t<!-- nodes of the flowchart -->\n';
 	for (var i=0; i<this.nodes.length; i++) {
+		this.nodes[i].stopEdit();
 		xml += this.nodes[i].toXML() + '\n';
 	}
 	

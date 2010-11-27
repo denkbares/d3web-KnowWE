@@ -27,16 +27,16 @@ Action.prototype.getExpression = function() {
 
 Action.prototype.getDisplayText = function() {
 	if (this.markup == 'NOP')		return '';
-	if (this.valueString == "ERFRAGE")	return 'fragen';
-	if (this.valueString == "ALWAYS")	return 'immer fragen';
-	if (this.valueString == "INSTANT")	return 'sofort fragen';
-	if (this.valueString == "P7")		return 'etabliert';
-	if (this.valueString == "N7")		return 'ausgeschlossen';
-	if (this.valueString == "YES")		return 'Ja';
-	if (this.valueString == "NO")		return 'Nein';
-	if (this.valueString == "P4")		return 'verdächtigt';
-	if (this.valueString == "()" && this.markup == "KnOffice")		return 'Wert:'; // nur leere Formel so anzeigen
-	if (this.valueString == "eval()" && this.markup == "timeDB")		return 'Formel: f(x)='; // nur leere Formel so anzeigen
+	if (this.valueString == "ERFRAGE")	return 'ask';
+	if (this.valueString == "ALWAYS")	return 'always ask';
+	if (this.valueString == "INSTANT")	return 'ask instantly';
+	if (this.valueString == "P7")		return 'established';
+	if (this.valueString == "N7")		return 'excluded';
+	if (this.valueString == "YES")		return 'Yes';
+	if (this.valueString == "NO")		return 'No';
+	if (this.valueString == "P4")		return 'suggested';
+	if (this.valueString == "()" && this.markup == "KnOffice")		return 'Value:'; // nur leere Formel so anzeigen
+	if (this.valueString == "eval()" && this.markup == "timeDB")		return 'Formula: f(x)='; // nur leere Formel so anzeigen
 	
 	if (this.isFormula()) { // nichtleere Formel
 		
@@ -170,7 +170,7 @@ Action.prototype._extractInfoObjectName = function(string) {
 	result = nameExpr.exec(string);
 	if (result && result.length > 1 && result[1]) return result[1];	
 
-	this.error = "Der Name des Zielobjektes kann nicht identifiziert werden.";
+	this.error = "The object's name can not be identified.";
 	return null;
 }
 
@@ -216,7 +216,7 @@ Action.prototype._extractValueString = function(string) {
 	result = nameExpr.exec(string);
 	if (result && result.length > 1 && result[1]) return 'ERFRAGE'; // we do have an implicit value	
 
-	this.error = "Die Aktion kann nicht identifiziert werden.";
+	this.error = "The action can not be identified.";
 	return null;
 }
 
@@ -233,14 +233,14 @@ Action.prototype._checkSemantic = function() {
 	if (this.isIndication()) {
 		if (clazz == KBInfo.QSet) return;
 		if (clazz == KBInfo.Question && !infoObject.isAbstract()) return;
-		this.error = 'Dieser Objekttyp kann nicht erfragt werden';
+		this.error = 'This object can not be asked.';
 	}
 	else if (this.valueString == '()' || this.valueString == 'eval()') {
-		this.error = 'Es wurde noch keine Formel eingegeben';
+		this.error = 'No formula has been entered yet.';
 	}
 	else if (clazz == KBInfo.Solution) {
 		if (this.valueString && this.valueString.search(/^[NP][1234567]$/i) >= 0) return;
-		this.error = '"'+this.valueString+'" ist kein gueltiger Wert fuer eine Loesung';
+		this.error = '"'+this.valueString+'" is no valid value of a solution.';
 	}
 	else if (clazz == KBInfo.Question) {
 		
@@ -252,19 +252,19 @@ Action.prototype._checkSemantic = function() {
 			case KBInfo.Question.TYPE_OC:
 			case KBInfo.Question.TYPE_MC:
 				if (infoObject.getOptions().indexOf(this.valueString) >= 0) break;
-				this.error = '"'+this.valueString+'" ist keine Antwortalternative dieser Frage';
+				this.error = '"'+this.valueString+'" is no answer of this question.';
 				break;
 			case KBInfo.Question.TYPE_NUM:
 			case KBInfo.Question.TYPE_DATE:
 			case KBInfo.Question.TYPE_TEXT:
 				if (this.isFormula()) break;
-				this.error = 'Nur Formeln als Wert fuer diese Frage zugelassen';
+				this.error = 'Only formulas are allow for this object';
 				break;
 		}
 	}
 	else if (clazz == KBInfo.Flowchart) {
 		if (infoObject.getStartNames().indexOf(this.valueString) >= 0) return;
-		this.error = '"'+this.valueString+'" ist kein Startknoten dieses Flussdiagramms';
+		this.error = '"'+this.valueString+'" is no start node of this flowchart';
 	}
 }
 
@@ -275,14 +275,14 @@ Action.createPossibleActions = function(infoObject) {
 	var result = [];
 	if (infoObject.getClassInstance() == KBInfo.Question) {
 		if (!infoObject.isAbstract()) {
-			result.push('---- Frage stellen ----');			
+			result.push('Ask question');			
 			// questions can be asked
 			//removed conversion to json-string @20091102
 			result.push(new Action('KnOffice', name));
 			result.push(new Action('KnOffice', 'INSTANT['+name+']'));
 			result.push(new Action('KnOffice', 'ALWAYS['+name+']'));
 		}
-		result.push('---- Wert abfragen ----');			
+		result.push('Use Value');			
 		result.push(new Action('NOP', '"'+name.escapeQuote()+'"'));			
 		result.push('---- Wert zuweisen ----');			
 		switch (infoObject.getType()) {
@@ -312,7 +312,7 @@ Action.createPossibleActions = function(infoObject) {
 		}
 	}
 	else if (infoObject.getClassInstance() == KBInfo.Solution) {
-		result.push('---- Loesung bewerten ----');
+		result.push('Rate Solution');
 		 
 		for (var i = 7; i > 1; i--){
 			result.push(new Action('KnOffice', Action._createExpression(name, 'P' + i, true)));
@@ -325,14 +325,14 @@ Action.createPossibleActions = function(infoObject) {
 
 	}
 	else if (infoObject.getClassInstance() == KBInfo.Flowchart) {
-		result.push('---- Startknoten aufrufen ----');			
+		result.push('Call Start Node');			
 		var options = infoObject.getStartNames();
 		for (var i=0; i<options.length; i++) {
 			result.push(new Action('KnOffice', 'CALL[' + name + '(' + options[i] + ')' + ']'));
 		}
 	}
 	else if (infoObject.getClassInstance() == KBInfo.QSet) {
-		result.push('---- Fragebogen stellen ----');			
+		result.push('Ask Questionnaire');			
 		//removed conversion to json-string @20091102
 		result.push(new Action('KnOffice', name));
 
@@ -551,9 +551,9 @@ ActionEditor.prototype.refreshValueInput = function() {
 	// check if object is in cache
 	var infoObject = (this.objectSelect) ? this.objectSelect.getMatchedItem() : null;
 	if (!infoObject) {
-		var buttonOK = '<button class="ok" onclick="this.parentNode.parentNode.__ActionEditor.askQuestionType()">Ok</button>';
-		var question = '<form name="choseQuestionText" id="choseQuestionText" method="get"><input type="text" id="questionText" name="questionText"></form>';
-		root.innerHTML = "<i>Objekt nicht bekannt<br\>Objekt erstellen?<br\></i>" + question + "<br\>" + buttonOK;
+//		var buttonOK = '<button class="ok" onclick="this.parentNode.parentNode.__ActionEditor.askQuestionType()">Ok</button>';
+//		var question = '<form name="choseQuestionText" id="choseQuestionText" method="get"><input type="text" id="questionText" name="questionText"></form>';
+//		root.innerHTML = "<i>Objekt nicht bekannt<br\>Objekt erstellen?<br\></i>" + question + "<br\>" + buttonOK;
 		if (this.objectSelect) this.selectedAction = new Action('NOP', this.objectSelect.getValue());
 		return;
 	}
@@ -574,7 +574,7 @@ ActionEditor.prototype.refreshValueInput = function() {
 	this.selectedAction = null;
 
 	if (!actions) {
-		root.innerHTML = '<i>Keine Aktionen verfuegbar</i>';
+		root.innerHTML = '<i>no action available</i>';
 		if (this.objectSelect) this.selectedAction = new Action('NOP', this.objectSelect.getValue());
 		return;
 	}
@@ -591,8 +591,6 @@ ActionEditor.prototype.refreshValueInput = function() {
 		// oder beides eine Formel ist (da dann der Wert in der Drop-Down-Liste leer ist)
 		// Ausserdem wird die erste Action gemerkt, da eventuell keine passende mehr nachfolgt
 		
-		
-			
 		if (indexToSelect == -1 // noch keine Aktion ausgewählt -> nimm die erste
 			|| (actionValueString == valueToSelect // sonst muss markup und wert übereinstimmen
 				&& markupToSelect == actionMarkup)) {
@@ -623,7 +621,7 @@ ActionEditor.prototype.refreshValueInput = function() {
 	for (var i=0, value=0; i<actions.length; i++) {
 		var action = actions[i];
 		if (Object.isString(action)) {
-			html +=  '<optgroup label="'+action+'"></optgroup>';
+			html +=  '<optgroup label="--- ' + action + ' ---"></optgroup>';
 		}
 		else {
 			html += '<option value=' + (value++) + 
@@ -639,14 +637,9 @@ ActionEditor.prototype.refreshValueInput = function() {
 }
 
 
-
-
-
 ActionEditor.prototype.destroy = function() {
 	this.setVisible(false);
 }
-
-
 
 
 /**
@@ -732,16 +725,6 @@ ActionPane.prototype.render = function() {
 	var valueError = null;
 	valueText = this.action.getDisplayText(); // zeigt ZusatzInfo an (fragen/ immer fragen,...)
 
-	//Hack for displaying waiting time (startnode) in Wait Nodes
-//	if (this.action.isFlowCall()) {
-//		if (this.action.expression.startsWith('CALL[Warten') || this.action.expression.startsWith('CALL[Wait'))
-//			valueText = this.action.getDisplayText();
-//		else
-//			valueText = null;
-//	} else if (this.action.isIndication()) {
-//		valueText = this.action.getDisplayText(); // zeigt ZusatzInfo an (fragen/ immer fragen,...)
-//	}
-	
 	valueError = this.action.getError();
 
 	var object;

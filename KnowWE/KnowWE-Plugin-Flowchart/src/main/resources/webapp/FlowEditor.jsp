@@ -49,39 +49,6 @@
 <html>
 <head>
 <title>Edit Flowchart: <%= title %></title>
-	<style type="text/css">
-		.toolbar .propertyTitle {
-			font-family: Arial,Helvetica;
-			font-size: 10pt;
-			font-weight: bold;
-		}
-		.toolbar .short {
-			width: 40px;
-		}
-		.toolbar .long {
-			width: 120px;
-		}
-		.toolbar .propertyText, .toolbar button {
-			font-family: Arial,Helvetica;
-			font-size: 10pt;
-		}
-		.toolbar button {
-			padding-left: 5px;
-			padding-right: 5px;
-			width: 100%;
-			height: 100%;
-		}
-		.toolbar .propertyBlock {
-			display: inline-block;
-			padding-left: 10px;
-			padding-right: 10px;
-		}
-		.toolbar .propertyArea {
-			background-color: #eee;
-			border: 1px solid gray;
-		}
-	</style>
-	
 	
 	<script src="cc/scriptaculous-js/lib/prototype.js" type="text/javascript"></script>
 	<script src="cc/scriptaculous-js/src/builder.js" type="text/javascript"></script>
@@ -152,7 +119,7 @@
 <tr>
 	<td valign=top>
 		<div id=prototype_title class=rollup_title>Node types</div>
-		<div id=prototype_content class=rollup_content style="display: none;">
+		<div id=prototype_content class=rollup_content style="display: visible;">
 			<div style="max-height: 280px; overflow: auto;">
 				<div style="padding: 5px;">
 					<div id=decision_prototype class=NodePrototype> 
@@ -171,7 +138,7 @@
 							<div class=start>
 								<div class=decorator></div>
 								<div class=title>new start</div>
-								<div class=text>drag this element to add a new start point.</div>
+								<div class=text>drag this element to add a new start node.</div>
 							</div>
 						</div>			
 					</div>			
@@ -182,7 +149,7 @@
 							<div class=exit>
 								<div class=decorator></div>
 								<div class=title>new exit</div>
-								<div class=text>drag this element to add a new exit point.</div>
+								<div class=text>drag this element to add a new exit node.</div>
 							</div>
 						</div>			
 					</div>			
@@ -248,7 +215,7 @@
 							<table cellpadding=0 cellspacing=0>
 							<tr>
 							<td><img src="cc/image/toolbar/cancel.png" height=16 width=16></img></td>
-							<td style="padding-left:5px;">Cancel
+							<td style="padding-left:5px;">Cancel</td>
 							</tr>
 							</table>
 						</button>
@@ -284,7 +251,7 @@
 							<table cellpadding=0 cellspacing=0>
 							<tr>
 							<td><img src="cc/image/toolbar/refresh.png" height=16 width=16></img></td>
-							<td style="padding-left:5px;">Refresh
+							<td style="padding-left:5px;">Refresh</td>
 							</tr>
 							</table>
 						</button>
@@ -319,7 +286,7 @@
 	var objects =  new Rollup('objects_title', 'objects_content');
 	// and group them to display only one at the same time 
 	// (can be comment out to enable independed toggle behaviour)
-	new RollupGroup([prototypes, objects]);
+	//new RollupGroup([prototypes, objects]);
 
 	// initialize wiki tree tool
 	new ObjectTree('objects_content', null, 
@@ -346,7 +313,7 @@
 	}
 	
 	function deleteFlowchart() {
-		var result = confirm('Wollen Sie das Flussdiagramm wirklich aus dem Wiki loeschen?');
+		var result = confirm('Do you really want to delete the flowchart?');
 		if (result) {
 			_saveFlowchartText('', true);
 		}
@@ -406,9 +373,9 @@
 	new Draggable('comment_prototype', { ghosting: true, revert: true, reverteffect: revertIt, starteffect: null });
 	new Draggable('snapshot_prototype', { ghosting: true, revert: true, reverteffect: revertIt, starteffect: null });
 	$('decision_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {action: { markup: 'KnOffice', expression: ''}}); };
-	$('start_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {start: 'start'}); };
-	$('exit_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {exit: 'done'}); };
-	$('comment_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {comment: 'Kommentar'}); };
+	$('start_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {start: 'Start'}); };
+	$('exit_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {exit: 'Exit'}); };
+	$('comment_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {comment: 'Comment'}); };
 	$('snapshot_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {snapshot: 'Snapshot'}); };
 	
 	function createActionNode(flowchart, left, top, nodeModel) {

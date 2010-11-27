@@ -161,8 +161,6 @@ Guard.createPossibleGuards = function(nodeModel) {
 				result.push(new Guard('timeDB', 'eval(${formula})', '${formula}'));
 				break
 			case KBInfo.Question.TYPE_NUM:
-				result.push('Formula');
-				result.push(new Guard('timeDB', 'eval(${formula})', '${formula}'));
 				result.push('Test value');
 				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = ${num}', '= ${num}'));
 				result.push(new Guard('KnOffice', 'NOT("'+infoObject.getName()+'" = ${num})', '&ne; ${num}'));
@@ -175,11 +173,13 @@ Guard.createPossibleGuards = function(nodeModel) {
 				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" >= ${num} AND "'+infoObject.getName()+'" < ${num}', '[ ${num} .. ${num} ['));
 				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" > ${num} AND "'+infoObject.getName()+'" <= ${num}', '] ${num} .. ${num} ]'));
 				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" > ${num} AND "'+infoObject.getName()+'" < ${num}', '] ${num} .. ${num} ['));
+				result.push('Formula');
+				result.push(new Guard('timeDB', 'eval(${formula})', '${formula}'));
 				break;
 		}
 		result.push('Common');
 		result.push(new Guard('KnOffice', 'KNOWN["'+infoObject.getName()+'"]', 'known'));
-		result.push(new Guard('KnOffice', 'NOT(KNOWN["'+infoObject.getName()+'"])', 'not known'));
+		result.push(new Guard('KnOffice', 'NOT(KNOWN["'+infoObject.getName()+'"])', 'unknown'));
 		result.push(new Guard('NOP', ' ', ' '));
 	}
 	else if (infoObject.getClassInstance() == KBInfo.Solution) {
@@ -210,7 +210,6 @@ Guard.createPossibleGuards = function(nodeModel) {
 	}
 	else if (infoObject.getClassInstance() == KBInfo.QSet) {
 		result.push('Common');
-		result.push(new Guard('KnOffice', 'KNOWN["'+infoObject.getName()+'"]', 'known'));
 		result.push(new Guard('NOP', ' ', ' '));
 	}
 	
@@ -328,8 +327,18 @@ GuardEditor.prototype.updateInputField = function() {
 	var guard = this.getSelectedGuard();
 	var inputs = this.dom.select('.input input');
 	var count = guard ? guard.countVariables() : 0;
+	var formula = this.getSelectedGuard() ? this.getSelectedGuard().isFormula() : false;
 	for (var i=0; i<inputs.length; i++) {
 		if (i<count) {
+			if (i ==0){
+				if (formula){ // enlarge input field for formulas
+					inputs[0].addClassName("formula");
+					
+				}else {
+					inputs[0].removeClassName("formula");
+					
+				}
+			}
 			inputs[i].show();
 		}
 		else {
@@ -388,7 +397,7 @@ GuardEditor.prototype.render = function() {
 	}
 	
 	var selectParent, inputParent;
-	var inputclass = this.getGuard().isFormula() ? 'formula' : '';
+	var inputclass = this.getGuard() ? (this.getGuard().isFormula() ? 'formula' : '') : '';
 	var dom = Builder.node('div', {
 		className: 'GuardEditor '
 	}, 
@@ -468,8 +477,11 @@ GuardPane.prototype.checkProblems = function(rule) {
 		this.problem = 'no edge must enter a start node';
 	}
 	
-	if (this.guard.isFormula() && (this.guard.getConditionString() == '()' ||  this.guard.getConditionString() == 'eval()')){
-		this.problem = 'empty formula';
+	if (this.guard){
+		if (this.guard.isFormula() && (this.guard.getConditionString() == '()' ||  this.guard.getConditionString() == 'eval()')){
+			this.problem = 'empty formula';
+		}
+		
 	}
 
 	
