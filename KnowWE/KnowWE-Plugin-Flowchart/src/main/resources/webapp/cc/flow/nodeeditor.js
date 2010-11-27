@@ -58,16 +58,20 @@ NodeEditor.prototype.handleOk = function() {
 		};
 	}
 	else if (this.tabItems[1].className == 'startTab_selected') {
-		this.nodeModel.start = this.tabPanes[1].childNodes[2].value;
+		var value = this.tabPanes[1].childNodes[2].value;
+		this.nodeModel.start = value || " ";
 	}
 	else if (this.tabItems[2].className == 'exitTab_selected') {
-		this.nodeModel.exit = this.tabPanes[2].childNodes[2].value;
+		var value = this.tabPanes[2].childNodes[2].value;
+		this.nodeModel.exit = value || " ";
 	}
 	else if (this.tabItems[3].className == 'commentTab_selected') {
-		this.nodeModel.comment = this.tabPanes[3].childNodes[2].value;
+		var value = this.tabPanes[3].childNodes[2].value;
+		this.nodeModel.comment = value || " ";
 	}
 	else if (this.tabItems[4].className == 'snapshotTab_selected') {
-		this.nodeModel.snapshot = this.tabPanes[4].childNodes[2].value;
+		var value = this.tabPanes[4].childNodes[2].value;
+		this.nodeModel.snapshot = value || " ";
 	}
 	else {
 		throw "invalid/unexpected tab pane layout";
@@ -138,7 +142,16 @@ NodeEditor.prototype.selectTab = function(index) {
 				if (inputs && inputs.length >= 1) {
 					inputs[0].focus();
 					inputs[0].select();
+					continue;
+				} 
+				
+				inputs = this.tabPanes[i].select('textarea');
+				if (inputs && inputs.length >= 1) {
+					inputs[0].focus();
+					inputs[0].select();
+					
 				}
+				
 			}
 		}
 		else {
