@@ -36,11 +36,13 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
+import de.d3web.we.kdom.report.message.InvalidNumberError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.QuestionReference;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
 
 /**
@@ -105,9 +107,24 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 
 		Section<Number> numberSec = s.findSuccessor(Number.class);
 
+		if (numberSec == null) {
+			InvalidNumberError error = new InvalidNumberError(
+					"No number on right side of comparator.");
+			KnowWEUtils.storeSingleMessage(article, s, getClass(), InvalidNumberError.class, error);
+			return null;
+		}
+
 		String comparator = s.findSuccessor(Comparator.class).getOriginalText();
 
 		Double number = numberSec.get().getNumber(numberSec);
+
+		if (number == null) {
+			InvalidNumberError error = new InvalidNumberError(
+					numberSec.getOriginalText());
+			KnowWEUtils.storeSingleMessage(article, numberSec, getClass(),
+					InvalidNumberError.class, error);
+			return null;
+		}
 
 		Question q = qRef.get().getTermObject(article, qRef);
 
