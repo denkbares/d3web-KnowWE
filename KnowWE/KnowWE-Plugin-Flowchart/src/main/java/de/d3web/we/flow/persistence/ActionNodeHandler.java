@@ -30,11 +30,11 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.diaFlux.flow.NOOPAction;
-import de.d3web.report.Message;
 import de.d3web.we.flow.type.ActionType;
 import de.d3web.we.flow.type.CallFlowActionType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.rules.action.D3webRuleAction;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
@@ -59,7 +59,7 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 	}
 
 	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm,
-			Section nodeSection, Section flowSection, String id, List<Message> errors) {
+			Section nodeSection, Section flowSection, String id, List<KDOMReportMessage> errors) {
 
 		Section<AbstractXMLObjectType> actionSection = getNodeInfo(nodeSection);
 		

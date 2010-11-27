@@ -34,23 +34,27 @@ import de.d3web.diaFlux.flow.INode;
 import de.d3web.diaFlux.inference.ConditionTrue;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.io.DiaFluxPersistenceHandler;
-import de.d3web.report.Message;
 import de.d3web.we.flow.persistence.NodeHandler;
 import de.d3web.we.flow.persistence.NodeHandlerManager;
+import de.d3web.we.flow.type.EdgeContentType;
 import de.d3web.we.flow.type.EdgeType;
+import de.d3web.we.flow.type.FlowchartContentType;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.flow.type.GuardType;
 import de.d3web.we.flow.type.NodeType;
 import de.d3web.we.flow.type.OriginType;
 import de.d3web.we.flow.type.TargetType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SimpleMessageError;
+import de.d3web.we.kdom.report.SyntaxError;
+import de.d3web.we.kdom.report.message.NoSuchObjectError;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 
 /**
@@ -67,7 +71,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<FlowchartType> s) {
 
 		KnowledgeBaseManagement kbm = getKBM(article);
-		Section flowcontent = ((AbstractXMLObjectType) s.getObjectType()).getContentChild(s);
+		Section<FlowchartContentType> flowcontent = ((AbstractXMLObjectType) s.getObjectType()).getContentChild(s);
 
 		if (kbm == null || flowcontent == null) {
 			return null;
@@ -79,7 +83,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		if (name == null || name.equals("")) name = "unnamed";
 
-		List<Message> errors = new ArrayList<Message>();
+		List<KDOMReportMessage> errors = new ArrayList<KDOMReportMessage>();
 
 		List<INode> nodes = createNodes(article, name, s, errors);
 
@@ -89,34 +93,29 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		DiaFluxUtils.addFlow(flow, kbm.getKnowledgeBase());
 
-		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
-
-		for (final Message message : errors) {
-			msgs.add(new ObjectCreationError(message.getMessageText(), getClass()));
-		}
-
-		return msgs;
+		return errors;
 	}
 
-	private List<IEdge> createEdges(KnowWEArticle article, Section<FlowchartType> flowSection, List<INode> nodes, List<Message> errors) {
+	private List<IEdge> createEdges(KnowWEArticle article, Section<FlowchartType> flowSection, List<INode> nodes, List<KDOMReportMessage> errors) {
 		List<IEdge> result = new ArrayList<IEdge>();
 
-		List<Section> edgeSections = new ArrayList<Section>();
-		Section flowcontent = ((AbstractXMLObjectType) flowSection.getObjectType()).getContentChild(flowSection);
+		List<Section<EdgeType>> edgeSections = new ArrayList<Section<EdgeType>>();
+		Section<FlowchartContentType> flowcontent = ((AbstractXMLObjectType) flowSection.getObjectType()).getContentChild(flowSection);
 		flowcontent.findSuccessorsOfType(EdgeType.class, edgeSections);
 
-		for (Section section : edgeSections) {
+		for (Section<EdgeType> section : edgeSections) {
 
 			String id = AbstractXMLObjectType.getAttributeMapFor(section).get("fcid");
-			Section content = (Section) section.getChildren().get(1);
+			Section<EdgeContentType> content = (Section<EdgeContentType>) section.getChildren().get(
+					1);
 
-			Section originSection = content.findChildOfType(OriginType.class);
+			Section<OriginType> originSection = content.findChildOfType(OriginType.class);
 
 			// TODO remove duplicate code
 			if (originSection == null) {
 				String messageText = "No origin node specified in edge with id '" + id + "'.";
 
-				errors.add(new Message(messageText));
+				errors.add(new SyntaxError(messageText));
 				continue;
 			}
 			String sourceID = getXMLContentText(originSection);
@@ -127,16 +126,16 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 				String messageText = "No origin node found with id " + sourceID + " in edge " + id
 						+ ".";
 
-				errors.add(new Message(messageText));
+				errors.add(new NoSuchObjectError(messageText));
 				continue;
 			}
 
-			Section targetSection = content.findChildOfType(TargetType.class);
+			Section<TargetType> targetSection = content.findChildOfType(TargetType.class);
 
 			if (targetSection == null) {
 				String messageText = "No target node specified in edge with id '" + id + "'.";
 
-				errors.add(new Message(messageText));
+				errors.add(new SyntaxError(messageText));
 				continue;
 			}
 
@@ -147,13 +146,13 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 			if (target == null) {
 				String messageText = "No target node found with id " + targetID + " in edge " + id
 						+ ".";
-				errors.add(new Message(messageText));
+				errors.add(new NoSuchObjectError(messageText));
 				continue;
 			}
 
 			Condition condition;
 
-			Section guardSection = content.findChildOfType(GuardType.class);
+			Section<GuardType> guardSection = content.findChildOfType(GuardType.class);
 			if (guardSection != null) {
 				Section<CompositeCondition> compositionConditionSection = (Section<CompositeCondition>) guardSection.getChildren().get(1);
 				condition = buildCondition(article, compositionConditionSection, errors);
@@ -161,8 +160,8 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 				if (condition == null) {
 					condition = ConditionTrue.INSTANCE;
 
-					errors.add(new Message("Could not parse condition: "
-							+ getXMLContentText(guardSection)));
+					errors.add(new ObjectCreationError("Could not parse condition: "
+							+ getXMLContentText(guardSection), getClass()));
 
 				}
 
@@ -184,39 +183,41 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 
 
-	private Condition buildCondition(KnowWEArticle article, Section<CompositeCondition> s, List<Message> errors) {
+	private Condition buildCondition(KnowWEArticle article, Section<CompositeCondition> s, List<KDOMReportMessage> errors) {
 
 		return KDOMConditionFactory.createCondition(article, s);
 	}
 
 
 
-	public static String getXMLContentText(Section s) {
-		String originalText = ((Section) s.getChildren().get(1)).getOriginalText();
+	public static String getXMLContentText(Section<? extends AbstractXMLObjectType> s) {
+		String originalText = ((Section<XMLContent>) s.getChildren().get(1)).getOriginalText();
 //		return StringEscapeUtils.unescapeXml(originalText);
 		return originalText;
 	}
 
 
-	private List<INode> createNodes(KnowWEArticle article, String flowName, Section<FlowchartType> flowSection, List<Message> errors) {
+	private List<INode> createNodes(KnowWEArticle article, String flowName, Section<FlowchartType> flowSection, List<KDOMReportMessage> errors) {
 
 		List<INode> result = new ArrayList<INode>();
-		List<Section> nodeSections = new ArrayList<Section>();
-		Section flowcontent = ((AbstractXMLObjectType) flowSection.getObjectType()).getContentChild(flowSection);
+		ArrayList<Section<NodeType>> nodeSections = new ArrayList<Section<NodeType>>();
+		Section<FlowchartContentType> flowcontent = ((AbstractXMLObjectType) flowSection.getObjectType()).getContentChild(flowSection);
 		flowcontent.findSuccessorsOfType(NodeType.class, nodeSections);
 
 		KnowledgeBaseManagement kbm = getKBM(article);
 
-		for (Section nodeSection : nodeSections) {
+		for (Section<NodeType> nodeSection : nodeSections) {
 
 
 			NodeHandler handler = NodeHandlerManager.getInstance().findNodeHandler(article, kbm,
 					nodeSection);
 
 			if (handler == null) {
-				errors.add(new Message("No NodeHandler found for: " + nodeSection.getOriginalText()));
+				errors.add(new SimpleMessageError("No NodeHandler found for: "
+						+ nodeSection.getOriginalText()));
 				continue;
 			}
+
 			else {// handler can in general handle NodeType
 				String id = AbstractXMLObjectType.getAttributeMapFor(nodeSection).get("fcid");
 
@@ -227,11 +228,12 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 				}
 				else { // handler could not generate a node for the supplied
 						// section
-					Section<KnowWEObjectType> nodeInfo = nodeSection.findSuccessor(handler.getObjectType().getClass());
+					Section<AbstractXMLObjectType> nodeInfo = (Section<AbstractXMLObjectType>) nodeSection.findSuccessor(handler.getObjectType().getClass());
 					String text = getXMLContentText(nodeInfo);
 
-					errors.add(new Message("NodeHandler " + handler.getClass().getSimpleName()
-							+ " could not create node for: " + text));
+					errors.add(new ObjectCreationError("NodeHandler "
+							+ handler.getClass().getSimpleName()
+							+ " could not create node for: " + text, getClass()));
 
 					result.add(FlowFactory.getInstance().createCommentNode(id,
 							"Surrogate for node of type " + text));
@@ -244,65 +246,6 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		return result;
 	}
 
-
-
-	// vv old ANTLR Condition building
-
-	// private Condition buildCondition(KnowWEArticle article, Section s,
-	// List<Message> errors) {
-	// String originalText = getXMLContentText(s);
-	//
-	// if (originalText.startsWith("PROCESSED[")) {
-	//
-	// String flowName = originalText.substring(10, originalText.length() -
-	// 1);
-	// return new FlowchartProcessedCondition(flowName);
-	// }
-	// else if (originalText.startsWith("IS_ACTIVE[")) {
-	// int nodenameStart = originalText.indexOf('(');
-	// int nodenameEnd = originalText.indexOf(')');
-	//
-	// String flowName = originalText.substring(10, nodenameStart);
-	// String nodeName = originalText.substring(nodenameStart + 1,
-	// nodenameEnd);
-	// return new NodeActiveCondition(flowName, nodeName);
-	// }
-	// else {
-	//
-	// // for other Conditions use ANTLR parser
-	// InputStream stream = new
-	// ByteArrayInputStream(originalText.getBytes());
-	// ANTLRInputStream input = null;
-	// try {
-	// input = new ANTLRInputStream(stream);
-	// }
-	// catch (IOException e) {
-	// e.printStackTrace();
-	// }
-	// DefaultLexer lexer = new DefaultLexer(input);
-	// CommonTokenStream tokens = new CommonTokenStream(lexer);
-	// ComplexConditionSOLO parser = new ComplexConditionSOLO(tokens);
-	//
-	// RestrictedIDObjectManager idom = new
-	// RestrictedIDObjectManager(getKBM(article));
-	//
-	// D3webConditionBuilder builder = new
-	// D3webConditionBuilder("Parsed from article",
-	// errors,
-	// idom);
-	//
-	// parser.setBuilder(builder);
-	// try {
-	// parser.complexcondition();
-	// }
-	// catch (RecognitionException e) {
-	// e.printStackTrace();
-	// }
-	// Condition condition = builder.pop();
-	//
-	// return condition;
-	// }
-	// }
 
 
 }

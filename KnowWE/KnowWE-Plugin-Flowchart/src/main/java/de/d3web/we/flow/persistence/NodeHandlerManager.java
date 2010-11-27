@@ -25,10 +25,10 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
-import de.d3web.report.Message;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 
 /**
  * 
@@ -82,7 +82,7 @@ public class NodeHandlerManager implements NodeHandler {
 	}
 
 	@Override
-	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section nodeSection, Section flowSection, String id, List<Message> errors) {
+	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section nodeSection, Section flowSection, String id, List<KDOMReportMessage> errors) {
 		NodeHandler nodeHandler = findNodeHandler(article, kbm, nodeSection);
 
 		if (nodeHandler == null) return null;

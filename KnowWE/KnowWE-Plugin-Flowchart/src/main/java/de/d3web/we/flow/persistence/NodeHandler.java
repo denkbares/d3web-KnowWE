@@ -24,10 +24,10 @@ import java.util.List;
 
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.diaFlux.flow.INode;
-import de.d3web.report.Message;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 
 /**
  * 
@@ -57,7 +57,7 @@ public interface NodeHandler {
 	 * @param errors
 	 * @return
 	 */
-	INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section nodeSection, Section flowSection, String id, List<Message> errors);
+	INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section nodeSection, Section flowSection, String id, List<KDOMReportMessage> errors);
 
 	/**
 	 * Returns the ObjectType of the NodeModel this handler handles.
