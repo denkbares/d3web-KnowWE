@@ -108,50 +108,60 @@ public class TagHandlerMarkup extends DefaultMarkupType {
 			// To find the AttributValues and the taghandlerName
 			Section<ContentType> markupContent = sec.findChildOfType(ContentType.class);
 
-			if (markupContent.getObjectType() instanceof ContentType) {
+			// TODO isn't this check redundant??
+			if (!(markupContent.getObjectType() instanceof ContentType)) return;
 
-				/**
-				 * get all found attributevalues. they are needed in the render
-				 * Method of any TagHandler markupContent.getId() is used,
-				 * because the {@link TagHandlerAttributeSectionFinder} uses the
-				 * father-id to store the attributes.
-				 */
-				Map<String, String> attValues = null;
-				Object storedValues = KnowWEEnvironment.getInstance()
+			/**
+			 * get all found attributevalues. they are needed in the render
+			 * Method of any TagHandler markupContent.getId() is used, because
+			 * the {@link TagHandlerAttributeSectionFinder} uses the father-id
+			 * to store the attributes.
+			 */
+			Map<String, String> attValues = null;
+			Object storedValues = KnowWEEnvironment.getInstance()
 						.getArticleManager(sec.getWeb()).getTypeStore()
 						.getStoredObject(sec.getTitle(), markupContent.getID(),
 								TagHandlerAttributeSubTreeHandler.ATTRIBUTE_MAP);
-				if (storedValues != null) {
-					if (storedValues instanceof Map) {
-						attValues = (Map<String, String>) storedValues;
-					}
-				}
-				if (attValues == null) attValues = new HashMap<String, String>();
 
-				// Render the Taghandler with its attValues
-				String taghandlerName = DefaultMarkupType.getAnnotation(sec, "taghandlername");
-				HashMap<String, TagHandler> defaultTagHandlers =
+			if (storedValues != null) {
+				if (storedValues instanceof Map) {
+					attValues = (Map<String, String>) storedValues;
+				}
+			}
+			if (attValues == null) {
+				attValues = new HashMap<String, String>();
+			}
+
+			// provide the kdom id for ReRenderingMarker.
+			// it is not contained when generating the article,
+			// but later upon Ajax-Requests.
+			if (!attValues.containsKey("kdomid")) {
+				attValues.put("kdomid", sec.getID());
+			}
+
+			// Render the Taghandler with its attValues
+			String taghandlerName = DefaultMarkupType.getAnnotation(sec, "taghandlername");
+			HashMap<String, TagHandler> defaultTagHandlers =
 						KnowWEEnvironment.getInstance().getDefaultTagHandlers();
-				if (taghandlerName != null) {
-					taghandlerName = taghandlerName.toLowerCase();
-				}
-				TagHandler handler = defaultTagHandlers.get(taghandlerName);
+			if (taghandlerName != null) {
+				taghandlerName = taghandlerName.toLowerCase();
+			}
+			TagHandler handler = defaultTagHandlers.get(taghandlerName);
 
-				if (handler != null) {
-					String rendered = handler.render(
+			if (handler != null) {
+				String rendered = handler.render(
 							article, sec, user, attValues);
-					string.append(rendered);
-				}
+				string.append(rendered);
+			}
 
-				// Taghandler not found
-				if (handler == null) {
-					string.append(KnowWEUtils
+			// Taghandler not found
+			else {
+				string.append(KnowWEUtils
 							.maskHTML("<div><p class='info box'>"));
-					string.append(KnowWEUtils.maskHTML(KnowWEEnvironment
+				string.append(KnowWEUtils.maskHTML(KnowWEEnvironment
 							.getInstance().getKwikiBundle(user).getString(
-									"KnowWE.Taghandler.notFoundError")
-							+ "</p></div>"));
-				}
+									"KnowWE.Taghandler.notFoundError") + " '" + taghandlerName
+							+ "'</p></div>"));
 			}
 		}
 	}
