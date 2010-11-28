@@ -282,9 +282,9 @@ Action.createPossibleActions = function(infoObject) {
 			result.push(new Action('KnOffice', 'INSTANT['+name+']'));
 			result.push(new Action('KnOffice', 'ALWAYS['+name+']'));
 		}
-		result.push('Use Value');			
+		result.push('Use value');			
 		result.push(new Action('NOP', '"'+name.escapeQuote()+'"'));			
-		result.push('---- Wert zuweisen ----');			
+		result.push('Assign value');			
 		switch (infoObject.getType()) {
 			//add yes/no value
 			case KBInfo.Question.TYPE_BOOL:
@@ -312,7 +312,7 @@ Action.createPossibleActions = function(infoObject) {
 		}
 	}
 	else if (infoObject.getClassInstance() == KBInfo.Solution) {
-		result.push('Rate Solution');
+		result.push('Rate solution');
 		 
 		for (var i = 7; i > 1; i--){
 			result.push(new Action('KnOffice', Action._createExpression(name, 'P' + i, true)));
@@ -325,14 +325,14 @@ Action.createPossibleActions = function(infoObject) {
 
 	}
 	else if (infoObject.getClassInstance() == KBInfo.Flowchart) {
-		result.push('Call Start Node');			
+		result.push('Call start node');			
 		var options = infoObject.getStartNames();
 		for (var i=0; i<options.length; i++) {
 			result.push(new Action('KnOffice', 'CALL[' + name + '(' + options[i] + ')' + ']'));
 		}
 	}
 	else if (infoObject.getClassInstance() == KBInfo.QSet) {
-		result.push('Ask Questionnaire');			
+		result.push('Ask questionnaire');			
 		//removed conversion to json-string @20091102
 		result.push(new Action('KnOffice', name));
 

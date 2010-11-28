@@ -370,9 +370,17 @@ Node.prototype.toXML = function() {
 	}
 	else if (this.nodeModel.action) {
 		var action = this.nodeModel.action;
-		xml += '\t\t<action markup="'+action.markup+'">' + 
+
+		if (action.markup == 'NOP') {
+				xml += '\t\t<decision>' + 
 				(action.expression ? action.expression : '') + 
-				'</action>\n';
+				'</decision>\n';
+				
+		} else { 
+			xml += '\t\t<action markup="' + action.markup + '">' + 
+			(action.expression ? action.expression : '') + 
+			'</action>\n';
+		}
 	}
 	xml += '\t</node>\n';
 	return xml;
@@ -405,6 +413,16 @@ Node.createFromXML = function(flowchart, xmlDom, pasteOptions) {
 			expression: KBInfo._nodeText(actionDoms[0])
 		}
 	}
+	
+	var decisionDoms = xmlDom.getElementsByTagName('decision');
+	if (decisionDoms && decisionDoms.length > 0) {
+		nodeModel.action = {
+				markup: 'NOP',
+				expression: KBInfo._nodeText(decisionDoms[0])
+		}
+	}
+	
+	
 	
 	return new Node(flowchart, nodeModel);
 }

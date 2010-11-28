@@ -6,13 +6,13 @@ Formel auch für Date/text?? Done
 Neues Icon für Date/Text
 
 
-Negation von flowchartprocessed
+Negation von flowchartprocessed???
 
 IDOBject
 
 einheiten für numfragen
 
-
+Artefakte in Textfelder nach wechsel von formel zu was anderem. Check auf Variablennamen?
 Changes:
 
 Formula an Kanten von Num, Date und Text

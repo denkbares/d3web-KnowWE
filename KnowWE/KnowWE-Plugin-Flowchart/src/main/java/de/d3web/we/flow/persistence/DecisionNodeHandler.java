@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
- * Computer Science VI, University of Wuerzburg
+ * Copyright (C) 2010 University Wuerzburg, Computer Science VI
  * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -17,10 +16,6 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-
-/**
- * 
- */
 package de.d3web.we.flow.persistence;
 
 import java.util.List;
@@ -28,59 +23,37 @@ import java.util.List;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.INode;
-import de.d3web.we.flow.type.ActionType;
-import de.d3web.we.flow.type.CallFlowActionType;
+import de.d3web.diaFlux.flow.NOOPAction;
+import de.d3web.we.flow.type.DecisionType;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.flow.type.NodeType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 /**
- * @author Reinhard Hatko
- * @created 10.08.10
  * 
+ * @author Reinhard Hatko
+ * @created 28.11.2010
  */
-public class ComposedNodeHandler extends AbstractNodeHandler {
+public class DecisionNodeHandler extends AbstractNodeHandler {
 
-	public ComposedNodeHandler() {
-		super(ActionType.getInstance(), "KnOffice");
+	public DecisionNodeHandler() {
+		super(DecisionType.getInstance());
+
 	}
 
+	@Override
 	public boolean canCreateNode(KnowWEArticle article, KnowledgeBaseManagement kbm,
 			Section<NodeType> nodeSection) {
-
-		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
-
-		if (nodeInfo == null) return false;
-
-		// String actionString =
-		// FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
-
-		return nodeInfo.findSuccessor(CallFlowActionType.class) != null;
+		return getNodeInfo(nodeSection) != null;
 	}
 
+	@Override
 	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 
-		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
-		// String actionString =
-		// FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
-		//
-		// if (!actionString.startsWith("CALL[")) return null;
-		//
-		// int nodenameStart = actionString.indexOf('(');
-		// int nodenameEnd = actionString.indexOf(')');
-		//
-		// String flowName = actionString.substring(5, nodenameStart);
-		// String nodeName = actionString.substring(nodenameStart + 1,
-		// nodenameEnd);
-		Section<CallFlowActionType> section = nodeInfo.findSuccessor(CallFlowActionType.class);
-		String flowName = CallFlowActionType.getFlowName(section);
-		String nodeName = CallFlowActionType.getStartNodeName(section);
-
-		return FlowFactory.getInstance().createComposedNode(id, flowName, nodeName);
+		return FlowFactory.getInstance().createActionNode(id, NOOPAction.INSTANCE);
 
 	}
 

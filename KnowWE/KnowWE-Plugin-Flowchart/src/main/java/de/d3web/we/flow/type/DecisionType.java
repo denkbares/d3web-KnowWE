@@ -20,36 +20,32 @@
 
 package de.d3web.we.flow.type;
 
-import de.d3web.we.kdom.xml.XMLContent;
+import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.object.QuestionReference;
 
 /**
  * 
  * 
- * @author hatko Created on: 09.10.2009
+ * @author Reinhard Hatko
+ * @created 28.11.2010
  */
-public class NodeContentType extends XMLContent {
+public class DecisionType extends AbstractXMLObjectType {
 
-	private static NodeContentType instance;
+	private static DecisionType instance;
 
-	private NodeContentType() {
+	private DecisionType() {
+		super("decision");
 	}
 
-	public static NodeContentType getInstance() {
-		if (instance == null) instance = new NodeContentType();
+	public static DecisionType getInstance() {
+		if (instance == null) instance = new DecisionType();
 
 		return instance;
 	}
 
 	@Override
 	protected void init() {
-		this.childrenTypes.add(StartType.getInstance());
-		this.childrenTypes.add(ExitType.getInstance());
-		this.childrenTypes.add(PositionType.getInstance());
-		this.childrenTypes.add(ActionType.getInstance());
-		this.childrenTypes.add(CommentType.getInstance());
-		this.childrenTypes.add(SnapshotType.getInstance());
-		this.childrenTypes.add(DecisionType.getInstance());
 
+		addChildType(new QuestionReference());
 	}
-
 }

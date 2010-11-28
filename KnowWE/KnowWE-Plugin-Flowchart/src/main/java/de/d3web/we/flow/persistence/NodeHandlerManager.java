@@ -1,20 +1,20 @@
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.d3web.we.flow.persistence;
 
@@ -25,6 +25,8 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
+import de.d3web.we.flow.type.FlowchartType;
+import de.d3web.we.flow.type.NodeType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -55,6 +57,7 @@ public class NodeHandlerManager implements NodeHandler {
 		HANDLERS.add(new CommentNodeHandler());
 		HANDLERS.add(new ComposedNodeHandler());
 		HANDLERS.add(new SnapshotNodeHandler());
+		HANDLERS.add(new DecisionNodeHandler());
 
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				NODEHANDLER_EXTENSIONPOINT);
@@ -73,7 +76,7 @@ public class NodeHandlerManager implements NodeHandler {
 	}
 
 	@Override
-	public boolean canCreateNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section nodeSection) {
+	public boolean canCreateNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section<NodeType> nodeSection) {
 		for (NodeHandler handler : HANDLERS) {
 			if (handler.canCreateNode(article, kbm, nodeSection)) return true;
 		}
@@ -82,7 +85,8 @@ public class NodeHandlerManager implements NodeHandler {
 	}
 
 	@Override
-	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section nodeSection, Section flowSection, String id, List<KDOMReportMessage> errors) {
+	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section<NodeType> nodeSection,
+			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 		NodeHandler nodeHandler = findNodeHandler(article, kbm, nodeSection);
 
 		if (nodeHandler == null) return null;
@@ -91,7 +95,7 @@ public class NodeHandlerManager implements NodeHandler {
 	}
 
 	public NodeHandler findNodeHandler(KnowWEArticle article,
-			KnowledgeBaseManagement kbm, Section nodeSection) {
+			KnowledgeBaseManagement kbm, Section<NodeType> nodeSection) {
 
 		for (NodeHandler handler : HANDLERS) {
 			if (handler.canCreateNode(article, kbm, nodeSection)) return handler;

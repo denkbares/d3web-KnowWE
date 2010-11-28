@@ -29,6 +29,8 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
+import de.d3web.we.flow.type.FlowchartType;
+import de.d3web.we.flow.type.NodeType;
 import de.d3web.we.flow.type.SnapshotType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -46,8 +48,8 @@ public class SnapshotNodeHandler extends AbstractNodeHandler {
 		super(SnapshotType.getInstance(), null);
 	}
 
-	public boolean canCreateNode(KnowWEArticle article,
-			KnowledgeBaseManagement kbm, Section nodeSection) {
+	public boolean canCreateNode(KnowWEArticle article, KnowledgeBaseManagement kbm,
+			Section<NodeType> nodeSection) {
 
 		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
 
@@ -55,7 +57,8 @@ public class SnapshotNodeHandler extends AbstractNodeHandler {
 
 	}
 
-	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section nodeSection, Section flowSection, String id, List<KDOMReportMessage> errors) {
+	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section<NodeType> nodeSection,
+			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 
 		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
 		String content = FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
