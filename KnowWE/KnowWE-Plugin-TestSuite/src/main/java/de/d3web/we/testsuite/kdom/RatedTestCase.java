@@ -32,8 +32,7 @@ import de.d3web.we.utils.SplitUtility;
 
 public class RatedTestCase extends DefaultAbstractKnowWEObjectType {
 
-	@Override
-	public void init() {
+	public RatedTestCase() {
 		childrenTypes.add(new Findings());
 		childrenTypes.add(new RatedSolutions());
 		this.sectionFinder = new RatedTestCaseSectionFinder();

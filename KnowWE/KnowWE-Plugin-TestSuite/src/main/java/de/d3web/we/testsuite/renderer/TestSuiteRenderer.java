@@ -23,7 +23,7 @@ import de.d3web.we.testsuite.kdom.TestSuiteType;
 
 /**
  * Renderer for the Default Markup TestSuiteType
- * 
+ *
  * @see TestSuiteType
  * @author Sebastian Furth (denkbares GmbH)
  * @created 18/10/2010
@@ -31,7 +31,7 @@ import de.d3web.we.testsuite.kdom.TestSuiteType;
 public class TestSuiteRenderer extends DefaultMarkupRenderer<TestSuiteType> {
 
 	public TestSuiteRenderer() {
-		super("KnowWEExtension/d3web/icon/testsuite24.png");
+		super("KnowWEExtension/d3web/icon/testsuite24.png", false);
 	}
 
 }

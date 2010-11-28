@@ -33,14 +33,11 @@ import de.d3web.we.utils.SplitUtility;
 
 public class RatedSolution extends DefaultAbstractKnowWEObjectType {
 
-	@Override
-	public void init() {
-
+	public RatedSolution() {
 		SolutionReference solution = new SolutionReference();
 		solution.setSectionFinder(new SolutionSectionFinder());
 		childrenTypes.add(solution);
 		childrenTypes.add(new StateRating());
-		// childrenTypes.add(new ScoreRating());
 		this.sectionFinder = new RatedSolutionSectionFinder();
 	}
 

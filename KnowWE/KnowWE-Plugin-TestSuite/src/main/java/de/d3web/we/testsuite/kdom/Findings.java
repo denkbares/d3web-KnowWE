@@ -32,8 +32,7 @@ import de.d3web.we.utils.SplitUtility;
 
 public class Findings extends DefaultAbstractKnowWEObjectType {
 
-	@Override
-	public void init() {
+	public Findings() {
 		childrenTypes.add(new Finding());
 		this.sectionFinder = new FindingsSectionFinder();
 	}

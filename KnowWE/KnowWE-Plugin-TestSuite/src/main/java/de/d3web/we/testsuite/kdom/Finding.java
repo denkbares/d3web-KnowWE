@@ -32,23 +32,16 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.utils.SplitUtility;
-import de.knowwe.core.renderer.FontColorRenderer;
-import de.knowwe.core.renderer.ObjectInfoLinkRenderer;
 
 public class Finding extends DefaultAbstractKnowWEObjectType {
 
-	@Override
-	public void init() {
+	public Finding() {
 
 		QuestionReference question = new QuestionReference();
 		question.setSectionFinder(new QuestionSectionFinder());
-		question.setCustomRenderer(new ObjectInfoLinkRenderer(
-				FontColorRenderer.getRenderer(FontColorRenderer.COLOR6)));
 
 		AnswerReference answer = new AnswerReferenceImpl();
 		answer.setSectionFinder(new AnswerSectionFinder());
-		answer.setCustomRenderer(new ObjectInfoLinkRenderer(
-				FontColorRenderer.getRenderer(FontColorRenderer.COLOR5)));
 
 		this.childrenTypes.add(question);
 		this.childrenTypes.add(answer);
@@ -84,6 +77,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 
 			int start = text.indexOf(findings.get(1));
 			int end = start + findings.get(1).length();
+
 			SectionFinderResult s = new SectionFinderResult(start, end);
 			result.add(s);
 
@@ -102,6 +96,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 
 			int start = text.indexOf(findings.get(0));
 			int end = start + findings.get(0).length();
+
 			SectionFinderResult s =
 					new SectionFinderResult(start, end);
 			result.add(s);

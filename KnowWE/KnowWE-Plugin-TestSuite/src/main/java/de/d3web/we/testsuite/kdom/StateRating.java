@@ -26,21 +26,14 @@ import java.util.List;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.renderer.FontColorRenderer;
 
 public class StateRating extends DefaultAbstractKnowWEObjectType {
 
-	@Override
-	public void init() {
+	public StateRating() {
 		this.sectionFinder = new StateRatingSectionFinder();
-	}
-
-	@Override
-	public KnowWEDomRenderer getRenderer() {
-		return new FontColorRenderer(FontColorRenderer.COLOR3);
+		// this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR3));
 	}
 
 	class StateRatingSectionFinder implements ISectionFinder {

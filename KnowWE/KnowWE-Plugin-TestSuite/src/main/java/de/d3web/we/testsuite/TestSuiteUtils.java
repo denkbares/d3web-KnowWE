@@ -25,11 +25,12 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.testsuite.kdom.TestSuiteType;
+import de.d3web.we.testsuite.kdom.TestsuiteContent;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * Util class which offers convenience methods for the handling of test suites
- * 
+ *
  * @see TestSuite
  * @author Sebastian Furth (denkbares GmbH)
  * @created 25/10/2010
@@ -38,7 +39,7 @@ public class TestSuiteUtils {
 
 	/**
 	 * Loads a test suite from the specified article.
-	 * 
+	 *
 	 * @created 25/10/2010
 	 * @param article KnowWEArticle containing a TestSuiteType section
 	 * @param web the current web
@@ -46,11 +47,11 @@ public class TestSuiteUtils {
 	 */
 	public static TestSuite loadTestSuite(String article, String web) {
 		KnowWEArticle a = KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(article);
-		Section<TestSuiteType> s = null;
+		Section<TestsuiteContent> s = null;
 		TestSuite testSuite = null;
 
 		if (a != null) {
-			s = a.getSection().findSuccessor(TestSuiteType.class);
+			s = a.getSection().findSuccessor(TestsuiteContent.class);
 		}
 		else {
 			Logger.getLogger(TestSuiteUtils.class.getName()).warning(
