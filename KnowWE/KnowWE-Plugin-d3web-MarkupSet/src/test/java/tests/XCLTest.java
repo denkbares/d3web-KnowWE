@@ -29,6 +29,7 @@ import utils.MyTestArticleManager;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.plugin.test.InitPluginManager;
+import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.logging.Logging;
 import de.d3web.xcl.XCLModel;
@@ -49,6 +50,7 @@ public class XCLTest extends TestCase {
 	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
+		KnowWEPackageManager.overrideAutocompileArticle(true);		
 	}
 
 	public void testNumberOfXCLModels() {
