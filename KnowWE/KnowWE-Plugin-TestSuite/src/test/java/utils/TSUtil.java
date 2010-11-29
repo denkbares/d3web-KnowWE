@@ -42,6 +42,7 @@ import de.d3web.empiricaltesting.TestSuite;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.testsuite.kdom.TestSuiteType;
+import de.d3web.we.testsuite.kdom.TestsuiteContent;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -65,7 +66,7 @@ public class TSUtil {
 	}
 
 	public TestSuite findTestSuite(KnowWEArticle article) {
-		Section<TestSuiteType> s = article.getSection().findSuccessor(TestSuiteType.class);
+		Section<TestsuiteContent> s = article.getSection().findSuccessor(TestsuiteContent.class);
 		return (TestSuite) KnowWEUtils.getStoredObject("default_web",
 				article.getTitle(),
 				s.getID(), TestSuiteType.TESTSUITEKEY);

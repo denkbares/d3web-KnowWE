@@ -286,11 +286,19 @@ public class TestsuiteContent extends XMLContent {
 		 * Due to the knowledge base is in another article we need this method.
 		 */
 		private KnowledgeBaseManagement loadKBM(KnowWEArticle a, Section<TestSuiteType> s) {
-			Section<TestSuiteType> father = s.findAncestorOfType(TestSuiteType.class);
-			String source = DefaultMarkupType.getAnnotation(father, TestSuiteType.KBSOURCE);
-			KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(a.getWeb(),
-					source);
-			return getKBM(article);
+
+			// This is necessary for the JUNIT-Test (@see MyTestArticleManager)
+			KnowledgeBaseManagement kbm = getKBM(a);
+
+			if (kbm == null) {
+				Section<TestSuiteType> father = s.findAncestorOfType(TestSuiteType.class);
+				String source = DefaultMarkupType.getAnnotation(father, TestSuiteType.KBSOURCE);
+				KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(a.getWeb(),
+						source);
+				kbm = getKBM(article);
+			}
+
+			return kbm;
 		}
 
 		private String clean(String quotedString) {

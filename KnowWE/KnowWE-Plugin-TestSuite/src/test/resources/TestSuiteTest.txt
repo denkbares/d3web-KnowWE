@@ -7,9 +7,7 @@ Other problem
 Observations
 - Driving [mc]
 -- insufficient power on partial load
---- "Num. Mileage evaluation" SET (110)
 -- insufficient power on full load
---- "Num. Mileage evaluation" (20)
 -- unsteady idle speed
 -- everything is fine
 --- Other problem (P7)
@@ -26,8 +24,7 @@ STC1 {
 	Driving = everything is fine :
 	Other problem (established);
 }
-@KnowledgeBase TestSuiteTest;
-@package test
+@KnowledgeBase TestSuiteTest
 %
 
 %%TestSuiteRunner
