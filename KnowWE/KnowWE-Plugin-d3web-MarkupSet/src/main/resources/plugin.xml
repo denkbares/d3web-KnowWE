@@ -86,5 +86,16 @@
 		<parameter id="priority" value="7.0" />
 		<parameter id="scope" value="root" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="Resource">
+		<parameter id="class" value="de.knowwe.d3web.resource.ResourceType" />
+		<parameter id="name" value="Resource" />
+		<parameter id="description"
+			value="Adds a binary resource file to the knowledge base archive" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="6" />
+		<parameter id="scope" value="root" />
+	</extension>
 
 </plugin>
