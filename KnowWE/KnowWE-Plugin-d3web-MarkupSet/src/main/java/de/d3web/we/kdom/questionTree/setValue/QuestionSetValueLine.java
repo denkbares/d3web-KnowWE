@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.List;
 
 import de.d3web.abstraction.ActionSetValue;
+import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Choice;
@@ -149,7 +150,8 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 						Rule r = null;
 						if (ac != null) {
-							r = RuleFactory.createRule(newRuleID, ac, cond, null, null);
+							r = RuleFactory.createRule(newRuleID, ac, cond, null, null,
+									PSMethodAbstraction.class);
 						}
 
 						if (r != null) {

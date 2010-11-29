@@ -22,9 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.core.inference.PSAction;
+import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.indication.ActionContraIndication;
+import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -92,6 +94,11 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 
 			return KnowWEUtils.trimQuotes(questionName);
 		}
+	}
+
+	@Override
+	public Class<? extends PSMethod> getActionPSContext() {
+		return PSMethodStrategic.class;
 	}
 
 }

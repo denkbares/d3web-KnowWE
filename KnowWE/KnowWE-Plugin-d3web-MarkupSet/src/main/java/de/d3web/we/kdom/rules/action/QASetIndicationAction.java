@@ -24,10 +24,12 @@ import java.util.Collection;
 import java.util.List;
 
 import de.d3web.core.inference.PSAction;
+import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.indication.ActionIndication;
+import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
@@ -63,7 +65,7 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 				if (terminologyHandler.isDefinedTerm(article, termName, KnowWETerm.LOCAL)) {
 					Section<? extends TermDefinition> termDefinitionSection = terminologyHandler.getTermDefiningSection(
 							article, termName, KnowWETerm.LOCAL);
-					Class objectClazz = termDefinitionSection.get().getTermObjectClass();
+					Class<?> objectClazz = termDefinitionSection.get().getTermObjectClass();
 					if (Question.class.isAssignableFrom(objectClazz)) {
 						s.setType(new QuestionReference());
 						return new ArrayList<KDOMReportMessage>(0);
@@ -80,7 +82,8 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 				}
 
 				return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(
-						"Could not find '" + termName+ "' - expected was Question or Questionnaire"));
+						"Could not find '" + termName
+								+ "' - expected was Question or Questionnaire"));
 			}
 		});
 
@@ -109,6 +112,11 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 		}
 
 		return a;
+	}
+
+	@Override
+	public Class<? extends PSMethod> getActionPSContext() {
+		return PSMethodStrategic.class;
 	}
 
 }

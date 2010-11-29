@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.abstraction.ActionSetValue;
+import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.PSAction;
+import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -86,8 +88,6 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 		}
 	}
 
-
-
 	public class WordSectionFinder extends SectionFinder {
 
 		@Override
@@ -131,5 +131,10 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 			return a;
 		}
 		return null;
+	}
+
+	@Override
+	public Class<? extends PSMethod> getActionPSContext() {
+		return PSMethodAbstraction.class;
 	}
 }

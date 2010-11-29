@@ -164,7 +164,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 
 			if (d3action != null && d3Cond != null) {
 				Rule r = RuleFactory.createRule(mgn.createRuleID(), d3action, d3Cond,
-						null, null);
+						null, null, action.get().getActionPSContext());
 				if (r != null) {
 					KnowWEUtils.storeObject(article, s, ruleStoreKey, r);
 					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage("Rule"));

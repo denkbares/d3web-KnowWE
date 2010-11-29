@@ -22,6 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.core.inference.PSAction;
+import de.d3web.core.inference.PSMethod;
 import de.d3web.diaFlux.inference.CallFlowAction;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -69,6 +70,12 @@ public class CallFlowActionType extends D3webRuleAction<CallFlowActionType> {
 		Matcher matcher = pattern.matcher(action.getOriginalText());
 		matcher.matches();
 		return matcher.group(1);
+	}
+
+	@Override
+	public Class<? extends PSMethod> getActionPSContext() {
+		// TODO insert this, if this type will be used to create rules
+		return null;
 	}
 
 }

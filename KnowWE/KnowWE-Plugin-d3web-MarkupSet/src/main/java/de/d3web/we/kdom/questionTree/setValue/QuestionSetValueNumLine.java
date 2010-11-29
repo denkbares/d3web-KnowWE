@@ -27,6 +27,7 @@ import java.util.List;
 
 import de.d3web.abstraction.ActionSetValue;
 import de.d3web.abstraction.formula.FormulaNumber;
+import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Question;
@@ -176,7 +177,8 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 				action.setQuestion(q);
 				action.setValue(new FormulaNumber(d));
 
-				Rule r = RuleFactory.createRule(newRuleID, action, cond, null, null);
+				Rule r = RuleFactory.createRule(newRuleID, action, cond, null, null,
+						PSMethodAbstraction.class);
 				if (r != null) {
 					KnowWEUtils.storeSectionInfo(article, s, SETVALUE_ARGUMENT, r);
 					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(

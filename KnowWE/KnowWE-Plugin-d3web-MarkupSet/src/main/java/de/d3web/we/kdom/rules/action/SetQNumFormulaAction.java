@@ -7,7 +7,9 @@ import org.apache.log4j.Logger;
 
 import de.d3web.abstraction.ActionSetValue;
 import de.d3web.abstraction.formula.FormulaNumberElement;
+import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.PSAction;
+import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -40,7 +42,7 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 		qr.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(equals));
 		this.childrenTypes.add(equals);
 		this.childrenTypes.add(qr);
-		
+
 		CompositeFormula formula = new CompositeFormula();
 		// crate List of valid terminals
 		List<KnowWEObjectType> terminals = new ArrayList<KnowWEObjectType>();
@@ -55,7 +57,6 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 		formula.setAllowedTerminalConditions(terminals);
 		this.childrenTypes.add(formula);
 	}
-
 
 	private class SetQuestionValueSectionFinder implements ISectionFinder {
 
@@ -75,7 +76,6 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 			return null;
 		}
 	}
-
 
 	@Override
 	protected PSAction createAction(KnowWEArticle article, Section s) {
@@ -102,4 +102,8 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 		return null;
 	}
 
+	@Override
+	public Class<? extends PSMethod> getActionPSContext() {
+		return PSMethodAbstraction.class;
+	}
 }

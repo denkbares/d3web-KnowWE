@@ -23,6 +23,7 @@ package de.d3web.we.kdom.rules.action;
 import java.util.Collection;
 
 import de.d3web.core.inference.PSAction;
+import de.d3web.core.inference.PSMethod;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -41,6 +42,8 @@ public abstract class D3webRuleAction<T extends KnowWEObjectType>
 	public D3webRuleAction() {
 		this.addSubtreeHandler(new ActionCreateHandler());
 	}
+
+	public abstract Class<? extends PSMethod> getActionPSContext();
 
 	public final PSAction getAction(KnowWEArticle article, Section<T> s) {
 		return (PSAction) KnowWEUtils.getStoredObject(article, s, ACTION_STORE_KEY);
