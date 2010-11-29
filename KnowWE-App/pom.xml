@@ -395,6 +395,25 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		
+		<!-- Table plugin -->
+		<profile>
+			<id>table-plugin</id>
+			<activation>
+				<property>
+					<name>table-plugin</name>
+				</property>
+			</activation>
+
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Table</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 
 		<!-- TestcaseTable plugin -->
 		<profile>
