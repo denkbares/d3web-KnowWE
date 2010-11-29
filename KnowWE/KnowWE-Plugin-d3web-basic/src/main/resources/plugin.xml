@@ -112,9 +112,20 @@
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SetSingleFindingAction">
-		<parameter id="class" value="de.knowwe.d3web.action.SetSingleFindingAction" />
+		<parameter id="class"
+			value="de.knowwe.d3web.action.SetSingleFindingAction" />
 		<parameter id="name" value="SetSingleFindingAction" />
 		<parameter id="description" value="Action SetSingleFindingAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="RetractSingleFindingAction">
+		<parameter id="class"
+			value="de.knowwe.d3web.action.RetractSingleFindingAction" />
+		<parameter id="name" value="RetractSingleFindingAction" />
+		<parameter id="description" value="Action RetractSingleFindingAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
