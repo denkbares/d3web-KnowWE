@@ -657,12 +657,6 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-SemanticCore-Tests</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
