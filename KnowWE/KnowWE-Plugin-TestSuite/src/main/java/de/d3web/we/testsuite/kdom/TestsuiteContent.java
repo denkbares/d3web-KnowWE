@@ -74,7 +74,7 @@ public class TestsuiteContent extends XMLContent {
 			List<KDOMReportMessage> messages = new LinkedList<KDOMReportMessage>();
 			KnowledgeBaseManagement kbm = loadKBM(article, s);
 
-			if (kbm == null) {
+			if (kbm != null) {
 
 				List<de.d3web.empiricaltesting.SequentialTestCase> repository = new LinkedList<de.d3web.empiricaltesting.SequentialTestCase>();
 
@@ -115,9 +115,10 @@ public class TestsuiteContent extends XMLContent {
 
 			}
 			else {
+				Section<TestSuiteType> father = s.findAncestorOfType(TestSuiteType.class);
 				return Arrays.asList((KDOMReportMessage) new SimpleMessageError(
 						"Unable to get knowledge base from article: "
-								+ DefaultMarkupType.getAnnotation(s, TestSuiteType.KBSOURCE)));
+								+ DefaultMarkupType.getAnnotation(father, TestSuiteType.KBSOURCE)));
 			}
 
 			return messages;
@@ -287,10 +288,12 @@ public class TestsuiteContent extends XMLContent {
 		 */
 		private KnowledgeBaseManagement loadKBM(KnowWEArticle a, Section<TestSuiteType> s) {
 
-			// This is necessary for the JUNIT-Test (@see MyTestArticleManager)
 			KnowledgeBaseManagement kbm = getKBM(a);
 
-			if (kbm == null) {
+			// KBM contains only the ROOT-QASET and the ROOT-Solution
+			// TODO: Remove this check. ATM necessary for the Test (@see
+			// MyTestArticleManager)
+			if (kbm != null && kbm.getKnowledgeBase().getAllIDObjects().size() == 2) {
 				Section<TestSuiteType> father = s.findAncestorOfType(TestSuiteType.class);
 				String source = DefaultMarkupType.getAnnotation(father, TestSuiteType.KBSOURCE);
 				KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(a.getWeb(),
