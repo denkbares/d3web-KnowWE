@@ -36,6 +36,31 @@ ActionEditor.prototype.sendAjaxRequest = function (action, text) {
 	}); 
 }
 
+CCEvents.addClassListener('keydown', 'ActionEditor',
+	function(event) {
+		this.__ActionEditor.handleKeyEvent(event);
+	}
+);
+
+ActionEditor.prototype.handleKeyEvent = function(e) {
+	switch(e.keyCode){
+		case Event.KEY_ESC: 
+			this.handleCancel();
+			return;
+		case Event.KEY_RETURN:
+			if ($('choseQuestionText')) {
+				this.askQuestionType();
+			} else if ($('choseQuestionType')) {
+				this.addAnswer();
+			} else if ($('addAnswer')) {
+				this.answerValue();
+			} 
+			return;
+	}
+	//default handling for cursor events
+	e.defaultHandler();
+}
+
 
 // AJAX-Request for adding questions and their answers to the article
 ActionEditor.prototype.updateQuestions = function(addedQuestionText, addedQuestionType, possibleAnswers) {

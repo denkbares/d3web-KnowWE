@@ -151,8 +151,8 @@ Guard.createPossibleGuards = function(nodeModel) {
 				for (var i=0; i<options.length; i++) {
 					result.push(new Guard('KnOffice', 'NOT("'+infoObject.getName()+'" = "'+options[i]+'")', '&ne; ' + options[i]));
 				}
-				result.push('Complex condition');
-				result.push(new Guard('KnOffice', '(${formula})', '${formula}'));
+				result.push('Formula');
+				result.push(new Guard('timeDB', 'eval(${formula})', '${formula}'));
 				break;
 			// currently add no options for other values
 			case KBInfo.Question.TYPE_DATE:
@@ -211,6 +211,8 @@ Guard.createPossibleGuards = function(nodeModel) {
 	else if (infoObject.getClassInstance() == KBInfo.QSet) {
 		result.push('Common');
 		result.push(new Guard('NOP', ' ', ' '));
+		result.push('Formula');
+		result.push(new Guard('timeDB', 'eval(${formula})', '${formula}'));
 	}
 	
 	return result;

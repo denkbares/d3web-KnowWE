@@ -490,30 +490,6 @@ ActionEditor.prototype.render = function() {
 	return dom;
 }
 
-CCEvents.addClassListener('keydown', 'ActionEditor',
-	function(event) {
-		this.__ActionEditor.handleKeyEvent(event);
-	}
-);
-
-ActionEditor.prototype.handleKeyEvent = function(e) {
-	switch(e.keyCode){
-		case Event.KEY_ESC: 
-			this.handleCancel();
-			return;
-		case Event.KEY_RETURN:
-			if ($('choseQuestionText')) {
-				this.askQuestionType();
-			} else if ($('choseQuestionType')) {
-				this.addAnswer();
-			} else if ($('addAnswer')) {
-				this.answerValue();
-			} 
-			return;
-	}
-	//default handling for cursor events
-	e.defaultHandler();
-}
 
 
 // Helper

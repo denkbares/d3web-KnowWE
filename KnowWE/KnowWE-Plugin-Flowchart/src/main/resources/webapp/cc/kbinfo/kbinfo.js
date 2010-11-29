@@ -47,7 +47,10 @@ var KBInfo = {
 };
 
 KBInfo._nodeText = function(node) {
-	return node.firstChild.nodeValue;
+	if (node.firstChild)
+		return node.firstChild.nodeValue;
+	else 
+		return "";
 };
 
 KBInfo._getNodeValueIfExists = function(xmlDom, selector) {
