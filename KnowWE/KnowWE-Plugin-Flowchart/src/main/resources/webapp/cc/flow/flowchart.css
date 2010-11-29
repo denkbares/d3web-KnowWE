@@ -18,12 +18,12 @@
 }
 
 .FlowchartGroup .inputFocus {
-	position:	absolute;
+	position:	fixed;
 	overflow:	hidden;
 	width: 0px;
 	height: 0px;
-	top: 5px;
-	left: 5px;
+	top: 50px;
+	left: 50px;
 	z-index: -100;
 }
 
