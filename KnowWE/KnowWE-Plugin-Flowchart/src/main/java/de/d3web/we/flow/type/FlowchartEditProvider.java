@@ -40,22 +40,28 @@ public class FlowchartEditProvider implements ToolProvider {
 	}
 
 	private Tool getEditTool(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext) {
-		// tool to execute a full-parse onto the knowledge base
-		// may be removed in later releases (after moneypenny)
 
-		Section<FlowchartType> flowchart = section.findSuccessor(FlowchartType.class);
+		String jsAction = createEditAction(section, userContext);
 
+		return new DefaultTool(
+				"KnowWEExtension/flowchart/icon/edit16.png",
+				"Visual Editor",
+				"Opens the visual editor for this flowchart to edit its content grapically.",
+				jsAction);
+	}
+
+	private static String createEditAction(Section<?> section, KnowWEUserContext userContext) {
 		String id = section.getID();
 		String url =
 				"FlowEditor.jsp?kdomID=" + id + "&" +
 						KnowWEAttributes.TOPIC + "=" + userContext.getTopic();
 		String winID = id.replaceAll("[^\\w]", "_");
 		String jsAction = "window.open('" + url + "', '" + winID + "');";
-		return new DefaultTool(
-				"KnowWEExtension/flowchart/icon/edit16.png",
-				"Visual Editor",
-				"Opens the visual editor for this flowchart to edit its content grapically.",
-				jsAction);
+		return jsAction;
+	}
+
+	public static String createEditLink(Section<?> section, KnowWEUserContext userContext) {
+		return "javascript:" + createEditAction(section, userContext) + "undefined;";
 	}
 
 }

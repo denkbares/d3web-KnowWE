@@ -4,12 +4,13 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * 
  * @author Reinhard Hatko
- * @created 24.11.2010 
+ * @created 24.11.2010
  */
 class DiaFluxRenderer extends DefaultMarkupRenderer<DefaultMarkupType> {
 
@@ -35,12 +36,14 @@ class DiaFluxRenderer extends DefaultMarkupRenderer<DefaultMarkupType> {
 		Section<FlowchartType> flowchart = section.findSuccessor(FlowchartType.class);
 
 		if (flowchart == null) {
-			string.append("No flowchart created yet. Use tool on the right.");
+			string.append("No flowchart created yet. ");
+			String link = "<a href=\""
+					+ FlowchartEditProvider.createEditLink(section, user)
+					+ "\">"
+					+ "Click here to create one." + "</a>";
+			string.append(KnowWEUtils.maskHTML(link));
 		}
 
 		super.renderContents(article, section, user, string);
 	}
-
-
-
 }
