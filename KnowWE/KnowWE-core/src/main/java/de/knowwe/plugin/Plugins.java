@@ -21,7 +21,7 @@ package de.knowwe.plugin;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 
 import de.d3web.plugin.Extension;
@@ -212,7 +212,7 @@ public class Plugins {
 	 * Initializes the Javascript files
 	 */
 	public static void initJS() {
-		LinkedList<String> files = new LinkedList<String>();
+		HashSet<String> files = new HashSet<String>();
 		addStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_PageAppendHandler));
 		addStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
@@ -227,7 +227,7 @@ public class Plugins {
 	}
 
 	public static void initCSS() {
-		LinkedList<String> files = new LinkedList<String>();
+		HashSet<String> files = new HashSet<String>();
 		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_PageAppendHandler));
 		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
@@ -241,7 +241,7 @@ public class Plugins {
 		}
 	}
 
-	private static void addStripts(LinkedList<String> files, Extension[] extensions) {
+	private static void addStripts(HashSet<String> files, Extension[] extensions) {
 		for (Extension e : extensions) {
 			List<String> scripts = e.getParameters("script");
 			if (scripts != null) {
@@ -252,7 +252,7 @@ public class Plugins {
 		}
 	}
 
-	private static void addCSS(LinkedList<String> files, Extension[] extensions) {
+	private static void addCSS(HashSet<String> files, Extension[] extensions) {
 		for (Extension e : extensions) {
 			List<String> scripts = e.getParameters("css");
 			if (scripts != null) {
