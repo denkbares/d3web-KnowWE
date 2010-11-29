@@ -18,6 +18,9 @@
  */
 package de.d3web.we.ci4ke.testmodules;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.we.basic.D3webModule;
@@ -40,23 +43,45 @@ public class EmptyQuestionnaireTest extends AbstractCITest {
 
 	@Override
 	public CITestResult call() throws Exception {
-
+		// check if one test-parameter was set
 		if (!checkIfParametersAreSufficient(1)) {
 			return numberOfParametersNotSufficientError(1);
 		}
+		// get the first parameter = article whose KB should be searched for
+		// empty questionnaires
 		String articleName = getParameter(0);
+		// get the KB of this article
 		KnowledgeBase kb = D3webModule.getAD3webKnowledgeServiceInTopic(
 				KnowWEEnvironment.DEFAULT_WEB, articleName);
 		if (kb != null) {
+			List<String> emptyQASets = new ArrayList<String>();
+			// iterate over QAsets and check if they are empty
 			for (QASet qaset : kb.getQASets()) {
 				if (!qaset.isQuestionOrHasQuestions()) {
-					return new CITestResult(TestResultType.FAILED,
-							"Article " + articleName + " has empty questionnaires!");
+					emptyQASets.add(qaset.getName());
 				}
 			}
+			if (emptyQASets.size() > 0) {// empty QASets were found:
+				String failedMessage = "Article '" + articleName +
+						"' has empty questionnaires: " +
+						createHTMLListFromStringList(emptyQASets);
+				return new CITestResult(TestResultType.FAILED, failedMessage);
+			}
 		}
+		// it seems everything was fine:
 		return new CITestResult(TestResultType.SUCCESSFUL);
 	}
 
+	private String createHTMLListFromStringList(List<String> list) {
+		StringBuilder htmlList = new StringBuilder();
+		htmlList.append("<ul>\n");
+		for (String listItem : list) {
+			htmlList.append("<li>");
+			htmlList.append(listItem);
+			htmlList.append("</li>\n");
+		}
+		htmlList.append("</ul>\n");
+		return htmlList.toString();
+	}
 }
 
