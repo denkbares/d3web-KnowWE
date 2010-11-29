@@ -74,7 +74,7 @@ public class TestsuiteContent extends XMLContent {
 			List<KDOMReportMessage> messages = new LinkedList<KDOMReportMessage>();
 			KnowledgeBaseManagement kbm = loadKBM(article, s);
 
-			if (kbm != null) {
+			if (kbm == null) {
 
 				List<de.d3web.empiricaltesting.SequentialTestCase> repository = new LinkedList<de.d3web.empiricaltesting.SequentialTestCase>();
 
