@@ -450,7 +450,24 @@ Flowchart.prototype.toPreviewHTML = function(node) {
 	var html = '<' + node.nodeName; 
 	if (node.className)	html += ' class="' + node.className + '"';
 	if (node.id) html += ' id="' + node.id + '"';
-	if (node.src) html += ' src="' + node.src + '"';
+	if (node.src){
+		var srcVal = node.src;
+
+		if (node.src.startsWith('http://')){
+		
+			
+			var path = self.location.href;
+			var pos = path.indexOf('.jsp');
+			path = path.substring(0,pos);
+			
+			pos = path.lastIndexOf('/') + 1;
+			path = path.substring(0,pos);
+		
+			srcVal = node.src.substring(path.length, srcVal.length);
+		}
+		
+		html += ' src="' + srcVal + '"';
+	}
 	// for nodes we have a problem: padding is not taken nto consideration
 	// therefore allow width+padding not to be more than parent's width - 2
 

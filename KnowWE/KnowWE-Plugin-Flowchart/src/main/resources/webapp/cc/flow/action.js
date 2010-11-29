@@ -42,7 +42,7 @@ Action.prototype.getDisplayText = function() {
 		
 		var result = Action._extractFormulaExpression(this.markup, this.valueString);
 		
-		return (this.markup == "timeDB" ? ":= " : "= ") + result; 
+		return "= " + result; 
 		
 	}
 	
