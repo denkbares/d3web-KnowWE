@@ -154,10 +154,8 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 							tagname, section2, c);
 
 				}
-
 			}
 		}
-
 	}
 
 	/**
@@ -181,11 +179,14 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 		childrenTypes.add(0, new XMLHead());
 		childrenTypes.add(1, new XMLTail());
 		this.sectionFinder = new XMLSectionFinder(anyXML ? null : xmlTagName);
-		this.addSubtreeHandler(Priority.PRECOMPILE_HIGH, new RegisterPackageDefinitionHandler());
 	}
 
 	public String getXMLTagName() {
 		return xmlTagName;
+	}
+
+	public void registerPackageDefinitionHandler() {
+		this.addSubtreeHandler(Priority.PRECOMPILE_HIGH, new RegisterPackageDefinitionHandler());
 	}
 
 	static class RegisterPackageDefinitionHandler extends SubtreeHandler<AbstractXMLObjectType> {
@@ -196,7 +197,7 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public boolean needsToCreate(KnowWEArticle article, Section<AbstractXMLObjectType> s) {
-			return super.needsToCreate(article, s) && s.getTitle().equals(article.getTitle());
+			return super.needsToCreate(article, s) && !s.get().isIgnoringPackageCompile();
 		}
 
 		@Override
@@ -214,7 +215,7 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public boolean needsToDestroy(KnowWEArticle article, Section<AbstractXMLObjectType> s) {
-			return super.needsToDestroy(article, s) && s.getTitle().equals(article.getTitle());
+			return super.needsToDestroy(article, s) && !s.get().isIgnoringPackageCompile();
 		}
 
 		@Override

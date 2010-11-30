@@ -46,20 +46,16 @@ public abstract class OwlSubtreeHandler<T extends KnowWEObjectType> extends
 		super(true);
 	}
 
-	// no need to create (and destroy) all the OWL statements again for included
-	// Sections
 	@Override
 	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
-		return s.getTitle().equals(article.getTitle())
-				&& (super.needsToCreate(article, s)
-						|| s.isOrHasSuccessorNotReusedBy(article.getTitle()));
+		return super.needsToCreate(article, s)
+						|| s.isOrHasSuccessorNotReusedBy(article.getTitle());
 	}
 
 	@Override
 	public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
-		return s.getTitle().equals(article.getTitle())
-				&& (super.needsToDestroy(article, s)
-						|| s.isOrHasSuccessorNotReusedBy(article.getTitle()));
+		return super.needsToDestroy(article, s)
+						|| s.isOrHasSuccessorNotReusedBy(article.getTitle());
 	}
 
 	@Override

@@ -63,8 +63,9 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 			}
 		}
 
+		// register section in the package manager
 		// TODO: refactor this to somewhere else
-		if (markupSection.getTitle().equals(article.getTitle())) {
+		if (!markupSection.get().isIgnoringPackageCompile()) {
 			String value = null;
 			Annotation packageAnno = this.markup.getAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME);
 			if (packageAnno != null) {
@@ -76,12 +77,9 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 				}
 			}
 			if (value == null) value = KnowWEPackageManager.DEFAULT_PACKAGE;
-			// TODO: Should point to CompileFlag.MARKUP_NAME
-			if (!markupSection.get().getMarkup().getName().equals("Compile")) {
-				markupSection.addPackageName(value);
-				KnowWEEnvironment.getInstance().getPackageManager(article.getWeb()).registerPackageDefinition(
-						markupSection);
-			}
+			markupSection.addPackageName(value);
+			KnowWEEnvironment.getInstance().getPackageManager(article.getWeb()).registerPackageDefinition(
+					markupSection);
 		}
 
 		// check unrecognized annotations
@@ -114,10 +112,9 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 
 	@Override
 	public void destroy(KnowWEArticle article, Section<DefaultMarkupType> markupSection) {
+		// unregister section in the package manager
 		// TODO: refactor this to somewhere else
-		if (markupSection.getTitle().equals(article.getTitle())
-				// TODO: Should point to CompileFlag.MARKUP_NAME
-				&& !markupSection.get().getMarkup().getName().equals("Compile")) {
+		if (!markupSection.get().isIgnoringPackageCompile()) {
 				KnowWEEnvironment.getInstance().getPackageManager(article.getWeb()).unregisterPackageDefinition(
 						markupSection);
 		}

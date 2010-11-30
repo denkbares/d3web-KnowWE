@@ -36,6 +36,7 @@ public class Tags extends DefaultMarkupType {
 
 	public Tags() {
 		super(m);
+		this.setIgnorePackageCompile(true);
 	}
 
 	@Override

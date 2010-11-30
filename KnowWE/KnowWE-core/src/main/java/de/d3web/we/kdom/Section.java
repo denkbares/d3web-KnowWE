@@ -1591,8 +1591,12 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	private boolean isMatchingPackageName(KnowWEArticle article, SubtreeHandler<?> h) {
 
-		if (h.isIgnoringPackageCompile()
-				|| KnowWEPackageManager.isAutocompileArticleEnabled()) {
+		// ignore: compile always but only for the article of this section
+		if (h.isIgnoringPackageCompile() || objectType.isIgnoringPackageCompile()) {
+			return article.getTitle().equals(getTitle());
+		}
+		// auto: compile always
+		else if (KnowWEPackageManager.isAutocompileArticleEnabled()) {
 			return true;
 		}
 		else {

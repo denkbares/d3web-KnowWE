@@ -109,6 +109,10 @@ public interface KnowWEObjectType extends KnowWEType {
 	public void setNotRecyclable(boolean notRecyclable);
 
 	public boolean isOrderSensitive();
+	
+	public boolean isIgnoringPackageCompile();
+	
+	public void setIgnorePackageCompile(boolean ignorePackageCompile);
 
 	public void setOrderSensitive(boolean orderSensitive);
 

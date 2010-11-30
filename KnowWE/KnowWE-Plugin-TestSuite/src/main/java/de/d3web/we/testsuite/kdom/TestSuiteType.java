@@ -42,6 +42,7 @@ public class TestSuiteType extends DefaultMarkupType {
 
 	public TestSuiteType() {
 		super(m);
+		this.setIgnorePackageCompile(true);
 		setCustomRenderer(new TestSuiteRenderer());
 	}
 

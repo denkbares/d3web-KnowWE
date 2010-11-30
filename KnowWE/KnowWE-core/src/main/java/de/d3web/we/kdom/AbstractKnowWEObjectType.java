@@ -79,6 +79,11 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * Sections appears in the article
 	 */
 	private boolean isOrderSensitive = false;
+	
+	/**
+	 * a flag to determine if SubtreeHandlers registered to this type should ignore package compile 
+	 */
+	private boolean ignorePackageCompile = false;
 
 	/**
 	 * determines whether there is a enumeration of siblings defined for this
@@ -568,6 +573,26 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	@Override
 	public void setOrderSensitive(boolean orderSensitive) {
 		this.isOrderSensitive = orderSensitive;
+	}
+
+	/**
+	 * If a type ignores package compile, all SubtreeHandlers registered to this
+	 * type will always compile, but only for the article the section is
+	 * directly hooked in.
+	 */
+	@Override
+	public boolean isIgnoringPackageCompile() {
+		return ignorePackageCompile;
+	}
+
+	/**
+	 * If a type ignores package compile, all SubtreeHandlers registered to this
+	 * type will always compile, but only for the article the section is
+	 * directly hooked in.
+	 */
+	@Override
+	public void setIgnorePackageCompile(boolean ignorePackageCompile) {
+		this.ignorePackageCompile = ignorePackageCompile;
 	}
 
 }

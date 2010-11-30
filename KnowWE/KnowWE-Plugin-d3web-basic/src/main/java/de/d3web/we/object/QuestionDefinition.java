@@ -19,6 +19,7 @@
  */
 package de.d3web.we.object;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -29,7 +30,6 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
@@ -73,8 +73,10 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			if (KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(article, sec)) {
 				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(article,
 						sec);
-				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
-						sec.get().getTermName(sec)));
+				return new ArrayList<KDOMReportMessage>(0);
+				// return Arrays.asList((KDOMReportMessage) new
+				// ObjectAlreadyDefinedError(
+				// sec.get().getTermName(sec)));
 			}
 
 			Section<QuestionDefinition> qidSection = (sec);

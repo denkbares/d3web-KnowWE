@@ -19,6 +19,7 @@
  */
 package de.d3web.we.object;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -68,8 +69,10 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 			if (KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(article, qcSec)) {
 				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(article,
 						qcSec);
-				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedWarning(
-						qcSec.get().getTermName(qcSec)));
+				return new ArrayList<KDOMReportMessage>(0);
+				// return Arrays.asList((KDOMReportMessage) new
+				// ObjectAlreadyDefinedWarning(
+				// qcSec.get().getTermName(qcSec)));
 			}
 
 			KnowledgeBaseManagement mgn = getKBM(article);
