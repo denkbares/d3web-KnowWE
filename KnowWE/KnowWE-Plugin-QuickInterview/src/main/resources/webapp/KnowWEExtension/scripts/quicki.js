@@ -437,7 +437,7 @@ KNOWWE.plugin.quicki = function(){
             if(_KS('#input_' + rel.oid)) {
                     inputtext = _KS('#input_' + rel.oid).value; 
             }
-            
+            if( !inputtext ) return;  
             // send KNOWWE request as SingleFindingAction with given value
             KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
             		{action: 'SetSingleFindingAction', ValueDate: inputtext});
@@ -638,7 +638,6 @@ KNOWWE.plugin.quicki = function(){
                     ids : [ id ],					// to re-insert a freshly created interview
                     fn : function(){
                     	KNOWWE.plugin.quicki.initialize();
-                    	KNOWWE.plugin.solutionpanel.clearSolutionstate(); 	// clear (old) solutionpanel
                     	KNOWWE.core.rerendercontent.update(); //Clear new SolutionPanel
                     }	
         		}
