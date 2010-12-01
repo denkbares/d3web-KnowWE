@@ -23,17 +23,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.rendering.DefaultTextRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class DashesPrefix extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	protected void init() {
 		this.sectionFinder = new DashesPrefixFinder();
+		this.setCustomRenderer(new KnowWEDomRenderer<KnowWEObjectType>() {
 
+			@Override
+			public void render(KnowWEArticle article, Section<KnowWEObjectType> sec, KnowWEUserContext user, StringBuilder string) {
+				if (sec.getOriginalText().trim().startsWith("-")) {
+					string.append('~');
+				}
+				DefaultTextRenderer.getInstance().render(article, sec, user, string);
+			}
+		});
 	}
 
 	class DashesPrefixFinder extends SectionFinder {
