@@ -30,6 +30,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.NotUniqueKnowWETerm;
 import de.d3web.we.kdom.objects.TermReference;
+import de.d3web.we.tools.ToolMenuDecoratingRenderer;
 import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
@@ -48,7 +49,9 @@ public abstract class AnswerReference
 
 	public AnswerReference() {
 		super(Choice.class);
-		this.setCustomRenderer(new ReferenceRenderer(FontColorRenderer.COLOR1));
+		this.setCustomRenderer(
+				new ToolMenuDecoratingRenderer<D3webTermReference>(
+						new ReferenceRenderer(FontColorRenderer.COLOR1)));
 	}
 
 	@Override

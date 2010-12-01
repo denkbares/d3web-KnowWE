@@ -31,6 +31,7 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
@@ -40,6 +41,7 @@ import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.tools.ToolMenuDecoratingRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 import de.knowwe.core.renderer.FontColorRenderer;
 
@@ -66,7 +68,9 @@ public abstract class AnswerDefinition
 	public AnswerDefinition() {
 		super(Choice.class);
 		this.addSubtreeHandler(Priority.HIGH, new CreateAnswerHandler());
-		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR1));
+		this.setCustomRenderer(
+				new ToolMenuDecoratingRenderer<KnowWEObjectType>(
+						FontColorRenderer.getRenderer(FontColorRenderer.COLOR1)));
 		this.setOrderSensitive(true);
 	}
 

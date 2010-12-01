@@ -82,8 +82,8 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		for (Tool tool : tools) {
 			String icon = tool.getIconPath();
 			boolean hasIcon = icon != null && !icon.trim().isEmpty();
-			menuHtml += "<div class='markupMenuItem'>" +
-					"<a class='markupMenuItem'" +
+			menuHtml += "<div class=\"markupMenuItem\">" +
+					"<a class=\"markupMenuItem\"" +
 					" href=\"javascript:" + tool.getJSAction() + ";undefined;\"" +
 					" title=\"" + tool.getDescription() + "\">" +
 					(hasIcon ? ("<img src=\"" + icon + "\"></img>") : "") +

@@ -41,6 +41,7 @@ import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.tools.ToolMenuDecoratingRenderer;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.MessageUtils;
@@ -67,7 +68,9 @@ public abstract class SolutionDefinition
 
 	public SolutionDefinition(Priority p, boolean alreadyDefinedWarning) {
 		super(Solution.class);
-		this.setCustomRenderer(new SolutionIDHighlightingRenderer());
+		this.setCustomRenderer(
+				new ToolMenuDecoratingRenderer<SolutionDefinition>(
+						new SolutionIDHighlightingRenderer()));
 		// this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR4));
 		this.addSubtreeHandler(p, new CreateSolutionHandler(alreadyDefinedWarning));
 	}

@@ -23,8 +23,10 @@ import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.TermReference;
+import de.d3web.we.tools.ToolMenuDecoratingRenderer;
 import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
@@ -38,7 +40,9 @@ public class QuestionnaireReference extends D3webTermReference<QContainer> {
 
 	public QuestionnaireReference() {
 		super(QContainer.class);
-		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR5));
+		this.setCustomRenderer(
+				new ToolMenuDecoratingRenderer<KnowWEObjectType>(
+						FontColorRenderer.getRenderer(FontColorRenderer.COLOR5)));
 		this.setOrderSensitive(true);
 	}
 

@@ -15,6 +15,23 @@
 		</library>
 	</runtime>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="ObjectInfoPageToolProvider">
+		<parameter id="class"
+			value="de.d3web.we.kdom.objects.ObjectInfoPageToolProvider" />
+		<parameter id="name" value="ObjectInfoPageToolProvider" />
+		<parameter id="description"
+			value="Offer a button to navigate to the object information page of an selected object." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="QuestionDefinition" />
+		<parameter id="scope" value="QuestionnaireDefinition" />
+		<parameter id="scope" value="SolutionDefinition" />
+		<parameter id="scope" value="QuestionReference" />
+		<parameter id="scope" value="QuestionnaireReference" />
+		<parameter id="scope" value="SolutionReference" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="TagHandlerType">
 		<parameter id="class"
@@ -36,6 +53,8 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="css" value="defaultMarkup.css" />
+		<parameter id="css" value="toolsMenuDecorator.css" />
+		<parameter id="script" value="toolsMenuDecorator.js" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
