@@ -43,14 +43,16 @@ public class QuestionTreeRootTypeDefaultRenderer extends DefaultMarkupRenderer {
 			KnowWEUserContext user, StringBuilder string) {
 
 		boolean renderDialog = Boolean.parseBoolean(DefaultMarkupType.getAnnotation(sec, "dialog"));
-		string.append(KnowWEUtils.maskHTML("<div id=\"" + sec.getID() + "\" >\n"));
-		string.append(KnowWEUtils.maskHTML("<a name='" + KnowWEUtils.getAnchor(sec) + "'></a>\n"));
-		string.append("{{{\n");
-		article = PackageRenderUtils.checkArticlesCompiling(article, sec, string);
-		if (renderDialog) {
-
+		if (!renderDialog) {
+			super.render(article, sec, user, string);
+		}
+		else {
+			string.append(KnowWEUtils.maskHTML("<div id=\"" + sec.getID() + "\" >\n"));
+			string.append(KnowWEUtils.maskHTML("<a name='" + KnowWEUtils.getAnchor(sec)
+					+ "'></a>\n"));
+			string.append("{{{\n");
+			article = PackageRenderUtils.checkArticlesCompiling(article, sec, string);
 			string.append(KnowWEUtils.maskHTML("<div id=\"\" style=\"float:right;\">"));
-
 			string.append(KnowWEUtils.maskHTML("<span class=\"dt-ajax pointer\" rel=\"{dt : '', KdomNodeId : '"
 					+ sec.getID()
 					+ "'}\"><img src='KnowWEExtension/images/dt_icon_explanation2.png' alt='Default decision tree view' title='Default decision tree view'/></span> "
@@ -62,14 +64,14 @@ public class QuestionTreeRootTypeDefaultRenderer extends DefaultMarkupRenderer {
 					+ "'}\"><img src='KnowWEExtension/images/icon_diagnosis.gif' alt='Show decision tree in anwser mode' title='Show decision tree in anwser mode'/></span>"
 					));
 			string.append(KnowWEUtils.maskHTML("</div>\n"));
+
+			// render messages and content
+			renderMessages(article, sec, string);
+			DelegateRenderer.getInstance().render(article, sec, user, string);
+
+			// and close the box
+			string.append("}}}\n");
+			string.append(KnowWEUtils.maskHTML("</div>\n"));
 		}
-
-		// render messages and content
-		renderMessages(article, sec, string);
-		DelegateRenderer.getInstance().render(article, sec, user, string);
-
-		// and close the box
-		string.append("}}}\n");
-		string.append(KnowWEUtils.maskHTML("</div>\n"));
 	}
 }

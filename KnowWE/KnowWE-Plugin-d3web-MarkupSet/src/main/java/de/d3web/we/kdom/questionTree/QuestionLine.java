@@ -62,6 +62,7 @@ import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.knowwe.core.dashtree.DashTreeElementContent;
 import de.knowwe.core.dashtree.DashTreeUtils;
 import de.knowwe.core.renderer.FontColorRenderer;
@@ -596,7 +597,15 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 				}
 			};
 			this.setSectionFinder(typeFinder);
-			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
+			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7) {
+
+				@Override
+				public void render(KnowWEArticle article, Section section, KnowWEUserContext user, StringBuilder string) {
+					StringBuilder temp = new StringBuilder();
+					super.render(article, section, user, temp);
+					string.append(temp.toString().replace("[", "~["));
+				}
+			});
 			this.addSubtreeHandler(new StringEnumChecker<QuestionTypeDeclaration>(
 					QUESTION_DECLARATIONS, new SimpleMessageError(
 							D3webModule.getKwikiBundle_d3web()
