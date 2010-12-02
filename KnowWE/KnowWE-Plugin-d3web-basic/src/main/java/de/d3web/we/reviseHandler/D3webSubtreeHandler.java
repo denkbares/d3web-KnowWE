@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -19,6 +19,8 @@
  */
 
 package de.d3web.we.reviseHandler;
+
+import java.util.logging.Logger;
 
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.basic.D3webModule;
@@ -36,6 +38,11 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	 * @returns the KBM for the given article
 	 */
 	protected KnowledgeBaseManagement getKBM(KnowWEArticle article) {
+		if (article == null) {
+			Logger.getAnonymousLogger(this.getClass().getName()).warning(
+					"Article was null. KBM wasn't loaded.");
+			return null;
+		}
 		return D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(
 				article.getTitle());
 	}
