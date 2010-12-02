@@ -108,9 +108,6 @@ public class TagHandlerMarkup extends DefaultMarkupType {
 			// To find the AttributValues and the taghandlerName
 			Section<ContentType> markupContent = sec.findChildOfType(ContentType.class);
 
-			// TODO isn't this check redundant??
-			if (!(markupContent.getObjectType() instanceof ContentType)) return;
-
 			/**
 			 * get all found attributevalues. they are needed in the render
 			 * Method of any TagHandler markupContent.getId() is used, because
