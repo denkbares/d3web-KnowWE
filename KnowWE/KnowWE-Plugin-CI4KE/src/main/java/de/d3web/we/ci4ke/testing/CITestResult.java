@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.ci4ke.handling;
+package de.d3web.we.ci4ke.testing;
 
 public final class CITestResult implements Comparable<CITestResult> {
 

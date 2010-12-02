@@ -24,9 +24,9 @@ import java.util.List;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.ci4ke.handling.AbstractCITest;
-import de.d3web.we.ci4ke.handling.CITestResult;
-import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.testing.AbstractCITest;
+import de.d3web.we.ci4ke.testing.CITestResult;
+import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
 import de.d3web.we.core.KnowWEEnvironment;
 
 /**
@@ -74,13 +74,13 @@ public class EmptyQuestionnaireTest extends AbstractCITest {
 
 	private String createHTMLListFromStringList(List<String> list) {
 		StringBuilder htmlList = new StringBuilder();
-		htmlList.append("<ul>\n");
+		htmlList.append("<ul>");
 		for (String listItem : list) {
 			htmlList.append("<li>");
 			htmlList.append(listItem);
-			htmlList.append("</li>\n");
+			htmlList.append("</li>");
 		}
-		htmlList.append("</ul>\n");
+		htmlList.append("</ul>");
 		return htmlList.toString();
 	}
 }

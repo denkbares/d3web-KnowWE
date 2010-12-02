@@ -48,8 +48,18 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<!-- CITests -->
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="CIDashboardToolProvider">
+		<parameter id="class" value="de.d3web.we.ci4ke.handling.CIDashboardToolProvider" />
+		<parameter id="name" value="CIDashboardToolProvider" />
+		<parameter id="description"
+			value="Offers the possibility to start a new build." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="/CIDashboardType" />
+	</extension>
 	
+	<!-- CITests -->
 	<extension plugin-id="KnowWEExtensionPoints" point-id="CITest"
 		id="ArticleHasErrorsTest">
 		<parameter id="class"

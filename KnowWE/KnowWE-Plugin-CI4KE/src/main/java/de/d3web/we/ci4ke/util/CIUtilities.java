@@ -36,9 +36,9 @@ import java.util.logging.Logger;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
-import de.d3web.we.ci4ke.handling.CITest;
-import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
-import de.d3web.we.ci4ke.handling.DynamicCITestManager;
+import de.d3web.we.ci4ke.testing.CITest;
+import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.testing.DynamicCITestManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -242,10 +242,10 @@ public class CIUtilities {
 		return imgBulb;
 	}
 
-	public static String renderForecastIcon(int score, int lastBuilds, int lastFailedBuilds) {
+	public static String renderForecastIcon(int score, int lastBuilds, int lastFailedBuilds, int pixelSize) {
 
 		String imgForecast = "<img src='KnowWEExtension/ci4ke/images/" +
-				"22x22/%s.png' alt='%<s' title='%s'>";
+				pixelSize + "x" + pixelSize + "/%s.png' alt='%<s' title='%s'>";
 
 		if (score == 0) {
 			imgForecast = String.format(imgForecast, "health-00to19",
@@ -333,5 +333,21 @@ public class CIUtilities {
 		res.append(orig.substring(end));
 
 		return res.toString();
+	}
+
+	/**
+	 * Escapes a string using UTF-8
+	 * 
+	 * @created 01.12.2010
+	 * @param toEscape
+	 * @return
+	 */
+	public static String utf8Escape(String toEscape) {
+		try {
+			return URLEncoder.encode(toEscape, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e) {
+			return toEscape;
+		}
 	}
 }

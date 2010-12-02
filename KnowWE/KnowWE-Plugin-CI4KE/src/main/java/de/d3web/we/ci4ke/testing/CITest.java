@@ -18,10 +18,12 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.ci4ke.handling;
+package de.d3web.we.ci4ke.testing;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+
+import de.d3web.we.ci4ke.handling.CIConfig;
 
 /**
  * Any implementing class has to implement the call() method which results a

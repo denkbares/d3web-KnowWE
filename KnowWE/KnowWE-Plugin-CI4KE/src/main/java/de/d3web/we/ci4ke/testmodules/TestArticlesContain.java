@@ -24,9 +24,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import de.d3web.we.ci4ke.handling.AbstractCITest;
-import de.d3web.we.ci4ke.handling.CITestResult;
-import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.testing.AbstractCITest;
+import de.d3web.we.ci4ke.testing.CITestResult;
+import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
 import de.d3web.we.kdom.KnowWEArticle;
 
 /**

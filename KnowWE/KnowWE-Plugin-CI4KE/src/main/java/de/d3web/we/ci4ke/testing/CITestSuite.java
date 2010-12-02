@@ -16,12 +16,13 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.ci4ke.handling;
+package de.d3web.we.ci4ke.testing;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.ci4ke.build.CIBuildResultset;
+import de.d3web.we.ci4ke.handling.CIConfig;
 
 /**
  * A Suite of CITests.

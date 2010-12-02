@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.ci4ke.handling;
+package de.d3web.we.ci4ke.testing;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,7 +26,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.handling.CIConfig;
+import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 

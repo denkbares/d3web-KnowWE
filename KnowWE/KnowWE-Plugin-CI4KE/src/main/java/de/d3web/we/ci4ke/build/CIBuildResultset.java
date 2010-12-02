@@ -26,8 +26,8 @@ import java.util.Date;
 import java.util.List;
 
 import de.d3web.core.utilities.Pair;
-import de.d3web.we.ci4ke.handling.CITestResult;
-import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.testing.CITestResult;
+import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
 
 /**
  * An instance of this class holds the result of a ci build

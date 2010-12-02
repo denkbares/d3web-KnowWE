@@ -23,26 +23,19 @@ package de.d3web.we.ci4ke.handling;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.core.utilities.Pair;
-import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.AnnotationType;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class CIDashboardType extends DefaultMarkupType {
 
@@ -72,7 +65,8 @@ public class CIDashboardType extends DefaultMarkupType {
 	public CIDashboardType() {
 		super(MARKUP);
 		this.addSubtreeHandler(new DashboardSubtreeHandler());
-		this.setCustomRenderer(new DashboardRenderer());
+		// this.setCustomRenderer(new DashboardRenderer());
+		this.setCustomRenderer(new CIDashboardRenderer());
 	}
 
 	private class DashboardSubtreeHandler extends SubtreeHandler<CIDashboardType> {
@@ -86,12 +80,8 @@ public class CIDashboardType extends DefaultMarkupType {
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<CIDashboardType> s) {
 
 			// TODO is this still neccessary?
-			AbstractKnowWEObjectType.cleanMessages(article, s, this.getClass());
-
-			// String monitoredArticle =
-			// DefaultMarkupType.getAnnotation(s, MONITORED_ARTICLE_KEY);
-			// String tests =
-			// DefaultMarkupType.getAnnotation(s, TEST_KEY);
+			// AbstractKnowWEObjectType.cleanMessages(article, s,
+			// this.getClass());
 
 			String dashboardName = DefaultMarkupType.getAnnotation(s, NAME_KEY);
 
@@ -112,7 +102,7 @@ public class CIDashboardType extends DefaultMarkupType {
 				String annotationText = annoSection.getOriginalText();
 				Matcher matcher = pattern.matcher(annotationText);
 				if (!matcher.find()) {
-					// No Testname entered: Render warning!
+					// No Testname entered: TODO: Render warning!
 				}
 				else {
 					// get the name of the test
@@ -166,40 +156,6 @@ public class CIDashboardType extends DefaultMarkupType {
 		}
 	}
 
-	private class DashboardRenderer extends KnowWEDomRenderer<CIDashboardType> {
-
-		@Override
-		public void render(KnowWEArticle article, Section<CIDashboardType> sec,
-				KnowWEUserContext user, StringBuilder string) {
-
-			boolean hasWarningOrError = false;
-
-			Collection<Message> messages = DefaultMarkupType.getMessages(article, sec);
-			for (Message m : messages) {
-				if (m.getMessageType().equals(Message.ERROR) ||
-						m.getMessageType().equals(Message.WARNING)) {
-					hasWarningOrError = true;
-					Logger.getLogger(this.getClass().getName()).log(
-							Level.INFO,
-							" >> DashboardRenderer >> "
-									+ "Found error(s) and/or warnings in this Dashboard-Section! "
-									+ "These messages will be "
-									+ "rendered instead of the dashboard! ");
-				}
-			}
-
-			if (hasWarningOrError) {
-				// Render Error-Messages!
-				DefaultMarkupRenderer.renderMessages(article, sec, string);
-				// return;
-			}
-			else {
-				CIDashboard board = new CIDashboard(sec);
-				string.append(KnowWEUtils.maskHTML(board.render()));
-			}
-		}
-	}
-
 	/**
 	 * Checks if the name of the given CIDashboard-Section is not taken by any
 	 * other CIDashboard-Section in the wiki.
@@ -229,4 +185,6 @@ public class CIDashboardType extends DefaultMarkupType {
 		}
 		return true;
 	}
+	
+
 }

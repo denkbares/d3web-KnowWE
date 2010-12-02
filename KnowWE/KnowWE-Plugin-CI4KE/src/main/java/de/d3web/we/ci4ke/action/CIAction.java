@@ -27,27 +27,21 @@ import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
 import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
 import de.d3web.we.ci4ke.build.CIBuilder;
-import de.d3web.we.ci4ke.handling.CIDashboard;
-import de.d3web.we.ci4ke.handling.CIDashboardType;
-import de.d3web.we.ci4ke.util.CIUtilities;
-import de.d3web.we.kdom.Section;
+import de.d3web.we.ci4ke.handling.CIDashboardRenderer;
 
 public class CIAction extends AbstractAction {
 
 	@Override
 	public void execute(ActionContext context) throws IOException {
 
-		// Logger.getLogger(this.getClass().getName()).info(
-		// ">>> execute Action angekommen! >>>");
-
 		String task = String.valueOf(context.getParameter("task"));
 
-		String dashboardID = String.valueOf(context.getParameter("id"));
-		dashboardID = URLDecoder.decode(dashboardID, "UTF-8");
+		String dashboardName = String.valueOf(context.getParameter("id"));
+		dashboardName = URLDecoder.decode(dashboardName, "UTF-8");
 
 		String topic = context.getKnowWEParameterMap().getTopic();
 
-		if (task.equals("null") || dashboardID.equals("null")) {
+		if (task.equals("null") || dashboardName.equals("null")) {
 			throw new IOException(
 					"CIAction.execute(): Required parameters not set!");
 		}
@@ -56,27 +50,15 @@ public class CIAction extends AbstractAction {
 
 		if (task.equals("executeNewBuild")) {
 
-			// Logger.getLogger(this.getClass().getName()).log(Level.INFO,
-			// ">>> executeNewBuild angekommen! >>>");
-
-			CIBuilder builder = new CIBuilder(topic, dashboardID);
+			CIBuilder builder = new CIBuilder(topic, dashboardName);
 			builder.executeBuild();
-
-			Section<CIDashboardType> sec = CIUtilities.findCIDashboardSection(topic, dashboardID);
-			CIDashboard dashboard = new CIDashboard(sec);
-			buffy.append(dashboard.renderDashboardContents());
-
-			// CIBuildPersistenceHandler handler = new
-			// CIBuildPersistenceHandler(dashboardID);
-			// buffy.append(handler.renderNewestBuilds(5));
-
-			// context.getKnowWEParameterMap().
+			buffy.append(CIDashboardRenderer.renderDashboardContents(dashboardName, topic));
 
 		}// Get the details of one build (wiki changes + test results)
 		else if (task.equals("getBuildDetails")) {
 
 			int selectedBuildNumber = Integer.parseInt(context.getParameter("nr"));
-			buffy.append(CIDashboard.renderBuildDetails(dashboardID, topic, selectedBuildNumber));
+			buffy.append(CIDashboardRenderer.renderBuildDetails(dashboardName, topic, selectedBuildNumber));
 
 		}
 		else if (task.equals("refreshBuildList")) {
@@ -86,13 +68,9 @@ public class CIAction extends AbstractAction {
 			int numberOfBuilds =
 					Integer.parseInt(context.getParameter("numberOfBuilds"));
 
-			CIBuildPersistenceHandler handler = CIBuildPersistenceHandler.getHandler(dashboardID, topic);
-			buffy.append(handler.renderBuildList(indexFromBack,
-					numberOfBuilds));
+			CIBuildPersistenceHandler handler = CIBuildPersistenceHandler.getHandler(dashboardName, topic);
+			buffy.append(handler.renderBuildList(indexFromBack, numberOfBuilds));
 		}
-		// else {
-		// buffy.append("@info@CIAction says: Hello World!");
-		// }
 
 		context.setContentType("text/html; charset=UTF-8");
 		context.getWriter().write(buffy.toString());

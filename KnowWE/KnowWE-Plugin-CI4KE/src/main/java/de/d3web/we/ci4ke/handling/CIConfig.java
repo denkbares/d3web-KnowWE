@@ -28,6 +28,7 @@ import java.util.List;
 
 import de.d3web.core.utilities.Pair;
 import de.d3web.we.ci4ke.handling.CIDashboardType.CIBuildTriggers;
+import de.d3web.we.ci4ke.util.CIUtilities;
 
 public final class CIConfig implements Cloneable {
 
@@ -57,12 +58,19 @@ public final class CIConfig implements Cloneable {
 		return dashboardName;
 	}
 
+	/**
+	 * Use {@link CIUtilities#utf8Escape(String)} instead!
+	 * 
+	 * @created 01.12.2010
+	 * @return
+	 */
+	@Deprecated
 	public String getDashboardNameEscaped() {
 		try {
 			return URLEncoder.encode(dashboardName, "UTF-8");
 		}
 		catch (UnsupportedEncodingException e) {
-			return "";
+			return dashboardName;
 		}
 	}
 

@@ -23,7 +23,6 @@ package de.d3web.we.ci4ke.build;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,8 +42,8 @@ import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
 
 import de.d3web.core.utilities.Pair;
-import de.d3web.we.ci4ke.handling.CITestResult;
-import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.testing.CITestResult;
+import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
 import de.d3web.we.ci4ke.util.CIUtilities;
 
 public class CIBuildPersistenceHandler {
@@ -331,18 +330,15 @@ public class CIBuildPersistenceHandler {
 	 */
 	public String renderBuildList(int indexFromBack, int numberOfBuilds) {
 
-		String dashboardNameEncoded = dashboardName;
-		try {
-			dashboardNameEncoded = URLEncoder.encode(dashboardName, "UTF-8");
-		}
-		catch (UnsupportedEncodingException e1) {
-		}
+		String dashboardNameEncoded = CIUtilities.utf8Escape(dashboardName);
+
 		String xpath = "builds/build[position() <= last() - " + indexFromBack +
 				" and position() > last() - " + (indexFromBack + numberOfBuilds) + "]";
 		List<?> builds = selectNodes(xpath);
 
 		StringBuffer sb = new StringBuffer();
-		sb.append("<table width=\"100%\" class=\"build-table\">\n");
+		sb.append("<h3>Builds</h3>");
+		sb.append("<table width=\"100%\" class=\"build-table\">");
 
 		Collections.reverse(builds);// most current builds at top!
 		String s;
@@ -350,7 +346,6 @@ public class CIBuildPersistenceHandler {
 			if (o instanceof Element) {
 				Element e = (Element) o;
 
-				// TODO Check for null
 				String buildNr = e.getAttributeValue("nr");
 
 				sb.append("<tr><td>");
@@ -377,28 +372,29 @@ public class CIBuildPersistenceHandler {
 				sb.append("</a></td></tr>\n");
 			}
 		}
-		sb.append("</table>\n");
+		sb.append("</table>");
 
 		int allNodes = countNodes("builds/build");
 
 		// wenn man noch weiter zurückblättern kann, rendere einen Button
 		if ((allNodes - indexFromBack) > numberOfBuilds) {
-			sb.append("<div style=\"float: left;\"><form name=\"ci-show-older-builds\">");
-			sb.append("<input type=\"button\" value=\"<--\" "
-					+ "name=\"submit\" class=\"button\" onclick=\"fctRefreshBuildList('"
-					+ dashboardNameEncoded + "','" + (indexFromBack + numberOfBuilds) + "','"
-					+ numberOfBuilds + "');\"/>");
-			sb.append("</form></div>");
+			String buttonLeft = "<button onclick=\"fctRefreshBuildList('"
+					+ dashboardNameEncoded + "','" + (indexFromBack + numberOfBuilds)
+					+ "','" + numberOfBuilds + "');\" style=\"margin-top: 4px; float: left;\">"
+					+ "<img src=\"KnowWEExtension/ci4ke/images/16x16/left.png\" "
+					+ "style=\"vertical-align: middle; margin-right: 5px;\">"
+					+ "Older builds</button>";
+			sb.append(buttonLeft);
 		}
 
 		// wenn man noch weiter vorblättern kann, rendere einen Button
 		if ((allNodes - indexFromBack) < allNodes) {
-			sb.append("<div style=\"float: right;\"><form name=\"ci-show-newer-builds\">");
-			sb.append("<input type=\"button\" value=\"-->\" "
-					+ "name=\"submit\" class=\"button\" onclick=\"fctRefreshBuildList('"
-					+ dashboardNameEncoded + "','" + (indexFromBack - numberOfBuilds) + "','"
-					+ numberOfBuilds + "');\"/>");
-			sb.append("</form></div>");
+			String buttonRight = "<button onclick=\"fctRefreshBuildList('"
+					+ dashboardNameEncoded + "','" + (indexFromBack - numberOfBuilds)
+					+ "','" + numberOfBuilds + "');\" style=\"margin-top: 4px; float: right;\">"
+					+ "Newer builds<img src=\"KnowWEExtension/ci4ke/images/16x16/right.png\" "
+					+ "style=\"vertical-align: middle; margin-left: 5px;\"></button>";
+			sb.append(buttonRight);
 		}
 		return sb.toString();
 	}
@@ -409,11 +405,11 @@ public class CIBuildPersistenceHandler {
 	 * @created 27.05.2010
 	 * @return
 	 */
-	public String renderCurrentBuildStatus() {
+	public String renderCurrentBuildStatus(int pixelSize) {
 		Object o = selectSingleNode("builds/@actualBuildStatus");
 		if (o instanceof Attribute) {
 			String actualStatus = ((Attribute) o).getValue();
-			return CIUtilities.renderResultType(TestResultType.valueOf(actualStatus), 22);
+			return CIUtilities.renderResultType(TestResultType.valueOf(actualStatus), pixelSize);
 		}
 		return "";
 	}
@@ -424,7 +420,7 @@ public class CIBuildPersistenceHandler {
 	 * @created 27.05.2010
 	 * @return
 	 */
-	public String renderBuildHealthReport() {
+	public String renderBuildHealthReport(int pixelSize) {
 
 		int lastBuilds = countNodes("builds/build[position() > last() - 5]");
 		int lastSuccessfulBuilds = countNodes("builds/build[position() > last() - 5]"
@@ -435,6 +431,6 @@ public class CIBuildPersistenceHandler {
 			score = (100 * lastSuccessfulBuilds) / lastBuilds;
 		}
 
-		return CIUtilities.renderForecastIcon(score, lastBuilds, lastFailedBuilds);
+		return CIUtilities.renderForecastIcon(score, lastBuilds, lastFailedBuilds, pixelSize);
 	}
 }

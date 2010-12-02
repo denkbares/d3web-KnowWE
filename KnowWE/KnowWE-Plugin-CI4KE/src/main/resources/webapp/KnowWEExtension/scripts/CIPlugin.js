@@ -57,7 +57,7 @@ function fctExecuteNewBuild( dashboardID ) {
                 ids : [ dashboardID ],
                 action : 'insert',
                 fn : function() {
-					KNOWWE.core.util.addCollabsiblePluginHeader( dashboardID );
+                	// KNOWWE.core.util.addCollabsiblePluginHeader( dashboardID );
 					makeCIBoxesCollapsible( dashboardID );
 				}
             }

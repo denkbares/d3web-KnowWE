@@ -21,9 +21,9 @@ package de.d3web.we.ci4ke.testmodules;
 import java.util.Collection;
 
 import de.d3web.report.Message;
-import de.d3web.we.ci4ke.handling.AbstractCITest;
-import de.d3web.we.ci4ke.handling.CITestResult;
-import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.testing.AbstractCITest;
+import de.d3web.we.ci4ke.testing.CITestResult;
+import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
