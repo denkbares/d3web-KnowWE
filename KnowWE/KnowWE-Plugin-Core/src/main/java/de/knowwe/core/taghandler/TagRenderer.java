@@ -41,10 +41,13 @@ public class TagRenderer extends KnowWEDomRenderer {
 		if (attrContent == null) {
 			string.append(KnowWEUtils
 					.maskHTML("<div><p class='info box'>"));
-			string.append(KnowWEUtils.maskHTML(KnowWEEnvironment
+			string.append(KnowWEEnvironment
 					.getInstance().getKwikiBundle(user).getString(
-							"KnowWE.Taghandler.notFoundError")
-					+ "</p></div>"));
+							"KnowWE.Taghandler.notFoundError"));
+			string.append(" '"
+					+ ((Section<?>) sec.getChildren().get(1)).getOriginalText()
+					+ "'");
+			string.append(KnowWEUtils.maskHTML("</p></div>"));
 			return;
 		}
 

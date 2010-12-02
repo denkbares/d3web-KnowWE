@@ -27,8 +27,8 @@ import java.util.List;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.we.kdom.IncrementalConstraints;
@@ -44,7 +44,6 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.tools.ToolMenuDecoratingRenderer;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.utils.MessageUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.inference.PSMethodXCL;
@@ -63,16 +62,16 @@ public abstract class SolutionDefinition
 		implements IncrementalConstraints {
 
 	public SolutionDefinition() {
-		this(Priority.HIGHEST, true);
+		this(Priority.HIGHEST);
 	}
 
-	public SolutionDefinition(Priority p, boolean alreadyDefinedWarning) {
+	public SolutionDefinition(Priority p) {
 		super(Solution.class);
 		this.setCustomRenderer(
 				new ToolMenuDecoratingRenderer<SolutionDefinition>(
 						new SolutionIDHighlightingRenderer()));
 		// this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR4));
-		this.addSubtreeHandler(p, new CreateSolutionHandler(alreadyDefinedWarning));
+		this.addSubtreeHandler(p, new CreateSolutionHandler());
 	}
 
 	@Override
@@ -169,11 +168,6 @@ public abstract class SolutionDefinition
 
 	static class CreateSolutionHandler extends D3webSubtreeHandler<SolutionDefinition> {
 
-		private boolean alreadyDefinedWarning = true;
-
-		public CreateSolutionHandler(boolean alreadyDefinedWarning) {
-			this.alreadyDefinedWarning = alreadyDefinedWarning;
-		}
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
@@ -184,13 +178,8 @@ public abstract class SolutionDefinition
 				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(article,
 						solutionSection);
 
-				if (this.alreadyDefinedWarning) {
-					return MessageUtils.asList((KDOMReportMessage) new ObjectAlreadyDefinedWarning(
-							solutionSection.get().getTermName(solutionSection)));
-				}
-				else {
-					return new ArrayList<KDOMReportMessage>(0);
-				}
+				return new ArrayList<KDOMReportMessage>(0);
+
 			}
 
 			String name = solutionSection.get().getTermName(solutionSection);
