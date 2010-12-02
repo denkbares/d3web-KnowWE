@@ -36,7 +36,8 @@ import dummies.KnowWETestWikiConnector;
  * <li>If the scope starts with "/" it must match its path from the KDOM root.
  * <li>Each of the path entries name a KDOM node, either by naming the "name" of
  * the KnowWEObjectType (see {@link KnowWEObjectType#getName()} or its simple
- * class name or the simple class name of any of it's super-classes.
+ * class name or the simple class name of any of it's super-classes or
+ * interfaces.
  * <li>For default markups the name of the markup section can be used. For it's
  * annotations the annotation name can be used. For a default markup content
  * section "content" can be used. (e.g. "solution/package" matches the package
