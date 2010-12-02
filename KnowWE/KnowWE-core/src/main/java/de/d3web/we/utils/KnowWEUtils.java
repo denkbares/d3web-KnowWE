@@ -328,7 +328,6 @@ public class KnowWEUtils {
 				article.getTitle(), sec.getID(), createMsgMapKey(msgType));
 	}
 
-
 	/**
 	 * This method is deprecated! If the Section is included in other articles,
 	 * the returned object might be created for an other article!
@@ -531,16 +530,17 @@ public class KnowWEUtils {
 	}
 
 	public static String trimQuotes(String text) {
-		
+
 		String trimmed = text.trim();
 
-		if (trimmed.equals("\""))
-			return "";
+		if (trimmed.equals("\"")) return "";
 
 		// Heck, '"' starts AND ends with '"', but then this throws
 		// an StringIndexOutOfBoundsException because 1 > 0
 		if (trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
-			return trimmed.substring(1, trimmed.length() - 1).trim();
+			trimmed = trimmed.substring(1, trimmed.length() - 1).trim();
+			// unmask "
+			return trimmed.replace("\\\"", "\"");
 		}
 
 		return trimmed;
