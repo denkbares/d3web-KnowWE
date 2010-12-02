@@ -58,7 +58,8 @@ public class OverdashedElement extends DefaultAbstractKnowWEObjectType {
 
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
-				int level = -1;
+				// when there is no father, one dash is too much
+				int level = 1;
 
 				// IMPORTANT: +2
 				if (father.getObjectType() instanceof DashSubtree) {

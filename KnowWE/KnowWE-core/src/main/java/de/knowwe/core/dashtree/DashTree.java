@@ -47,6 +47,7 @@ public class DashTree extends DefaultAbstractKnowWEObjectType {
 		this.sectionFinder = new AllTextFinderDivCorrectTrimmed();
 		this.childrenTypes.add(new DashSubtree());
 		this.childrenTypes.add(new CommentLineType());
+		this.childrenTypes.add(new OverdashedElement());
 		this.setCustomRenderer(new PreRenderer());
 	}
 
