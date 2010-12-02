@@ -61,7 +61,7 @@ public class TestsuiteContent extends XMLContent {
 		this.addSubtreeHandler(Priority.LOWEST, new TestSuiteSubTreeHandler());
 	}
 
-	private class TestSuiteSubTreeHandler extends D3webSubtreeHandler<TestSuiteType> {
+	public class TestSuiteSubTreeHandler extends D3webSubtreeHandler<TestSuiteType> {
 
 		@Override
 		public boolean isIgnoringPackageCompile() {
