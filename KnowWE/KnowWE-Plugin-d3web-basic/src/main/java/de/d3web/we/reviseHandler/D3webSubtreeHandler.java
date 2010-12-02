@@ -39,7 +39,7 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	 */
 	protected KnowledgeBaseManagement getKBM(KnowWEArticle article) {
 		if (article == null) {
-			Logger.getAnonymousLogger(this.getClass().getName()).warning(
+			Logger.getLogger(this.getClass().getName()).warning(
 					"Article was null. KBM wasn't loaded.");
 			return null;
 		}
