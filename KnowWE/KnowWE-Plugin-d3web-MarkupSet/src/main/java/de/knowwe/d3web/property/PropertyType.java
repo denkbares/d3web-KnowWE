@@ -28,6 +28,7 @@ import de.d3web.we.object.ContentDefinition;
 import de.d3web.we.object.IDObjectReference;
 import de.d3web.we.object.LocaleDefinition;
 import de.d3web.we.object.PropertyReference;
+import de.d3web.we.utils.Patterns;
 
 /**
  * Adds the PropertyReviseSubtreeHandler to the Property line
@@ -39,12 +40,13 @@ public class PropertyType extends DefaultAbstractKnowWEObjectType {
 
 	public PropertyType() {
 		setSectionFinder(new AllTextFinderTrimmed());
-		String quoted = "(?:\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\")";
-		// no " . and = allowed
-		String unquotedName = "(?:[^\".=])+";
-		String name = "(" + quoted + "|" + unquotedName + ")";
+		String quoted = Patterns.quoted;
+		// no " . # and = allowed
+		String unquotedName = "(?:[^\".=#])+";
+		String name = "(?:" + quoted + "|" + unquotedName + ")";
 		String language = "(\\.\\w{2}(?:\\.\\w{2})?)?";
-		String leftSide = name + "\\." + name + language;
+		String idObject = "(" + name + "(?:#" + name + ")?" + ")";
+		String leftSide = idObject + "\\.(" + name + ")" + language;
 		// no " and = allowed, dots are allowed
 		String unquotedContent = "(?:[^\"=])+";
 		String content = "(" + quoted + "|" + unquotedContent + ")";
@@ -63,12 +65,12 @@ public class PropertyType extends DefaultAbstractKnowWEObjectType {
 
 		// Property
 		PropertyReference pr = new PropertyReference();
-		pr.setSectionFinder(new RegexSectionFinder(Pattern.compile("\\." + name), 1));
+		pr.setSectionFinder(new RegexSectionFinder(Pattern.compile("\\.(" + name + ")"), 1));
 		this.childrenTypes.add(pr);
 
 		// IDObject
 		IDObjectReference idor = new IDObjectReference();
-		idor.setSectionFinder(new RegexSectionFinder(Pattern.compile(name + "\\."), 1));
+		idor.setSectionFinder(new RegexSectionFinder(Pattern.compile(idObject + "\\."), 1));
 		this.childrenTypes.add(idor);
 
 		addSubtreeHandler(Priority.LOW, new PropertyReviseSubtreeHandler());

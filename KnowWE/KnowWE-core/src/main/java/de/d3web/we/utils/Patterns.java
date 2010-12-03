@@ -89,7 +89,7 @@ public final class Patterns {
 					QUOTEDSTRING + "|" + // either a quoted string or
 					"[^,\"]++" + // anything but a comma or a quote (possesively
 									// quantified)
-					")+)" + // 
+					")+)" + //
 					","; // terminated by comma
 
 	/**
@@ -119,5 +119,10 @@ public final class Patterns {
 					SPACETABS + // space after thresholds
 					// LINEBREAK + // XCL has to be terminated by newline
 					"";
+
+	/**
+	 * A pattern for all quoted strings " can be masked by \
+	 */
+	public static String quoted = "(?:\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\")";
 
 }

@@ -18,12 +18,20 @@
  */
 package de.d3web.we.object;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.IDObject;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.TermReference;
+import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.utils.Patterns;
 
 /**
  * Type for {@link IDObject} references
@@ -38,12 +46,37 @@ public class IDObjectReference extends D3webTermReference<IDObject> {
 	}
 
 	@Override
+	public String getTermName(Section<? extends KnowWETerm<IDObject>> s) {
+		return s.getOriginalText();
+	}
+
+	@Override
 	public IDObject getTermObjectFallback(KnowWEArticle article, Section<? extends TermReference<IDObject>> s) {
 		if (s.get() instanceof IDObjectReference) {
-			String idObjectName = s.get().getTermName(s);
+			// # not allowed
+			String unquotedNamePattern = "(?:[^#])+";
+			String namePattern = "(" + Patterns.quoted + "|" + unquotedNamePattern + ")";
+			String idObjectPattern = namePattern + "(?:#" + namePattern + ")?";
+			Pattern p = Pattern.compile(idObjectPattern);
+			Matcher matcher = p.matcher(s.get().getTermName(s));
+			if (!matcher.matches()) return null;
+			String idObjectName = KnowWEUtils.trimQuotes(matcher.group(1));
+			String choiceString = matcher.group(2);
+			if (choiceString != null) {
+				choiceString = KnowWEUtils.trimQuotes(matcher.group(2));
+			}
 			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
 					article.getWeb()).getKBM(article.getTitle());
-			IDObject idObject = mgn.findIDObjectByName(idObjectName);
+			IDObject idObject = mgn.findTerminologyObjectByName(idObjectName);
+			if (idObject instanceof QuestionChoice && choiceString != null) {
+				QuestionChoice qc = (QuestionChoice) idObject;
+				idObject = null;
+				for (Choice c : qc.getAllAlternatives()) {
+					if (c.getName().equalsIgnoreCase(choiceString)) {
+						return c;
+					}
+				}
+			}
 			return idObject;
 		}
 		return null;
