@@ -54,6 +54,7 @@ public class PropertyReviseSubtreeHandler extends SubtreeHandler<PropertyType> {
 											// subtreehandler
 		if (propertySection == null) return null;
 		Property<?> property = propertySection.get().getTermObject(article, propertySection);
+		if (property == null) return null;
 		Section<LocaleDefinition> localeSection = s.findSuccessor(LocaleDefinition.class);
 		Section<ContentDefinition> contentSection = s.findSuccessor(ContentDefinition.class);
 		if (contentSection == null) return MessageUtils.syntaxErrorAsList("Property value is missing for property "

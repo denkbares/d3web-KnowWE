@@ -1,16 +1,16 @@
 /*
  * Copyright (C) ${year} denkbares GmbH, Germany
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -56,7 +56,7 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
  * The package name "default" may be used to compile all wiki content that have
  * no explicitly defined package. The package name "this" may be used to compile
  * the contents of this article, ignoring their package declaration.
- *
+ * 
  * @author volker_belli
  * @created 13.10.2010
  */
@@ -102,7 +102,7 @@ public class KnowledgeBaseType extends DefaultMarkupType implements KnowWETermMa
 				if (id != null) kb.setId(id);
 
 				InfoStore infoStore = kb.getInfoStore();
-				infoStore.addValue(MMInfo.PROMPT, title);
+				if (title != null && title.length() > 0) infoStore.addValue(MMInfo.PROMPT, title);
 				if (author != null) infoStore.addValue(BasicProperties.AUTHOR, author);
 				if (comment != null) infoStore.addValue(MMInfo.DESCRIPTION, comment);
 				if (version != null) infoStore.addValue(BasicProperties.VERSION, version);
