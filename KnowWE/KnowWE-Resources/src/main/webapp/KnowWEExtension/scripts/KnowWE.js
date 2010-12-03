@@ -41,36 +41,7 @@ KNOWWE.core.actions = function(){
          * Function: init
          * Core KnowWE actions.
          */
-        init : function(){
-            //init quickedit actions
-            var els = _KS('.quickedit');
-            for (var i = 0; i < els.length; i++){
-                _KE.removeEvents(els[i]);
-                if( els[i]._hasClass( 'table' )){
-                    _KE.add('click', els[i], function(e){
-                        var el = _KE.target(e);
-                        var id = el.parentNode.id;
-                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.table.init, id, null );
-                    });
-                    //Due to problems with refresh, so that table functionality is still guaranteed:
-                    KNOWWE.table.init();
-                } else if( els[i]._hasClass( 'default') ) {
-                    _KE.add('click', els[i], function(e){
-                        var el = _KE.target(e);
-                        var rel = eval("(" + el.getAttribute('rel') + ")");
-                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id, "render" );
-                    });
-                }
-                //check for save button in case the user reloads the page during quick edit
-                rel = eval("(" + els[i].getAttribute('rel') + ")");
-                if(rel) {
-                    bttns = _KS('#'+rel.id + ' input[type=submit]');
-                    if( bttns.length != 0 ){
-                        _KE.add('click', bttns[0], KNOWWE.core.edit.onSave );
-                    }
-                }        
-            }
-            
+        init : function(){           
             //init show extend panel
             els = _KS('.show-extend'); 
             if( els ){
@@ -135,42 +106,6 @@ KNOWWE.core.actions = function(){
                     }
                 }
                 new _KA( options ).send();
-            }
-        },
-        /**
-         * Function: enableQuickEdit
-         * Sets the quick-edit flag to the given element.
-         * 
-         * Parameters:
-         *     fn - The function that should be executed afterwards.
-         *     id - The id of the element the quick edit flag should set to.
-         */        
-        enableQuickEdit : function( fn, id, view){
-            var params = {
-                action : 'SetQuickEditFlagAction',
-                TargetNamespace : id,
-                KWiki_Topic : KNOWWE.helper.gup('page'),
-                ajaxToHTML : view,
-                inPre : KNOWWE.helper.tagParent(_KS('#' + id), 'pre') != document
-            }   
-            
-            var options = {
-                url : KNOWWE.core.util.getURL( params ),
-                response : {
-                    action : 'string',
-                    ids : [id],
-                    fn : function(){
-                        fn.call();
-                        Collapsible.render( _KS('#page'), KNOWWE.helper.gup('page'));
-                        if(view === "render"){
-                            KNOWWE.helper.observer.notify('quick-edit');
-                        }
-                    }
-                }
-            }
-            new _KA( options ).send();
-            if (id.substring(id.length - 13) === 'TestcaseTable') {
-            	(function() {Testcase.addNewAnswers($(id));}).delay(500);
             }
         }
     }
@@ -419,73 +354,6 @@ KNOWWE.core.util.form = function(){
             }
         }
     }    
-}();
-
-/**
- * Namespace: KNOWWE.core.edit
- * The KNOWWE quick edit namespace.
- */
-KNOWWE.core.edit = function(){
-    return {
-        /**
-         * Function: init
-         * Initializes some wuick edit default functionality.
-         */     
-        init : function(){
-            var elements = _KS('.quickedit .default');
-            for(var i = 0; i < elements.length; i++){
-                var rel, bttns;
-                
-                _KE.removeEvents(elements[i]);
-                rel = eval("(" + elements[i].getAttribute('rel') + ")");
-                bttns = _KS('#'+rel.id + ' input[type=submit]');
-                if( bttns.length != 0 ){
-                    _KE.add('click', bttns[0], KNOWWE.core.edit.onSave );
-                    _KE.add('click', elements[i], function(e){
-                        var el = _KE.target(e);
-                        var rel = eval("(" + el.getAttribute('rel') + ")");
-                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id, "render");
-                    });
-                }  else {               
-                    _KE.add('click', elements[i], function(e){
-                        var el = _KE.target(e);
-                        var rel = eval("(" + el.getAttribute('rel') + ")");
-                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id, null);
-                    });
-                }
-            }               
-        },
-        /**
-         * Function: onSave
-         * Triggered when the changes to the quick edit element in edit mode should be saved.
-         * 
-         * Parameters:
-         *     e - The occurred event.
-         */     
-        onSave : function( e ){
-            var el = _KE.target(e);
-            var rel = eval("(" + el.getAttribute('rel') + ")");
-            var params = {
-                action : 'UpdateKDOMNodeAction',
-                SectionID :  rel.id,
-                KWiki_Topic : KNOWWE.helper.gup('page')
-            }
-
-            var options = {
-                url : KNOWWE.core.util.getURL ( params ),
-                data : 'TargetNamespace='+encodeURIComponent(_KS('#' + rel.id + '/default-edit-area').value.replace(/\s$/,"")),
-                loader : true,
-                response : {
-                    action : 'none',
-                    fn : function(){ 
-                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id, "render");
-                        Collapsible.render( _KS('#page'), KNOWWE.helper.gup('page'));
-                    }
-                }
-            }
-            new _KA( options ).send();          
-        }
-    }
 }();
 
 /**

@@ -20,18 +20,16 @@
 
 package de.knowwe.core.renderer;
 
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class DefaultTextLineRenderer extends KnowWEDomRenderer {
 
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
-		/* generateQuickEditLink(topic, sec.getId(), web, user)+ */
 		DelegateRenderer.getInstance().render(article, sec, user, string);
 		string.append(generateTextField(sec));
 	}
@@ -43,11 +41,4 @@ public class DefaultTextLineRenderer extends KnowWEDomRenderer {
 		// return KnowWEEnvironment
 		// .maskHTML("<span><textarea cols=\"30\" rows=\"1\">"+sec.getOriginalText()+"</textarea></span>");
 	}
-
-	private String generateQuickEditLink(String topic, String id, String web2, String user) {
-		String icon = " <img src=KnowWEExtension/images/pencil.png title='Set QuickEdit-Mode' class='quickedit default pointer'/>";
-
-		return KnowWEEnvironment.maskHTML("<a>" + icon + "</a>");
-	}
-
 }
