@@ -81,9 +81,9 @@ KNOWWE.plugin.quicki = function(){
          */
         updateProcessingState : function (delta) {
         	activityCounter += delta;
-        	var node = $('KnowWEProcessingState');
+        	var node = $('QuickIProcessingState');
         	if (!node) {
-        		node = new Element('div', {'id': 'KnowWEProcessingState', 'styles': { 'display': 'none' }});
+        		node = new Element('div', {'id': 'QuickIProcessingState', 'styles': { 'display': 'none' }});
         		document.body.appendChild(node);
         	}
         	var state = "idle";
