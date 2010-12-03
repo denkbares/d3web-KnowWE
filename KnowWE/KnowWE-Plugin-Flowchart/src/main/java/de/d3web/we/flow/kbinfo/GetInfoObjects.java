@@ -20,11 +20,13 @@
 
 package de.d3web.we.flow.kbinfo;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
+import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Choice;
@@ -41,74 +43,80 @@ import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
+import de.d3web.core.knowledge.terminology.info.MMInfo;
+import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.diaFlux.flow.EndNode;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.flow.StartNode;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
-import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
+import de.d3web.we.action.AbstractAction;
+import de.d3web.we.action.ActionContext;
 import de.d3web.we.basic.WikiEnvironment;
 import de.d3web.we.basic.WikiEnvironmentManager;
 import de.d3web.we.core.KnowWEParameterMap;
 
-public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
+public class GetInfoObjects extends AbstractAction {
 
 	public GetInfoObjects() {
 	}
 
-	@Override
-	public String perform(KnowWEParameterMap parameterMap) {
-		/**
-		 * KnowWEEnvironment: Allgemeines Semantic Wiki auf OWL als
-		 * Repraesentation KDOM Engine. Verwaltet alle technischen Aspekte der
-		 * Umgebung (z.B. Plugins). Dieser hat noch nichts mit d3web zu tun.
-		 * 
-		 * ArticeManager: Verwaltung der Wiki-Artikel. Fuer jedes Web kann es
-		 * einen Article-Manager geben. Dieser kann vom KnowWEEnvironment
-		 * angefragt werden. Dieser hat noch nichts mit d3web zu tun. Ein
-		 * Article besteht im wesentlichen aus dem KDOM-Baum
-		 * 
-		 * KDOM: Baumstruktur des Wiki-Textes ohne Semantik
-		 * 
-		 * WebEnvironmentManager: Verwaltet die DSPEnvironments, eines fuer
-		 * jedes Web des Wiki.
-		 * 
-		 * DSPEnvironment: Verwaltung fuer diagnostischen
-		 * Problemlï¿½sungsservices, fï¿½r alle Wissensbasen dieses Webs (z.B.
-		 * unter anderem d3web-Services (KnowledgeBase)). Ein Service entspricht
-		 * einer Wissensbasis der jeweiligen Engine (z.B. unter anderem d3web).
-		 * 
-		 * KnowledgeService Service fuer eine Wissensbasis fuer eine Wiki-Seite.
-		 * Der Zugriff erfolgt ueber das DSPEnvironmentï¿½ber eine
-		 * Wissensbasis-ID, die aktuell aber eindeutig aus dem Wiki-Seiten-Namen
-		 * erzeugt wird). Das bedeutet, fuer jede Wiki-Seite gibt es aktuell
-		 * genau (maximal) eine Wissenbasis fuer genau (maximal) eine Engine.
-		 * 
-		 * KnowledgeBase: Implementierung des KnowledgeServices fuer d3web.
-		 * Hierueber erhaelt man Zugriff auf die d3web Wissensbasis der
-		 * jeweiligen Wiki-Seite.
-		 */
+	/**
+	 * KnowWEEnvironment: Allgemeines Semantic Wiki auf OWL als Repraesentation
+	 * KDOM Engine. Verwaltet alle technischen Aspekte der Umgebung (z.B.
+	 * Plugins). Dieser hat noch nichts mit d3web zu tun.
+	 * 
+	 * ArticeManager: Verwaltung der Wiki-Artikel. Fuer jedes Web kann es einen
+	 * Article-Manager geben. Dieser kann vom KnowWEEnvironment angefragt
+	 * werden. Dieser hat noch nichts mit d3web zu tun. Ein Article besteht im
+	 * wesentlichen aus dem KDOM-Baum
+	 * 
+	 * KDOM: Baumstruktur des Wiki-Textes ohne Semantik
+	 * 
+	 * WebEnvironmentManager: Verwaltet die DSPEnvironments, eines fuer jedes
+	 * Web des Wiki.
+	 * 
+	 * DSPEnvironment: Verwaltung fuer diagnostischen Problemlösungsservices,
+	 * für alle Wissensbasen dieses Webs (z.B. unter anderem d3web-Services
+	 * (KnowledgeBase)). Ein Service entspricht einer Wissensbasis der
+	 * jeweiligen Engine (z.B. unter anderem d3web).
+	 * 
+	 * KnowledgeService Service fuer eine Wissensbasis fuer eine Wiki-Seite. Der
+	 * Zugriff erfolgt ueber das DSPEnvironment über eine Wissensbasis-ID, die
+	 * aktuell aber eindeutig aus dem Wiki-Seiten-Namen erzeugt wird). Das
+	 * bedeutet, fuer jede Wiki-Seite gibt es aktuell genau (maximal) eine
+	 * Wissenbasis fuer genau (maximal) eine Engine.
+	 * 
+	 * KnowledgeBase: Implementierung des KnowledgeServices fuer d3web.
+	 * Hierueber erhaelt man Zugriff auf die d3web Wissensbasis der jeweiligen
+	 * Wiki-Seite.
+	 */
 
+	@Override
+	public void execute(ActionContext context) throws IOException {
 		// prepare parameters
-		String ids = parameterMap.get("ids");
+		String ids = context.getParameter("ids");
 		if (ids == null || ids.isEmpty()) {
-			return "<kbinfo></kbinfo>";
+			context.getWriter().write("<kbinfo></kbinfo>");
+			return;
 		}
 
 		// prepare the buffer for the result
 		StringBuffer buffer = new StringBuffer();
-		appendHeader(parameterMap, buffer);
+		appendHeader(context.getKnowWEParameterMap(), buffer);
 
 		// iterate through the requested Objects
 		String[] idArray = ids.split(",");
 		for (int i = 0; i < idArray.length; i++) {
 			String id = idArray[i];
-			appendInfoObject(parameterMap.getWeb(), id, buffer);
+			appendInfoObject(context.getKnowWEParameterMap().getWeb(), id, buffer);
 		}
 
 		// finish result
-		appendFooter(parameterMap, buffer);
-		return buffer.toString();
+		appendFooter(context.getKnowWEParameterMap(), buffer);
+
+		context.getWriter().write(buffer.toString());
 	}
 
 	public static void appendHeader(KnowWEParameterMap parameterMap, StringBuffer buffer) {
@@ -238,24 +246,28 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		buffer.append("'");
 		buffer.append(">\n");
 		appendChilds(web, service, object, buffer);
-		// if (object instanceof QuestionYN) { // workaround for german
-		// // localization
-		// buffer.append("\t\t<choice>").append(encodeXML("Yes")).append("</choice>\n");
-		// buffer.append("\t\t<choice>").append(encodeXML("No")).append("</choice>\n");
-		//
-		// }
-		// else
+
 		if (object instanceof QuestionChoice) {
-			// TODO: choices are not considered in JS implementation of bool
-			// questions
 			for (Choice answer : ((QuestionChoice) object).getAllAlternatives()) {
 				buffer.append("\t\t<choice>").append(encodeXML(answer.getName())).append(
 						"</choice>\n");
 			}
 		}
 		else if (object instanceof QuestionNum) {
-			// TODO: access range and append
-			// "<range min='???' max='???'></range>"
+			InfoStore infoStore = object.getInfoStore();
+			if (infoStore.contains(BasicProperties.QUESTION_NUM_RANGE)) {
+				NumericalInterval interval = infoStore.getValue(
+						BasicProperties.QUESTION_NUM_RANGE);
+				// TODO: check for open/closed
+				buffer.append("<range min='").append(interval.getLeft()).append("' ");
+				buffer.append("max='").append(interval.getRight()).append("'></range>");
+			}
+			if (infoStore.contains(MMInfo.UNIT)) {
+				String value = infoStore.getValue(MMInfo.UNIT);
+
+				buffer.append("<unit>").append(value).append("</unit>");
+			}
+
 		}
 		buffer.append("\t</question>\n");
 	}
@@ -302,7 +314,7 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		}
 	}
 
-	private static String encodeXML(String text) {
+	static String encodeXML(String text) {
 		return StringEscapeUtils.escapeXml(text);
 	}
 }

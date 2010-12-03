@@ -20,6 +20,7 @@
 
 package de.d3web.we.flow.kbinfo;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -32,25 +33,30 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
-import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
+import de.d3web.we.action.AbstractAction;
+import de.d3web.we.action.ActionContext;
 import de.d3web.we.basic.WikiEnvironment;
 import de.d3web.we.basic.WikiEnvironmentManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 
-public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
+public class SearchInfoObjects extends AbstractAction {
+
 
 	@Override
-	public String perform(KnowWEParameterMap parameterMap) {
-		// prepare parameters
+	public void execute(ActionContext context) throws IOException {
+
+		KnowWEParameterMap parameterMap = context.getKnowWEParameterMap();
 		String web = parameterMap.getWeb();
 		String phrase = parameterMap.get("phrase");
 		String classes = parameterMap.get("classes");
 		String max = parameterMap.get("maxcount");
 
 		int maxCount = (max != null) ? Integer.parseInt(max) : 100;
-		return search(KnowWEEnvironment.getInstance(), web, phrase, classes, maxCount);
+		String result = search(KnowWEEnvironment.getInstance(), web, phrase, classes, maxCount);
+		context.getWriter().write(result);
 	}
+
 
 	public static String search(KnowWEEnvironment knowWEEnv, String web, String phraseString, String classesString, int maxCount) {
 		// get the matches
@@ -68,7 +74,7 @@ public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
 			if (index >= count) break;
 			index++;
 			page.append("\t<match>");
-			page.append(encodeXML(name));
+			page.append(GetInfoObjects.encodeXML(name));
 			page.append("</match>\n");
 		}
 		page.append("</matches>\n");
@@ -169,18 +175,4 @@ public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
 		return base.getId() + "/" + object.getId();
 	}
 
-	private static String encodeXML(String text) {
-		StringBuffer buffer = new StringBuffer();
-		for (int i = 0; i < text.length(); i++) {
-			char c = text.charAt(i);
-			if (c == ' ' || Character.isLetterOrDigit(c)) {
-				buffer.append(c);
-			}
-			else {
-				int code = c;
-				buffer.append("&#").append(code).append(";");
-			}
-		}
-		return buffer.toString();
-	}
 }
