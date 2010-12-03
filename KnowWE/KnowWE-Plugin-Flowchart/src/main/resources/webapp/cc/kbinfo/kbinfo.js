@@ -392,6 +392,7 @@ KBInfo.Question = Class.create(
 		this.type = this.xmlDom.getAttribute('type');
 		this.options = KBInfo._collectNodeValues(this.xmlDom, 'choice');
 		this.text = KBInfo._getNodeValueIfExists(this.xmlDom, 'text');
+		this.unit = KBInfo._getNodeValueIfExists(this.xmlDom, 'unit');
 		
 		var rangeNodes = this.xmlDom.getElementsByTagName('range');
 		if (rangeNodes && rangeNodes.length>0) {

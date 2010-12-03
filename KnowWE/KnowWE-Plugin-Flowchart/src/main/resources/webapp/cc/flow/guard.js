@@ -5,10 +5,11 @@
  * @param {String} conditionString textual rule condition on KnOffice format to be fulfilled, it may contain placeholders like ${num} or ${question:num}
  * @param {String} displayHTML (optional) name for pretty printing the guard
  */
-function Guard(markup, conditionString, displayHTML) {
+function Guard(markup, conditionString, displayHTML, unit) {
 	this.markup = markup;
 	this.conditionString = conditionString;
 	this.displayHTML = displayHTML;
+	this.unit = unit || '';
 }
 
 Guard.prototype.isPatternFor = function(other) {
@@ -134,6 +135,8 @@ Guard.createPossibleGuards = function(nodeModel) {
 	if (!infoObject) 
 		return null;
 	
+	var unit = infoObject.unit;
+		
 	// ok, so now we build the possible guards
 	var result = [];
 	if (infoObject.getClassInstance() == KBInfo.Question) {
@@ -162,17 +165,17 @@ Guard.createPossibleGuards = function(nodeModel) {
 				break
 			case KBInfo.Question.TYPE_NUM:
 				result.push('Test value');
-				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = ${num}', '= ${num}'));
-				result.push(new Guard('KnOffice', 'NOT("'+infoObject.getName()+'" = ${num})', '&ne; ${num}'));
-				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" < ${num}', '&lt; ${num}'));
-				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" > ${num}', '&gt; ${num}'));
-				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" <= ${num}', '&le; ${num}'));
-				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" >= ${num}', '&ge; ${num}'));
+				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = ${num}', '= ${num}', unit));
+				result.push(new Guard('KnOffice', 'NOT("'+infoObject.getName()+'" = ${num})', '&ne; ${num}', unit));
+				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" < ${num}', '&lt; ${num}', unit));
+				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" > ${num}', '&gt; ${num}', unit));
+				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" <= ${num}', '&le; ${num}', unit));
+				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" >= ${num}', '&ge; ${num}', unit));
 				result.push('Test interval');
-				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" >= ${num} AND "'+infoObject.getName()+'" <= ${num}', '[ ${num} .. ${num} ]'));
-				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" >= ${num} AND "'+infoObject.getName()+'" < ${num}', '[ ${num} .. ${num} ['));
-				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" > ${num} AND "'+infoObject.getName()+'" <= ${num}', '] ${num} .. ${num} ]'));
-				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" > ${num} AND "'+infoObject.getName()+'" < ${num}', '] ${num} .. ${num} ['));
+				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" >= ${num} AND "'+infoObject.getName()+'" <= ${num}', '[ ${num} .. ${num} ]', unit));
+				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" >= ${num} AND "'+infoObject.getName()+'" < ${num}', '[ ${num} .. ${num} [', unit));
+				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" > ${num} AND "'+infoObject.getName()+'" <= ${num}', '] ${num} .. ${num} ]', unit));
+				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" > ${num} AND "'+infoObject.getName()+'" < ${num}', '] ${num} .. ${num} [', unit));
 				result.push('Formula');
 				result.push(new Guard('timeDB', 'eval(${formula})', '${formula}'));
 				break;
@@ -278,7 +281,7 @@ GuardEditor.prototype.getGuard = function() {
 	this.updateFromUI();
 	var guard = this.getSelectedGuard();
 	if (guard) {
-		guard = new Guard(guard.getMarkup(), guard.getConditionString(), guard.getDisplayHTML());
+		guard = new Guard(guard.getMarkup(), guard.getConditionString(), guard.getDisplayHTML(), guard.unit);
 		// update input fields and inject them into the copy of selected guard
 		guard.inject(this.values);
 	}
@@ -523,7 +526,7 @@ GuardPane.prototype.render = function() {
 	
 	if (this.guard) {
 		var textNode = Builder.node('div');
-		textNode.innerHTML = this.guard.getDisplayHTML();
+		textNode.innerHTML = this.guard.getDisplayHTML() + ' ' + this.guard.unit;
 		childs.push(textNode);
 	}
 	var dom = Builder.node('div', {
