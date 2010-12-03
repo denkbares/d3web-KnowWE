@@ -78,14 +78,15 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 		}
 
 		StringBuilder builder = new StringBuilder(2000);
+		// surround content with div with kdom-id for rerendering
+		builder.append("<div id='").append(sec.getID()).append("'>");
 
 		// Debug
 		if (isDebug(user.getUrlParameterMap())) {
 			builder.append("<b>active object:</b><br>");
 			List<InterviewObject> activeObjects = session.getInterview().getInterviewAgenda().getCurrentlyActiveObjects();
 			for (InterviewObject object : activeObjects) {
-
-				builder.append(object.getName() + "<br>");
+				builder.append(object.getName()).append("<br>");
 			}
 			
 			Form form = session.getInterview().nextForm();
@@ -123,6 +124,8 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 			builder.append("\n");
 
 		}
+
+		builder.append("</div>");
 
 		string.append(KnowWEUtils.maskHTML(builder.toString()));
 
