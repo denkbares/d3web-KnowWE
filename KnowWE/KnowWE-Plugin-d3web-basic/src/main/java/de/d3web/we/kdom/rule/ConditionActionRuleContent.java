@@ -82,6 +82,9 @@ public class ConditionActionRuleContent extends DefaultAbstractKnowWEObjectType 
 
 		public ConditionArea() {
 			compCond = new CompositeCondition();
+			EndLineComment comment = new EndLineComment();
+			comment.setCustomRenderer(new CommentRenderer());
+			this.addChildType(comment);
 			this.addChildType(compCond);
 		}
 	}
