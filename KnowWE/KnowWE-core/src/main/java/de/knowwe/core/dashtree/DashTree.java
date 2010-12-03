@@ -24,13 +24,8 @@ import java.util.List;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.InvalidKDOMSchemaModificationOperation;
-import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.DelegateRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderDivCorrectTrimmed;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.knowwe.core.CommentLineType;
 
 /**
@@ -48,7 +43,6 @@ public class DashTree extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(new DashSubtree());
 		this.childrenTypes.add(new CommentLineType());
 		this.childrenTypes.add(new OverdashedElement());
-		this.setCustomRenderer(new PreRenderer());
 	}
 
 	/**
@@ -83,20 +77,6 @@ public class DashTree extends DefaultAbstractKnowWEObjectType {
 				}
 			}
 		}
-	}
-
-	class PreRenderer extends KnowWEDomRenderer<DashTree> {
-
-		@Override
-		public void render(KnowWEArticle article, Section<DashTree> sec,
-				KnowWEUserContext user, StringBuilder string) {
-
-			string.append("{{{");
-			DelegateRenderer.getInstance().render(article, sec, user, string);
-			string.append("}}}");
-
-		}
-
 	}
 
 }

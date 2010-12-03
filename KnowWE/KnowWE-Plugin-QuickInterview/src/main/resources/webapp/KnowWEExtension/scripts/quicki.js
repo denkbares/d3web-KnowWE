@@ -70,7 +70,34 @@ KNOWWE.plugin.quicki = function(){
 	var questionnaireVis = ''; // for storing questionnaire visibility states
 	var questionVis = '';		// for storing question visibility states
 	
+	var activityCounter = 0;
+	
 	return {
+        /**
+         * Function updateProcessingState
+         *
+         * Updates the hidden element in the page to contain
+         * the current processing state
+         */
+        updateProcessingState : function (delta) {
+        	activityCounter += delta;
+        	var node = $('KnowWEProcessingState');
+        	if (!node) {
+        		node = new Element('div', {'id': 'KnowWEProcessingState', 'styles': { 'display': 'none' }});
+        		document.body.appendChild(node);
+        	}
+        	var state = "idle";
+        	if (activityCounter > 0) state = "processing";
+        	node.innerHTML = state;
+        },
+        applyActivityToFunction : function (fun, event) {
+        	KNOWWE.plugin.quicki.updateProcessingState(1);
+        	try {
+        		fun(event);
+        	}
+        	catch (e) { /*ignore*/ }
+        	KNOWWE.plugin.quicki.updateProcessingState(-1);
+        },
 		/**
          * Function: initialize
          * 		add the click events and corresponding functions to interview elments
@@ -78,40 +105,61 @@ KNOWWE.plugin.quicki = function(){
         initialize : function (){
         	
         	_KS('.answer').each(function(element){
-        		_KE.add('click', element, KNOWWE.plugin.quicki.answerClicked);                
+        		_KE.add('click', element, 
+        		function(event) {
+        			KNOWWE.plugin.quicki.applyActivityToFunction(KNOWWE.plugin.quicki.answerClicked, event);
+        		});
             });
         	
         	_KS('.answerunknown').each(function(element){
-                _KE.add('click', element, KNOWWE.plugin.quicki.answerUnknownClicked);
+                _KE.add('click', element,  
+        		function(event) {
+        			KNOWWE.plugin.quicki.applyActivityToFunction(KNOWWE.plugin.quicki.answerUnknownClicked, event);
+        		});
         	});
         	
         	_KS('.answerMC').each(function(element){
-                _KE.add('click', element, KNOWWE.plugin.quicki.answerMCCollect);
+                _KE.add('click', element,  
+        		function(event) {
+        			KNOWWE.plugin.quicki.applyActivityToFunction(KNOWWE.plugin.quicki.answerMCCollect, event);
+        		});
         	});
         	
         	_KS('.answerMCClicked').each(function(element){
-                _KE.add('click', element, KNOWWE.plugin.quicki.answerMCCollect);
+                _KE.add('click', element,  
+        		function(event) {
+        			KNOWWE.plugin.quicki.applyActivityToFunction(KNOWWE.plugin.quicki.answerMCCollect, event);
+        		});
         	});
         	
         	_KS('.questionnaire').each(function(element){
-                _KE.add('click', element, KNOWWE.plugin.quicki.toggleQuestionnaireVisibility);
+                _KE.add('click', element,  
+        		function(event) {
+        			KNOWWE.plugin.quicki.applyActivityToFunction(KNOWWE.plugin.quicki.toggleQuestionnaireVisibility, event);
+        		});
         	});
         	
-        	//_KS('.question').each(function(element){
-        		//_KE.add('click', element, KNOWWE.plugin.quicki.toggleQuestionVisibility);
-        	//});
         	
         	// add click-event for divs with class='num-ok' to submit numValues
         	_KS('.num-ok').each(function( element ){
-        		_KE.add('click', element, KNOWWE.plugin.quicki.numAnswerClicked);
+        		_KE.add('click', element,  
+        		function(event) {
+        			KNOWWE.plugin.quicki.applyActivityToFunction(KNOWWE.plugin.quicki.numAnswerClicked, event);
+        		});
             });
         	
         	_KS('.numinput').each(function( element ){
-        		_KE.add('keydown', element, KNOWWE.plugin.quicki.numAnswerClicked);
+        		_KE.add('keydown', element,  
+        		function(event) {
+        			KNOWWE.plugin.quicki.applyActivityToFunction(KNOWWE.plugin.quicki.numAnswerClicked, event);
+        		});
             });  
         	
         	_KS('.inputdate').each(function( element ){
-        		_KE.add('keydown', element, KNOWWE.plugin.quicki.dateAnswerClicked);
+        		_KE.add('keydown', element,  
+        		function(event) {
+        			KNOWWE.plugin.quicki.applyActivityToFunction(KNOWWE.plugin.quicki.dateAnswerClicked, event);
+        		});
             }); 
         	
         	/* removing indicated elements from the storages; this ensures that indicated
@@ -125,7 +173,10 @@ KNOWWE.plugin.quicki = function(){
         		}
             }); 
         	
-            _KE.add('click', _KS('#quickireset'), KNOWWE.plugin.quicki.quickIReset);
+            _KE.add('click', _KS('#quickireset'),  
+        		function(event) {
+        			KNOWWE.plugin.quicki.applyActivityToFunction(KNOWWE.plugin.quicki.quickIReset, event);
+        		});
           
             
         	/* restore visibility states of elements after reloading
@@ -637,11 +688,13 @@ KNOWWE.plugin.quicki = function(){
         			action : 'insert',
                     ids : [ id ],					// to re-insert a freshly created interview
                     fn : function(){
+			        	KNOWWE.plugin.quicki.updateProcessingState(-1);
                     	KNOWWE.plugin.quicki.initialize();
                     	KNOWWE.core.rerendercontent.update(); //Clear new SolutionPanel
                     }	
         		}
         	}
+        	KNOWWE.plugin.quicki.updateProcessingState(1);
             new _KA( options ).send();
         },
         /**
@@ -670,10 +723,12 @@ KNOWWE.plugin.quicki = function(){
                 response : {
                 	action : 'none',
                 	fn : function(){
-                		 KNOWWE.helper.observer.notify('update');
+			        	KNOWWE.plugin.quicki.updateProcessingState(-1);
+                		KNOWWE.helper.observer.notify('update');
                 	}
                 }
             }
+        	KNOWWE.plugin.quicki.updateProcessingState(1);
             new _KA( options ).send();         
         },
         /**
@@ -700,10 +755,12 @@ KNOWWE.plugin.quicki = function(){
                 	 action : 'insert',
                      ids : [ id ],	
                 	 fn : function(){
-                		 KNOWWE.plugin.quicki.initialize();
+			        	KNOWWE.plugin.quicki.updateProcessingState(-1);
+                		KNOWWE.plugin.quicki.initialize();
                 	 }	
                  }
         	 }
+        	 KNOWWE.plugin.quicki.updateProcessingState(1);
              new _KA( options ).send();
         }
     }
