@@ -46,7 +46,7 @@ public class FlowchartEditProvider implements ToolProvider {
 		return new DefaultTool(
 				"KnowWEExtension/flowchart/icon/edit16.png",
 				"Visual Editor",
-				"Opens the visual editor for this flowchart to edit its content grapically.",
+				"Opens the visual editor for this flowchart.",
 				jsAction);
 	}
 
@@ -60,6 +60,11 @@ public class FlowchartEditProvider implements ToolProvider {
 		return jsAction;
 	}
 
+	/**
+	 * Creates a JS-Edit link for a DiaFlux-Section.
+	 * 
+	 * @created 29.11.2010
+	 */
 	public static String createEditLink(Section<?> section, KnowWEUserContext userContext) {
 		return "javascript:" + createEditAction(section, userContext) + "undefined;";
 	}
