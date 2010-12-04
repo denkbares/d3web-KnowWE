@@ -268,8 +268,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 				boolean fullParse = parse != null
 						&& (parse.equals("full") || parse.equals("true"));
-				if ((fullParse/* && !article.isFullParse() */)
-						|| !originalText.equals(content)) {
+				if (fullParse || !originalText.equals(content)) {
 					article = KnowWEArticle.createArticle(content, topicName,
 							KnowWEEnvironment.getInstance().getRootType(),
 							KnowWEEnvironment.DEFAULT_WEB, fullParse);

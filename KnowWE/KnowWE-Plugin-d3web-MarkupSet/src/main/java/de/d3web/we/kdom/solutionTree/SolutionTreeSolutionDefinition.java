@@ -29,7 +29,7 @@ public class SolutionTreeSolutionDefinition extends SolutionDefinition {
 
 	@Override
 	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
-		return DashTreeUtils.isChangeInAncestorSubtree(article, s, 1);
+		return DashTreeUtils.isChangeInAncestorSubtree(article, s, 0);
 	}
 
 }

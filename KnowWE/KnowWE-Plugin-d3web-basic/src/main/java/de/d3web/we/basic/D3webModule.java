@@ -52,6 +52,7 @@ public class D3webModule {
 	}
 
 	public static ResourceBundle getKwikiBundle_d3web(KnowWEUserContext user) {
+		if (user == null) return getKwikiBundle_d3web();
 
 		Locale.setDefault(KnowWEEnvironment.getInstance().getWikiConnector()
 				.getLocale(user.getHttpRequest()));
@@ -59,6 +60,7 @@ public class D3webModule {
 	}
 
 	public static ResourceBundle getKwikiBundle_d3web(HttpServletRequest request) {
+		if (request == null) return getKwikiBundle_d3web();
 
 		Locale.setDefault(KnowWEEnvironment.getInstance().getWikiConnector()
 				.getLocale(request));

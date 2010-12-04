@@ -87,6 +87,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 	private boolean fullParse;
 
+	private final boolean reParse;
+
 	private boolean postDestroy;
 
 	private boolean postPreDestroy;
@@ -137,6 +139,11 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		this.report = new KnowWEDomParseReport(this);
 		this.childrenTypes.add(rootType);
 		this.lastVersion = KnowWEEnvironment.getInstance().getArticle(web, title);
+
+		boolean unchangedContent = lastVersion != null
+				&& lastVersion.getSection().getOriginalText().equals(text);
+
+		reParse = unchangedContent && fullParse;
 
 		boolean defFullParse = fullParse
 				|| lastVersion == null
@@ -533,6 +540,10 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 	public boolean isFullParse() {
 		return this.fullParse;
+	}
+
+	public boolean isReParse() {
+		return this.reParse;
 	}
 
 	public boolean isPostDestroyFullParse() {

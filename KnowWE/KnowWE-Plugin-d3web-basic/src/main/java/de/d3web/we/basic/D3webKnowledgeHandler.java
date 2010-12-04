@@ -27,6 +27,8 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -34,6 +36,7 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
+import de.d3web.we.knowledgebase.KBRenderer;
 
 /**
  * D3webKnowledgeHandler. Handles Knowledge and its recycling.
@@ -48,6 +51,11 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	 * Map for all articles an their KBMs.
 	 */
 	private static Map<String, KnowledgeBaseManagement> kbms = new HashMap<String, KnowledgeBaseManagement>();
+
+	/**
+	 * Map to cache a String output if the KnowledgeBase for an article.
+	 */
+	private static Map<String, String> kbCache = new HashMap<String, String>();
 
 	/**
 	 * Stores for each Article if the jar file already got built
@@ -108,6 +116,11 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 				broker.removeServiceSession(service.getId());
 			}
 		}
+		if (art.isReParse()) {
+			String kbOutput = new KBRenderer().renderHTML(art.getTitle(), null, null,
+					art.getWeb());
+			kbCache.put(art.getTitle(), kbOutput);
+		}
 		if (art.isFullParse()) {
 			getKBM(art.getTitle()).clearKnowledgeBase();
 		}
@@ -121,6 +134,16 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	@Override
 	public void finishArticle(KnowWEArticle art) {
 		KnowledgeBaseManagement kbm = this.getKBM(art.getTitle());
+		if (art.isReParse()) {
+			String kbOutput = new KBRenderer().renderHTML(art.getTitle(), null, null,
+					art.getWeb());
+			String cached = kbCache.remove(art.getTitle());
+			if (!kbOutput.equals(cached)) {
+				Logger.getLogger(this.getClass().getName()).log(
+						Level.WARNING,
+						"Detected difference in the knowledgebase after a full reparse.");
+			}
+		}
 		if (!isEmpty(kbm)) {
 			WikiEnvironmentManager.registerKnowledgeBase(kbm,
 					art.getTitle(), art.getWeb());
