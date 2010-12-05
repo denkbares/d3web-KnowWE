@@ -1,0 +1,81 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-TestSuite" version="0.0.1">
+
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+	</requires>
+
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="TestCaseToolProvider">
+		<parameter id="class" value="de.d3web.we.testcase.toolprovider.TestCaseToolProvider" />
+		<parameter id="name" value="TestCaseToolProvider" />
+		<parameter id="description"
+			value="Offers download buttons to download test suites as single files." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="/TestCaseType" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="TestCaseRunnerToolProvider">
+		<parameter id="class" value="de.d3web.we.testcase.toolprovider.TestCaseRunnerToolProvider" />
+		<parameter id="name" value="TestCaseRunnerToolProvider" />
+		<parameter id="description"
+			value="Offers download buttons to download visualizations of test suites as single files." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="/TestCaseRunnerType" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="TestCaseType">
+		<parameter id="class" 
+			value="de.d3web.we.testcase.kdom.TestCaseType" />
+		<parameter id="name" value="TestCaseType" />
+		<parameter id="description" value="KnowWEObjectType TestCaseType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="TestCaseRunnerType">
+		<parameter id="class" 
+			value="de.d3web.we.testcase.kdom.TestCaseRunnerType" />
+		<parameter id="name" value="TestCaseRunnerType" />
+		<parameter id="description" value="KnowWEObjectType TestCaseRunnerType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="TestCaseRunAction">
+		<parameter id="class"
+			value="de.d3web.we.testcase.action.TestCaseRunAction" />
+		<parameter id="name" value="TestCaseRunAction" />
+		<parameter id="description" value="Action TestCaseRunAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="TestCaseServlet">
+		<parameter id="class" value="de.d3web.we.testcase.action.TestCaseServlet" />
+		<parameter id="name" value="TestCaseServlet" />
+		<parameter id="description" value="Action TestCaseServlet" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+</plugin>
