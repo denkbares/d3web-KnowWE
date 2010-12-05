@@ -25,7 +25,7 @@ import de.d3web.we.ci4ke.testing.AbstractCITest;
 import de.d3web.we.ci4ke.testing.CITestResult;
 import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.testsuite.TestSuiteUtils;
+import de.d3web.we.testcase.TestCaseUtils;
 
 public class TestsuiteRunner extends AbstractCITest {
 
@@ -37,7 +37,7 @@ public class TestsuiteRunner extends AbstractCITest {
 		}
 		String monitoredArticleTitle = getParameter(0);
 
-		TestSuite suite = TestSuiteUtils.loadTestSuite(
+		TestSuite suite = TestCaseUtils.loadTestSuite(
 				monitoredArticleTitle, KnowWEEnvironment.DEFAULT_WEB);
 
 		if (suite != null) {
