@@ -135,7 +135,7 @@
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-TestSuite</artifactId>
+					<artifactId>KnowWE-Plugin-TestCase</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -360,17 +360,17 @@
 
 		<!-- TestSuite plugin -->
 		<profile>
-			<id>testsuite</id>
+			<id>testcase</id>
 			<activation>
 				<property>
-					<name>testsuite-plugin</name>
+					<name>testcase-plugin</name>
 				</property>
 			</activation>
 
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-TestSuite</artifactId>
+					<artifactId>KnowWE-Plugin-TestCase</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
