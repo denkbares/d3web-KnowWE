@@ -120,6 +120,7 @@ KNOWWE.core.actions = function(){
 KNOWWE.core.util = function(){
 
 	var activityCounter = 0;
+	var indicatorShouldBeVisible = false;
 	
     return {
         /**
@@ -136,31 +137,37 @@ KNOWWE.core.util = function(){
         			'display': 'none', 'position': 'absolute', 'top': '0px', 'left': '0px' }});
         		document.body.appendChild(node);
         	}
-        	var state = "idle";
         	if (activityCounter > 0) {
-        		state = "processing";
+        		node.innerHTML = "processing";
         		KNOWWE.core.util.showProcessingIndicator();
         	}
         	else {
         		// hide animation
+        		node.innerHTML = "idle";
         		KNOWWE.core.util.hideProcessingIndicator();
         	}
-        	node.innerHTML = state;
         },
         showProcessingIndicator : function () {
+        	indicatorShouldBeVisible = true;
+        	window.setTimeout("KNOWWE.core.util.updateProcessingIndicator()", 100);
+        },
+        hideProcessingIndicator : function () {
+        	indicatorShouldBeVisible = false;
+        	KNOWWE.core.util.updateProcessingIndicator();
+        },
+        updateProcessingIndicator : function () {
        		var node = $('KnowWEProcessingIndicator');
-    		if (!node) {
+    		if (!node && indicatorShouldBeVisible) {
+    			// not visible but should be --> show it
         		node = new Element('div', {'id': 'KnowWEProcessingIndicator', 'styles': { 
         			'display': 'block', 'position': 'fixed', 'top': '0px', 'left': '0px' }});
         		document.body.appendChild(node);
         		node.innerHTML = '<img src="KnowWEExtension/images/ajax-loader16.gif"></img>';
         	}
-        },
-        hideProcessingIndicator : function () {
-       		var node = $('KnowWEProcessingIndicator');
-    		if (node) {
+        	else if (node && !indicatorShouldBeVisible) {
+    			// visible but should not be --> delete it
     			node.remove();
-    		}
+        	}
         },
         /**
          * Function: addCollabsiblePluginHeader
