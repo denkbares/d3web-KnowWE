@@ -70,33 +70,14 @@ KNOWWE.plugin.quicki = function(){
 	var questionnaireVis = ''; // for storing questionnaire visibility states
 	var questionVis = '';		// for storing question visibility states
 	
-	var activityCounter = 0;
-	
 	return {
-        /**
-         * Function updateProcessingState
-         *
-         * Updates the hidden element in the page to contain
-         * the current processing state
-         */
-        updateProcessingState : function (delta) {
-        	activityCounter += delta;
-        	var node = $('QuickIProcessingState');
-        	if (!node) {
-        		node = new Element('div', {'id': 'QuickIProcessingState', 'styles': { 'display': 'none' }});
-        		document.body.appendChild(node);
-        	}
-        	var state = "idle";
-        	if (activityCounter > 0) state = "processing";
-        	node.innerHTML = state;
-        },
-        applyActivityToFunction : function (fun, event) {
-        	KNOWWE.plugin.quicki.updateProcessingState(1);
+        applyProcessingStateToEventHandler : function (fun, event) {
+        	KNOWWE.core.util.updateProcessingState(1);
         	try {
         		fun(event);
         	}
         	catch (e) { /*ignore*/ }
-        	KNOWWE.plugin.quicki.updateProcessingState(-1);
+        	KNOWWE.core.util.updateProcessingState(-1);
         },
 		/**
          * Function: initialize
@@ -107,35 +88,35 @@ KNOWWE.plugin.quicki = function(){
         	_KS('.answer').each(function(element){
         		_KE.add('click', element, 
         		function(event) {
-        			KNOWWE.plugin.quicki.applyActivityToFunction(KNOWWE.plugin.quicki.answerClicked, event);
+        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.answerClicked, event);
         		});
             });
         	
         	_KS('.answerunknown').each(function(element){
                 _KE.add('click', element,  
         		function(event) {
-        			KNOWWE.plugin.quicki.applyActivityToFunction(KNOWWE.plugin.quicki.answerUnknownClicked, event);
+        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.answerUnknownClicked, event);
         		});
         	});
         	
         	_KS('.answerMC').each(function(element){
                 _KE.add('click', element,  
         		function(event) {
-        			KNOWWE.plugin.quicki.applyActivityToFunction(KNOWWE.plugin.quicki.answerMCCollect, event);
+        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.answerMCCollect, event);
         		});
         	});
         	
         	_KS('.answerMCClicked').each(function(element){
                 _KE.add('click', element,  
         		function(event) {
-        			KNOWWE.plugin.quicki.applyActivityToFunction(KNOWWE.plugin.quicki.answerMCCollect, event);
+        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.answerMCCollect, event);
         		});
         	});
         	
         	_KS('.questionnaire').each(function(element){
                 _KE.add('click', element,  
         		function(event) {
-        			KNOWWE.plugin.quicki.applyActivityToFunction(KNOWWE.plugin.quicki.toggleQuestionnaireVisibility, event);
+        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.toggleQuestionnaireVisibility, event);
         		});
         	});
         	
@@ -144,21 +125,21 @@ KNOWWE.plugin.quicki = function(){
         	_KS('.num-ok').each(function( element ){
         		_KE.add('click', element,  
         		function(event) {
-        			KNOWWE.plugin.quicki.applyActivityToFunction(KNOWWE.plugin.quicki.numAnswerClicked, event);
+        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.numAnswerClicked, event);
         		});
             });
         	
         	_KS('.numinput').each(function( element ){
         		_KE.add('keydown', element,  
         		function(event) {
-        			KNOWWE.plugin.quicki.applyActivityToFunction(KNOWWE.plugin.quicki.numAnswerClicked, event);
+        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.numAnswerClicked, event);
         		});
             });  
         	
         	_KS('.inputdate').each(function( element ){
         		_KE.add('keydown', element,  
         		function(event) {
-        			KNOWWE.plugin.quicki.applyActivityToFunction(KNOWWE.plugin.quicki.dateAnswerClicked, event);
+        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.dateAnswerClicked, event);
         		});
             }); 
         	
@@ -166,23 +147,28 @@ KNOWWE.plugin.quicki = function(){
         	 * questions are always displayed expanded, even after e.g. the user previously
         	 * collapsed a (part of) such a questionnaire tree. */
         	_KS('.indicated').each(function( element ){
-        		var ids = questionnaireVis.indexOf(element.id);
-        		var torep = questionnaireVis.substring(ids, ids + element.id.length + 1 + 5);
-        		if (questionnaireVis.indexOf(torep)!=-1){
-        			questionnaireVis = questionnaireVis.replace(torep, "");
-        		}
+	        	KNOWWE.core.util.updateProcessingState(1);
+	        	try {
+	        		var ids = questionnaireVis.indexOf(element.id);
+	        		var torep = questionnaireVis.substring(ids, ids + element.id.length + 1 + 5);
+	        		if (questionnaireVis.indexOf(torep)!=-1){
+	        			questionnaireVis = questionnaireVis.replace(torep, "");
+	        		}
+	          	}
+	        	catch (e) { /*ignore*/ }
+	        	KNOWWE.core.util.updateProcessingState(-1);
             }); 
         	
             _KE.add('click', _KS('#quickireset'),  
         		function(event) {
-        			KNOWWE.plugin.quicki.applyActivityToFunction(KNOWWE.plugin.quicki.quickIReset, event);
+        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.quickIReset, event);
         		});
           
             
         	/* restore visibility states of elements after reloading
         	 * the page (e.g. after sending answer val via AJAX)
         	 */
-        	 KNOWWE.plugin.quicki.restoreQuestionnaireVis();
+        	KNOWWE.plugin.quicki.restoreQuestionnaireVis();
         },
         /**
          * Function: restoreQuestionnaireVis
@@ -192,32 +178,37 @@ KNOWWE.plugin.quicki = function(){
          */
         restoreQuestionnaireVis : function(){
         	
-        	// split questionnaireVis storage into questionnaire;vis
-        	// elments
-        	var qs = questionnaireVis.split('###');
-        	
-        	for (var i = 0; i < qs.length; i++) {
-        	
-        		// split into questionnaire id and visibility
-        		var qsplit = qs[i].split(';');
-        		var qid = qsplit[0];
-        		qid = qid.replace(/ /g, ''); // remove spaces
-        		var qvis = qsplit[1];
-        		        		
-        		var groupEl = _KS('#group_' + qid);
-        		var questionnaire = _KS('#'+qid);
-        		
-        		// 0 means set style and image to invisible
-        		if(qvis==0){
-        			groupEl.style.display = 'none'; 
-        			KNOWWE.plugin.quicki.toggleImage(1, questionnaire);       
-        		} 
-        		// 1 means set style and image to be visible = unfolded
-        		else if (qvis ==1 ){
-        			groupEl.style.display = 'block'; 
-        			KNOWWE.plugin.quicki.toggleImage(0, questionnaire);       
-        		}
+        	KNOWWE.core.util.updateProcessingState(1);
+        	try {
+	        	// split questionnaireVis storage into questionnaire;vis
+	        	// elments
+	        	var qs = questionnaireVis.split('###');
+	        	
+	        	for (var i = 0; i < qs.length; i++) {
+	        	
+	        		// split into questionnaire id and visibility
+	        		var qsplit = qs[i].split(';');
+	        		var qid = qsplit[0];
+	        		qid = qid.replace(/ /g, ''); // remove spaces
+	        		var qvis = qsplit[1];
+	        		        		
+	        		var groupEl = _KS('#group_' + qid);
+	        		var questionnaire = _KS('#'+qid);
+	        		
+	        		// 0 means set style and image to invisible
+	        		if(qvis==0){
+	        			groupEl.style.display = 'none'; 
+	        			KNOWWE.plugin.quicki.toggleImage(1, questionnaire);       
+	        		} 
+	        		// 1 means set style and image to be visible = unfolded
+	        		else if (qvis ==1 ){
+	        			groupEl.style.display = 'block'; 
+	        			KNOWWE.plugin.quicki.toggleImage(0, questionnaire);       
+	        		}
+	        	}
         	}
+        	catch (e) { /*ignore*/ }
+        	KNOWWE.core.util.updateProcessingState(-1);
         },
         /**
          * Function: restoreQuestionVis
@@ -225,32 +216,37 @@ KNOWWE.plugin.quicki = function(){
          */
         restoreQuestionVis : function(){
         	
-        	// split questionVis storage
-        	var qs = questionVis.split('###');
-        	
-        	for (var i = 0; i < qs.length; i++) {
-        	
-        		// split into question id and visibility
-        		var qsplit = qs[i].split(';');
-        		var qid = qsplit[0];
-        		qid = qid.replace(/ /g, ''); // remove spaces
-        		var qvis = qsplit[1];
-        		        	
-        		// TODO check what we need to get here: the table???
-        		var groupEl = _KS('#group_' + qid);
-        		var questionnaire = _KS('#'+qid);
-        		
-        		// 0 means set style and image to invisible
-        		if(qvis==0){
-        			groupEl.style.display = 'none'; 
-        			KNOWWE.plugin.quicki.toggleImage(1, questionnaire);       
-        		} 
-        		// 1 means set style and image to be visible = unfolded
-        		else if (qvis ==1 ){
-        			groupEl.style.display = 'block'; 
-        			KNOWWE.plugin.quicki.toggleImage(0, questionnaire);       
-        		}
+        	KNOWWE.core.util.updateProcessingState(1);
+        	try {
+	        	// split questionVis storage
+	        	var qs = questionVis.split('###');
+	        	
+	        	for (var i = 0; i < qs.length; i++) {
+	        	
+	        		// split into question id and visibility
+	        		var qsplit = qs[i].split(';');
+	        		var qid = qsplit[0];
+	        		qid = qid.replace(/ /g, ''); // remove spaces
+	        		var qvis = qsplit[1];
+	        		        	
+	        		// TODO check what we need to get here: the table???
+	        		var groupEl = _KS('#group_' + qid);
+	        		var questionnaire = _KS('#'+qid);
+	        		
+	        		// 0 means set style and image to invisible
+	        		if(qvis==0){
+	        			groupEl.style.display = 'none'; 
+	        			KNOWWE.plugin.quicki.toggleImage(1, questionnaire);       
+	        		} 
+	        		// 1 means set style and image to be visible = unfolded
+	        		else if (qvis ==1 ){
+	        			groupEl.style.display = 'block'; 
+	        			KNOWWE.plugin.quicki.toggleImage(0, questionnaire);       
+	        		}
+	        	}
         	}
+        	catch (e) { /*ignore*/ }
+        	KNOWWE.core.util.updateProcessingState(-1);
         },
          /**
          * Function: answerMCCollect
@@ -688,13 +684,16 @@ KNOWWE.plugin.quicki = function(){
         			action : 'insert',
                     ids : [ id ],					// to re-insert a freshly created interview
                     fn : function(){
-			        	KNOWWE.plugin.quicki.updateProcessingState(-1);
-                    	KNOWWE.plugin.quicki.initialize();
-                    	KNOWWE.core.rerendercontent.update(); //Clear new SolutionPanel
+			        	try {
+	                    	KNOWWE.plugin.quicki.initialize();
+                    		KNOWWE.core.rerendercontent.update(); //Clear new SolutionPanel
+			        	}
+			        	catch (e) { /*ignore*/ }
+			        	KNOWWE.core.util.updateProcessingState(-1);
                     }	
         		}
         	}
-        	KNOWWE.plugin.quicki.updateProcessingState(1);
+        	KNOWWE.core.util.updateProcessingState(1);
             new _KA( options ).send();
         },
         /**
@@ -723,12 +722,15 @@ KNOWWE.plugin.quicki = function(){
                 response : {
                 	action : 'none',
                 	fn : function(){
-			        	KNOWWE.plugin.quicki.updateProcessingState(-1);
-                		KNOWWE.helper.observer.notify('update');
+			        	try {
+	                		KNOWWE.helper.observer.notify('update');
+			        	}
+			        	catch (e) { /*ignore*/ }
+			        	KNOWWE.core.util.updateProcessingState(-1);
                 	}
                 }
             }
-        	KNOWWE.plugin.quicki.updateProcessingState(1);
+        	KNOWWE.core.util.updateProcessingState(1);
             new _KA( options ).send();         
         },
         /**
@@ -755,12 +757,15 @@ KNOWWE.plugin.quicki = function(){
                 	 action : 'insert',
                      ids : [ id ],	
                 	 fn : function(){
-			        	KNOWWE.plugin.quicki.updateProcessingState(-1);
-                		KNOWWE.plugin.quicki.initialize();
+			        	try {
+	                		KNOWWE.plugin.quicki.initialize();
+			        	}
+			        	catch (e) { /*ignore*/ }
+			        	KNOWWE.core.util.updateProcessingState(-1);
                 	 }	
                  }
         	 }
-        	 KNOWWE.plugin.quicki.updateProcessingState(1);
+        	 KNOWWE.core.util.updateProcessingState(1);
              new _KA( options ).send();
         }
     }

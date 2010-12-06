@@ -1593,18 +1593,23 @@ KNOWWE.helper.logger = function(){
          *     o - The current scope.
          */
         notify : function( name, o ) {
-            var scope = o || window;
-            var l = observations.length;
-           
-            for( var i = 0; i < l; i++){
-                var obName = observations[i];
-                if( obName.getName() === name ){
-                    var f = obName.getFunct();
-                    for(var j = 0; j < f.length; j++){
-                        f[j].call( o );
-                    }
-                }
-            }
+        	KNOWWE.core.util.updateProcessingState(1);
+        	try {
+	            var scope = o || window;
+	            var l = observations.length;
+	           
+	            for( var i = 0; i < l; i++){
+	                var obName = observations[i];
+	                if( obName.getName() === name ){
+	                    var f = obName.getFunct();
+	                    for(var j = 0; j < f.length; j++){
+	                        f[j].call( o );
+	                    }
+	                }
+	            }
+         	}
+        	catch (e) { /*ignore*/ }
+        	KNOWWE.core.util.updateProcessingState(-1);
         },
         /**
          * Function: notifyAll
@@ -1612,14 +1617,19 @@ KNOWWE.helper.logger = function(){
          * Notifies all registered observation of a change.
          */
         notifyAll : function( o ) {
-            var scope = o || window;
-            var l = observations.length;
-            for( var i = 0; i < l; i++){
-                var f = observations[i].getFunct();
-                for(var j = 0; j < f.length; j++){
-                    f[j].call( o );
-                }
-            }           
+        	KNOWWE.core.util.updateProcessingState(1);
+        	try {
+	            var scope = o || window;
+	            var l = observations.length;
+	            for( var i = 0; i < l; i++){
+	                var f = observations[i].getFunct();
+	                for(var j = 0; j < f.length; j++){
+	                    f[j].call( o );
+	                }
+	            }           
+        	}
+        	catch (e) { /*ignore*/ }
+        	KNOWWE.core.util.updateProcessingState(-1);
         }
     }
 }();

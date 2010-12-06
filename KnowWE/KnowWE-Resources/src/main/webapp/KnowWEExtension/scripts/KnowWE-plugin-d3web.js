@@ -1178,11 +1178,16 @@ KNOWWE.plugin.d3web.rerenderquestionsheet = function() {
                     action : 'insert',
                     ids : [ id ],
                     fn : function(){
-                        KNOWWE.core.util.addCollabsiblePluginHeader('#questionsheet-panel');
-                        KNOWWE.plugin.d3web.semantic.init();
+			        	try {
+	                        KNOWWE.core.util.addCollabsiblePluginHeader('#questionsheet-panel');
+	                        KNOWWE.plugin.d3web.semantic.init();
+			        	}
+			        	catch (e) { /*ignore*/ }
+			        	KNOWWE.core.util.updateProcessingState(-1);
                     }
                 }
             }
+			KNOWWE.core.util.updateProcessingState(1);
             new _KA( options ).send();
         }
     }

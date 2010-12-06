@@ -118,7 +118,28 @@ KNOWWE.core.actions = function(){
  * above each function.
  */
 KNOWWE.core.util = function(){
+
+	var activityCounter = 0;
+	
     return {
+        /**
+         * Function updateProcessingState
+         *
+         * Updates the hidden element in the page to contain
+         * the current processing state
+         */
+        updateProcessingState : function (delta) {
+        	activityCounter += delta;
+        	var node = $('KnowWEProcessingState');
+        	if (!node) {
+        		node = new Element('div', {'id': 'KnowWEProcessingState', 'styles': { 
+        			'display': 'none', 'position': 'absolute', 'top': '0px', 'left': '0px' }});
+        		document.body.appendChild(node);
+        	}
+        	var state = "idle";
+        	if (activityCounter > 0) state = "processing";
+        	node.innerHTML = state;
+        },
         /**
          * Function: addCollabsiblePluginHeader
          * Extends the headings of the KnowWEPlugin DIVs with collabs ability.
@@ -431,11 +452,16 @@ KNOWWE.core.rerendercontent = function(){
                     ids : [ id ],
                     action : action,
                     fn : function(){
-                        KNOWWE.core.actions.init();
-                        Collapsible.render( _KS('#page'), KNOWWE.helper.gup('page'));
+			        	try {
+	                        KNOWWE.core.actions.init();
+	                        Collapsible.render( _KS('#page'), KNOWWE.helper.gup('page'));
+			        	}
+			        	catch (e) { /*ignore*/ }
+			        	KNOWWE.core.util.updateProcessingState(-1);
                     }
                 }
             }
+        	KNOWWE.core.util.updateProcessingState(1);
             new _KA( options ).send();
         }
     }
