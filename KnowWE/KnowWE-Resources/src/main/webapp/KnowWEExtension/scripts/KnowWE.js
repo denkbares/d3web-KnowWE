@@ -25,7 +25,6 @@ KNOWWE.core = function(){
          */
         init : function(){
             KNOWWE.core.util.addCollabsiblePluginHeader();
-            KNOWWE.core.util.form.addFormHints('knoffice-panel');
             KNOWWE.core.actions.init();
         }
     }
@@ -397,10 +396,11 @@ KNOWWE.core.util.form = function(){
          
             if(style['display'] == 'inline'){
                 style['display'] = 'none';
-                el.setAttribute('class', 'show extend pointer extend-panel-down');
+                //el.setAttribute('class', 'show extend pointer extend-panel-down');
+                el.setAttribute('class', 'show extend pointer extend-panel-right');
             }else{
                 style['display'] = 'inline';
-                el.setAttribute('class', 'show extend pointer extend-panel-up');
+                el.setAttribute('class', 'show extend pointer extend-panel-down');
             }
         }
     }    

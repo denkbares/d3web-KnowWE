@@ -39,9 +39,9 @@ import de.d3web.we.testcase.kdom.TestCaseRunnerType;
 /**
  * KnowWEAction which is used to run a test case and to display the result of
  * the run.
- * 
+ *
  * This action is called by a JavaScript-Snippet used by the TestCaseResultType.
- * 
+ *
  * @see TestSuite
  * @see TestCaseRunnerType
  * @author Sebastian Furth (denkbares GmbH)
@@ -143,7 +143,7 @@ public class TestCaseRunAction extends AbstractAction {
 		StringBuilder html = new StringBuilder();
 
 		// Pointer and Text
-		html.append("<p id='testcase2-show-extend' class='show-extend pointer extend-panel-down'>");
+		html.append("<p id='testcase2-show-extend' class='show-extend pointer extend-panel-right'>");
 		html.append(rb.getString("KnowWE.TestCase.detail"));
 		html.append("</p>");
 
@@ -256,7 +256,7 @@ public class TestCaseRunAction extends AbstractAction {
 
 		temp.append("");
 
-		
+
 		temp.append("</table>");
 
 		// HTML-Code

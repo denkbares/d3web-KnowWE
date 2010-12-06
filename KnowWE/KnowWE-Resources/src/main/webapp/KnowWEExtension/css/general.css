@@ -85,11 +85,15 @@ h1, h2, h3, h4 {
 }
 .extend-panel-down{
     padding:0px 20px;
-    background: #FFF url(../images/arrow_down.png) no-repeat 0px 3px;   
+    background: url(../images/arrow_down.png) no-repeat 0px 3px;   
 }
 .extend-panel-up{
     padding:0px 20px;
-    background: #FFF url(../images/arrow_up.png) no-repeat 0px 3px; 
+    background: url(../images/arrow_up.png) no-repeat 0px 3px; 
+}
+.extend-panel-right{
+    padding:0px 20px;
+    background: url(../images/arrow_right.png) no-repeat 0px 3px; 
 }
 
 
