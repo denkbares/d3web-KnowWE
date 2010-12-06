@@ -146,6 +146,13 @@ public abstract class AnswerDefinition
 			Section<? extends QuestionDefinition> qDef = s
 					.get().getQuestionSection(s);
 
+			if (qDef == null) {
+				// this situation can only occur with incremental update
+				// -> fullparse
+				article.setFullParse(CreateAnswerHandler.class);
+				return null;
+			}
+
 			// if having error somewhere, do nothing and report error
 			if (qDef.hasErrorInSubtree(article)) {
 				return Arrays.asList((KDOMReportMessage) new ObjectCreationError(

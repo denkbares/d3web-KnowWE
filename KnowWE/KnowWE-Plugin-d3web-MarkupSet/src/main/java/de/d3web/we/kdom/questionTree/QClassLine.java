@@ -21,6 +21,7 @@ package de.d3web.we.kdom.questionTree;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
@@ -106,6 +107,16 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QClassLine> s) {
 			Section<? extends DashTreeElementContent> fatherContent = DashTreeUtils.getFatherDashTreeElementContent(
 					s);
+
+			if (fatherContent != null) {
+				List<Section<QuestionLine>> questionLine = fatherContent.findChildrenOfType(QuestionLine.class);
+				if (questionLine != null && !questionLine.isEmpty()) {
+					// this situation can only occur with incremental update
+					// -> fullparse
+					article.setFullParse(this.getClass());
+				}
+			}
+
 			Section<QuestionnaireDefinition> localQuestionniareDef = s.findSuccessor(QuestionnaireDefinition.class);
 			QContainer localQuestionnaire = localQuestionniareDef.get().getTermObject(
 					article,
