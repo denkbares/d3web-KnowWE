@@ -24,7 +24,9 @@ String findParam( PageContext ctx, String key )
 	
 	map.put("KWikiUser",wikiContext.getWikiSession().getUserPrincipal().getName());
 	if(!map.containsKey("KWiki_Topic")) {
-		//map.put("KWiki_Topic", wikiContext.getPage().getName());
+		// add topic if missing, otherwise the action on the Main page
+		// (using url) "http://.../KnowWE" will not work 
+		map.put("KWiki_Topic", wikiContext.getPage().getName());
 	}
 	
 	env.getDispatcher().performAction(map);
