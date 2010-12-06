@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -58,14 +58,12 @@ import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 
 /**
- *
- *
+ * 
+ * 
  * @author Reinhard Hatko
  * @created on: 12.10.2009
  */
 public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> {
-
-
 
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<FlowchartType> s) {
@@ -80,6 +78,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		Map<String, String> attributeMap = AbstractXMLObjectType.getAttributeMapFor(s);
 		String name = attributeMap.get("name");
 		String id = attributeMap.get("fcid");
+		boolean autostart = Boolean.parseBoolean(attributeMap.get("autostart"));
 
 		if (name == null || name.equals("")) name = "unnamed";
 
@@ -90,6 +89,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		List<IEdge> edges = createEdges(article, s, nodes, errors);
 
 		Flow flow = FlowFactory.getInstance().createFlow(id, name, nodes, edges);
+		flow.setAutostart(autostart);
 
 		DiaFluxUtils.addFlow(flow, kbm.getKnowledgeBase());
 
@@ -154,7 +154,8 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 			Section<GuardType> guardSection = content.findChildOfType(GuardType.class);
 			if (guardSection != null) {
-				Section<CompositeCondition> compositionConditionSection = (Section<CompositeCondition>) guardSection.getChildren().get(1);
+				Section<CompositeCondition> compositionConditionSection = (Section<CompositeCondition>) guardSection.getChildren().get(
+						1);
 				condition = buildCondition(article, compositionConditionSection, errors);
 
 				if (condition == null) {
@@ -175,27 +176,21 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 			result.add(edge);
 
-
 		}
 
 		return result;
 	}
-
-
 
 	private Condition buildCondition(KnowWEArticle article, Section<CompositeCondition> s, List<KDOMReportMessage> errors) {
 
 		return KDOMConditionFactory.createCondition(article, s);
 	}
 
-
-
 	public static String getXMLContentText(Section<? extends AbstractXMLObjectType> s) {
 		String originalText = ((Section<XMLContent>) s.getChildren().get(1)).getOriginalText();
-//		return StringEscapeUtils.unescapeXml(originalText);
+		// return StringEscapeUtils.unescapeXml(originalText);
 		return originalText;
 	}
-
 
 	private List<INode> createNodes(KnowWEArticle article, String flowName, Section<FlowchartType> flowSection, List<KDOMReportMessage> errors) {
 
@@ -207,7 +202,6 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		KnowledgeBaseManagement kbm = getKBM(article);
 
 		for (Section<NodeType> nodeSection : nodeSections) {
-
 
 			NodeHandler handler = NodeHandlerManager.getInstance().findNodeHandler(article, kbm,
 					nodeSection);
@@ -245,7 +239,5 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		return result;
 	}
-
-
 
 }

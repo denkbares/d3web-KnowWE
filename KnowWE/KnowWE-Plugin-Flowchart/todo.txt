@@ -1,8 +1,16 @@
-leere menge an guards bei snapshot
 
-focus bug
+Artefakte in Textfelder nach wechsel von formel zu was anderem. Check auf Variablennamen?
 
-Formel auch für Date/text?? Done
+Knoten verdeckt Guards nach Größenänderung bei langem Text
+
+Apple Commands
+
+Knoten für Pixelrouting
+
+einheiten für numfragen beim laden wiederherstellen
+
+
+
 Neues Icon für Date/Text
 
 
@@ -10,9 +18,8 @@ Negation von flowchartprocessed???
 
 IDOBject
 
-einheiten für numfragen
 
-Artefakte in Textfelder nach wechsel von formel zu was anderem. Check auf Variablennamen?
+
 Changes:
 
 Formula an Kanten von Num, Date und Text
@@ -30,3 +37,7 @@ exception bei doppelklick auf prototyp
 node editor beenden beim speichern
 Formel: Backspace löscht Kante, Enter beendet editing nicht
 Drag und drop in combobox
+exception wenn esc in aktioneditor
+leere menge an guards bei snapshot -> conditions
+Formel auch für Date/text?? Done
+focus bug

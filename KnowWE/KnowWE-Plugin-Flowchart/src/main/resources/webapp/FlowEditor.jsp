@@ -35,6 +35,11 @@
 	String web = map.getWeb();
 	KnowWEArticle article = env.getArticle(web, topic);
 	
+	if (article == null){
+		//TODO happens if article is no longer available
+	return;
+	}
+	
 	JSPHelper jspHelper = new JSPHelper(map);
 	String kdomID = map.get("kdomID");
 	Section diafluxSection = article.findSection(kdomID);
@@ -220,14 +225,18 @@
 							</table>
 						</button>
 					</td>
-					<td rowspan=2 valign=top class=propertyArea>
-						<span class=propertyBlock>
+					<td rowspan=2 valign=top class="propertyArea">
+						<span class="propertyBlock">
 							<table>
 							<tr>
-							<td class=propertyTitle>Name:</td>
+							<td class="propertyTitle">Name:</td>
+							<td><input type=text id="properties.editName" class="propertyText long"></input></td>
 							</tr>
 							<tr>
-							<td><input type=text id="properties.editName" class="propertyText long"></input></td>
+							<tr>
+							<td class="propertyTitle">Autostart:</td>
+							<td><input type="checkbox" id="properties.autostart" title="Defines if all startnodes of this flowchart are activated on session start."></input></td>
+							
 							</tr>
 							</table>
 						</span>
@@ -302,14 +311,17 @@
 		$('properties.editName').value = theFlowchart.name || theFlowchart.id;
 		$('properties.editWidth').value = theFlowchart.width;
 		$('properties.editHeight').value = theFlowchart.height;
+		$('properties.autostart').checked = theFlowchart.autostart;
 		$('properties.editName').onchange = updateProperties;
 		$('properties.editWidth').onchange = updateProperties;
 		$('properties.editHeight').onchange = updateProperties;
+		$('properties.autostart').onchange = updateProperties;
 	}
 	
 	function updateProperties() {
 		theFlowchart.name = $('properties.editName').value;
 		theFlowchart.setSize($('properties.editWidth').value, $('properties.editHeight').value);
+		theFlowchart.autostart = $('properties.autostart').checked;
 	}
 	
 	function deleteFlowchart() {

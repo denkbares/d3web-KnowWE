@@ -1,19 +1,16 @@
 
 function Flowchart(parent, id, width, height, idCounter) {
 	this.parent = $(parent);
-	this.nodes = [];
-	this.rules = [];
 	this.id = id || this.createID('sheet');
 	this.width = width;
 	this.height = height;
+	this.idCounter = idCounter || 0;
+
+	this.nodes = [];
+	this.rules = [];
 	this.dom = null;
 	this.router = new Router(this);
 	this.selection = [];
-	if (idCounter) {
-		this.idCounter = idCounter;
-	} else {
-		this.idCounter = 0;
-	}
 }
 // register select click events for flowchart
 CCEvents.addClassListener('click', 'FlowchartGroup', 
@@ -415,6 +412,7 @@ Flowchart.prototype.toXML = function(includePreview) {
 			(this.icon ?' icon="'+this.icon+'"' : '')  +
 			' width="'+this.width+'"' +
 			' height="'+this.height+'"' +
+			' autostart="'+this.autostart+'"' +
 			' idCounter="'+this.idCounter+'">\n\n';
 	
 	xml += '\t<!-- nodes of the flowchart -->\n';
@@ -559,14 +557,19 @@ Flowchart.createFromXML = function(parent, xmlDom) {
 	var name = xmlDom.getAttribute('name');
 	var icon = xmlDom.getAttribute('icon');
 	var idCounter = xmlDom.getAttribute('idCounter');
-
+	var autostart = xmlDom.getAttribute('autostart');
 	
 	// create flowchart
 	var flowchart = new Flowchart(parent, id, width, height, idCounter);
 	flowchart.name = name;
 	flowchart.icon = icon;
-	flowchart.idCounter = idCounter;
 	
+	if (autostart){
+		flowchart.autostart = (autostart == "true")
+	} else {
+		flowchart.autostart = false;
+	}
+		
 	flowchart.addFromXML(xmlDom, 0, 0);
 	
 	flowchart.setVisible(true);
