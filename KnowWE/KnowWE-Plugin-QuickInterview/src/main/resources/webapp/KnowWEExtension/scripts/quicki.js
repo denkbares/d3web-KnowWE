@@ -412,7 +412,11 @@ KNOWWE.plugin.quicki = function(){
             if(key){				// if enter was pressed
                 rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")");
             } else {				// if div was clicked
-                rel = eval("(" + _KE.target( event ).previousSibling.previousSibling.getAttribute('rel') + ")");
+            	// split the ID of the <div> by "_"
+            	var arrSplittedID = _KE.target( event ).getAttribute('id').split('_');
+            	// use the second part of the splitted ID to get the <input> element
+            	var inputID = 'input_' + arrSplittedID[1];
+                rel = eval("(" + $(inputID).getAttribute('rel') + ")");
             }
             if( !rel ) return;            
   
