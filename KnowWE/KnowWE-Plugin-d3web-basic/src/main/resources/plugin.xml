@@ -36,6 +36,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="9" />
 		<parameter id="scope" value="root" />
+		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
@@ -45,7 +46,7 @@
 		<parameter id="description" value="TagHandler KBRenderer" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="script" value="KnowWE-plugin-d3web.js" />
+		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
 
@@ -77,6 +78,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
+		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"

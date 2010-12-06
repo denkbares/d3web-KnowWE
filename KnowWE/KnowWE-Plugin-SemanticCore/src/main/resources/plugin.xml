@@ -32,6 +32,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="4" />
 		<parameter id="scope" value="root" />
+		<parameter id="script" value="KnowWE-Plugin-SemanticCore.js" />
 	</extension>
 	
 		<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
@@ -43,6 +44,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="4" />
 		<parameter id="scope" value="root" />
+		<parameter id="script" value="KnowWE-Plugin-SemanticCore.js" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="EventListener"
