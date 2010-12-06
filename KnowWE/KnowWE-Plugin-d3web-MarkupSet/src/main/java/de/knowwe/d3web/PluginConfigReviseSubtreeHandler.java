@@ -18,11 +18,10 @@
  */
 package de.knowwe.d3web;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-
-import org.apache.tools.ant.filters.StringInputStream;
 
 import de.d3web.core.io.progress.DummyProgressListener;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -47,7 +46,8 @@ public class PluginConfigReviseSubtreeHandler extends SubtreeHandler<PluginConfi
 		if (kbm == null) return null;
 		KnowledgeBase kb = kbm.getKnowledgeBase();
 		try {
-			new PluginConfigPersistenceHandler().read(kb, new StringInputStream(xmlText),
+			new PluginConfigPersistenceHandler().read(kb,
+					new ByteArrayInputStream(xmlText.getBytes()),
 					new DummyProgressListener());
 		}
 		catch (IOException e1) {
