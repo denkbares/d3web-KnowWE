@@ -23,21 +23,21 @@ import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.testcase.renderer.TestCaseRenderer;
 
 /**
- * TestCaseType for defining test suites in wiki markup.
+ * TestCaseType for defining test cases in wiki markup.
  * 
  * @author Sebastian Furth (denkbares GmbH)
  * @created 18/10/2010
  */
 public class TestCaseType extends DefaultMarkupType {
 
-	public static final String TESTSUITEKEY = "TestCaseType_Testsuite";
-	public static final String KBSOURCE = "master";
+	public static final String TESTCASEKEY = "TestCaseType_Testsuite";
+	public static final String ANNOTATION_MASTER = "master";
 	private static DefaultMarkup m = null;
 
 	static {
 		m = new DefaultMarkup("TestCase");
 		m.addContentType(new TestCaseContent());
-		m.addAnnotation(KBSOURCE, true);
+		m.addAnnotation(ANNOTATION_MASTER, true);
 	}
 
 	public TestCaseType() {

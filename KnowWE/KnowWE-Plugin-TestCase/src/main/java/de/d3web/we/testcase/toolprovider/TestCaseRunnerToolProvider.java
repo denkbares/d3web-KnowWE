@@ -47,11 +47,11 @@ public class TestCaseRunnerToolProvider implements ToolProvider {
 
 	protected Tool getRefreshTool() {
 		// Tool which enables rerunning the test suite
-		String jsAction = "runTestSuite()";
+		String jsAction = "runTestCase()";
 		return new DefaultTool(
 				"KnowWEExtension/d3web/icon/refresh16.png",
 				"Re-Run",
-				"Re-Runs the test suite.",
+				"Re-Runs the test case.",
 				jsAction);
 	}
 
@@ -63,7 +63,7 @@ public class TestCaseRunnerToolProvider implements ToolProvider {
 		return new DefaultTool(
 				"KnowWEExtension/images/pdf.png",
 				"Download PDF",
-				"Download the test suite visualized in a pdf file.",
+				"Download the test case visualized in a pdf file.",
 				jsAction);
 	}
 
@@ -75,7 +75,7 @@ public class TestCaseRunnerToolProvider implements ToolProvider {
 		return new DefaultTool(
 				"KnowWEExtension/images/txt.png",
 				"Download GraphViz",
-				"Download the test suite visualized in a GraphViz (.dot) file.",
+				"Download the test case visualized in a GraphViz (.dot) file.",
 				jsAction);
 	}
 

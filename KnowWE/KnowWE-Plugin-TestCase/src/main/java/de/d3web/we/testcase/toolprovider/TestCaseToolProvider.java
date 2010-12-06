@@ -47,7 +47,7 @@ public class TestCaseToolProvider implements ToolProvider {
 		// tool to provide download capability
 		String jsAction = "window.location='action/TestCaseServlet?type=case&KWiki_Topic="
 				+ topic + "&web=" + web + "&filename=" + topic.replaceAll(" ", "_")
-				+ "_testsuite.xml'";
+				+ "_testcase.xml'";
 		return new DefaultTool(
 				"KnowWEExtension/images/xml.png",
 				"Download XML",
@@ -59,7 +59,7 @@ public class TestCaseToolProvider implements ToolProvider {
 		// tool to provide download capability
 		String jsAction = "window.location='action/TestCaseServlet?type=case&KWiki_Topic="
 				+ topic + "&web=" + web + "&filename=" + topic.replaceAll(" ", "_")
-				+ "_testsuite.txt'";
+				+ "_testcase.txt'";
 		return new DefaultTool(
 				"KnowWEExtension/images/txt.png",
 				"Download TXT",

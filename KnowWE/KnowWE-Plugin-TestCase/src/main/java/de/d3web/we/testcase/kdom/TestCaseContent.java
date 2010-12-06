@@ -107,7 +107,7 @@ public class TestCaseContent extends XMLContent {
 
 					// Store the test suite
 					KnowWEUtils.storeObject(s.getArticle().getWeb(), s.getTitle(), s.getID(),
-							TestCaseType.TESTSUITEKEY, testSuite);
+							TestCaseType.TESTCASEKEY, testSuite);
 					messages.add(new ObjectCreatedMessage(
 							"Test Suite successfully created with "
 									+ testSuite.getRepository().size() + " cases."));
@@ -118,7 +118,7 @@ public class TestCaseContent extends XMLContent {
 				Section<TestCaseType> father = s.findAncestorOfType(TestCaseType.class);
 				return Arrays.asList((KDOMReportMessage) new SimpleMessageError(
 						"Unable to get knowledge base from article: "
-								+ DefaultMarkupType.getAnnotation(father, TestCaseType.KBSOURCE)));
+								+ DefaultMarkupType.getAnnotation(father, TestCaseType.ANNOTATION_MASTER)));
 			}
 
 			return messages;
@@ -295,7 +295,7 @@ public class TestCaseContent extends XMLContent {
 			// MyTestArticleManager)
 			if (kbm != null && kbm.getKnowledgeBase().getAllIDObjects().size() == 2) {
 				Section<TestCaseType> father = s.findAncestorOfType(TestCaseType.class);
-				String source = DefaultMarkupType.getAnnotation(father, TestCaseType.KBSOURCE);
+				String source = DefaultMarkupType.getAnnotation(father, TestCaseType.ANNOTATION_MASTER);
 				KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(a.getWeb(),
 						source);
 				kbm = getKBM(article);

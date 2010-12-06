@@ -60,7 +60,7 @@ public class TestCaseUtils {
 
 		if (s != null) {
 			testSuite = (TestSuite) KnowWEUtils.getStoredObject(web, article, s.getID(),
-					TestCaseType.TESTSUITEKEY);
+					TestCaseType.TESTCASEKEY);
 		}
 		else {
 			Logger.getLogger(TestCaseUtils.class.getName()).warning(

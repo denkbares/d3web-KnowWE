@@ -69,7 +69,7 @@ public class TSUtil {
 		Section<TestCaseContent> s = article.getSection().findSuccessor(TestCaseContent.class);
 		return (TestSuite) KnowWEUtils.getStoredObject("default_web",
 				article.getTitle(),
-				s.getID(), TestCaseType.TESTSUITEKEY);
+				s.getID(), TestCaseType.TESTCASEKEY);
 	}
 
 	public KnowledgeBase getCreatedKB() {
