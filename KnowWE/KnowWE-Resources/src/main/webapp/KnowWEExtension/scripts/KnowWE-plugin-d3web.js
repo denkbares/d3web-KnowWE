@@ -1184,6 +1184,9 @@ KNOWWE.plugin.d3web.rerenderquestionsheet = function() {
 			        	}
 			        	catch (e) { /*ignore*/ }
 			        	KNOWWE.core.util.updateProcessingState(-1);
+                    },
+                    onError : function () {
+			        	KNOWWE.core.util.updateProcessingState(-1);                    	
                     }
                 }
             }

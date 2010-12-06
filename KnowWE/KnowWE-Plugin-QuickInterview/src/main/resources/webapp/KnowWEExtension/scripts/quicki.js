@@ -694,7 +694,10 @@ KNOWWE.plugin.quicki = function(){
 			        	}
 			        	catch (e) { /*ignore*/ }
 			        	KNOWWE.core.util.updateProcessingState(-1);
-                    }	
+                    },
+                    onError : function () {
+			        	KNOWWE.core.util.updateProcessingState(-1);                    	
+                    }
         		}
         	}
         	KNOWWE.core.util.updateProcessingState(1);
@@ -731,7 +734,10 @@ KNOWWE.plugin.quicki = function(){
 			        	}
 			        	catch (e) { /*ignore*/ }
 			        	KNOWWE.core.util.updateProcessingState(-1);
-                	}
+                	},
+                    onError : function () {
+			        	KNOWWE.core.util.updateProcessingState(-1);                    	
+                    }
                 }
             }
         	KNOWWE.core.util.updateProcessingState(1);
@@ -756,18 +762,21 @@ KNOWWE.plugin.quicki = function(){
         	 
         	 var id = 'quickinterview';
              var options = {
-                 url : KNOWWE.core.util.getURL( params ),
-                 response : {
-                	 action : 'insert',
-                     ids : [ id ],	
-                	 fn : function(){
+                url : KNOWWE.core.util.getURL( params ),
+                response : {
+                	action : 'insert',
+                    ids : [ id ],	
+                	fn : function(){
 			        	try {
 	                		KNOWWE.plugin.quicki.initialize();
 			        	}
 			        	catch (e) { /*ignore*/ }
 			        	KNOWWE.core.util.updateProcessingState(-1);
-                	 }	
-                 }
+                	},
+                    onError : function () {
+			        	KNOWWE.core.util.updateProcessingState(-1);                    	
+                    }
+                }
         	 }
         	 KNOWWE.core.util.updateProcessingState(1);
              new _KA( options ).send();

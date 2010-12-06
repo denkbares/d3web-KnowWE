@@ -137,8 +137,30 @@ KNOWWE.core.util = function(){
         		document.body.appendChild(node);
         	}
         	var state = "idle";
-        	if (activityCounter > 0) state = "processing";
+        	if (activityCounter > 0) {
+        		state = "processing";
+        		KNOWWE.core.util.showProcessingIndicator();
+        	}
+        	else {
+        		// hide animation
+        		KNOWWE.core.util.hideProcessingIndicator();
+        	}
         	node.innerHTML = state;
+        },
+        showProcessingIndicator : function () {
+       		var node = $('KnowWEProcessingIndicator');
+    		if (!node) {
+        		node = new Element('div', {'id': 'KnowWEProcessingIndicator', 'styles': { 
+        			'display': 'block', 'position': 'fixed', 'top': '0px', 'left': '0px' }});
+        		document.body.appendChild(node);
+        		node.innerHTML = '<img src="KnowWEExtension/images/ajax-loader16.gif"></img>';
+        	}
+        },
+        hideProcessingIndicator : function () {
+       		var node = $('KnowWEProcessingIndicator');
+    		if (node) {
+    			node.remove();
+    		}
         },
         /**
          * Function: addCollabsiblePluginHeader
@@ -458,6 +480,9 @@ KNOWWE.core.rerendercontent = function(){
 			        	}
 			        	catch (e) { /*ignore*/ }
 			        	KNOWWE.core.util.updateProcessingState(-1);
+                    },
+                    onError : function () {
+			        	KNOWWE.core.util.updateProcessingState(-1);                    	
                     }
                 }
             }

@@ -371,7 +371,8 @@ KNOWWE.helper.ajax = function ( options ) {
                                 * - create: the response is inserted into the DOM before the element specified by create options
                                 * - string: a special command: see comments below for explanation
                                 */
-            fn : false  
+            fn : false,
+	        onError: false
         },
         create : {
             id : '',
@@ -410,54 +411,61 @@ KNOWWE.helper.ajax = function ( options ) {
      * without errors the action defined in oDefault.response.action is executed.
      */
     function handleResponse() {
-        if ((http.readyState == 4) && (http.status == 200)) {
-            var ids = oDefault.response.ids;
-            var action = oDefault.response.action;
-            
-            switch ( action ) {
-                case 'insert':
-                    var max = ids.length;
-                    for ( var i = 0; i < max; i++ ) {
-                    	var d = document.getElementById(ids[i]);
-                    	if( d ) {
-                            document.getElementById(ids[i]).innerHTML = http.responseText;
-                    	}
-                    }
-                    break;
-                case 'create':
-                    if( oDefault.create ){
-                        var el = oDefault.create.fn.call();
-                        el.innerHTML = http.responseText;
-                        document.getElementById( oDefault.create.id ).insertBefore( el, document.getElementById( oDefault.create.id ).childNodes[0]);
-                    } 
-                    break;
-                case 'replaceElement':
-                    KNOWWE.core.util.replaceElement( ids, http.responseText);
-                    break;                    
-                case 'replace':
-                    KNOWWE.core.util.replace( ids, http.responseText);
-                    break;                    
-                case 'string':
-                    if( http.responseText.startsWith('@info@')){
-                         var info = new _KN('p', { 'class' : 'box info' });
-                         info._setHTML( http.responseText.replace(/@info@/, '') );
-                         info._injectTop(document.getElementById( ids[0]));
-                    } 
-                    if( http.responseText.startsWith('@replace@')){
-                        var html = http.responseText.replace(/@replace@/, '');
-                        KNOWWE.core.util.replace( ids, html );    
-                    }
-                    break;
-                default:
-                    break;
-            }
-            if( !oDefault.response.fn ){ return; }
-            oDefault.response.fn.call( this );
-            
-            if(oDefault.loader) {
-                var loader = document.getElementById('KNOWWE-ajax-loader');
-                loader.parentNode.removeChild( loader );
-            }
+        if (http.readyState == 4) {
+			if (http.status == 200) {
+	            var ids = oDefault.response.ids;
+	            var action = oDefault.response.action;
+	            
+	            switch ( action ) {
+	                case 'insert':
+	                    var max = ids.length;
+	                    for ( var i = 0; i < max; i++ ) {
+	                    	var d = document.getElementById(ids[i]);
+	                    	if( d ) {
+	                            document.getElementById(ids[i]).innerHTML = http.responseText;
+	                    	}
+	                    }
+	                    break;
+	                case 'create':
+	                    if( oDefault.create ){
+	                        var el = oDefault.create.fn.call();
+	                        el.innerHTML = http.responseText;
+	                        document.getElementById( oDefault.create.id ).insertBefore( el, document.getElementById( oDefault.create.id ).childNodes[0]);
+	                    } 
+	                    break;
+	                case 'replaceElement':
+	                    KNOWWE.core.util.replaceElement( ids, http.responseText);
+	                    break;                    
+	                case 'replace':
+	                    KNOWWE.core.util.replace( ids, http.responseText);
+	                    break;                    
+	                case 'string':
+	                    if( http.responseText.startsWith('@info@')){
+	                         var info = new _KN('p', { 'class' : 'box info' });
+	                         info._setHTML( http.responseText.replace(/@info@/, '') );
+	                         info._injectTop(document.getElementById( ids[0]));
+	                    } 
+	                    if( http.responseText.startsWith('@replace@')){
+	                        var html = http.responseText.replace(/@replace@/, '');
+	                        KNOWWE.core.util.replace( ids, html );    
+	                    }
+	                    break;
+	                default:
+	                    break;
+	            }
+	            if( !oDefault.response.fn ){ return; }
+	            oDefault.response.fn.call( this );
+	            
+	            if(oDefault.loader) {
+	                var loader = document.getElementById('KNOWWE-ajax-loader');
+	                loader.parentNode.removeChild( loader );
+	            }
+			}
+			else {
+				if(oDefault.response.onError) {
+					oDefault.response.onError.call(this);
+				}
+	    	}
         }  
     }    
     
