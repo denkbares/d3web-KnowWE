@@ -31,7 +31,7 @@ public class TermNameCaseWarning extends KDOMWarning {
 
 	@Override
 	public String getVerbalization() {
-		return "Wrong case. Expected: " + expected;
+		return "Term name matches with wrong case. Expected: " + expected;
 	}
 
 }

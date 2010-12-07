@@ -31,10 +31,12 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
+import de.d3web.we.kdom.report.message.TermNameCaseWarning;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.tools.ToolMenuDecoratingRenderer;
 import de.d3web.we.utils.D3webUtils;
@@ -69,9 +71,20 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
 				Section<QuestionnaireDefinition> qcSec) {
 
+			String name = qcSec.get().getTermName(qcSec);
+
 			if (KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(article, qcSec)) {
 				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(article,
 						qcSec);
+
+				Section<? extends TermDefinition<QContainer>> termDef = KnowWEUtils.getTerminologyHandler(
+						article.getWeb()).getTermDefiningSection(article, qcSec);
+
+				String termDefName = termDef.get().getTermName(termDef);
+
+				if (!name.equals(termDefName)) {
+					return Arrays.asList((KDOMReportMessage) new TermNameCaseWarning(termDefName));
+				}
 				return new ArrayList<KDOMReportMessage>(0);
 				// return Arrays.asList((KDOMReportMessage) new
 				// ObjectAlreadyDefinedWarning(
@@ -79,8 +92,6 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 			}
 
 			KnowledgeBaseManagement mgn = getKBM(article);
-
-			String name = qcSec.get().getTermName(qcSec);
 
 			IDObject o = mgn.findQContainer(name);
 

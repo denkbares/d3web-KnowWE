@@ -30,8 +30,10 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
+import de.d3web.we.kdom.report.message.TermNameCaseWarning;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.tools.ToolMenuDecoratingRenderer;
 import de.d3web.we.utils.D3webUtils;
@@ -75,18 +77,28 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
 				Section<QuestionDefinition> sec) {
 
+			Section<QuestionDefinition> qidSection = (sec);
+			String name = qidSection.get().getTermName(qidSection);
+
 			if (KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(article, sec)) {
 				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(article,
 						sec);
+
+				Section<? extends TermDefinition<Question>> termDef = KnowWEUtils.getTerminologyHandler(
+						article.getWeb()).getTermDefiningSection(article, sec);
+
+				String termDefName = termDef.get().getTermName(termDef);
+
+				if (!name.equals(termDefName)) {
+					return Arrays.asList((KDOMReportMessage) new TermNameCaseWarning(termDefName));
+				}
 				return new ArrayList<KDOMReportMessage>(0);
 				// return Arrays.asList((KDOMReportMessage) new
 				// ObjectAlreadyDefinedWarning(
 				// sec.get().getTermName(sec)));
 			}
 
-			Section<QuestionDefinition> qidSection = (sec);
 
-			String name = qidSection.get().getTermName(qidSection);
 
 			KnowledgeBaseManagement mgn = getKBM(article);
 
