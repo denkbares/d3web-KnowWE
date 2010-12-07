@@ -130,6 +130,9 @@ public class KnowWEParameterMap extends HashMap<String, String> {
 		String page = this.get(KnowWEAttributes.TOPIC);
 		if (page == null) {
 			page = this.get("page");
+			if (page == null) {
+				page = wikiContext.getTopic();
+			}
 		}
 		return page;
 	}
