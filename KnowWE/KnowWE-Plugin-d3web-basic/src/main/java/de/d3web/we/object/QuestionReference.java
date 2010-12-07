@@ -63,4 +63,9 @@ public class QuestionReference extends D3webTermReference<Question> {
 		return null;
 	}
 
+	@Override
+	public String getTermObjectDisplayName() {
+		return "Question";
+	}
+
 }

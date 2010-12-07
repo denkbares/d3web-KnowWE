@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.CondKnown;
+import de.d3web.we.kdom.condition.CondKnownUnknown;
 import de.d3web.we.kdom.condition.Finding;
 import de.d3web.we.kdom.condition.NumericalFinding;
 import de.d3web.we.kdom.condition.NumericalIntervallFinding;
@@ -60,6 +61,7 @@ public class GuardType extends AbstractXMLObjectType {
 
 		types.add(new NodeActiveConditionType());
 		types.add(new UserRatingConditionType());
+		types.add(new CondKnownUnknown());
 		types.add(new FlowchartProcessedConditionType());
 		types.add(new Finding());
 		types.add(new NumericalFinding());

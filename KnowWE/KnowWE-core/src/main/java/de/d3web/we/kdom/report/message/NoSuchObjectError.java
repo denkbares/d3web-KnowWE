@@ -25,14 +25,20 @@ import de.d3web.we.kdom.report.KDOMError;
 public class NoSuchObjectError extends KDOMError {
 
 	private final String name;
+	private final String type;
 
 	public NoSuchObjectError(String name) {
+		this("Object", name);
+	}
+
+	public NoSuchObjectError(String type, String name) {
+		this.type = type;
 		this.name = name;
 	}
 
 	@Override
 	public String getVerbalization() {
-		return "Object not found: '" + name + "'";
+		return type + " not found: '" + name + "'";
 	}
 
 }

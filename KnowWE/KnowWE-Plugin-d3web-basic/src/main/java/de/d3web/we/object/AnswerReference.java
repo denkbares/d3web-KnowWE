@@ -112,43 +112,9 @@ public abstract class AnswerReference
 		return question + " " + answer;
 	}
 
-	// @Override
-	// public Choice getObject(KnowWEArticle article, Section<? extends
-	// ObjectRef<Choice>> s) {
-	//
-	// // new lookup method using Terminology Manager
-	// Section<? extends ObjectDef<Choice>> objectDefinition =
-	// TerminologyManager.getInstance()
-	// .getObjectDefinition(article, s);
-	// if (objectDefinition != null) {
-	// Choice c = objectDefinition.get().getObject(objectDefinition);
-	// if (c != null &&
-	// c.getName().equals(objectDefinition.get().getTermName(s))) {
-	// return c;
-	// }
-	// }
-	//
-	// // old lookup method using knowledge base - evil slow!!
-	// Section<AnswerRef> sec = (Section<AnswerRef>) s;
-	// String answerName = sec.get().getTermName(sec);
-	// Section<QuestionRef> ref = sec.get().getQuestionSection(sec);
-	// String questionName = ref.get().getTermName(ref);
-	//
-	// KnowledgeBaseManagement mgn =
-	// D3webModule.getKnowledgeRepresentationHandler(
-	// article.getWeb())
-	// .getKBM(article.getTitle());
-	//
-	// Question question = mgn.findQuestion(questionName);
-	// if (question != null && question instanceof QuestionChoice) {
-	// return mgn.findChoice((QuestionChoice) question,
-	// answerName);
-	//
-	// }
-	//
-	//
-	// return null;
-	//
-	// }
+	@Override
+	public String getTermObjectDisplayName() {
+		return "Choice";
+	}
 
 }

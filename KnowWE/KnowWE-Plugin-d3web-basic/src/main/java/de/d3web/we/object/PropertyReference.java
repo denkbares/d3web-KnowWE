@@ -53,4 +53,9 @@ public class PropertyReference extends D3webTermReference<Property> {
 		return null;
 	}
 
+	@Override
+	public String getTermObjectDisplayName() {
+		return "Property";
+	}
+
 }

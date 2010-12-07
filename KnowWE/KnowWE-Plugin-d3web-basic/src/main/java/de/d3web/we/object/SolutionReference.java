@@ -62,4 +62,9 @@ public class SolutionReference extends D3webTermReference<Solution> {
 		return null;
 	}
 
+	@Override
+	public String getTermObjectDisplayName() {
+		return "Solution";
+	}
+
 }

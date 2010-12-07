@@ -82,4 +82,9 @@ public class IDObjectReference extends D3webTermReference<IDObject> {
 		return null;
 	}
 
+	@Override
+	public String getTermObjectDisplayName() {
+		return "Object";
+	}
+
 }

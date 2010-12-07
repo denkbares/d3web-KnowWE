@@ -96,7 +96,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 		return null;
 	}
 
-	class CondKnownFinder implements ISectionFinder {
+	private class CondKnownFinder implements ISectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {

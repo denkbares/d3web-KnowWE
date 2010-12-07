@@ -66,6 +66,8 @@ public abstract class TermReference<TermObject>
 		return this.termObjectClass;
 	}
 
+	public abstract String getTermObjectDisplayName();
+
 	/**
 	 * Allows quick and simple access to the object this sections is refering
 	 * to.
@@ -109,8 +111,9 @@ public abstract class TermReference<TermObject>
 
 			if (s.get().getTermObject(article, s) == null) {
 
-				return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(s.get().getName()
-						+ ": " + s.get().getTermName(s)));
+				return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(
+						s.get().getTermObjectDisplayName(),
+						s.get().getTermName(s)));
 			}
 
 			// TODO: give meaningful information about the object
