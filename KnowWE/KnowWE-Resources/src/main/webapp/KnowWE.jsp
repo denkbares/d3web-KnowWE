@@ -26,7 +26,7 @@ String findParam( PageContext ctx, String key )
 	if(!map.containsKey("KWiki_Topic")) {
 		// add topic if missing, otherwise the action on the Main page
 		// (using url) "http://.../KnowWE" will not work 
-		map.put("KWiki_Topic", wikiContext.getPage().getName());
+		// map.put("KWiki_Topic", wikiContext.getPage().getName());
 	}
 	
 	env.getDispatcher().performAction(map);
