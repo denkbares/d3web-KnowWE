@@ -24,16 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.DelegateRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * SequentialTestCaseKDOM This class represents the sequentialTestCases in the
@@ -48,7 +43,6 @@ public class SequentialTestCase extends DefaultAbstractKnowWEObjectType {
 		this.sectionFinder = new SequentialTestCaseSectionFinder();
 		this.childrenTypes.add(new SequentialTestCaseName());
 		this.childrenTypes.add(new RatedTestCases());
-		this.setCustomRenderer(new SequentialTestCaseRenderer());
 	}
 
 	public class SequentialTestCaseSectionFinder implements ISectionFinder {
@@ -72,18 +66,6 @@ public class SequentialTestCase extends DefaultAbstractKnowWEObjectType {
 			}
 			return matches;
 		}
-	}
-
-	private class SequentialTestCaseRenderer extends KnowWEDomRenderer<SequentialTestCase> {
-
-		@Override
-		public void render(KnowWEArticle article, Section<SequentialTestCase> sec, KnowWEUserContext user, StringBuilder string) {
-			string.append(KnowWEUtils.maskHTML("<p>"));
-			DelegateRenderer.getInstance().render(article, sec, user, string);
-			string.append(KnowWEUtils.maskHTML("</p>"));
-
-		}
-
 	}
 
 }
