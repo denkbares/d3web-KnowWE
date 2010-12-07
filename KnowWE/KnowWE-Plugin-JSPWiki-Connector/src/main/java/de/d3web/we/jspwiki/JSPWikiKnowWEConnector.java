@@ -307,51 +307,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		return this.engine.getPureText(wp);
 	}
 
-	// private String getHashMapContent(HashMap<String, String> pageContent,
-	// String topic ) {
-	//
-	// String content = "<Kopic id=\"" + topic + "\"" + ">";
-	//
-	// // append the Sections to content if they are not "".
-	// // 1. Questionnaires-section
-	// if (pageContent.get("qClassHierarchy") != "") {
-	// content += "\n<Questionnaires-section>\n";
-	// content += pageContent.get("qClassHierarchy");
-	// content += "</Questionnaires-section>\n";
-	// }
-	//
-	// // 2.Questions-section
-	// if (pageContent.get("decisionTree") != "") {
-	// content += "<Questions-section>\n";
-	// content += pageContent.get("decisionTree");
-	// content += "</Questions-section>\n";
-	// }
-	//
-	// // 3. SetCoveringList-Section
-	// if (pageContent.get("xcl") != "") {
-	// content += "<SetCoveringList-section>\n";
-	// content += pageContent.get("xcl");
-	// content += "</SetCoveringList-section>\n";
-	// }
-	//
-	// // 4. Rules-section
-	// if (pageContent.get("rules") != "") {
-	// content.concat("<Rules-section>\n");
-	// content.concat(pageContent.get("rules"));
-	// content.concat("</Rules-section>\n");
-	// }
-	//
-	// // 5. Solutions-Section
-	// if (pageContent.get("diagnosisHierarchy") != "") {
-	// content += "<Solutions-section>\n";
-	// content += pageContent.get("diagnosisHierarchy");
-	// content += "</Solutions-section>\n";
-	// }
-	//
-	// content += "</Kopic>";
-	// return content;
-	// }
-
+	
 	@Override
 	public boolean doesPageExist(String topic) {
 

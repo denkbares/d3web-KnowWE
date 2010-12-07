@@ -56,51 +56,6 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		throw new CloneNotSupportedException();
 	}
 
-	// @Override
-	// public String render(Section sec, KnowWEUserContext user) {
-	//
-	// // old hack - TODO: remove (not referring to ObjectType-Renderer
-	// // causes loop with ErrorRenderer!!! -> deactivated
-	// // if (sec.getRenderer() != null) {
-	// // return sec.getRenderer().render(sec, user);
-	// // }
-	//
-	// StringBuilder result = new StringBuilder();
-	// List<Section> subsecs = sec.getChildren();
-	// if (subsecs.size() == 0) {
-	// return sec.getOriginalText();
-	// }
-	//
-	// for (Section section : subsecs) {
-	// try {
-	// KnowWEObjectType objectType = section.getObjectType();
-	// KnowWEDomRenderer renderer = RendererManager.getInstance()
-	// .getRenderer(objectType, user.getUsername(),
-	// sec.getTitle());
-	// if (renderer == null) {
-	// renderer = objectType.getRenderer();
-	// }
-	//
-	// /* Once we have completely switched to new render-method
-	// * deprecated call will be removed (also from the interface)
-	// */
-	// try {
-	// renderer.render(section, user, result);
-	// } catch (NotImplementedException e) {
-	//
-	// result.append(renderer.render(section, user));
-	// }
-	//
-	// } catch (Exception e) {
-	// System.out.println(section.getObjectType());
-	// e.printStackTrace();
-	// }
-	//
-	// }
-	//
-	// return result.toString();
-	// }
-
 	@Override
 	public void render(KnowWEArticle article, Section section,
 			KnowWEUserContext user, StringBuilder builder) {
