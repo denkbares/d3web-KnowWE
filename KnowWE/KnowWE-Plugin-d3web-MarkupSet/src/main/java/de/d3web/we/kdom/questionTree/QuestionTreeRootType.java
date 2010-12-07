@@ -22,8 +22,6 @@ package de.d3web.we.kdom.questionTree;
 
 import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
-import de.d3web.we.kdom.questionTree.dialog.QuestionTreeRootTypeDefaultRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 
 public class QuestionTreeRootType extends QuestionTree {
 
@@ -32,17 +30,11 @@ public class QuestionTreeRootType extends QuestionTree {
 	static {
 		m = new DefaultMarkup("Question");
 		m.addContentType(new QuestionDashTree());
-		m.addAnnotation("dialog", false);
 		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME, false);
 	}
 
 	public QuestionTreeRootType() {
 		super(m);
-	}
-
-	@Override
-	protected KnowWEDomRenderer<?> getDefaultRenderer() {
-		return new QuestionTreeRootTypeDefaultRenderer();
 	}
 
 }
