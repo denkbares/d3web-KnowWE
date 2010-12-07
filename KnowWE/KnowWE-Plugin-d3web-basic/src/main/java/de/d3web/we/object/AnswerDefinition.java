@@ -140,7 +140,7 @@ public abstract class AnswerDefinition
 				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(article,
 						s);
 				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
-						s.get().getTermName(s)));
+						s.get().getTermObject(article, s).getName()));
 			}
 
 			String name = s.get().getTermName(s);
@@ -209,8 +209,7 @@ public abstract class AnswerDefinition
 					}
 					else {
 						KnowledgeBaseManagement mgn = getKBM(article);
-						a = mgn.addChoiceAnswer((QuestionChoice) q, name,
-								s.get().getPosition(s));
+						a = mgn.addChoiceAnswer((QuestionChoice) q, name, s.get().getPosition(s));
 					}
 				}
 
@@ -230,7 +229,8 @@ public abstract class AnswerDefinition
 		}
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<AnswerDefinition> s) {
+		public void destroy(KnowWEArticle article, Section<AnswerDefinition>
+				s) {
 
 			KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
 					article, s);

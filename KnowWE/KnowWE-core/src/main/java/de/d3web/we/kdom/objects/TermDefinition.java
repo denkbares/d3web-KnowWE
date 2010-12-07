@@ -121,7 +121,7 @@ public abstract class TermDefinition<TermObject>
 
 	/**
 	 * 
-	 * This handler registers this Term globally when the Section is found.
+	 * This handler registers this Term..
 	 * 
 	 * @author Jochen
 	 * @created 08.10.2010

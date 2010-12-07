@@ -107,8 +107,10 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 
 				QContainer qc = mgn.createQContainer(name, parent);
 				if (qc != null) {
-					if (!article.isFullParse()) parent.moveChildToPosition(qc,
-							qcSec.get().getPosition(qcSec));
+					if (!article.isFullParse()) {
+						parent.moveChildToPosition(qc,
+								qcSec.get().getPosition(qcSec));
+					}
 					qcSec.get().storeTermObject(article, qcSec, qc);
 					KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
 							article, qcSec);
@@ -124,7 +126,8 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 		}
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<QuestionnaireDefinition> s) {
+		public void destroy(KnowWEArticle article,
+				Section<QuestionnaireDefinition> s) {
 
 			QContainer q = s.get().getTermObjectFromLastVersion(article, s);
 			if (q != null) {

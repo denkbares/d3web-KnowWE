@@ -63,6 +63,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 	public abstract QuestionType getQuestionType(Section<QuestionDefinition> s);
 
+	@SuppressWarnings("unchecked")
 	public abstract Section<? extends QASetDefinition> getParentQASetSection(Section<? extends QuestionDefinition> qdef);
 
 	public abstract int getPosition(Section<QuestionDefinition> s);
@@ -79,7 +80,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 						sec);
 				return new ArrayList<KDOMReportMessage>(0);
 				// return Arrays.asList((KDOMReportMessage) new
-				// ObjectAlreadyDefinedError(
+				// ObjectAlreadyDefinedWarning(
 				// sec.get().getTermName(sec)));
 			}
 
@@ -137,7 +138,8 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 				// ok everything went well
 				// set position right in case this is an incremental update
 				if (!article.isFullParse()) {
-					parent.moveChildToPosition(q, sec.get().getPosition(sec));
+					parent.moveChildToPosition(q,
+							sec.get().getPosition(sec));
 				}
 				// register term
 				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
@@ -157,9 +159,11 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 		}
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<QuestionDefinition> question) {
+		public void destroy(KnowWEArticle article,
+				Section<QuestionDefinition> question) {
 
-			Question q = question.get().getTermObjectFromLastVersion(article, question);
+			Question q = question.get().getTermObjectFromLastVersion(article,
+					question);
 
 			if (q != null) {
 				D3webUtils.removeRecursively(q);

@@ -29,6 +29,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NoSuchObjectError;
 import de.d3web.we.kdom.report.message.ObjectFound;
+import de.d3web.we.kdom.report.message.TermNameCaseWarning;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -77,9 +78,7 @@ public abstract class TermReference<TermObject>
 				article.getWeb()).getTermDefiningSection(article, s);
 		if (objectDefinition != null) {
 			TermObject c = objectDefinition.get().getTermObject(article, objectDefinition);
-			if (c != null && c.toString().equals(objectDefinition.get().getTermName(s))) {
-				return c;
-			}
+			if (c != null) return c;
 		}
 		return getTermObjectFallback(article, s);
 	}
@@ -109,11 +108,21 @@ public abstract class TermReference<TermObject>
 
 			KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermReference(article, s);
 
+			String termName = s.get().getTermName(s);
+
 			if (s.get().getTermObject(article, s) == null) {
 
 				return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(
 						s.get().getTermObjectDisplayName(),
-						s.get().getTermName(s)));
+						termName));
+			}
+			Section<? extends TermDefinition<TermObject>> termDef = KnowWEUtils.getTerminologyHandler(
+					article.getWeb()).getTermDefiningSection(article, s);
+
+			String termDefName = termDef.get().getTermName(termDef);
+
+			if (!termName.equals(termDefName)) {
+				return Arrays.asList((KDOMReportMessage) new TermNameCaseWarning(termDefName));
 			}
 
 			// TODO: give meaningful information about the object

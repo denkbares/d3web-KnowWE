@@ -139,7 +139,7 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 
 	private TermReferenceLog<?> getTermReferenceLog(KnowWEArticle article, String termName, int termScope) {
 		return getTermReferenceLogsMap(article.getTitle(), termScope).get(
-				new TermIdentifier(article, termName));
+				new TermIdentifier(termName));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -565,6 +565,8 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 
 		private final String termIdentifier;
 
+		private final String termIdentifierLowerCase;
+
 		@SuppressWarnings("unchecked")
 		public TermIdentifier(KnowWEArticle article, Section<? extends KnowWETerm> s) {
 			if (s.get() instanceof NotUniqueKnowWETerm) {
@@ -574,18 +576,17 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 			else {
 				termIdentifier = s.get().getTermName(s);
 			}
+			this.termIdentifierLowerCase = this.termIdentifier.toLowerCase();
 		}
 
-		public TermIdentifier(KnowWEArticle article, String termName) {
+		public TermIdentifier(String termName) {
 			this.termIdentifier = termName;
+			this.termIdentifierLowerCase = this.termIdentifier.toLowerCase();
 		}
 
 		@Override
 		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((termIdentifier == null) ? 0 : termIdentifier.hashCode());
-			return result;
+			return termIdentifierLowerCase.hashCode();
 		}
 
 		@Override
@@ -594,10 +595,14 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 			if (obj == null) return false;
 			if (getClass() != obj.getClass()) return false;
 			TermIdentifier other = (TermIdentifier) obj;
-			if (termIdentifier == null) {
-				if (other.termIdentifier != null) return false;
+			if (termIdentifierLowerCase == null) {
+				if (other.termIdentifierLowerCase != null) {
+					return false;
+				}
 			}
-			else if (!termIdentifier.equals(other.termIdentifier)) return false;
+			else if (!termIdentifierLowerCase.equals(other.termIdentifierLowerCase)) {
+				return false;
+			}
 			return true;
 		}
 
