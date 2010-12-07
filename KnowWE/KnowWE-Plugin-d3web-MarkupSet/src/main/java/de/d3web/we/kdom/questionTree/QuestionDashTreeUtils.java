@@ -93,6 +93,10 @@ public class QuestionDashTreeUtils {
 			Section<? extends DashTreeElement> father,
 			Section<? extends DashTreeElement> grandFather) {
 
+		if (father.hasErrorInSubtree(article) || grandFather.hasErrorInSubtree(article)) {
+			return null;
+		}
+
 		Section<QuestionTreeAnswerDefinition> answerSec = father
 				.findSuccessor(QuestionTreeAnswerDefinition.class);
 		Section<QuestionDefinition> qSec = grandFather.findSuccessor(QuestionDefinition.class);

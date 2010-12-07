@@ -181,13 +181,14 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 					Condition cond = QuestionDashTreeUtils.createCondition(article,
 							DashTreeUtils.getAncestorDashTreeElements(s));
-
-					Rule r = RuleFactory.createHeuristicPSRule(newRuleID, sol, score, cond);
-					if (r != null) {
-						KnowWEUtils.storeSectionInfo(article, s, SETVALUE_ARGUMENT, r);
-						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
-								r.getClass()
-										+ " : " + r.getId()));
+					if (cond != null) {
+						Rule r = RuleFactory.createHeuristicPSRule(newRuleID, sol, score, cond);
+						if (r != null) {
+							KnowWEUtils.storeObject(article, s, SETVALUE_ARGUMENT, r);
+							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+									r.getClass()
+											+ " : " + r.getId()));
+						}
 					}
 				}
 			}

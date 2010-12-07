@@ -155,11 +155,10 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 						DashTreeUtils.getAncestorDashTreeElements(element));
 
 				if (cond != null) {
-
 					Rule r = RuleFactory.createIndicationRule(newRuleID, qaset, cond);
 
 					if (r != null) {
-						KnowWEUtils.storeSectionInfo(article, s, indicationStoreKey, r);
+						KnowWEUtils.storeObject(article, s, indicationStoreKey, r);
 						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
 								r.getClass() + " : "
 										+ r.getId()));

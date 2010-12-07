@@ -172,20 +172,21 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 				Condition cond = QuestionDashTreeUtils.createCondition(article,
 								DashTreeUtils.getAncestorDashTreeElements(s));
 
-				Double d = Double.parseDouble(argument);
-				ActionSetValue action = new ActionSetValue();
-				action.setQuestion(q);
-				action.setValue(new FormulaNumber(d));
+				if (cond != null) {
+					Double d = Double.parseDouble(argument);
+					ActionSetValue action = new ActionSetValue();
+					action.setQuestion(q);
+					action.setValue(new FormulaNumber(d));
 
-				Rule r = RuleFactory.createRule(newRuleID, action, cond, null, null,
-						PSMethodAbstraction.class);
-				if (r != null) {
-					KnowWEUtils.storeSectionInfo(article, s, SETVALUE_ARGUMENT, r);
-					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
-									r.getClass() + " : "
-											+ r.getId()));
+					Rule r = RuleFactory.createRule(newRuleID, action, cond, null, null,
+							PSMethodAbstraction.class);
+					if (r != null) {
+						KnowWEUtils.storeObject(article, s, SETVALUE_ARGUMENT, r);
+						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+										r.getClass() + " : "
+												+ r.getId()));
+					}
 				}
-
 			}
 
 			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(

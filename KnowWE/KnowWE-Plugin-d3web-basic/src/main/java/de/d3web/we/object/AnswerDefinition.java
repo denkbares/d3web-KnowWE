@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -40,6 +41,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
+import de.d3web.we.kdom.report.message.UnexpectedSequence;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.tools.ToolMenuDecoratingRenderer;
 import de.d3web.we.utils.KnowWEUtils;
@@ -167,33 +169,60 @@ public abstract class AnswerDefinition
 
 			if (q instanceof QuestionChoice) {
 
-				// at first check if Answer already defined
-				boolean alreadyExisting = false;
-				List<Choice> allAlternatives = ((QuestionChoice) q).getAllAlternatives();
-				for (Choice choice : allAlternatives) {
-					if (choice.getName().equals(name)) {
-						alreadyExisting = true;
+				Choice a;
+
+				// special treatment for QuestionYN
+				// Answers are not created, but mapped to the already existing
+				// Choices.
+				if (q instanceof QuestionYN) {
+					QuestionYN qyn = (QuestionYN) q;
+					if (name.equals(qyn.getAnswerChoiceYes().getName())) {
+						a = qyn.getAnswerChoiceYes();
+					}
+					else if (name.equals(qyn.getAnswerChoiceNo().getName())) {
+						a = qyn.getAnswerChoiceNo();
+					}
+					else {
+						return Arrays.asList((KDOMReportMessage) new UnexpectedSequence(
+								"only '" + qyn.getAnswerChoiceYes().getName() + "' and '"
+										+ qyn.getAnswerChoiceNo().getName()
+										+ "' is allowed for this question type"));
+					}
+				}
+				else {
+
+					// at first check if is Answer already defined
+					boolean alreadyExisting = false;
+					// we compare case insensitive
+					String actualAnswer = "";
+					List<Choice> allAlternatives = ((QuestionChoice) q).getAllAlternatives();
+					for (Choice choice : allAlternatives) {
+						if (choice.getName().equalsIgnoreCase(name)) {
+							alreadyExisting = true;
+							actualAnswer = choice.getName();
+						}
+					}
+
+					if (alreadyExisting) {
+						return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
+								"Answer already existing - " + actualAnswer));
+					}
+					else {
+						KnowledgeBaseManagement mgn = getKBM(article);
+						a = mgn.addChoiceAnswer((QuestionChoice) q, name,
+								s.get().getPosition(s));
 					}
 				}
 
-				if (alreadyExisting) {
-					return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
-							"Answer already existing - " + name));
-				}
-				else {
-					KnowledgeBaseManagement mgn = getKBM(article);
-					Choice a = mgn.addChoiceAnswer((QuestionChoice) q, name,
-							s.get().getPosition(s));
+				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
+						article, s);
 
-					KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
-							article, s);
+				s.get().storeTermObject(article, s, a);
 
-					s.get().storeTermObject(article, s, a);
+				return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
+						a.getClass().getSimpleName() + "  "
+								+ a.getName()));
 
-					return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
-							a.getClass().getSimpleName() + "  "
-									+ a.getName()));
-				}
 			}
 			return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
 					"no choice question - " + name,
