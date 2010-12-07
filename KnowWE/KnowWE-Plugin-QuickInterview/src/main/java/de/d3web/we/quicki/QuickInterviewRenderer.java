@@ -449,7 +449,7 @@ public class QuickInterviewRenderer {
 			jscall = " rel=\"{oid: '" + id + "', "
 					+ "web:'" + web + "',"
 					+ "ns:'" + namespace + "',"
-					+ "type:'num', "
+					+ "type:'text', "
 					+ "qtext:'" + URLEncoder.encode(q.getName(), "UTF-8") + "', "
 					+ "}\" ";
 		}
@@ -458,13 +458,11 @@ public class QuickInterviewRenderer {
 		}
 
 		// assemble the input field
-		sb.append("\n<input class='inputdate'  style='display: inline;' id='input_" + id
+		sb.append("\n<input class='inputtextvalue'  style='display: inline;' id='input_" + id
 				+ "' type='text' "
 				+ "value='" + value + "' "
 				+ "size='18' "
 				+ jscall + " />");
-		// TODO: Really a date-ok class?
-		sb.append("<input type='button' value='ok' class='date-ok' /> ");
 		// "<div class='dateformatdesc'>()</div>");
 
 		sb.append("\n<div class='answerseparator'></div>");

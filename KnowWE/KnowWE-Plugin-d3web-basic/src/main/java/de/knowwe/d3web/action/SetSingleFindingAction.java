@@ -35,6 +35,7 @@ import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.blackboard.FactFactory;
 import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.NumValue;
+import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.basic.D3webModule;
@@ -56,6 +57,7 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 		String valueid = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_ID);
 		String valuenum = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_NUM);
 		String valuedate = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_DATE);
+		String valueText = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_TEXT);
 		String topic = parameterMap.getTopic();
 		String user = parameterMap.get(KnowWEAttributes.USER);
 		String web = parameterMap.get(KnowWEAttributes.WEB);
@@ -100,7 +102,9 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 					e.printStackTrace();
 				}
 			}
-
+			else if (valueText != null) {
+				value = new TextValue(valueText);
+			}
 			if (value != null) {
 				if (question instanceof QuestionMC && !value.equals(Unknown.getInstance())) {
 

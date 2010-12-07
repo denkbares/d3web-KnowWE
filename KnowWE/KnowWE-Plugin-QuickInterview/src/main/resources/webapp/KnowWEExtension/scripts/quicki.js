@@ -141,7 +141,14 @@ KNOWWE.plugin.quicki = function(){
         		function(event) {
         			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.dateAnswerClicked, event);
         		});
-            }); 
+            });
+            
+            _KS('.inputtextvalue').each(function( element ){
+        		_KE.add('keydown', element,  
+        		function(event) {
+        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.textAnswerClicked, event);
+        		});
+            });
         	
         	/* removing indicated elements from the storages; this ensures that indicated
         	 * questions are always displayed expanded, even after e.g. the user previously
@@ -492,6 +499,34 @@ KNOWWE.plugin.quicki = function(){
             // send KNOWWE request as SingleFindingAction with given value
             KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
             		{action: 'SetSingleFindingAction', ValueDate: inputtext});
+        },
+        /**
+         * Function: textAnswerClicked
+         * 		Handles the input of text-values
+         * 
+         * Parameters:
+         * 		event - the event firing the action
+         */
+        textAnswerClicked : function (event) {
+        	event = new Event( event ).stopPropagation();         
+            var key = (event.code == 13);
+            
+            // check, if either button was clicked or enter was pressed
+            if( !key) return false;
+            
+            var rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")");
+            if( !rel ) return;
+            
+            var inputtext;	// default input
+            
+            // if an input was given in the field
+            if(_KS('#input_' + rel.oid)) {
+                    inputtext = _KS('#input_' + rel.oid).value; 
+            }
+            if( !inputtext ) return;  
+            // send KNOWWE request as SingleFindingAction with given value
+            KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
+            		{action: 'SetSingleFindingAction', ValueText: inputtext});
         },
         /**
          * Function: toggleImage
