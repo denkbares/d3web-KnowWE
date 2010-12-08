@@ -22,6 +22,8 @@ package de.d3web.we.quicki;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -118,7 +120,7 @@ public class QuickInterviewRenderer {
 
 		// call method for getting interview elements recursively
 		// start with root QASet and go DFS strategy
-		getInterviewElementsRenderingRecursively(kb.getRootQASet(), buffi, processedTOs, 0, true);
+		getInterviewElementsRenderingRecursively(kb.getRootQASet(), buffi, processedTOs, -2, true);
 
 		// add pseudo element for correctly closing the plugin
 		buffi.append("<div class='invisible'>  </div>");
@@ -132,22 +134,24 @@ public class QuickInterviewRenderer {
 	 * @return the plugin header HTML String
 	 */
 	private void getInterviewPluginHeader(StringBuffer html) {
-
+		/*
+		 * // assemble JS string String relAt = " rel=\"{" + "web:'" + web +
+		 * "', " + "ns:'" + namespace + "'" + "}\" ";
+		 * 
+		 * html.append("<h3>"); html.append("Quick Interview");
+		 * html.append("<div id='quickireset' class='reset pointer' title='" +
+		 * rb.getString("KnowWE.quicki.reset") + "'" + relAt + "></div>\n"); //
+		 * html.append("<div class=''></div>"); //
+		 * html.append("<div class='qanswerunknown'></div>");
+		 * html.append("</h3>\n");
+		 */
 		// assemble JS string
-		String relAt = " rel=\"{"
-				+ "web:'" + web + "', "
-				+ "ns:'" + namespace + "'"
-				+ "}\" ";
-
-		html.append("<h3>");
-		html.append("Quick Interview");
-		html.append("<div id='quickireset' class='reset pointer' title='"
-				+ rb.getString("KnowWE.quicki.reset") + "'"
-				+ relAt
-				+ "></div>\n");
-		// html.append("<div class=''></div>");
-		// html.append("<div class='qanswerunknown'></div>");
-		html.append("</h3>\n");
+		String relAt = "rel=\"{" + "web:'" + web + "', " + "ns:'" + namespace + "'" + "}\" ";
+		html.append("<div style='position:relative'>");
+		html.append("<div id='quickireset' style='position:absolute;right:0px;top:3px;' ").
+				append("class='reset pointer' title='").append(rb.getString("KnowWE.quicki.reset")).
+				append("' ").append(relAt).append("></div>\n");
+		html.append("</div>");
 	}
 
 	/**
@@ -207,9 +211,9 @@ public class QuickInterviewRenderer {
 		// corresponding recursion
 		for (TerminologyObject qcontainerchild : topContainer.getChildren()) {
 
-			init = inits.contains(qcontainerchild) ? true : false;
-			if (!init && isIndicated(topContainer)) {
-				init = true;
+			init = inits.contains(qcontainerchild) || isIndicated(topContainer);
+			if (!init && qcontainerchild instanceof QASet) {
+				init = !Collections.disjoint(Arrays.asList(qcontainerchild.getChildren()), inits);
 			}
 
 			if (qcontainerchild instanceof QContainer) {
@@ -228,7 +232,7 @@ public class QuickInterviewRenderer {
 
 	private void getEmptyQuestionnaireRendering(QContainer container, int depth, StringBuffer buffi,
 			boolean show) {
-		int margin = 10 + depth * 10; // calculate identation
+		int margin = 10 + depth * 20; // calculate identation
 
 		String clazz = show // decide class for rendering expand-icon
 				? "class='questionnaire pointDown'"
@@ -302,7 +306,7 @@ public class QuickInterviewRenderer {
 	 */
 	private void getAlreadyDefinedRendering(TerminologyObject element, StringBuffer sb, int depth) {
 
-		int margin = 30 + depth * 10;
+		int margin = 30 + depth * 20;
 		sb.append("<div id='" + element.getId() + "' " +
 				"class='alreadyDefined' style='margin-left: " + margin + "px; display: block'; >");
 		sb.append(element.getName() + " is already defined!");
@@ -322,7 +326,7 @@ public class QuickInterviewRenderer {
 	 */
 	private void getQuestionnaireRendering(QASet container, int depth, boolean show, StringBuffer buffi) {
 
-		int margin = 10 + depth * 10; // calculate identation
+		int margin = 10 + depth * 20; // calculate identation
 
 		String clazz = show // decide class for rendering expand-icon
 				? "class='questionnaire pointDown'"
@@ -355,7 +359,7 @@ public class QuickInterviewRenderer {
 
 		// calculate indentation depth & resulting width of the question display
 		// 10 for standard margin and 30 for indenting further than the triangle
-		int d = 30 + depth * 10;
+		int d = 30 + depth * 20;
 
 		String qablockCSS = "qablock";
 
