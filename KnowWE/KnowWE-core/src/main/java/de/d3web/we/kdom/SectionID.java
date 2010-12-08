@@ -76,7 +76,7 @@ public class SectionID {
 		StringBuilder newText = new StringBuilder();
 		for (int i = 0; i < text.length(); i++) {
 			char c = text.charAt(i);
-			if (Character.isLetterOrDigit(c) || c == '_' || c == ' ') {
+			if (Character.isLetterOrDigit(c) || c == '_' || c == ' ' || c == '-') {
 				newText.append(c);
 			}
 			else {
