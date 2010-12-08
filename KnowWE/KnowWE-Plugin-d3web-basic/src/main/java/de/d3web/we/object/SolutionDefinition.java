@@ -22,13 +22,11 @@ package de.d3web.we.object;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
-import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Rating.State;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.we.kdom.IncrementalConstraints;
@@ -47,8 +45,6 @@ import de.d3web.we.tools.ToolMenuDecoratingRenderer;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
-import de.d3web.xcl.XCLModel;
-import de.d3web.xcl.inference.PSMethodXCL;
 import de.knowwe.core.renderer.FontColorRenderer;
 import de.knowwe.core.renderer.ObjectInfoLinkRenderer;
 
@@ -94,7 +90,6 @@ public abstract class SolutionDefinition
 		@Override
 		public void render(KnowWEArticle article, Section sec,
 				KnowWEUserContext user, StringBuilder string) {
-			String solution = sec.getOriginalText().replace("\"", "").trim();
 
 			Session session = D3webUtils.getSession(article.getTitle(), user,
 					article.getWeb());
@@ -105,45 +100,18 @@ public abstract class SolutionDefinition
 			String spanEnd = KnowWEUtils.maskHTML("</span>");
 
 			if (session != null) {
+				Solution solution = getTermObject(article, sec);
+				Rating state = session.getBlackboard().getRating(solution);
 
-				List<Solution> diags = session.getKnowledgeBase().getSolutions();
-				Collection<KnowledgeSlice> slices = session.getKnowledgeBase()
-						.getAllKnowledgeSlicesFor(PSMethodXCL.class);
-
-				for (Solution d : diags) {
-
-					if (d.getName().equals(solution)) {
-						Rating state;
-						XCLModel diagModel = this.findModel(solution, slices);
-
-						if (diagModel == null) state = new Rating(State.UNCLEAR);
-						else state = diagModel.getState(session);
-
-						if (state.hasState(State.ESTABLISHED)) {
-							string
-									.append(spanStart + "51, 255, 51)"
-											+ spanStartEnd);
-						}
-
-						if (state.hasState(State.EXCLUDED)) {
-							string
-									.append(spanStart + "255, 153, 0)"
-											+ spanStartEnd);
-						}
-
-						if (state.hasState(State.SUGGESTED)) {
-							string.append(spanStart + "220, 200, 11)"
-									+ spanStartEnd);
-						}
-
-						if (state.hasState(State.UNCLEAR)) {
-							string.append(spanStart + ")" + spanStartEnd);
-						}
-					}
+				if (state.hasState(State.ESTABLISHED)) {
+					string.append(spanStart + "207, 255, 207)" + spanStartEnd);
 				}
-			}
-			else {
-				string.append("");
+				else if (state.hasState(State.EXCLUDED)) {
+					string.append(spanStart + "255, 207, 207)" + spanStartEnd);
+				}
+				else {
+					string.append(spanStart + ")" + spanStartEnd);
+				}
 			}
 
 			new ObjectInfoLinkRenderer(FontColorRenderer
@@ -151,25 +119,9 @@ public abstract class SolutionDefinition
 					user, string);
 			string.append(spanEnd);
 		}
-
-		/**
-		 * Finds a Model from a KnowledgeSlice list.
-		 * 
-		 * @param solution
-		 * @return
-		 */
-		private XCLModel findModel(String solution, Collection<KnowledgeSlice> slices) {
-			for (KnowledgeSlice s : slices) {
-				if (s instanceof XCLModel) {
-					if (((XCLModel) s).getSolution().getName().equals(solution)) return (XCLModel) s;
-				}
-			}
-			return null;
-		}
 	}
 
 	static class CreateSolutionHandler extends D3webSubtreeHandler<SolutionDefinition> {
-
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
@@ -192,7 +144,6 @@ public abstract class SolutionDefinition
 				}
 				return new ArrayList<KDOMReportMessage>(0);
 			}
-
 
 			KnowledgeBaseManagement mgn = getKBM(article);
 

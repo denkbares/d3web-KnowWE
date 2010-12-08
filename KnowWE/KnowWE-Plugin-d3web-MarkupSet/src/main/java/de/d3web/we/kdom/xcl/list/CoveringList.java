@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -74,13 +74,13 @@ import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
 
 /**
  * @author Jochen
- *
+ * 
  *         A covering-list markup parser
- *
+ * 
  *         In the first line the solution is defined @see ListSolutionType The
  *         rest of the content is split by ',' (komas) and the content inbetween
  *         is taken as CoveringRelations
- *
+ * 
  */
 public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
@@ -104,15 +104,29 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 		// the rest is CoveringRelations
 		this.addChildType(new CoveringRelation());
 
-		// quick edit with ReRenderSectionMarker
 		this.setCustomRenderer(new ReRenderSectionMarkerRenderer<KnowWEObjectType>(
-				DelegateRenderer.getInstance()));
+				new CoveringListRenderer()));
 
 		// anything left is comment
 		AnonymousType residue = new AnonymousType("derRest");
 		residue.setSectionFinder(new AllTextFinderTrimmed());
 		residue.setCustomRenderer(new CommentRenderer());
 		this.addChildType(residue);
+	}
+
+	/**
+	 * 
+	 * @author volker_belli
+	 * @created 08.12.2010
+	 */
+	private static final class CoveringListRenderer extends KnowWEDomRenderer<KnowWEObjectType> {
+
+		@Override
+		public void render(KnowWEArticle article, Section<KnowWEObjectType> sec, KnowWEUserContext user, StringBuilder string) {
+			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID() + "'>"));
+			DelegateRenderer.getInstance().render(article, sec, user, string);
+			string.append(KnowWEUtils.maskHTML("</span>"));
+		}
 	}
 
 	class CoveringRelation extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
@@ -162,10 +176,10 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 		/**
 		 * @author Jochen
-		 *
+		 * 
 		 *         this handler translates the parsed covering-relation-KDOM to
 		 *         the d3web knowledge base
-		 *
+		 * 
 		 */
 		class CreateXCLRelationHandler extends D3webSubtreeHandler<CoveringRelation> {
 
@@ -191,7 +205,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 			/*
 			 * (non-Javadoc)
-			 *
+			 * 
 			 * @see
 			 * de.d3web.we.kdom.subtreeHandler.SubtreeHandler#create(de.d3web
 			 * .we.kdom.KnowWEArticle, de.d3web.we.kdom.Section)
@@ -333,10 +347,10 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * @author Johannes Dienst
-	 *
+	 * 
 	 *         Highlights XCLRelations. Answer Right: Green Answer wrong: Red
 	 *         Answer unknown: No Highlighting
-	 *
+	 * 
 	 */
 	class CoveringRelationRenderer extends KnowWEDomRenderer<CoveringRelation> {
 
@@ -386,7 +400,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 		/***
 		 * Replaces the SpecialDelegateRenderer functionality to enable
 		 * highlighting of Relations without their RelationWeights.
-		 *
+		 * 
 		 * @param sec
 		 * @param user
 		 * @param web
@@ -417,7 +431,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 				List<Section<?>> children = sec.getChildren();
 				for (Section<?> s : children) {
 					buffi.append(this.renderRelationChild(article, s,
-							fulfilled, user, "#33FF33"));
+							fulfilled, user, "#CFFFCF"));
 				}
 
 			}
@@ -426,7 +440,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 				List<Section<?>> children = sec.getChildren();
 				for (Section<?> s : children) {
 					buffi.append(this.renderRelationChild(article, s,
-							fulfilled, user, "#FF9900"));
+							fulfilled, user, "#FFCFCF"));
 				}
 
 			}
@@ -435,7 +449,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 		/**
 		 * Renders the children of a CoveringRelation.
-		 *
+		 * 
 		 * @param article
 		 * @param sec
 		 * @param fulfilled

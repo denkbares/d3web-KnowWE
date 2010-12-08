@@ -215,7 +215,9 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 					.getTitle(), sec.getID(),
 					RuleContentType.ruleStoreKey);
 
+			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID() + "'>"));
 			this.highlightRule(article, sec, rule, session, user, string);
+			string.append(KnowWEUtils.maskHTML("</span>"));
 		}
 
 		private static final String highlightMarker = "HIGHLIGHT_MARKER";
@@ -224,7 +226,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		 * Stores the Renderer used in <b>highlightRule<b>
 		 */
 		KnowWEDomRenderer greenRenderer = FontColorBackgroundRenderer.getRenderer(
-						highlightMarker, FontColorRenderer.COLOR5, "#33FF33");
+						highlightMarker, FontColorRenderer.COLOR5, "#CFFFCF");
 
 		KnowWEDomRenderer redRenderer = FontColorBackgroundRenderer.getRenderer(highlightMarker,
 				FontColorRenderer.COLOR5, "#FF9900");
@@ -252,11 +254,12 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 			}
 			else {
 				try {
-					if (r.hasFired(session)) this.greenRenderer.render(article, sec, user,
-							newContent);
-					else DelegateRenderer.getInstance().render(article, sec, user,
-							newContent);
-					// this.redRenderer.render(article, sec, user, string);
+					if (r.hasFired(session)) {
+						this.greenRenderer.render(article, sec, user, newContent);
+					}
+					else {
+						DelegateRenderer.getInstance().render(article, sec, user, newContent);
+					}
 				}
 				catch (Exception e) {
 					this.exceptionRenderer.render(article, sec, user, newContent);

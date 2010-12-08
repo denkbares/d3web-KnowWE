@@ -26,18 +26,24 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.questionTree.ObjectDescription;
+import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.RelationCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.object.SolutionDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.knowwe.core.dashtree.DashTreeElementContent;
 import de.knowwe.core.dashtree.DashTreeUtils;
+import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
 
 /**
  * @author Jochen
@@ -64,6 +70,23 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 		f.addConstraint(SingleChildConstraint.getInstance());
 		solutionDef.setSectionFinder(f);
 		this.addChildType(solutionDef);
+		this.setCustomRenderer(new ReRenderSectionMarkerRenderer<KnowWEObjectType>(
+				new SolutionDashTreeElementContentRenderer()));
+	}
+
+	/**
+	 * 
+	 * @author volker_belli
+	 * @created 08.12.2010
+	 */
+	private static final class SolutionDashTreeElementContentRenderer extends KnowWEDomRenderer<KnowWEObjectType> {
+
+		@Override
+		public void render(KnowWEArticle article, Section<KnowWEObjectType> sec, KnowWEUserContext user, StringBuilder string) {
+			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID() + "'>"));
+			DelegateRenderer.getInstance().render(article, sec, user, string);
+			string.append(KnowWEUtils.maskHTML("</span>"));
+		}
 	}
 
 	/**
