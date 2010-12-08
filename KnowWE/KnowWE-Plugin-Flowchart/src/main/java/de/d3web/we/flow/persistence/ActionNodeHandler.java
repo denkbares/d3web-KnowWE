@@ -37,7 +37,6 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.rules.action.D3webRuleAction;
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 /**
  * @author Reinhard Hatko
@@ -50,6 +49,7 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 		super(ActionType.getInstance());
 	}
 
+	@SuppressWarnings("rawtypes")
 	public boolean canCreateNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section<NodeType> nodeSection) {
 
 		Section<D3webRuleAction> actionSection = nodeSection.findSuccessor(D3webRuleAction.class);
@@ -58,13 +58,10 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 				&& actionSection.getObjectType().getClass() != CallFlowActionType.class;
 	}
 
+	@SuppressWarnings({
+			"rawtypes", "unchecked" })
 	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
-
-		Section<AbstractXMLObjectType> actionSection = getNodeInfo(nodeSection);
-
-		String markup = getMarkup(actionSection);
-
 
 		Section<D3webRuleAction> ruleAction = nodeSection.findSuccessor(D3webRuleAction.class);
 

@@ -38,9 +38,11 @@ public class FlowchartUtils {
 	 */
 	public static String extractPreview(Section<FlowchartType> flowchartSection) {
 
-		Section previewsection = flowchartSection.findSuccessor(FlowchartPreviewContentType.class);
+		Section<FlowchartPreviewContentType> previewsection = flowchartSection.findSuccessor(FlowchartPreviewContentType.class);
 
-		if (previewsection == null) return null;
+		if (previewsection == null) {
+			return null;
+		}
 
 		String flowchart = previewsection.getOriginalText();
 
@@ -80,7 +82,9 @@ public class FlowchartUtils {
 	public static String createRenderablePreview(Section<FlowchartType> flowSection) {
 		String preview = extractPreview(flowSection);
 
-		if (preview == null) return null;
+		if (preview == null) {
+			return null;
+		}
 
 		return createRenderablePreview(preview);
 

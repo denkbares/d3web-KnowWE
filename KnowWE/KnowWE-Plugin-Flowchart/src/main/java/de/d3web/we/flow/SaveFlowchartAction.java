@@ -43,6 +43,7 @@ import de.d3web.we.kdom.Section;
  */
 public class SaveFlowchartAction extends AbstractAction {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(ActionContext context) throws IOException {
 		KnowWEParameterMap map = context.getKnowWEParameterMap();
@@ -84,6 +85,5 @@ public class SaveFlowchartAction extends AbstractAction {
 		mgr.replaceKDOMNodesSaveAndBuild(map, topic, nodesMap);
 
 	}
-
 
 }

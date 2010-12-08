@@ -1,20 +1,20 @@
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.d3web.we.flow;
 
@@ -48,9 +48,8 @@ import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-
 /**
- *
+ * 
  * @author Reinhard Hatko
  * @created 09.09.2010
  */
@@ -70,8 +69,6 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 
 		article.getSection().findSuccessorsOfType(FlowchartType.class, flows);
 
-
-
 		if (flows.isEmpty()) {
 			string.append("No Flowcharts found in KB.");
 			return;
@@ -88,15 +85,15 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 			for (InterviewObject object : activeObjects) {
 				builder.append(object.getName()).append("<br>");
 			}
-			
+
 			Form form = session.getInterview().nextForm();
 
 			InterviewObject nextForm = form.getInterviewObject();
-			
+
 			builder.append("<b>Next InterviewObject:</b>  " + (nextForm != null
 					? nextForm.getName()
 					: "null") + "<br>");
-			
+
 			builder.append(getPathendText(session));
 			builder.append(getBlackboardTable(session));
 			builder.append("\n");
@@ -129,11 +126,9 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 
 		string.append(KnowWEUtils.maskHTML(builder.toString()));
 
-
-
 	}
 
-	private boolean isActive(Section section, Session theCase) {
+	private boolean isActive(Section<FlowchartType> section, Session theCase) {
 
 		// TODO
 		// String flowID =
@@ -238,7 +233,7 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 		return builder.toString();
 	}
 
-	private String createPreviewWithHighlightedPath(Section section, Session session) {
+	private String createPreviewWithHighlightedPath(Section<FlowchartType> section, Session session) {
 
 		String preview = FlowchartUtils.extractPreview(section);
 
@@ -266,7 +261,6 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 		// get all the nodes
 		String[] nodes = preview.split("<DIV class=\"Node\" id=\"");
 		String[] edges = preview.split("<DIV class=\"Rule\" id=\"");
-
 
 		for (INode node : path.getActiveNodes()) {
 
@@ -363,8 +357,5 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 		// // return true;
 		// return false;
 	}
-
-
-
 
 }

@@ -46,10 +46,13 @@ public abstract class AbstractNodeHandler implements NodeHandler {
 		this(type, null);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected Section<AbstractXMLObjectType> getNodeInfo(Section<?> nodeSection) {
 		Section<AbstractXMLObjectType> child = (Section<AbstractXMLObjectType>) nodeSection.findSuccessor(type.getClass());
 
-		if (child == null) return null; // no child of expected type
+		if (child == null) {
+			return null; // no child of expected type
+		}
 
 		if (markup == null || markup == "") {
 			// no constraints of markup given
@@ -79,6 +82,5 @@ public abstract class AbstractNodeHandler implements NodeHandler {
 	public AbstractKnowWEObjectType getType() {
 		return type;
 	}
-
 
 }

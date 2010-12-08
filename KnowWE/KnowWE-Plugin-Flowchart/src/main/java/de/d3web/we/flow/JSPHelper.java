@@ -102,6 +102,7 @@ public class JSPHelper {
 		return buffer.toString();
 	}
 
+	@SuppressWarnings("unchecked")
 	public String loadFlowchart(String kdomID) {
 		String web = parameterMap.getWeb();
 		String topic = parameterMap.getTopic();
@@ -151,6 +152,7 @@ public class JSPHelper {
 		return getFlowchartAttributeValue("height");
 	}
 
+	@SuppressWarnings("unchecked")
 	private String getFlowchartAttributeValue(String attributeName) {
 		Section<FlowchartType> section = (Section<FlowchartType>) KnowWEEnvironment.getInstance().getArticle(
 				parameterMap.getWeb(), parameterMap.getTopic()).findSection(

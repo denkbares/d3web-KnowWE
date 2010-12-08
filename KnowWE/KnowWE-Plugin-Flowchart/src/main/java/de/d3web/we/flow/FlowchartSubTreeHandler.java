@@ -65,6 +65,7 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
  */
 public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<FlowchartType> s) {
 
@@ -80,7 +81,9 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		String id = attributeMap.get("fcid");
 		boolean autostart = Boolean.parseBoolean(attributeMap.get("autostart"));
 
-		if (name == null || name.equals("")) name = "unnamed";
+		if (name == null || name.equals("")) {
+			name = "unnamed";
+		}
 
 		List<KDOMReportMessage> errors = new ArrayList<KDOMReportMessage>();
 
@@ -96,6 +99,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		return errors;
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<IEdge> createEdges(KnowWEArticle article, Section<FlowchartType> flowSection, List<INode> nodes, List<KDOMReportMessage> errors) {
 		List<IEdge> result = new ArrayList<IEdge>();
 
@@ -186,12 +190,14 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		return KDOMConditionFactory.createCondition(article, s);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static String getXMLContentText(Section<? extends AbstractXMLObjectType> s) {
 		String originalText = ((Section<XMLContent>) s.getChildren().get(1)).getOriginalText();
 		// return StringEscapeUtils.unescapeXml(originalText);
 		return originalText;
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<INode> createNodes(KnowWEArticle article, String flowName, Section<FlowchartType> flowSection, List<KDOMReportMessage> errors) {
 
 		List<INode> result = new ArrayList<INode>();
