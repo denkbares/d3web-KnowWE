@@ -30,7 +30,6 @@ import de.d3web.core.session.CaseObjectSource;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.interviewmanager.Form;
 import de.d3web.diaFlux.flow.DiaFluxCaseObject;
-import de.d3web.diaFlux.flow.EdgeSupport;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.flow.IEdge;
 import de.d3web.diaFlux.flow.INode;
@@ -273,20 +272,19 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 				}
 			}
 
-			INodeData nodeData = DiaFluxUtils.getNodeData(node, session);
+			List<IEdge> outgoingEdges = node.getOutgoingEdges();
 
-			List<ISupport> supports = nodeData.getSupports();
-			for (ISupport support : supports) {
+			for (IEdge edge : outgoingEdges) {
 
-				if ((support instanceof EdgeSupport)) {
+				String edgeId = edge.getID();
 
-					IEdge edge = ((EdgeSupport) support).getEdge();
-					String edgeId = edge.getID();
+				if (!DiaFluxUtils.getEdgeData(edge, session).hasFired()) {
+					continue;
+				}
 
-					for (int i = 0; i < edges.length; i++) {
-						if (edges[i].contains(edgeId + "\"")) {
-							preview = colorEdge(edges[i], preview);
-						}
+				for (int i = 0; i < edges.length; i++) {
+					if (edges[i].contains(edgeId + "\"")) {
+						preview = colorEdge(edges[i], preview);
 					}
 				}
 			}

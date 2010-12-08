@@ -1,20 +1,19 @@
-
-Artefakte in Textfelder nach wechsel von formel zu was anderem. Check auf Variablennamen?
-
-Knoten verdeckt Guards nach Größenänderung bei langem Text
+einheiten für numfragen beim laden wiederherstellen
 
 Apple Commands
 
+Artefakte in Textfelder nach wechsel von formel zu was anderem. Check auf Variablennamen?
+
+
+Knoten verdeckt Guards nach Größenänderung bei langem Text
+
+
 Knoten für Pixelrouting
-
-einheiten für numfragen beim laden wiederherstellen
-
-
 
 Neues Icon für Date/Text
 
-
 Negation von flowchartprocessed???
+
 
 IDOBject
 
