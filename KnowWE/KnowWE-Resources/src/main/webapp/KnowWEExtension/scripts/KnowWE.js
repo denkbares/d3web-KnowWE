@@ -456,7 +456,7 @@ KNOWWE.core.rerendercontent = function(){
                         KWikiWeb : 'default_web',
                         KdomNodeId : rel.id,
                         //works for now, but when the IDs change it breaks again
-                        KWiki_Topic : rel.id.substring(0, rel.id.indexOf('/')), 
+                        //KWiki_Topic : rel.id.substring(0, rel.id.indexOf('/')), 
                         //KWiki_Topic : KNOWWE.helper.gup('page'),
                         ajaxToHTML : "render",
                         inPre : KNOWWE.helper.tagParent(_KS('#' + rel.id), 'pre') != document 
