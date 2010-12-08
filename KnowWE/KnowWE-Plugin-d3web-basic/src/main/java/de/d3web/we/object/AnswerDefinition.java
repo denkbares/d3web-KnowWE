@@ -19,9 +19,9 @@
  */
 package de.d3web.we.object;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,10 +37,11 @@ import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.NotUniqueKnowWETerm;
+import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
-import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
+import de.d3web.we.kdom.report.message.TermNameCaseWarning;
 import de.d3web.we.kdom.report.message.UnexpectedSequence;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.tools.ToolMenuDecoratingRenderer;
@@ -136,14 +137,26 @@ public abstract class AnswerDefinition
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
 				Section<AnswerDefinition> s) {
 
+			String name = s.get().getTermName(s);
+
 			if (KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(article, s)) {
 				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(article,
 						s);
-				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
-						s.get().getTermObject(article, s).getName()));
+
+				Section<? extends TermDefinition<Choice>> termDef = KnowWEUtils.getTerminologyHandler(
+						article.getWeb()).getTermDefiningSection(article, s);
+
+				String termDefName = termDef.get().getTermName(termDef);
+
+				if (!name.equals(termDefName)) {
+					return Arrays.asList((KDOMReportMessage) new TermNameCaseWarning(termDefName));
+				}
+				return new ArrayList<KDOMReportMessage>(0);
+				// return Arrays.asList((KDOMReportMessage) new
+				// ObjectAlreadyDefinedWarning(
+				// sec.get().getTermName(sec)));
 			}
 
-			String name = s.get().getTermName(s);
 
 			Section<? extends QuestionDefinition> qDef = s
 					.get().getQuestionSection(s);
@@ -190,27 +203,9 @@ public abstract class AnswerDefinition
 					}
 				}
 				else {
+					KnowledgeBaseManagement mgn = getKBM(article);
+					a = mgn.addChoiceAnswer((QuestionChoice) q, name, s.get().getPosition(s));
 
-					// at first check if is Answer already defined
-					boolean alreadyExisting = false;
-					// we compare case insensitive
-					String actualAnswer = "";
-					List<Choice> allAlternatives = ((QuestionChoice) q).getAllAlternatives();
-					for (Choice choice : allAlternatives) {
-						if (choice.getName().equalsIgnoreCase(name)) {
-							alreadyExisting = true;
-							actualAnswer = choice.getName();
-						}
-					}
-
-					if (alreadyExisting) {
-						return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
-								"Answer already existing - " + actualAnswer));
-					}
-					else {
-						KnowledgeBaseManagement mgn = getKBM(article);
-						a = mgn.addChoiceAnswer((QuestionChoice) q, name, s.get().getPosition(s));
-					}
 				}
 
 				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
