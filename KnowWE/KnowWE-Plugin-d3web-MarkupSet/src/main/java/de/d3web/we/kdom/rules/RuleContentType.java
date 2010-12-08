@@ -62,7 +62,6 @@ import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.knowwe.core.renderer.FontColorBackgroundRenderer;
-import de.knowwe.core.renderer.FontColorRenderer;
 import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
 
 /**
@@ -226,13 +225,13 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		 * Stores the Renderer used in <b>highlightRule<b>
 		 */
 		KnowWEDomRenderer greenRenderer = FontColorBackgroundRenderer.getRenderer(
-						highlightMarker, FontColorRenderer.COLOR5, "#CFFFCF");
+						highlightMarker, "", "#CFFFCF");
 
 		KnowWEDomRenderer redRenderer = FontColorBackgroundRenderer.getRenderer(highlightMarker,
-				FontColorRenderer.COLOR5, "#FF9900");
+				"", "#FF9900");
 
 		KnowWEDomRenderer exceptionRenderer = FontColorBackgroundRenderer.getRenderer(
-				highlightMarker, FontColorRenderer.COLOR5, null);
+				highlightMarker, "", null);
 
 		/**
 		 * Renders the Rule with highlighting.
