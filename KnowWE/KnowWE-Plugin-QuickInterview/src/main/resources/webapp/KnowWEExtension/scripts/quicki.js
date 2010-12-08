@@ -166,11 +166,12 @@ KNOWWE.plugin.quicki = function(){
 	        	KNOWWE.core.util.updateProcessingState(-1);
             }); 
         	
-            _KE.add('click', _KS('#quickireset'),  
-        		function(event) {
-        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.quickIReset, event);
-        		});
-          
+        	if ($('quickireset')) {
+	            _KE.add('click', _KS('#quickireset'),  
+	        		function(event) {
+	        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.quickIReset, event);
+	        		});
+        	}
             
         	/* restore visibility states of elements after reloading
         	 * the page (e.g. after sending answer val via AJAX)
