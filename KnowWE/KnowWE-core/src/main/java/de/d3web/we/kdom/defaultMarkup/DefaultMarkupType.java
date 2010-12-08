@@ -31,6 +31,7 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.report.MessageRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
@@ -286,6 +287,25 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	public static Pattern getPattern(String name) {
 		String regexp = SECTION_REGEXP.replace("$NAME$", name);
 		return Pattern.compile(regexp, FLAGS);
+	}
+
+	@Override
+	public MessageRenderer getErrorRenderer() {
+		// return null,
+		// because errors are already rendered inline in the markup
+		return null;
+	}
+
+	@Override
+	public MessageRenderer getWarningRenderer() {
+		// return null,
+		// because warnings are already rendered inline in the markup
+		return null;
+	}
+
+	@Override
+	public MessageRenderer getNoticeRenderer() {
+		return null;
 	}
 
 }
