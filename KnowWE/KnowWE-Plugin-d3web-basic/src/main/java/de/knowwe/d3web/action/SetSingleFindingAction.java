@@ -26,7 +26,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
@@ -36,7 +35,6 @@ import de.d3web.core.session.blackboard.FactFactory;
 import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.TextValue;
-import de.d3web.core.session.values.Unknown;
 import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEAttributes;
@@ -75,14 +73,6 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 		Question question = kbm.findQuestion(objectid);
 		if (question != null) {
 
-			// update: resetting the value is unnecessary --rh@100903
-			// reset choices in case the selection changed
-			// (user removed choices)
-			// blackboard.addValueFact(new DefaultFact(question,
-			// Unknown.getInstance(), PSMethodUserSelected.getInstance(),
-			// PSMethodUserSelected.getInstance()));
-			//
-
 			Value value = null;
 			if (valueid != null) {
 				value = kbm.findValue(question, valueid);
@@ -106,34 +96,6 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 				value = new TextValue(valueText);
 			}
 			if (value != null) {
-				if (question instanceof QuestionMC && !value.equals(Unknown.getInstance())) {
-
-					/*
-					 * if (mcFact != null &&
-					 * !mcFact.getValue().equals(Unknown.getInstance())) {
-					 * MultipleChoiceValue mcv = ((MultipleChoiceValue)
-					 * mcFact.getValue()); Collection<ChoiceValue> thisMcv =
-					 * (Collection<ChoiceValue>) ((MultipleChoiceValue)
-					 * value).getValue(); for (ChoiceValue cv :
-					 * (Collection<ChoiceValue>) mcv.getValue()) { if
-					 * (!thisMcv.contains(cv)) { thisMcv.add(cv); } } }
-					 */
-
-					Fact mcFact = blackboard.getValueFact(question);
-
-					// remove old mc value if any
-
-					// vb: should be comment out, see below:
-					// that is wrong and even not possible
-					// because this may be a merged fact.
-					// old facts are automatically overwrtitten
-					// by setting new ones from the same source!
-					// if (mcFact != null) {
-					// blackboard.removeValueFact(mcFact);
-					//
-					// }
-				}
-
 				// synchronize to session as suggested for multi-threaded
 				// kernel access applications
 				synchronized (session) {
