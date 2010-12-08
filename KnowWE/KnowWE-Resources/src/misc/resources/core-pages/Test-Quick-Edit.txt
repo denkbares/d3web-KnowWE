@@ -39,7 +39,7 @@ THEN Exhaust pipe color evaluation = abnormal
 %
 
 %%Question
-Observations #1
+Observations 1
 - Exhaust fumes [oc]
 -- black
 -- blue
