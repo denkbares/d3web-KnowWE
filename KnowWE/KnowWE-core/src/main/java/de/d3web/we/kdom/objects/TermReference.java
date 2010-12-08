@@ -119,10 +119,11 @@ public abstract class TermReference<TermObject>
 			Section<? extends TermDefinition<TermObject>> termDef = KnowWEUtils.getTerminologyHandler(
 					article.getWeb()).getTermDefiningSection(article, s);
 
-			String termDefName = termDef.get().getTermName(termDef);
-
-			if (!termName.equals(termDefName)) {
-				return Arrays.asList((KDOMReportMessage) new TermNameCaseWarning(termDefName));
+			if (termDef != null) {
+				String termDefName = termDef.get().getTermName(termDef);
+				if (!termName.equals(termDefName)) {
+					return Arrays.asList((KDOMReportMessage) new TermNameCaseWarning(termDefName));
+				}
 			}
 
 			// TODO: give meaningful information about the object
