@@ -134,12 +134,14 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 					// }
 				}
 
-				Fact fact = FactFactory.createUserEnteredFact(question, value);
-
-				blackboard.addValueFact(fact);
-
+				// synchronize to session as suggested for multi-threaded
+				// kernel access applications
+				synchronized (session) {
+					Fact fact = FactFactory.createUserEnteredFact(question, value);
+					blackboard.addValueFact(fact);
+				}
 				EventManager.getInstance().fireEvent(
-								new FindingSetEvent(question, value, namespace, web, user));
+						new FindingSetEvent(question, value, namespace, web, user));
 			}
 		}
 		return null;
