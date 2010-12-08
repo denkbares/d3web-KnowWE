@@ -134,13 +134,13 @@ public abstract class TermDefinition<TermObject>
 
 			TerminologyHandler tHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
 
-			Section<? extends TermDefinition> before = tHandler.getTermDefiningSection(
-					article, s.get().getTermName(s), getTermScope());
+			Section<? extends TermDefinition<TermObject>> before = tHandler.getTermDefiningSection(
+					article, s);
 
 			tHandler.registerTermDefinition(article, s);
 
-			Section<? extends TermDefinition> after = tHandler.getTermDefiningSection(
-					article, s.get().getTermName(s), getTermScope());
+			Section<? extends TermDefinition<TermObject>> after = tHandler.getTermDefiningSection(
+					article, s);
 
 			if (before == after) {
 				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
