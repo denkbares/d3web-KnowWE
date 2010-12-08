@@ -20,7 +20,6 @@
 
 package de.d3web.we.kdom;
 
-
 /**
  * This class generates ids for Sections.
  * 
@@ -34,7 +33,6 @@ public class SectionID {
 	private String specificID;
 
 	public static final String SEPARATOR = "/";
-
 
 	/**
 	 * This Constructor should be used for assigning <b>nonspecific</b> IDs
@@ -63,14 +61,36 @@ public class SectionID {
 	 */
 	public SectionID(KnowWEArticle article, String id) {
 		this.specificID = id;
-		createID(article, article.getTitle() + SEPARATOR + id);
+		createID(article, escapeWeirdChars(article.getTitle()) + SEPARATOR + id);
+	}
+
+	/**
+	 * Escapes all non-usual characters of the page title into normal
+	 * alphanumeric characters.
+	 * 
+	 * @created 08.12.2010
+	 * @param text the text to be escaped
+	 * @return the escaped text
+	 */
+	private String escapeWeirdChars(String text) {
+		StringBuilder newText = new StringBuilder();
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			if (Character.isLetterOrDigit(c) || c == '_' || c == ' ') {
+				newText.append(c);
+			}
+			else {
+				newText.append('_').append(Integer.toHexString(c)).append('_');
+			}
+		}
+		return newText.toString();
 	}
 
 	/**
 	 * THIS SHOULD ONLY BE USED FOR THE ROOT SECTION OF THE ARTICLE!
 	 */
 	protected SectionID(String title) {
-		this.id = title;
+		this.id = escapeWeirdChars(title);
 	}
 
 	private void createID(KnowWEArticle article, String lid) {
