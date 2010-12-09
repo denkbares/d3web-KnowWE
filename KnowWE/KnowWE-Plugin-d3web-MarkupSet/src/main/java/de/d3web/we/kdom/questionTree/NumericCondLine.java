@@ -28,6 +28,7 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
@@ -40,7 +41,7 @@ import de.knowwe.core.dashtree.DashTreeElement;
 import de.knowwe.core.dashtree.DashTreeUtils;
 import de.knowwe.core.renderer.FontColorRenderer;
 
-public class NumericCondLine extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
+public class NumericCondLine extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker, IncrementalConstraints {
 
 	@Override
 	protected void init() {
@@ -71,12 +72,6 @@ public class NumericCondLine extends DefaultAbstractKnowWEObjectType implements 
 	static class CheckConditionHandler extends D3webSubtreeHandler<NumericCondLine> {
 
 		@Override
-		public boolean needsToCreate(KnowWEArticle article, Section<NumericCondLine> s) {
-			return super.needsToCreate(article, s)
-					|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
-		}
-
-		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<NumericCondLine> s) {
 
 			Section<DashTreeElement> dte = s.findAncestorOfType(DashTreeElement.class);
@@ -94,7 +89,7 @@ public class NumericCondLine extends DefaultAbstractKnowWEObjectType implements 
 
 		@Override
 		public void destroy(KnowWEArticle article, Section<NumericCondLine> s) {
-			// nothing to do here, the message destroys itself.
+			KDOMReportMessage.clearMessages(article, s, CheckConditionHandler.class);
 		}
 
 	}
@@ -158,6 +153,11 @@ public class NumericCondLine extends DefaultAbstractKnowWEObjectType implements 
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+		return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 	}
 
 }
