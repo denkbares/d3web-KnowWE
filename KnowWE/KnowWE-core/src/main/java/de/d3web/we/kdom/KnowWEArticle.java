@@ -70,10 +70,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	 */
 	private Section<KnowWEArticle> sec;
 
-	private final Map<String, Integer> idMap = new HashMap<String, Integer>();
-
-	// private final Set<Section<Include>> activeIncludes = new
-	// HashSet<Section<Include>>();
+	private Map<String, Integer> idMap = new HashMap<String, Integer>();
 
 	private KnowWEArticle lastVersion;
 
@@ -151,6 +148,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 		if (this.postDestroyFullParse) {
 			this.secondBuild = true;
+			this.idMap = new HashMap<String, Integer>();
 			build(text, title, rootType, web, startTime);
 		}
 
