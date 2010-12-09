@@ -456,6 +456,9 @@ KNOWWE.plugin.quicki = function(){
             if(_KS('#input_' + rel.oid)) {
                 inputtext = _KS('#input_' + rel.oid).value; 
                 
+                // empty values should not be sent!
+                if(inputtext == '') return;
+                
                 // enabling float value input also with "," instead of "."
                 if(inputtext.indexOf(",")!=-1){
                 	inputtext = inputtext.replace(",", ".");
