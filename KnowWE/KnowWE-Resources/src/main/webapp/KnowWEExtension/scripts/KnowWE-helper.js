@@ -882,6 +882,11 @@ KNOWWE.helper.element.prototype = {
  * - _KS( tag )        returns all elements with tag=tag
  * - _KS( #id tag )    returns all elements with tag=tag within the element with id=id
  * - _KS( tag .class ) returns an array with all elements that agree in tag and class properties
+ *                     WARNING: All partial matches of .class are selected!
+ *                              for example _KS('.foo') selects class="foo", 
+ *                              as well as class="foobar" and class="barfoobar"!!
+ *                              When exact matching by class is required, use the
+ *                              MooTools selector $$('.foo') instead!
  * - _KS(input[type=submit] returns all submit input elements
  * - _KS(input[type] returns all input elements with the specified type attribute
  * - _KS([type=submit] returns all elements with the given attribute  
