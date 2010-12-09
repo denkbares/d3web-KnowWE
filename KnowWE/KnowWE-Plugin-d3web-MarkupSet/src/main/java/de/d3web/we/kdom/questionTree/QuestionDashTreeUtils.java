@@ -25,7 +25,12 @@ import java.util.List;
 
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondEqual;
+import de.d3web.core.inference.condition.CondNumEqual;
+import de.d3web.core.inference.condition.CondNumGreater;
+import de.d3web.core.inference.condition.CondNumGreaterEqual;
 import de.d3web.core.inference.condition.CondNumIn;
+import de.d3web.core.inference.condition.CondNumLess;
+import de.d3web.core.inference.condition.CondNumLessEqual;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
@@ -36,9 +41,10 @@ import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.condition.FindingConditionBuilder;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.TermReference;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
 import de.knowwe.core.dashtree.DashSubtree;
@@ -129,8 +135,8 @@ public class QuestionDashTreeUtils {
 				if (d == null) return null;
 				String comp = NumericCondLine.getComparator(numCondSec);
 
-				if (d != null && comp != null) return FindingConditionBuilder
-						.createCondNum(father.getArticle(), numCondSec, comp, d,
+				if (d != null && comp != null) return createCondNum(father.getArticle(),
+						numCondSec, comp, d,
 								(QuestionNum) q);
 				;
 			}
@@ -139,14 +145,28 @@ public class QuestionDashTreeUtils {
 		return null;
 
 	}
-	
 
+	private static Condition createCondNum(KnowWEArticle article,
+			Section<NumericCondLine> comp, String comparator, Double valueOf,
+			QuestionNum questionNum) {
+		KDOMReportMessage.clearMessages(article, comp, QuestionDashTreeUtils.class);
+
+		if (comparator.equals("=")) return new CondNumEqual(questionNum, valueOf);
+		else if (comparator.equals(">")) return new CondNumGreater(questionNum, valueOf);
+		else if (comparator.equals(">=")) return new CondNumGreaterEqual(questionNum, valueOf);
+		else if (comparator.equals("<")) return new CondNumLess(questionNum, valueOf);
+		else if (comparator.equals("<=")) return new CondNumLessEqual(questionNum, valueOf);
+		else {
+			KDOMReportMessage.storeSingleError(article, comp, QuestionDashTreeUtils.class,
+					new SimpleMessageError("Unkown comparator '" + comparator + "'."));
+			return null;
+		}
+	}
 
 	/**
 	 * Checks if the Subtree of the root Question has changed. Ignores
 	 * TermReferences!
 	 */
-	@SuppressWarnings("unchecked")
 	public static boolean isChangeInRootQuestionSubtree(KnowWEArticle article, Section<?> s) {
 
 		Section<?> rootQuestionSubtree = null;

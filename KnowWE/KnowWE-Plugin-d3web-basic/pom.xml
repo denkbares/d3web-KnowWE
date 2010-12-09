@@ -67,11 +67,5 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>d3web-Report</artifactId>
-			<version>${d3webCoreVersion}</version>
-			<scope>compile</scope>
-		</dependency>
 	</dependencies>
 </project>

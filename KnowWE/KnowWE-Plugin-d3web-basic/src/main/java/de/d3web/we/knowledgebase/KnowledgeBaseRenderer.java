@@ -1,16 +1,16 @@
 /*
  * Copyright (C) ${year} denkbares GmbH, Germany
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -42,7 +41,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * Renders a knowledge base markup into the wiki page.
- *
+ * 
  * @author volker_belli
  * @created 13.10.2010
  */
@@ -109,8 +108,6 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 				KnowWEEnvironment.getInstance().getPackageManager(article.getWeb());
 		List<Section<?>> packageDefinitions = packageManager.getPackageDefinitions(packageName);
 
-		Collection<Message> messagesErrors = new LinkedList<Message>();
-		Collection<Message> messagesWarnings = new LinkedList<Message>();
 		Collection<KDOMError> kdomErrors = new LinkedList<KDOMError>();
 		Collection<KDOMWarning> kdomWarnings = new LinkedList<KDOMWarning>();
 
@@ -118,17 +115,6 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 		Set<KnowWEArticle> warningArticles = new HashSet<KnowWEArticle>();
 
 		for (Section<?> packageDef : packageDefinitions) {
-			for (Message m : KnowWEUtils.getMessagesFromSubtree(article,
-					packageDef, Message.class)) {
-				if (m.getMessageType().equals(Message.ERROR)) {
-					messagesErrors.add(m);
-					errorArticles.add(packageDef.getArticle());
-				}
-				else if (m.getMessageType().equals(Message.WARNING)) {
-					messagesWarnings.add(m);
-					warningArticles.add(packageDef.getArticle());
-				}
-			}
 			Collection<KDOMError> errors = KnowWEUtils.getMessagesFromSubtree(
 					article, packageDef, KDOMError.class);
 			if (errors != null && errors.size() > 0) {
@@ -143,8 +129,8 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 			}
 		}
 
-		int errorsCount = messagesErrors.size() + kdomErrors.size();
-		int warningsCount = messagesWarnings.size() + kdomWarnings.size();
+		int errorsCount = kdomErrors.size();
+		int warningsCount = kdomWarnings.size();
 		boolean hasErrors = errorsCount > 0;
 		boolean hasWarnings = warningsCount > 0;
 
