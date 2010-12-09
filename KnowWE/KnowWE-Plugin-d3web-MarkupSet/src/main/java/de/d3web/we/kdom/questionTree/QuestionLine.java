@@ -47,9 +47,9 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.kdom.sectionFinder.EmbracedContentFinder;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.MatchUntilEndFinder;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.StringEnumChecker;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
@@ -162,71 +162,6 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	// /**
-	// * This handler creates an indication rule if a question if son of an
-	// answer
-	// * if a preceeding question
-	// *
-	// * @author Jochen
-	// *
-	// */
-	// static class CreateIndicationHandler extends
-	// QuestionTreeElementDefSubtreeHandler<QuestionTreeQuestionDef> {
-	//
-	// private final String ruleKey = "RULE_STORE_KEY";
-	//
-	// @Override
-	// public Collection<KDOMReportMessage> create(KnowWEArticle article,
-	// Section<QuestionTreeQuestionDef> qidSection) {
-	//
-	// // current DashTreeElement
-	// Section<DashTreeElement> element = KnowWEObjectTypeUtils
-	// .getAncestorOfType(qidSection, DashTreeElement.class);
-	//
-	// // get dashTree-father
-	// Section<? extends DashTreeElement> dashTreeFather = DashTreeElement
-	// .getDashTreeFather(element);
-	//
-	// Section<QuestionTreeAnswerDef> answerSec = dashTreeFather
-	// .findSuccessor(QuestionTreeAnswerDef.class);
-	// Section<NumericCondLine> numCondSec = dashTreeFather
-	// .findSuccessor(NumericCondLine.class);
-	//
-	// if (answerSec != null || numCondSec != null) {
-	//
-	// KnowledgeBaseManagement mgn = getKBM(article);
-	//
-	// String newRuleID = mgn.createRuleID();
-	//
-	// Condition cond = Utils.createCondition(article,
-	// DashTreeElement.getDashTreeAncestors(element));
-	//
-	// Rule r = RuleFactory.createIndicationRule(newRuleID, qidSection
-	// .get().getObject(article, qidSection), cond);
-	// if (r != null) {
-	// KnowWEUtils.storeSectionInfo(article, qidSection, ruleKey, r);
-	// return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
-	// r.getClass() + " : "
-	// + r.getId()));
-	// }
-	// else {
-	// return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
-	// Rule.class.getSimpleName()));
-	// }
-	// }
-	//
-	// return new ArrayList<KDOMReportMessage>(0);
-	// }
-	//
-	// @Override
-	// public void destroy(KnowWEArticle article,
-	// Section<QuestionTreeQuestionDef> s) {
-	// Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, s,
-	// ruleKey);
-	// if (kbr != null) kbr.remove();
-	// }
-	//
-	// }
 
 	/**
 	 * A type allowing for the definition of numerical ranges/boundaries for
@@ -549,26 +484,35 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 			if (typeSection == null) return null;
 			String embracedContent = typeSection.getOriginalText();
-			if (embracedContent.contains("oc")) {
+			if (embracedContent.startsWith("[")) {
+				embracedContent = embracedContent.substring(1);
+			}
+			if (embracedContent.endsWith("]")) {
+				embracedContent = embracedContent.substring(0,
+						embracedContent.length() - 1);
+			}
+			String questionTypeDeclaration = embracedContent.trim();
+
+			if (questionTypeDeclaration.equalsIgnoreCase("oc")) {
 				return QuestionType.OC;
 			}
-			else if (embracedContent.contains("mc")) {
+			else if (questionTypeDeclaration.equalsIgnoreCase("mc")) {
 				return QuestionType.MC;
 			}
-			else if (embracedContent.contains("num")) {
+			else if (questionTypeDeclaration.equalsIgnoreCase("num")) {
 				return QuestionType.NUM;
 			}
-			else if (embracedContent.contains("jn")
-					|| embracedContent.contains("yn")) {
+			else if (questionTypeDeclaration.equalsIgnoreCase("jn")
+					|| questionTypeDeclaration.equalsIgnoreCase("yn")) {
 				return QuestionType.YN;
 			}
-			else if (embracedContent.contains("date")) {
+			else if (questionTypeDeclaration.equalsIgnoreCase("date")) {
 				return QuestionType.DATE;
 			}
-			else if (embracedContent.contains("info")) {
+			else if (questionTypeDeclaration.equalsIgnoreCase("info")) {
 				return QuestionType.INFO;
 			}
-			else if (embracedContent.contains("text")) {
+			else if (questionTypeDeclaration.equalsIgnoreCase("text")) {
 				return QuestionType.TEXT;
 			}
 			else {
@@ -581,9 +525,8 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 				"oc", "mc",
 				"yn", "jn", "num", "date", "text", "info" };
 
-		@Override
-		protected void init() {
-			SectionFinder typeFinder = new SectionFinder() {
+		public QuestionTypeDeclaration() {
+			ISectionFinder typeFinder = new ISectionFinder() {
 
 				@Override
 				public List<SectionFinderResult> lookForSections(String text,
@@ -609,8 +552,15 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 					QUESTION_DECLARATIONS, new SimpleMessageError(
 							D3webModule.getKwikiBundle_d3web()
 									.getString("KnowWE.questiontree.allowingonly")
-									+ QUESTION_DECLARATIONS.toString())));
+									+ concatStrings(QUESTION_DECLARATIONS)), 1, 1));
 		}
 	}
 
+	private static String concatStrings(String [] str) {
+		String result = " ";
+		for (String string : str) {
+			result += string + " ;";
+		}
+		return result;
+	}
 }

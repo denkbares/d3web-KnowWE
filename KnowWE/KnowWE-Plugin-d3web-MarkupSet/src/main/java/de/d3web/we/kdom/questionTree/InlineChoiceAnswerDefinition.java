@@ -76,6 +76,7 @@ public class InlineChoiceAnswerDefinition extends DefaultAbstractKnowWEObjectTyp
 	 * @author Jochen
 	 * 
 	 */
+
 	class InlineAnswerDef extends AnswerDefinition {
 
 		@Override
