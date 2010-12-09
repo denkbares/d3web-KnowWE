@@ -19,6 +19,9 @@
  */
 package de.d3web.we.flow;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import de.d3web.we.flow.type.FlowchartPreviewContentType;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
@@ -29,6 +32,9 @@ import de.d3web.we.kdom.Section;
  * @created 09.12.2009
  */
 public class FlowchartUtils {
+
+	public static final String PREVIEW_REGEX = "\\s*<!\\[CDATA\\[\\s*(.*)\\s*\\]\\]>\\s*";
+	public static final Pattern PREVIEW_PATTERN = Pattern.compile(PREVIEW_REGEX);
 
 	private FlowchartUtils() {
 	}
@@ -46,7 +52,13 @@ public class FlowchartUtils {
 
 		String flowchart = previewsection.getOriginalText();
 
-		return flowchart.substring(flowchart.indexOf("<![CDATA[") + 9, flowchart.indexOf("]]>"));
+		Matcher matcher = PREVIEW_PATTERN.matcher(flowchart);
+		if (!matcher.matches()) {
+			return null;
+		}
+		else {
+			return matcher.group(1);
+		}
 	}
 
 	/**
