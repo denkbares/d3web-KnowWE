@@ -27,12 +27,11 @@ import de.d3web.core.io.progress.DummyProgressListener;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.plugin.io.PluginConfigPersistenceHandler;
-import de.d3web.report.Message;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 public class PluginConfigReviseSubtreeHandler extends SubtreeHandler<PluginConfigType> {
@@ -43,7 +42,10 @@ public class PluginConfigReviseSubtreeHandler extends SubtreeHandler<PluginConfi
 				+ "</psmethods></settings>";
 		KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(
 				article.getWeb()).getKBM(article.getTitle());
-		if (kbm == null) return null;
+		if (kbm == null) {
+			return Arrays.asList((KDOMReportMessage) new SimpleMessageError(
+					"No knowledgebase available."));
+		}
 		KnowledgeBase kb = kbm.getKnowledgeBase();
 		try {
 			new PluginConfigPersistenceHandler().read(kb,
@@ -51,10 +53,7 @@ public class PluginConfigReviseSubtreeHandler extends SubtreeHandler<PluginConfi
 					new DummyProgressListener());
 		}
 		catch (IOException e1) {
-			AbstractKnowWEObjectType.storeMessages(article, s, this.getClass(),
-					Arrays.asList(new Message(Message.ERROR,
-							e1.getMessage(), null, -1, null)));
-			return null;
+			return Arrays.asList((KDOMReportMessage) new SimpleMessageError(e1.getMessage()));
 		}
 
 		return null;

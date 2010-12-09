@@ -20,13 +20,13 @@ package de.d3web.we.ci4ke.testmodules;
 
 import java.util.Collection;
 
-import de.d3web.report.Message;
 import de.d3web.we.ci4ke.testing.AbstractCITest;
 import de.d3web.we.ci4ke.testing.CITestResult;
 import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.report.KDOMError;
+import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * 
@@ -41,29 +41,27 @@ public class ArticleHasErrorsTest extends AbstractCITest {
 		StringBuffer buffy = new StringBuffer();
 
 		String monitoredArticleTitle = getParameter(0);
-		if(monitoredArticleTitle.isEmpty()) {
+		if (monitoredArticleTitle.isEmpty()) {
 			return new CITestResult(TestResultType.FAILED, "Parameter 0 was invalid!");
 		}
-		
+
 		KnowWEArticle moni = KnowWEEnvironment.getInstance().getArticle(
 				KnowWEEnvironment.DEFAULT_WEB, monitoredArticleTitle);
 		if (moni == null) {
 			return new CITestResult(TestResultType.FAILED, "MonitoredArticle not found or invalid!");
 		}
 
-		Collection<Message> messages = AbstractKnowWEObjectType.
-				getMessagesFromSubtree(moni, moni.getSection());
+		Collection<KDOMError> messages = KnowWEUtils.getMessagesFromSubtree(moni,
+				moni.getSection(), KDOMError.class);
 
-		for (Message message : messages) {
+		for (KDOMError message : messages) {
 			// This finds only messages, that are explicitly stored
 			// as Message.ERROR, because the Type Message.UNKNOWN_ERROR
 			// is not public!
-			if (message.getMessageType().equals(Message.ERROR)) {
-				hasError = true;
-				buffy.append("Error on monitored article: ");
-				buffy.append(message.getMessageText());
-				buffy.append("<br/><br/>");
-			}
+			hasError = true;
+			buffy.append("Error on monitored article: ");
+			buffy.append(message.getVerbalization());
+			buffy.append("<br/><br/>");
 		}
 		if (hasError) {
 			return new CITestResult(TestResultType.FAILED, buffy.toString());

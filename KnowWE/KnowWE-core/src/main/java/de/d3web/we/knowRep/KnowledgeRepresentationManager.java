@@ -28,9 +28,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.d3web.report.Message;
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SimpleMessageError;
 
 public class KnowledgeRepresentationManager {
 
@@ -77,13 +77,11 @@ public class KnowledgeRepresentationManager {
 				handler.finishArticle(art);
 			}
 			catch (Throwable e) {
-				List<Message> messages = new ArrayList<Message>();
-				messages.add(new Message(Message.ERROR,
+				List<KDOMReportMessage> messages = new ArrayList<KDOMReportMessage>();
+				messages.add(new SimpleMessageError(
 						"This page's content caused a serious initialitation error:\n" +
-								e.getLocalizedMessage(),
-						null, 0, 0, ""));
-				AbstractKnowWEObjectType.storeMessages(art, art.getSection(), this.getClass(),
-						messages);
+								e.getLocalizedMessage()));
+				KDOMReportMessage.storeMessages(art, art.getSection(), getClass(), messages);
 				Logger.getLogger("KnowWE-core").log(Level.SEVERE,
 						"Page content of page '" +
 								art.getTitle() +

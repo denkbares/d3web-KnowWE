@@ -146,7 +146,11 @@ KNOWWE.plugin.quicki = function(){
             _KS('.inputtextvalue').each(function( element ){
         		_KE.add('keydown', element,  
         		function(event) {
-        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.textAnswerClicked, event);
+        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.textAnswerEntered, event);
+        		});
+        		_KE.add('blur', element,  
+        		function(event) {
+        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.submitTextValue, event);
         		});
             });
         	
@@ -502,20 +506,28 @@ KNOWWE.plugin.quicki = function(){
             		{action: 'SetSingleFindingAction', ValueDate: inputtext});
         },
         /**
-         * Function: textAnswerClicked
+         * Function: textAnswerEntered
          * 		Handles the input of text-values
          * 
          * Parameters:
          * 		event - the event firing the action
          */
-        textAnswerClicked : function (event) {
+        textAnswerEntered : function (event) {
         	event = new Event( event ).stopPropagation();         
             var key = (event.code == 13);
             
             // check, if either button was clicked or enter was pressed
             if( !key) return false;
             
-            var rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")");
+            KNOWWE.plugin.quicki.submitTextValue(event);
+            _KS('#input_' + rel.oid).focus();
+            _KS('#input_' + rel.oid).select();
+        },
+        /**
+         * submits the value
+         */
+        submitTextValue : function (event) {
+        	var rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")");
             if( !rel ) return;
             
             var inputtext;	// default input

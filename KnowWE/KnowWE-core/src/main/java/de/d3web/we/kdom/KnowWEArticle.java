@@ -32,7 +32,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.d3web.we.core.KnowWEArticleManager;
-import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.event.ArticleCreatedEvent;
 import de.d3web.we.event.EventManager;
@@ -67,11 +66,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	private final String web;
 
 	/**
-	 * the complete report generated during parsing-process
-	 */
-	private final KnowWEDomParseReport report;
-
-	/**
 	 * The section representing the root-node of the KDOM-tree
 	 */
 	private Section<KnowWEArticle> sec;
@@ -98,7 +92,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	private boolean postPreDestroyFullParse;
 
 	private boolean secondBuild;
-	
+
 	private ReviseIterator reviseIterator;
 
 	private final Set<String> classesCausingFullParse = new HashSet<String>();
@@ -136,7 +130,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		long startTime = startTimeOverall;
 		this.title = title;
 		this.web = web;
-		this.report = new KnowWEDomParseReport(this);
 		this.childrenTypes.add(rootType);
 		this.lastVersion = KnowWEEnvironment.getInstance().getArticle(web, title);
 
@@ -204,7 +197,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 		startTime = System.currentTimeMillis();
 
-
 		if (this.fullParse) {
 			EventManager.getInstance().fireEvent(new FullParseEvent(this));
 		}
@@ -233,8 +225,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		destroy(Priority.LOWEST);
 		this.postDestroy = true;
 
-
-
 		// init KnowledgeRepHandler
 		env.getKnowledgeRepresentationManager(web)
 				.initArticle(this);
@@ -247,8 +237,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		create(Priority.LOWEST);
 
 		// ============ Postcompile =============
-		
-		
+
 		for (Section<?> node : reviseIterator.getAllSections()) {
 			node.setReusedBy(title, true);
 		}
@@ -413,10 +402,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return sec;
 	}
 
-	public KnowWEDomParseReport getReport() {
-		return report;
-	}
-
 	public Section<? extends KnowWEObjectType> findSmallestNodeContaining(int start, int end) {
 		return sec.findSmallestNodeContaining(start, end);
 	}
@@ -579,7 +564,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 				? source.getName().substring(
 						source.getName().lastIndexOf(".") + 1)
 				: source.getSimpleName());
-
 
 		this.fullParse = true;
 	}

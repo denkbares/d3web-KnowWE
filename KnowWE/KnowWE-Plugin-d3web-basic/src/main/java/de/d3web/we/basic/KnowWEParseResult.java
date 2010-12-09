@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.core;
+package de.d3web.we.basic;
 
 import java.util.ArrayList;
 import java.util.Collection;

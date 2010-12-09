@@ -34,8 +34,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
-import de.d3web.report.Message;
-import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.event.EventManager;
@@ -46,6 +44,7 @@ import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.visitor.Visitable;
 import de.d3web.we.kdom.visitor.Visitor;
@@ -177,14 +176,11 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * Important: parses itself recursively by getting the allowed childrenTypes
 	 * of the local type
 	 * 
-	 * @param text
-	 *            the part of (article-source) text of the node
-	 * @param objectType
-	 *            type of the node
+	 * @param text the part of (article-source) text of the node
+	 * @param objectType type of the node
 	 * @param father
 	 * @param beginIndexFather
-	 * @param article
-	 *            is the article this section is hooked in
+	 * @param article is the article this section is hooked in
 	 */
 	private Section(String text, T objectType, Section<? extends KnowWEObjectType> father,
 			int beginIndexFather, KnowWEArticle article, SectionID sectionID,
@@ -377,8 +373,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	/**
 	 * Setter method for boolean variable is Dirty.
 	 * 
-	 * @param invalidated
-	 *            New value for section's variable isDirty
+	 * @param invalidated New value for section's variable isDirty
 	 */
 	public void setDirty(boolean invalidated) {
 		this.isDirty = invalidated;
@@ -502,8 +497,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * return the list of child nodes matching a filter
 	 * 
 	 * @return
-	 * @param filter
-	 *            the filter to be matched
+	 * @param filter the filter to be matched
 	 */
 	public List<Section<? extends KnowWEObjectType>> getChildren(SectionFilter filter) {
 		ArrayList<Section<? extends KnowWEObjectType>> list = new ArrayList<Section<? extends KnowWEObjectType>>();
@@ -655,10 +649,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	public String getWeb() {
 		return this.article.getWeb();
-	}
-
-	public KnowWEDomParseReport getReport() {
-		return this.article.getReport();
 	}
 
 	public KnowWEArticle getArticle() {
@@ -888,8 +878,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 		if (father == null) return null;
 
-		if (clazz.isAssignableFrom(father.getObjectType().getClass()))
-			return (Section<OT>) father;
+		if (clazz.isAssignableFrom(father.getObjectType().getClass())) return (Section<OT>) father;
 
 		return father != null ? father.findAncestorOfType(clazz) : null;
 	}
@@ -984,8 +973,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	public <OT extends KnowWEObjectType> List<Section<OT>> findChildrenOfType(Class<OT> clazz) {
 		List<Section<OT>> result = new ArrayList<Section<OT>>();
 		for (Section<?> s : this.getChildren())
-			if (clazz.isAssignableFrom(s.getObjectType().getClass()))
-				result.add((Section<OT>) s);
+			if (clazz.isAssignableFrom(s.getObjectType().getClass())) result.add((Section<OT>) s);
 		return result;
 	}
 
@@ -1000,8 +988,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	public <OT extends KnowWEObjectType> List<Section<OT>> findChildrenOfType(OT t) {
 		List<Section<OT>> result = new ArrayList<Section<OT>>();
 		for (Section<? extends KnowWEObjectType> s : this.getChildren())
-			if (t.getClass().isAssignableFrom(s.getObjectType().getClass()))
-				result.add((Section<OT>) s);
+			if (t.getClass().isAssignableFrom(s.getObjectType().getClass())) result.add((Section<OT>) s);
 		return result;
 	}
 
@@ -1275,10 +1262,9 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	/**
 	 * @param buffi
-	 * @param followSharedChildren
-	 *            if false, the text from for example includes will not be
-	 *            included. this is necessary if you want just the text of a
-	 *            wikipage having generated.
+	 * @param followSharedChildren if false, the text from for example includes
+	 *        will not be included. this is necessary if you want just the text
+	 *        of a wikipage having generated.
 	 */
 	public void collectTextsFromLeaves(StringBuilder buffi, boolean followSharedChildren) {
 		if (!this.getChildren().isEmpty()
@@ -1604,8 +1590,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 					article.getWeb()).getReferencedPackages(article.getTitle());
 
 			if (referencedPackages.contains(article.getTitle())
-					|| referencedPackages.contains(KnowWEPackageManager.THIS))
-				return true;
+					|| referencedPackages.contains(KnowWEPackageManager.THIS)) return true;
 
 			for (String name : getPackageNames()) {
 				if (referencedPackages.contains(name)) return true;
@@ -1663,12 +1648,10 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 				String text = "Unexpected internal error in subtree handler '" + handler
 						+ "' : "
 						+ e.toString();
-				Message msg = new Message(text);
+				SimpleMessageError msg = new SimpleMessageError(text);
 
 				Logging.getInstance().severe(text);
-
-				AbstractKnowWEObjectType.storeMessages(article, this, this.getClass(),
-						Arrays.asList(msg));
+				KDOMReportMessage.storeSingleError(getArticle(), this, getClass(), msg);
 				// TODO: vb: store the error also in the article. (see below for
 				// more details)
 				//

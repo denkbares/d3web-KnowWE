@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -24,14 +24,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.packaging.KnowWEPackageManager;
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup.Annotation;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupType> {
@@ -43,11 +42,10 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 		this.markup = markup;
 	}
 
-
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<DefaultMarkupType> markupSection) {
 
-		List<Message> msgs = new ArrayList<Message>();
+		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 
 		// check defined annotations
 		for (Annotation annotation : this.markup.getAnnotations()) {
@@ -57,8 +55,8 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 
 			// check existence of mandatory annotation
 			if (annotationSection == null && annotation.isMandatory()) {
-				Message message = new Message(Message.ERROR, "The annotation @" + name
-						+ " is mandatory, but missing. Please specify that annotation.", "", -1, "");
+				KDOMReportMessage message = new SimpleMessageError("The annotation @" + name
+						+ " is mandatory, but missing. Please specify that annotation.");
 				msgs.add(message);
 			}
 		}
@@ -86,8 +84,8 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 		List<Section<UnknownAnnotationType>> unknownSections = markupSection.findChildrenOfType(UnknownAnnotationType.class);
 		for (Section<UnknownAnnotationType> annotationSection : unknownSections) {
 			String name = UnknownAnnotationType.getName(annotationSection);
-			Message message = new Message(Message.WARNING, "The annotation @" + name
-					+ " is not known to KnowWE. It will be ignored.", "", -1, "");
+			KDOMReportMessage message = new SimpleMessageError("The annotation @" + name
+					+ " is not known to KnowWE. It will be ignored.");
 			msgs.add(message);
 		}
 
@@ -99,15 +97,13 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 			String text = annotationSection.getOriginalText();
 			if (!annotation.matches(text)) {
 				String name = annotation.getName();
-				Message message = new Message(Message.ERROR, "The value of annotation @" + name
-						+ " is invalid: " + text, "", -1, "");
+				KDOMReportMessage message = new SimpleMessageError("The value of annotation @"
+						+ name
+						+ " is invalid: " + text);
 				msgs.add(message);
 			}
 		}
-		if (!msgs.isEmpty()) AbstractKnowWEObjectType.storeMessages(article, markupSection,
-				this.getClass(), msgs);
-
-		return null;
+		return msgs;
 	}
 
 	@Override
@@ -115,7 +111,7 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 		// unregister section in the package manager
 		// TODO: refactor this to somewhere else
 		if (!markupSection.get().isIgnoringPackageCompile()) {
-				KnowWEEnvironment.getInstance().getPackageManager(article.getWeb()).unregisterPackageDefinition(
+			KnowWEEnvironment.getInstance().getPackageManager(article.getWeb()).unregisterPackageDefinition(
 						markupSection);
 		}
 	}

@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -70,13 +70,13 @@ import dummies.KnowWETestWikiConnector;
 
 /**
  * @author Jochen
- *
+ * 
  *         This is the core class of KnowWE2. It manages the ArticleManager(s)
  *         and provides methods to access KnowWE-Articles, KnowWE-Modules and
  *         Parse-reports. Further it is connected to the used Wiki-engine,
  *         holding an instance of KnowWEWikiConnector and allows page saves.
- *
- *
+ * 
+ * 
  */
 
 public class KnowWEEnvironment {
@@ -143,14 +143,14 @@ public class KnowWEEnvironment {
 
 	/**
 	 * holding the default tag handlers of KnowWE2
-	 *
+	 * 
 	 * @see renderTags
 	 */
 	private final HashMap<String, TagHandler> tagHandlers = new HashMap<String, TagHandler>();
 
 	/**
 	 * grants access on the default tag handlers of KnowWE2
-	 *
+	 * 
 	 * @return HashMap holding the default tag handlers of KnowWE2
 	 */
 	public HashMap<String, TagHandler> getDefaultTagHandlers() {
@@ -267,7 +267,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * Returns the KnowWEArticle object for a given web and pagename
-	 *
+	 * 
 	 * @param web
 	 * @param topic
 	 * @return
@@ -278,7 +278,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * returns the ArtilceManager for a given web
-	 *
+	 * 
 	 * @param web
 	 * @return
 	 */
@@ -302,7 +302,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * returns the PackageManager for a given web
-	 *
+	 * 
 	 * @param web
 	 * @return
 	 */
@@ -317,9 +317,9 @@ public class KnowWEEnvironment {
 
 	/**
 	 * private contructor
-	 *
+	 * 
 	 * @see getInstance()
-	 *
+	 * 
 	 * @param wiki Connector to the used core wiki engine
 	 */
 	/**
@@ -376,7 +376,8 @@ public class KnowWEEnvironment {
 		if (libDir.exists()) {
 			List<File> pluginFiles = new ArrayList<File>();
 			for (File file : libDir.listFiles()) {
-				if (file.getName().contains("KnowWE-Plugin-") || file.getName().contains("d3web-Plugin-")) {
+				if (file.getName().contains("KnowWE-Plugin-")
+						|| file.getName().contains("d3web-Plugin-")) {
 					pluginFiles.add(file);
 				}
 			}
@@ -483,7 +484,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * Getter for KnowWEWikiConnector
-	 *
+	 * 
 	 * @return this.wikiConnector
 	 */
 	public KnowWEWikiConnector getWikiConnector() {
@@ -493,9 +494,9 @@ public class KnowWEEnvironment {
 	/**
 	 * returns the ActionDispatcher from the WikiConnector (JSPWiki: used by
 	 * KnowWE.jsp)
-	 *
+	 * 
 	 * TODO factor out in KnowWE.jsp
-	 *
+	 * 
 	 * @return
 	 */
 	public KnowWEActionDispatcher getDispatcher() {
@@ -506,26 +507,25 @@ public class KnowWEEnvironment {
 	 * Called from the Wikiplugin when article is saved. Parses and updates
 	 * inner knowledge representation of KnowWE2
 	 */
-	public String buildAndRegisterArticle(String username, String content,
+	public void buildAndRegisterArticle(String username, String content,
 			String topic, String web) {
-		return buildAndRegisterArticle(username, content, topic, web, false);
+		buildAndRegisterArticle(username, content, topic, web, false);
 
 	}
 
-	public String buildAndRegisterArticle(String username, String content,
+	public void buildAndRegisterArticle(String username, String content,
 			String topic, String web, boolean fullParse) {
 
 		// create article with the new content
 		KnowWEArticle article = KnowWEArticle.createArticle(content, topic, KnowWEEnvironment
 				.getInstance().getRootType(), web);
 
-		return this.getArticleManager(web).registerArticle(
-				article).getHTML();
+		this.getArticleManager(web).registerArticle(article);
 	}
 
 	/**
 	 * Called by the Core-Junit-Tests
-	 *
+	 * 
 	 * @param username
 	 * @param content
 	 * @param topic
@@ -546,7 +546,7 @@ public class KnowWEEnvironment {
 	/**
 	 * Knowledge Services (Kopic) needs to have an id. This is how a default id
 	 * is generated when users dont enter one.
-	 *
+	 * 
 	 * @param topic
 	 * @return
 	 */
@@ -576,12 +576,10 @@ public class KnowWEEnvironment {
 	// return res.hasErrors();
 	// }
 
-
-
 	/**
-	 *
+	 * 
 	 * use KnowWEUtils.unmaskHTML
-	 *
+	 * 
 	 * @param htmlContent
 	 * @return
 	 */
@@ -592,9 +590,9 @@ public class KnowWEEnvironment {
 	}
 
 	/**
-	 *
+	 * 
 	 * use KnowWEUtils.maskHTML
-	 *
+	 * 
 	 * @param htmlContent
 	 * @return
 	 */
@@ -620,7 +618,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * Collects all KnowWEObjectTypes.
-	 *
+	 * 
 	 * @return
 	 */
 	public List<KnowWEObjectType> getAllKnowWEObjectTypes() {
@@ -641,7 +639,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * @See KnowWEObjectTypeBrowserAction
-	 *
+	 * 
 	 * @param clazz
 	 * @return
 	 */

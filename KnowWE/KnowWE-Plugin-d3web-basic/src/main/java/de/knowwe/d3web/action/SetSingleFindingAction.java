@@ -78,7 +78,12 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 				value = kbm.findValue(question, valueid);
 			}
 			else if (valuenum != null) {
-				value = new NumValue(Double.parseDouble(valuenum));
+				try {
+					value = new NumValue(Double.parseDouble(valuenum));
+				}
+				catch (NumberFormatException e) {
+					// nothing to do, value will be null, field will be empty
+				}
 
 				// TODO set valuedate in Attributes
 			}

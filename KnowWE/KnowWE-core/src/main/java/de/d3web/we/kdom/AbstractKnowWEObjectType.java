@@ -27,14 +27,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 
-import de.d3web.report.Message;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.DefaultErrorRenderer;
 import de.d3web.we.kdom.report.MessageRenderer;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
-import de.d3web.we.utils.KnowWEUtils;
 
 public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
@@ -79,9 +77,10 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * Sections appears in the article
 	 */
 	private boolean isOrderSensitive = false;
-	
+
 	/**
-	 * a flag to determine if SubtreeHandlers registered to this type should ignore package compile 
+	 * a flag to determine if SubtreeHandlers registered to this type should
+	 * ignore package compile
 	 */
 	private boolean ignorePackageCompile = false;
 
@@ -205,51 +204,6 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 						articleName, clearedTypes);
 			}
 		}
-	}
-
-	/**
-	 * @see KnowWEUtils#storeSingleMessage(KnowWEArticle, Section, Class, Class,
-	 *      Object)
-	 */
-	public static void storeSingleMessage(KnowWEArticle article, Section<?> sec, Class<?> source, Message msg) {
-		KnowWEUtils.storeSingleMessage(article, sec, source, Message.class, msg);
-	}
-
-	/**
-	 * @see KnowWEUtils#clearMessages(KnowWEArticle, Section, Class, Class)
-	 */
-	public static void cleanMessages(KnowWEArticle article, Section<?> section, Class<?> source) {
-		KnowWEUtils.clearMessages(article, section, source, Message.class);
-	}
-
-	/**
-	 * @see KnowWEUtils#storeMessages(KnowWEArticle, Section, Class, Class,
-	 *      Collection)
-	 */
-	public static void storeMessages(KnowWEArticle article, Section<?> section,
-			Class<?> source, Collection<Message> messages) {
-		KnowWEUtils.storeMessages(article, section, source, Message.class, messages);
-	}
-
-	/**
-	 * @see KnowWEUtils#getMessages(KnowWEArticle, Section, Class)
-	 */
-	public static Collection<Message> getMessages(KnowWEArticle article, Section<?> section) {
-		return KnowWEUtils.getMessages(article, section, Message.class);
-	}
-
-	/**
-	 * @see KnowWEUtils#getMessages(KnowWEArticle, Section, Class, Class)
-	 */
-	public static Collection<Message> getMessages(KnowWEArticle article, Section<?> section, Class<?> source) {
-		return KnowWEUtils.getMessages(article, section, source, Message.class);
-	}
-
-	/**
-	 * @see KnowWEUtils#getMessagesFromSubtree(KnowWEArticle, Section, Class)
-	 */
-	public static Collection<Message> getMessagesFromSubtree(KnowWEArticle article, Section<?> section) {
-		return KnowWEUtils.getMessagesFromSubtree(article, section, Message.class);
 	}
 
 	// /**

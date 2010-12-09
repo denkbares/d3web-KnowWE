@@ -21,9 +21,11 @@ package de.d3web.we.kdom;
 
 import java.util.Collection;
 
-import de.d3web.report.Message;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.report.KDOMError;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.KDOMWarning;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -54,14 +56,14 @@ public class RootType extends DefaultAbstractKnowWEObjectType {
 
 			@Override
 			public void render(KnowWEArticle article, Section<RootType> section, KnowWEUserContext user, StringBuilder string) {
-				Collection<Message> messages = KnowWEArticle.getMessages(article, section);
-				for (Message message : messages) {
-					String type = message.getMessageType();
-					String tag = Message.ERROR.equals(type)
+				Collection<KDOMReportMessage> messages = KDOMReportMessage.getMessages(section,
+						article);
+				for (KDOMReportMessage message : messages) {
+					String tag = (message instanceof KDOMError)
 							? "error"
-							: Message.WARNING.equals(type) ? "warning" : "information";
+							: (message instanceof KDOMWarning) ? "warning" : "information";
 					string.append("\n%%").append(tag).append("\n");
-					string.append(message.getMessageText());
+					string.append(message.getVerbalization());
 					string.append("\n/%\n\n");
 				}
 				DelegateRenderer.getInstance().render(article, section, user, string);

@@ -250,7 +250,7 @@ public class KnowWEArticleManager {
 	 * @param topic
 	 * @return
 	 */
-	public KnowWEDomParseReport registerArticle(KnowWEArticle article) {
+	public void registerArticle(KnowWEArticle article) {
 
 		// store new article
 		articleMap.put(article.getTitle(), article);
@@ -288,8 +288,6 @@ public class KnowWEArticleManager {
 						+ web + " in "
 						+ (System.currentTimeMillis() - article.getStartTime())
 						+ "ms <<====");
-
-		return article.getReport();
 	}
 
 	public void clearArticleMap() {
