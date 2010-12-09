@@ -69,7 +69,7 @@ public class FlowchartUtils {
 	 * @return
 	 */
 	public static String createRenderablePreview(String preview) {
-		return "<div style='cursor: default !important;'>" +
+		return "<div>" +
 				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/dropdownlist.css'></link>" +
 				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objectselect.css'></link>" +
 				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objecttree.css'></link>" +

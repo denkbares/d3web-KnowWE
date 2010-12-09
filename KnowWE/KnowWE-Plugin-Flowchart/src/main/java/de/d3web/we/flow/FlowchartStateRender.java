@@ -111,9 +111,7 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 			builder.append("'");
 			builder.append("</h3>");
 
-			if (isActive(section, session)) {
-				builder.append(createPreviewWithHighlightedPath(section, session));
-			}
+			builder.append(createPreviewWithHighlightedPath(section, session));
 
 			builder.append("</div>");
 			builder.append("<p/><p/>");
@@ -125,20 +123,6 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 
 		string.append(KnowWEUtils.maskHTML(builder.toString()));
 
-	}
-
-	private boolean isActive(Section<FlowchartType> section, Session theCase) {
-
-		// TODO
-		// String flowID =
-		// AbstractXMLObjectType.getAttributeMapFor(section).get("id");
-		//
-		// CaseObjectSource flowSet = FluxSolver.getFlowSet(theCase);
-		//
-		// DiaFluxCaseObject caseObject = (DiaFluxCaseObject)
-		// theCase.getCaseObject(flowSet);
-		//
-		return true;
 	}
 
 	private String getPathendText(Session session) {
@@ -246,10 +230,13 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 
 		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) session.getCaseObject(flowSet);
 
+		preview = "\n" + preview + "\n";
+
 		for (IPath path : caseObject.getActivePathes()) {
 
-			if (path.getFlow().getId().equals(flowID)) preview = highlightPath(preview, flowID,
-					path, session);
+			if (path.getFlow().getId().equals(flowID)) {
+				preview = highlightPath(preview, flowID, path, session);
+			}
 
 		}
 
@@ -295,9 +282,6 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 
 	private String colorNode(String node, String preview) {
 
-		// is node in current flowchart?
-		// TODO as FC change along PathEntries, the node might not be in the
-		// current FC
 		int nodeIndex = preview.indexOf(node);
 
 		if (nodeIndex == -1) return preview;
@@ -352,8 +336,6 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 	private boolean isDebug(Map<String, String> urlParameterMap) {
 		String debug = urlParameterMap.get("debug");
 		return debug != null && debug.equals("true");
-		// // return true;
-		// return false;
 	}
 
 }
