@@ -110,7 +110,7 @@
 /* styling for indicated questions/questionnaires */
 /* #quickinterview .indicated { border: 2px solid #ACC0D6; padding: 3px 0 0 0; }*/
 /* the separator between the answers */
-#quickinterview .answerseparator {
+#quickinterview .separator {
 	float: left;
 	padding: 2px 3px;
 	border: none;

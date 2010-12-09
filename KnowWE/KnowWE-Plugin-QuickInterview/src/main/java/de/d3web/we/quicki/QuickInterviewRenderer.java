@@ -469,7 +469,7 @@ public class QuickInterviewRenderer {
 				+ jscall + " />");
 		// "<div class='dateformatdesc'>()</div>");
 
-		sb.append("\n<div class='answerseparator'></div>");
+		sb.append("\n<div class='separator'></div>");
 		renderAnswerUnknown(q, "num", sb);
 	}
 
@@ -511,14 +511,14 @@ public class QuickInterviewRenderer {
 			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + "",
 					cssclass, jscall, null, spanid, ""));
 
-			sb.append("<div class='answerseparator'> | </div>");
+			sb.append("<div class='separator'> | </div>");
 
 			// System.out.println(getEnclosingTagOnClick("div", "" +
 			// choice.getName() + " ",
 			// cssclass, jscall, null, spanid));
 
 			// for having a separator between answer alternatives (img, text...)
-			// sb.append("\n<div class='answerseparator'></div>");
+			// sb.append("\n<div class='separator'></div>");
 		}
 
 		renderAnswerUnknown(q, "oc", sb);
@@ -609,7 +609,7 @@ public class QuickInterviewRenderer {
 
 		// sb.append("<input type='button' value='OK' class='num-ok' />");
 
-		sb.append("<div class='answerseparator'>");
+		sb.append("<div class='separator'>");
 		// M.Ochlast: i added this (hidden) div to re-enable submitting of
 		// numValues by "clicking". This workaround is neccessary for KnowWE
 		// Systemtests (there is no Return-Key emulation possible).
@@ -675,7 +675,7 @@ public class QuickInterviewRenderer {
 
 		// sb.append("<input type='button' value='OK' class='date-ok' /> ");
 
-		sb.append("<div class='answerseparator'> | </div>");
+		sb.append("<div class='separator'> | </div>");
 		renderAnswerUnknown(q, "num", sb);
 	}
 
@@ -715,7 +715,7 @@ public class QuickInterviewRenderer {
 			String spanid = q.getId() + "_" + choice.getId();
 			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + "", cssclass,
 					jscall, null, spanid, ""));
-			sb.append("<div class='answerseparator'> | </div>");
+			sb.append("<div class='separator'> | </div>");
 		}
 
 		// also render the unknown alternative for choice questions

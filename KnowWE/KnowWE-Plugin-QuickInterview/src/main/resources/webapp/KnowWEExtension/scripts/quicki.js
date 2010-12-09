@@ -106,13 +106,6 @@ KNOWWE.plugin.quicki = function(){
         		});
         	});
         	
-        	_KS('.answerMCClicked').each(function(element){
-                _KE.add('click', element,  
-        		function(event) {
-        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.answerMCCollect, event);
-        		});
-        	});
-        	
         	_KS('.questionnaire').each(function(element){
                 _KE.add('click', element,  
         		function(event) {

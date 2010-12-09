@@ -55,7 +55,7 @@
 #quickinterview .indicated { border: 2px solid orange; padding: 3px 0 0 0; }
 
 /* the separator between the answers */
-#quickinterview .answerseparator { float: left; background: #E8F2FE url(../images/ballWhite_s.png); height: 19px; width: 19px;
+#quickinterview .separator { float: left; background: #E8F2FE url(../images/ballWhite_s.png); height: 19px; width: 19px;
 	 background-repeat: no-repeat; background-position: center center;  padding: 1px 5px;}
 
 /* answer styling */
