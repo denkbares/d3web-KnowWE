@@ -20,12 +20,18 @@
 
 package de.d3web.we.flow.type;
 
+import de.d3web.we.kdom.Priority;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.objects.KnowWETerm;
+import de.d3web.we.kdom.objects.TermDefinition;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 /**
  * 
  * 
- * @author hatko Created on: 09.10.2009
+ * @author Reinhard Hatko
+ * @created on: 09.10.2009
  */
 public class ExitType extends AbstractXMLObjectType {
 
@@ -43,5 +49,30 @@ public class ExitType extends AbstractXMLObjectType {
 
 	@Override
 	protected void init() {
+		addChildType(new ExitNodeDef());
 	}
+
+	static class ExitNodeDef extends TermDefinition<String> {
+
+		public ExitNodeDef() {
+			super(String.class);
+		}
+
+		@Override
+		protected void init() {
+			setSectionFinder(new AllTextSectionFinder());
+			addSubtreeHandler(Priority.HIGH, new FlowchartTermDefinitionRegistrationHandler());
+		}
+
+		@Override
+		public String getTermName(Section<? extends KnowWETerm<String>> s) {
+			String nodeName = s.getOriginalText();
+			Section<FlowchartType> flowchart = s.findAncestorOfType(FlowchartType.class);
+			String flowchartName = FlowchartType.getFlowchartName(flowchart);
+
+			return flowchartName + "." + nodeName;
+		}
+
+	}
+
 }

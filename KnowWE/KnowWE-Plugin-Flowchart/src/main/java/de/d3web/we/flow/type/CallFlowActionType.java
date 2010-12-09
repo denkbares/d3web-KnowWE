@@ -18,7 +18,6 @@
  */
 package de.d3web.we.flow.type;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.core.inference.PSAction;
@@ -36,8 +35,10 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
  */
 public class CallFlowActionType extends D3webRuleAction<CallFlowActionType> {
 
+	public static final int FLOWCHART_GROUP = 1;
+	public static final int STARTNODE_GROUP = 2;
 	public static final String REGEX = "CALL\\[([^\\]]*)\\(([^)]*)\\)\\]";
-	private static final Pattern pattern = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
+	public static final Pattern PATTERN = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
 
 	@Override
 	public void cleanStoredInfos(String articleName) {
@@ -46,7 +47,16 @@ public class CallFlowActionType extends D3webRuleAction<CallFlowActionType> {
 
 	@Override
 	protected void init() {
-		setSectionFinder(new RegexSectionFinder(REGEX, Pattern.CASE_INSENSITIVE));
+		setSectionFinder(new RegexSectionFinder(PATTERN));
+
+		FlowchartReference flowchartReference = new FlowchartReference();
+		flowchartReference.setSectionFinder(new RegexSectionFinder(PATTERN, FLOWCHART_GROUP));
+		addChildType(flowchartReference);
+
+		StartNodeReference startNodeReference = new StartNodeReference();
+		startNodeReference.setSectionFinder(new RegexSectionFinder(
+				Pattern.compile("\\(([^)]*)\\)"), 1));
+		addChildType(startNodeReference);
 	}
 
 	@Override
@@ -61,15 +71,13 @@ public class CallFlowActionType extends D3webRuleAction<CallFlowActionType> {
 	}
 
 	public static String getStartNodeName(Section<CallFlowActionType> action) {
-		Matcher matcher = pattern.matcher(action.getOriginalText());
-		matcher.matches();
-		return matcher.group(2);
+		Section<StartNodeReference> nodeSection = action.findChildOfType(StartNodeReference.class);
+		return nodeSection.getOriginalText();
 	}
 
 	public static String getFlowName(Section<CallFlowActionType> action) {
-		Matcher matcher = pattern.matcher(action.getOriginalText());
-		matcher.matches();
-		return matcher.group(1);
+		Section<FlowchartReference> nodeSection = action.findChildOfType(FlowchartReference.class);
+		return nodeSection.getOriginalText();
 	}
 
 	@Override

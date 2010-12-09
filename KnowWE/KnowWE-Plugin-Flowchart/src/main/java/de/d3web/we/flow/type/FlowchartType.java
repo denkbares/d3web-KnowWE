@@ -20,14 +20,15 @@
 
 package de.d3web.we.flow.type;
 
-import java.util.Map;
-
 import de.d3web.we.flow.FlowchartSectionRenderer;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
+import de.d3web.we.flow.type.FlowchartXMLHeadType.FlowchartTermDef;
+import de.d3web.we.kdom.InvalidKDOMSchemaModificationOperation;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.XMLHead;
 
 /**
  * @author Reinhard Hatko
@@ -39,6 +40,9 @@ public class FlowchartType extends AbstractXMLObjectType {
 
 	public FlowchartType() {
 		super("flowchart");
+		replaceHead(); // can not be done in init, because objetc
+		// construction
+		// is not yet finished
 	}
 
 	@Override
@@ -48,17 +52,26 @@ public class FlowchartType extends AbstractXMLObjectType {
 
 	}
 
+	/**
+	 * 
+	 * @created 08.12.2010
+	 */
+	public void replaceHead() {
+		try {
+			this.replaceChildType(new FlowchartXMLHeadType(), XMLHead.class);
+		}
+		catch (InvalidKDOMSchemaModificationOperation e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Override
 	public KnowWEDomRenderer<FlowchartType> getRenderer() {
 		return renderer;
 	}
 
 	public static String getFlowchartName(Section<FlowchartType> sec) {
-		Map<String, String> mapFor = AbstractXMLObjectType
-				.getAttributeMapFor(sec);
-		return mapFor.get("name");
+		return sec.findSuccessor(FlowchartTermDef.class).getOriginalText();
 	}
-
-
 
 }

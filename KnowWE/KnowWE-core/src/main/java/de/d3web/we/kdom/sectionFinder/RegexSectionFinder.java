@@ -49,6 +49,10 @@ public class RegexSectionFinder extends SectionFinder {
 		this(Pattern.compile(p, patternmod), group);
 	}
 
+	public RegexSectionFinder(Pattern pattern) {
+		this(pattern, 0);
+	}
+
 	public RegexSectionFinder(Pattern pattern, int group) {
 		this.pattern = pattern;
 		this.group = group;

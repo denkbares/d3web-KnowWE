@@ -175,8 +175,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 				condition = ConditionTrue.INSTANCE;
 			}
 
-			IEdge edge = FlowFactory.getInstance().createEdge(id, source,
-					target, condition);
+			IEdge edge = FlowFactory.getInstance().createEdge(id, source, target, condition);
 
 			result.add(edge);
 
@@ -232,11 +231,9 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 					String text = getXMLContentText(nodeInfo);
 
 					errors.add(new ObjectCreationError("NodeHandler "
-							+ handler.getClass().getSimpleName()
-							+ " could not create node for: " + text, getClass()));
+							+ handler.getClass().getSimpleName() + " could not create node for: " + text, getClass()));
 
-					result.add(FlowFactory.getInstance().createCommentNode(id,
-							"Surrogate for node of type " + text));
+					result.add(FlowFactory.getInstance().createCommentNode(id, "Surrogate for node of type " + text));
 				}
 
 			}

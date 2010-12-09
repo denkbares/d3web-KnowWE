@@ -1,20 +1,20 @@
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.d3web.we.flow.type;
 
@@ -28,7 +28,6 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.D3webCondition;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
-
 /**
  * 
  * @author Reinhard Hatko
@@ -36,13 +35,10 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
  */
 public class FlowchartProcessedConditionType extends D3webCondition<FlowchartProcessedConditionType> {
 
+	public static final int FLOWCHART_GROUP = 1;
 	public static final String REGEX = "PROCESSED\\[([^\\]]*)\\]";
 
-	private final Pattern pattern;
-
-	public FlowchartProcessedConditionType() {
-		pattern = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
-	}
+	public static final Pattern PATTERN = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
 
 	@Override
 	public void cleanStoredInfos(String articleName) {
@@ -51,13 +47,16 @@ public class FlowchartProcessedConditionType extends D3webCondition<FlowchartPro
 
 	@Override
 	protected void init() {
-		setSectionFinder(new RegexSectionFinder(REGEX, Pattern.CASE_INSENSITIVE));
+		setSectionFinder(new RegexSectionFinder(PATTERN));
+		FlowchartReference reference = new FlowchartReference();
+		reference.setSectionFinder(new RegexSectionFinder(PATTERN, FLOWCHART_GROUP));
+		addChildType(reference);
 	}
 
 	@Override
 	protected Condition createCondition(KnowWEArticle article, Section<FlowchartProcessedConditionType> section) {
 
-		Matcher matcher = pattern.matcher(section.getOriginalText());
+		Matcher matcher = PATTERN.matcher(section.getOriginalText());
 
 		if (!matcher.matches()) {
 			return null;
@@ -69,6 +68,5 @@ public class FlowchartProcessedConditionType extends D3webCondition<FlowchartPro
 		}
 
 	}
-
 
 }
