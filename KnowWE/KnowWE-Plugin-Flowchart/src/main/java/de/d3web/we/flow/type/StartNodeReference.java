@@ -36,7 +36,7 @@ public class StartNodeReference extends TermReference<String> {
 	public String getTermName(Section s) {
 		Section<FlowchartReference> ref = s.getFather().findSuccessor(FlowchartReference.class);
 
-		return ref.getOriginalText() + "." + s.getOriginalText();
+		return ref.getOriginalText() + "(" + s.getOriginalText() + ")";
 	}
 
 	@Override

@@ -70,7 +70,7 @@ public class StartType extends AbstractXMLObjectType {
 			Section<FlowchartType> flowchart = s.findAncestorOfType(FlowchartType.class);
 			String flowchartName = FlowchartType.getFlowchartName(flowchart);
 
-			return flowchartName + "." + nodeName;
+			return flowchartName + "(" + nodeName + ")";
 		}
 
 	}
