@@ -214,7 +214,7 @@
 						<configuration>
 							<mappingId>customizable</mappingId>
 							<configurators>
-								<!-- remove javaConfigurator in EAR pom.xml -->
+								<!-- remove javaConfigurator in EAR pom.xml  -->
 								<configurator id='org.maven.ide.eclipse.jdt.javaConfigurator' />
 							</configurators>
 							<mojoExecutions>
