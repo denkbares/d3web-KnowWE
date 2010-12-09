@@ -85,13 +85,23 @@ KNOWWE.plugin.quicki = function(){
          */
         initialize : function (){
         	
-        	_KS('.answer').each(function(element){
+        	// select all elements with class="answer"
+        	$$('.answer').each(function(element){
         		_KE.add('click', element, 
         		function(event) {
         			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.answerClicked, event);
         		});
             });
+        	// select all elements with class="answerClicked"
+        	$$('.answerClicked').each(function(element){
+        		_KE.add('click', element, 
+        		function(event) {
+        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.answerClicked, event);
+        		});
+            });        	
         	
+        	// select all elements with class="(.*)answerunknown(.*)" 
+        	// ---> class="answerunknown" and class="answerunknownClicked"
         	_KS('.answerunknown').each(function(element){
                 _KE.add('click', element,  
         		function(event) {
@@ -99,13 +109,23 @@ KNOWWE.plugin.quicki = function(){
         		});
         	});
         	
-        	_KS('.answerMC').each(function(element){
+        	// select all elements with class="answerMC"
+        	$$('.answerMC').each(function(element){
                 _KE.add('click', element,  
         		function(event) {
         			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.answerMCCollect, event);
         		});
         	});
+        	// select all elements with class="answerMCClicked"
+        	$$('.answerMCClicked').each(function(element){
+                _KE.add('click', element,  
+        		function(event) {
+        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.answerMCCollect, event);
+        		});
+        	});        	
         	
+        	// select all elements with class="(.*)questionnaire(.*)"
+        	// ---> class="questionnaire" and class="emptyQuestionnaire"
         	_KS('.questionnaire').each(function(element){
                 _KE.add('click', element,  
         		function(event) {
@@ -113,30 +133,33 @@ KNOWWE.plugin.quicki = function(){
         		});
         	});
         	
-        	
         	// add click-event for divs with class='num-ok' to submit numValues
-        	_KS('.num-ok').each(function( element ){
+        	// select all elements with class="num-ok"
+        	$$('.num-ok').each(function( element ){
         		_KE.add('click', element,  
         		function(event) {
         			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.numAnswerClicked, event);
         		});
             });
         	
-        	_KS('.numinput').each(function( element ){
+        	// select all elements with class="numinput"
+        	$$('.numinput').each(function( element ){
         		_KE.add('keydown', element,  
         		function(event) {
         			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.numAnswerClicked, event);
         		});
             });  
         	
-        	_KS('.inputdate').each(function( element ){
+        	// select all elements with class="inputdate"
+        	$$('.inputdate').each(function( element ){
         		_KE.add('keydown', element,  
         		function(event) {
         			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.dateAnswerClicked, event);
         		});
             });
             
-            _KS('.inputtextvalue').each(function( element ){
+        	// select all elements with class="inputtextvalue"
+            $$('.inputtextvalue').each(function( element ){
         		_KE.add('keydown', element,  
         		function(event) {
         			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.textAnswerEntered, event);
@@ -150,7 +173,8 @@ KNOWWE.plugin.quicki = function(){
         	/* removing indicated elements from the storages; this ensures that indicated
         	 * questions are always displayed expanded, even after e.g. the user previously
         	 * collapsed a (part of) such a questionnaire tree. */
-        	_KS('.indicated').each(function( element ){
+            // select all elements with class="indicated"
+        	$$('.indicated').each(function( element ){
 	        	KNOWWE.core.util.updateProcessingState(1);
 	        	try {
 	        		var ids = questionnaireVis.indexOf(element.id);
@@ -163,8 +187,9 @@ KNOWWE.plugin.quicki = function(){
 	        	KNOWWE.core.util.updateProcessingState(-1);
             }); 
         	
+        	// select the element with id="quickireset"
         	if ($('quickireset')) {
-	            _KE.add('click', _KS('#quickireset'),  
+	            _KE.add('click', $('#quickireset'),  
 	        		function(event) {
 	        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.quickIReset, event);
 	        		});
