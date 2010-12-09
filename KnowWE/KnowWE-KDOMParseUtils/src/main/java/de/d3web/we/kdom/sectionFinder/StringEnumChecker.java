@@ -35,17 +35,37 @@ public class StringEnumChecker<T extends KnowWEObjectType> extends SubtreeHandle
 
 	private final String[] values;
 	private final KDOMError error;
+	private int startOffset;
+	private int endOffset;
+
+	public StringEnumChecker(String[] values, KDOMError error, int startOffset, int endoffset) {
+		this.values = values;
+		this.error = error;
+		this.startOffset = startOffset;
+		this.endOffset = endoffset;
+	}
 
 	public StringEnumChecker(String[] values, KDOMError error) {
 		this.values = values;
 		this.error = error;
+		this.startOffset = 0;
+		this.endOffset = 0;
 	}
 
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
+
+		// cut offsets and trim
+		String sectionContent = s.getOriginalText();
+		sectionContent = sectionContent.substring(startOffset);
+		sectionContent = sectionContent.substring(0,
+					sectionContent.length() - endOffset);
+		String checkContent = sectionContent.trim();
+
+		// check against string values
 		boolean found = false;
 		for (String string : values) {
-			if (s.getOriginalText().contains(string)) {
+			if (checkContent.equalsIgnoreCase(string)) {
 				found = true;
 			}
 		}
