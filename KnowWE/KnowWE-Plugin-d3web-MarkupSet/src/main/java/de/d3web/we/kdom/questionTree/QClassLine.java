@@ -190,14 +190,15 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 				@Override
 				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<InitNumber> s) {
 
-					Integer number = new Integer(((s.get().getNumber(
-							s)).intValue()));
-					if (number == null) {
+					Double originalnumber = s.get().getNumber(
+							s);
+					if (originalnumber == null) {
 						// if the numbers cannot be found throw error
 						return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
-															"invalid number",
+								"invalid number",
 								this.getClass()));
 					}
+					Integer number = new Integer((originalnumber.intValue()));
 
 					Section<QuestionnaireDefinition> qDef = s.getFather().findSuccessor(
 							QuestionnaireDefinition.class);
