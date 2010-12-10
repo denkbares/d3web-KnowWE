@@ -37,9 +37,9 @@ import de.d3web.diaFlux.flow.INodeData;
 import de.d3web.diaFlux.flow.ISupport;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.inference.IPath;
+import de.d3web.we.flow.type.DiaFluxStateType;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
@@ -52,10 +52,10 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Reinhard Hatko
  * @created 09.09.2010
  */
-public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
+public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 
 	@Override
-	public void render(KnowWEArticle article, Section<KnowWEObjectType> sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section<DiaFluxStateType> sec, KnowWEUserContext user, StringBuilder string) {
 
 		Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
 
@@ -105,11 +105,11 @@ public class FlowchartStateRender extends KnowWEDomRenderer<KnowWEObjectType> {
 			String name = attributeMap.get("name");
 
 			builder.append("<div>");
-			builder.append("<h3>");
-			builder.append("Diagnostic Flow '");
+			builder.append("<h4>");
+			builder.append("DiaFlux '");
 			builder.append(name);
 			builder.append("'");
-			builder.append("</h3>");
+			builder.append("</h4>");
 
 			builder.append(createPreviewWithHighlightedPath(section, session));
 

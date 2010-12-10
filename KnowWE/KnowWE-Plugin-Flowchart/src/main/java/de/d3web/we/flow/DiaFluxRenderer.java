@@ -1,5 +1,7 @@
-package de.d3web.we.flow.type;
+package de.d3web.we.flow;
 
+import de.d3web.we.flow.type.FlowchartEditProvider;
+import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -12,9 +14,9 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Reinhard Hatko
  * @created 24.11.2010
  */
-class DiaFluxRenderer extends DefaultMarkupRenderer<DefaultMarkupType> {
+public class DiaFluxRenderer extends DefaultMarkupRenderer<DefaultMarkupType> {
 
-	DiaFluxRenderer() {
+	public DiaFluxRenderer() {
 		super("KnowWEExtension/flowchart/icon/flowchart24.png", true);
 	}
 

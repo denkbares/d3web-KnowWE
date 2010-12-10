@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.flow;
+package de.d3web.we.flow.kbinfo;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,8 +26,6 @@ import java.util.UUID;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.flow.kbinfo.GetInfoObjects;
-import de.d3web.we.flow.kbinfo.SearchInfoObjects;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
@@ -46,7 +44,7 @@ public class JSPHelper {
 
 	private List<String> getAllMatches(String className) {
 		return SearchInfoObjects.searchObjects(
-				de.d3web.we.core.KnowWEEnvironment.getInstance(),
+				KnowWEEnvironment.getInstance(),
 				this.parameterMap.getWeb(),
 				null, className, 65535);
 	}
@@ -136,8 +134,7 @@ public class JSPHelper {
 		return "<flowchart fcid=\"flow_"
 				+ id.substring(0, 8)
 				+ "\" name=\"New Flowchart\" icon=\"sanduhr.gif\" width=\"750\" height=\"500\" idCounter=\"1\">"
-				+
-				"</flowchart>";
+				+ "</flowchart>";
 	}
 
 	public String getFlowchartID() {

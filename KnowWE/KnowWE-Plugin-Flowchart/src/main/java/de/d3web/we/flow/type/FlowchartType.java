@@ -20,7 +20,7 @@
 
 package de.d3web.we.flow.type;
 
-import de.d3web.we.flow.FlowchartSectionRenderer;
+import de.d3web.we.flow.FlowchartRenderer;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
 import de.d3web.we.flow.type.FlowchartXMLHeadType.FlowchartTermDef;
 import de.d3web.we.kdom.InvalidKDOMSchemaModificationOperation;
@@ -36,7 +36,7 @@ import de.d3web.we.kdom.xml.XMLHead;
  */
 public class FlowchartType extends AbstractXMLObjectType {
 
-	protected KnowWEDomRenderer<FlowchartType> renderer = new FlowchartSectionRenderer();
+	protected KnowWEDomRenderer<FlowchartType> renderer = new FlowchartRenderer();
 
 	public FlowchartType() {
 		super("flowchart");

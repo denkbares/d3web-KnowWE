@@ -25,7 +25,7 @@
 		<parameter-def id="priority" type="number" />
 	</extension-point>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+	<!-- extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="FlowchartTagHandler">
 		<parameter id="class"
 			value="de.d3web.we.flow.FlowchartStateTagHandler" />
@@ -33,7 +33,7 @@
 		<parameter id="description" value="TagHandler FlowchartStateTagHandler" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-	</extension>
+	</extension-->
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="DiaFluxType">
@@ -41,6 +41,17 @@
 			value="de.d3web.we.flow.type.DiaFluxType" />
 		<parameter id="name" value="DiaFluxType" />
 		<parameter id="description" value="KnowWEObjectType DiaFluxType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="DiaFluxStateType">
+		<parameter id="class"
+			value="de.d3web.we.flow.type.DiaFluxStateType" />
+		<parameter id="name" value="DiaFluxStateType" />
+		<parameter id="description" value="KnowWEObjectType DiaFluxStateType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />

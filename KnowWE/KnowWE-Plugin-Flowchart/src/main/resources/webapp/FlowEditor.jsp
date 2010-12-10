@@ -1,9 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 
-<%@page import="de.d3web.we.kdom.Section"%>
-<%@page import="de.d3web.we.kdom.KnowWEArticle"%>
-<%@page import="de.d3web.we.flow.type.DiaFluxType"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="de.d3web.we.kdom.Section"%>
+<%@ page import="de.d3web.we.kdom.KnowWEArticle"%>
+<%@ page import="de.d3web.we.flow.type.DiaFluxType"%>
 <%@ page import="com.ecyrd.jspwiki.*" %>
 <%@ page import="de.d3web.we.jspwiki.*" %>
 <%@ page import="java.util.*" %>

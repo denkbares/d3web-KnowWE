@@ -31,7 +31,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * 
  * @author Reinhard Hatko
  */
-public class FlowchartSectionRenderer extends KnowWEDomRenderer<FlowchartType> {
+public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 
 	@Override
 	public void render(KnowWEArticle article, Section<FlowchartType> sec, KnowWEUserContext user, StringBuilder string) {

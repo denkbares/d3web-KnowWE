@@ -18,48 +18,32 @@
  */
 package de.d3web.we.flow.type;
 
-import de.d3web.we.core.packaging.KnowWEPackageManager;
-import de.d3web.we.flow.DiaFluxRenderer;
-import de.d3web.we.kdom.Section;
+import de.d3web.we.flow.FlowchartStateRender;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
 
 
 /**
  * 
  * @author Reinhard Hatko
- * @created 15.11.2010
+ * @created 10.12.2010
  */
-public class DiaFluxType extends DefaultMarkupType {
+public class DiaFluxStateType extends DefaultMarkupType {
 
 	private static final DefaultMarkup MARKUP;
-
 	static {
-
-		MARKUP = new DefaultMarkup("DiaFlux");
-		MARKUP.addContentType(new FlowchartType());
-		MARKUP.addAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME, false);
-
+		MARKUP = new DefaultMarkup("DiaFluxState");
 	}
 
-	/**
-	 * @param markup
-	 */
-	public DiaFluxType() {
+	public DiaFluxStateType() {
 		super(MARKUP);
-		setCustomRenderer(new DiaFluxRenderer());
 	}
 
-	public static String getFlowchartName(Section<DefaultMarkupType> diaFluxSection) {
-
-		Section<FlowchartType> flowchart = diaFluxSection.findSuccessor(FlowchartType.class);
-
-		if (flowchart == null) {
-			return "";
-		}
-		else {
-			return FlowchartType.getFlowchartName(flowchart);
-		}
-
+	@Override
+	public KnowWEDomRenderer<DiaFluxStateType> getRenderer() {
+		return new ReRenderSectionMarkerRenderer<DiaFluxStateType>(new FlowchartStateRender());
 	}
+
 }
