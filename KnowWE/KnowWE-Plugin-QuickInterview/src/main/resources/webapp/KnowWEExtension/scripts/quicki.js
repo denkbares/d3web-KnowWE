@@ -189,7 +189,7 @@ KNOWWE.plugin.quicki = function(){
         	
         	// select the element with id="quickireset"
         	if ($('quickireset')) {
-	            _KE.add('click', $('#quickireset'),  
+	            _KE.add('click', _KS('#quickireset'),  
 	        		function(event) {
 	        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.quickIReset, event);
 	        		});
