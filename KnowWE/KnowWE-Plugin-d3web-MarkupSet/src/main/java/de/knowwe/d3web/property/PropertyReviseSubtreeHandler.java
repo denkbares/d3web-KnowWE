@@ -27,11 +27,11 @@ import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.object.ContentDefinition;
 import de.d3web.we.object.IDObjectReference;
 import de.d3web.we.object.LocaleDefinition;
 import de.d3web.we.object.PropertyReference;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.MessageUtils;
 
 /**
@@ -42,7 +42,7 @@ import de.d3web.we.utils.MessageUtils;
  * @author Markus Friedrich (denkbares GmbH)
  * @created 10.11.2010
  */
-public class PropertyReviseSubtreeHandler extends SubtreeHandler<PropertyType> {
+public class PropertyReviseSubtreeHandler extends D3webSubtreeHandler<PropertyType> {
 
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<PropertyType> s) {
