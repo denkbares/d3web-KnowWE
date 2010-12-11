@@ -35,6 +35,18 @@ import de.d3web.we.utils.Patterns;
 
 /**
  * Type for {@link IDObject} references
+ * <p/>
+ * FIXME: This is not really a TermReference, it needs a redesign.
+ * <p/>
+ * <b>Problems:</b>
+ * <p/>
+ * - There is no definition counterpart for this reference... definitions and
+ * references are matched by their term name (getTermName(Section)), but there
+ * is no definition with the term name given here. <br/>
+ * - Also the term object should normally be retrieved via the term definition.
+ * The getTermObjectFallback()-method is designed to help with compatibility
+ * issues with old markups.
+ * 
  * 
  * @author Markus Friedrich (denkbares GmbH)
  * @created 11.11.2010
