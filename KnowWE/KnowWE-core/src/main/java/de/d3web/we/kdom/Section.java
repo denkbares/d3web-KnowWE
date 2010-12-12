@@ -1292,10 +1292,14 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 */
 	public boolean hasErrorInSubtree(KnowWEArticle article) {
 		Collection<KDOMError> s = KDOMReportMessage.getErrors(article, this);
-		if (s != null && s.size() > 0) return true;
+		if (s != null && s.size() > 0) {
+			return true;
+		}
 		for (Section<?> child : children) {
 			boolean err = child.hasErrorInSubtree(article);
-			if (err) return true;
+			if (err) {
+				return true;
+			}
 		}
 
 		return false;
@@ -1373,8 +1377,10 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * be ignored.
 	 * 
 	 * @created 10.07.2010
-	 * @param title
-	 * @return
+	 * @param title is the article, for which to check.
+	 * @param filteredTypes if this Section has one of the filtered types, false
+	 *        is returned.
+	 * @return a boolean with the result of the check
 	 */
 	public boolean isOrHasChangedSuccessor(String title, Collection<Class<? extends KnowWEObjectType>> filteredTypes) {
 		boolean filteredType = false;
@@ -1386,8 +1392,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 				}
 			}
 		}
-		if (!filteredType &&
-				(!isReusedBy(title) || isPositionChangedFor(title))) {
+		if (isChanged(title, filteredTypes)) {
 			return true;
 		}
 		else {
@@ -1396,6 +1401,30 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			}
 			return false;
 		}
+	}
+
+	/**
+	 * Checks, whether this Section has changed since the last version of the
+	 * article.
+	 * 
+	 * @created 08.12.2010
+	 * @param title is the article, for which to check.
+	 * @param filteredTypes if this Section has one of the filtered types, false
+	 *        is returned.
+	 * @return a boolean with the result of the check
+	 */
+	public boolean isChanged(String title, Collection<Class<? extends KnowWEObjectType>> filteredTypes) {
+		if (filteredTypes != null) {
+			for (Class<?> c : filteredTypes) {
+				if (c.isAssignableFrom(objectType.getClass())) {
+					return false;
+				}
+			}
+		}
+		if (!isReusedBy(title) || isPositionChangedFor(title)) {
+			return true;
+		}
+		return false;
 	}
 
 	public void setReusedBy(String title, boolean reused) {

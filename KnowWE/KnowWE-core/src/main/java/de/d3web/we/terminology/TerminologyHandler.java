@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -304,16 +305,37 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		return null;
 	}
 
+	/**
+	 * For a TermName the redundant TermDefinition are returned.
+	 * 
+	 * @param <TermObject>
+	 * @param s
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public Collection<Section<? extends TermDefinition>> getRedundantTermDefiningSections(
+			KnowWEArticle article, String termName, int termScope) {
+
+		TermReferenceLog refLog = getTermReferenceLog(article, termName, termScope);
+
+		if (refLog != null) {
+			return Collections.unmodifiableSet(refLog.getRedundantDefinitions());
+		}
+
+		return Collections.unmodifiableSet(new HashSet<Section<? extends TermDefinition>>(
+				0));
+	}
+
 	@SuppressWarnings("unchecked")
 	public Set<Section<? extends TermReference>> getTermReferenceSections(KnowWEArticle article,
 			String termName, int termScope) {
 		TermReferenceLog refLog = getTermReferenceLog(article, termName, termScope);
 
 		if (refLog != null) {
-			return refLog.getReferences();
+			return Collections.unmodifiableSet(refLog.getReferences());
 		}
 
-		return new HashSet<Section<? extends TermReference>>(0);
+		return Collections.unmodifiableSet(new HashSet<Section<? extends TermReference>>(0));
 	}
 
 	/**
@@ -358,15 +380,36 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		return null;
 	}
 
+	/**
+	 * For a TermName the redundant TermDefinition are returned.
+	 * 
+	 * @param <TermObject>
+	 * @param s
+	 * @return
+	 */
+	public <TermObject> Collection<Section<? extends TermDefinition<TermObject>>> getRedundantTermDefiningSections(
+			KnowWEArticle article, Section<? extends KnowWETerm<TermObject>> r) {
+
+		TermReferenceLog<TermObject> refLog = getTermReferenceLog(article, r);
+
+		if (refLog != null) {
+			return Collections.unmodifiableSet(refLog.getRedundantDefinitions());
+		}
+
+		return Collections.unmodifiableSet(new HashSet<Section<? extends TermDefinition<TermObject>>>(
+				0));
+	}
+
 	public <TermObject> Set<Section<? extends TermReference<TermObject>>> getTermReferenceSections(KnowWEArticle article, Section<? extends KnowWETerm<TermObject>> r) {
 
 		TermReferenceLog<TermObject> refLog = getTermReferenceLog(article, r);
 
 		if (refLog != null) {
-			return refLog.getReferences();
+			return Collections.unmodifiableSet(refLog.getReferences());
 		}
 
-		return new HashSet<Section<? extends TermReference<TermObject>>>(0);
+		return Collections.unmodifiableSet(new HashSet<Section<? extends TermReference<TermObject>>>(
+				0));
 	}
 
 	// public <TermObject> void setTermReferencesToNotReused(KnowWEArticle

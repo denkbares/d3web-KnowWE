@@ -21,6 +21,10 @@
 package de.d3web.we.kdom.questionTree;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.d3web.core.inference.condition.CondAnd;
@@ -42,11 +46,13 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
+import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.objects.TermReference;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
+import de.d3web.we.utils.KnowWEUtils;
 import de.knowwe.core.dashtree.DashSubtree;
 import de.knowwe.core.dashtree.DashTreeElement;
 import de.knowwe.core.dashtree.DashTreeUtils;
@@ -167,9 +173,10 @@ public class QuestionDashTreeUtils {
 	 * Checks if the Subtree of the root Question has changed. Ignores
 	 * TermReferences!
 	 */
-	public static boolean isChangeInRootQuestionSubtree(KnowWEArticle article, Section<?> s) {
+	@SuppressWarnings("unchecked")
+	public static Section<DashSubtree> getRootQuestionSubtree(KnowWEArticle article, Section<?> s) {
 
-		Section<?> rootQuestionSubtree = null;
+		Section<DashSubtree> rootQuestionSubtree = null;
 
 		Section<DashTreeElement> thisElement = s.findAncestorOfType(DashTreeElement.class);
 		if (s.get() instanceof QuestionDefinition && DashTreeUtils.getDashLevel(thisElement) == 0) {
@@ -177,7 +184,7 @@ public class QuestionDashTreeUtils {
 		}
 
 		if (rootQuestionSubtree == null) {
-			Section<?> lvl1SubtreeAncestor = DashTreeUtils.getAncestorDashSubtree(s, 1);
+			Section<DashSubtree> lvl1SubtreeAncestor = DashTreeUtils.getAncestorDashSubtree(s, 1);
 			if (lvl1SubtreeAncestor != null) {
 				Section<DashTreeElement> lvl1Element = lvl1SubtreeAncestor.findChildOfType(DashTreeElement.class);
 				Section<? extends KnowWETerm> termRefSection = lvl1Element.findSuccessor(KnowWETerm.class);
@@ -186,18 +193,74 @@ public class QuestionDashTreeUtils {
 					rootQuestionSubtree = lvl1SubtreeAncestor;
 				}
 				else {
-					rootQuestionSubtree = lvl1SubtreeAncestor.getFather();
+					rootQuestionSubtree = (Section<DashSubtree>) lvl1SubtreeAncestor.getFather();
 				}
 			}
 		}
 
+		return rootQuestionSubtree;
+	}
+
+	/**
+	 * Checks if the Subtree of the root Question has changed. Ignores
+	 * TermReferences!
+	 */
+	public static boolean isChangeInRootQuestionSubtree(KnowWEArticle article, Section<?> s) {
+
+		Section<DashSubtree> rootQuestionSubtree = getRootQuestionSubtree(article, s);
+
+
 		if (rootQuestionSubtree != null) {
-			List<Class<? extends KnowWEObjectType>> filteredTypes =
-					new ArrayList<Class<? extends KnowWEObjectType>>(1);
-			filteredTypes.add(TermReference.class);
+			return isChangeInQuestionSubtree(article, rootQuestionSubtree);
+		}
+		return false;
+	}
 
-			return rootQuestionSubtree.isOrHasChangedSuccessor(article.getTitle(), filteredTypes);
+	public static boolean isChangeInQuestionSubtree(KnowWEArticle article, Section<DashSubtree> s) {
 
+		HashMap<String, Boolean> changeCacheForArticle = DashTreeUtils.getChangeCacheForArticle(article.getTitle());
+		Boolean change = changeCacheForArticle.get(s.getID());
+
+		if (change != null) return change;
+
+		List<Class<? extends KnowWEObjectType>> filteredTypes =
+				new ArrayList<Class<? extends KnowWEObjectType>>(1);
+		filteredTypes.add(TermReference.class);
+
+		HashSet<Section<DashSubtree>> visited = new HashSet<Section<DashSubtree>>();
+		visited.add(s);
+		change = isChangeInQuestionSubtree(article, s, filteredTypes, visited);
+		changeCacheForArticle.put(s.getID(), change);
+		return change;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static boolean isChangeInQuestionSubtree(KnowWEArticle article, Section<DashSubtree> s, List<Class<? extends KnowWEObjectType>> filteredTypes, HashSet<Section<DashSubtree>> visited) {
+		List<Section<?>> nodes = new LinkedList<Section<?>>();
+		s.getAllNodesPostOrder(nodes);
+		for (Section<?> node : nodes) {
+			if (node.get() instanceof TermDefinition) {
+				Section<TermDefinition> tdef = (Section<TermDefinition>) node;
+				Collection<Section<? extends TermDefinition>> termDefs = new ArrayList<Section<? extends TermDefinition>>();
+				termDefs.addAll(KnowWEUtils.getTerminologyHandler(article.getWeb()).getRedundantTermDefiningSections(
+								article, tdef.get().getTermName(tdef), tdef.get().getTermScope()));
+				termDefs.add(KnowWEUtils.getTerminologyHandler(
+						article.getWeb()).getTermDefiningSection(article,
+						tdef.get().getTermName(tdef), tdef.get().getTermScope()));
+				for (Section<?> tDef : termDefs) {
+					if (tDef != null && tDef != node) {
+						Section<DashSubtree> dashSubtree = getRootQuestionSubtree(article, tDef);
+						if (dashSubtree != null && !visited.contains(dashSubtree)) {
+							visited.add(dashSubtree);
+							if (isChangeInQuestionSubtree(article, dashSubtree, filteredTypes,
+									visited)) {
+								return true;
+							}
+						}
+					}
+				}
+			}
+			if (node.isChanged(article.getTitle(), filteredTypes)) return true;
 		}
 		return false;
 	}
