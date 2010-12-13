@@ -35,6 +35,7 @@ if (typeof KNOWWE == "undefined" || !KNOWWE) {
     var KNOWWE = {};
 }
 
+var toSelect;
 /**
  * The KNOWWE.plugin global namespace object. If KNOWWE.plugin is already defined, the
  * existing KNOWWE.plugin object will not be overwritten so that defined namespaces
@@ -168,6 +169,10 @@ KNOWWE.plugin.quicki = function(){
         		function(event) {
         			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.submitTextValue, event);
         		});
+        		_KE.add('focus', element,  
+        		function(event) {
+        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.focusgained, event);
+        		});
             });
         	
         	/* removing indicated elements from the storages; this ensures that indicated
@@ -199,6 +204,20 @@ KNOWWE.plugin.quicki = function(){
         	 * the page (e.g. after sending answer val via AJAX)
         	 */
         	KNOWWE.plugin.quicki.restoreQuestionnaireVis();
+        	
+        },
+        selectBox : function(){
+        	if (toSelect) {
+        			_KS(toSelect).focus();
+            		_KS(toSelect).select();
+            		
+            }
+        },
+        
+        focusgained : function(event){
+        	var rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")");
+            if( !rel ) return;
+            toSelect = '#input_' + rel.oid;
         },
         /**
          * Function: restoreQuestionnaireVis
@@ -541,8 +560,6 @@ KNOWWE.plugin.quicki = function(){
             if( !key) return false;
             
             KNOWWE.plugin.quicki.submitTextValue(event);
-            _KS('#input_' + rel.oid).focus();
-            _KS('#input_' + rel.oid).select();
         },
         /**
          * submits the value
@@ -849,9 +866,11 @@ KNOWWE.plugin.quicki = function(){
         	 }
         	 KNOWWE.core.util.updateProcessingState(1);
              new _KA( options ).send();
+             window.setTimeout("KNOWWE.plugin.quicki.selectBox()", 200);
         }
     }
 }();
+
 
 
 
@@ -863,6 +882,8 @@ KNOWWE.plugin.quicki = function(){
         window.addEvent( 'domready', function(){
         	KNOWWE.plugin.quicki.initialize();
         	KNOWWE.helper.observer.subscribe( 'update', KNOWWE.plugin.quicki.showRefreshed);
+        	//KNOWWE.helper.observer.subscribe( 'update', KNOWWE.plugin.quicki.selectBox);
+        	
         });
     }
 }());
