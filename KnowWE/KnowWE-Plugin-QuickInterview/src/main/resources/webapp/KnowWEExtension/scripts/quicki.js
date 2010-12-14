@@ -142,18 +142,27 @@ KNOWWE.plugin.quicki = function(){
         			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.numAnswerClicked, event);
         		});
             });
-        	
+        	//select all input fields
+        	$$('.numinput, .inputdate, .inputtextvalue').each(function( element ){
+        		_KE.add('blur', element,  
+        		function(event) {
+        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.focusLost, event);
+        		});
+        		_KE.add('focus', element,  
+        		function(event) {
+        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.focusGained, event);
+        		});
+            });
         	// select all elements with class="numinput"
         	$$('.numinput').each(function( element ){
-        		_KE.add('keydown', element,  
+        		_KE.add('change', element,  
         		function(event) {
         			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.numAnswerClicked, event);
         		});
             });  
-        	
         	// select all elements with class="inputdate"
         	$$('.inputdate').each(function( element ){
-        		_KE.add('keydown', element,  
+        		_KE.add('change', element,  
         		function(event) {
         			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.dateAnswerClicked, event);
         		});
@@ -161,17 +170,9 @@ KNOWWE.plugin.quicki = function(){
             
         	// select all elements with class="inputtextvalue"
             $$('.inputtextvalue').each(function( element ){
-        		_KE.add('keydown', element,  
-        		function(event) {
-        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.textAnswerEntered, event);
-        		});
-        		_KE.add('blur', element,  
+        		_KE.add('change', element,  
         		function(event) {
         			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.submitTextValue, event);
-        		});
-        		_KE.add('focus', element,  
-        		function(event) {
-        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.focusgained, event);
         		});
             });
         	
@@ -206,19 +207,15 @@ KNOWWE.plugin.quicki = function(){
         	KNOWWE.plugin.quicki.restoreQuestionnaireVis();
         	
         },
-        selectBox : function(){
-        	if (toSelect) {
-        			_KS(toSelect).focus();
-            		_KS(toSelect).select();
-            		
-            }
-        },
-        
-        focusgained : function(event){
+        focusGained : function(event){
         	var rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")");
             if( !rel ) return;
             toSelect = '#input_' + rel.oid;
         },
+        focusLost : function(event){
+        	toSelect = null;
+        },
+        
         /**
          * Function: restoreQuestionnaireVis
          * 		restores the visibility states of questionnaires 
@@ -453,12 +450,8 @@ KNOWWE.plugin.quicki = function(){
         	event = new Event( event ).stopPropagation();
         	//this (hidden) div is for submitting numValues by click-event
         	var div = (_KE.target( event ).className == 'num-ok');
-        	var key = (event.code == 13);
-            
-            // check, if either the div was clicked or enter was pressed
-        	if( !(key || div) ) return false;
-            
-            if(key){				// if enter was pressed
+        	
+            if(!div){				// if enter was pressed
                 rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")");
             } else {				// if div was clicked
             	// split the ID of the <div> by "_"
@@ -476,13 +469,22 @@ KNOWWE.plugin.quicki = function(){
                 inputtext = _KS('#input_' + rel.oid).value; 
                 
                 // empty values should not be sent!
-                if(inputtext == '') return;
+                if(inputtext == '') {
+                	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.oid, rel.qtext, 
+			             	{action: 'SetSingleFindingAction', ValueID: 'MaU'});
+			        return;
+			    }
                 
                 // enabling float value input also with "," instead of "."
                 if(inputtext.indexOf(",")!=-1){
                 	inputtext = inputtext.replace(",", ".");
                 }
-    	 		
+    	 		if (!inputtext.match(/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/)) {
+    	 			var errormessage = 'Input needs to be a number!';
+            		_KS('#' + rel.oid + "_errormsg").className='errormsg';
+            		_KS('#' + rel.oid + "_errormsg").innerHTML=errormessage;
+            		return;
+    	 		}
                 // if range is given, validate range
                 if(rel.rangeMin!='NaN' && rel.rangeMax!='NaN'){
             	            	
@@ -526,10 +528,6 @@ KNOWWE.plugin.quicki = function(){
          */
         dateAnswerClicked : function (event) {
         	event = new Event( event ).stopPropagation();         
-            var key = (event.code == 13);
-            
-            // check, if either button was clicked or enter was pressed
-            if( !key) return false;
             
             var rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")");
             if( !rel ) return;
@@ -540,31 +538,26 @@ KNOWWE.plugin.quicki = function(){
             if(_KS('#input_' + rel.oid)) {
                     inputtext = _KS('#input_' + rel.oid).value; 
             }
-            if( !inputtext ) return;  
+            if( !inputtext ) {
+            	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.oid, rel.qtext, 
+			             	{action: 'SetSingleFindingAction', ValueID: 'MaU'});
+			        return;
+			}
+			if (!inputtext.match(/^\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d$/)) {
+    	 			var errormessage = 'Input needs to be yyyy-mm-dd-hh-mm-ss!';
+            		_KS('#' + rel.oid + "_errormsg").className='errormsg';
+            		_KS('#' + rel.oid + "_errormsg").innerHTML=errormessage;
+            		return;
+    	 	}
             // send KNOWWE request as SingleFindingAction with given value
             KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
             		{action: 'SetSingleFindingAction', ValueDate: inputtext});
         },
         /**
-         * Function: textAnswerEntered
-         * 		Handles the input of text-values
-         * 
-         * Parameters:
-         * 		event - the event firing the action
-         */
-        textAnswerEntered : function (event) {
-        	event = new Event( event ).stopPropagation();         
-            var key = (event.code == 13);
-            
-            // check, if either button was clicked or enter was pressed
-            if( !key) return false;
-            
-            KNOWWE.plugin.quicki.submitTextValue(event);
-        },
-        /**
          * submits the value
          */
         submitTextValue : function (event) {
+        	toFocus = null;
         	var rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")");
             if( !rel ) return;
             
@@ -574,7 +567,11 @@ KNOWWE.plugin.quicki = function(){
             if(_KS('#input_' + rel.oid)) {
                     inputtext = _KS('#input_' + rel.oid).value; 
             }
-            if( !inputtext ) return;  
+            if( !inputtext ) {
+            	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.oid, rel.qtext, 
+			             	{action: 'SetSingleFindingAction', ValueID: 'MaU'});
+	            return;  
+            }
             // send KNOWWE request as SingleFindingAction with given value
             KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
             		{action: 'SetSingleFindingAction', ValueText: inputtext});
@@ -847,6 +844,7 @@ KNOWWE.plugin.quicki = function(){
              }
         	 
         	 var id = 'quickinterview';
+        	 var rememberedToFocus = toSelect;
              var options = {
                 url : KNOWWE.core.util.getURL( params ),
                 response : {
@@ -855,6 +853,11 @@ KNOWWE.plugin.quicki = function(){
                 	fn : function(){
 			        	try {
 	                		KNOWWE.plugin.quicki.initialize();
+	                		//KNOWWE.plugin.quicki.selectBox();
+	                		if (rememberedToFocus) {
+        						_KS(rememberedToFocus).focus();
+            					_KS(rememberedToFocus).select();
+            				}
 			        	}
 			        	catch (e) { /*ignore*/ }
 			        	KNOWWE.core.util.updateProcessingState(-1);
@@ -866,7 +869,7 @@ KNOWWE.plugin.quicki = function(){
         	 }
         	 KNOWWE.core.util.updateProcessingState(1);
              new _KA( options ).send();
-             window.setTimeout("KNOWWE.plugin.quicki.selectBox()", 200);
+             //window.setTimeout("KNOWWE.plugin.quicki.selectBox()", 200);
         }
     }
 }();
@@ -882,8 +885,6 @@ KNOWWE.plugin.quicki = function(){
         window.addEvent( 'domready', function(){
         	KNOWWE.plugin.quicki.initialize();
         	KNOWWE.helper.observer.subscribe( 'update', KNOWWE.plugin.quicki.showRefreshed);
-        	//KNOWWE.helper.observer.subscribe( 'update', KNOWWE.plugin.quicki.selectBox);
-        	
         });
     }
 }());

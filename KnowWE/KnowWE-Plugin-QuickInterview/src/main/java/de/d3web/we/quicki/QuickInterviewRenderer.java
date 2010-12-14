@@ -677,6 +677,9 @@ public class QuickInterviewRenderer {
 
 		sb.append("<div class='separator'> | </div>");
 		renderAnswerUnknown(q, "num", sb);
+
+		String errmsgid = q.getId() + "_errormsg";
+		sb.append("<div id='" + errmsgid + "' class='invisible' ></div>");
 	}
 
 	/**
