@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -172,6 +173,18 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		// process this article in KnowWE
 		KnowWEEnvironment.getInstance().buildAndRegisterArticle(user, content,
 				topic, "default_web");
+
+		// write log
+		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle("default_web", topic);
+
+		String logEntry = topic + ", " + wikiContext.getRealPage().getVersion() + ", " + user
+				+ ", " + new Date().toString()
+				+ (article.isFullParse()
+						? ", fullparse " + article.getClassesCausingFullParse()
+						: "")
+				+ "\n";
+
+		KnowWEUtils.appendToFile(KnowWEUtils.getVersionsSavePath() + "PageChangeLog.txt", logEntry);
 	}
 
 	@Override

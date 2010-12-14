@@ -20,6 +20,9 @@
 
 package de.d3web.we.utils;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -32,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
@@ -644,6 +649,45 @@ public class KnowWEUtils {
 				replaceAll("\"", "&quot;").
 				replaceAll("<", "&lt;").
 				replaceAll(">", "&gt;");
+	}
+
+	public static String getVersionsSavePath() {
+		String path = KnowWEEnvironment.getInstance().getWikiConnector().getSavePath();
+		if (path != null && !path.endsWith(File.pathSeparator)) path += File.separator;
+		path += "OLD/";
+		return path;
+	}
+
+	public static void appendToFile(String path, String entry) {
+
+		// String path = getVersionsSavePath();
+		// path += "OLD/";
+		// new File(path).mkdirs();
+		// path += "PageChangeLog.txt";
+		try {
+			FileWriter fstream = new FileWriter(path, true);
+			BufferedWriter out = new BufferedWriter(fstream);
+			out.write(entry);
+			out.close();
+		}
+		catch (Exception e) {
+			Logger.getLogger(KnowWEUtils.class.getName()).log(
+					Level.WARNING, "Unable to append to File: " + e.getMessage());
+		}
+	}
+
+	public static void writeFile(String path, String content) {
+
+		try {
+			FileWriter fstream = new FileWriter(path);
+			BufferedWriter out = new BufferedWriter(fstream);
+			out.write(content);
+			out.close();
+		}
+		catch (Exception e) {
+			Logger.getLogger(KnowWEUtils.class.getName()).log(
+					Level.WARNING, "Unable to write File: " + e.getMessage());
+		}
 	}
 
 	/**

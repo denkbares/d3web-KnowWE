@@ -32,6 +32,7 @@ import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -53,7 +54,6 @@ import de.d3web.we.kdom.sectionFinder.OneOfStringEnumFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.StringEnumChecker;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.object.QuestionnaireDefinition;
@@ -174,16 +174,21 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class NumBounds extends DefaultAbstractKnowWEObjectType {
+	static class NumBounds extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker, IncrementalConstraints {
 
 		public static final char BOUNDS_OPEN = '(';
 		public static final char BOUNDS_CLOSE = ')';
+
+		@Override
+		public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
+		}
 
 		public NumBounds() {
 			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
 			this.setSectionFinder(new EmbracedContentFinder(BOUNDS_OPEN, BOUNDS_CLOSE));
 
-			this.addSubtreeHandler(new SubtreeHandler<NumBounds>() {
+			this.addSubtreeHandler(new D3webSubtreeHandler<NumBounds>() {
 
 				/**
 				 * creates the bound-property for a bound-definition
@@ -242,6 +247,11 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 							D3webModule.getKwikiBundle_d3web()
 									.getString("KnowWE.questiontree.numerical"),
 							this.getClass()));
+				}
+
+				@Override
+				public void destroy(KnowWEArticle article, Section<NumBounds> sec) {
+					// bounds are destroyed together with question
 				}
 			});
 		}
@@ -311,7 +321,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class NumUnit extends DefaultAbstractKnowWEObjectType {
+	static class NumUnit extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker, IncrementalConstraints {
 
 		public static final char UNIT_OPEN = '{';
 		public static final char UNIT_CLOSE = '}';
@@ -323,12 +333,17 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			return originalText;
 		}
 
+		@Override
+		public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
+		}
+
 		public NumUnit() {
 			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
 
 			this.setSectionFinder(new EmbracedContentFinder(UNIT_OPEN, UNIT_CLOSE));
 
-			this.addSubtreeHandler(new SubtreeHandler<NumUnit>() {
+			this.addSubtreeHandler(new D3webSubtreeHandler<NumUnit>() {
 
 				/**
 				 * creates the unit-property for a unit-definition
@@ -362,6 +377,11 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 									.getString("KnowWE.questiontree.unit"),
 							this.getClass()));
 				}
+
+				@Override
+				public void destroy(KnowWEArticle article, Section<NumUnit> sec) {
+					// unit is destroyed together with question
+				}
 			});
 		}
 
@@ -378,7 +398,12 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class AbstractFlag extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
+	static class AbstractFlag extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker, IncrementalConstraints {
+
+		@Override
+		public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
+		}
 
 		public AbstractFlag() {
 			this.sectionFinder = new OneOfStringEnumFinder(new String[] {
@@ -408,6 +433,11 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 									.getString("KnowWE.questiontree.abstractflag"),
 							this.getClass()));
 				}
+				
+				@Override
+				public void destroy(KnowWEArticle article, Section<AbstractFlag> sec) {
+					// flag is destroyed together with question
+				}
 			});
 		}
 	}
@@ -422,9 +452,14 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class QuestionText extends DefaultAbstractKnowWEObjectType {
+	static class QuestionText extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker, IncrementalConstraints {
 
 		private static final String QTEXT_START_SYMBOL = "~";
+
+		@Override
+		public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
+		}
 
 		@Override
 		protected void init() {
@@ -432,7 +467,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 					QTEXT_START_SYMBOL));
 
 			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR8));
-			this.addSubtreeHandler(new SubtreeHandler<QuestionText>() {
+			this.addSubtreeHandler(new D3webSubtreeHandler<QuestionText>() {
 
 				@Override
 				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionText> sec) {
@@ -456,6 +491,11 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 							D3webModule.getKwikiBundle_d3web()
 									.getString("KnowWE.questiontree.questiontext"),
 							this.getClass()));
+				}
+
+				@Override
+				public void destroy(KnowWEArticle article, Section<QuestionText> sec) {
+					// text is destroyed together with question
 				}
 			});
 		}

@@ -37,6 +37,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 import de.d3web.we.knowledgebase.KBRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * D3webKnowledgeHandler. Handles Knowledge and its recycling.
@@ -142,6 +143,18 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 				Logger.getLogger(this.getClass().getName()).log(
 						Level.WARNING,
 						"Detected difference in the knowledgebase after a full reparse.");
+				int version = KnowWEEnvironment.getInstance().getWikiConnector().getVersion(art.getTitle());
+				String fileName = art.getTitle() + " " + version + " KB-diff.txt";
+				String logEntry = art.getTitle() + ", " + version
+						+ ", full reparse with difference in knowledgebase ,"
+						+ " logfile: " + fileName + "\n";
+
+				KnowWEUtils.appendToFile(KnowWEUtils.getVersionsSavePath() + "PageChangeLog.txt",
+						logEntry);
+
+				String logContent = kbOutput + "\n+++++++++++++++++++++++\nfull compile above\n" +
+						"incremental compile below\n+++++++++++++++++++++++\n" + cached;
+				KnowWEUtils.writeFile(KnowWEUtils.getVersionsSavePath() + fileName, logContent);
 			}
 		}
 		if (!isEmpty(kbm)) {

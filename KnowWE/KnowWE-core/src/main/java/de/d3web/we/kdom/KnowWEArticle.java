@@ -565,5 +565,9 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 		this.fullParse = true;
 	}
+	
+	public Set<String> getClassesCausingFullParse() {
+		return this.classesCausingFullParse;
+	}
 
 }
