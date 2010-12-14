@@ -64,7 +64,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		WikiEventListener {
 
 	private String topicName = "";
-	private boolean initializedArticles;
 
 	/**
 	 * To initialize KnowWE.
@@ -184,7 +183,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 						: "")
 				+ "\n";
 
-		KnowWEUtils.appendToFile(KnowWEUtils.getVersionsSavePath() + "PageChangeLog.txt", logEntry);
+		KnowWEUtils.appendToFile(KnowWEUtils.getPageChangeLogPath(), logEntry);
 	}
 
 	@Override
@@ -211,7 +210,9 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	public String preTranslate(WikiContext wikiContext, String content)
 			throws FilterException {
 
-		if (!initializedArticles) initializeAllArticles(wikiContext.getEngine());
+		if (!KnowWEEnvironment.getInstance().getArticleManager(KnowWEEnvironment.DEFAULT_WEB).hasInitializedArticles()) {
+			initializeAllArticles(wikiContext.getEngine());
+		}
 
 		/* creating KnowWEUserContext with username and requestParamteters */
 		if (!wikiContext.getCommand().getRequestContext().equals(
@@ -383,12 +384,13 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 						KnowWEEnvironment.getInstance().getRootType(),
 						KnowWEEnvironment.DEFAULT_WEB);
 				KnowWEEnvironment.getInstance().getArticleManager(
-						"default_web").registerArticle(article);
+						KnowWEEnvironment.DEFAULT_WEB).registerArticle(article);
 			}
 
 		}
-
-		initializedArticles = true;
+		KnowWEEnvironment.getInstance().getArticleManager(KnowWEEnvironment.DEFAULT_WEB).setInitializedArticles(
+				true);
+		KnowWEEnvironment.getInstance().getArticleManager(KnowWEEnvironment.DEFAULT_WEB).buildArticlesToRefresh();
 
 	}
 

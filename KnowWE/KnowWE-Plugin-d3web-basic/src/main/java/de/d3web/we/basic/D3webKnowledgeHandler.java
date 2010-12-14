@@ -149,8 +149,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 						+ ", full reparse with difference in knowledgebase ,"
 						+ " logfile: " + fileName + "\n";
 
-				KnowWEUtils.appendToFile(KnowWEUtils.getVersionsSavePath() + "PageChangeLog.txt",
-						logEntry);
+				KnowWEUtils.appendToFile(KnowWEUtils.getPageChangeLogPath(), logEntry);
 
 				String logContent = kbOutput + "\n+++++++++++++++++++++++\nfull compile above\n" +
 						"incremental compile below\n+++++++++++++++++++++++\n" + cached;

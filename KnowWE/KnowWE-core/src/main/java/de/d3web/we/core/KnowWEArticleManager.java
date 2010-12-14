@@ -70,6 +70,8 @@ public class KnowWEArticleManager {
 	 */
 	private final Set<String> updatingArticles = new HashSet<String>();
 
+	private boolean initializedArticles = false;
+
 	protected KnowWESectionInfoStorage typeStore = new KnowWESectionInfoStorage();
 
 	public KnowWESectionInfoStorage getTypeStore() {
@@ -242,13 +244,11 @@ public class KnowWEArticleManager {
 	}
 
 	/**
-	 * updates an article that has changed
+	 * Registers an changed article in the manager and also updates depending
+	 * articles.
 	 * 
-	 * 
-	 * @param user
-	 * @param text
-	 * @param topic
-	 * @return
+	 * @created 14.12.2010
+	 * @param article is the changed article to register
 	 */
 	public void registerArticle(KnowWEArticle article) {
 
@@ -265,15 +265,7 @@ public class KnowWEArticleManager {
 
 		EventManager.getInstance().fireEvent(new UpdatingDependenciesEvent(article));
 
-		for (String title : new ArrayList<String>(articlesToRefresh)) {
-			if (updatingArticles.contains(title)) continue;
-			KnowWEArticle newArt = KnowWEArticle.createArticle(
-					articleMap.get(title).getSection().getOriginalText(), title,
-					KnowWEEnvironment.getInstance().getRootType(), web, false);
-
-			registerArticle(newArt);
-		}
-		this.articlesToRefresh = new TreeSet<String>();
+		if (initializedArticles) buildArticlesToRefresh();
 
 		updatingArticles.remove(article.getTitle());
 		Logger.getLogger(this.getClass().getName()).log(
@@ -288,6 +280,18 @@ public class KnowWEArticleManager {
 						+ web + " in "
 						+ (System.currentTimeMillis() - article.getStartTime())
 						+ "ms <<====");
+	}
+
+	public void buildArticlesToRefresh() {
+		for (String title : new ArrayList<String>(articlesToRefresh)) {
+			if (updatingArticles.contains(title)) continue;
+			KnowWEArticle newArt = KnowWEArticle.createArticle(
+					articleMap.get(title).getSection().getOriginalText(), title,
+					KnowWEEnvironment.getInstance().getRootType(), web, false);
+
+			registerArticle(newArt);
+		}
+		this.articlesToRefresh = new TreeSet<String>();
 	}
 
 	public void clearArticleMap() {
@@ -332,6 +336,14 @@ public class KnowWEArticleManager {
 
 	public void addAllArticlesToRefresh(Collection<String> titles) {
 		this.articlesToRefresh.addAll(titles);
+	}
+
+	public boolean hasInitializedArticles() {
+		return initializedArticles;
+	}
+
+	public void setInitializedArticles(boolean b) {
+		initializedArticles = true;
 	}
 
 }

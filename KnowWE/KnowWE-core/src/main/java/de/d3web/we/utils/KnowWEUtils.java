@@ -658,12 +658,12 @@ public class KnowWEUtils {
 		return path;
 	}
 
+	public static String getPageChangeLogPath() {
+		return getVersionsSavePath() + "PageChangeLog.txt";
+	}
+
 	public static void appendToFile(String path, String entry) {
 
-		// String path = getVersionsSavePath();
-		// path += "OLD/";
-		// new File(path).mkdirs();
-		// path += "PageChangeLog.txt";
 		try {
 			FileWriter fstream = new FileWriter(path, true);
 			BufferedWriter out = new BufferedWriter(fstream);
