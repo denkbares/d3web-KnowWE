@@ -111,12 +111,39 @@ public class Strings {
 	 *         determined by the {@link #equals(Object)} method.
 	 * @throws NullPointerException if any of the specified strings is null
 	 */
-	public static boolean startWithIgnoreCase(String text, String prefix) {
+	public static boolean startsWithIgnoreCase(String text, String prefix) {
 		int length = prefix.length();
 		if (length > text.length()) return false;
 		for (int i = 0; i < length; i++) {
 			char tc = Character.toLowerCase(text.charAt(i));
 			char pc = Character.toLowerCase(prefix.charAt(i));
+			if (tc != pc) return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Tests if the specified text string ends with the specified prefix.
+	 * 
+	 * 
+	 * @created 18.10.2010
+	 * @param text the text string to be checked
+	 * @param prefix the prefix to be looked for
+	 * @return <code>true</code> if the character sequence represented by the
+	 *         argument is a suffix of the character sequence represented by the
+	 *         specified text string; <code>false</code> otherwise. Note also
+	 *         that <code>true</code> will be returned if the argument is an
+	 *         empty string or is equal to this <code>String</code> object as
+	 *         determined by the {@link #equals(Object)} method.
+	 * @throws NullPointerException if any of the specified strings is null
+	 */
+	public static boolean endsWithIgnoreCase(String text, String suffix) {
+		int length = suffix.length();
+		int offset = text.length() - length;
+		if (offset < 0) return false;
+		for (int i = 0; i < length; i++) {
+			char tc = Character.toLowerCase(text.charAt(offset + i));
+			char pc = Character.toLowerCase(suffix.charAt(i));
 			if (tc != pc) return false;
 		}
 		return true;
