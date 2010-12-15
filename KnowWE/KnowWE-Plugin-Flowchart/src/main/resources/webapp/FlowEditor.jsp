@@ -348,6 +348,7 @@
 				KWikitext: xml				// content
 			},
 			onSuccess: function(transport) {
+				if (window.opener) window.opener.location.reload();
 				if (closeOnSuccess) window.close();
 			},
 			onFailure: function() {
