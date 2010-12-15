@@ -24,10 +24,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.scoring.Score;
+import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.basic.SessionBroker;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -132,4 +135,26 @@ public class D3webUtils {
 		}
 	}
 
+	/**
+	 * Utility method to get a {@link KnowledgeBase} from an article
+	 * 
+	 * @created 15.12.2010
+	 * @param web
+	 * @param topic
+	 * @return
+	 */
+	public static KnowledgeBase getKB(String web, String topic) {
+		if (web == null || topic == null) {
+			throw new IllegalArgumentException("Argument 'web' and/or 'topic' was null!");
+		}
+		D3webKnowledgeHandler knowledgeHandler =
+			D3webModule.getKnowledgeRepresentationHandler(web);
+		if (knowledgeHandler != null) {
+			KnowledgeBaseManagement kbm = knowledgeHandler.getKBM(topic);
+			if (kbm != null) {
+				return kbm.getKnowledgeBase();
+			}
+		}
+		return null;
+	}
 }
