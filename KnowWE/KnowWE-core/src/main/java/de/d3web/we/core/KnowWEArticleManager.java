@@ -265,7 +265,8 @@ public class KnowWEArticleManager {
 
 		EventManager.getInstance().fireEvent(new UpdatingDependenciesEvent(article));
 
-		if (initializedArticles) buildArticlesToRefresh();
+		// if (initializedArticles)
+		buildArticlesToRefresh();
 
 		updatingArticles.remove(article.getTitle());
 		Logger.getLogger(this.getClass().getName()).log(
