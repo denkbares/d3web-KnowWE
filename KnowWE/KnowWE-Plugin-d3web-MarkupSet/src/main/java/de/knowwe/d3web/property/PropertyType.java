@@ -20,15 +20,29 @@ package de.knowwe.d3web.property;
 
 import java.util.regex.Pattern;
 
+import de.d3web.core.knowledge.terminology.Choice;
+import de.d3web.core.knowledge.terminology.IDObject;
+import de.d3web.core.knowledge.terminology.QContainer;
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.basic.PlainText;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.ContentDefinition;
 import de.d3web.we.object.IDObjectReference;
 import de.d3web.we.object.LocaleDefinition;
 import de.d3web.we.object.PropertyReference;
+import de.d3web.we.object.QuestionReference;
+import de.d3web.we.object.QuestionnaireReference;
+import de.d3web.we.object.SolutionReference;
 import de.d3web.we.utils.Patterns;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * Adds the PropertyReviseSubtreeHandler to the Property line
@@ -37,6 +51,36 @@ import de.d3web.we.utils.Patterns;
  * @created 10.11.2010
  */
 public class PropertyType extends DefaultAbstractKnowWEObjectType {
+
+	/**
+	 * 
+	 * @author volker_belli
+	 * @created 15.12.2010
+	 */
+	private static final class PropertyIDObbjetReferenceRenderer extends KnowWEDomRenderer<IDObjectReference> {
+
+		@Override
+		public void render(KnowWEArticle article, Section<IDObjectReference> sec, KnowWEUserContext user, StringBuilder string) {
+			IDObject object = sec.get().getTermObject(article, sec);
+			KnowWEDomRenderer renderer;
+			if (object instanceof Question) {
+				renderer = QuestionReference.DEFAULT_RENDERER;
+			}
+			else if (object instanceof QContainer) {
+				renderer = QuestionnaireReference.DEFAULT_RENDERER;
+			}
+			else if (object instanceof Solution) {
+				renderer = SolutionReference.DEFAULT_RENDERER;
+			}
+			else if (object instanceof Choice) {
+				renderer = AnswerReference.DEFAULT_RENDERER;
+			}
+			else {
+				renderer = PlainText.getInstance().getRenderer();
+			}
+			renderer.render(article, sec, user, string);
+		}
+	}
 
 	public PropertyType() {
 		setSectionFinder(new AllTextFinderTrimmed());
@@ -71,6 +115,7 @@ public class PropertyType extends DefaultAbstractKnowWEObjectType {
 		// IDObject
 		IDObjectReference idor = new IDObjectReference();
 		idor.setSectionFinder(new RegexSectionFinder(Pattern.compile(idObject + "\\."), 1));
+		idor.setCustomRenderer(new PropertyIDObbjetReferenceRenderer());
 		this.childrenTypes.add(idor);
 
 		addSubtreeHandler(Priority.LOW, new PropertyReviseSubtreeHandler());

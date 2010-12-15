@@ -30,6 +30,7 @@
 		<parameter id="scope" value="QuestionReference" />
 		<parameter id="scope" value="QuestionnaireReference" />
 		<parameter id="scope" value="SolutionReference" />
+		<parameter id="scope" value="IDObjectReference" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
