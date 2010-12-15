@@ -63,15 +63,15 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	private static final String HIDEREFS = "hideReferences";
 
 	// KnowWE-ResourceBundle
-	private final ResourceBundle rb;
+	private ResourceBundle rb;
 
 	public ObjectInfoTagHandler() {
 		super("ObjectInfo", true);
-		rb = KnowWEEnvironment.getInstance().getKwikiBundle();
 	}
 
 	@Override
 	public final String render(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext, Map<String, String> parameters) {
+		rb = KnowWEEnvironment.getInstance().getKwikiBundle();
 		String content = renderContent(article, section, userContext, parameters);
 		Section<TagHandlerTypeContent> tagNameSection = section.findSuccessor(TagHandlerTypeContent.class);
 		String sectionID = section.getID();
