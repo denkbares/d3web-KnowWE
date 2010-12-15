@@ -55,6 +55,7 @@ public class IDObjectReference extends D3webTermReference<IDObject> {
 
 	public IDObjectReference() {
 		super(IDObject.class);
+		this.subtreeHandler.clear();
 	}
 
 	@Override
