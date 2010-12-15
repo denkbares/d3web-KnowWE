@@ -488,10 +488,10 @@ KNOWWE.plugin.quicki = function(){
                 // if range is given, validate range
                 if(rel.rangeMin!='NaN' && rel.rangeMax!='NaN'){
             	            	
-                	var min = parseInt(rel.rangeMin);
-                	var max = parseInt(rel.rangeMax);
+                	var min = parseFloat(rel.rangeMin);
+                	var max = parseFloat(rel.rangeMax);
             	 	// compare with range
-                	if(parseInt(inputtext) >= min && parseInt(inputtext) <= max){
+                	if(parseFloat(inputtext) >= min && parseFloat(inputtext) <= max){
             		 	 	                		
                         if(_KS('#' + rel.oid + "_errormsg")){
                         	_KS('#' + rel.oid + "_errormsg").className='invisible';	
