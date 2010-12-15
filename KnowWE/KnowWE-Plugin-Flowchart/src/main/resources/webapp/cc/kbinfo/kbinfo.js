@@ -136,7 +136,7 @@ KBInfo.prepareInfoObject = function(nameOrIDOrArray) {
 		if (i>0) ids += ',';
 		ids += nameOrIDOrArray[i];
 	}
-	var url = "KnowCC.jsp?action=GetInfoObjects&ids=" + ids;
+	var url = "KnowCC.jsp?action=GetInfoObjects&ids=" + encodeURIComponent(ids);
 	new Ajax.Request(url, {
 		method: 'get',
 		onSuccess: function(transport) {

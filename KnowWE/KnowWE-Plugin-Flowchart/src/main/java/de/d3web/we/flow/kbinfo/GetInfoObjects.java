@@ -116,6 +116,7 @@ public class GetInfoObjects extends AbstractAction {
 		// finish result
 		appendFooter(context.getKnowWEParameterMap(), buffer);
 
+		context.setContentType("text/xml");
 		context.getWriter().write(buffer.toString());
 	}
 
@@ -157,7 +158,7 @@ public class GetInfoObjects extends AbstractAction {
 		//
 		String name = id.substring(0, id.indexOf(".."));
 		buffer.append("\t<article");
-		buffer.append(" id='").append(id).append("'");
+		buffer.append(" id='").append(encodeXML(id)).append("'");
 		buffer.append(" name='").append(name).append("'");
 		buffer.append(">");
 		// children of an article are all Solutions of P000 and all QSets of
@@ -176,7 +177,7 @@ public class GetInfoObjects extends AbstractAction {
 		if (flowSet != null) {
 			for (Flow flow : flowSet.getFlows()) {
 				buffer.append("\t\t<child>");
-				buffer.append(base.getId() + "/" + flow.getId());
+				buffer.append(encodeXML(base.getId()) + "/" + flow.getId());
 				buffer.append("</child>\n");
 			}
 		}
@@ -217,7 +218,7 @@ public class GetInfoObjects extends AbstractAction {
 
 	private static void appendInfoObject(String web, KnowledgeBase service, Solution object, StringBuffer buffer) {
 		buffer.append("\t<solution");
-		buffer.append(" id='").append(service.getId()).append("/").append(object.getId()).append(
+		buffer.append(" id='").append(encodeXML(service.getId())).append("/").append(object.getId()).append(
 				"'");
 		buffer.append(" name='").append(encodeXML(object.getName())).append("'");
 		buffer.append(">\n");
@@ -227,7 +228,7 @@ public class GetInfoObjects extends AbstractAction {
 
 	private static void appendInfoObject(String web, KnowledgeBase service, Question object, StringBuffer buffer) {
 		buffer.append("\t<question");
-		buffer.append(" id='").append(service.getId()).append("/").append(object.getId()).append(
+		buffer.append(" id='").append(encodeXML(service.getId())).append("/").append(object.getId()).append(
 				"'");
 		buffer.append(" name='").append(encodeXML(object.getName())).append("'");
 		if (object.getDerivationType() == DerivationType.DERIVED) {
@@ -274,14 +275,13 @@ public class GetInfoObjects extends AbstractAction {
 
 	private static void appendInfoObject(String web, KnowledgeBase service, QContainer object, StringBuffer buffer) {
 		buffer.append("\t<qset");
-		buffer.append(" id='").append(service.getId()).append("/").append(object.getId()).append(
+		buffer.append(" id='").append(encodeXML(service.getId())).append("/").append(object.getId()).append(
 				"'");
 		buffer.append(" name='").append(encodeXML(object.getName())).append("'");
 		buffer.append(">\n");
 		appendChilds(web, service, object, buffer);
 		buffer.append("\t</qset>\n");
 	}
-
 
 	private static void appendInfoObject(String web, KnowledgeBase service, Flow flow, StringBuffer buffer) {
 		String name = flow.getName();
@@ -290,7 +290,7 @@ public class GetInfoObjects extends AbstractAction {
 		List<EndNode> exitNodes = flow.getExitNodes();
 
 		buffer.append("\t<flowchart");
-		buffer.append(" id='").append(service.getId()).append("/").append(id).append("'");
+		buffer.append(" id='").append(encodeXML(service.getId())).append("/").append(id).append("'");
 		buffer.append(" name='").append(encodeXML(name)).append("'");
 		buffer.append(">\n");
 		for (StartNode node : startNodes) {
@@ -309,7 +309,7 @@ public class GetInfoObjects extends AbstractAction {
 	private static void appendChilds(String web, KnowledgeBase service, TerminologyObject[] childs, StringBuffer buffer) {
 		for (TerminologyObject child : childs) {
 			buffer.append("\t\t<child>");
-			buffer.append(service.getId() + "/" + child.getId());
+			buffer.append(encodeXML(service.getId()) + "/" + child.getId());
 			buffer.append("</child>\n");
 		}
 	}
