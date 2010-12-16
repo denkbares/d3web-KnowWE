@@ -200,6 +200,8 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		TermIdentifier termIdentifier = new TermIdentifier(article, d);
 		TermReferenceLog<TermObject> termRefLog = getTermReferenceLog(article, d);
 		if (termRefLog != null) {
+			KnowWEArticleManager artMan = KnowWEEnvironment.getInstance().getArticleManager(
+					article.getWeb());
 			if (termRefLog.termDefiningSection != null) {
 				if (termRefLog.termDefiningSection == d || termRefLog.getRedundantDefinitions().contains(d)) {
 					// this should not happen
@@ -221,13 +223,15 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 				else {
 					// A TermDefinition was added before another already
 					// existing or with higher priority than the existing
-					// TermDefinition with the same term.... because
-					// we are already past the destroy step, we need a full
-					// reparse.
-
+					// TermDefinition with the same term....
+					// If the scope is LOCAL, we need a full reparse, because
+					// we are already past the destroy step.
+					// If the scope is GLOBAL, we need a full reparse for the
+					// same reason, but only if the last TermDefinition
+					// originates from the article currently compiled. If the
+					// Section is from a different article, it will compiled
+					// there.
 					if (d.get().getTermScope() == KnowWETerm.GLOBAL) {
-						KnowWEArticleManager artMan = KnowWEEnvironment.getInstance().getArticleManager(
-								article.getWeb());
 						artMan.addAllArticlesToRefresh(termRefLog.termDefiningSection.getReusedBySet());
 						termRefLog.termDefiningSection.clearReusedBySet();
 						for (Section<?> termDef : termRefLog.getRedundantDefinitions()) {
@@ -239,11 +243,21 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 							termRef.clearReusedBySet();
 						}
 					}
-					if (termRefLog.termDefiningSection.getArticle().getTitle().equals(
+					if (d.get().getTermScope() == KnowWETerm.LOCAL
+							|| termRefLog.termDefiningSection.getArticle().getTitle().equals(
 							article.getTitle())) {
 						article.setFullParse(this.getClass());
 						return;
 					}
+				}
+			}
+			else {
+				// if the TermDefinition was null before, the
+				// TermReferences need to be compiled again, because there is
+				// now a TermDefinition to refer to
+				for (Section<?> termRef : termRefLog.getReferences()) {
+					artMan.addAllArticlesToRefresh(termRef.getReusedBySet());
+					termRef.clearReusedBySet();
 				}
 			}
 		}

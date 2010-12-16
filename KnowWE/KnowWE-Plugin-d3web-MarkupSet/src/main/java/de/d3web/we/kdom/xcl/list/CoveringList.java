@@ -284,7 +284,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 								// set KDOMID here used in {@link KBRenderer}
 								relation.setKdmomID(s.getID());
 
-								KnowWEUtils.storeSectionInfo(article, s, relationStoreKey, relation);
+								KnowWEUtils.storeObject(article, s, relationStoreKey, relation);
 
 								String wString = "";
 								if (w > 0 && w != 1) {
@@ -457,6 +457,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 		 * @param color
 		 * @return
 		 */
+		@SuppressWarnings("unchecked")
 		private String renderRelationChild(KnowWEArticle article,
 				Section<?> sec, boolean fulfilled, KnowWEUserContext user,
 				String color) {

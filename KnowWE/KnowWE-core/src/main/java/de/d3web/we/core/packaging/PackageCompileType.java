@@ -17,6 +17,7 @@ public abstract class PackageCompileType extends DefaultAbstractKnowWEObjectType
 
 	public PackageCompileType() {
 		this.sectionFinder = new AllTextSectionFinder();
+		this.setIgnorePackageCompile(true);
 		this.addSubtreeHandler(Priority.PRECOMPILE_LOW, new PackageCompileHandler());
 	}
 

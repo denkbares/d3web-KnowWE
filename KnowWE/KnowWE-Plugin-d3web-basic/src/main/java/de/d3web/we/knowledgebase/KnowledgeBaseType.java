@@ -82,6 +82,7 @@ public class KnowledgeBaseType extends DefaultMarkupType implements KnowWETermMa
 
 	public KnowledgeBaseType() {
 		super(MARKUP);
+		this.setIgnorePackageCompile(true);
 		this.setCustomRenderer(new KnowledgeBaseRenderer());
 		this.addSubtreeHandler(new D3webSubtreeHandler<KnowledgeBaseType>() {
 

@@ -25,8 +25,8 @@ import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.we.kdom.IncrementalConstraints;
@@ -88,7 +88,7 @@ public abstract class SolutionDefinition
 	class SolutionIDHighlightingRenderer extends KnowWEDomRenderer<SolutionDefinition> {
 
 		@Override
-		public void render(KnowWEArticle article, Section sec,
+		public void render(KnowWEArticle article, Section<SolutionDefinition> sec,
 				KnowWEUserContext user, StringBuilder string) {
 
 			Session session = D3webUtils.getSession(article.getTitle(), user,
@@ -101,16 +101,18 @@ public abstract class SolutionDefinition
 
 			if (session != null) {
 				Solution solution = getTermObject(article, sec);
-				Rating state = session.getBlackboard().getRating(solution);
+				if (solution != null) {
+					Rating state = session.getBlackboard().getRating(solution);
 
-				if (state.hasState(State.ESTABLISHED)) {
-					string.append(spanStart + "207, 255, 207)" + spanStartEnd);
-				}
-				else if (state.hasState(State.EXCLUDED)) {
-					string.append(spanStart + "255, 207, 207)" + spanStartEnd);
-				}
-				else {
-					string.append(spanStart + ")" + spanStartEnd);
+					if (state.hasState(State.ESTABLISHED)) {
+						string.append(spanStart + "207, 255, 207)" + spanStartEnd);
+					}
+					else if (state.hasState(State.EXCLUDED)) {
+						string.append(spanStart + "255, 207, 207)" + spanStartEnd);
+					}
+					else {
+						string.append(spanStart + ")" + spanStartEnd);
+					}
 				}
 			}
 

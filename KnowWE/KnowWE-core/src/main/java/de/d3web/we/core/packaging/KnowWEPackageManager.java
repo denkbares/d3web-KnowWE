@@ -337,6 +337,7 @@ public class KnowWEPackageManager implements EventListener {
 					LinkedList<Section<?>> nodes = new LinkedList<Section<?>>();
 					packageDef.getAllNodesPostOrder(nodes);
 					for (Section<?> node : nodes) {
+						if (node.get().isIgnoringPackageCompile()) continue;
 						for (String title : new LinkedList<String>(node.getReusedBySet())) {
 							if (!articlesReferingTo.contains(title)) {
 								node.setReusedBy(title, false);

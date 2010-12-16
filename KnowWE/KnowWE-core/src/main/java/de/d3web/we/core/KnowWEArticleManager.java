@@ -181,7 +181,7 @@ public class KnowWEArticleManager {
 			String title, Map<String, String> nodesMap) {
 		KnowWEArticle art = this.getArticle(title);
 		if (art == null) return "article not found: " + title;
-		Section root = art.getSection();
+		Section<?> root = art.getSection();
 		StringBuffer newText = new StringBuffer();
 		appendTextReplaceNode(root, nodesMap, newText);
 
@@ -200,7 +200,7 @@ public class KnowWEArticleManager {
 	 * @return null if article or node not found
 	 * @see findNode(String nodeID)
 	 */
-	public Section findNode(String title, String nodeID) {
+	public Section<?> findNode(String title, String nodeID) {
 		if (nodeID == null || title == null) return null;
 
 		KnowWEArticle art = this.getArticle(title);
@@ -215,7 +215,7 @@ public class KnowWEArticleManager {
 	 * @param nodeID
 	 * @return null if article or node not found
 	 */
-	public Section findNode(String nodeID) {
+	public Section<?> findNode(String nodeID) {
 		String articleName;
 		if (nodeID.contains("/")) {
 			articleName = nodeID.substring(0, nodeID.indexOf("/"));
@@ -226,19 +226,19 @@ public class KnowWEArticleManager {
 		return findNode(articleName, nodeID);
 	}
 
-	private void appendTextReplaceNode(Section sec,
+	private void appendTextReplaceNode(Section<?> sec,
 			Map<String, String> nodesMap, StringBuffer newText) {
 		if (nodesMap.containsKey(sec.getID())) {
 			newText.append(nodesMap.get(sec.getID()));
 			return;
 		}
-		List<Section> children = sec.getChildren();
+		List<Section<?>> children = sec.getChildren();
 		if (children == null || children.isEmpty()
 				|| sec.hasPossiblySharedChildren()) {
 			newText.append(sec.getOriginalText());
 			return;
 		}
-		for (Section section : children) {
+		for (Section<?> section : children) {
 			appendTextReplaceNode(section, nodesMap, newText);
 		}
 	}

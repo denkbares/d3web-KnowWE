@@ -25,14 +25,26 @@ import de.d3web.we.kdom.Section;
 /**
  * Interface for type containing/wrapping term names
  * 
- * @author Jochen
+ * @author Jochen, Albrecht
  * 
- * @param <TermObject>
+ * @param <TermObject> represents the class of the object defined or referenced
+ *        by this KnowWETerm.
  */
 public interface KnowWETerm<TermObject> extends KnowWETermMarker {
 
+	/**
+	 * LOCAL terms are valid only for the master compiling them.
+	 * <p/>
+	 * Example: questions, answers, solution...
+	 */
 	public static final int LOCAL = 0;
 
+	/**
+	 * GLOBAL terms are valid for the whole wiki, disregarding packages,
+	 * respectively masters articles.
+	 * <p/>
+	 * Example: semantic/owl statements.
+	 */
 	public static final int GLOBAL = 1;
 
 	public String getTermName(Section<? extends KnowWETerm<TermObject>> s);

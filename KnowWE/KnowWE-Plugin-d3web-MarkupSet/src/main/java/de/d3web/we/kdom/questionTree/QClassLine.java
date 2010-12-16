@@ -172,7 +172,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 		};
 	}
 
-	static class InitNumber extends DefaultAbstractKnowWEObjectType {
+	static class InitNumber extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
 
 		public InitNumber() {
 
@@ -239,7 +239,8 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 
 					if (qDef != null) {
 						// remove init number value from registration in KB
-						QContainer questionnaire = qDef.get().getTermObject(article, qDef);
+						QContainer questionnaire = qDef.get().getTermObjectFromLastVersion(article,
+								qDef);
 						getKBM(article).getKnowledgeBase().removeInitQuestion(
 								questionnaire);
 					}
