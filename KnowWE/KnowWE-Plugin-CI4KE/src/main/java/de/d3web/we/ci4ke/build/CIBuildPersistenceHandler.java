@@ -369,7 +369,7 @@ public class CIBuildPersistenceHandler {
 					sb.append(s);
 				}
 				// close table-cell
-				sb.append("</a></td></tr>\n");
+				sb.append("</a></td></tr>");
 			}
 		}
 		sb.append("</table>");
