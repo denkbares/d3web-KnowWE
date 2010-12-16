@@ -20,6 +20,7 @@
 package de.knowwe.d3web.resource;
 
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
@@ -59,6 +60,7 @@ public class ResourceType extends DefaultMarkupType {
 		MARKUP = new DefaultMarkup(MARKUP_NAME);
 		MARKUP.addAnnotation(ANNOTATION_PATH, false);
 		MARKUP.addAnnotation(ANNOTATION_SRC, false);
+		MARKUP.addAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME, false);
 	}
 
 	public ResourceType() {
