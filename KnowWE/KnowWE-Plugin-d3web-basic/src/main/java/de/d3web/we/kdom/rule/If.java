@@ -21,15 +21,15 @@
 package de.d3web.we.kdom.rule;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.renderer.FontColorRenderer;
 
 public class If extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	protected void init() {
 		sectionFinder = new RegexSectionFinder("( *WENN\\s+| *IF\\s+)");
-		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR0));
+		this.setCustomRenderer(StyleRenderer.KEYWORDS);
 	}
 
 }

@@ -35,6 +35,7 @@ import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
@@ -45,7 +46,6 @@ import de.d3web.we.tools.ToolMenuDecoratingRenderer;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
-import de.knowwe.core.renderer.FontColorRenderer;
 import de.knowwe.core.renderer.ObjectInfoLinkRenderer;
 
 /**
@@ -116,8 +116,7 @@ public abstract class SolutionDefinition
 				}
 			}
 
-			new ObjectInfoLinkRenderer(FontColorRenderer
-					.getRenderer(FontColorRenderer.COLOR1)).render(article, sec,
+			new ObjectInfoLinkRenderer(StyleRenderer.SOLUTION).render(article, sec,
 					user, string);
 			string.append(spanEnd);
 		}

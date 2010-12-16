@@ -25,9 +25,7 @@ import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.TermReference;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.tools.ToolMenuDecoratingRenderer;
-import de.knowwe.core.renderer.FontColorRenderer;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 
 /**
  * 
@@ -38,13 +36,9 @@ import de.knowwe.core.renderer.FontColorRenderer;
  */
 public class SolutionReference extends D3webTermReference<Solution> {
 
-	public static final KnowWEDomRenderer<D3webTermReference> DEFAULT_RENDERER =
-			new ToolMenuDecoratingRenderer<D3webTermReference>(
-							FontColorRenderer.getRenderer(FontColorRenderer.COLOR4));
-
 	public SolutionReference() {
 		super(Solution.class);
-		this.setCustomRenderer(DEFAULT_RENDERER);
+		this.setCustomRenderer(StyleRenderer.SOLUTION);
 	}
 
 	@Override

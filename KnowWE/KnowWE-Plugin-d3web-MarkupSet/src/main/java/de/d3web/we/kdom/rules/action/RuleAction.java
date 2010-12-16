@@ -26,8 +26,8 @@ import java.util.logging.Logger;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.basic.EndLineComment;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
-import de.knowwe.core.renderer.CommentRenderer;
 
 public class RuleAction extends DefaultAbstractKnowWEObjectType {
 
@@ -45,7 +45,7 @@ public class RuleAction extends DefaultAbstractKnowWEObjectType {
 					"cc.knowwe.tdb.EvalAssignActionType is not attached");
 		}
 		EndLineComment comment = new EndLineComment();
-		comment.setCustomRenderer(new CommentRenderer());
+		comment.setCustomRenderer(StyleRenderer.COMMENT);
 		this.childrenTypes.add(comment);
 		this.childrenTypes.add(new SolutionValueAssignment());
 		this.childrenTypes.add(new SetQNumFormulaAction());

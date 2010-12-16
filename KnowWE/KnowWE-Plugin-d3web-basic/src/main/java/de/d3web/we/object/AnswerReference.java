@@ -30,9 +30,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.NotUniqueKnowWETerm;
 import de.d3web.we.kdom.objects.TermReference;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.tools.ToolMenuDecoratingRenderer;
-import de.knowwe.core.renderer.FontColorRenderer;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 
 /**
  * 
@@ -48,13 +46,9 @@ public abstract class AnswerReference
 		extends D3webTermReference<Choice>
 		implements NotUniqueKnowWETerm<Choice> {
 
-	public static final KnowWEDomRenderer<D3webTermReference> DEFAULT_RENDERER =
-			new ToolMenuDecoratingRenderer<D3webTermReference>(
-							new ReferenceRenderer(FontColorRenderer.COLOR1));
-
 	public AnswerReference() {
 		super(Choice.class);
-		this.setCustomRenderer(DEFAULT_RENDERER);
+		this.setCustomRenderer(StyleRenderer.CHOICE);
 	}
 
 	@Override

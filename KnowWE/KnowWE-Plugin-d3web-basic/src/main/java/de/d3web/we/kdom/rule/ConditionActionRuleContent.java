@@ -26,9 +26,9 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.basic.EndLineComment;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.renderer.CommentRenderer;
 
 /**
  * Markup for a simple condition-action-rule using the CompositeCondition @see
@@ -52,7 +52,7 @@ public class ConditionActionRuleContent extends DefaultAbstractKnowWEObjectType 
 		this.addChildType(condArea);
 
 		EndLineComment endLineComment = new EndLineComment();
-		endLineComment.setCustomRenderer(new CommentRenderer());
+		endLineComment.setCustomRenderer(StyleRenderer.COMMENT);
 		this.addChildType(endLineComment);
 
 		action.setSectionFinder(new AllTextFinderTrimmed());
@@ -83,7 +83,7 @@ public class ConditionActionRuleContent extends DefaultAbstractKnowWEObjectType 
 		public ConditionArea() {
 			compCond = new CompositeCondition();
 			EndLineComment comment = new EndLineComment();
-			comment.setCustomRenderer(new CommentRenderer());
+			comment.setCustomRenderer(StyleRenderer.COMMENT);
 			this.addChildType(comment);
 			this.addChildType(compCond);
 		}

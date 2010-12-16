@@ -43,6 +43,7 @@ import de.d3web.we.kdom.condition.NumericalIntervallFinding;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.InvalidNumberWarning;
@@ -67,9 +68,6 @@ import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
 import de.d3web.xcl.inference.PSMethodXCL;
 import de.knowwe.core.CommentLineType;
-import de.knowwe.core.renderer.CommentRenderer;
-import de.knowwe.core.renderer.FontColorBackgroundRenderer;
-import de.knowwe.core.renderer.FontColorRenderer;
 import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
 
 /**
@@ -110,7 +108,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 		// anything left is comment
 		AnonymousType residue = new AnonymousType("derRest");
 		residue.setSectionFinder(new AllTextFinderTrimmed());
-		residue.setCustomRenderer(new CommentRenderer());
+		residue.setCustomRenderer(StyleRenderer.COMMENT);
 		this.addChildType(residue);
 	}
 
@@ -155,7 +153,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 			AnonymousType relationComment = new AnonymousType("comment");
 			relationComment.setSectionFinder(new RegexSectionFinder("[\\t ]*"
 					+ "//[^\r\n]*+" + "\\r?\\n"));
-			relationComment.setCustomRenderer(new CommentRenderer());
+			relationComment.setCustomRenderer(StyleRenderer.COMMENT);
 			this.addChildType(relationComment);
 
 			// take weights
@@ -468,8 +466,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 				// red if fulfilled
 
 				if (fulfilled && sec.getOriginalText().trim().equals("[--]")) {
-					FontColorBackgroundRenderer.getRenderer(
-							FontColorRenderer.COLOR2, null).render(article,
+					StyleRenderer.OPERATOR.render(article,
 							sec, user, buffi);
 				}
 				else {
@@ -478,7 +475,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 			}
 			else if (type instanceof CompositeCondition) {
-				FontColorBackgroundRenderer.getRenderer(null, color).render(
+				StyleRenderer.getRenderer(null, color).render(
 						article, sec, user, buffi);
 			}
 			else {

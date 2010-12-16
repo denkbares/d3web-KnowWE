@@ -30,6 +30,7 @@ import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
@@ -42,7 +43,6 @@ import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.QuestionDefinition;
 import de.knowwe.core.dashtree.DashTreeElement;
 import de.knowwe.core.dashtree.DashTreeUtils;
-import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
  * Answerline of the questionTree; a dashTreeElement is an AnswerLine if its
@@ -96,7 +96,7 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 		public InitFlag() {
 			this.sectionFinder = new OneOfStringEnumFinder(new String[] {
 					"<init>" });
-			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
+			this.setCustomRenderer(StyleRenderer.KEYWORDS);
 
 			this.addSubtreeHandler(new SubtreeHandler<InitFlag>() {
 

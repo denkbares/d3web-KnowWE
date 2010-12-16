@@ -28,22 +28,20 @@ import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.TermDefinition;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.report.message.TermNameCaseWarning;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.d3web.we.tools.ToolMenuDecoratingRenderer;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.knowwe.core.dashtree.DashTreeElement;
 import de.knowwe.core.dashtree.DashTreeUtils;
-import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
  * 
@@ -57,8 +55,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 	public QuestionnaireDefinition() {
 		super(QContainer.class);
 		addSubtreeHandler(Priority.HIGHEST, new CreateQuestionnaireHandler());
-		setCustomRenderer(new ToolMenuDecoratingRenderer<KnowWEObjectType>(
-						new FontColorRenderer(FontColorRenderer.COLOR5)));
+		setCustomRenderer(StyleRenderer.Questionaire);
 		setOrderSensitive(true);
 	}
 

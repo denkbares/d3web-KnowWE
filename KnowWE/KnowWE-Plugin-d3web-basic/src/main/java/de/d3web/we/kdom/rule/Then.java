@@ -23,15 +23,15 @@ package de.d3web.we.kdom.rule;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.renderer.FontColorRenderer;
 
 public class Then extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	protected void init() {
 		sectionFinder = new RegexSectionFinder("(DANN|THEN)", Pattern.MULTILINE);
-		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR0));
+		this.setCustomRenderer(StyleRenderer.KEYWORDS);
 	}
 
 }

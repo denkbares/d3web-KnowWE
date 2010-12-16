@@ -11,6 +11,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.TermDefinition;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
@@ -18,7 +19,6 @@ import de.d3web.we.kdom.sectionFinder.MatchUntilEndFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.SplitUtility;
-import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
  * A type to allow for the definition of (extended) question-text for a question
@@ -38,7 +38,7 @@ public class ObjectDescription extends DefaultAbstractKnowWEObjectType {
 		this.sectionFinder = new MatchUntilEndFinder(new StringSectionFinderUnquoted(
 					QTEXT_START_SYMBOL));
 
-		this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR8));
+		this.setCustomRenderer(StyleRenderer.PROMPT);
 		this.addSubtreeHandler(new SubtreeHandler<ObjectDescription>() {
 
 			@Override

@@ -31,16 +31,13 @@ import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
-import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.ContentDefinition;
 import de.d3web.we.object.IDObjectReference;
 import de.d3web.we.object.LocaleDefinition;
 import de.d3web.we.object.PropertyReference;
-import de.d3web.we.object.QuestionReference;
-import de.d3web.we.object.QuestionnaireReference;
-import de.d3web.we.object.SolutionReference;
 import de.d3web.we.utils.Patterns;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -64,16 +61,16 @@ public class PropertyType extends DefaultAbstractKnowWEObjectType {
 			IDObject object = sec.get().getTermObject(article, sec);
 			KnowWEDomRenderer renderer;
 			if (object instanceof Question) {
-				renderer = QuestionReference.DEFAULT_RENDERER;
+				renderer = StyleRenderer.Question;
 			}
 			else if (object instanceof QContainer) {
-				renderer = QuestionnaireReference.DEFAULT_RENDERER;
+				renderer = StyleRenderer.Questionaire;
 			}
 			else if (object instanceof Solution) {
-				renderer = SolutionReference.DEFAULT_RENDERER;
+				renderer = StyleRenderer.SOLUTION;
 			}
 			else if (object instanceof Choice) {
-				renderer = AnswerReference.DEFAULT_RENDERER;
+				renderer = StyleRenderer.CHOICE;
 			}
 			else {
 				renderer = PlainText.getInstance().getRenderer();

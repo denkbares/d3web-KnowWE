@@ -49,6 +49,7 @@ import de.d3web.we.kdom.condition.SolutionStateCond;
 import de.d3web.we.kdom.condition.UserRatingConditionType;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
@@ -61,7 +62,6 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
-import de.knowwe.core.renderer.FontColorBackgroundRenderer;
 import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
 
 /**
@@ -224,13 +224,13 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		/**
 		 * Stores the Renderer used in <b>highlightRule<b>
 		 */
-		KnowWEDomRenderer greenRenderer = FontColorBackgroundRenderer.getRenderer(
+		KnowWEDomRenderer greenRenderer = StyleRenderer.getRenderer(
 						highlightMarker, "", "#CFFFCF");
 
-		KnowWEDomRenderer redRenderer = FontColorBackgroundRenderer.getRenderer(highlightMarker,
+		KnowWEDomRenderer redRenderer = StyleRenderer.getRenderer(highlightMarker,
 				"", "#FF9900");
 
-		KnowWEDomRenderer exceptionRenderer = FontColorBackgroundRenderer.getRenderer(
+		KnowWEDomRenderer exceptionRenderer = StyleRenderer.getRenderer(
 				highlightMarker, "", null);
 
 		/**

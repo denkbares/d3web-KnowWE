@@ -8,10 +8,10 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.CompositeCondition;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.SplitUtility;
-import de.knowwe.core.renderer.CommentRenderer;
 
 /**
  * 
@@ -26,7 +26,7 @@ public class CompCondLineEndComment extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 		this.setSectionFinder(new LineEndCommentFinder());
-		setCustomRenderer(new CommentRenderer());
+		setCustomRenderer(StyleRenderer.COMMENT);
 	}
 
 	/**

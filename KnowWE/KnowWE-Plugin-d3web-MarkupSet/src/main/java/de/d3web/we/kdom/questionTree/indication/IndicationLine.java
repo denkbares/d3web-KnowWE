@@ -24,7 +24,6 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.object.QuestionnaireReference;
-import de.knowwe.core.renderer.FontColorRenderer;
 
 public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 
@@ -33,78 +32,9 @@ public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 		this.sectionFinder = new AllTextFinderTrimmed();
 
 		QuestionnaireReference qc = new QuestionnaireReference();
-		qc.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
 		qc.setSectionFinder(new AllTextFinderTrimmed());
 		// qc.addSubtreeHandler(Priority.LOW, new CreateIndication());
 		qc.addSubtreeHandler(Priority.LOW, IndicationHandler.getInstance());
 		this.childrenTypes.add(qc);
 	}
-
-	// static class CreateIndication extends
-	// D3webSubtreeHandler<QuestionnaireRef> {
-	//
-	// private final String indicationStoreKey = "INDICATION_STORE_KEY";
-	//
-	// @Override
-	// public boolean needsToCreate(KnowWEArticle article,
-	// Section<QuestionnaireRef> s) {
-	//
-	// return super.needsToCreate(article, s)
-	// || DashSubtree.subtreeAncestorHasNotReusedObjectDefs(article, s);
-	// }
-	//
-	// @Override
-	// public Collection<KDOMReportMessage> create(KnowWEArticle article,
-	// Section<QuestionnaireRef> s) {
-	// KnowledgeBaseManagement mgn = getKBM(article);
-	//
-	// // current DashTreeElement
-	// Section<DashTreeElement> element = KnowWEObjectTypeUtils
-	// .getAncestorOfType(s, DashTreeElement.class);
-	//
-	// String name = s.get().getTermName(s);
-	//
-	// QContainer qc = mgn.findQContainer(name);
-	//
-	// if (qc != null) {
-	// String newRuleID = mgn.createRuleID();
-	// Condition cond = Utils.createCondition(article,
-	// DashTreeElement.getDashTreeAncestors(element));
-	// if (cond != null) {
-	// Rule r = RuleFactory.createIndicationRule(newRuleID, qc,
-	// cond);
-	// KnowWEUtils.storeSectionInfo(article, s, indicationStoreKey, r);
-	// if (r != null) {
-	// return Arrays.asList((KDOMReportMessage) new
-	// ObjectCreatedMessage(r.getClass()
-	// + " : " + r.getId()));
-	// }
-	//
-	// }
-	// return Arrays.asList((KDOMReportMessage) new
-	// CreateRelationFailed(Rule.class
-	// .getSimpleName()));
-	// } else {
-	//
-	// return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(name));
-	// }
-	//
-	// }
-	//
-	// @Override
-	// public boolean needsToDestroy(KnowWEArticle article,
-	// Section<QuestionnaireRef> s) {
-	// return super.needsToDestroy(article, s)
-	// || DashSubtree.subtreeAncestorHasNotReusedObjectDefs(article, s);
-	// }
-	//
-	// @Override
-	// public void destroy(KnowWEArticle article, Section<QuestionnaireRef>
-	// rule) {
-	// Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, rule,
-	// indicationStoreKey);
-	// if (kbr != null) kbr.remove();
-	// }
-	//
-	// }
 }

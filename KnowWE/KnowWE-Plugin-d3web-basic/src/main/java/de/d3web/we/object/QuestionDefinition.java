@@ -27,19 +27,17 @@ import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.TermDefinition;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.report.message.TermNameCaseWarning;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.d3web.we.tools.ToolMenuDecoratingRenderer;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.MessageUtils;
-import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
  * 
@@ -57,15 +55,12 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 	public QuestionDefinition() {
 		super(Question.class);
 		this.addSubtreeHandler(Priority.HIGHER, new CreateQuestionHandler());
-		this.setCustomRenderer(
-				new ToolMenuDecoratingRenderer<KnowWEObjectType>(
-						new FontColorRenderer(FontColorRenderer.COLOR3)));
+		this.setCustomRenderer(StyleRenderer.Question);
 		this.setOrderSensitive(true);
 	}
 
 	public abstract QuestionType getQuestionType(Section<QuestionDefinition> s);
 
-	@SuppressWarnings("unchecked")
 	public abstract Section<? extends QASetDefinition> getParentQASetSection(Section<? extends QuestionDefinition> qdef);
 
 	public abstract int getPosition(Section<QuestionDefinition> s);
@@ -97,8 +92,6 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 				// ObjectAlreadyDefinedWarning(
 				// sec.get().getTermName(sec)));
 			}
-
-
 
 			KnowledgeBaseManagement mgn = getKBM(article);
 

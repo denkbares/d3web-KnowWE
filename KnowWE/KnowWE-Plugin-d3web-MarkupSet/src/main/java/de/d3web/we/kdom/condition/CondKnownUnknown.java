@@ -29,6 +29,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SyntaxError;
@@ -37,7 +38,6 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.utils.Patterns;
-import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
  * 
@@ -121,7 +121,7 @@ public class CondKnownUnknown extends D3webCondition<CondKnownUnknown> {
 		@Override
 		protected void init() {
 			this.setSectionFinder(new AllTextFinderTrimmed());
-			this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR1));
+			this.setCustomRenderer(StyleRenderer.OPERATOR);
 		}
 	}
 

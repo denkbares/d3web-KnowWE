@@ -28,9 +28,9 @@ import java.util.regex.Pattern;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.renderer.FontColorRenderer;
 
 public class XCLRelationWeight extends DefaultAbstractKnowWEObjectType {
 
@@ -57,7 +57,7 @@ public class XCLRelationWeight extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 		this.sectionFinder = new XCLRelationWeightSectionFinder();
-		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR6));
+		this.setCustomRenderer(StyleRenderer.OPERATOR);
 	}
 
 }

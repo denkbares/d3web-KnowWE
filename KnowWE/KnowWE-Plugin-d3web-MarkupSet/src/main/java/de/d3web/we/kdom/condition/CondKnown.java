@@ -27,6 +27,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NoSuchObjectError;
@@ -35,7 +36,6 @@ import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
-import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
  * Implements the CondKnown Condition to be used as child type in
@@ -54,7 +54,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 	@Override
 	protected void init() {
 		this.sectionFinder = new CondKnownFinder();
-		this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7) {
+		this.setCustomRenderer(new StyleRenderer(StyleRenderer.KEYWORDS.getCssStyle()) {
 
 			@Override
 			protected void renderContent(KnowWEArticle article, Section section, KnowWEUserContext user, StringBuilder string) {

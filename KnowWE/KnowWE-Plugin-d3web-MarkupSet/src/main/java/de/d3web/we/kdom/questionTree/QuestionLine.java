@@ -39,7 +39,9 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
+import de.d3web.we.kdom.questionTree.QuestionLine.QuestionTypeDeclaration;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
@@ -56,15 +58,14 @@ import de.d3web.we.kdom.sectionFinder.StringEnumChecker;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
-import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.object.QuestionDefinition.QuestionType;
+import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.knowwe.core.dashtree.DashTreeElementContent;
 import de.knowwe.core.dashtree.DashTreeUtils;
-import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
  * QuestionLine of the QuestionTree, here Questions can be defined
@@ -162,7 +163,6 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-
 	/**
 	 * A type allowing for the definition of numerical ranges/boundaries for
 	 * numerical questions
@@ -185,7 +185,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		}
 
 		public NumBounds() {
-			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
+			this.setCustomRenderer(StyleRenderer.NUMBER);
 			this.setSectionFinder(new EmbracedContentFinder(BOUNDS_OPEN, BOUNDS_CLOSE));
 
 			this.addSubtreeHandler(new D3webSubtreeHandler<NumBounds>() {
@@ -339,7 +339,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		}
 
 		public NumUnit() {
-			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
+			this.setCustomRenderer(StyleRenderer.NUMBER);
 
 			this.setSectionFinder(new EmbracedContentFinder(UNIT_OPEN, UNIT_CLOSE));
 
@@ -408,7 +408,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		public AbstractFlag() {
 			this.sectionFinder = new OneOfStringEnumFinder(new String[] {
 					"<abstract>", "<abstrakt>" });
-			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
+			this.setCustomRenderer(StyleRenderer.KEYWORDS);
 
 			this.addSubtreeHandler(new D3webSubtreeHandler<AbstractFlag>() {
 
@@ -433,7 +433,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 									.getString("KnowWE.questiontree.abstractflag"),
 							this.getClass()));
 				}
-				
+
 				@Override
 				public void destroy(KnowWEArticle article, Section<AbstractFlag> sec) {
 					// flag is destroyed together with question
@@ -466,7 +466,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			this.sectionFinder = new MatchUntilEndFinder(new StringSectionFinderUnquoted(
 					QTEXT_START_SYMBOL));
 
-			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR8));
+			this.setCustomRenderer(StyleRenderer.PROMPT);
 			this.addSubtreeHandler(new D3webSubtreeHandler<QuestionText>() {
 
 				@Override
@@ -579,7 +579,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 				}
 			};
 			this.setSectionFinder(typeFinder);
-			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7) {
+			this.setCustomRenderer(new StyleRenderer(StyleRenderer.OPERATOR.getCssStyle()) {
 
 				@Override
 				public void render(KnowWEArticle article, Section section, KnowWEUserContext user, StringBuilder string) {
@@ -596,7 +596,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		}
 	}
 
-	private static String concatStrings(String [] str) {
+	private static String concatStrings(String[] str) {
 		String result = " ";
 		for (String string : str) {
 			result += string + " ;";

@@ -32,21 +32,19 @@ import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.NotUniqueKnowWETerm;
 import de.d3web.we.kdom.objects.TermDefinition;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.report.message.TermNameCaseWarning;
 import de.d3web.we.kdom.report.message.UnexpectedSequence;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.d3web.we.tools.ToolMenuDecoratingRenderer;
 import de.d3web.we.utils.KnowWEUtils;
-import de.knowwe.core.renderer.FontColorRenderer;
 
 /**
  * 
@@ -72,8 +70,7 @@ public abstract class AnswerDefinition
 		super(Choice.class);
 		this.addSubtreeHandler(Priority.HIGH, new CreateAnswerHandler());
 		this.setCustomRenderer(
-				new ToolMenuDecoratingRenderer<KnowWEObjectType>(
-						FontColorRenderer.getRenderer(FontColorRenderer.COLOR1)));
+				StyleRenderer.CHOICE);
 		this.setOrderSensitive(true);
 	}
 
@@ -156,7 +153,6 @@ public abstract class AnswerDefinition
 				// ObjectAlreadyDefinedWarning(
 				// sec.get().getTermName(sec)));
 			}
-
 
 			Section<? extends QuestionDefinition> qDef = s
 					.get().getQuestionSection(s);

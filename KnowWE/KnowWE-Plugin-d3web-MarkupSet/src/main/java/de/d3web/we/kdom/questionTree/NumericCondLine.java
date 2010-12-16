@@ -32,6 +32,7 @@ import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.InvalidNumberError;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
@@ -39,7 +40,6 @@ import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.dashtree.DashTreeElement;
 import de.knowwe.core.dashtree.DashTreeUtils;
-import de.knowwe.core.renderer.FontColorRenderer;
 
 public class NumericCondLine extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker, IncrementalConstraints {
 
@@ -56,7 +56,7 @@ public class NumericCondLine extends DefaultAbstractKnowWEObjectType implements 
 
 		this.addSubtreeHandler(new CheckConditionHandler());
 
-		this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR8));
+		this.setCustomRenderer(StyleRenderer.NUMBER);
 
 	}
 

@@ -27,13 +27,13 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.InvalidNumberError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.renderer.FontColorRenderer;
 
 public class Number extends DefaultAbstractKnowWEObjectType {
 
@@ -41,7 +41,7 @@ public class Number extends DefaultAbstractKnowWEObjectType {
 		this.setSectionFinder(new NumberFinder());
 		// NumberChecker only makes sense if NumberFinder is overwritten..
 		this.addSubtreeHandler(new NumberChecker());
-		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR7));
+		this.setCustomRenderer(StyleRenderer.NUMBER);
 	}
 
 	public static Double getNumber(Section<Number> s) {
@@ -77,7 +77,7 @@ public class Number extends DefaultAbstractKnowWEObjectType {
 	class NumberChecker extends SubtreeHandler<Number> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<Number> s) {
 			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 			String trim = s.getOriginalText().trim();
 			try {

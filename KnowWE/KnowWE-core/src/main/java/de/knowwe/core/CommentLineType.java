@@ -22,9 +22,9 @@ package de.knowwe.core;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.utils.Patterns;
-import de.knowwe.core.renderer.CommentRenderer;
 
 /**
  * 
@@ -37,7 +37,7 @@ public class CommentLineType extends DefaultAbstractKnowWEObjectType {
 		super.init();
 
 		setSectionFinder(new RegexSectionFinder(Patterns.COMMENTLINE, Pattern.MULTILINE));
-		setCustomRenderer(new CommentRenderer());
+		setCustomRenderer(StyleRenderer.COMMENT);
 
 	}
 
