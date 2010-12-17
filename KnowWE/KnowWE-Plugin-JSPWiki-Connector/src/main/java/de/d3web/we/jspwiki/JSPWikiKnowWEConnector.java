@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -57,9 +57,9 @@ import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 /**
  * For code documentation look at the KnowWEWikiConnector interface definition
- * 
+ *
  * @author Jochen
- * 
+ *
  */
 public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
@@ -307,7 +307,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		return this.engine.getPureText(wp);
 	}
 
-	
+
 	@Override
 	public boolean doesPageExist(String topic) {
 
@@ -479,10 +479,10 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	}
 
 	/**
-	 * Checks if the current user has the rights to edit the given page.
-	 * IReturns TRUE if the user has editing permission, otherwise FALSE and
-	 * editing of the page is denied.
-	 * 
+	 * Checks if the current user has the rights to edit the given page. Returns
+	 * TRUE if the user has editing permission, otherwise FALSE and editing of
+	 * the page is denied.
+	 *
 	 * @param articlename
 	 */
 	@Override
@@ -497,10 +497,10 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	}
 
 	/**
-	 * Checks if the current user has the rights to edit the given page.
-	 * IReturns TRUE if the user has editing permission, otherwise FALSE and
-	 * editing of the page is denied.
-	 * 
+	 * Checks if the current user has the rights to edit the given page. Returns
+	 * TRUE if the user has editing permission, otherwise FALSE and editing of
+	 * the page is denied.
+	 *
 	 * @param articlename
 	 * @param r HttpRequest
 	 */
@@ -517,10 +517,48 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	}
 
 	/**
+	 * Checks if the current user has the rights to view the given page. Returns
+	 * TRUE if the user has viewing permission, otherwise FALSE and viewing the
+	 * page is denied.
+	 *
+	 * @param articlename
+	 */
+	@Override
+	public boolean userCanViewPage(String articlename) {
+		WikiPage page = new WikiPage(engine, articlename);
+		WikiContext context = new WikiContext(this.engine, this.engine
+				.getPage(articlename));
+		AuthorizationManager authmgr = engine.getAuthorizationManager();
+		PagePermission pp = PermissionFactory.getPagePermission(page, "view");
+
+		return authmgr.checkPermission(context.getWikiSession(), pp);
+	}
+
+	/**
+	 * Checks if the current user has the rights to show the given page. Returns
+	 * TRUE if the user has showing permission, otherwise FALSE and showing of
+	 * the page is denied.
+	 *
+	 * @param articlename
+	 * @param r HttpRequest
+	 */
+	@Override
+	public boolean userCanViewPage(String articlename, HttpServletRequest r) {
+		WikiPage page = new WikiPage(engine, articlename);
+		WikiContext context = new WikiContext(this.engine, r, this.engine
+				.getPage(articlename));
+
+		AuthorizationManager authmgr = engine.getAuthorizationManager();
+		PagePermission pp = PermissionFactory.getPagePermission(page, "view");
+
+		return authmgr.checkPermission(context.getWikiSession(), pp);
+	}
+
+	/**
 	 * Checks if the current page has an access lock. If TRUE no user other then
 	 * the lock owner can edit the page. If FALSE the current page has no lock
 	 * and can be edited by anyone.
-	 * 
+	 *
 	 * @param articlename
 	 */
 	@Override
@@ -534,7 +572,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	/**
 	 * Checks if the current page has been locked by the current user. Returns
 	 * TRUE if yes, FALSE otherwise.
-	 * 
+	 *
 	 * @param articlename
 	 * @param user
 	 * @return
@@ -553,7 +591,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 	/**
 	 * Locks a page in the WIKI so no other user can edit the page.
-	 * 
+	 *
 	 * @param articlename
 	 */
 	@Override
@@ -569,7 +607,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	/**
 	 * Removes a page lock from a certain page in the WIKI so other users can
 	 * edit the page.
-	 * 
+	 *
 	 * @param articlename
 	 */
 	@Override
@@ -686,4 +724,5 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 		return false;
 	}
+
 }
