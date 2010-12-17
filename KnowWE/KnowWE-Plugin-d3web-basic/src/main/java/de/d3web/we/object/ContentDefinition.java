@@ -18,16 +18,9 @@
  */
 package de.d3web.we.object;
 
-import java.util.Arrays;
-import java.util.Collection;
-
-import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
-import de.d3web.we.kdom.objects.TermDefinition;
-import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.report.message.NewObjectCreated;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.kdom.objects.StringDefinition;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -35,27 +28,13 @@ import de.d3web.we.utils.KnowWEUtils;
  * @author Markus Friedrich (denkbares GmbH)
  * @created 12.11.2010
  */
-public class ContentDefinition extends TermDefinition<String> {
+public class ContentDefinition extends StringDefinition {
 
-	public ContentDefinition() {
-		super(String.class);
-		this.addSubtreeHandler(new ContentSubtreeHandler());
-	}
 
 	@Override
 	public String getTermName(Section<? extends KnowWETerm<String>> s) {
 		return KnowWEUtils.trimQuotes(s.getOriginalText());
 	}
 
-	private class ContentSubtreeHandler extends D3webSubtreeHandler<ContentDefinition> {
 
-		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ContentDefinition> s) {
-			String text = s.get().getTermName(s);
-			s.get().storeTermObject(article, s, text);
-			return Arrays.asList((KDOMReportMessage) new NewObjectCreated("Content: \""
-					+ text + "\" created."));
-		}
-
-	}
 }

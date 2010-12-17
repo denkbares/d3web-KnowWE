@@ -37,11 +37,13 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.we.kdom.objects.KnowWETerm;
+import de.d3web.we.kdom.objects.StringReference;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.report.message.NoSuchObjectError;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
-import de.d3web.we.kdom.xml.XMLContent;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.SolutionReference;
@@ -54,11 +56,26 @@ import de.d3web.we.utils.KnowWEUtils;
  * @author Sebastian Furth
  *
  */
-public class TestCaseContent extends XMLContent {
+public class TestCaseContent extends StringReference {
 
 	protected TestCaseContent() {
+		this.setTermScope(KnowWETerm.GLOBAL);
+		this.setIgnorePackageCompile(true);
+		this.sectionFinder = new AllTextSectionFinder();
 		this.childrenTypes.add(new SequentialTestCase());
 		this.addSubtreeHandler(Priority.LOWEST, new TestSuiteSubTreeHandler());
+	}
+	
+
+	@Override
+	public String getTermName(Section<? extends KnowWETerm<String>> s) {
+		return DefaultMarkupType.getAnnotation(s.findAncestorOfType(TestCaseType.class),
+				TestCaseType.ANNOTATION_MASTER);
+	}
+
+	@Override
+	public String getTermObjectDisplayName() {
+		return "Master";
 	}
 
 	public class TestSuiteSubTreeHandler extends D3webSubtreeHandler<TestCaseType> {
@@ -312,5 +329,6 @@ public class TestCaseContent extends XMLContent {
 		}
 
 	}
+
 
 }

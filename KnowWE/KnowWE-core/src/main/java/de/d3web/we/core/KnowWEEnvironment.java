@@ -123,10 +123,16 @@ public class KnowWEEnvironment {
 	private final Map<String, KnowledgeRepresentationManager> knowledgeManagers = new HashMap<String, KnowledgeRepresentationManager>();
 
 	/**
-	 * A namespace manager for each web. In case of JSPWiki there is only on web
+	 * A package manager for each web. In case of JSPWiki there is only on web
 	 * ('default_web')
 	 */
 	private final Map<String, KnowWEPackageManager> packageManagers = new HashMap<String, KnowWEPackageManager>();
+
+	/**
+	 * A terminology handler for each web. In case of JSPWiki there is only on
+	 * web ('default_web')
+	 */
+	private final Map<String, TerminologyHandler> terminologyHandlers = new HashMap<String, TerminologyHandler>();
 
 	// /**
 	// * The servlet context of the running application. Necessary to determine
@@ -316,6 +322,21 @@ public class KnowWEEnvironment {
 	}
 
 	/**
+	 * returns the TerminologyHandler for a given web
+	 * 
+	 * @param web
+	 * @return
+	 */
+	public TerminologyHandler getTerminologyHandler(String web) {
+		TerminologyHandler mgr = this.terminologyHandlers.get(web);
+		if (mgr == null) {
+			mgr = new TerminologyHandler(web);
+			terminologyHandlers.put(web, mgr);
+		}
+		return mgr;
+	}
+
+	/**
 	 * private contructor
 	 * 
 	 * @see getInstance()
@@ -458,7 +479,6 @@ public class KnowWEEnvironment {
 			handler.setWeb(web);
 			manager.registerHandler(handler);
 		}
-		manager.registerHandler(new TerminologyHandler(web));
 
 		Plugins.initJS();
 		Plugins.initCSS();

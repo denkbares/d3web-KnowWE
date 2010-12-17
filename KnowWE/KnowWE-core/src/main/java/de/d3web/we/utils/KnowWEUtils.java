@@ -392,8 +392,7 @@ public class KnowWEUtils {
 	}
 
 	public static TerminologyHandler getTerminologyHandler(String web) {
-		return (TerminologyHandler) KnowWEEnvironment.getInstance()
-				.getKnowledgeRepresentationManager(web).getHandler(TerminologyHandler.HANDLER_KEY);
+		return KnowWEEnvironment.getInstance().getTerminologyHandler(web);
 	}
 
 	public static String convertUmlaut(String text) {

@@ -19,21 +19,18 @@
 package de.d3web.we.flow.type;
 
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.TermReference;
+import de.d3web.we.kdom.objects.KnowWETerm;
+import de.d3web.we.kdom.objects.StringReference;
 
 /**
  * 
  * @author Reinhard Hatko
  * @created 08.12.2010
  */
-public class StartNodeReference extends TermReference<String> {
-
-	public StartNodeReference() {
-		super(String.class);
-	}
+public class StartNodeReference extends StringReference {
 
 	@Override
-	public String getTermName(Section s) {
+	public String getTermName(Section<? extends KnowWETerm<String>> s) {
 		Section<FlowchartReference> ref = s.getFather().findSuccessor(FlowchartReference.class);
 
 		return ref.getOriginalText() + "(" + s.getOriginalText() + ")";

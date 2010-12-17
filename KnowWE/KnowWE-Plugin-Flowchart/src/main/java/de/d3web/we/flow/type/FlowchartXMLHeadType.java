@@ -20,10 +20,9 @@ package de.d3web.we.flow.type;
 
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
-import de.d3web.we.kdom.objects.TermDefinition;
+import de.d3web.we.kdom.objects.StringDefinition;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.xml.XMLHead;
 
@@ -41,17 +40,12 @@ public class FlowchartXMLHeadType extends XMLHead {
 		addChildType(new FlowchartTermDef());
 	}
 
-	static class FlowchartTermDef extends TermDefinition<String> {
+	static class FlowchartTermDef extends StringDefinition {
 
 		public FlowchartTermDef() {
-			super(String.class);
+			setSectionFinder(new RegexSectionFinder(Pattern.compile("name=\"([^\"]*)\""), 1));
 		}
 
-		@Override
-		protected void init() {
-			setSectionFinder(new RegexSectionFinder(Pattern.compile("name=\"([^\"]*)\""), 1));
-			addSubtreeHandler(Priority.HIGH, new FlowchartTermDefinitionRegistrationHandler());
-		}
 
 		@Override
 		public String getTermName(Section<? extends KnowWETerm<String>> s) {

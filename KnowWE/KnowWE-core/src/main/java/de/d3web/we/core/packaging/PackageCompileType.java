@@ -5,20 +5,29 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.objects.KnowWETerm;
+import de.d3web.we.kdom.objects.StringDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.utils.KnowWEUtils;
 
-public abstract class PackageCompileType extends DefaultAbstractKnowWEObjectType implements PackageReference {
+public abstract class PackageCompileType extends StringDefinition implements PackageReference {
 
 	public PackageCompileType() {
+		this.subtreeHandler.clear();
+		this.setTermScope(KnowWETerm.GLOBAL);
 		this.sectionFinder = new AllTextSectionFinder();
 		this.setIgnorePackageCompile(true);
 		this.addSubtreeHandler(Priority.PRECOMPILE_LOW, new PackageCompileHandler());
+	}
+
+	@Override
+	public String getTermName(Section<? extends KnowWETerm<String>> s) {
+		return s.getTitle();
 	}
 
 	@Override
@@ -72,12 +81,25 @@ public abstract class PackageCompileType extends DefaultAbstractKnowWEObjectType
 				article.getReviseIterator().addRootSectionToRevise(packDef);
 			}
 
+			s.get().storeTermObject(article, s, s.get().getTermName(s));
+			KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
+					article, s);
+
 			return null;
 		}
 
 		@Override
+		public boolean needsToDestroy(KnowWEArticle article, Section<PackageCompileType> s) {
+			return true;
+		}
+
+		@Override
 		public void destroy(KnowWEArticle article, Section<PackageCompileType> s) {
-			article.setFullParse(this.getClass());
+			if (super.needsToDestroy(article, s)) {
+				article.setFullParse(this.getClass());
+			}
+			KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
+					article, s);
 		}
 
 	}

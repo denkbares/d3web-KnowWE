@@ -20,8 +20,6 @@
 
 package de.d3web.we.terminology;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,6 +33,11 @@ import java.util.logging.Logger;
 
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.event.ArticleCreatedEvent;
+import de.d3web.we.event.Event;
+import de.d3web.we.event.EventListener;
+import de.d3web.we.event.EventManager;
+import de.d3web.we.event.FullParseEvent;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
@@ -42,7 +45,6 @@ import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.NotUniqueKnowWETerm;
 import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.objects.TermReference;
-import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 
 /**
  * @author Jochen, Albrecht
@@ -56,28 +58,24 @@ import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
  *         the terms are registered here.
  *         <p/>
  * 
- *         TODOs:
+ *         TODO:
  *         <p/>
- *         1. Add more class-checks!! Right now it is possible to override
+ *         Add more class-checks!! Right now it is possible to override
  *         TermReferenceLogs with other Logs with the same term name but a
  *         different TermObject-class. Maybe it should be possible to store all
  *         TermReferenceLogs with the same term name but different
  *         TermObject-classes?
- *         <p/>
- *         2. This should not be a KnowledgerepresentationHandler. Stuff in the
- *         initArticle(...)-method can be done using e.g. a FullParseEvent.
  * 
  * 
  * 
  */
-public class TerminologyHandler implements KnowledgeRepresentationHandler {
+public class TerminologyHandler implements EventListener {
+
+	private final String web;
 
 	public final static String HANDLER_KEY = TerminologyHandler.class.getSimpleName();
 
 	private final Map<String, Boolean> modifiedTermDefinitions = new HashMap<String, Boolean>();
-
-	@SuppressWarnings("unused")
-	private String web;
 
 	@SuppressWarnings("unchecked")
 	private final Map<String, Map<TermIdentifier, TermReferenceLog>> termReferenceLogsMaps =
@@ -87,28 +85,13 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	private final Map<TermIdentifier, TermReferenceLog> globalTermReferenceLogs =
 			new HashMap<TermIdentifier, TermReferenceLog>();
 
-	// private static TerminologyHandler instance = null;
-	//
-	// public static TerminologyHandler getInstance() {
-	// if (instance == null) {
-	// instance = new TerminologyHandler();
-	//
-	// }
-	//
-	// return instance;
-	// }
-
-	/**
-	 * <b>This constructor SHOULD NOT BE USED!</b>
-	 * <p/>
-	 * Use KnowWEUtils.getTerminologyHandler(String web) instead!
-	 */
 	public TerminologyHandler(String web) {
 		this.web = web;
+		EventManager.getInstance().registerListener(this);
 	}
 
-	public TerminologyHandler() {
-		this.web = KnowWEEnvironment.DEFAULT_WEB;
+	public String getWeb() {
+		return web;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -178,16 +161,6 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		}
 	}
 
-	public void initArticle(KnowWEArticle article) {
-		if (article.isFullParse()) {
-			removeTermReferenceLogsForArticle(article);
-		}
-	}
-
-	public void finishArticle(KnowWEArticle article) {
-		modifiedTermDefinitions.put(article.getTitle(), false);
-	}
-
 	/**
 	 * Allows to register a new term.
 	 * 
@@ -255,9 +228,15 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 				// if the TermDefinition was null before, the
 				// TermReferences need to be compiled again, because there is
 				// now a TermDefinition to refer to
-				for (Section<?> termRef : termRefLog.getReferences()) {
-					artMan.addAllArticlesToRefresh(termRef.getReusedBySet());
-					termRef.clearReusedBySet();
+				for (Section<? extends TermReference<TermObject>> termRef : termRefLog.getReferences()) {
+					if (termRef.get().getTermScope() == KnowWETerm.GLOBAL) {
+						artMan.addAllArticlesToRefresh(termRef.getReusedBySet());
+						termRef.clearReusedBySet();
+					}
+					else {
+						termRef.setReusedBy(article.getTitle(), false);
+					}
+
 				}
 			}
 		}
@@ -547,22 +526,6 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		return terms;
 	}
 
-	@Override
-	public String getKey() {
-		// TODO Auto-generated method stub
-		return TerminologyHandler.HANDLER_KEY;
-	}
-
-	@Override
-	public URL saveKnowledge(String title) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setWeb(String web) {
-		this.web = web;
-	}
 
 	/**
 	 * 
@@ -668,6 +631,25 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 			return termIdentifier;
 		}
 
+	}
+
+	@Override
+	public Collection<Class<? extends Event>> getEvents() {
+		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(2);
+		events.add(FullParseEvent.class);
+		events.add(ArticleCreatedEvent.class);
+		return events;
+	}
+
+	@Override
+	public void notify(Event event) {
+		if (event instanceof FullParseEvent) {
+			removeTermReferenceLogsForArticle(((FullParseEvent) event).getArticle());
+		}
+		else if (event instanceof ArticleCreatedEvent) {
+			modifiedTermDefinitions.put(((ArticleCreatedEvent) event).getArticle().getTitle(),
+					false);
+		}
 	}
 
 }

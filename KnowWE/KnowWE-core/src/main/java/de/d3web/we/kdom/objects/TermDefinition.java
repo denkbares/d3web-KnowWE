@@ -20,18 +20,9 @@
 
 package de.d3web.we.kdom.objects;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
-import de.d3web.we.terminology.TerminologyHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -61,14 +52,6 @@ public abstract class TermDefinition<TermObject>
 		}
 		this.termObjectClass = termObjectClass;
 		this.key = termObjectClass.getName() + "_STORE_KEY";
-	}
-
-	public TermDefinition(Class<TermObject> termObjectClass, boolean register) {
-		this(termObjectClass);
-		if (register) {
-			this.addSubtreeHandler(Priority.HIGHER,
-					new TermDefinitionRegistrationHandler());
-		}
 	}
 
 	public Class<TermObject> getTermObjectClass() {
@@ -117,46 +100,12 @@ public abstract class TermDefinition<TermObject>
 	@Override
 	public void setTermScope(int termScope) {
 		this.termScope = termScope;
-	}
-
-	/**
-	 * 
-	 * This handler registers this Term..
-	 * 
-	 * @author Jochen
-	 * @created 08.10.2010
-	 */
-	class TermDefinitionRegistrationHandler extends SubtreeHandler<TermDefinition<TermObject>> {
-
-
-		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<TermDefinition<TermObject>> s) {
-
-			TerminologyHandler tHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
-
-			Section<? extends TermDefinition<TermObject>> before = tHandler.getTermDefiningSection(
-					article, s);
-
-			tHandler.registerTermDefinition(article, s);
-
-			Section<? extends TermDefinition<TermObject>> after = tHandler.getTermDefiningSection(
-					article, s);
-
-			if (before == after) {
-				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
-						s.get().getName()
-								+ ": " + s.get().getTermName(s), before));
-			}
-
-			return new ArrayList<KDOMReportMessage>(0);
+		if (termScope == KnowWETerm.GLOBAL) {
+			this.setIgnorePackageCompile(true);
 		}
-
-		@Override
-		public void destroy(KnowWEArticle article, Section<TermDefinition<TermObject>> s) {
-			KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
-					article, s);
+		else {
+			this.setIgnorePackageCompile(false);
 		}
-
 	}
 
 }

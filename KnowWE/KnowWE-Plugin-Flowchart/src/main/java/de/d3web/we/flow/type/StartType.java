@@ -20,10 +20,9 @@
 
 package de.d3web.we.flow.type;
 
-import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
-import de.d3web.we.kdom.objects.TermDefinition;
+import de.d3web.we.kdom.objects.StringDefinition;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
@@ -52,16 +51,10 @@ public class StartType extends AbstractXMLObjectType {
 		addChildType(new StartNodeDef());
 	}
 
-	static class StartNodeDef extends TermDefinition<String> {
+	static class StartNodeDef extends StringDefinition {
 
 		public StartNodeDef() {
-			super(String.class);
-		}
-
-		@Override
-		protected void init() {
 			setSectionFinder(new AllTextSectionFinder());
-			addSubtreeHandler(Priority.HIGH, new FlowchartTermDefinitionRegistrationHandler());
 		}
 
 		@Override

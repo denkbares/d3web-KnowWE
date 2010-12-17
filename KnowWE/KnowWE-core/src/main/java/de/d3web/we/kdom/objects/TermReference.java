@@ -77,7 +77,9 @@ public abstract class TermReference<TermObject>
 		Section<? extends TermDefinition<TermObject>> objectDefinition = KnowWEUtils.getTerminologyHandler(
 				article.getWeb()).getTermDefiningSection(article, s);
 		if (objectDefinition != null) {
-			TermObject c = objectDefinition.get().getTermObject(article, objectDefinition);
+			TermObject c = objectDefinition.get().getTermObject(
+					termScope == KnowWETerm.GLOBAL ? objectDefinition.getArticle() : article,
+					objectDefinition);
 			if (c != null) return c;
 		}
 		return getTermObjectFallback(article, s);
@@ -99,6 +101,12 @@ public abstract class TermReference<TermObject>
 	@Override
 	public void setTermScope(int termScope) {
 		this.termScope = termScope;
+		if (termScope == KnowWETerm.GLOBAL) {
+			this.setIgnorePackageCompile(true);
+		}
+		else {
+			this.setIgnorePackageCompile(false);
+		}
 	}
 
 	class TermRegistrationHandler extends SubtreeHandler<TermReference<TermObject>> {
@@ -111,11 +119,11 @@ public abstract class TermReference<TermObject>
 			String termName = s.get().getTermName(s);
 
 			if (s.get().getTermObject(article, s) == null) {
-
 				return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(
 						s.get().getTermObjectDisplayName(),
 						termName));
 			}
+
 			Section<? extends TermDefinition<TermObject>> termDef = KnowWEUtils.getTerminologyHandler(
 					article.getWeb()).getTermDefiningSection(article, s);
 
