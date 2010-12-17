@@ -67,6 +67,11 @@ public class JSPHelper {
 		return buffer.toString();
 	}
 
+	public String getKDOMNodeContent(String kdomID) {
+		return KnowWEEnvironment.getInstance().getNodeData(parameterMap.getWeb(),
+				parameterMap.getTopic(), kdomID);
+	}
+
 	public String getArticleInfoObjectsAsXML() {
 		// search for matches
 		List<String> matches = getAllMatches("Article");
@@ -153,7 +158,7 @@ public class JSPHelper {
 	private String getFlowchartAttributeValue(String attributeName) {
 		Section<FlowchartType> section = (Section<FlowchartType>) KnowWEEnvironment.getInstance().getArticle(
 				parameterMap.getWeb(), parameterMap.getTopic()).findSection(
-				parameterMap.get("kdomID"));
+				parameterMap.get("kdomID")).findSuccessor(FlowchartType.class);
 
 		return AbstractXMLObjectType.getAttributeMapFor(section).get(attributeName);
 	}
