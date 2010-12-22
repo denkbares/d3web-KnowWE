@@ -39,6 +39,15 @@ public class ReplaceKDOMNodeAction extends AbstractAction {
 		String name = parameterMap.getTopic();
 		String newText = parameterMap.get(KnowWEAttributes.TEXT);
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
+		
+		// Check for user access
+		if (!KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(name)) {
+			return "perm";
+		}
+		
+		// Remove any extra whitespace that might have gotten appended by JSPWiki
+		newText = newText.replaceAll("\\s*$", "");
+		
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(nodeID, newText);
 		mgr.replaceKDOMNodesSaveAndBuild(parameterMap, name, nodesMap);
@@ -51,8 +60,12 @@ public class ReplaceKDOMNodeAction extends AbstractAction {
 		KnowWEParameterMap parameterMap = context.getKnowWEParameterMap();
 		String result = perform(parameterMap);
 		if (result != null && context.getWriter() != null) {
-			context.setContentType("text/html; charset=UTF-8");
-			context.getWriter().write(result);
+			if (result.equals("perm")) {
+				context.sendError(403, "You do not have the permission to edit this page.");
+			} else {
+				context.setContentType("text/html; charset=UTF-8");
+				context.getWriter().write(result);
+			}
 		}
 	}
 
