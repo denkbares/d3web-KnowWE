@@ -265,9 +265,87 @@ KNOWWE.helper = function(){
                 return this.tagParent( element.parentNode, tag );
             }
             
-        }
+        },
+        /**
+         * Function: greyOut
+         * Greys out the page for modal dialogs
+         */
+        greyOut : function(options) {
+        	var options = options || {}; 
+        	var zindex = options.zindex || 9990;
+        	var opacity = options.opacity || 0.7;
+        	var opaque = (opacity / 100);
+        	var bgcolor = options.bgcolor || '#000000';
+        	var dark = $('knowwe_fog');
+        	
+        	if (!dark) {
+        		dark = new Element('div', {
+        			id: 'knowwe_fog',
+        			styles: {
+        				position: 'fixed',
+        				top: 0,
+        				right: 0,
+        				bottom: 0,
+        				left: 0,
+        				overflow: 'hidden',
+        				filter: 'alpha(opacity='+opacity+')',
+        				'opacity': opacity,
+        				'z-index': zindex,
+        				'background-color': bgcolor,
+        				display: 'none'
+        			}
+        		}).inject(document.body);
+        	}
+        	
+        	if (dark.style.display != 'block') {
+        		dark.style.display = 'block';
+        	} else {
+        		dark.style.display = 'none';
+        	}
+        },
     }
 }();
+
+KNOWWE.helper.message = function() {
+	return {
+		showMessage : function(message, title) {
+			KNOWWE.helper.greyOut();
+			
+			var div = new Element('div', {
+				'class': 'message-dialog',
+				id: 'knowwe_message',
+				styles: {
+					height: 200,
+					width: 500,
+					'margin-top': -100,
+					'margin-left': -250,
+					opacity: 1
+				}
+			}).inject(document.body);
+			
+			var h2 = new Element('h2').inject(div);
+			h2.setText(title);
+			
+			var p = new Element('p').inject(div);
+			p.setText(message);
+			
+			var buttons = new Element('div', {
+				'class': 'buttons'
+			}).inject(div);
+			
+			var ok = new Element('button', {
+				events: {
+					click: function(e) {
+						$('knowwe_message').remove();
+						KNOWWE.helper.greyOut();
+					}
+				}
+			}).inject(buttons);
+			ok.setText("OK");
+		}
+	}
+}();
+
 
 /**
  * Class: KNOWWE.helper.event
@@ -453,19 +531,21 @@ KNOWWE.helper.ajax = function ( options ) {
 	                default:
 	                    break;
 	            }
-	            if( !oDefault.response.fn ){ return; }
-	            oDefault.response.fn.call( this );
 	            
-	            if(oDefault.loader) {
-	                var loader = document.getElementById('KNOWWE-ajax-loader');
-	                loader.parentNode.removeChild( loader );
+	            if( oDefault.response.fn ) { 
+	            	oDefault.response.fn.call( this );
 	            }
 			}
 			else {
-				if(oDefault.response.onError) {
-					oDefault.response.onError.call(this);
+				if (oDefault.response.onError) {
+					oDefault.response.onError.call(this, http);
 				}
 	    	}
+			
+            if(oDefault.loader) {
+                var loader = document.getElementById('KNOWWE-ajax-loader');
+                loader.parentNode.removeChild( loader );
+            }
         }  
     }    
     

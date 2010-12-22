@@ -96,7 +96,43 @@ h1, h2, h3, h4 {
     background: url(../images/arrow_right.png) no-repeat 0px 3px; 
 }
 
+.message-dialog {
+	position: fixed;
+	background: #FFF6BF;
+	border-bottom: 2px solid #FFD324;
+	border-top: 2px solid #FFD324;
+	z-index: 9999;
+	top: 50%;
+	left: 50%;
+}
 
+.message-dialog h2 {
+	background: #FFF6BF url(../images/msg_info.png) center no-repeat;
+    background-position: 10px 50%; /* x-pos y-pos */
+	padding: .5em;
+	padding-left: 40px;	
+	margin: 0;
+	height: 1em;
+}
+
+.message-dialog p {
+	margin: 0;
+	margin-top: .5em;
+	padding: .5em;
+	overflow: hidden;
+	height: 50%;
+}
+
+.message-dialog .buttons {
+	height: 2em;
+	padding: .5em;
+	text-align: right;
+	background-color: #FFF6BF;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
 
 code.box {
   background-color: #F9F9F9;
