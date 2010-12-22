@@ -8,7 +8,7 @@
     
     String message = "";
     Object messageObj = request.getAttribute("javax.servlet.error.message");
-    if (message != null) {
+    if (messageObj != null) {
     	message = messageObj.toString();
     }
     
