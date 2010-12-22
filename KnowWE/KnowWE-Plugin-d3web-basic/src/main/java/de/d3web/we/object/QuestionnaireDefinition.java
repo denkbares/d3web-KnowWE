@@ -83,9 +83,6 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 					return Arrays.asList((KDOMReportMessage) new TermNameCaseWarning(termDefName));
 				}
 				return new ArrayList<KDOMReportMessage>(0);
-				// return Arrays.asList((KDOMReportMessage) new
-				// ObjectAlreadyDefinedWarning(
-				// qcSec.get().getTermName(qcSec)));
 			}
 
 			KnowledgeBaseManagement mgn = getKBM(article);

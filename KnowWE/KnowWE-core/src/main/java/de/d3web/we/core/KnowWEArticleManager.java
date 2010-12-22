@@ -251,6 +251,19 @@ public class KnowWEArticleManager {
 	 * @param article is the changed article to register
 	 */
 	public void registerArticle(KnowWEArticle article) {
+		registerArticle(article, true);
+	}
+
+	/**
+	 * Registers an changed article in the manager and also updates depending
+	 * articles.
+	 * 
+	 * @created 14.12.2010
+	 * @param article is the changed article to register
+	 * @param updateDependencies determines whether to update dependencies with
+	 *        this registration
+	 */
+	public void registerArticle(KnowWEArticle article, boolean updateDependencies) {
 
 		// store new article
 		articleMap.put(article.getTitle(), article);
@@ -265,8 +278,7 @@ public class KnowWEArticleManager {
 
 		EventManager.getInstance().fireEvent(new UpdatingDependenciesEvent(article));
 
-		// if (initializedArticles)
-		buildArticlesToRefresh();
+		if (updateDependencies) buildArticlesToRefresh();
 
 		updatingArticles.remove(article.getTitle());
 		Logger.getLogger(this.getClass().getName()).log(
@@ -290,7 +302,7 @@ public class KnowWEArticleManager {
 					articleMap.get(title).getSection().getOriginalText(), title,
 					KnowWEEnvironment.getInstance().getRootType(), web, false);
 
-			registerArticle(newArt);
+			registerArticle(newArt, true);
 		}
 		this.articlesToRefresh = new TreeSet<String>();
 	}

@@ -25,6 +25,7 @@ import java.util.List;
 
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -113,6 +114,14 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 				if (questionLine != null && !questionLine.isEmpty()) {
 					// this situation can only occur with incremental update
 					// -> fullparse
+					if (article != s.getArticle()) {
+						KnowWEEnvironment.getInstance().getArticleManager(s.getWeb()).registerArticle(
+								KnowWEArticle.createArticle(
+										s.getArticle().getSection().getOriginalText(),
+										s.getTitle(),
+										KnowWEEnvironment.getInstance().getRootType(),
+										s.getWeb(), true), false);
+					}
 					article.setFullParse(this.getClass());
 				}
 			}

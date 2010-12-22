@@ -88,9 +88,6 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 					return Arrays.asList((KDOMReportMessage) new TermNameCaseWarning(termDefName));
 				}
 				return new ArrayList<KDOMReportMessage>(0);
-				// return Arrays.asList((KDOMReportMessage) new
-				// ObjectAlreadyDefinedWarning(
-				// sec.get().getTermName(sec)));
 			}
 
 			KnowledgeBaseManagement mgn = getKBM(article);

@@ -30,6 +30,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
@@ -109,7 +110,7 @@ public abstract class AnswerDefinition
 			// (correctly) overridden by the (custom) AnswerDefintion
 			question = "questionNotFound";
 			Logger.getLogger(this.getClass().getName())
-					.log(Level.SEVERE,
+					.log(Level.WARNING,
 							"QuestionSection for AnswerDefintion couldnt be found: '" +
 									answer + "'!");
 		}
@@ -149,9 +150,6 @@ public abstract class AnswerDefinition
 					return Arrays.asList((KDOMReportMessage) new TermNameCaseWarning(termDefName));
 				}
 				return new ArrayList<KDOMReportMessage>(0);
-				// return Arrays.asList((KDOMReportMessage) new
-				// ObjectAlreadyDefinedWarning(
-				// sec.get().getTermName(sec)));
 			}
 
 			Section<? extends QuestionDefinition> qDef = s
@@ -160,6 +158,13 @@ public abstract class AnswerDefinition
 			if (qDef == null) {
 				// this situation can only occur with incremental update
 				// -> fullparse
+				if (article != s.getArticle()) {
+					KnowWEEnvironment.getInstance().getArticleManager(s.getWeb()).registerArticle(
+							KnowWEArticle.createArticle(
+									s.getArticle().getSection().getOriginalText(), s.getTitle(),
+									KnowWEEnvironment.getInstance().getRootType(),
+									s.getWeb(), true), false);
+				}
 				article.setFullParse(CreateAnswerHandler.class);
 				return null;
 			}
