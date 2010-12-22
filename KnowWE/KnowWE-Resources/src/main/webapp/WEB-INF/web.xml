@@ -227,7 +227,7 @@
 	<!-- Error pages -->
 	<error-page>
 		<error-code>403</error-code>
-		<location>/error/Forbidden.html</location>
+		<location>/403.jsp</location>
 	</error-page>
 
 	<!-- REMOVE ME TO ENABLE JDBC DATABASE <resource-ref> <description> Resource 
