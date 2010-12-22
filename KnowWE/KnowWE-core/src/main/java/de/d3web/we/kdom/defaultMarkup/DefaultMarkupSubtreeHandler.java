@@ -71,13 +71,13 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 						DefaultMarkupType.getAnnotationSection(markupSection, packageAnno.getName());
 				if (annotationSection != null) {
 					value = annotationSection.getOriginalText();
-
 				}
 			}
 			if (value == null) value = KnowWEPackageManager.DEFAULT_PACKAGE;
 			markupSection.addPackageName(value);
-			KnowWEEnvironment.getInstance().getPackageManager(article.getWeb()).registerPackageDefinition(
-					markupSection);
+			msgs.addAll(KnowWEEnvironment.getInstance().getPackageManager(
+					article.getWeb()).registerPackageDefinition(
+					markupSection));
 		}
 
 		// check unrecognized annotations

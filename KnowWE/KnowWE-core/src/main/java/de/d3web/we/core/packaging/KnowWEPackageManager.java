@@ -40,6 +40,8 @@ import de.d3web.we.event.PreCompileFinishedEvent;
 import de.d3web.we.event.UpdatingDependenciesEvent;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMError;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class KnowWEPackageManager implements EventListener {
@@ -93,9 +95,11 @@ public class KnowWEPackageManager implements EventListener {
 						web).getTitles().contains(packageName);
 	}
 
-	public void registerPackageDefinition(Section<?> s) {
+	public Collection<KDOMReportMessage> registerPackageDefinition(Section<?> s) {
+		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 		for (String packageName : s.getPackageNames()) {
 			if (isDisallowedPackageName(packageName)) {
+				msgs.add(new DisallowedPackageNameError(packageName));
 				continue;
 			}
 			LinkedList<Section<?>> packageList = packageDefinitionsMap.get(packageName);
@@ -106,6 +110,7 @@ public class KnowWEPackageManager implements EventListener {
 			packageList.add(s);
 			changedPackages.add(packageName);
 		}
+		return msgs;
 	}
 
 	public boolean unregisterPackageDefinition(Section<?> s) {
@@ -388,6 +393,21 @@ public class KnowWEPackageManager implements EventListener {
 		else if (event instanceof PreCompileFinishedEvent) {
 			updateReusedStates(((PreCompileFinishedEvent) event).getArticle());
 		}
+	}
+
+	class DisallowedPackageNameError extends KDOMError {
+
+		private final String packageName;
+
+		public DisallowedPackageNameError(String packageName) {
+			this.packageName = packageName;
+		}
+
+		@Override
+		public String getVerbalization() {
+			return "'" + packageName + "' is not allowed as a package name.";
+		}
+
 	}
 
 
