@@ -14,7 +14,7 @@ public interface ToolProvider {
 	 * @param article the article the tools are requested for
 	 * @param section the section the tools are requested for
 	 * @param userContext the user's context the tools are requested for
-	 * @return the tools that can be procided by this provider
+	 * @return the tools that can be provided by this provider
 	 */
 	Tool[] getTools(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext);
 }

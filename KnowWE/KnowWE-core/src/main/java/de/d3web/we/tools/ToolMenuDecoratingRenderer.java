@@ -44,6 +44,28 @@ public class ToolMenuDecoratingRenderer<T extends KnowWEObjectType> extends Know
 		// prepare tools
 		Tool[] tools = ToolUtils.getTools(article, sec, user);
 		boolean hasTools = tools != null && tools.length > 0;
+		
+		int customToolCount = 0;
+		boolean noCustomToolContent = false;
+		
+		if (hasTools) {
+			for (Tool t : tools) {
+				if (t instanceof CustomTool) {
+					customToolCount++;
+					
+					if (customToolCount == 1) {
+						noCustomToolContent = !((CustomTool) t).hasContent();
+					} else {
+						noCustomToolContent &= !(((CustomTool) t).hasContent());
+					}
+				}
+			}
+			
+			if (customToolCount == tools.length && noCustomToolContent) {
+				hasTools = false;
+			}
+		}
+		
 		String headerID = "header_" + sec.getID();
 
 		if (hasTools) {

@@ -31,6 +31,7 @@ import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMNotice;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.KDOMWarning;
+import de.d3web.we.tools.CustomTool;
 import de.d3web.we.tools.Tool;
 import de.d3web.we.tools.ToolUtils;
 import de.d3web.we.utils.KnowWEUtils;
@@ -76,19 +77,34 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 
 	public static String renderMenu(Tool[] tools, String id) {
 		String menuHtml = "<div id='menu_" + id + "' class='markupMenu'>";
+		
 		for (Tool tool : tools) {
-			String icon = tool.getIconPath();
-			boolean hasIcon = icon != null && !icon.trim().isEmpty();
-			menuHtml += "<div class=\"markupMenuItem\">" +
+			String toolContent;
+			
+			if (tool instanceof CustomTool) {
+				toolContent = ((CustomTool) tool).render();
+				
+				// If a CustomTool returns null, do not render an item
+				if (toolContent == null) {
+					continue;
+				}
+			} else {
+				String icon = tool.getIconPath();
+				boolean hasIcon = icon != null && !icon.trim().isEmpty();
+
+				toolContent =
 					"<a class=\"markupMenuItem\"" +
 					" href=\"javascript:" + tool.getJSAction() + ";undefined;\"" +
 					" title=\"" + tool.getDescription() + "\">" +
 					(hasIcon ? ("<img src=\"" + icon + "\"></img>") : "") +
 					" " + tool.getTitle() +
-					"</a>" +
-					"</div>";
+					"</a>";
+			}
+			
+			menuHtml += "<div class=\"markupMenuItem" + ((tool instanceof CustomTool) ? "customMenuItem" : "") + "\">" + toolContent + "</div>";
 		}
 		menuHtml += "</div>";
+		
 		return menuHtml;
 	}
 
