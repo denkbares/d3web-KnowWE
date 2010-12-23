@@ -41,6 +41,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.CondKnown;
 import de.d3web.we.kdom.condition.CondKnownUnknown;
+import de.d3web.we.kdom.condition.CondUnknown;
 import de.d3web.we.kdom.condition.Finding;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.kdom.condition.NumericalFinding;
@@ -106,6 +107,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		termConds.add(new UserRatingConditionType());
 		termConds.add(new CondKnownUnknown());
 		termConds.add(new Finding());
+		termConds.add(new CondUnknown());
 		termConds.add(new CondKnown());
 		termConds.add(new NumericalFinding());
 		termConds.add(new NumericalIntervallFinding());

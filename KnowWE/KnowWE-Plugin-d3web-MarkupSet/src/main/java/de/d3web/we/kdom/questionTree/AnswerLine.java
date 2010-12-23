@@ -24,12 +24,17 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.InfoStore;
+import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
+import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.objects.KnowWETermMarker;
+import de.d3web.we.kdom.questionTree.QuestionLine.QuestionText;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
@@ -37,10 +42,14 @@ import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
+import de.d3web.we.kdom.sectionFinder.MatchUntilEndFinder;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumFinder;
+import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.QuestionDefinition;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.utils.SplitUtility;
 import de.knowwe.core.dashtree.DashTreeElement;
 import de.knowwe.core.dashtree.DashTreeUtils;
 
@@ -75,17 +84,22 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 			}
 		};
 
+		// description text - startet by '~'
+		this.childrenTypes.add(new AnswerText());
+		
 		QuestionTreeAnswerDefinition aid = new QuestionTreeAnswerDefinition();
 		aid.setSectionFinder(new AllTextFinderTrimmed());
 		this.childrenTypes.add(aid);
+		
+
 	}
 
 	/**
 	 * Allows for the definition of abstract-flagged questions Syntax is:
-	 * "<abstract>" or "<abstrakt>"
+	 * "<init>"
 	 * 
 	 * The subtreehandler creates the corresponding
-	 * ABSTRACTION_QUESTION-property in the knoweldge base
+	 * BasicProperties.INIT in the knoweldge base
 	 * 
 	 * 
 	 * @author Jochen
@@ -139,6 +153,76 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 							this.getClass()));
 				}
 			});
+		}
+	}
+	
+	/**
+	 * A type to allow for the definition of (extended) question-text for a
+	 * question leaded by '~'
+	 * 
+	 * the subtreehandler creates the corresponding DCMarkup using
+	 * MMInfoSubject.PROMPT for the question object
+	 * 
+	 * @author Jochen
+	 * 
+	 */
+	static class AnswerText extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker, IncrementalConstraints {
+
+		private static final String QTEXT_START_SYMBOL = "~";
+
+		@Override
+		public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
+		}
+
+		@Override
+		protected void init() {
+			this.sectionFinder = new MatchUntilEndFinder(new StringSectionFinderUnquoted(
+					QTEXT_START_SYMBOL));
+
+			this.setCustomRenderer(StyleRenderer.PROMPT);
+			this.addSubtreeHandler(new D3webSubtreeHandler<AnswerText>() {
+
+				@Override
+				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AnswerText> sec) {
+
+					Section<AnswerDefinition> aDef = sec.getFather().findSuccessor(
+							AnswerDefinition.class);
+					
+					Section<? extends QuestionDefinition> qSec = aDef.get().getQuestionSection(aDef); 
+
+					if (aDef != null && qSec != null) {
+
+						Question question = qSec.get().getTermObject(article, qSec);
+						Choice choice = aDef.get().getTermObject(article, aDef);
+
+						if (question != null && choice != null) {
+							choice.getInfoStore().addValue(MMInfo.PROMPT,
+									AnswerText.getAnswerText(sec));
+							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+									"Answer text set"));
+						}
+					}
+					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+							D3webModule.getKwikiBundle_d3web()
+									.getString("KnowWE.questiontree.questiontext"),
+							this.getClass()));
+				}
+
+				@Override
+				public void destroy(KnowWEArticle article, Section<AnswerText> sec) {
+					// text is destroyed together with object
+				}
+			});
+		}
+
+		public static String getAnswerText(Section<AnswerText> s) {
+			String text = s.getOriginalText();
+			if (text.startsWith(QTEXT_START_SYMBOL)) {
+				text = text.substring(1).trim();
+			}
+
+			return SplitUtility.unquote(text);
 		}
 	}
 

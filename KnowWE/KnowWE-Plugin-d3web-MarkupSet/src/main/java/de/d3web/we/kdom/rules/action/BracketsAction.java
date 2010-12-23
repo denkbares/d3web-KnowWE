@@ -18,13 +18,17 @@
  */
 package de.d3web.we.kdom.rules.action;
 
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
 import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.utils.SplitUtility;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * 
@@ -38,6 +42,16 @@ public abstract class BracketsAction<T extends KnowWEObjectType> extends D3webRu
 	protected static final String CLOSE = "]";
 
 	public BracketsAction(final String[] alternativeKeys) {
+		this.setCustomRenderer(new KnowWEDomRenderer<KnowWEObjectType>() {
+
+			@Override
+			public void render(KnowWEArticle article, Section<KnowWEObjectType> sec, KnowWEUserContext user, StringBuilder string) {
+				StringBuilder b = new StringBuilder();
+				DelegateRenderer.getInstance().render(article, sec, user, b);
+				string.append(b.toString().replaceAll("\\[", "~["));
+				
+			}
+		});
 		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
 
 			@Override

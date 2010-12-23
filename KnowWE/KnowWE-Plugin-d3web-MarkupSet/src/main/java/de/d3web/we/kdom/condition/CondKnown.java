@@ -27,6 +27,8 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -48,11 +50,12 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  */
 public class CondKnown extends D3webCondition<CondKnown> {
 
-	protected static String[] KEYWORDS = {
+	protected String[] KEYWORDS = {
 			"KNOWN", "BEKANNT" };
 
 	@Override
 	protected void init() {
+
 		this.sectionFinder = new CondKnownFinder();
 		this.setCustomRenderer(new StyleRenderer(StyleRenderer.KEYWORDS.getCssStyle()) {
 
@@ -83,7 +86,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 			Question q = qRef.get().getTermObject(article, qRef);
 
 			if (q != null) {
-				return new de.d3web.core.inference.condition.CondKnown(q);
+				return createCond(q);
 			}
 			else {
 				KDOMError msg = new NoSuchObjectError(qRef.getOriginalText());
@@ -94,6 +97,10 @@ public class CondKnown extends D3webCondition<CondKnown> {
 		KDOMError msg = new NoSuchObjectError("");
 		KDOMReportMessage.storeSingleError(article, section, getClass(), msg);
 		return null;
+	}
+
+	protected Condition createCond(Question q) {
+		return new de.d3web.core.inference.condition.CondKnown(q);
 	}
 
 	private class CondKnownFinder implements ISectionFinder {

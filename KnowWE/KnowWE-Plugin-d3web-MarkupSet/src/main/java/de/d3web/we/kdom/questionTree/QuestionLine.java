@@ -40,6 +40,7 @@ import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.questionTree.QuestionLine.QuestionTypeDeclaration;
+import de.d3web.we.kdom.questionTree.extension.InlineIndicationCondition;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -90,6 +91,9 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			}
 		};
 
+		// allows to make inline-indications in question-definitions uncomment to activate:
+		//this.childrenTypes.add(new InlineIndicationCondition());
+		
 		// type of the question '[oc]'
 		this.childrenTypes.add(new QuestionTypeDeclaration());
 		// abstract flag: '<abstract>'
