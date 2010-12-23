@@ -33,6 +33,8 @@ import de.d3web.we.utils.SplitUtility;
  * somestuff (content-to-find) other  --> using '(' and ')'
  * "some <stuff>" <content-to-find> other --> using '<' and '>'
  *
+ *
+ *	WANRING! open and close may NOT be equal!
  * @author Jochen
  *
  */
