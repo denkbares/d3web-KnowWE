@@ -186,13 +186,13 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	@Override
 	public boolean userCanEditPage(String articlename) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean userCanEditPage(String articlename, HttpServletRequest r) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
@@ -277,12 +277,12 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	@Override
 	public boolean userCanViewPage(String articlename) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean userCanViewPage(String articlename, HttpServletRequest r) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 }
