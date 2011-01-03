@@ -92,8 +92,6 @@ public interface KnowWEObjectType extends KnowWEType {
 
 	public boolean getActivationStatus();
 
-	public void cleanStoredInfos(String articleName);
-
 	public MessageRenderer getErrorRenderer();
 
 	public MessageRenderer getNoticeRenderer();

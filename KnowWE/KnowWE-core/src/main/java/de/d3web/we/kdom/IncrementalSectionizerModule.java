@@ -109,9 +109,11 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 					// (Section<Include>) node);
 					// }
 
-					SectionStore lastStore = KnowWEEnvironment.getInstance().getArticleManager(
-							father.getWeb()).getTypeStore().getLastSectionStore(father.getTitle(),
+					SectionStore lastStore = KnowWEEnvironment.getInstance().getKnowWEStoreManager(
+							father.getWeb()).getLastSectionStore(father.getTitle(),
 							node.getID());
+					SectionStore lastArtIndStore = KnowWEEnvironment.getInstance().getKnowWEStoreManager(
+							father.getWeb()).getLastArticleIndependentSectionStore(node.getID());
 
 					// don't do the following if the node is
 					// included
@@ -145,10 +147,16 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 
 					if (lastStore != null) {
 						// reuse last section store
-						KnowWEEnvironment.getInstance().getArticleManager(
-								father.getWeb()).getTypeStore().putSectionStore(
+						KnowWEEnvironment.getInstance().getKnowWEStoreManager(
+								father.getWeb()).putSectionStore(
 										father.getTitle(), node.getID(),
 								lastStore);
+					}
+					if (lastArtIndStore != null) {
+						// reuse last article independent section store
+						KnowWEEnvironment.getInstance().getKnowWEStoreManager(
+								father.getWeb()).putArticleIndependentSectionStore(node.getID(),
+										lastArtIndStore);
 					}
 				}
 			}

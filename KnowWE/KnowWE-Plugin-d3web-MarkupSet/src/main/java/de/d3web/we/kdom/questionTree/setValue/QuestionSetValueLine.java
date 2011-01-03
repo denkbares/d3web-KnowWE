@@ -155,7 +155,7 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 						}
 
 						if (r != null) {
-							KnowWEUtils.storeSectionInfo(article, s, SETVALUE_ARGUMENT, r);
+							KnowWEUtils.storeObject(article, s, SETVALUE_ARGUMENT, r);
 							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
 									r.getClass() + " : "
 											+ r.getId()));

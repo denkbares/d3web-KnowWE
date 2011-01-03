@@ -41,11 +41,6 @@ public class CallFlowActionType extends D3webRuleAction<CallFlowActionType> {
 	public static final Pattern PATTERN = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
 
 	@Override
-	public void cleanStoredInfos(String articleName) {
-
-	}
-
-	@Override
 	protected void init() {
 		setSectionFinder(new RegexSectionFinder(PATTERN));
 

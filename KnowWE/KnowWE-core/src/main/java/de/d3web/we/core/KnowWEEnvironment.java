@@ -54,6 +54,7 @@ import de.d3web.we.kdom.SectionizerModule;
 import de.d3web.we.kdom.rendering.ConditionalRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.PageAppendHandler;
+import de.d3web.we.kdom.store.KnowWEStoreManager;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 import de.d3web.we.taghandler.TagHandler;
@@ -134,6 +135,11 @@ public class KnowWEEnvironment {
 	 */
 	private final Map<String, TerminologyHandler> terminologyHandlers = new HashMap<String, TerminologyHandler>();
 
+	/**
+	 * A store manager for each web. In case of JSPWiki there is only on web
+	 * ('default_web')
+	 */
+	private final Map<String, KnowWEStoreManager> knowWEStores = new HashMap<String, KnowWEStoreManager>();
 	// /**
 	// * The servlet context of the running application. Necessary to determine
 	// * the path of the running app on the server
@@ -332,6 +338,21 @@ public class KnowWEEnvironment {
 		if (mgr == null) {
 			mgr = new TerminologyHandler(web);
 			terminologyHandlers.put(web, mgr);
+		}
+		return mgr;
+	}
+
+	/**
+	 * returns the KnowWEStoreManager for a given web
+	 * 
+	 * @param web
+	 * @return
+	 */
+	public KnowWEStoreManager getKnowWEStoreManager(String web) {
+		KnowWEStoreManager mgr = this.knowWEStores.get(web);
+		if (mgr == null) {
+			mgr = new KnowWEStoreManager();
+			knowWEStores.put(web, mgr);
 		}
 		return mgr;
 	}

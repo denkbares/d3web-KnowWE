@@ -23,7 +23,7 @@ package de.d3web.we.kdom.store;
 import java.util.HashMap;
 import java.util.Map;
 
-public class InfoStorePerArticle {
+public class ArticleStore {
 
 	private final Map<String, SectionStore> map = new HashMap<String, SectionStore>(4);
 

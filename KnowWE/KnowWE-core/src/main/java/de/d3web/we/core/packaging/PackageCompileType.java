@@ -66,19 +66,19 @@ public abstract class PackageCompileType extends StringDefinition implements Pac
 				packageMng.registerPackageReference(article, s);
 			}
 
-			List<Section<?>> packageDefinitions = new LinkedList<Section<?>>();
+			List<Section<?>> sectionsOfPackage = new LinkedList<Section<?>>();
 			for (String referedPackages : s.get().getPackagesToCompile(s)) {
 				if (referedPackages.equals(article.getTitle())) continue;
-				List<Section<?>> tempPackageDefs = packageMng.getPackageDefinitions(referedPackages);
-				for (Section<?> packageDef : tempPackageDefs) {
-					if (!packageDef.getTitle().equals(article.getTitle())) {
-						packageDefinitions.add(packageDef);
+				List<Section<?>> tempSectionsOfPackage = packageMng.getSectionsOfPackage(referedPackages);
+				for (Section<?> sectionOfPackage : tempSectionsOfPackage) {
+					if (!sectionOfPackage.getTitle().equals(article.getTitle())) {
+						sectionsOfPackage.add(sectionOfPackage);
 					}
 				}
 			}
 
-			for (Section<?> packDef : packageDefinitions) {
-				article.getReviseIterator().addRootSectionToRevise(packDef);
+			for (Section<?> sectionOfPackage : sectionsOfPackage) {
+				article.getReviseIterator().addRootSectionToRevise(sectionOfPackage);
 			}
 
 			s.get().storeTermObject(article, s, s.get().getTermName(s));

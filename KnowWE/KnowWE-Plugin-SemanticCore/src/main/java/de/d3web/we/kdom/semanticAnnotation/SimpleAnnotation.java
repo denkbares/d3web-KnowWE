@@ -93,7 +93,7 @@ public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType {
 			if (anno != null) {
 				io.addLiteral(anno);
 			}
-			KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
+			KnowWEUtils.storeObject(article, s, OwlHelper.IOO, io);
 			return null;
 		}
 

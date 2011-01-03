@@ -295,18 +295,18 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	}
 
-	public boolean equalsOrIsChildrenOf(Section<? extends KnowWEObjectType> sec) {
+	public boolean equalsOrIsSuccessorOf(Section<?> sec) {
 		if (sec == this) {
 			return true;
 		}
-		else {
-			if (father == null) {
-				return false;
-			}
-			else {
-				return father.equalsOrIsChildrenOf(sec);
-			}
+		if (article != sec.article || father == null) {
+			return false;
 		}
+		return father.equalsOrIsSuccessorOf(sec);
+	}
+
+	public boolean equalsOrIsAncestorOf(Section<?> sec) {
+		return sec.equalsOrIsSuccessorOf(this);
 	}
 
 	/**
@@ -610,11 +610,17 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return this.article.getTitle();
 	}
 
-	public void addPackageName(String packageName) {
-		if (packageNames == null) {
-			packageNames = new HashSet<String>(4);
+	public boolean addPackageName(String packageName) {
+		if (getPackageNames().contains(packageName)) {
+			return false;
 		}
-		packageNames.add(packageName);
+		else {
+			if (packageNames == null) {
+				packageNames = new HashSet<String>(4);
+			}
+			packageNames.add(packageName);
+			return true;
+		}
 	}
 
 	public boolean removePackageName(String packageName) {

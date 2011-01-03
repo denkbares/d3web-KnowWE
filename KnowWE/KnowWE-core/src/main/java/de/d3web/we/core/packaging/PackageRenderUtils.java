@@ -14,7 +14,7 @@ public class PackageRenderUtils {
 		KnowWEArticle compilingArticle = article;
 		if (article.getTitle().equals(s.getTitle())) {
 			Set<String> compilingArticles = KnowWEEnvironment.getInstance().getPackageManager(
-					article.getWeb()).getArticlesReferingTo(s);
+					article.getWeb()).getArticlesReferringTo(s);
 
 			if (compilingArticles.size() > 1) {
 				// string.append("Articles compiling this Section: " +
@@ -43,7 +43,7 @@ public class PackageRenderUtils {
 		KnowWEArticle compilingArticle = article;
 		if (article.getTitle().equals(s.getTitle())) {
 			Set<String> compilingArticles = KnowWEEnvironment.getInstance().getPackageManager(
-					article.getWeb()).getArticlesReferingTo(s);
+					article.getWeb()).getArticlesReferringTo(s);
 			if (compilingArticles.size() == 1) {
 				String title = compilingArticles.iterator().next();
 				if (!title.equals(compilingArticle.getTitle())) {

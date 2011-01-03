@@ -46,7 +46,7 @@ public class XMLSectionFinder extends SectionFinder {
 
 	public static final String ATTRIBUTE_MAP_STORE_KEY = "attributeMap";
 
-	private String tagNamePattern;
+	private final String tagNamePattern;
 
 	/**
 	 * RegEx-Description 1:
@@ -58,7 +58,7 @@ public class XMLSectionFinder extends SectionFinder {
 	 * terminates the attributes part and start the content part - The first
 	 * sequence of '</Test> terminates the content part and the match
 	 */
-	private Pattern tagPattern;
+	private final Pattern tagPattern;
 
 	/**
 	 * RegEx-Description 2:
@@ -70,7 +70,7 @@ public class XMLSectionFinder extends SectionFinder {
 	 * quotes and equals signs are allowed - Around the '=' and before and after
 	 * the attributeName and value, spaces are allowed
 	 */
-	private Pattern attributePattern;
+	private final Pattern attributePattern;
 
 	/**
 	 * Finds any XML-Section. The name of the XML-Section must not contain ' ',
@@ -185,7 +185,7 @@ public class XMLSectionFinder extends SectionFinder {
 
 			KnowWEArticle art = father.getArticle();
 			if (art != null) {
-				KnowWEUtils.storeSectionInfo(art.getWeb(), art.getTitle(), sectionID.toString(),
+				KnowWEUtils.storeObject(art.getWeb(), art.getTitle(), sectionID.toString(),
 						ATTRIBUTE_MAP_STORE_KEY, parameterMap);
 			}
 		}

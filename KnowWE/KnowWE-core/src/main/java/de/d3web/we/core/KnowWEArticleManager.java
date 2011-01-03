@@ -39,7 +39,6 @@ import de.d3web.we.event.EventManager;
 import de.d3web.we.event.UpdatingDependenciesEvent;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.store.KnowWESectionInfoStorage;
 import de.d3web.we.utils.KnowWEUtils;
 import dummies.KnowWETestWikiConnector;
 
@@ -71,12 +70,6 @@ public class KnowWEArticleManager {
 	private final Set<String> updatingArticles = new HashSet<String>();
 
 	private boolean initializedArticles = false;
-
-	protected KnowWESectionInfoStorage typeStore = new KnowWESectionInfoStorage();
-
-	public KnowWESectionInfoStorage getTypeStore() {
-		return typeStore;
-	}
 
 	private final String web;
 

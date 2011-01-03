@@ -113,7 +113,7 @@ public class SemanticAnnotationProperty extends DefaultAbstractKnowWEObjectType 
 				property = uo.getHelper().createlocalURI(prop);
 			}
 			io.addLiteral(property);
-			KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
+			KnowWEUtils.storeObject(article, s, OwlHelper.IOO, io);
 			return null;
 		}
 

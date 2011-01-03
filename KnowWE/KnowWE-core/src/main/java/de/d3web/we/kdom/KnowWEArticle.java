@@ -31,7 +31,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.event.ArticleCreatedEvent;
 import de.d3web.we.event.EventManager;
@@ -42,7 +41,6 @@ import de.d3web.we.kdom.ReviseIterator.SectionPriorityTuple;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
-import de.d3web.we.kdom.store.KnowWESectionInfoStorage;
 import de.d3web.we.kdom.store.SectionStore;
 import de.d3web.we.kdom.validation.KDOMValidator;
 
@@ -141,8 +139,9 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 						.contains("true");
 		this.fullParse = defFullParse;
 
-		// clear KnowWETypeStorage before re-parsing data
-		clearTypeStore(rootType, title);
+		// clear store before rebuilding
+		ContextManager.getInstance().detachContexts(title);
+		KnowWEEnvironment.getInstance().getKnowWEStoreManager(web).clearStoreForArticle(title);
 
 		startTime = build(text, title, rootType, web, startTime);
 
@@ -277,12 +276,11 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 				if (!s.getTitle().equals(title) && s.isReusedBy(title)) {
 					// get last section store, if this is a section from a
 					// different article but is reused by this article
-					SectionStore lastStore = KnowWEEnvironment.getInstance().getArticleManager(
-							web).getTypeStore().getLastSectionStore(title, s.getID());
+					SectionStore lastStore = KnowWEEnvironment.getInstance().getKnowWEStoreManager(
+							web).getLastSectionStore(title, s.getID());
 					if (lastStore != null) {
-						KnowWEEnvironment.getInstance().getArticleManager(
-								web).getTypeStore().putSectionStore(
-										title, s.getID(), lastStore);
+						KnowWEEnvironment.getInstance().getKnowWEStoreManager(
+								web).putSectionStore(title, s.getID(), lastStore);
 					}
 				}
 				s.letSubtreeHandlersDestroy(this, tuple.getPriority());
@@ -300,30 +298,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		}
 	}
 
-	private void clearTypeStore(KnowWEObjectType type, String title) {
-
-		ContextManager.getInstance().detachContexts(title);
-
-		KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
-		KnowWEArticleManager articleManager = null;
-		if (instance != null) {
-			articleManager = instance.getArticleManager(web);
-		}
-
-		if (articleManager != null) {
-			KnowWESectionInfoStorage typeStore = articleManager.getTypeStore();
-			typeStore.clearStoreForArticle(title);
-		}
-		else {
-			// System.out.println("ArticleManager for web is null: "+web);
-		}
-
-		if (type instanceof AbstractKnowWEObjectType) {
-			((AbstractKnowWEObjectType) type).clearTypeStoreRecursivly(title,
-					new HashSet<KnowWEType>());
-		}
-
-	}
 
 	/**
 	 * Returns Section with given id if exists in KDOM of this article, else

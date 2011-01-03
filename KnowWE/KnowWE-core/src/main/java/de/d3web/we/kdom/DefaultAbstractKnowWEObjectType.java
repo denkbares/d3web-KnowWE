@@ -44,9 +44,5 @@ public class DefaultAbstractKnowWEObjectType extends AbstractKnowWEObjectType {
 		// empty default implementation, if no initialization is necessary
 	}
 
-	@Override
-	public void cleanStoredInfos(String articleName) {
-		// empty default implementation, if no cleaning is necessary
-	}
 
 }

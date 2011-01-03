@@ -73,11 +73,9 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 					value = annotationSection.getOriginalText();
 				}
 			}
-			if (value == null) value = KnowWEPackageManager.DEFAULT_PACKAGE;
-			markupSection.addPackageName(value);
-			msgs.addAll(KnowWEEnvironment.getInstance().getPackageManager(
-					article.getWeb()).registerPackageDefinition(
-					markupSection));
+			KnowWEEnvironment.getInstance().getPackageManager(
+					article.getWeb()).addSectionToPackage(
+					markupSection, value);
 		}
 
 		// check unrecognized annotations
@@ -111,7 +109,7 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 		// unregister section in the package manager
 		// TODO: refactor this to somewhere else
 		if (!markupSection.get().isIgnoringPackageCompile()) {
-			KnowWEEnvironment.getInstance().getPackageManager(article.getWeb()).unregisterPackageDefinition(
+			KnowWEEnvironment.getInstance().getPackageManager(article.getWeb()).removeSectionFromAllPackages(
 						markupSection);
 		}
 	}

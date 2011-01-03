@@ -45,6 +45,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.SectionID;
 import de.d3web.we.terminology.TerminologyHandler;
 
 public class KnowWEUtils {
@@ -125,7 +126,8 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Clears all Messages for the given article and section.
+	 * Clears all Messages for the given article and section. Article
+	 * independent Messages are not cleared!
 	 * 
 	 * @param web is the web you want to clear the message for
 	 * @param title is the title of the article you want to clear the message
@@ -139,21 +141,21 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Clears all Messages for the given article, section and msgType.
+	 * Clears all Messages for the given article, section and msgType. Article
+	 * independent Messages are not cleared!
 	 * 
 	 * @param article is the article you want to clear the message for
 	 * @param sec is the section you want to clear the message for
 	 * @param msgType is the Class of the message you want to clear
 	 */
-	@SuppressWarnings("unchecked")
 	public static void clearMessages(KnowWEArticle article, Section<?> sec, Class<?> msgType) {
-		Map<String, Collection> messages = (Map<String, Collection>) KnowWEUtils.getStoredObject(
-				article.getWeb(), article.getTitle(), sec.getID(), createMsgMapKey(msgType));
-		if (messages != null) messages.clear();
+		clearMessages(sec.getWeb(), article == null ? null : article.getTitle(), sec.getID(),
+				msgType);
 	}
 
 	/**
 	 * Clears all Messages for the given web, title, section ID and msgType.
+	 * Article independent Messages are not cleared!
 	 * 
 	 * @param web is the web you want to clear the message for
 	 * @param article is the title of the article you want to clear the message
@@ -163,13 +165,15 @@ public class KnowWEUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	public static void clearMessages(String web, String title, String secID, Class<?> msgType) {
-		Map<String, Collection> messages = (Map<String, Collection>) KnowWEUtils.getStoredObject(
-				web, title, secID, createMsgMapKey(msgType));
+		Map<String, Collection> messages = (Map<String, Collection>)
+				KnowWEEnvironment.getInstance().getKnowWEStoreManager(
+				web).getStoredObjectArticleDependent(title, secID, createMsgMapKey(msgType));
 		if (messages != null) messages.clear();
 	}
 
 	/**
 	 * Clears all Messages for the given article, section, source and msgType.
+	 * Article independent Messages are not cleared!
 	 * 
 	 * @param article is the article you want to clear the message for
 	 * @param sec is the section you want to clear the message for
@@ -180,7 +184,7 @@ public class KnowWEUtils {
 			Class<?> source, Class<MSGType> msgType) {
 
 		Map<String, Collection<MSGType>> msgsMap = getMessagesMapModifiable(article, sec,
-				msgType);
+				msgType, 1);
 		if (msgsMap != null) {
 			msgsMap.remove(source.getName());
 		}
@@ -232,8 +236,8 @@ public class KnowWEUtils {
 					msgType);
 			if (msgsMap == null) {
 				msgsMap = new HashMap<String, Collection<MSGType>>(4);
-				KnowWEUtils.storeObject(article.getWeb(), article.getTitle(), sec.getID(),
-						createMsgMapKey(msgType), msgsMap);
+				KnowWEUtils.storeObject(sec.getWeb(), article == null ? null : article.getTitle(),
+						sec.getID(), createMsgMapKey(msgType), msgsMap);
 			}
 			msgsMap.put(source.getName(), Collections.unmodifiableCollection(msgs));
 		}
@@ -326,69 +330,93 @@ public class KnowWEUtils {
 	/**
 	 * This method is private to avoid misuse (this map is modifiable).
 	 */
-	@SuppressWarnings("unchecked")
 	private static <MSGType> Map<String, Collection<MSGType>> getMessagesMapModifiable(KnowWEArticle article,
 			Section<?> sec, Class<MSGType> msgType) {
-		return (Map<String, Collection<MSGType>>) KnowWEUtils.getStoredObject(article.getWeb(),
-				article.getTitle(), sec.getID(), createMsgMapKey(msgType));
+		return getMessagesMapModifiable(article, sec, msgType, 0);
 	}
 
 	/**
-	 * This method is deprecated! If the Section is included in other articles,
-	 * the returned object might be created for an other article!
+	 * This method is private to avoid misuse (this map is modifiable).
+	 * <p/>
+	 * 
+	 * mode 1: only get article dependent messages. <br/>
+	 * mode 2: only get article independent messages. <br/>
+	 * mode else: get article dependent messages if there are not article
+	 * independent message. <br/>
 	 */
-	@Deprecated
-	public static void storeSectionInfo(Section<?> sec, String key, Object o) {
-		storeObject(sec.getWeb(), sec.getTitle(), sec.getID(), key, o);
+	@SuppressWarnings("unchecked")
+	private static <MSGType> Map<String, Collection<MSGType>> getMessagesMapModifiable(KnowWEArticle article,
+			Section<?> sec, Class<MSGType> msgType, int mode) {
+			return (Map<String, Collection<MSGType>>) KnowWEUtils.getStoredObject(sec.getWeb(),
+					article == null ? null : article.getTitle(), sec.getID(),
+					createMsgMapKey(msgType), mode);
 	}
 
-	/**
-	 * This method is deprecated! If the Section is included in other articles,
-	 * the object might be overwritten!
-	 */
-	@Deprecated
+
+
 	public static Object getStoredObject(Section<?> s, String key) {
-		return getStoredObject(s.getWeb(), s.getTitle(), s.getID(), key);
+		return getStoredObject(s.getWeb(), null, s.getID(), key);
 	}
 
 	public static void storeObject(KnowWEArticle article, Section<?> s, String key, Object o) {
-		storeObject(article.getWeb(), article.getTitle(), s.getID(), key, o);
-	}
-
-	/**
-	 * Unfitting name -> deprecated: Use storeObject(...) instead.
-	 */
-	@Deprecated
-	public static void storeSectionInfo(KnowWEArticle article, Section<?> s, String key, Object o) {
-		storeObject(article.getWeb(), article.getTitle(), s.getID(), key, o);
+		storeObject(s.getWeb(), article == null ? null : article.getTitle(), s.getID(), key, o);
 	}
 
 	public static Object getStoredObject(KnowWEArticle article, Section<?> s, String key) {
-		return getStoredObject(article.getWeb(), article.getTitle(), s.getID(), key);
+		return getStoredObject(s.getWeb(), article == null ? null : article.getTitle(),
+				s.getID(), key);
 	}
 
 	public static Object getObjectFromLastVersion(KnowWEArticle article, Section<?> s, String key) {
-		return KnowWEEnvironment.getInstance().getArticleManager(article.getWeb()).getTypeStore()
-				.getLastStoredObject(article.getTitle(),
-						s.isReusedBy(article.getTitle()) ? s.getLastID() : s.getID(), key);
+		String title = article == null
+				? SectionID.getArticleNameFromID(s.getID())
+				: article.getTitle();
+		String kdomID = s.isReusedBy(title) ? s.getLastID() : s.getID();
+		return KnowWEEnvironment.getInstance().getKnowWEStoreManager(s.getWeb())
+				.getLastStoredObject(title, kdomID, key);
 	}
 
 	public static void storeObject(String web, String article, String kdomid, String key, Object o) {
-		KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().storeObject(
+		KnowWEEnvironment.getInstance().getKnowWEStoreManager(web).storeObject(
 				article, kdomid, key, o);
 	}
 
-	/**
-	 * Unfitting name -> deprecated: Use storeObject(...) instead.
-	 */
-	@Deprecated
-	public static void storeSectionInfo(String web, String article, String kdomid, String key, Object o) {
-		storeObject(web, article, kdomid, key, o);
-	}
+	// /**
+	// * Unfitting name -> deprecated: Use storeObject(...) instead.
+	// */
+	// @Deprecated
+	// public static void storeSectionInfo(String web, String article, String
+	// kdomid, String key, Object o) {
+	// storeObject(web, article, kdomid, key, o);
+	// }
 
 	public static Object getStoredObject(String web, String article, String kdomid, String key) {
-		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getStoredObject(
+		return KnowWEEnvironment.getInstance().getKnowWEStoreManager(web).getStoredObject(
 				article, kdomid, key);
+	}
+
+	/**
+	 * This method is private to avoid misuse (this map is modifiable).
+	 * <p/>
+	 * 
+	 * mode 1: only get article dependent objects. <br/>
+	 * mode 2: only get article independent objects. <br/>
+	 * mode else: get article dependent objects if there are not article
+	 * independent objects. <br/>
+	 */
+	private static Object getStoredObject(String web, String article, String kdomid, String key, int mode) {
+		if (mode == 1) {
+			return KnowWEEnvironment.getInstance().getKnowWEStoreManager(web).getStoredObjectArticleDependent(
+					article, kdomid, key);
+		}
+		else if (mode == 2) {
+			return KnowWEEnvironment.getInstance().getKnowWEStoreManager(web).getStoredObjectArticleIndependent(
+					kdomid, key);
+		}
+		else {
+			return KnowWEEnvironment.getInstance().getKnowWEStoreManager(web).getStoredObject(
+					article, kdomid, key);
+		}
 	}
 
 	public static TerminologyHandler getTerminologyHandler(String web) {

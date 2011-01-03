@@ -55,6 +55,17 @@
 		<parameter id="scope" value="root" />
 	</extension>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="ArticleToPackageFlag">
+		<parameter id="class"
+			value="de.knowwe.core.packaging.ArticleToPackageFlag" />
+		<parameter id="name" value="ArticleToPackageFlag" />
+		<parameter id="description" value="KnowWEObjectType ArticleToPackageFlag" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5.0" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="VersionTagHandler">
 		<parameter id="class"

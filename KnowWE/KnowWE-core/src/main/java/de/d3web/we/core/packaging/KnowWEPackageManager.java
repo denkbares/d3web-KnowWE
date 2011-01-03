@@ -40,8 +40,8 @@ import de.d3web.we.event.PreCompileFinishedEvent;
 import de.d3web.we.event.UpdatingDependenciesEvent;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.message.GenericError;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class KnowWEPackageManager implements EventListener {
@@ -58,9 +58,12 @@ public class KnowWEPackageManager implements EventListener {
 	 * For each packageName, you get all Sections in the wiki belonging to this
 	 * packageName.
 	 */
-	private final Map<String, LinkedList<Section<?>>> packageDefinitionsMap =
+	private final Map<String, LinkedList<Section<?>>> packagesMap =
 			new HashMap<String, LinkedList<Section<?>>>();
 
+	private final Map<String, Map<String, Set<Section<?>>>> deactivatedSectionsMap =
+			new HashMap<String, Map<String, Set<Section<?>>>>();
+	
 	/**
 	 * For each article, you get all Sections of type PackageReference defined
 	 * in this article.
@@ -95,37 +98,131 @@ public class KnowWEPackageManager implements EventListener {
 						web).getTitles().contains(packageName);
 	}
 
-	public Collection<KDOMReportMessage> registerPackageDefinition(Section<?> s) {
-		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
-		for (String packageName : s.getPackageNames()) {
-			if (isDisallowedPackageName(packageName)) {
-				msgs.add(new DisallowedPackageNameError(packageName));
-				continue;
-			}
-			LinkedList<Section<?>> packageList = packageDefinitionsMap.get(packageName);
-			if (packageList == null) {
-				packageList = new LinkedList<Section<?>>();
-				packageDefinitionsMap.put(packageName, packageList);
-			}
-			packageList.add(s);
-			changedPackages.add(packageName);
+	private void addDeactivatedSection(String packageName, Section<?> s) {
+		Map<String, Set<Section<?>>> map = deactivatedSectionsMap.get(packageName);
+		if (map == null) {
+			map = new HashMap<String, Set<Section<?>>>();
+			deactivatedSectionsMap.put(packageName, map);
 		}
-		return msgs;
+		Set<Section<?>> set = map.get(s.getTitle());
+		if (set == null) {
+			set = new HashSet<Section<?>>();
+			map.put(s.getTitle(), set);
+		}
+		set.add(s);
 	}
 
-	public boolean unregisterPackageDefinition(Section<?> s) {
-		for (String packageName : s.getPackageNames()) {
-			if (isDisallowedPackageName(packageName)) {
-				continue;
+	private Set<Section<?>> getDeactivatedSections(String packageName) {
+		Set<Section<?>> all = new HashSet<Section<?>>();
+		Map<String, Set<Section<?>>> map = deactivatedSectionsMap.get(packageName);
+		if (map != null) {
+			for (Set<Section<?>> set : map.values()) {
+				all.addAll(set);
 			}
-			LinkedList<Section<?>> packageList = packageDefinitionsMap.get(packageName);
+		}
+		return all;
+	}
+
+	private Set<Section<?>> getDeactivatedSections(String packageName, String title) {
+		Map<String, Set<Section<?>>> map = deactivatedSectionsMap.get(packageName);
+		if (map != null) {
+			Set<Section<?>> set = map.get(title);
+			if (set != null) return set;
+		}
+		return new HashSet<Section<?>>(0);
+	}
+
+	/**
+	 * Adds the given Section to the package with the given name.
+	 * 
+	 * @created 28.12.2010
+	 * @param s is the Section to add
+	 * @param packageName is the name of the package the Section is added to
+	 * @returns KDOMReportMessages, if something went wrong while adding the
+	 *          Section
+	 */
+	public void addSectionToPackage(Section<?> s, String packageName) {
+
+		if (packageName == null || packageName.trim().isEmpty()) {
+			if (s.getPackageNames().isEmpty()) {
+				packageName = DEFAULT_PACKAGE;
+			}
+			else {
+				return;
+			}
+		}
+		if (isDisallowedPackageName(packageName)) {
+			KDOMReportMessage.storeSingleError(null, s, this.getClass(), new GenericError("'"
+					+ packageName
+					+ "' is not allowed as a package name."));
+			return;
+		}
+		if (s.getPackageNames().contains(packageName)) {
+			KDOMReportMessage.storeSingleError(null, s, this.getClass(), new GenericError(
+					"This Section is added to " +
+							"the package '" + packageName + "' multiple times."));
+			addDeactivatedSection(packageName, s);
+		}
+		else {
+			s.addPackageName(packageName);
+		}
+		List<Section<?>> sectionsOfPackage = getSectionsOfPackage(packageName);
+		for (Section<?> sectionOfPackage : sectionsOfPackage) {
+			if (sectionOfPackage.equalsOrIsSuccessorOf(s)){
+				KDOMReportMessage.storeSingleError(null, sectionOfPackage, this.getClass(),
+						new GenericError("This Section is added to " +
+								"the package '" + packageName + "' multiple times."));
+				addDeactivatedSection(packageName, sectionOfPackage);
+				sectionOfPackage.removePackageName(packageName);
+			}
+		}
+		LinkedList<Section<?>> packageList = packagesMap.get(packageName);
+		if (packageList == null) {
+			packageList = new LinkedList<Section<?>>();
+			packagesMap.put(packageName, packageList);
+		}
+		packageList.add(s);
+		changedPackages.add(packageName);
+	}
+
+	/**
+	 * Removes the given Section from the package with the given name.
+	 * 
+	 * @created 28.12.2010
+	 * @param s is the Section to remove
+	 * @param packageName is the name of the package from which the section is
+	 *        removed
+	 * @returns whether the Section was removed
+	 */
+	public boolean removeSectionFromPackage(Section<?> s, String packageName) {
+		if (!isDisallowedPackageName(packageName)) {
+			LinkedList<Section<?>> packageList = packagesMap.get(packageName);
 			if (packageList != null) {
 				boolean removed = packageList.remove(s);
 				if (removed) {
 					changedPackages.add(packageName);
+					s.removePackageName(packageName);
+					// reactivate deactivated sections
+					Set<Section<?>> deactivatedSections = getDeactivatedSections(packageName,
+							s.getTitle());
+					if (!deactivatedSections.remove(s)) {
+						// if the section was itself deactivated, it can not
+						// reactivate other sections
+						List<Section<?>> notLongerDeactivated = new ArrayList<Section<?>>(
+								deactivatedSections.size());
+						for (Section<?> dSec : deactivatedSections) {
+							if (!dSec.getPackageNames().contains(packageName)) {
+								notLongerDeactivated.add(dSec);
+								KDOMReportMessage.storeMessages(null, dSec, this.getClass(),
+										new ArrayList<KDOMReportMessage>());
+								dSec.addPackageName(packageName);
+							}
+						}
+						deactivatedSections.removeAll(notLongerDeactivated);
+					}
 				}
 				if (packageList.isEmpty()) {
-					packageDefinitionsMap.remove(packageName);
+					packagesMap.remove(packageName);
 				}
 				return removed;
 			}
@@ -133,9 +230,23 @@ public class KnowWEPackageManager implements EventListener {
 		return false;
 	}
 
+	/**
+	 * Removes the given Section from all packages it was added to.
+	 * 
+	 * @created 28.12.2010
+	 * @param s is the Section to remove
+	 * @param packageName is the name of the package from which the section is
+	 *        removed
+	 */
+	public void removeSectionFromAllPackages(Section<?> s) {
+		for (String packageName : s.getPackageNames()) {
+			removeSectionFromPackage(s, packageName);
+		}
+	}
+
 	public void cleanForArticle(KnowWEArticle article) {
 		for (LinkedList<Section<?>> list : new ArrayList<LinkedList<Section<?>>>(
-				packageDefinitionsMap.values())) {
+				packagesMap.values())) {
 			List<Section<?>> sectionsToRemove = new ArrayList<Section<?>>();
 			for (Section<?> sec : list) {
 				if (sec.getTitle().equals(article.getTitle())) {
@@ -143,7 +254,7 @@ public class KnowWEPackageManager implements EventListener {
 				}
 			}
 			for (Section<?> sec : sectionsToRemove) {
-				unregisterPackageDefinition(sec);
+				removeSectionFromAllPackages(sec);
 			}
 		}
 		for (HashSet<Section<? extends PackageReference>> set : new ArrayList<HashSet<Section<? extends PackageReference>>>(
@@ -162,18 +273,25 @@ public class KnowWEPackageManager implements EventListener {
 
 	}
 
-	public List<Section<?>> getPackageDefinitions(String packageName) {
-		LinkedList<Section<?>> packageDefs = packageDefinitionsMap.get(packageName);
-		if (packageDefs != null) {
-			Collections.sort(packageDefs);
-			return Collections.unmodifiableList(new ArrayList<Section<?>>(packageDefs));
+	public List<Section<?>> getSectionsOfPackage(String packageName) {
+		LinkedList<Section<?>> sectionsOfPackage = packagesMap.get(packageName);
+		if (sectionsOfPackage != null) {
+			Set<Section<?>> deactivatedSections = getDeactivatedSections(packageName);
+			ArrayList<Section<?>> cleanedSections = new ArrayList<Section<?>>(sectionsOfPackage.size());
+			for (Section<?> s : sectionsOfPackage) {
+				if (!deactivatedSections.contains(s)) {
+					cleanedSections.add(s);
+				}
+			}
+			Collections.sort(cleanedSections);
+			return Collections.unmodifiableList(new ArrayList<Section<?>>(cleanedSections));
 		} else
 			return Collections.unmodifiableList(new ArrayList<Section<?>>(0));
 	}
 
 	/**
-	 * Override the Autocompile-article switch of KnowWE_config. This should
-	 * only be used during unittests!
+	 * Override the autocompile-article-switch of KnowWE_config. This should
+	 * only be used during unit tests!
 	 * 
 	 * @param autocompileArticleEnabled whether autocompile of articles should
 	 *        be enabled or disabled
@@ -184,7 +302,7 @@ public class KnowWEPackageManager implements EventListener {
 	}
 
 	/**
-	 * Returns whether Autocompiling of articles is enabled or not.
+	 * Returns whether autocompiling of articles is enabled or not.
 	 * 
 	 * @created 12.10.2010
 	 * @return
@@ -242,18 +360,18 @@ public class KnowWEPackageManager implements EventListener {
 						// also remove package from referencedPackagesMap
 						referencedPackagesMap.get(article.getTitle()).remove(packageToReferTo);
 
-						List<Section<?>> packageDefinitions;
+						List<Section<?>> sectionsOfPackage;
 						if (packageToReferTo.equals(article.getTitle())
 								|| (packageToReferTo.equals(THIS))) {
-							packageDefinitions = new ArrayList<Section<?>>(1);
-							packageDefinitions.add(article.getSection());
+							sectionsOfPackage = new ArrayList<Section<?>>(1);
+							sectionsOfPackage.add(article.getSection());
 						}
 						else {
-							packageDefinitions = getPackageDefinitions(packageToReferTo);
+							sectionsOfPackage = getSectionsOfPackage(packageToReferTo);
 						}
-						for (Section<?> packageDef : packageDefinitions) {
-							packageDef.setReusedByRecursively(article.getTitle(), false);
-							KnowWEUtils.clearMessagesRecursively(article, packageDef);
+						for (Section<?> oackSection : sectionsOfPackage) {
+							oackSection.setReusedByRecursively(article.getTitle(), false);
+							KnowWEUtils.clearMessagesRecursively(article, oackSection);
 						}
 					}
 				}
@@ -270,13 +388,13 @@ public class KnowWEPackageManager implements EventListener {
 	}
 
 	/**
-	 * Returns all articles that refer to the given packageName.
+	 * Returns all articles that refer to the package with the given name.
 	 * 
 	 * @created 28.08.2010
-	 * @param packageName
-	 * @return
+	 * @param packageName is the name of the package
+	 * @return a Set of articles referring to the package with the given name.
 	 */
-	public Set<String> getArticlesReferingTo(String packageName) {
+	public Set<String> getArticlesReferringTo(String packageName) {
 		Set<String> matchingArticles = new HashSet<String>();
 		for (String article : referencedPackagesMap.keySet()) {
 			if (referencedPackagesMap.get(article).contains(packageName)) {
@@ -286,10 +404,17 @@ public class KnowWEPackageManager implements EventListener {
 		return Collections.unmodifiableSet(matchingArticles);
 	}
 
-	public Set<String> getArticlesReferingTo(Section<?> section) {
+	/**
+	 * Returns all articles, that refer to the given Section via packages.
+	 * 
+	 * @created 28.12.2010
+	 * @param section
+	 * @return
+	 */
+	public Set<String> getArticlesReferringTo(Section<?> section) {
 		Set<String> matchingArticles = new HashSet<String>();
 		for (String packageName : section.getPackageNames()) {
-			matchingArticles.addAll(getArticlesReferingTo(packageName));
+			matchingArticles.addAll(getArticlesReferringTo(packageName));
 		}
 		HashSet<String> referencedPackages = referencedPackagesMap.get(section.getTitle());
 		if (autocompileArticleEnabled
@@ -333,18 +458,18 @@ public class KnowWEPackageManager implements EventListener {
 
 	public void updateReusedStates(KnowWEArticle article) {
 		// TODO: not that fast... probably use own map sorted by article
-		// maybe only do this for changed PackageDefs... take care of
-		// multiuser-scenarios
-		for (LinkedList<Section<?>> packageDefList : packageDefinitionsMap.values()) {
-			for (Section<?> packageDef : packageDefList) {
-				if (packageDef.getTitle().equals(article.getTitle())) {
-					Set<String> articlesReferingTo = getArticlesReferingTo(packageDef);
+		// maybe only do this for changed sections of the package... take care
+		// of multiuser-scenarios
+		for (LinkedList<Section<?>> sectionsOfPackageList : packagesMap.values()) {
+			for (Section<?> sectionOfPackage : sectionsOfPackageList) {
+				if (sectionOfPackage.getTitle().equals(article.getTitle())) {
+					Set<String> articlesReferringTo = getArticlesReferringTo(sectionOfPackage);
 					LinkedList<Section<?>> nodes = new LinkedList<Section<?>>();
-					packageDef.getAllNodesPostOrder(nodes);
+					sectionOfPackage.getAllNodesPostOrder(nodes);
 					for (Section<?> node : nodes) {
 						if (node.get().isIgnoringPackageCompile()) continue;
 						for (String title : new LinkedList<String>(node.getReusedBySet())) {
-							if (!articlesReferingTo.contains(title)) {
+							if (!articlesReferringTo.contains(title)) {
 								node.setReusedBy(title, false);
 								KnowWEUtils.clearMessages(article.getWeb(), title, node.getID());
 							}
@@ -355,13 +480,13 @@ public class KnowWEPackageManager implements EventListener {
 		}
 	}
 
-	public void updateReferingArticles(KnowWEArticle article) {
+	public void updateReferringArticles(KnowWEArticle article) {
 
 		for (HashSet<Section<? extends PackageReference>> referencesSet : packageReferenceMap.values()) {
 			for (Section<? extends PackageReference> packReference : referencesSet) {
-				List<String> packagesToReference = packReference.get().getPackagesToReferTo(
+				List<String> packagesToReferTo = packReference.get().getPackagesToReferTo(
 						packReference);
-				for (String packagName : packagesToReference) {
+				for (String packagName : packagesToReferTo) {
 					if (changedPackages.contains(packagName) && !article.getTitle().equals(packagName)) {
 						KnowWEEnvironment.getInstance().getArticleManager(article.getWeb()).addArticleToRefresh(
 								packReference.getTitle());
@@ -388,28 +513,11 @@ public class KnowWEPackageManager implements EventListener {
 			cleanForArticle(((FullParseEvent) event).getArticle());
 		}
 		else if (event instanceof UpdatingDependenciesEvent) {
-			updateReferingArticles(((UpdatingDependenciesEvent) event).getArticle());
+			updateReferringArticles(((UpdatingDependenciesEvent) event).getArticle());
 		}
 		else if (event instanceof PreCompileFinishedEvent) {
 			updateReusedStates(((PreCompileFinishedEvent) event).getArticle());
 		}
 	}
-
-	class DisallowedPackageNameError extends KDOMError {
-
-		private final String packageName;
-
-		public DisallowedPackageNameError(String packageName) {
-			this.packageName = packageName;
-		}
-
-		@Override
-		public String getVerbalization() {
-			return "'" + packageName + "' is not allowed as a package name.";
-		}
-
-	}
-
-
 
 }

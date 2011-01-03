@@ -40,7 +40,7 @@ import de.d3web.we.utils.KnowWEUtils;
 public class ContextManager {
 
 	private static ContextManager me;
-	private Map<String, ArticleContextMap> contextmap;
+	private final Map<String, ArticleContextMap> contextmap;
 
 	private ContextManager() {
 		contextmap = new HashMap<String, ArticleContextMap>();
@@ -57,7 +57,7 @@ public class ContextManager {
 		else {
 			Set<Context> contextSet = new HashSet<Context>();
 			contextSet.add(c);
-			KnowWEUtils.storeSectionInfo(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(),
+			KnowWEUtils.storeObject(section.getWeb(), section.getTitle(),
 					section.getID(), c.getClass().getName(), contextSet);
 
 		}
@@ -72,7 +72,7 @@ public class ContextManager {
 	 */
 	public void attachContext(Section section, Context context) {
 
-		KnowWEUtils.storeSectionInfo(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(),
+		KnowWEUtils.storeObject(section.getWeb(), section.getTitle(),
 				section.getID(), context.getCID(), context);
 
 		// String title = section.getArticle().getTitle();
@@ -194,7 +194,7 @@ public class ContextManager {
 
 	class ArticleContextMap {
 
-		private HashMap<Section, Map<String, Context>> artContextMap;
+		private final HashMap<Section, Map<String, Context>> artContextMap;
 
 		public Map<Section, Map<String, Context>> getContextmap() {
 			return artContextMap;

@@ -101,10 +101,6 @@ public class SectionID {
 		this.id = lid;
 	}
 
-	private String getEndOfId(String id) {
-		return id.substring(id.lastIndexOf(SEPARATOR) + 1);
-	}
-
 	public String getID() {
 		return this.id;
 	}
@@ -115,6 +111,12 @@ public class SectionID {
 	 */
 	public String getSpecificID() {
 		return this.specificID;
+	}
+
+	public static String getArticleNameFromID(String kdomID) {
+		int pos = kdomID.indexOf(SEPARATOR);
+		if (pos == -1) return kdomID;
+		return kdomID.substring(0, pos);
 	}
 
 	@Override

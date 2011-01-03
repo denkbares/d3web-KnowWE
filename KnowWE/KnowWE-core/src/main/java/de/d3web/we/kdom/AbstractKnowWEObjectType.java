@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeMap;
 
 import de.d3web.we.kdom.rendering.DelegateRenderer;
@@ -184,75 +183,6 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	public void addSubtreeHandler(SubtreeHandler<? extends KnowWEObjectType> handler) {
 		getSubtreeHandlers(Priority.DEFAULT).add(handler);
 	}
-
-	/**
-	 * A mechanism to help clean up old information, when a new version of a
-	 * page is saved
-	 * 
-	 * @param articleName
-	 * @param clearedTypes
-	 */
-	public void clearTypeStoreRecursivly(String articleName,
-			Set<KnowWEType> clearedTypes) {
-		cleanStoredInfos(articleName);
-		clearedTypes.add(this);
-
-		for (KnowWEObjectType type : childrenTypes) {
-			if (type instanceof AbstractKnowWEObjectType
-					&& !clearedTypes.contains(type)) {
-				((AbstractKnowWEObjectType) type).clearTypeStoreRecursivly(
-						articleName, clearedTypes);
-			}
-		}
-	}
-
-	// /**
-	// * Returns all the messages stored for this section put doesn't create a
-	// new
-	// * empty MessageList in the SectionStore if no MessageList is there yet.
-	// * Returns <tt>null</tt> in this case.
-	// *
-	// * @param s
-	// * @return
-	// */
-	// public static List<Message> getMessagesPassively(KnowWEArticle article,
-	// Section s) {
-	// Object o = KnowWEUtils.getStoredObject(
-	// article.getWeb(), article.getTitle(), s.getId(),
-	// MESSAGES_STORE_KEY);
-	// if (o == null) {
-	// return null;
-	// }
-	// else {
-	// return toMessages(o, article, s);
-	// }
-	// }
-	//
-	// /**
-	// * Returns all the messages stored for this section.
-	// *
-	// * @param s
-	// * @return
-	// */
-	// public static List<Message> getMessages(KnowWEArticle article, Section s)
-	// {
-	// return toMessages(KnowWEUtils.getStoredObject(
-	// article.getWeb(), article.getTitle(), s.getId(),
-	// MESSAGES_STORE_KEY), article, s);
-	// }
-	//
-	// private static List<Message> toMessages(Object o, KnowWEArticle article,
-	// Section s) {
-	// if (o instanceof List) {
-	// return (List<Message>) o;
-	// }
-	// if (o == null) {
-	// List<Message> msg = new ArrayList<Message>();
-	// storeMessages(article, s, msg);
-	// return msg;
-	// }
-	// return null;
-	// }
 
 	public void replaceChildType(KnowWEObjectType type,
 			Class<? extends KnowWEObjectType> c)

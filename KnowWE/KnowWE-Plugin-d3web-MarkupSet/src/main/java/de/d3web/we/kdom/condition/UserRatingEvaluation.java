@@ -31,12 +31,6 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
  */
 public class UserRatingEvaluation extends AbstractKnowWEObjectType {
 
-
-	@Override
-	public void cleanStoredInfos(String articleName) {
-
-	}
-
 	@Override
 	protected void init() {
 		setSectionFinder(new RegexSectionFinder("(confirmed|rejected)", Pattern.CASE_INSENSITIVE));

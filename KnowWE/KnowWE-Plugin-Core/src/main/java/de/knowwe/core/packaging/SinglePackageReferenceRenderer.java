@@ -27,7 +27,7 @@ public class SinglePackageReferenceRenderer extends KnowWEDomRenderer {
 		KnowWEPackageManager packageManager = KnowWEEnvironment.getInstance().getPackageManager(
 				article.getWeb());
 
-		List<Section<?>> packageDefinitions = packageManager.getPackageDefinitions(packageName);
+		List<Section<?>> packageDefinitions = packageManager.getSectionsOfPackage(packageName);
 
 		Collection<KDOMError> kdomErrors = new LinkedList<KDOMError>();
 		Collection<KDOMWarning> kdomWarnings = new LinkedList<KDOMWarning>();

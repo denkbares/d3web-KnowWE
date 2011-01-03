@@ -41,11 +41,6 @@ public class FlowchartProcessedConditionType extends D3webCondition<FlowchartPro
 	public static final Pattern PATTERN = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
 
 	@Override
-	public void cleanStoredInfos(String articleName) {
-
-	}
-
-	@Override
 	protected void init() {
 		setSectionFinder(new RegexSectionFinder(PATTERN));
 		FlowchartReference reference = new FlowchartReference();

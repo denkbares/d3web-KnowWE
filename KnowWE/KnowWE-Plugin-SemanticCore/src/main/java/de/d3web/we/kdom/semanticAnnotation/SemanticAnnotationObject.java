@@ -91,7 +91,7 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 				if (cur.getObjectType().getClass().equals(
 						SemanticAnnotationProperty.class)) {
 					IntermediateOwlObject tempio = (IntermediateOwlObject) KnowWEUtils
-							.getStoredObject(cur, OwlHelper.IOO);
+							.getStoredObject(article, cur, OwlHelper.IOO);
 					prop = tempio.getLiterals().get(0);
 					erronousproperty = !tempio.getValidPropFlag();
 					if (erronousproperty) {
@@ -106,7 +106,7 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 				else if (cur.getObjectType().getClass().equals(
 						SimpleAnnotation.class)) {
 					IntermediateOwlObject tempio = (IntermediateOwlObject) KnowWEUtils
-							.getStoredObject(cur, OwlHelper.IOO);
+							.getStoredObject(article, cur, OwlHelper.IOO);
 					if (tempio.getValidPropFlag()) {
 						stringa = tempio.getLiterals().get(0);
 					}

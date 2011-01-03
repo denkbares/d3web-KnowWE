@@ -58,7 +58,8 @@ public class TagRenderer extends KnowWEDomRenderer {
 		if (type instanceof TagHandlerTypeContent) {
 			Map<String, String> attValues = null; // ((TagHandlerTypeContent)type).getValuesForSections().get(attrContent);
 			String id = sec.getID();
-			Object storedValues = KnowWEEnvironment.getInstance().getArticleManager(sec.getWeb()).getTypeStore().getStoredObject(
+			Object storedValues = KnowWEEnvironment.getInstance().getKnowWEStoreManager(
+					article.getWeb()).getStoredObject(
 					sec.getTitle(), id, TagHandlerAttributeSubTreeHandler.ATTRIBUTE_MAP);
 			if (storedValues != null) {
 				if (storedValues instanceof Map) {

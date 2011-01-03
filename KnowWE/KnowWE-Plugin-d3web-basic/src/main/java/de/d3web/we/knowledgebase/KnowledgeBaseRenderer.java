@@ -106,7 +106,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 
 		KnowWEPackageManager packageManager =
 				KnowWEEnvironment.getInstance().getPackageManager(article.getWeb());
-		List<Section<?>> packageDefinitions = packageManager.getPackageDefinitions(packageName);
+		List<Section<?>> sectionsOfPackage = packageManager.getSectionsOfPackage(packageName);
 
 		Collection<KDOMError> kdomErrors = new LinkedList<KDOMError>();
 		Collection<KDOMWarning> kdomWarnings = new LinkedList<KDOMWarning>();
@@ -114,18 +114,18 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 		Set<KnowWEArticle> errorArticles = new HashSet<KnowWEArticle>();
 		Set<KnowWEArticle> warningArticles = new HashSet<KnowWEArticle>();
 
-		for (Section<?> packageDef : packageDefinitions) {
+		for (Section<?> sectionOfPackage : sectionsOfPackage) {
 			Collection<KDOMError> errors = KnowWEUtils.getMessagesFromSubtree(
-					article, packageDef, KDOMError.class);
+					article, sectionOfPackage, KDOMError.class);
 			if (errors != null && errors.size() > 0) {
 				kdomErrors.addAll(errors);
-				errorArticles.add(packageDef.getArticle());
+				errorArticles.add(sectionOfPackage.getArticle());
 			}
 			Collection<KDOMWarning> warnings = KnowWEUtils.getMessagesFromSubtree(
-					article, packageDef, KDOMWarning.class);
+					article, sectionOfPackage, KDOMWarning.class);
 			if (warnings != null && warnings.size() > 0) {
 				kdomWarnings.addAll(warnings);
-				warningArticles.add(packageDef.getArticle());
+				warningArticles.add(sectionOfPackage.getArticle());
 			}
 		}
 
@@ -141,14 +141,16 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 		string.append("uses package: ").append(packageName);
 		if (hasErrors) {
 			string.append(" (").append(errorsCount).append(" errors in ");
-			string.append(errorArticles.size()).append(" articles)");
+			string.append(errorArticles.size()).append(
+					" article" + (errorArticles.size() > 1 ? "s" : "") + ")");
 			renderDefectArticleNames(errorArticles, string);
 			// renderDefectArticleNames(kdomErrors, icon, string);
 			// renderDefectArticleNames(messagesErrors, icon, string);
 		}
 		else if (hasWarnings) {
 			string.append(" (").append(warningsCount).append(" warnings in ");
-			string.append(warningArticles.size()).append(" articles)");
+			string.append(warningArticles.size()).append(
+					" article" + (warningArticles.size() > 1 ? "s" : "") + ")");
 			renderDefectArticleNames(warningArticles, string);
 			// renderDefectArticleNames(kdomWarnings, icon, string);
 			// renderDefectArticleNames(messagesWarnings, icon, string);

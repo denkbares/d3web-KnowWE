@@ -202,14 +202,9 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AbstractXMLObjectType> s) {
-
 			String value = getAttributeMapFor(s).get(KnowWEPackageManager.ATTRIBUTE_NAME);
-
-			if (value == null) value = KnowWEPackageManager.DEFAULT_PACKAGE;
-
-			s.addPackageName(value);
 			KnowWEEnvironment.getInstance().getPackageManager(
-					article.getWeb()).registerPackageDefinition(s);
+					article.getWeb()).addSectionToPackage(s, value);
 			return null;
 		}
 
@@ -221,7 +216,7 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public void destroy(KnowWEArticle article, Section<AbstractXMLObjectType> s) {
 			KnowWEEnvironment.getInstance().getPackageManager(
-					article.getWeb()).unregisterPackageDefinition(s);
+					article.getWeb()).removeSectionFromAllPackages(s);
 		}
 
 	}
