@@ -395,7 +395,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		html.append(title);
 		html.append("</strong></p>");
 		html.append(innerHTML.length() > 0 ? innerHTML : "N/A");
-		html.append("</div>");
+		html.append("</div>\n");
 		sectionCounter++;
 		return html.toString();
 	}
