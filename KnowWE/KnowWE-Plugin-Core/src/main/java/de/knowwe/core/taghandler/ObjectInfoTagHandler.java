@@ -1,23 +1,24 @@
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
  *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.knowwe.core.taghandler;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -30,11 +31,15 @@ import java.util.Set;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.objects.TermReference;
+import de.d3web.we.kdom.search.Result;
+import de.d3web.we.kdom.search.SearchEngine;
+import de.d3web.we.kdom.search.SearchOption;
 import de.d3web.we.taghandler.AbstractTagHandler;
 import de.d3web.we.terminology.TerminologyHandler;
 import de.d3web.we.tools.Tool;
@@ -57,10 +62,16 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  */
 public class ObjectInfoTagHandler extends AbstractTagHandler {
 
-	// Paremeter used in the request
+	// Parameter used in the request
 	public static final String OBJECTNAME = "objectname";
 	private static final String HIDEDEF = "hideDefinition";
 	private static final String HIDEREFS = "hideReferences";
+	private static final String HIDEPLAIN = "hidePlainTextOccurrences";
+	private static final String HIDERENAME = "hideRename";
+
+	// internal counter used to create unique IDs
+	private int panelCounter = 0;
+	private int sectionCounter = 0;
 
 	// KnowWE-ResourceBundle
 	private ResourceBundle rb;
@@ -70,7 +81,23 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	}
 
 	@Override
+	public String getExampleString() {
+		StringBuilder example = new StringBuilder();
+		example.append("[{KnowWEPlugin objectInfo [");
+		example.append(", objectname=<name of object> ");
+		example.append(", hideDefinition=<true|false> ");
+		example.append(", hideReferences=<true|false> ");
+		example.append(", hidePlainTextOccurrences=<true|false> ");
+		example.append(", hideRename=<true|false>] ");
+		example.append("}])\n ");
+		example.append("The parameters in [ ] are optional.");
+		return example.toString();
+	}
+
+	@Override
 	public final String render(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext, Map<String, String> parameters) {
+		panelCounter = 0;
+		sectionCounter = 0;
 		rb = KnowWEEnvironment.getInstance().getKwikiBundle();
 		String content = renderContent(article, section, userContext, parameters);
 		Section<TagHandlerTypeContent> tagNameSection = section.findSuccessor(TagHandlerTypeContent.class);
@@ -99,9 +126,9 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 		StringBuilder html = new StringBuilder();
 		html.append(renderHeader(objectName));
-		// TODO: After Moneypenny
-		// html.append(renderRenamingForm(objectName));
+		html.append(renderRenamingForm(objectName, article.getWeb(), parameters));
 		html.append(renderObjectInfo(objectName, article.getWeb(), parameters));
+		html.append(renderPlainTextOccurrences(objectName, article.getWeb(), parameters));
 
 		return KnowWEUtils.maskHTML(html.toString());
 	}
@@ -117,11 +144,6 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	private String renderLookUpForm(KnowWEArticle article) {
 		StringBuilder html = new StringBuilder();
 
-		html.append("<div>");
-		html.append("<p>");
-		html.append(rb.getString("KnowWE.ObjectInfoTagHandler.look_up"));
-		html.append("</p>");
-
 		html.append("<form action=\"\" method=\"get\">");
 		html.append("<input type=\"hidden\" name=\"page\" value=\""
 				+ KnowWEUtils.urlencode(article.getTitle())
@@ -129,38 +151,43 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		html.append("<input type=\"text\" name=\"" + OBJECTNAME + "\" /> ");
 		html.append("<input type=\"submit\" value=\"&rarr;\" />");
 		html.append("</form>");
-		html.append("</div>\n");
 
-		return html.toString();
+		return renderSection(rb.getString("KnowWE.ObjectInfoTagHandler.lookUp"),
+				html.toString());
 	}
 
-	// TODO: After Moneypenny:
-	// private String renderRenamingForm(String objectName) {
-	// StringBuilder html = new StringBuilder();
-	//
-	// html.append("<div>");
-	// html.append("<form action=\"\" method=\"post\">");
-	// html.append(rb.getString("KnowWE.ObjectInfoTagHandler.rename_to"));
-	// html.append("<input type=\"hidden\" id=\"objectinfo-target\" value=\"" +
-	// objectName
-	// + "\" />");
-	// html.append("<input type=\"text\" id=\"objectinfo-replacement\" /> ");
-	// html.append("<input type=\"submit\" id=\"objectinfo-replace\" value=\"&rarr;\" />");
-	// html.append("</form>");
-	// html.append("</div>\n");
-	// html.append("<div style=\"margin-left:-4px; height:1px; width:100%; background-color:#DDDDDD;\"></div>");
-	//
-	// return html.toString();
-	// }
+	private String renderRenamingForm(String objectName, String web, Map<String, String> parameters) {
+
+		// Check if rendering is suppressed
+		if (checkParameter(HIDERENAME, parameters)) return "";
+
+		StringBuilder html = new StringBuilder();
+
+		html.append("<form action=\"\" method=\"post\">");
+		html.append(rb.getString("KnowWE.ObjectInfoTagHandler.renameTo"));
+		html.append("<input type=\"hidden\" id=\"objectinfo-target\" value=\"" +
+				objectName
+				+ "\" />");
+		html.append("<input type=\"hidden\" id=\"objectinfo-web\" value=\"" +
+				web
+				+ "\" />");
+		html.append("<input type=\"text\" id=\"objectinfo-replacement\" />&nbsp;");
+		html.append("<input type=\"button\" id=\"objectinfo-replace-button\" value=\"&rarr;\" />");
+		html.append("&nbsp;<span id=\"objectinfo-rename-result\"></span>");
+		html.append("</form>");
+
+		return renderSection(rb.getString("KnowWE.ObjectInfoTagHandler.renameTo"),
+				html.toString());
+	}
 
 	private String renderObjectInfo(String objectName, String web, Map<String, String> parameters) {
 		StringBuilder html = new StringBuilder();
 
 		TerminologyHandler th = KnowWEUtils.getTerminologyHandler(web);
-		Section<? extends TermDefinition> definition;
-		Set<Section<? extends TermDefinition>> definitions = new HashSet<Section<? extends TermDefinition>>();
-		Set<Section<? extends TermReference>> references = new HashSet<Section<? extends TermReference>>();
-		Set<Section<? extends TermReference>> temp = new HashSet<Section<? extends TermReference>>();
+		Section<? extends TermDefinition<?>> definition;
+		Set<Section<? extends TermDefinition<?>>> definitions = new HashSet<Section<? extends TermDefinition<?>>>();
+		Set<Section<? extends TermReference<?>>> references = new HashSet<Section<? extends TermReference<?>>>();
+		Set<Section<? extends TermReference<?>>> temp = new HashSet<Section<? extends TermReference<?>>>();
 
 		Iterator<KnowWEArticle> iter = KnowWEEnvironment.getInstance().getArticleManager(web).getArticleIterator();
 		KnowWEArticle currentArticle;
@@ -181,29 +208,19 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			}
 		}
 
-		boolean hideDefinition = parameters.get(HIDEDEF) != null
-				? Boolean.parseBoolean(parameters.get(HIDEDEF))
-				: false;
-		boolean hideReferences = parameters.get(HIDEREFS) != null
-				? Boolean.parseBoolean(parameters.get(HIDEREFS))
-				: false;
-
-		if (!hideDefinition) html.append(renderTermDefinitions(definitions));
-		if (!hideReferences) html.append(renderTermReferences(references));
+		if (!checkParameter(HIDEDEF, parameters)) html.append(renderTermDefinitions(definitions));
+		if (!checkParameter(HIDEREFS, parameters)) html.append(renderTermReferences(references,
+				definitions));
 
 		return html.toString();
 	}
 
-	private String renderTermDefinitions(Set<Section<? extends TermDefinition>> definitions) {
+	private String renderTermDefinitions(Set<Section<? extends TermDefinition<?>>> definitions) {
 		StringBuilder html = new StringBuilder();
 
-		html.append("<div>");
 		if (definitions.size() > 0) {
-			html.append("<p><strong>");
-			html.append(rb.getString("KnowWE.ObjectInfoTagHandler.definition"));
-			html.append("</strong></p>");
 			html.append("<p>");
-			for (Section<? extends TermDefinition> definition : definitions) {
+			for (Section<? extends TermDefinition<?>> definition : definitions) {
 				html.append(definition.getObjectType().getName());
 				html.append(" in ");
 				html.append("<a href=\"Wiki.jsp?page=");
@@ -216,58 +233,45 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			}
 			html.append("</p>");
 		}
-		html.append("</div>\n");
-		html.append("<div style=\"margin-left:-4px; height:1px; width:102%; background-color:#DDDDDD;\"></div>");
 
-		return html.toString();
+		return renderSection(rb.getString("KnowWE.ObjectInfoTagHandler.definition"),
+				html.toString());
 	}
 
-	private String renderTermReferences(Set<Section<? extends TermReference>> references) {
+	private String renderTermReferences(Set<Section<? extends TermReference<?>>> references, Set<Section<? extends TermDefinition<?>>> definitions) {
 
 		StringBuilder html = new StringBuilder();
 
 		if (references.size() > 0) {
 
-			html.append("<div>");
-			html.append("<p><strong>");
-			html.append(rb.getString("KnowWE.ObjectInfoTagHandler.references"));
-			html.append("</strong></p>");
-
-			// Group References by article
-			Map<KnowWEArticle, List<Section<? extends TermReference>>> groupedReferences = groupByArticle(references);
-
-			// counter, necessary for unique ids
-			int c = 0;
-
-			// For each article
-			for (KnowWEArticle article : groupedReferences.keySet()) {
-				html.append("<p id=\"objectinfo-" + c++
-						+ "-show-extend\" class=\"show-extend pointer extend-panel-right\" >");
-				html.append("<strong>");
-				html.append(article.getTitle());
-				html.append("</strong>");
+			// Render a warning if there is no definition for the references
+			if (definitions.size() == 0) {
+				html.append("<p style=\"color:red;\">");
+				html.append(rb.getString("KnowWE.ObjectInfoTagHandler.noDefinitionAvailable"));
 				html.append("</p>");
-				html.append("<div class=\"hidden\">");
-				html.append("<ul>");
-				// render references for current article
-				for (Section<? extends TermReference> reference : groupedReferences.get(article)) {
-					html.append("<li>");
-					html.append(reference.getObjectType().getName());
-					html.append(" in ");
-					html.append(renderLinkToSection(reference));
-					html.append("</li>");
-				}
-				html.append("</ul>");
-				html.append("</div>");
 			}
-			html.append("</div>\n");
 
+			Map<KnowWEArticle, List<Section<? extends TermReference<?>>>> groupedReferences = groupByArticle(references);
+			for (KnowWEArticle article : groupedReferences.keySet()) {
+				StringBuilder innerHTML = new StringBuilder();
+				innerHTML.append("<ul>");
+				for (Section<? extends TermReference<?>> reference : groupedReferences.get(article)) {
+					innerHTML.append("<li>");
+					innerHTML.append(reference.getObjectType().getName());
+					innerHTML.append(" in ");
+					innerHTML.append(renderLinkToSection(reference));
+					innerHTML.append("</li>");
+				}
+				innerHTML.append("</ul>");
+				html.append(wrapInExtendPanel(article.getTitle(), innerHTML.toString()));
+			}
 		}
 
-		return html.toString();
+		return renderSection(rb.getString("KnowWE.ObjectInfoTagHandler.references"),
+				html.toString());
 	}
 
-	private String renderLinkToSection(Section<? extends TermReference> reference) {
+	private String renderLinkToSection(Section<? extends TermReference<?>> reference) {
 		StringBuilder html = new StringBuilder();
 
 		if (reference != null) {
@@ -290,16 +294,16 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return html.toString();
 	}
 
-	private Map<KnowWEArticle, List<Section<? extends TermReference>>> groupByArticle(Set<Section<? extends TermReference>> references) {
+	private Map<KnowWEArticle, List<Section<? extends TermReference<?>>>> groupByArticle(Set<Section<? extends TermReference<?>>> references) {
 
-		Map<KnowWEArticle, List<Section<? extends TermReference>>> result = new HashMap<KnowWEArticle, List<Section<? extends TermReference>>>();
+		Map<KnowWEArticle, List<Section<? extends TermReference<?>>>> result = new HashMap<KnowWEArticle, List<Section<? extends TermReference<?>>>>();
 		KnowWEArticle article;
 
-		for (Section<? extends TermReference> reference : references) {
+		for (Section<? extends TermReference<?>> reference : references) {
 			article = reference.getArticle();
-			List<Section<? extends TermReference>> existingReferences = result.get(article);
+			List<Section<? extends TermReference<?>>> existingReferences = result.get(article);
 			if (existingReferences == null) {
-				existingReferences = new LinkedList<Section<? extends TermReference>>();
+				existingReferences = new LinkedList<Section<? extends TermReference<?>>>();
 			}
 			existingReferences.add(reference);
 			result.put(article, existingReferences);
@@ -308,4 +312,99 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return result;
 	}
 
+	private String renderPlainTextOccurrences(String objectName, String web, Map<String, String> parameters) {
+
+		// Check if rendering is suppressed
+		if (checkParameter(HIDEPLAIN, parameters)) return "";
+
+		StringBuilder html = new StringBuilder();
+
+		// Search for plain text occurrences
+		SearchEngine se = new SearchEngine(KnowWEEnvironment.getInstance().getArticleManager(web));
+		se.setOption(SearchOption.FUZZY);
+		se.setOption(SearchOption.CASE_INSENSITIVE);
+		se.setOption(SearchOption.DOTALL);
+		Map<KnowWEArticle, Collection<Result>> results = se.search(objectName,
+				PlainText.class);
+
+		// Flag which is set to true if there are appropriate Sections
+		boolean appropriateSections = false;
+
+		for (KnowWEArticle article : results.keySet()) {
+			StringBuilder innerHTML = new StringBuilder();
+			innerHTML.append("<ul style=\"list-style-type:none;\">");
+			for (Result r : results.get(article)) {
+				Section<?> s = r.getSection();
+				if (s.getFather() != null
+						&& s.getFather().getObjectType().equals(article.getRootType())) {
+					appropriateSections = true;
+					innerHTML.append("<li>");
+					innerHTML.append("<pre style=\"margin:1em -1em;\">");
+					String textBefore = r.getAdditionalContext(-35).replaceAll("(\\{|\\})", "");
+					if (!article.getSection().getOriginalText().startsWith(textBefore)) innerHTML.append("...");
+					innerHTML.append(textBefore);
+					innerHTML.append("<a href=\"Wiki.jsp?page=");
+					innerHTML.append(article.getTitle());
+					innerHTML.append("#");
+					innerHTML.append(s.getID());
+					innerHTML.append("\" >");
+					innerHTML.append(s.getOriginalText().substring(r.getStart(), r.getEnd()));
+					innerHTML.append("</a>");
+					String textAfter = r.getAdditionalContext(40).replaceAll("(\\{|\\})", "");
+					innerHTML.append(textAfter);
+					if (!article.getSection().getOriginalText().endsWith(textAfter)) innerHTML.append("...");
+					innerHTML.append("</pre>");
+					innerHTML.append("</li>");
+				}
+			}
+			innerHTML.append("</ul>");
+			// append the html only if there are appropriate sections!
+			if (appropriateSections) {
+				html.append(wrapInExtendPanel(article.getTitle(), innerHTML.toString()));
+				appropriateSections = false;
+			}
+		}
+
+		return renderSection(rb.getString("KnowWE.ObjectInfoTagHandler.plaintextoccurrences"),
+				html.toString());
+	}
+
+	private String wrapInExtendPanel(String title, String text) {
+		StringBuilder html = new StringBuilder();
+		html.append("<p id=\"objectinfo-" + panelCounter++
+				+ "-show-extend\" class=\"show-extend pointer extend-panel-right\" >");
+		html.append("<strong>");
+		html.append(title);
+		html.append("</strong>");
+		html.append("</p>");
+		html.append("<div class=\"hidden\">");
+		html.append(text);
+		html.append("</div>");
+		return html.toString();
+	}
+
+	private String renderHR() {
+		return "<div style=\"margin-left:-4px; height:1px; width:102%; background-color:#DDDDDD;\"></div>";
+	}
+
+	private String renderSection(String title, String innerHTML) {
+		StringBuilder html = new StringBuilder();
+		html.append(sectionCounter > 0 ? renderHR() : "");
+		html.append("<div>");
+		html.append("<p><strong>");
+		html.append(title);
+		html.append("</strong></p>");
+		html.append(innerHTML.length() > 0 ? innerHTML : "N/A");
+		html.append("</div>");
+		sectionCounter++;
+		return html.toString();
+	}
+
+	private boolean checkParameter(String parameter, Map<String, String> parameters) {
+		return parameters.get(parameter) != null
+				? Boolean.parseBoolean(parameters.get(parameter))
+				: false;
+	}
+
 }
+

@@ -30,11 +30,15 @@ if (typeof KNOWWE.core.plugin == "undefined" || !KNOWWE.core.plugin) {
  */
 KNOWWE.core.plugin.objectinfo = function() {
 	return {
+		init : function(){       
+            //init renaming form button
+			button = _KS('#objectinfo-replace-button');
+			if (button) _KE.add('click', button, KNOWWE.core.plugin.objectinfo.renameTerm);             
+        },
+		
 		/**
 		 * Function: createHomePage Used in the ObjectInfoToolProvider for
 		 * creating homepages for KnowWEObjects
-		 * 
-		 * Parameters: e - The occurred event.
 		 */
 		createHomePage : function() {
 			objectName = _KS('#objectinfo-src');
@@ -56,6 +60,46 @@ KNOWWE.core.plugin.objectinfo = function() {
 				new _KA(options).send();
 			}
 
+		},
+		
+		/**
+		 * Renames all occurrences of a specific term.
+		 */
+		renameTerm : function() {
+			objectname = _KS('#objectinfo-target');
+			replacement = _KS('#objectinfo-replacement');
+			web = _KS('#objectinfo-web');
+			if (objectname && replacement && web) {
+				var params = {
+					action : 'TermRenamingAction',
+					termname : objectname.value,
+					termreplacement : replacement.value,
+					KWikiWeb : web.value
+				}
+
+				var options = {
+					url : KNOWWE.core.util.getURL(params),
+					response : {
+						action : 'insert',
+	                    ids : ['objectinfo-rename-result']
+					}
+				}
+				new _KA(options).send();
+			}
 		}
 	}
 }();
+
+/* ############################################################### */
+/* ------------- Onload Events  ---------------------------------- */
+/* ############################################################### */
+(function init(){
+    
+    window.addEvent( 'domready', _KL.setup );
+
+    if( KNOWWE.helper.loadCheck( ['Wiki.jsp'] )){
+        window.addEvent( 'domready', function(){
+        	KNOWWE.core.plugin.objectinfo.init();
+        });
+    };
+}());

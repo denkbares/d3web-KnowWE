@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -48,7 +48,7 @@ import de.d3web.we.kdom.objects.TermReference;
 
 /**
  * @author Jochen, Albrecht
- * 
+ *
  *         This class manages the definition and usage of terms. A term
  *         represents some kind of object. For each term that is defined in the
  *         wiki (and registered here) it stores the location where it has been
@@ -57,7 +57,7 @@ import de.d3web.we.kdom.objects.TermReference;
  *         and the references can be asked for. Obviously, this only works if
  *         the terms are registered here.
  *         <p/>
- * 
+ *
  *         TODO:
  *         <p/>
  *         Add more class-checks!! Right now it is possible to override
@@ -65,9 +65,9 @@ import de.d3web.we.kdom.objects.TermReference;
  *         different TermObject-class. Maybe it should be possible to store all
  *         TermReferenceLogs with the same term name but different
  *         TermObject-classes?
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class TerminologyHandler implements EventListener {
 
@@ -163,7 +163,7 @@ public class TerminologyHandler implements EventListener {
 
 	/**
 	 * Allows to register a new term.
-	 * 
+	 *
 	 * @param d is the term defining section.
 	 * @param <TermObject>
 	 */
@@ -280,13 +280,13 @@ public class TerminologyHandler implements EventListener {
 
 	/**
 	 * For a TermName the TermDefinition is returned.
-	 * 
+	 *
 	 * @param <TermObject>
 	 * @param s
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public Section<? extends TermDefinition> getTermDefiningSection(
+	public Section<? extends TermDefinition<?>> getTermDefiningSection(
 			KnowWEArticle article, String termName, int termScope) {
 
 		TermReferenceLog refLog = getTermReferenceLog(article, termName, termScope);
@@ -300,7 +300,7 @@ public class TerminologyHandler implements EventListener {
 
 	/**
 	 * For a TermName the redundant TermDefinition are returned.
-	 * 
+	 *
 	 * @param <TermObject>
 	 * @param s
 	 * @return
@@ -320,7 +320,7 @@ public class TerminologyHandler implements EventListener {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<Section<? extends TermReference>> getTermReferenceSections(KnowWEArticle article,
+	public Set<Section<? extends TermReference<?>>> getTermReferenceSections(KnowWEArticle article,
 			String termName, int termScope) {
 		TermReferenceLog refLog = getTermReferenceLog(article, termName, termScope);
 
@@ -328,7 +328,7 @@ public class TerminologyHandler implements EventListener {
 			return Collections.unmodifiableSet(refLog.getReferences());
 		}
 
-		return Collections.unmodifiableSet(new HashSet<Section<? extends TermReference>>(0));
+		return Collections.unmodifiableSet(new HashSet<Section<? extends TermReference<?>>>(0));
 	}
 
 	/**
@@ -356,7 +356,7 @@ public class TerminologyHandler implements EventListener {
 
 	/**
 	 * For a TermReference the TermDefinition is returned.
-	 * 
+	 *
 	 * @param <TermObject>
 	 * @param s
 	 * @return
@@ -375,7 +375,7 @@ public class TerminologyHandler implements EventListener {
 
 	/**
 	 * For a TermName the redundant TermDefinition are returned.
-	 * 
+	 *
 	 * @param <TermObject>
 	 * @param s
 	 * @return
@@ -476,7 +476,7 @@ public class TerminologyHandler implements EventListener {
 
 	/**
 	 * Returns all global terms of the given class (e.g. Question, String,...).
-	 * 
+	 *
 	 * @created 03.11.2010
 	 */
 	public Collection<String> getAllGlobalTermsOfType(Class<?> termClass) {
@@ -485,7 +485,7 @@ public class TerminologyHandler implements EventListener {
 
 	/**
 	 * Returns all global terms.
-	 * 
+	 *
 	 * @created 03.11.2010
 	 */
 	public Collection<String> getAllGlobalTerms() {
@@ -495,7 +495,7 @@ public class TerminologyHandler implements EventListener {
 	/**
 	 * Returns all local terms of the given class (e.g. Question, String,...),
 	 * that are compiled in the article with the given title.
-	 * 
+	 *
 	 * @created 03.11.2010
 	 */
 	public Collection<String> getAllLocalTermsOfType(String title, Class<?> termClass) {
@@ -505,7 +505,7 @@ public class TerminologyHandler implements EventListener {
 	/**
 	 * Returns all local terms that are compiled in the article with the given
 	 * title.
-	 * 
+	 *
 	 * @created 03.11.2010
 	 */
 	public Collection<String> getAllLocalTerms(String title) {
@@ -528,12 +528,12 @@ public class TerminologyHandler implements EventListener {
 
 
 	/**
-	 * 
+	 *
 	 * This is an auxiliary data-structure to store the definitions and
 	 * references of terms
-	 * 
+	 *
 	 * @author Jochen
-	 * 
+	 *
 	 * @param <TermObject>
 	 */
 	class TermReferenceLog<TermObject> {
