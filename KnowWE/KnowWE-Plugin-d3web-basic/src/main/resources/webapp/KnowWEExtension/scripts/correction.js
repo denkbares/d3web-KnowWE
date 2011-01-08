@@ -63,7 +63,7 @@ KNOWWE.plugin.correction = function() {
 		 */
 		doCorrection : function(sectionID, correction) {
 			var params = {
-					action : 'ReplaceKDOMNodeAction',
+					action : 'KDOMReplaceTermNameAction',
 					TargetNamespace :  sectionID,
 					KWiki_Topic : KNOWWE.helper.gup('page')
 			};
@@ -78,7 +78,7 @@ KNOWWE.plugin.correction = function() {
 							window.location.reload();
 						},
 						onError : function(http) {
-							KNOWWE.helper.message.showMessage(http.responseText, "AJAX failed");
+							KNOWWE.helper.message.showMessage(http.responseText, "AJAX call failed");
 						}
 					}
 			};

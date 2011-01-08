@@ -114,19 +114,27 @@ public class CorrectionToolProvider implements ToolProvider {
 			TermReference<?> termReference = ((TermReference<?>) s.get());		
 			
 			Collection<String> localTermMatches = terminologyHandler.getAllLocalTermsOfType(
-					s.getArticle().getTitle(), 
+					s.getArticle().getTitle(),
 					termReference.getTermObjectClass()
 			);
-
+			
 			String originalText = s.getOriginalText();
 			List<String> suggestions = new LinkedList<String>();
 			Levenstein l = new Levenstein();
 			
 			for (String match : localTermMatches) {
-				String[] parts = match.split(" ");
+				String name;
+				String type;
 				
-				String name = parts.length == 1 ? parts[0] : parts[1];
-				String type = parts.length == 2 ? parts[0] : null;
+				if (termReference instanceof AnswerReference) {
+					String[] parts = match.split(" ");
+				
+					name = parts.length == 1 ? parts[0] : parts[1];
+					type = parts.length == 2 ? parts[0] : null;
+				} else {
+					name = match;
+					type = "";
+				}
 				
 				if (l.score(originalText, name) >= -THRESH) {
 					// Special case: AnswerReference: Also check that the defining Question matches

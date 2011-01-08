@@ -127,7 +127,17 @@
 		<parameter id="scope" value="QuestionnaireReference" />
 		<parameter id="scope" value="SolutionReference" />
 		<parameter id="scope" value="IDObjectReference" />
-	</extension>	
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="KDOMReplaceTermNameAction">
+		<parameter id="class"
+			value="de.knowwe.d3web.action.KDOMReplaceTermNameAction" />
+		<parameter id="name" value="KDOMReplaceTermNameAction" />
+		<parameter id="description" value="Action KDOMReplaceTermNameAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="RetractSingleFindingAction">

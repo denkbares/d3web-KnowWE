@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.core.action;
+package de.knowwe.d3web.action;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -30,21 +30,35 @@ import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.objects.TermReference;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
- * This Action replaces a single KDOM node's content.
+ * This Action replaces a term name contained in a single KDOM node.
  * Before performing the change, the users privileges are checked.
  * 
  * <p>Needed Parameters:</p>
  * <ul>
  *  <li><tt>{@link KnowWEAttributes.TARGET}:</tt> The KDOM node of which the content will be replaced</li>
- *  <li><tt>{@link KnowWEAtrributes.TEXT}:</tt> The new node content</li>
+ *  <li><tt>{@link KnowWEAtrributes.TEXT}:</tt> The new term reference inside the node</li>
  * </ul>
+ * 
+ * @author Alex Legler
+ * @created 05.01.2011
  */
-public class ReplaceKDOMNodeAction extends AbstractAction {
+public class KDOMReplaceTermNameAction extends AbstractAction {
 
-	private String perform(KnowWEParameterMap parameterMap) {
+	@SuppressWarnings({
+			"rawtypes", "unchecked" })
+	@Override
+	public void execute(ActionContext context) throws IOException {
+		if (context.getWriter() == null) {
+			return;
+		}
+		
+		KnowWEParameterMap parameterMap = context.getKnowWEParameterMap();
+		
 		String web = parameterMap.getWeb();
 		String nodeID = parameterMap.get(KnowWEAttributes.TARGET);
 		String name = parameterMap.getTopic();
@@ -53,33 +67,31 @@ public class ReplaceKDOMNodeAction extends AbstractAction {
 		
 		// Check for user access
 		if (!KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(name)) {
-			return "perm";
+			context.sendError(403, "You do not have the permission to edit this page.");
+			return;
 		}
 		
+		// Prepare new text, urldecode and strip whitespaces that JSPWiki might have added
 		newText = KnowWEUtils.urldecode(newText);
-		
-		// Remove any extra whitespace that might have gotten appended by JSPWiki
 		newText = newText.replaceAll("\\s*$", "");
 		
 		Map<String, String> nodesMap = new HashMap<String, String>();
-		nodesMap.put(nodeID, newText);
-		mgr.replaceKDOMNodesSaveAndBuild(parameterMap, name, nodesMap);
-
-		return "done";
-	}
-
-	@Override
-	public void execute(ActionContext context) throws IOException {
-		KnowWEParameterMap parameterMap = context.getKnowWEParameterMap();
-		String result = perform(parameterMap);
-		if (result != null && context.getWriter() != null) {
-			if (result.equals("perm")) {
-				context.sendError(403, "You do not have the permission to edit this page.");
-			} else {
-				context.setContentType("text/html; charset=UTF-8");
-				context.getWriter().write(result);
-			}
+		
+		Section<?> section = mgr.getArticle(name).getSection().findChild(nodeID);
+		
+		if (!(section.get() instanceof TermReference<?>)) {
+			context.sendError(500, "Invalid section type");
+			return;
 		}
+		
+		TermReference t = (TermReference) section.get();
+		String newNodeText = section.getOriginalText().replace(t.getTermName(section), newText);
+		
+		nodesMap.put(nodeID, newNodeText);
+		mgr.replaceKDOMNodesSaveAndBuild(parameterMap, name, nodesMap);
+				
+		context.setContentType("text/html; charset=UTF-8");
+		context.getWriter().write("done");
 	}
 
 }
