@@ -75,7 +75,7 @@ public class TerminologyHandler implements EventListener {
 
 	public final static String HANDLER_KEY = TerminologyHandler.class.getSimpleName();
 
-	private final Map<String, Boolean> modifiedTermDefinitions = new HashMap<String, Boolean>();
+	private final Set<String> modifiedTermDefinitions = new HashSet<String>();
 
 	@SuppressWarnings("unchecked")
 	private final Map<String, Map<TermIdentifier, TermReferenceLog>> termReferenceLogsMaps =
@@ -242,7 +242,7 @@ public class TerminologyHandler implements EventListener {
 		}
 		getTermReferenceLogsMap(article.getTitle(), d.get().getTermScope()).put(termIdentifier,
 				new TermReferenceLog<TermObject>(d.get().getTermObjectClass(), d, p));
-		modifiedTermDefinitions.put(article.getTitle(), true);
+		modifiedTermDefinitions.add(article.getTitle());
 	}
 
 	public <TermObject> void registerTermReference(KnowWEArticle article, Section<? extends TermReference<TermObject>> r) {
@@ -457,7 +457,7 @@ public class TerminologyHandler implements EventListener {
 			}
 
 		}
-		modifiedTermDefinitions.put(article.getTitle(), true);
+		modifiedTermDefinitions.add(article.getTitle());
 	}
 
 	public <TermObject> void unregisterTermReference(KnowWEArticle article, Section<? extends TermReference<TermObject>> r) {
@@ -468,10 +468,7 @@ public class TerminologyHandler implements EventListener {
 	}
 
 	public boolean areTermDefinitionsModifiedFor(KnowWEArticle article) {
-		if (!modifiedTermDefinitions.containsKey(article.getTitle())) {
-			return false;
-		}
-		return modifiedTermDefinitions.get(article.getTitle());
+		return modifiedTermDefinitions.contains(article.getTitle());
 	}
 
 	/**
@@ -526,15 +523,15 @@ public class TerminologyHandler implements EventListener {
 		return terms;
 	}
 
-
 	/**
-	 *
+	 * 
 	 * This is an auxiliary data-structure to store the definitions and
 	 * references of terms
-	 *
-	 * @author Jochen
-	 *
-	 * @param <TermObject>
+	 * 
+	 * @author Jochen, Albrecht
+	 * 
+	 * @param <TermObject> is the Class of the term object associated with the
+	 *        term.
 	 */
 	class TermReferenceLog<TermObject> {
 
@@ -581,6 +578,13 @@ public class TerminologyHandler implements EventListener {
 
 	}
 
+	/**
+	 * Wrapper class to identify and match the terms inside the
+	 * TerminologyHandler.
+	 * 
+	 * @author Albrecht Striffler
+	 * @created 08.01.2011
+	 */
 	private class TermIdentifier {
 
 		private final String termIdentifier;
@@ -647,8 +651,7 @@ public class TerminologyHandler implements EventListener {
 			removeTermReferenceLogsForArticle(((FullParseEvent) event).getArticle());
 		}
 		else if (event instanceof ArticleCreatedEvent) {
-			modifiedTermDefinitions.put(((ArticleCreatedEvent) event).getArticle().getTitle(),
-					false);
+			modifiedTermDefinitions.remove(((ArticleCreatedEvent) event).getArticle().getTitle());
 		}
 	}
 
