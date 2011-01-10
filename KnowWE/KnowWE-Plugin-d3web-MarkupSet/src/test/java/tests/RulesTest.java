@@ -27,6 +27,8 @@ import java.util.Iterator;
 import junit.framework.TestCase;
 import utils.KBTestUtilNewMarkup;
 import utils.MyTestArticleManager;
+import de.d3web.abstraction.ActionSetValue;
+import de.d3web.abstraction.formula.FormulaElement;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.PSMethod;
@@ -34,11 +36,11 @@ import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.RuleSet;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.indication.ActionIndication;
-import de.d3web.indication.ActionRefine;
 import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.scoring.ActionHeuristicPS;
 import de.d3web.scoring.inference.PSMethodHeuristic;
+import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.KnowWEArticle;
 
 /**
@@ -60,6 +62,8 @@ public class RulesTest extends TestCase {
 	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
+		// Enforce Autocompile
+		KnowWEPackageManager.overrideAutocompileArticle(true);
 	}
 
 	/**
@@ -151,15 +155,7 @@ public class RulesTest extends TestCase {
 
 	}
 
-	/**
-	 *
-	 *
-	 * @created 13.10.2010
-	 */
-	// public void testNextQASetRules() {
-	// }
-
-	void foobar1() {
+	public void testNextQASetRules() {
 		// load KnowledgeBases
 		KnowWEArticle art = MyTestArticleManager
 				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
@@ -208,15 +204,6 @@ public class RulesTest extends TestCase {
 							((ActionIndication) loadedRule.getAction()).getQASets());
 				}
 
-				// ActionRefine specific tests
-				if (createdRule.getAction() instanceof ActionRefine) {
-
-					// Compare QASets of ActionRefine
-					assertEquals("ActionRefine of " + createdRule.getId() + " has wrong QASets.",
-							((ActionRefine) createdRule.getAction()).getQASets(),
-							((ActionRefine) loadedRule.getAction()).getQASets());
-				}
-
 			}
 			else {
 
@@ -231,15 +218,7 @@ public class RulesTest extends TestCase {
 
 	}
 
-	/**
-	 * Rule should be 7 instead of 2
-	 *
-	 * @created 13.10.2010
-	 */
-	// public void testSetValueRules() {
-	// }
-
-	void foobar2() {
+	public void testSetValueRules() {
 		// load KnowledgeBases
 		KnowWEArticle art = MyTestArticleManager
 				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
@@ -280,62 +259,55 @@ public class RulesTest extends TestCase {
 						createdRule.getAction().getClass(), loadedRule.getAction().getClass());
 
 				// ActionSetValue specific tests
-				// TODO ActionQuestionSetter Class does not exist!
-				// Johannes 13.10.2010
-				// if (createdRule.getAction() instanceof ActionQuestionSetter)
-				// {
-				//
-				// ActionQuestionSetter createdAction = (ActionQuestionSetter)
-				// createdRule.getAction();
-				// ActionQuestionSetter loadedAction = (ActionQuestionSetter)
-				// loadedRule.getAction();
-				//
-				// // Compare questions
-				// assertEquals("ActionSetValue of " + createdRule.getId()
-				// + " has wrong Question.",
-				// createdAction.getQuestion(),
-				// createdAction.getQuestion());
-				//
-				// // Compare types of ActionSetValue values
-				// assertEquals("ActionSetValue of " + createdRule.getId()
-				// + " has wrong valuetype.",
-				// createdAction.getValue().getClass(),
-				// loadedAction.getValue().getClass());
-				//
-				// // FormulaExpression specific tests
-				// if (createdAction.getValue() instanceof FormulaExpression) {
-				// FormulaExpression createdFormula =
-				// (FormulaExpression) createdAction.getValue();
-				// FormulaExpression loadedFormula =
-				// (FormulaExpression) loadedAction.getValue();
+				if (createdRule.getAction() instanceof ActionSetValue) {
 
-				// TODO get Methods dont exist
-				// Johannes 13.10.2010
-				// // Compare Question of FormulaExpression
-				// assertEquals("FormulaExpression of " +
-				// createdRule.getId()
-				// + " has wrong QuestionNum",
-				// createdFormula.getQuestionNum(),
-				// loadedFormula.getQuestionNum());
-				//
-				// // Compare FormulaExpression formula (sorry for the
-				// // toString() comparison)
-				// assertEquals("FormulaExpression of " +
-				// createdRule.getId()
-				// + " has wrong FormulaElement",
-				// createdFormula.getFormulaElement().toString(),
-				// loadedFormula.getFormulaElement().toString());
-				// }
-				//
-				// }
-				// else {
-				//
-				// assertNotNull("Rule " + key + " does not exist!",
-				// createdRules.containsKey(key));
-				// assertNotNull("Rule " + key + " does not exist!",
-				// loadedRules.containsKey(key));
-				//
-				// }
+					ActionSetValue createdAction = (ActionSetValue)
+							createdRule.getAction();
+					ActionSetValue loadedAction = (ActionSetValue)
+							loadedRule.getAction();
+
+					// Compare questions
+					assertEquals("ActionSetValue of " + createdRule.getId()
+							+ " has wrong Question.",
+							createdAction.getQuestion(),
+							createdAction.getQuestion());
+
+					// Compare types of ActionSetValue values
+					assertEquals("ActionSetValue of " + createdRule.getId()
+							+ " has wrong valuetype.",
+							createdAction.getValue().getClass(),
+							loadedAction.getValue().getClass());
+
+					// FormulaExpression specific tests
+					if (createdAction.getValue() instanceof FormulaElement) {
+						FormulaElement createdFormula =
+								(FormulaElement) createdAction.getValue();
+						FormulaElement loadedFormula =
+								(FormulaElement) loadedAction.getValue();
+
+						// Compare FormulaType
+						assertEquals("FormulaElement of " +
+								createdRule.getId()
+								+ " has wrong Type",
+								createdFormula.getClass(), loadedFormula.getClass());
+
+						// Compare Question of FormulaExpression
+						assertEquals("FormulaElement of " +
+								createdRule.getId()
+								+ " has wrong Terminal Objects",
+								createdFormula.getTerminalObjects(),
+								loadedFormula.getTerminalObjects());
+					}
+
+				}
+				else {
+
+					assertNotNull("Rule " + key + " does not exist!",
+							createdRules.containsKey(key));
+					assertNotNull("Rule " + key + " does not exist!",
+							loadedRules.containsKey(key));
+
+				}
 
 			}
 		}

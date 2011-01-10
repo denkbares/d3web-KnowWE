@@ -6,7 +6,7 @@ is assembled. Otherwise the tests will fail!
 Please be careful when editing this article because the order
 of the elements does matter in the tests (especially the IDs).
 
-%%compile this
+
 
 %%Questionnaire
 Observations #1
@@ -54,8 +54,7 @@ Observations
 -- everything is fine
 // Rule R6
 --- Other problem (P7)
-// Rule R7
---- Other [text]
+- Other [text]
 
 Technical Examinations
 - "Idle speed system o.k.?" [yn]
@@ -72,7 +71,7 @@ THEN Mileage evaluation = increased
 
 // Rule R10
 IF Driving = unsteady idle speed
-THEN "Real mileage  /100km" = ( 2 )
+THEN "Real mileage  /100km" = ("Real mileage  /100km" + 2)
 
 // Rule R11
 IF Driving = insufficient power on full load
@@ -94,10 +93,13 @@ THEN Mechanical problem = N7
 IF Driving = unsteady idle speed
 THEN Technical Examinations
 
-// Rule R17
+// Rule R16
 IF KNOWN[Other]
 THEN Technical Examinations
 
+// Rule R17
+IF Other problem = ESTABLISHED
+THEN Other
 %
 
 %%coveringList
@@ -109,3 +111,5 @@ Damaged idle speed system  {
     Exhaust fumes = black,
 }
 %
+
+%%compile this
