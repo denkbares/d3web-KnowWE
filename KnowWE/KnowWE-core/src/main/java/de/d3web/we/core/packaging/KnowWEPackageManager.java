@@ -41,7 +41,7 @@ import de.d3web.we.event.UpdatingDependenciesEvent;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.report.message.GenericError;
+import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class KnowWEPackageManager implements EventListener {
@@ -152,13 +152,13 @@ public class KnowWEPackageManager implements EventListener {
 			}
 		}
 		if (isDisallowedPackageName(packageName)) {
-			KDOMReportMessage.storeSingleError(null, s, this.getClass(), new GenericError("'"
+			KDOMReportMessage.storeSingleError(null, s, this.getClass(), new SimpleMessageError("'"
 					+ packageName
 					+ "' is not allowed as a package name."));
 			return;
 		}
 		if (s.getPackageNames().contains(packageName)) {
-			KDOMReportMessage.storeSingleError(null, s, this.getClass(), new GenericError(
+			KDOMReportMessage.storeSingleError(null, s, this.getClass(), new SimpleMessageError(
 					"This Section is added to " +
 							"the package '" + packageName + "' multiple times."));
 			addDeactivatedSection(packageName, s);
@@ -170,7 +170,7 @@ public class KnowWEPackageManager implements EventListener {
 		for (Section<?> sectionOfPackage : sectionsOfPackage) {
 			if (sectionOfPackage.equalsOrIsSuccessorOf(s)){
 				KDOMReportMessage.storeSingleError(null, sectionOfPackage, this.getClass(),
-						new GenericError("This Section is added to " +
+						new SimpleMessageError("This Section is added to " +
 								"the package '" + packageName + "' multiple times."));
 				addDeactivatedSection(packageName, sectionOfPackage);
 				sectionOfPackage.removePackageName(packageName);

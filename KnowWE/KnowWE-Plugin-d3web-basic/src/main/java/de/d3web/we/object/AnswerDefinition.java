@@ -37,12 +37,10 @@ import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.NotUniqueKnowWETerm;
-import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
-import de.d3web.we.kdom.report.message.TermNameCaseWarning;
 import de.d3web.we.kdom.report.message.UnexpectedSequence;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
@@ -137,18 +135,8 @@ public abstract class AnswerDefinition
 
 			String name = s.get().getTermName(s);
 
-			if (KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(article, s)) {
-				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(article,
-						s);
-
-				Section<? extends TermDefinition<Choice>> termDef = KnowWEUtils.getTerminologyHandler(
-						article.getWeb()).getTermDefiningSection(article, s);
-
-				String termDefName = termDef.get().getTermName(termDef);
-
-				if (!name.equals(termDefName)) {
-					return Arrays.asList((KDOMReportMessage) new TermNameCaseWarning(termDefName));
-				}
+			if (!KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
+					article, s)) {
 				return new ArrayList<KDOMReportMessage>(0);
 			}
 
@@ -208,9 +196,6 @@ public abstract class AnswerDefinition
 					a = mgn.addChoiceAnswer((QuestionChoice) q, name, s.get().getPosition(s));
 
 				}
-
-				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
-						article, s);
 
 				s.get().storeTermObject(article, s, a);
 

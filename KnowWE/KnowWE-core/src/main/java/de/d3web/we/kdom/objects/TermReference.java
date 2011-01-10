@@ -29,7 +29,6 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NoSuchObjectError;
 import de.d3web.we.kdom.report.message.ObjectFound;
-import de.d3web.we.kdom.report.message.TermNameCaseWarning;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -122,16 +121,6 @@ public abstract class TermReference<TermObject>
 				return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(
 						s.get().getTermObjectDisplayName(),
 						termName));
-			}
-
-			Section<? extends TermDefinition<TermObject>> termDef = KnowWEUtils.getTerminologyHandler(
-					article.getWeb()).getTermDefiningSection(article, s);
-
-			if (termDef != null) {
-				String termDefName = termDef.get().getTermName(termDef);
-				if (!termName.equals(termDefName)) {
-					return Arrays.asList((KDOMReportMessage) new TermNameCaseWarning(termDefName));
-				}
 			}
 
 			// TODO: give meaningful information about the object

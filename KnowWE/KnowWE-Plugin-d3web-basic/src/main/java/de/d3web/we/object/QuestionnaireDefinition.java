@@ -30,13 +30,11 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
-import de.d3web.we.kdom.report.message.TermNameCaseWarning;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
@@ -66,22 +64,12 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
-				Section<QuestionnaireDefinition> qcSec) {
+				Section<QuestionnaireDefinition> s) {
 
-			String name = qcSec.get().getTermName(qcSec);
+			String name = s.get().getTermName(s);
 
-			if (KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(article, qcSec)) {
-				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(article,
-						qcSec);
-
-				Section<? extends TermDefinition<QContainer>> termDef = KnowWEUtils.getTerminologyHandler(
-						article.getWeb()).getTermDefiningSection(article, qcSec);
-
-				String termDefName = termDef.get().getTermName(termDef);
-
-				if (!name.equals(termDefName)) {
-					return Arrays.asList((KDOMReportMessage) new TermNameCaseWarning(termDefName));
-				}
+			if (!KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
+					article, s)) {
 				return new ArrayList<KDOMReportMessage>(0);
 			}
 
@@ -95,7 +83,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 			}
 			else {
 				Section<? extends DashTreeElement> dashTreeFather = DashTreeUtils
-						.getFatherDashTreeElement(qcSec);
+						.getFatherDashTreeElement(s);
 				QASet parent = mgn.getKnowledgeBase().getRootQASet();
 				if (dashTreeFather != null) {
 					// is child of a QClass declaration => also declaration
@@ -114,11 +102,9 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 				if (qc != null) {
 					if (!article.isFullParse()) {
 						parent.moveChildToPosition(qc,
-								qcSec.get().getPosition(qcSec));
+								s.get().getPosition(s));
 					}
-					qcSec.get().storeTermObject(article, qcSec, qc);
-					KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
-							article, qcSec);
+					s.get().storeTermObject(article, s, qc);
 					return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
 							qc.getClass().getSimpleName()
 									+ " " + qc.getName()));

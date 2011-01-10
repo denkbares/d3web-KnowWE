@@ -25,22 +25,20 @@ import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
-import de.d3web.we.kdom.report.message.TermNameCaseWarning;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.tools.ToolMenuDecoratingRenderer;
 import de.d3web.we.utils.D3webUtils;
@@ -126,26 +124,12 @@ public abstract class SolutionDefinition
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
-				Section<SolutionDefinition> solutionSection) {
+				Section<SolutionDefinition> s) {
 
-			String name = solutionSection.get().getTermName(solutionSection);
+			String name = s.get().getTermName(s);
 
-			if (KnowWEUtils.getTerminologyHandler(solutionSection.getArticle().getWeb()).isDefinedTerm(
-					solutionSection.getArticle(),
-					solutionSection)) {
-				KnowWEUtils.getTerminologyHandler(solutionSection.getArticle().getWeb()).registerTermDefinition(
-						solutionSection.getArticle(),
-						solutionSection);
-
-				Section<? extends TermDefinition<Solution>> termDef = KnowWEUtils.getTerminologyHandler(
-						solutionSection.getArticle().getWeb()).getTermDefiningSection(
-						solutionSection.getArticle(), solutionSection);
-
-				String termDefName = termDef.get().getTermName(termDef);
-
-				if (!name.equals(termDefName)) {
-					return Arrays.asList((KDOMReportMessage) new TermNameCaseWarning(termDefName));
-				}
+			if (!KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
+					article, s)) {
 				return new ArrayList<KDOMReportMessage>(0);
 			}
 
@@ -160,17 +144,13 @@ public abstract class SolutionDefinition
 			}
 			else {
 
-				Solution s = mgn.createSolution(name);
+				Solution solution = mgn.createSolution(name);
 
-				if (s != null) {
-					// ok everything went well
-					// register term
-					KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
-							article, solutionSection);
-					solutionSection.get().storeTermObject(article, solutionSection, s);
+				if (solution != null) {
+					s.get().storeTermObject(article, s, solution);
 					return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
-							s.getClass().getSimpleName()
-									+ " " + s.getName()));
+							solution.getClass().getSimpleName()
+									+ " " + solution.getName()));
 				}
 				else {
 					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(

@@ -1,6 +1,5 @@
-package de.d3web.we.kdom.report.message;
+package de.d3web.we.kdom.report;
 
-import de.d3web.we.kdom.report.KDOMWarning;
 
 /**
  * This class is for all the warnings that are only used in one place inside the
@@ -9,11 +8,11 @@ import de.d3web.we.kdom.report.KDOMWarning;
  * @author Albrecht Striffler
  * @created 28.12.2010
  */
-public class GenericWarning extends KDOMWarning {
+public class SimpleMessageWarning extends KDOMWarning {
 
 	private final String text;
 
-	public GenericWarning(String text) {
+	public SimpleMessageWarning(String text) {
 		this.text = text;
 	}
 

@@ -1,6 +1,5 @@
-package de.d3web.we.kdom.report.message;
+package de.d3web.we.kdom.report;
 
-import de.d3web.we.kdom.report.KDOMNotice;
 
 /**
  * This class is for all the notices that are only used in one place inside the
@@ -9,11 +8,11 @@ import de.d3web.we.kdom.report.KDOMNotice;
  * @author Albrecht Striffler
  * @created 28.12.2010
  */
-public class GenericNotice extends KDOMNotice {
+public class SimpleMessageNotice extends KDOMNotice {
 
 	private final String text;
 
-	public GenericNotice(String text) {
+	public SimpleMessageNotice(String text) {
 		this.text = text;
 	}
 

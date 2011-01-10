@@ -29,11 +29,9 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
-import de.d3web.we.kdom.report.message.TermNameCaseWarning;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
@@ -70,30 +68,20 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 		@Override
 		@SuppressWarnings("unchecked")
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
-				Section<QuestionDefinition> sec) {
+				Section<QuestionDefinition> s) {
 
-			Section<QuestionDefinition> qidSection = (sec);
+			Section<QuestionDefinition> qidSection = (s);
 			String name = qidSection.get().getTermName(qidSection);
 
-			if (KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(article, sec)) {
-				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(article,
-						sec);
-
-				Section<? extends TermDefinition<Question>> termDef = KnowWEUtils.getTerminologyHandler(
-						article.getWeb()).getTermDefiningSection(article, sec);
-
-				String termDefName = termDef.get().getTermName(termDef);
-
-				if (!name.equals(termDefName)) {
-					return Arrays.asList((KDOMReportMessage) new TermNameCaseWarning(termDefName));
-				}
+			if (!KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
+					article, s)) {
 				return new ArrayList<KDOMReportMessage>(0);
 			}
 
 			KnowledgeBaseManagement mgn = getKBM(article);
 
 			Section<? extends QASetDefinition> parentQASetSection =
-					sec.get().getParentQASetSection(sec);
+					s.get().getParentQASetSection(s);
 
 			QASet parent = null;
 			if (parentQASetSection != null) {
@@ -141,11 +129,8 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 				// set position right in case this is an incremental update
 				if (!article.isFullParse()) {
 					parent.moveChildToPosition(q,
-							sec.get().getPosition(sec));
+							s.get().getPosition(s));
 				}
-				// register term
-				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
-						article, sec);
 
 				// store object in section
 				qidSection.get().storeTermObject(article, qidSection, q);
