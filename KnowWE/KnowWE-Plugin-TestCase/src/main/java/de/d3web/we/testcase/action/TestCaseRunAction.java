@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 import de.d3web.empiricaltesting.RatedSolution;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.empiricaltesting.SequentialTestCase;
-import de.d3web.empiricaltesting.TestSuite;
+import de.d3web.empiricaltesting.TestCase;
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
 import de.d3web.we.basic.D3webModule;
@@ -42,7 +42,7 @@ import de.d3web.we.testcase.kdom.TestCaseRunnerType;
  *
  * This action is called by a JavaScript-Snippet used by the TestCaseResultType.
  *
- * @see TestSuite
+ * @see TestCase
  * @see TestCaseRunnerType
  * @author Sebastian Furth (denkbares GmbH)
  * @created 25/10/2010
@@ -61,7 +61,7 @@ public class TestCaseRunAction extends AbstractAction {
 		String testCaseName = context.getParameter("testcase");
 		String web = context.getParameter(KnowWEAttributes.WEB);
 
-		TestSuite t = TestCaseUtils.loadTestSuite(testCaseName, web);
+		TestCase t = TestCaseUtils.loadTestSuite(testCaseName, web);
 		if (t == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"Test case was null. Unable to execute it.");
@@ -73,7 +73,7 @@ public class TestCaseRunAction extends AbstractAction {
 
 	}
 
-	private String renderTestCaseResult(TestSuite t) {
+	private String renderTestCaseResult(TestCase t) {
 		if (t.totalPrecision() == 1.0 && t.totalRecall() == 1.0) {
 			return renderTestCasePassed(t);
 
@@ -86,7 +86,7 @@ public class TestCaseRunAction extends AbstractAction {
 		return renderTestCaseFailed(t);
 	}
 
-	private String renderTestCasePassed(TestSuite t) {
+	private String renderTestCasePassed(TestCase t) {
 		StringBuilder html = new StringBuilder();
 
 		// TestCase passed text and green bulb
@@ -111,7 +111,7 @@ public class TestCaseRunAction extends AbstractAction {
 		return html.toString();
 	}
 
-	private String renderTestCaseNotConsistent(TestSuite t) {
+	private String renderTestCaseNotConsistent(TestCase t) {
 		StringBuilder html = new StringBuilder();
 
 		// TestCase failed text and red bulb
@@ -139,7 +139,7 @@ public class TestCaseRunAction extends AbstractAction {
 		return html.toString();
 	}
 
-	private String renderNotConsistentDetails(TestSuite t) {
+	private String renderNotConsistentDetails(TestCase t) {
 		StringBuilder html = new StringBuilder();
 
 		// Pointer and Text
@@ -157,7 +157,7 @@ public class TestCaseRunAction extends AbstractAction {
 		return html.toString();
 	}
 
-	private String findInconsistentRTC(TestSuite t) {
+	private String findInconsistentRTC(TestCase t) {
 
 		StringBuilder message = new StringBuilder();
 
@@ -201,7 +201,7 @@ public class TestCaseRunAction extends AbstractAction {
 		return message.substring(0, message.length() / 2).toString();
 	}
 
-	private String renderTestCaseFailed(TestSuite t) {
+	private String renderTestCaseFailed(TestCase t) {
 		StringBuilder html = new StringBuilder();
 
 		// TestCase failed text and red bulb
@@ -227,7 +227,7 @@ public class TestCaseRunAction extends AbstractAction {
 		return html.toString();
 	}
 
-	private String renderDifferenceDetails(TestSuite t) {
+	private String renderDifferenceDetails(TestCase t) {
 
 		StringBuilder html = new StringBuilder();
 
@@ -249,7 +249,7 @@ public class TestCaseRunAction extends AbstractAction {
 		return html.toString();
 	}
 
-	private String renderDetailResultTable(TestSuite t) {
+	private String renderDetailResultTable(TestCase t) {
 
 		StringBuilder html = new StringBuilder();
 		StringBuilder temp = new StringBuilder();

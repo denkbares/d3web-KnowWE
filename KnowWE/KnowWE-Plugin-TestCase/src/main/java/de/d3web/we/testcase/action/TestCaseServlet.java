@@ -23,7 +23,7 @@ package de.d3web.we.testcase.action;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import de.d3web.empiricaltesting.TestSuite;
+import de.d3web.empiricaltesting.TestCase;
 import de.d3web.empiricaltesting.casevisualization.dot.DDBuilder;
 import de.d3web.empiricaltesting.writer.TestSuiteKnOfficeWriter;
 import de.d3web.empiricaltesting.writer.TestSuiteXMLWriter;
@@ -45,7 +45,7 @@ public class TestCaseServlet extends AbstractAction {
 		//TestSuite t = (TestSuite) KnowWEUtils.getStoredObject(web, topic, nodeID,
 		// TestSuiteType.TESTSUITEKEY);
 		
-		TestSuite t = TestCaseUtils.loadTestSuite(topic, web);
+		TestCase t = TestCaseUtils.loadTestSuite(topic, web);
 
 		if (t != null) {
 			if (type.equals("visualization")) {
@@ -61,7 +61,7 @@ public class TestCaseServlet extends AbstractAction {
 		}
 	}
 
-	private void generateVisualization(ActionContext context, TestSuite t, String filename) throws IOException {
+	private void generateVisualization(ActionContext context, TestCase t, String filename) throws IOException {
 
 		if (filename.endsWith(".dot")) {
 
@@ -98,7 +98,7 @@ public class TestCaseServlet extends AbstractAction {
 
 	}
 
-	private void generateCaseFile(ActionContext context, TestSuite t, String filename) throws IOException {
+	private void generateCaseFile(ActionContext context, TestCase t, String filename) throws IOException {
 
 		if (filename.endsWith(".txt")) {
 

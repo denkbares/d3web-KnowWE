@@ -21,7 +21,7 @@ package de.d3web.we.testcase.renderer;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
-import de.d3web.empiricaltesting.TestSuite;
+import de.d3web.empiricaltesting.TestCase;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -56,7 +56,7 @@ public class TestCaseRunnerRenderer extends DefaultMarkupRenderer<TestCaseRunner
 		string.append(mask("<strong>" + TestCaseRunnerType.getText(section) + "</strong><br />\n"));
 
 		String testCaseArticleName = TestCaseRunnerType.getTestCase(section);
-		TestSuite testSuite = getTestSuiteFor(testCaseArticleName, article.getWeb());
+		TestCase testSuite = getTestSuiteFor(testCaseArticleName, article.getWeb());
 		if (testSuite == null) {
 			string.append(mask("<img src='KnowWEExtension/d3web/icon/uses_error16.gif' align='top' /> "));
 			string.append(loadMessage("KnowWE.TestCase.notestcasefound",
@@ -70,7 +70,7 @@ public class TestCaseRunnerRenderer extends DefaultMarkupRenderer<TestCaseRunner
 		}
 	}
 
-	private void renderTestCaseDescription(StringBuilder string, String testCaseTopic, TestSuite testSuite) {
+	private void renderTestCaseDescription(StringBuilder string, String testCaseTopic, TestCase testSuite) {
 		string.append(mask("<img src='KnowWEExtension/d3web/icon/comment16.png' align='top' /> "));
 		String link = mask("<a href='Wiki.jsp?page=" + testCaseTopic
 				+ "'><span id='testcase-topic'>"
@@ -80,7 +80,7 @@ public class TestCaseRunnerRenderer extends DefaultMarkupRenderer<TestCaseRunner
 		string.append(mask("<br />\n"));
 	}
 
-	private void renderTestCaseRun(StringBuilder string, TestSuite testSuite) {
+	private void renderTestCaseRun(StringBuilder string, TestCase testSuite) {
 		String runText = rb.getString("KnowWE.TestCase.runbutton");
 		string.append(mask("<p onclick='runTestCase()' id='testcase-run-link'>"));
 		string.append(mask("<img "));
@@ -105,7 +105,7 @@ public class TestCaseRunnerRenderer extends DefaultMarkupRenderer<TestCaseRunner
 	 * @param web current web
 	 * @return loaded test case or null (in case of errors)
 	 */
-	private TestSuite getTestSuiteFor(String article, String web) {
+	private TestCase getTestSuiteFor(String article, String web) {
 		return TestCaseUtils.loadTestSuite(article, web);
 	}
 

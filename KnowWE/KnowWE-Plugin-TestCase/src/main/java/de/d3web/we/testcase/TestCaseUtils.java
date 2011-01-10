@@ -20,7 +20,7 @@ package de.d3web.we.testcase;
 
 import java.util.logging.Logger;
 
-import de.d3web.empiricaltesting.TestSuite;
+import de.d3web.empiricaltesting.TestCase;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -31,7 +31,7 @@ import de.d3web.we.utils.KnowWEUtils;
 /**
  * Util class which offers convenience methods for the handling of test suites
  *
- * @see TestSuite
+ * @see TestCase
  * @author Sebastian Furth (denkbares GmbH)
  * @created 25/10/2010
  */
@@ -45,10 +45,10 @@ public class TestCaseUtils {
 	 * @param web the current web
 	 * @return loaded test suite or null (if no test suite was found)
 	 */
-	public static TestSuite loadTestSuite(String article, String web) {
+	public static TestCase loadTestSuite(String article, String web) {
 		KnowWEArticle a = KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(article);
 		Section<TestCaseContent> s = null;
-		TestSuite testSuite = null;
+		TestCase testSuite = null;
 
 		if (a != null) {
 			s = a.getSection().findSuccessor(TestCaseContent.class);
@@ -59,7 +59,7 @@ public class TestCaseUtils {
 		}
 
 		if (s != null) {
-			testSuite = (TestSuite) KnowWEUtils.getStoredObject(web, article, s.getID(),
+			testSuite = (TestCase) KnowWEUtils.getStoredObject(web, article, s.getID(),
 					TestCaseType.TESTCASEKEY);
 		}
 		else {

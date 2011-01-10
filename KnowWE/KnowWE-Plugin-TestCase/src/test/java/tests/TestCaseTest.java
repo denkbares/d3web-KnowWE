@@ -26,7 +26,6 @@ import junit.framework.TestCase;
 import utils.MyTestArticleManager;
 import utils.TSUtil;
 import de.d3web.empiricaltesting.RatedTestCase;
-import de.d3web.empiricaltesting.TestSuite;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -59,9 +58,9 @@ public class TestCaseTest extends TestCase {
 	public void testTestCases() {
 		KnowWEArticle article =
 				MyTestArticleManager.getArticle(TESTSUITEARTICLE);
-		TestSuite loadedTS =
+		de.d3web.empiricaltesting.TestCase loadedTS =
 				TSUtil.getInstance().findTestSuite(article);
-		TestSuite createdTS = TSUtil.getInstance().getCreatedTS();
+		de.d3web.empiricaltesting.TestCase createdTS = TSUtil.getInstance().getCreatedTS();
 
 		assertNotNull("TestCase has no Sequential-Test-Case.",
 				loadedTS.getRepository().get(0));

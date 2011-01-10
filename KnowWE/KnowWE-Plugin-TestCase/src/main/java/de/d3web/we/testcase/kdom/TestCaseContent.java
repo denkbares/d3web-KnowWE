@@ -31,7 +31,7 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.NumValue;
-import de.d3web.empiricaltesting.TestSuite;
+import de.d3web.empiricaltesting.TestCase;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
@@ -118,7 +118,7 @@ public class TestCaseContent extends StringReference {
 				if (messages.size() == 0) {
 
 					// Create the test suite
-					TestSuite testSuite = new TestSuite();
+					TestCase testSuite = new TestCase();
 					testSuite.setKb(kbm.getKnowledgeBase());
 					testSuite.setRepository(repository);
 

@@ -38,7 +38,7 @@ import de.d3web.empiricaltesting.RatedSolution;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.StateRating;
-import de.d3web.empiricaltesting.TestSuite;
+import de.d3web.empiricaltesting.TestCase;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.testcase.kdom.TestCaseType;
@@ -53,7 +53,7 @@ import de.d3web.we.utils.KnowWEUtils;
 public class TSUtil {
 
 	private static TSUtil instance = new TSUtil();
-	private TestSuite createdTS;
+	private TestCase createdTS;
 	private KnowledgeBase kb;
 
 	private TSUtil() {
@@ -65,9 +65,9 @@ public class TSUtil {
 		return instance;
 	}
 
-	public TestSuite findTestSuite(KnowWEArticle article) {
+	public TestCase findTestSuite(KnowWEArticle article) {
 		Section<TestCaseContent> s = article.getSection().findSuccessor(TestCaseContent.class);
-		return (TestSuite) KnowWEUtils.getStoredObject("default_web",
+		return (TestCase) KnowWEUtils.getStoredObject("default_web",
 				article.getTitle(),
 				s.getID(), TestCaseType.TESTCASEKEY);
 	}
@@ -81,7 +81,7 @@ public class TSUtil {
 	 *
 	 * @return TestSuite
 	 */
-	public TestSuite getCreatedTS() {
+	public TestCase getCreatedTS() {
 		return createdTS;
 	}
 
@@ -161,7 +161,7 @@ public class TSUtil {
 		repository.add(stc);
 
 		// Create testSuite
-		TestSuite t = new TestSuite();
+		TestCase t = new TestCase();
 		t.setKb(kb);
 		t.setRepository(repository);
 		createdTS = t;

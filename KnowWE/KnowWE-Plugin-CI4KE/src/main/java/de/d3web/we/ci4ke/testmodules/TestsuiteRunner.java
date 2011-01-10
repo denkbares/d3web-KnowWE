@@ -20,7 +20,7 @@
 
 package de.d3web.we.ci4ke.testmodules;
 
-import de.d3web.empiricaltesting.TestSuite;
+import de.d3web.empiricaltesting.TestCase;
 import de.d3web.we.ci4ke.testing.AbstractCITest;
 import de.d3web.we.ci4ke.testing.CITestResult;
 import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
@@ -37,7 +37,7 @@ public class TestsuiteRunner extends AbstractCITest {
 		}
 		String monitoredArticleTitle = getParameter(0);
 
-		TestSuite suite = TestCaseUtils.loadTestSuite(
+		TestCase suite = TestCaseUtils.loadTestSuite(
 				monitoredArticleTitle, KnowWEEnvironment.DEFAULT_WEB);
 
 		if (suite != null) {
