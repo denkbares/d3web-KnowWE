@@ -25,8 +25,8 @@ import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Rating.State;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.we.kdom.IncrementalConstraints;
@@ -130,13 +130,16 @@ public abstract class SolutionDefinition
 
 			String name = solutionSection.get().getTermName(solutionSection);
 
-			if (KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(article,
+			if (KnowWEUtils.getTerminologyHandler(solutionSection.getArticle().getWeb()).isDefinedTerm(
+					solutionSection.getArticle(),
 					solutionSection)) {
-				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(article,
+				KnowWEUtils.getTerminologyHandler(solutionSection.getArticle().getWeb()).registerTermDefinition(
+						solutionSection.getArticle(),
 						solutionSection);
 
 				Section<? extends TermDefinition<Solution>> termDef = KnowWEUtils.getTerminologyHandler(
-						article.getWeb()).getTermDefiningSection(article, solutionSection);
+						solutionSection.getArticle().getWeb()).getTermDefiningSection(
+						solutionSection.getArticle(), solutionSection);
 
 				String termDefName = termDef.get().getTermName(termDef);
 
