@@ -42,10 +42,14 @@ public class ConjunctSectionFinder implements ISectionFinder {
 			// store all found operator sign oc indices and its length
 			for (Integer integer : indicesOfUnbraced) {
 				
-				//when operator has index 0, no valid first operand is possible
+				//when (binary) operator has index 0, no valid first operand is possible
 				//thus not a valid operator
 				//in this case skip finding
 				if(integer == 0) continue;
+				
+				//same if binary is at the end of the expression
+				if(integer == text.length()-symbol.length()) continue;
+				
 				
 				allFoundOps.put(integer, symbol.length());
 			}
