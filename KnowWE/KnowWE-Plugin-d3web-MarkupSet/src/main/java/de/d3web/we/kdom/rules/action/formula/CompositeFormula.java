@@ -43,7 +43,18 @@ public class CompositeFormula extends DefaultAbstractKnowWEObjectType {
 		// endline-comments
 		bracedContent.addChildType(this);
 
+		// ... a multiplicative expression,...
+		Multiplication mult = new Multiplication();
+		this.addChildType(mult);
+		mult.addChildType(this); // Multiplications again allow for a
+		// CompositeExpression
 
+		// ... a dividing expression,...
+		Division div = new Division();
+		this.addChildType(div);
+		div.addChildType(this); // Divisions again allow for a
+		// CompositeExpression
+		
 		// ...a Additive expression,...
 		Addition conj = new Addition();
 		this.addChildType(conj);
@@ -56,17 +67,7 @@ public class CompositeFormula extends DefaultAbstractKnowWEObjectType {
 		sub.addChildType(this); // Subtractions again allow for a
 		// CompositeExpression
 
-		// ... a multiplicative expression,...
-		Multiplication mult = new Multiplication();
-		this.addChildType(mult);
-		mult.addChildType(this); // Multiplications again allow for a
-		// CompositeExpression
 
-		// ... a dividing expression,...
-		Division div = new Division();
-		this.addChildType(div);
-		div.addChildType(this); // Divisions again allow for a
-		// CompositeExpression
 
 		// ... or finally a TerminalExpression which stops the recursive descent
 		this.addChildType(terminalExpression);
