@@ -1384,11 +1384,9 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @return a boolean with the result of the check
 	 */
 	public boolean isOrHasChangedSuccessor(String title, Collection<Class<? extends KnowWEObjectType>> filteredTypes) {
-		boolean filteredType = false;
 		if (filteredTypes != null) {
 			for (Class<?> c : filteredTypes) {
 				if (c.isAssignableFrom(objectType.getClass())) {
-					filteredType = true;
 					break;
 				}
 			}
@@ -1716,8 +1714,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 */
 	@SuppressWarnings("unchecked")
 	public final void letSubtreeHandlersDestroy(KnowWEArticle article, Priority p) {
-		List<SubtreeHandler<? extends KnowWEObjectType>> handlerList = objectType.getSubtreeHandlers().get(
-				p);
+		List<SubtreeHandler<? extends KnowWEObjectType>> handlerList =
+				objectType.getSubtreeHandlers().get(p);
 		if (handlerList != null) {
 			for (SubtreeHandler handler : handlerList) {
 				letSubtreeHandlerDestroy(article, handler);

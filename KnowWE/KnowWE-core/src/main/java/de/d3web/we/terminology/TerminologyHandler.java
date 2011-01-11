@@ -524,9 +524,8 @@ public class TerminologyHandler implements EventListener {
 			else {
 				termRefLog.getRedundantDefinitions().remove(s);
 			}
-
+			modifiedTermDefinitions.add(article.getTitle());
 		}
-		modifiedTermDefinitions.add(article.getTitle());
 	}
 
 	public <TermObject> void unregisterTermReference(KnowWEArticle article, Section<? extends TermReference<TermObject>> s) {
