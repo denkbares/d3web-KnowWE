@@ -41,6 +41,12 @@ public class ConjunctSectionFinder implements ISectionFinder {
 					CompositeCondition.BRACE_OPEN, CompositeCondition.BRACE_CLOSED);
 			// store all found operator sign oc indices and its length
 			for (Integer integer : indicesOfUnbraced) {
+				
+				//when operator has index 0, no valid first operand is possible
+				//thus not a valid operator
+				//in this case skip finding
+				if(integer == 0) continue;
+				
 				allFoundOps.put(integer, symbol.length());
 			}
 
