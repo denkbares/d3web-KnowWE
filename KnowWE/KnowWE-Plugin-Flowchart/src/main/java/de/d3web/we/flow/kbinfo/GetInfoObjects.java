@@ -32,7 +32,6 @@ import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.DerivationType;
 import de.d3web.core.knowledge.terminology.IDObject;
-import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -185,7 +184,7 @@ public class GetInfoObjects extends AbstractAction {
 	}
 
 	private static void appendInfoObject(String web, KnowledgeBase base, String objectID, StringBuffer buffer) {
-		IDObject object = base.search(objectID);
+		IDObject object = base.getManager().search(objectID);
 
 		if (object instanceof Solution) {
 			appendInfoObject(web, base, (Solution) object, buffer);
@@ -302,7 +301,7 @@ public class GetInfoObjects extends AbstractAction {
 		buffer.append("\t</flowchart>\n");
 	}
 
-	private static void appendChilds(String web, KnowledgeBase service, NamedObject object, StringBuffer buffer) {
+	private static void appendChilds(String web, KnowledgeBase service, TerminologyObject object, StringBuffer buffer) {
 		appendChilds(web, service, object.getChildren(), buffer);
 	}
 

@@ -3,7 +3,7 @@ package de.d3web.we.kdom.questionTree;
 import java.util.Arrays;
 import java.util.Collection;
 
-import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.basic.D3webModule;
@@ -51,9 +51,9 @@ public class ObjectDescription extends DefaultAbstractKnowWEObjectType {
 
 					// get the object the information should be stored for
 					Object ob = qDef.get().getTermObject(article, qDef);
-					NamedObject object = null;
-					if (ob instanceof NamedObject) {
-						object = (NamedObject) ob;
+					TerminologyObject object = null;
+					if (ob instanceof TerminologyObject) {
+						object = (TerminologyObject) ob;
 					}
 
 					if (object != null) {

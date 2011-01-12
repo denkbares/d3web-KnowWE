@@ -2,21 +2,21 @@ package utils;
 
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 import java.util.ArrayList;
@@ -41,12 +41,12 @@ import de.d3web.empiricaltesting.StateRating;
 import de.d3web.empiricaltesting.TestCase;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.testcase.kdom.TestCaseType;
 import de.d3web.we.testcase.kdom.TestCaseContent;
+import de.d3web.we.testcase.kdom.TestCaseType;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
- *
+ * 
  * @author Sebastian Furth
  * @created 27/10/2010
  */
@@ -78,7 +78,7 @@ public class TSUtil {
 
 	/**
 	 * Returns the TestSuite which was created manually.
-	 *
+	 * 
 	 * @return TestSuite
 	 */
 	public TestCase getCreatedTS() {
@@ -92,26 +92,26 @@ public class TSUtil {
 		// Root Solution
 		Solution p0 = new Solution("P000");
 		p0.setName("P000");
-		kb.add(p0);
+		kb.getManager().putTerminologyObject(p0);
 		kb.setRootSolution(p0);
 
 		// Solution
 		Solution p = new Solution("P1");
 		p.setName("Other problem");
 		kb.getRootSolution().addChild(p);
-		kb.add(p);
+		kb.getManager().putTerminologyObject(p);
 
 		// Root Questionnaire
 		QContainer qc0 = new QContainer("Q000");
 		qc0.setName("Q000");
-		kb.add(qc0);
+		kb.getManager().putTerminologyObject(qc0);
 		kb.setRootQASet(qc0);
 
 		// Questionnaire
 		QContainer qc = new QContainer("QC1");
 		qc.setName("Observations");
 		kb.getRootQASet().addChild(qc);
-		kb.add(qc);
+		kb.getManager().putTerminologyObject(qc);
 
 		// Add question:
 		// - Driving [mc]

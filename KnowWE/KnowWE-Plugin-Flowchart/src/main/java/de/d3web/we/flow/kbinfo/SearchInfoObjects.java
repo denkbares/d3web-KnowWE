@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.diaFlux.flow.Flow;
@@ -42,7 +43,6 @@ import de.d3web.we.core.KnowWEParameterMap;
 
 public class SearchInfoObjects extends AbstractAction {
 
-
 	@Override
 	public void execute(ActionContext context) throws IOException {
 
@@ -56,7 +56,6 @@ public class SearchInfoObjects extends AbstractAction {
 		String result = search(KnowWEEnvironment.getInstance(), web, phrase, classes, maxCount);
 		context.getWriter().write(result);
 	}
-
 
 	public static String search(KnowWEEnvironment knowWEEnv, String web, String phraseString, String classesString, int maxCount) {
 		// get the matches
@@ -128,11 +127,11 @@ public class SearchInfoObjects extends AbstractAction {
 
 			// add Diagnosis
 			if (classes.contains("solution")) {
-				allKBObjects.addAll(base.getSolutions());
+				allKBObjects.addAll(base.getManager().getSolutions());
 			}
 			// add QContainers (QSet)
 			if (classes.contains("qset")) {
-				allKBObjects.addAll(base.getQContainers());
+				allKBObjects.addAll(base.getManager().getQContainers());
 			}
 			// add Questions
 			if (classes.contains("question")) {
@@ -140,14 +139,14 @@ public class SearchInfoObjects extends AbstractAction {
 				// the are lazy created as implicit import
 				// TODO: define better mechanism with university and
 				// implement well
-				for (Question question : base.getQuestions()) {
+				for (Question question : base.getManager().getQuestions()) {
 					if (!Arrays.asList(question.getParents()).contains(base.getRootQASet())) {
 						allKBObjects.add(question);
 					}
 				}
 			}
 			// search all objects
-			for (NamedObject object : allKBObjects) {
+			for (TerminologyObject object : allKBObjects) {
 				String name = object.getName().toLowerCase();
 				if (!foundNames.contains(name) && matches(name, phrases)) {
 					foundNames.add(name);
@@ -170,7 +169,7 @@ public class SearchInfoObjects extends AbstractAction {
 		return true;
 	}
 
-	private static String createResultEntry(KnowledgeBase base, NamedObject object) {
+	private static String createResultEntry(KnowledgeBase base, TerminologyObject object) {
 		// create a unique name for the object to be recovered easily
 		return base.getId() + "/" + object.getId();
 	}

@@ -127,7 +127,7 @@ public class D3webUtils {
 			removeRecursively((NamedObject) to);
 		}
 		try {
-			object.getKnowledgeBase().remove(object);
+			object.getKnowledgeBase().getManager().remove(object);
 		}
 		catch (IllegalAccessException e) {
 			// shouldn't happen...
@@ -148,7 +148,7 @@ public class D3webUtils {
 			throw new IllegalArgumentException("Argument 'web' and/or 'topic' was null!");
 		}
 		D3webKnowledgeHandler knowledgeHandler =
-			D3webModule.getKnowledgeRepresentationHandler(web);
+				D3webModule.getKnowledgeRepresentationHandler(web);
 		if (knowledgeHandler != null) {
 			KnowledgeBaseManagement kbm = knowledgeHandler.getKBM(topic);
 			if (kbm != null) {

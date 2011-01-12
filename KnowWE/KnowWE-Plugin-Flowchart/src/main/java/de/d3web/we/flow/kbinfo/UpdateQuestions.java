@@ -79,7 +79,7 @@ public class UpdateQuestions extends AbstractAction {
 		// get the right id for the nodemodel
 		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(
 				article.getTitle()).getKnowledgeBase();
-		List<Question> questions = kb.getQuestions();
+		List<Question> questions = kb.getManager().getQuestions();
 		String questionID = null;
 
 		for (Question question : questions) {

@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -38,7 +38,7 @@ import de.d3web.we.logging.Logging;
 
 /**
  * This class tests whether the Questionnaires are created as expected.
- *
+ * 
  * @author Sebastian Furth
  * @see KBTestUtilNewMarkup to modify the KB against which everything is tested
  * @see KBCreationTest.txt to modify the Article which is tested
@@ -56,8 +56,9 @@ public class QuestionnaireTest extends TestCase {
 		KnowWEArticle art = MyTestArticleManager.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
-		assertEquals("Number of Qestionnaires differ.", createdKB.getQContainers().size(),
-				loadedKB.getQContainers().size());
+		assertEquals("Number of Qestionnaires differ.",
+				createdKB.getManager().getQContainers().size(),
+				loadedKB.getManager().getQContainers().size());
 	}
 
 	public void testQuestionnaires() {
@@ -66,11 +67,11 @@ public class QuestionnaireTest extends TestCase {
 		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
 
-		if (loadedKB.getQContainers().size() == createdKB.getQContainers().size()) {
-			for (int i = 0; i < loadedKB.getQContainers().size(); i++) {
+		if (loadedKB.getManager().getQContainers().size() == createdKB.getManager().getQContainers().size()) {
+			for (int i = 0; i < loadedKB.getManager().getQContainers().size(); i++) {
 
-				QContainer expected = createdKB.getQContainers().get(i);
-				QContainer actual = loadedKB.getQContainers().get(i);
+				QContainer expected = createdKB.getManager().getQContainers().get(i);
+				QContainer actual = loadedKB.getManager().getQContainers().get(i);
 
 				// Test Name & ID(ID is outdated. But it does not make problems
 				// here)

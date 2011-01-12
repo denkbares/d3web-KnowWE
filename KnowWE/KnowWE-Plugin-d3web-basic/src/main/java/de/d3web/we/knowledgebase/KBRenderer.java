@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -29,8 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.RuleSet;
@@ -39,7 +39,6 @@ import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Choice;
-import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -83,7 +82,6 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 		D3webKnowledgeHandler knowledgeRepresentationHandler = D3webModule.getKnowledgeRepresentationHandler(KnowWEEnvironment.DEFAULT_WEB);
 		KnowledgeBaseManagement knowledgeBaseManagement = knowledgeRepresentationHandler.getKBM(topic);
 		KnowledgeBase kb = knowledgeBaseManagement.getKnowledgeBase();
-
 
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
 
@@ -179,7 +177,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 
 			KnowledgeBaseManagement kbm = KnowledgeBaseManagement
 					.createInstance(kb);
-			List<QContainer> questions = kb.getQContainers();
+			List<QContainer> questions = kb.getManager().getQContainers();
 			kbm.sortQContainers(questions);
 			boolean appendedQuestionHeadline = false;
 			for (QContainer q1 : questions) {
@@ -235,7 +233,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 						for (XCLRelation rel : relations) {
 							Condition cond = rel.getConditionedFinding();
 							String weight = "";
-							String kdomid = rel.getKdmomID();
+							// String kdomid = rel.getKdmomID();
 							if (type == XCLRelationType.explains) {
 								weight = "[" + rel.getWeight() + "]";
 							}
@@ -257,7 +255,8 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 							text.append(type.getName() + weight + ": ");
 							text.append("&nbsp;&nbsp;&nbsp;"
 									+ VerbalizationManager.getInstance()
-											.verbalize(cond,
+											.verbalize(
+													cond,
 													VerbalizationManager.RenderingFormat.PLAIN_TEXT,
 													parameterMap));
 
@@ -294,10 +293,10 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	}
 
 	/**
-	 *
+	 * 
 	 * Returns all children in an hierarchically view from a given list of
 	 * terminology objects.
-	 *
+	 * 
 	 * @param nodes the nodes from which you want to have all children
 	 *        displayed.
 	 * @param save List for saving already visited nodes, to avoid an infinite
@@ -312,8 +311,8 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 		StringBuffer prompt = new StringBuffer();
 		StringBuffer property = new StringBuffer();
 		for (TerminologyObject t1 : nodes) {
-			if (t1 instanceof NamedObject
-					&& ((NamedObject) t1).getInfoStore() != null) {
+			if (t1 instanceof TerminologyObject
+					&& (t1).getInfoStore() != null) {
 				// Append the prompt for questions
 				String longname = t1.getInfoStore().getValue(MMInfo.PROMPT);
 				if (t1 instanceof Question && longname != null) {
@@ -398,7 +397,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 
 	/**
 	 * See above.
-	 *
+	 * 
 	 * @param nodes
 	 * @param depth
 	 * @return String

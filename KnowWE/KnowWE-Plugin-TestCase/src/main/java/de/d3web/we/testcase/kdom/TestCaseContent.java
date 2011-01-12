@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -52,9 +52,9 @@ import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * TestsuiteContent
- *
+ * 
  * @author Sebastian Furth
- *
+ * 
  */
 public class TestCaseContent extends StringReference {
 
@@ -65,7 +65,6 @@ public class TestCaseContent extends StringReference {
 		this.childrenTypes.add(new SequentialTestCase());
 		this.addSubtreeHandler(Priority.LOWEST, new TestSuiteSubTreeHandler());
 	}
-	
 
 	@Override
 	public String getTermName(Section<? extends KnowWETerm<String>> s) {
@@ -135,7 +134,8 @@ public class TestCaseContent extends StringReference {
 				Section<TestCaseType> father = s.findAncestorOfType(TestCaseType.class);
 				return Arrays.asList((KDOMReportMessage) new SimpleMessageError(
 						"Unable to get knowledge base from article: "
-								+ DefaultMarkupType.getAnnotation(father, TestCaseType.ANNOTATION_MASTER)));
+								+ DefaultMarkupType.getAnnotation(father,
+										TestCaseType.ANNOTATION_MASTER)));
 			}
 
 			return messages;
@@ -310,9 +310,10 @@ public class TestCaseContent extends StringReference {
 			// KBM contains only the ROOT-QASET and the ROOT-Solution
 			// TODO: Remove this check. ATM necessary for the Test (@see
 			// MyTestArticleManager)
-			if (kbm != null && kbm.getKnowledgeBase().getAllIDObjects().size() == 2) {
+			if (kbm != null && kbm.getKnowledgeBase().getManager().getAllIDObjects().size() == 2) {
 				Section<TestCaseType> father = s.findAncestorOfType(TestCaseType.class);
-				String source = DefaultMarkupType.getAnnotation(father, TestCaseType.ANNOTATION_MASTER);
+				String source = DefaultMarkupType.getAnnotation(father,
+						TestCaseType.ANNOTATION_MASTER);
 				KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(a.getWeb(),
 						source);
 				kbm = getKBM(article);
@@ -329,6 +330,5 @@ public class TestCaseContent extends StringReference {
 		}
 
 	}
-
 
 }

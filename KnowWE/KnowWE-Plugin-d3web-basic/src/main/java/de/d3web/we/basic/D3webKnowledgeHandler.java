@@ -143,7 +143,8 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 				Logger.getLogger(this.getClass().getName()).log(
 						Level.WARNING,
 						"Detected difference in the knowledgebase after a full reparse.");
-				int version = KnowWEEnvironment.getInstance().getWikiConnector().getVersion(art.getTitle());
+				int version = KnowWEEnvironment.getInstance().getWikiConnector().getVersion(
+						art.getTitle());
 				String fileName = art.getTitle() + " " + version + " KB-diff.txt";
 				String logEntry = art.getTitle() + ", " + version
 						+ ", full reparse with difference in knowledgebase ,"
@@ -164,8 +165,8 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 
 	private boolean isEmpty(KnowledgeBaseManagement kbm) {
 		if (kbm.getKnowledgeBase().getAllKnowledgeSlices().size() == 0
-				&& kbm.getKnowledgeBase().getQuestions().size() < 1
-				&& kbm.getKnowledgeBase().getSolutions().size() <= 1) {
+				&& kbm.getKnowledgeBase().getManager().getQuestions().size() < 1
+				&& kbm.getKnowledgeBase().getManager().getSolutions().size() <= 1) {
 			return true;
 		}
 		else {

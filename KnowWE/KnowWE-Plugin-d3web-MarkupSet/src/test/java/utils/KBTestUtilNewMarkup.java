@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -65,19 +65,19 @@ import de.d3web.xcl.XCLRelationType;
 
 /**
  * This Class loads the KnowledgeBase which will be tested.
- *
+ * 
  * Furthermore in this class the KnowledgeBase against which the loaded
  * KnowledgeBase is compared is created.
- *
+ * 
  * This class is a Singleton class because this insures that the KnowledgeBase
  * is loaded only once.
- *
+ * 
  * Please be careful when editing anything in here because the order of the
  * elements does matter in the tests! (especially the IDs)
- *
+ * 
  * @author Sebastian Furth
  * @see KnowledgeBaseCreationTest
- *
+ * 
  */
 public class KBTestUtilNewMarkup {
 
@@ -89,7 +89,7 @@ public class KBTestUtilNewMarkup {
 
 	/**
 	 * Returns the KnowledgeBase of a specific article
-	 *
+	 * 
 	 * @created 01.09.2010
 	 * @param article
 	 */
@@ -110,7 +110,7 @@ public class KBTestUtilNewMarkup {
 
 	/**
 	 * Returns an instance of KBCreationTestKBStorage.
-	 *
+	 * 
 	 * @return KBCreationTestKBStorage
 	 */
 	public static KBTestUtilNewMarkup getInstance() {
@@ -119,7 +119,7 @@ public class KBTestUtilNewMarkup {
 
 	/**
 	 * Returns the KnowledgeBase which was created manually.
-	 *
+	 * 
 	 * @return KnowledgeBase
 	 */
 	public KnowledgeBase getCreatedKB() {
@@ -149,29 +149,29 @@ public class KBTestUtilNewMarkup {
 
 		Solution p0 = new Solution("P000");
 		p0.setName("P000");
-		createdKB.add(p0);
+		createdKB.getManager().putTerminologyObject(p0);
 		createdKB.setRootSolution(p0);
 
 		Solution p1 = new Solution("P1");
 		p1.setName("Mechanical problem");
 		createdKB.getRootSolution().addChild(p1);
-		createdKB.add(p1);
+		createdKB.getManager().putTerminologyObject(p1);
 
 		Solution p2 = new Solution("P2");
 		p2.setName("Damaged idle speed system");
 		p1.addChild(p2);
-		createdKB.add(p2);
+		createdKB.getManager().putTerminologyObject(p2);
 
 		Solution p3 = new Solution("P3");
 		p3.setName("Leaking air intake system");
 		p3.getInfoStore().addValue(MMInfo.DESCRIPTION, "The air intake system is leaking.");
 		p1.addChild(p3);
-		createdKB.add(p3);
+		createdKB.getManager().putTerminologyObject(p3);
 
 		Solution p4 = new Solution("P4");
 		p4.setName("Other problem");
 		createdKB.getRootSolution().addChild(p4);
-		createdKB.add(p4);
+		createdKB.getManager().putTerminologyObject(p4);
 
 	}
 
@@ -182,35 +182,35 @@ public class KBTestUtilNewMarkup {
 
 		QContainer qc0 = new QContainer("Q000");
 		qc0.setName("Q000");
-		createdKB.add(qc0);
+		createdKB.getManager().putTerminologyObject(qc0);
 		createdKB.setRootQASet(qc0);
 
 		QContainer qc1 = new QContainer("QC1");
 		qc1.setName("Observations");
 		createdKB.getRootQASet().addChild(qc1);
-		createdKB.add(qc1);
+		createdKB.getManager().putTerminologyObject(qc1);
 
 		QContainer qc2 = new QContainer("QC2");
 		qc2.setName("Idle speed system");
 		qc1.addChild(qc2);
-		createdKB.add(qc2);
+		createdKB.getManager().putTerminologyObject(qc2);
 
 		QContainer qc3 = new QContainer("QC3");
 		qc3.setName("Air filter");
 		qc3.getInfoStore().addValue(MMInfo.DESCRIPTION,
 				"Here you can enter your observations concerning the air filter.");
 		qc1.addChild(qc3);
-		createdKB.add(qc3);
+		createdKB.getManager().putTerminologyObject(qc3);
 
 		QContainer qc4 = new QContainer("QC4");
 		qc4.setName("Ignition timing");
 		qc1.addChild(qc4);
-		createdKB.add(qc4);
+		createdKB.getManager().putTerminologyObject(qc4);
 
 		QContainer qc5 = new QContainer("QC5");
 		qc5.setName("Technical Examinations");
 		createdKB.getRootQASet().addChild(qc5);
-		createdKB.add(qc5);
+		createdKB.getManager().putTerminologyObject(qc5);
 
 		// Set Init-Questions
 		List<QContainer> initQuestions = new ArrayList<QContainer>();
