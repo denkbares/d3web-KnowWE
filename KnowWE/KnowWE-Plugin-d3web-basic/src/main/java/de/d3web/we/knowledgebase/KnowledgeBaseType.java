@@ -67,6 +67,7 @@ public class KnowledgeBaseType extends DefaultMarkupType implements KnowWETermMa
 	public static final String ANNOTATION_AUTHOR = "author";
 	public static final String ANNOTATION_COMMENT = "comment";
 	public static final String ANNOTATION_COMPILE = "uses";
+	public static final String ANNOTATION_FILENAME = "filename";
 
 	private static final DefaultMarkup MARKUP;
 
@@ -78,6 +79,7 @@ public class KnowledgeBaseType extends DefaultMarkupType implements KnowWETermMa
 		MARKUP.addAnnotation(ANNOTATION_COMMENT, false);
 		MARKUP.addAnnotation(ANNOTATION_ID, false);
 		MARKUP.addAnnotation(ANNOTATION_VERSION, false);
+		MARKUP.addAnnotation(ANNOTATION_FILENAME, false);
 	}
 
 	public KnowledgeBaseType() {
@@ -98,6 +100,7 @@ public class KnowledgeBaseType extends DefaultMarkupType implements KnowWETermMa
 				String author = getAnnotation(section, ANNOTATION_AUTHOR);
 				String comment = getAnnotation(section, ANNOTATION_COMMENT);
 				String version = getAnnotation(section, ANNOTATION_VERSION);
+				String filename = getAnnotation(section, ANNOTATION_FILENAME);
 
 				// and write it to the knowledge base
 				if (id != null) kb.setId(id);
@@ -107,6 +110,7 @@ public class KnowledgeBaseType extends DefaultMarkupType implements KnowWETermMa
 				if (author != null) infoStore.addValue(BasicProperties.AUTHOR, author);
 				if (comment != null) infoStore.addValue(MMInfo.DESCRIPTION, comment);
 				if (version != null) infoStore.addValue(BasicProperties.VERSION, version);
+				if (filename != null) infoStore.addValue(BasicProperties.FILENAME, filename);
 
 				return null;
 			}

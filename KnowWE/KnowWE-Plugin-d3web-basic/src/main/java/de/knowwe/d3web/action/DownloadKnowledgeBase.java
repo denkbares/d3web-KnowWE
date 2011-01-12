@@ -4,11 +4,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
 
+import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
+import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
@@ -25,10 +30,29 @@ public class DownloadKnowledgeBase extends AbstractAction {
 
 		KnowledgeRepresentationHandler handler = KnowWEEnvironment.getInstance()
 				.getKnowledgeRepresentationManager(web).getHandler("d3web");
-		URL home = handler.saveKnowledge(topic);
-		InputStream in = home.openStream();
+		// before writing, check if the user defined a desired filename
+		if (handler instanceof D3webKnowledgeHandler) {
+			KnowledgeBase base = ((D3webKnowledgeHandler) handler).getKBM(topic).getKnowledgeBase();
+			String desired_filename = base.getInfoStore().getValue(BasicProperties.FILENAME);
+			if (desired_filename != null) {
+				filename = desired_filename;
+			}
+			// write the timestamp of the creation (Now!) into the knowledge
+			// base
+			String timestamp = "no timestamp";
+			String formated = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+			if (formated != null) {
+				timestamp = formated;
+			}
 
+			base.getInfoStore().addValue(BasicProperties.CREATED, timestamp);
+		}
+
+		URL home = handler.saveKnowledge(topic);
+
+		InputStream in = home.openStream();
 		context.setContentType("application/x-bin");
+
 		context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
 		OutputStream outs = context.getOutputStream();
 

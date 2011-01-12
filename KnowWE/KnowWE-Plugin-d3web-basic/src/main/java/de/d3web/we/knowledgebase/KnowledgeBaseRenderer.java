@@ -61,6 +61,8 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 				KnowledgeBaseType.ANNOTATION_COMMENT);
 		String version = KnowledgeBaseType.getAnnotation(section,
 				KnowledgeBaseType.ANNOTATION_VERSION);
+		String filename = KnowledgeBaseType.getAnnotation(section,
+				KnowledgeBaseType.ANNOTATION_FILENAME);
 
 		// render title line
 		string.append(KnowWEUtils.maskHTML("<b>" + title + "</b>"));
@@ -70,7 +72,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 		string.append("\n");
 
 		// render information block
-		if (version != null || author != null || comment != null) {
+		if (version != null || author != null || comment != null || filename != null) {
 			string.append(KnowWEUtils.maskHTML("<div style='padding-top:1em;'>"));
 
 			if (version != null) {
@@ -84,6 +86,10 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 			if (comment != null) {
 				string.append(KnowWEUtils.maskHTML("<img src='KnowWEExtension/d3web/icon/comment16.png'></img> "));
 				string.append(comment).append("\n");
+			}
+			if (filename != null) {
+				string.append(KnowWEUtils.maskHTML("<img src='KnowWEExtension/d3web/icon/download16.gif'></img> "));
+				string.append(filename).append("\n");
 			}
 
 			string.append(KnowWEUtils.maskHTML("</div>"));

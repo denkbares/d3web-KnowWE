@@ -68,7 +68,7 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 		return new DefaultTool(
 				"KnowWEExtension/d3web/icon/download16.gif",
 				"Download",
-				"Download the whole knowledge base into a single file for deployment.",
+				"Download the entire knowledge base into a single file for deployment.",
 				jsAction);
 	}
 
