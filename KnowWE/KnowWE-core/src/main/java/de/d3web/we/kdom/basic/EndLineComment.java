@@ -26,7 +26,7 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 public class EndLineComment extends DefaultAbstractKnowWEObjectType {
 
 	public EndLineComment() {
-		this.sectionFinder = new RegexSectionFinder("//.*$");
+		this.sectionFinder = new RegexSectionFinder("[\\s^]//.*$");
 	}
 
 }
