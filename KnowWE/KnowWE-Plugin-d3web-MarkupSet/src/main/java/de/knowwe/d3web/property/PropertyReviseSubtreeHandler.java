@@ -89,4 +89,34 @@ public class PropertyReviseSubtreeHandler extends D3webSubtreeHandler<PropertyTy
 		}
 		return null;
 	}
+
+	@Override
+	public void destroy(KnowWEArticle article, Section<PropertyType> s) {
+		Section<IDObjectReference> idobjectSection = s.findSuccessor(IDObjectReference.class);
+		Section<PropertyReference> propertySection = s.findSuccessor(PropertyReference.class);
+		if (idobjectSection == null) return;
+		IDObject object = idobjectSection.get().getTermObject(article, idobjectSection);
+		if (object == null) return;
+		if (propertySection == null) return;
+		Property<?> property = propertySection.get().getTermObject(article, propertySection);
+		if (property == null) return;
+		Section<LocaleDefinition> localeSection = s.findSuccessor(LocaleDefinition.class);
+		Section<ContentDefinition> contentSection = s.findSuccessor(ContentDefinition.class);
+		if (contentSection == null) return;
+		String content = contentSection.get().getTermObject(article, contentSection);
+		if (content == null || content.trim().isEmpty()) {
+			return;
+		}
+		Locale locale = InfoStore.NO_LANGUAGE;
+		if (localeSection != null) {
+			locale = localeSection.get().getTermObject(article, localeSection);
+		}
+		try {
+			object.getInfoStore().remove(property, locale);
+		}
+		catch (IllegalArgumentException e) {
+			return;
+		}
+		return;
+	}
 }

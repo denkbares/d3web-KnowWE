@@ -26,10 +26,12 @@ import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
+import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -38,6 +40,7 @@ import de.d3web.we.object.ContentDefinition;
 import de.d3web.we.object.IDObjectReference;
 import de.d3web.we.object.LocaleDefinition;
 import de.d3web.we.object.PropertyReference;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.Patterns;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -47,7 +50,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Markus Friedrich (denkbares GmbH)
  * @created 10.11.2010
  */
-public class PropertyType extends DefaultAbstractKnowWEObjectType {
+public class PropertyType extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker, IncrementalConstraints {
 
 	/**
 	 * 
@@ -116,6 +119,12 @@ public class PropertyType extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(idor);
 
 		addSubtreeHandler(Priority.LOW, new PropertyReviseSubtreeHandler());
+	}
+
+	@Override
+	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+		return KnowWEUtils.getTerminologyHandler(
+				article.getWeb()).areTermDefinitionsModifiedFor(article);
 	}
 
 }
