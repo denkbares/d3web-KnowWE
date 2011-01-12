@@ -226,11 +226,8 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		/**
 		 * Stores the Renderer used in <b>highlightRule<b>
 		 */
-		KnowWEDomRenderer greenRenderer = StyleRenderer.getRenderer(
+		KnowWEDomRenderer firedRenderer = StyleRenderer.getRenderer(
 						highlightMarker, "", "#CFFFCF");
-
-		KnowWEDomRenderer redRenderer = StyleRenderer.getRenderer(highlightMarker,
-				"", "#FF9900");
 
 		KnowWEDomRenderer exceptionRenderer = StyleRenderer.getRenderer(
 				highlightMarker, "", null);
@@ -256,7 +253,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 			else {
 				try {
 					if (r.hasFired(session)) {
-						this.greenRenderer.render(article, sec, user, newContent);
+						this.firedRenderer.render(article, sec, user, newContent);
 					}
 					else {
 						DelegateRenderer.getInstance().render(article, sec, user, newContent);

@@ -429,7 +429,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 				List<Section<?>> children = sec.getChildren();
 				for (Section<?> s : children) {
 					buffi.append(this.renderRelationChild(article, s,
-							fulfilled, user, "#CFFFCF"));
+							fulfilled, user, StyleRenderer.CONDITION_FULLFILLED));
 				}
 
 			}
@@ -438,7 +438,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 				List<Section<?>> children = sec.getChildren();
 				for (Section<?> s : children) {
 					buffi.append(this.renderRelationChild(article, s,
-							fulfilled, user, "#FFCFCF"));
+							fulfilled, user, StyleRenderer.CONDITION_FALSE));
 				}
 
 			}
