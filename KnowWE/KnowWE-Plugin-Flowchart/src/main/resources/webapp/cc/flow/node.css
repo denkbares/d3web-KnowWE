@@ -159,7 +159,7 @@
 	width: 25px;
 	height: 25px;
 	z-index: 200;
-	background-image: url(../image/node_decorators/done.png);
+	background-image: url(../image/node_decorators/done.gif);
 }
 
 .Node .start .decorator {
@@ -169,7 +169,7 @@
 	width: 25px;
 	height: 25px;
 	z-index: 200;
-	background-image: url(../image/node_decorators/start.gif);
+	background-image: url(../image/node_decorators/start.png);
 }
 
 .Node .comment .decorator {

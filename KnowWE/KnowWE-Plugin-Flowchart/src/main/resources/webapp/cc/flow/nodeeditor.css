@@ -63,13 +63,13 @@
 
 .NodeEditor .startTab, .NodeEditor .startTab_selected {
 	background-color: #bfb;
-	background-image: url(../image/node_decorators/start.gif);
+	background-image: url(../image/node_decorators/start.png);
 	background-repeat: no-repeat;
 }
 
 .NodeEditor .exitTab, .NodeEditor .exitTab_selected {
 	background-color: #fbb;
-	background-image: url(../image/node_decorators/done.png);
+	background-image: url(../image/node_decorators/done.gif);
 	background-position: -3px 0px;
 	background-repeat: no-repeat;
 }
