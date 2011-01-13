@@ -48,6 +48,7 @@ public class RuleAction extends DefaultAbstractKnowWEObjectType {
 		comment.setCustomRenderer(StyleRenderer.COMMENT);
 		this.childrenTypes.add(comment);
 		this.childrenTypes.add(new SolutionValueAssignment());
+		this.childrenTypes.add(new SetQuestionNumValueAction());
 		this.childrenTypes.add(new SetQNumFormulaAction());
 		this.childrenTypes.add(new SetQuestionValue());
 		this.childrenTypes.add(new ContraIndicationAction());

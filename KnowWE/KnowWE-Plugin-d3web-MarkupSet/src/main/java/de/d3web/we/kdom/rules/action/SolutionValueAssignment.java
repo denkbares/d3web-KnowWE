@@ -101,9 +101,9 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			// check for comparator
-			if (SplitUtility.containsUnquoted(text, "=")) {
+			if (SplitUtility.containsUnquoted(text, Equals.SIGN)) {
 				// get right hand side of comparator
-				int index = SplitUtility.indexOfUnquoted(text, "=");
+				int index = SplitUtility.indexOfUnquoted(text, Equals.SIGN);
 				String rightHandSide = text.substring(index + 1).trim();
 				// scan right hand side for score symbol match
 				for (String score : possibleScorePoints) {

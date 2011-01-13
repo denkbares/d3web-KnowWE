@@ -34,6 +34,8 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
  *         Used in DiagnosisRuleAction.
  */
 public class Equals extends DefaultAbstractKnowWEObjectType {
+	
+	public static final String SIGN = "=";
 
 	@Override
 	public void init() {
@@ -47,7 +49,7 @@ public class Equals extends DefaultAbstractKnowWEObjectType {
 
 			if (text.length() == 0) return null;
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			int start = text.indexOf("=");
+			int start = text.indexOf(SIGN);
 			if (start == -1) return null;
 			result.add(new SectionFinderResult(start, start + 1));
 			return result;
