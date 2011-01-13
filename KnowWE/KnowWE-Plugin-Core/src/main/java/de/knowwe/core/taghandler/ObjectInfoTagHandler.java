@@ -220,7 +220,9 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 		if (definitions.size() > 0) {
 			html.append("<p>");
+			html.append(definitions.size() > 1 ? "<ul>" : "");
 			for (Section<? extends TermDefinition<?>> definition : definitions) {
+				html.append(definitions.size() > 1 ? "<li>" : "");
 				html.append(definition.getObjectType().getName());
 				html.append(" in ");
 				html.append("<a href=\"Wiki.jsp?page=");
@@ -230,7 +232,9 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				html.append("\" >");
 				html.append(definition.getTitle());
 				html.append("</a>");
+				html.append(definitions.size() > 1 ? "</li>" : "");
 			}
+			html.append(definitions.size() > 1 ? "</ul>" : "");
 			html.append("</p>");
 		}
 

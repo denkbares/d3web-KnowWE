@@ -93,33 +93,42 @@ public class TermRenamingAction extends AbstractAction {
 
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 		Set<KnowWEArticle> failures = new HashSet<KnowWEArticle>();
-		renameTermDefinitions(definitions, replacement, mgr, context, failures);
-		renameTermReferences(references, replacement, mgr, context, failures);
-		generateMessage(failures, context);
+		Set<KnowWEArticle> success = new HashSet<KnowWEArticle>();
+		renameTermDefinitions(definitions, replacement, mgr, context, failures, success);
+		renameTermReferences(references, replacement, mgr, context, failures, success);
+		generateMessage(failures, success, context);
 	}
 
-	private void generateMessage(Set<KnowWEArticle> failures, ActionContext context) throws IOException {
+	private void generateMessage(Set<KnowWEArticle> failures, Set<KnowWEArticle> success, ActionContext context) throws IOException {
 		ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle();
 		Writer w = context.getWriter();
 		if (failures.size() == 0) {
-			w.write("<span style=\"color:green;\">");
+			w.write("<p style=\"color:green;\">");
 			w.write(rb.getString("KnowWE.ObjectInfoTagHandler.renamingSuccessful"));
-			w.write("</span>");
+			w.write("</p>");
+			w.write("<ul>");
+			for (KnowWEArticle article : success) {
+				w.write("<li>");
+				w.write(article.getTitle());
+				w.write("</li>");
+			}
+			w.write("</ul>");
 		}
 		else {
-			w.write("<span style=\"color:green;\">");
+			w.write("<p style=\"color:red;\">");
 			w.write(rb.getString("KnowWE.ObjectInfoTagHandler.renamingFailed"));
-			KnowWEArticle[] failureArticles = failures.toArray(new KnowWEArticle[failures.size()]);
-			for (int i = 0; i < failureArticles.length - 1; i++) {
-				w.write(failureArticles[i].getTitle());
-				w.write(", ");
+			w.write("</p>");
+			w.write("<ul>");
+			for (KnowWEArticle article : failures) {
+				w.write("<li>");
+				w.write(article.getTitle());
+				w.write("</li>");
 			}
-			w.write(failureArticles[failureArticles.length - 1].getTitle());
-			w.write("</span>");
+			w.write("</ul>");
 		}
 	}
 
-	private void renameTermDefinitions(Set<Section<? extends TermDefinition<?>>> definitions, String replacement, KnowWEArticleManager mgr, ActionContext context, Set<KnowWEArticle> failures) {
+	private void renameTermDefinitions(Set<Section<? extends TermDefinition<?>>> definitions, String replacement, KnowWEArticleManager mgr, ActionContext context, Set<KnowWEArticle> failures, Set<KnowWEArticle> success) {
 		for (Section<? extends TermDefinition<?>> definition : definitions) {
 			if (KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(
 					definition.getTitle())) {
@@ -127,6 +136,7 @@ public class TermRenamingAction extends AbstractAction {
 				nodesMap.put(definition.getID(), replacement);
 				mgr.replaceKDOMNodesSaveAndBuild(context.getKnowWEParameterMap(),
 						definition.getArticle().getTitle(), nodesMap);
+				success.add(definition.getArticle());
 			}
 			else {
 				failures.add(definition.getArticle());
@@ -134,7 +144,7 @@ public class TermRenamingAction extends AbstractAction {
 		}
 	}
 
-	private void renameTermReferences(Set<Section<? extends TermReference<?>>> references, String replacement, KnowWEArticleManager mgr, ActionContext context, Set<KnowWEArticle> failures) {
+	private void renameTermReferences(Set<Section<? extends TermReference<?>>> references, String replacement, KnowWEArticleManager mgr, ActionContext context, Set<KnowWEArticle> failures, Set<KnowWEArticle> success) {
 		Map<KnowWEArticle, List<Section<? extends TermReference<?>>>> groupedReferences = groupByArticle(references);
 		for (KnowWEArticle article : groupedReferences.keySet()) {
 			if (KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(
@@ -145,6 +155,7 @@ public class TermRenamingAction extends AbstractAction {
 				}
 				mgr.replaceKDOMNodesSaveAndBuild(context.getKnowWEParameterMap(),
 							article.getTitle(), nodesMap);
+				success.add(article);
 			}
 			else {
 				failures.add(article);
