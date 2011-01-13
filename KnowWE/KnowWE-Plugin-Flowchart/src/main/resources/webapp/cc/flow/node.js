@@ -65,8 +65,10 @@ function Node(flowchart, nodeModel /*id, type, title, x, y*/) {
 // register select and edit click events for node
 CCEvents.addClassListener('click', 'Node', 
 	function(event) {
-		var ctrlKey = event.ctrlKey;	
-		if (this.__node) this.__node.select(ctrlKey);
+		var ctrlKey = event.ctrlKey;
+		var altKey = event.altKey;
+		var metaKey = event.metaKey;
+		if (this.__node) this.__node.select(ctrlKey | altKey | metaKey);
 	}
 );
 CCEvents.addClassListener('dblclick', 'Node', 
