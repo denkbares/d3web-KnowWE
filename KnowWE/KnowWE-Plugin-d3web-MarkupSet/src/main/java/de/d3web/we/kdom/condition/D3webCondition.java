@@ -26,7 +26,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.KnowWETermMarker;
+import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
@@ -39,7 +39,7 @@ import de.d3web.we.utils.KnowWEUtils;
  */
 public abstract class D3webCondition<T extends KnowWEObjectType>
 		extends DefaultAbstractKnowWEObjectType
-		implements KnowWETermMarker {
+		implements IncrementalMarker {
 
 	private static final String COND_STORE_KEY = "cond-store-key";
 

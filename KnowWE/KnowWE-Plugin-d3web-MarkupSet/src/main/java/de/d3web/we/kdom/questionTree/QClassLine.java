@@ -29,7 +29,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.KnowWETermMarker;
+import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
@@ -45,7 +45,7 @@ import de.knowwe.core.dashtree.DashTreeElement;
 import de.knowwe.core.dashtree.DashTreeElementContent;
 import de.knowwe.core.dashtree.DashTreeUtils;
 
-public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
+public class QClassLine extends DefaultAbstractKnowWEObjectType implements IncrementalMarker {
 
 	public QClassLine() {
 
@@ -181,7 +181,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements KnowW
 		};
 	}
 
-	static class InitNumber extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
+	static class InitNumber extends DefaultAbstractKnowWEObjectType implements IncrementalMarker {
 
 		public InitNumber() {
 

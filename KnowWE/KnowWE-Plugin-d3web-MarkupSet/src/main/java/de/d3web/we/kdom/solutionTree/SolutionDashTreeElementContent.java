@@ -30,7 +30,7 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
-import de.d3web.we.kdom.objects.KnowWETermMarker;
+import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.questionTree.ObjectDescription;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -56,7 +56,7 @@ import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
  * 
  * 
  */
-public class SolutionDashTreeElementContent extends DashTreeElementContent implements KnowWETermMarker {
+public class SolutionDashTreeElementContent extends DashTreeElementContent implements IncrementalMarker {
 
 	public SolutionDashTreeElementContent() {
 		this.addSubtreeHandler(new CreateSubSolutionRelationHandler());

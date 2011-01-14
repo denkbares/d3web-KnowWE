@@ -38,7 +38,7 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
-import de.d3web.we.kdom.objects.KnowWETermMarker;
+import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.questionTree.QuestionLine.QuestionTypeDeclaration;
 import de.d3web.we.kdom.questionTree.extension.InlineIndicationCondition;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
@@ -178,7 +178,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class NumBounds extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker, IncrementalConstraints {
+	static class NumBounds extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraints {
 
 		public static final char BOUNDS_OPEN = '(';
 		public static final char BOUNDS_CLOSE = ')';
@@ -325,7 +325,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class NumUnit extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker, IncrementalConstraints {
+	static class NumUnit extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraints {
 
 		public static final char UNIT_OPEN = '{';
 		public static final char UNIT_CLOSE = '}';
@@ -402,7 +402,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class AbstractFlag extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker, IncrementalConstraints {
+	static class AbstractFlag extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraints {
 
 		@Override
 		public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
@@ -456,7 +456,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class QuestionText extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker, IncrementalConstraints {
+	static class QuestionText extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraints {
 
 		private static final String QTEXT_START_SYMBOL = "~";
 

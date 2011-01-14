@@ -191,7 +191,6 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 			Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, rule, ruleStoreKey);
 			if (kbr != null) {
 				kbr.remove();
-				KnowWEUtils.storeObject(article, rule, ruleStoreKey, null);
 			}
 		}
 

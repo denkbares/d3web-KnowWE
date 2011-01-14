@@ -32,7 +32,7 @@ import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.ExactlyOneFindingConstraint;
 import de.d3web.we.kdom.defaultMarkup.AnnotationType;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
-import de.d3web.we.kdom.objects.KnowWETermMarker;
+import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.NonEmptyLineSectionFinder;
@@ -52,7 +52,7 @@ import de.d3web.xcl.inference.PSMethodXCL;
  * 
  * 
  */
-public class ListSolutionType extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
+public class ListSolutionType extends DefaultAbstractKnowWEObjectType implements IncrementalMarker {
 
 	public ListSolutionType() {
 		ConstraintSectionFinder solutionFinder = new ConstraintSectionFinder(

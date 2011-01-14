@@ -201,7 +201,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 			throw new InvalidKDOMSchemaModificationOperation("class"
 					+ c.toString() + " may not be replaced by: "
 					+ type.getClass().toString()
-					+ " since it isnt a subclass of former");
+					+ " since it isn't a subclass of former");
 		}
 
 	}

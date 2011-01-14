@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.objects.KnowWETermMarker;
+import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
@@ -34,7 +34,7 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
  *         Container for ConditionActionRule
  *
  */
-public class ConditionActionRule extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
+public class ConditionActionRule extends DefaultAbstractKnowWEObjectType implements IncrementalMarker {
 
 	public ConditionActionRule() {
 		sectionFinder = new RegexSectionFinder(

@@ -33,7 +33,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.KnowWETermMarker;
+import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.questionTree.QuestionLine.QuestionText;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -166,7 +166,7 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class AnswerText extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker, IncrementalConstraints {
+	static class AnswerText extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraints {
 
 		private static final String QTEXT_START_SYMBOL = "~";
 

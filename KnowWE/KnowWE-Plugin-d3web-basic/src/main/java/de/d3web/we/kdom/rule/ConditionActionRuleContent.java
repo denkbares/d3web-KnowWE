@@ -25,7 +25,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.basic.EndLineComment;
 import de.d3web.we.kdom.condition.CompositeCondition;
-import de.d3web.we.kdom.objects.KnowWETermMarker;
+import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -38,7 +38,7 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
  * @author Max Diez (mostly copied from old ConditionActionRule)
  * @created 12.08.2010
  */
-public class ConditionActionRuleContent extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
+public class ConditionActionRuleContent extends DefaultAbstractKnowWEObjectType implements IncrementalMarker {
 
 	ConditionArea condArea = new ConditionArea();
 

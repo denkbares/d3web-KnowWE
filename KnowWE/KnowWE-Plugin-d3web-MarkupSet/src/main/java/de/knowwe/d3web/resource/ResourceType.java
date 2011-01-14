@@ -24,6 +24,7 @@ import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.we.kdom.objects.IncrementalMarker;
 
 /**
  * Defines a resource that should be added to the knowledge base as a binary
@@ -48,7 +49,7 @@ import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
  * @author volker_belli
  * @created 07.10.2010
  */
-public class ResourceType extends DefaultMarkupType {
+public class ResourceType extends DefaultMarkupType implements IncrementalMarker {
 
 	private static final DefaultMarkup MARKUP;
 

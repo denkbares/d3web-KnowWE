@@ -56,6 +56,7 @@ import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * 
@@ -68,6 +69,13 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<FlowchartType> s) {
+
+		if (KnowWEUtils.getTerminologyHandler(
+				article.getWeb()).areTermDefinitionsModifiedFor(article)) {
+			// ugly hack for now...
+			article.setFullParse(this.getClass());
+			return null;
+		}
 
 		KnowledgeBaseManagement kbm = getKBM(article);
 		Section<FlowchartContentType> flowcontent = ((AbstractXMLObjectType) s.getObjectType()).getContentChild(s);

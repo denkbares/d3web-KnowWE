@@ -30,7 +30,7 @@ import de.d3web.we.kdom.Section;
  * @param <TermObject> represents the class of the object defined or referenced
  *        by this KnowWETerm.
  */
-public interface KnowWETerm<TermObject> extends KnowWETermMarker {
+public interface KnowWETerm<TermObject> extends IncrementalMarker {
 
 	/**
 	 * LOCAL terms are valid only for the master compiling them.

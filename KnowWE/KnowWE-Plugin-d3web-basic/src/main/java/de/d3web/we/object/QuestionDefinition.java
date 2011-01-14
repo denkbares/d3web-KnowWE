@@ -22,9 +22,12 @@ package de.d3web.we.object;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
@@ -33,6 +36,7 @@ import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.terminology.TerminologyHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.MessageUtils;
@@ -59,6 +63,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 	public abstract QuestionType getQuestionType(Section<QuestionDefinition> s);
 
+	@SuppressWarnings("unchecked")
 	public abstract Section<? extends QASetDefinition> getParentQASetSection(Section<? extends QuestionDefinition> qdef);
 
 	public abstract int getPosition(Section<QuestionDefinition> s);
@@ -73,8 +78,9 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			Section<QuestionDefinition> qidSection = (s);
 			String name = qidSection.get().getTermName(qidSection);
 
-			if (!KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
-					article, s)) {
+			TerminologyHandler tHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
+
+			if (!tHandler.registerTermDefinition(article, s)) {
 				return new ArrayList<KDOMReportMessage>(0);
 			}
 
@@ -110,6 +116,9 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			}
 			else if (questionType.equals(QuestionType.YN)) {
 				q = mgn.createQuestionYN(name, parent);
+				if (q != null) {
+					handleYNChoices(article, s);
+				}
 			}
 			else if (questionType.equals(QuestionType.DATE)) {
 				q = mgn.createQuestionDate(name, parent);
@@ -132,6 +141,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 							s.get().getPosition(s));
 				}
 
+
 				// store object in section
 				qidSection.get().storeTermObject(article, qidSection, q);
 
@@ -147,17 +157,34 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 		@Override
 		public void destroy(KnowWEArticle article,
-				Section<QuestionDefinition> question) {
+				Section<QuestionDefinition> s) {
 
-			Question q = question.get().getTermObjectFromLastVersion(article,
-					question);
+			Question q = s.get().getTermObjectFromLastVersion(article, s);
 
 			if (q != null) {
 				D3webUtils.removeRecursively(q);
 				KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
-						article, question);
+						article, s);
+				if (q instanceof QuestionYN) {
+					handleYNChoices(article, s);
+				}
 			}
 
+		}
+
+		/**
+		 * Special treatment for QuestionYN, since there may be no actual term
+		 * definitions for the answers.
+		 */
+		private void handleYNChoices(KnowWEArticle article, Section<QuestionDefinition> s) {
+			List<Section<?>> refs = new LinkedList<Section<?>>();
+			refs.addAll(KnowWEUtils.getTerminologyHandler(article.getWeb()).getTermReferenceSections(
+					article, s.get().getTermName(s) + " Yes", s.get().getTermScope()));
+			refs.addAll(KnowWEUtils.getTerminologyHandler(article.getWeb()).getTermReferenceSections(
+					article, s.get().getTermName(s) + " No", s.get().getTermScope()));
+			for (Section<?> ref : refs) {
+				ref.clearReusedBySet();
+			}
 		}
 
 	}

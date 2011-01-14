@@ -293,7 +293,9 @@ public class TerminologyHandler implements EventListener {
 		}
 		getTermReferenceLogsMap(article.getTitle(), s.get().getTermScope()).put(termIdentifier,
 				new TermReferenceLog<TermObject>(s.get().getTermObjectClass(), s, p));
-		modifiedTermDefinitions.add(article.getTitle());
+		if (s.get().getTermScope() == KnowWETerm.LOCAL) {
+			modifiedTermDefinitions.add(article.getTitle());
+		}
 		KDOMReportMessage.storeMessages(article, s, this.getClass(), msgs);
 		return true;
 	}
@@ -524,7 +526,9 @@ public class TerminologyHandler implements EventListener {
 			else {
 				termRefLog.getRedundantDefinitions().remove(s);
 			}
-			modifiedTermDefinitions.add(article.getTitle());
+			if (s.get().getTermScope() == KnowWETerm.LOCAL) {
+				modifiedTermDefinitions.add(article.getTitle());
+			}
 		}
 	}
 

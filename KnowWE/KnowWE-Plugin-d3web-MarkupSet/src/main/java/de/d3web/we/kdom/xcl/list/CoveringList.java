@@ -40,7 +40,7 @@ import de.d3web.we.kdom.condition.Finding;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.kdom.condition.NumericalFinding;
 import de.d3web.we.kdom.condition.NumericalIntervallFinding;
-import de.d3web.we.kdom.objects.KnowWETermMarker;
+import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.StyleRenderer;
@@ -127,7 +127,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 		}
 	}
 
-	class CoveringRelation extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
+	class CoveringRelation extends DefaultAbstractKnowWEObjectType implements IncrementalMarker {
 
 		public CoveringRelation() {
 

@@ -31,7 +31,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
-import de.d3web.we.kdom.objects.KnowWETermMarker;
+import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -50,7 +50,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Markus Friedrich (denkbares GmbH)
  * @created 10.11.2010
  */
-public class PropertyType extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker, IncrementalConstraints {
+public class PropertyType extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraints {
 
 	/**
 	 * 

@@ -30,7 +30,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
-import de.d3web.we.kdom.objects.KnowWETermMarker;
+import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 
@@ -60,7 +60,7 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
  * @author volker_belli
  * @created 13.10.2010
  */
-public class KnowledgeBaseType extends DefaultMarkupType implements KnowWETermMarker {
+public class KnowledgeBaseType extends DefaultMarkupType implements IncrementalMarker {
 
 	public static final String ANNOTATION_ID = "id";
 	public static final String ANNOTATION_VERSION = "version";
