@@ -181,9 +181,9 @@ KBInfo.searchInfoObject = function(phrase, classArray, maxCount, onResult) {
 			while (root && root.nodeName.toLowerCase() != 'matches') root = root.firstChild;
 			// extract result
 			var result = {
-				count: root.getAttribute('count'),
-				hasMore: (root.getAttribute('hasmore') == 'true'),
-				matches: KBInfo._collectNodeValues(root, 'match')
+				count: root ? root.getAttribute('count') : 0,
+				hasMore: root ? (root.getAttribute('hasmore') == 'true') : false,
+				matches: root ? KBInfo._collectNodeValues(root, 'match') : []
 			};
 			// request the info objects for the result in advance
 			KBInfo.prepareInfoObject(result.matches);
