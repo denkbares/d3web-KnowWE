@@ -212,10 +212,10 @@ Guard.createPossibleGuards = function(nodeModel) {
 		//result.push(new Guard('NOP', ' ', ' ')); //does this make sense for FCs?
 	}
 	else if (infoObject.getClassInstance() == KBInfo.QSet) {
-		result.push('Common');
-		result.push(new Guard('NOP', ' ', ' '));
 		result.push('Formula');
 		result.push(new Guard('timeDB', 'eval(${formula})', '${formula}'));
+		result.push('Common');
+		result.push(new Guard('NOP', ' ', ' '));
 	}
 	
 	return result;
@@ -257,6 +257,10 @@ Guard.createPossibleGuards = function(nodeModel) {
 	 		this.possibleGuards.unshift(this.initialGuard);
 	 		this.selectedIndex = 0;
 	 	}
+ 	} else { // if no initial guard is present, choose last one. this would be TRUE in most cases.
+ 		if (this.possibleGuards){
+ 			this.selectedIndex = this.possibleGuards.length - 1;
+ 		}
  	}
  	 	
 	this.setVisible(true);
