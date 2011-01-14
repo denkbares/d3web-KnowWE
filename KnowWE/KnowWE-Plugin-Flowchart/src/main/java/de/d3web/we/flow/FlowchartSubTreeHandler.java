@@ -72,9 +72,8 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		if (KnowWEUtils.getTerminologyHandler(
 				article.getWeb()).areTermDefinitionsModifiedFor(article)) {
-			// ugly hack for now...
+			// ugly hot fix for now...
 			article.setFullParse(this.getClass());
-			return null;
 		}
 
 		KnowledgeBaseManagement kbm = getKBM(article);

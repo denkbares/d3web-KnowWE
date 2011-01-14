@@ -117,7 +117,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 				broker.removeServiceSession(service.getId());
 			}
 		}
-		if (art.isReParse()) {
+		if (art.isReParse() && !art.isSecondBuild()) {
 			String kbOutput = new KBRenderer().renderHTML(art.getTitle(), null, null,
 					art.getWeb());
 			kbCache.put(art.getTitle(), kbOutput);
@@ -135,7 +135,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	@Override
 	public void finishArticle(KnowWEArticle art) {
 		KnowledgeBaseManagement kbm = this.getKBM(art.getTitle());
-		if (art.isReParse()) {
+		if (art.isReParse() && (!art.isPostDestroyFullParse() || art.isSecondBuild())) {
 			String kbOutput = new KBRenderer().renderHTML(art.getTitle(), null, null,
 					art.getWeb());
 			String cached = kbCache.remove(art.getTitle());
