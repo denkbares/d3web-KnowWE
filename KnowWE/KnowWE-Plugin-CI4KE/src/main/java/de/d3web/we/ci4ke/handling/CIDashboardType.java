@@ -22,7 +22,9 @@ package de.d3web.we.ci4ke.handling;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,32 +36,27 @@ import de.d3web.we.kdom.defaultMarkup.AnnotationType;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class CIDashboardType extends DefaultMarkupType {
-
-	// public static final String WEB_KEY = "web";
-	// public static final String MONITORED_ARTICLE_KEY = "monitoredArticle";
-	// public static final String DASHBOARD_ARTICLE_KEY = "dashboardArticle";
 
 	public static final String NAME_KEY = "name";
 	public static final String TEST_KEY = "test";
 	public static final String TRIGGER_KEY = "trigger";
 
 	public static enum CIBuildTriggers {
-		onDemand
-		// , onSave
+		onDemand, onSave
 	}
 
 	private static final DefaultMarkup MARKUP;
 
 	static {
 		MARKUP = new DefaultMarkup("CIDashboard");
-		// MARKUP.addAnnotation(MONITORED_ARTICLE_KEY, true);
 		MARKUP.addAnnotation(NAME_KEY, true);
 		MARKUP.addAnnotation(TEST_KEY, true);
-		MARKUP.addAnnotation(TRIGGER_KEY, true, CIBuildTriggers.values());
+		MARKUP.addAnnotation(TRIGGER_KEY, true);
 	}
 
 	public CIDashboardType() {
@@ -79,14 +76,48 @@ public class CIDashboardType extends DefaultMarkupType {
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<CIDashboardType> s) {
 
-			// TODO is this still neccessary?
-			// AbstractKnowWEObjectType.cleanMessages(article, s,
-			// this.getClass());
+			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 
 			String dashboardName = DefaultMarkupType.getAnnotation(s, NAME_KEY);
 
-			CIBuildTriggers trigger = CIBuildTriggers.valueOf(DefaultMarkupType.
-					getAnnotation(s, TRIGGER_KEY));
+			if (dashboardName == null) return msgs;
+
+			String triggerString = DefaultMarkupType.getAnnotation(s, TRIGGER_KEY);
+
+			if (triggerString == null) return msgs;
+
+			CIBuildTriggers trigger = null;
+
+			Pattern pattern = Pattern.compile("(?:\\w+|\".+?\")");
+
+			Set<String> monitoredArticles = new HashSet<String>();
+			Matcher matcher = pattern.matcher(triggerString);
+			if (matcher.find()) {
+				// get the name of the test
+				try {
+					trigger = CIBuildTriggers.valueOf(matcher.group());
+					// get the monitoredArticles if onSave
+					if (trigger.equals(CIDashboardType.CIBuildTriggers.onSave)) {
+						while (matcher.find()) {
+							String parameter = matcher.group();
+							if (parameter.startsWith("\"") && parameter.endsWith("\"")) {
+								parameter = parameter.substring(1, parameter.length() - 1);
+							}
+							monitoredArticles.add(parameter);
+						}
+					}
+				}
+				catch (IllegalArgumentException e) {
+					msgs.add(new SimpleMessageError("Invalid trigger specified: " + triggerString));
+					return msgs;
+				}
+			}
+			
+			if (trigger.equals(CIBuildTriggers.onSave) && monitoredArticles.isEmpty()) {
+				msgs.add(new SimpleMessageError("Invalid trigger: " + CIBuildTriggers.onSave
+						+ " requires attached articles to monitor."));
+				return msgs;
+			}
 
 			// This map is used for storing tests and their parameter-list
 			// Map<String, List<String>> tests = new HashMap<String,
@@ -95,16 +126,12 @@ public class CIDashboardType extends DefaultMarkupType {
 
 			List<Section<? extends AnnotationType>> annotationSections =
 					DefaultMarkupType.getAnnotationSections(s, TEST_KEY);
-			Pattern pattern = Pattern.compile("(?:\\w+|\".+?\")");
 
 			// iterate over all @test-Annotations
 			for(Section<?> annoSection : annotationSections) {
 				String annotationText = annoSection.getOriginalText();
-				Matcher matcher = pattern.matcher(annotationText);
-				if (!matcher.find()) {
-					// No Testname entered: TODO: Render warning!
-				}
-				else {
+				matcher = pattern.matcher(annotationText);
+				if (matcher.find()) {
 					// get the name of the test
 					String testName = matcher.group();
 					// get the parameters of the test
@@ -121,38 +148,34 @@ public class CIDashboardType extends DefaultMarkupType {
 			}
 
 			CIConfig config = new CIConfig(dashboardName, s.getArticle().getTitle(), tests, trigger);
-
-			// String id = getDashboardID(s);
-
-			// Parse the trigger-parameter and (eventually) register
-			// or deregister a CIHook
-			// if (trigger.equals(CIDashboardType.CIBuildTriggers.onDemand)) {
-			// // the tests of this dashboard should (currently!) be build
-			// // only on Demand. Lets check, if there is a hook registered
-			// // for this dashboard, then deregister it.
-			// CIHookManager.getInstance().deRegisterHook(monitoredArticle,
-			// s.getArticle().getTitle(), id);
-			// }
-			// else if (trigger.equals(CIDashboardType.CIBuildTriggers.onSave))
-			// {
-			// Logger.getLogger(this.getClass().getName()).log(
-			// Level.INFO, ">> CI >> Setting Hook on " + monitoredArticle);
-			//
-			// // Hook registrieren, TODO: Wenn er nicht schon registriert ist!
-			// CIHookManager.getInstance().registerHook(monitoredArticle,
-			// s.getArticle().getTitle(), id);
-			// }
-
+			
+			 // Parse the trigger-parameter and (eventually) register
+			 // a CIHook
+			if (trigger.equals(CIBuildTriggers.onSave)) {
+				// Hook registrieren
+				CIHook ciHook = new CIHook(article.getTitle(), dashboardName, monitoredArticles);
+				CIHookManager.getInstance().registerHook(ciHook);
+				// Store to be able to unregister in destroy method
+				KnowWEUtils.storeObject(s.getArticle().getWeb(), s.getTitle(), s.getID(),
+						CIHook.CIHOOK_STORE_KEY, ciHook);
+			}
+			
 			// Alright, everything seems to be ok. Let's store the CIConfig in
 			// the store
-
-			// KnowWEUtils.storeSectionInfo(s, CIConfig.CICONFIG_STORE_KEY,
-			// config);
 
 			KnowWEUtils.storeObject(s.getArticle().getWeb(), s.getTitle(), s.getID(),
 					CIConfig.CICONFIG_STORE_KEY, config);
 
 			return new ArrayList<KDOMReportMessage>(0);
+		}
+
+		@Override
+		public void destroy(KnowWEArticle article, Section<CIDashboardType> s) {
+			CIHook ciHook = (CIHook) KnowWEUtils.getObjectFromLastVersion(article, s,
+					CIHook.CIHOOK_STORE_KEY);
+			if (ciHook != null) {
+				CIHookManager.getInstance().unregisterHook(ciHook);
+			}
 		}
 	}
 

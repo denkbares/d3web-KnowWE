@@ -23,7 +23,8 @@ package de.d3web.we.ci4ke.handling;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import de.d3web.we.event.ArticleCreatedEvent;
+import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.event.ArticleRegisteredEvent;
 import de.d3web.we.event.Event;
 import de.d3web.we.event.EventListener;
 
@@ -35,17 +36,20 @@ public class CIEventForwarder implements EventListener {
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
 		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(1);
-		events.add(ArticleCreatedEvent.class);
+		events.add(ArticleRegisteredEvent.class);
 		return events;
 	}
 
 	@Override
 	public void notify(Event event) {
-		if (event instanceof ArticleCreatedEvent) {
-			CIHookManager.getInstance().triggerHooks(
-					((ArticleCreatedEvent) event).getArticle().getSection().getID());
+		if (event instanceof ArticleRegisteredEvent) {
+			ArticleRegisteredEvent arEvent = (ArticleRegisteredEvent) event;
+			if (KnowWEEnvironment.getInstance().getArticleManager(
+					arEvent.getArticle().getWeb()).hasInitializedArticles()) {
+				CIHookManager.getInstance().triggerHooks(
+						((ArticleRegisteredEvent) event).getArticle().getSection().getID());
+			}
 		}
-
 	}
 
 }

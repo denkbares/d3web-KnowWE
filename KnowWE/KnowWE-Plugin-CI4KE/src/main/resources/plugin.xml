@@ -98,6 +98,17 @@
 		<parameter id="description" value="CITest EmptyQuestionnaireTest" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="CIDaemonType">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.daemon.CIDaemonType" />
+		<parameter id="name" value="CIDashboardType" />
+		<parameter id="description" value="KnowWEObjectType CIDaemonType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
 	</extension>	
 	
 </plugin>

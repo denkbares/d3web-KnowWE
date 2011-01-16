@@ -20,140 +20,57 @@
 
 package de.d3web.we.ci4ke.handling;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.d3web.we.ci4ke.build.CIBuilder;
 
 /**
- * TODO Comment outdated Das Speichern eines "monitored Articles" soll den Hook
- * auslösen. Die Methode triggerHook(monitoredArticleTitle) löst dazu für jedes
- * registrierte Dashboard einen neuen Build aus. Aufbau der Map: Map(
- * monitoredArticle --> Set( dashboardArticle + "$$$" + dashboardID )) TODO:
- * English comment Mit dashboardArticle UND DashboardID lässt sich ein Dashboard
- * EINDEUTIG und ohne Suchaufwand identifizieren.
  * 
- * @author Marc-Oliver Ochlast
+ * @author Marc-Oliver Ochlast, Albrecht Striffler
  * 
  */
 public class CIHookManager {
 
-	private final Map<String, List<CIHook>> hooks;
+	/**
+	 * Fore each monitored articles a list of hooks are stored.
+	 */
+	private final Map<String, Set<CIHook>> hooks;
 
-	private static final CIHookManager INSTANCE = new CIHookManager();
+	private static final CIHookManager instance = new CIHookManager();
 
 	private CIHookManager() {
-		hooks = new TreeMap<String, List<CIHook>>();
+		hooks = new HashMap<String, Set<CIHook>>();
 	}
 
 	public static CIHookManager getInstance() {
-		return INSTANCE;
+		return instance;
 	}
 
-	/**
-	 * Registers a new onSave hook.
-	 * 
-	 * @param monitoredArticleTitle
-	 * @param dashboardArticleTitle
-	 * @param dashboardID
-	 * @return true, if the hook was successfully registered (or if the hook was
-	 *         already registered!). false if not.
-	 */
-	public boolean registerHook(String monitoredArticleTitle,
-			String dashboardArticleTitle, String dashboardID) {
-
-		CIHook hook = new CIHook(dashboardArticleTitle,
-				dashboardID);
-		return registerHook(monitoredArticleTitle, hook);
-	}
-
-	public boolean registerHook(String monitoredArticleTitle, CIHook hook) {
-		// some serious paramteter checking first!
-		if (monitoredArticleTitle == null || monitoredArticleTitle.isEmpty()) {
-			throw new IllegalArgumentException("monitoredArticleTitle is null or empty!");
-		}
-
-		if (!hooks.containsKey(monitoredArticleTitle)) {
-			// the first hook for this monitoredArticle. init the set
-			List<CIHook> hookList = new ArrayList<CIHook>();
-			hookList.add(hook);
-			// and put it into the hooks map
-			this.hooks.put(monitoredArticleTitle, hookList);
-		}
-		else {
-			List<CIHook> hookList = hooks.get(monitoredArticleTitle);
-			if (!hookList.contains(hook)) {
-				hookList.add(hook);
-				hooks.put(monitoredArticleTitle, hookList);
+	public void registerHook(CIHook hook) {
+		Collection<String> monitoredArticles = hook.getMonitoredArticles();
+		for (String monitoredArticle : monitoredArticles) {
+			Set<CIHook> set = hooks.get(monitoredArticle);
+			if (set == null) {
+				set = new HashSet<CIHook>();
+				hooks.put(monitoredArticle, set);
 			}
-		}
-		return true;
-	}
-
-	public void deRegisterHook(String monitoredArticleTitle,
-			String dashboardArticleTitle, String dashboardID) {
-
-		CIHook hook = new CIHook(dashboardArticleTitle,
-				dashboardID);
-		deRegisterHook(monitoredArticleTitle, hook);
-	}
-
-	public void deRegisterHook(String monitoredArticleTitle, CIHook hook) {
-		// some serious paramteter checking first!
-		if (monitoredArticleTitle == null || monitoredArticleTitle.isEmpty()) {
-			throw new IllegalArgumentException("monitoredArticleTitle is null or empty!");
-		}
-
-		if (containedInAHook(monitoredArticleTitle, hook.getDashboardID())) {
-			List<CIHook> hookList = hooks.get(monitoredArticleTitle);
-			hookList.remove(hook);
-			hooks.put(monitoredArticleTitle, hookList);
+			set.add(hook);
 		}
 	}
 
-	public boolean deRegisterAllHooks(String monitoredArticleTitle) {
-		return false;
-	}
-
-	/**
-	 * Checks, if a specified dashboard holds a hook on a specific monitored
-	 * Article
-	 * 
-	 * @param monitoredArticleTitle
-	 * @return
-	 */
-	public boolean containedInAHook(String monitoredArticleTitle,
-			String dashboardID) {
-
-		List<CIHook> hookList = hooks.get(monitoredArticleTitle);
-		if (hookList == null) return false;
-
-		for (CIHook hook : hookList)
-			if (hook.getDashboardID().equals(dashboardID)) return true;
-
-		return false;
-	}
-
-	/**
-	 * Checks, if a specified dashboard holds a hook on a specific monitored
-	 * Article
-	 * 
-	 * @param monitoredArticleTitle
-	 * @return
-	 */
-	public boolean containedInAHook(String dashboardID) {
-
-		for (Map.Entry<String, List<CIHook>> entry : hooks.entrySet()) {
-			String monitoredArticleTitle = entry.getKey();
-			if (containedInAHook(monitoredArticleTitle, dashboardID)) {
-				return true;
-			}
+	public void unregisterHook(CIHook hook) {
+		Collection<String> monitoredArticles = hook.getMonitoredArticles();
+		for (String monitoredArticle : monitoredArticles) {
+			Set<CIHook> set = hooks.get(monitoredArticle);
+			if (set != null) set.remove(hook);
+			if (set.isEmpty()) hooks.remove(monitoredArticle);
 		}
-		return false;
 	}
 
 	/**
@@ -163,105 +80,16 @@ public class CIHookManager {
 	 */
 	public void triggerHooks(String monitoredArticleTitle) {
 
-		if (hooks.containsKey(monitoredArticleTitle)) {
-			List<CIHook> hookList = hooks.get(monitoredArticleTitle);
-			// Collections.sort(hookList); //sortieren um evtl unnötige
-			// CIBuilder
-			// Instanzen zu vermeiden
-
-			for (CIHook hook : hookList) {
+		Set<CIHook> hookSet = hooks.get(monitoredArticleTitle);
+		if (hookSet != null) {
+			for (CIHook hook : hookSet) {
 				Logger.getLogger(CIEventForwarder.class.getName()).log(
 						Level.INFO, " >> CI >> Constructing and executing " +
 								"new CIBuilder for " + hook);
-				CIBuilder builder = new CIBuilder(hook);
-				builder.executeBuild();
+				new CIBuilder(hook).executeBuild();
 			}
 		}
 	}
 
-	public static class CIHook implements Comparable<CIHook> {
 
-		private final String dashboardArticleTitle;
-		private final String dashboardID;
-
-		public String getDashboardArticleTitle() {
-			return dashboardArticleTitle;
-		}
-
-		public String getDashboardID() {
-			return dashboardID;
-		}
-
-		public CIHook(String dashboardArticleTitle,
-				String dashboardID) {
-
-			super();
-
-			if (dashboardArticleTitle == null || dashboardArticleTitle.isEmpty()) {
-				throw new IllegalArgumentException("dashboardArticleTitle is null or empty!");
-			}
-			if (dashboardID == null || dashboardID.isEmpty()) {
-				throw new IllegalArgumentException("dashboardID is null or empty!");
-			}
-
-			this.dashboardArticleTitle = dashboardArticleTitle;
-			this.dashboardID = dashboardID;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see java.lang.Object#hashCode()
-		 */
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime
-					* result
-					+ ((dashboardArticleTitle == null) ? 0
-							: dashboardArticleTitle.hashCode());
-			result = prime * result
-					+ ((dashboardID == null) ? 0 : dashboardID.hashCode());
-			return result;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see java.lang.Object#equals(java.lang.Object)
-		 */
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) return true;
-			if (obj == null) return false;
-			if (getClass() != obj.getClass()) return false;
-			CIHook other = (CIHook) obj;
-			if (dashboardArticleTitle == null) {
-				if (other.dashboardArticleTitle != null) return false;
-			}
-			else if (!dashboardArticleTitle
-					.equals(other.dashboardArticleTitle)) return false;
-			if (dashboardID == null) {
-				if (other.dashboardID != null) return false;
-			}
-			else if (!dashboardID.equals(other.dashboardID)) return false;
-			return true;
-		}
-
-		/**
-		 * compares two CIHooks by comparing their "dashboardArticleTitle"
-		 * lexicographically
-		 */
-		@Override
-		public int compareTo(CIHook o) {
-			return this.dashboardArticleTitle.compareTo(o.dashboardArticleTitle);
-		}
-
-		@Override
-		public String toString() {
-			return "CIHook [dashboardArticleTitle=" + dashboardArticleTitle
-					+ ", dashboardID=" + dashboardID + "]";
-		}
-	}
 }

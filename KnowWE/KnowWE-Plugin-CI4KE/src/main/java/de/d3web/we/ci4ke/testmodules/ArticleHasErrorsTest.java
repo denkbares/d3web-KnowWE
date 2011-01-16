@@ -19,12 +19,14 @@
 package de.d3web.we.ci4ke.testmodules;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 import de.d3web.we.ci4ke.testing.AbstractCITest;
 import de.d3web.we.ci4ke.testing.CITestResult;
 import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -51,8 +53,10 @@ public class ArticleHasErrorsTest extends AbstractCITest {
 			return new CITestResult(TestResultType.FAILED, "MonitoredArticle not found or invalid!");
 		}
 
-		Collection<KDOMError> messages = KnowWEUtils.getMessagesFromSubtree(moni,
-				moni.getSection(), KDOMError.class);
+		Collection<KDOMError> messages = new LinkedList<KDOMError>();
+		for (Section<?> sec : moni.getReviseIterator().getAllSections()) {
+			messages.addAll(KnowWEUtils.getMessages(moni, sec, KDOMError.class));
+		}
 
 		for (KDOMError message : messages) {
 			// This finds only messages, that are explicitly stored

@@ -31,7 +31,7 @@ import java.util.concurrent.Future;
 import de.d3web.core.utilities.Pair;
 import de.d3web.we.ci4ke.handling.CIConfig;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
-import de.d3web.we.ci4ke.handling.CIHookManager.CIHook;
+import de.d3web.we.ci4ke.handling.CIHook;
 import de.d3web.we.ci4ke.testing.CITest;
 import de.d3web.we.ci4ke.testing.CITestResult;
 import de.d3web.we.ci4ke.util.CIUtilities;
@@ -74,7 +74,7 @@ public class CIBuilder {
 	 * @param hook
 	 */
 	public CIBuilder(CIHook hook) {
-		this(hook.getDashboardArticleTitle(), hook.getDashboardID());
+		this(hook.getDashboardArticleTitle(), hook.getDashboardName());
 	}
 
 	/**

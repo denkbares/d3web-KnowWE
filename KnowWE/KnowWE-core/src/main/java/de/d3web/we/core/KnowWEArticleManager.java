@@ -35,11 +35,13 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.d3web.we.event.ArticleRegisteredEvent;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.UpdatingDependenciesEvent;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 import dummies.KnowWETestWikiConnector;
 
 /**
@@ -150,11 +152,17 @@ public class KnowWEArticleManager {
 		appendTextReplaceNode(root, nodesMap, newText);
 
 		String newArticleSourceText = newText.toString();
-		KnowWEEnvironment.getInstance().getWikiConnector().writeArticleToWikiEnginePersistence(
+		KnowWEWikiConnector wikiConnector = KnowWEEnvironment.getInstance().getWikiConnector();
+		wikiConnector.writeArticleToWikiEnginePersistence(
 				title, newArticleSourceText, map);
-		KnowWEEnvironment.getInstance().buildAndRegisterArticle(map.getUser(),
-				newArticleSourceText, title, web);
 
+		if (wikiConnector instanceof KnowWETestWikiConnector) {
+			// this is only needed for the test environment, in the running
+			// wiki, this is automatically called after the change to the
+			// persistence
+			KnowWEEnvironment.getInstance().buildAndRegisterArticle(map.getUser(),
+					newArticleSourceText, title, web);
+		}
 		return "done";
 	}
 
@@ -286,6 +294,7 @@ public class KnowWEArticleManager {
 						+ web + " in "
 						+ (System.currentTimeMillis() - article.getStartTime())
 						+ "ms <<====");
+		EventManager.getInstance().fireEvent(new ArticleRegisteredEvent(article));
 	}
 
 	public void buildArticlesToRefresh() {
