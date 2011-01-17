@@ -11,8 +11,9 @@ public class CondUnknown extends CondKnown{
 				"UNKNOWN", "UNBEKANNT" };
 	}
 
+	@Override
 	protected Condition createCond(Question q) {
-		return new de.d3web.core.inference.condition.CondKnown(q);
+		return new de.d3web.core.inference.condition.CondUnknown(q);
 	}
 
 	
