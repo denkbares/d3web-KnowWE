@@ -61,8 +61,41 @@ public class Strings {
 	}
 
 	/**
-	 * Returns a copy of the string, with leading and trailing whitespace
-	 * omitted.
+	 * Returns a copy of the string, with trailing whitespace omitted.
+	 * <p>
+	 * If this <code>String</code> object represents an empty character
+	 * sequence, or the first character of character sequence represented by
+	 * this <code>String</code> object has a code greater than
+	 * <code>'&#92;u0020'</code> (the space character), then a reference to this
+	 * <code>String</code> object is returned.
+	 * <p>
+	 * Otherwise, if there is no character with a code greater than
+	 * <code>'&#92;u0020'</code> in the string, then a new <code>String</code>
+	 * object representing an empty string is created and returned.
+	 * <p>
+	 * Otherwise, let <i>k</i> be the index of the first character in the string
+	 * whose code is greater than <code>'&#92;u0020'</code>. A new
+	 * <code>String</code> object is created, representing the substring of this
+	 * string that begins with the character at index <i>k</i>, the result of
+	 * <code>this.substring(<i>k</i>)</code>.
+	 * <p>
+	 * This method may be used to trim whitespace (as defined above) from the
+	 * beginning and end of a string.
+	 * 
+	 * @return A copy of this string with leading white space removed, or this
+	 *         string if it has no leading white space.
+	 */
+	public static String trimRight(String text) {
+		if (text == null) return null;
+		int pos = text.length();
+		while ((pos > 0) && (text.charAt(pos - 1) <= ' ')) {
+			pos--;
+		}
+		return (pos == text.length()) ? text : text.substring(0, pos);
+	}
+
+	/**
+	 * Returns a copy of the string, with leading whitespace omitted.
 	 * <p>
 	 * If this <code>String</code> object represents an empty character
 	 * sequence, or the first character of character sequence represented by
