@@ -69,7 +69,8 @@ public abstract class D3webCondition<T extends KnowWEObjectType>
 
 		@Override
 		public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
-			return super.needsToCreate(article, s) || getCondition(article, s) == null;
+			return super.needsToCreate(article, s)
+					|| s.isOrHasSuccessorNotReusedBy(article.getTitle());
 		}
 
 		@Override

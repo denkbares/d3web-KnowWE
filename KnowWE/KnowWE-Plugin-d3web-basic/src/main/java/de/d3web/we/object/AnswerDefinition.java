@@ -135,13 +135,16 @@ public abstract class AnswerDefinition
 
 			String name = s.get().getTermName(s);
 
+			Section<? extends QuestionDefinition> qDef = s.get().getQuestionSection(s);
+			KnowWEUtils.storeObject(article, s, AnswerDefinition.QUESTION_FOR_ANSWER_KEY, qDef);
+			// storing the current question needs to happen first, so the method
+			// getUniqueTermIdentifier() can use the right question.
+
 			if (!KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
 					article, s)) {
 				return new ArrayList<KDOMReportMessage>(0);
 			}
 
-			Section<? extends QuestionDefinition> qDef = s
-					.get().getQuestionSection(s);
 
 			if (qDef == null) {
 				// this situation can only occur with incremental update
@@ -163,9 +166,6 @@ public abstract class AnswerDefinition
 						"no valid question - " + name,
 						this.getClass()));
 			}
-
-			KnowWEUtils.storeObject(article, s,
-					AnswerDefinition.QUESTION_FOR_ANSWER_KEY, qDef);
 
 			Question q = qDef.get().getTermObject(article, qDef);
 
