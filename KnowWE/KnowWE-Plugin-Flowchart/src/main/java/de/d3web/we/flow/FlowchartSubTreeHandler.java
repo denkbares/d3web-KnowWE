@@ -100,6 +100,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		Flow flow = FlowFactory.getInstance().createFlow(id, name, nodes, edges);
 		flow.setAutostart(autostart);
+		flow.setOrigin(s.getID());
 
 		DiaFluxUtils.addFlow(flow, kbm.getKnowledgeBase());
 
@@ -238,9 +239,11 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 					String text = getXMLContentText(nodeInfo);
 
 					errors.add(new ObjectCreationError("NodeHandler "
-							+ handler.getClass().getSimpleName() + " could not create node for: " + text, getClass()));
+							+ handler.getClass().getSimpleName() + " could not create node for: "
+							+ text, getClass()));
 
-					result.add(FlowFactory.getInstance().createCommentNode(id, "Surrogate for node of type " + text));
+					result.add(FlowFactory.getInstance().createCommentNode(id,
+							"Surrogate for node of type " + text));
 				}
 
 			}

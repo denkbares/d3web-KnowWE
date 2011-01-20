@@ -30,6 +30,7 @@ import de.d3web.core.session.CaseObjectSource;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.interviewmanager.Form;
 import de.d3web.diaFlux.flow.DiaFluxCaseObject;
+import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.flow.IEdge;
 import de.d3web.diaFlux.flow.INode;
@@ -37,6 +38,7 @@ import de.d3web.diaFlux.flow.INodeData;
 import de.d3web.diaFlux.flow.ISupport;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.inference.IPath;
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.flow.type.DiaFluxStateType;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -63,7 +65,7 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 			master = article.getTitle();
 		}
 
-		Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
+		Session session = D3webUtils.getSession(master, user, article.getWeb());
 
 		if (!DiaFluxUtils.isFlowCase(session)) {
 			string.append("No Flowchart found.");
@@ -72,7 +74,18 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 
 		List<Section<FlowchartType>> flows = new ArrayList<Section<FlowchartType>>();
 
-		article.getSection().findSuccessorsOfType(FlowchartType.class, flows);
+		FlowSet flowSet = DiaFluxUtils.getFlowSet(session);
+
+		for (Flow flow : flowSet) {
+
+			if (!DiaFluxUtils.getPath(flow, session).isActive()) continue;
+
+			String origin = flow.getOrigin();
+			if (origin == null) continue;
+			Section<FlowchartType> node = (Section<FlowchartType>) KnowWEEnvironment.getInstance().getArticleManager(
+					article.getWeb()).findNode(origin);
+			flows.add(node);
+		}
 
 		if (flows.isEmpty()) {
 			string.append("No Flowcharts found in KB.");
