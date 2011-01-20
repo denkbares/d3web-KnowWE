@@ -57,6 +57,12 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 	@Override
 	public void render(KnowWEArticle article, Section<DiaFluxStateType> sec, KnowWEUserContext user, StringBuilder string) {
 
+		String master = DiaFluxStateType.getMaster(sec);
+
+		if (master == null) {
+			master = article.getTitle();
+		}
+
 		Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
 
 		if (!DiaFluxUtils.isFlowCase(session)) {

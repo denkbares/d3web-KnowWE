@@ -18,7 +18,9 @@
  */
 package de.d3web.we.flow.type;
 
+import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.flow.FlowchartStateRender;
+import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -32,18 +34,25 @@ import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
  */
 public class DiaFluxStateType extends DefaultMarkupType {
 
+	private static final String ANNOTATION_MASTER = "master";
 	private static final DefaultMarkup MARKUP;
+
 	static {
 		MARKUP = new DefaultMarkup("DiaFluxState");
 	}
 
 	public DiaFluxStateType() {
 		super(MARKUP);
+		MARKUP.addAnnotation(ANNOTATION_MASTER, false);
 	}
 
 	@Override
 	public KnowWEDomRenderer<DiaFluxStateType> getRenderer() {
 		return new ReRenderSectionMarkerRenderer<DiaFluxStateType>(new FlowchartStateRender());
+	}
+
+	public static String getMaster(Section<DiaFluxStateType> section) {
+		return DefaultMarkupType.getAnnotation(section, ANNOTATION_MASTER);
 	}
 
 }
