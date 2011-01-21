@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
@@ -39,13 +38,7 @@ public class DownloadKnowledgeBase extends AbstractAction {
 			}
 			// write the timestamp of the creation (Now!) into the knowledge
 			// base
-			String timestamp = "no timestamp";
-			String formated = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-			if (formated != null) {
-				timestamp = formated;
-			}
-
-			base.getInfoStore().addValue(BasicProperties.CREATED, timestamp);
+			base.getInfoStore().addValue(BasicProperties.CREATED, new Date());
 		}
 
 		URL home = handler.saveKnowledge(topic);
