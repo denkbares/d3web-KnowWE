@@ -219,7 +219,7 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 
 			@Override
 			public boolean violatedConstraints(KnowWEArticle article, Section<AbstractXMLObjectType> s) {
-				return !s.get().isIgnoringPackageCompile();
+				return s.get().isIgnoringPackageCompile();
 			}
 
 		}

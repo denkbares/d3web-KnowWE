@@ -84,7 +84,6 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 				if (!s.isReusedBy(article.getTitle()) || KnowWEUtils.getTerminologyHandler(
 							article.getWeb()).areTermDefinitionsModifiedFor(article)) {
 					article.setFullParse(this.getClass());
-					return true;
 				}
 			}
 			return false;
