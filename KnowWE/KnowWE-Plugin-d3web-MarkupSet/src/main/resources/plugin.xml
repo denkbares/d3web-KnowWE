@@ -106,5 +106,15 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="CoveringListSettingsMarkup">
+		<parameter id="class" value="de.d3web.we.kdom.xcl.settings.CoveringListSettingsMarkup" />
+		<parameter id="name" value="CoveringListSettingsMarkup" />
+		<parameter id="description" value="KnowWEObjectType CoveringListSettingsMarkup" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
 
 </plugin>
