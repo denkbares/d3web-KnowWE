@@ -20,9 +20,9 @@
 package de.d3web.we.object;
 
 import de.d3web.core.knowledge.terminology.QASet;
-import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.subtreeHandler.IncrementalConstraint;
 
 /**
  * Abstract type for the Definition of QASets, i.e. questions and
@@ -35,14 +35,14 @@ import de.d3web.we.kdom.Section;
  */
 public abstract class QASetDefinition<TermObject extends QASet>
 		extends D3webTermDefinition<TermObject>
-		implements IncrementalConstraints {
+		implements IncrementalConstraint<QASetDefinition<? extends QASet>> {
 
 	public QASetDefinition(Class<TermObject> termObjectClass) {
 		super(termObjectClass);
 	}
 
 	@Override
-	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+	public boolean violatedConstraints(KnowWEArticle article, Section<QASetDefinition<? extends QASet>> s) {
 		return false;
 	}
 

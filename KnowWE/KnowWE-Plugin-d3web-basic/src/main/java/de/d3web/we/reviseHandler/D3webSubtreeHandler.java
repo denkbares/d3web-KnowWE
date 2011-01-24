@@ -28,10 +28,16 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.IncrementalMarker;
+import de.d3web.we.kdom.subtreeHandler.ConstraintModule;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends SubtreeHandler<T> {
+
+	public D3webSubtreeHandler() {
+		registerConstraintModule(new D3webCreateConstraints<T>());
+		registerConstraintModule(new D3webDestroyConstraints<T>());
+	}
 
 	/**
 	 * @param article is the article you need the KBM from
@@ -51,50 +57,12 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	 * Checking for a Section with an KnowWEObjectType implementing
 	 * IncrementalMarker is necessary for the compatibility with
 	 * KnowWEObjectTypes that do not use KnowWETerms. If the KnowWEObjectType of
-	 * the Section does not implement IncrementalMarker, needsToCreate() might
-	 * force a full parse. TermDefinition, TermReference and KnowWETerm already
-	 * implement IncrementalMarker, so there is no need to implement again.
-	 */
-	@Override
-	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
-		if (!(s.get() instanceof IncrementalMarker)) {
-			// This D3webSubtreeHandler compiles d3web knowledge without
-			// regarding TermDefinitions or TermReferences (the section does not
-			// implement IncrementalMarker).
-			// So if the Section has changed, we need a full parse, because it
-			// is possible, that new terminology gets added without notifying
-			// references.
-			// If there already are registered changes to the terminology, we
-			// also need a full parse, even if the Section hasn't changed: In
-			// this case it is possible, that the knowledge in this Section is
-			// references to the changed definitions, so the knowledge in this
-			// Section is affected and needs to be compiled again. Since we are
-			// past destroying and are no longer able to just remove knowledge
-			// from the knowledge base, a simple "create" might not be enough.
-			if (!s.isReusedBy(article.getTitle()) || KnowWEUtils.getTerminologyHandler(
-						article.getWeb()).areTermDefinitionsModifiedFor(article)) {
-				article.setFullParse(this.getClass());
-			}
-		}
-		return super.needsToCreate(article, s);
-	}
-
-	/*
-	 * Checking for a Section with an KnowWEObjectType implementing
-	 * IncrementalMarker is necessary for the compatibility with
-	 * KnowWEObjectTypes that do not use KnowWETerms. If the KnowWEObjectType of
 	 * the Section does not implement KnowWETermMarker, it might not be notified
 	 * of the changes to the TermDefinitions, so we destroy anyway.
 	 * TermDefinition, TermReference and KnowWETerm already implement
 	 * IncrementalMarker, so there is no need to implement again.
 	 */
-	@Override
-	public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
-		return super.needsToDestroy(article, s)
-				|| (!(s.get() instanceof IncrementalMarker)
-						&& KnowWEUtils.getTerminologyHandler(article.getWeb()).areTermDefinitionsModifiedFor(
-								article));
-	}
+
 
 	@Override
 	public void destroy(KnowWEArticle article, Section<T> s) {
@@ -102,4 +70,40 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 		return;
 	}
 
+	// ++++++++++++++++++++++ Constraint classes ++++++++++++++++++++++ //
+
+	private class D3webCreateConstraints<T2 extends KnowWEObjectType> extends ConstraintModule<T2> {
+
+		public D3webCreateConstraints() {
+			super(Operator.DONT_COMPILE_IF_VIOLATED, Purpose.CREATE);
+		}
+
+		@Override
+		public boolean violatedConstraints(KnowWEArticle article, Section<T2> s) {
+			if (!(s.get() instanceof IncrementalMarker)) {
+				if (!s.isReusedBy(article.getTitle()) || KnowWEUtils.getTerminologyHandler(
+							article.getWeb()).areTermDefinitionsModifiedFor(article)) {
+					article.setFullParse(this.getClass());
+					return true;
+				}
+			}
+			return false;
+		}
+
+	}
+	
+	private class D3webDestroyConstraints<T2 extends KnowWEObjectType> extends ConstraintModule<T2> {
+
+		public D3webDestroyConstraints() {
+			super(Operator.COMPILE_IF_VIOLATED, Purpose.DESTROY);
+		}
+
+		@Override
+		public boolean violatedConstraints(KnowWEArticle article, Section<T2> s) {
+			return (!(s.get() instanceof IncrementalMarker) && KnowWEUtils.getTerminologyHandler(
+					article.getWeb()).areTermDefinitionsModifiedFor(
+							article));
+		}
+
+	}
 }

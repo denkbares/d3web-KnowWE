@@ -40,7 +40,7 @@ public class QuestionTreeAnswerDefinition extends AnswerDefinition {
 	}
 
 	@Override
-	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+	public boolean violatedConstraints(KnowWEArticle article, Section<AnswerDefinition> s) {
 		return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 	}
 

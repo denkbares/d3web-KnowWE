@@ -117,4 +117,5 @@ public interface KnowWEObjectType extends KnowWEType {
 	public TreeMap<Priority, List<SubtreeHandler<? extends KnowWEObjectType>>> getSubtreeHandlers();
 
 	public List<SubtreeHandler<? extends KnowWEObjectType>> getSubtreeHandlers(Priority p);
+
 }

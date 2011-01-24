@@ -24,7 +24,6 @@ import java.util.Collection;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
@@ -35,10 +34,11 @@ import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.subtreeHandler.IncrementalConstraint;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class ArticleToPackageFlag extends DefaultMarkupType implements IncrementalConstraints {
+public class ArticleToPackageFlag extends DefaultMarkupType implements IncrementalConstraint<ArticleToPackageFlag> {
 
 	private static DefaultMarkup m = null;
 
@@ -65,7 +65,7 @@ public class ArticleToPackageFlag extends DefaultMarkupType implements Increment
 	}
 
 	@Override
-	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+	public boolean violatedConstraints(KnowWEArticle article, Section<ArticleToPackageFlag> s) {
 		return !s.getArticle().getSection().isReusedBy(s.getTitle());
 	}
 

@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
@@ -32,15 +33,12 @@ import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.IncrementalMarker;
-import de.d3web.we.kdom.questionTree.QuestionLine.QuestionTypeDeclaration;
-import de.d3web.we.kdom.questionTree.extension.InlineIndicationCondition;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -57,10 +55,11 @@ import de.d3web.we.kdom.sectionFinder.OneOfStringEnumFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.StringEnumChecker;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
+import de.d3web.we.kdom.subtreeHandler.IncrementalConstraint;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
-import de.d3web.we.object.QuestionDefinition.QuestionType;
 import de.d3web.we.object.QuestionnaireDefinition;
+import de.d3web.we.object.QuestionDefinition.QuestionType;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
@@ -161,7 +160,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		}
 
 		@Override
-		public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+		public boolean violatedConstraints(KnowWEArticle article, Section<QASetDefinition<? extends QASet>> s) {
 			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
 
@@ -178,13 +177,13 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class NumBounds extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraints {
+	static class NumBounds extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraint<NumBounds> {
 
 		public static final char BOUNDS_OPEN = '(';
 		public static final char BOUNDS_CLOSE = ')';
 
 		@Override
-		public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+		public boolean violatedConstraints(KnowWEArticle article, Section<NumBounds> s) {
 			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
 
@@ -325,7 +324,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class NumUnit extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraints {
+	static class NumUnit extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraint<NumUnit> {
 
 		public static final char UNIT_OPEN = '{';
 		public static final char UNIT_CLOSE = '}';
@@ -338,7 +337,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		}
 
 		@Override
-		public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+		public boolean violatedConstraints(KnowWEArticle article, Section<NumUnit> s) {
 			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
 
@@ -402,10 +401,10 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class AbstractFlag extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraints {
+	static class AbstractFlag extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraint<AbstractFlag> {
 
 		@Override
-		public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+		public boolean violatedConstraints(KnowWEArticle article, Section<AbstractFlag> s) {
 			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
 
@@ -456,12 +455,12 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class QuestionText extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraints {
+	static class QuestionText extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraint<QuestionText> {
 
 		private static final String QTEXT_START_SYMBOL = "~";
 
 		@Override
-		public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+		public boolean violatedConstraints(KnowWEArticle article, Section<QuestionText> s) {
 			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
 

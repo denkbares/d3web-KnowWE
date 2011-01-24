@@ -28,7 +28,6 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.IncrementalMarker;
@@ -37,11 +36,12 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.InvalidNumberError;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
+import de.d3web.we.kdom.subtreeHandler.IncrementalConstraint;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.dashtree.DashTreeElement;
 import de.knowwe.core.dashtree.DashTreeUtils;
 
-public class NumericCondLine extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraints {
+public class NumericCondLine extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraint<NumericCondLine> {
 
 	@Override
 	protected void init() {
@@ -156,7 +156,7 @@ public class NumericCondLine extends DefaultAbstractKnowWEObjectType implements 
 	}
 
 	@Override
-	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+	public boolean violatedConstraints(KnowWEArticle article, Section<NumericCondLine> s) {
 		return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 	}
 

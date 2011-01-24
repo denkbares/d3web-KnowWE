@@ -28,7 +28,7 @@ import de.knowwe.core.dashtree.DashTreeUtils;
 public class SolutionTreeSolutionDefinition extends SolutionDefinition {
 
 	@Override
-	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+	public boolean violatedConstraints(KnowWEArticle article, Section<SolutionDefinition> s) {
 		return DashTreeUtils.isChangeInAncestorSubtree(article, s, 0);
 	}
 

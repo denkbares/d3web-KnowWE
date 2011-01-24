@@ -32,6 +32,7 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.ConstraintModule;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -193,11 +194,7 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 
 		public RegisterPackageDefinitionHandler() {
 			super(true);
-		}
-
-		@Override
-		public boolean needsToCreate(KnowWEArticle article, Section<AbstractXMLObjectType> s) {
-			return super.needsToCreate(article, s) && !s.get().isIgnoringPackageCompile();
+			this.registerConstraintModule(new IgnorePackageConstraint());
 		}
 
 		@Override
@@ -209,14 +206,22 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 		}
 
 		@Override
-		public boolean needsToDestroy(KnowWEArticle article, Section<AbstractXMLObjectType> s) {
-			return super.needsToDestroy(article, s) && !s.get().isIgnoringPackageCompile();
-		}
-
-		@Override
 		public void destroy(KnowWEArticle article, Section<AbstractXMLObjectType> s) {
 			KnowWEEnvironment.getInstance().getPackageManager(
 					article.getWeb()).removeSectionFromAllPackages(s);
+		}
+
+		private class IgnorePackageConstraint extends ConstraintModule<AbstractXMLObjectType> {
+
+			public IgnorePackageConstraint() {
+				super(Operator.DONT_COMPILE_IF_VIOLATED, Purpose.CREATE_AND_DESTROY);
+			}
+
+			@Override
+			public boolean violatedConstraints(KnowWEArticle article, Section<AbstractXMLObjectType> s) {
+				return !s.get().isIgnoringPackageCompile();
+			}
+
 		}
 
 	}

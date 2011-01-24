@@ -33,6 +33,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
+import de.d3web.we.kdom.questionTree.RootQuestionChangeConstraint;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
@@ -147,16 +148,8 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	static class CreateScoringRuleHandler extends D3webSubtreeHandler<SolutionReference> {
 
-		@Override
-		public boolean needsToCreate(KnowWEArticle article, Section<SolutionReference> s) {
-			return super.needsToCreate(article, s)
-					|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
-		}
-
-		@Override
-		public boolean needsToDestroy(KnowWEArticle article, Section<SolutionReference> s) {
-			return super.needsToDestroy(article, s)
-					|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
+		public CreateScoringRuleHandler() {
+			this.registerConstraintModule(new RootQuestionChangeConstraint<SolutionReference>());
 		}
 
 		@Override

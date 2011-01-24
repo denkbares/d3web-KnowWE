@@ -28,6 +28,7 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SuccessorNotReusedConstraint;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -67,16 +68,8 @@ public abstract class D3webCondition<T extends KnowWEObjectType>
 
 	private class CondCreateHandler extends D3webSubtreeHandler<T> {
 
-		@Override
-		public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
-			return super.needsToCreate(article, s)
-					|| s.isOrHasSuccessorNotReusedBy(article.getTitle());
-		}
-
-		@Override
-		public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
-			return super.needsToDestroy(article, s)
-					|| s.isOrHasSuccessorNotReusedBy(article.getTitle());
+		public CondCreateHandler() {
+			this.registerConstraintModule(new SuccessorNotReusedConstraint<T>());
 		}
 
 		@Override

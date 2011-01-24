@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -39,6 +40,7 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.dashtree.DashTreeElement;
@@ -75,7 +77,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements Incre
 		}
 
 		@Override
-		public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+		public boolean violatedConstraints(KnowWEArticle article, Section<QASetDefinition<? extends QASet>> s) {
 			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
 
@@ -91,12 +93,6 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements Incre
 	 * 
 	 */
 	static class CreateSubQuestionnaireRelationHandler extends D3webSubtreeHandler<QClassLine> {
-
-		@Override
-		public boolean needsToCreate(KnowWEArticle article, Section<QClassLine> s) {
-			return super.needsToCreate(article, s)
-					|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
-		}
 
 		@Override
 		public void destroy(KnowWEArticle article, Section<QClassLine> s) {

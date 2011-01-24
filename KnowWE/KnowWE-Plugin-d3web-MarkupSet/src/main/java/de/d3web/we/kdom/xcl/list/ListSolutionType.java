@@ -37,6 +37,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.NonEmptyLineSectionFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
+import de.d3web.we.kdom.subtreeHandler.ConstraintModule;
 import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.object.SolutionDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
@@ -83,11 +84,18 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType implements
 	 */
 	class XCLModelCreator extends D3webSubtreeHandler<ListSolutionType> {
 
-		@Override
-		public boolean needsToCreate(KnowWEArticle article, Section<ListSolutionType> s) {
-			return super.needsToCreate(article, s)
-					|| !s.findSuccessor(SolutionDefinition.class).isReusedBy(
-							article.getTitle());
+		public XCLModelCreator() {
+			this.registerConstraintModule(new XCLModelCreatorConstraint());
+		}
+
+		private class XCLModelCreatorConstraint extends ConstraintModule<ListSolutionType> {
+
+			@Override
+			public boolean violatedConstraints(KnowWEArticle article, Section<ListSolutionType> s) {
+				return !s.findSuccessor(SolutionDefinition.class).isReusedBy(
+						article.getTitle());
+			}
+
 		}
 
 		@Override
@@ -185,6 +193,7 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType implements
 
 					}
 				}
+
 			}
 
 		}

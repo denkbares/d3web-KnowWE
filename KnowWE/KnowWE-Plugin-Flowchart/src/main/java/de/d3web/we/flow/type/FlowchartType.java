@@ -23,13 +23,13 @@ package de.d3web.we.flow.type;
 import de.d3web.we.flow.FlowchartRenderer;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
 import de.d3web.we.flow.type.FlowchartXMLHeadType.FlowchartTermDef;
-import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.InvalidKDOMSchemaModificationOperation;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.subtreeHandler.IncrementalConstraint;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.kdom.xml.XMLHead;
 import de.d3web.we.utils.KnowWEUtils;
@@ -38,7 +38,7 @@ import de.d3web.we.utils.KnowWEUtils;
  * @author Reinhard Hatko
  * @created on: 09.10.2009
  */
-public class FlowchartType extends AbstractXMLObjectType implements IncrementalMarker, IncrementalConstraints {
+public class FlowchartType extends AbstractXMLObjectType implements IncrementalMarker, IncrementalConstraint<FlowchartType> {
 
 	protected KnowWEDomRenderer<FlowchartType> renderer = new FlowchartRenderer();
 
@@ -79,7 +79,7 @@ public class FlowchartType extends AbstractXMLObjectType implements IncrementalM
 	}
 
 	@Override
-	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+	public boolean violatedConstraints(KnowWEArticle article, Section<FlowchartType> s) {
 		return KnowWEUtils.getTerminologyHandler(
 				article.getWeb()).areTermDefinitionsModifiedFor(article);
 	}

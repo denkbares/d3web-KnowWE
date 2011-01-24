@@ -31,7 +31,6 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
@@ -42,6 +41,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.report.message.UnexpectedSequence;
+import de.d3web.we.kdom.subtreeHandler.IncrementalConstraint;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -61,7 +61,7 @@ import de.d3web.we.utils.KnowWEUtils;
  */
 public abstract class AnswerDefinition
 		extends D3webTermDefinition<Choice>
-		implements IncrementalConstraints, NotUniqueKnowWETerm<Choice> {
+		implements IncrementalConstraint<AnswerDefinition>, NotUniqueKnowWETerm<Choice> {
 
 	private static final String QUESTION_FOR_ANSWER_KEY = "QUESTION_FOR_ANSWER_KEY";
 
@@ -86,7 +86,7 @@ public abstract class AnswerDefinition
 	public abstract Section<? extends QuestionDefinition> getQuestionSection(Section<? extends AnswerDefinition> s);
 
 	@Override
-	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+	public boolean violatedConstraints(KnowWEArticle article, Section<AnswerDefinition> s) {
 		return false;
 	}
 

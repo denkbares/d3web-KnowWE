@@ -38,6 +38,7 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
+import de.d3web.we.kdom.questionTree.RootQuestionChangeConstraint;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
@@ -90,16 +91,8 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	static class CreateSetValueRuleHandler extends D3webSubtreeHandler<QuestionReference> {
 
-		@Override
-		public boolean needsToCreate(KnowWEArticle article, Section<QuestionReference> s) {
-			return super.needsToCreate(article, s)
-					|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
-		}
-
-		@Override
-		public boolean needsToDestroy(KnowWEArticle article, Section<QuestionReference> s) {
-			return super.needsToDestroy(article, s)
-					|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
+		public CreateSetValueRuleHandler() {
+			this.registerConstraintModule(new RootQuestionChangeConstraint<QuestionReference>());
 		}
 
 		@Override

@@ -56,6 +56,8 @@ import de.d3web.we.kdom.sectionFinder.EmbracedContentFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.sectionFinder.UnquotedExpressionFinder;
+import de.d3web.we.kdom.subtreeHandler.ConstraintModule;
+import de.d3web.we.kdom.subtreeHandler.SuccessorNotReusedConstraint;
 import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.object.SolutionDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
@@ -183,22 +185,13 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 			private final String relationStoreKey = "XCLRELATION_STORE_KEY";
 
-			private Section<SolutionDefinition> getCorrespondingSolutionDef(KnowWEArticle article, Section<CoveringRelation> s) {
-				return s.getFather().getFather().findSuccessor(SolutionDefinition.class);
+			public CreateXCLRelationHandler() {
+				this.registerConstraintModule(new SuccessorNotReusedConstraint<CoveringRelation>());
+				this.registerConstraintModule(new CreateXCLRelationConstraint());
 			}
 
-			@Override
-			public boolean needsToCreate(KnowWEArticle article, Section<CoveringRelation> s) {
-
-				// TODO: handle this case...
-				Section<SolutionDefinition> solutionDef = getCorrespondingSolutionDef(article, s);
-				if (solutionDef == null) {
-					return false;
-				}
-
-				return super.needsToCreate(article, s)
-						|| !solutionDef.isReusedBy(article.getTitle())
-						|| s.isOrHasSuccessorNotReusedBy(article.getTitle());
+			private Section<SolutionDefinition> getCorrespondingSolutionDef(KnowWEArticle article, Section<CoveringRelation> s) {
+				return s.getFather().getFather().findSuccessor(SolutionDefinition.class);
 			}
 
 			/*
@@ -302,12 +295,6 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 			}
 
 			@Override
-			public boolean needsToDestroy(KnowWEArticle article, Section<CoveringRelation> s) {
-				return super.needsToDestroy(article, s)
-						|| s.isOrHasSuccessorNotReusedBy(article.getTitle());
-			}
-
-			@Override
 			public void destroy(KnowWEArticle article, Section<CoveringRelation> s) {
 				Section<SolutionDefinition> soltuionDef = getCorrespondingSolutionDef(article, s);
 
@@ -325,6 +312,24 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 				if (rel == null) return;
 				xclModel.removeRelation(rel);
+
+			}
+
+			private class CreateXCLRelationConstraint extends ConstraintModule<CoveringRelation> {
+
+				public CreateXCLRelationConstraint() {
+					super(Operator.COMPILE_IF_VIOLATED, Purpose.CREATE);
+				}
+
+				@Override
+				public boolean violatedConstraints(KnowWEArticle article, Section<CoveringRelation> s) {
+					Section<SolutionDefinition> solutionDef = getCorrespondingSolutionDef(article,
+							s);
+					if (solutionDef == null) {
+						return false;
+					}
+					return !solutionDef.isReusedBy(article.getTitle());
+				}
 
 			}
 

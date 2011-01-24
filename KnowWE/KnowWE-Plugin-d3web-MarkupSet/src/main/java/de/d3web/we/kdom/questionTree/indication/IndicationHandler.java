@@ -38,6 +38,7 @@ import de.d3web.we.kdom.questionTree.NumericCondLine;
 import de.d3web.we.kdom.questionTree.QuestionDashTree;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
 import de.d3web.we.kdom.questionTree.QuestionTreeAnswerDefinition;
+import de.d3web.we.kdom.questionTree.RootQuestionChangeConstraint;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
@@ -63,18 +64,7 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 	}
 
 	private IndicationHandler() {
-	}
-
-	@Override
-	public boolean needsToCreate(KnowWEArticle article, Section<KnowWETerm<?>> s) {
-		return super.needsToCreate(article, s)
-				|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
-	}
-
-	@Override
-	public boolean needsToDestroy(KnowWEArticle article, Section<KnowWETerm<?>> s) {
-		return super.needsToDestroy(article, s)
-				|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
+		this.registerConstraintModule(new RootQuestionChangeConstraint<KnowWETerm<?>>());
 	}
 
 	@Override

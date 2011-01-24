@@ -37,10 +37,13 @@ import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.RelationCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.d3web.we.kdom.subtreeHandler.ConstraintModule.Operator;
+import de.d3web.we.kdom.subtreeHandler.ConstraintModule.Purpose;
 import de.d3web.we.object.SolutionDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.knowwe.core.dashtree.AncestorSubtreeChangeConstraint;
 import de.knowwe.core.dashtree.DashTreeElementContent;
 import de.knowwe.core.dashtree.DashTreeUtils;
 import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
@@ -100,10 +103,9 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 	 */
 	class CreateSubSolutionRelationHandler extends D3webSubtreeHandler<SolutionDashTreeElementContent> {
 
-		@Override
-		public boolean needsToCreate(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
-			return super.needsToCreate(article, s)
-					|| DashTreeUtils.isChangeInAncestorSubtree(article, s, 0);
+		public CreateSubSolutionRelationHandler() {
+			this.registerConstraintModule(new AncestorSubtreeChangeConstraint<SolutionDashTreeElementContent>(
+					0, Operator.COMPILE_IF_VIOLATED, Purpose.CREATE));
 		}
 
 		@Override

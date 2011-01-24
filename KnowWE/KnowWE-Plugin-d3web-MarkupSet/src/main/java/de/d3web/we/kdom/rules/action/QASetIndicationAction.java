@@ -37,6 +37,7 @@ import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NoSuchObjectError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.d3web.we.kdom.subtreeHandler.ModifiedTermsConstraint;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.object.QuestionReference;
@@ -101,11 +102,8 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 	 */
 	static class SetTypeHandler extends SubtreeHandler<AnonymousType> {
 
-		@Override
-		public boolean needsToCreate(KnowWEArticle article, Section<AnonymousType> s) {
-			return super.needsToCreate(article, s)
-					|| KnowWEUtils.getTerminologyHandler(article.getWeb()).areTermDefinitionsModifiedFor(
-							article);
+		public SetTypeHandler() {
+			this.registerConstraintModule(new ModifiedTermsConstraint<AnonymousType>());
 		}
 
 		@Override

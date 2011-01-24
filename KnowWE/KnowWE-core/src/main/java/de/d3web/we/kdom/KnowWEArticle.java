@@ -526,9 +526,9 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	 * @param source is just for tracking...
 	 */
 	public void setFullParse(Class<?> source) {
-		if (this.postPreDestroy) this.postPreDestroyFullParse = true;
-		if (this.postDestroy) this.postDestroyFullParse = true;
 		if (!this.fullParse) {
+			if (this.postPreDestroy) this.postPreDestroyFullParse = true;
+			if (this.postDestroy) this.postDestroyFullParse = true;
 			sec.setNotCompiledByRecursively(title);
 			EventManager.getInstance().fireEvent(new FullParseEvent(this));
 		}

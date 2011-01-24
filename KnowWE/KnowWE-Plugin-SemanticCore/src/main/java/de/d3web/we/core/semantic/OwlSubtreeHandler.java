@@ -30,6 +30,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.kdom.subtreeHandler.SuccessorNotReusedConstraint;
 
 /**
  * @author kazamatzuri
@@ -44,19 +45,9 @@ public abstract class OwlSubtreeHandler<T extends KnowWEObjectType> extends
 
 	public OwlSubtreeHandler() {
 		super(true);
+		this.registerConstraintModule(new SuccessorNotReusedConstraint<T>());
 	}
 
-	@Override
-	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
-		return super.needsToCreate(article, s)
-						|| s.isOrHasSuccessorNotReusedBy(article.getTitle());
-	}
-
-	@Override
-	public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
-		return super.needsToDestroy(article, s)
-						|| s.isOrHasSuccessorNotReusedBy(article.getTitle());
-	}
 
 	@Override
 	public void destroy(KnowWEArticle article, Section<T> s) {

@@ -59,6 +59,7 @@ import de.d3web.we.kdom.rule.ConditionActionRuleContent;
 import de.d3web.we.kdom.rules.action.D3webRuleAction;
 import de.d3web.we.kdom.rules.action.RuleAction;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderDivCorrectTrimmed;
+import de.d3web.we.kdom.subtreeHandler.SuccessorNotReusedConstraint;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
@@ -133,10 +134,8 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 	 */
 	class RuleCompiler extends D3webSubtreeHandler<ConditionActionRuleContent> {
 
-		@Override
-		public boolean needsToCreate(KnowWEArticle article, Section<ConditionActionRuleContent> s) {
-			return super.needsToCreate(article, s)
-					|| s.isOrHasSuccessorNotReusedBy(article.getTitle());
+		public RuleCompiler() {
+			this.registerConstraintModule(new SuccessorNotReusedConstraint<ConditionActionRuleContent>());
 		}
 
 		@Override
@@ -178,12 +177,6 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 					D3webModule.getKwikiBundle_d3web().
 							getString("KnowWE.rulesNew.notcreated")
 					));
-		}
-
-		@Override
-		public boolean needsToDestroy(KnowWEArticle article, Section<ConditionActionRuleContent> s) {
-			return super.needsToDestroy(article, s)
-					|| s.isOrHasSuccessorNotReusedBy(article.getTitle());
 		}
 
 		@Override

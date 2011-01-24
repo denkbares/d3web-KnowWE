@@ -26,7 +26,6 @@ import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
@@ -36,6 +35,7 @@ import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.kdom.subtreeHandler.IncrementalConstraint;
 import de.d3web.we.object.ContentDefinition;
 import de.d3web.we.object.IDObjectReference;
 import de.d3web.we.object.LocaleDefinition;
@@ -50,7 +50,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Markus Friedrich (denkbares GmbH)
  * @created 10.11.2010
  */
-public class PropertyType extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraints {
+public class PropertyType extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraint<PropertyType> {
 
 	/**
 	 * 
@@ -122,7 +122,7 @@ public class PropertyType extends DefaultAbstractKnowWEObjectType implements Inc
 	}
 
 	@Override
-	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+	public boolean violatedConstraints(KnowWEArticle article, Section<PropertyType> s) {
 		return KnowWEUtils.getTerminologyHandler(
 				article.getWeb()).areTermDefinitionsModifiedFor(article);
 	}

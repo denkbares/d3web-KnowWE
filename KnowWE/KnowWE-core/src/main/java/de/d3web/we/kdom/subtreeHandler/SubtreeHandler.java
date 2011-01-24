@@ -20,13 +20,16 @@
 
 package de.d3web.we.kdom.subtreeHandler;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.ConstraintModule.Operator;
+import de.d3web.we.kdom.subtreeHandler.ConstraintModule.Purpose;
 
 /**
  * Abstract class for a SubtreeHandler. This handler has to be registered to a
@@ -41,18 +44,47 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 
 	private boolean ignorePackageCompile;
 
+	private final List<ConstraintModule<T>> constraintModulesDONT = new ArrayList<ConstraintModule<T>>();
+	private final List<ConstraintModule<T>> constraintModulesDO = new ArrayList<ConstraintModule<T>>();
+
+	/**
+	 * Creates a new SubtreeHandler.
+	 * 
+	 * @param ignorePackageCompile: If the handler ignores package compile, it
+	 *        will always run independently of any packages, but only for the
+	 *        article, the section directly belongs to.
+	 */
 	public SubtreeHandler(boolean ignorePackageCompile) {
-		this.ignorePackageCompile = ignorePackageCompile;
+		setIgnorePackageCompile(ignorePackageCompile);
+		registerConstraintModule(new CreateConstraintsDO<T>(this));
+		registerConstraintModule(new CreateConstraintsDONT<T>());
+		registerConstraintModule(new DestroyConstraintsDO<T>());
+		registerConstraintModule(new DestroyConstraintsDONT<T>(this));
 	}
 
 	public SubtreeHandler() {
-		this.ignorePackageCompile = false;
+		this(false);
 	}
 
+	/**
+	 * If the handler ignores package compile, it will always run independently
+	 * of any packages, but only for the article, the section directly belongs
+	 * to.
+	 * 
+	 * @created 21.01.2011
+	 */
 	public void setIgnorePackageCompile(boolean ignore) {
 		this.ignorePackageCompile = ignore;
 	}
 
+	/**
+	 * If the handler ignores package compile, it will always run independently
+	 * of any packages, but only for the article, the section directly belongs
+	 * to.
+	 * 
+	 * @created 21.01.2011
+	 * @returns whether the handler ignores package compile or not.
+	 */
 	public boolean isIgnoringPackageCompile() {
 		return this.ignorePackageCompile;
 	}
@@ -72,15 +104,20 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	 * @param s is the Section from which you want to create something
 	 * @return true if this handler needs to create, false if not.
 	 */
-	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
-		return (article.isSecondBuild() || !article.isPostDestroyFullParse())
-				&& (article.isFullParse()
-						|| !s.isCompiledBy(article.getTitle(), this)
-						|| !s.isReusedBy(article.getTitle())
-						|| (s.get().isOrderSensitive() && s.isPositionChangedFor(article.getTitle()))
-						|| (s.get() instanceof IncrementalConstraints
-								&& ((IncrementalConstraints) s.get()).hasViolatedConstraints(
-										article, s)));
+	public final boolean needsToCreate(KnowWEArticle article, Section<T> s) {
+		for (ConstraintModule<T> cm : constraintModulesDONT) {
+			if (cm.PURPOSE.equals(Purpose.DESTROY)) continue;
+			if (cm.violatedConstraints(article, s)) {
+				return false;
+			}
+		}
+		for (ConstraintModule<T> cm : constraintModulesDO) {
+			if (cm.PURPOSE.equals(Purpose.DESTROY)) continue;
+			if (cm.violatedConstraints(article, s)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -111,13 +148,20 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	 * @param s is the old, not reused Section whose stuff you want to destroy
 	 * @return true if this handler needs to destroy, false if not.
 	 */
-	public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
-		return (!article.isFullParse() || s.isCompiledBy(article.getTitle(), this))
-				&& (!s.isReusedBy(article.getTitle())
-						|| (s.get().isOrderSensitive() && s.isPositionChangedFor(article.getTitle()))
-						|| (s.get() instanceof IncrementalConstraints
-								&& ((IncrementalConstraints) s.get()).hasViolatedConstraints(
-										article, s)));
+	public final boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
+		for (ConstraintModule<T> cm : constraintModulesDONT) {
+			if (cm.PURPOSE.equals(Purpose.CREATE)) continue;
+			if (cm.violatedConstraints(article, s)) {
+				return false;
+			}
+		}
+		for (ConstraintModule<T> cm : constraintModulesDO) {
+			if (cm.PURPOSE.equals(Purpose.CREATE)) continue;
+			if (cm.violatedConstraints(article, s)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -154,6 +198,149 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	 * @param s is the old, not reused Section whose stuff you want to destroy
 	 */
 	public void destroy(KnowWEArticle article, Section<T> s) {
+
+	}
+
+	/**
+	 * Registers the given constraint to the handler.
+	 * 
+	 * @created 21.01.2011
+	 * @param cm is the constraint to register.
+	 */
+	public void registerConstraintModule(ConstraintModule<T> cm) {
+		registerConstraintModule(Integer.MAX_VALUE, cm);
+	}
+
+	/**
+	 * Registers the given constraint to the handler.
+	 * 
+	 * @created 21.01.2011
+	 * @param pos determines the position of the constraint in the list of
+	 *        constraints checked by this handler.
+	 * @param cm is the constraint to register.
+	 * 
+	 */
+	public void registerConstraintModule(int pos, ConstraintModule<T> cm) {
+		List<ConstraintModule<T>> modules;
+		if (cm.OPERATOR.equals(Operator.DONT_COMPILE_IF_VIOLATED)) {
+			modules = constraintModulesDONT;
+		}
+		else {
+			modules = constraintModulesDO;
+		}
+		if (pos > modules.size() || pos < 0) {
+			modules.add(cm);
+		}
+		else {
+			modules.add(pos, cm);
+		}
+	}
+
+	public void unregisterConstraintModulesOfType(Class<ConstraintModule<T>> moduleClass) {
+		ArrayList<ConstraintModule<T>> modulesToremove = new ArrayList<ConstraintModule<T>>();
+		for (ConstraintModule<T> module : constraintModulesDONT) {
+			if (moduleClass.isAssignableFrom(module.getClass())) {
+				modulesToremove.add(module);
+			}
+		}
+		constraintModulesDONT.removeAll(modulesToremove);
+		modulesToremove = new ArrayList<ConstraintModule<T>>();
+		for (ConstraintModule<T> module : constraintModulesDO) {
+			if (moduleClass.isAssignableFrom(module.getClass())) {
+				modulesToremove.add(module);
+			}
+		}
+		constraintModulesDO.removeAll(modulesToremove);
+	}
+
+	public void unregisterAllConstraintModules() {
+		constraintModulesDONT.clear();
+		constraintModulesDO.clear();
+	}
+
+	// ++++++++++++++++++++++ Constraint classes ++++++++++++++++++++++ //
+
+	private class CreateConstraintsDONT<T2 extends KnowWEObjectType> extends ConstraintModule<T2> {
+
+		public CreateConstraintsDONT() {
+			super(Operator.DONT_COMPILE_IF_VIOLATED, Purpose.CREATE);
+		}
+
+		@Override
+		public boolean violatedConstraints(KnowWEArticle article, Section<T2> s) {
+
+			boolean firstBuild = !article.isSecondBuild();
+			boolean postDestroyFullParse = article.isPostDestroyFullParse();
+
+			return firstBuild && postDestroyFullParse;
+		}
+		
+	}
+
+	
+	private class CreateConstraintsDO<T2 extends KnowWEObjectType> extends ConstraintModule<T2> {
+
+		private final SubtreeHandler<T2> handler;
+
+		public CreateConstraintsDO(SubtreeHandler<T2> handler) {
+			super(Operator.COMPILE_IF_VIOLATED, Purpose.CREATE);
+			this.handler = handler;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean violatedConstraints(KnowWEArticle article, Section<T2> s) {
+
+			boolean fullparse = article.isFullParse();
+			boolean notCompiled = !s.isCompiledBy(article.getTitle(), handler);
+			boolean notReused = !s.isReusedBy(article.getTitle());
+			boolean changedPosition = s.get().isOrderSensitive()
+					&& s.isPositionChangedFor(article.getTitle());
+			boolean typeConstraint = s.get() instanceof IncrementalConstraint
+					&& ((IncrementalConstraint<T2>) s.get()).violatedConstraints(
+					article, s);
+
+			return fullparse || notCompiled || notReused || changedPosition || typeConstraint;
+		}
+
+	}
+
+	private class DestroyConstraintsDONT<T2 extends KnowWEObjectType> extends ConstraintModule<T2> {
+
+		SubtreeHandler<T2> handler;
+
+		public DestroyConstraintsDONT(SubtreeHandler<T2> handler) {
+			super(Operator.DONT_COMPILE_IF_VIOLATED, Purpose.DESTROY);
+			this.handler = handler;
+		}
+
+		@Override
+		public boolean violatedConstraints(KnowWEArticle article, Section<T2> s) {
+
+			boolean fullparse = article.isFullParse();
+			boolean notCompiled = !s.isCompiledBy(article.getTitle(), handler);
+
+			return fullparse || notCompiled;
+		}
+
+	}
+
+	private class DestroyConstraintsDO<T2 extends KnowWEObjectType> extends ConstraintModule<T2> {
+
+		public DestroyConstraintsDO() {
+			super(Operator.COMPILE_IF_VIOLATED, Purpose.DESTROY);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean violatedConstraints(KnowWEArticle article, Section<T2> s) {
+			boolean notReused = !s.isReusedBy(article.getTitle());
+			boolean changedPosition = s.get().isOrderSensitive() && s.isPositionChangedFor(article.getTitle());
+			boolean typeConstraint = (s.get() instanceof IncrementalConstraint<?>
+			 && ((IncrementalConstraint<T2>) s.get()).violatedConstraints(
+							article, s));
+			return notReused || changedPosition || typeConstraint;
+		}
 
 	}
 

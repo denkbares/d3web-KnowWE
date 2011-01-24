@@ -18,10 +18,15 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom;
+package de.d3web.we.kdom.subtreeHandler;
 
-public interface IncrementalConstraints {
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Section;
 
-	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s);
+
+public interface IncrementalConstraint<T extends KnowWEObjectType> {
+
+	public abstract boolean violatedConstraints(KnowWEArticle article, Section<T> s);
 
 }

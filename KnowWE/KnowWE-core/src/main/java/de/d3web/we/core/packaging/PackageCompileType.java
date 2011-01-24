@@ -12,6 +12,7 @@ import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.StringDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.subtreeHandler.ConstraintModule;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -49,11 +50,8 @@ public abstract class PackageCompileType extends StringDefinition implements Pac
 
 		public PackageCompileHandler() {
 			super(true);
-		}
-
-		@Override
-		public boolean needsToCreate(KnowWEArticle article, Section<PackageCompileType> s) {
-			return true;
+			this.unregisterAllConstraintModules();
+			this.registerConstraintModule(0, new CompileHandlerConstraint());
 		}
 
 		@Override
@@ -89,17 +87,21 @@ public abstract class PackageCompileType extends StringDefinition implements Pac
 		}
 
 		@Override
-		public boolean needsToDestroy(KnowWEArticle article, Section<PackageCompileType> s) {
-			return true;
-		}
-
-		@Override
 		public void destroy(KnowWEArticle article, Section<PackageCompileType> s) {
-			if (super.needsToDestroy(article, s)) {
+			if (!s.isReusedBy(article.getTitle())) {
 				article.setFullParse(this.getClass());
 			}
 			KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
 					article, s);
+		}
+
+		private class CompileHandlerConstraint extends ConstraintModule<PackageCompileType> {
+
+			@Override
+			public boolean violatedConstraints(KnowWEArticle article, Section<PackageCompileType> s) {
+				return true;
+			}
+
 		}
 
 	}

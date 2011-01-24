@@ -30,11 +30,9 @@ import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.IncrementalMarker;
-import de.d3web.we.kdom.questionTree.QuestionLine.QuestionText;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
@@ -45,6 +43,7 @@ import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.kdom.sectionFinder.MatchUntilEndFinder;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
+import de.d3web.we.kdom.subtreeHandler.IncrementalConstraint;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.QuestionDefinition;
@@ -166,12 +165,12 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class AnswerText extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraints {
+	static class AnswerText extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraint<AnswerText> {
 
 		private static final String QTEXT_START_SYMBOL = "~";
 
 		@Override
-		public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+		public boolean violatedConstraints(KnowWEArticle article, Section<AnswerText> s) {
 			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
 

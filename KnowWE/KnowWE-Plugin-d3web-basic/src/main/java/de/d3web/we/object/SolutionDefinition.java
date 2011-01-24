@@ -29,7 +29,6 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
-import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
@@ -39,6 +38,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
+import de.d3web.we.kdom.subtreeHandler.IncrementalConstraint;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.tools.ToolMenuDecoratingRenderer;
 import de.d3web.we.utils.D3webUtils;
@@ -55,7 +55,7 @@ import de.knowwe.core.renderer.ObjectInfoLinkRenderer;
  */
 public abstract class SolutionDefinition
 		extends D3webTermDefinition<Solution>
-		implements IncrementalConstraints {
+		implements IncrementalConstraint<SolutionDefinition> {
 
 	public SolutionDefinition() {
 		this(Priority.HIGHEST);
@@ -71,7 +71,7 @@ public abstract class SolutionDefinition
 	}
 
 	@Override
-	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+	public boolean violatedConstraints(KnowWEArticle article, Section<SolutionDefinition> s) {
 		return false;
 	}
 
