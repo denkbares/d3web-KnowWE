@@ -64,16 +64,22 @@ public class SaveFlowchartAction extends AbstractAction {
 		if (flowchartSection != null) {
 			save(map, topic, flowchartSection.getID(), newText);
 		}
-		else { // no flowchart, insert flowchart //TODO more convenient way??
-
+		else { // no flowchart, insert flowchart
 			StringBuilder builder = new StringBuilder("%%DiaFlux");
 			builder.append("\r\n");
 			builder.append(newText);
 
-			builder.append(diaFluxSection.getOriginalText().substring(9));
+			// one line version, breaks because of missing linebreak, see ticket
+			// #172
+			if (diaFluxSection.getOriginalText().matches("%%DiaFlux */?% *")) {
+				builder.append("\r\n");
+				builder.append("%");
+			}
+			else { // TODO this adds all content, just extract annotations
+				builder.append(diaFluxSection.getOriginalText().substring(9));
+			}
 
 			save(map, topic, nodeID, builder.toString());
-
 		}
 
 	}
