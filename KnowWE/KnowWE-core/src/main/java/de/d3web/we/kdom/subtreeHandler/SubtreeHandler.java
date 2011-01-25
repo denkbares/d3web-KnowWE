@@ -310,6 +310,9 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 			boolean firstBuild = !article.isSecondBuild();
 			boolean postDestroyFullParse = article.isPostDestroyFullParse();
 
+			// if a fullparse was requested after the destroy step
+			// (-> postDestroyFullParse), the current first build needs to be
+			// aborted and a second build is started
 			return firstBuild && postDestroyFullParse;
 		}
 		
@@ -330,14 +333,26 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 		public boolean violatedConstraints(KnowWEArticle article, Section<T2> s) {
 
 			boolean fullparse = article.isFullParse();
+			// fullparse means, that the article is compiled non incremental,
+			// respectively that the all handlers and section need to be
+			// compiled
 			boolean notCompiled = !s.isCompiledBy(article.getTitle(), handler);
+			// if the current handler wasn't compiled yet
 			boolean notReused = !s.isReusedBy(article.getTitle());
+			// if the current section was not reused during the KDOM update
+			// if it wasn't reused, the section has changed since the last
+			// version of the article, so this is a constraint for create
 			boolean changedPosition = s.get().isOrderSensitive()
 					&& s.isPositionChangedFor(article.getTitle());
+			// if the section is order sensitive, we need to check, if the
+			// position of the section has changed
 			boolean typeConstraint = s.get() instanceof IncrementalConstraint
 					&& ((IncrementalConstraint<T2>) s.get()).violatedConstraints(
 					article, s);
+			// it is possible to define additional constraints for the all
+			// handlers of a KnowWEObjectType... they need to be checked too
 
+			// if one of these items is true, we need to create
 			return fullparse || notCompiled || notReused || changedPosition || typeConstraint;
 		}
 
@@ -358,6 +373,10 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 			boolean fullparse = article.isFullParse();
 			boolean notCompiled = !s.isCompiledBy(article.getTitle(), handler);
 
+			// in case of a fullparse we do not destroy, a clean state has to be
+			// generated e.g. via the FullparseEvent
+			// also, if the handler hasn't compiled (created) yet, we also don't
+			// need to destroy
 			return fullparse || notCompiled;
 		}
 
@@ -373,10 +392,19 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 		@Override
 		public boolean violatedConstraints(KnowWEArticle article, Section<T2> s) {
 			boolean notReused = !s.isReusedBy(article.getTitle());
+			// if the section was not reused during the update of the KDOM, we
+			// need to destroy its content... it was either removed from the
+			// article or replaced by something else
 			boolean changedPosition = s.get().isOrderSensitive() && s.isPositionChangedFor(article.getTitle());
+			// if the position of a order sensitive section has changed, we need
+			// to destroy, because it will be created later in the new context
 			boolean typeConstraint = (s.get() instanceof IncrementalConstraint<?>
 			 && ((IncrementalConstraint<T2>) s.get()).violatedConstraints(
 							article, s));
+			// also check constraints defined in the KnowWEObjectType for all
+			// handlers of the type
+
+			// destroy if one of the items is true
 			return notReused || changedPosition || typeConstraint;
 		}
 
