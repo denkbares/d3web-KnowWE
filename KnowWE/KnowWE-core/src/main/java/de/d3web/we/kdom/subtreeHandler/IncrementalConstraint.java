@@ -27,6 +27,15 @@ import de.d3web.we.kdom.Section;
 
 public interface IncrementalConstraint<T extends KnowWEObjectType> {
 
+	/**
+	 * In this method you can check different constraints.
+	 * 
+	 * @created 25.01.2011
+	 * @param article is the article, for which the constraints are checked
+	 * @param s is the Section, for which the constrains are checked
+	 * @return true, if the checked constraints are violated. false if they are
+	 *         kept.
+	 */
 	public abstract boolean violatedConstraints(KnowWEArticle article, Section<T> s);
 
 }
