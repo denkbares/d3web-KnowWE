@@ -10,6 +10,9 @@ import de.d3web.we.utils.KnowWEUtils;
 public class PackageRenderUtils {
 
 	public static KnowWEArticle checkArticlesCompiling(KnowWEArticle article, Section<?> s, StringBuilder string) {
+
+		if (s.get().isIgnoringPackageCompile()) return article;
+
 		// check and handle, if the section is compiled in other articles
 		KnowWEArticle compilingArticle = article;
 		if (article.getTitle().equals(s.getTitle())) {
@@ -40,6 +43,9 @@ public class PackageRenderUtils {
 	}
 
 	public static KnowWEArticle checkArticlesCompiling(KnowWEArticle article, Section<?> s) {
+
+		if (s.get().isIgnoringPackageCompile()) return article;
+
 		KnowWEArticle compilingArticle = article;
 		if (article.getTitle().equals(s.getTitle())) {
 			Set<String> compilingArticles = KnowWEEnvironment.getInstance().getPackageManager(

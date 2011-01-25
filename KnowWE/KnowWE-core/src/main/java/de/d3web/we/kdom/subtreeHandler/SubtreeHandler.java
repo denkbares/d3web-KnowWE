@@ -62,6 +62,9 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 		registerConstraintModule(new DestroyConstraintsDONT<T>(this));
 	}
 
+	/**
+	 * Creates a new SubtreeHandler, that does not ignore package compilation.
+	 */
 	public SubtreeHandler() {
 		this(false);
 	}
@@ -94,9 +97,8 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	 * <tt>create(KnowWEArticle, Section)</tt> in this handler will not be
 	 * called in the revising of the article.
 	 * <p/>
-	 * If you are implementing an incremental SubtreeHandler, you can overwrite
-	 * or extend this method with an algorithm to decide, if this handler needs
-	 * or doesn't need to create, depending on the constraints there might be.
+	 * You can influence the outcome of this method by registering
+	 * ConstraintModules to the SubreeHandler.
 	 * 
 	 * @param article is the article that calls this method... not necessarily
 	 *        the article the Section is hooked into directly, since Sections
@@ -107,16 +109,26 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	public final boolean needsToCreate(KnowWEArticle article, Section<T> s) {
 		for (ConstraintModule<T> cm : constraintModulesDONT) {
 			if (cm.PURPOSE.equals(Purpose.DESTROY)) continue;
+			// skip modules with wrong purpose
 			if (cm.violatedConstraints(article, s)) {
+				// if one of the modules with Operator.DONT_COMPILE_IF_VIOLATED
+				// detects violated constraints, return false to prevent calling
+				// of the create() method
 				return false;
 			}
 		}
 		for (ConstraintModule<T> cm : constraintModulesDO) {
 			if (cm.PURPOSE.equals(Purpose.DESTROY)) continue;
+			// skip modules with wrong purpose
 			if (cm.violatedConstraints(article, s)) {
+				// if one of the modules with Operator.COMPILE_IF_VIOLATED
+				// detects violated constraints, return true to call the
+				// create() method
 				return true;
 			}
 		}
+		// if non of the Operator.COMPILE_IF_VIOLATED modules fires, the
+		// create() method will not be called.
 		return false;
 	}
 
@@ -137,10 +149,8 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	 * Section)</tt> in this handler will not be called for that Section of the
 	 * last version of the KDOM.
 	 * <p/>
-	 * If you are implementing an incremental SubtreeHandler, you can overwrite
-	 * or extend this method with an algorithm to decide, if this handler needs
-	 * or doesn't need to destroy the old stuff, depending on the constraints
-	 * there might be.
+	 * You can influence the outcome of this method by registering
+	 * ConstraintModules to the SubreeHandler.
 	 * 
 	 * @param article is the last version of the article that calls this
 	 *        method... not necessarily the article the Section is hooked into
@@ -151,16 +161,26 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	public final boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
 		for (ConstraintModule<T> cm : constraintModulesDONT) {
 			if (cm.PURPOSE.equals(Purpose.CREATE)) continue;
+			// skip modules with wrong purpose
 			if (cm.violatedConstraints(article, s)) {
+				// if one of the modules with Operator.DONT_COMPILE_IF_VIOLATED
+				// detects violated constraints, return false to prevent calling
+				// of the destroy() method
 				return false;
 			}
 		}
 		for (ConstraintModule<T> cm : constraintModulesDO) {
 			if (cm.PURPOSE.equals(Purpose.CREATE)) continue;
+			// skip modules with wrong purpose
 			if (cm.violatedConstraints(article, s)) {
+				// if one of the modules with Operator.COMPILE_IF_VIOLATED
+				// detects violated constraints, return true to call the
+				// destroy() method
 				return true;
 			}
 		}
+		// if non of the Operator.COMPILE_IF_VIOLATED modules fires, the
+		// destroy() method will not be called.
 		return false;
 	}
 
@@ -188,7 +208,8 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	 * handler to restore the clean state by destroying everything old by
 	 * iterating over all Section and remove their stuff piece by piece. This
 	 * restoring of the clean state has to be done somewhere else, e.g. in the
-	 * constructor of the KnowWEArticle by checking <tt>isFullParse()</tt>.
+	 * constructor of the KnowWEArticle by checking <tt>isFullParse()</tt> or by
+	 * listening to the FullparseEvent.
 	 * 
 	 * 
 	 * 
@@ -212,7 +233,11 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	}
 
 	/**
-	 * Registers the given constraint to the handler.
+	 * Registers the given constraint to the handler at a certain position in
+	 * the order of execution of the different modules. You can, for example,
+	 * register a very fast (check one boolean) module at position 0, so more
+	 * complex ones (expensive searches in the KDOM) are not executed, if the
+	 * simple one already detects a violation.
 	 * 
 	 * @created 21.01.2011
 	 * @param pos determines the position of the constraint in the list of
@@ -236,6 +261,13 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 		}
 	}
 
+	/**
+	 * Unregisters all ConstraintModules of the given class from the
+	 * SubtreeHandler.
+	 * 
+	 * @created 25.01.2011
+	 * @param moduleClass
+	 */
 	public void unregisterConstraintModulesOfType(Class<ConstraintModule<T>> moduleClass) {
 		ArrayList<ConstraintModule<T>> modulesToremove = new ArrayList<ConstraintModule<T>>();
 		for (ConstraintModule<T> module : constraintModulesDONT) {
@@ -253,6 +285,12 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 		constraintModulesDO.removeAll(modulesToremove);
 	}
 
+	/**
+	 * Removes all ConstraintModules currently registered to this
+	 * SubtreeHandler.
+	 * 
+	 * @created 25.01.2011
+	 */
 	public void unregisterAllConstraintModules() {
 		constraintModulesDONT.clear();
 		constraintModulesDO.clear();
