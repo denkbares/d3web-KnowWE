@@ -35,11 +35,13 @@ import de.d3web.we.utils.KnowWEUtils;
 public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends SubtreeHandler<T> {
 
 	public D3webSubtreeHandler() {
-		registerConstraintModule(new D3webCreateConstraints<T>());
+		registerConstraintModule(0, new D3webCreateConstraints<T>());
 		registerConstraintModule(new D3webDestroyConstraints<T>());
 	}
 
 	/**
+	 * You can get the KnowledgeBaseManagement for the given article.
+	 * 
 	 * @param article is the article you need the KBM from
 	 * @returns the KBM for the given article
 	 */
@@ -53,17 +55,13 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 				article.getTitle());
 	}
 
-	/*
-	 * Checking for a Section with an KnowWEObjectType implementing
-	 * IncrementalMarker is necessary for the compatibility with
-	 * KnowWEObjectTypes that do not use KnowWETerms. If the KnowWEObjectType of
-	 * the Section does not implement KnowWETermMarker, it might not be notified
-	 * of the changes to the TermDefinitions, so we destroy anyway.
-	 * TermDefinition, TermReference and KnowWETerm already implement
-	 * IncrementalMarker, so there is no need to implement again.
+	/**
+	 * By default, a full parse is triggered to assure a consistent compilation.
+	 * Avoid a full parse by overwriting this method and instead destroying
+	 * everything that is created in the create method.
+	 * 
+	 * @see SubtreeHandler#destroy(KnowWEArticle, Section)
 	 */
-
-
 	@Override
 	public void destroy(KnowWEArticle article, Section<T> s) {
 		article.setFullParse(this.getClass());
@@ -80,6 +78,27 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 
 		@Override
 		public boolean violatedConstraints(KnowWEArticle article, Section<T2> s) {
+			// For compatibility reasons with non incremental SubtreeHandlers,
+			// we check for the interface IncrementalMarker. Be default, all
+			// TermDefinitions and TermReferences implement this interface,
+			// because they are already handled correctly in the incremental
+			// context.
+			// For KnowWEObjectTypes that don't implement this interface, we
+			// assume, that they are not designed for incremental compilation.
+			// We then trigger a full parse, in case they are not reused or in
+			// case that the terms for this article were modified by another
+			// section and handler.
+			// Reason: If a Section is compiled (because it is not reused) that
+			// adds terminology to the KnowledgeBase, but does not use the
+			// TerminologyHandler like TermDefinitions and TermReferences, other
+			// TermDefinitions and TermReferences are not notified about this
+			// addition and therefore may not be recompiled correctly without a
+			// full parse.
+			// If on the other hand terms were modified in the
+			// TerminologyHandler by other TermDefinitions, but the current
+			// Section is neither a TermDefinition nor a TermReference and
+			// therefore isn't notified of this modification, we also need a
+			// full parse.
 			if (!(s.get() instanceof IncrementalMarker)) {
 				if (!s.isReusedBy(article.getTitle()) || KnowWEUtils.getTerminologyHandler(
 							article.getWeb()).areTermDefinitionsModifiedFor(article)) {
@@ -99,9 +118,17 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 
 		@Override
 		public boolean violatedConstraints(KnowWEArticle article, Section<T2> s) {
-			return (!(s.get() instanceof IncrementalMarker) && KnowWEUtils.getTerminologyHandler(
+			// Here we have the same issue as inside the D3webCreateConstraints.
+			// If the KnowWEObjectType does not implement the Interface
+			// IncrementalMarker, we have to assume, that the type is not
+			// designed for incremental compilation.
+			// If the terminology is modified but this type isn't notified,
+			// because it is not made for incremental compilation, we need to
+			// destroy (and create again later), because it is possible that it
+			// is affected by that modification.
+			return !(s.get() instanceof IncrementalMarker) && KnowWEUtils.getTerminologyHandler(
 					article.getWeb()).areTermDefinitionsModifiedFor(
-							article));
+							article);
 		}
 
 	}

@@ -211,8 +211,6 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	 * constructor of the KnowWEArticle by checking <tt>isFullParse()</tt> or by
 	 * listening to the FullparseEvent.
 	 * 
-	 * 
-	 * 
 	 * @param article is the last version of the article that calls this
 	 *        method... not necessarily the article the Section is hooked into
 	 *        directly, since Sections can also be included!
