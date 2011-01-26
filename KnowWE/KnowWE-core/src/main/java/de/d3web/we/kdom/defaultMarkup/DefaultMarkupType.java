@@ -225,6 +225,28 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	}
 
 	/**
+	 * Returns the content of the annotation sections using the specified name.
+	 * If the sections are not of type "DefaultMarkup" an
+	 * IllegalArgumentException is thrown. If there is no annotation section
+	 * with the specified name, null is returned.
+	 * 
+	 * @created 26.01.2011
+	 * @param section the section to be searched
+	 * @param name the name of the annotation
+	 * @return the content strings of the found annotation
+	 */
+	public static String[] getAnnotations(Section<?> section, String name) {
+		List<Section<? extends AnnotationType>> annotationSections = getAnnotationSections(section,
+				name);
+		String[] result = new String[annotationSections.size()];
+		int position = 0;
+		for (Section<?> aSection : annotationSections) {
+			result[position++] = aSection.getOriginalText();
+		}
+		return result;
+	}
+
+	/**
 	 * Returns the first annotation section of the specified name. If the
 	 * section is not of type "DefaultMarkup" an IllegalArgumentException is
 	 * thrown. If there is no annotation section with the specified name, null

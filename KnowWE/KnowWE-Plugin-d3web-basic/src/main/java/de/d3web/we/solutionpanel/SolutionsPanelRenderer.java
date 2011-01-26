@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Rating.State;
@@ -48,6 +49,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * <li>@show_suggested: true/false
  * <li>@show_excluded: true/false
  * <li>@show_abstractions: true/false
+ * <li>@only_derivations: questionnaire name
  * <li>@master: Name of the article with the knowledge base
  * </ul>
  * 
@@ -80,14 +82,23 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 	 * Renders the derived abstractions when panel opted for it.
 	 */
 	private StringBuffer renderAbstractions(Section<?> section, Session session) {
+		// Check, if the shown abstractions are limited to a number of
+		// questionnaires
+		String[] allowedQuestionnaires = ShowSolutionsType.getShownAbstraction(section);
+
 		StringBuffer buffer = new StringBuffer();
 		if (ShowSolutionsType.shouldShowAbstractions(section)) {
 			List<Question> abstractions = new ArrayList<Question>();
 			for (Question question : session.getBlackboard().getAnsweredQuestions()) {
-				Boolean isAbstract = (Boolean) question.getInfoStore().getValue(
+				Boolean isAbstract = question.getInfoStore().getValue(
 						BasicProperties.ABSTRACTION_QUESTION);
 				if (isAbstract != null && isAbstract) {
-					abstractions.add(question);
+					if (allowedQuestionnaires.length == 0 || // no restriction,
+																// so
+																// always insert
+							contains(allowedQuestionnaires, question)) {
+						abstractions.add(question);
+					}
 				}
 			}
 			Collections.sort(abstractions, new Comparator<Question>() {
@@ -102,6 +113,33 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 			}
 		}
 		return buffer;
+	}
+
+	private boolean contains(String[] allowedParents, TerminologyObject object) {
+		if (object.getParents() == null) {
+			return false;
+		}
+		else {
+			for (TerminologyObject parent : object.getParents()) {
+				if (arrayIgnoreCaseContains(allowedParents, parent.getName())) {
+					return true;
+				}
+				else {
+					boolean tester = contains(allowedParents, parent);
+					if (tester == true) return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean arrayIgnoreCaseContains(String[] allowedParents, String name) {
+		for (String string : allowedParents) {
+			if (name.equalsIgnoreCase(string)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

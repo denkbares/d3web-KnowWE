@@ -22,9 +22,12 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.d3web.we.object.QuestionnaireReference;
 import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
 
 /**
+ * This type defines the possible annotations of the ShowSoltions markup.
  * 
  * @author Joachim Baumeister (denkbares GmbH)
  * @created 22.10.2010
@@ -36,12 +39,14 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	private static final String ANNOTATION_SUGGESTED = "show_suggested";
 	private static final String ANNOTATION_ESTABLISHED = "show_established";
 	private static final String ANNOTATION_EXCLUDED = "show_excluded";
+	private static final String ALLOWED_DERIVATIONS = "only_derivations";
 
 	public enum BoolValue {
 		TRUE, FALSE
 	};
 
 	private static final DefaultMarkup MARKUP;
+
 	static {
 		MARKUP = new DefaultMarkup("ShowSolutions");
 		MARKUP.addAnnotation(ANNOTATION_MASTER, true);
@@ -49,6 +54,11 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_SUGGESTED, false, BoolValue.values());
 		MARKUP.addAnnotation(ANNOTATION_EXCLUDED, false, BoolValue.values());
 		MARKUP.addAnnotation(ANNOTATION_ABSTRACTIONS, false, BoolValue.values());
+		MARKUP.addAnnotation(ALLOWED_DERIVATIONS, false);
+
+		QuestionnaireReference qc = new QuestionnaireReference();
+		qc.setSectionFinder(new AllTextFinderTrimmed());
+		MARKUP.addAnnotationType(ALLOWED_DERIVATIONS, qc);
 	}
 
 	public ShowSolutionsType() {
@@ -64,6 +74,11 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	public static String getMaster(Section<?> section) {
 		assert section.getObjectType() instanceof ShowSolutionsType;
 		return DefaultMarkupType.getAnnotation(section, ANNOTATION_MASTER);
+	}
+
+	public static String[] getShownAbstraction(Section<?> section) {
+		assert section.getObjectType() instanceof ShowSolutionsType;
+		return DefaultMarkupType.getAnnotations(section, ALLOWED_DERIVATIONS);
 	}
 
 	public static boolean shouldShowEstablished(Section<?> section) {
