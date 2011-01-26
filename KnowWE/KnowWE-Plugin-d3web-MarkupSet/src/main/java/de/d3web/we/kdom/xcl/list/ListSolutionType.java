@@ -24,6 +24,7 @@ import java.util.Collection;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
@@ -116,6 +117,12 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType implements
 					setThresholdsAndMinSupport(defaultMarkupType, m);
 
 					solution.addKnowledge(PSMethodXCL.class, m, XCLModel.XCLMODEL);
+
+					String description = DefaultMarkupType.getAnnotation(defaultMarkupType,
+							CoveringListMarkup.DESCRIPTION);
+					if (description != null) {
+						m.getSolution().getInfoStore().addValue(MMInfo.DESCRIPTION, description);
+					}
 				}
 			}
 			return null;

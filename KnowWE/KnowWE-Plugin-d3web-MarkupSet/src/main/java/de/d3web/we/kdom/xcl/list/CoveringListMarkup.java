@@ -29,6 +29,7 @@ public class CoveringListMarkup extends DefaultMarkupType {
 	public static final String ESTABLISHED_THRESHOLD = "establishedThreshold";
 	public static final String SUGGESTED_THRESHOLD = "suggestedThreshold";
 	public static final String MIN_SUPPORT = "minSupport";
+	public static final String DESCRIPTION = "description";
 
 	private static DefaultMarkup m = null;
 
@@ -39,7 +40,7 @@ public class CoveringListMarkup extends DefaultMarkupType {
 		m.addAnnotation(SUGGESTED_THRESHOLD, false);
 		m.addAnnotation(MIN_SUPPORT, false);
 		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME, false);
-
+		m.addAnnotation(DESCRIPTION, false);
 	}
 
 	public CoveringListMarkup() {
