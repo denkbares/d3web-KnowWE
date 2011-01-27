@@ -218,6 +218,10 @@
 		<url-pattern>/JSON-RPC</url-pattern>
 	</servlet-mapping>
 
+	 <session-config>
+	 	<session-timeout>1440</session-timeout>
+	 </session-config>
+ 
 	<!-- This means that we don't have to use redirection from index.html anymore. 
 		Yay! -->
 	<welcome-file-list>
