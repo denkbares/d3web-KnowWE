@@ -34,7 +34,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.SectionID;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -42,7 +42,7 @@ import de.d3web.we.utils.KnowWEUtils;
  * @author astriffler
  * 
  */
-public class XMLSectionFinder extends SectionFinder {
+public class XMLSectionFinder implements ISectionFinder {
 
 	public static final String ATTRIBUTE_MAP_STORE_KEY = "attributeMap";
 
@@ -101,7 +101,7 @@ public class XMLSectionFinder extends SectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
 
 		Matcher tagMatcher = tagPattern.matcher(text);
 
@@ -171,7 +171,7 @@ public class XMLSectionFinder extends SectionFinder {
 		return result;
 	}
 
-	private SectionID makeSectionID(Section father, Map<String, String> parameterMap) {
+	private SectionID makeSectionID(Section<?> father, Map<String, String> parameterMap) {
 
 		SectionID sectionID = null;
 
@@ -185,7 +185,7 @@ public class XMLSectionFinder extends SectionFinder {
 
 			KnowWEArticle art = father.getArticle();
 			if (art != null) {
-				KnowWEUtils.storeObject(art.getWeb(), art.getTitle(), sectionID.toString(),
+				KnowWEUtils.storeObject(father.getWeb(), null, sectionID.toString(),
 						ATTRIBUTE_MAP_STORE_KEY, parameterMap);
 			}
 		}
@@ -231,6 +231,7 @@ public class XMLSectionFinder extends SectionFinder {
 
 	}
 
+	@SuppressWarnings("unused")
 	private static String readTxtFile(String fileName) {
 		StringBuffer inContent = new StringBuffer();
 		try {

@@ -44,8 +44,6 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 
 	private final String xmlTagName;
 
-	private final boolean anyXML;
-
 	private static AbstractXMLObjectType defaultInstance;
 
 	public static AbstractXMLObjectType getDefaultInstance() {
@@ -55,9 +53,9 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 		return defaultInstance;
 	}
 
-	public Section getContentChild(Section s) {
+	public Section<XMLContent> getContentChild(Section<?> s) {
 		if (s.getObjectType() instanceof AbstractXMLObjectType) {
-			Section content = s.findSuccessor(XMLContent.class);
+			Section<XMLContent> content = s.findSuccessor(XMLContent.class);
 			return content;
 		}
 		return null;
@@ -68,9 +66,17 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 		return getXMLTagName();
 	}
 
+	@SuppressWarnings("unchecked")
 	public static Map<String, String> getAttributeMapFor(Section<? extends AbstractXMLObjectType> s) {
-		return (Map<String, String>) KnowWEUtils.getStoredObject(s.getWeb(),
-				s.getTitle(), s.getID(), XMLSectionFinder.ATTRIBUTE_MAP_STORE_KEY);
+		return (Map<String, String>) KnowWEUtils.getStoredObject(null, s,
+				XMLSectionFinder.ATTRIBUTE_MAP_STORE_KEY);
+
+	}
+
+	@SuppressWarnings("unchecked")
+	public static Map<String, String> getLastAttributeMapFor(Section<? extends AbstractXMLObjectType> s) {
+		return (Map<String, String>) KnowWEUtils.getObjectFromLastVersion(null, s,
+				XMLSectionFinder.ATTRIBUTE_MAP_STORE_KEY);
 
 	}
 
@@ -93,7 +99,7 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 	}
 
 	public static Section<AbstractXMLObjectType> getXMLFatherElement(Section<? extends AbstractXMLObjectType> s) {
-		Section xmlFather = s.findAncestorOfType(AbstractXMLObjectType.class);
+		Section<AbstractXMLObjectType> xmlFather = s.findAncestorOfType(AbstractXMLObjectType.class);
 		return xmlFather;
 	}
 
@@ -103,7 +109,7 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 	}
 
 	private static int getXMLDepth(Section<AbstractXMLObjectType> s, int depth) {
-		Section xmlFather = s.findAncestorOfType(AbstractXMLObjectType.class);
+		Section<AbstractXMLObjectType> xmlFather = s.findAncestorOfType(AbstractXMLObjectType.class);
 		if (xmlFather != null && xmlFather.getObjectType() instanceof AbstractXMLObjectType) {
 			return getXMLDepth(xmlFather, ++depth);
 		}
@@ -137,6 +143,7 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public static void findSubSectionsOfTag(
 			String tagname, Section<? extends AbstractXMLObjectType> s, Collection<Section<? extends AbstractXMLObjectType>> c) {
 		String tagName2 = getTagName(s);
@@ -145,9 +152,9 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 			c.add(s);
 		}
 		List<Section<? extends KnowWEObjectType>> children = s.getChildren();
-		for (Section section : children) {
+		for (Section<?> section : children) {
 			if (section.getObjectType() instanceof XMLContent) {
-				Section<XMLContent> conSec = section;
+				Section<XMLContent> conSec = (Section<XMLContent>) section;
 				List<Section<AbstractXMLObjectType>> nodes = conSec
 						.findChildrenOfType(AbstractXMLObjectType.class);
 				for (Section<AbstractXMLObjectType> section2 : nodes) {
@@ -176,7 +183,6 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType {
 
 	private AbstractXMLObjectType(String tagName, boolean anyXML) {
 		this.xmlTagName = tagName;
-		this.anyXML = false;
 		childrenTypes.add(0, new XMLHead());
 		childrenTypes.add(1, new XMLTail());
 		this.sectionFinder = new XMLSectionFinder(anyXML ? null : xmlTagName);

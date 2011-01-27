@@ -29,6 +29,7 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowFactory;
+import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.flow.IEdge;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.diaFlux.inference.ConditionTrue;
@@ -38,13 +39,14 @@ import de.d3web.we.flow.persistence.NodeHandler;
 import de.d3web.we.flow.persistence.NodeHandlerManager;
 import de.d3web.we.flow.type.EdgeContentType;
 import de.d3web.we.flow.type.EdgeType;
-import de.d3web.we.flow.type.FlowchartContentType;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.flow.type.GuardType;
 import de.d3web.we.flow.type.NodeType;
 import de.d3web.we.flow.type.OriginType;
+import de.d3web.we.flow.type.PositionType;
 import de.d3web.we.flow.type.TargetType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
@@ -53,10 +55,10 @@ import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.report.SyntaxError;
 import de.d3web.we.kdom.report.message.NoSuchObjectError;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
+import de.d3web.we.kdom.subtreeHandler.ConstraintModule;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * 
@@ -66,18 +68,19 @@ import de.d3web.we.utils.KnowWEUtils;
  */
 public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> {
 
-	@SuppressWarnings("unchecked")
+	private final List<Class<? extends KnowWEObjectType>> filteredTypes =
+			new ArrayList<Class<? extends KnowWEObjectType>>(0);
+
+	public FlowchartSubTreeHandler() {
+		this.registerConstraintModule(new FlowchartConstraintModule());
+		filteredTypes.add(PositionType.class);
+	}
+
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<FlowchartType> s) {
 
-		if (KnowWEUtils.getTerminologyHandler(
-				article.getWeb()).areTermDefinitionsModifiedFor(article)) {
-			// ugly hot fix for now...
-			article.setFullParse(this.getClass());
-		}
-
 		KnowledgeBaseManagement kbm = getKBM(article);
-		Section<FlowchartContentType> flowcontent = ((AbstractXMLObjectType) s.getObjectType()).getContentChild(s);
+		Section<XMLContent> flowcontent = ((AbstractXMLObjectType) s.getObjectType()).getContentChild(s);
 
 		if (kbm == null || flowcontent == null) {
 			return null;
@@ -107,12 +110,28 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		return errors;
 	}
 
+	@Override
+	public void destroy(KnowWEArticle article, Section<FlowchartType> s) {
+		FlowSet flowSet = DiaFluxUtils.getFlowSet(getKBM(article).getKnowledgeBase());
+		Map<String, String> attributeMap = AbstractXMLObjectType.getLastAttributeMapFor(s);
+		flowSet.remove(attributeMap.get("fcid"));
+	}
+
+	private class FlowchartConstraintModule extends ConstraintModule<FlowchartType> {
+
+		@Override
+		public boolean violatedConstraints(KnowWEArticle article, Section<FlowchartType> s) {
+			return s.isOrHasChangedSuccessor(article.getTitle(), filteredTypes);
+		}
+
+	}
+
 	@SuppressWarnings("unchecked")
 	private List<IEdge> createEdges(KnowWEArticle article, Section<FlowchartType> flowSection, List<INode> nodes, List<KDOMReportMessage> errors) {
 		List<IEdge> result = new ArrayList<IEdge>();
 
 		List<Section<EdgeType>> edgeSections = new ArrayList<Section<EdgeType>>();
-		Section<FlowchartContentType> flowcontent = ((AbstractXMLObjectType) flowSection.getObjectType()).getContentChild(flowSection);
+		Section<XMLContent> flowcontent = ((AbstractXMLObjectType) flowSection.getObjectType()).getContentChild(flowSection);
 		flowcontent.findSuccessorsOfType(EdgeType.class, edgeSections);
 
 		for (Section<EdgeType> section : edgeSections) {
@@ -209,7 +228,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		List<INode> result = new ArrayList<INode>();
 		ArrayList<Section<NodeType>> nodeSections = new ArrayList<Section<NodeType>>();
-		Section<FlowchartContentType> flowcontent = ((AbstractXMLObjectType) flowSection.getObjectType()).getContentChild(flowSection);
+		Section<XMLContent> flowcontent = ((AbstractXMLObjectType) flowSection.getObjectType()).getContentChild(flowSection);
 		flowcontent.findSuccessorsOfType(NodeType.class, nodeSections);
 
 		KnowledgeBaseManagement kbm = getKBM(article);

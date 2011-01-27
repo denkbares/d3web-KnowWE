@@ -1372,6 +1372,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		}
 	}
 
+
 	/**
 	 * Checks whether this Section or a successor is not reused. Sections and
 	 * successors with a KnowWEObjectType contained in the Set of classes will
@@ -1384,13 +1385,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @return a boolean with the result of the check
 	 */
 	public boolean isOrHasChangedSuccessor(String title, Collection<Class<? extends KnowWEObjectType>> filteredTypes) {
-		if (filteredTypes != null) {
-			for (Class<?> c : filteredTypes) {
-				if (c.isAssignableFrom(objectType.getClass())) {
-					break;
-				}
-			}
-		}
 		if (isChanged(title, filteredTypes)) {
 			return true;
 		}
@@ -1420,7 +1414,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 				}
 			}
 		}
-		if (!isReusedBy(title) || isPositionChangedFor(title)) {
+		if (!isReusedBy(title) || (objectType.isOrderSensitive() && isPositionChangedFor(title))) {
 			return true;
 		}
 		return false;
