@@ -120,7 +120,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				: KnowWEUtils.html_escape(parameters.get(OBJECTNAME));
 
 		// If name is not defined -> render search form!
-		if (objectName == null) {
+		if (objectName == null || objectName.isEmpty()) {
 			return KnowWEUtils.maskHTML(renderLookUpForm(article));
 		}
 
