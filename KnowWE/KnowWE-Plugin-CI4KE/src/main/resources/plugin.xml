@@ -71,6 +71,16 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="CITest"
+		id="ReparseTest">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.testmodules.ReparseTest" />
+		<parameter id="name" value="ReparseTest" />
+		<parameter id="description" value="CITest ReparseTest" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CITest"
 		id="TestArticlesContain">
 		<parameter id="class"
 			value="de.d3web.we.ci4ke.testmodules.TestArticlesContain" />

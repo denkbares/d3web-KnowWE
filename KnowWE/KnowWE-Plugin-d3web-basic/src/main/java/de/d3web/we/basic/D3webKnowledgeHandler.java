@@ -27,8 +27,6 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -36,8 +34,6 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
-import de.d3web.we.knowledgebase.KBRenderer;
-import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * D3webKnowledgeHandler. Handles Knowledge and its recycling.
@@ -54,9 +50,9 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	private static Map<String, KnowledgeBaseManagement> kbms = new HashMap<String, KnowledgeBaseManagement>();
 
 	/**
-	 * Map to cache a String output if the KnowledgeBase for an article.
+	 * Map to store the last version of the KnowledgeBase.
 	 */
-	private static Map<String, String> kbCache = new HashMap<String, String>();
+	private static Map<String, KnowledgeBase> lastKB = new HashMap<String, KnowledgeBase>();
 
 	/**
 	 * Stores for each Article if the jar file already got built
@@ -102,6 +98,10 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 		return keySet.toArray(new String[keySet.size()]);
 	}
 
+	public KnowledgeBase getLastKB(String title) {
+		return lastKB.get(title);
+	}
+
 	/**
 	 * This gets called when an new Article or a new version of an Article gets
 	 * build. Prepares it for new d3web knowledge.
@@ -117,10 +117,8 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 				broker.removeServiceSession(service.getId());
 			}
 		}
-		if (art.isReParse() && !art.isSecondBuild()) {
-			String kbOutput = new KBRenderer().renderHTML(art.getTitle(), null, null,
-					art.getWeb());
-			kbCache.put(art.getTitle(), kbOutput);
+		if (!art.isSecondBuild()) {
+			lastKB.put(art.getTitle(), getKBM(art.getTitle()).getKnowledgeBase());
 		}
 		if (art.isFullParse()) {
 			getKBM(art.getTitle()).clearKnowledgeBase();
@@ -135,28 +133,6 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	@Override
 	public void finishArticle(KnowWEArticle art) {
 		KnowledgeBaseManagement kbm = this.getKBM(art.getTitle());
-		if (art.isReParse() && (!art.isPostDestroyFullParse() || art.isSecondBuild())) {
-			String kbOutput = new KBRenderer().renderHTML(art.getTitle(), null, null,
-					art.getWeb());
-			String cached = kbCache.remove(art.getTitle());
-			if (!kbOutput.equals(cached)) {
-				Logger.getLogger(this.getClass().getName()).log(
-						Level.WARNING,
-						"Detected difference in the knowledgebase after a full reparse.");
-				int version = KnowWEEnvironment.getInstance().getWikiConnector().getVersion(
-						art.getTitle());
-				String fileName = art.getTitle() + " " + version + " KB-diff.txt";
-				String logEntry = art.getTitle() + ", " + version
-						+ ", full reparse with difference in knowledgebase ,"
-						+ " logfile: " + fileName + "\n";
-
-				KnowWEUtils.appendToFile(KnowWEUtils.getPageChangeLogPath(), logEntry);
-
-				String logContent = kbOutput + "\n+++++++++++++++++++++++\nfull compile above\n" +
-						"incremental compile below\n+++++++++++++++++++++++\n" + cached;
-				KnowWEUtils.writeFile(KnowWEUtils.getVersionsSavePath() + fileName, logContent);
-			}
-		}
 		if (!isEmpty(kbm)) {
 			WikiEnvironmentManager.registerKnowledgeBase(kbm,
 					art.getTitle(), art.getWeb());

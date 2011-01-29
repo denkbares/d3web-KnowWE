@@ -29,8 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.ResourceBundle;
+import java.util.Map.Entry;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.RuleSet;
@@ -83,6 +83,10 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 		KnowledgeBaseManagement knowledgeBaseManagement = knowledgeRepresentationHandler.getKBM(topic);
 		KnowledgeBase kb = knowledgeBaseManagement.getKnowledgeBase();
 
+		return renderHTML(web, topic, user, kb);
+	}
+	
+	public String renderHTML(String web, String topic, KnowWEUserContext user, KnowledgeBase kb) {
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
 
 		StringBuilder text = new StringBuilder(
