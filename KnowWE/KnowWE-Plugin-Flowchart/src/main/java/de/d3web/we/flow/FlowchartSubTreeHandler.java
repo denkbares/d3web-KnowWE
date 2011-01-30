@@ -79,6 +79,8 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<FlowchartType> s) {
 
+		if (!article.isFullParse()) destroy(article, s);
+
 		KnowledgeBaseManagement kbm = getKBM(article);
 		Section<XMLContent> flowcontent = ((AbstractXMLObjectType) s.getObjectType()).getContentChild(s);
 
@@ -114,7 +116,9 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 	public void destroy(KnowWEArticle article, Section<FlowchartType> s) {
 		FlowSet flowSet = DiaFluxUtils.getFlowSet(getKBM(article).getKnowledgeBase());
 		Map<String, String> attributeMap = AbstractXMLObjectType.getLastAttributeMapFor(s);
-		flowSet.remove(attributeMap.get("fcid"));
+		if (flowSet != null && attributeMap != null) {
+			flowSet.remove(attributeMap.get("fcid"));
+		}
 	}
 
 	private class FlowchartConstraintModule extends ConstraintModule<FlowchartType> {

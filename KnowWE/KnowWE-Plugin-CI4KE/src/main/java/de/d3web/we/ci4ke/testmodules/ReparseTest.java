@@ -62,27 +62,28 @@ public class ReparseTest extends AbstractCITest {
 		KnowledgeBase lastKB = d3webKH.getLastKB(title);
 		KnowledgeBase currentKB = d3webKH.getKBM(title).getKnowledgeBase();
 
-		String lastKBOutput = new KBRenderer().renderHTML(KnowWEEnvironment.DEFAULT_WEB, title,
+		String incrKBOutput = new KBRenderer().renderHTML(KnowWEEnvironment.DEFAULT_WEB, title,
 				null, lastKB).replaceAll("<.+?>", "");
-		String currentKBOutput = new KBRenderer().renderHTML(KnowWEEnvironment.DEFAULT_WEB, title,
+		String fullKBOutput = new KBRenderer().renderHTML(KnowWEEnvironment.DEFAULT_WEB, title,
 				null, currentKB).replaceAll("<.+?>", "");
 
-		if (!lastKBOutput.equals(currentKBOutput)) {
+		if (!incrKBOutput.equals(fullKBOutput)) {
 			Logger.getLogger(this.getClass().getName()).log(
 					Level.WARNING,
 					"Detected difference in the knowledgebase after a full reparse.");
 			int version = KnowWEEnvironment.getInstance().getWikiConnector().getVersion(
 					title);
-			String fileName = title + " " + version + " KB-diff.txt";
+			String fileName = title + " " + version + " KB-diff";
+			String fileNameFull = fileName + " fullparse.txt";
+			String fileNameIncr = fileName + " incremental.txt";
 			String logEntry = title + ", " + version
 					+ ", full reparse with difference in knowledgebase ,"
-					+ " logfile: " + fileName + "\n";
+					+ " logfiles: " + fileName + " [fullparse|incremental].txt\n";
 
 			KnowWEUtils.appendToFile(KnowWEUtils.getPageChangeLogPath(), logEntry);
 
-			String logContent = currentKBOutput + "\n+++++++++++++++++++++++\nfull compile above\n"
-					+ "incremental compile below\n+++++++++++++++++++++++\n" + lastKBOutput;
-			KnowWEUtils.writeFile(KnowWEUtils.getVersionsSavePath() + fileName, logContent);
+			KnowWEUtils.writeFile(KnowWEUtils.getVersionsSavePath() + fileNameFull, fullKBOutput);
+			KnowWEUtils.writeFile(KnowWEUtils.getVersionsSavePath() + fileNameIncr, incrKBOutput);
 
 			return new CITestResult(TestResultType.FAILED,
 					"Detected difference in the knowledgebase after a full reparse. Check "

@@ -141,6 +141,8 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ConditionActionRuleContent> s) {
 
+			if (!article.isFullParse()) destroy(article, s);
+
 			if (s.hasErrorInSubtree(article)) {
 				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed("Rule"));
 			}
