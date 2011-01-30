@@ -49,7 +49,7 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 		super(ActionType.getInstance());
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings("unchecked")
 	public boolean canCreateNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section<NodeType> nodeSection) {
 
 		Section<D3webRuleAction> actionSection = nodeSection.findSuccessor(D3webRuleAction.class);
@@ -58,8 +58,7 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 				&& actionSection.getObjectType().getClass() != CallFlowActionType.class;
 	}
 
-	@SuppressWarnings({
-			"rawtypes", "unchecked" })
+	@SuppressWarnings("unchecked")
 	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 

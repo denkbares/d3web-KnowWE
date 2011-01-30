@@ -42,6 +42,7 @@ import de.d3web.we.kdom.Section;
  */
 public class KDOMConditionFactory {
 
+	@SuppressWarnings("unchecked")
 	public static Condition createCondition(KnowWEArticle article, Section<CompositeCondition> c) {
 		if (c == null) return null;
 

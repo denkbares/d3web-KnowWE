@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2011 denkbares GmbH
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
 package de.d3web.we.ci4ke.testmodules;
 
 import java.util.logging.Level;
@@ -14,7 +32,12 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.knowledgebase.KBRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 
-
+/**
+ * 
+ * 
+ * @author Albrecht Striffler
+ * @created 30.01.2011
+ */
 public class ReparseTest extends AbstractCITest {
 
 	@Override
@@ -40,9 +63,9 @@ public class ReparseTest extends AbstractCITest {
 		KnowledgeBase currentKB = d3webKH.getKBM(title).getKnowledgeBase();
 
 		String lastKBOutput = new KBRenderer().renderHTML(KnowWEEnvironment.DEFAULT_WEB, title,
-				null, lastKB);
+				null, lastKB).replaceAll("<.+?>", "");
 		String currentKBOutput = new KBRenderer().renderHTML(KnowWEEnvironment.DEFAULT_WEB, title,
-				null, currentKB);
+				null, currentKB).replaceAll("<.+?>", "");
 
 		if (!lastKBOutput.equals(currentKBOutput)) {
 			Logger.getLogger(this.getClass().getName()).log(
@@ -58,8 +81,7 @@ public class ReparseTest extends AbstractCITest {
 			KnowWEUtils.appendToFile(KnowWEUtils.getPageChangeLogPath(), logEntry);
 
 			String logContent = currentKBOutput + "\n+++++++++++++++++++++++\nfull compile above\n"
-					+
-					"incremental compile below\n+++++++++++++++++++++++\n" + lastKBOutput;
+					+ "incremental compile below\n+++++++++++++++++++++++\n" + lastKBOutput;
 			KnowWEUtils.writeFile(KnowWEUtils.getVersionsSavePath() + fileName, logContent);
 
 			return new CITestResult(TestResultType.FAILED,

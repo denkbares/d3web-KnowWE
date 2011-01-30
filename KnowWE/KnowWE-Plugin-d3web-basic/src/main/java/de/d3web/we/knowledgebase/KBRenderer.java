@@ -33,6 +33,7 @@ import java.util.ResourceBundle;
 import java.util.Map.Entry;
 
 import de.d3web.core.inference.KnowledgeSlice;
+import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.RuleSet;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.InfoStore;
@@ -65,8 +66,13 @@ import de.d3web.xcl.inference.PSMethodXCL;
 
 public class KBRenderer extends AbstractHTMLTagHandler {
 
+	private Map<Rule, String> renderedRulesCache = new HashMap<Rule, String>();
+
+	private final Map<String, Object> parameterMap = new HashMap<String, Object>();
+
 	public KBRenderer() {
 		super("renderKnowledge");
+		parameterMap.put(Verbalizer.IS_SINGLE_LINE, Boolean.TRUE);
 	}
 
 	@Override
@@ -87,11 +93,12 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	}
 	
 	public String renderHTML(String web, String topic, KnowWEUserContext user, KnowledgeBase kb) {
+
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
 
 		StringBuilder text = new StringBuilder(
 				"<div id=\"knowledge-panel\" class=\"panel\"><h3>"
-						+ rb.getString("KnowWE.KBRenderer.header") + "</h3>");
+						+ rb.getString("KnowWE.KBRenderer.header") + "</h3>\n\n");
 		text.append("<div>");
 		text.append("<p>");
 		if (kb != null) {
@@ -106,7 +113,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				if (!appendedSolutionsHeadline) {
 					text.append("<strong>"
 							+ rb.getString("KnowWE.KBRenderer.solutions")
-							+ ":</strong><p/>");
+							+ ":</strong><p/>\n\n");
 					appendedSolutionsHeadline = true;
 				}
 				// Get all Children
@@ -114,12 +121,11 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				for (TerminologyObject t1 : getRoots) {
 					// Look for children @ depth 1
 					if (t1.getParents().length == 1) {
-						text
-								.append("<span style=\"color: rgb(150, 110, 120);\">"
-										+ t1.getName() + "</span><br/>");
+						text.append("<span style=\"color: rgb(150, 110, 120);\">"
+								+ t1.getName() + "</span><br/>\n");
 						// Get their childrens and build up the tree recursively
 						text.append(getAll(t1.getChildren(), 1));
-						text.append("<br/>");
+						text.append("<br/>\n");
 					}
 				}
 			}
@@ -128,9 +134,6 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			/*
 			 * Render Rules
 			 */
-
-			Map<String, Object> parameterMap = new HashMap<String, Object>();
-			parameterMap.put(Verbalizer.IS_SINGLE_LINE, Boolean.TRUE);
 			List<KnowledgeSlice> rules = new ArrayList<KnowledgeSlice>(kb
 					.getAllKnowledgeSlices());
 
@@ -145,11 +148,11 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 						duplRules.add(r);
 						if (!appendedRulesHeadline) {
 							if (appendedSolutionsHeadline) {
-								text.append("<br/>");
+								text.append("<br/>\n");
 							}
 							text.append("<strong>"
 									+ rb.getString("KnowWE.KBRenderer.rules")
-									+ ":</strong><p/>");
+									+ ":</strong><p/>\n\n");
 							appendedRulesHeadline = true;
 						}
 					}
@@ -160,20 +163,11 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 					duplRules);
 			// Sort rules
 			Collections.sort(sort, new RuleComparator());
-			// TODO:Johannes: Highlighting does not work
-			// due to strange JS Problems
 			for (de.d3web.core.inference.Rule r : sort) {
-				text.append("Rule: "
-						+ VerbalizationManager.getInstance().verbalize(
-								r.getCondition(), VerbalizationManager.RenderingFormat.PLAIN_TEXT));
-				text.append(" --> ");
-				text.append(VerbalizationManager.getInstance().verbalize(
-						r.getAction(), VerbalizationManager.RenderingFormat.HTML, parameterMap));
-				text.append("\n <br />"); // \n only to avoid hmtl-code
-				// being cut by JspWiki
-				// (String.length > 10000)
+				text.append(renderRule(r, parameterMap));
 			}
-			text.append("<p/>");
+			text.append("<p/>\n");
+			renderedRulesCache = new HashMap<Rule, String>();
 
 			/*
 			 * Questions
@@ -188,11 +182,11 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				if (q1.getName() != null && !q1.getName().equals("Q000")) {
 					if (!appendedQuestionHeadline) {
 						if (appendedSolutionsHeadline || appendedRulesHeadline) {
-							text.append("<br/>");
+							text.append("<br/>\n");
 						}
 						text.append("<strong>"
 								+ rb.getString("KnowWE.KBRenderer.questions")
-								+ ":</strong><p/>");
+								+ ":</strong><p/>\n\n");
 						appendedQuestionHeadline = true;
 					}
 					if (q1 instanceof QContainer) {
@@ -200,7 +194,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 								+ q1.getName() + "</span><br/>");
 						// Build up question tree recursively
 						text.append(getAll(q1.getChildren(), 1));
-						text.append("<br/>");
+						text.append("<br/>\n");
 					}
 				}
 			}
@@ -215,7 +209,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 					if (!appendedXCLHeadline) {
 						if (appendedSolutionsHeadline || appendedRulesHeadline
 								|| appendedQuestionHeadline) {
-							text.append("<br/>");
+							text.append("<br/>\n");
 						}
 						text.append("<strong>"
 								+ rb.getString("KnowWE.KBRenderer.xclModels")
@@ -224,8 +218,8 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 					}
 					de.d3web.xcl.XCLModel model = ((de.d3web.xcl.XCLModel) slice);
 
-					text.append("<p /> " + model.getSolution().getName()
-							+ ": <br />");
+					text.append("<p/>\n\n" + model.getSolution().getName()
+							+ ":<br/>\n");
 
 					Map<XCLRelationType, Collection<XCLRelation>> relationMap = model
 							.getTypedRelations();
@@ -237,24 +231,9 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 						for (XCLRelation rel : relations) {
 							Condition cond = rel.getConditionedFinding();
 							String weight = "";
-							// String kdomid = rel.getKdmomID();
 							if (type == XCLRelationType.explains) {
 								weight = "[" + rel.getWeight() + "]";
 							}
-
-							// TODO:Johannes: Highlighting does not work
-							// due to strange JS Problems
-							// if (kdomid != null) {
-							// String button =
-							// ("<img src=\"KnowWEExtension/images/page_white_find.png\" "
-							// + "class=\"highlight-xcl-relation\" "
-							// + "rel=\"{kdomid: '"
-							// + kdomid
-							// + "', topic: '"
-							// + topic
-							// + "', depth: 0, breadth: 0}\"" + "/></img>");
-							// text.append(button);
-							// }
 
 							text.append(type.getName() + weight + ": ");
 							text.append("&nbsp;&nbsp;&nbsp;"
@@ -268,22 +247,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 							if (id) {
 								text.append(" (ID: " + rel.getId() + ")");
 							}
-
-							// if (kdomid != null) {
-							// String button = ("<input type='button' value='"
-							// + "XCL-Generieren"
-							// + "'"
-							// +
-							// " name='TiRexToXCL' class='button' onclick='highlightNode(\""
-							// + kdomid + "\",\"" + topic + "\");'/>");
-							// text += button;
-							// }
-							text.append(" \n <br />"); // \n only to avoid
-							// hmtl-code being cut
-							// by JspWiki
-							// (String.length >
-							// 10000)
-
+							text.append(" <br/>\n");
 						}
 					}
 				}
@@ -293,7 +257,27 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			text.append("<p class=\"box error\">"
 					+ rb.getString("KnowWE.KBRenderer.error") + "</p>");
 		}
+
 		return text.append("</p></div></div>").toString();
+	}
+
+	private String renderRule(Rule r, Map<String, Object> parameterMap) {
+		String renderedRule = renderedRulesCache.get(r);
+		if (renderedRule != null) return renderedRule;
+
+		StringBuilder text = new StringBuilder();
+		text.append("Rule: "
+				+ VerbalizationManager.getInstance().verbalize(
+						r.getCondition(), VerbalizationManager.RenderingFormat.PLAIN_TEXT));
+		text.append(" --> ");
+		text.append(VerbalizationManager.getInstance().verbalize(
+				r.getAction(), VerbalizationManager.RenderingFormat.HTML, parameterMap));
+		text.append("<br/>\n");
+		
+		renderedRule = text.toString();
+		renderedRulesCache.put(r, renderedRule);
+		
+		return renderedRule;
 	}
 
 	/**
@@ -336,55 +320,53 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			}
 			if (t1 instanceof QuestionChoice) {
 				if (t1 instanceof QuestionMC) {
-					result
-							.append("<span style=\"color: rgb(0, 128, 0);\">"
+					result.append("<span style=\"color: rgb(0, 128, 0);\">"
 									+ t1.toString()
 									+ " "
 									+ prompt
 									+ "</span>"
 									+ "<span style=\"color: rgb(125, 80, 102);\"> [mc] "
-									+ property + " </span><br/>");
+									+ property + " </span><br/>\n");
 				}
 				else {
-					result
-							.append("<span style=\"color: rgb(0, 128, 0);\">"
+					result.append("<span style=\"color: rgb(0, 128, 0);\">"
 									+ t1.toString()
 									+ " "
 									+ prompt
 									+ "</span>"
 									+ "<span style=\"color: rgb(125, 80, 102);\"> [oc] "
-									+ property + " </span><br/>");
+									+ property + " </span><br/>\n");
 				}
 				for (Choice c1 : ((QuestionChoice) t1).getAllAlternatives()) {
 					for (int i = 0; i < depth + 1; i++) {
 						result.append("-");
 					}
 					result.append("<span style=\"color: rgb(0, 0, 255);\">"
-							+ c1.toString() + "</span><br/>");
+							+ c1.toString() + "</span><br/>\n");
 				}
 			}
 			else if (t1 instanceof QuestionText) {
 				result.append("<span style=\"color: rgb(0, 128, 0);\">"
 						+ t1.getName() + " " + prompt + "</span>"
 						+ "<span style=\"color: rgb(125, 80, 102);\"> [text] "
-						+ property + " </span><br/>");
+						+ property + " </span><br/>\n");
 			}
 			else if (t1 instanceof QuestionNum) {
 				result.append("<span style=\"color: rgb(0, 128, 0);\">"
 						+ t1.getName() + " " + prompt + "</span>"
 						+ "<span style=\"color: rgb(125, 80, 102);\"> [num] "
-						+ property + " </span><br/>");
+						+ property + " </span><br/>\n");
 			}
 			else if (t1 instanceof QuestionDate) {
 				result.append("<span style=\"color: rgb(0, 128, 0);\">"
 						+ t1.getName() + " " + prompt
 						+ "<span style=\"color: rgb(125, 80, 102);\"> [date] "
-						+ property + " </span><br/>");
+						+ property + " </span><br/>\n");
 			}
 			else if (t1 instanceof Solution) {
 				result.append("<span style=\"color: rgb(150, 110, 120);\">"
 						+ VerbalizationManager.getInstance().verbalize(t1,
-								VerbalizationManager.RenderingFormat.HTML) + "</span><br/>");
+								VerbalizationManager.RenderingFormat.HTML) + "</span><br/>\n");
 			}
 			// Reset the prompt & property buffer for every object
 			prompt = new StringBuffer();
@@ -410,13 +392,11 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 		return getAll(nodes, new ArrayList<TerminologyObject>(), depth);
 	}
 
-	private class RuleComparator implements
-			Comparator<de.d3web.core.inference.Rule> {
+	private class RuleComparator implements Comparator<Rule> {
 
 		@Override
-		public int compare(de.d3web.core.inference.Rule o1,
-				de.d3web.core.inference.Rule o2) {
-			return o1.toString().compareTo(o2.toString());
+		public int compare(Rule o1, Rule o2) {
+			return renderRule(o1, parameterMap).compareTo(renderRule(o2, parameterMap));
 		}
 
 	}

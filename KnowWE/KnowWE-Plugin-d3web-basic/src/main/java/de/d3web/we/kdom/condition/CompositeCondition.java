@@ -204,10 +204,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 	 * @return
 	 */
 	public Section<? extends NonTerminalCondition> getNegation(Section<CompositeCondition> c) {
-
-		List<Section<? extends NonTerminalCondition>> result = new ArrayList<Section<? extends NonTerminalCondition>>();
 		Section<? extends NonTerminalCondition> negEx = c.findChildOfType(NegatedExpression.class);
-
 		return negEx;
 	}
 
@@ -228,10 +225,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 	 * @return
 	 */
 	public Section<? extends TerminalCondition> getTerminal(Section<CompositeCondition> c) {
-
-		List<Section<? extends TerminalCondition>> result = new ArrayList<Section<? extends TerminalCondition>>();
 		Section<? extends TerminalCondition> terminal = c.findChildOfType(TerminalCondition.class);
-
 		return terminal;
 	}
 
@@ -323,7 +317,7 @@ class NegatedExpression extends NonTerminalCondition {
 		this.sectionFinder = new ISectionFinder() {
 
 			@Override
-			public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+			public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
 				String trimmed = text.trim();
 				for (String sign : NEG_SIGNS) {
 					if (trimmed.startsWith(sign)) {
