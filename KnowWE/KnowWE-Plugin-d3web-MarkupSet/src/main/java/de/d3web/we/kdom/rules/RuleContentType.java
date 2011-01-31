@@ -165,7 +165,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 			PSAction d3action = action.get().getAction(article, action);
 
 			if (d3action != null && d3Cond != null) {
-				Rule r = RuleFactory.createRule(mgn.createRuleID(), d3action, d3Cond,
+				Rule r = RuleFactory.createRule(d3action, d3Cond,
 						null, null, action.get().getActionPSContext());
 				if (r != null) {
 					KnowWEUtils.storeObject(article, s, ruleStoreKey, r);

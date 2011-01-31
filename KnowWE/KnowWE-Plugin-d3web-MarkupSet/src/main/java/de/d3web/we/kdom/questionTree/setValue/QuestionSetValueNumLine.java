@@ -160,8 +160,6 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 			String argument = getArgumentString(s);
 
 			if (q != null) {
-				String newRuleID = getKBM(article).createRuleID();
-
 				Condition cond = QuestionDashTreeUtils.createCondition(article,
 								DashTreeUtils.getAncestorDashTreeElements(s));
 
@@ -171,13 +169,12 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 					action.setQuestion(q);
 					action.setValue(new FormulaNumber(d));
 
-					Rule r = RuleFactory.createRule(newRuleID, action, cond, null, null,
+					Rule r = RuleFactory.createRule(action, cond, null, null,
 							PSMethodAbstraction.class);
 					if (r != null) {
 						KnowWEUtils.storeObject(article, s, SETVALUE_ARGUMENT, r);
 						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
-										r.getClass() + " : "
-												+ r.getId()));
+										r.getClass().toString()));
 					}
 				}
 			}

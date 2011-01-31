@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,23 +42,21 @@ import de.d3web.we.utils.SplitUtility;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
- * This type allows to define within the definition of a question, when this question will be asked
- * This is an alternative method to dashTree-indents
+ * This type allows to define within the definition of a question, when this
+ * question will be asked This is an alternative method to dashTree-indents
  * 
  * @author Jochen
- * @created 23.12.2010 
+ * @created 23.12.2010
  */
-public class InlineIndicationCondition extends DefaultAbstractKnowWEObjectType{
+public class InlineIndicationCondition extends DefaultAbstractKnowWEObjectType {
 
 	private static final String START_KEY = "&\\s*?(Nur falls|Only if):?";
 	private static final String END_KEY = "&";
-	
-	
-	
-	public InlineIndicationCondition()  {
+
+	public InlineIndicationCondition() {
 		this.addSubtreeHandler(new CreateIndicationRulesHandler());
 		this.setSectionFinder(new InlineIndiFinder());
-		
+
 		// TODO find better way to crop open and closing signs
 		AnonymousType open = new AnonymousType(START_KEY);
 		open.setSectionFinder(new RegexSectionFinder(
@@ -80,13 +77,11 @@ public class InlineIndicationCondition extends DefaultAbstractKnowWEObjectType{
 				END_KEY));
 		close.setCustomRenderer(NothingRenderer.getInstance());
 		this.addChildType(close);
-		
-		
-		
+
 		this.addChildType(new Finding());
-		
+
 	}
-	
+
 	private class InlineIndiFinder implements ISectionFinder {
 
 		@Override
@@ -94,60 +89,61 @@ public class InlineIndicationCondition extends DefaultAbstractKnowWEObjectType{
 
 			Pattern pattern = Pattern.compile(START_KEY, Pattern.CASE_INSENSITIVE);
 			Matcher matcher = pattern.matcher(text);
-			if(matcher.find()) {
+			if (matcher.find()) {
 				int start = matcher.start();
-				int end = SplitUtility.lastIndexOfUnquoted(text,END_KEY);
-				return SectionFinderResult.createSingleItemList(new SectionFinderResult(start, end+1));
+				int end = SplitUtility.lastIndexOfUnquoted(text, END_KEY);
+				return SectionFinderResult.createSingleItemList(new SectionFinderResult(start,
+						end + 1));
 			}
 			return null;
 		}
 
 	}
-	
+
 	static class CreateIndicationRulesHandler extends D3webSubtreeHandler<InlineIndicationCondition> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<InlineIndicationCondition> s) {
 			Section<Finding> finding = s.findSuccessor(Finding.class);
-			
+
 			Section<QuestionDefinition> qDef = s.getFather().findSuccessor(QuestionDefinition.class);
 			Collection<KDOMReportMessage> collection = new HashSet<KDOMReportMessage>();
-			if(finding != null && qDef != null) {
-				
+			if (finding != null && qDef != null) {
+
 				Question question = qDef.get().getTermObject(article, qDef);
-				
+
 				// create instant-indication rule with the specified condition
 				Condition condition = finding.get().getCondition(article, finding);
 				ActionInstantIndication actionInstantIndication = new ActionInstantIndication();
 				List<QASet> obs = new ArrayList<QASet>();
 				obs.add(question);
 				actionInstantIndication.setQASets(obs);
-				collection = createRule(article,s,actionInstantIndication,condition);
-				
-				
-				// create an contraIndication-rule that always fires at beginning
+				collection = createRule(article, s, actionInstantIndication, condition);
+
+				// create an contraIndication-rule that always fires at
+				// beginning
 				ActionContraIndication actionContraIndication = new ActionContraIndication();
 				List<QASet> obsContra = new ArrayList<QASet>();
 				obsContra.add(question);
 				actionContraIndication.setQASets(obsContra);
-				Collection<KDOMReportMessage> collection2 = createRule(article,s,actionContraIndication, new CondUnknown(question));
-				//Todo handle these messages
-				
-				
+				Collection<KDOMReportMessage> collection2 = createRule(article, s,
+						actionContraIndication, new CondUnknown(question));
+				// Todo handle these messages
+
 			}
-			
+
 			return collection;
 		}
-		
+
 		private Collection<KDOMReportMessage> createRule(KnowWEArticle article, Section<InlineIndicationCondition> s, PSAction d3action, Condition d3Cond) {
 			if (s.hasErrorInSubtree(article)) {
 				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed("Rule"));
 			}
 
 			KnowledgeBaseManagement mgn = getKBM(article);
-		
+
 			if (d3action != null && d3Cond != null) {
-				Rule r = RuleFactory.createRule(mgn.createRuleID(), d3action, d3Cond,
+				Rule r = RuleFactory.createRule(d3action, d3Cond,
 						null, null, null);
 				if (r != null) {
 					KnowWEUtils.storeObject(article, s, RuleContentType.ruleStoreKey, r);
@@ -162,6 +158,6 @@ public class InlineIndicationCondition extends DefaultAbstractKnowWEObjectType{
 							getString("KnowWE.rulesNew.notcreated")
 					));
 		}
-		
+
 	}
 }

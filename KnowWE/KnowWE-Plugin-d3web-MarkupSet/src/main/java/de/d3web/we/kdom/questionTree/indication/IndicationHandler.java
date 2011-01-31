@@ -140,18 +140,16 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 			if (qaset != null) {
 
 				KnowledgeBaseManagement mgn = getKBM(article);
-				String newRuleID = mgn.createRuleID();
 				Condition cond = QuestionDashTreeUtils.createCondition(article,
 						DashTreeUtils.getAncestorDashTreeElements(element));
 
 				if (cond != null) {
-					Rule r = RuleFactory.createIndicationRule(newRuleID, qaset, cond);
+					Rule r = RuleFactory.createIndicationRule(qaset, cond);
 
 					if (r != null) {
 						KnowWEUtils.storeObject(article, s, indicationStoreKey, r);
 						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
-								r.getClass() + " : "
-										+ r.getId()));
+								r.getClass().toString()));
 					}
 				}
 			}

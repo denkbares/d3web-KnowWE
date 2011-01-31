@@ -170,17 +170,15 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 				Score score = D3webUtils.getScoreForString(argument);
 
 				if (score != null) {
-					String newRuleID = getKBM(article).createRuleID();
 
 					Condition cond = QuestionDashTreeUtils.createCondition(article,
 							DashTreeUtils.getAncestorDashTreeElements(s));
 					if (cond != null) {
-						Rule r = RuleFactory.createHeuristicPSRule(newRuleID, sol, score, cond);
+						Rule r = RuleFactory.createHeuristicPSRule(sol, score, cond);
 						if (r != null) {
 							KnowWEUtils.storeObject(article, s, SETVALUE_ARGUMENT, r);
 							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
-									r.getClass()
-											+ " : " + r.getId()));
+									r.getClass().toString()));
 						}
 					}
 				}
