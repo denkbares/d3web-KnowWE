@@ -509,6 +509,12 @@
 					<version>0.2-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-CITestModules</artifactId>
+					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
 			</dependencies>
 		</profile>
 		
