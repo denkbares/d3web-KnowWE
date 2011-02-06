@@ -295,6 +295,71 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	}
 
+	@SuppressWarnings("unchecked")
+	public Section<InjectType> injectChildren(InjectType injectType) {
+
+		Section<InjectType> injectSection = Section.createSection(
+				originalText, injectType, this, 0, article, null, false);
+
+		if (!this.get().getAllowedChildrenTypes().isEmpty()
+				|| this.getChildren().size() > 1
+				|| (this.getChildren().size() == 1 && !(this.getChildren().get(0).get() instanceof InjectType))) {
+			KDOMReportMessage.storeSingleError(null, this, this.getClass(),
+					new SimpleMessageError(
+							"Internal error: Tried to inject sections in non-leaf section."));
+			return null;
+		}
+
+		if (this.getChildren().size() == 1 && !this.getChildren().get(0).equalsAsKDOMSubtree(
+						injectSection)) {
+			KDOMReportMessage.storeSingleError(null, this, this.getClass(),
+					new SimpleMessageError(
+							"Internal error: Multiple diverging section injections."));
+			return (Section<InjectType>) this.getChildren().get(0);
+		}
+
+		KDOMReportMessage.clearMessages(null, this, this.getClass());
+		this.addChild(injectSection);
+
+		return injectSection;
+	}
+	
+	public boolean removeInjectedChildren() {
+		if (this.getChildren().size() == 1 && this.getChildren().get(0).get() instanceof InjectType) {
+			Section<?> injectSection = this.getChildren().remove(0);
+			KnowWEEnvironment.getInstance().getArticleManager(getWeb()).addAllArticlesToRefresh(
+					injectSection.getReusedBySet());
+			injectSection.clearReusedBySet();
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Compares the KDOM subtree of this Section with the KDOM subtree of given
+	 * Section. Types, originalText and structure of the tree are checked.
+	 * 
+	 * @created 04.02.2011
+	 * @param sec is the Section to compare with this Section
+	 * @return true, if both KDOM subtrees equal in terms of type, originalText
+	 *         and structure. False else.
+	 */
+	public boolean equalsAsKDOMSubtree(Section<?> sec) {
+		if (this.objectType.equals(sec.objectType)
+					&& this.originalText.equals(sec.originalText)
+					&& this.getChildren().size() == sec.getChildren().size()) {
+			Iterator<Section<?>> thisIter = this.getChildren().iterator();
+			Iterator<Section<?>> secIter = sec.getChildren().iterator();
+			while (thisIter.hasNext()) {
+				if (!thisIter.next().equalsAsKDOMSubtree(secIter.next())) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
 	public boolean equalsOrIsSuccessorOf(Section<?> sec) {
 		if (sec == this) {
 			return true;
@@ -1455,6 +1520,13 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	public void clearReusedBySet() {
 		this.reusedBy = null;
+	}
+
+	public void clearReusedBySetRecursively() {
+		clearReusedBySet();
+		for (Section<?> child : getChildren()) {
+			child.clearReusedBySetRecursively();
+		}
 	}
 
 	/**
