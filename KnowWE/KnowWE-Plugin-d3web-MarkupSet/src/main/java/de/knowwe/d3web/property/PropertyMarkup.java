@@ -24,7 +24,7 @@ import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.core.TextLine;
 
 /**
- * Markup the add properties to an IDObject
+ * Markup the add properties to an NamedObject
  * 
  * @author Markus Friedrich (denkbares GmbH)
  * @created 10.11.2010

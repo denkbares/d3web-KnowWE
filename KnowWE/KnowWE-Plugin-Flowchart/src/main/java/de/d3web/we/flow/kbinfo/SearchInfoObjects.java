@@ -29,7 +29,7 @@ import java.util.Set;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.AbstractTerminologyObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowSet;
@@ -123,7 +123,7 @@ public class SearchInfoObjects extends AbstractAction {
 				}
 			}
 
-			List<NamedObject> allKBObjects = new LinkedList<NamedObject>();
+			List<AbstractTerminologyObject> allKBObjects = new LinkedList<AbstractTerminologyObject>();
 
 			// add Diagnosis
 			if (classes.contains("solution")) {

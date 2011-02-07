@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import de.d3web.core.knowledge.terminology.IDObject;
+import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.manage.KnowledgeBaseManagement;
@@ -75,7 +75,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 
 			KnowledgeBaseManagement mgn = getKBM(article);
 
-			IDObject o = mgn.findQContainer(name);
+			NamedObject o = mgn.findQContainer(name);
 
 			if (o != null) {
 				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedWarning(

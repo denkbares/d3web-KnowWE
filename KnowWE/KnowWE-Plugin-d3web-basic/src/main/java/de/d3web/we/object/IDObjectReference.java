@@ -22,7 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.terminology.Choice;
-import de.d3web.core.knowledge.terminology.IDObject;
+import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.basic.D3webModule;
@@ -34,7 +34,7 @@ import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.Patterns;
 
 /**
- * Type for {@link IDObject} references
+ * Type for {@link NamedObject} references
  * <p/>
  * FIXME: This is not really a TermReference, it needs a redesign.
  * <p/>
@@ -51,20 +51,20 @@ import de.d3web.we.utils.Patterns;
  * @author Markus Friedrich (denkbares GmbH)
  * @created 11.11.2010
  */
-public class IDObjectReference extends D3webTermReference<IDObject> {
+public class IDObjectReference extends D3webTermReference<NamedObject> {
 
 	public IDObjectReference() {
-		super(IDObject.class);
+		super(NamedObject.class);
 		this.subtreeHandler.clear();
 	}
 
 	@Override
-	public String getTermName(Section<? extends KnowWETerm<IDObject>> s) {
+	public String getTermName(Section<? extends KnowWETerm<NamedObject>> s) {
 		return s.getOriginalText();
 	}
 
 	@Override
-	public IDObject getTermObjectFallback(KnowWEArticle article, Section<? extends TermReference<IDObject>> s) {
+	public NamedObject getTermObjectFallback(KnowWEArticle article, Section<? extends TermReference<NamedObject>> s) {
 		if (s.get() instanceof IDObjectReference) {
 			// # not allowed
 			String unquotedNamePattern = "(?:[^#])+";
@@ -80,7 +80,7 @@ public class IDObjectReference extends D3webTermReference<IDObject> {
 			}
 			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
 					article.getWeb()).getKBM(article.getTitle());
-			IDObject idObject = mgn.findTerminologyObjectByName(idObjectName);
+			NamedObject idObject = mgn.findTerminologyObjectByName(idObjectName);
 			if (idObject instanceof QuestionChoice && choiceString != null) {
 				QuestionChoice qc = (QuestionChoice) idObject;
 				idObject = null;

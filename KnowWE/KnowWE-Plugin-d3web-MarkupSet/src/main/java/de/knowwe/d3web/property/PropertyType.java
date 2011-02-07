@@ -21,7 +21,7 @@ package de.knowwe.d3web.property;
 import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.terminology.Choice;
-import de.d3web.core.knowledge.terminology.IDObject;
+import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Solution;
@@ -61,7 +61,7 @@ public class PropertyType extends DefaultAbstractKnowWEObjectType implements Inc
 
 		@Override
 		public void render(KnowWEArticle article, Section<IDObjectReference> sec, KnowWEUserContext user, StringBuilder string) {
-			IDObject object = sec.get().getTermObject(article, sec);
+			NamedObject object = sec.get().getTermObject(article, sec);
 			KnowWEDomRenderer renderer;
 			if (object instanceof Question) {
 				renderer = StyleRenderer.Question;
@@ -112,7 +112,7 @@ public class PropertyType extends DefaultAbstractKnowWEObjectType implements Inc
 		pr.setSectionFinder(new RegexSectionFinder(Pattern.compile("\\.(" + name + ")"), 1));
 		this.childrenTypes.add(pr);
 
-		// IDObject
+		// NamedObject
 		IDObjectReference idor = new IDObjectReference();
 		idor.setSectionFinder(new RegexSectionFinder(Pattern.compile(idObject + "\\."), 1));
 		idor.setCustomRenderer(new PropertyIDObbjetReferenceRenderer());

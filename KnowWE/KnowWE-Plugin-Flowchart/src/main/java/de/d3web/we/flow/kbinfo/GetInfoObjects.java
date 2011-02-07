@@ -31,7 +31,7 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.DerivationType;
-import de.d3web.core.knowledge.terminology.IDObject;
+import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -184,7 +184,7 @@ public class GetInfoObjects extends AbstractAction {
 	}
 
 	private static void appendInfoObject(String web, KnowledgeBase base, String objectID, StringBuffer buffer) {
-		IDObject object = base.getManager().search(objectID);
+		NamedObject object = base.getManager().search(objectID);
 
 		if (object instanceof Solution) {
 			appendInfoObject(web, base, (Solution) object, buffer);
@@ -196,7 +196,7 @@ public class GetInfoObjects extends AbstractAction {
 			appendInfoObject(web, base, (QContainer) object, buffer);
 		}
 		else {
-			// TODO: why ist a "Flow" not an IDObject?
+			// TODO: why ist a "Flow" not an NamedObject?
 			// if not inside knowledge base
 			// look for a flowchart th the article
 			FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
