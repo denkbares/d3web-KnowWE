@@ -194,8 +194,8 @@ public class QuestionTreeTest extends TestCase {
 		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
 
 		// Get Question with ID "Q1": "Exhaust fumes"
-		Question loadedQuestion = loadedKB.getManager().searchQuestion("Q1");
-		Question createdQuestion = createdKB.getManager().searchQuestion("Q1");
+		Question loadedQuestion = loadedKB.getManager().searchQuestion("Exhaust fumes");
+		Question createdQuestion = createdKB.getManager().searchQuestion("Exhaust fumes");
 
 		String loadedPrompt = loadedQuestion.getInfoStore().getValue(MMInfo.PROMPT);
 		String createdPrompt = createdQuestion.getInfoStore().getValue(MMInfo.PROMPT);

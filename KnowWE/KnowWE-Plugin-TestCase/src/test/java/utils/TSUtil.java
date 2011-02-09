@@ -90,26 +90,22 @@ public class TSUtil {
 		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance(kb);
 
 		// Root Solution
-		Solution p0 = new Solution("P000");
-		p0.setName("P000");
+		Solution p0 = new Solution(kb, "P000");
 		kb.getManager().putTerminologyObject(p0);
 		kb.setRootSolution(p0);
 
 		// Solution
-		Solution p = new Solution("P1");
-		p.setName("Other problem");
+		Solution p = new Solution(kb, "Other problem");
 		kb.getRootSolution().addChild(p);
 		kb.getManager().putTerminologyObject(p);
 
 		// Root Questionnaire
-		QContainer qc0 = new QContainer("Q000");
-		qc0.setName("Q000");
+		QContainer qc0 = new QContainer(kb, "Q000");
 		kb.getManager().putTerminologyObject(qc0);
 		kb.setRootQASet(qc0);
 
 		// Questionnaire
-		QContainer qc = new QContainer("QC1");
-		qc.setName("Observations");
+		QContainer qc = new QContainer(kb, "Observations");
 		kb.getRootQASet().addChild(qc);
 		kb.getManager().putTerminologyObject(qc);
 

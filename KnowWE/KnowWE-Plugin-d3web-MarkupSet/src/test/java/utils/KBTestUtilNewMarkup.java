@@ -147,31 +147,22 @@ public class KBTestUtilNewMarkup {
 	 */
 	private void createSolutions() {
 
-		Solution p0 = new Solution("P000");
-		p0.setName("P000");
+		Solution p0 = new Solution(createdKB, "P000");
 		createdKB.getManager().putTerminologyObject(p0);
 		createdKB.setRootSolution(p0);
 
-		Solution p1 = new Solution("P1");
-		p1.setName("Mechanical problem");
+		Solution p1 = new Solution(createdKB, "Mechanical problem");
 		createdKB.getRootSolution().addChild(p1);
-		createdKB.getManager().putTerminologyObject(p1);
 
-		Solution p2 = new Solution("P2");
-		p2.setName("Damaged idle speed system");
+		Solution p2 = new Solution(createdKB, "Damaged idle speed system");
 		p1.addChild(p2);
-		createdKB.getManager().putTerminologyObject(p2);
 
-		Solution p3 = new Solution("P3");
-		p3.setName("Leaking air intake system");
+		Solution p3 = new Solution(createdKB, "Leaking air intake system");
 		p3.getInfoStore().addValue(MMInfo.DESCRIPTION, "The air intake system is leaking.");
 		p1.addChild(p3);
-		createdKB.getManager().putTerminologyObject(p3);
 
-		Solution p4 = new Solution("P4");
-		p4.setName("Other problem");
+		Solution p4 = new Solution(createdKB, "Other problem");
 		createdKB.getRootSolution().addChild(p4);
-		createdKB.getManager().putTerminologyObject(p4);
 
 	}
 
@@ -180,35 +171,25 @@ public class KBTestUtilNewMarkup {
 	 */
 	private void createQuestionnaires() {
 
-		QContainer qc0 = new QContainer("Q000");
-		qc0.setName("Q000");
+		QContainer qc0 = new QContainer(createdKB, "Q000");
 		createdKB.getManager().putTerminologyObject(qc0);
 		createdKB.setRootQASet(qc0);
 
-		QContainer qc1 = new QContainer("QC1");
-		qc1.setName("Observations");
+		QContainer qc1 = new QContainer(createdKB, "Observations");
 		createdKB.getRootQASet().addChild(qc1);
-		createdKB.getManager().putTerminologyObject(qc1);
 
-		QContainer qc2 = new QContainer("QC2");
-		qc2.setName("Idle speed system");
+		QContainer qc2 = new QContainer(createdKB, "Idle speed system");
 		qc1.addChild(qc2);
-		createdKB.getManager().putTerminologyObject(qc2);
 
-		QContainer qc3 = new QContainer("QC3");
-		qc3.setName("Air filter");
+		QContainer qc3 = new QContainer(createdKB, "Air filter");
 		qc3.getInfoStore().addValue(MMInfo.DESCRIPTION,
 				"Here you can enter your observations concerning the air filter.");
 		qc1.addChild(qc3);
-		createdKB.getManager().putTerminologyObject(qc3);
 
-		QContainer qc4 = new QContainer("QC4");
-		qc4.setName("Ignition timing");
+		QContainer qc4 = new QContainer(createdKB, "Ignition timing");
 		qc1.addChild(qc4);
-		createdKB.getManager().putTerminologyObject(qc4);
 
-		QContainer qc5 = new QContainer("QC5");
-		qc5.setName("Technical Examinations");
+		QContainer qc5 = new QContainer(createdKB, "Technical Examinations");
 		createdKB.getRootQASet().addChild(qc5);
 		createdKB.getManager().putTerminologyObject(qc5);
 
@@ -233,7 +214,7 @@ public class KBTestUtilNewMarkup {
 		// -- black
 		// -- blue
 		// -- invisible
-		Question q0 = createdKBM.createQuestionOC("Q1", "Exhaust fumes", qc1,
+		Question q0 = createdKBM.createQuestionOC("Exhaust fumes", qc1,
 				new String[] {
 						"black", "blue", "invisible" });
 
@@ -245,12 +226,12 @@ public class KBTestUtilNewMarkup {
 		// --- Fuel [oc]
 		// ---- diesel
 		// ---- unleaded gasoline
-		createdKBM.createQuestionOC("Q2", "Fuel", q0, new String[] {
+		createdKBM.createQuestionOC("Fuel", q0, new String[] {
 				"diesel", "unleaded gasoline" });
 
 		// Add question:
 		// - "Average mileage /100km" [num] {liter} (0 30) #Q1337
-		Question q1 = createdKBM.createQuestionNum("Q3", "Average mileage /100km", qc1);
+		Question q1 = createdKBM.createQuestionNum("Average mileage /100km", qc1);
 		// q1.setName("Average mileage /100km");
 		InfoStore infoStore = q1.getInfoStore();
 		infoStore.addValue(MMInfo.UNIT, "liter");
@@ -258,21 +239,21 @@ public class KBTestUtilNewMarkup {
 
 		// Add question:
 		// -- "Num. Mileage evaluation" [num] <abstract>
-		Question q2 = createdKBM.createQuestionNum("Q4", "Num. Mileage evaluation", q1);
+		Question q2 = createdKBM.createQuestionNum("Num. Mileage evaluation", q1);
 		q2.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION, Boolean.TRUE);
 
 		// Add question:
 		// --- Mileage evaluation [oc] <abstract>
 		// ---- normal
 		// ---- increased
-		Question q3 = createdKBM.createQuestionOC("Q5", "Mileage evaluation", q2,
+		Question q3 = createdKBM.createQuestionOC("Mileage evaluation", q2,
 				new String[] {
 						"normal", "increased" });
 		q3.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION, Boolean.TRUE);
 
 		// Add question:
 		// - "Real mileage  /100km" [num]
-		createdKBM.createQuestionNum("Q6", "Real mileage  /100km", qc1);
+		createdKBM.createQuestionNum("Real mileage  /100km", qc1);
 
 		// Add question:
 		// - Driving [mc]
@@ -280,7 +261,7 @@ public class KBTestUtilNewMarkup {
 		// -- insufficient power on full load
 		// -- unsteady idle speed
 		// -- everything is fine
-		createdKBM.createQuestionMC("Q7", "Driving", qc1,
+		createdKBM.createQuestionMC("Driving", qc1,
 				new String[] {
 						"insufficient power on partial load",
 						"insufficient power on full load",
@@ -296,7 +277,7 @@ public class KBTestUtilNewMarkup {
 		QContainer qc2 = createdKBM.findQContainer("Technical Examinations");
 		// - "Idle speed system o.k.?" [yn]
 		// createdKBM.createQuestionYN("Q9", "Idle speed system o.k.?", qc2);
-		createdKBM.createQuestionYN("Q9", "Idle speed system o.k.?", null, null, qc2);
+		createdKBM.createQuestionYN("Idle speed system o.k.?", null, null, qc2);
 	}
 
 	/**
