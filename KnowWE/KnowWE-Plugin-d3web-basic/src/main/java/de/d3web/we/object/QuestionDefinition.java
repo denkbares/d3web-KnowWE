@@ -63,7 +63,6 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 	public abstract QuestionType getQuestionType(Section<QuestionDefinition> s);
 
-	@SuppressWarnings("unchecked")
 	public abstract Section<? extends QASetDefinition> getParentQASetSection(Section<? extends QuestionDefinition> qdef);
 
 	public abstract int getPosition(Section<QuestionDefinition> s);
@@ -140,7 +139,6 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 					parent.moveChildToPosition(q,
 							s.get().getPosition(s));
 				}
-
 
 				// store object in section
 				qidSection.get().storeTermObject(article, qidSection, q);
