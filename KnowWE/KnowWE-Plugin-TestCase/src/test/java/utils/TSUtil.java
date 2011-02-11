@@ -91,23 +91,19 @@ public class TSUtil {
 
 		// Root Solution
 		Solution p0 = new Solution(kb, "P000");
-		kb.getManager().putTerminologyObject(p0);
 		kb.setRootSolution(p0);
 
 		// Solution
 		Solution p = new Solution(kb, "Other problem");
 		kb.getRootSolution().addChild(p);
-		kb.getManager().putTerminologyObject(p);
 
 		// Root Questionnaire
 		QContainer qc0 = new QContainer(kb, "Q000");
-		kb.getManager().putTerminologyObject(qc0);
 		kb.setRootQASet(qc0);
 
 		// Questionnaire
 		QContainer qc = new QContainer(kb, "Observations");
 		kb.getRootQASet().addChild(qc);
-		kb.getManager().putTerminologyObject(qc);
 
 		// Add question:
 		// - Driving [mc]

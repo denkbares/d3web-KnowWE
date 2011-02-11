@@ -148,7 +148,6 @@ public class KBTestUtilNewMarkup {
 	private void createSolutions() {
 
 		Solution p0 = new Solution(createdKB, "P000");
-		createdKB.getManager().putTerminologyObject(p0);
 		createdKB.setRootSolution(p0);
 
 		Solution p1 = new Solution(createdKB, "Mechanical problem");
@@ -172,7 +171,6 @@ public class KBTestUtilNewMarkup {
 	private void createQuestionnaires() {
 
 		QContainer qc0 = new QContainer(createdKB, "Q000");
-		createdKB.getManager().putTerminologyObject(qc0);
 		createdKB.setRootQASet(qc0);
 
 		QContainer qc1 = new QContainer(createdKB, "Observations");
@@ -191,7 +189,6 @@ public class KBTestUtilNewMarkup {
 
 		QContainer qc5 = new QContainer(createdKB, "Technical Examinations");
 		createdKB.getRootQASet().addChild(qc5);
-		createdKB.getManager().putTerminologyObject(qc5);
 
 		// Set Init-Questions
 		List<QContainer> initQuestions = new ArrayList<QContainer>();
