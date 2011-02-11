@@ -20,6 +20,9 @@
 
 package de.knowwe.d3web.action;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,7 +38,8 @@ import de.d3web.core.session.blackboard.FactFactory;
 import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.TextValue;
-import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
+import de.d3web.we.action.AbstractAction;
+import de.d3web.we.action.ActionContext;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -43,22 +47,43 @@ import de.d3web.we.event.EventManager;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.d3web.event.FindingSetEvent;
 
-public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
+public class SetSingleFindingAction extends AbstractAction {
 
-	@SuppressWarnings({ "deprecation" })
 	@Override
-	public String perform(KnowWEParameterMap parameterMap) {
-		String namespace = java.net.URLDecoder.decode(parameterMap
-				.get(KnowWEAttributes.SEMANO_NAMESPACE));
+	public void execute(ActionContext context) throws IOException {
+		KnowWEParameterMap map = context.getKnowWEParameterMap();
+		String result = setValue(map);
+		if (result != null && context.getWriter() != null) {
+			context.getWriter().write(result);
+		}
+
+	}
+
+	private String setValue(KnowWEParameterMap parameterMap) {
 
 		String objectid = parameterMap.get(KnowWEAttributes.SEMANO_OBJECT_ID);
-		String valueid = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_ID);
 		String valuenum = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_NUM);
 		String valuedate = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_DATE);
 		String valueText = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_TEXT);
 		String topic = parameterMap.getTopic();
 		String user = parameterMap.get(KnowWEAttributes.USER);
 		String web = parameterMap.get(KnowWEAttributes.WEB);
+		String namespace = null;
+		String term = null;
+		String valueid = null;
+		try {
+			namespace = java.net.URLDecoder.decode(parameterMap
+					.get(KnowWEAttributes.SEMANO_NAMESPACE), "UTF-8");
+			String tempValueID = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_ID);
+			if (tempValueID != null) valueid = URLDecoder.decode(tempValueID, "UTF-8");
+			term = URLDecoder.decode(parameterMap.get(KnowWEAttributes.SEMANO_TERM_NAME), "UTF-8");
+		}
+		catch (UnsupportedEncodingException e1) {
+			// should not occur
+		}
+		if (term != null && !term.equalsIgnoreCase("undefined")) {
+			objectid = term;
+		}
 
 		if (namespace == null || objectid == null) {
 			return "null";

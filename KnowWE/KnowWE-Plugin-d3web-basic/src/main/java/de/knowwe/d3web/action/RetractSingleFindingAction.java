@@ -21,6 +21,8 @@
 package de.knowwe.d3web.action;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -62,14 +64,28 @@ public class RetractSingleFindingAction extends AbstractAction {
 
 	private String retractValue(KnowWEParameterMap parameterMap) {
 
-		String namespace = parameterMap.get(KnowWEAttributes.SEMANO_NAMESPACE);
 		String objectid = parameterMap.get(KnowWEAttributes.SEMANO_OBJECT_ID);
-		String valueid = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_ID);
 		String valuenum = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_NUM);
 		String valuedate = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_DATE);
 		String topic = parameterMap.getTopic();
 		String user = parameterMap.get(KnowWEAttributes.USER);
 		String web = parameterMap.get(KnowWEAttributes.WEB);
+
+		String namespace = null;
+		String term = null;
+		String valueid = null;
+		try {
+			namespace = java.net.URLDecoder.decode(parameterMap
+					.get(KnowWEAttributes.SEMANO_NAMESPACE), "UTF-8");
+			valueid = URLDecoder.decode(parameterMap.get(KnowWEAttributes.SEMANO_VALUE_ID), "UTF-8");
+			term = URLDecoder.decode(parameterMap.get(KnowWEAttributes.SEMANO_TERM_NAME), "UTF-8");
+		}
+		catch (UnsupportedEncodingException e1) {
+			// should not occur
+		}
+		if (term != null && !term.equalsIgnoreCase("undefined")) {
+			objectid = term;
+		}
 
 		if (namespace == null || objectid == null) {
 			return "null";

@@ -80,6 +80,8 @@ public class QuickInterviewRenderer {
 
 	private final ResourceBundle rb;
 
+	private int counter = 0;
+
 	/**
 	 * Assembles and returns the HTML representation of the interview.
 	 * 
@@ -170,6 +172,7 @@ public class QuickInterviewRenderer {
 	private void getInterviewElementsRenderingRecursively(TerminologyObject topContainer,
 			StringBuffer buffer, Set<TerminologyObject> processedTOs, int depth, boolean init) {
 
+		String id = getID();
 		// just do not display the rooty root
 		if (!topContainer.getName().endsWith("Q000")) {
 
@@ -182,11 +185,12 @@ public class QuickInterviewRenderer {
 
 				// if not empty
 				if (topContainer.getChildren() != null && topContainer.getChildren().length > 0) {
-					getQuestionnaireRendering((QContainer) topContainer, depth, init, buffer);
+					getQuestionnaireRendering((QContainer) topContainer, depth, init, buffer, id);
 				}
 				// if empty, specific rendering
 				else {
-					getEmptyQuestionnaireRendering((QContainer) topContainer, depth, buffer, init);
+					getEmptyQuestionnaireRendering((QContainer) topContainer, depth, buffer, init,
+							id);
 				}
 			}
 		}
@@ -202,7 +206,7 @@ public class QuickInterviewRenderer {
 
 		// group all following questionnaires/questions for easily hiding them
 		// blockwise later
-		buffer.append("\n<div id='group_" + topContainer.getId() + "' " + clazz + " style='"
+		buffer.append("\n<div id='group_" + id + "' " + clazz + " style='"
 				+ display + "' >");
 
 		depth++;
@@ -231,7 +235,7 @@ public class QuickInterviewRenderer {
 	}
 
 	private void getEmptyQuestionnaireRendering(QContainer container, int depth, StringBuffer buffi,
-			boolean show) {
+			boolean show, String id) {
 		int margin = 10 + depth * 20; // calculate identation
 
 		String clazz = show // decide class for rendering expand-icon
@@ -241,13 +245,13 @@ public class QuickInterviewRenderer {
 		// if init questionnaire: all contained elements are to be displayed
 		String display = show ? "display: block;" : "display: none;";
 
-		buffi.append("<div id='" + container.getId() + "' " + clazz + " style='display: block;" +
+		buffi.append("<div id='" + id + "' " + clazz + " style='display: block;" +
 				" margin-left: " + margin + "px;' >");
 		buffi.append(container.getName());
 		buffi.append("</div>");
 
 		margin = margin + 30;
-		buffi.append("\n<div id='group_" + container.getId() + "' class='group' style='"
+		buffi.append("\n<div id='group_" + container.getName() + "' class='group' style='"
 				+ display + "' >");
 		buffi.append("\n<div class='emptyQuestionnaire' " +
 				"style='margin-left: " + margin + "px; display: block;' "
@@ -307,7 +311,7 @@ public class QuickInterviewRenderer {
 	private void getAlreadyDefinedRendering(TerminologyObject element, StringBuffer sb, int depth) {
 
 		int margin = 30 + depth * 20;
-		sb.append("<div id='" + element.getId() + "' " +
+		sb.append("<div id='" + element.getName() + "' " +
 				"class='alreadyDefined' style='margin-left: " + margin + "px; display: block'; >");
 		sb.append(element.getName() + " is already defined!");
 		sb.append("</div>");
@@ -324,7 +328,7 @@ public class QuickInterviewRenderer {
 	 * @param buffi
 	 * @return the HTML of a questionnaire div
 	 */
-	private void getQuestionnaireRendering(QASet container, int depth, boolean show, StringBuffer buffi) {
+	private void getQuestionnaireRendering(QASet container, int depth, boolean show, StringBuffer buffi, String id) {
 
 		int margin = 10 + depth * 20; // calculate identation
 
@@ -338,7 +342,7 @@ public class QuickInterviewRenderer {
 			clazz = "class='questionnaire pointDown indicated' ";
 		}
 
-		buffi.append("<div id='" + container.getId() + "' " + clazz + style + " >");
+		buffi.append("<div id='" + id + "' " + clazz + style + " >");
 
 		buffi.append(container.getName());
 		buffi.append("</div>");
@@ -385,8 +389,8 @@ public class QuickInterviewRenderer {
 			// render the first cell displaying the Question in a separate div,
 			// then call method for rendering a question's answers in another
 			// div
-			sb.append("\n<div id='" + question.getId() + "' " +
-					"parent='" + parent.getId() + "' " +
+			sb.append("\n<div id='" + question.getName() + "' " +
+					"parent='" + parent.getName() + "' " +
 					"class='questionTT' " +
 					"style='width: " + w + "px; display: inline-block;' title='"
 					+ question.getName()
@@ -399,8 +403,8 @@ public class QuickInterviewRenderer {
 			// render the first cell displaying the Question in a separate div,
 			// then call method for rendering a question's answers in another
 			// div
-			sb.append("\n<div id='" + question.getId() + "' " +
-					"parent='" + parent.getId() + "' " +
+			sb.append("\n<div id='" + question.getName() + "' " +
+					"parent='" + parent.getName() + "' " +
 					"class='question' " +
 					"style='width: " + w + "px; display: inline-block;' >"
 					+ divText + "</div>");
@@ -446,7 +450,7 @@ public class QuickInterviewRenderer {
 			}
 		}
 
-		String id = q.getId();
+		String id = getID();
 		String jscall = "";
 		// assemble the JS call
 		try {
@@ -489,14 +493,21 @@ public class QuickInterviewRenderer {
 			String cssclass = "answer";
 
 			// assemble JS string
-			String jscall = " rel=\"{oid:'" + choice.getId() + "', "
-					+ "web:'" + web + "', "
-					+ "ns:'" + namespace + "', "
-					+ "qid:'" + q.getId() + "', "
-					+ "type:'oc'"
-					+ "}\" ";
+			String jscall = null;
+			try {
+				jscall = " rel=\"{oid:'" + choice.getName() + "', "
+						+ "web:'" + web + "', "
+						+ "ns:'" + namespace + "', "
+						+ "qid:'" + URLEncoder.encode(q.getName(), "UTF-8") + "', "
+						+ "choice:'" + URLEncoder.encode(choice.getName(), "UTF-8") + "', "
+						+ "type:'oc'"
+						+ "}\" ";
+			}
+			catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
 
-			String spanid = q.getId() + "_" + choice.getId();
+			String spanid = q.getName() + "_" + choice.getName();
 
 			// if a value was already set, get the value and set corresponding
 			// css class
@@ -553,7 +564,7 @@ public class QuickInterviewRenderer {
 			value = value.substring(0, value.indexOf("."));
 		}
 
-		String id = q.getId();
+		String id = getID();
 		String unit = "";
 		Double rangeMax = Double.MAX_VALUE;
 		Double rangeMin = Double.MIN_VALUE;
@@ -618,7 +629,7 @@ public class QuickInterviewRenderer {
 
 		renderAnswerUnknown(q, "num", sb);
 
-		String errmsgid = q.getId() + "_errormsg";
+		String errmsgid = id + "_errormsg";
 		sb.append("<div id='" + errmsgid + "' class='invisible' ></div>");
 	}
 
@@ -650,7 +661,7 @@ public class QuickInterviewRenderer {
 			value = "yyyy-mm-dd-hh-mm-ss";
 		}
 
-		String id = q.getId();
+		String id = getID();
 
 		// assemble the JS call
 		String jscall = "";
@@ -678,7 +689,7 @@ public class QuickInterviewRenderer {
 		sb.append("<div class='separator'> | </div>");
 		renderAnswerUnknown(q, "num", sb);
 
-		String errmsgid = q.getId() + "_errormsg";
+		String errmsgid = id + "_errormsg";
 		sb.append("<div id='" + errmsgid + "' class='invisible' ></div>");
 	}
 
@@ -702,12 +713,19 @@ public class QuickInterviewRenderer {
 		for (Choice choice : mcval.asChoiceList(q)) {
 
 			String cssclass = "answerMC";
-			String jscall = " rel=\"{oid:'" + choice.getId() + "', "
-					+ "web:'" + web + "', "
-					+ "ns:'" + namespace + "', "
-					+ "qid:'" + q.getId() + "', "
-					+ "type:'mc', "
-					+ "}\" ";
+			String jscall = null;
+			try {
+				jscall = " rel=\"{oid:'" + choice.getName() + "', "
+						+ "web:'" + web + "', "
+						+ "ns:'" + namespace + "', "
+						+ "qid:'" + URLEncoder.encode(q.getName(), "UTF-8") + "', "
+						+ "type:'mc', "
+						+ "choice:'" + URLEncoder.encode(choice.getName(), "UTF-8") + "', "
+						+ "}\" ";
+			}
+			catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
 
 			Value value = session.getBlackboard().getValue(q);
 
@@ -715,7 +733,7 @@ public class QuickInterviewRenderer {
 					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
 				cssclass = "answerMCClicked";
 			}
-			String spanid = q.getId() + "_" + choice.getId();
+			String spanid = q.getName() + "_" + choice.getName();
 			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + "", cssclass,
 					jscall, null, spanid, ""));
 			sb.append("<div class='separator'> | </div>");
@@ -724,11 +742,11 @@ public class QuickInterviewRenderer {
 		// also render the unknown alternative for choice questions
 		renderAnswerUnknown(q, "mc", sb);
 
-		String jscall = " rel=\"{web:'" + web + "', "
-				+ "ns:'" + namespace + "', "
-				+ "qid:'" + q.getId() + "', "
-				+ "type:'mc', "
-				+ "}\" ";
+		// String jscall = " rel=\"{web:'" + web + "', "
+		// + "ns:'" + namespace + "', "
+		// + "qid:'" + q.getId() + "', "
+		// + "type:'mc', "
+		// + "}\" ";
 		// sb.append("<button class='mcbutton' type='button' " + jscall +
 		// " >OK</button>");
 
@@ -745,13 +763,18 @@ public class QuickInterviewRenderer {
 	 * @return the HTML representation
 	 */
 	private void renderAnswerUnknown(Question q, String type, StringBuffer sb) {
-
-		String jscall = " rel=\"{oid: '" + Unknown.getInstance().getId() + "', "
-				+ "web:'" + web + "', "
-				+ "ns:'" + namespace + "', "
-				+ "type:'" + type + "', "
-				+ "qid:'" + q.getId() + "'"
-				+ "}\" ";
+		String jscall = null;
+		try {
+			jscall = " rel=\"{oid: '" + Unknown.getInstance().getId() + "', "
+					+ "web:'" + web + "', "
+					+ "ns:'" + namespace + "', "
+					+ "type:'" + type + "', "
+					+ "qid:'" + URLEncoder.encode(q.getName(), "UTF-8") + "'"
+					+ "}\" ";
+		}
+		catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		String cssclass = "answerunknown";
 
 		Value value = session.getBlackboard().getValue(q);
@@ -761,7 +784,7 @@ public class QuickInterviewRenderer {
 		else if (value != null && !value.equals(Unknown.getInstance())) {
 			cssclass = "answerunknown";
 		}
-		String spanid = q.getId() + "_" + Unknown.getInstance().getId();
+		String spanid = q.getName() + "_" + Unknown.getInstance().getId();
 		String title = "title=' " + rb.getString("KnowWE.quicki.unknown") + " '";
 		sb.append(getEnclosingTagOnClick("div", "unknown", cssclass, jscall, null, spanid, title));
 	}
@@ -851,5 +874,9 @@ public class QuickInterviewRenderer {
 		}
 
 		return false;
+	}
+
+	private String getID() {
+		return "quicki" + counter++;
 	}
 }

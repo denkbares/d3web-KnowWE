@@ -319,7 +319,7 @@ KNOWWE.plugin.quicki = function(){
            
             var rel = eval("(" + el.getAttribute('rel') + ")");
             if( !rel ) return;
-            var oid = rel.oid;
+            var oid = rel.choice;
             var toreplace = oid + "#####";
         	            
             /* not yet clicked, thus highlight, store, collect all highlighted, and send */
@@ -334,7 +334,7 @@ KNOWWE.plugin.quicki = function(){
             	// get the newly assembled, complete mc fact without the last "#####"
             	mcvals = mcanswervals.substring(0, mcanswervals.length-5);
             	// and send it
-            	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
+            	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, rel.qid, 
                     	{action: 'SetSingleFindingAction', ValueID: mcvals});
             	
             } 
@@ -353,13 +353,13 @@ KNOWWE.plugin.quicki = function(){
             	// if mcanswerval storage is empty after last removal
             	if(mcanswervals == ""){
             		// we need to call a retract action 
-                	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
+                	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, rel.qid, 
                         	{action: 'RetractSingleFindingAction', ValueID: mcvalsOld});
             	} else {
             		// get the newly assembled, complete mc fact
                 	mcvals = mcanswervals.substring(0, mcanswervals.length-5);
                 	// and send it
-                	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
+                	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, rel.qid, 
                         	{action: 'SetSingleFindingAction', ValueID: mcvals});
             	}
         	}
@@ -393,13 +393,13 @@ KNOWWE.plugin.quicki = function(){
             
             // if it is already highlighted it should now be deactivated and value retracted
             if(retract){
-            	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
-                    	{action: 'RetractSingleFindingAction', ValueID: rel.oid});
+            	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, rel.qid, 
+                    	{action: 'RetractSingleFindingAction', ValueID: rel.choice});
             }
             // otherwise send the value
             else {
-            	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
-                    	{action: 'SetSingleFindingAction', ValueID: rel.oid});
+            	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, rel.qid, 
+                    	{action: 'SetSingleFindingAction', ValueID: rel.choice});
             }
         },
         /**
@@ -429,7 +429,7 @@ KNOWWE.plugin.quicki = function(){
 			if(el.className=='answerunknownClicked'){
 				
 			} else if (el.className=="answerunknown"){
-				KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, 'undefined', 
+				KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, rel.qid, 
 			             	{action: 'SetSingleFindingAction', ValueID: 'MaU'});
 				
 				// TODO: check if those are correct and needed at all
