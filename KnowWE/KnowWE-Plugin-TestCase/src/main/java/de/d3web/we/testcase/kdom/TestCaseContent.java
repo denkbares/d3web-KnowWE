@@ -310,7 +310,7 @@ public class TestCaseContent extends StringReference {
 			// KBM contains only the ROOT-QASET and the ROOT-Solution
 			// TODO: Remove this check. ATM necessary for the Test (@see
 			// MyTestArticleManager)
-			if (kbm != null && kbm.getKnowledgeBase().getManager().getAllIDObjects().size() == 2) {
+			if (kbm != null && kbm.getKnowledgeBase().getManager().getAllTerminologyObjects().size() == 2) {
 				Section<TestCaseType> father = s.findAncestorOfType(TestCaseType.class);
 				String source = DefaultMarkupType.getAnnotation(father,
 						TestCaseType.ANNOTATION_MASTER);
