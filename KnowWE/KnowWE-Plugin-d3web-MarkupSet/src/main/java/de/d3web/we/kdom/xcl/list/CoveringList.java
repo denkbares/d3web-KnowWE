@@ -224,7 +224,8 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 							article, solutionDef);
 
 					if (solution != null) {
-						KnowledgeSlice xclModel = solution.getKnowledge(PSMethodXCL.class,
+						KnowledgeSlice xclModel = solution.getKnowledgeStore().getKnowledge(
+								PSMethodXCL.class,
 								XCLModel.XCLMODEL);
 
 						if (xclModel != null) {
@@ -303,7 +304,8 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 						soltuionDef);
 
 				if (solution == null) return;
-				XCLModel xclModel = (XCLModel) solution.getKnowledge(PSMethodXCL.class,
+				XCLModel xclModel = (XCLModel) solution.getKnowledgeStore().getKnowledge(
+						PSMethodXCL.class,
 						XCLModel.XCLMODEL);
 
 				if (xclModel == null) return;

@@ -109,14 +109,16 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType implements
 			Section<DefaultMarkupType> defaultMarkupType = s.findAncestorOfType(DefaultMarkupType.class);
 
 			if (solution != null) {
-				KnowledgeSlice xclModel = solution.getKnowledge(PSMethodXCL.class,
+				KnowledgeSlice xclModel = solution.getKnowledgeStore().getKnowledge(
+						PSMethodXCL.class,
 						XCLModel.XCLMODEL);
 				if (xclModel == null) {
 					XCLModel m = new XCLModel(solution);
 
 					setThresholdsAndMinSupport(defaultMarkupType, m);
 
-					solution.addKnowledge(PSMethodXCL.class, m, XCLModel.XCLMODEL);
+					solution.getKnowledgeStore().addKnowledge(PSMethodXCL.class, XCLModel.XCLMODEL,
+							m);
 
 					String description = DefaultMarkupType.getAnnotation(defaultMarkupType,
 							CoveringListMarkup.DESCRIPTION);

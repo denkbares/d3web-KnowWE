@@ -196,7 +196,7 @@ public class GetInfoObjects extends AbstractAction {
 			appendInfoObject(web, base, (QContainer) object, buffer);
 		}
 		else {
-			// TODO: why ist a "Flow" not an NamedObject?
+			// TODO: why is a "Flow" not an NamedObject?
 			// if not inside knowledge base
 			// look for a flowchart th the article
 			FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
@@ -217,7 +217,8 @@ public class GetInfoObjects extends AbstractAction {
 
 	private static void appendInfoObject(String web, KnowledgeBase service, Solution object, StringBuffer buffer) {
 		buffer.append("\t<solution");
-		buffer.append(" id='").append(encodeXML(service.getId())).append("/").append(object.getId()).append(
+		buffer.append(" id='").append(encodeXML(service.getId())).append("/").append(
+				object.getName()).append(
 				"'");
 		buffer.append(" name='").append(encodeXML(object.getName())).append("'");
 		buffer.append(">\n");
@@ -227,7 +228,8 @@ public class GetInfoObjects extends AbstractAction {
 
 	private static void appendInfoObject(String web, KnowledgeBase service, Question object, StringBuffer buffer) {
 		buffer.append("\t<question");
-		buffer.append(" id='").append(encodeXML(service.getId())).append("/").append(object.getId()).append(
+		buffer.append(" id='").append(encodeXML(service.getId())).append("/").append(
+				object.getName()).append(
 				"'");
 		buffer.append(" name='").append(encodeXML(object.getName())).append("'");
 		if (object.getDerivationType() == DerivationType.DERIVED) {
@@ -274,7 +276,8 @@ public class GetInfoObjects extends AbstractAction {
 
 	private static void appendInfoObject(String web, KnowledgeBase service, QContainer object, StringBuffer buffer) {
 		buffer.append("\t<qset");
-		buffer.append(" id='").append(encodeXML(service.getId())).append("/").append(object.getId()).append(
+		buffer.append(" id='").append(encodeXML(service.getId())).append("/").append(
+				object.getName()).append(
 				"'");
 		buffer.append(" name='").append(encodeXML(object.getName())).append("'");
 		buffer.append(">\n");
@@ -308,7 +311,7 @@ public class GetInfoObjects extends AbstractAction {
 	private static void appendChilds(String web, KnowledgeBase service, TerminologyObject[] childs, StringBuffer buffer) {
 		for (TerminologyObject child : childs) {
 			buffer.append("\t\t<child>");
-			buffer.append(encodeXML(service.getId()) + "/" + child.getId());
+			buffer.append(encodeXML(service.getId()) + "/" + child.getName());
 			buffer.append("</child>\n");
 		}
 	}
