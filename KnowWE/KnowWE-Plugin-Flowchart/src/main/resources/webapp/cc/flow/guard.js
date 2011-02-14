@@ -190,7 +190,7 @@ Guard.createPossibleGuards = function(nodeModel) {
 		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = confirmed', "confirmed"));
 		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = rejected', "rejected"));		
 		result.push('Derivation');
-		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = established', "establisehd"));
+		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = established', "established"));
 		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = excluded', "excluded"));
 		result.push('Common');
 		result.push(new Guard('NOP', ' ', ' '));
