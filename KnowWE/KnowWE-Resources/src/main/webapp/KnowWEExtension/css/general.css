@@ -903,61 +903,6 @@ div.collapsible-questiontree ul .pointer{
     clear:both; float: right; width:300px;
 }
 
-/* ################################################## */
-/* -------------- TestcaseTable       --------------- */
-/* ################################################## */
-
-div.addRow{
-	height: 12px;
-	width: 12px;
-	margin-left: 10px;
-	margin-top: 5px; 
-	margin-right: 5px; 
-	float:left;
-	background-image: url(../images/plus.png);
-}
-
-div.addCol{
-	height: 12px;
-	width: 12px;
-	margin-top: 15px; 
-	margin-left: 5px;
-	float:left;
-	background-image: url(../images/plus.png);
-}
-
-div.startTestcase{
-	height: 15px;
-	width: 9px;
-	float: left;
-	margin-right: 5px;
-	background-image: url(../images/arrow_right.png);
-	cursor: pointer;
-}
-
-td.testcaseExecuted{
-	background-color: #CDFECD ;
-}
-
-td.invalidTimeStamp{
-	background-color: red ;
-}
-
-td.invalidTimeStamp div.invalidTimeStamp{
-	display: none;
-}
-
-td.invalidTimeStamp:hover div.invalidTimeStamp {
-	margin-left: -175px;
-	margin-top: -4px;
-	height: 20px;
-	width: 160px;
-	background-color: red;
-	display: block;
-	position: absolute;
-	border: solid;
-	text-align: center;
-}
 
 /* ################################################## */
 /* ----------Image Question TagHandler--------------- */
