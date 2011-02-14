@@ -136,7 +136,6 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements Incre
 							questionniareDef);
 					// here the actual taxonomic relation is established
 					superQuasetionniare.addChild(localQuestionnaire);
-					localQuestionnaire.addParent(superQuasetionniare);
 
 					return Arrays.asList((KDOMReportMessage) new RelationCreatedMessage(
 							s.getClass().getSimpleName()

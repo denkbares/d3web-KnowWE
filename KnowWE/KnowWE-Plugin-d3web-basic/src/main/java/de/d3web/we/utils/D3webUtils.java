@@ -26,7 +26,6 @@ import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.terminology.AbstractTerminologyObject;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.scoring.Score;
@@ -122,17 +121,11 @@ public class D3webUtils {
 	 * 
 	 * @param object the object to be removed
 	 */
-	public static void removeRecursively(AbstractTerminologyObject object) {
+	public static void removeRecursively(TerminologyObject object) {
 		for (TerminologyObject to : object.getChildren()) {
-			removeRecursively((AbstractTerminologyObject) to);
+			removeRecursively(to);
 		}
-		try {
-			object.getKnowledgeBase().getManager().remove(object);
-		}
-		catch (IllegalAccessException e) {
-			// shouldn't happen...
-			e.printStackTrace();
-		}
+		object.removeFromKnowledgeBase();
 	}
 
 	/**
