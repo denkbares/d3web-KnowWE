@@ -101,7 +101,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 				QContainer qc = mgn.createQContainer(name, parent);
 				if (qc != null) {
 					if (!article.isFullParse()) {
-						parent.moveChildToPosition(qc,
+						parent.addChild(qc,
 								s.get().getPosition(s));
 					}
 					s.get().storeTermObject(article, s, qc);

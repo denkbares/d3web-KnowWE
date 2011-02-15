@@ -125,7 +125,7 @@ public class D3webUtils {
 		for (TerminologyObject to : object.getChildren()) {
 			removeRecursively(to);
 		}
-		object.removeFromKnowledgeBase();
+		object.destroy();
 	}
 
 	/**

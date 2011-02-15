@@ -136,8 +136,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 				// ok everything went well
 				// set position right in case this is an incremental update
 				if (!article.isFullParse()) {
-					parent.moveChildToPosition(q,
-							s.get().getPosition(s));
+					parent.addChild(q, s.get().getPosition(s));
 				}
 
 				// store object in section
