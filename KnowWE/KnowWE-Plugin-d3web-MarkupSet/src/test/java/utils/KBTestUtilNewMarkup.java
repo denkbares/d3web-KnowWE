@@ -85,7 +85,6 @@ public class KBTestUtilNewMarkup {
 
 	private static KBTestUtilNewMarkup instance = new KBTestUtilNewMarkup();
 	private KnowledgeBase createdKB;
-	private KnowledgeBaseManagement createdKBM;
 
 	/**
 	 * Returns the KnowledgeBase of a specific article
@@ -133,7 +132,6 @@ public class KBTestUtilNewMarkup {
 	private void createGoldenKnowledge() {
 
 		createdKB = new KnowledgeBase();
-		createdKBM = KnowledgeBaseManagement.createInstance(createdKB);
 		createSolutions();
 		createQuestionnaires();
 		createQuestions();
@@ -204,14 +202,15 @@ public class KBTestUtilNewMarkup {
 
 		// Get QContainer
 		// Observations
-		QContainer qc1 = createdKBM.findQContainer("Observations");
+		QContainer qc1 = createdKB.getManager().searchQContainer("Observations");
 
 		// Add Question:
 		// - Exhaust fumes ~ "What is the color of the exhaust fumes?" [oc]
 		// -- black
 		// -- blue
 		// -- invisible
-		Question q0 = createdKBM.createQuestionOC("Exhaust fumes", qc1,
+		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance(createdKB);
+		Question q0 = kbm.createQuestionOC("Exhaust fumes", qc1,
 				new String[] {
 						"black", "blue", "invisible" });
 
@@ -223,12 +222,12 @@ public class KBTestUtilNewMarkup {
 		// --- Fuel [oc]
 		// ---- diesel
 		// ---- unleaded gasoline
-		createdKBM.createQuestionOC("Fuel", q0, new String[] {
+		kbm.createQuestionOC("Fuel", q0, new String[] {
 				"diesel", "unleaded gasoline" });
 
 		// Add question:
 		// - "Average mileage /100km" [num] {liter} (0 30) #Q1337
-		Question q1 = createdKBM.createQuestionNum("Average mileage /100km", qc1);
+		Question q1 = kbm.createQuestionNum("Average mileage /100km", qc1);
 		// q1.setName("Average mileage /100km");
 		InfoStore infoStore = q1.getInfoStore();
 		infoStore.addValue(MMInfo.UNIT, "liter");
@@ -236,21 +235,21 @@ public class KBTestUtilNewMarkup {
 
 		// Add question:
 		// -- "Num. Mileage evaluation" [num] <abstract>
-		Question q2 = createdKBM.createQuestionNum("Num. Mileage evaluation", q1);
+		Question q2 = kbm.createQuestionNum("Num. Mileage evaluation", q1);
 		q2.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION, Boolean.TRUE);
 
 		// Add question:
 		// --- Mileage evaluation [oc] <abstract>
 		// ---- normal
 		// ---- increased
-		Question q3 = createdKBM.createQuestionOC("Mileage evaluation", q2,
+		Question q3 = kbm.createQuestionOC("Mileage evaluation", q2,
 				new String[] {
 						"normal", "increased" });
 		q3.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION, Boolean.TRUE);
 
 		// Add question:
 		// - "Real mileage  /100km" [num]
-		createdKBM.createQuestionNum("Real mileage  /100km", qc1);
+		kbm.createQuestionNum("Real mileage  /100km", qc1);
 
 		// Add question:
 		// - Driving [mc]
@@ -258,7 +257,7 @@ public class KBTestUtilNewMarkup {
 		// -- insufficient power on full load
 		// -- unsteady idle speed
 		// -- everything is fine
-		createdKBM.createQuestionMC("Driving", qc1,
+		kbm.createQuestionMC("Driving", qc1,
 				new String[] {
 						"insufficient power on partial load",
 						"insufficient power on full load",
@@ -267,14 +266,14 @@ public class KBTestUtilNewMarkup {
 
 		// Add question:
 		// - Other [text]
-		createdKBM.createQuestionText("Q8", "Other", qc1);
+		kbm.createQuestionText("Q8", "Other", qc1);
 
 		// Get second QContainer and add Question
 		// Technical Examinations
-		QContainer qc2 = createdKBM.findQContainer("Technical Examinations");
+		QContainer qc2 = createdKB.getManager().searchQContainer("Technical Examinations");
 		// - "Idle speed system o.k.?" [yn]
 		// createdKBM.createQuestionYN("Q9", "Idle speed system o.k.?", qc2);
-		createdKBM.createQuestionYN("Idle speed system o.k.?", null, null, qc2);
+		kbm.createQuestionYN("Idle speed system o.k.?", null, null, qc2);
 	}
 
 	/**
@@ -296,14 +295,16 @@ public class KBTestUtilNewMarkup {
 
 		Choice answer;
 		CondEqual condition;
-		QuestionChoice condQuestion = (QuestionChoice) createdKBM.findQuestion("Exhaust fumes");
-		QuestionChoice actionQuestion = (QuestionChoice) createdKBM.findQuestion("Fuel");
+		QuestionChoice condQuestion = (QuestionChoice) createdKB.getManager().searchQuestion(
+				"Exhaust fumes");
+		QuestionChoice actionQuestion = (QuestionChoice) createdKB.getManager().searchQuestion(
+				"Fuel");
 
 		// Create Rule R1:
 		// - Exhaust fumes [oc]
 		// -- black
 		// --- Fuel [oc]
-		answer = createdKBM.findChoice(condQuestion, "black");
+		answer = KnowledgeBaseManagement.findChoice(condQuestion, "black");
 		condition = new CondEqual(condQuestion, new ChoiceValue(answer));
 		RuleFactory.createIndicationRule(actionQuestion, condition);
 
@@ -311,7 +312,7 @@ public class KBTestUtilNewMarkup {
 		// - Exhaust fumes [oc]
 		// -- blue
 		// --- &REF Fuel
-		answer = createdKBM.findChoice(condQuestion, "blue");
+		answer = KnowledgeBaseManagement.findChoice(condQuestion, "blue");
 		condition = new CondEqual(condQuestion, new ChoiceValue(answer));
 		RuleFactory.createIndicationRule(actionQuestion, condition);
 
@@ -319,7 +320,7 @@ public class KBTestUtilNewMarkup {
 		// - Exhaust fumes [oc]
 		// -- invisible
 		// --- &REF Fuel
-		answer = createdKBM.findChoice(condQuestion, "invisible");
+		answer = KnowledgeBaseManagement.findChoice(condQuestion, "invisible");
 		condition = new CondEqual(condQuestion, new ChoiceValue(answer));
 		RuleFactory.createIndicationRule(actionQuestion, condition);
 
@@ -334,10 +335,11 @@ public class KBTestUtilNewMarkup {
 		// - Driving [mc]
 		// -- insufficient power on partial load
 		// --- "Num. Mileage evaluation" SET (110)
-		QuestionChoice q1 = (QuestionChoice) createdKBM.findQuestion("Driving");
-		Choice a1 = createdKBM.findChoice(q1, "insufficient power on partial load");
+		QuestionChoice q1 = (QuestionChoice) createdKB.getManager().searchQuestion("Driving");
+		Choice a1 = KnowledgeBaseManagement.findChoice(q1, "insufficient power on partial load");
 		CondEqual c1 = new CondEqual(q1, new ChoiceValue(a1));
-		QuestionNum q2 = (QuestionNum) createdKBM.findQuestion("Num. Mileage evaluation");
+		QuestionNum q2 = (QuestionNum) createdKB.getManager().searchQuestion(
+				"Num. Mileage evaluation");
 		FormulaNumber fn1 = new FormulaNumber(110.0);
 		RuleFactory.createSetValueRule(q2, fn1, c1);
 
@@ -345,9 +347,10 @@ public class KBTestUtilNewMarkup {
 		// - Driving [mc]
 		// -- insufficient power on full load
 		// --- "Num. Mileage evaluation" (20)
-		Choice a2 = createdKBM.findChoice(q1, "insufficient power on full load");
+		Choice a2 = KnowledgeBaseManagement.findChoice(q1, "insufficient power on full load");
 		CondEqual c2 = new CondEqual(q1, new ChoiceValue(a2));
-		QuestionNum q3 = (QuestionNum) createdKBM.findQuestion("Num. Mileage evaluation");
+		QuestionNum q3 = (QuestionNum) createdKB.getManager().searchQuestion(
+				"Num. Mileage evaluation");
 		FormulaNumber fn2 = new FormulaNumber(20.0);
 		RuleFactory.createSetValueRule(q3, fn2, c2);
 	}
@@ -361,11 +364,12 @@ public class KBTestUtilNewMarkup {
 		// - Driving [mc]
 		// -- everything is fine
 		// --- Other problem (P7)
-		QuestionChoice condQuestion = (QuestionChoice) createdKBM.findQuestion("Driving");
-		Choice answer = createdKBM.findChoice(condQuestion, "everything is fine");
+		QuestionChoice condQuestion = (QuestionChoice) createdKB.getManager().searchQuestion(
+				"Driving");
+		Choice answer = KnowledgeBaseManagement.findChoice(condQuestion, "everything is fine");
 		CondEqual condition = new CondEqual(condQuestion, new ChoiceValue(
 				answer));
-		Solution diag = createdKBM.findSolution("Other problem");
+		Solution diag = createdKB.getManager().searchSolution("Other problem");
 		RuleFactory.createHeuristicPSRule(diag, Score.P7, condition);
 
 	}
@@ -378,12 +382,14 @@ public class KBTestUtilNewMarkup {
 
 		// Create first Condition:
 		// KNOWN["Real mileage  /100km"]
-		QuestionNum q11 = (QuestionNum) createdKBM.findQuestion("Real mileage  /100km");
+		QuestionNum q11 = (QuestionNum) createdKB.getManager().searchQuestion(
+				"Real mileage  /100km");
 		CondKnown c11 = new CondKnown(q11);
 
 		// Create second Condition:
 		// "Average mileage /100km" > 0
-		QuestionNum q12 = (QuestionNum) createdKBM.findQuestion("Average mileage /100km");
+		QuestionNum q12 = (QuestionNum) createdKB.getManager().searchQuestion(
+				"Average mileage /100km");
 		CondNumGreater c12 = new CondNumGreater(q12, 0.0);
 
 		// Create AND Condition:
@@ -397,7 +403,8 @@ public class KBTestUtilNewMarkup {
 		// IF "Average mileage /100km" > 0 AND KNOWN["Real mileage  /100km"]
 		// THEN "Num. Mileage evaluation" = (("Real mileage  /100km" /
 		// "Average mileage /100km") * 100.0)
-		QuestionNum q3 = (QuestionNum) createdKBM.findQuestion("Num. Mileage evaluation");
+		QuestionNum q3 = (QuestionNum) createdKB.getManager().searchQuestion(
+				"Num. Mileage evaluation");
 		Operator d = new Operator(new QNumWrapper(q11), new QNumWrapper(q12), Operation.Div);
 		FormulaNumber fn = new FormulaNumber(100.0);
 		Operator m = new Operator(d, fn, Operation.Mult);
@@ -407,18 +414,20 @@ public class KBTestUtilNewMarkup {
 		// IF "Num. Mileage evaluation" > 130
 		// THEN Mileage evaluation = increased
 		CondNumGreater c2 = new CondNumGreater(q3, 130.0);
-		Question q4 = createdKBM.findQuestion("Mileage evaluation");
-		Choice a = createdKBM.findChoice((QuestionChoice) q4, "increased");
+		Question q4 = createdKB.getManager().searchQuestion("Mileage evaluation");
+		Choice a = KnowledgeBaseManagement.findChoice((QuestionChoice) q4, "increased");
 		RuleFactory.createSetValueRule(q4, a, c2);
 
 		// Create rule R10:
 		// IF Driving = unsteady idle speed
 		// THEN "Real mileage  /100km" += ( 2 )
-		QuestionChoice questionIf4 = (QuestionChoice) createdKBM.findQuestion("Driving");
-		Choice answerIf4 = createdKBM.findChoice(questionIf4, "unsteady idle speed");
+		QuestionChoice questionIf4 = (QuestionChoice) createdKB.getManager().searchQuestion(
+				"Driving");
+		Choice answerIf4 = KnowledgeBaseManagement.findChoice(questionIf4, "unsteady idle speed");
 		CondEqual conditionIf4 = new CondEqual(questionIf4, new ChoiceValue(
 				answerIf4));
-		QuestionNum qnum = (QuestionNum) createdKBM.findQuestion("Real mileage  /100km");
+		QuestionNum qnum = (QuestionNum) createdKB.getManager().searchQuestion(
+				"Real mileage  /100km");
 		FormulaNumber fn2 = new FormulaNumber(2.0);
 		Operator add = new Operator(new QNumWrapper(qnum), fn2, Operation.Add);
 		RuleFactory.createSetValueRule(qnum, add, conditionIf4);
@@ -426,27 +435,35 @@ public class KBTestUtilNewMarkup {
 		// Create Rule R11:
 		// IF Driving = insufficient power on full load
 		// THEN "Real mileage  /100km" = ("Average mileage /100km" + 2)
-		QuestionChoice questionIf5 = (QuestionChoice) createdKBM.findQuestion("Driving");
-		Choice answerIf5 = createdKBM.findChoice(questionIf5, "insufficient power on full load");
+		QuestionChoice questionIf5 = (QuestionChoice) createdKB.getManager().searchQuestion(
+				"Driving");
+		Choice answerIf5 = KnowledgeBaseManagement.findChoice(questionIf5,
+				"insufficient power on full load");
 		CondEqual conditionIf5 = new CondEqual(questionIf5, new ChoiceValue(
 				answerIf5));
-		QuestionNum questionFormula = (QuestionNum) createdKBM.findQuestion("Average mileage /100km");
+		QuestionNum questionFormula = (QuestionNum) createdKB.getManager().searchQuestion(
+				"Average mileage /100km");
 		FormulaNumber fn3 = new FormulaNumber(2.0);
 		Operator addition = new Operator(new QNumWrapper(questionFormula), fn3, Operation.Add);
-		QuestionNum questionThen = (QuestionNum) createdKBM.findQuestion("Real mileage  /100km");
+		QuestionNum questionThen = (QuestionNum) createdKB.getManager().searchQuestion(
+				"Real mileage  /100km");
 		RuleFactory.createSetValueRule(questionThen, addition, conditionIf5);
 
 		// Create Rule R12:
 		// IF Driving = insufficient power on partial load
 		// THEN "Real mileage  /100km" = ("Average mileage /100km" - 1)
-		QuestionChoice questionIf6 = (QuestionChoice) createdKBM.findQuestion("Driving");
-		Choice answerIf6 = createdKBM.findChoice(questionIf6, "insufficient power on partial load");
+		QuestionChoice questionIf6 = (QuestionChoice) createdKB.getManager().searchQuestion(
+				"Driving");
+		Choice answerIf6 = KnowledgeBaseManagement.findChoice(questionIf6,
+				"insufficient power on partial load");
 		CondEqual conditionIf6 = new CondEqual(questionIf6, new ChoiceValue(
 				answerIf6));
-		QuestionNum questionFormula2 = (QuestionNum) createdKBM.findQuestion("Average mileage /100km");
+		QuestionNum questionFormula2 = (QuestionNum) createdKB.getManager().searchQuestion(
+				"Average mileage /100km");
 		FormulaNumber fn4 = new FormulaNumber(1.0);
 		Operator subtraction = new Operator(new QNumWrapper(questionFormula2), fn4, Operation.Sub);
-		QuestionNum questionThen2 = (QuestionNum) createdKBM.findQuestion("Real mileage  /100km");
+		QuestionNum questionThen2 = (QuestionNum) createdKB.getManager().searchQuestion(
+				"Real mileage  /100km");
 		RuleFactory.createSetValueRule(questionThen2, subtraction, conditionIf6);
 
 	}
@@ -460,30 +477,32 @@ public class KBTestUtilNewMarkup {
 		// Create rule R13:
 		// IF Exhaust fumes = black EXCEPT Fuel = diesel
 		// THEN Air filter (P7)
-		QuestionChoice questionIf = (QuestionChoice) createdKBM.findQuestion("Exhaust fumes");
-		Choice answerIf = createdKBM.findChoice(questionIf, "black");
+		QuestionChoice questionIf = (QuestionChoice) createdKB.getManager().searchQuestion(
+				"Exhaust fumes");
+		Choice answerIf = KnowledgeBaseManagement.findChoice(questionIf, "black");
 		CondEqual conditionIf = new CondEqual(questionIf, new ChoiceValue(
 				answerIf));
 
-		QuestionChoice questionExc = (QuestionChoice) createdKBM.findQuestion("Fuel");
-		Choice answerExc = createdKBM.findChoice(questionExc, "diesel");
+		QuestionChoice questionExc = (QuestionChoice) createdKB.getManager().searchQuestion("Fuel");
+		Choice answerExc = KnowledgeBaseManagement.findChoice(questionExc, "diesel");
 		CondEqual conditionExc = new CondEqual(questionExc, new ChoiceValue(
 				answerExc));
 
-		Solution diag = createdKBM.findSolution("Mechanical problem");
+		Solution diag = createdKB.getManager().searchSolution("Mechanical problem");
 		RuleFactory.createHeuristicPSRule(diag, Score.P7, conditionIf, conditionExc);
 
 		// Create rule R14:
 		// IF (NOT Fuel = unleaded gasoline) OR (NOT Exhaust fumes = black)
 		// THEN Mechanical problem = N7
-		QuestionChoice questionIf2 = (QuestionChoice) createdKBM.findQuestion("Fuel");
-		Choice answerIf2 = createdKBM.findChoice(questionIf2, "unleaded gasoline");
+		QuestionChoice questionIf2 = (QuestionChoice) createdKB.getManager().searchQuestion("Fuel");
+		Choice answerIf2 = KnowledgeBaseManagement.findChoice(questionIf2, "unleaded gasoline");
 		CondEqual conditionIf2 = new CondEqual(questionIf2, new ChoiceValue(
 				answerIf2));
 		CondNot condNot1 = new CondNot(conditionIf2);
 
-		QuestionChoice questionIf3 = (QuestionChoice) createdKBM.findQuestion("Exhaust fumes");
-		Choice answerIf3 = createdKBM.findChoice(questionIf3, "black");
+		QuestionChoice questionIf3 = (QuestionChoice) createdKB.getManager().searchQuestion(
+				"Exhaust fumes");
+		Choice answerIf3 = KnowledgeBaseManagement.findChoice(questionIf3, "black");
 		CondEqual conditionIf3 = new CondEqual(questionIf3, new ChoiceValue(
 				answerIf3));
 		CondNot condNot2 = new CondNot(conditionIf3);
@@ -505,9 +524,10 @@ public class KBTestUtilNewMarkup {
 		// Create Rule R15:
 		// IF Driving = unsteady idle speed
 		// THEN Technical Examinations
-		QuestionChoice condQuestion = (QuestionChoice) createdKBM.findQuestion("Driving");
-		QASet actionQuestion = createdKBM.findQContainer("Technical Examinations");
-		Choice answer = createdKBM.findChoice(condQuestion, "unsteady idle speed");
+		QuestionChoice condQuestion = (QuestionChoice) createdKB.getManager().searchQuestion(
+				"Driving");
+		QASet actionQuestion = createdKB.getManager().searchQContainer("Technical Examinations");
+		Choice answer = KnowledgeBaseManagement.findChoice(condQuestion, "unsteady idle speed");
 		CondEqual condition = new CondEqual(condQuestion, new ChoiceValue(
 				answer));
 		RuleFactory.createIndicationRule(actionQuestion, condition);
@@ -515,18 +535,18 @@ public class KBTestUtilNewMarkup {
 		// Create Rule R16:
 		// IF KNOWN[Other]
 		// THEN Technical Examinations
-		Question condQuestion3 = createdKBM.findQuestion("Other");
-		QASet actionQuestion4 = createdKBM.findQContainer("Technical Examinations");
+		Question condQuestion3 = createdKB.getManager().searchQuestion("Other");
+		QASet actionQuestion4 = createdKB.getManager().searchQContainer("Technical Examinations");
 		CondKnown condition3 = new CondKnown(condQuestion3);
 		RuleFactory.createIndicationRule(actionQuestion4, condition3);
 
 		// Create Rule R17:
 		// IF Other problem = ESTABLISHED
 		// THEN Other
-		Question question = createdKBM.findQuestion("Other");
+		Question question = createdKB.getManager().searchQuestion("Other");
 		List<QASet> action = new ArrayList<QASet>();
 		action.add(question);
-		Solution diag = createdKBM.findSolution("Other problem");
+		Solution diag = createdKB.getManager().searchSolution("Other problem");
 		CondDState condState = new CondDState(diag,
 				new Rating(State.ESTABLISHED));
 		ActionNextQASet ruleAction = new ActionIndication();
@@ -540,35 +560,35 @@ public class KBTestUtilNewMarkup {
 	 */
 	private void createXCLModels() {
 
-		Solution d = createdKBM.findSolution("Damaged idle speed system");
+		Solution d = createdKB.getManager().searchSolution("Damaged idle speed system");
 
 		// "Idle speed system o.k.?" = Yes [--]
-		Question q1 = createdKBM.findQuestion("Idle speed system o.k.?");
-		Choice a1 = createdKBM.findChoice((QuestionChoice) q1, "Yes");
+		Question q1 = createdKB.getManager().searchQuestion("Idle speed system o.k.?");
+		Choice a1 = KnowledgeBaseManagement.findChoice((QuestionChoice) q1, "Yes");
 		CondEqual c1 = new CondEqual(q1, new ChoiceValue(a1));
 		XCLModel.insertXCLRelation(createdKB, c1, d, XCLRelationType.contradicted);
 
 		// Driving = unsteady idle speed [!]
-		Question q2 = createdKBM.findQuestion("Driving");
-		Choice a2 = createdKBM.findChoice((QuestionChoice) q2, "unsteady idle speed");
+		Question q2 = createdKB.getManager().searchQuestion("Driving");
+		Choice a2 = KnowledgeBaseManagement.findChoice((QuestionChoice) q2, "unsteady idle speed");
 		CondEqual c2 = new CondEqual(q2, new ChoiceValue(a2));
 		XCLModel.insertXCLRelation(createdKB, c2, d, XCLRelationType.requires);
 
 		// "Idle speed system o.k.?" = no [++]
-		Question q3 = createdKBM.findQuestion("Idle speed system o.k.?");
-		Choice a3 = createdKBM.findChoice((QuestionChoice) q3, "No");
+		Question q3 = createdKB.getManager().searchQuestion("Idle speed system o.k.?");
+		Choice a3 = KnowledgeBaseManagement.findChoice((QuestionChoice) q3, "No");
 		CondEqual c3 = new CondEqual(q3, new ChoiceValue(a3));
 		XCLModel.insertXCLRelation(createdKB, c3, d, XCLRelationType.sufficiently);
 
 		// Mileage evaluation = increased [3]
-		Question q4 = createdKBM.findQuestion("Mileage evaluation");
-		Choice a4 = createdKBM.findChoice((QuestionChoice) q4, "increased");
+		Question q4 = createdKB.getManager().searchQuestion("Mileage evaluation");
+		Choice a4 = KnowledgeBaseManagement.findChoice((QuestionChoice) q4, "increased");
 		CondEqual c4 = new CondEqual(q4, new ChoiceValue(a4));
 		XCLModel.insertXCLRelation(createdKB, c4, d, XCLRelationType.explains, 3.0);
 
 		// Exhaust fumes = black
-		Question q5 = createdKBM.findQuestion("Exhaust fumes");
-		Choice a5 = createdKBM.findChoice((QuestionChoice) q5, "black");
+		Question q5 = createdKB.getManager().searchQuestion("Exhaust fumes");
+		Choice a5 = KnowledgeBaseManagement.findChoice((QuestionChoice) q5, "black");
 		CondEqual c5 = new CondEqual(q5, new ChoiceValue(a5));
 		XCLModel.insertXCLRelation(createdKB, c5, d, XCLRelationType.explains);
 

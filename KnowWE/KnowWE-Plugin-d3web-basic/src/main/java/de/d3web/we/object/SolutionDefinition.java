@@ -23,10 +23,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Rating.State;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -135,7 +135,7 @@ public abstract class SolutionDefinition
 
 			KnowledgeBaseManagement mgn = getKBM(article);
 
-			NamedObject o = mgn.findSolution(name);
+			TerminologyObject o = mgn.getKnowledgeBase().getManager().search(name);
 
 			if (o != null) {
 				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedWarning(

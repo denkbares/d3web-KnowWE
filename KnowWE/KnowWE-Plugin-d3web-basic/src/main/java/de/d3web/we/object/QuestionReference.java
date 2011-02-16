@@ -54,7 +54,7 @@ public class QuestionReference extends D3webTermReference<Question> {
 					D3webModule.getKnowledgeRepresentationHandler(
 							article.getWeb()).getKBM(article.getTitle());
 
-			Question question = mgn.findQuestion(questionName);
+			Question question = mgn.getKnowledgeBase().getManager().searchQuestion(questionName);
 			return question;
 		}
 		return null;

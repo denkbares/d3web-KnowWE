@@ -184,7 +184,8 @@ public class TestCaseContent extends StringReference {
 				// Get the real Question
 				if (questionSection != null) {
 					String questionText = clean(questionSection.getOriginalText());
-					Question question = kbm.findQuestion(questionText);
+					Question question = kbm.getKnowledgeBase().getManager().searchQuestion(
+							questionText);
 
 					// Create error message if there is no question with this
 					// name in the KB
@@ -258,7 +259,8 @@ public class TestCaseContent extends StringReference {
 
 				// Get the real Solution
 				if (solutionSection != null) {
-					solution = kbm.findSolution(clean(solutionSection.getOriginalText().trim()));
+					solution = kbm.getKnowledgeBase().getManager().searchSolution(
+							clean(solutionSection.getOriginalText().trim()));
 
 					// Create error message if there is no question with this
 					// name in the KB
@@ -310,7 +312,8 @@ public class TestCaseContent extends StringReference {
 			// KBM contains only the ROOT-QASET and the ROOT-Solution
 			// TODO: Remove this check. ATM necessary for the Test (@see
 			// MyTestArticleManager)
-			if (kbm != null && kbm.getKnowledgeBase().getManager().getAllTerminologyObjects().size() == 2) {
+			if (kbm != null
+					&& kbm.getKnowledgeBase().getManager().getAllTerminologyObjects().size() == 2) {
 				Section<TestCaseType> father = s.findAncestorOfType(TestCaseType.class);
 				String source = DefaultMarkupType.getAnnotation(father,
 						TestCaseType.ANNOTATION_MASTER);

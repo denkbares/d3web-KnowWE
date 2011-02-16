@@ -128,12 +128,12 @@ public class TSUtil {
 		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance(kb);
 
 		// Create Finding
-		Question q = kbm.findQuestion("Driving");
-		Choice a = kbm.findChoice((QuestionChoice) q, "everything is fine");
+		Question q = kbm.getKnowledgeBase().getManager().searchQuestion("Driving");
+		Choice a = KnowledgeBaseManagement.findChoice((QuestionChoice) q, "everything is fine");
 		Finding f = new Finding(q, new MultipleChoiceValue(new ChoiceID(a)));
 
 		// Create RatedSolution
-		Solution d = kbm.findSolution("Other problem");
+		Solution d = kbm.getKnowledgeBase().getManager().searchSolution("Other problem");
 		StateRating sr = new StateRating(new Rating(State.ESTABLISHED));
 		RatedSolution rs = new RatedSolution(d, sr);
 

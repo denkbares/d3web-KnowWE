@@ -96,7 +96,7 @@ public class RetractSingleFindingAction extends AbstractAction {
 		Session session = D3webUtils.getSession(topic, user, web);
 		Blackboard blackboard = session.getBlackboard();
 
-		Question question = kbm.findQuestion(objectid);
+		Question question = kbm.getKnowledgeBase().getManager().searchQuestion(objectid);
 		if (question != null) {
 
 			Value value = null;

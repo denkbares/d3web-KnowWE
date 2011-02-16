@@ -56,7 +56,7 @@ public class QuestionnaireReference extends D3webTermReference<QContainer> {
 							article.getWeb())
 							.getKBM(article.getTitle());
 
-			QContainer q = mgn.findQContainer(qcName);
+			QContainer q = mgn.getKnowledgeBase().getManager().searchQContainer(qcName);
 			return q;
 		}
 		return null;

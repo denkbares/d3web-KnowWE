@@ -69,9 +69,9 @@ public abstract class AnswerReference
 							s.getArticle().getWeb())
 							.getKBM(article.getTitle());
 
-			Question question = mgn.findQuestion(questionName);
+			Question question = mgn.getKnowledgeBase().getManager().searchQuestion(questionName);
 			if (question != null && question instanceof QuestionChoice) {
-				return mgn.findChoice((QuestionChoice) question,
+				return KnowledgeBaseManagement.findChoice((QuestionChoice) question,
 						answerName);
 
 			}

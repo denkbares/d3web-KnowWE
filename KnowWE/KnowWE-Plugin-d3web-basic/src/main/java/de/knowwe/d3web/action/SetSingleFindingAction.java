@@ -95,7 +95,7 @@ public class SetSingleFindingAction extends AbstractAction {
 		Blackboard blackboard = session.getBlackboard();
 
 		// Necessary for FindingSetEvent
-		Question question = kbm.findQuestion(objectid);
+		Question question = kbm.getKnowledgeBase().getManager().searchQuestion(objectid);
 		if (question != null) {
 
 			Value value = null;

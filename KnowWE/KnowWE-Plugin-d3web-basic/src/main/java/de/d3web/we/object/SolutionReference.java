@@ -52,7 +52,7 @@ public class SolutionReference extends D3webTermReference<Solution> {
 			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
 					article.getWeb()).getKBM(article.getTitle());
 
-			Solution solution = mgn.findSolution(solutionName);
+			Solution solution = mgn.getKnowledgeBase().getManager().searchSolution(solutionName);
 			return solution;
 		}
 		return null;

@@ -75,7 +75,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 
 			KnowledgeBaseManagement mgn = getKBM(article);
 
-			NamedObject o = mgn.findQContainer(name);
+			NamedObject o = mgn.getKnowledgeBase().getManager().searchQContainer(name);
 
 			if (o != null) {
 				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedWarning(
@@ -90,8 +90,9 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 					Section<QuestionnaireDefinition> parentQclass = dashTreeFather
 							.findSuccessor(QuestionnaireDefinition.class);
 					if (parentQclass != null) {
-						QASet localParent = mgn.findQContainer(parentQclass.get().getTermName(
-								parentQclass));
+						QASet localParent = mgn.getKnowledgeBase().getManager().searchQContainer(
+								parentQclass.get().getTermName(
+										parentQclass));
 						if (localParent != null) {
 							parent = localParent;
 						}
