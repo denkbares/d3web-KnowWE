@@ -29,8 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.Rule;
@@ -60,9 +60,9 @@ import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.taghandler.AbstractHTMLTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
-import de.d3web.xcl.inference.PSMethodXCL;
 
 public class KBRenderer extends AbstractHTMLTagHandler {
 
@@ -91,7 +91,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 
 		return renderHTML(web, topic, user, kb);
 	}
-	
+
 	public String renderHTML(String web, String topic, KnowWEUserContext user, KnowledgeBase kb) {
 
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
@@ -201,54 +201,50 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			text.append("<p/>");
 
 			// Covering List
-			Collection<KnowledgeSlice> xclRels = kb
-					.getAllKnowledgeSlicesFor(PSMethodXCL.class);
+			Collection<XCLModel> xclRels = kb.getAllKnowledgeSlicesFor(XCLModel.KNOWLEDGE_KIND);
 			boolean appendedXCLHeadline = false;
-			for (KnowledgeSlice slice : xclRels) {
-				if (slice instanceof de.d3web.xcl.XCLModel) {
-					if (!appendedXCLHeadline) {
-						if (appendedSolutionsHeadline || appendedRulesHeadline
+			for (XCLModel model : xclRels) {
+				if (!appendedXCLHeadline) {
+					if (appendedSolutionsHeadline || appendedRulesHeadline
 								|| appendedQuestionHeadline) {
-							text.append("<br/>\n");
-						}
-						text.append("<strong>"
+						text.append("<br/>\n");
+					}
+					text.append("<strong>"
 								+ rb.getString("KnowWE.KBRenderer.xclModels")
 								+ ":</strong>");
-						appendedXCLHeadline = true;
-					}
-					de.d3web.xcl.XCLModel model = ((de.d3web.xcl.XCLModel) slice);
+					appendedXCLHeadline = true;
+				}
 
-					text.append("<p/>\n\n" + model.getSolution().getName()
+				text.append("<p/>\n\n" + model.getSolution().getName()
 							+ ":<br/>\n");
 
-					Map<XCLRelationType, Collection<XCLRelation>> relationMap = model
+				Map<XCLRelationType, Collection<XCLRelation>> relationMap = model
 							.getTypedRelations();
 
-					for (Entry<XCLRelationType, Collection<XCLRelation>> entry : relationMap
+				for (Entry<XCLRelationType, Collection<XCLRelation>> entry : relationMap
 							.entrySet()) {
-						XCLRelationType type = entry.getKey();
-						Collection<XCLRelation> relations = entry.getValue();
-						for (XCLRelation rel : relations) {
-							Condition cond = rel.getConditionedFinding();
-							String weight = "";
-							if (type == XCLRelationType.explains) {
-								weight = "[" + rel.getWeight() + "]";
-							}
+					XCLRelationType type = entry.getKey();
+					Collection<XCLRelation> relations = entry.getValue();
+					for (XCLRelation rel : relations) {
+						Condition cond = rel.getConditionedFinding();
+						String weight = "";
+						if (type == XCLRelationType.explains) {
+							weight = "[" + rel.getWeight() + "]";
+						}
 
-							text.append(type.getName() + weight + ": ");
-							text.append("&nbsp;&nbsp;&nbsp;"
+						text.append(type.getName() + weight + ": ");
+						text.append("&nbsp;&nbsp;&nbsp;"
 									+ VerbalizationManager.getInstance()
 											.verbalize(
 													cond,
 													VerbalizationManager.RenderingFormat.PLAIN_TEXT,
 													parameterMap));
 
-							boolean id = false;
-							if (id) {
-								text.append(" (ID: " + rel.getId() + ")");
-							}
-							text.append(" <br/>\n");
+						boolean id = false;
+						if (id) {
+							text.append(" (ID: " + rel.getId() + ")");
 						}
+						text.append(" <br/>\n");
 					}
 				}
 			}
@@ -273,10 +269,10 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 		text.append(VerbalizationManager.getInstance().verbalize(
 				r.getAction(), VerbalizationManager.RenderingFormat.HTML, parameterMap));
 		text.append("<br/>\n");
-		
+
 		renderedRule = text.toString();
 		renderedRulesCache.put(r, renderedRule);
-		
+
 		return renderedRule;
 	}
 

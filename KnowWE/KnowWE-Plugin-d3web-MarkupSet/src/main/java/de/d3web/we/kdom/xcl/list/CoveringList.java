@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
@@ -68,7 +67,6 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
-import de.d3web.xcl.inference.PSMethodXCL;
 import de.knowwe.core.CommentLineType;
 import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
 
@@ -224,9 +222,8 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 							article, solutionDef);
 
 					if (solution != null) {
-						KnowledgeSlice xclModel = solution.getKnowledgeStore().getKnowledge(
-								PSMethodXCL.class,
-								XCLModel.XCLMODEL);
+						XCLModel xclModel = solution.getKnowledgeStore().getKnowledge(
+								XCLModel.KNOWLEDGE_KIND);
 
 						if (xclModel != null) {
 
@@ -304,9 +301,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 						soltuionDef);
 
 				if (solution == null) return;
-				XCLModel xclModel = (XCLModel) solution.getKnowledgeStore().getKnowledge(
-						PSMethodXCL.class,
-						XCLModel.XCLMODEL);
+				XCLModel xclModel = solution.getKnowledgeStore().getKnowledge(XCLModel.KNOWLEDGE_KIND);
 
 				if (xclModel == null) return;
 				XCLRelation rel = (XCLRelation) KnowWEUtils.getObjectFromLastVersion(article, s,

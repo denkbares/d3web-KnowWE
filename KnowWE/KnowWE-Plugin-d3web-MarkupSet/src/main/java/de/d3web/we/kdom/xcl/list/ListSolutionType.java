@@ -22,7 +22,6 @@ package de.d3web.we.kdom.xcl.list;
 
 import java.util.Collection;
 
-import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
@@ -43,7 +42,6 @@ import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.object.SolutionDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.xcl.XCLModel;
-import de.d3web.xcl.inference.PSMethodXCL;
 
 /**
  * @author Jochen
@@ -109,15 +107,13 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType implements
 			Section<DefaultMarkupType> defaultMarkupType = s.findAncestorOfType(DefaultMarkupType.class);
 
 			if (solution != null) {
-				KnowledgeSlice xclModel = solution.getKnowledgeStore().getKnowledge(
-						PSMethodXCL.class,
-						XCLModel.XCLMODEL);
+				XCLModel xclModel = solution.getKnowledgeStore().getKnowledge(XCLModel.KNOWLEDGE_KIND);
 				if (xclModel == null) {
 					XCLModel m = new XCLModel(solution);
 
 					setThresholdsAndMinSupport(defaultMarkupType, m);
 
-					solution.getKnowledgeStore().addKnowledge(PSMethodXCL.class, XCLModel.XCLMODEL,
+					solution.getKnowledgeStore().addKnowledge(XCLModel.KNOWLEDGE_KIND,
 							m);
 
 					String description = DefaultMarkupType.getAnnotation(defaultMarkupType,

@@ -30,7 +30,6 @@ import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Choice;
-import de.d3web.core.knowledge.terminology.DerivationType;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
@@ -232,7 +231,7 @@ public class GetInfoObjects extends AbstractAction {
 				object.getName()).append(
 				"'");
 		buffer.append(" name='").append(encodeXML(object.getName())).append("'");
-		if (object.getDerivationType() == DerivationType.DERIVED) {
+		if (BasicProperties.isAbstract(object)) {
 			buffer.append(" abstract='true'");
 		}
 		buffer.append(" type='");

@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -26,7 +26,6 @@ import java.util.Collection;
 import junit.framework.TestCase;
 import utils.KBTestUtilNewMarkup;
 import utils.MyTestArticleManager;
-import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.packaging.KnowWEPackageManager;
@@ -34,7 +33,6 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.logging.Logging;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
-import de.d3web.xcl.inference.PSMethodXCL;
 
 /**
  * This class tests whether the XCLModels are created as expected.
@@ -50,7 +48,7 @@ public class XCLTest extends TestCase {
 	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
-		KnowWEPackageManager.overrideAutocompileArticle(true);		
+		KnowWEPackageManager.overrideAutocompileArticle(true);
 	}
 
 	public void testNumberOfXCLModels() {
@@ -62,8 +60,8 @@ public class XCLTest extends TestCase {
 
 		// Check number of rules
 		assertEquals("Wrong number of rules for PSMethodXCL.",
-				createdKB.getAllKnowledgeSlicesFor(PSMethodXCL.class).size(),
-				loadedKB.getAllKnowledgeSlicesFor(PSMethodXCL.class).size());
+				createdKB.getAllKnowledgeSlicesFor(XCLModel.KNOWLEDGE_KIND).size(),
+				loadedKB.getAllKnowledgeSlicesFor(XCLModel.KNOWLEDGE_KIND).size());
 	}
 
 	public void testXCLModels() {
@@ -74,12 +72,10 @@ public class XCLTest extends TestCase {
 		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
 
-		Collection<KnowledgeSlice> loadedXCLModels =
-				loadedKB.getAllKnowledgeSlicesFor(
-						PSMethodXCL.class, XCLModel.XCLMODEL);
-		Collection<KnowledgeSlice> createdXCLModels =
-				createdKB.getAllKnowledgeSlicesFor(
-						PSMethodXCL.class, XCLModel.XCLMODEL);
+		Collection<XCLModel> loadedXCLModels =
+				loadedKB.getAllKnowledgeSlicesFor(XCLModel.KNOWLEDGE_KIND);
+		Collection<XCLModel> createdXCLModels =
+				createdKB.getAllKnowledgeSlicesFor(XCLModel.KNOWLEDGE_KIND);
 
 		XCLModel loadedXCLModel = (XCLModel) loadedXCLModels.toArray()[0];
 		XCLModel createdXCLModel = (XCLModel) createdXCLModels.toArray()[0];

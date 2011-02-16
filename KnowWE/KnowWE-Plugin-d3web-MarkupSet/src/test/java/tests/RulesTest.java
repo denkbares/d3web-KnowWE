@@ -22,15 +22,14 @@ package tests;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.Set;
 
 import junit.framework.TestCase;
 import utils.KBTestUtilNewMarkup;
 import utils.MyTestArticleManager;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
-import de.d3web.core.inference.KnowledgeSlice;
-import de.d3web.core.inference.PSMethod;
+import de.d3web.core.inference.KnowledgeKind;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.RuleSet;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -74,9 +73,9 @@ public class RulesTest extends TestCase {
 		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
 
 		Collection<Rule> loadedRules =
-				getRulesInHashMap(loadedKB, PSMethodHeuristic.class);
+				getRulesInHashMap(loadedKB, PSMethodHeuristic.FORWARD);
 		Collection<Rule> createdRules =
-				getRulesInHashMap(createdKB, PSMethodHeuristic.class);
+				getRulesInHashMap(createdKB, PSMethodHeuristic.FORWARD);
 
 		// Check number of rules
 		checkRules(loadedRules, createdRules);
@@ -106,9 +105,9 @@ public class RulesTest extends TestCase {
 		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
 
 		Collection<Rule> loadedRules =
-				getRulesInHashMap(loadedKB, PSMethodStrategic.class);
+				getRulesInHashMap(loadedKB, PSMethodStrategic.FORWARD);
 		Collection<Rule> createdRules =
-				getRulesInHashMap(createdKB, PSMethodStrategic.class);
+				getRulesInHashMap(createdKB, PSMethodStrategic.FORWARD);
 
 		// Check number of rules
 		checkRules(loadedRules, createdRules);
@@ -124,9 +123,9 @@ public class RulesTest extends TestCase {
 
 		// load Rules in HashMaps (necessary because they are unsorted)
 		Collection<Rule> loadedRules =
-				getRulesInHashMap(loadedKB, PSMethodAbstraction.class);
+				getRulesInHashMap(loadedKB, PSMethodAbstraction.FORWARD);
 		Collection<Rule> createdRules =
-				getRulesInHashMap(createdKB, PSMethodAbstraction.class);
+				getRulesInHashMap(createdKB, PSMethodAbstraction.FORWARD);
 
 		// Check number of rules
 		checkRules(loadedRules, createdRules);
@@ -142,22 +141,11 @@ public class RulesTest extends TestCase {
 	 * @param PSMethod PSMethod
 	 * @return HashMap<String, RuleComplex>
 	 */
-	private Collection<Rule> getRulesInHashMap(KnowledgeBase kb,
-			Class<? extends PSMethod> PSMethod) {
-
-		Collection<Rule> rules = new LinkedList<Rule>();
-		Iterator<KnowledgeSlice> iter =
-				kb.getAllKnowledgeSlicesFor(PSMethod).iterator();
-
-		while (iter.hasNext()) {
-			RuleSet rs = (RuleSet) iter.next();
-			for (Rule rule : rs.getRules()) {
-				if (!rules.contains(rule)) {
-					rules.add(rule);
-				}
-			}
+	private Collection<Rule> getRulesInHashMap(KnowledgeBase kb, KnowledgeKind<RuleSet> kind) {
+		Set<Rule> rules = new HashSet<Rule>();
+		for (RuleSet rs : kb.getAllKnowledgeSlicesFor(kind)) {
+			rules.addAll(rs.getRules());
 		}
-
 		return rules;
 
 	}
