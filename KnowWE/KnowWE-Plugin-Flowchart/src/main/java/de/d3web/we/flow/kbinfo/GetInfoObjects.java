@@ -183,6 +183,7 @@ public class GetInfoObjects extends AbstractAction {
 	}
 
 	private static void appendInfoObject(String web, KnowledgeBase base, String objectID, StringBuffer buffer) {
+		if (base == null) return;
 		NamedObject object = base.getManager().search(objectID);
 
 		if (object instanceof Solution) {

@@ -19,7 +19,8 @@
 package de.d3web.we.flow;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -31,13 +32,11 @@ import de.d3web.core.session.Session;
 import de.d3web.core.session.interviewmanager.Form;
 import de.d3web.diaFlux.flow.DiaFluxCaseObject;
 import de.d3web.diaFlux.flow.Flow;
+import de.d3web.diaFlux.flow.FlowRun;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.flow.IEdge;
 import de.d3web.diaFlux.flow.INode;
-import de.d3web.diaFlux.flow.INodeData;
-import de.d3web.diaFlux.flow.ISupport;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
-import de.d3web.diaFlux.inference.IPath;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.flow.type.DiaFluxStateType;
 import de.d3web.we.flow.type.FlowchartType;
@@ -78,24 +77,30 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 
 		for (Flow flow : flowSet) {
 
-			if (!DiaFluxUtils.getPath(flow, session).isActive()) continue;
-
 			String origin = flow.getOrigin();
 			if (origin == null) continue;
+
 			Section<FlowchartType> node = (Section<FlowchartType>) KnowWEEnvironment.getInstance().getArticleManager(
 					article.getWeb()).findNode(origin);
 			flows.add(node);
 		}
 
 		if (flows.isEmpty()) {
-			string.append("No Flowcharts found in KB.");
+			string.append("No active flowcharts found in KB.");
 			return;
 		}
 
 		StringBuilder builder = new StringBuilder(2000);
+
 		// surround content with div with kdom-id for rerendering
 		builder.append("<div id='").append(sec.getID()).append("'>");
 
+		for (FlowRun run : DiaFluxUtils.getDiaFluxCaseObject(session).getRuns()) {
+			for (INode n : run) {
+				builder.append(n + ", ");
+			}
+			builder.append("\n----------------\n");
+		}
 		// Debug
 		if (isDebug(user.getUrlParameterMap())) {
 			builder.append("<b>active object:</b><br>");
@@ -112,7 +117,6 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 					? nextForm.getName()
 					: "null") + "<br>");
 
-			builder.append(getPathendText(session));
 			builder.append(getBlackboardTable(session));
 			builder.append("\n");
 		}
@@ -144,75 +148,21 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 
 	}
 
-	private String getPathendText(Session session) {
-
-		if (session == null) return "";
-
-		FlowSet set = DiaFluxUtils.getFlowSet(session);
-
-		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) session.getCaseObject(set);
-		Collection<IPath> pathes = caseObject.getActivePathes();
-
-		StringBuilder builder = new StringBuilder(2000);
-
-		builder.append("<b>Current Pathes:</b>");
-		builder.append("<br/>");
-		for (IPath path : pathes) {
-
-			builder.append("<b>" + path.getFlow().getName() + "</b>");
-			builder.append("<br/>");
-		}
-
-		builder.append("<br/>");
-		builder.append("\n");
-		int i = 0;
-
-		for (IPath path : pathes) {
-
-			builder.append(++i + ". Path: " + path.getFlow().getName() + "<br/>");
-			builder.append("<table>");
-
-			for (INode node : path.getActiveNodes()) {
-				builder.append("<tr>");
-
-				INodeData nodeData = DiaFluxUtils.getNodeData(node, session);
-				builder.append("<td>" + nodeData.getNode().getName() + "</td>");
-				builder.append("<td>");
-				builder.append("<ol>");
-
-				List<ISupport> supports = nodeData.getSupports();
-				for (ISupport support : supports) {
-					builder.append("<li>" + support + "</li>");
-
-				}
-
-				builder.append("</ol>");
-
-				builder.append("</td>");
-
-				builder.append("</tr>");
-				builder.append("\n");
-
-			}
-			builder.append("</table>");
-
-			builder.append("<br/>");
-			builder.append("<br/>");
-			builder.append("\n");
-
-		}
-
-		builder.append("<br/>");
-
-		return builder.toString();
-	}
-
 	private String getBlackboardTable(Session session) {
 
 		StringBuilder builder = new StringBuilder(1000);
 
-		Collection<TerminologyObject> objects = new ArrayList<TerminologyObject>(
+		List<TerminologyObject> objects = new ArrayList<TerminologyObject>(
 				session.getBlackboard().getValuedObjects());
+
+		Collections.sort(objects, new Comparator<TerminologyObject>() {
+
+			@Override
+			public int compare(TerminologyObject o1, TerminologyObject o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+
 		builder.append("Valued objects: " + objects.size());
 		builder.append("<table>");
 		builder.append("<tr>");
@@ -251,23 +201,21 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 
 		preview = "\n" + preview + "\n";
 
-		for (IPath path : caseObject.getActivePathes()) {
+		for (FlowRun run : caseObject.getRuns()) {
 
-			if (path.getFlow().getId().equals(flowID)) {
-				preview = highlightPath(preview, flowID, path, session);
-			}
+			preview = highlightPath(preview, flowID, run, session);
 
 		}
 
 		return FlowchartUtils.createRenderablePreview(preview);
 	}
 
-	private String highlightPath(String preview, String flowID, IPath path, Session session) {
+	private String highlightPath(String preview, String flowID, FlowRun run, Session session) {
 		// get all the nodes
 		String[] nodes = preview.split("<DIV class=\"Node\" id=\"");
 		String[] edges = preview.split("<DIV class=\"Rule\" id=\"");
 
-		for (INode node : path.getActiveNodes()) {
+		for (INode node : run) {
 
 			// if (!node.getFlow().getId().equals(flowID)) return preview;
 
@@ -284,15 +232,15 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 
 				String edgeId = edge.getID();
 
-				if (!DiaFluxUtils.getEdgeData(edge, session).hasFired()) {
-					continue;
-				}
-
-				for (int i = 0; i < edges.length; i++) {
-					if (edges[i].contains(edgeId + "\"")) {
-						preview = colorEdge(edges[i], preview);
-					}
-				}
+				// if (!DiaFluxUtils.getEdgeData(edge, session).hasFired()) {
+				// continue;
+				// }
+				//
+				// for (int i = 0; i < edges.length; i++) {
+				// if (edges[i].contains(edgeId + "\"")) {
+				// preview = colorEdge(edges[i], preview);
+				// }
+				// }
 			}
 
 		}
