@@ -29,6 +29,7 @@ import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
+import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.NumValue;
@@ -50,6 +51,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * <li>@show_excluded: true/false
  * <li>@show_abstractions: true/false
  * <li>@only_derivations: questionnaire name
+ * <li>@show_digits: 0..NUMBER of fractional digits to be shown
  * <li>@master: Name of the article with the knowledge base
  * </ul>
  * 
@@ -109,7 +111,7 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 				}
 			});
 			for (Question question : abstractions) {
-				addListItem(buffer, question, session);
+				addListItem(buffer, question, session, section);
 			}
 		}
 		return buffer;
@@ -220,14 +222,22 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 		return KnowWEUtils.maskHTML(string);
 	}
 
-	private void addListItem(StringBuffer buffer, Question question, Session session) {
+	private void addListItem(StringBuffer buffer, Question question, Session session, Section<?> section) {
 		// TODO: look for internationalization and only print getName,
 		// when no intlz is available
 		// buffer.append("* ");
 		buffer.append(renderImage("KnowWEExtension/images/fsp_abstraction.gif", "Abstraction"));
 		buffer.append(mask("<span class=\"ABSTRACTION\">"));
+		// render the abstraction question with value
 		buffer.append(question.getName() + " = "
-				+ formatValue(session.getBlackboard().getValue(question)));
+				+ formatValue(session.getBlackboard().getValue(question), section));
+
+		// add the unit name for num question, if available
+		String unit = question.getInfoStore().getValue(MMInfo.UNIT);
+		if (unit != null) {
+			buffer.append(" " + unit);
+		}
+
 		buffer.append(mask("</span>") + br() + "\n");
 	}
 
@@ -244,12 +254,23 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 	 * @param value the specified value
 	 * @return A string representation of the specified value.
 	 */
-	private String formatValue(Value value) {
+	private String formatValue(Value value, Section<?> section) {
 
 		if (value instanceof NumValue) {
 			Double numValue = (Double) value.getValue();
-			if (Math.abs(numValue - Math.round(numValue)) > 0) return numValue.toString();
-			else return "" + Math.round(numValue);
+			// check, if we need to round the value
+			int digits = ShowSolutionsType.numberOfShownDigits(section);
+			if (digits >= 0) {
+				double d = Math.pow(10, digits);
+				numValue = (Math.round(numValue * d) / d);
+			}
+			// cut an ending .0 when appropriate
+			if (Math.abs(numValue - Math.round(numValue)) > 0) {
+				return numValue.toString();
+			}
+			else {
+				return "" + Math.round(numValue);
+			}
 		}
 		else if (value instanceof Unknown || value instanceof UndefinedValue) return "-";
 		else return value.toString();

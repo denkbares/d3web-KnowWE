@@ -40,6 +40,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	private static final String ANNOTATION_ESTABLISHED = "show_established";
 	private static final String ANNOTATION_EXCLUDED = "show_excluded";
 	private static final String ALLOWED_DERIVATIONS = "only_derivations";
+	private static final String SHOW_DIGITS = "show_digits";
 
 	public enum BoolValue {
 		TRUE, FALSE
@@ -55,6 +56,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_EXCLUDED, false, BoolValue.values());
 		MARKUP.addAnnotation(ANNOTATION_ABSTRACTIONS, false, BoolValue.values());
 		MARKUP.addAnnotation(ALLOWED_DERIVATIONS, false);
+		MARKUP.addAnnotation(SHOW_DIGITS, false);
 
 		QuestionnaireReference qc = new QuestionnaireReference();
 		qc.setSectionFinder(new AllTextFinderTrimmed());
@@ -108,6 +110,19 @@ public class ShowSolutionsType extends DefaultMarkupType {
 
 	public static boolean shouldShowAbstractions(Section<?> section) {
 		return shouldShow(section, ANNOTATION_ABSTRACTIONS);
+	}
+
+	public static int numberOfShownDigits(Section<?> section) {
+		assert section.getObjectType() instanceof ShowSolutionsType;
+		String val = DefaultMarkupType.getAnnotation(section, SHOW_DIGITS);
+		int iVal = 10;
+		try {
+			iVal = Integer.parseInt(val);
+		}
+		catch (NumberFormatException e) {
+			// TODO some error handling here
+		}
+		return iVal;
 	}
 
 	private static boolean shouldShow(Section<?> section, String annotation) {
