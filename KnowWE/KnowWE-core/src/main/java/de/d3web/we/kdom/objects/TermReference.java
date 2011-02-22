@@ -73,12 +73,10 @@ public abstract class TermReference<TermObject>
 	 * to.
 	 */
 	public final TermObject getTermObject(KnowWEArticle article, Section<? extends TermReference<TermObject>> s) {
-		Section<? extends TermDefinition<TermObject>> objectDefinition = KnowWEUtils.getTerminologyHandler(
-				article.getWeb()).getTermDefiningSection(article, s);
-		if (objectDefinition != null) {
-			TermObject c = objectDefinition.get().getTermObject(
-					termScope == KnowWETerm.GLOBAL ? objectDefinition.getArticle() : article,
-					objectDefinition);
+		Section<? extends TermDefinition<TermObject>> defSec = KnowWEUtils.getTerminologyHandler(
+				s.getWeb()).getTermDefiningSection(article, s);
+		if (defSec != null) {
+			TermObject c = defSec.get().getTermObject(article, defSec);
 			if (c != null) return c;
 		}
 		return getTermObjectFallback(article, s);

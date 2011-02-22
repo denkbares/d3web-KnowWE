@@ -102,9 +102,9 @@ public class TerminologyHandler implements EventListener {
 	@SuppressWarnings("unchecked")
 	private <TermObject> TermReferenceLog<TermObject> getTermReferenceLog(KnowWEArticle article,
 			Section<? extends KnowWETerm<TermObject>> r) {
-		TermReferenceLog refLog = getTermReferenceLogsMap(article.getTitle(),
-				r.get().getTermScope()).get(
-				new TermIdentifier(article, r));
+		TermReferenceLog refLog = getTermReferenceLogsMap(
+				r.get().getTermScope() == KnowWETerm.GLOBAL ? null : article.getTitle(),
+				r.get().getTermScope()).get(new TermIdentifier(article, r));
 		if (refLog != null && refLog.getTermObjectClass().equals(r.get().getTermObjectClass())) {
 			return refLog;
 		}
@@ -114,8 +114,8 @@ public class TerminologyHandler implements EventListener {
 	}
 
 	private TermReferenceLog<?> getTermReferenceLog(KnowWEArticle article, String termIdentifier, int termScope) {
-		return getTermReferenceLogsMap(article.getTitle(), termScope).get(
-				new TermIdentifier(termIdentifier));
+		return getTermReferenceLogsMap(termScope == KnowWETerm.GLOBAL ? null : article.getTitle(),
+				termScope).get(new TermIdentifier(termIdentifier));
 	}
 
 	@SuppressWarnings("unchecked")

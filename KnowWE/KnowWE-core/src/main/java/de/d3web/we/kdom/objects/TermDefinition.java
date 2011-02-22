@@ -66,13 +66,11 @@ public abstract class TermDefinition<TermObject>
 	public TermObject getTermObject(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> s) {
 		// in case the of duplicate definitions, get the one that has actually
 		// created the TermObject
-		KnowWEArticle art = article;
-		if(art == null) {
-			art = s.getArticle();
-		}
-		Section<?> s2 = KnowWEUtils.getTerminologyHandler(art.getWeb()).getTermDefiningSection(
-				art, s);
-		return (TermObject) KnowWEUtils.getStoredObject(article, s2 != null ? s2 : s, key);
+		Section<? extends TermDefinition<TermObject>> defSec = KnowWEUtils.getTerminologyHandler(
+				s.getWeb()).getTermDefiningSection(article, s);
+		if (defSec != null) s = defSec;
+		return (TermObject) KnowWEUtils.getStoredObject(
+				s.get().getTermScope() == KnowWETerm.GLOBAL ? null : article, s, key);
 	}
 
 	/**
@@ -84,7 +82,8 @@ public abstract class TermDefinition<TermObject>
 	 */
 	@SuppressWarnings("unchecked")
 	public TermObject getTermObjectFromLastVersion(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> s) {
-		return (TermObject) KnowWEUtils.getObjectFromLastVersion(article, s, key);
+		return (TermObject) KnowWEUtils.getObjectFromLastVersion(
+				s.get().getTermScope() == KnowWETerm.GLOBAL ? null : article, s, key);
 	}
 
 	/**
@@ -93,7 +92,8 @@ public abstract class TermDefinition<TermObject>
 	 * needed for the further compilation process
 	 */
 	public void storeTermObject(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> s, TermObject q) {
-		KnowWEUtils.storeObject(article, s, key, q);
+		KnowWEUtils.storeObject(s.get().getTermScope() == KnowWETerm.GLOBAL ? null : article, s,
+				key, q);
 	}
 
 	@Override
