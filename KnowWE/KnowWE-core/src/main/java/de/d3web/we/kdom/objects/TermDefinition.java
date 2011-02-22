@@ -66,8 +66,12 @@ public abstract class TermDefinition<TermObject>
 	public TermObject getTermObject(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> s) {
 		// in case the of duplicate definitions, get the one that has actually
 		// created the TermObject
-		Section<?> s2 = KnowWEUtils.getTerminologyHandler(article.getWeb()).getTermDefiningSection(
-				article, s);
+		KnowWEArticle art = article;
+		if(art == null) {
+			art = s.getArticle();
+		}
+		Section<?> s2 = KnowWEUtils.getTerminologyHandler(art.getWeb()).getTermDefiningSection(
+				art, s);
 		return (TermObject) KnowWEUtils.getStoredObject(article, s2 != null ? s2 : s, key);
 	}
 
