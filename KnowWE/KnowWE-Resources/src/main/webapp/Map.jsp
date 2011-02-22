@@ -3,20 +3,26 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <title>KnowWE Map Koordinatenpaar: <%= request.getParameter("num") %></title>
-<script src="http://maps.google.com/maps?file=api&v=2&key=ABQIAAAAb3JzCPOo-PmQupF8WKTY_BQhTDteWOscIBEFxr5sPfw40-jPhhS0zVcy-utMHpbsLwjf1yApcwxvXg&sensor=false" type="text/javascript"></script>
- <script type="text/javascript">
+<script type="text/javascript"
+src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript">
  function initialize(){
 	var lat = <%= request.getParameter("lat") %>;
 	var long = <%= request.getParameter("long") %>;
-
-	if (GBrowserIsCompatible()) {
-		var map = new GMap2(document.getElementById("map_canvas"));
-		map.setCenter(new GLatLng(lat,long),7);
-		map.addControl(new GSmallMapControl(),new GControlPosition(G_ANCHOR_TOP_RIGHT));
-		map.enableScrollWheelZoom();
-		}
-	var point = new GLatLng(lat, long);
-	map.addOverlay(new GMarker(point));
+	var latlong = new google.maps.LatLng(lat, long);
+	
+    var myOptions = {
+      zoom: 8,
+      center: latlong,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    
+    var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+	 var marker = new google.maps.Marker({
+		position: latlong, 
+		map: map, 
+		title:""
+	});   	
 }
  </script>
   </head>
