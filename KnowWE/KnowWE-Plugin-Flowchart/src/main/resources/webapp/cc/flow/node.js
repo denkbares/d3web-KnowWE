@@ -62,22 +62,6 @@ function Node(flowchart, nodeModel /*id, type, title, x, y*/) {
 	this.setVisible(this.flowchart.isVisible());
 }
 
-// register select and edit click events for node
-CCEvents.addClassListener('click', 'Node', 
-	function(event) {
-		var ctrlKey = event.ctrlKey;
-		var altKey = event.altKey;
-		var metaKey = event.metaKey;
-		if (this.__node) this.__node.select(ctrlKey | altKey | metaKey);
-	}
-);
-CCEvents.addClassListener('dblclick', 'Node', 
-	function(event) {
-	//avoids error when dblclick on prototype
-		if (this.__node)
-			this.__node.edit();
-	}
-);
 
 
 Node.prototype.getDOM = function() {
@@ -446,8 +430,6 @@ function ArrowTool(node) {
 	this.draggable = null;
 }
 
-// register click-listener for that class
-CCEvents.addClassListener('click', 'ArrowTool', function(event) {/*NOP, but avoid bubbling*/});
 
 ArrowTool.prototype.getDOM = function() {
 	return this.dom;

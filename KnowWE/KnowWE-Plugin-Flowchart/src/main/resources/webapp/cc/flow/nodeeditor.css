@@ -33,59 +33,6 @@
 	white-space: nowrap;
 }
 
-.NodeEditor .actionTab, .NodeEditor .startTab, .NodeEditor .exitTab, .NodeEditor .commentTab, .NodeEditor .snapshotTab {
-	position: relative;
-	display: inline-block;
-	border-top:   1px solid gray;
-	border-left:  1px solid gray;
-	border-right: 1px solid gray;
-	width: 32px;
-	height: 18px;
-	z-index: 0;
-}
-
-.NodeEditor .actionTab_selected, .NodeEditor .startTab_selected, .NodeEditor .exitTab_selected, .NodeEditor .commentTab_selected , .NodeEditor .snapshotTab_selected  {
-	position: relative;
-	display: inline-block;
-	border-top:   1px solid gray;
-	border-left:  1px solid gray;
-	border-right: 1px solid gray;
-	width: 32px;
-	height: 20px;
-	z-index: 100;
-}
-
-.NodeEditor .actionTab, .NodeEditor .actionTab_selected {
-	background-color: #ffb;
-	background-image: url(../image/node_decorators/question.gif);
-	background-repeat: no-repeat;
-}
-
-.NodeEditor .startTab, .NodeEditor .startTab_selected {
-	background-color: #bfb;
-	background-image: url(../image/node_decorators/start.png);
-	background-repeat: no-repeat;
-}
-
-.NodeEditor .exitTab, .NodeEditor .exitTab_selected {
-	background-color: #fbb;
-	background-image: url(../image/node_decorators/done.gif);
-	background-position: -3px 0px;
-	background-repeat: no-repeat;
-}
-
-.NodeEditor .commentTab, .NodeEditor .commentTab_selected {
-	background-color: #bbf;
-	background-image: url(../image/node_decorators/comment.png);
-	background-position: -3px 0px;
-	background-repeat: no-repeat;
-}
-.NodeEditor .commentTab, .NodeEditor .snapshotTab_selected {
-	background-color: #fbf;;
-	background-image: url(../image/node_decorators/snapshot.png);
-	background-position: -3px 0px;
-	background-repeat: no-repeat;
-}
 
 .NodeEditor .paneGroup {
 	position: relative;
@@ -116,14 +63,14 @@
 
 .NodeEditor .commentPane {
 	padding: 5px;
-	background-color: #bbf;
+	background-color: #1af;
 	border: 1px gray solid;
 	z-index: 50;
 }
 
 .NodeEditor .snapshotPane {
 	padding: 5px;
-	background-color: #fbf;;
+	background-color: #fbf;
 	border: 1px gray solid;
 	z-index: 50;
 }

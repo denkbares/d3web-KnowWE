@@ -1,31 +1,14 @@
 
-.FlowchartGroup {
-	padding: 1px;
-	background-color: white;
-}
-
-.FlowchartGroup_hover {
-	padding: 1px;
-	background-color: black;
-}
-
 .Flowchart {
 	position:	relative;
 	#background-color: #eee;
 	background-image: url(../image/grid_10.png);
 	background-position: 1px 1px;
 	overflow:	auto;
+	
 }
 
-.FlowchartGroup .inputFocus {
-	position:	fixed;
-	overflow:	hidden;
-	width: 0px;
-	height: 0px;
-	top: 50px;
-	left: 50px;
-	z-index: -100;
-}
+
 
 .Flowchart .h_snapline {
 	position: absolute;
@@ -41,18 +24,5 @@
 	z-index: 0;
 }
 
-.FlowchartGroup .trash {
-	position: absolute; 
-	overflow: visible; 
-	width: 64px; 
-	height: 64px;
-	left: -5px;
-	top: -65px;
-	background-image: url(../image/trash64.png);
-	z-index:1000;
-}
 
-.FlowchartGroup .trash_hover {
-	background-image: url(../image/trash64-highlight.png);
-}
 

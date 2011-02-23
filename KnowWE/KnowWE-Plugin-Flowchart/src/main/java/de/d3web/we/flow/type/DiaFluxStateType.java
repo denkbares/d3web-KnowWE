@@ -32,12 +32,14 @@ import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
  */
 public class DiaFluxStateType extends DefaultMarkupType {
 
-	private static final String ANNOTATION_MASTER = "master";
+	public static final String ANNOTATION_MASTER = "master";
+	public static final String ANNOTATION_SHOW_ALL = "showall";
 	private static final DefaultMarkup MARKUP;
 
 	static {
 		MARKUP = new DefaultMarkup("DiaFluxState");
 		MARKUP.addAnnotation(ANNOTATION_MASTER, false);
+		MARKUP.addAnnotation(ANNOTATION_SHOW_ALL, false, "true", "false");
 	}
 
 	public DiaFluxStateType() {

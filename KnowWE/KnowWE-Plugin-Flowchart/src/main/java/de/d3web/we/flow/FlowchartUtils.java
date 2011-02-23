@@ -70,14 +70,9 @@ public class FlowchartUtils {
 	 */
 	public static String createRenderablePreview(String preview) {
 		return "<div>" +
-				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/dropdownlist.css'></link>" +
-				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objectselect.css'></link>" +
-				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objecttree.css'></link>" +
 				"<link rel='stylesheet' type='text/css' href='cc/flow/flowchart.css'></link>" +
-				"<link rel='stylesheet' type='text/css' href='cc/flow/floweditor.css'></link>" +
 				"<link rel='stylesheet' type='text/css' href='cc/flow/guard.css'></link>" +
 				"<link rel='stylesheet' type='text/css' href='cc/flow/node.css'></link>" +
-				"<link rel='stylesheet' type='text/css' href='cc/flow/nodeeditor.css'></link>" +
 				"<link rel='stylesheet' type='text/css' href='cc/flow/rule.css'></link>" +
 				"<style type='text/css'>.Node { cursor: default !important; }</style>" +
 				preview +

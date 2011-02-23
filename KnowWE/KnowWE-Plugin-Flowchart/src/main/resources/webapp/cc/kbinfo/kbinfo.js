@@ -1,49 +1,7 @@
 var KBInfo = { 
+		
+	imagePath: "cc/image/kbinfo/"
 	
-	Version: '0.0.1',
-	REQUIRED_PROTOTYPE: '1.6.0.3',
-
-	requireJS: function(libraryName) {
-		// inserting via DOM fails in Safari 2.0, so brute force approach
-		document.write('<script type="text/javascript" src="'+libraryName+'"><\/script>');
-	},
-	
-	requireCSS: function(cssName) {
-		// inserting via DOM fails in Safari 2.0, so brute force approach
-		document.write('<link rel="stylesheet" type="text/css" href="'+cssName+'"><\/link>');
-	},
-	
-	imagePath: "../image/kbinfo/",
-
-	load: function() {
-	    function convertVersionString(versionString) {
-	      var v = versionString.replace(/_.*|\./g, '');
-	      v = parseInt(v + '0'.times(4-v.length));
-	      return versionString.indexOf('_') > -1 ? v-1 : v;
-	    }
-	    KBInfo.imagePath = "cc/image/kbinfo/";
-	/*
-		if((typeof Prototype=='undefined') ||
-				(typeof Element == 'undefined') ||
-				(typeof Element.Methods=='undefined') ||
-				(convertVersionString(Prototype.Version) <
-				convertVersionString(KBInfo.REQUIRED_PROTOTYPE)))
-			throw("FlowPlugin requires the Prototype JavaScript framework >= " +
-				KBInfo.REQUIRED_PROTOTYPE);
-	  */
-		/*
-		var js = /kbinfo\.js(\?.*)?$/;
-		$$('head script[src]').findAll(function(s) {
-			return s.src.match(js);
-		}).each(function(s) {
-			var path = s.src.replace(js, '');
-			('extensions,dropdownlist,objectselect,objecttree').split(',').each(function(include) { 
-				KBInfo.requireJS(path+include+'.js');
-				KBInfo.requireCSS(path+include+'.css');
-			});
-	    });
-	    */
-	}	
 };
 
 KBInfo._nodeText = function(node) {
@@ -533,10 +491,3 @@ KBInfo.Article = Class.create(
 KBInfo.Article.getShortClassName = function() {
 	return "Article";
 };
-
-
-
-
-
-// and fianlly we load the sub-libraries
-KBInfo.load();

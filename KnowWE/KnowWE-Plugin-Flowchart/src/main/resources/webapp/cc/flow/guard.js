@@ -523,7 +523,7 @@ GuardPane.prototype.render = function() {
 	
 	if (this.problem) {
 		childs.push(Builder.node('img', {
-			src: FlowEditor.imagePath+'warning.gif',
+			src: FlowEditor.imagePath+'warning.png',
 			title: this.problem
 		}));
 	}

@@ -59,10 +59,10 @@
 	<script src="cc/scriptaculous-js/src/builder.js" type="text/javascript"></script>
 	<script src="cc/scriptaculous-js/src/effects.js" type="text/javascript"></script>
 	<script src="cc/scriptaculous-js/src/dragdrop.js" type="text/javascript"></script>
-	<script src="cc/scriptaculous-js/src/controls.js" type="text/javascript"></script>
+	<!-- script src="cc/scriptaculous-js/src/controls.js" type="text/javascript"></script>
 	<script src="cc/scriptaculous-js/src/slider.js" type="text/javascript"></script>
 	<script src="cc/scriptaculous-js/src/sound.js" type="text/javascript"></script>
-	<!-- script src="cc/scriptaculous-js/src/scriptaculous.js" type="text/javascript"></script-->
+	<script src="cc/scriptaculous-js/src/scriptaculous.js" type="text/javascript"></script-->
 	
 	<script src="cc/kbinfo/kbinfo.js" type="text/javascript"></script>
 	<script src="cc/kbinfo/extensions.js" type="text/javascript"></script>
@@ -120,185 +120,46 @@
 <%= jspHelper.loadFlowchart(request.getParameter("kdomID")) %>
 </xml>
 
-<table>
-<tr>
-	<td valign=top>
-		<div id=prototype_title class=rollup_title>Node types</div>
-		<div id=prototype_content class=rollup_content style="display: visible;">
-			<div style="max-height: 280px; overflow: auto;">
-				<div style="padding: 5px;">
-					<div id=decision_prototype class=NodePrototype> 
-						<div class=Node style="position: relative; width: 120px;">
-							<div class=decision>
-								<div class=decorator></div>
-								<div class=title>use object</div>
-								<div class=text>drag this element to use wiki objects.</div>
-							</div>
-						</div>			
-					</div>			
-				</div>			
-				<div style="padding: 5px;">
-					<div id=start_prototype class=NodePrototype>
-						<div  class=Node style="position: relative; width: 120px;">
-							<div class=start>
-								<div class=decorator></div>
-								<div class=title>new start</div>
-								<div class=text>drag this element to add a new start node.</div>
-							</div>
-						</div>			
-					</div>			
-				</div>			
-				<div style="padding: 5px;">
-					<div id=exit_prototype class=NodePrototype>
-						<div class=Node style="position: relative; width: 120px;">
-							<div class=exit>
-								<div class=decorator></div>
-								<div class=title>new exit</div>
-								<div class=text>drag this element to add a new exit node.</div>
-							</div>
-						</div>			
-					</div>			
-				</div>			
-				<div style="padding: 5px;">
-					<div id=comment_prototype class=NodePrototype>
-						<div class=Node style="position: relative; width: 120px;">
-							<div class=comment>
-								<div class=decorator></div>
-								<div class=title>new comment</div>
-								<div class=text>drag this element to add a new comment.</div>
-							</div>
-						</div>			
-					</div>			
-				</div>			
-				<div style="padding: 5px;">
-					<div id=snapshot_prototype class=NodePrototype>
-						<div class=Node style="position: relative; width: 120px;">
-							<div class=snapshot>
-								<div class=decorator></div>
-								<div class=title>new snapshot</div>
-								<div class=text>drag this element to add a new snapshot.</div>
-							</div>
-						</div>			
-					</div>			
-				</div>			
-			</div>
-		</div>
-		<div id=prototype_bottom class=rollup_bottom></div>
-		
-		<div id=objects_title class=rollup_title>Wiki objects</div>
-		<div id=objects_content class=rollup_content style="display: visible;"></div>
-		<div id=objects_bottom class=rollup_bottom></div>
+<div> 
+	<ul class="toolbar" tyle="float: left; width: 40%;">
+		<li class="icon" id="saveClose" title="Save & Close" style="background-image:url(cc/image/toolbar/saveclose_flowchart_32.png);"></li><!--
+	  --><li class="icon" id="save" title="Save" style="background-image:url(cc/image/toolbar/save_flowchart_32.png);"></li><!--  
+	  --><li class="icon" id="refresh" title="Reload" style="background-image:url(cc/image/toolbar/reload_32.png);"></li><!--  
+	  --><li class="icon" id="close" title="Close" style="background-image:url(cc/image/toolbar/cancel_32.png);"></li><!--  
+	  --><li class="icon" id="delete" title="Delete" style="background-image:url(cc/image/toolbar/delete_flowchart_32.png);"></li>
+	</ul>
+	<div class="propertyArea">
+		<div>
+			<span class="propertyTitle">Name:</span><input type=text id="properties.editName" class="propertyText long"></input>
+			<span class="propertyTitle">Autostart:</span><input type="checkbox" id="properties.autostart" title="Defines if all startnodes of this flowchart are activated on session start."></input>
+			<span class=propertyTitle>Width:</span><input type=text id="properties.editWidth" class="propertyText short"></input>
+			<span class=propertyTitle>Height:</span><input type=text id="properties.editHeight" class="propertyText short"></input>
+		</div>	
+	</div>	
+	<ul class="toolbar" tyle="float: left; width: 60%;">
+		<li class="icon NodePrototype" id="decision_prototype" title="Action node" style="background-image:url(cc/image/node_decorators/decision.png);"></li><!--
+	  --><li class="icon NodePrototype" id="start_prototype" title="Start node" style="background-image:url(cc/image/node_decorators/start.png);"></li><!--
+	  --><li class="icon NodePrototype" id="exit_prototype" title="Exit node" style="background-image:url(cc/image/node_decorators/exit.png);"></li><!--
+	  --><li class="icon NodePrototype" id="comment_prototype" title="Comment node" style="background-image:url(cc/image/node_decorators/comment.png);"></li><!--
+	  --><li class="icon NodePrototype" id="snapshot_prototype" title="Snapshot node" style="background-image:url(cc/image/node_decorators/snapshot.png);"></li><!--
+	  -->
+	</ul>
+</div>
 
+<div id="leftMenu" class="leftMenu">
+	<div id="objectTree"></div>
+</div>
 
-	</td>
-	<td rowspan=2 valign=top>
-		<div class=toolbar>
-			<table>
-				<tr>
-					<td rowspan=2>
-						<button onclick="saveFlowchart(true);">
-							<table cellpadding=0 cellspacing=0>
-							<tr>
-							<td><img src="cc/image/toolbar/save_and_close.png"></img></td>
-							<td><div style="padding-left:5px; text-align:center;">Save<br>&amp;<br>close</div></td>
-							</tr>
-							</table>
-						</button>
-					</td>
-					<td>
-						<button onclick="saveFlowchart(false);" style="width:100%;text-align:left;vertical-align:middle;">
-							<table cellpadding=0 cellspacing=0>
-							<tr>
-							<td><img src="cc/image/toolbar/save.png" height=16 width=16></img></td>
-							<td style="padding-left:5px;">Save</td>
-							</tr>
-							</table>
-						</button>
-					</td>
-					<td>
-						<button onclick="window.close();" style="width:100%;text-align:left;vertical-align:middle;">
-							<table cellpadding=0 cellspacing=0>
-							<tr>
-							<td><img src="cc/image/toolbar/cancel.png" height=16 width=16></img></td>
-							<td style="padding-left:5px;">Cancel</td>
-							</tr>
-							</table>
-						</button>
-					</td>
-					<td rowspan=2 valign=top class="propertyArea">
-						<span class="propertyBlock">
-							<table>
-							<tr>
-							<td class="propertyTitle">Name:</td>
-							<td><input type=text id="properties.editName" class="propertyText long"></input></td>
-							</tr>
-							<tr>
-							<tr>
-							<td class="propertyTitle">Autostart:</td>
-							<td><input type="checkbox" id="properties.autostart" title="Defines if all startnodes of this flowchart are activated on session start."></input></td>
-							
-							</tr>
-							</table>
-						</span>
-						<span class=propertyBlock>
-							<table>
-							<tr>
-							<td class=propertyTitle>Width:</td>
-							<td><input type=text id="properties.editWidth" class="propertyText short"></input></td>
-							</tr>
-							<tr>
-							<td class=propertyTitle>Height:</td>
-							<td><input type=text id="properties.editHeight" class="propertyText short"></input></td>
-							</tr>
-							</table>
-						</span>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<button onclick="window.location.reload();" style="width:100%;text-align:left;vertical-align:middle;">
-							<table cellpadding=0 cellspacing=0>
-							<tr>
-							<td><img src="cc/image/toolbar/refresh.png" height=16 width=16></img></td>
-							<td style="padding-left:5px;">Refresh</td>
-							</tr>
-							</table>
-						</button>
-					</td>
-					<td>
-						<button onclick="deleteFlowchart();" style="width:100%;text-align:left;vertical-align:middle;">
-							<table cellpadding=0 cellspacing=0>
-							<tr>
-							<td><img src="cc/image/toolbar/delete.png" height=16 width=16></img></td>
-							<td style="padding-left:5px;">Delete</td>
-							</tr>
-							</table>
-						</button>
-					</td>
-				</tr>
-			</table>
-		</div>
-		<div id=contents style="position:relative"></div>
-	</td>
-</tr>
-</table>
-
-<div id=message></div>
+<div id="contents" style="position:relative"></div>
 
 <script>
 	// kbinfo initialization
 	KBInfo._updateCache($('articleKBInfo'));
 	KBInfo._updateCache($('referredKBInfo'));
 	
-	// make rollups responsive
-	var prototypes = new Rollup('prototype_title', 'prototype_content');
-	var objects =  new Rollup('objects_title', 'objects_content');
-	// and group them to display only one at the same time 
-	// (can be comment out to enable independed toggle behaviour)
-	//new RollupGroup([prototypes, objects]);
 
 	// initialize wiki tree tool
-	new ObjectTree('objects_content', null, 
+	new ObjectTree('objectTree', null, 
 		<%= jspHelper.getArticleIDsAsArray() %>
 	);
 
@@ -316,12 +177,28 @@
 		$('properties.editWidth').onchange = updateProperties;
 		$('properties.editHeight').onchange = updateProperties;
 		$('properties.autostart').onchange = updateProperties;
+		
+		$('saveClose').observe('click', function(){saveFlowchart(true);});
+		$('save').observe('click', function(){saveFlowchart(false);});
+		$('refresh').observe('click', refresh);
+		
+		$('close').observe('click', closeEditor);
+		$('delete').observe('click', deleteFlowchart);
+		
 	}
 	
 	function updateProperties() {
 		theFlowchart.name = $('properties.editName').value;
 		theFlowchart.setSize($('properties.editWidth').value, $('properties.editHeight').value);
 		theFlowchart.autostart = $('properties.autostart').checked;
+	}
+	
+	function refresh(){
+		window.location.reload();
+	}
+	
+	function closeEditor(){
+		window.close();
 	}
 	
 	function deleteFlowchart() {
@@ -367,24 +244,14 @@
 		
 	}
 
+	var dragOptions = { ghosting: true, revert: true, reverteffect: ObjectTree.revertEffect};
 
-	// initialize prototypes to create new nodes	
-	function revertIt(element,  top_offset, left_offset) {
-		element = $(element);
-	    element.makePositioned();
-		var x = parseFloat(element.getStyle('left') || '0');
-		var y = parseFloat(element.getStyle('top')  || '0');
-		element.setStyle({
-			left: (x - left_offset) + 'px',
-			top:  (y - top_offset) + 'px'
-		});
-	}
-
-	new Draggable('decision_prototype', { ghosting: true, revert: true, reverteffect: revertIt, starteffect: null });
-	new Draggable('start_prototype', { ghosting: true, revert: true, reverteffect: revertIt, starteffect: null });
-	new Draggable('exit_prototype', { ghosting: true, revert: true, reverteffect: revertIt, starteffect: null });
-	new Draggable('comment_prototype', { ghosting: true, revert: true, reverteffect: revertIt, starteffect: null });
-	new Draggable('snapshot_prototype', { ghosting: true, revert: true, reverteffect: revertIt, starteffect: null });
+	new Draggable('decision_prototype', dragOptions);
+	new Draggable('start_prototype', dragOptions);
+	new Draggable('exit_prototype', dragOptions);
+	new Draggable('comment_prototype', dragOptions);
+	new Draggable('snapshot_prototype', dragOptions);
+	
 	$('decision_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {action: { markup: 'KnOffice', expression: ''}}); };
 	$('start_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {start: 'Start'}); };
 	$('exit_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {exit: 'Exit'}); };

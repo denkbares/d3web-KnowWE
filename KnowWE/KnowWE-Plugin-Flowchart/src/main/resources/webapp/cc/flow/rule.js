@@ -17,13 +17,6 @@ function Rule(id, sourceNode, guard, targetNode) {
 	this.setVisible(this.flowchart.isVisible());
 }
 
-// register select click events for flowchart
-CCEvents.addClassListener('click', 'Rule', 
-	function(event) {
-		this.__rule.select();
-	}
-);
-
 
 Rule.prototype.getDOM = function() {
 	return this.dom;
