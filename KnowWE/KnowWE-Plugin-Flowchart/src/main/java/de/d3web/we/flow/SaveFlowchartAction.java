@@ -32,6 +32,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.flow.type.DiaFluxType;
 import de.d3web.we.flow.type.FlowchartType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 
 /**
@@ -43,7 +44,7 @@ import de.d3web.we.kdom.Section;
  */
 public class SaveFlowchartAction extends AbstractAction {
 
-	@SuppressWarnings("unchecked")
+
 	@Override
 	public void execute(ActionContext context) throws IOException {
 		KnowWEParameterMap map = context.getKnowWEParameterMap();
@@ -51,9 +52,29 @@ public class SaveFlowchartAction extends AbstractAction {
 		String web = map.getWeb();
 		String nodeID = map.get(KnowWEAttributes.TARGET);
 		String topic = map.getTopic();
-
 		String newText = map.get(KnowWEAttributes.TEXT);
 
+		if (nodeID == null) {
+			saveNewFlowchart(map, web, topic, newText);
+		}
+		else {
+			replaceExistingFlowchart(map, web, nodeID, topic, newText);
+		}
+
+	}
+
+	/**
+	 * Saves a flowchart when the surrounding %%DiaFlux markup exists.
+	 * 
+	 * @created 23.02.2011
+	 * @param map
+	 * @param web
+	 * @param nodeID
+	 * @param topic
+	 * @param newText
+	 */
+	@SuppressWarnings("unchecked")
+	private void replaceExistingFlowchart(KnowWEParameterMap map, String web, String nodeID, String topic, String newText) {
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 		Section<DiaFluxType> diaFluxSection = (Section<DiaFluxType>) mgr.getArticle(topic).findSection(
 				nodeID);
@@ -81,7 +102,28 @@ public class SaveFlowchartAction extends AbstractAction {
 
 			save(map, topic, nodeID, builder.toString());
 		}
+	}
 
+	/**
+	 * Saves a flowchart for which no section exists in the article yet.
+	 * 
+	 * @created 23.02.2011
+	 * @param map
+	 * @param web
+	 * @param topic
+	 * @param newText
+	 */
+	private void saveNewFlowchart(KnowWEParameterMap map, String web, String topic, String newText) {
+		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(map.getWeb());
+		KnowWEArticle article = mgr.getArticle(topic);
+		Section<KnowWEArticle> rootSection = article.getSection();
+
+		// append flowchart to root section and replace it
+		String newArticle = rootSection.getOriginalText() + "\r\n%%Diaflux\r\n" + newText
+				+ "\r\n%\r\n";
+		String nodeID = rootSection.getID();
+			
+		save(map, topic, nodeID, newArticle);
 	}
 
 	private void save(KnowWEParameterMap map, String topic, String nodeID, String newText) {
@@ -89,7 +131,6 @@ public class SaveFlowchartAction extends AbstractAction {
 		nodesMap.put(nodeID, newText);
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(map.getWeb());
 		mgr.replaceKDOMNodesSaveAndBuild(map, topic, nodesMap);
-
 	}
 
 }
