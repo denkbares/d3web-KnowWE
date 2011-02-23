@@ -229,7 +229,8 @@ public class CIUtilities {
 	public static String renderResultType(TestResultType resultType, int pixelSize) {
 
 		String imgBulb = "<img src='KnowWEExtension/ci4ke/images/" +
-				pixelSize + "x" + pixelSize + "/%s.png' alt='%<s' title='%s'>";
+				pixelSize + "x" + pixelSize
+				+ "/%s.png' alt='%<s' align='absmiddle' title='%s'>";
 
 		switch (resultType) {
 		case SUCCESSFUL:
@@ -246,7 +247,7 @@ public class CIUtilities {
 	public static String renderForecastIcon(int score, int lastBuilds, int lastFailedBuilds, int pixelSize) {
 
 		String imgForecast = "<img src='KnowWEExtension/ci4ke/images/" +
-				pixelSize + "x" + pixelSize + "/%s.png' alt='%<s' title='%s'>";
+				pixelSize + "x" + pixelSize + "/%s.png' align='absmiddle' alt='%<s' title='%s'>";
 
 		if (score == 0) {
 			imgForecast = String.format(imgForecast, "health-00to19",

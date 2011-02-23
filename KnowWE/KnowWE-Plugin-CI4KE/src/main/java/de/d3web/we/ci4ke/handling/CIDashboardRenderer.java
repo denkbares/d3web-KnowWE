@@ -85,15 +85,13 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer<CIDashboardType> 
 		}
 		String dashboardNameEscaped = CIUtilities.utf8Escape(dashboardName);
 
-		string.append("<h3>" + dashboardName);
+		string.append("<h3>");
 		// if at least one build has been executed: Render forecast icons:
 		if (handler.getCurrentBuildNumber() > 0) {
-			string.append(" - Current build status: " +
-					handler.renderCurrentBuildStatus(22));
-			string.append(" - Build health report: "
-					+ handler.renderBuildHealthReport(22));
+			string.append(handler.renderCurrentBuildStatus(22) + "  ");
+			string.append(handler.renderBuildHealthReport(22));
 		}
-		string.append("</h3>");
+		string.append("   " + dashboardName + "</h3>");
 
 		// render the last five builds:
 		string.append("<div id='" + dashboardNameEscaped
@@ -135,13 +133,14 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer<CIDashboardType> 
 		String xPath = "builds/build[@nr=%s]/tests/test";
 		List<?> tests = handler.selectNodes(String.format(xPath, selectedBuildNumber));
 
-		buffy.append("<h3>Results of Build #" + selectedBuildNumber + "</h3>");
+		buffy.append("<H4>Build #" + selectedBuildNumber + "</H4>");
 
 		for (Object o : tests) {
 			if (o instanceof Element) {
 				Element e = (Element) o;
 
-				buffy.append("<div class='ci-collapsible-box'><h4>");
+				buffy.append("<div class='ci-collapsible-box'>");
+				// buffy.append("<b>";
 
 				// Render Test Result
 				String s = e.getAttributeValue("result");
@@ -155,7 +154,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer<CIDashboardType> 
 					buffy.append(s);
 				}
 
-				buffy.append("</h4>");
+				// buffy.append("</b>");
 
 				// Render Test Message (if existent)
 				buffy.append("<span style=\"display: none;\">");

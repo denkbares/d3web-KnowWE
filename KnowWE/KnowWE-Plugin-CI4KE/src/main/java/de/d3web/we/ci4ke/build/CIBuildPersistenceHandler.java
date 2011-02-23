@@ -128,7 +128,7 @@ public class CIBuildPersistenceHandler {
 		}
 
 		String buildFileName = URLEncoder.encode("results-" + dashboardName + ".xml", "UTF-8");
-		
+
 		File buildFile = new File(CIUtilities.getAttachmentsDirectory(
 				dashboardArticleTitle), buildFileName);
 
@@ -337,7 +337,7 @@ public class CIBuildPersistenceHandler {
 		List<?> builds = selectNodes(xpath);
 
 		StringBuffer sb = new StringBuffer();
-		sb.append("<h3>Builds</h3>");
+		sb.append("<H4>Builds</H4>");
 		sb.append("<table width=\"100%\" class=\"build-table\">");
 
 		Collections.reverse(builds);// most current builds at top!
@@ -383,7 +383,7 @@ public class CIBuildPersistenceHandler {
 					+ "','" + numberOfBuilds + "');\" style=\"margin-top: 4px; float: left;\">"
 					+ "<img src=\"KnowWEExtension/ci4ke/images/16x16/left.png\" "
 					+ "style=\"vertical-align: middle; margin-right: 5px;\">"
-					+ "Older builds</button>";
+					+ "</button>";
 			sb.append(buttonLeft);
 		}
 
@@ -392,7 +392,7 @@ public class CIBuildPersistenceHandler {
 			String buttonRight = "<button onclick=\"fctRefreshBuildList('"
 					+ dashboardNameEncoded + "','" + (indexFromBack - numberOfBuilds)
 					+ "','" + numberOfBuilds + "');\" style=\"margin-top: 4px; float: right;\">"
-					+ "Newer builds<img src=\"KnowWEExtension/ci4ke/images/16x16/right.png\" "
+					+ "<img src=\"KnowWEExtension/ci4ke/images/16x16/right.png\" "
 					+ "style=\"vertical-align: middle; margin-left: 5px;\"></button>";
 			sb.append(buttonRight);
 		}
