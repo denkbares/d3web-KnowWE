@@ -234,11 +234,11 @@ public class CIUtilities {
 
 		switch (resultType) {
 		case SUCCESSFUL:
-			imgBulb = String.format(imgBulb, "green", "Current build succeeded!");
+			imgBulb = String.format(imgBulb, "green", "Build successful!");
 		case FAILED:
-			imgBulb = String.format(imgBulb, "red", "Current build failed!");
+			imgBulb = String.format(imgBulb, "red", "Build failed!");
 		case ERROR:
-			imgBulb = String.format(imgBulb, "grey", "Current build had errors!");
+			imgBulb = String.format(imgBulb, "grey", "Build has errors!");
 		}
 
 		return imgBulb;

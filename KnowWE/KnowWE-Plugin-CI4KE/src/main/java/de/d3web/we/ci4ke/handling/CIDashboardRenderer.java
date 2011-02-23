@@ -133,7 +133,13 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer<CIDashboardType> 
 		String xPath = "builds/build[@nr=%s]/tests/test";
 		List<?> tests = handler.selectNodes(String.format(xPath, selectedBuildNumber));
 
-		buffy.append("<H4>Build #" + selectedBuildNumber + "</H4>");
+		Element buildNr = (Element) handler.selectSingleNode("builds/build[@nr="
+				+ selectedBuildNumber + "]"); // e.getAttributeValue("executed")
+		String buildDate = buildNr.getAttributeValue("executed");
+		if (buildDate == null) buildDate = "";
+		buffy.append("<H4>Build #" + selectedBuildNumber +
+				" (" + buildDate + ")" +
+				"</H4>");
 
 		for (Object o : tests) {
 			if (o instanceof Element) {

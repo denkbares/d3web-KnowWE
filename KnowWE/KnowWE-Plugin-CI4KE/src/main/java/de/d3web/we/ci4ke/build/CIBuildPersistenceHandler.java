@@ -358,18 +358,13 @@ public class CIBuildPersistenceHandler {
 				sb.append("</td><td>");
 				// followed by the Build Number...
 				if (buildNr != null && !buildNr.equals("")) {
-					sb.append("#" + buildNr);
+					sb.append("<td><a onclick=\"");
+					sb.append("fctGetBuildDetails('" +
+							dashboardNameEncoded + "','" + buildNr + "');\"> #" + buildNr
+							+ "</a>  </td>");
+
 				}
-				sb.append("<td><a onclick=\"");
-				sb.append("fctGetBuildDetails('" +
-						dashboardNameEncoded + "','" + buildNr + "');\">");
-				// and the build date/time
-				s = e.getAttributeValue("executed");
-				if (s != null && !s.equals("")) {
-					sb.append(s);
-				}
-				// close table-cell
-				sb.append("</a></td></tr>");
+				sb.append("</tr>");
 			}
 		}
 		sb.append("</table>");

@@ -22,12 +22,12 @@
 	{ 
 /*	border: thin solid #000000; */
 	float: left; 
-	width: 24%;
+	/* width: 24%; */
 	}
 .ci-build-details-wrapper
 	{ 
 	float: left; 
-	width: 75%;
+	/* width: 75%; */
 	}
 .ci-column-middle
 	{ 
