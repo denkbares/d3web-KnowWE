@@ -135,11 +135,20 @@ public class JSPHelper {
 	 * @return
 	 */
 	private String getEmptyFlowchart() {
-		String id = UUID.randomUUID().toString();
+		String id = createNewFlowchartID();
 		return "<flowchart fcid=\"flow_"
-				+ id.substring(0, 8)
+				+ id
 				+ "\" name=\"New Flowchart\" icon=\"sanduhr.gif\" width=\"750\" height=\"500\" idCounter=\"1\">"
 				+ "</flowchart>";
+	}
+
+	/**
+	 * 
+	 * @created 23.02.2011
+	 * @return
+	 */
+	public static String createNewFlowchartID() {
+		return UUID.randomUUID().toString().substring(0, 8);
 	}
 
 	public String getFlowchartID() {
