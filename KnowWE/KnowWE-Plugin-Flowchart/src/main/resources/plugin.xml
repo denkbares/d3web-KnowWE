@@ -128,4 +128,16 @@
 		<parameter id="scope" value="/DiaFluxType" />
 	</extension>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="HighlightProvider">
+		<parameter id="class"
+			value="de.d3web.we.flow.HighlightProvider" />
+		<parameter id="name" value="HighlightProvider" />
+		<parameter id="description"
+			value="Enables highlighting for active nodes and edges." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="/DiaFlux" />
+	</extension>
+	
 </plugin>

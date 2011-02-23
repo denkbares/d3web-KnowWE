@@ -20,10 +20,19 @@
 
 package de.d3web.we.flow;
 
+import de.d3web.core.inference.condition.NoAnswerException;
+import de.d3web.core.inference.condition.UnknownAnswerException;
+import de.d3web.core.session.Session;
+import de.d3web.diaFlux.flow.DiaFluxCaseObject;
+import de.d3web.diaFlux.flow.FlowRun;
+import de.d3web.diaFlux.flow.IEdge;
+import de.d3web.diaFlux.flow.INode;
+import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -38,14 +47,53 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 
 		String topic = sec.getArticle().getTitle();
 		String web = sec.getArticle().getWeb();
-
+		// string.append(KnowWEUtils.maskHTML("<div id='" + sec.getID() +
+		// "'>"));
 		string.append(createPreview(article, sec, user, web, topic, string));
+		String highlight = user.getUrlParameterMap().get("highlight");
+		if (highlight != null && highlight.equals("true")) {
+			Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
+			DiaFluxCaseObject diaFluxCaseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
+			for (FlowRun run : diaFluxCaseObject.getRuns()) {
+				for (INode node : run) {
+					if (node.getFlow().getName().equals(FlowchartType.getFlowchartName(sec))) {
+						String secID = sec.getFather().getFather().getID();
+						string.append(KnowWEUtils.maskHTML("<script>$('" + secID
+								+ "').getElement('div[id=" + node.getID()
+								+ "]').style.border='2px solid green';</script>"));
+						for (IEdge edge : node.getOutgoingEdges()) {
+							if (hasFired(session, edge)) {
+								string.append(KnowWEUtils.maskHTML("<script>var child = $('"
+										+ secID
+										+ "').getElement('div[id="
+										+ edge.getID()
+										+ "]').firstChild; while (child) {if (child.className.match(/[hv]_line/)) {child.style.border='1px solid green';} child = child.nextSibling;}</script>\n"));
+							}
+						}
+					}
+				}
+			}
+		}
+		// string.append(KnowWEUtils.maskHTML("</div>"));
+	}
+
+	private boolean hasFired(Session session, IEdge edge) {
+		try {
+			return edge.getCondition() != null && edge.getCondition().eval(session);
+		}
+		catch (NoAnswerException e) {
+			return false;
+		}
+		catch (UnknownAnswerException e) {
+			return false;
+		}
+
 	}
 
 	private String createPreview(KnowWEArticle article, Section<FlowchartType> sec, KnowWEUserContext user, String web, String topic, StringBuilder builder) {
 
 		String preview = FlowchartUtils.createRenderablePreview(sec);
-		
+
 		if (preview == null) {
 			return "No preview";
 		}
@@ -54,6 +102,5 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 		}
 
 	}
-
 
 }
