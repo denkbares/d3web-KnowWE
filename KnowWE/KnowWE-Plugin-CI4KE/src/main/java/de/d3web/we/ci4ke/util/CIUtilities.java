@@ -116,7 +116,8 @@ public class CIUtilities {
 			article.getSection().findSuccessorsOfType(CIDashboardType.class, list);
 
 			for (Section<CIDashboardType> sec : list) {
-				if (CIDashboardType.getAnnotation(sec, CIDashboardType.NAME_KEY).equals(dashboardName)) {
+				if (CIDashboardType.getAnnotation(sec, CIDashboardType.NAME_KEY).equals(
+						dashboardName)) {
 					return sec;
 				}
 			}

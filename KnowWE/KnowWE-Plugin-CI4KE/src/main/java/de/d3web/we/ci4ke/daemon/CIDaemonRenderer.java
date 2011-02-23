@@ -50,7 +50,7 @@ public class CIDaemonRenderer extends KnowWEDomRenderer<CIDaemonType> {
 		string.append(srclink);
 
 		if (handler.getCurrentBuildNumber() > 0) {
-			string.append(handler.renderCurrentBuildStatus(22));
+			string.append(handler.renderCurrentBuildStatus(16));
 		}
 		else {
 			string.append("<span class='warning'>");
@@ -62,6 +62,5 @@ public class CIDaemonRenderer extends KnowWEDomRenderer<CIDaemonType> {
 
 		return string.toString();
 	}
-
 
 }
