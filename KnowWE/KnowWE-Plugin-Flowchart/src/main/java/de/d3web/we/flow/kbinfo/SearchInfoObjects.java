@@ -28,9 +28,8 @@ import java.util.List;
 import java.util.Set;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.we.action.AbstractAction;
@@ -109,20 +108,15 @@ public class SearchInfoObjects extends AbstractAction {
 				}
 			}
 
+			List<NamedObject> allKBObjects = new LinkedList<NamedObject>();
+
 			// add Flowcharts
 			if (classes.contains("flowchart")) {
 				FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
 				if (flowSet != null) {
-					for (Flow flow : flowSet.getFlows()) {
-						if (matches(flow.getName(), phrases)) {
-							result.add(base.getId() + "/" + flow.getId());
-						}
-
-					}
+					allKBObjects.addAll(flowSet.getFlows());
 				}
 			}
-
-			List<TerminologyObject> allKBObjects = new LinkedList<TerminologyObject>();
 
 			// add Diagnosis
 			if (classes.contains("solution")) {
@@ -145,7 +139,7 @@ public class SearchInfoObjects extends AbstractAction {
 				}
 			}
 			// search all objects
-			for (TerminologyObject object : allKBObjects) {
+			for (NamedObject object : allKBObjects) {
 				String name = object.getName().toLowerCase();
 				if (!foundNames.contains(name) && matches(name, phrases)) {
 					foundNames.add(name);
@@ -168,7 +162,7 @@ public class SearchInfoObjects extends AbstractAction {
 		return true;
 	}
 
-	private static String createResultEntry(KnowledgeBase base, TerminologyObject object) {
+	private static String createResultEntry(KnowledgeBase base, NamedObject object) {
 		// create a unique name for the object to be recovered easily
 		return base.getId() + "/" + object.getName();
 	}

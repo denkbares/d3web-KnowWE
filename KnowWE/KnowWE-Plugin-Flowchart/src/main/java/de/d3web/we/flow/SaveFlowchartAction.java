@@ -119,7 +119,7 @@ public class SaveFlowchartAction extends AbstractAction {
 		Section<KnowWEArticle> rootSection = article.getSection();
 
 		// append flowchart to root section and replace it
-		String newArticle = rootSection.getOriginalText() + "\r\n%%Diaflux\r\n" + newText
+		String newArticle = rootSection.getOriginalText() + "\r\n%%DiaFlux\r\n" + newText
 				+ "\r\n%\r\n";
 		String nodeID = rootSection.getID();
 			
