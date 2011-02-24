@@ -27,7 +27,7 @@
 	KnowWEUserContextImpl userContext =  new KnowWEUserContextImpl(wikiContext.getWikiSession().getUserPrincipal().getName(), wikiContext.getHttpRequest().getParameterMap());
 	KnowWEParameterMap map = new KnowWEParameterMap(userContext, request, response, wiki.getServletContext(), env);
 	
-	map.put("KWikiUser",wikiContext.getWikiSession().getUserPrincipal().getName());
+	map.put(KnowWEAttributes.USER, wikiContext.getWikiSession().getUserPrincipal().getName());
 	if(!map.containsKey(KnowWEAttributes.WEB)) {
 		map.put(KnowWEAttributes.WEB, "default_web");
 	}
@@ -37,7 +37,8 @@
 	
 	if (article == null){
 		//TODO happens if article is no longer available
-	return;
+		out.println("<h3>Article not found: '" + topic + "'.</h3>");
+		return;
 	}
 	
 	JSPHelper jspHelper = new JSPHelper(map);
@@ -230,12 +231,12 @@
 			},
 			onFailure: function() {
 				CCMessage.warn(
-					'AJAX Verbindungs-Fehler', 
-					'Die Aenderungen konnten nicht gespeichert werden.');
+					'AJAX Error', 
+					'Changes could not be saved.');
 			},
 			onException: function(transport, exception) {
 				CCMessage.warn(
-					'AJAX interner Fehler, Aenderungen eventuell verloren',
+					'AJAX Error, Saving most likely failed.',
 					exception
 					);
 			}
