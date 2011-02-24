@@ -47,7 +47,7 @@ public class HighlightProvider implements ToolProvider {
 					"window.location = url;";
 			return new DefaultTool(
 					"KnowWEExtension/flowchart/icon/debug16.png",
-					"Hide current flow",
+					"Hide Trace",
 					"Highlights active nodes and edges in the flowchart.",
 					jsAction);
 		}
@@ -58,7 +58,7 @@ public class HighlightProvider implements ToolProvider {
 					"window.location = url;";
 			return new DefaultTool(
 					"KnowWEExtension/flowchart/icon/debug16.png",
-					"Show current flow",
+					"Show Trace",
 					"Highlights active nodes and edges in the flowchart.",
 					jsAction);
 		}
