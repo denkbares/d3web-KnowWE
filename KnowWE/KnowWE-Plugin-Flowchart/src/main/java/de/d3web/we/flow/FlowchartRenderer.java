@@ -45,11 +45,14 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 	@Override
 	public void render(KnowWEArticle article, Section<FlowchartType> sec, KnowWEUserContext user, StringBuilder string) {
 
+		// render preview
 		String topic = sec.getArticle().getTitle();
 		String web = sec.getArticle().getWeb();
-		// string.append(KnowWEUtils.maskHTML("<div id='" + sec.getID() +
-		// "'>"));
 		string.append(createPreview(article, sec, user, web, topic, string));
+
+		// render debug highlighting into the existing flowchart
+		// we do this by applying some additional styling
+		// to the preview nodes using javascript/dhtml
 		String highlight = user.getUrlParameterMap().get("highlight");
 		if (highlight != null && highlight.equals("true")) {
 			Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
