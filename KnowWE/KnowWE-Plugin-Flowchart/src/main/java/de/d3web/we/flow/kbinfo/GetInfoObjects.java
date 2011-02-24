@@ -127,7 +127,10 @@ public class GetInfoObjects extends AbstractAction {
 	}
 
 	public static void appendInfoObject(String web, String id, StringBuffer buffer) {
-		int pos = id.lastIndexOf("/");
+		// TODO: perhaps not the most elegant solution, but works as '/' is not
+		// allowed in article names, the first '/' must be separating the KB
+		// name from the object name.
+		int pos = id.indexOf("/");
 		String serviceID = (pos == -1) ? id : id.substring(0, pos);
 		String objectID = (pos == -1) ? null : id.substring(pos + 1);
 
@@ -196,12 +199,10 @@ public class GetInfoObjects extends AbstractAction {
 			appendInfoObject(web, base, (QContainer) object, buffer);
 		}
 		else {
-			// TODO: why is a "Flow" not an NamedObject?
-			// if not inside knowledge base
-			// look for a flowchart th the article
+
 			FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
 			if (flowSet != null) {
-				Flow flow = flowSet.get(objectID);
+				Flow flow = flowSet.getByName(objectID);
 				if (flow != null) {
 					appendInfoObject(web, base, flow, buffer);
 					return;
