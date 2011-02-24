@@ -58,7 +58,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 			Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
 			DiaFluxCaseObject diaFluxCaseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
 			for (FlowRun run : diaFluxCaseObject.getRuns()) {
-				for (INode node : run) {
+				for (INode node : run.getActiveNodes()) {
 					if (node.getFlow().getName().equals(FlowchartType.getFlowchartName(sec))) {
 						String secID = sec.getFather().getFather().getID();
 						string.append(KnowWEUtils.maskHTML("<script>$('" + secID

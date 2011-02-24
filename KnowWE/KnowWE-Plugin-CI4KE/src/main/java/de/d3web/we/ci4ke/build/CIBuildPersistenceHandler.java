@@ -338,7 +338,7 @@ public class CIBuildPersistenceHandler {
 
 		StringBuffer sb = new StringBuffer();
 		sb.append("<H4>Builds</H4>");
-		sb.append("<table width=\"100%\" class=\"build-table\">");
+		sb.append("<table width=\"100%\" border='1' class=\"build-table\">");
 
 		Collections.reverse(builds);// most current builds at top!
 		String s;

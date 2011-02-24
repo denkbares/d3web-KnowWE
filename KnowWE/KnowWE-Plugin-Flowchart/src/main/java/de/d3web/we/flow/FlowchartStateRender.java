@@ -96,7 +96,7 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 		builder.append("<div id='").append(sec.getID()).append("'>");
 
 		for (FlowRun run : DiaFluxUtils.getDiaFluxCaseObject(session).getRuns()) {
-			for (INode n : run) {
+			for (INode n : run.getActiveNodes()) {
 				builder.append(n + ", ");
 			}
 			builder.append("\n----------------\n");
@@ -215,7 +215,7 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 		String[] nodes = preview.split("<DIV class=\"Node\" id=\"");
 		String[] edges = preview.split("<DIV class=\"Rule\" id=\"");
 
-		for (INode node : run) {
+		for (INode node : run.getActiveNodes()) {
 
 			// if (!node.getFlow().getId().equals(flowID)) return preview;
 
