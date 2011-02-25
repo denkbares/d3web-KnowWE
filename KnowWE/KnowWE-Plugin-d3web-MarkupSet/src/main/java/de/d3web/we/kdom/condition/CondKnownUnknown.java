@@ -35,6 +35,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SyntaxError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.utils.Patterns;
@@ -60,7 +61,7 @@ public class CondKnownUnknown extends D3webCondition<CondKnownUnknown> {
 
 		// comparator
 		AnonymousType comparator = new AnonymousType("equals");
-		comparator.setSectionFinder(new RegexSectionFinder("="));
+		comparator.setSectionFinder(new StringSectionFinderUnquoted("="));
 		this.childrenTypes.add(comparator);
 
 		// question

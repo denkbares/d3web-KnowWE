@@ -34,8 +34,8 @@ import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
-import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.object.SolutionReference;
 import de.d3web.we.utils.Patterns;
@@ -92,7 +92,7 @@ public class UserRatingConditionType extends D3webCondition<UserRatingConditionT
 
 		// comparator
 		AnonymousType comparator = new AnonymousType("equals");
-		comparator.setSectionFinder(new RegexSectionFinder("="));
+		comparator.setSectionFinder(new StringSectionFinderUnquoted("="));
 		this.childrenTypes.add(comparator);
 
 		// solution
