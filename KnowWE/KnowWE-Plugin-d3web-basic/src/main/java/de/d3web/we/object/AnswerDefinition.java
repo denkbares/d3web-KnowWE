@@ -29,7 +29,7 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionYN;
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
@@ -192,7 +192,7 @@ public abstract class AnswerDefinition
 					}
 				}
 				else {
-					KnowledgeBaseManagement mgn = getKBM(article);
+					KnowledgeBaseUtils mgn = getKBM(article);
 					a = mgn.addChoiceAnswer((QuestionChoice) q, name, s.get().getPosition(s));
 
 				}

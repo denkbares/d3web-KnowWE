@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.D3webModule;
@@ -147,7 +147,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed("Rule"));
 			}
 
-			KnowledgeBaseManagement mgn = getKBM(article);
+			KnowledgeBaseUtils mgn = getKBM(article);
 
 			Section<CompositeCondition> cond = s.findSuccessor(CompositeCondition.class);
 

@@ -77,7 +77,6 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 				}
 			}
 		}
-		// string.append(KnowWEUtils.maskHTML("</div>"));
 	}
 
 	private boolean hasFired(Session session, IEdge edge) {

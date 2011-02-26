@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import de.d3web.core.inference.PSConfig;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.plugin.Autodetect;
 import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginConfig;
@@ -82,7 +82,7 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<CoveringListSettingsMarkup> s) {
 
 			// Get KnowledgeBase
-			KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(
+			KnowledgeBaseUtils kbm = D3webModule.getKnowledgeRepresentationHandler(
 					article.getWeb()).getKBM(article.getTitle());
 			if (kbm == null || kbm.getKnowledgeBase() == null) {
 				return Arrays.asList((KDOMReportMessage) new SimpleMessageError(

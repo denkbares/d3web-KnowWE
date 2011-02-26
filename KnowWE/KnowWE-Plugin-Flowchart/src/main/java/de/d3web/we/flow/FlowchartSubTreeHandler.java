@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.FlowSet;
@@ -81,7 +81,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		if (!article.isFullParse()) destroy(article, s);
 
-		KnowledgeBaseManagement kbm = getKBM(article);
+		KnowledgeBaseUtils kbm = getKBM(article);
 		Section<XMLContent> flowcontent = ((AbstractXMLObjectType) s.getObjectType()).getContentChild(s);
 
 		if (kbm == null || flowcontent == null) {
@@ -235,7 +235,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		Section<XMLContent> flowcontent = ((AbstractXMLObjectType) flowSection.getObjectType()).getContentChild(flowSection);
 		flowcontent.findSuccessorsOfType(NodeType.class, nodeSections);
 
-		KnowledgeBaseManagement kbm = getKBM(article);
+		KnowledgeBaseUtils kbm = getKBM(article);
 
 		for (Section<NodeType> nodeSection : nodeSections) {
 

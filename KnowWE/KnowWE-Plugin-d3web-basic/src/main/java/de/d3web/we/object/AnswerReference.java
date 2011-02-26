@@ -23,7 +23,7 @@ package de.d3web.we.object;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -64,14 +64,14 @@ public abstract class AnswerReference
 
 			String answerName = sec.get().getTermName(sec);
 
-			KnowledgeBaseManagement mgn =
+			KnowledgeBaseUtils mgn =
 					D3webModule.getKnowledgeRepresentationHandler(
 							s.getArticle().getWeb())
 							.getKBM(article.getTitle());
 
 			Question question = mgn.getKnowledgeBase().getManager().searchQuestion(questionName);
 			if (question != null && question instanceof QuestionChoice) {
-				return KnowledgeBaseManagement.findChoice((QuestionChoice) question,
+				return KnowledgeBaseUtils.findChoice((QuestionChoice) question,
 						answerName);
 
 			}

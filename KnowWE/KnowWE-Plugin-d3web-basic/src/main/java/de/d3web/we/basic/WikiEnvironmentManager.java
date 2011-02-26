@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.we.core.KnowWEEnvironment;
 
@@ -93,10 +92,7 @@ public class WikiEnvironmentManager {
 		environments.remove(webID);
 	}
 
-	public static void registerKnowledgeBase(KnowledgeBaseManagement kbm, String topic, String webname) {
-
-		KnowledgeBase base = kbm.getKnowledgeBase();
-
+	public static void registerKnowledgeBase(KnowledgeBase base, String topic, String webname) {
 		base.setId(topic + ".."
 				+ KnowWEEnvironment.generateDefaultID(topic));
 		WikiEnvironment env = D3webModule.getDPSE(webname);

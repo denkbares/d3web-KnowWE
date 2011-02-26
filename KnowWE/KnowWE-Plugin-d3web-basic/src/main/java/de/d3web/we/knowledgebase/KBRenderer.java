@@ -51,7 +51,7 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.knowledge.terminology.info.Property.Autosave;
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.utilities.Triple;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.kernel.verbalizer.Verbalizer;
@@ -86,7 +86,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			Map<String, String> values, String web) {
 
 		D3webKnowledgeHandler knowledgeRepresentationHandler = D3webModule.getKnowledgeRepresentationHandler(KnowWEEnvironment.DEFAULT_WEB);
-		KnowledgeBaseManagement knowledgeBaseManagement = knowledgeRepresentationHandler.getKBM(topic);
+		KnowledgeBaseUtils knowledgeBaseManagement = knowledgeRepresentationHandler.getKBM(topic);
 		KnowledgeBase kb = knowledgeBaseManagement.getKnowledgeBase();
 
 		return renderHTML(web, topic, user, kb);
@@ -173,10 +173,8 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			 * Questions
 			 */
 
-			KnowledgeBaseManagement kbm = KnowledgeBaseManagement
-					.createInstance(kb);
 			List<QContainer> questions = new ArrayList<QContainer>(kb.getManager().getQContainers());
-			kbm.sortQContainers(questions);
+			KnowledgeBaseUtils.sortQContainers(questions);
 			boolean appendedQuestionHeadline = false;
 			for (QContainer q1 : questions) {
 				if (q1.getName() != null && !q1.getName().equals("Q000")) {

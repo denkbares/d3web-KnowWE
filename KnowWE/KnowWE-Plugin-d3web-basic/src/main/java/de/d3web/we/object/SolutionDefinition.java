@@ -23,11 +23,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.Session;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
@@ -133,9 +134,10 @@ public abstract class SolutionDefinition
 				return new ArrayList<KDOMReportMessage>(0);
 			}
 
-			KnowledgeBaseManagement mgn = getKBM(article);
+			KnowledgeBaseUtils mgn = getKBM(article);
 
-			TerminologyObject o = mgn.getKnowledgeBase().getManager().search(name);
+			KnowledgeBase kb = mgn.getKnowledgeBase();
+			TerminologyObject o = kb.getManager().search(name);
 
 			if (o != null) {
 				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedWarning(
@@ -144,7 +146,7 @@ public abstract class SolutionDefinition
 			}
 			else {
 
-				Solution solution = mgn.createSolution(name);
+				Solution solution = new Solution(kb.getRootSolution(), name);
 
 				if (solution != null) {
 					s.get().storeTermObject(article, s, solution);

@@ -22,7 +22,7 @@ package de.d3web.we.reviseHandler;
 
 import java.util.logging.Logger;
 
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -40,12 +40,12 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	}
 
 	/**
-	 * You can get the KnowledgeBaseManagement for the given article.
+	 * You can get the KnowledgeBaseUtils for the given article.
 	 * 
 	 * @param article is the article you need the KBM from
 	 * @returns the KBM for the given article
 	 */
-	protected KnowledgeBaseManagement getKBM(KnowWEArticle article) {
+	protected KnowledgeBaseUtils getKBM(KnowWEArticle article) {
 		if (article == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"Article was null. KBM wasn't loaded.");

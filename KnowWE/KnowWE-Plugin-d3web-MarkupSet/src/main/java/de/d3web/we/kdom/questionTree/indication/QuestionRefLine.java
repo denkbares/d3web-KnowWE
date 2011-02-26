@@ -95,7 +95,7 @@ public class QuestionRefLine extends DefaultAbstractKnowWEObjectType {
 	//
 	// if (answerSec != null || numCondSec != null) {
 	//
-	// KnowledgeBaseManagement mgn = getKBM(article);
+	// KnowledgeBaseUtils mgn = getKBM(article);
 	//
 	// String newRuleID = mgn.createRuleID();
 	//

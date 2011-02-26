@@ -26,7 +26,7 @@ package de.d3web.we.flow.persistence;
 import java.util.List;
 
 import de.d3web.core.inference.PSAction;
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.we.flow.type.ActionType;
@@ -50,7 +50,7 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	public boolean canCreateNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section<NodeType> nodeSection) {
+	public boolean canCreateNode(KnowWEArticle article, KnowledgeBaseUtils kbm, Section<NodeType> nodeSection) {
 
 		Section<D3webRuleAction> actionSection = nodeSection.findSuccessor(D3webRuleAction.class);
 
@@ -59,7 +59,7 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	public INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section<NodeType> nodeSection,
+	public INode createNode(KnowWEArticle article, KnowledgeBaseUtils kbm, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 
 		Section<D3webRuleAction> ruleAction = nodeSection.findSuccessor(D3webRuleAction.class);

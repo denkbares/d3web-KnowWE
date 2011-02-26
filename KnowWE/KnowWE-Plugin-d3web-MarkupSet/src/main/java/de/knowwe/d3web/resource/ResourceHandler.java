@@ -26,7 +26,7 @@ import java.util.Collection;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -73,7 +73,7 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ResourceType> section) {
-		KnowledgeBaseManagement kbm = getKBM(article);
+		KnowledgeBaseUtils kbm = getKBM(article);
 		if (kbm == null) return null;
 
 		String content = DefaultMarkupType.getContent(section);

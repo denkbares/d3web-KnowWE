@@ -14,7 +14,7 @@ import de.d3web.core.inference.condition.CondUnknown;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.indication.ActionContraIndication;
 import de.d3web.indication.ActionInstantIndication;
@@ -140,7 +140,7 @@ public class InlineIndicationCondition extends DefaultAbstractKnowWEObjectType {
 				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed("Rule"));
 			}
 
-			KnowledgeBaseManagement mgn = getKBM(article);
+			KnowledgeBaseUtils mgn = getKBM(article);
 
 			if (d3action != null && d3Cond != null) {
 				Rule r = RuleFactory.createRule(d3action, d3Cond,

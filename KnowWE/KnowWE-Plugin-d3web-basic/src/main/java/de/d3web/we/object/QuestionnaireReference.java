@@ -20,7 +20,7 @@
 package de.d3web.we.object;
 
 import de.d3web.core.knowledge.terminology.QContainer;
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -51,7 +51,7 @@ public class QuestionnaireReference extends D3webTermReference<QContainer> {
 			Section<QuestionnaireReference> sec = (Section<QuestionnaireReference>) s;
 			String qcName = sec.get().getTermName(sec);
 
-			KnowledgeBaseManagement mgn =
+			KnowledgeBaseUtils mgn =
 					D3webModule.getKnowledgeRepresentationHandler(
 							article.getWeb())
 							.getKBM(article.getTitle());

@@ -27,8 +27,14 @@ import java.util.List;
 
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionDate;
+import de.d3web.core.knowledge.terminology.QuestionMC;
+import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.knowledge.terminology.QuestionOC;
+import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.QuestionYN;
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.knowledge.terminology.QuestionZC;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
@@ -83,7 +89,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 				return new ArrayList<KDOMReportMessage>(0);
 			}
 
-			KnowledgeBaseManagement mgn = getKBM(article);
+			KnowledgeBaseUtils mgn = getKBM(article);
 
 			Section<? extends QASetDefinition> parentQASetSection =
 					s.get().getParentQASetSection(s);
@@ -105,28 +111,28 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 			Question q = null;
 			if (questionType.equals(QuestionType.OC)) {
-				q = mgn.createQuestionOC(name, parent, new String[] {});
+				q = new QuestionOC(parent, name);
 			}
 			else if (questionType.equals(QuestionType.MC)) {
-				q = mgn.createQuestionMC(name, parent, new String[] {});
+				q = new QuestionMC(parent, name);
 			}
 			else if (questionType.equals(QuestionType.NUM)) {
-				q = mgn.createQuestionNum(name, parent);
+				q = new QuestionNum(parent, name);
 			}
 			else if (questionType.equals(QuestionType.YN)) {
-				q = mgn.createQuestionYN(name, parent);
+				q = new QuestionYN(parent, name);
 				if (q != null) {
 					handleYNChoices(article, s);
 				}
 			}
 			else if (questionType.equals(QuestionType.DATE)) {
-				q = mgn.createQuestionDate(name, parent);
+				q = new QuestionDate(parent, name);
 			}
 			else if (questionType.equals(QuestionType.INFO)) {
-				q = mgn.createQuestionZC(name, parent);
+				q = new QuestionZC(parent, name);
 			}
 			else if (questionType.equals(QuestionType.TEXT)) {
-				q = mgn.createQuestionText(name, parent);
+				q = new QuestionText(parent, name);
 			}
 			else {
 				// no valid type...

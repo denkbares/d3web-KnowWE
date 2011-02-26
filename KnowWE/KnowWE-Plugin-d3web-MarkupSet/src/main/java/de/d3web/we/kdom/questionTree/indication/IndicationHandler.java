@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.QASet;
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -139,7 +139,7 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 
 			if (qaset != null) {
 
-				KnowledgeBaseManagement mgn = getKBM(article);
+				KnowledgeBaseUtils mgn = getKBM(article);
 				Condition cond = QuestionDashTreeUtils.createCondition(article,
 						DashTreeUtils.getAncestorDashTreeElements(element));
 

@@ -30,7 +30,7 @@ import java.util.Set;
 
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
@@ -47,7 +47,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	/**
 	 * Map for all articles an their KBMs.
 	 */
-	private static Map<String, KnowledgeBaseManagement> kbms = new HashMap<String, KnowledgeBaseManagement>();
+	private static Map<String, KnowledgeBaseUtils> kbms = new HashMap<String, KnowledgeBaseUtils>();
 
 	/**
 	 * Map to store the last version of the KnowledgeBase.
@@ -77,10 +77,10 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	 * @returns the KBM for the given article
 	 * @param title TODO
 	 */
-	public KnowledgeBaseManagement getKBM(String title) {
-		KnowledgeBaseManagement kbm = kbms.get(title);
+	public KnowledgeBaseUtils getKBM(String title) {
+		KnowledgeBaseUtils kbm = kbms.get(title);
 		if (kbm == null) {
-			kbm = KnowledgeBaseManagement.createInstance();
+			kbm = KnowledgeBaseUtils.createInstance();
 			kbms.put(title, kbm);
 		}
 		return kbm;
@@ -132,14 +132,14 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	 */
 	@Override
 	public void finishArticle(KnowWEArticle art) {
-		KnowledgeBaseManagement kbm = this.getKBM(art.getTitle());
+		KnowledgeBaseUtils kbm = this.getKBM(art.getTitle());
 		if (!isEmpty(kbm)) {
-			WikiEnvironmentManager.registerKnowledgeBase(kbm,
+			WikiEnvironmentManager.registerKnowledgeBase(kbm.getKnowledgeBase(),
 					art.getTitle(), art.getWeb());
 		}
 	}
 
-	private boolean isEmpty(KnowledgeBaseManagement kbm) {
+	private boolean isEmpty(KnowledgeBaseUtils kbm) {
 		if (kbm.getKnowledgeBase().getAllKnowledgeSlices().size() == 0
 				&& kbm.getKnowledgeBase().getManager().getQuestions().size() < 1
 				&& kbm.getKnowledgeBase().getManager().getSolutions().size() <= 1) {

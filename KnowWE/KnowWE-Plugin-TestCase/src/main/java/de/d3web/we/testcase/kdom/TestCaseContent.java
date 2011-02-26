@@ -28,7 +28,7 @@ import java.util.List;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.empiricaltesting.TestCase;
@@ -88,7 +88,7 @@ public class TestCaseContent extends StringReference {
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<TestCaseType> s) {
 
 			List<KDOMReportMessage> messages = new LinkedList<KDOMReportMessage>();
-			KnowledgeBaseManagement kbm = loadKBM(article, s);
+			KnowledgeBaseUtils kbm = loadKBM(article, s);
 
 			if (kbm != null) {
 
@@ -151,7 +151,7 @@ public class TestCaseContent extends StringReference {
 			}
 		}
 
-		private void createRTCs(Section<SequentialTestCase> stcSection, int stcIndex, de.d3web.empiricaltesting.SequentialTestCase stc, KnowledgeBaseManagement kbm, List<KDOMReportMessage> messages) {
+		private void createRTCs(Section<SequentialTestCase> stcSection, int stcIndex, de.d3web.empiricaltesting.SequentialTestCase stc, KnowledgeBaseUtils kbm, List<KDOMReportMessage> messages) {
 
 			// Get all RatedTestCase sections
 			List<Section<RatedTestCase>> rtcSections = new LinkedList<Section<RatedTestCase>>();
@@ -169,7 +169,7 @@ public class TestCaseContent extends StringReference {
 
 		}
 
-		private void createFindings(Section<RatedTestCase> rtcSection, int stcIndex, int rtcIndex, de.d3web.empiricaltesting.RatedTestCase rtc, KnowledgeBaseManagement kbm, List<KDOMReportMessage> messages) {
+		private void createFindings(Section<RatedTestCase> rtcSection, int stcIndex, int rtcIndex, de.d3web.empiricaltesting.RatedTestCase rtc, KnowledgeBaseUtils kbm, List<KDOMReportMessage> messages) {
 
 			// Get all Finding sections
 			List<Section<Finding>> findingSections = new LinkedList<Section<Finding>>();
@@ -243,7 +243,7 @@ public class TestCaseContent extends StringReference {
 			}
 		}
 
-		private void createRatedSolutions(Section<RatedTestCase> rtcSection, int stcIndex, int rtcIndex, de.d3web.empiricaltesting.RatedTestCase rtc, KnowledgeBaseManagement kbm, List<KDOMReportMessage> messages) {
+		private void createRatedSolutions(Section<RatedTestCase> rtcSection, int stcIndex, int rtcIndex, de.d3web.empiricaltesting.RatedTestCase rtc, KnowledgeBaseUtils kbm, List<KDOMReportMessage> messages) {
 
 			// Get all RatedSolution sections
 			List<Section<RatedSolution>> ratedSolutionSections = new LinkedList<Section<RatedSolution>>();
@@ -305,9 +305,9 @@ public class TestCaseContent extends StringReference {
 		/**
 		 * Due to the knowledge base is in another article we need this method.
 		 */
-		private KnowledgeBaseManagement loadKBM(KnowWEArticle a, Section<TestCaseType> s) {
+		private KnowledgeBaseUtils loadKBM(KnowWEArticle a, Section<TestCaseType> s) {
 
-			KnowledgeBaseManagement kbm = getKBM(a);
+			KnowledgeBaseUtils kbm = getKBM(a);
 
 			// KBM contains only the ROOT-QASET and the ROOT-Solution
 			// TODO: Remove this check. ATM necessary for the Test (@see

@@ -26,7 +26,7 @@ import java.util.Collection;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
@@ -34,7 +34,6 @@ import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
-import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
@@ -73,7 +72,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 				return new ArrayList<KDOMReportMessage>(0);
 			}
 
-			KnowledgeBaseManagement mgn = getKBM(article);
+			KnowledgeBaseUtils mgn = getKBM(article);
 
 			NamedObject o = mgn.getKnowledgeBase().getManager().searchQContainer(name);
 
@@ -99,21 +98,15 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 					}
 				}
 
-				QContainer qc = mgn.createQContainer(name, parent);
-				if (qc != null) {
-					if (!article.isFullParse()) {
-						parent.addChild(qc,
+				QContainer qc = new QContainer(parent, name);
+				if (!article.isFullParse()) {
+					parent.addChild(qc,
 								s.get().getPosition(s));
-					}
-					s.get().storeTermObject(article, s, qc);
-					return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
+				}
+				s.get().storeTermObject(article, s, qc);
+				return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
 							qc.getClass().getSimpleName()
 									+ " " + qc.getName()));
-				}
-				else {
-					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(name,
-							this.getClass()));
-				}
 			}
 		}
 

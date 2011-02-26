@@ -27,10 +27,11 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.values.ChoiceID;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.empiricaltesting.Finding;
@@ -87,7 +88,6 @@ public class TSUtil {
 
 	private void createKB() {
 		kb = new KnowledgeBase();
-		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance(kb);
 
 		// Root Solution
 		Solution p0 = new Solution(kb, "P000");
@@ -111,11 +111,11 @@ public class TSUtil {
 		// -- insufficient power on full load
 		// -- unsteady idle speed
 		// -- everything is fine
-		kbm.createQuestionMC("Driving", qc, new String[] {
+		new QuestionMC(qc, "Driving",
 						"insufficient power on partial load",
 						"insufficient power on full load",
 						"unsteady idle speed",
-						"everything is fine" });
+						"everything is fine");
 
 	}
 
@@ -125,15 +125,13 @@ public class TSUtil {
 	 */
 	private void createTestSuite() {
 
-		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance(kb);
-
 		// Create Finding
-		Question q = kbm.getKnowledgeBase().getManager().searchQuestion("Driving");
-		Choice a = KnowledgeBaseManagement.findChoice((QuestionChoice) q, "everything is fine");
+		Question q = kb.getManager().searchQuestion("Driving");
+		Choice a = KnowledgeBaseUtils.findChoice((QuestionChoice) q, "everything is fine");
 		Finding f = new Finding(q, new MultipleChoiceValue(new ChoiceID(a)));
 
 		// Create RatedSolution
-		Solution d = kbm.getKnowledgeBase().getManager().searchSolution("Other problem");
+		Solution d = kb.getManager().searchSolution("Other problem");
 		StateRating sr = new StateRating(new Rating(State.ESTABLISHED));
 		RatedSolution rs = new RatedSolution(d, sr);
 

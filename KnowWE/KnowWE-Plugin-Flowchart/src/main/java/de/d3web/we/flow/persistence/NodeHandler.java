@@ -22,7 +22,7 @@ package de.d3web.we.flow.persistence;
 
 import java.util.List;
 
-import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.flow.type.NodeType;
@@ -46,7 +46,7 @@ public interface NodeHandler {
 	 * @param nodeSection the section of the node
 	 * @return true, if this nodehandler can create a node
 	 */
-	boolean canCreateNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section<NodeType> nodeSection);
+	boolean canCreateNode(KnowWEArticle article, KnowledgeBaseUtils kbm, Section<NodeType> nodeSection);
 
 	/**
 	 * Creates a node from the supplied section.
@@ -59,7 +59,7 @@ public interface NodeHandler {
 	 * @param errors
 	 * @return
 	 */
-	INode createNode(KnowWEArticle article, KnowledgeBaseManagement kbm, Section<NodeType> nodeSection, Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors);
+	INode createNode(KnowWEArticle article, KnowledgeBaseUtils kbm, Section<NodeType> nodeSection, Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors);
 
 	/**
 	 * Returns the ObjectType of the NodeModel this handler handles.
