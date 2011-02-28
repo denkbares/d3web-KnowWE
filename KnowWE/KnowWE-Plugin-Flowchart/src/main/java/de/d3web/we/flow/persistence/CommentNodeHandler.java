@@ -25,7 +25,7 @@ package de.d3web.we.flow.persistence;
 
 import java.util.List;
 
-import de.d3web.core.manage.KnowledgeBaseUtils;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
@@ -48,7 +48,7 @@ public class CommentNodeHandler extends AbstractNodeHandler {
 		super(CommentType.getInstance(), null);
 	}
 
-	public boolean canCreateNode(KnowWEArticle article, KnowledgeBaseUtils kbm,
+	public boolean canCreateNode(KnowWEArticle article, KnowledgeBase kb,
 			Section<NodeType> nodeSection) {
 
 		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
@@ -57,7 +57,7 @@ public class CommentNodeHandler extends AbstractNodeHandler {
 
 	}
 
-	public INode createNode(KnowWEArticle article, KnowledgeBaseUtils kbm, Section<NodeType> nodeSection,
+	public INode createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 
 		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);

@@ -20,6 +20,7 @@
 
 package de.d3web.we.object;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -64,12 +65,12 @@ public abstract class AnswerReference
 
 			String answerName = sec.get().getTermName(sec);
 
-			KnowledgeBaseUtils mgn =
+			KnowledgeBase kb =
 					D3webModule.getKnowledgeRepresentationHandler(
 							s.getArticle().getWeb())
-							.getKBM(article.getTitle());
+							.getKB(article.getTitle());
 
-			Question question = mgn.getKnowledgeBase().getManager().searchQuestion(questionName);
+			Question question = kb.getManager().searchQuestion(questionName);
 			if (question != null && question instanceof QuestionChoice) {
 				return KnowledgeBaseUtils.findChoice((QuestionChoice) question,
 						answerName);

@@ -99,7 +99,7 @@ public class KBTestUtilNewMarkup {
 	public KnowledgeBase getKnowledgeBase(KnowWEArticle article) {
 		// Load KnowledgeBase
 		D3webKnowledgeHandler d3Handler = D3webModule.getKnowledgeRepresentationHandler("default_web");
-		return d3Handler.getKBM(article.getTitle()).getKnowledgeBase();
+		return d3Handler.getKB(article.getTitle());
 	}
 
 	/**

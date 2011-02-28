@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionDate;
@@ -34,7 +35,6 @@ import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.QuestionZC;
-import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
@@ -89,7 +89,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 				return new ArrayList<KDOMReportMessage>(0);
 			}
 
-			KnowledgeBaseUtils mgn = getKBM(article);
+			KnowledgeBase kb = getKB(article);
 
 			Section<? extends QASetDefinition> parentQASetSection =
 					s.get().getParentQASetSection(s);
@@ -98,7 +98,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			if (parentQASetSection != null) {
 				parent = (QASet) parentQASetSection.get().getTermObject(article, parentQASetSection);
 			}
-			if (parent == null) parent = mgn.getKnowledgeBase().getRootQASet();
+			if (parent == null) parent = kb.getRootQASet();
 
 			QuestionType questionType = qidSection.get().getQuestionType(
 					qidSection);

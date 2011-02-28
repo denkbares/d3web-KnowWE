@@ -145,7 +145,6 @@ public abstract class AnswerDefinition
 				return new ArrayList<KDOMReportMessage>(0);
 			}
 
-
 			if (qDef == null) {
 				// this situation can only occur with incremental update
 				// -> fullparse
@@ -192,8 +191,8 @@ public abstract class AnswerDefinition
 					}
 				}
 				else {
-					KnowledgeBaseUtils mgn = getKBM(article);
-					a = mgn.addChoiceAnswer((QuestionChoice) q, name, s.get().getPosition(s));
+					a = KnowledgeBaseUtils.addChoiceAnswer((QuestionChoice) q, name,
+							s.get().getPosition(s));
 
 				}
 

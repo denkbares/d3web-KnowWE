@@ -211,7 +211,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements Incre
 
 						QContainer questionnaire = qDef.get().getTermObject(article, qDef);
 
-						boolean alreadyInitDefined = getKBM(article).getKnowledgeBase().removeInitQuestion(
+						boolean alreadyInitDefined = getKB(article).removeInitQuestion(
 								questionnaire);
 						// check whether there is already some init-number
 						// registered for this QASet
@@ -222,7 +222,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements Incre
 						}
 						else {
 							// else register init value
-							getKBM(article).getKnowledgeBase().addInitQuestion(
+							getKB(article).addInitQuestion(
 									questionnaire,
 									number);
 
@@ -245,7 +245,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements Incre
 						// remove init number value from registration in KB
 						QContainer questionnaire = qDef.get().getTermObjectFromLastVersion(article,
 								qDef);
-						getKBM(article).getKnowledgeBase().removeInitQuestion(
+						getKB(article).removeInitQuestion(
 								questionnaire);
 					}
 				}

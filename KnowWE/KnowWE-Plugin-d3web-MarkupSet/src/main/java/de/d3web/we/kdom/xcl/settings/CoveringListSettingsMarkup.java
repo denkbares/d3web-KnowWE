@@ -1,20 +1,20 @@
 /*
  * Copyright (C) 2011 University Wuerzburg, Computer Science VI
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.d3web.we.kdom.xcl.settings;
 
@@ -25,7 +25,6 @@ import java.util.LinkedList;
 import de.d3web.core.inference.PSConfig;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.plugin.Autodetect;
 import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginConfig;
@@ -47,11 +46,9 @@ import de.d3web.xcl.ScoreAlgorithm;
 import de.d3web.xcl.SprintGroupScoreAlgorithm;
 import de.d3web.xcl.inference.PSMethodXCL;
 
-
 /**
- * This MarkUp offers some annotations to configure the
- * XCL problem solver.
- *
+ * This MarkUp offers some annotations to configure the XCL problem solver.
+ * 
  * @author Sebastian Furth (denkbares GmbH)
  * @created Jan 24, 2011
  */
@@ -82,15 +79,14 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<CoveringListSettingsMarkup> s) {
 
 			// Get KnowledgeBase
-			KnowledgeBaseUtils kbm = D3webModule.getKnowledgeRepresentationHandler(
-					article.getWeb()).getKBM(article.getTitle());
-			if (kbm == null || kbm.getKnowledgeBase() == null) {
+			KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(
+					article.getWeb()).getKB(article.getTitle());
+			if (kb == null) {
 				return Arrays.asList((KDOMReportMessage) new SimpleMessageError(
 						"No knowledgebase available."));
 			}
 
 			// Get PSConfig
-			KnowledgeBase kb = kbm.getKnowledgeBase();
 			PSConfig config = getPSConfig(kb);
 			PSMethodXCL psMethod;
 			if (config.getPsMethod() instanceof PSMethodXCL) {

@@ -77,8 +77,8 @@ public class UpdateQuestions extends AbstractAction {
 		questionText = removeLeadingAndClosingQuotes(questionText);
 
 		// get the right id for the nodemodel
-		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(
-				article.getTitle()).getKnowledgeBase();
+		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKB(
+				article.getTitle());
 		List<Question> questions = kb.getManager().getQuestions();
 		String questionID = null;
 

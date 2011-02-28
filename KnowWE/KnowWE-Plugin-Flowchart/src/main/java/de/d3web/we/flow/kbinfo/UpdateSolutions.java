@@ -99,8 +99,8 @@ public class UpdateSolutions extends AbstractAction {
 		solutionText = UpdateQuestions.removeLeadingAndClosingQuotes(solutionText);
 
 		// get the right id for the nodemodel
-		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(
-				article.getTitle()).getKnowledgeBase();
+		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKB(
+				article.getTitle());
 
 		List<Solution> diagnoses = kb.getManager().getSolutions();
 

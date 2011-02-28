@@ -25,7 +25,6 @@ import java.util.Collection;
 
 import de.d3web.core.io.progress.DummyProgressListener;
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.plugin.io.PluginConfigPersistenceHandler;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -40,13 +39,12 @@ public class PluginConfigReviseSubtreeHandler extends SubtreeHandler<PluginConfi
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<PluginConfigType> s) {
 		String xmlText = "<settings><plugins /><psmethods>" + s.getOriginalText()
 				+ "</psmethods></settings>";
-		KnowledgeBaseUtils kbm = D3webModule.getKnowledgeRepresentationHandler(
-				article.getWeb()).getKBM(article.getTitle());
-		if (kbm == null) {
+		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(
+				article.getWeb()).getKB(article.getTitle());
+		if (kb == null) {
 			return Arrays.asList((KDOMReportMessage) new SimpleMessageError(
 					"No knowledgebase available."));
 		}
-		KnowledgeBase kb = kbm.getKnowledgeBase();
 		try {
 			new PluginConfigPersistenceHandler().read(kb,
 					new ByteArrayInputStream(xmlText.getBytes()),

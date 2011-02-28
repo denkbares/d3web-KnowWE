@@ -20,7 +20,7 @@ package de.d3web.we.flow.persistence;
 
 import java.util.List;
 
-import de.d3web.core.manage.KnowledgeBaseUtils;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.diaFlux.flow.NOOPAction;
@@ -44,13 +44,13 @@ public class DecisionNodeHandler extends AbstractNodeHandler {
 	}
 
 	@Override
-	public boolean canCreateNode(KnowWEArticle article, KnowledgeBaseUtils kbm,
+	public boolean canCreateNode(KnowWEArticle article, KnowledgeBase kb,
 			Section<NodeType> nodeSection) {
 		return getNodeInfo(nodeSection) != null;
 	}
 
 	@Override
-	public INode createNode(KnowWEArticle article, KnowledgeBaseUtils kbm, Section<NodeType> nodeSection,
+	public INode createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 
 		return FlowFactory.getInstance().createActionNode(id, NOOPAction.INSTANCE);

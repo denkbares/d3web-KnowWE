@@ -21,7 +21,7 @@ package de.d3web.we.flow.persistence;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.core.manage.KnowledgeBaseUtils;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
@@ -76,29 +76,29 @@ public class NodeHandlerManager implements NodeHandler {
 	}
 
 	@Override
-	public boolean canCreateNode(KnowWEArticle article, KnowledgeBaseUtils kbm, Section<NodeType> nodeSection) {
+	public boolean canCreateNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection) {
 		for (NodeHandler handler : HANDLERS) {
-			if (handler.canCreateNode(article, kbm, nodeSection)) return true;
+			if (handler.canCreateNode(article, kb, nodeSection)) return true;
 		}
 
 		return false;
 	}
 
 	@Override
-	public INode createNode(KnowWEArticle article, KnowledgeBaseUtils kbm, Section<NodeType> nodeSection,
+	public INode createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
-		NodeHandler nodeHandler = findNodeHandler(article, kbm, nodeSection);
+		NodeHandler nodeHandler = findNodeHandler(article, kb, nodeSection);
 
 		if (nodeHandler == null) return null;
 
-		return nodeHandler.createNode(article, kbm, nodeSection, flowSection, id, errors);
+		return nodeHandler.createNode(article, kb, nodeSection, flowSection, id, errors);
 	}
 
 	public NodeHandler findNodeHandler(KnowWEArticle article,
-			KnowledgeBaseUtils kbm, Section<NodeType> nodeSection) {
+			KnowledgeBase kb, Section<NodeType> nodeSection) {
 
 		for (NodeHandler handler : HANDLERS) {
-			if (handler.canCreateNode(article, kbm, nodeSection)) return handler;
+			if (handler.canCreateNode(article, kb, nodeSection)) return handler;
 		}
 
 		return null;

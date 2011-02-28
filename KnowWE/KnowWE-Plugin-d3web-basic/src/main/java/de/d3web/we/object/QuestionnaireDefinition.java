@@ -23,10 +23,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
-import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
@@ -72,9 +72,9 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 				return new ArrayList<KDOMReportMessage>(0);
 			}
 
-			KnowledgeBaseUtils mgn = getKBM(article);
+			KnowledgeBase kb = getKB(article);
 
-			NamedObject o = mgn.getKnowledgeBase().getManager().searchQContainer(name);
+			NamedObject o = kb.getManager().searchQContainer(name);
 
 			if (o != null) {
 				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedWarning(
@@ -83,13 +83,13 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 			else {
 				Section<? extends DashTreeElement> dashTreeFather = DashTreeUtils
 						.getFatherDashTreeElement(s);
-				QASet parent = mgn.getKnowledgeBase().getRootQASet();
+				QASet parent = kb.getRootQASet();
 				if (dashTreeFather != null) {
 					// is child of a QClass declaration => also declaration
 					Section<QuestionnaireDefinition> parentQclass = dashTreeFather
 							.findSuccessor(QuestionnaireDefinition.class);
 					if (parentQclass != null) {
-						QASet localParent = mgn.getKnowledgeBase().getManager().searchQContainer(
+						QASet localParent = kb.getManager().searchQContainer(
 								parentQclass.get().getTermName(
 										parentQclass));
 						if (localParent != null) {

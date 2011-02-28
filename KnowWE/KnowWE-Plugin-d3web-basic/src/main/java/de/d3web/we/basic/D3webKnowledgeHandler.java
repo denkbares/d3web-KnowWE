@@ -47,7 +47,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	/**
 	 * Map for all articles an their KBMs.
 	 */
-	private static Map<String, KnowledgeBaseUtils> kbms = new HashMap<String, KnowledgeBaseUtils>();
+	private static Map<String, KnowledgeBase> kbs = new HashMap<String, KnowledgeBase>();
 
 	/**
 	 * Map to store the last version of the KnowledgeBase.
@@ -77,13 +77,17 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	 * @returns the KBM for the given article
 	 * @param title TODO
 	 */
-	public KnowledgeBaseUtils getKBM(String title) {
-		KnowledgeBaseUtils kbm = kbms.get(title);
-		if (kbm == null) {
-			kbm = KnowledgeBaseUtils.createInstance();
-			kbms.put(title, kbm);
+	public KnowledgeBase getKB(String title) {
+		KnowledgeBase kb = kbs.get(title);
+		if (kb == null) {
+			kb = KnowledgeBaseUtils.createKnowledgeBase();
+			kbs.put(title, kb);
 		}
-		return kbm;
+		return kb;
+	}
+
+	public void clearKB(String title) {
+		kbs.remove(title);
 	}
 
 	/**
@@ -94,7 +98,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	 * @return all topics with a compiled d3web knowledge base
 	 */
 	public String[] getKnowledgeTopics() {
-		Set<String> keySet = kbms.keySet();
+		Set<String> keySet = kbs.keySet();
 		return keySet.toArray(new String[keySet.size()]);
 	}
 
@@ -118,10 +122,10 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 			}
 		}
 		if (!art.isSecondBuild()) {
-			lastKB.put(art.getTitle(), getKBM(art.getTitle()).getKnowledgeBase());
+			lastKB.put(art.getTitle(), getKB(art.getTitle()));
 		}
 		if (art.isFullParse()) {
-			getKBM(art.getTitle()).clearKnowledgeBase();
+			clearKB(art.getTitle());
 		}
 		savedToJar.put(art.getTitle(), false);
 	}
@@ -132,17 +136,17 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	 */
 	@Override
 	public void finishArticle(KnowWEArticle art) {
-		KnowledgeBaseUtils kbm = this.getKBM(art.getTitle());
-		if (!isEmpty(kbm)) {
-			WikiEnvironmentManager.registerKnowledgeBase(kbm.getKnowledgeBase(),
+		KnowledgeBase kb = this.getKB(art.getTitle());
+		if (!isEmpty(kb)) {
+			WikiEnvironmentManager.registerKnowledgeBase(kb,
 					art.getTitle(), art.getWeb());
 		}
 	}
 
-	private boolean isEmpty(KnowledgeBaseUtils kbm) {
-		if (kbm.getKnowledgeBase().getAllKnowledgeSlices().size() == 0
-				&& kbm.getKnowledgeBase().getManager().getQuestions().size() < 1
-				&& kbm.getKnowledgeBase().getManager().getSolutions().size() <= 1) {
+	private boolean isEmpty(KnowledgeBase kb) {
+		if (kb.getAllKnowledgeSlices().size() == 0
+				&& kb.getManager().getQuestions().size() < 1
+				&& kb.getManager().getSolutions().size() <= 1) {
 			return true;
 		}
 		else {
@@ -154,7 +158,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	@Override
 	public URL saveKnowledge(String title) throws IOException {
 
-		KnowledgeBase base = getKBM(title).getKnowledgeBase();
+		KnowledgeBase base = getKB(title);
 		URL home = D3webModule.getKbUrl(web, base.getId());
 		if (!savedToJar.get(title)) {
 			PersistenceManager.getInstance().save(base,

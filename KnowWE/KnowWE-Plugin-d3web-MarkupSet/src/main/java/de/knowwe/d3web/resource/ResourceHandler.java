@@ -26,7 +26,6 @@ import java.util.Collection;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
-import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -73,8 +72,8 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ResourceType> section) {
-		KnowledgeBaseUtils kbm = getKBM(article);
-		if (kbm == null) return null;
+		KnowledgeBase kb = getKB(article);
+		if (kb == null) return null;
 
 		String content = DefaultMarkupType.getContent(section);
 		String destinationPath =
@@ -141,7 +140,6 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 		}
 
 		// and add the resource to the knowledge base
-		KnowledgeBase kb = kbm.getKnowledgeBase();
 		kb.addResouce(resource);
 
 		// if we have both content and source, warn this

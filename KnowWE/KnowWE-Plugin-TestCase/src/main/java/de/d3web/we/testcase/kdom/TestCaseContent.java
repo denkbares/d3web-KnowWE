@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Solution;
@@ -88,9 +89,9 @@ public class TestCaseContent extends StringReference {
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<TestCaseType> s) {
 
 			List<KDOMReportMessage> messages = new LinkedList<KDOMReportMessage>();
-			KnowledgeBaseUtils kbm = loadKBM(article, s);
+			KnowledgeBase kb = loadKB(article, s);
 
-			if (kbm != null) {
+			if (kb != null) {
 
 				List<de.d3web.empiricaltesting.SequentialTestCase> repository = new LinkedList<de.d3web.empiricaltesting.SequentialTestCase>();
 
@@ -107,7 +108,7 @@ public class TestCaseContent extends StringReference {
 					de.d3web.empiricaltesting.SequentialTestCase stc = new de.d3web.empiricaltesting.SequentialTestCase();
 					createSTCName(stcSection, index, stc, messages);
 					if (messages.size() > 0) return messages;
-					createRTCs(stcSection, index, stc, kbm, messages);
+					createRTCs(stcSection, index, stc, kb, messages);
 					if (messages.size() > 0) return messages;
 
 					// Add STC to Repository
@@ -118,7 +119,7 @@ public class TestCaseContent extends StringReference {
 
 					// Create the test suite
 					TestCase testSuite = new TestCase();
-					testSuite.setKb(kbm.getKnowledgeBase());
+					testSuite.setKb(kb);
 					testSuite.setRepository(repository);
 
 					// Store the test suite
@@ -151,7 +152,7 @@ public class TestCaseContent extends StringReference {
 			}
 		}
 
-		private void createRTCs(Section<SequentialTestCase> stcSection, int stcIndex, de.d3web.empiricaltesting.SequentialTestCase stc, KnowledgeBaseUtils kbm, List<KDOMReportMessage> messages) {
+		private void createRTCs(Section<SequentialTestCase> stcSection, int stcIndex, de.d3web.empiricaltesting.SequentialTestCase stc, KnowledgeBase kb, List<KDOMReportMessage> messages) {
 
 			// Get all RatedTestCase sections
 			List<Section<RatedTestCase>> rtcSections = new LinkedList<Section<RatedTestCase>>();
@@ -162,14 +163,14 @@ public class TestCaseContent extends StringReference {
 
 				int rtcIndex = rtcSections.indexOf(rtcSection);
 				de.d3web.empiricaltesting.RatedTestCase rtc = new de.d3web.empiricaltesting.RatedTestCase();
-				createFindings(rtcSection, stcIndex, rtcIndex, rtc, kbm, messages);
-				createRatedSolutions(rtcSection, stcIndex, rtcIndex, rtc, kbm, messages);
+				createFindings(rtcSection, stcIndex, rtcIndex, rtc, kb, messages);
+				createRatedSolutions(rtcSection, stcIndex, rtcIndex, rtc, kb, messages);
 				stc.add(rtc);
 			}
 
 		}
 
-		private void createFindings(Section<RatedTestCase> rtcSection, int stcIndex, int rtcIndex, de.d3web.empiricaltesting.RatedTestCase rtc, KnowledgeBaseUtils kbm, List<KDOMReportMessage> messages) {
+		private void createFindings(Section<RatedTestCase> rtcSection, int stcIndex, int rtcIndex, de.d3web.empiricaltesting.RatedTestCase rtc, KnowledgeBase kb, List<KDOMReportMessage> messages) {
 
 			// Get all Finding sections
 			List<Section<Finding>> findingSections = new LinkedList<Section<Finding>>();
@@ -184,7 +185,7 @@ public class TestCaseContent extends StringReference {
 				// Get the real Question
 				if (questionSection != null) {
 					String questionText = clean(questionSection.getOriginalText());
-					Question question = kbm.getKnowledgeBase().getManager().searchQuestion(
+					Question question = kb.getManager().searchQuestion(
 							questionText);
 
 					// Create error message if there is no question with this
@@ -222,7 +223,7 @@ public class TestCaseContent extends StringReference {
 						}
 						// If not, it is a QuestionChoice
 						else {
-							Value value = kbm.findValue(question,
+							Value value = KnowledgeBaseUtils.findValue(question,
 									clean(valueSection.getOriginalText().trim()));
 							if (value == null) {
 								messages.add(new NoSuchObjectError(
@@ -243,7 +244,7 @@ public class TestCaseContent extends StringReference {
 			}
 		}
 
-		private void createRatedSolutions(Section<RatedTestCase> rtcSection, int stcIndex, int rtcIndex, de.d3web.empiricaltesting.RatedTestCase rtc, KnowledgeBaseUtils kbm, List<KDOMReportMessage> messages) {
+		private void createRatedSolutions(Section<RatedTestCase> rtcSection, int stcIndex, int rtcIndex, de.d3web.empiricaltesting.RatedTestCase rtc, KnowledgeBase kb, List<KDOMReportMessage> messages) {
 
 			// Get all RatedSolution sections
 			List<Section<RatedSolution>> ratedSolutionSections = new LinkedList<Section<RatedSolution>>();
@@ -259,7 +260,7 @@ public class TestCaseContent extends StringReference {
 
 				// Get the real Solution
 				if (solutionSection != null) {
-					solution = kbm.getKnowledgeBase().getManager().searchSolution(
+					solution = kb.getManager().searchSolution(
 							clean(solutionSection.getOriginalText().trim()));
 
 					// Create error message if there is no question with this
@@ -305,24 +306,24 @@ public class TestCaseContent extends StringReference {
 		/**
 		 * Due to the knowledge base is in another article we need this method.
 		 */
-		private KnowledgeBaseUtils loadKBM(KnowWEArticle a, Section<TestCaseType> s) {
+		private KnowledgeBase loadKB(KnowWEArticle a, Section<TestCaseType> s) {
 
-			KnowledgeBaseUtils kbm = getKBM(a);
+			KnowledgeBase kb = getKB(a);
 
 			// KBM contains only the ROOT-QASET and the ROOT-Solution
 			// TODO: Remove this check. ATM necessary for the Test (@see
 			// MyTestArticleManager)
-			if (kbm != null
-					&& kbm.getKnowledgeBase().getManager().getAllTerminologyObjects().size() == 2) {
+			if (kb != null
+					&& kb.getManager().getAllTerminologyObjects().size() == 2) {
 				Section<TestCaseType> father = s.findAncestorOfType(TestCaseType.class);
 				String source = DefaultMarkupType.getAnnotation(father,
 						TestCaseType.ANNOTATION_MASTER);
 				KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(a.getWeb(),
 						source);
-				kbm = getKBM(article);
+				kb = getKB(article);
 			}
 
-			return kbm;
+			return kb;
 		}
 
 		private String clean(String quotedString) {

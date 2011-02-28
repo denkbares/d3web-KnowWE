@@ -19,8 +19,8 @@
  */
 package de.d3web.we.object;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -50,11 +50,11 @@ public class QuestionReference extends D3webTermReference<Question> {
 			Section<QuestionReference> sec = (Section<QuestionReference>) s;
 			String questionName = sec.get().getTermName(sec);
 
-			KnowledgeBaseUtils mgn =
+			KnowledgeBase kb =
 					D3webModule.getKnowledgeRepresentationHandler(
-							article.getWeb()).getKBM(article.getTitle());
+							article.getWeb()).getKB(article.getTitle());
 
-			Question question = mgn.getKnowledgeBase().getManager().searchQuestion(questionName);
+			Question question = kb.getManager().searchQuestion(questionName);
 			return question;
 		}
 		return null;

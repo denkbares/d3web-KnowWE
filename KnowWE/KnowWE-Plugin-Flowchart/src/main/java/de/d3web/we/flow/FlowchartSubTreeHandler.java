@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Map;
 
 import de.d3web.core.inference.condition.Condition;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.FlowSet;
@@ -84,10 +84,10 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		if (!article.isFullParse()) destroy(article, s);
 
-		KnowledgeBaseUtils kbm = getKBM(article);
+		KnowledgeBase kb = getKB(article);
 		Section<XMLContent> flowcontent = ((AbstractXMLObjectType) s.getObjectType()).getContentChild(s);
 
-		if (kbm == null || flowcontent == null) {
+		if (kb == null || flowcontent == null) {
 			return null;
 		}
 
@@ -108,17 +108,17 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		Flow flow = FlowFactory.getInstance().createFlow(id, name, nodes, edges);
 		flow.setAutostart(autostart);
-		
+
 		flow.getInfoStore().addValue(Property.getProperty(ORIGIN, String.class), s.getID());
 
-		DiaFluxUtils.addFlow(flow, kbm.getKnowledgeBase());
+		DiaFluxUtils.addFlow(flow, kb);
 
 		return errors;
 	}
 
 	@Override
 	public void destroy(KnowWEArticle article, Section<FlowchartType> s) {
-		FlowSet flowSet = DiaFluxUtils.getFlowSet(getKBM(article).getKnowledgeBase());
+		FlowSet flowSet = DiaFluxUtils.getFlowSet(getKB(article));
 		Map<String, String> attributeMap = AbstractXMLObjectType.getLastAttributeMapFor(s);
 		if (flowSet != null && attributeMap != null) {
 			flowSet.remove(attributeMap.get("fcid"));
@@ -239,11 +239,11 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		Section<XMLContent> flowcontent = ((AbstractXMLObjectType) flowSection.getObjectType()).getContentChild(flowSection);
 		flowcontent.findSuccessorsOfType(NodeType.class, nodeSections);
 
-		KnowledgeBaseUtils kbm = getKBM(article);
+		KnowledgeBase kb = getKB(article);
 
 		for (Section<NodeType> nodeSection : nodeSections) {
 
-			NodeHandler handler = NodeHandlerManager.getInstance().findNodeHandler(article, kbm,
+			NodeHandler handler = NodeHandlerManager.getInstance().findNodeHandler(article, kb,
 					nodeSection);
 
 			if (handler == null) {
@@ -255,7 +255,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 			else {// handler can in general handle NodeType
 				String id = AbstractXMLObjectType.getAttributeMapFor(nodeSection).get("fcid");
 
-				INode node = handler.createNode(article, kbm, nodeSection, flowSection, id, errors);
+				INode node = handler.createNode(article, kb, nodeSection, flowSection, id, errors);
 
 				if (node != null) {
 					result.add(node);

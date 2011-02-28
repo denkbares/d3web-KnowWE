@@ -26,7 +26,6 @@ import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.Session;
 import de.d3web.scoring.Score;
 import de.d3web.we.basic.D3webKnowledgeHandler;
@@ -143,10 +142,8 @@ public class D3webUtils {
 		D3webKnowledgeHandler knowledgeHandler =
 				D3webModule.getKnowledgeRepresentationHandler(web);
 		if (knowledgeHandler != null) {
-			KnowledgeBaseUtils kbm = knowledgeHandler.getKBM(topic);
-			if (kbm != null) {
-				return kbm.getKnowledgeBase();
-			}
+			KnowledgeBase kb = knowledgeHandler.getKB(topic);
+			return kb;
 		}
 		return null;
 	}

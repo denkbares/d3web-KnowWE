@@ -86,8 +86,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			Map<String, String> values, String web) {
 
 		D3webKnowledgeHandler knowledgeRepresentationHandler = D3webModule.getKnowledgeRepresentationHandler(KnowWEEnvironment.DEFAULT_WEB);
-		KnowledgeBaseUtils knowledgeBaseManagement = knowledgeRepresentationHandler.getKBM(topic);
-		KnowledgeBase kb = knowledgeBaseManagement.getKnowledgeBase();
+		KnowledgeBase kb = knowledgeRepresentationHandler.getKB(topic);
 
 		return renderHTML(web, topic, user, kb);
 	}

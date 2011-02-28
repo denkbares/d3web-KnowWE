@@ -25,7 +25,6 @@ import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
-import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
@@ -93,8 +92,7 @@ public class KnowledgeBaseType extends DefaultMarkupType implements IncrementalM
 			@Override
 			public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<KnowledgeBaseType> section) {
 				// get required information
-				KnowledgeBaseUtils kbm = getKBM(article);
-				KnowledgeBase kb = kbm.getKnowledgeBase();
+				KnowledgeBase kb = getKB(article);
 
 				// prepare the items to be set into the knowledge base
 				String title = getContent(section).trim();
@@ -118,8 +116,8 @@ public class KnowledgeBaseType extends DefaultMarkupType implements IncrementalM
 				if (unknownbydefault != null)
 					infoStore.addValue(BasicProperties.UNKNOWNBYDEFAULT, unknownbydefault);
 
-				return null;
-			}
+					return null;
+				}
 		});
 	}
 

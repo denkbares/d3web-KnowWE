@@ -28,6 +28,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.Session;
@@ -91,17 +92,17 @@ public class RetractSingleFindingAction extends AbstractAction {
 			return "null";
 		}
 
-		KnowledgeBaseUtils kbm = D3webModule.getKnowledgeRepresentationHandler(web).getKBM(
+		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(web).getKB(
 				topic);
 		Session session = D3webUtils.getSession(topic, user, web);
 		Blackboard blackboard = session.getBlackboard();
 
-		Question question = kbm.getKnowledgeBase().getManager().searchQuestion(objectid);
+		Question question = kb.getManager().searchQuestion(objectid);
 		if (question != null) {
 
 			Value value = null;
 			if (valueid != null) {
-				value = kbm.findValue(question, valueid);
+				value = KnowledgeBaseUtils.findValue(question, valueid);
 			}
 			else if (valuenum != null) {
 				value = new NumValue(Double.parseDouble(valuenum));

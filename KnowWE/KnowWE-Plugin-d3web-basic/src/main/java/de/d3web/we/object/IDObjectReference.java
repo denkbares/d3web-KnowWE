@@ -21,6 +21,7 @@ package de.d3web.we.object;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -78,10 +79,10 @@ public class IDObjectReference extends D3webTermReference<NamedObject> {
 			if (choiceString != null) {
 				choiceString = KnowWEUtils.trimQuotes(matcher.group(2));
 			}
-			KnowledgeBaseUtils mgn = D3webModule.getKnowledgeRepresentationHandler(
-					article.getWeb()).getKBM(article.getTitle());
+			KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(
+					article.getWeb()).getKB(article.getTitle());
 			NamedObject idObject = KnowledgeBaseUtils.findTerminologyObjectByName(
-					idObjectName, mgn.getKnowledgeBase());
+					idObjectName, kb);
 			if (idObject instanceof QuestionChoice && choiceString != null) {
 				QuestionChoice qc = (QuestionChoice) idObject;
 				idObject = null;

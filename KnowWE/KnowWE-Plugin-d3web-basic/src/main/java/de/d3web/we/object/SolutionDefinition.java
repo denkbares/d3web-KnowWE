@@ -28,7 +28,6 @@ import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.Session;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
@@ -134,9 +133,8 @@ public abstract class SolutionDefinition
 				return new ArrayList<KDOMReportMessage>(0);
 			}
 
-			KnowledgeBaseUtils mgn = getKBM(article);
+			KnowledgeBase kb = getKB(article);
 
-			KnowledgeBase kb = mgn.getKnowledgeBase();
 			TerminologyObject o = kb.getManager().search(name);
 
 			if (o != null) {

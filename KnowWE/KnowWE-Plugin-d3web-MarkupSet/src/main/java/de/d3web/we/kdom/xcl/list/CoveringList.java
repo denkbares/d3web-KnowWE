@@ -266,7 +266,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 								// Insert the Relation into the currentModel
 								XCLRelation relation = XCLModel.insertAndReturnXCLRelation(
-												getKBM(article).getKnowledgeBase(),
+												getKB(article),
 												condition,
 												solution, type, w, null);
 
@@ -301,7 +301,8 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 						soltuionDef);
 
 				if (solution == null) return;
-				XCLModel xclModel = solution.getKnowledgeStore().getKnowledge(XCLModel.KNOWLEDGE_KIND);
+				XCLModel xclModel = solution.getKnowledgeStore().getKnowledge(
+						XCLModel.KNOWLEDGE_KIND);
 
 				if (xclModel == null) return;
 				XCLRelation rel = (XCLRelation) KnowWEUtils.getObjectFromLastVersion(article, s,
