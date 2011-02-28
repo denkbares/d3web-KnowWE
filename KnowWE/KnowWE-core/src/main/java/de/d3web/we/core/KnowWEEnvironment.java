@@ -31,14 +31,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.catalina.Session;
 
 import de.d3web.plugin.JPFPluginManager;
 import de.d3web.plugin.Plugin;
@@ -137,12 +134,6 @@ public class KnowWEEnvironment {
 	 * web ('default_web')
 	 */
 	private final Map<String, TerminologyHandler> terminologyHandlers = new HashMap<String, TerminologyHandler>();
-
-	/**
-	 * A store for information depending a certain session, e.g. for
-	 * visualization.
-	 */
-	private final Map<Session, Map<String, Object>> sessionInfoStore = new WeakHashMap<Session, Map<String, Object>>();
 
 	/**
 	 * A store manager for each web. In case of JSPWiki there is only on web
@@ -364,24 +355,6 @@ public class KnowWEEnvironment {
 			knowWEStores.put(web, mgr);
 		}
 		return mgr;
-	}
-
-	/**
-	 * Returns the SessionInfostore for a session. This simply is a Map for
-	 * key/value-pairs.
-	 * 
-	 * @created 25.02.2011
-	 * @param session
-	 * @return
-	 */
-	public Map<String, Object> getSessionInfoStore(Session session) {
-		Map<String, Object> store = this.sessionInfoStore.get(session);
-		if (store == null) {
-			store = new HashMap<String, Object>();
-			this.sessionInfoStore.put(session, store);
-		}
-		return store;
-
 	}
 
 	/**

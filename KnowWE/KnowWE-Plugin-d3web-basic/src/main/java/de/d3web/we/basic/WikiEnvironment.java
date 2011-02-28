@@ -23,6 +23,7 @@ package de.d3web.we.basic;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
@@ -33,8 +34,13 @@ public class WikiEnvironment {
 	private Map<String, KnowledgeBase> services;
 	private Map<String, SessionBroker> brokers;
 
+	/**
+	 * A store for information about a certain session, e.g. for
+	 * visualization.
+	 */
+	private final Map<Session, Map<String, Object>> sessionInfoStore = new WeakHashMap<Session, Map<String, Object>>();
+
 	public WikiEnvironment() {
-		super();
 		services = new HashMap<String, KnowledgeBase>();
 		brokers = new HashMap<String, SessionBroker>();
 	}
@@ -69,6 +75,24 @@ public class WikiEnvironment {
 			result.addServiceSession(each.getId(), serviceSession);
 		}
 		return result;
+	}
+
+	/**
+	 * Returns the SessionInfostore for a session. This simply is a Map for
+	 * key/value-pairs.
+	 * 
+	 * @created 25.02.2011
+	 * @param session
+	 * @return
+	 */
+	public Map<String, Object> getSessionInfoStore(Session session) {
+		Map<String, Object> store = this.sessionInfoStore.get(session);
+		if (store == null) {
+			store = new HashMap<String, Object>();
+			this.sessionInfoStore.put(session, store);
+		}
+		return store;
+
 	}
 
 	public KnowledgeBase getService(String id) {
