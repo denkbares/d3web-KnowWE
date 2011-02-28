@@ -387,6 +387,10 @@ public class KnowWEPackageManager implements EventListener {
 		return false;
 	}
 
+	public Set<String> getAllPackageNames() {
+		return Collections.unmodifiableSet(packagesMap.keySet());
+	}
+
 	/**
 	 * Returns all articles that refer to the package with the given name.
 	 * 
