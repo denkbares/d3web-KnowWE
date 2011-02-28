@@ -675,8 +675,8 @@ public class TerminologyHandler implements EventListener {
 			this.termIdentifierLowerCase = this.termIdentifier.toLowerCase();
 		}
 
-		public TermIdentifier(String termName) {
-			this.termIdentifier = termName;
+		public TermIdentifier(String termIdentifier) {
+			this.termIdentifier = termIdentifier;
 			this.termIdentifierLowerCase = this.termIdentifier.toLowerCase();
 		}
 

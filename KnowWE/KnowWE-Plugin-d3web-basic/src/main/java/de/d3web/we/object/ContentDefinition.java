@@ -18,23 +18,16 @@
  */
 package de.d3web.we.object;
 
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.KnowWETerm;
-import de.d3web.we.kdom.objects.StringDefinition;
-import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+
 
 /**
  * 
  * @author Markus Friedrich (denkbares GmbH)
  * @created 12.11.2010
  */
-public class ContentDefinition extends StringDefinition {
+public class ContentDefinition extends DefaultAbstractKnowWEObjectType {
 
-
-	@Override
-	public String getTermName(Section<? extends KnowWETerm<String>> s) {
-		return KnowWEUtils.trimQuotes(s.getOriginalText());
-	}
 
 
 }

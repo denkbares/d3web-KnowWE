@@ -59,7 +59,7 @@ public class PropertyReviseSubtreeHandler extends D3webSubtreeHandler<PropertyTy
 		Section<ContentDefinition> contentSection = s.findSuccessor(ContentDefinition.class);
 		if (contentSection == null) return MessageUtils.syntaxErrorAsList("Property value is missing for property "
 				+ property);
-		String content = contentSection.get().getTermObject(article, contentSection);
+		String content = contentSection.getOriginalText();
 		if (content == null || content.trim().isEmpty()) {
 			return MessageUtils.syntaxErrorAsList("Property value is missing for property "
 					+ property);
@@ -103,7 +103,7 @@ public class PropertyReviseSubtreeHandler extends D3webSubtreeHandler<PropertyTy
 		Section<LocaleDefinition> localeSection = s.findSuccessor(LocaleDefinition.class);
 		Section<ContentDefinition> contentSection = s.findSuccessor(ContentDefinition.class);
 		if (contentSection == null) return;
-		String content = contentSection.get().getTermObject(article, contentSection);
+		String content = contentSection.getOriginalText();
 		if (content == null || content.trim().isEmpty()) {
 			return;
 		}
