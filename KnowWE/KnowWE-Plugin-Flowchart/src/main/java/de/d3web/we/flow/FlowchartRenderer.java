@@ -80,6 +80,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 	}
 
 	private boolean hasFired(Session session, IEdge edge) {
+		if (!edge.getStartNode().canFireEdges(session)) return false;
 		try {
 			return edge.getCondition() != null && edge.getCondition().eval(session);
 		}
