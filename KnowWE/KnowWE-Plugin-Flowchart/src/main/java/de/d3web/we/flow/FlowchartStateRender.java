@@ -27,6 +27,7 @@ import java.util.Map;
 import de.d3web.core.knowledge.InterviewObject;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.ValueObject;
+import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.session.CaseObjectSource;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.interviewmanager.Form;
@@ -77,7 +78,9 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 
 		for (Flow flow : flowSet) {
 
-			String origin = flow.getOrigin();
+			String origin = flow.getInfoStore().getValue(
+					Property.getProperty(FlowchartSubTreeHandler.ORIGIN, String.class));
+
 			if (origin == null) continue;
 
 			Section<FlowchartType> node = (Section<FlowchartType>) KnowWEEnvironment.getInstance().getArticleManager(

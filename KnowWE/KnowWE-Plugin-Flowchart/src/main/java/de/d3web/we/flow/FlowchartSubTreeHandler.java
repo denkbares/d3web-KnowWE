@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.d3web.core.inference.condition.Condition;
+import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowFactory;
@@ -68,6 +69,8 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
  */
 public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> {
 
+	public static final String ORIGIN = "diafluxorigin";
+
 	private final List<Class<? extends KnowWEObjectType>> filteredTypes =
 			new ArrayList<Class<? extends KnowWEObjectType>>(0);
 
@@ -105,7 +108,8 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		Flow flow = FlowFactory.getInstance().createFlow(id, name, nodes, edges);
 		flow.setAutostart(autostart);
-		flow.setOrigin(s.getID());
+		
+		flow.getInfoStore().addValue(Property.getProperty(ORIGIN, String.class), s.getID());
 
 		DiaFluxUtils.addFlow(flow, kbm.getKnowledgeBase());
 
