@@ -39,13 +39,21 @@ import de.d3web.we.utils.KnowWEUtils;
  */
 public class DashTreeElement extends DefaultAbstractKnowWEObjectType {
 
+	private KnowWEObjectType elementContent;
+	
 	@Override
 	protected void init() {
 		this.sectionFinder = new RootFinder();
 		this.childrenTypes.add(new DashesPrefix());
 		this.childrenTypes.add(new LineEndComment());
-		this.childrenTypes.add(new DashTreeElementContent());
+		elementContent = new DashTreeElementContent();
+		this.childrenTypes.add(elementContent);
 
+	}
+
+	public void setDashTreeElementContent(KnowWEObjectType newType) {
+		this.childrenTypes.set(this.childrenTypes.indexOf(elementContent), newType);
+		elementContent = newType;
 	}
 
 	/**
