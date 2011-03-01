@@ -30,6 +30,7 @@ import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class NamespacesContentRenderer extends KnowWEDomRenderer {
@@ -75,7 +76,7 @@ public class NamespacesContentRenderer extends KnowWEDomRenderer {
 		}
 		buffy.append("</table>");
 		buffy.append("</div>");
-		string.append(KnowWEEnvironment.maskHTML(buffy.toString()));
+		string.append(KnowWEUtils.maskHTML(buffy.toString()));
 	}
 
 }

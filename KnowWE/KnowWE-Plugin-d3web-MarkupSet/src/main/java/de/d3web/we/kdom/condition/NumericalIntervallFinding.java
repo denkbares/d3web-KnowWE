@@ -25,12 +25,13 @@ import de.d3web.core.inference.condition.CondNumIn;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.utils.SplitUtility;
@@ -48,9 +49,9 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 
 	@Override
 	protected Condition createCondition(KnowWEArticle article, Section<NumericalFinding> s) {
-		Section<QuestionReference> qRef = s.findSuccessor(QuestionReference.class);
+		Section<QuestionReference> qRef = Sections.findSuccessor(s, QuestionReference.class);
 
-		Section<Intervall> intervall = s.findSuccessor(Intervall.class);
+		Section<Intervall> intervall = Sections.findSuccessor(s, Intervall.class);
 
 		Double number1 = intervall.get().getFirstNumber(intervall);
 		Double number2 = intervall.get().getSecondNumber(intervall);
@@ -67,10 +68,10 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 		return null;
 	}
 
-	class NumericalIntervallFinder extends SectionFinder {
+	class NumericalIntervallFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			// has to end with ']'
 			if (text.trim().endsWith("]")) {
@@ -95,7 +96,7 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 
 	}
 
-	class Intervall extends DefaultAbstractKnowWEObjectType {
+	class Intervall extends AbstractType {
 
 		public Double getFirstNumber(Section<Intervall> s) {
 			String text = s.getOriginalText();
@@ -134,10 +135,10 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 		}
 
 		public Intervall() {
-			this.setSectionFinder(new SectionFinder() {
+			this.setSectionFinder(new ISectionFinder() {
 
 				@Override
-				public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+				public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 					if (text.trim().endsWith("]")) {
 						int bracketsStart = SplitUtility.lastIndexOfUnquoted(text, "[");
 						int bracketsEnd = SplitUtility.lastIndexOfUnquoted(text, "]");

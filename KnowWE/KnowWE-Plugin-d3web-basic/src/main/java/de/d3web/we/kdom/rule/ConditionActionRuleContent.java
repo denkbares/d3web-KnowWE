@@ -20,9 +20,8 @@ package de.d3web.we.kdom.rule;
 
 import java.util.List;
 
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.basic.EndLineComment;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.objects.IncrementalMarker;
@@ -38,17 +37,17 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
  * @author Max Diez (mostly copied from old ConditionActionRule)
  * @created 12.08.2010
  */
-public class ConditionActionRuleContent extends DefaultAbstractKnowWEObjectType implements IncrementalMarker {
+public class ConditionActionRuleContent extends AbstractType implements IncrementalMarker {
 
 	ConditionArea condArea = new ConditionArea();
 
-	public ConditionActionRuleContent(AbstractKnowWEObjectType action) {
+	public ConditionActionRuleContent(AbstractType action) {
 		this.sectionFinder = new AllTextFinderTrimmed();
 		this.addChildType(new If());
 		Then then = new Then();
 		this.addChildType(then);
 
-		condArea.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(then));
+		condArea.setSectionFinder(new AllBeforeTypeSectionFinder(then));
 		this.addChildType(condArea);
 
 		EndLineComment endLineComment = new EndLineComment();
@@ -64,7 +63,7 @@ public class ConditionActionRuleContent extends DefaultAbstractKnowWEObjectType 
 	 * 
 	 * @param termConds
 	 */
-	public void setTerminalConditions(List<KnowWEObjectType> termConds) {
+	public void setTerminalConditions(List<Type> termConds) {
 		condArea.compCond.setAllowedTerminalConditions(termConds);
 	}
 
@@ -76,7 +75,7 @@ public class ConditionActionRuleContent extends DefaultAbstractKnowWEObjectType 
 	 * @author Jochen
 	 * 
 	 */
-	class ConditionArea extends DefaultAbstractKnowWEObjectType {
+	class ConditionArea extends AbstractType {
 
 		CompositeCondition compCond = null;
 

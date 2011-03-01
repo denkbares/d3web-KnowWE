@@ -23,17 +23,17 @@ package de.knowwe.core.packaging;
 import java.util.Collection;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.defaultMarkup.ContentType;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.subtreeHandler.IncrementalConstraint;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -44,16 +44,11 @@ public class ArticleToPackageFlag extends DefaultMarkupType implements Increment
 
 	static {
 		m = new DefaultMarkup("AddToPackage");
-		m.addContentType(new DefaultAbstractKnowWEObjectType() {
+		m.addContentType(new AbstractType(new AllTextSectionFinder()) {
 			
 			@Override
-			public KnowWEDomRenderer<DefaultAbstractKnowWEObjectType> getRenderer() {
+			public KnowWEDomRenderer<AbstractType> getRenderer() {
 				return new ArticleToPackageFlagRenderer();
-			}
-
-			@Override
-			public ISectionFinder getSectioner() {
-				return new AllTextSectionFinder();
 			}
 		});
 	}
@@ -73,7 +68,7 @@ public class ArticleToPackageFlag extends DefaultMarkupType implements Increment
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ArticleToPackageFlag> s) {
-			String value = s.findChildOfType(ContentType.class).getOriginalText();
+			String value = Sections.findChildOfType(s, ContentType.class).getOriginalText();
 			if (!value.trim().isEmpty()) {
 				KnowWEEnvironment.getInstance().getPackageManager(
 						article.getWeb()).addSectionToPackage(
@@ -90,10 +85,10 @@ public class ArticleToPackageFlag extends DefaultMarkupType implements Increment
 
 	}
 	
-	static class ArticleToPackageFlagRenderer extends KnowWEDomRenderer<DefaultAbstractKnowWEObjectType> {
+	static class ArticleToPackageFlagRenderer extends KnowWEDomRenderer<AbstractType> {
 
 		@Override
-		public void render(KnowWEArticle article, Section<DefaultAbstractKnowWEObjectType> sec, KnowWEUserContext user, StringBuilder string) {
+		public void render(KnowWEArticle article, Section<AbstractType> sec, KnowWEUserContext user, StringBuilder string) {
 			string.append("Added article to package '" + sec.getOriginalText() + "'.");
 
 		}

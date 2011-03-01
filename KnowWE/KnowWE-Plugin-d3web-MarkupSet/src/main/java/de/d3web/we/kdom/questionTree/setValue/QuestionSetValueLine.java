@@ -32,10 +32,11 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
 import de.d3web.we.kdom.questionTree.RootQuestionChangeConstraint;
@@ -54,7 +55,7 @@ import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
 import de.knowwe.core.dashtree.DashTreeUtils;
 
-public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
+public class QuestionSetValueLine extends AbstractType {
 
 	private static final String SETVALUE_ARGUMENT = "SetValueArgument";
 	private static final String OPEN = "(";
@@ -81,10 +82,10 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	private KnowWEObjectType createObjectRefTypeBefore(
-			KnowWEObjectType typeAfter) {
+	private AbstractType createObjectRefTypeBefore(
+			AbstractType typeAfter) {
 		QuestionReference qid = new QuestionReference();
-		qid.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(typeAfter));
+		qid.setSectionFinder(new AllBeforeTypeSectionFinder(typeAfter));
 		qid.addSubtreeHandler(new CreateSetValueRuleHandler());
 		return qid;
 	}
@@ -107,8 +108,8 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 			Question q = s.get().getTermObject(article, s);
 
-			Section<AnswerReference> answerSec = s.getFather().findSuccessor(
-					AnswerReference.class);
+			Section<AnswerReference> answerSec = Sections.findSuccessor(
+					s.getFather(), AnswerReference.class);
 
 			String answerName = answerSec.get().getTermName(answerSec);
 
@@ -176,7 +177,7 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 				@Override
 				public List<SectionFinderResult> lookForSections(String text,
-						Section father, KnowWEObjectType type) {
+						Section<?> father, Type type) {
 
 					return SectionFinderResult
 							.createSingleItemList(new SectionFinderResult(
@@ -188,7 +189,7 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s) {
-			return s.getFather().findSuccessor(QuestionReference.class);
+			return Sections.findSuccessor(s.getFather(), QuestionReference.class);
 		}
 
 		@Override

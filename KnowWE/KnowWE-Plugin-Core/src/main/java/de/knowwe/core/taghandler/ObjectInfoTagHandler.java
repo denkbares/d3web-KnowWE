@@ -31,6 +31,7 @@ import java.util.Set;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
@@ -100,7 +101,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		sectionCounter = 0;
 		rb = KnowWEEnvironment.getInstance().getKwikiBundle();
 		String content = renderContent(article, section, userContext, parameters);
-		Section<TagHandlerTypeContent> tagNameSection = section.findSuccessor(TagHandlerTypeContent.class);
+		Section<TagHandlerTypeContent> tagNameSection = Sections.findSuccessor(section,
+				TagHandlerTypeContent.class);
 		String sectionID = section.getID();
 		Tool[] tools = ToolUtils.getTools(article, tagNameSection, userContext);
 
@@ -223,7 +225,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			html.append(definitions.size() > 1 ? "<ul>" : "");
 			for (Section<? extends TermDefinition<?>> definition : definitions) {
 				html.append(definitions.size() > 1 ? "<li>" : "");
-				html.append(definition.getObjectType().getName());
+				html.append(definition.get().getName());
 				html.append(" in ");
 				html.append("<a href=\"Wiki.jsp?page=");
 				html.append(definition.getArticle().getTitle());
@@ -261,7 +263,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				innerHTML.append("<ul>");
 				for (Section<? extends TermReference<?>> reference : groupedReferences.get(article)) {
 					innerHTML.append("<li>");
-					innerHTML.append(reference.getObjectType().getName());
+					innerHTML.append(reference.get().getName());
 					innerHTML.append(" in ");
 					innerHTML.append(renderLinkToSection(reference));
 					innerHTML.append("</li>");
@@ -287,10 +289,11 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			html.append("\" >" + reference.getArticle().getTitle() + " (");
 
 			// Get a nice name
-			Section<DefaultMarkupType> root = reference.findAncestorOfType(DefaultMarkupType.class);
+			Section<DefaultMarkupType> root = Sections.findAncestorOfType(reference,
+					DefaultMarkupType.class);
 			html.append(root != null
-					? root.getObjectType().getName()
-					: reference.getFather().getObjectType().getName());
+					? root.get().getName()
+					: reference.getFather().get().getName());
 
 			html.append(")</a>");
 		}
@@ -340,7 +343,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			for (Result r : results.get(article)) {
 				Section<?> s = r.getSection();
 				if (s.getFather() != null
-						&& s.getFather().getObjectType().equals(article.getRootType())) {
+						&& s.getFather().get().equals(article.getRootType())) {
 					appropriateSections = true;
 					innerHTML.append("<li>");
 					innerHTML.append("<pre style=\"margin:1em -1em;\">");

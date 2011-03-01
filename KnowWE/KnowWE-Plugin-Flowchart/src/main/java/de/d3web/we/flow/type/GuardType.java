@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.CondKnown;
 import de.d3web.we.kdom.condition.CondKnownUnknown;
@@ -32,13 +32,13 @@ import de.d3web.we.kdom.condition.Finding;
 import de.d3web.we.kdom.condition.NumericalFinding;
 import de.d3web.we.kdom.condition.NumericalIntervallFinding;
 import de.d3web.we.kdom.condition.UserRatingConditionType;
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.AbstractXMLType;
 
 /**
  * 
  * @author Reinhard Hatko Created on: 08.10.2009
  */
-public class GuardType extends AbstractXMLObjectType {
+public class GuardType extends AbstractXMLType {
 
 	private static GuardType instance;
 
@@ -46,12 +46,12 @@ public class GuardType extends AbstractXMLObjectType {
 		super("guard");
 		CompositeCondition condition = new CompositeCondition();
 
-		List<KnowWEObjectType> types = new ArrayList<KnowWEObjectType>();
+		List<Type> types = new ArrayList<Type>();
 
 		try {
 			// TODO remove this evil workaround
 			// when updating KnowWE architecture
-			types.add((KnowWEObjectType) Class.forName(
+			types.add((Type) Class.forName(
 					"cc.knowwe.tdb.EvalConditionType").newInstance());
 		}
 		catch (Throwable e) {

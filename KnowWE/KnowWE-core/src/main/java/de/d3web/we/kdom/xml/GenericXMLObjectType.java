@@ -22,9 +22,9 @@ package de.d3web.we.kdom.xml;
 
 import java.util.List;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 
-public class GenericXMLObjectType extends AbstractXMLObjectType {
+public class GenericXMLObjectType extends AbstractXMLType {
 
 	/**
 	 * <p>
@@ -36,7 +36,7 @@ public class GenericXMLObjectType extends AbstractXMLObjectType {
 	}
 
 	@Override
-	public List<KnowWEObjectType> getAllowedChildrenTypes() {
+	public List<Type> getAllowedChildrenTypes() {
 		childrenTypes.add(new GenericXMLContent());
 		return childrenTypes;
 	}

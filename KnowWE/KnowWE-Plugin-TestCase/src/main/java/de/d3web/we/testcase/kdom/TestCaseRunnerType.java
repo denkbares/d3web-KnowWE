@@ -54,12 +54,12 @@ public class TestCaseRunnerType extends DefaultMarkupType {
 	}
 
 	public static String getText(Section<?> sec) {
-		assert sec.getObjectType() instanceof TestCaseRunnerType;
+		assert sec.get() instanceof TestCaseRunnerType;
 		return DefaultMarkupType.getContent(sec);
 	}
 
 	public static String getTestCase(Section<?> section) {
-		assert section.getObjectType() instanceof TestCaseRunnerType;
+		assert section.get() instanceof TestCaseRunnerType;
 		return DefaultMarkupType.getAnnotation(section, ANNOTATION_TESTCASE);
 	}
 

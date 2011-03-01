@@ -27,6 +27,7 @@ import de.d3web.we.core.packaging.PackageCompileType;
 import de.d3web.we.core.packaging.PackageReference;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
@@ -60,7 +61,7 @@ public class CompileFlag extends DefaultMarkupType {
 				StringBuilder string) {
 
 			List<Section<SinglePackageReference>> packageReferences = new LinkedList<Section<SinglePackageReference>>();
-			sec.findSuccessorsOfType(SinglePackageReference.class, packageReferences);
+			Sections.findSuccessorsOfType(sec, SinglePackageReference.class, packageReferences);
 			if (packageReferences.isEmpty()) {
 				DelegateRenderer.getInstance().render(article, sec, user, string);
 				return;

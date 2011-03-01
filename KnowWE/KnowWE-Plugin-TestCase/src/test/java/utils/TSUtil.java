@@ -29,6 +29,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.Rating;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseUtils;
@@ -42,6 +43,7 @@ import de.d3web.empiricaltesting.StateRating;
 import de.d3web.empiricaltesting.TestCase;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.testcase.kdom.TestCaseContent;
 import de.d3web.we.testcase.kdom.TestCaseType;
 import de.d3web.we.utils.KnowWEUtils;
@@ -67,7 +69,8 @@ public class TSUtil {
 	}
 
 	public TestCase findTestSuite(KnowWEArticle article) {
-		Section<TestCaseContent> s = article.getSection().findSuccessor(TestCaseContent.class);
+		Section<TestCaseContent> s = Sections.findSuccessor(article.getSection(),
+				TestCaseContent.class);
 		return (TestCase) KnowWEUtils.getStoredObject("default_web",
 				article.getTitle(),
 				s.getID(), TestCaseType.TESTCASEKEY);

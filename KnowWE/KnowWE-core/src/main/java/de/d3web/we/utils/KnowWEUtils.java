@@ -46,6 +46,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.SectionID;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.terminology.TerminologyHandler;
 
 public class KnowWEUtils {
@@ -258,7 +259,7 @@ public class KnowWEUtils {
 			Section<?> sec, Class<MSGType> msgType) {
 		Collection<MSGType> msgsList = new ArrayList<MSGType>();
 		List<Section<?>> nodes = new ArrayList<Section<?>>();
-		sec.getAllNodesPreOrder(nodes);
+		Sections.getAllNodesPreOrder(sec, nodes);
 		for (Section<?> n : nodes) {
 			msgsList.addAll(getMessages(article, n, msgType));
 		}

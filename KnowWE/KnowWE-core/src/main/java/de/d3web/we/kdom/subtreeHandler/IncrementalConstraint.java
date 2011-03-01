@@ -21,11 +21,11 @@
 package de.d3web.we.kdom.subtreeHandler;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 
 
-public interface IncrementalConstraint<T extends KnowWEObjectType> {
+public interface IncrementalConstraint<T extends Type> {
 
 	/**
 	 * In this method you can check different constraints.

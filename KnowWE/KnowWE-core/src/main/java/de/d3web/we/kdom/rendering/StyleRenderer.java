@@ -21,7 +21,7 @@
 package de.d3web.we.kdom.rendering;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.tools.ToolMenuDecoratingRenderer;
 import de.d3web.we.utils.KnowWEUtils;
@@ -36,13 +36,13 @@ public class StyleRenderer extends KnowWEDomRenderer {
 	public static final StyleRenderer PROMPT = new StyleRenderer("color:rgb(0, 128, 0)");
 	public static final StyleRenderer NUMBER = new StyleRenderer("color:rgb(125, 80, 102)");
 	public static final StyleRenderer COMMENT = new StyleRenderer("color:rgb(160, 160, 160)");
-	public static final KnowWEDomRenderer<KnowWEObjectType> CHOICE = new ToolMenuDecoratingRenderer<KnowWEObjectType>(
+	public static final KnowWEDomRenderer<Type> CHOICE = new ToolMenuDecoratingRenderer<Type>(
 			new StyleRenderer("color:rgb(40, 40, 160)"));
-	public static final KnowWEDomRenderer<KnowWEObjectType> SOLUTION = new ToolMenuDecoratingRenderer<KnowWEObjectType>(
+	public static final KnowWEDomRenderer<Type> SOLUTION = new ToolMenuDecoratingRenderer<Type>(
 			new StyleRenderer("color:rgb(150, 110, 120)"));
-	public static final KnowWEDomRenderer<KnowWEObjectType> Question = new ToolMenuDecoratingRenderer<KnowWEObjectType>(
+	public static final KnowWEDomRenderer<Type> Question = new ToolMenuDecoratingRenderer<Type>(
 			new StyleRenderer("color:rgb(0, 128, 0)"));
-	public static final KnowWEDomRenderer<KnowWEObjectType> Questionaire = new ToolMenuDecoratingRenderer<KnowWEObjectType>(
+	public static final KnowWEDomRenderer<Type> Questionaire = new ToolMenuDecoratingRenderer<Type>(
 			new StyleRenderer("color:rgb(128, 128, 0)"));
 
 	public static final String CONDITION_FULLFILLED = "#33FF33";

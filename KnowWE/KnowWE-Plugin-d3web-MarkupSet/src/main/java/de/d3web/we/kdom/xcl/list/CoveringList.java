@@ -29,11 +29,12 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.Finding;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
@@ -80,7 +81,7 @@ import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
  *         is taken as CoveringRelations
  * 
  */
-public class CoveringList extends DefaultAbstractKnowWEObjectType {
+public class CoveringList extends AbstractType {
 
 	public CoveringList() {
 		this.sectionFinder = new AllTextSectionFinder();
@@ -102,7 +103,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 		// the rest is CoveringRelations
 		this.addChildType(new CoveringRelation());
 
-		this.setCustomRenderer(new ReRenderSectionMarkerRenderer<KnowWEObjectType>(
+		this.setCustomRenderer(new ReRenderSectionMarkerRenderer<Type>(
 				new CoveringListRenderer()));
 
 		// anything left is comment
@@ -117,17 +118,17 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 	 * @author volker_belli
 	 * @created 08.12.2010
 	 */
-	private static final class CoveringListRenderer extends KnowWEDomRenderer<KnowWEObjectType> {
+	private static final class CoveringListRenderer extends KnowWEDomRenderer<Type> {
 
 		@Override
-		public void render(KnowWEArticle article, Section<KnowWEObjectType> sec, KnowWEUserContext user, StringBuilder string) {
+		public void render(KnowWEArticle article, Section<Type> sec, KnowWEUserContext user, StringBuilder string) {
 			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID() + "'>"));
 			DelegateRenderer.getInstance().render(article, sec, user, string);
 			string.append(KnowWEUtils.maskHTML("</span>"));
 		}
 	}
 
-	class CoveringRelation extends DefaultAbstractKnowWEObjectType implements IncrementalMarker {
+	class CoveringRelation extends AbstractType implements IncrementalMarker {
 
 		public CoveringRelation() {
 
@@ -163,7 +164,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 			CompositeCondition cond = new CompositeCondition();
 
 			// these are the allowed/recognized terminal-conditions
-			List<KnowWEObjectType> termConds = new ArrayList<KnowWEObjectType>();
+			List<Type> termConds = new ArrayList<Type>();
 			termConds.add(new Finding());
 			termConds.add(new NumericalFinding());
 			termConds.add(new NumericalIntervallFinding());
@@ -189,7 +190,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 			}
 
 			private Section<SolutionDefinition> getCorrespondingSolutionDef(KnowWEArticle article, Section<CoveringRelation> s) {
-				return s.getFather().getFather().findSuccessor(SolutionDefinition.class);
+				return Sections.findSuccessor(s.getFather().getFather(), SolutionDefinition.class);
 			}
 
 			/*
@@ -204,7 +205,8 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 				List<KDOMReportMessage> result = new ArrayList<KDOMReportMessage>();
 
-				Section<CompositeCondition> cond = s.findSuccessor(CompositeCondition.class);
+				Section<CompositeCondition> cond = Sections.findSuccessor(s,
+						CompositeCondition.class);
 				if (cond == null) {
 					// no valid relation, do not revise
 					return result;
@@ -240,8 +242,8 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 								// check the weight/relation type in square
 								// brackets
-								Section<XCLWeight> weight = s.findSuccessor(
-										XCLWeight.class);
+								Section<XCLWeight> weight = Sections.findSuccessor(
+										s, XCLWeight.class);
 								XCLRelationType type = XCLRelationType.explains;
 								Double w = 1.0;
 								if (weight != null) {
@@ -335,7 +337,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	class XCLWeight extends DefaultAbstractKnowWEObjectType {
+	class XCLWeight extends AbstractType {
 
 		public static final char BOUNDS_OPEN = '[';
 		public static final char BOUNDS_CLOSE = ']';
@@ -463,7 +465,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 				Section<?> sec, boolean fulfilled, KnowWEUserContext user,
 				String color) {
 			StringBuilder buffi = new StringBuilder();
-			KnowWEObjectType type = sec.getObjectType();
+			Type type = sec.get();
 
 			if (type instanceof XCLRelationWeight) { // renders contradiction in
 				// red if fulfilled

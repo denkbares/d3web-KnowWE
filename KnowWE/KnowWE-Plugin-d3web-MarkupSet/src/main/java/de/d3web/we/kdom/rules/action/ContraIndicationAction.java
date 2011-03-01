@@ -28,8 +28,9 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.indication.ActionContraIndication;
 import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -51,13 +52,13 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 	}
 
 	@Override
-	protected KnowWEObjectType getObjectReference() {
+	protected Type getObjectReference() {
 		return new QuestionReferenceInBrackets();
 	}
 
 	@Override
 	public PSAction createAction(KnowWEArticle article, Section<ContraIndicationAction> s) {
-		Section<QuestionReference> qSec = s.findSuccessor(QuestionReference.class);
+		Section<QuestionReference> qSec = Sections.findSuccessor(s, QuestionReference.class);
 		Question termObject = qSec.get().getTermObject(article, qSec);
 
 		ActionContraIndication actionContraIndication = new ActionContraIndication();
@@ -74,7 +75,7 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 
 				@Override
 				public List<SectionFinderResult> lookForSections(String text,
-						Section father, KnowWEObjectType type) {
+						Section father, Type type) {
 
 					return SectionFinderResult
 							.createSingleItemList(new SectionFinderResult(

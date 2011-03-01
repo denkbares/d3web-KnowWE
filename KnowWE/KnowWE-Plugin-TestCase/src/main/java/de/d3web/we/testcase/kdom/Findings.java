@@ -23,14 +23,14 @@ package de.d3web.we.testcase.kdom;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.SplitUtility;
 
-public class Findings extends DefaultAbstractKnowWEObjectType {
+public class Findings extends AbstractType {
 
 	public Findings() {
 		childrenTypes.add(new Finding());
@@ -40,7 +40,7 @@ public class Findings extends DefaultAbstractKnowWEObjectType {
 	public class FindingsSectionFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			List<String> findings = SplitUtility.splitUnquoted(text, ":");

@@ -21,11 +21,11 @@
 package de.d3web.we.kdom.rendering;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public abstract class KnowWEDomRenderer<T extends KnowWEObjectType> {
+public abstract class KnowWEDomRenderer<T extends Type> {
 
 	/**
 	 * All rendered Sections will be appended to string.

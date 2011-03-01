@@ -20,16 +20,16 @@
 
 package de.d3web.we.kdom.report;
 
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 
 /**
  * Abstract class for a message denoting a warning (some non-critical problem)
  * 
  * 
  * Will be rendered by the WarningRenderer specified by getWarningRenderer() of
- * the KnowWEObjectType
+ * the Type
  * 
- * @see @link {@link AbstractKnowWEObjectType}
+ * @see @link {@link AbstractType}
  * 
  * 
  * @author Jochen

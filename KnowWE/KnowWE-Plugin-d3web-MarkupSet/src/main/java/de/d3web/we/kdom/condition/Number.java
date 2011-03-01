@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -35,7 +35,7 @@ import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
-public class Number extends DefaultAbstractKnowWEObjectType {
+public class Number extends AbstractType {
 
 	public Number() {
 		this.setSectionFinder(new NumberFinder());
@@ -61,7 +61,7 @@ public class Number extends DefaultAbstractKnowWEObjectType {
 	class NumberFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 			String trim = text.trim();
 			try {
 				Double.parseDouble(trim);

@@ -25,19 +25,22 @@ import java.util.Map;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.taghandler.TagHandler;
 import de.d3web.we.taghandler.TagHandlerAttributeSubTreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class TagRenderer extends KnowWEDomRenderer {
+public class TagRenderer extends KnowWEDomRenderer<TagHandlerType> {
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
-		Section attrContent = sec.findChildOfType(TagHandlerTypeContent.class);
+	public void render(KnowWEArticle article, Section<TagHandlerType> sec, KnowWEUserContext user, StringBuilder string) {
+		Section<TagHandlerTypeContent> attrContent = Sections.findChildOfType(sec,
+				TagHandlerTypeContent.class);
 		if (attrContent == null) {
 			string.append(KnowWEUtils
 					.maskHTML("<div><p class='info box'>"));
@@ -53,7 +56,7 @@ public class TagRenderer extends KnowWEDomRenderer {
 
 		StringBuilder buffi = new StringBuilder();
 
-		KnowWEObjectType type = attrContent.getObjectType();
+		Type type = attrContent.get();
 
 		if (type instanceof TagHandlerTypeContent) {
 			Map<String, String> attValues = null; // ((TagHandlerTypeContent)type).getValuesForSections().get(attrContent);

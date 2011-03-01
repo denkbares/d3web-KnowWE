@@ -22,7 +22,7 @@ package de.d3web.we.kdom.visitor;
 
 import java.util.List;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.utils.KnowWEUtils;
@@ -32,7 +32,7 @@ public class RenderKDOMVisitor implements Visitor {
 	private StringBuffer buffi;
 
 	@Override
-	public void visit(Section<? extends KnowWEObjectType> s) {
+	public void visit(Section<? extends Type> s) {
 		buffi = new StringBuffer();
 		renderSubtree(s, 0, buffi);
 	}
@@ -41,7 +41,7 @@ public class RenderKDOMVisitor implements Visitor {
 		return buffi.toString();
 	}
 
-	private void renderSubtree(Section<? extends KnowWEObjectType> s, int i, StringBuffer buffi) {
+	private void renderSubtree(Section<? extends Type> s, int i, StringBuffer buffi) {
 		buffi.append(getDashes(i));
 		buffi.append(" <span style=\"color:black\" title=\"");
 		buffi.append(" ID: " + s.getID() + "\n");
@@ -51,13 +51,13 @@ public class RenderKDOMVisitor implements Visitor {
 											// cut by JspWiki (String.length >
 											// 10000)
 		i++;
-		List<Section<? extends KnowWEObjectType>> children = s.getChildren();
+		List<Section<? extends Type>> children = s.getChildren();
 		if (children.size() == 1
-				&& children.get(0).getObjectType() instanceof PlainText) {
+				&& children.get(0).get() instanceof PlainText) {
 
 		}
 		else {
-			for (Section<? extends KnowWEObjectType> section : children) {
+			for (Section<? extends Type> section : children) {
 				renderSubtree(section, i, buffi);
 			}
 		}

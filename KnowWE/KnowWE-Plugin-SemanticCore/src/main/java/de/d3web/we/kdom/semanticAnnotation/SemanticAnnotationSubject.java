@@ -23,12 +23,12 @@
  */
 package de.d3web.we.kdom.semanticAnnotation;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 
 /**
  * @author kazamatzuri
  * 
  */
-public class SemanticAnnotationSubject extends DefaultAbstractKnowWEObjectType {
+public class SemanticAnnotationSubject extends AbstractType {
 
 }

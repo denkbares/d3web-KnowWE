@@ -24,8 +24,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.TreeMap;
 
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.MessageRenderer;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 /**
@@ -33,7 +33,7 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
  * 
  *         This interface is the foundation of the KnowWE2 Knowledge-DOM
  *         type-system. To every node in this dom tree exactly one
- *         KnowWEObjectType is associated.
+ *         Type is associated.
  * 
  *         A type defines itself by its SectionFinder, which allocates text
  *         parts to this type.
@@ -46,14 +46,23 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
  * @see getRenderer
  * 
  */
-public interface KnowWEObjectType extends KnowWEType {
+public interface Type {
+
+	public boolean isType(Class<? extends Type> clazz);
+
+	public boolean isAssignableFromType(Class<? extends Type> clazz);
 
 	/**
-	 * On tree creation this SectionFinder is used to create node of this type
+	 * When KnowWE renders the article this renderer is used to render this
+	 * node. In most cases rendering should be delegated to children types.
 	 * 
 	 * @return
 	 */
-	public abstract ISectionFinder getSectioner();
+	public KnowWEDomRenderer getRenderer();
+
+
+
+	public abstract Parser getParser();
 
 	/**
 	 * @return name of this type
@@ -66,7 +75,7 @@ public interface KnowWEObjectType extends KnowWEType {
 	 * 
 	 * @return
 	 */
-	public abstract List<KnowWEObjectType> getAllowedChildrenTypes();
+	public abstract List<Type> getAllowedChildrenTypes();
 
 	/**
 	 * This method offers the possibility for a type to revise its subtree when
@@ -76,15 +85,15 @@ public interface KnowWEObjectType extends KnowWEType {
 	 * @param kbm
 	 */
 	// public void reviseSubtree(KnowWEArticle article, Section<? extends
-	// KnowWEObjectType> section, Priority p);
+	// Type> section, Priority p);
 
-	// public <T extends KnowWEObjectType> void reviseSubtree(KnowWEArticle
+	// public <T extends Type> void reviseSubtree(KnowWEArticle
 	// article, Section<T> section, SubtreeHandler<T> h);
 
 	public Collection<Section> getAllSectionsOfType();
 
 	public abstract void findTypeInstances(Class clazz,
-			List<KnowWEObjectType> instances);
+			List<Type> instances);
 
 	public void deactivateType();
 
@@ -114,8 +123,8 @@ public interface KnowWEObjectType extends KnowWEType {
 
 	public void setOrderSensitive(boolean orderSensitive);
 
-	public TreeMap<Priority, List<SubtreeHandler<? extends KnowWEObjectType>>> getSubtreeHandlers();
+	public TreeMap<Priority, List<SubtreeHandler<? extends Type>>> getSubtreeHandlers();
 
-	public List<SubtreeHandler<? extends KnowWEObjectType>> getSubtreeHandlers(Priority p);
+	public List<SubtreeHandler<? extends Type>> getSubtreeHandlers(Priority p);
 
 }

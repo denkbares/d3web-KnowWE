@@ -19,7 +19,7 @@
  */
 package de.d3web.we.kdom.condition;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 
 /**
  * 
@@ -30,6 +30,6 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
  * @author Jochen
  * @created 26.07.2010
  */
-public abstract class NonTerminalCondition extends DefaultAbstractKnowWEObjectType {
+public abstract class NonTerminalCondition extends AbstractType {
 
 }

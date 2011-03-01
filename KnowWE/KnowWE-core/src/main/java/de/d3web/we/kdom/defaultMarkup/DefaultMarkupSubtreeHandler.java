@@ -28,6 +28,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup.Annotation;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
@@ -79,7 +80,8 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 		}
 
 		// check unrecognized annotations
-		List<Section<UnknownAnnotationType>> unknownSections = markupSection.findChildrenOfType(UnknownAnnotationType.class);
+		List<Section<UnknownAnnotationType>> unknownSections = Sections.findChildrenOfType(
+				markupSection, UnknownAnnotationType.class);
 		for (Section<UnknownAnnotationType> annotationSection : unknownSections) {
 			String name = UnknownAnnotationType.getName(annotationSection);
 			KDOMReportMessage message = new SimpleMessageError("The annotation @" + name
@@ -88,10 +90,11 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 		}
 
 		// check annotated sections
-		List<Section<AnnotationType>> subSections = markupSection.findChildrenOfType(AnnotationType.class);
+		List<Section<AnnotationType>> subSections = Sections.findChildrenOfType(markupSection,
+				AnnotationType.class);
 		for (Section<AnnotationType> annotationSection : subSections) {
 			// check annotations pattern
-			Annotation annotation = annotationSection.getObjectType().getAnnotation();
+			Annotation annotation = annotationSection.get().getAnnotation();
 			String text = annotationSection.getOriginalText();
 			if (!annotation.matches(text)) {
 				String name = annotation.getName();

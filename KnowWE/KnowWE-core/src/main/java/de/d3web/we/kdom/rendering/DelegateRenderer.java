@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMNotice;
@@ -86,7 +86,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		}
 		catch (Throwable e) {
 			// wow, that was evil!
-			// System.out.println(section.getObjectType());
+			// System.out.println(section.get());
 			// e.printStackTrace();
 			// now we log instead AND report the error to the user
 			Logger.getLogger(getClass().getName()).warning(
@@ -217,7 +217,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 			StringBuilder builder) {
 		builder.append(KnowWEUtils.maskHTML("<sub>&lt;"));
 		if (!openIt) builder.append('/');
-		builder.append(section.getObjectType().getName());
+		builder.append(section.get().getName());
 		builder.append(KnowWEUtils.maskHTML("&gt;</sub>"));
 	}
 
@@ -225,7 +225,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 			KnowWEUserContext user) {
 		KnowWEDomRenderer renderer = null;
 
-		KnowWEObjectType objectType = section.getObjectType();
+		Type objectType = section.get();
 		if (renderer == null) {
 			renderer = RendererManager.getInstance().getRenderer(objectType,
 					user.getUserName(), section.getTitle());

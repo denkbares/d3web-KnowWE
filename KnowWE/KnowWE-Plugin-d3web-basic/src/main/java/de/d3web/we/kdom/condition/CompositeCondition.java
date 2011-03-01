@@ -25,9 +25,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.condition.helper.BracedCondition;
 import de.d3web.we.kdom.condition.helper.BracedConditionContent;
 import de.d3web.we.kdom.condition.helper.CompCondLineEndComment;
@@ -50,7 +51,7 @@ import de.d3web.we.utils.SplitUtility;
  * @author Jochen
  * 
  */
-public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
+public class CompositeCondition extends AbstractType {
 
 	private final TerminalCondition terminalCondition = new TerminalCondition();
 
@@ -111,7 +112,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 	 * 
 	 * @param types
 	 */
-	public void setAllowedTerminalConditions(List<KnowWEObjectType> types) {
+	public void setAllowedTerminalConditions(List<Type> types) {
 		terminalCondition.setAllowedTerminalConditions(types);
 	}
 
@@ -134,7 +135,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 	public List<Section<? extends NonTerminalCondition>> getDisjuncts(Section<CompositeCondition> c) {
 
 		List<Section<? extends NonTerminalCondition>> result = new ArrayList<Section<? extends NonTerminalCondition>>();
-		List<Section<Disjunct>> childrenOfType = c.findChildrenOfType(Disjunct.class);
+		List<Section<Disjunct>> childrenOfType = Sections.findChildrenOfType(c, Disjunct.class);
 
 		result.addAll(childrenOfType);
 		return result;
@@ -159,7 +160,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 	public List<Section<? extends NonTerminalCondition>> getConjuncts(Section<CompositeCondition> c) {
 
 		List<Section<? extends NonTerminalCondition>> result = new ArrayList<Section<? extends NonTerminalCondition>>();
-		List<Section<Conjunct>> childrenOfType = c.findChildrenOfType(Conjunct.class);
+		List<Section<Conjunct>> childrenOfType = Sections.findChildrenOfType(c, Conjunct.class);
 
 		result.addAll(childrenOfType);
 		return result;
@@ -183,7 +184,8 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 	 */
 	public Section<? extends NonTerminalCondition> getBraced(Section<CompositeCondition> c) {
 
-		Section<? extends BracedCondition> childrenOfType = c.findChildOfType(BracedCondition.class);
+		Section<? extends BracedCondition> childrenOfType = Sections.findChildOfType(c,
+				BracedCondition.class);
 		return childrenOfType;
 	}
 
@@ -204,7 +206,8 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 	 * @return
 	 */
 	public Section<? extends NonTerminalCondition> getNegation(Section<CompositeCondition> c) {
-		Section<? extends NonTerminalCondition> negEx = c.findChildOfType(NegatedExpression.class);
+		Section<? extends NonTerminalCondition> negEx = Sections.findChildOfType(c,
+				NegatedExpression.class);
 		return negEx;
 	}
 
@@ -225,7 +228,8 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 	 * @return
 	 */
 	public Section<? extends TerminalCondition> getTerminal(Section<CompositeCondition> c) {
-		Section<? extends TerminalCondition> terminal = c.findChildOfType(TerminalCondition.class);
+		Section<? extends TerminalCondition> terminal = Sections.findChildOfType(c,
+				TerminalCondition.class);
 		return terminal;
 	}
 
@@ -317,7 +321,7 @@ class NegatedExpression extends NonTerminalCondition {
 		this.sectionFinder = new ISectionFinder() {
 
 			@Override
-			public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
+			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 				String trimmed = text.trim();
 				for (String sign : NEG_SIGNS) {
 					if (trimmed.startsWith(sign)) {

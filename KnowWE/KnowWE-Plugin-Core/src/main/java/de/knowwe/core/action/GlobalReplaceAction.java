@@ -28,8 +28,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.ResourceBundle;
+import java.util.Map.Entry;
 
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
@@ -80,7 +80,7 @@ public class GlobalReplaceAction extends AbstractAction {
 						+ rb.getString("KnowWE.renamingtool.msg.noarticle") + article + "</div>";
 			}
 			modifiedArticles.add(art);
-			Section sec = art.getNode(nodeID);
+			Section sec = art.findSection(nodeID);
 
 			// organize replacementRequests per sections
 			if (findingsPerSection.containsKey(sec)) {

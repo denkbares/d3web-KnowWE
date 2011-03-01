@@ -27,10 +27,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -133,7 +133,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 			KnowWEArticle article = iter.next();
 
 			if (article.getTitle().equals(articleTitle)) {
-				Section section = article.getSection().findChild(sectionID);
+				Section<?> section = article.findSection(sectionID);
 				String context = WordBasedRenameFinding.getAdditionalContext(
 									pos, direction, curWords, query.length(),
 									section.getOriginalText());
@@ -259,7 +259,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 								'a', true));
 				mask.append("</td>");
 				mask.append("<td><i>"
-						+ WordBasedRenameFinding.getSec().getObjectType().getName()
+						+ WordBasedRenameFinding.getSec().get().getName()
 						+ "</i></td>");
 				mask.append("<td><input type='checkbox' id='" + checkBoxID
 						+ "'></td>");
@@ -336,7 +336,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 						new WordBasedRenameFinding(startInSec, startInSec + query.length(),
 								WordBasedRenameFinding.
 										getContext(startInSec, sec, text, query.length()), sec);
-				if (sections == null || sectionSet.contains(sec.getObjectType().getName())) {
+				if (sections == null || sectionSet.contains(sec.get().getName())) {
 					map.get(article).add(f);
 				}
 			}

@@ -27,9 +27,10 @@ import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
@@ -47,7 +48,7 @@ import de.knowwe.core.dashtree.DashTreeElement;
 import de.knowwe.core.dashtree.DashTreeElementContent;
 import de.knowwe.core.dashtree.DashTreeUtils;
 
-public class QClassLine extends DefaultAbstractKnowWEObjectType implements IncrementalMarker {
+public class QClassLine extends AbstractType implements IncrementalMarker {
 
 	public QClassLine() {
 
@@ -106,7 +107,8 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements Incre
 					s);
 
 			if (fatherContent != null) {
-				List<Section<QuestionLine>> questionLine = fatherContent.findChildrenOfType(QuestionLine.class);
+				List<Section<QuestionLine>> questionLine = Sections.findChildrenOfType(
+						fatherContent, QuestionLine.class);
 				if (questionLine != null && !questionLine.isEmpty()) {
 					// this situation can only occur with incremental update
 					// -> fullparse
@@ -122,14 +124,16 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements Incre
 				}
 			}
 
-			Section<QuestionnaireDefinition> localQuestionniareDef = s.findSuccessor(QuestionnaireDefinition.class);
+			Section<QuestionnaireDefinition> localQuestionniareDef = Sections.findSuccessor(s,
+					QuestionnaireDefinition.class);
 			QContainer localQuestionnaire = localQuestionniareDef.get().getTermObject(
 					article,
 					localQuestionniareDef);
 
 			if (fatherContent != null && localQuestionnaire != null) {
 
-				Section<QuestionnaireDefinition> questionniareDef = fatherContent.findSuccessor(QuestionnaireDefinition.class);
+				Section<QuestionnaireDefinition> questionniareDef = Sections.findSuccessor(
+						fatherContent, QuestionnaireDefinition.class);
 				if (questionniareDef != null) {
 					QContainer superQuasetionniare = questionniareDef.get().getTermObject(
 							article,
@@ -156,8 +160,8 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements Incre
 			@Override
 			protected boolean condition(String text, Section<?> father) {
 
-				Section<DashTreeElement> s = father
-						.findAncestorOfType(DashTreeElement.class);
+				Section<DashTreeElement> s = Sections.findAncestorOfType(father,
+						DashTreeElement.class);
 				if (DashTreeUtils.getDashLevel(s) == 0) {
 					// is root level
 					return true;
@@ -166,7 +170,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements Incre
 						.getFatherDashTreeElement(s);
 				if (dashTreeFather != null) {
 					// is child of a QClass declaration => also declaration
-					if (dashTreeFather.findSuccessor(QClassLine.class) != null) {
+					if (Sections.findSuccessor(dashTreeFather, QClassLine.class) != null) {
 						return true;
 					}
 				}
@@ -176,7 +180,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements Incre
 		};
 	}
 
-	static class InitNumber extends DefaultAbstractKnowWEObjectType implements IncrementalMarker {
+	static class InitNumber extends AbstractType implements IncrementalMarker {
 
 		public InitNumber() {
 
@@ -204,8 +208,8 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements Incre
 					}
 					Integer number = new Integer((originalnumber.intValue()));
 
-					Section<QuestionnaireDefinition> qDef = s.getFather().findSuccessor(
-							QuestionnaireDefinition.class);
+					Section<QuestionnaireDefinition> qDef = Sections.findSuccessor(
+								s.getFather(), QuestionnaireDefinition.class);
 
 					if (qDef != null) {
 
@@ -238,8 +242,8 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType implements Incre
 
 				@Override
 				public void destroy(KnowWEArticle article, Section<InitNumber> s) {
-					Section<QuestionnaireDefinition> qDef = s.getFather().findSuccessor(
-							QuestionnaireDefinition.class);
+					Section<QuestionnaireDefinition> qDef = Sections.findSuccessor(
+							s.getFather(), QuestionnaireDefinition.class);
 
 					if (qDef != null) {
 						// remove init number value from registration in KB

@@ -46,11 +46,11 @@ import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.InitEvent;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sectionizer;
 import de.d3web.we.kdom.SectionizerModule;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.rendering.ConditionalRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.PageAppendHandler;
@@ -60,8 +60,8 @@ import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 import de.d3web.we.taghandler.TagHandler;
 import de.d3web.we.terminology.TerminologyHandler;
 import de.d3web.we.user.UserSettingsManager;
-import de.d3web.we.utils.KnowWEObjectTypeSet;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
+import de.d3web.we.utils.KnowWETypeSet;
+import de.d3web.we.utils.KnowWETypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
@@ -84,19 +84,19 @@ public class KnowWEEnvironment {
 
 	// private KnowWETopicLoader topicLoader;
 
-	private KnowWEObjectType rootTypes;
-	private List<KnowWEObjectType> globalTypes = new ArrayList<KnowWEObjectType>();
+	private Type rootTypes;
+	private List<Type> globalTypes = new ArrayList<Type>();
 	private List<PageAppendHandler> appendHandlers = new ArrayList<PageAppendHandler>();
 
 	public List<PageAppendHandler> getAppendHandlers() {
 		return appendHandlers;
 	}
 
-	public List<KnowWEObjectType> getGlobalTypes() {
+	public List<Type> getGlobalTypes() {
 		return globalTypes;
 	}
 
-	private List<KnowWEObjectType> allKnowWEObjectTypes;
+	private List<Type> allKnowWETypes;
 
 	/**
 	 * default paths, used only, if null is given to the constructor as path
@@ -261,12 +261,12 @@ public class KnowWEEnvironment {
 
 	}
 
-	public boolean registerConditionalRendererToType(Class<? extends KnowWEObjectType> clazz,
+	public boolean registerConditionalRendererToType(Class<? extends Type> clazz,
 			KnowWEDomRenderer renderer) {
-		List<KnowWEObjectType> instances = KnowWEEnvironment.getInstance()
+		List<Type> instances = KnowWEEnvironment.getInstance()
 				.searchTypeInstances(clazz);
 
-		for (KnowWEObjectType annoType : instances) {
+		for (Type annoType : instances) {
 			if (annoType.getRenderer() instanceof ConditionalRenderer) {
 				((ConditionalRenderer) annoType.getRenderer())
 						.addConditionalRenderer(renderer);
@@ -486,12 +486,12 @@ public class KnowWEEnvironment {
 		}
 
 		for (SectionizerModule sm : Plugins.getSectionizerModules()) {
-			Sectionizer.getInstance().registerSectionizerModule(sm);
+			Sectionizer.registerSectionizerModule(sm);
 		}
 
 		appendHandlers = Plugins.getPageAppendHandlers();
 
-		for (KnowWEObjectType type : Plugins.getRootTypes()) {
+		for (Type type : Plugins.getRootTypes()) {
 			addRootType(type);
 		}
 		this.globalTypes = Plugins.getGlobalTypes();
@@ -519,7 +519,7 @@ public class KnowWEEnvironment {
 		}
 	}
 
-	private boolean addRootType(KnowWEObjectType type) {
+	private boolean addRootType(Type type) {
 		return RootType.getInstance().addChildType(type);
 	}
 
@@ -574,7 +574,7 @@ public class KnowWEEnvironment {
 	 * @return
 	 */
 	public void processAndUpdateArticleJunit(String username, String content,
-			String topic, String web, KnowWEObjectType rootType) {
+			String topic, String web, Type rootType) {
 		this.rootTypes = rootType;
 		this.articleManagers.get(web).registerArticle(
 				KnowWEArticle.createArticle(content, topic, rootType, web));
@@ -595,57 +595,10 @@ public class KnowWEEnvironment {
 		return topic + "_KB";
 	}
 
-	// /**
-	// * Returns whether the last parse report of an artilce contains parsing
-	// errors
-	// *
-	// * @param topic
-	// * @param web
-	// * @return
-	// * @throws NoParseResultException
-	// */
-	// public boolean containsError(String topic, String web) throws
-	// NoParseResultException {
-	// KnowWEArticle article = this.articleManagers.get(web).getArticle(topic);
-	// if(article == null) {
-	// throw new NoParseResultException("Article not (yet) parsed!");
-	// }
-	// KopicParseResult res = article.getLastParseResult();
-	// if(res == null) {
-	// throw new NoParseResultException("Article not (yet) parsed!");
-	// }
-	// return res.hasErrors();
-	// }
-
-	/**
-	 * 
-	 * use KnowWEUtils.unmaskHTML
-	 * 
-	 * @param htmlContent
-	 * @return
-	 */
-	@Deprecated
-	public static String unmaskHTML(String htmlContent) {
-
-		return KnowWEUtils.unmaskHTML(htmlContent);
-	}
-
-	/**
-	 * 
-	 * use KnowWEUtils.maskHTML
-	 * 
-	 * @param htmlContent
-	 * @return
-	 */
-	@Deprecated
-	public static String maskHTML(String htmlContent) {
-		return KnowWEUtils.maskHTML(htmlContent);
-	}
-
 	public String getNodeData(String web, String topic, String nodeID) {
 		if (web == null || topic == null) return null;
 		KnowWEArticle art = this.articleManagers.get(web).getArticle(topic);
-		Section<?> sec = art.getNode(nodeID);
+		Section<?> sec = art.findSection(nodeID);
 		String data = "Node not found: " + nodeID;
 		if (sec != null) {
 			data = sec.getOriginalText();
@@ -653,40 +606,40 @@ public class KnowWEEnvironment {
 		return data;
 	}
 
-	public KnowWEObjectType getRootType() {
+	public Type getRootType() {
 		return rootTypes;
 	}
 
 	/**
-	 * Collects all KnowWEObjectTypes.
+	 * Collects all Types.
 	 * 
 	 * @return
 	 */
-	public List<KnowWEObjectType> getAllKnowWEObjectTypes() {
+	public List<Type> getAllTypes() {
 
-		if (this.allKnowWEObjectTypes == null) {
-			KnowWEObjectTypeSet allTypes = new KnowWEObjectTypeSet();
+		if (this.allKnowWETypes == null) {
+			KnowWETypeSet allTypes = new KnowWETypeSet();
 
-			KnowWEObjectTypeSet s = KnowWEObjectTypeUtils
+			KnowWETypeSet s = KnowWETypeUtils
 					.getAllChildrenTypesRecursive(getRootType(),
-							new KnowWEObjectTypeSet());
+							new KnowWETypeSet());
 			allTypes.addAll(s.toList());
 
-			this.allKnowWEObjectTypes = allTypes.toLexicographicalList();
+			this.allKnowWETypes = allTypes.toLexicographicalList();
 		}
 
-		return this.allKnowWEObjectTypes;
+		return this.allKnowWETypes;
 	}
 
 	/**
-	 * @See KnowWEObjectTypeBrowserAction
+	 * @See KnowWETypeBrowserAction
 	 * 
 	 * @param clazz
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public KnowWEObjectType searchType(Class clazz) {
-		for (KnowWEObjectType t : this.allKnowWEObjectTypes) {
+	public Type searchType(Class clazz) {
+		for (Type t : this.allKnowWETypes) {
 			if (t.isType(clazz)) {
 				return t;
 			}
@@ -694,8 +647,8 @@ public class KnowWEEnvironment {
 		return null;
 	}
 
-	public List<KnowWEObjectType> searchTypeInstances(Class<?> clazz) {
-		List<KnowWEObjectType> instances = new ArrayList<KnowWEObjectType>();
+	public List<Type> searchTypeInstances(Class<?> clazz) {
+		List<Type> instances = new ArrayList<Type>();
 		getRootType().findTypeInstances(clazz, instances);
 		// for (KnowWEModule mod : this.modules) {
 		// mod.findTypeInstances(clazz, instances);

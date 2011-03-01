@@ -11,10 +11,10 @@ import java.util.Set;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.SectionID;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.basic.QuotedType;
 import de.d3web.we.kdom.basic.RoundBracedType;
@@ -35,7 +35,7 @@ import dummies.KnowWETestWikiConnector;
  * <li>The elements within the path are separated by "/".
  * <li>If the scope starts with "/" it must match its path from the KDOM root.
  * <li>Each of the path entries name a KDOM node, either by naming the "name" of
- * the KnowWEObjectType (see {@link KnowWEObjectType#getName()} or its simple
+ * the Type (see {@link Type#getName()} or its simple
  * class name or the simple class name of any of it's super-classes or
  * interfaces.
  * <li>For default markups the name of the markup section can be used. For it's
@@ -61,8 +61,8 @@ public class Scope {
 	private static final String ROOT = "root";
 	private static final String SEPERATOR = "/";
 
-	private static final Map<KnowWEObjectType, Set<String>> CACHED_NAMES_OF_KDOM_TYPE =
-			new HashMap<KnowWEObjectType, Set<String>>();
+	private static final Map<Type, Set<String>> CACHED_NAMES_OF_KDOM_TYPE =
+			new HashMap<Type, Set<String>>();
 
 	private static final Map<String, Scope> CACHED_SCOPES =
 			new HashMap<String, Scope>();
@@ -144,12 +144,12 @@ public class Scope {
 
 		// the root is simply checked hard-coded against the root type class
 		if (item.equals(ROOT)) {
-			return section.getObjectType() instanceof RootType;
+			return section.get() instanceof RootType;
 		}
 
 		// finally we try to match the name of the path item
 		// against the object type of the section
-		KnowWEObjectType nodeType = section.getObjectType();
+		Type nodeType = section.get();
 		Set<String> names = getCachedNamesOfType(nodeType);
 		boolean itemMatches = names.contains(item);
 		if (itemMatches) {
@@ -163,8 +163,8 @@ public class Scope {
 		}
 	}
 
-	private Set<String> getCachedNamesOfType(KnowWEObjectType nodeType) {
-		Class<? extends KnowWEObjectType> nodeTypeClass = nodeType.getClass();
+	private Set<String> getCachedNamesOfType(Type nodeType) {
+		Class<? extends Type> nodeTypeClass = nodeType.getClass();
 		Set<String> simpleNames = CACHED_NAMES_OF_KDOM_TYPE.get(nodeType);
 		if (simpleNames == null) {
 			simpleNames = new HashSet<String>();
@@ -202,19 +202,19 @@ public class Scope {
 		String t1 = "(" + t2 + ")";
 		String t0 = "<root>" + t1 + "</root>";
 
-		KnowWEObjectType o4 = new PlainText();
-		KnowWEObjectType o3 = new SquareBracedType(o4);
-		KnowWEObjectType o2 = new QuotedType(o3);
-		KnowWEObjectType o1 = new RoundBracedType(o2);
-		KnowWEObjectType o0 = RootType.getInstance();
+		Type o4 = new PlainText();
+		Type o3 = new SquareBracedType(o4);
+		Type o2 = new QuotedType(o3);
+		Type o1 = new RoundBracedType(o2);
+		Type o0 = RootType.getInstance();
 
 		KnowWEArticle article = KnowWEArticle.createArticle(t0, "test", o0, "myWeb");
-		Section<?> s0 = Section.createSection(t0, o0, null, 0, article, new SectionID("id_root") {
-		}, true);
-		Section<?> s1 = Section.createSection(t1, o1, s0, 6, article, null, true);
-		Section<?> s2 = Section.createSection(t2, o2, s1, 1, article, null, true);
-		Section<?> s3 = Section.createSection(t3, o3, s2, 1, article, null, true);
-		Section<?> s4 = Section.createSection(t4, o4, s3, 1, article, null, true);
+		Section<?> s0 = Section.createSection(t0, o0, null, article, new SectionID("id_root") {
+		});
+		Section<?> s1 = Section.createSection(t1, o1, s0, article);
+		Section<?> s2 = Section.createSection(t2, o2, s1, article);
+		Section<?> s3 = Section.createSection(t3, o3, s2, article);
+		Section<?> s4 = Section.createSection(t4, o4, s3, article);
 
 		// these ones should be true
 		System.out.println(new Scope("").matches(s4)); // empty path is always

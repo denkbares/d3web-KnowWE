@@ -2,12 +2,11 @@ package de.d3web.we.kdom.condition.helper;
 
 import java.util.List;
 
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.NonTerminalCondition;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
-import de.d3web.we.kdom.constraint.ExclusiveType;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SyntaxError;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
@@ -43,12 +42,11 @@ class EmbracedExpressionFinder implements ISectionFinder {
 	public static ISectionFinder createEmbracedExpressionFinder() {
 		ConstraintSectionFinder sectionFinder = new ConstraintSectionFinder(
 					new EmbracedExpressionFinder());
-		sectionFinder.addConstraint(ExclusiveType.getInstance());
 		return sectionFinder;
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+	public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
 		String trimmed = text.trim();
 		int leadingSpaces = text.indexOf(trimmed);
 		int followingSpaces = text.length() - trimmed.length() - leadingSpaces;

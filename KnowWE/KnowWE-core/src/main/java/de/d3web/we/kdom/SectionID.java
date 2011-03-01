@@ -37,7 +37,7 @@ public class SectionID {
 	/**
 	 * This Constructor should be used for assigning <b>nonspecific</b> IDs
 	 */
-	public SectionID(Section<? extends KnowWEObjectType> father, KnowWEObjectType type) {
+	public SectionID(Section<? extends Type> father, Type type) {
 		String typename;
 
 		if (type instanceof SectionIDDeclarant) {
@@ -52,7 +52,7 @@ public class SectionID {
 	/**
 	 * This Constructor should be used for assigning <b>nonspecific</b> IDs
 	 */
-	public SectionID(Section<? extends KnowWEObjectType> father, String id) {
+	public SectionID(Section<? extends Type> father, String id) {
 		createID(father.getArticle(), father.getID() + SEPARATOR + id);
 	}
 

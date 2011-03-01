@@ -26,48 +26,48 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 
 /**
- * Used as a set for KnowWEObjectTypes. Makes sorting out unnecessary See
- * KnowWEEnvironment.getAllKnowWEObjectTypes().
+ * Used as a set for Types. Makes sorting out unnecessary See
+ * KnowWEEnvironment.getAllTypes().
  * 
  * @author Johannes Dienst
  * 
  */
-public class KnowWEObjectTypeSet {
+public class KnowWETypeSet {
 
-	private HashMap<String, KnowWEObjectType> types;
+	private final HashMap<String, Type> types;
 
-	public KnowWEObjectTypeSet() {
-		types = new HashMap<String, KnowWEObjectType>();
+	public KnowWETypeSet() {
+		types = new HashMap<String, Type>();
 	}
 
-	public void addAll(Collection<KnowWEObjectType> c) {
-		for (KnowWEObjectType o : c) {
+	public void addAll(Collection<Type> c) {
+		for (Type o : c) {
 			types.put(o.getName(), o);
 		}
 	}
 
-	public void add(KnowWEObjectType o) {
+	public void add(Type o) {
 		types.put(o.getName(), o);
 	}
 
-	public boolean contains(KnowWEObjectType o) {
+	public boolean contains(Type o) {
 		if (types.get(o.getName()) != null) return true;
 		return false;
 	}
 
-	public List<KnowWEObjectType> toList() {
-		ArrayList<KnowWEObjectType> r = new ArrayList<KnowWEObjectType>(types.size());
+	public List<Type> toList() {
+		ArrayList<Type> r = new ArrayList<Type>(types.size());
 		for (String s : types.keySet()) {
 			r.add(types.get(s));
 		}
 		return r;
 	}
 
-	public KnowWEObjectType getInstanceOf(Class<? extends KnowWEObjectType> cl) {
-		for (KnowWEObjectType o : types.values()) {
+	public Type getInstanceOf(Class<? extends Type> cl) {
+		for (Type o : types.values()) {
 			if (cl.isAssignableFrom(o.getClass())) {
 				return o;
 			}
@@ -76,12 +76,12 @@ public class KnowWEObjectTypeSet {
 		return null;
 	}
 
-	public List<KnowWEObjectType> toLexicographicalList() {
-		ArrayList<KnowWEObjectType> r = new ArrayList<KnowWEObjectType>(types.size());
+	public List<Type> toLexicographicalList() {
+		ArrayList<Type> r = new ArrayList<Type>(types.size());
 		for (String s : types.keySet()) {
 			r.add(types.get(s));
 		}
-		Collections.sort(r, new KnowWEObjectTypeComparator());
+		Collections.sort(r, new KnowWETypeComparator());
 		return r;
 	}
 }

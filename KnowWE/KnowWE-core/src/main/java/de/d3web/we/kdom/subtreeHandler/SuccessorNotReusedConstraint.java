@@ -20,7 +20,7 @@
 package de.d3web.we.kdom.subtreeHandler;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 
 /**
@@ -29,9 +29,9 @@ import de.d3web.we.kdom.Section;
  * 
  * @author Albrecht Striffler
  * @created 25.01.2011
- * @param <T> is the KnowWEObjectType of the Section this module is used with.
+ * @param <T> is the Type of the Section this module is used with.
  */
-public class SuccessorNotReusedConstraint<T extends KnowWEObjectType> extends ConstraintModule<T> {
+public class SuccessorNotReusedConstraint<T extends Type> extends ConstraintModule<T> {
 
 	public SuccessorNotReusedConstraint() {
 	}

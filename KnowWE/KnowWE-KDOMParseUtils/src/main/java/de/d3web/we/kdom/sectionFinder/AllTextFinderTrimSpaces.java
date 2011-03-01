@@ -22,7 +22,7 @@ package de.d3web.we.kdom.sectionFinder;
 
 import java.util.List;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 
 /**
@@ -37,7 +37,7 @@ import de.d3web.we.kdom.Section;
 public class AllTextFinderTrimSpaces extends SectionFinder {
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+	public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
 
 		int leadingSpaces = 0;
 		while (text.charAt(leadingSpaces) == ' ') {

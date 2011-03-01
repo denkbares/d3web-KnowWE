@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.condition.CondUnknown;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
@@ -18,10 +17,11 @@ import de.d3web.core.manage.RuleFactory;
 import de.d3web.indication.ActionContraIndication;
 import de.d3web.indication.ActionInstantIndication;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.condition.Finding;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.NothingRenderer;
@@ -47,7 +47,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Jochen
  * @created 23.12.2010
  */
-public class InlineIndicationCondition extends DefaultAbstractKnowWEObjectType {
+public class InlineIndicationCondition extends AbstractType {
 
 	private static final String START_KEY = "&\\s*?(Nur falls|Only if):?";
 	private static final String END_KEY = "&";
@@ -60,10 +60,10 @@ public class InlineIndicationCondition extends DefaultAbstractKnowWEObjectType {
 		AnonymousType open = new AnonymousType(START_KEY);
 		open.setSectionFinder(new RegexSectionFinder(
 				START_KEY, Pattern.CASE_INSENSITIVE));
-		open.setCustomRenderer(new KnowWEDomRenderer<KnowWEObjectType>() {
+		open.setCustomRenderer(new KnowWEDomRenderer<Type>() {
 
 			@Override
-			public void render(KnowWEArticle article, Section<KnowWEObjectType> sec, KnowWEUserContext user, StringBuilder string) {
+			public void render(KnowWEArticle article, Section<Type> sec, KnowWEUserContext user, StringBuilder string) {
 				string.append(KnowWEUtils.maskHTML("<b>"));
 				string.append(sec.getOriginalText().substring(1).trim());
 				string.append(KnowWEUtils.maskHTML("</b>"));
@@ -84,7 +84,7 @@ public class InlineIndicationCondition extends DefaultAbstractKnowWEObjectType {
 	private class InlineIndiFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			Pattern pattern = Pattern.compile(START_KEY, Pattern.CASE_INSENSITIVE);
 			Matcher matcher = pattern.matcher(text);
@@ -103,9 +103,10 @@ public class InlineIndicationCondition extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<InlineIndicationCondition> s) {
-			Section<Finding> finding = s.findSuccessor(Finding.class);
+			Section<Finding> finding =  Sections.findSuccessor(s, Finding.class);
 
-			Section<QuestionDefinition> qDef = s.getFather().findSuccessor(QuestionDefinition.class);
+			Section<QuestionDefinition> qDef = Sections.findSuccessor(s.getFather(),
+					QuestionDefinition.class);
 			Collection<KDOMReportMessage> collection = new HashSet<KDOMReportMessage>();
 			if (finding != null && qDef != null) {
 
@@ -125,8 +126,9 @@ public class InlineIndicationCondition extends DefaultAbstractKnowWEObjectType {
 				List<QASet> obsContra = new ArrayList<QASet>();
 				obsContra.add(question);
 				actionContraIndication.setQASets(obsContra);
-				Collection<KDOMReportMessage> collection2 = createRule(article, s,
-						actionContraIndication, new CondUnknown(question));
+				// Collection<KDOMReportMessage> collection2 =
+				// createRule(article, s,
+				// actionContraIndication, new CondUnknown(question));
 				// Todo handle these messages
 
 			}

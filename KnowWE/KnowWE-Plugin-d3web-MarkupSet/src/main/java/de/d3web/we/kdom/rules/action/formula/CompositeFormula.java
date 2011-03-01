@@ -5,9 +5,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.condition.NonTerminalCondition;
 import de.d3web.we.kdom.condition.helper.BracedCondition;
 import de.d3web.we.kdom.condition.helper.BracedConditionContent;
@@ -16,7 +17,7 @@ import de.d3web.we.kdom.condition.helper.ConjunctSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.utils.SplitUtility;
 
-public class CompositeFormula extends DefaultAbstractKnowWEObjectType {
+public class CompositeFormula extends AbstractType {
 
 	private final TerminalExpression terminalExpression = new TerminalExpression();
 
@@ -83,7 +84,7 @@ public class CompositeFormula extends DefaultAbstractKnowWEObjectType {
 	 * 
 	 * @param types
 	 */
-	public void setAllowedTerminalConditions(List<KnowWEObjectType> types) {
+	public void setAllowedTerminalConditions(List<Type> types) {
 		terminalExpression.setAllowedTerminalConditions(types);
 	}
 
@@ -104,7 +105,7 @@ public class CompositeFormula extends DefaultAbstractKnowWEObjectType {
 	 * @return
 	 */
 	public Section<? extends NonTerminalCondition> getBraced(Section<CompositeFormula> c) {
-		return c.findChildOfType(BracedCondition.class);
+		return Sections.findChildOfType(c, BracedCondition.class);
 	}
 
 
@@ -116,7 +117,8 @@ public class CompositeFormula extends DefaultAbstractKnowWEObjectType {
 	 */
 	public List<Section<? extends CalcMethodType>> getMultiplicationElements(Section<CompositeFormula> c) {
 		List<Section<? extends CalcMethodType>> result = new ArrayList<Section<? extends CalcMethodType>>();
-		List<Section<Multiplication>> childrenOfType = c.findChildrenOfType(Multiplication.class);
+		List<Section<Multiplication>> childrenOfType = Sections.findChildrenOfType(c,
+				Multiplication.class);
 		result.addAll(childrenOfType);
 		return result;
 	}
@@ -149,7 +151,8 @@ public class CompositeFormula extends DefaultAbstractKnowWEObjectType {
 	 */
 	public List<Section<? extends CalcMethodType>> getSubtractionElements(Section<CompositeFormula> c) {
 		List<Section<? extends CalcMethodType>> result = new ArrayList<Section<? extends CalcMethodType>>();
-		List<Section<Subtraction>> childrenOfType = c.findChildrenOfType(Subtraction.class);
+		List<Section<Subtraction>> childrenOfType = Sections.findChildrenOfType(c,
+				Subtraction.class);
 		result.addAll(childrenOfType);
 		return result;
 	}
@@ -172,7 +175,7 @@ public class CompositeFormula extends DefaultAbstractKnowWEObjectType {
 	 */
 	public List<Section<? extends CalcMethodType>> getAdditionElements(Section<CompositeFormula> c) {
 		List<Section<? extends CalcMethodType>> result = new ArrayList<Section<? extends CalcMethodType>>();
-		List<Section<Addition>> childrenOfType = c.findChildrenOfType(Addition.class);
+		List<Section<Addition>> childrenOfType = Sections.findChildrenOfType(c, Addition.class);
 		result.addAll(childrenOfType);
 		return result;
 	}
@@ -196,7 +199,7 @@ public class CompositeFormula extends DefaultAbstractKnowWEObjectType {
 	 */
 	public List<Section<? extends CalcMethodType>> getDivisionElements(Section<CompositeFormula> c) {
 		List<Section<? extends CalcMethodType>> result = new ArrayList<Section<? extends CalcMethodType>>();
-		List<Section<Division>> childrenOfType = c.findChildrenOfType(Division.class);
+		List<Section<Division>> childrenOfType = Sections.findChildrenOfType(c, Division.class);
 		result.addAll(childrenOfType);
 		return result;
 	}
@@ -218,8 +221,10 @@ public class CompositeFormula extends DefaultAbstractKnowWEObjectType {
 	 * @return
 	 */
 	public Section<? extends TerminalExpression> getTerminal(Section<CompositeFormula> c) {
-		List<Section<? extends TerminalExpression>> result = new ArrayList<Section<? extends TerminalExpression>>();
-		Section<? extends TerminalExpression> terminal = c.findChildOfType(TerminalExpression.class);
+		// List<Section<? extends TerminalExpression>> result = new
+		// ArrayList<Section<? extends TerminalExpression>>();
+		Section<? extends TerminalExpression> terminal = Sections.findChildOfType(c,
+				TerminalExpression.class);
 		return terminal;
 	}
 

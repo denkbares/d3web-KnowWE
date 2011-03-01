@@ -20,10 +20,10 @@
 
 package de.d3web.we.kdom.semanticAnnotation;
 
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class XCLComparatorEditorRenderer extends KnowWEDomRenderer {
@@ -47,7 +47,7 @@ public class XCLComparatorEditorRenderer extends KnowWEDomRenderer {
 		}
 		buffi.append("</select>");
 
-		string.append(KnowWEEnvironment.maskHTML(buffi.toString()));
+		string.append(KnowWEUtils.maskHTML(buffi.toString()));
 	}
 
 }

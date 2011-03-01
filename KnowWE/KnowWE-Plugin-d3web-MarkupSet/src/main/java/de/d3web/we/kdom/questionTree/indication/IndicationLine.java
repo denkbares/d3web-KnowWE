@@ -20,12 +20,12 @@
 
 package de.d3web.we.kdom.questionTree.indication;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.object.QuestionnaireReference;
 
-public class IndicationLine extends DefaultAbstractKnowWEObjectType {
+public class IndicationLine extends AbstractType {
 
 	@Override
 	protected void init() {

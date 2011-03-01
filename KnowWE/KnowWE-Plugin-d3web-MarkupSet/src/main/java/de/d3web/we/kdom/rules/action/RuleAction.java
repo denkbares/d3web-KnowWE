@@ -23,13 +23,13 @@ package de.d3web.we.kdom.rules.action;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.basic.EndLineComment;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 
-public class RuleAction extends DefaultAbstractKnowWEObjectType {
+public class RuleAction extends AbstractType {
 
 	@Override
 	protected void init() {
@@ -37,7 +37,7 @@ public class RuleAction extends DefaultAbstractKnowWEObjectType {
 		try {
 			// TODO remove this evil workaround
 			// when updating KnowWE architecture
-			this.childrenTypes.add((KnowWEObjectType) Class.forName(
+			this.childrenTypes.add((Type) Class.forName(
 					"cc.knowwe.tdb.EvalAssignActionType").newInstance());
 		}
 		catch (Throwable e) {

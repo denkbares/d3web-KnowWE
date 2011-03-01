@@ -32,6 +32,7 @@ import de.d3web.core.manage.RuleFactory;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.questionTree.NumericCondLine;
 import de.d3web.we.kdom.questionTree.QuestionDashTree;
@@ -77,7 +78,7 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 	@SuppressWarnings("unchecked")
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<KnowWETerm<?>> s) {
 
-		Section<DashTreeElement> element = s.findAncestorOfType(DashTreeElement.class);
+		Section<DashTreeElement> element = Sections.findAncestorOfType(s, DashTreeElement.class);
 
 		if (element == null) {
 			Logger.getLogger(this.getClass().getName()).log(
@@ -86,7 +87,7 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 							+ this.getClass().getSimpleName()
 							+ " only works inside "
 							+ QuestionDashTree.class.getSimpleName()
-							+ "s. It seems the handler is used with the wrong KnowWEObjectType.");
+							+ "s. It seems the handler is used with the wrong Type.");
 			return new ArrayList<KDOMReportMessage>(0);
 		}
 
@@ -104,10 +105,10 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 			// + " - no dashTreeFather found"));
 		}
 
-		Section<QuestionTreeAnswerDefinition> answerSec = dashTreeFather
-				.findSuccessor(QuestionTreeAnswerDefinition.class);
-		Section<NumericCondLine> numCondSec = dashTreeFather
-				.findSuccessor(NumericCondLine.class);
+		Section<QuestionTreeAnswerDefinition> answerSec = 
+				 Sections.findSuccessor(dashTreeFather, QuestionTreeAnswerDefinition.class);
+		Section<NumericCondLine> numCondSec = 
+				 Sections.findSuccessor(dashTreeFather, NumericCondLine.class);
 
 		if (answerSec != null || numCondSec != null) {
 
@@ -117,10 +118,11 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 								getString("KnowWE.rulesNew.indicationnotcreated")));
 			}
 
-			// retrieve the QASet for the different KnowWEObjectTypes that might
+			// retrieve the QASet for the different Types that might
 			// use this handler
 			QASet qaset = null;
-			Section<? extends KnowWETerm> termRef = element.findSuccessor(KnowWETerm.class);
+			Section<? extends KnowWETerm> termRef = Sections.findSuccessor(element,
+					KnowWETerm.class);
 			if (termRef != null) {
 				if (termRef.get() instanceof QuestionnaireReference) {
 					Section<QuestionnaireReference> qnref = (Section<QuestionnaireReference>) termRef;

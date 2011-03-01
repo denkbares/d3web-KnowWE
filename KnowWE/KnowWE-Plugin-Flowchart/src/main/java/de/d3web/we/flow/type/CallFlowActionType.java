@@ -25,6 +25,7 @@ import de.d3web.core.inference.PSMethod;
 import de.d3web.diaFlux.inference.CallFlowAction;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.rules.action.D3webRuleAction;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
@@ -66,12 +67,14 @@ public class CallFlowActionType extends D3webRuleAction<CallFlowActionType> {
 	}
 
 	public static String getStartNodeName(Section<CallFlowActionType> action) {
-		Section<StartNodeReference> nodeSection = action.findChildOfType(StartNodeReference.class);
+		Section<StartNodeReference> nodeSection = Sections.findChildOfType(action,
+				StartNodeReference.class);
 		return nodeSection.getOriginalText();
 	}
 
 	public static String getFlowName(Section<CallFlowActionType> action) {
-		Section<FlowchartReference> nodeSection = action.findChildOfType(FlowchartReference.class);
+		Section<FlowchartReference> nodeSection = Sections.findChildOfType(action,
+				FlowchartReference.class);
 		return nodeSection.getOriginalText();
 	}
 

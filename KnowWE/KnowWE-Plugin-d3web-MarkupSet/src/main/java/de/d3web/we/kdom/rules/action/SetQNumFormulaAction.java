@@ -12,8 +12,9 @@ import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.auxiliary.Equals;
 import de.d3web.we.kdom.condition.QuestionNumReference;
 import de.d3web.we.kdom.rules.action.formula.CompositeFormula;
@@ -39,13 +40,13 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 		this.sectionFinder = new SetQuestionValueSectionFinder();
 		Equals equals = new Equals();
 		QuestionReference qr = new QuestionReference();
-		qr.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(equals));
+		qr.setSectionFinder(new AllBeforeTypeSectionFinder(equals));
 		this.childrenTypes.add(equals);
 		this.childrenTypes.add(qr);
 
 		CompositeFormula formula = new CompositeFormula();
 		// crate List of valid terminals
-		List<KnowWEObjectType> terminals = new ArrayList<KnowWEObjectType>();
+		List<Type> terminals = new ArrayList<Type>();
 		// terminals may either be numbers...
 		de.d3web.we.kdom.condition.Number number = new de.d3web.we.kdom.condition.Number();
 		terminals.add(number);
@@ -61,7 +62,7 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 	private class SetQuestionValueSectionFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			// take if right side starts with '('
 			if (SplitUtility.containsUnquoted(text, "=")) {
@@ -78,10 +79,10 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 	}
 
 	@Override
-	protected PSAction createAction(KnowWEArticle article, Section s) {
-		Section<QuestionReference> qref = s.findSuccessor(QuestionReference.class);
+	protected PSAction createAction(KnowWEArticle article, Section<SetQuestionValue> s) {
+		Section<QuestionReference> qref = Sections.findSuccessor(s, QuestionReference.class);
 		Question q = qref.get().getTermObject(article, qref);
-		Section<CompositeFormula> formulaSection = s.findSuccessor(CompositeFormula.class);
+		Section<CompositeFormula> formulaSection = Sections.findSuccessor(s, CompositeFormula.class);
 		if (formulaSection == null) return null;
 		FormulaNumberElement formular = null;
 		try {

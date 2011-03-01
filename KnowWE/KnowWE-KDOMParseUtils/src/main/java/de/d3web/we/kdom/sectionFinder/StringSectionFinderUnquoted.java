@@ -20,7 +20,7 @@
 
 package de.d3web.we.kdom.sectionFinder;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.SplitUtility;
 
@@ -49,7 +49,7 @@ public class StringSectionFinderUnquoted extends AbstractSingleResultFinder {
 	}
 
 	@Override
-	public SectionFinderResult lookForSection(String text, Section father, KnowWEObjectType type) {
+	public SectionFinderResult lookForSection(String text, Section father, Type type) {
 
 		int index;
 

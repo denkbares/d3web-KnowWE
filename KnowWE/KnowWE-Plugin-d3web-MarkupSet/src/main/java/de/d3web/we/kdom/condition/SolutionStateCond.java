@@ -7,8 +7,9 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -56,7 +57,7 @@ public class SolutionStateCond extends D3webCondition<SolutionStateCond> {
 		private final AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
 			if (SplitUtility.containsUnquoted(text, "=")) {
 				List<String> list = SplitUtility.splitUnquoted(text, "=");
 				// Hotfix for AOB when there is nothing behind the "="
@@ -85,8 +86,8 @@ public class SolutionStateCond extends D3webCondition<SolutionStateCond> {
 
 	@Override
 	protected Condition createCondition(KnowWEArticle article, Section<SolutionStateCond> s) {
-		Section<SolutionReference> sRef = s.findSuccessor(SolutionReference.class);
-		Section<SolutionStateType> state = s.findSuccessor(SolutionStateType.class);
+		Section<SolutionReference> sRef =  Sections.findSuccessor(s, SolutionReference.class);
+		Section<SolutionStateType> state =  Sections.findSuccessor(s, SolutionStateType.class);
 		if (sRef != null && state != null) {
 			Solution solution = sRef.get().getTermObject(article, sRef);
 			Rating.State solutionState = SolutionStateType.getSolutionState(state);

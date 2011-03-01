@@ -23,22 +23,22 @@ package de.d3web.we.kdom.xml;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.SectionIDDeclarant;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.NothingRenderer;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
-public class XMLHead extends DefaultAbstractKnowWEObjectType implements SectionIDDeclarant {
+public class XMLHead extends AbstractType implements SectionIDDeclarant {
 
 	public static final String SEPARATOR = "/";
 	public static final String HEAD_SUFFIX = "_head";
 
 	@Override
-	public String createSectionID(Section<? extends KnowWEObjectType> father) {
+	public String createSectionID(Section<? extends Type> father) {
 		return getEndOfId(father.getID()) + HEAD_SUFFIX;
 	}
 
@@ -57,14 +57,14 @@ public class XMLHead extends DefaultAbstractKnowWEObjectType implements SectionI
 		return NothingRenderer.getInstance();
 	}
 
-	public class XMLHeadSectionFinder extends SectionFinder {
+	public class XMLHeadSectionFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text2, Section father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text2, Section<?> father, Type type) {
 
-			if (father.getObjectType() instanceof AbstractXMLObjectType) {
-				String text = AbstractXMLObjectType.getAttributeMapFor(father).get(
-						AbstractXMLObjectType.HEAD);
+			if (father.get() instanceof AbstractXMLType) {
+				String text = AbstractXMLType.getAttributeMapFor(father).get(
+						AbstractXMLType.HEAD);
 				if (text != null) {
 					List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 					result.add(new SectionFinderResult(0, text.length()));

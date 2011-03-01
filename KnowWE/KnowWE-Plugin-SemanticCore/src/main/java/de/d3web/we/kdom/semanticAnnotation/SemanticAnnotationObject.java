@@ -39,7 +39,7 @@ import de.d3web.we.core.semantic.OwlSubtreeHandler;
 import de.d3web.we.core.semantic.PropertyManager;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
@@ -47,24 +47,24 @@ import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
-import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * @author kazamatzuri
  * 
  */
-public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
+public class SemanticAnnotationObject extends AbstractType {
 
 	@Override
 	public void init() {
 		SemanticAnnotationProperty propType = new SemanticAnnotationProperty();
 		SemanticAnnotationSubject subject = new SemanticAnnotationSubject();
-		subject.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(propType));
+		subject.setSectionFinder(new AllBeforeTypeSectionFinder(propType));
 		this.childrenTypes.add(propType);
 		this.childrenTypes.add(subject);
 		this.childrenTypes.add(new SimpleAnnotation());
-		this.sectionFinder = new AllTextSectionFinder();
+		this.sectionFinder = new AllTextFinderTrimmed();
 		this.addSubtreeHandler(new SemanticAnnotationObjectSubTreeHandler());
 	}
 
@@ -88,7 +88,7 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 			boolean erronousproperty = false;
 			String badprop = "";
 			for (Section cur : childs) {
-				if (cur.getObjectType().getClass().equals(
+				if (cur.get().getClass().equals(
 						SemanticAnnotationProperty.class)) {
 					IntermediateOwlObject tempio = (IntermediateOwlObject) KnowWEUtils
 							.getStoredObject(article, cur, OwlHelper.IOO);
@@ -98,12 +98,12 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 						badprop = tempio.getBadAttribute();
 					}
 				}
-				else if (cur.getObjectType().getClass().equals(
+				else if (cur.get().getClass().equals(
 						SemanticAnnotationSubject.class)) {
 					String subj = cur.getOriginalText().trim();
 					soluri = uo.getHelper().createlocalURI(subj);
 				}
-				else if (cur.getObjectType().getClass().equals(
+				else if (cur.get().getClass().equals(
 						SimpleAnnotation.class)) {
 					IntermediateOwlObject tempio = (IntermediateOwlObject) KnowWEUtils
 							.getStoredObject(article, cur, OwlHelper.IOO);

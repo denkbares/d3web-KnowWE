@@ -32,6 +32,7 @@ import de.d3web.indication.ActionIndication;
 import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -69,14 +70,15 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 		List<QASet> qasets = new ArrayList<QASet>();
 		a.setQASets(qasets);
 
-		Section<QuestionReference> questionRef = s.findSuccessor(QuestionReference.class);
+		Section<QuestionReference> questionRef = Sections.findSuccessor(s, QuestionReference.class);
 		if (questionRef != null) {
 
 			Question object = questionRef.get().getTermObject(article, questionRef);
 			qasets.add(object);
 		}
 
-		Section<QuestionnaireReference> questionnaireRef = s.findSuccessor(QuestionnaireReference.class);
+		Section<QuestionnaireReference> questionnaireRef = Sections.findSuccessor(s,
+				QuestionnaireReference.class);
 		if (questionnaireRef != null) {
 
 			QContainer object = questionnaireRef.get().getTermObject(article, questionnaireRef);

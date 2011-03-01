@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.condition;
 
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
 
@@ -28,7 +29,7 @@ public class AnswerReferenceImpl extends AnswerReference {
 
 	@Override
 	public Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s) {
-		return s.getFather().findSuccessor(QuestionReference.class);
+		return Sections.findSuccessor(s.getFather(), QuestionReference.class);
 	}
 
 }

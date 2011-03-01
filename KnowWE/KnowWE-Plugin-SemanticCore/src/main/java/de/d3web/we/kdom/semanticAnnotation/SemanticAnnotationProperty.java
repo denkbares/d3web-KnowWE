@@ -36,10 +36,11 @@ import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.OwlSubtreeHandler;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -49,7 +50,7 @@ import de.d3web.we.utils.KnowWEUtils;
  * @author kazamatzuri
  * 
  */
-public class SemanticAnnotationProperty extends DefaultAbstractKnowWEObjectType {
+public class SemanticAnnotationProperty extends AbstractType {
 
 	public SemanticAnnotationProperty() {
 		this.sectionFinder = new AnnotationPropertySectionFinder();
@@ -64,7 +65,7 @@ public class SemanticAnnotationProperty extends DefaultAbstractKnowWEObjectType 
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section father, KnowWEObjectType type) {
+				Section<?> father, Type type) {
 			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			Pattern p = Pattern.compile(PATTERN);
 			Matcher m = p.matcher(text);
@@ -82,7 +83,8 @@ public class SemanticAnnotationProperty extends DefaultAbstractKnowWEObjectType 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<SemanticAnnotationProperty> s) {
 
-			Section<SemanticAnnotationPropertyName> name = s.findChildOfType(SemanticAnnotationPropertyName.class);
+			Section<SemanticAnnotationPropertyName> name = Sections.findChildOfType(s,
+					SemanticAnnotationPropertyName.class);
 
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			UpperOntology uo = UpperOntology.getInstance();

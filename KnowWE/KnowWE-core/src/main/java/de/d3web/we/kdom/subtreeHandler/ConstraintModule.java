@@ -19,7 +19,7 @@
  */
 package de.d3web.we.kdom.subtreeHandler;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 
 /**
  * Instances of this class can be registered to SubtreeHandlers, to determine
@@ -29,9 +29,9 @@ import de.d3web.we.kdom.KnowWEObjectType;
  * 
  * @author Albrecht Striffler
  * @created 25.01.2011
- * @param <T> is the KnowWEObjectType of the Section
+ * @param <T> is the Type of the Section
  */
-public abstract class ConstraintModule<T extends KnowWEObjectType> implements IncrementalConstraint<T> {
+public abstract class ConstraintModule<T extends Type> implements IncrementalConstraint<T> {
 
 	/**
 	 * Represents the behavior of the SubtreeHandler, depending on whether the

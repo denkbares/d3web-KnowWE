@@ -25,29 +25,28 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.Type;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
-public class SemanticAnnotation extends DefaultAbstractKnowWEObjectType {
+public class SemanticAnnotation extends AbstractType {
 
 	private static String ANNOTATIONBEGIN = "\\[";
 	private static String ANNOTATIONEND = "\\]";
 
-	@Override
-	public SectionFinder getSectioner() {
-		return new AnnotationSectionFinder();
+	public SemanticAnnotation() {
+		super(new AnnotationSectionFinder());
 	}
 
-	public static class AnnotationSectionFinder extends SectionFinder {
+	public static class AnnotationSectionFinder implements ISectionFinder {
 
-		private String PATTERN = ANNOTATIONBEGIN + "[\\w\\W]*?" + ANNOTATIONEND;
+		private final String PATTERN = ANNOTATIONBEGIN + "[\\w\\W]*?" + ANNOTATIONEND;
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section father, KnowWEObjectType type) {
+				Section<?> father, Type type) {
 			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			Pattern p = Pattern.compile(PATTERN);
 			Matcher m = p.matcher(text);
@@ -62,7 +61,7 @@ public class SemanticAnnotation extends DefaultAbstractKnowWEObjectType {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.d3web.we.dom.AbstractKnowWEObjectType#init()
+	 * @see de.d3web.we.dom.AbstractType#init()
 	 */
 	@Override
 	protected void init() {

@@ -20,15 +20,15 @@
 
 package de.d3web.we.kdom.objects;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 
 /**
- * This is a marker interface. If you are implementing a KnowWEObjectType with a
- * D3webSubtreeHandler that works incrementally, but the KnowWEObjectType that
+ * This is a marker interface. If you are implementing a Type with a
+ * D3webSubtreeHandler that works incrementally, but the Type that
  * the D3webSubtreeHandler is registered to is neither an TermDefinition nor an
  * TermReference, than you have to extend this class to make the
  * D3webSubtreeHandler able to distinguish. D3webSubtreeHandlers that are not
- * registered to a KnowWEObjectType implementing KnowWETermMarker, respectively
+ * registered to a Type implementing KnowWETermMarker, respectively
  * TermDefinition or TermReference, will automatically create and destroy every
  * time new TermDefinitions are registered or unregistered in the
  * TerminologyManager.
@@ -36,6 +36,6 @@ import de.d3web.we.kdom.KnowWEObjectType;
  * @author Albrecht Striffler
  * @created 19.07.2010
  */
-public interface IncrementalMarker extends KnowWEObjectType {
+public interface IncrementalMarker extends Type {
 
 }

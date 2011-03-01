@@ -35,6 +35,7 @@ import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.flow.type.NodeType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.rules.action.D3webRuleAction;
 
@@ -52,17 +53,19 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 	@SuppressWarnings("unchecked")
 	public boolean canCreateNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection) {
 
-		Section<D3webRuleAction> actionSection = nodeSection.findSuccessor(D3webRuleAction.class);
+		Section<D3webRuleAction> actionSection = Sections.findSuccessor(nodeSection,
+				D3webRuleAction.class);
 
 		return actionSection != null
-				&& actionSection.getObjectType().getClass() != CallFlowActionType.class;
+				&& actionSection.get().getClass() != CallFlowActionType.class;
 	}
 
 	@SuppressWarnings("unchecked")
 	public INode createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 
-		Section<D3webRuleAction> ruleAction = nodeSection.findSuccessor(D3webRuleAction.class);
+		Section<D3webRuleAction> ruleAction = Sections.findSuccessor(nodeSection,
+				D3webRuleAction.class);
 
 		PSAction action = ruleAction.get().getAction(article, ruleAction);
 

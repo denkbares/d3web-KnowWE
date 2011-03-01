@@ -35,7 +35,7 @@ import de.d3web.we.flow.type.StartType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.AbstractXMLType;
 
 /**
  * @author Reinhard Hatko
@@ -50,7 +50,7 @@ public class StartNodeHandler extends AbstractNodeHandler {
 
 	public boolean canCreateNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection) {
 
-		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
+		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
 
 		return nodeInfo != null;
 
@@ -59,7 +59,7 @@ public class StartNodeHandler extends AbstractNodeHandler {
 	public INode createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 
-		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
+		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
 
 		String name = FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
 

@@ -50,7 +50,7 @@ import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 
 /**
@@ -171,7 +171,7 @@ public class OwlHelper {
 	}
 
 	private IntermediateOwlObject createTextOrigin(
-			Section<KnowWEObjectType> source, Resource to)
+			Section<Type> source, Resource to)
 			throws RepositoryException {
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		io.addStatement(createStatement(to, RDF.TYPE, TEXTORIGIN));
@@ -345,7 +345,7 @@ public class OwlHelper {
 	}
 
 	public IntermediateOwlObject createProperty(String subject,
-			String property, String object, Section<KnowWEObjectType> source) {
+			String property, String object, Section<Type> source) {
 
 		UpperOntology uo = UpperOntology.getInstance();
 		URI suri = uo.getHelper().createlocalURI(subject);
@@ -430,7 +430,7 @@ public class OwlHelper {
 	}
 
 	public void attachTextOrigin(Resource attachto,
-			Section<KnowWEObjectType> source, IntermediateOwlObject io, URI type) {
+			Section<Type> source, IntermediateOwlObject io, URI type) {
 		try {
 			UpperOntology uo = UpperOntology.getInstance();
 			BNode to = uo.getVf().createBNode();
@@ -446,7 +446,7 @@ public class OwlHelper {
 	}
 
 	private IntermediateOwlObject createTextOrigin(
-			Section<KnowWEObjectType> source, Resource to, URI type)
+			Section<Type> source, Resource to, URI type)
 			throws RepositoryException {
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		io.addStatement(createStatement(to, RDF.TYPE, TEXTORIGIN));

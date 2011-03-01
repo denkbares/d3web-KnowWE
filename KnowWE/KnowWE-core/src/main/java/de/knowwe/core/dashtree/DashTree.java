@@ -21,10 +21,10 @@ package de.knowwe.core.dashtree;
 
 import java.util.List;
 
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.InvalidKDOMSchemaModificationOperation;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderDivCorrectTrimmed;
 import de.knowwe.core.CommentLineType;
 
@@ -36,7 +36,7 @@ import de.knowwe.core.CommentLineType;
  * 
  */
 
-public class DashTree extends DefaultAbstractKnowWEObjectType {
+public class DashTree extends AbstractType {
 
 	public DashTree() {
 		this.sectionFinder = new AllTextFinderDivCorrectTrimmed();
@@ -54,16 +54,16 @@ public class DashTree extends DefaultAbstractKnowWEObjectType {
 	 * @param dashTree
 	 * @param newContentType
 	 */
-	protected void replaceDashTreeElementContentType(AbstractKnowWEObjectType dashTree, DashTreeElementContent newContentType) {
-		List<KnowWEObjectType> types = dashTree.getAllowedChildrenTypes();
-		for (KnowWEObjectType knowWEObjectType : types) {
-			if (knowWEObjectType instanceof DashSubtree) {
-				List<KnowWEObjectType> content = knowWEObjectType
+	protected void replaceDashTreeElementContentType(AbstractType dashTree, DashTreeElementContent newContentType) {
+		List<Type> types = dashTree.getAllowedChildrenTypes();
+		for (Type Type : types) {
+			if (Type instanceof DashSubtree) {
+				List<Type> content = Type
 						.getAllowedChildrenTypes();
-				for (KnowWEObjectType knowWEObjectType2 : content) {
-					if (knowWEObjectType2 instanceof DashTreeElement) {
+				for (Type Type2 : content) {
+					if (Type2 instanceof DashTreeElement) {
 						try {
-							((AbstractKnowWEObjectType) knowWEObjectType2)
+							((AbstractType) Type2)
 									.replaceChildType(
 											newContentType,
 											DashTreeElementContent.class);

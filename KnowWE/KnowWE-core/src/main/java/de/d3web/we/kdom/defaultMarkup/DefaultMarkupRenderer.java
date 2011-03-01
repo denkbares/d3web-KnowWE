@@ -238,7 +238,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 	}
 
 	protected String getHeaderName(KnowWEArticle article, Section<T> section, KnowWEUserContext user) {
-		return section.getObjectType().getName();
+		return section.get().getName();
 	}
 
 	protected String getHeaderIcon(KnowWEArticle article, Section<T> section, KnowWEUserContext user) {
@@ -250,13 +250,13 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		Section<?> first = subsecs.get(0);
 		Section<?> last = subsecs.get(subsecs.size() - 1);
 		for (Section<?> subsec : subsecs) {
-			if (subsec == first && subsec.getObjectType() instanceof PlainText) {
+			if (subsec == first && subsec.get() instanceof PlainText) {
 				continue;
 			}
-			if (subsec == last && subsec.getObjectType() instanceof PlainText) {
+			if (subsec == last && subsec.get() instanceof PlainText) {
 				continue;
 			}
-			subsec.getObjectType().getRenderer().render(article, subsec, user, string);
+			subsec.get().getRenderer().render(article, subsec, user, string);
 		}
 	}
 

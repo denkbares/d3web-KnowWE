@@ -30,10 +30,11 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.report.message.InvalidNumberError;
@@ -87,7 +88,7 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 		private final AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
 			for (String comp : comparators) {
 				if (SplitUtility.containsUnquoted(text, comp)) {
 
@@ -103,9 +104,9 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 
 	@Override
 	protected Condition createCondition(KnowWEArticle article, Section<NumericalFinding> s) {
-		Section<QuestionReference> qRef = s.findSuccessor(QuestionReference.class);
+		Section<QuestionReference> qRef = Sections.findSuccessor(s, QuestionReference.class);
 
-		Section<Number> numberSec = s.findSuccessor(Number.class);
+		Section<Number> numberSec = Sections.findSuccessor(s, Number.class);
 
 		if (numberSec == null) {
 			InvalidNumberError error = new InvalidNumberError(
@@ -114,7 +115,7 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 			return null;
 		}
 
-		String comparator = s.findSuccessor(Comparator.class).getOriginalText();
+		String comparator =  Sections.findSuccessor(s, Comparator.class).getOriginalText();
 
 		Double number = numberSec.get().getNumber(numberSec);
 
@@ -166,6 +167,6 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 	 * @author Jochen
 	 * @created 26.10.2010
 	 */
-	class Comparator extends DefaultAbstractKnowWEObjectType {
+	class Comparator extends AbstractType {
 	}
 }

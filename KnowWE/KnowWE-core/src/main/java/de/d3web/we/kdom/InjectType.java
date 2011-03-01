@@ -29,7 +29,7 @@ import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
  * @author Albrecht Striffler
  * @created 06.02.2011
  */
-public class InjectType extends DefaultAbstractKnowWEObjectType {
+public class InjectType extends AbstractType {
 
 	public InjectType() {
 		this.setSectionFinder(new AllTextSectionFinder());

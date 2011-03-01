@@ -20,13 +20,13 @@
 
 package de.d3web.we.flow.type;
 
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.AbstractXMLType;
 
 /**
  * 
  * @author hatko Created on: 08.10.2009
  */
-public class PositionType extends AbstractXMLObjectType {
+public class PositionType extends AbstractXMLType {
 
 	private static PositionType instance;
 

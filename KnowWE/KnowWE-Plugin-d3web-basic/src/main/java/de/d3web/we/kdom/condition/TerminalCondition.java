@@ -24,10 +24,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.UnexpectedSequence;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -47,7 +47,7 @@ import de.d3web.we.kdom.type.AnonymousType;
  * @author Jochen
  * 
  */
-public class TerminalCondition extends DefaultAbstractKnowWEObjectType {
+public class TerminalCondition extends AbstractType {
 
 	private static final String DEFAULT_typeName = "UnrecognizedTerminalCondition";
 	
@@ -66,7 +66,7 @@ public class TerminalCondition extends DefaultAbstractKnowWEObjectType {
 		unrecognizedCond.addSubtreeHandler(new SubtreeHandler<TerminalCondition>() {
 
 			@Override
-			public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
+			public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<TerminalCondition> s) {
 				return Arrays.asList((KDOMReportMessage) new UnexpectedSequence(
 						messageText	+ s.getOriginalText()));
 			}
@@ -75,7 +75,7 @@ public class TerminalCondition extends DefaultAbstractKnowWEObjectType {
 		this.addChildType(unrecognizedCond);
 	}
 
-	public void setAllowedTerminalConditions(List<KnowWEObjectType> types) {
+	public void setAllowedTerminalConditions(List<Type> types) {
 		this.childrenTypes.addAll(0, types);
 	}
 

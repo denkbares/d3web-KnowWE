@@ -22,9 +22,9 @@ package de.knowwe.core.dashtree;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.LineSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -37,9 +37,9 @@ import de.d3web.we.utils.KnowWEUtils;
  *         root-element of the SubTree which comes after it.
  * 
  */
-public class DashTreeElement extends DefaultAbstractKnowWEObjectType {
+public class DashTreeElement extends AbstractType {
 
-	private KnowWEObjectType elementContent;
+	private Type elementContent;
 	
 	@Override
 	protected void init() {
@@ -51,7 +51,7 @@ public class DashTreeElement extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	public void setDashTreeElementContent(KnowWEObjectType newType) {
+	public void setDashTreeElementContent(Type newType) {
 		this.childrenTypes.set(this.childrenTypes.indexOf(elementContent), newType);
 		elementContent = newType;
 	}
@@ -67,7 +67,7 @@ public class DashTreeElement extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section<?> father, KnowWEObjectType type) {
+				Section<?> father, Type type) {
 
 			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 

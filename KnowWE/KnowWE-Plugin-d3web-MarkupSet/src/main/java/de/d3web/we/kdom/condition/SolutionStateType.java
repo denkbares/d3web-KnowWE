@@ -1,7 +1,7 @@
 package de.d3web.we.kdom.condition;
 
 import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DefaultTextRenderer;
 
@@ -12,7 +12,7 @@ import de.d3web.we.kdom.rendering.DefaultTextRenderer;
  * @author Jochen
  * @created 26.10.2010
  */
-public class SolutionStateType extends DefaultAbstractKnowWEObjectType {
+public class SolutionStateType extends AbstractType {
 
 	
 	private static final String SOL_STATE_ESTABLISHED = "established";

@@ -24,8 +24,9 @@ import de.d3web.empiricaltesting.TestCase;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.testcase.kdom.TestCaseType;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.testcase.kdom.TestCaseContent;
+import de.d3web.we.testcase.kdom.TestCaseType;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -51,7 +52,7 @@ public class TestCaseUtils {
 		TestCase testSuite = null;
 
 		if (a != null) {
-			s = a.getSection().findSuccessor(TestCaseContent.class);
+			s = Sections.findSuccessor(a.getSection(), TestCaseContent.class);
 		}
 		else {
 			Logger.getLogger(TestCaseUtils.class.getName()).warning(

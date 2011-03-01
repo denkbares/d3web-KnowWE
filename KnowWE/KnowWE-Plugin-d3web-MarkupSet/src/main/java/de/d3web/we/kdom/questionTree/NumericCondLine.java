@@ -27,9 +27,10 @@ import java.util.Collection;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -41,7 +42,7 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.dashtree.DashTreeElement;
 import de.knowwe.core.dashtree.DashTreeUtils;
 
-public class NumericCondLine extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraint<NumericCondLine> {
+public class NumericCondLine extends AbstractType implements IncrementalMarker, IncrementalConstraint<NumericCondLine> {
 
 	@Override
 	protected void init() {
@@ -74,7 +75,7 @@ public class NumericCondLine extends DefaultAbstractKnowWEObjectType implements 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<NumericCondLine> s) {
 
-			Section<DashTreeElement> dte = s.findAncestorOfType(DashTreeElement.class);
+			Section<DashTreeElement> dte = Sections.findAncestorOfType(s, DashTreeElement.class);
 			Section<? extends DashTreeElement> fatherDashTreeElement = DashTreeUtils.getFatherDashTreeElement(dte);
 
 			Condition simpleCondition = QuestionDashTreeUtils.createSimpleCondition(article, dte,

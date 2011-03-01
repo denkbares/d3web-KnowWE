@@ -27,9 +27,9 @@ import de.d3web.we.kdom.SectionID;
 
 public class SectionFinderResult implements Comparable<SectionFinderResult> {
 
-	protected int start = Integer.MIN_VALUE;
+	protected int start = -1;
 
-	protected int end = Integer.MIN_VALUE;
+	protected int end = -1;
 
 	protected SectionID id = null;
 
@@ -40,8 +40,7 @@ public class SectionFinderResult implements Comparable<SectionFinderResult> {
 	}
 
 	public SectionFinderResult(int start, int end) {
-		this.start = start;
-		this.end = end;
+		this(start, end, null);
 	}
 
 	public static List<SectionFinderResult> createSingleItemList(SectionFinderResult s) {
@@ -70,6 +69,14 @@ public class SectionFinderResult implements Comparable<SectionFinderResult> {
 		return end;
 	}
 
+	public void setStart(int start) {
+		this.start = start;
+	}
+
+	public void setEnd(int end) {
+		this.end = end;
+	}
+
 	/**
 	 * If you overwrite this method to return true for your own
 	 * SectionFinderResult, the result will not be validated in the Sectionizer.
@@ -90,7 +97,7 @@ public class SectionFinderResult implements Comparable<SectionFinderResult> {
 
 	@Override
 	public String toString() {
-		return super.toString() + " [" + getStart() + " - " + getEnd() + "]";
+		return "[" + getStart() + ", " + getEnd() + "]";
 	}
 
 }

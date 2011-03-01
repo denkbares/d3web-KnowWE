@@ -27,7 +27,7 @@ import de.d3web.diaFlux.flow.INode;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.flow.type.NodeType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 
@@ -66,6 +66,6 @@ public interface NodeHandler {
 	 * 
 	 * @return
 	 */
-	KnowWEObjectType getObjectType();
+	Type get();
 
 }

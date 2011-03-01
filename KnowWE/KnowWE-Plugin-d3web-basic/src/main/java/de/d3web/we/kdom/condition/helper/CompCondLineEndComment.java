@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.rendering.StyleRenderer;
@@ -21,7 +21,7 @@ import de.d3web.we.utils.SplitUtility;
  * @author Jochen
  * @created 16.10.2010
  */
-public class CompCondLineEndComment extends DefaultAbstractKnowWEObjectType {
+public class CompCondLineEndComment extends AbstractType {
 
 	@Override
 	protected void init() {
@@ -38,7 +38,7 @@ public class CompCondLineEndComment extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-					Section father, KnowWEObjectType type) {
+					Section father, Type type) {
 
 			// looks for an unquoted occurrence of '//'
 			int start = SplitUtility.lastIndexOfUnquoted(text, "//");

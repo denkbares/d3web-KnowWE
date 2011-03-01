@@ -20,11 +20,11 @@
 
 package de.d3web.we.kdom.basic;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 
 public class SquareBracedType extends EmbracedType {
 
-	public SquareBracedType(KnowWEObjectType bodyType) {
+	public SquareBracedType(Type bodyType) {
 		super(bodyType, "[", "]");
 	}
 

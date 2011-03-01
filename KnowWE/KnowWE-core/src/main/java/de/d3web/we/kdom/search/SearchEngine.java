@@ -31,8 +31,9 @@ import java.util.regex.Pattern;
 
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 
 /**
  * Generic KDOM Search Engine
@@ -64,12 +65,12 @@ public class SearchEngine {
 	 * the type parameter T.
 	 *
 	 * @created Dec 14, 2010
-	 * @param <T> Type parameter representing the section's KnowWEObjectType
+	 * @param <T> Type parameter representing the section's Type
 	 * @param query the search query
 	 * @param clazz Class necessary for the TypeParameter
 	 * @return Map containing the results for each article.
 	 */
-	public <T extends KnowWEObjectType> Map<KnowWEArticle, Collection<Result>> search(String query, Class<T> clazz) {
+	public <T extends Type> Map<KnowWEArticle, Collection<Result>> search(String query, Class<T> clazz) {
 		Iterator<KnowWEArticle> iter = articleManager.getArticleIterator();
 		Map<KnowWEArticle, Collection<Result>> results = new HashMap<KnowWEArticle, Collection<Result>>();
 
@@ -95,13 +96,13 @@ public class SearchEngine {
 	 * ObjectType of the sections with the type parameter T.
 	 *
 	 * @created Dec 15, 2010
-	 * @param <T> Type parameter representing the section's KnowWEObjectType
+	 * @param <T> Type parameter representing the section's Type
 	 * @param query the search query
 	 * @param article the article on which the search is based
 	 * @param clazz Class necessary for the TypeParameter
 	 * @return Collection containing the found sections
 	 */
-	public <T extends KnowWEObjectType> Collection<Result> search(String query, KnowWEArticle article, Class<T> clazz) {
+	public <T extends Type> Collection<Result> search(String query, KnowWEArticle article, Class<T> clazz) {
 		if (article == null || query == null || clazz == null) {
 			throw new IllegalArgumentException("Need an article, a query and a class");
 		}
@@ -121,13 +122,13 @@ public class SearchEngine {
 
 	}
 
-	private <T extends KnowWEObjectType> Collection<Result> search(Pattern query, Section<KnowWEArticle> section, Class<T> clazz) {
+	private <T extends Type> Collection<Result> search(Pattern query, Section<KnowWEArticle> section, Class<T> clazz) {
 		if (section == null || query == null || clazz == null) {
 			throw new IllegalArgumentException("Need an article, a query and a class");
 		}
 
 		List<Section<T>> sectionsWithType = new LinkedList<Section<T>>();
-		section.findSuccessorsOfType(clazz, sectionsWithType);
+		Sections.findSuccessorsOfType(section, clazz, sectionsWithType);
 
 		Collection<Result> results = new LinkedList<Result>();
 		for (Section<T> sectionWithType : sectionsWithType) {

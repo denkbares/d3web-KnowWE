@@ -20,14 +20,14 @@
 
 package de.d3web.we.flow.type;
 
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.AbstractXMLType;
 
 /**
  * 
  * @author Reinhard Hatko
  * @created 05.08.10
  */
-public class SnapshotType extends AbstractXMLObjectType {
+public class SnapshotType extends AbstractXMLType {
 
 	private static SnapshotType instance;
 

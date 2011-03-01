@@ -26,10 +26,11 @@ import java.util.regex.Pattern;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.MessageRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
@@ -97,7 +98,7 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
  * @author Volker Belli
  * 
  */
-public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
+public class DefaultMarkupType extends AbstractType {
 
 	private final static String DEFAULTMARKUPSUBTREEHANDLER_EXTENSIONPOINT = "DefaultMarkupSubtreeHandler";
 
@@ -153,7 +154,7 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 		Extension[] extensions = PluginManager.getInstance().getExtensions("KnowWEExtensionPoints",
 				DEFAULTMARKUPSUBTREEHANDLER_EXTENSIONPOINT);
 		for (Extension e : extensions) {
-			this.addSubtreeHandler((SubtreeHandler<? extends KnowWEObjectType>) e.getNewInstance());
+			this.addSubtreeHandler((SubtreeHandler<? extends Type>) e.getNewInstance());
 		}
 	}
 
@@ -200,10 +201,10 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	 *         {@link DefaultMarkupType}
 	 */
 	public static Section<? extends ContentType> getContentSection(Section<?> section) {
-		if (!DefaultMarkupType.class.isAssignableFrom(section.getObjectType().getClass())) {
+		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
 			throw new IllegalArgumentException("section not of type DefaultMarkupType");
 		}
-		return section.findChildOfType(ContentType.class);
+		return Sections.findChildOfType(section, ContentType.class);
 	}
 
 	/**
@@ -259,12 +260,13 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	 *         {@link DefaultMarkupType}
 	 */
 	public static Section<? extends AnnotationType> getAnnotationSection(Section<?> section, String name) {
-		if (!DefaultMarkupType.class.isAssignableFrom(section.getObjectType().getClass())) {
+		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
 			throw new IllegalArgumentException("section not of type DefaultMarkupType");
 		}
-		List<Section<AnnotationType>> children = section.findChildrenOfType(AnnotationType.class);
+		List<Section<AnnotationType>> children = Sections.findChildrenOfType(section,
+				AnnotationType.class);
 		for (Section<AnnotationType> child : children) {
-			String childName = child.getObjectType().getName();
+			String childName = child.get().getName();
 			if (childName.equalsIgnoreCase(name)) {
 				return child;
 			}
@@ -285,13 +287,14 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	 *         {@link DefaultMarkupType}
 	 */
 	public static List<Section<? extends AnnotationType>> getAnnotationSections(Section<?> section, String name) {
-		if (!DefaultMarkupType.class.isAssignableFrom(section.getObjectType().getClass())) {
+		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
 			throw new IllegalArgumentException("section not of type DefaultMarkupType");
 		}
-		List<Section<AnnotationType>> children = section.findChildrenOfType(AnnotationType.class);
+		List<Section<AnnotationType>> children = Sections.findChildrenOfType(section,
+				AnnotationType.class);
 		List<Section<? extends AnnotationType>> results = new ArrayList<Section<? extends AnnotationType>>();
 		for (Section<AnnotationType> child : children) {
-			String childName = child.getObjectType().getName();
+			String childName = child.get().getName();
 			if (childName.equalsIgnoreCase(name)) {
 				results.add(child);
 			}

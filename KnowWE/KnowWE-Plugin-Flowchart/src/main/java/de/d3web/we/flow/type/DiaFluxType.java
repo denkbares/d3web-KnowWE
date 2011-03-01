@@ -21,6 +21,7 @@ package de.d3web.we.flow.type;
 import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.flow.DiaFluxRenderer;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -52,7 +53,8 @@ public class DiaFluxType extends DefaultMarkupType {
 
 	public static String getFlowchartName(Section<DefaultMarkupType> diaFluxSection) {
 
-		Section<FlowchartType> flowchart = diaFluxSection.findSuccessor(FlowchartType.class);
+		Section<FlowchartType> flowchart = Sections.findSuccessor(diaFluxSection,
+				FlowchartType.class);
 
 		if (flowchart == null) {
 			return "";

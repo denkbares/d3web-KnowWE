@@ -22,9 +22,9 @@ package de.d3web.we.flow.type;
 
 import java.util.ArrayList;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.rules.action.RuleAction;
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.AbstractXMLType;
 
 /**
  * 
@@ -32,7 +32,7 @@ import de.d3web.we.kdom.xml.AbstractXMLObjectType;
  * @author Reinhard Hatko
  * Created on: 09.10.2009
  */
-public class ActionType extends	AbstractXMLObjectType{
+public class ActionType extends	AbstractXMLType{
 		
 	private static ActionType instance;
 
@@ -53,15 +53,15 @@ public class ActionType extends	AbstractXMLObjectType{
 		
 		//get the CFAction higher up in the list
 		RuleAction ruleAction = new RuleAction();
-		ArrayList<KnowWEObjectType> list = new ArrayList<KnowWEObjectType>(ruleAction.getAllowedChildrenTypes());
+		ArrayList<Type> list = new ArrayList<Type>(ruleAction.getAllowedChildrenTypes());
 		
 		for (int i = list.size() - 1; i >= 0; i--) {
 			ruleAction.removeChild(i);
 		}
 		ruleAction.addChildType(new CallFlowActionType());
 		
-		for (KnowWEObjectType knowWEObjectType : list) {
-			ruleAction.addChildType(knowWEObjectType);
+		for (Type Type : list) {
+			ruleAction.addChildType(Type);
 		}
 		
 		

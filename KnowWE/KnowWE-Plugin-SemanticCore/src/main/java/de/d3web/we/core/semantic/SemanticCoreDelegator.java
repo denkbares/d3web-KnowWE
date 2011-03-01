@@ -44,7 +44,7 @@ import de.d3web.we.event.Event;
 import de.d3web.we.event.EventListener;
 import de.d3web.we.event.FullParseEvent;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.knowwe.plugin.Instantiation;
 import de.knowwe.plugin.Plugins;
@@ -153,7 +153,7 @@ public class SemanticCoreDelegator implements ISemanticCore, Instantiation, Even
 
 	@Override
 	public List<Statement> getSectionStatementsRecursive(
-			Section<? extends KnowWEObjectType> s) {
+			Section<? extends Type> s) {
 
 		return impl.getSectionStatementsRecursive(s);
 	}

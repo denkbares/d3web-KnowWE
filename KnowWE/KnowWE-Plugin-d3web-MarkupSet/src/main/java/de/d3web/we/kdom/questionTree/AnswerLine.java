@@ -29,9 +29,10 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -60,7 +61,7 @@ import de.knowwe.core.dashtree.DashTreeUtils;
  * @author Jochen
  * 
  */
-public class AnswerLine extends DefaultAbstractKnowWEObjectType {
+public class AnswerLine extends AbstractType {
 
 	@Override
 	protected void init() {
@@ -70,11 +71,11 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 			protected boolean condition(String text, Section<?> father) {
 
 				Section<?> dashTreeElement = father.getFather();
-				if (dashTreeElement.getObjectType() instanceof DashTreeElement) {
+				if (dashTreeElement.get() instanceof DashTreeElement) {
 					Section<? extends DashTreeElement> dashFather = DashTreeUtils
 							.getFatherDashTreeElement(dashTreeElement);
 					if (dashFather != null
-							&& dashFather.findSuccessor(QuestionLine.class) != null) {
+							&& Sections.findSuccessor(dashFather, QuestionLine.class) != null) {
 						return true;
 					}
 				}
@@ -104,7 +105,7 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class InitFlag extends DefaultAbstractKnowWEObjectType {
+	static class InitFlag extends AbstractType {
 
 		public InitFlag() {
 			this.sectionFinder = new OneOfStringEnumFinder(new String[] {
@@ -116,8 +117,8 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 				@Override
 				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<InitFlag> s) {
 
-					Section<AnswerDefinition> aDef = s.getFather().findSuccessor(
-							AnswerDefinition.class);
+					Section<AnswerDefinition> aDef = Sections.findSuccessor(
+							s.getFather(), AnswerDefinition.class);
 
 					Section<? extends QuestionDefinition> qdef = aDef.get().getQuestionSection(
 							aDef);
@@ -165,7 +166,7 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class AnswerText extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraint<AnswerText> {
+	static class AnswerText extends AbstractType implements IncrementalMarker, IncrementalConstraint<AnswerText> {
 
 		private static final String QTEXT_START_SYMBOL = "~";
 
@@ -185,8 +186,8 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 				@Override
 				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AnswerText> sec) {
 
-					Section<AnswerDefinition> aDef = sec.getFather().findSuccessor(
-							AnswerDefinition.class);
+					Section<AnswerDefinition> aDef = Sections.findSuccessor(
+							sec.getFather(), AnswerDefinition.class);
 					
 					Section<? extends QuestionDefinition> qSec = aDef.get().getQuestionSection(aDef); 
 

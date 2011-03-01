@@ -32,8 +32,9 @@ import de.d3web.we.event.EventListener;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.KDOMCreatedEvent;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.objects.TermReference;
 import de.d3web.we.utils.KnowWEUtils;
@@ -62,7 +63,7 @@ public class DashTreeUtils implements EventListener {
 	public static Section<? extends DashTreeElement> getFatherDashTreeElement(Section<?> s) {
 		Section<? extends DashSubtree> dashSubtree = getFatherDashSubtree(s);
 		if (dashSubtree != null) {
-			return dashSubtree.findSuccessor(DashTreeElement.class);
+			return Sections.findSuccessor(dashSubtree, DashTreeElement.class);
 		}
 		return null;
 	}
@@ -70,7 +71,7 @@ public class DashTreeUtils implements EventListener {
 	public static Section<? extends DashTreeElement> getAncestorDashTreeElement(Section<?> s, int dashLevel) {
 		Section<? extends DashSubtree> dashSubtree = getAncestorDashSubtree(s, dashLevel);
 		if (dashSubtree != null) {
-			return dashSubtree.findChildOfType(DashTreeElement.class);
+			return Sections.findChildOfType(dashSubtree, DashTreeElement.class);
 		}
 		return null;
 	}
@@ -78,13 +79,13 @@ public class DashTreeUtils implements EventListener {
 	public static List<Section<? extends DashTreeElement>> getAncestorDashTreeElements(Section<?> s) {
 		List<Section<? extends DashTreeElement>> ancestors = new ArrayList<Section<? extends DashTreeElement>>();
 		List<Section<?>> ancestorSubTrees = new ArrayList<Section<?>>();
-		Section<?> ancestorSubtree = s.findAncestorOfType(DashSubtree.class).getFather();
+		Section<?> ancestorSubtree = Sections.findAncestorOfType(s, DashSubtree.class).getFather();
 		while (ancestorSubtree != null && ancestorSubtree.get() instanceof DashSubtree) {
 			ancestorSubTrees.add(ancestorSubtree);
 			ancestorSubtree = ancestorSubtree.getFather();
 		}
 		for (Section<?> subTree : ancestorSubTrees) {
-			ancestors.add(subTree.findChildOfType(DashTreeElement.class));
+			ancestors.add(Sections.findChildOfType(subTree, DashTreeElement.class));
 		}
 		return ancestors;
 	}
@@ -98,14 +99,15 @@ public class DashTreeUtils implements EventListener {
 	public static Section<? extends DashTreeElementContent> getFatherDashTreeElementContent(Section<?> s) {
 		Section<? extends DashTreeElement> dashTreeFatherElement = getFatherDashTreeElement(s);
 		if (dashTreeFatherElement != null) {
-			return dashTreeFatherElement.findChildOfType(DashTreeElementContent.class);
+			return Sections.findChildOfType(dashTreeFatherElement, DashTreeElementContent.class);
 		}
 		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	public static Section<? extends DashSubtree> getFatherDashSubtree(Section<?> s) {
-		Section<? extends DashSubtree> dashSubtree = s.findAncestorOfType(DashSubtree.class);
+		Section<? extends DashSubtree> dashSubtree = Sections.findAncestorOfType(s,
+				DashSubtree.class);
 		if (dashSubtree != null) {
 			if (dashSubtree.getFather().get() instanceof DashSubtree) {
 				return (Section<? extends DashSubtree>) dashSubtree.getFather();
@@ -117,7 +119,7 @@ public class DashTreeUtils implements EventListener {
 	@SuppressWarnings("unchecked")
 	public static Section<DashSubtree> getAncestorDashSubtree(Section<?> s, int dashLevel) {
 		if (dashLevel < 0) return null;
-		Section<?> dashSubtree = s.findAncestorOfType(DashSubtree.class);
+		Section<?> dashSubtree = Sections.findAncestorOfType(s, DashSubtree.class);
 		if (dashSubtree != null) {
 			int fLevel = getDashLevel(dashSubtree);
 			if (fLevel < dashLevel) {
@@ -152,7 +154,7 @@ public class DashTreeUtils implements EventListener {
 
 	public static int getPositionInFatherDashSubtree(Section<?> s) {
 
-		Section<DashSubtree> subTreeRoot = s.findAncestorOfType(DashSubtree.class);
+		Section<DashSubtree> subTreeRoot = Sections.findAncestorOfType(s, DashSubtree.class);
 
 		if (subTreeRoot != null) {
 
@@ -195,8 +197,8 @@ public class DashTreeUtils implements EventListener {
 
 		if (change != null) return change;
 		
-		List<Class<? extends KnowWEObjectType>> filteredTypes =
-			new ArrayList<Class<? extends KnowWEObjectType>>(1);
+		List<Class<? extends Type>> filteredTypes =
+			new ArrayList<Class<? extends Type>>(1);
 		filteredTypes.add(TermReference.class);
 
 		HashSet<Section<DashSubtree>> visited = new HashSet<Section<DashSubtree>>();
@@ -208,9 +210,9 @@ public class DashTreeUtils implements EventListener {
 
 
 	@SuppressWarnings("unchecked")
-	private static boolean isChangeInSubtree(KnowWEArticle article, Section<DashSubtree> s, List<Class<? extends KnowWEObjectType>> filteredTypes, HashSet<Section<DashSubtree>> visited) {
+	private static boolean isChangeInSubtree(KnowWEArticle article, Section<DashSubtree> s, List<Class<? extends Type>> filteredTypes, HashSet<Section<DashSubtree>> visited) {
 		List<Section<?>> nodes = new LinkedList<Section<?>>();
-		s.getAllNodesPostOrder(nodes);
+		Sections.getAllNodesPostOrder(s, nodes);
 		for (Section<?> node : nodes) {
 			if (node.get() instanceof TermDefinition) {
 				Section<TermDefinition> tdef = (Section<TermDefinition>) node;

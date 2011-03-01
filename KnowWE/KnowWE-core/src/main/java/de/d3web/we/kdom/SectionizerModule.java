@@ -22,13 +22,9 @@ package de.d3web.we.kdom;
 
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
+
 public interface SectionizerModule {
 
-	public Section<?> createSection(KnowWEArticle article,
-			KnowWEObjectType ob,
-			Section<?> father,
-			Section<?> thisSection,
-			String secText,
-			SectionFinderResult result);
+	public Section<?> createSection(String text, Type type, Section<?> father, KnowWEArticle article, SectionFinderResult result);
 
 }

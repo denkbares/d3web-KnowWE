@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 
 /**
@@ -44,7 +44,7 @@ public class SplittingSectionFinder extends SectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+	public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
 
 		Matcher tagMatcher = pattern.matcher(text);
 		List<SectionFinderResult> resultRegex = new ArrayList<SectionFinderResult>();

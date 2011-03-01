@@ -20,7 +20,7 @@
 
 package de.d3web.we.kdom.report;
 
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 
 /**
  * Abstract class for a message denoting a notice (some non-critical feedback
@@ -28,9 +28,9 @@ import de.d3web.we.kdom.AbstractKnowWEObjectType;
  * 
  * 
  * Will be rendered by the NoticeRenderer specified by getNoticeRenderer() of
- * the KnowWEObjectType
+ * the Type
  * 
- * @see @link {@link AbstractKnowWEObjectType}
+ * @see @link {@link AbstractType}
  * 
  * 
  * @author Jochen

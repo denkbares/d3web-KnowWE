@@ -20,12 +20,12 @@
 
 package de.knowwe.core.taghandler;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.MultiSectionFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 
-public class TagHandlerTypeEndSymbol extends DefaultAbstractKnowWEObjectType {
+public class TagHandlerTypeEndSymbol extends AbstractType {
 
 	@Override
 	protected void init() {

@@ -25,14 +25,14 @@ import java.util.logging.Logger;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.subtreeHandler.ConstraintModule;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
-public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends SubtreeHandler<T> {
+public abstract class D3webSubtreeHandler<T extends Type> extends SubtreeHandler<T> {
 
 	public D3webSubtreeHandler() {
 		registerConstraintModule(0, new D3webCreateConstraints<T>());
@@ -70,7 +70,7 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 
 	// ++++++++++++++++++++++ Constraint classes ++++++++++++++++++++++ //
 
-	private class D3webCreateConstraints<T2 extends KnowWEObjectType> extends ConstraintModule<T2> {
+	private class D3webCreateConstraints<T2 extends Type> extends ConstraintModule<T2> {
 
 		public D3webCreateConstraints() {
 			super(Operator.DONT_COMPILE_IF_VIOLATED, Purpose.CREATE);
@@ -83,7 +83,7 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 			// TermDefinitions and TermReferences implement this interface,
 			// because they are already handled correctly in the incremental
 			// context.
-			// For KnowWEObjectTypes that don't implement this interface, we
+			// For Types that don't implement this interface, we
 			// assume, that they are not designed for incremental compilation.
 			// We then trigger a full parse, in case they are not reused or in
 			// case that the terms for this article were modified by another
@@ -110,7 +110,7 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 
 	}
 
-	private class D3webDestroyConstraints<T2 extends KnowWEObjectType> extends ConstraintModule<T2> {
+	private class D3webDestroyConstraints<T2 extends Type> extends ConstraintModule<T2> {
 
 		public D3webDestroyConstraints() {
 			super(Operator.COMPILE_IF_VIOLATED, Purpose.DESTROY);
@@ -119,7 +119,7 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 		@Override
 		public boolean violatedConstraints(KnowWEArticle article, Section<T2> s) {
 			// Here we have the same issue as inside the D3webCreateConstraints.
-			// If the KnowWEObjectType does not implement the Interface
+			// If the Type does not implement the Interface
 			// IncrementalMarker, we have to assume, that the type is not
 			// designed for incremental compilation.
 			// If the terminology is modified but this type isn't notified,

@@ -30,10 +30,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.SectionID;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.KnowWEUtils;
@@ -101,7 +100,7 @@ public class XMLSectionFinder implements ISectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 		Matcher tagMatcher = tagPattern.matcher(text);
 
@@ -120,8 +119,8 @@ public class XMLSectionFinder implements ISectionFinder {
 				// its the first tag with this name
 				if (depth == 0 && foundTagName.equals(new String())) {
 
-					parameterMap.put(AbstractXMLObjectType.HEAD, tagMatcher.group());
-					parameterMap.put(AbstractXMLObjectType.TAGNAME, tagMatcher.group(2));
+					parameterMap.put(AbstractXMLType.HEAD, tagMatcher.group());
+					parameterMap.put(AbstractXMLType.TAGNAME, tagMatcher.group(2));
 					sectionStart = tagMatcher.start();
 					foundTagName = tagMatcher.group(2);
 
@@ -151,7 +150,7 @@ public class XMLSectionFinder implements ISectionFinder {
 			else {
 				// it's the closing tag belonging to the first opening tag
 				if (depth == 1 && foundTagName.equals(tagMatcher.group(2))) {
-					parameterMap.put(AbstractXMLObjectType.TAIL, tagMatcher.group());
+					parameterMap.put(AbstractXMLType.TAIL, tagMatcher.group());
 					result.add(makeSectionFinderResult(sectionStart, tagMatcher.end(),
 							makeSectionID(father, parameterMap), parameterMap));
 				}
@@ -180,14 +179,11 @@ public class XMLSectionFinder implements ISectionFinder {
 				sectionID = new SectionID(father.getArticle(), parameterMap.get("id"));
 			}
 			else {
-				sectionID = new SectionID(father, parameterMap.get(AbstractXMLObjectType.TAGNAME));
+				sectionID = new SectionID(father, parameterMap.get(AbstractXMLType.TAGNAME));
 			}
+			KnowWEUtils.storeObject(father.getWeb(), null, sectionID.toString(),
+					ATTRIBUTE_MAP_STORE_KEY, parameterMap);
 
-			KnowWEArticle art = father.getArticle();
-			if (art != null) {
-				KnowWEUtils.storeObject(father.getWeb(), null, sectionID.toString(),
-						ATTRIBUTE_MAP_STORE_KEY, parameterMap);
-			}
 		}
 
 		return sectionID;
@@ -219,7 +215,7 @@ public class XMLSectionFinder implements ISectionFinder {
 
 		public Map<String, String> paras;
 
-		public TestSectionFinder(KnowWEObjectType type, String tag) {
+		public TestSectionFinder(Type type, String tag) {
 			super(tag);
 		}
 

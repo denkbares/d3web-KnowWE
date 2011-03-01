@@ -25,10 +25,9 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.DelegateRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -71,7 +70,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 		question.setSectionFinder(new ISectionFinder() {
 
 			@Override
-			public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+			public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
 				return SectionFinderResult.createSingleItemList(new SectionFinderResult(
 						text.indexOf('[') + 1, text.indexOf(']')));
 			}
@@ -81,7 +80,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 
 	@Override
 	protected Condition createCondition(KnowWEArticle article, de.d3web.we.kdom.Section<CondKnown> section) {
-		Section<QuestionReference> qRef = section.findSuccessor(QuestionReference.class);
+		Section<QuestionReference> qRef = Sections.findSuccessor(section, QuestionReference.class);
 		if (qRef != null) {
 			Question q = qRef.get().getTermObject(article, qRef);
 
@@ -106,7 +105,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 	private class CondKnownFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
 
 			for (String key : KEYWORDS) {
 				if (text.trim().startsWith(key + "[") && text.trim().endsWith("]")) return new AllTextFinderTrimmed().lookForSections(

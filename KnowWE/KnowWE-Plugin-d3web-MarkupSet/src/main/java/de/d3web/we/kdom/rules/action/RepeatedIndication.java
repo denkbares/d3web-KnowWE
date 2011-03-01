@@ -28,8 +28,9 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.indication.ActionRepeatedIndication;
 import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.rules.action.ContraIndicationAction.QuestionReferenceInBrackets;
 import de.d3web.we.object.QuestionReference;
 
@@ -48,13 +49,13 @@ public class RepeatedIndication extends BracketsAction<RepeatedIndication> {
 	}
 
 	@Override
-	protected KnowWEObjectType getObjectReference() {
+	protected Type getObjectReference() {
 		return new QuestionReferenceInBrackets();
 	}
 
 	@Override
 	public PSAction createAction(KnowWEArticle article, Section<RepeatedIndication> s) {
-		Section<QuestionReference> qSec = s.findSuccessor(QuestionReference.class);
+		Section<QuestionReference> qSec = Sections.findSuccessor(s, QuestionReference.class);
 		Question termObject = qSec.get().getTermObject(article, qSec);
 
 		ActionRepeatedIndication repInd = new ActionRepeatedIndication();

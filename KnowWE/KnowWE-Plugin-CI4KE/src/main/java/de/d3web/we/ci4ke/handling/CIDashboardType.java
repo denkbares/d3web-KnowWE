@@ -32,6 +32,7 @@ import de.d3web.core.utilities.Pair;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.defaultMarkup.AnnotationType;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
@@ -195,7 +196,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		List<Section<CIDashboardType>> sectionList = new ArrayList<Section<CIDashboardType>>();
 		for (KnowWEArticle article : KnowWEEnvironment.getInstance().
 				getArticleManager(section.getWeb()).getArticles()) {
-			article.getSection().findSuccessorsOfType(CIDashboardType.class, sectionList);
+			Sections.findSuccessorsOfType(article.getSection(), CIDashboardType.class, sectionList);
 		}
 
 		for (Section<CIDashboardType> s : sectionList) {

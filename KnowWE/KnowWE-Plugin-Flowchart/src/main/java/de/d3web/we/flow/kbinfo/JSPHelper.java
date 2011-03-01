@@ -28,8 +28,9 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.AbstractXMLType;
 
 public class JSPHelper {
 
@@ -118,7 +119,8 @@ public class JSPHelper {
 					+ kdomID);
 		}
 
-		Section<FlowchartType> flowchart = diaFluxSection.findSuccessor(FlowchartType.class);
+		Section<FlowchartType> flowchart = Sections.findSuccessor(diaFluxSection,
+				FlowchartType.class);
 
 		if (flowchart == null) {
 			return getEmptyFlowchart();
@@ -163,12 +165,12 @@ public class JSPHelper {
 		return getFlowchartAttributeValue("height");
 	}
 
-	@SuppressWarnings("unchecked")
 	private String getFlowchartAttributeValue(String attributeName) {
-		Section<FlowchartType> section = (Section<FlowchartType>) KnowWEEnvironment.getInstance().getArticle(
-				parameterMap.getWeb(), parameterMap.getTopic()).findSection(
-				parameterMap.get("kdomID")).findSuccessor(FlowchartType.class);
+		Section<FlowchartType> section = Sections.findSuccessor(
+				KnowWEEnvironment.getInstance().getArticle(
+						parameterMap.getWeb(), parameterMap.getTopic()).findSection(
+						parameterMap.get("kdomID")), FlowchartType.class);
 
-		return AbstractXMLObjectType.getAttributeMapFor(section).get(attributeName);
+		return AbstractXMLType.getAttributeMapFor(section).get(attributeName);
 	}
 }

@@ -35,7 +35,7 @@ public class ReviseIterator {
 
 	private void addToPriorityMap(List<Section<?>> sections) {
 		for (Section<?> sec : sections) {
-			for (Priority p : sec.getObjectType().getSubtreeHandlers().keySet()) {
+			for (Priority p : sec.get().getSubtreeHandlers().keySet()) {
 				if (p.compareTo(currentPriority) > 0) currentPriority = p;
 				priorityMap.get(p).add(sec);
 			}
@@ -46,7 +46,7 @@ public class ReviseIterator {
 	public void addRootSectionToRevise(Section<?> rootSection) {
 		rootSectionsList.add(rootSection);
 		List<Section<?>> sections = new LinkedList<Section<?>>();
-		rootSection.getAllNodesPostOrder(sections);
+		Sections.getAllNodesPostOrder(rootSection, sections);
 		addToPriorityMap(sections);
 	}
 	
@@ -54,7 +54,7 @@ public class ReviseIterator {
 		init();
 		for (Section<?> rootSection : rootSectionsList) {
 			List<Section<?>> sections = new LinkedList<Section<?>>();
-			rootSection.getAllNodesPostOrder(sections);
+			Sections.getAllNodesPostOrder(rootSection, sections);
 			addToPriorityMap(sections);
 		}
 	}

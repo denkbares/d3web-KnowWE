@@ -20,7 +20,7 @@
 package de.knowwe.core.renderer;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
@@ -33,7 +33,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  *         content is automatically updated when answers are set.
  * 
  */
-public class ReRenderSectionMarkerRenderer<T extends KnowWEObjectType> extends KnowWEDomRenderer<T> {
+public class ReRenderSectionMarkerRenderer<T extends Type> extends KnowWEDomRenderer<T> {
 
 	/**
 	 * Holds the renderer of the inner text.

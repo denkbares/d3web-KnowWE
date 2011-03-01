@@ -20,7 +20,7 @@
 package de.knowwe.core.dashtree;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.subtreeHandler.ConstraintModule;
 
@@ -33,9 +33,9 @@ import de.d3web.we.kdom.subtreeHandler.ConstraintModule;
  * 
  * @author Albrecht Striffler
  * @created 25.01.2011
- * @param <T> is the KnowWEObjectType of the Section this module is used with.
+ * @param <T> is the Type of the Section this module is used with.
  */
-public class AncestorSubtreeChangeConstraint<T extends KnowWEObjectType> extends ConstraintModule<T> {
+public class AncestorSubtreeChangeConstraint<T extends Type> extends ConstraintModule<T> {
 
 	private int dashLvl = 0;
 

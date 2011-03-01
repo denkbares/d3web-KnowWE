@@ -1,6 +1,6 @@
 package de.d3web.we.kdom.condition;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.UserRatingConditionType.UserEvaluation;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -11,7 +11,7 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
  * @author Reinhard Hatko
  * @created 23.11.2010
  */
-public class UserRatingType extends DefaultAbstractKnowWEObjectType {
+public class UserRatingType extends AbstractType {
 
 	
 	private static final String SOL_STATE_CONFIRMED = "confirmed";

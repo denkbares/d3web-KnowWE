@@ -20,44 +20,91 @@
 
 package de.d3web.we.kdom.sectionFinder;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
-import de.d3web.we.kdom.constraint.SingleChildConstraint;
+import de.d3web.we.kdom.Sectionizable;
+import de.d3web.we.kdom.Type;
 
-public class AllBeforeTypeSectionFinder extends SectionFinder {
+public class AllBeforeTypeSectionFinder implements ISectionFinder {
 
-	KnowWEObjectType markerType = null;
+	Sectionizable markerType = null;
 
-	private final AllTextFinderTrimmed allTextFinderTrimmed = new AllTextFinderTrimmed();
+	LinkedList<String> findThese = new LinkedList<String>();
 
-	private AllBeforeTypeSectionFinder(KnowWEObjectType type) {
+	/**
+	 * To use this SectionFinder, the argument type has to be added as an
+	 * allowed children to the parent type directly before the type with this
+	 * SectionFinder is added to the parent type.
+	 * <p/>
+	 * <b>Examples:</b>
+	 * <pre>
+	 * public ParentType() {
+	 * 
+	 * 	FirstType firstType = new FirstType();
+	 * 	SecondType secondType = new SecondType();
+	 * 
+	 * 	secondType.setSectionFinder(new AllBeforeTypeSectionFinder(firstType));
+	 * 
+	 * 	this.childrenTypes.add(firstType);
+	 * 	this.childrenTypes.add(secondType);
+	 * 
+	 * }
+	 * </pre>
+	 * 
+	 */
+	public AllBeforeTypeSectionFinder(Sectionizable type) {
 		this.markerType = type;
+		type.setSectionFinder(new AllBeforeTypeSectionFinderWrapper(type.getSectioFinder(), this));
 	}
 
-	public static ISectionFinder createFinder(KnowWEObjectType type) {
-
-		ConstraintSectionFinder f = new ConstraintSectionFinder(
-				new AllBeforeTypeSectionFinder(type));
-		f.addConstraint(SingleChildConstraint.getInstance());
-		return f;
-
+	public void addStringToFind(String findThis) {
+		findThese.add(findThis);
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
-		// note this indexOf call is unsafe - wrong matches are caught by
-		// SingelChildConstraint
-		Section s = father.getChildSectionAtPosition(father.getOriginalText().indexOf(
-				text)
-				+ text.length());
-		if (s != null && s.getObjectType().getName().equals(markerType.getName())) {
-			return allTextFinderTrimmed.lookForSections(text, father, type);
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
+		if (!findThese.isEmpty()) {
+			List<SectionFinderResult> results = new ArrayList<SectionFinderResult>(findThese.size());
+			int start = text.indexOf(findThese.getFirst());
+			if (start >= 0) {
+				results.add(new SectionFinderResult(start, findThese.getFirst().length()));
+				findThese.removeFirst();
+			}
+			return results;
+		}
+		return null;
+	}
+
+	class AllBeforeTypeSectionFinderWrapper implements ISectionFinder {
+
+		private final ISectionFinder allBeforeThis;
+
+		private final AllBeforeTypeSectionFinder getsAllBefore;
+
+		public AllBeforeTypeSectionFinderWrapper(ISectionFinder allBeforeThis, AllBeforeTypeSectionFinder getsAllBefore) {
+			this.allBeforeThis = allBeforeThis;
+			this.getsAllBefore = getsAllBefore;
+
 		}
 
-		return null;
+		@Override
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
+			List<SectionFinderResult> found = allBeforeThis.lookForSections(text, father, type);
+			if (found != null) {
+				int lastEnd = 0;
+				for (SectionFinderResult result : found) {
+					if (lastEnd < result.getStart()) {
+						getsAllBefore.addStringToFind(text.substring(lastEnd, result.getStart()).trim());
+					}
+					lastEnd = result.getEnd();
+				}
+			}
+			return found;
+		}
+
 	}
 
 }

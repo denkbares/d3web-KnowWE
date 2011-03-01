@@ -19,13 +19,13 @@
  */
 package de.d3web.we.flow.type;
 
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.AbstractXMLType;
 
 /**
  * 
  * @author hatko Created on: 08.10.2009
  */
-public class OriginType extends AbstractXMLObjectType {
+public class OriginType extends AbstractXMLType {
 
 	private static OriginType instance;
 

@@ -22,9 +22,9 @@ package de.d3web.we.kdom.defaultMarkup;
 
 import java.util.Collections;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 
-public class AnnotationType extends DefaultAbstractKnowWEObjectType {
+public class AnnotationType extends AbstractType {
 
 	// private final static int FLAGS = Pattern.CASE_INSENSITIVE |
 	// Pattern.MULTILINE | Pattern.DOTALL;

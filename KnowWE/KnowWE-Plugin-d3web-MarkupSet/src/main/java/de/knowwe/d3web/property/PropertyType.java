@@ -25,7 +25,7 @@ import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
@@ -50,7 +50,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Markus Friedrich (denkbares GmbH)
  * @created 10.11.2010
  */
-public class PropertyType extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraint<PropertyType> {
+public class PropertyType extends AbstractType implements IncrementalMarker, IncrementalConstraint<PropertyType> {
 
 	/**
 	 * 

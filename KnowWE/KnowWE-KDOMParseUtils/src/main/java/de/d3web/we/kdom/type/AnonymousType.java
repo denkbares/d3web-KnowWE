@@ -20,9 +20,9 @@
 
 package de.d3web.we.kdom.type;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 
-public class AnonymousType extends DefaultAbstractKnowWEObjectType {
+public class AnonymousType extends AbstractType {
 
 	private String name;
 

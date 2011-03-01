@@ -21,350 +21,121 @@
 package de.d3web.we.kdom;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.utils.PairOfInts;
 
 /**
  * @author Jochen, Albrecht
  * 
  *         This singleton contains the algorithm which parses the KDOM. The
  *         algorithm searches occurrences that match certain types.
- * @param <T>
  * @see splitToSections
  * 
  */
-public class Sectionizer {
+public class Sectionizer implements Parser {
 
-	/**
-	 * Singleton instance
-	 */
-	private static Sectionizer instance;
+	private static final List<SectionizerModule> sectionizerModules = new ArrayList<SectionizerModule>();
 
-	/**
-	 * Singleton lazy factory
-	 * 
-	 * @return
-	 */
-	public static synchronized Sectionizer getInstance() {
-		if (instance == null) instance = new Sectionizer();
-		return instance;
-	}
+	private static SectionizerModule defaultSectionizerModule = new DefaultSectionizerModule();
 
-	/**
-	 * prevent cloning
-	 */
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException();
-	}
-
-	private final List<SectionizerModule> sectionizerModules = new ArrayList<SectionizerModule>();
-
-	private SectionizerModule defaultSectionizerModule = new DefaultSectionizerModule();
-
-	public void registerSectionizerModule(SectionizerModule sectionizerModule) {
+	public static void registerSectionizerModule(SectionizerModule sectionizerModule) {
 		sectionizerModules.add(sectionizerModule);
 	}
 
-	public void setDefaultSectionizerModule(SectionizerModule defSectionizerModule) {
-		if (defSectionizerModule != null) this.defaultSectionizerModule = defSectionizerModule;
+	public static void setDefaultSectionizerModule(SectionizerModule defSectionizerModule) {
+		if (defSectionizerModule != null) defaultSectionizerModule = defSectionizerModule;
 	}
 
-	// protected TreeMap<Priority, List<SectionizerModule>> sModMap = new
-	// TreeMap<Priority, List<SectionizerModule>>();
-	//
-	//
-	// public void addSectionizerModule(SectionizerModule sModule) {
-	// List<SectionizerModule> sModList = sModMap.get(Priority.DEFAULT);
-	// if (sModList == null) {
-	// sModList = new ArrayList<SectionizerModule>();
-	// sModMap.put(Priority.DEFAULT, sModList);
-	// }
-	// sModList.add(sModule);
-	// }
-	//
-	// public void addSectionizerModule(Priority p, SectionizerModule sModule) {
-	// List<SectionizerModule> sModList = sModMap.get(p);
-	// if (sModList == null) {
-	// sModList = new ArrayList<SectionizerModule>();
-	// sModMap.put(p, sModList);
-	// }
-	// else {
-	// if (p == Priority.HIGHEST) {
-	// throw new IllegalArgumentException(
-	// "There can only be one highest-priority "
-	// + SectionizerModule.class.getSimpleName());
-	// }
-	// if (p == Priority.LOWEST) {
-	// throw new IllegalArgumentException(
-	// "There can only be one lowest-priority "
-	// + SectionizerModule.class.getSimpleName());
-	// }
-	// }
-	// sModList.add(sModule);
-	// }
+	@Override
+	public Section<?> parse(String text, Type type, SectionID id, Section<? extends Type> father, KnowWEArticle article) {
+		Section<?> section = Section.createSection(text, type, father, article, id);
+		
+		// fetches the allowed children types of the local type
+		ArrayList<Type> types = new ArrayList<Type>();
+		if (type.getAllowedChildrenTypes() != null) {
+			types.addAll(type.getAllowedChildrenTypes());
+		}
 
-	/**
-	 * DO NEVER TOUCH THIS ALGORITHM because this works
-	 * 
-	 * Working for types as priority in list: -searches type occurences in text
-	 * -creates according section nodes which parse itself recursively
-	 * -unallocated text parts are temporarily store as UndefinedSection which
-	 * can be allocated by later types of the type-list
-	 * 
-	 * When list is done, UndefinedSections are made PlainText-nodes
-	 * 
-	 * @param text The text to be searched for type occurrences
-	 * @param allowedTypes The types that are searched for, priority ordered
-	 * @param father Father-node section
-	 * @param topic topic name
-	 * @param mgn Knowledgebase
-	 * @param report ParseReport
-	 * @param idgen IDGenerator to generate unique IDs for new nodes
-	 */
-	@SuppressWarnings("unchecked")
-	public void splitToSections(String text,
-			List<KnowWEObjectType> allowedTypes, Section<?> father,
-			KnowWEArticle article) {
+		// adding the registered global types to the children-list
+		if (KnowWEEnvironment.GLOBAL_TYPES_ENABLED
+				&& !(type instanceof TerminalType)
+				&& type.allowesGlobalTypes()) {
+			types.addAll(KnowWEEnvironment.getInstance().getGlobalTypes());
+		}
+		
+		if (!types.isEmpty()) {
+			splitToSections(section.getText(), section, article, types, 0);
+		}
+		
+		return section;
+	}
 
-		// initializes the list with just one single section
-		ArrayList<Section<?>> sectionList = new ArrayList<Section<?>>();
-		sectionList.add(new UndefinedSection(text, 0, article));
+	public void splitToSections(String text, Section<?> father, KnowWEArticle article, ArrayList<Type> types, int posInTypes) {
 
-		// SEARCH ALL SPECIAL SECTIONS IN DEFINED ORDER
-		for (KnowWEObjectType ob : allowedTypes) {
+		if (posInTypes > types.size()) return;
 
-			// for the case that somehow null came into childrentypes-list
-			if (ob == null) {
-				continue;
-			}
+		Type type = posInTypes == types.size() ? PlainText.getInstance() : types.get(posInTypes);
 
-			ISectionFinder finder = ob.getSectioner();
-			if (finder == null) {
-				continue;
-			}
+		posInTypes++;
 
-			// thisSection is used as "pseudo-Index" to iterate over the, while
-			// its modified
-			// (avoid concurrentModificationException)
-			Section<?> thisSection = sectionList.get(0);
-			while (thisSection != null) {
+		if (type == null || !(type instanceof Sectionizable)) return;
 
-				// the position of the current section in sectionList
-				int index = sectionList.indexOf(thisSection);
+		ISectionFinder finder = ((Sectionizable) type).getSectioFinder();
+		if (finder == null) return;
 
-				// Set the next Section:
-				Section<?> nextSection;
-				// last element reached
-				if (index == sectionList.size() - 1) nextSection = null;
-				// currentSection is not last element in sectionList
-				else nextSection = sectionList.get(index + 1);
+		List<SectionFinderResult> results = finder.lookForSections(text,
+				father, type);
 
-				// get the text from the current Section
-				String secText = thisSection.getOriginalText();
-
-				// skip sections already taken by a sectionFinder (they are not
-				// undefined anymore)
-				if (!(thisSection instanceof UndefinedSection)) {
-					thisSection = nextSection;
+		int lastEnd = 0;
+		boolean createdSection = false;
+		if (results != null) {
+			for (SectionFinderResult r : results) {
+				if (r == null) {
 					continue;
 				}
 
-				if (hasExclusiveSon(father, thisSection)) {
-					thisSection = nextSection;
+				if (r.getStart() < lastEnd || r.getStart() > r.getEnd()) {
+					Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
+							"Invalid SectionFinderResults for the Type '"
+									+ type.getName() + "'. Results: " + results + ". Result " + r
+									+ " will be skipped.");
 					continue;
 				}
 
-				// find the sub-sections
-				List<SectionFinderResult> results = finder.lookForSections(secText,
-						father, ob);
-
-				if (results == null) {
-					thisSection = nextSection;
-					continue;
+				if (lastEnd < r.getStart()) {
+					splitToSections(text.substring(lastEnd, r.getStart()), father,
+							article, types, type instanceof ExclusiveType
+									? types.size()
+									: posInTypes);
 				}
 
-				Collections.sort(results);
-				validateNonOverlaps(results, secText, ob);
-
-				List<Section<?>> findings = new ArrayList<Section<?>>();
-				for (SectionFinderResult result : results) {
-					// here the actual Section objects will be 'created'
-					// possibly using incremental parse-moduls
-					Section s = createSection(article, ob, father, thisSection, secText, result);
-					if (s != null) {
-						s.startPosFromTmp = new PairOfInts(result.getStart(),
-								result.getEnd());
-						findings.add(s);
-					}
+				Section<?> child = null;
+				String sectionText = text.substring(r.getStart(), r.getEnd());
+				for (SectionizerModule sModule : sectionizerModules) {
+					child = sModule.createSection(sectionText, type, father,
+							father.getArticle(), r);
+					if (child != null) break;
 				}
-
-				// this sectionFinder has found something!
-				if (!findings.isEmpty()) {
-					List<Section<?>> newSections = new ArrayList<Section<?>>();
-					Section<?> firstFinding = findings.get(0);
-					if (findings.size() == 1 && firstFinding.isExpanded()) {
-						// the generated section is already expanded and is just
-						// hooked into the tree
-						// long start = System.currentTimeMillis();
-						// Validator.getConsoleInstance().validateSubTree(father);
-						// System.out.println("###" +
-						// (System.currentTimeMillis() - start));
-						newSections.add(firstFinding);
-					}
-					else {
-						PairOfInts positionOfFirstFinding = firstFinding
-								.startPosFromTmp;
-						Section<?> start = new UndefinedSection(secText.substring(
-								0, positionOfFirstFinding.getFirst()), thisSection
-										.getOffSetFromFatherText(), article);
-						if (start.getOriginalText().length() > 0) newSections.add(start);
-						for (int i = 0; i < findings.size(); i++) {
-							PairOfInts position = findings.get(i).startPosFromTmp;
-							Section<?> nextNewSection = findings.get(i);
-							if (nextNewSection.getOriginalText().length() > 0) newSections.add(nextNewSection);
-							Section<?> afterSection;
-
-							// there will be another section => make a new
-							// undefined
-							// section until this next section starts
-							int second = position.getSecond();
-							if (i + 1 < findings.size()) {
-								int first = findings.get(i + 1).startPosFromTmp
-										.getFirst();
-								afterSection = new UndefinedSection(secText
-										.substring(second, first),
-										thisSection.getOffSetFromFatherText()
-												+ second, article);
-								// there will be no more new section => make the
-								// rest of this section undefined
-							}
-							else {
-								afterSection = new UndefinedSection(secText
-										.substring(second, secText.length()),
-										thisSection.getOffSetFromFatherText()
-												+ second, article);
-							}
-							if (afterSection.getOriginalText().length() > 0) newSections.add(afterSection);
-						}
-					}
-					sectionList.remove(thisSection);
-					sectionList.addAll(index, newSections);
+				if (child == null) {
+					child = defaultSectionizerModule.createSection(sectionText, type,
+							father, father.getArticle(), r);
 				}
-				thisSection = nextSection;
-
-			}
-
-		}
-		associateAllUndefinedSectionsToPlaintextOfFather(sectionList,
-				father, article);
-	}
-
-	private Section<?> createSection(KnowWEArticle article,
-			KnowWEObjectType ob,
-			Section<?> father,
-			Section<?> thisSection,
-			String secText,
-			SectionFinderResult result) {
-
-		Section<?> s = null;
-		if (result != null) {
-
-			for (SectionizerModule sModule : sectionizerModules) {
-				s = sModule.createSection(article, ob, father, thisSection, secText, result);
-				if (s != null) return s;
-			}
-			s = defaultSectionizerModule.createSection(article, ob, father, thisSection, secText,
-					result);
-
-		}
-		return s;
-	}
-
-	private boolean hasExclusiveSon(Section<?> father, Section<?> thisSection) {
-		int offset = thisSection.getOffSetFromFatherText();
-
-		// check if left brother is exclusive
-		Section<?> leftBrother = father.getChildSectionAtPosition(offset - 1);
-		if (leftBrother != null) {
-			if (leftBrother.get() instanceof ExclusiveType) {
-				return true;
+				createdSection = true;
+				lastEnd = r.getEnd();
 			}
 		}
-
-		// and if right brother is exclusive
-		Section<?> rightBrother = father.getChildSectionAtPosition(offset
-				+ thisSection.getOriginalText().length());
-		if (rightBrother != null) {
-			if (rightBrother.get() instanceof ExclusiveType) {
-				return true;
-			}
+		if (lastEnd < text.length()) {
+			splitToSections(text.substring(lastEnd, text.length()), father, article,
+					types, type instanceof ExclusiveType && createdSection
+							? types.size()
+							: posInTypes);
 		}
-
-		return false;
-	}
-
-	private void validateNonOverlaps(List<SectionFinderResult> results, String text, KnowWEObjectType type) {
-		if (results == null) return;
-		int lastValue = 0;
-		int i = 0;
-		int invalid = -1;
-		for (SectionFinderResult result : results) {
-			if (result.excludeFromValidating()) {
-				continue;
-			}
-			int a = result.getStart();
-			int b = result.getEnd();
-			if (a < lastValue) {
-				invalid = i;
-				Logger.getLogger(type.getName()).severe(
-						"INVALID SECTIONIZING in " + type.getName()
-								+ ": start = " + a + ", lastEnd = " + lastValue
-								+ ", Text: " + text);
-			}
-			if (b < a) {
-				invalid = i;
-				Logger.getLogger(type.getName()).severe(
-						"INVALID SECTIONIZING in " + type.getName()
-								+ ": start = " + a + ", end = " + b + ", Text: " + text);
-			}
-			if (b > text.length()) {
-				invalid = i;
-				Logger.getLogger(type.getName()).severe(
-						"INVALID SECTIONIZING in " + type.getName()
-								+ ": end = " + b + ", length = " + text.length()
-								+ ", Text: " + text);
-			}
-			if (invalid != -1) {
-				break;
-			}
-			lastValue = b;
-			i++;
-		}
-		if (invalid != -1) {
-			results.remove(invalid);
-			validateNonOverlaps(results, text, type);
-		}
-
-	}
-
-	private void associateAllUndefinedSectionsToPlaintextOfFather(
-			ArrayList<Section<?>> sectionList, Section<?> father, KnowWEArticle article) {
-		for (Section<?> section : sectionList) {
-			if (section instanceof UndefinedSection) {
-				Section.createSection(section.getOriginalText(),
-						PlainText.getInstance(),
-						father, section.getOffSetFromFatherText(),
-						article, null, false);
-			}
-		}
-
 	}
 
 }

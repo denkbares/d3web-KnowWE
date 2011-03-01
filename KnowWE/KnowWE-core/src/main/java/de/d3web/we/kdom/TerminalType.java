@@ -29,10 +29,10 @@ import java.util.List;
  *         sections of this type are leaves in the KDOM
  * 
  */
-public abstract class TerminalType extends AbstractKnowWEObjectType {
+public abstract class TerminalType extends AbstractType {
 
 	@Override
-	public List<KnowWEObjectType> getAllowedChildrenTypes() {
+	public List<Type> getAllowedChildrenTypes() {
 		return null;
 	}
 

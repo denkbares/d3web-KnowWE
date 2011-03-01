@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -46,7 +46,7 @@ import de.d3web.we.kdom.type.AnonymousType;
  * @author Jochen
  * 
  */
-public class ConditionTerminal extends DefaultAbstractKnowWEObjectType {
+public class ConditionTerminal extends AbstractType {
 
 	@Override
 	protected void init() {

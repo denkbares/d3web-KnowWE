@@ -29,7 +29,7 @@ import de.d3web.plugin.PluginManager;
 import de.d3web.we.action.Action;
 import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.kdom.IncrementalSectionizerModule;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.SectionizerModule;
 import de.d3web.we.kdom.rendering.PageAppendHandler;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
@@ -47,7 +47,7 @@ public class Plugins {
 	public static final String EXTENDED_PLUGIN_ID = "KnowWEExtensionPoints";
 	public static final String EXTENDED_POINT_KnowWEAction = "Action";
 	public static final String EXTENDED_POINT_KnowledgeRepresentationHandler = "KnowledgeRepresentationHandler";
-	public static final String EXTENDED_POINT_KnowWEObjectType = "KnowWEObjectType";
+	public static final String EXTENDED_POINT_Type = "Type";
 	public static final String EXTENDED_POINT_ToolProvider = "ToolProvider";
 	public static final String EXTENDED_POINT_TagHandler = "TagHandler";
 	public static final String EXTENDED_POINT_PageAppendHandler = "PageAppendHandler";
@@ -102,12 +102,12 @@ public class Plugins {
 	}
 
 	/**
-	 * Returns a List of all KnowWEObjectTypes
+	 * Returns a List of all Types
 	 * 
-	 * @return List of KnowWEObjectTypes
+	 * @return List of Types
 	 */
-	public static List<KnowWEObjectType> getRootTypes() {
-		return getKnowWEObjectTypes(SCOPE_ROOT);
+	public static List<Type> getRootTypes() {
+		return getTypes(SCOPE_ROOT);
 	}
 
 	/**
@@ -117,10 +117,10 @@ public class Plugins {
 	 * 
 	 * DANGER: This can invade the markups/parsing of other modules!
 	 * 
-	 * @return List of KnowWEObjectTypes
+	 * @return List of Types
 	 */
-	public static List<KnowWEObjectType> getGlobalTypes() {
-		return getKnowWEObjectTypes(SCOPE_GLOBAL);
+	public static List<Type> getGlobalTypes() {
+		return getTypes(SCOPE_GLOBAL);
 	}
 
 	/**
@@ -128,16 +128,16 @@ public class Plugins {
 	 * framework uses the scopes global and root, other scopes can be defined in
 	 * plugins.
 	 * 
-	 * @param scope Scope of the KnowWEObjectTypes
-	 * @return a List of KnowWEObjectTypes
+	 * @param scope Scope of the Types
+	 * @return a List of Types
 	 */
-	public static List<KnowWEObjectType> getKnowWEObjectTypes(String scope) {
+	public static List<Type> getTypes(String scope) {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_KnowWEObjectType);
-		List<KnowWEObjectType> ret = new ArrayList<KnowWEObjectType>();
+				EXTENDED_POINT_Type);
+		List<Type> ret = new ArrayList<Type>();
 		for (Extension e : extensions) {
 			if (e.getParameter("scope").equals(scope)) {
-				ret.add((KnowWEObjectType) e.getSingleton());
+				ret.add((Type) e.getSingleton());
 			}
 		}
 		return ret;
@@ -216,7 +216,7 @@ public class Plugins {
 		addStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_PageAppendHandler));
 		addStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_KnowWEObjectType));
+				EXTENDED_POINT_Type));
 		addStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_TagHandler));
 		addStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
@@ -231,7 +231,7 @@ public class Plugins {
 		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_PageAppendHandler));
 		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_KnowWEObjectType));
+				EXTENDED_POINT_Type));
 		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_TagHandler));
 		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,

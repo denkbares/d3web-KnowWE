@@ -27,7 +27,7 @@
 		<parameter-def id="priority" type="number" />
 	</extension-point>
 	
-	<extension-point id="KnowWEObjectType">
+	<extension-point id="Type">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
 		<parameter-def id="description" />

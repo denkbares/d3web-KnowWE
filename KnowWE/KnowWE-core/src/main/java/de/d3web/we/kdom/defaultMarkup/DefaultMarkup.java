@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
@@ -38,7 +38,7 @@ public class DefaultMarkup {
 		private final boolean mandatory;
 		private final Pattern pattern; // optional
 
-		private final Collection<KnowWEObjectType> types = new LinkedList<KnowWEObjectType>();
+		private final Collection<Type> types = new LinkedList<Type>();
 
 		private Annotation(String name, boolean mandatory, Pattern pattern) {
 			super();
@@ -80,7 +80,7 @@ public class DefaultMarkup {
 		}
 
 		/**
-		 * Return all {@link KnowWEObjectType}s that may be accepted as the
+		 * Return all {@link Type}s that may be accepted as the
 		 * content text of the annotation. These types will be used to
 		 * sectionize, parse and render the annotations content text, if there
 		 * is no other renderer/parser defined in the parent's
@@ -91,10 +91,10 @@ public class DefaultMarkup {
 		 * in responsibility of the {@link SubtreeHandler} of the
 		 * {@link DefaultMarkupType} instance to check for non-allowed content.
 		 * 
-		 * @return the KnowWEObjectTypes of this annotation
+		 * @return the Types of this annotation
 		 */
-		public KnowWEObjectType[] getTypes() {
-			return this.types.toArray(new KnowWEObjectType[this.types.size()]);
+		public Type[] getTypes() {
+			return this.types.toArray(new Type[this.types.size()]);
 		}
 
 		public Pattern getPattern() {
@@ -103,7 +103,7 @@ public class DefaultMarkup {
 	}
 
 	private final String name;
-	private final Collection<KnowWEObjectType> types = new LinkedList<KnowWEObjectType>();
+	private final Collection<Type> types = new LinkedList<Type>();
 	private final Map<String, Annotation> annotations = new HashMap<String, Annotation>();
 
 	public DefaultMarkup(String name) {
@@ -193,7 +193,7 @@ public class DefaultMarkup {
 				new Annotation[this.annotations.size()]);
 	}
 
-	public void addAnnotationType(String name, KnowWEObjectType type) {
+	public void addAnnotationType(String name, Type type) {
 		Annotation annotation = getAnnotation(name);
 		if (annotation == null) {
 			throw new IllegalArgumentException("no such annotation defined: "
@@ -202,12 +202,12 @@ public class DefaultMarkup {
 		annotation.types.add(type);
 	}
 
-	public void addContentType(KnowWEObjectType type) {
+	public void addContentType(Type type) {
 		this.types.add(type);
 	}
 
 	/**
-	 * Return all {@link KnowWEObjectType}s that may be accepted as the content
+	 * Return all {@link Type}s that may be accepted as the content
 	 * text of the mark-up. These types will be used to sectionize, parse and
 	 * render the mark-up's content text, if there is no other renderer/parser
 	 * defined in the parent's {@link DefaultMarkupType}.
@@ -217,10 +217,10 @@ public class DefaultMarkup {
 	 * responsibility of the {@link SubtreeHandler} of the
 	 * {@link DefaultMarkupType} instance to check for non-allowed content.
 	 * 
-	 * @return the KnowWEObjectTypes of this mark-up
+	 * @return the Types of this mark-up
 	 */
-	public KnowWEObjectType[] getTypes() {
-		return this.types.toArray(new KnowWEObjectType[this.types.size()]);
+	public Type[] getTypes() {
+		return this.types.toArray(new Type[this.types.size()]);
 	}
 
 }

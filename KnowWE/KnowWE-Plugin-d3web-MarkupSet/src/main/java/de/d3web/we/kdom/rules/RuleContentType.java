@@ -33,10 +33,11 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.CondKnown;
 import de.d3web.we.kdom.condition.CondKnownUnknown;
@@ -72,7 +73,7 @@ import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
  *         text tries to create Rules from the content
  * 
  */
-public class RuleContentType extends DefaultAbstractKnowWEObjectType {
+public class RuleContentType extends AbstractType {
 
 	public static final String ruleStoreKey = "RULE_STORE_KEY";
 
@@ -91,13 +92,13 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		ConditionActionRuleContent ruleContent = new ConditionActionRuleContent(new RuleAction());
 		ruleContent.setCustomRenderer(new ReRenderSectionMarkerRenderer(
 				new RuleHighlightingRenderer()));
-		List<KnowWEObjectType> termConds = new ArrayList<KnowWEObjectType>();
+		List<Type> termConds = new ArrayList<Type>();
 
 		// add all the various allowed TerminalConditions here
 		try {
 			// TODO remove this evil workaround
 			// when updating KnowWE architecture
-			termConds.add((KnowWEObjectType) Class.forName("cc.knowwe.tdb.EvalConditionType").newInstance());
+			termConds.add((Type) Class.forName("cc.knowwe.tdb.EvalConditionType").newInstance());
 		}
 		catch (Throwable e) {
 			Logger.getLogger("KnowWE").log(Level.INFO,
@@ -137,6 +138,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 			this.registerConstraintModule(new SuccessorNotReusedConstraint<ConditionActionRuleContent>());
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ConditionActionRuleContent> s) {
 
@@ -146,11 +148,11 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed("Rule"));
 			}
 
-			Section<CompositeCondition> cond = s.findSuccessor(CompositeCondition.class);
+			Section<CompositeCondition> cond = Sections.findSuccessor(s, CompositeCondition.class);
 
 			Condition d3Cond = KDOMConditionFactory.createCondition(article, cond);
 
-			Section<D3webRuleAction> action = s.findSuccessor(D3webRuleAction.class);
+			Section<D3webRuleAction> action = Sections.findSuccessor(s, D3webRuleAction.class);
 			if (action == null) {
 				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
 						D3webModule.getKwikiBundle_d3web().
@@ -217,6 +219,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		/**
 		 * Stores the Renderer used in <b>highlightRule<b>
 		 */
+		@SuppressWarnings("unchecked")
 		KnowWEDomRenderer firedRenderer = StyleRenderer.getRenderer(
 						highlightMarker, "", "#CFFFCF");
 

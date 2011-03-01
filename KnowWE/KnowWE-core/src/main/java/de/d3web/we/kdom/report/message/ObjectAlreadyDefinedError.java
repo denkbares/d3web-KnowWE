@@ -27,13 +27,13 @@ import de.d3web.we.kdom.report.KDOMError;
 public class ObjectAlreadyDefinedError extends KDOMError {
 
 	private final String text;
-	private Section<? extends TermDefinition> definition = null;
+	private Section<? extends TermDefinition<?>> definition = null;
 
 	public ObjectAlreadyDefinedError(String text) {
 		this.text = text;
 	}
 	
-	public ObjectAlreadyDefinedError(String text, Section<? extends TermDefinition> s) {
+	public ObjectAlreadyDefinedError(String text, Section<? extends TermDefinition<?>> s) {
 		this(text);
 		definition = s;
 	}
@@ -42,7 +42,7 @@ public class ObjectAlreadyDefinedError extends KDOMError {
 	public String getVerbalization() {
 		String result = "Object already defined: " + text;
 		if (definition != null) {
-			result += " in :" + definition.getTitle();
+			result += " in: " + definition.getTitle();
 		}
 		return result;
 	}

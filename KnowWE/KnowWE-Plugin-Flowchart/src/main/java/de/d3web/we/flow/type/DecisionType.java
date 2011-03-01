@@ -20,7 +20,7 @@
 
 package de.d3web.we.flow.type;
 
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.AbstractXMLType;
 import de.d3web.we.object.QuestionReference;
 
 /**
@@ -29,7 +29,7 @@ import de.d3web.we.object.QuestionReference;
  * @author Reinhard Hatko
  * @created 28.11.2010
  */
-public class DecisionType extends AbstractXMLObjectType {
+public class DecisionType extends AbstractXMLType {
 
 	private static DecisionType instance;
 

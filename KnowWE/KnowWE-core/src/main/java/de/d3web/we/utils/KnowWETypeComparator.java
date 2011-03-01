@@ -18,22 +18,33 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom;
+package de.d3web.we.utils;
 
-public class UndefinedSection extends Section {
+import java.util.Comparator;
 
-	public UndefinedSection(String text, int offset, KnowWEArticle article) {
-		super(article);
-		this.originalText = text;
-		this.offSetFromFatherText = offset;
+import de.d3web.we.kdom.Type;
 
-	}
+/**
+ * Used in TypeUtils to sort Types lexicographical.
+ * 
+ * @author Johannes Dienst
+ * 
+ */
+public class KnowWETypeComparator implements Comparator<Type> {
 
 	@Override
-	public String toString() {
-		return "UndefinedSection l:"
-				+ this.getOriginalText().length() + " - "
-				+ this.getOriginalText();
+	public int compare(Type o1, Type o2) {
+		int i = o1.getName().compareTo(o2.getName());
+
+		if (i < 0) {
+			return -1;
+		}
+
+		if (i > 0) {
+			return 1;
+		}
+
+		return 0;
 	}
 
 }

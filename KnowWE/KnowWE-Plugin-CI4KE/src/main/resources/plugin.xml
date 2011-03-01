@@ -16,12 +16,12 @@
 	</runtime>
 
 	<!-- (DefaultMarkup-) ObjectType for CIDashboard -->
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="CIDashboardType">
 		<parameter id="class"
 			value="de.d3web.we.ci4ke.handling.CIDashboardType" />
 		<parameter id="name" value="CIDashboardType" />
-		<parameter id="description" value="KnowWEObjectType CIDashboardType" />
+		<parameter id="description" value="Type CIDashboardType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
@@ -100,12 +100,12 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="CIDaemonType">
 		<parameter id="class"
 			value="de.d3web.we.ci4ke.daemon.CIDaemonType" />
 		<parameter id="name" value="CIDashboardType" />
-		<parameter id="description" value="KnowWEObjectType CIDaemonType" />
+		<parameter id="description" value="Type CIDaemonType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />

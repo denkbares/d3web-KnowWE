@@ -1,6 +1,6 @@
 package de.d3web.we.kdom.subtreehandler;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 /**
@@ -11,7 +11,7 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
  * @author Jochen
  * @created 17.12.2010
  */
-public abstract class GeneralSubtreeHandler<T extends KnowWEObjectType> extends SubtreeHandler<T> {
+public abstract class GeneralSubtreeHandler<T extends Type> extends SubtreeHandler<T> {
 
 	public GeneralSubtreeHandler() {
 		super(true);

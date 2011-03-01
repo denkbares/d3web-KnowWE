@@ -29,13 +29,14 @@ import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.auxiliary.Equals;
 import de.d3web.we.kdom.condition.AnswerReferenceImpl;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
@@ -52,7 +53,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 		this.sectionFinder = new SetQuestionValueSectionFinder();
 		Equals equals = new Equals();
 		QuestionReference qr = new QuestionReference();
-		qr.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(equals));
+		qr.setSectionFinder(new AllBeforeTypeSectionFinder(equals));
 		this.childrenTypes.add(equals);
 		this.childrenTypes.add(qr);
 
@@ -72,10 +73,10 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 	/**
 	 * This works because it is no DiagnosisRuleAction.
 	 */
-	private class SetQuestionValueSectionFinder extends SectionFinder {
+	private class SetQuestionValueSectionFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			if (SplitUtility.containsUnquoted(text, " =")) {
 
@@ -88,10 +89,10 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 		}
 	}
 
-	public class WordSectionFinder extends SectionFinder {
+	public class WordSectionFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			if (!text.equals(" ") && !text.equals("\"")
 					&& !text.contains("(") && !text.contains(")")) {
@@ -118,9 +119,9 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 
 	@Override
 	public PSAction createAction(KnowWEArticle article, Section<SetQuestionValue> s) {
-		Section<QuestionReference> qref = s.findSuccessor(QuestionReference.class);
+		Section<QuestionReference> qref = Sections.findSuccessor(s, QuestionReference.class);
 		Question q = qref.get().getTermObject(article, qref);
-		Section<AnswerReference> aref = s.findSuccessor(AnswerReference.class);
+		Section<AnswerReference> aref = Sections.findSuccessor(s, AnswerReference.class);
 		if (aref == null) return null;
 		Choice c = aref.get().getTermObject(article, aref);
 

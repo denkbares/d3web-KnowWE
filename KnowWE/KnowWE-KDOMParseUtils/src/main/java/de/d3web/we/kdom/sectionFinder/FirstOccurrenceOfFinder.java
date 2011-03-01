@@ -22,7 +22,7 @@ package de.d3web.we.kdom.sectionFinder;
 
 import java.util.List;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 
 public class FirstOccurrenceOfFinder extends AbstractSingleResultFinder {
@@ -42,7 +42,7 @@ public class FirstOccurrenceOfFinder extends AbstractSingleResultFinder {
 	}
 
 	@Override
-	public SectionFinderResult lookForSection(String text, Section father, KnowWEObjectType type) {
+	public SectionFinderResult lookForSection(String text, Section father, Type type) {
 		List<SectionFinderResult> secs = finder.lookForSections(text, father, type);
 		if (secs.size() >= 1) return secs.get(0);
 		return null;

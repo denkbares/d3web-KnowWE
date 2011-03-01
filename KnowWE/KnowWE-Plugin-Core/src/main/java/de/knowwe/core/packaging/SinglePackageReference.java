@@ -1,9 +1,9 @@
 package de.knowwe.core.packaging;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
-public class SinglePackageReference extends DefaultAbstractKnowWEObjectType {
+public class SinglePackageReference extends AbstractType {
 
 	public SinglePackageReference() {
 		this.sectionFinder = new RegexSectionFinder("[\\w-_]+");

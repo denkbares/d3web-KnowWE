@@ -23,7 +23,7 @@ package de.d3web.we.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 
 /**
@@ -33,7 +33,7 @@ import de.d3web.we.kdom.Section;
  * @author Johannes Dienst
  * 
  */
-public class KnowWEObjectTypeUtils {
+public class KnowWETypeUtils {
 
 	/**
 	 * Removes duplicates. Needed because the java.util.Set-approach wont work
@@ -42,8 +42,8 @@ public class KnowWEObjectTypeUtils {
 	 * @param cleanMe
 	 * @return
 	 */
-	public static List<KnowWEObjectType> cleanList(List<KnowWEObjectType> cleanMe) {
-		List<KnowWEObjectType> cleaned = new ArrayList<KnowWEObjectType>();
+	public static List<Type> cleanList(List<Type> cleanMe) {
+		List<Type> cleaned = new ArrayList<Type>();
 		for (int i = 0; i < cleanMe.size(); i++) {
 			String name = cleanMe.get(i).getName();
 			cleaned.add(cleanMe.get(i));
@@ -73,7 +73,7 @@ public class KnowWEObjectTypeUtils {
 	//		
 	// try {
 	// if( Class.forName( classname ).isAssignableFrom(
-	// child.getObjectType().getClass() ) ) return child;
+	// child.get().getClass() ) ) return child;
 	// } catch (ClassNotFoundException e) {
 	// e.printStackTrace();
 	// return null;
@@ -83,13 +83,13 @@ public class KnowWEObjectTypeUtils {
 	// }
 
 	/**
-	 * Getting of all ChildrenTypes of a KnowWEObjectType.
+	 * Getting of all ChildrenTypes of a Type.
 	 * 
 	 * @param type
 	 * @param allTypes
 	 * @return
 	 */
-	public static KnowWEObjectTypeSet getAllChildrenTypesRecursive(KnowWEObjectType type, KnowWEObjectTypeSet allTypes) {
+	public static KnowWETypeSet getAllChildrenTypesRecursive(Type type, KnowWETypeSet allTypes) {
 
 		// Recursionstop
 		if (allTypes.contains(type)) {
@@ -103,20 +103,20 @@ public class KnowWEObjectTypeUtils {
 
 			// NOTE: .getAllowedChildrenTypes() now returns an unmodifiable list
 			// => copy
-			List<KnowWEObjectType> unModList = type.getAllowedChildrenTypes();
-			List<KnowWEObjectType> moreChildren = new ArrayList<KnowWEObjectType>();
+			List<Type> unModList = type.getAllowedChildrenTypes();
+			List<Type> moreChildren = new ArrayList<Type>();
 			moreChildren.addAll(unModList);
 
 			// Loop Protection
 			if (hasTypeInList(moreChildren, type)) removeTypeFromList(moreChildren, type);
 
-			for (KnowWEObjectType childrentype : moreChildren) {
+			for (Type childrentype : moreChildren) {
 
 				// if children does not contain this type
 				if (!allTypes.contains(childrentype)) {
 					allTypes.add(childrentype);
-					for (KnowWEObjectType c : childrentype.getAllowedChildrenTypes()) {
-						KnowWEObjectTypeSet t = getAllChildrenTypesRecursive(c, allTypes);
+					for (Type c : childrentype.getAllowedChildrenTypes()) {
+						KnowWETypeSet t = getAllChildrenTypesRecursive(c, allTypes);
 						allTypes.addAll(t.toList());
 					}
 				}
@@ -133,7 +133,7 @@ public class KnowWEObjectTypeUtils {
 	 * @param type
 	 * @return
 	 */
-	private static void removeTypeFromList(List<? extends KnowWEObjectType> types, KnowWEObjectType type) {
+	private static void removeTypeFromList(List<? extends Type> types, Type type) {
 		for (int i = 0; i < types.size(); i++) {
 			if (types.get(i).getName().equals(type.getName())) {
 				types.remove(i--);
@@ -148,7 +148,7 @@ public class KnowWEObjectTypeUtils {
 	 * @param type
 	 * @return
 	 */
-	private static boolean hasTypeInList(List<? extends KnowWEObjectType> children, KnowWEObjectType type) {
+	private static boolean hasTypeInList(List<? extends Type> children, Type type) {
 		if (children != null) {
 			for (int i = 0; i < children.size(); i++) {
 				if (children.get(i).getName().equals(type.getName())) {
@@ -168,11 +168,11 @@ public class KnowWEObjectTypeUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	@Deprecated
-	public static <OT extends KnowWEObjectType> Section<OT> getAncestorOfType(Section<?> s, Class<OT> clazz) {
+	public static <OT extends Type> Section<OT> getAncestorOfType(Section<?> s, Class<OT> clazz) {
 
 		if (s == null) return null;
 
-		if (clazz.isAssignableFrom(s.getObjectType().getClass())) return (Section<OT>) s;
+		if (clazz.isAssignableFrom(s.get().getClass())) return (Section<OT>) s;
 
 		return getAncestorOfType(s.getFather(), clazz);
 	}

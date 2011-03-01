@@ -20,10 +20,10 @@
 
 package de.d3web.we.kdom.semanticAnnotation;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinder;
 
-public class SemanticAnnotationEndSymbol extends DefaultAbstractKnowWEObjectType {
+public class SemanticAnnotationEndSymbol extends AbstractType {
 
 	private String end;
 

@@ -20,7 +20,7 @@
 
 package de.d3web.we.kdom.objects;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
@@ -37,7 +37,7 @@ import de.d3web.we.utils.KnowWEUtils;
  * @param <TermObject>
  */
 public abstract class TermDefinition<TermObject>
-		extends DefaultAbstractKnowWEObjectType
+		extends AbstractType
 		implements KnowWETerm<TermObject> {
 
 	protected String key;

@@ -23,7 +23,7 @@
  */
 package de.d3web.we.kdom.semanticAnnotation;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 
 /**
@@ -31,7 +31,7 @@ import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
  * 
  */
 public class SemanticAnnotationPropertyName extends
-		DefaultAbstractKnowWEObjectType {
+		AbstractType {
 
 	@Override
 	public void init() {

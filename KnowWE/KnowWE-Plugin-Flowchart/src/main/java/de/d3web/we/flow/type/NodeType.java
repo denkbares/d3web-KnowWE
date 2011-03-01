@@ -20,14 +20,14 @@
 
 package de.d3web.we.flow.type;
 
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.AbstractXMLType;
 
 /**
  * 
  * 
  * @author hatko Created on: 08.10.2009
  */
-public class NodeType extends AbstractXMLObjectType {
+public class NodeType extends AbstractXMLType {
 
 	private static NodeType instance;
 

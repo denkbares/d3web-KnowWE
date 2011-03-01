@@ -120,6 +120,6 @@ public class Result implements Comparable<Result> {
 
 		if (a != 0) return a;
 
-		return section.getObjectType().getName().compareTo(o.getSection().getObjectType().getName());
+		return section.get().getName().compareTo(o.getSection().get().getName());
 	}
 }

@@ -23,21 +23,23 @@ package de.d3web.we.kdom.semanticAnnotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.Type;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
-public class AnnotationMapSign extends DefaultAbstractKnowWEObjectType {
+public class AnnotationMapSign extends AbstractType {
 
-	public static class AnnotationMapSignSectionFinder extends SectionFinder {
+	public static class AnnotationMapSignSectionFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
-			int index = text.lastIndexOf("<=>");
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			int index = text.lastIndexOf("<=>");
+			if (index >= 0) {
 			result.add(new SectionFinderResult(index, index + 3));
+			}
 			return result;
 		}
 	}

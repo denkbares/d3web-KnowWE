@@ -20,19 +20,19 @@
 
 package de.knowwe.core;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.basic.EndLineComment;
 import de.d3web.we.kdom.basic.LineBreak;
 import de.d3web.we.kdom.sectionFinder.LineSectionFinder;
 
-public class TextLine extends DefaultAbstractKnowWEObjectType {
+public class TextLine extends AbstractType {
 
 	public TextLine() {
 		this(LineContent.getInstance());
 	}
 
-	public TextLine(KnowWEObjectType lineContent) {
+	public TextLine(Type lineContent) {
 		this.setNumberedType(true);
 		childrenTypes.add(new LineBreak());
 		childrenTypes.add(new EndLineComment());

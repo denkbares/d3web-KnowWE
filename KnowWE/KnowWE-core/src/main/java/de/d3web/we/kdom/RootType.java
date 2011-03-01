@@ -33,7 +33,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * 
  * @author Reinhard Hatko Created on: 17.12.2009
  */
-public class RootType extends DefaultAbstractKnowWEObjectType {
+public class RootType extends AbstractType {
 
 	private static RootType instance;
 

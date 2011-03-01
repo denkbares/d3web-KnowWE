@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.List;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.ConstraintModule.Operator;
@@ -40,7 +40,7 @@ import de.d3web.we.kdom.subtreeHandler.ConstraintModule.Purpose;
  * @author Jochen, Albrecht
  * 
  */
-public abstract class SubtreeHandler<T extends KnowWEObjectType> {
+public abstract class SubtreeHandler<T extends Type> {
 
 	private boolean ignorePackageCompile;
 
@@ -296,7 +296,7 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 
 	// ++++++++++++++++++++++ Constraint classes ++++++++++++++++++++++ //
 
-	private class CreateConstraintsDONT<T2 extends KnowWEObjectType> extends ConstraintModule<T2> {
+	private class CreateConstraintsDONT<T2 extends Type> extends ConstraintModule<T2> {
 
 		public CreateConstraintsDONT() {
 			super(Operator.DONT_COMPILE_IF_VIOLATED, Purpose.CREATE);
@@ -317,7 +317,7 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	}
 
 	
-	private class CreateConstraintsDO<T2 extends KnowWEObjectType> extends ConstraintModule<T2> {
+	private class CreateConstraintsDO<T2 extends Type> extends ConstraintModule<T2> {
 
 		private final SubtreeHandler<T2> handler;
 
@@ -348,7 +348,7 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 					&& ((IncrementalConstraint<T2>) s.get()).violatedConstraints(
 					article, s);
 			// it is possible to define additional constraints for the all
-			// handlers of a KnowWEObjectType... they need to be checked too
+			// handlers of a Type... they need to be checked too
 
 			// if one of these items is true, we need to create
 			return fullparse || notCompiled || notReused || changedPosition || typeConstraint;
@@ -356,7 +356,7 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 
 	}
 
-	private class DestroyConstraintsDONT<T2 extends KnowWEObjectType> extends ConstraintModule<T2> {
+	private class DestroyConstraintsDONT<T2 extends Type> extends ConstraintModule<T2> {
 
 		SubtreeHandler<T2> handler;
 
@@ -380,7 +380,7 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 
 	}
 
-	private class DestroyConstraintsDO<T2 extends KnowWEObjectType> extends ConstraintModule<T2> {
+	private class DestroyConstraintsDO<T2 extends Type> extends ConstraintModule<T2> {
 
 		public DestroyConstraintsDO() {
 			super(Operator.COMPILE_IF_VIOLATED, Purpose.DESTROY);
@@ -399,7 +399,7 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 			boolean typeConstraint = (s.get() instanceof IncrementalConstraint<?>
 			 && ((IncrementalConstraint<T2>) s.get()).violatedConstraints(
 							article, s));
-			// also check constraints defined in the KnowWEObjectType for all
+			// also check constraints defined in the Type for all
 			// handlers of the type
 
 			// destroy if one of the items is true

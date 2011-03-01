@@ -14,12 +14,12 @@
 		</library>
 	</runtime>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="Tags">
 		<parameter id="class"
 			value="de.knowwe.tagging.Tags" />
 		<parameter id="name" value="Tags" />
-		<parameter id="description" value="KnowWEObjectType Tags" />
+		<parameter id="description" value="Type Tags" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="4" />
 		<parameter id="scope" value="root" />

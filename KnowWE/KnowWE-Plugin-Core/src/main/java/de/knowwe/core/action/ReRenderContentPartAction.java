@@ -30,7 +30,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.packaging.PackageRenderUtils;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -57,15 +57,15 @@ public class ReRenderContentPartAction extends AbstractAction {
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 		KnowWEArticle article = mgr.getArticle(topic);
 
-		Section<? extends KnowWEObjectType> root = article.getSection();
-		Section<? extends KnowWEObjectType> secWithNodeID = getSectionFromCurrentID(nodeID, root);
+		Section<? extends Type> root = article.getSection();
+		Section<? extends Type> secWithNodeID = getSectionFromCurrentID(nodeID, root);
 
 		article = PackageRenderUtils.checkArticlesCompiling(article, secWithNodeID);
 
 		if (secWithNodeID != null) {
 			StringBuilder b = new StringBuilder();
 
-			KnowWEObjectType type = secWithNodeID.getObjectType();
+			Type type = secWithNodeID.get();
 			KnowWEDomRenderer renderer = RendererManager.getInstance().getRenderer(type,
 					user.getUserName(), topic);
 
@@ -106,12 +106,12 @@ public class ReRenderContentPartAction extends AbstractAction {
 	 * @param root
 	 * @param found
 	 */
-	private Section<? extends KnowWEObjectType> getSectionFromCurrentID(String nodeID, Section<? extends KnowWEObjectType> root) {
+	private Section<? extends Type> getSectionFromCurrentID(String nodeID, Section<? extends Type> root) {
 		if (root.getID().equals(nodeID)) return root;
 
-		Section<? extends KnowWEObjectType> found = null;
-		List<Section<? extends KnowWEObjectType>> children = root.getChildren();
-		for (Section<? extends KnowWEObjectType> section : children) {
+		Section<? extends Type> found = null;
+		List<Section<? extends Type>> children = root.getChildren();
+		for (Section<? extends Type> section : children) {
 			found = getSectionFromCurrentID(nodeID, section);
 			if (found != null) return found;
 		}

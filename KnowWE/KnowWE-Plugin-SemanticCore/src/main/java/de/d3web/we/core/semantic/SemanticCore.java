@@ -55,7 +55,7 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.logging.Logging;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
@@ -309,7 +309,7 @@ public class SemanticCore implements ISemanticCore {
 	}
 
 	private List<Statement> getStatementsofSingleSection(
-			Section<? extends KnowWEObjectType> sec) {
+			Section<? extends Type> sec) {
 		WeakHashMap<Section, List<Statement>> temp = statementcache.get(sec
 				.getArticle().getTitle());
 		if (temp != null) return temp.get(sec);
@@ -317,7 +317,7 @@ public class SemanticCore implements ISemanticCore {
 	}
 
 	private void removeStatementsofSingleSection(
-			Section<? extends KnowWEObjectType> sec) {
+			Section<? extends Type> sec) {
 		WeakHashMap<Section, List<Statement>> temp = statementcache.get(sec
 				.getArticle().getTitle());
 		if (temp != null) temp.remove(sec);
@@ -401,7 +401,7 @@ public class SemanticCore implements ISemanticCore {
 	 * @see de.d3web.we.core.ISemanticCore#getTopicStatements(java.lang.String)
 	 */
 	public List<Statement> getTopicStatements(String topic) {
-		Section<? extends KnowWEObjectType> rootsection = KnowWEEnvironment
+		Section<? extends Type> rootsection = KnowWEEnvironment
 				.getInstance().getArticle(KnowWEEnvironment.DEFAULT_WEB, topic)
 				.getSection();
 		return getSectionStatementsRecursive(rootsection);
@@ -415,7 +415,7 @@ public class SemanticCore implements ISemanticCore {
 	 * .we.kdom.Section)
 	 */
 	public List<Statement> getSectionStatementsRecursive(
-			Section<? extends KnowWEObjectType> s) {
+			Section<? extends Type> s) {
 		List<Statement> allstatements = new ArrayList<Statement>();
 
 		if (getStatementsofSingleSection(s) != null) {
@@ -424,7 +424,7 @@ public class SemanticCore implements ISemanticCore {
 		}
 
 		// walk over all children
-		for (Section<? extends KnowWEObjectType> current : s.getChildren()) {
+		for (Section<? extends Type> current : s.getChildren()) {
 			// collect statements of the the children's descendants
 			allstatements.addAll(getSectionStatementsRecursive(current));
 		}
@@ -433,12 +433,12 @@ public class SemanticCore implements ISemanticCore {
 	}
 
 	public void removeSectionStatementsRecursive(
-			Section<? extends KnowWEObjectType> s) {
+			Section<? extends Type> s) {
 
 		removeStatementsofSingleSection(s);
 
 		// walk over all children
-		for (Section<? extends KnowWEObjectType> current : s.getChildren()) {
+		for (Section<? extends Type> current : s.getChildren()) {
 			removeSectionStatementsRecursive(current);
 		}
 	}

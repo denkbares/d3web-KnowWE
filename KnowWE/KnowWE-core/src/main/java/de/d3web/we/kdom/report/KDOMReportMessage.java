@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -71,7 +71,7 @@ public abstract class KDOMReportMessage {
 
 	/**
 	 * return the verbalization of this message. Will be rendered into the wiki
-	 * page by the given MessageRenderer of the KnowWEObjectType of the section
+	 * page by the given MessageRenderer of the Type of the section
 	 * 
 	 * @return
 	 */
@@ -80,7 +80,7 @@ public abstract class KDOMReportMessage {
 	/**
 	 * @see KnowWEUtils#clearMessages(KnowWEArticle, Section, Class, Class)
 	 */
-	public static void clearMessages(KnowWEArticle article, Section<? extends KnowWEObjectType> s, Class<?> source) {
+	public static void clearMessages(KnowWEArticle article, Section<? extends Type> s, Class<?> source) {
 		storeMessages(article, s, source, new ArrayList<KDOMReportMessage>(0));
 	}
 
@@ -89,7 +89,7 @@ public abstract class KDOMReportMessage {
 	 *      Object)
 	 */
 	public static void storeSingleError(KnowWEArticle article,
-			Section<? extends KnowWEObjectType> s, Class<?> source, KDOMError msg) {
+			Section<? extends Type> s, Class<?> source, KDOMError msg) {
 		if (msg != null) storeMessages(article, s, source, Arrays.asList((KDOMReportMessage) msg));
 	}
 
@@ -98,7 +98,7 @@ public abstract class KDOMReportMessage {
 	 *      Object)
 	 */
 	public static void storeSingleWarning(KnowWEArticle article,
-			Section<? extends KnowWEObjectType> s, Class<?> source, KDOMWarning msg) {
+			Section<? extends Type> s, Class<?> source, KDOMWarning msg) {
 		if (msg != null) storeMessages(article, s, source, Arrays.asList((KDOMReportMessage) msg));
 	}
 
@@ -107,14 +107,14 @@ public abstract class KDOMReportMessage {
 	 *      Object)
 	 */
 	public static void storeSingleNotice(KnowWEArticle article,
-			Section<? extends KnowWEObjectType> s, Class<?> source, KDOMNotice msg) {
+			Section<? extends Type> s, Class<?> source, KDOMNotice msg) {
 		if (msg != null) storeMessages(article, s, source, Arrays.asList((KDOMReportMessage) msg));
 	}
 
 	/**
 	 * @see KnowWEUtils#storeMessages(KnowWEArticle, Section, Class, Collection)
 	 */
-	public static void storeMessages(KnowWEArticle article, Section<? extends KnowWEObjectType> s,
+	public static void storeMessages(KnowWEArticle article, Section<? extends Type> s,
 			Class<?> source, Collection<KDOMReportMessage> msgs) {
 		if (msgs == null) return;
 		Collection<KDOMError> errors = new ArrayList<KDOMError>(msgs.size());
@@ -141,7 +141,7 @@ public abstract class KDOMReportMessage {
 	/**
 	 * @see KnowWEUtils#storeMessages(KnowWEArticle, Section, Class, Collection)
 	 */
-	public static void storeErrors(KnowWEArticle article, Section<? extends KnowWEObjectType> s,
+	public static void storeErrors(KnowWEArticle article, Section<? extends Type> s,
 			Class<?> source, Collection<KDOMError> msgs) {
 		KnowWEUtils.storeMessages(article, s, source, KDOMError.class, msgs);
 	}
@@ -149,7 +149,7 @@ public abstract class KDOMReportMessage {
 	/**
 	 * @see KnowWEUtils#storeMessages(KnowWEArticle, Section, Class, Collection)
 	 */
-	public static void storeNotices(KnowWEArticle article, Section<? extends KnowWEObjectType> s,
+	public static void storeNotices(KnowWEArticle article, Section<? extends Type> s,
 			Class<?> source, Collection<KDOMNotice> msgs) {
 		KnowWEUtils.storeMessages(article, s, source, KDOMNotice.class, msgs);
 	}
@@ -157,12 +157,12 @@ public abstract class KDOMReportMessage {
 	/**
 	 * @see KnowWEUtils#storeMessages(KnowWEArticle, Section, Class, Collection)
 	 */
-	public static void storeWarnings(KnowWEArticle article, Section<? extends KnowWEObjectType> s,
+	public static void storeWarnings(KnowWEArticle article, Section<? extends Type> s,
 			Class<?> source, Collection<KDOMWarning> msgs) {
 		KnowWEUtils.storeMessages(article, s, source, KDOMWarning.class, msgs);
 	}
 
-	public static Collection<KDOMReportMessage> getMessages(Section<? extends KnowWEObjectType> s, KnowWEArticle article) {
+	public static Collection<KDOMReportMessage> getMessages(Section<? extends Type> s, KnowWEArticle article) {
 		Collection<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 		msgs.addAll(KnowWEUtils.getMessages(article, s, KDOMError.class));
 		msgs.addAll(KnowWEUtils.getMessages(article, s, KDOMWarning.class));
@@ -170,15 +170,15 @@ public abstract class KDOMReportMessage {
 		return Collections.unmodifiableCollection(msgs);
 	}
 
-	public static Collection<KDOMError> getErrors(KnowWEArticle article, Section<? extends KnowWEObjectType> s) {
+	public static Collection<KDOMError> getErrors(KnowWEArticle article, Section<? extends Type> s) {
 		return KnowWEUtils.getMessages(article, s, KDOMError.class);
 	}
 
-	public static Collection<KDOMNotice> getNotices(KnowWEArticle article, Section<? extends KnowWEObjectType> s) {
+	public static Collection<KDOMNotice> getNotices(KnowWEArticle article, Section<? extends Type> s) {
 		return KnowWEUtils.getMessages(article, s, KDOMNotice.class);
 	}
 
-	public static Collection<KDOMWarning> getWarnings(KnowWEArticle article, Section<? extends KnowWEObjectType> s) {
+	public static Collection<KDOMWarning> getWarnings(KnowWEArticle article, Section<? extends Type> s) {
 		return KnowWEUtils.getMessages(article, s, KDOMWarning.class);
 	}
 

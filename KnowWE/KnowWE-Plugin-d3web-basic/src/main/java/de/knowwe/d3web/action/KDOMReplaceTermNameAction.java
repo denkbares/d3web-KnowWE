@@ -31,6 +31,7 @@ import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.objects.TermReference;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -49,8 +50,7 @@ import de.d3web.we.utils.KnowWEUtils;
  */
 public class KDOMReplaceTermNameAction extends AbstractAction {
 
-	@SuppressWarnings({
-			"rawtypes", "unchecked" })
+	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(ActionContext context) throws IOException {
 		if (context.getWriter() == null) {
@@ -77,7 +77,7 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 		
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		
-		Section<?> section = mgr.getArticle(name).getSection().findChild(nodeID);
+		Section<?> section = Sections.findSuccessor(mgr.getArticle(name).getSection(), nodeID);
 		
 		if (!(section.get() instanceof TermReference<?>)) {
 			context.sendError(500, "Invalid section type");

@@ -34,6 +34,7 @@ import de.d3web.we.flow.type.DiaFluxType;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 
 /**
  * Receives a xml-encoded flowchart from the editor and replaces the old kdom
@@ -79,7 +80,8 @@ public class SaveFlowchartAction extends AbstractAction {
 		Section<DiaFluxType> diaFluxSection = (Section<DiaFluxType>) mgr.getArticle(topic).findSection(
 				nodeID);
 
-		Section<FlowchartType> flowchartSection = diaFluxSection.findSuccessor(FlowchartType.class);
+		Section<FlowchartType> flowchartSection = Sections.findSuccessor(diaFluxSection,
+				FlowchartType.class);
 
 		// if flowchart is existing, replace flowchart
 		if (flowchartSection != null) {

@@ -21,10 +21,11 @@
 package de.d3web.we.flow.type;
 
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.StringDefinition;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.AbstractXMLType;
 
 /**
  * 
@@ -32,7 +33,7 @@ import de.d3web.we.kdom.xml.AbstractXMLObjectType;
  * @author Reinhard Hatko
  * @created on: 08.10.2009
  */
-public class StartType extends AbstractXMLObjectType {
+public class StartType extends AbstractXMLType {
 
 	private static StartType instance;
 
@@ -60,7 +61,7 @@ public class StartType extends AbstractXMLObjectType {
 		@Override
 		public String getTermName(Section<? extends KnowWETerm<String>> s) {
 			String nodeName = s.getOriginalText();
-			Section<FlowchartType> flowchart = s.findAncestorOfType(FlowchartType.class);
+			Section<FlowchartType> flowchart = Sections.findAncestorOfType(s, FlowchartType.class);
 			String flowchartName = FlowchartType.getFlowchartName(flowchart);
 
 			return flowchartName + "(" + nodeName + ")";

@@ -22,15 +22,15 @@ package de.knowwe.core.dashtree;
 
 import java.util.List;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.SplitUtility;
 
-public class LineEndComment extends DefaultAbstractKnowWEObjectType {
+public class LineEndComment extends AbstractType {
 
 	@Override
 	protected void init() {
@@ -49,7 +49,7 @@ public class LineEndComment extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section father, KnowWEObjectType type) {
+				Section father, Type type) {
 
 			// looks for an unquoted occurrence of '//' and cuts off from this
 			// point

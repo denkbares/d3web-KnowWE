@@ -38,7 +38,7 @@ public class TypeSectionFilter implements SectionFilter {
 
 	@Override
 	public boolean accept(Section section) {
-		boolean erg = section.getObjectType().getName().equalsIgnoreCase(myType);
+		boolean erg = section.get().getName().equalsIgnoreCase(myType);
 		return erg;
 	}
 

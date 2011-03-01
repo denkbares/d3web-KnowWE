@@ -29,6 +29,7 @@ import de.d3web.core.inference.condition.CondOr;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 
 /**
  * 
@@ -49,7 +50,8 @@ public class KDOMConditionFactory {
 		// if braced - delegate to next composite
 		if (c.get().isBraced(c)) {
 			Section<? extends NonTerminalCondition> braced = c.get().getBraced(c);
-			return createCondition(article, braced.findSuccessor(CompositeCondition.class));
+			return createCondition(article,
+					Sections.findSuccessor(braced, CompositeCondition.class));
 		}
 
 		// create conjuncts
@@ -59,7 +61,8 @@ public class KDOMConditionFactory {
 
 			List<Condition> conds = new ArrayList<Condition>();
 			for (Section<? extends NonTerminalCondition> conjunct : conjuncts) {
-				Section<? extends CompositeCondition> subCondSection = conjunct.findChildOfType(CompositeCondition.class);
+				Section<? extends CompositeCondition> subCondSection = Sections.findChildOfType(
+						conjunct, CompositeCondition.class);
 				Condition subCond = createCondition(article,
 						(Section<CompositeCondition>) subCondSection);
 				if (subCond == null) return null;
@@ -77,7 +80,8 @@ public class KDOMConditionFactory {
 
 			List<Condition> conds = new ArrayList<Condition>();
 			for (Section<? extends NonTerminalCondition> disjunct : disjuncts) {
-				Section<? extends CompositeCondition> subCondSection = disjunct.findChildOfType(CompositeCondition.class);
+				Section<? extends CompositeCondition> subCondSection = Sections.findChildOfType(
+						disjunct, CompositeCondition.class);
 				Condition subCond = createCondition(article,
 						(Section<CompositeCondition>) subCondSection);
 				if (subCond == null) return null;
@@ -93,7 +97,8 @@ public class KDOMConditionFactory {
 			// can only be one
 			Section<? extends NonTerminalCondition> neg = c.get().getNegation(
 					c);
-			Section<? extends CompositeCondition> subCondSection = neg.findChildOfType(CompositeCondition.class);
+			Section<? extends CompositeCondition> subCondSection = Sections.findChildOfType(neg,
+					CompositeCondition.class);
 			Condition subCond = createCondition(article,
 					(Section<CompositeCondition>) subCondSection);
 			if (subCond == null) return null;
@@ -105,7 +110,8 @@ public class KDOMConditionFactory {
 		if (c.get().isTerminal(c)) {
 			Section<? extends TerminalCondition> terminal = c.get().getTerminal(c);
 
-			Section<? extends D3webCondition> termChild = terminal.findChildOfType(D3webCondition.class);
+			Section<? extends D3webCondition> termChild = Sections.findChildOfType(terminal,
+					D3webCondition.class);
 			
 			if (termChild == null) {
 				Logger.getLogger(KDOMConditionFactory.class.getName()).warning("Could not create Condition for: " + terminal.getFather());

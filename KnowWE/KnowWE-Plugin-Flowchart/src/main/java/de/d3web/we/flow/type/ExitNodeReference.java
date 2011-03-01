@@ -19,6 +19,7 @@
 package de.d3web.we.flow.type;
 
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.StringReference;
 
@@ -32,7 +33,8 @@ public class ExitNodeReference extends StringReference {
 
 	@Override
 	public String getTermName(Section<? extends KnowWETerm<String>> s) {
-		Section<FlowchartReference> ref = s.getFather().findSuccessor(FlowchartReference.class);
+		Section<FlowchartReference> ref = Sections.findSuccessor(s.getFather(),
+				FlowchartReference.class);
 
 		return ref.getOriginalText() + "(" + s.getOriginalText() + ")";
 	}

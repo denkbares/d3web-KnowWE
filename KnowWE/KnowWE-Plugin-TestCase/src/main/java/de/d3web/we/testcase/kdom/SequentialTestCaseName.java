@@ -23,14 +23,14 @@ package de.d3web.we.testcase.kdom;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
-public class SequentialTestCaseName extends DefaultAbstractKnowWEObjectType {
+public class SequentialTestCaseName extends AbstractType {
 
 	public SequentialTestCaseName() {
 		this.sectionFinder = new SequentialTestCaseNameSectionFinder();
@@ -41,7 +41,7 @@ public class SequentialTestCaseName extends DefaultAbstractKnowWEObjectType {
 	public class SequentialTestCaseNameSectionFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			if (text.length() == 0) return null;
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();

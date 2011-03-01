@@ -64,18 +64,60 @@ public class MultiSectionFinder implements ISectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		List<SectionFinderResult> results = new ArrayList<SectionFinderResult>();
 
-		// iterates all finders and gathers together all SectionFinderResults
-		for (ISectionFinder finder : finders) {
-			List<SectionFinderResult> singleResult = finder.lookForSections(text, father,
-					type);
-			if (singleResult != null) {
-				results.addAll(singleResult);
+		lookForSectionsOfType(text, father, type, 0, 0, results);
+
+		// // iterates all finders and gathers together all SectionFinderResults
+		// for (ISectionFinder finder : finders) {
+		// List<SectionFinderResult> singleResult = finder.lookForSections(text,
+		// father,
+		// type);
+		// if (singleResult != null) {
+		// results.addAll(singleResult);
+		// }
+		// }
+		return results;
+	}
+
+	private void lookForSectionsOfType(String text, Section<?> father, Type type, int finderNum, int offset, List<SectionFinderResult> results) {
+
+		if (finderNum >= finders.size()) return;
+
+		ISectionFinder finder = finders.get(finderNum);
+		
+		finderNum++;
+
+		List<SectionFinderResult> singleFinderResults = finder.lookForSections(text, father, type);
+		
+		int lastEnd = 0;
+		if (singleFinderResults != null) {
+			for (SectionFinderResult r : singleFinderResults) {
+				if (r == null) {
+					continue;
+				}
+
+				if (r.getStart() < lastEnd) {
+					continue;
+				}
+				if (lastEnd < r.getStart()) {
+					lookForSectionsOfType(text.substring(lastEnd, r.getStart()), father, type,
+							finderNum, offset + lastEnd, results);
+				}
+
+				r.setStart(r.getStart() + offset);
+				r.setEnd(r.getEnd() + offset);
+				results.add(r);
+
+				lastEnd = r.getEnd() - offset;
 			}
 		}
-		return results;
+		if (lastEnd < text.length()) {
+			lookForSectionsOfType(text.substring(lastEnd, text.length()), father, type, finderNum,
+					offset + lastEnd, results);
+		}
+		
 	}
 
 }

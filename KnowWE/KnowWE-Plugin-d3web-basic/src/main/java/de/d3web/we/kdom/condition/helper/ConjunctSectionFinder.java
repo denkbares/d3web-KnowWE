@@ -6,11 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
-import de.d3web.we.kdom.constraint.ExclusiveType;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.SplitUtility;
@@ -22,7 +21,6 @@ public class ConjunctSectionFinder implements ISectionFinder {
 	public static ISectionFinder createConjunctFinder(String[] signs) {
 		ConstraintSectionFinder csf = new ConstraintSectionFinder(
 				new ConjunctSectionFinder(signs));
-		csf.addConstraint(ExclusiveType.getInstance());
 		return csf;
 	}
 
@@ -32,7 +30,7 @@ public class ConjunctSectionFinder implements ISectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		Map<Integer, Integer> allFoundOps = new HashMap<Integer, Integer>();
 		List<SectionFinderResult> results = new ArrayList<SectionFinderResult>();
 		for (String symbol : signs) {

@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 
 /**
@@ -42,7 +42,7 @@ public class AllTextFinderDivCorrectTrimmed implements ISectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+	public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 		String trimmed = text.trim();
 		if (trimmed.length() == 0) return result;

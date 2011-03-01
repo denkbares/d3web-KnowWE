@@ -20,7 +20,7 @@ package de.d3web.we.kdom.sectionFinder;
 
 import java.util.List;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 
 /**
@@ -46,6 +46,6 @@ public interface ISectionFinder {
 	 *         the next belongs to the ObjectType calling the SectionFinder
 	 */
 	public List<SectionFinderResult> lookForSections(
-			String text, Section<?> father, KnowWEObjectType type);
+			String text, Section<?> father, Type type);
 
 }

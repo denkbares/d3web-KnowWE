@@ -23,8 +23,8 @@ package de.d3web.we.kdom.sectionFinder;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 
 /**
  * @author Jochen
@@ -33,13 +33,13 @@ import de.d3web.we.kdom.Section;
  *         operation cutting off whitespace characters
  * 
  */
-public class AllTextFinderTrimmed extends SectionFinder {
+public class AllTextFinderTrimmed implements ISectionFinder {
 
 	public AllTextFinderTrimmed() {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 
 		String trimmed = text.trim();

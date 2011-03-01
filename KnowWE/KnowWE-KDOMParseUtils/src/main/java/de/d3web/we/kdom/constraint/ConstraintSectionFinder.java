@@ -24,10 +24,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 /**
@@ -43,7 +42,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
  */
 public class ConstraintSectionFinder implements ISectionFinder {
 
-	private ISectionFinder finder;
+	private final ISectionFinder finder;
 
 	public ConstraintSectionFinder(ISectionFinder finder) {
 		this.finder = finder;
@@ -82,12 +81,12 @@ public class ConstraintSectionFinder implements ISectionFinder {
 	 */
 	@Override
 	public List<SectionFinderResult> lookForSections(String text,
-			Section<?> father, KnowWEObjectType type) {
+			Section<?> father, Type type) {
 
 		List<SectionFinderResult> result = finder.lookForSections(text, father, type);
 		if (result != null) {
 			Collections.sort(result);
-			applyConstraints(result, father, type);
+			applyConstraints(result, father, type.getClass());
 		}
 
 		return result;
@@ -103,7 +102,7 @@ public class ConstraintSectionFinder implements ISectionFinder {
 	 */
 
 	private void applyConstraints(List<SectionFinderResult> results, Section<?> father,
-			KnowWEObjectType ob) {
+			Class<? extends Type> ob) {
 
 		if (constraintList == null) return;
 

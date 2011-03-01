@@ -33,23 +33,23 @@ import de.d3web.we.kdom.report.MessageRenderer;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
-public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
+public abstract class AbstractType implements Type, Sectionizable {
 
 	/**
 	 * the children types of the type. Used to serve the getAllowedChildrenTypes
-	 * of the KnowWEObjectType interface
+	 * of the Type interface
 	 * 
-	 * @see KnowWEObjectType#getAllowedChildrenTypes()
+	 * @see Type#getAllowedChildrenTypes()
 	 * 
 	 */
-	protected List<KnowWEObjectType> childrenTypes = new ArrayList<KnowWEObjectType>();
+	protected List<Type> childrenTypes = new ArrayList<Type>();
 
 	/**
 	 * Manages the subtreeHandlers which are registered to this type
 	 * 
 	 * @see SubtreeHandler
 	 */
-	protected TreeMap<Priority, List<SubtreeHandler<? extends KnowWEObjectType>>> subtreeHandler = new TreeMap<Priority, List<SubtreeHandler<? extends KnowWEObjectType>>>();
+	protected TreeMap<Priority, List<SubtreeHandler<? extends Type>>> subtreeHandler = new TreeMap<Priority, List<SubtreeHandler<? extends Type>>>();
 
 	/**
 	 * types can be activated and deactivated in KnowWE this field is holding
@@ -61,7 +61,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * determines whether this type is sectionized after creating the knowledge
 	 * or before as all other types
 	 * 
-	 * @see AbstractKnowWEObjectType#isPostBuildSectionizing()
+	 * @see AbstractType#isPostBuildSectionizing()
 	 */
 	protected boolean postBuildSectionizing = false;
 
@@ -104,9 +104,9 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/**
 	 * The sectionFinder of this type, used to serve the getSectionFinder-method
-	 * of the KnowWEObjectType interface
+	 * of the Type interface
 	 * 
-	 * @see KnowWEObjectType#getSectioner()
+	 * @see Type#getSectioFinder()
 	 */
 	protected ISectionFinder sectionFinder;
 
@@ -115,6 +115,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * 
 	 * @param sectionFinder
 	 */
+	@Override
 	public void setSectionFinder(ISectionFinder sectionFinder) {
 		this.sectionFinder = sectionFinder;
 	}
@@ -130,14 +131,14 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * constructor calling init() which is abstract
 	 * 
 	 */
-	public AbstractKnowWEObjectType() {
+	public AbstractType() {
 		// TODO: vb: this is dangerous behavior. Should be replaced. The objects
 		// "init" method is called, before it is completely initialized by its
 		// own constructor.
 		init();
 	}
 
-	public AbstractKnowWEObjectType(ISectionFinder sectionFinder) {
+	public AbstractType(ISectionFinder sectionFinder) {
 		this();
 		this.sectionFinder = sectionFinder;
 	}
@@ -148,15 +149,15 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * @return list of handlers
 	 */
 	@Override
-	public final TreeMap<Priority, List<SubtreeHandler<? extends KnowWEObjectType>>> getSubtreeHandlers() {
+	public final TreeMap<Priority, List<SubtreeHandler<? extends Type>>> getSubtreeHandlers() {
 		return subtreeHandler;
 	}
 
 	@Override
-	public final List<SubtreeHandler<? extends KnowWEObjectType>> getSubtreeHandlers(Priority p) {
-		List<SubtreeHandler<? extends KnowWEObjectType>> handlers = subtreeHandler.get(p);
+	public final List<SubtreeHandler<? extends Type>> getSubtreeHandlers(Priority p) {
+		List<SubtreeHandler<? extends Type>> handlers = subtreeHandler.get(p);
 		if (handlers == null) {
-			handlers = new ArrayList<SubtreeHandler<? extends KnowWEObjectType>>();
+			handlers = new ArrayList<SubtreeHandler<? extends Type>>();
 			subtreeHandler.put(p, handlers);
 		}
 		return handlers;
@@ -165,7 +166,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	/**
 	 * Registers the given SubtreeHandlers with the given Priority.
 	 */
-	public final void addSubtreeHandler(Priority p, SubtreeHandler<? extends KnowWEObjectType> handler) {
+	public final void addSubtreeHandler(Priority p, SubtreeHandler<? extends Type> handler) {
 		getSubtreeHandlers(p).add(handler);
 	}
 
@@ -173,23 +174,23 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * Registers the given SubtreeHandlers at position <tt>pos</tt> in the List
 	 * of SubtreeHandlers of the given Priority.
 	 */
-	public final void addSubtreeHandler(int pos, Priority p, SubtreeHandler<? extends KnowWEObjectType> handler) {
+	public final void addSubtreeHandler(int pos, Priority p, SubtreeHandler<? extends Type> handler) {
 		getSubtreeHandlers(p).add(pos, handler);
 	}
 
 	/**
 	 * Registers the given SubtreeHandlers with Priority.DEFAULT.
 	 */
-	public void addSubtreeHandler(SubtreeHandler<? extends KnowWEObjectType> handler) {
+	public void addSubtreeHandler(SubtreeHandler<? extends Type> handler) {
 		getSubtreeHandlers(Priority.DEFAULT).add(handler);
 	}
 
-	public void replaceChildType(KnowWEObjectType type,
-			Class<? extends KnowWEObjectType> c)
+	public void replaceChildType(Type type,
+			Class<? extends Type> c)
 			throws InvalidKDOMSchemaModificationOperation {
 		if (c.isAssignableFrom(type.getClass())) {
-			KnowWEObjectType toReplace = null;
-			for (KnowWEObjectType child : childrenTypes) {
+			Type toReplace = null;
+			for (Type child : childrenTypes) {
 				if (child.getClass().equals(c)) {
 					toReplace = child;
 				}
@@ -218,7 +219,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	// * @param messages
 	// */
 	// public static void storeMessages(KnowWEArticle article, Section<? extends
-	// KnowWEObjectType> s,
+	// Type> s,
 	// List<Message> messages) {
 	// KnowWEUtils.storeSectionInfo(article.getWeb(), article
 	// .getTitle(), s.getId(), MESSAGES_STORE_KEY, messages);
@@ -227,7 +228,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.d3web.we.kdom.KnowWEObjectType#deactivateType()
+	 * @see de.d3web.we.kdom.Type#deactivateType()
 	 */
 	@Override
 	public void deactivateType() {
@@ -237,7 +238,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.d3web.we.kdom.KnowWEObjectType#activateType()
+	 * @see de.d3web.we.kdom.Type#activateType()
 	 */
 	@Override
 	public void activateType() {
@@ -247,7 +248,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.d3web.we.kdom.KnowWEObjectType#getActivationStatus()
+	 * @see de.d3web.we.kdom.Type#getActivationStatus()
 	 */
 	@Override
 	public boolean getActivationStatus() {
@@ -255,15 +256,15 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	}
 
 	@Override
-	public void findTypeInstances(Class clazz, List<KnowWEObjectType> instances) {
+	public void findTypeInstances(Class clazz, List<Type> instances) {
 		boolean foundNew = false;
 		if (this.getClass().equals(clazz)) {
 			instances.add(this);
 			foundNew = true;
 		}
 		if (foundNew) {
-			for (KnowWEObjectType knowWEObjectType : childrenTypes) {
-				knowWEObjectType.findTypeInstances(clazz, instances);
+			for (Type Type : childrenTypes) {
+				Type.findTypeInstances(clazz, instances);
 			}
 		}
 	}
@@ -271,7 +272,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.d3web.we.kdom.KnowWEObjectType#getName()
+	 * @see de.d3web.we.kdom.Type#getName()
 	 */
 	@Override
 	public String getName() {
@@ -282,40 +283,46 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * use normal constructor!
 	 */
 	@Deprecated
-	protected abstract void init();
+	protected void init() {
+
+	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.d3web.we.kdom.KnowWEObjectType#getSectioner()
+	 * @see de.d3web.we.kdom.Sectionizable#getSectioFinder()
 	 */
 	@Override
-	public ISectionFinder getSectioner() {
+	public final ISectionFinder getSectioFinder() {
 		if (isActivated) {
 			return sectionFinder;
 		}
 		return null;
 	}
 
+	public Parser getParser() {
+		return new Sectionizer();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.d3web.we.kdom.KnowWEObjectType#getAllowedChildrenTypes()
+	 * @see de.d3web.we.kdom.Type#getAllowedChildrenTypes()
 	 */
 	@Override
-	public List<KnowWEObjectType> getAllowedChildrenTypes() {
+	public List<Type> getAllowedChildrenTypes() {
 		return Collections.unmodifiableList(childrenTypes);
 	}
 
-	public boolean addChildType(KnowWEObjectType t) {
+	public boolean addChildType(Type t) {
 		return this.childrenTypes.add(t);
 	}
 
-	public boolean removeChildType(KnowWEObjectType t) {
+	public boolean removeChildType(Type t) {
 		return this.childrenTypes.remove(t);
 	}
 
-	public KnowWEObjectType removeChild(int i) {
+	public Type removeChild(int i) {
 		return this.childrenTypes.remove(i);
 	}
 
@@ -395,7 +402,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * @see de.d3web.we.kdom.KnowWEType#isAssignableFromType(java.lang.Class)
 	 */
 	@Override
-	public boolean isAssignableFromType(Class<? extends KnowWEObjectType> clazz) {
+	public boolean isAssignableFromType(Class<? extends Type> clazz) {
 		return clazz.isAssignableFrom(this.getClass());
 	}
 
@@ -410,25 +417,25 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * @see de.d3web.we.kdom.KnowWEType#isType(java.lang.Class)
 	 */
 	@Override
-	public boolean isType(Class<? extends KnowWEObjectType> clazz) {
+	public boolean isType(Class<? extends Type> clazz) {
 		return clazz.equals(this.getClass());
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.d3web.we.kdom.KnowWEObjectType#isLeafType()
+	 * @see de.d3web.we.kdom.Type#isLeafType()
 	 */
 	@Override
 	public boolean isLeafType() {
-		List<KnowWEObjectType> types = getAllowedChildrenTypes();
+		List<Type> types = getAllowedChildrenTypes();
 		return types == null || types.size() == 0;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.d3web.we.kdom.KnowWEObjectType#isNotRecyclable()
+	 * @see de.d3web.we.kdom.Type#isNotRecyclable()
 	 */
 	@Override
 	public boolean isNotRecyclable() {
@@ -438,12 +445,12 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.d3web.we.kdom.KnowWEObjectType#setNotRecyclable(boolean)
+	 * @see de.d3web.we.kdom.Type#setNotRecyclable(boolean)
 	 */
 	@Override
 	public final void setNotRecyclable(boolean notRecyclable) {
 		this.isNotRecyclable = notRecyclable;
-		for (KnowWEObjectType type : childrenTypes) {
+		for (Type type : childrenTypes) {
 			type.setNotRecyclable(notRecyclable);
 		}
 

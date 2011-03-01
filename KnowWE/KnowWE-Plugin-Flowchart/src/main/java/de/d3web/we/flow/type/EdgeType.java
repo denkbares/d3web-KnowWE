@@ -20,14 +20,14 @@
 
 package de.d3web.we.flow.type;
 
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.AbstractXMLType;
 
 /**
  * 
  * 
  * @author hatko Created on: 09.10.2009
  */
-public class EdgeType extends AbstractXMLObjectType {
+public class EdgeType extends AbstractXMLType {
 
 	private static EdgeType instance;
 

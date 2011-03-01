@@ -18,7 +18,7 @@
  */
 package de.d3web.we.object;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 
 
 /**
@@ -26,7 +26,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
  * @author Markus Friedrich (denkbares GmbH)
  * @created 12.11.2010
  */
-public class ContentDefinition extends DefaultAbstractKnowWEObjectType {
+public class ContentDefinition extends AbstractType {
 
 
 

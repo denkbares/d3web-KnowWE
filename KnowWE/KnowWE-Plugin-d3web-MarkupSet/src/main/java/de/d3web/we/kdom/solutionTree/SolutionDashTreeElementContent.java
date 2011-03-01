@@ -26,8 +26,9 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.IncrementalMarker;
@@ -73,7 +74,7 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 		f.addConstraint(SingleChildConstraint.getInstance());
 		solutionDef.setSectionFinder(f);
 		this.addChildType(solutionDef);
-		this.setCustomRenderer(new ReRenderSectionMarkerRenderer<KnowWEObjectType>(
+		this.setCustomRenderer(new ReRenderSectionMarkerRenderer<Type>(
 				new SolutionDashTreeElementContentRenderer()));
 	}
 
@@ -82,10 +83,10 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 	 * @author volker_belli
 	 * @created 08.12.2010
 	 */
-	private static final class SolutionDashTreeElementContentRenderer extends KnowWEDomRenderer<KnowWEObjectType> {
+	private static final class SolutionDashTreeElementContentRenderer extends KnowWEDomRenderer<Type> {
 
 		@Override
-		public void render(KnowWEArticle article, Section<KnowWEObjectType> sec, KnowWEUserContext user, StringBuilder string) {
+		public void render(KnowWEArticle article, Section<Type> sec, KnowWEUserContext user, StringBuilder string) {
 			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID() + "'>"));
 			DelegateRenderer.getInstance().render(article, sec, user, string);
 			string.append(KnowWEUtils.maskHTML("</span>"));
@@ -118,12 +119,14 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
 			Section<? extends DashTreeElementContent> fatherSolutionContent = DashTreeUtils.getFatherDashTreeElementContent(
 					s);
-			Section<SolutionDefinition> localSolutionDef = s.findSuccessor(SolutionDefinition.class);
+			Section<SolutionDefinition> localSolutionDef = Sections.findSuccessor(s,
+					SolutionDefinition.class);
 			Solution localSolution = localSolutionDef.get().getTermObject(article, localSolutionDef);
 
 			if (fatherSolutionContent != null && localSolution != null) {
 
-				Section<SolutionDefinition> solutionDef = fatherSolutionContent.findSuccessor(SolutionDefinition.class);
+				Section<SolutionDefinition> solutionDef = Sections.findSuccessor(
+						fatherSolutionContent, SolutionDefinition.class);
 				if (solutionDef != null) {
 					Solution superSolution = solutionDef.get().getTermObject(article, solutionDef);
 					// here the actual taxonomic relation is established

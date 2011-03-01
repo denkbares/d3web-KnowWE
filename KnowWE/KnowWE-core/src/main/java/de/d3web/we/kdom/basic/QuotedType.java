@@ -20,11 +20,11 @@
 
 package de.d3web.we.kdom.basic;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 
 public class QuotedType extends EmbracedType {
 
-	public QuotedType(KnowWEObjectType bodyType) {
+	public QuotedType(Type bodyType) {
 		super(bodyType, "\"", "\"");
 	}
 

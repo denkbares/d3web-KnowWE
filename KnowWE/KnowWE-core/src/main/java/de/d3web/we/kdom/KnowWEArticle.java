@@ -40,21 +40,19 @@ import de.d3web.we.event.PreCompileFinishedEvent;
 import de.d3web.we.kdom.ReviseIterator.SectionPriorityTuple;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.store.SectionStore;
-import de.d3web.we.kdom.validation.KDOMValidator;
 
 /**
  * @author Jochen
  * 
  *         This class is the representation of one wiki article in KnowWE. It is
- *         a KnowWEObjectType that always forms the root node and only the root
+ *         a Type that always forms the root node and only the root
  *         node of each KDOM document-parse-tree.
  * 
  * 
  * 
  */
-public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
+public class KnowWEArticle extends AbstractType {
 
 	/**
 	 * Name of this article (topic-name)
@@ -92,12 +90,12 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 	private final Set<String> classesCausingFullParse = new HashSet<String>();
 
-	public static KnowWEArticle createArticle(String text, String title, KnowWEObjectType rootType,
+	public static KnowWEArticle createArticle(String text, String title, Type rootType,
 			String web) {
 		return createArticle(text, title, rootType, web, false);
 	}
 
-	public static KnowWEArticle createArticle(String text, String title, KnowWEObjectType rootType,
+	public static KnowWEArticle createArticle(String text, String title, Type rootType,
 			String web, boolean fullParse) {
 
 		KnowWEArticle article = new KnowWEArticle(text, title, rootType,
@@ -115,7 +113,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	 * @param title
 	 * @param allowedObjects
 	 */
-	private KnowWEArticle(String text, String title, KnowWEObjectType rootType,
+	private KnowWEArticle(String text, String title, Type rootType,
 			String web, boolean fullParse) {
 
 		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
@@ -164,7 +162,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		lastVersion = null;
 	}
 
-	private long build(String text, String title, KnowWEObjectType rootType,
+	@SuppressWarnings("unchecked")
+	private long build(String text, String title, Type rootType,
 			String web, long startTime) {
 
 		this.postPreDestroy = false;
@@ -176,7 +175,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		env.getArticleManager(web).registerSectionizingArticle(title);
 
 		// create Sections recursively
-		sec = Section.createSection(text, this, null, 0, this, null, false);
+		sec = (Section<KnowWEArticle>) getParser().parse(text, this, null, null, this);
 
 		sec.absolutePositionStartInArticle = 0;
 		sec.clearReusedSuccessorRecursively();
@@ -249,21 +248,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 		startTime = System.currentTimeMillis();
 
-		// ============ Validate KDOM =============
-		if (KDOMValidator.getResourceBundle().getString("validator.active")
-				.contains("true")) {
-			Logger.getLogger(this.getClass().getName()).log(Level.FINER,
-					"-> Starting to validate article ->");
-
-			KDOMValidator.getFileHandlerInstance().validateArticle(this);
-
-			Logger.getLogger(this.getClass().getName()).log(
-					Level.FINER,
-					"<- Finished validating article in "
-							+ (System.currentTimeMillis() - startTime)
-							+ "ms <-");
-			startTime = System.currentTimeMillis();
-		}
 		return startTime;
 	}
 
@@ -306,8 +290,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	 * @param id
 	 * @return
 	 */
-	public Section<? extends KnowWEObjectType> findSection(String id) {
-		return sec.findChild(id);
+	public Section<? extends Type> findSection(String id) {
+		return Sections.findSuccessor(sec, id);
 
 	}
 
@@ -321,11 +305,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			idMap.put(id, num);
 			return num;
 		}
-	}
-
-	@Deprecated
-	public Section<? extends KnowWEObjectType> getNode(String nodeID) {
-		return sec.getNode(nodeID);
 	}
 
 	/**
@@ -352,16 +331,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	}
 
 	/**
-	 * Since the article is managed by the wiki there is no need for parsing it
-	 * out article is root node, so no sectioner necessary
-	 */
-	@Override
-	public ISectionFinder getSectioner() {
-		// Is not needed for KnowWEArticle
-		return null;
-	}
-
-	/**
 	 * Returns the simple name of this class, NOT THE NAME (Title) OF THIS
 	 * ARTICLE! For the articles title, use getTitle() instead!
 	 */
@@ -374,8 +343,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return sec;
 	}
 
-	public Section<? extends KnowWEObjectType> findSmallestNodeContaining(int start, int end) {
-		return sec.findSmallestNodeContaining(start, end);
+	public Section<? extends Type> findSmallestNodeContaining(int start, int end) {
+		return Sections.findSmallestNodeContaining(sec, start, end);
 	}
 
 	private final Map<String, Map<String, List<Section<?>>>> knownResults =
@@ -388,12 +357,12 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	 * 
 	 * @return Map of Sections, using their originalText as key.
 	 */
-	public Map<String, List<Section<?>>> findChildrenOfTypeMap(List<Class<? extends KnowWEObjectType>> path) {
+	public Map<String, List<Section<?>>> findChildrenOfTypeMap(List<Class<? extends Type>> path) {
 		String stringPath = path.toString();
-		Map<String, List<Section<? extends KnowWEObjectType>>> foundChildren = knownResults.get(stringPath);
+		Map<String, List<Section<? extends Type>>> foundChildren = knownResults.get(stringPath);
 		if (foundChildren == null) {
-			foundChildren = new HashMap<String, List<Section<? extends KnowWEObjectType>>>();
-			sec.findSuccessorsOfTypeAtTheEndOfPath(path, 0, foundChildren);
+			foundChildren = new HashMap<String, List<Section<? extends Type>>>();
+			Sections.findSuccessorsOfTypeAtTheEndOfPath(sec, path, 0, foundChildren);
 			knownResults.put(stringPath, foundChildren);
 		}
 		return foundChildren;
@@ -406,10 +375,10 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	 * 
 	 * @return List of Sections
 	 */
-	public List<Section<? extends KnowWEObjectType>> findChildrenOfTypeList(
-			LinkedList<Class<? extends KnowWEObjectType>> path) {
-		List<Section<? extends KnowWEObjectType>> foundChildren = new ArrayList<Section<? extends KnowWEObjectType>>();
-		sec.findSuccessorsOfTypeAtTheEndOfPath(path, 0, foundChildren);
+	public List<Section<? extends Type>> findChildrenOfTypeList(
+			LinkedList<Class<? extends Type>> path) {
+		List<Section<? extends Type>> foundChildren = new ArrayList<Section<? extends Type>>();
+		Sections.findSuccessorsOfTypeAtTheEndOfPath(sec, path, 0, foundChildren);
 		return foundChildren;
 	}
 
@@ -419,22 +388,22 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return buffi.toString();
 	}
 
-	public List<Section<? extends KnowWEObjectType>> getAllNodesPreOrder() {
-		List<Section<? extends KnowWEObjectType>> nodes = new ArrayList<Section<? extends KnowWEObjectType>>();
-		sec.getAllNodesPreOrder(nodes);
+	public List<Section<? extends Type>> getAllNodesPreOrder() {
+		List<Section<? extends Type>> nodes = new ArrayList<Section<? extends Type>>();
+		Sections.getAllNodesPreOrder(sec, nodes);
 		return nodes;
 	}
 
-	public List<Section<? extends KnowWEObjectType>> getAllNodesPostOrder() {
-		List<Section<? extends KnowWEObjectType>> nodes = new LinkedList<Section<? extends KnowWEObjectType>>();
-		sec.getAllNodesPostOrder(nodes);
+	public List<Section<? extends Type>> getAllNodesPostOrder() {
+		List<Section<? extends Type>> nodes = new LinkedList<Section<? extends Type>>();
+		Sections.getAllNodesPostOrder(sec, nodes);
 		return nodes;
 	}
 
-	// public List<Section<? extends KnowWEObjectType>>
+	// public List<Section<? extends Type>>
 	// getAllNodesToDestroyPostOrder() {
-	// List<Section<? extends KnowWEObjectType>> nodes = new
-	// LinkedList<Section<? extends KnowWEObjectType>>();
+	// List<Section<? extends Type>> nodes = new
+	// LinkedList<Section<? extends Type>>();
 	// if (lastVersion != null)
 	// lastVersion.sec.getAllNodesToDestroyPostOrder(this, nodes);
 	// return nodes;
@@ -453,13 +422,13 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	//
 	// List<Section<?>> nodes = getAllNodesToDestroyPostOrder();
 	// // Collections.reverse(nodes);
-	// TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
+	// TreeMap<Priority, List<Section<? extends Type>>> prioMap =
 	// Priority.createPrioritySortedList(nodes);
 	//
 	// for (Priority priority : prioMap.descendingKeySet()) {
-	// List<Section<? extends KnowWEObjectType>> prioList =
+	// List<Section<? extends Type>> prioList =
 	// prioMap.get(priority);
-	// for (Section<? extends KnowWEObjectType> section : prioList) {
+	// for (Section<? extends Type> section : prioList) {
 	// section.letSubtreeHandlersDestroy(this, priority);
 	// }
 	//
@@ -467,13 +436,13 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	// }
 	//
 	// private void reviseCurrentArticleToCreate() {
-	// TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
+	// TreeMap<Priority, List<Section<? extends Type>>> prioMap =
 	// Priority.createPrioritySortedList(getAllNodesPostOrder());
 	//
 	// for (Priority priority : prioMap.descendingKeySet()) {
-	// List<Section<? extends KnowWEObjectType>> prioList =
+	// List<Section<? extends Type>> prioList =
 	// prioMap.get(priority);
-	// for (Section<? extends KnowWEObjectType> section : prioList) {
+	// for (Section<? extends Type> section : prioList) {
 	// section.letSubtreeHandlersCreate(this, priority);
 	// }
 	// }
@@ -483,12 +452,12 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	// // This method is needed for the case that Sections get reused and are
 	// flagged
 	// // false from previous revising.
-	// private List<Section<? extends KnowWEObjectType>>
+	// private List<Section<? extends Type>>
 	// setAllHandlersToNotYetRevised
-	// (List<Section<? extends KnowWEObjectType>> sectionList) {
-	// for (Section<? extends KnowWEObjectType> section:sectionList) {
-	// for (SubtreeHandler<? extends KnowWEObjectType> handler
-	// :section.getObjectType().getSubtreeHandlers()) {
+	// (List<Section<? extends Type>> sectionList) {
+	// for (Section<? extends Type> section:sectionList) {
+	// for (SubtreeHandler<? extends Type> handler
+	// :section.get().getSubtreeHandlers()) {
 	// handler.setNotYetRevisedBy(title, true);
 	// }
 	// }
@@ -511,7 +480,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return this.secondBuild;
 	}
 
-	public KnowWEObjectType getRootType() {
+	public Type getRootType() {
 		return getAllowedChildrenTypes().get(0);
 	}
 

@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import de.d3web.we.flow.type.FlowchartPreviewContentType;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 
 /**
  * 
@@ -44,7 +45,8 @@ public class FlowchartUtils {
 	 */
 	public static String extractPreview(Section<FlowchartType> flowchartSection) {
 
-		Section<FlowchartPreviewContentType> previewsection = flowchartSection.findSuccessor(FlowchartPreviewContentType.class);
+		Section<FlowchartPreviewContentType> previewsection = Sections.findSuccessor(
+				flowchartSection, FlowchartPreviewContentType.class);
 
 		if (previewsection == null) {
 			return null;

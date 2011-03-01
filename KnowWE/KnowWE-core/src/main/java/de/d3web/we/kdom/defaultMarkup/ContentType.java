@@ -23,10 +23,10 @@ package de.d3web.we.kdom.defaultMarkup;
 import java.util.Collections;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
-public class ContentType extends DefaultAbstractKnowWEObjectType {
+public class ContentType extends AbstractType {
 
 	private final static int FLAGS = Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL;
 	private final static String SECTION_REGEXP =

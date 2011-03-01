@@ -69,17 +69,17 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	}
 
 	public static String getText(Section<?> sec) {
-		assert sec.getObjectType() instanceof ShowSolutionsType;
+		assert sec.get() instanceof ShowSolutionsType;
 		return DefaultMarkupType.getContent(sec);
 	}
 
 	public static String getMaster(Section<?> section) {
-		assert section.getObjectType() instanceof ShowSolutionsType;
+		assert section.get() instanceof ShowSolutionsType;
 		return DefaultMarkupType.getAnnotation(section, ANNOTATION_MASTER);
 	}
 
 	public static String[] getShownAbstraction(Section<?> section) {
-		assert section.getObjectType() instanceof ShowSolutionsType;
+		assert section.get() instanceof ShowSolutionsType;
 		return DefaultMarkupType.getAnnotations(section, ALLOWED_DERIVATIONS);
 	}
 
@@ -94,7 +94,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	}
 
 	private static boolean foundAnnotation(Section<?> section, String annotation) {
-		assert section.getObjectType() instanceof ShowSolutionsType;
+		assert section.get() instanceof ShowSolutionsType;
 		String value = DefaultMarkupType.getAnnotation(section, annotation);
 		if (!MARKUP.getAnnotation(annotation).matches(value)) return false;
 		else return true;
@@ -113,7 +113,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	}
 
 	public static int numberOfShownDigits(Section<?> section) {
-		assert section.getObjectType() instanceof ShowSolutionsType;
+		assert section.get() instanceof ShowSolutionsType;
 		String val = DefaultMarkupType.getAnnotation(section, SHOW_DIGITS);
 		int iVal = 10;
 		try {
@@ -126,7 +126,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	}
 
 	private static boolean shouldShow(Section<?> section, String annotation) {
-		assert section.getObjectType() instanceof ShowSolutionsType;
+		assert section.get() instanceof ShowSolutionsType;
 		String value = DefaultMarkupType.getAnnotation(section, annotation);
 		if (!MARKUP.getAnnotation(annotation).matches(value)) return false;
 		else return convert(BoolValue.valueOf(value.toUpperCase()));

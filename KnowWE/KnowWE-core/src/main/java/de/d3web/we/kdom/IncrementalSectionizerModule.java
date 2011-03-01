@@ -31,7 +31,7 @@ import de.d3web.we.kdom.store.SectionStore;
 public class IncrementalSectionizerModule implements SectionizerModule {
 
 	@Override
-	public Section<?> createSection(KnowWEArticle article, KnowWEObjectType ob, Section<?> father, Section<?> thisSection, String secText, SectionFinderResult result) {
+	public Section<?> createSection(String text, Type type, Section<?> father, KnowWEArticle article, SectionFinderResult result) {
 
 		Section<?> s = null;
 		// Update mechanism
@@ -39,21 +39,20 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 		// of the article
 		if (!article.isFullParse()
 				&& result.getClass().equals(SectionFinderResult.class)
-				&& !ob.isNotRecyclable()
-				&& !(ob.isLeafType())) {
+				&& !type.isNotRecyclable()
+				&& !(type.isLeafType())) {
 
 			// get path of of ObjectTypes the Section to be
 			// created would have
-			List<Class<? extends KnowWEObjectType>> path = father.getPathFromArticleToThis();
-			path.add(ob.getClass());
+			List<Class<? extends Type>> path = father.getPathFromArticleToThis();
+			path.add(type.getClass());
 
 			// find all Sections with same path of ObjectTypes
 			// in the last version
 			Map<String, List<Section<?>>> sectionsOfSameType = article.getLastVersionOfArticle()
 					.findChildrenOfTypeMap(path);
 
-			List<Section<?>> matches = sectionsOfSameType.remove(secText.substring(
-					result.getStart(), result.getEnd()));
+			List<Section<?>> matches = sectionsOfSameType.remove(text);
 
 			Section<?> match = null;
 			if (matches != null && matches.size() == 1) {
@@ -88,15 +87,13 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 				// use match instead of creating a new Section
 				// (thats the idea of updating ;) )
 				s = match;
-				s.setOffSetFromFatherText(thisSection.getOffSetFromFatherText()
-						+ result.getStart());
 				s.setFather(father);
 				father.addChild(s);
 
 				// perform necessary actions on complete reused
 				// KDOM subtree
 				List<Section<?>> newNodes = new ArrayList<Section<?>>();
-				s.getAllNodesPreOrder(newNodes);
+				Sections.getAllNodesPreOrder(s, newNodes);
 				for (Section<?> node : newNodes) {
 
 					List<Integer> lastPositions = node.calcPositionTil(match);
@@ -104,7 +101,7 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 					node.setLastPositionInKDOM(lastPositions);
 					node.clearPositionInKDOM();
 
-					// if (node.getObjectType() instanceof Include) {
+					// if (node.get() instanceof Include) {
 					// article.getActiveIncludes().add(
 					// (Section<Include>) node);
 					// }
@@ -135,7 +132,7 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 						else {
 							if (node.getSpecificID() == null) {
 								node.setID(new SectionID(node.father,
-										node.objectType).toString());
+										node.type).toString());
 							}
 							else {
 								node.setID(new SectionID(

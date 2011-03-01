@@ -7,9 +7,10 @@ import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -30,7 +31,7 @@ import de.d3web.we.utils.SplitUtility;
  * @author Jochen
  * 
  */
-public class ObjectDescription extends DefaultAbstractKnowWEObjectType {
+public class ObjectDescription extends AbstractType {
 
 	private static final String QTEXT_START_SYMBOL = "~";
 
@@ -44,8 +45,8 @@ public class ObjectDescription extends DefaultAbstractKnowWEObjectType {
 			@Override
 			public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ObjectDescription> sec) {
 
-				Section<TermDefinition> qDef = sec.getFather().findSuccessor(
-							TermDefinition.class);
+				Section<TermDefinition> qDef = Sections.findSuccessor(
+						sec.getFather(), TermDefinition.class);
 
 				if (qDef != null) {
 

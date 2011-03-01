@@ -23,10 +23,11 @@
  */
 package de.d3web.we.flow.persistence;
 
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.xml.AbstractXMLType;
 
 /**
  * @author Reinhard Hatko
@@ -34,21 +35,22 @@ import de.d3web.we.kdom.xml.AbstractXMLObjectType;
  */
 public abstract class AbstractNodeHandler implements NodeHandler {
 
-	protected final AbstractKnowWEObjectType type;
+	protected final AbstractType type;
 	protected final String markup;
 
-	public AbstractNodeHandler(AbstractKnowWEObjectType type, String markup) {
+	public AbstractNodeHandler(AbstractType type, String markup) {
 		this.type = type;
 		this.markup = markup;
 	}
 
-	public AbstractNodeHandler(AbstractKnowWEObjectType type) {
+	public AbstractNodeHandler(AbstractType type) {
 		this(type, null);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected Section<AbstractXMLObjectType> getNodeInfo(Section<?> nodeSection) {
-		Section<AbstractXMLObjectType> child = (Section<AbstractXMLObjectType>) nodeSection.findSuccessor(type.getClass());
+	protected Section<AbstractXMLType> getNodeInfo(Section<?> nodeSection) {
+		Section<AbstractXMLType> child = (Section<AbstractXMLType>) Sections.findSuccessor(
+				nodeSection, type.getClass());
 
 		if (child == null) {
 			return null; // no child of expected type
@@ -70,16 +72,16 @@ public abstract class AbstractNodeHandler implements NodeHandler {
 
 	}
 
-	protected String getMarkup(Section<AbstractXMLObjectType> child) {
-		return AbstractXMLObjectType.getAttributeMapFor(child).get("markup");
+	protected String getMarkup(Section<AbstractXMLType> child) {
+		return AbstractXMLType.getAttributeMapFor(child).get("markup");
 	}
 
 	@Override
-	public KnowWEObjectType getObjectType() {
+	public Type get() {
 		return type;
 	}
 
-	public AbstractKnowWEObjectType getType() {
+	public AbstractType getType() {
 		return type;
 	}
 

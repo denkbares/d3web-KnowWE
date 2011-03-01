@@ -19,10 +19,10 @@
  */
 package de.knowwe.core.dashtree;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 
-public class DashTreeElementContent extends DefaultAbstractKnowWEObjectType {
+public class DashTreeElementContent extends AbstractType {
 
 	private static DashTreeElementContent defaultInstance = null;
 

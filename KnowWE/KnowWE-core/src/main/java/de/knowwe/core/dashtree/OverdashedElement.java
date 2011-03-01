@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SyntaxError;
@@ -47,7 +47,7 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
  * 
  * 
  */
-public class OverdashedElement extends DefaultAbstractKnowWEObjectType {
+public class OverdashedElement extends AbstractType {
 
 	@Override
 	protected void init() {
@@ -57,12 +57,12 @@ public class OverdashedElement extends DefaultAbstractKnowWEObjectType {
 		this.sectionFinder = new SectionFinder() {
 
 			@Override
-			public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+			public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
 				// when there is no father, one dash is too much
 				int level = 1;
 
 				// IMPORTANT: +2
-				if (father.getObjectType() instanceof DashSubtree) {
+				if (father.get() instanceof DashSubtree) {
 					level = DashTreeUtils.getDashLevel(father) + 2;
 				}
 

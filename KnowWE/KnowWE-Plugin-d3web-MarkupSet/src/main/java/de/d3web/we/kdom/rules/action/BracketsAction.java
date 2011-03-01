@@ -19,7 +19,7 @@
 package de.d3web.we.kdom.rules.action;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -36,16 +36,16 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @param <T>
  * @created 30.07.2010
  */
-public abstract class BracketsAction<T extends KnowWEObjectType> extends D3webRuleAction<T> {
+public abstract class BracketsAction<T extends Type> extends D3webRuleAction<T> {
 
 	protected static final String OPEN = "[";
 	protected static final String CLOSE = "]";
 
 	public BracketsAction(final String[] alternativeKeys) {
-		this.setCustomRenderer(new KnowWEDomRenderer<KnowWEObjectType>() {
+		this.setCustomRenderer(new KnowWEDomRenderer<Type>() {
 
 			@Override
-			public void render(KnowWEArticle article, Section<KnowWEObjectType> sec, KnowWEUserContext user, StringBuilder string) {
+			public void render(KnowWEArticle article, Section<Type> sec, KnowWEUserContext user, StringBuilder string) {
 				StringBuilder b = new StringBuilder();
 				DelegateRenderer.getInstance().render(article, sec, user, b);
 				string.append(b.toString().replaceAll("\\[", "~["));
@@ -82,6 +82,6 @@ public abstract class BracketsAction<T extends KnowWEObjectType> extends D3webRu
 	 * @created 30.07.2010
 	 * @return
 	 */
-	protected abstract KnowWEObjectType getObjectReference();
+	protected abstract Type getObjectReference();
 
 }

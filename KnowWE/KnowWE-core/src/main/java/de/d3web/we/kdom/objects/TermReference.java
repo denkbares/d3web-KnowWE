@@ -23,7 +23,7 @@ package de.d3web.we.kdom.objects;
 import java.util.Arrays;
 import java.util.Collection;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -46,7 +46,7 @@ import de.d3web.we.utils.KnowWEUtils;
  * @param <TermObject>
  */
 public abstract class TermReference<TermObject>
-		extends DefaultAbstractKnowWEObjectType
+		extends AbstractType
 		implements KnowWETerm<TermObject> {
 
 	private int termScope = KnowWETerm.LOCAL;

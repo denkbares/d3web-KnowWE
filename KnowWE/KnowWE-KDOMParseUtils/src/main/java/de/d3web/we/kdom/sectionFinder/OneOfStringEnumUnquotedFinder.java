@@ -22,9 +22,9 @@ package de.d3web.we.kdom.sectionFinder;
 
 import java.util.List;
 
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.MultiSectionFinder;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 
 /**
  * This SectionFinder is created with an array of Strings. It looks for unquoted
@@ -33,7 +33,7 @@ import de.d3web.we.kdom.Section;
  * @author Jochen
  * 
  */
-public class OneOfStringEnumUnquotedFinder extends SectionFinder {
+public class OneOfStringEnumUnquotedFinder implements ISectionFinder {
 
 	private final MultiSectionFinder msf;
 
@@ -45,7 +45,7 @@ public class OneOfStringEnumUnquotedFinder extends SectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		return msf.lookForSections(text, father, type);
 	}
 }

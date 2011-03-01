@@ -32,10 +32,11 @@ import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
 import de.d3web.we.kdom.questionTree.RootQuestionChangeConstraint;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -55,7 +56,7 @@ import de.d3web.we.utils.SplitUtility;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.knowwe.core.dashtree.DashTreeUtils;
 
-public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
+public class QuestionSetValueNumLine extends AbstractType {
 
 	private static final String SETVALUE_ARGUMENT = "SetValueNumArgument";
 	private static final String OPEN = "(";
@@ -101,7 +102,7 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 
 			@Override
 			public List<SectionFinderResult> lookForSections(String text,
-					Section<?> father, KnowWEObjectType type) {
+					Section<?> father, Type type) {
 
 				return SectionFinderResult
 						.createSingleItemList(new SectionFinderResult(
@@ -114,10 +115,10 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 		return typeDef;
 	}
 
-	private KnowWEObjectType createObjectRefTypeBefore(
-			KnowWEObjectType typeAfter) {
+	private AbstractType createObjectRefTypeBefore(
+			AbstractType typeAfter) {
 		QuestionReference qid = new QuestionReference();
-		qid.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(typeAfter));
+		qid.setSectionFinder(new AllBeforeTypeSectionFinder(typeAfter));
 		qid.addSubtreeHandler(new CreateSetValueNumRuleHandler());
 		return qid;
 	}
@@ -187,7 +188,7 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 		private static String getArgumentString(Section<QuestionReference> s) {
 			String argument = null;
 			List<Section<AnonymousType>> children = new ArrayList<Section<AnonymousType>>();
-			s.getFather().findSuccessorsOfType(AnonymousType.class, children);
+			Sections.findSuccessorsOfType(s.getFather(), AnonymousType.class, children);
 			for (Section<AnonymousType> section : children) {
 				if (section.get().getName().equals(SETVALUE_ARGUMENT)) {
 					argument = section.getOriginalText().substring(1,

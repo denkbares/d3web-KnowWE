@@ -20,7 +20,7 @@ package de.d3web.we.kdom.condition;
 
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
 
@@ -29,7 +29,7 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
  * @author Reinhard Hatko
  * @created 23.11.2010 
  */
-public class UserRatingEvaluation extends AbstractKnowWEObjectType {
+public class UserRatingEvaluation extends AbstractType {
 
 	@Override
 	protected void init() {

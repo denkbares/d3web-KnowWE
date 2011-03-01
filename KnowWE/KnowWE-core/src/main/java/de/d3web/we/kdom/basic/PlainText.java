@@ -20,7 +20,7 @@
 
 package de.d3web.we.kdom.basic;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.TerminalType;
 import de.d3web.we.kdom.rendering.DefaultTextRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
@@ -34,7 +34,7 @@ import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
  *         of this type is created to end the recursion.
  * 
  */
-public class PlainText extends DefaultAbstractKnowWEObjectType {
+public class PlainText extends TerminalType {
 
 	private static PlainText instance;
 

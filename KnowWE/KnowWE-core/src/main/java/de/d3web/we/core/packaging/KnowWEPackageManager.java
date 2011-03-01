@@ -40,6 +40,7 @@ import de.d3web.we.event.PreCompileFinishedEvent;
 import de.d3web.we.event.UpdatingDependenciesEvent;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.utils.KnowWEUtils;
@@ -469,7 +470,7 @@ public class KnowWEPackageManager implements EventListener {
 				if (sectionOfPackage.getTitle().equals(article.getTitle())) {
 					Set<String> articlesReferringTo = getArticlesReferringTo(sectionOfPackage);
 					LinkedList<Section<?>> nodes = new LinkedList<Section<?>>();
-					sectionOfPackage.getAllNodesPostOrder(nodes);
+					Sections.getAllNodesPostOrder(sectionOfPackage, nodes);
 					for (Section<?> node : nodes) {
 						if (node.get().isIgnoringPackageCompile()) continue;
 						for (String title : new LinkedList<String>(node.getReusedBySet())) {

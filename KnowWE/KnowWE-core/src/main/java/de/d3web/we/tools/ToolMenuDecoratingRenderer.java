@@ -19,7 +19,7 @@
 package de.d3web.we.tools;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -31,7 +31,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author volker_belli
  * @created 30.11.2010
  */
-public class ToolMenuDecoratingRenderer<T extends KnowWEObjectType> extends KnowWEDomRenderer<T> {
+public class ToolMenuDecoratingRenderer<T extends Type> extends KnowWEDomRenderer<T> {
 
 	private final KnowWEDomRenderer<?> decoratedRenderer;
 

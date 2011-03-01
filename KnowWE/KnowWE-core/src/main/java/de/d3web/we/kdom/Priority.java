@@ -137,22 +137,22 @@ public class Priority implements Comparable<Priority> {
 	// * @param sections
 	// */
 	// public static TreeMap<Priority, List<Section<? extends
-	// KnowWEObjectType>>> createPrioritySortedList(List<Section<? extends
-	// KnowWEObjectType>> sections) {
+	// Type>>> createPrioritySortedList(List<Section<? extends
+	// Type>> sections) {
 	//
-	// TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> priorityMap
-	// = new TreeMap<Priority, List<Section<? extends KnowWEObjectType>>>();
+	// TreeMap<Priority, List<Section<? extends Type>>> priorityMap
+	// = new TreeMap<Priority, List<Section<? extends Type>>>();
 	//
-	// for (Section<? extends KnowWEObjectType> section : sections) {
+	// for (Section<? extends Type> section : sections) {
 	//
-	// for (Priority p : section.getObjectType().getSubtreeHandlers().keySet())
+	// for (Priority p : section.get().getSubtreeHandlers().keySet())
 	// {
 	//
-	// List<Section<? extends KnowWEObjectType>> singlePrioList =
+	// List<Section<? extends Type>> singlePrioList =
 	// priorityMap.get(p);
 	//
 	// if (singlePrioList == null) {
-	// singlePrioList = new ArrayList<Section<? extends KnowWEObjectType>>();
+	// singlePrioList = new ArrayList<Section<? extends Type>>();
 	// priorityMap.put(p, singlePrioList);
 	// }
 	// singlePrioList.add(section);

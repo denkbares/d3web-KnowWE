@@ -19,13 +19,13 @@
  */
 package de.d3web.we.flow.type;
 
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.AbstractXMLType;
 
 /**
  * 
  * @author Reinhard Hatko Created on: 09.12.2009
  */
-public class FlowchartPreviewType extends AbstractXMLObjectType {
+public class FlowchartPreviewType extends AbstractXMLType {
 
 	private static FlowchartPreviewType instance;
 

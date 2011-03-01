@@ -23,13 +23,13 @@ package de.d3web.we.kdom.defaultMarkup;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
-public class UnknownAnnotationType extends DefaultAbstractKnowWEObjectType {
+public class UnknownAnnotationType extends AbstractType {
 
 	private final static int FLAGS =
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL;

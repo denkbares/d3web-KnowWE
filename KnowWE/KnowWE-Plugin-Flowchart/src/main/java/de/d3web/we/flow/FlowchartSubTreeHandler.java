@@ -47,8 +47,9 @@ import de.d3web.we.flow.type.OriginType;
 import de.d3web.we.flow.type.PositionType;
 import de.d3web.we.flow.type.TargetType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -57,7 +58,7 @@ import de.d3web.we.kdom.report.SyntaxError;
 import de.d3web.we.kdom.report.message.NoSuchObjectError;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.subtreeHandler.ConstraintModule;
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.AbstractXMLType;
 import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 
@@ -71,8 +72,8 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 	public static final String ORIGIN = "diafluxorigin";
 
-	private final List<Class<? extends KnowWEObjectType>> filteredTypes =
-			new ArrayList<Class<? extends KnowWEObjectType>>(0);
+	private final List<Class<? extends Type>> filteredTypes =
+			new ArrayList<Class<? extends Type>>(0);
 
 	public FlowchartSubTreeHandler() {
 		this.registerConstraintModule(new FlowchartConstraintModule());
@@ -85,13 +86,13 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		if (!article.isFullParse()) destroy(article, s);
 
 		KnowledgeBase kb = getKB(article);
-		Section<XMLContent> flowcontent = ((AbstractXMLObjectType) s.getObjectType()).getContentChild(s);
+		Section<XMLContent> flowcontent = ((AbstractXMLType) s.get()).getContentChild(s);
 
 		if (kb == null || flowcontent == null) {
 			return null;
 		}
 
-		Map<String, String> attributeMap = AbstractXMLObjectType.getAttributeMapFor(s);
+		Map<String, String> attributeMap = AbstractXMLType.getAttributeMapFor(s);
 		String name = attributeMap.get("name");
 		String id = attributeMap.get("fcid");
 		boolean autostart = Boolean.parseBoolean(attributeMap.get("autostart"));
@@ -119,7 +120,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 	@Override
 	public void destroy(KnowWEArticle article, Section<FlowchartType> s) {
 		FlowSet flowSet = DiaFluxUtils.getFlowSet(getKB(article));
-		Map<String, String> attributeMap = AbstractXMLObjectType.getLastAttributeMapFor(s);
+		Map<String, String> attributeMap = AbstractXMLType.getLastAttributeMapFor(s);
 		if (flowSet != null && attributeMap != null) {
 			flowSet.remove(attributeMap.get("fcid"));
 		}
@@ -139,16 +140,16 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		List<IEdge> result = new ArrayList<IEdge>();
 
 		List<Section<EdgeType>> edgeSections = new ArrayList<Section<EdgeType>>();
-		Section<XMLContent> flowcontent = ((AbstractXMLObjectType) flowSection.getObjectType()).getContentChild(flowSection);
-		flowcontent.findSuccessorsOfType(EdgeType.class, edgeSections);
+		Section<XMLContent> flowcontent = ((AbstractXMLType) flowSection.get()).getContentChild(flowSection);
+		Sections.findSuccessorsOfType(flowcontent, EdgeType.class, edgeSections);
 
 		for (Section<EdgeType> section : edgeSections) {
 
-			String id = AbstractXMLObjectType.getAttributeMapFor(section).get("fcid");
+			String id = AbstractXMLType.getAttributeMapFor(section).get("fcid");
 			Section<EdgeContentType> content = (Section<EdgeContentType>) section.getChildren().get(
 					1);
 
-			Section<OriginType> originSection = content.findChildOfType(OriginType.class);
+			Section<OriginType> originSection = Sections.findChildOfType(content, OriginType.class);
 
 			// TODO remove duplicate code
 			if (originSection == null) {
@@ -169,7 +170,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 				continue;
 			}
 
-			Section<TargetType> targetSection = content.findChildOfType(TargetType.class);
+			Section<TargetType> targetSection = Sections.findChildOfType(content, TargetType.class);
 
 			if (targetSection == null) {
 				String messageText = "No target node specified in edge with id '" + id + "'.";
@@ -191,7 +192,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 			Condition condition;
 
-			Section<GuardType> guardSection = content.findChildOfType(GuardType.class);
+			Section<GuardType> guardSection = Sections.findChildOfType(content, GuardType.class);
 			if (guardSection != null) {
 				Section<CompositeCondition> compositionConditionSection = (Section<CompositeCondition>) guardSection.getChildren().get(
 						1);
@@ -225,7 +226,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 	}
 
 	@SuppressWarnings("unchecked")
-	public static String getXMLContentText(Section<? extends AbstractXMLObjectType> s) {
+	public static String getXMLContentText(Section<? extends AbstractXMLType> s) {
 		String originalText = ((Section<XMLContent>) s.getChildren().get(1)).getOriginalText();
 		// return StringEscapeUtils.unescapeXml(originalText);
 		return originalText;
@@ -236,8 +237,8 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		List<INode> result = new ArrayList<INode>();
 		ArrayList<Section<NodeType>> nodeSections = new ArrayList<Section<NodeType>>();
-		Section<XMLContent> flowcontent = ((AbstractXMLObjectType) flowSection.getObjectType()).getContentChild(flowSection);
-		flowcontent.findSuccessorsOfType(NodeType.class, nodeSections);
+		Section<XMLContent> flowcontent = ((AbstractXMLType) flowSection.get()).getContentChild(flowSection);
+		Sections.findSuccessorsOfType(flowcontent, NodeType.class, nodeSections);
 
 		KnowledgeBase kb = getKB(article);
 
@@ -253,7 +254,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 			}
 
 			else {// handler can in general handle NodeType
-				String id = AbstractXMLObjectType.getAttributeMapFor(nodeSection).get("fcid");
+				String id = AbstractXMLType.getAttributeMapFor(nodeSection).get("fcid");
 
 				INode node = handler.createNode(article, kb, nodeSection, flowSection, id, errors);
 
@@ -262,7 +263,8 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 				}
 				else { // handler could not generate a node for the supplied
 						// section
-					Section<AbstractXMLObjectType> nodeInfo = (Section<AbstractXMLObjectType>) nodeSection.findSuccessor(handler.getObjectType().getClass());
+					Section<AbstractXMLType> nodeInfo = (Section<AbstractXMLType>) Sections.findSuccessor(
+							nodeSection, handler.get().getClass());
 					String text = getXMLContentText(nodeInfo);
 
 					errors.add(new ObjectCreationError("NodeHandler "

@@ -1,6 +1,5 @@
 package de.d3web.we.kdom.rules.action;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.abstraction.ActionSetValue;
@@ -10,24 +9,17 @@ import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
-import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.scoring.ActionHeuristicPS;
-import de.d3web.scoring.Score;
-import de.d3web.scoring.inference.PSMethodHeuristic;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.auxiliary.Equals;
 import de.d3web.we.kdom.condition.QuestionNumReference;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
-import de.d3web.we.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.QuestionReference;
-import de.d3web.we.object.SolutionReference;
-import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.SplitUtility;
 
 /**
@@ -50,7 +42,7 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 			this.childrenTypes.add(equ);
 			this.childrenTypes.add(number);
 			this.childrenTypes.add(qRef);
-			qRef.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(equ));
+		qRef.setSectionFinder(new AllBeforeTypeSectionFinder(equ));
 		}
 
 
@@ -61,7 +53,7 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 
 
 			@Override
-			public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 				// check for comparator
 				if (SplitUtility.containsUnquoted(text, Equals.SIGN)) {
 					// get right hand side of comparator
@@ -84,12 +76,14 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 
 		@Override
 		public PSAction createAction(KnowWEArticle article, Section<SolutionValueAssignment> s) {
-			Section<QuestionReference> qRef = s.findSuccessor(QuestionReference.class);
-			Section<de.d3web.we.kdom.condition.Number> numberSec = s.findSuccessor(de.d3web.we.kdom.condition.Number.class);
+		Section<QuestionReference> qRef = Sections.findSuccessor(s, QuestionReference.class);
+		Section<de.d3web.we.kdom.condition.Number> numberSec = Sections.findSuccessor(s,
+				de.d3web.we.kdom.condition.Number.class);
 			if (numberSec == null || qRef == null) return null;
+
 			Question q = qRef.get().getTermObject(article, qRef);
 			
-			Double num = numberSec.get().getNumber(numberSec);
+		Double num = de.d3web.we.kdom.condition.Number.getNumber(numberSec);
 		
 			
 			if(! (q instanceof QuestionNum)) return null;

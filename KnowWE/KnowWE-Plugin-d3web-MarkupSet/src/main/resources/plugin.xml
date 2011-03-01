@@ -12,12 +12,12 @@
 		</library>
 	</runtime>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="QuestionTreeRootType">
 		<parameter id="class"
 			value="de.d3web.we.kdom.questionTree.QuestionTreeRootType" />
 		<parameter id="name" value="QuestionTreeRootType" />
-		<parameter id="description" value="KnowWEObjectType QuestionTreeRootType" />
+		<parameter id="description" value="Type QuestionTreeRootType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="4.55" />
 		<parameter id="scope" value="root" />
@@ -25,55 +25,55 @@
 	</extension>
 	
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="SolutionsDashTree">
 		<parameter id="class"
 			value="de.d3web.we.kdom.solutionTree.SolutionTreeMarkup" />
 		<parameter id="name" value="SolutionTreeMarkup" />
-		<parameter id="description" value="KnowWEObjectType SolutionTreeMarkup" />
+		<parameter id="description" value="Type SolutionTreeMarkup" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="4.5" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="QuestionnairesDashTree">
 		<parameter id="class"
 			value="de.d3web.we.kdom.questionnaireTree.QuestionnaireTreeMarkup" />
 		<parameter id="name" value="QuestionnaireTreeMarkup" />
-		<parameter id="description" value="KnowWEObjectType QuestionnaireTreeMarkup" />
+		<parameter id="description" value="Type QuestionnaireTreeMarkup" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="4.5" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="CoveringListMarkup">
 		<parameter id="class"
 			value="de.d3web.we.kdom.xcl.list.CoveringListMarkup" />
 		<parameter id="name" value="CoveringListMarkup" />
-		<parameter id="description" value="KnowWEObjectType CoveringListMarkup" />
+		<parameter id="description" value="Type CoveringListMarkup" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="RulesMarkup">
 		<parameter id="class"
 			value="de.d3web.we.kdom.rules.RulesMarkup" />
 		<parameter id="name" value="RulesBlock" />
-		<parameter id="description" value="KnowWEObjectType RulesMarkup" />
+		<parameter id="description" value="Type RulesMarkup" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5.0" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="PropertyMarkup">
 		<parameter id="class"
 			value="de.knowwe.d3web.property.PropertyMarkup" />
@@ -85,7 +85,7 @@
 		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="Resource">
 		<parameter id="class" value="de.knowwe.d3web.resource.ResourceType" />
 		<parameter id="name" value="Resource" />
@@ -97,21 +97,21 @@
 		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="PluginConfigType">
 		<parameter id="class" value="de.knowwe.d3web.PluginConfigType" />
 		<parameter id="name" value="PluginConfigType" />
-		<parameter id="description" value="KnowWEObjectType PluginConfigType" />
+		<parameter id="description" value="Type PluginConfigType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="CoveringListSettingsMarkup">
 		<parameter id="class" value="de.d3web.we.kdom.xcl.settings.CoveringListSettingsMarkup" />
 		<parameter id="name" value="CoveringListSettingsMarkup" />
-		<parameter id="description" value="KnowWEObjectType CoveringListSettingsMarkup" />
+		<parameter id="description" value="Type CoveringListSettingsMarkup" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />

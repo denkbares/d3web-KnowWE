@@ -22,9 +22,9 @@ package de.knowwe.core.dashtree;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DefaultTextRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -32,15 +32,15 @@ import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class DashesPrefix extends DefaultAbstractKnowWEObjectType {
+public class DashesPrefix extends AbstractType {
 
 	@Override
 	protected void init() {
 		this.sectionFinder = new DashesPrefixFinder();
-		this.setCustomRenderer(new KnowWEDomRenderer<KnowWEObjectType>() {
+		this.setCustomRenderer(new KnowWEDomRenderer<Type>() {
 
 			@Override
-			public void render(KnowWEArticle article, Section<KnowWEObjectType> sec, KnowWEUserContext user, StringBuilder string) {
+			public void render(KnowWEArticle article, Section<Type> sec, KnowWEUserContext user, StringBuilder string) {
 				if (sec.getOriginalText().trim().startsWith("-")) {
 					string.append('~');
 				}
@@ -53,7 +53,7 @@ public class DashesPrefix extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section father, KnowWEObjectType type) {
+				Section father, Type type) {
 
 			int leadingSpaces = text.indexOf(text.trim());
 

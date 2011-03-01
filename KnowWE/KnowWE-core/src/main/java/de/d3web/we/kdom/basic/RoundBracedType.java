@@ -20,11 +20,11 @@
 
 package de.d3web.we.kdom.basic;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 
 public class RoundBracedType extends EmbracedType {
 
-	public RoundBracedType(KnowWEObjectType bodyType) {
+	public RoundBracedType(Type bodyType) {
 		super(bodyType, "(", ")");
 	}
 }

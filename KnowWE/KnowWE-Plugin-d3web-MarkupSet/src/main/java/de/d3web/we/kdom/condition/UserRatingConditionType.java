@@ -28,8 +28,9 @@ import de.d3web.core.inference.condition.CondSolutionRejected;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -68,7 +69,7 @@ public class UserRatingConditionType extends D3webCondition<UserRatingConditionT
 			}
 
 			@Override
-			public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
+			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 				Matcher matcher = conditionPattern.matcher(text);
 				
 				if (!matcher.matches())
@@ -110,8 +111,8 @@ public class UserRatingConditionType extends D3webCondition<UserRatingConditionT
 
 	@Override
 	protected Condition createCondition(KnowWEArticle article, Section s) {
-		Section<SolutionReference> sRef = s.findSuccessor(SolutionReference.class);
-		Section<UserRatingType> ratingSec = s.findSuccessor(UserRatingType.class);
+		Section<SolutionReference> sRef = Sections.findSuccessor(s, SolutionReference.class);
+		Section<UserRatingType> ratingSec = Sections.findSuccessor(s, UserRatingType.class);
 		if (sRef != null && ratingSec != null) {
 			Solution solution = sRef.get().getTermObject(article, sRef);
 			UserEvaluation eval = UserRatingType.getUserEvaluationType(ratingSec);

@@ -235,7 +235,7 @@ public class KnowWEArticleManager {
 		}
 		List<Section<?>> children = sec.getChildren();
 		if (children == null || children.isEmpty()
-				|| sec.hasPossiblySharedChildren()) {
+				|| sec.hasSharedChildren()) {
 			newText.append(sec.getOriginalText());
 			return;
 		}

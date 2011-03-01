@@ -20,11 +20,11 @@
 
 package de.knowwe.core;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.renderer.DefaultTextLineRenderer;
 
-public class LineContent extends DefaultAbstractKnowWEObjectType {
+public class LineContent extends AbstractType {
 
 	private static LineContent instance = null;
 

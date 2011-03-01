@@ -38,6 +38,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.search.GenericSearchResult;
 import de.d3web.we.search.KnowWESearchProvider;
 import de.d3web.we.search.SearchTerm;
@@ -84,7 +85,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				pagename);
 		ArrayList<Section<TagsContent>> tagslist = new ArrayList<Section<TagsContent>>();
-		article.getSection().findSuccessorsOfType(TagsContent.class, tagslist);
+		Sections.findSuccessorsOfType(article.getSection(), TagsContent.class, tagslist);
 		HashSet<String> tags = new HashSet<String>();
 		if (tagslist.size() > 0) {
 			boolean multiple = tagslist.size() > 1;
@@ -129,7 +130,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				pagename);
 		ArrayList<Section<TagsContent>> tagslist = new ArrayList<Section<TagsContent>>();
-		article.getSection().findSuccessorsOfType(TagsContent.class, tagslist);
+		Sections.findSuccessorsOfType(article.getSection(), TagsContent.class, tagslist);
 		HashSet<String> tags = new HashSet<String>();
 		boolean multiple = tagslist.size() > 1;
 		for (Section<TagsContent> cur : tagslist) {
@@ -292,7 +293,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				topic);
 		ArrayList<Section<TagsContent>> tagslist = new ArrayList<Section<TagsContent>>();
-		article.getSection().findSuccessorsOfType(TagsContent.class, tagslist);
+		Sections.findSuccessorsOfType(article.getSection(), TagsContent.class, tagslist);
 		boolean multiple = tagslist.size() > 1;
 		String output = "";
 		for (String temptag : tag.split(" |,")) {

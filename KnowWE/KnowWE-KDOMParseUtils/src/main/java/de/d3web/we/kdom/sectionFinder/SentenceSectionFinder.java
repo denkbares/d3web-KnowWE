@@ -24,13 +24,13 @@ import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 
 public class SentenceSectionFinder extends SectionFinder {
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+	public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
 
 		if (getWordCount(text) < 2) {
 			return null;

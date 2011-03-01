@@ -33,34 +33,34 @@
 		<parameter id="scope" value="IDObjectReference" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="TagHandlerType">
 		<parameter id="class"
 			value="de.knowwe.core.taghandler.TagHandlerType" />
 		<parameter id="name" value="TagHandlerType" />
-		<parameter id="description" value="KnowWEObjectType TagHandlerType" />
+		<parameter id="description" value="Type TagHandlerType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="4" />
 		<parameter id="scope" value="root" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="CompileFlag">
 		<parameter id="class"
 			value="de.knowwe.core.packaging.CompileFlag" />
 		<parameter id="name" value="CompileFlag" />
-		<parameter id="description" value="KnowWEObjectType CompileFlag" />
+		<parameter id="description" value="Type CompileFlag" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5.0" />
 		<parameter id="scope" value="root" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="ArticleToPackageFlag">
 		<parameter id="class"
 			value="de.knowwe.core.packaging.ArticleToPackageFlag" />
 		<parameter id="name" value="ArticleToPackageFlag" />
-		<parameter id="description" value="KnowWEObjectType ArticleToPackageFlag" />
+		<parameter id="description" value="Type ArticleToPackageFlag" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5.0" />
 		<parameter id="scope" value="root" />

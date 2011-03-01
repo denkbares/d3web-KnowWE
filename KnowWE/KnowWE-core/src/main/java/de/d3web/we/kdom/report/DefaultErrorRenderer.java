@@ -27,7 +27,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * Default renderer for error messages
  * 
  * To have your own customized ErrorRenderer overwrite getErrorRenderer in your
- * KnowWEObjectType and return a (custom) MessageRenderer of your choice
+ * Type and return a (custom) MessageRenderer of your choice
  * 
  * @author Jochen
  * 

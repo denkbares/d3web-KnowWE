@@ -20,16 +20,16 @@
 
 package de.d3web.we.kdom.report;
 
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 
 /**
  * Abstract class for a message denoting a serious error in the
  * parsing/compilation process
  * 
  * Will be rendered by the ErrorRenderer specified by getErrorRenderer() of the
- * KnowWEObjectType
+ * Type
  * 
- * @see @link {@link AbstractKnowWEObjectType}
+ * @see @link {@link AbstractType}
  * 
  * 
  * @author Jochen

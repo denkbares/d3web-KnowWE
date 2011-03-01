@@ -37,23 +37,23 @@
 		<parameter id="scope" value="/TestCaseRunnerType" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="TestCaseType">
 		<parameter id="class" 
 			value="de.d3web.we.testcase.kdom.TestCaseType" />
 		<parameter id="name" value="TestCaseType" />
-		<parameter id="description" value="KnowWEObjectType TestCaseType" />
+		<parameter id="description" value="Type TestCaseType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="TestCaseRunnerType">
 		<parameter id="class" 
 			value="de.d3web.we.testcase.kdom.TestCaseRunnerType" />
 		<parameter id="name" value="TestCaseRunnerType" />
-		<parameter id="description" value="KnowWEObjectType TestCaseRunnerType" />
+		<parameter id="description" value="Type TestCaseRunnerType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />

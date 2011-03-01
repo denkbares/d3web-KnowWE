@@ -30,6 +30,7 @@ import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
@@ -86,8 +87,9 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 				QASet parent = kb.getRootQASet();
 				if (dashTreeFather != null) {
 					// is child of a QClass declaration => also declaration
-					Section<QuestionnaireDefinition> parentQclass = dashTreeFather
-							.findSuccessor(QuestionnaireDefinition.class);
+					Section<QuestionnaireDefinition> parentQclass =
+								Sections.findSuccessor(dashTreeFather,
+										QuestionnaireDefinition.class);
 					if (parentQclass != null) {
 						QASet localParent = kb.getManager().searchQContainer(
 								parentQclass.get().getTermName(

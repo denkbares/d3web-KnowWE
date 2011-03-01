@@ -37,11 +37,12 @@ import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.d3web.we.ci4ke.testing.CITest;
-import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
 import de.d3web.we.ci4ke.testing.DynamicCITestManager;
+import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 public class CIUtilities {
@@ -113,7 +114,7 @@ public class CIUtilities {
 
 			List<Section<CIDashboardType>> list = new ArrayList<Section<CIDashboardType>>();
 
-			article.getSection().findSuccessorsOfType(CIDashboardType.class, list);
+			Sections.findSuccessorsOfType(article.getSection(), CIDashboardType.class, list);
 
 			for (Section<CIDashboardType> sec : list) {
 				if (CIDashboardType.getAnnotation(sec, CIDashboardType.NAME_KEY).equals(
@@ -141,7 +142,7 @@ public class CIUtilities {
 				getArticle(dashboardArticleTitle);
 		// get all CIDashboardType-sections on this article
 		List<Section<CIDashboardType>> list = new ArrayList<Section<CIDashboardType>>();
-		article.getSection().findSuccessorsOfType(CIDashboardType.class, list);
+		Sections.findSuccessorsOfType(article.getSection(), CIDashboardType.class, list);
 		// iterate all sections and look for the given dashboard ID
 		for (Section<CIDashboardType> sec : list) {
 			if (CIDashboardType.getAnnotation(sec, CIDashboardType.NAME_KEY).equals(dashboardName)) {

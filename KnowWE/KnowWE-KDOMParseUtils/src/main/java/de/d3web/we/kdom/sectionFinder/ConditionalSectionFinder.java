@@ -21,7 +21,7 @@ package de.d3web.we.kdom.sectionFinder;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 
 /**
@@ -38,7 +38,7 @@ public abstract class ConditionalSectionFinder implements ISectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 		if (text.length() > 0) {
 			if (condition(text, father)) {

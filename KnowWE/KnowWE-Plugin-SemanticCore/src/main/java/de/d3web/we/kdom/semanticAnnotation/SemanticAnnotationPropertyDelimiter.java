@@ -23,14 +23,14 @@
  */
 package de.d3web.we.kdom.semanticAnnotation;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinder;
 
 /**
  * @author kazamatzuri
  * 
  */
-public class SemanticAnnotationPropertyDelimiter extends DefaultAbstractKnowWEObjectType {
+public class SemanticAnnotationPropertyDelimiter extends AbstractType {
 
 	@Override
 	public void init() {

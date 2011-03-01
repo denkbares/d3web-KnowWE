@@ -34,9 +34,9 @@ import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.OwlSubtreeHandler;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -46,7 +46,7 @@ import de.d3web.we.utils.KnowWEUtils;
  * @author kazamatzuri
  * 
  */
-public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType {
+public class SimpleAnnotation extends AbstractType {
 
 	@Override
 	public void init() {
@@ -55,7 +55,7 @@ public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType {
 	}
 
 	private class SimpleAnnotationSubTreeHandler extends
-			OwlSubtreeHandler<KnowWEObjectType> {
+			OwlSubtreeHandler<Type> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {

@@ -24,10 +24,11 @@ import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.ExactlyOneFindingConstraint;
 import de.d3web.we.kdom.defaultMarkup.AnnotationType;
@@ -52,7 +53,7 @@ import de.d3web.xcl.XCLModel;
  * 
  * 
  */
-public class ListSolutionType extends DefaultAbstractKnowWEObjectType implements IncrementalMarker {
+public class ListSolutionType extends AbstractType implements IncrementalMarker {
 
 	public ListSolutionType() {
 		ConstraintSectionFinder solutionFinder = new ConstraintSectionFinder(
@@ -91,7 +92,7 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType implements
 
 			@Override
 			public boolean violatedConstraints(KnowWEArticle article, Section<ListSolutionType> s) {
-				return !s.findSuccessor(SolutionDefinition.class).isReusedBy(
+				return !Sections.findSuccessor(s, SolutionDefinition.class).isReusedBy(
 						article.getTitle());
 			}
 
@@ -100,11 +101,13 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType implements
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ListSolutionType> s) {
 
-			Section<SolutionDefinition> solutionDef = s.findSuccessor(SolutionDefinition.class);
+			Section<SolutionDefinition> solutionDef = Sections.findSuccessor(s,
+					SolutionDefinition.class);
 
 			Solution solution = solutionDef.get().getTermObject(article, solutionDef);
 
-			Section<DefaultMarkupType> defaultMarkupType = s.findAncestorOfType(DefaultMarkupType.class);
+			Section<DefaultMarkupType> defaultMarkupType = Sections.findAncestorOfType(s,
+					DefaultMarkupType.class);
 
 			if (solution != null) {
 				XCLModel xclModel = solution.getKnowledgeStore().getKnowledge(XCLModel.KNOWLEDGE_KIND);

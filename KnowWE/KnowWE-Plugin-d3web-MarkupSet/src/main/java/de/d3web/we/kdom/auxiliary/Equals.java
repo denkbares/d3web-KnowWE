@@ -22,8 +22,8 @@ package de.d3web.we.kdom.auxiliary;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -33,7 +33,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
  * 
  *         Used in DiagnosisRuleAction.
  */
-public class Equals extends DefaultAbstractKnowWEObjectType {
+public class Equals extends AbstractType {
 	
 	public static final String SIGN = "=";
 
@@ -45,7 +45,7 @@ public class Equals extends DefaultAbstractKnowWEObjectType {
 	private class EqualsSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
 
 			if (text.length() == 0) return null;
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();

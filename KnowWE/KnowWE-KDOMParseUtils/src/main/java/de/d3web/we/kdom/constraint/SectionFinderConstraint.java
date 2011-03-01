@@ -22,14 +22,14 @@ package de.d3web.we.kdom.constraint;
 
 import java.util.List;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public interface SectionFinderConstraint {
 
-	public boolean satisfiesConstraint(List<SectionFinderResult> found, Section father, KnowWEObjectType type);
+	public <T extends Type> boolean satisfiesConstraint(List<SectionFinderResult> found, Section<?> father, Class<T> type);
 
-	public void filterCorrectResults(List<SectionFinderResult> found, Section father, KnowWEObjectType type);
+	public <T extends Type> void filterCorrectResults(List<SectionFinderResult> found, Section<?> father, Class<T> type);
 
 }

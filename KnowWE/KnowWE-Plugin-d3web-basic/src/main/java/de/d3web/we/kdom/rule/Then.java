@@ -22,11 +22,11 @@ package de.d3web.we.kdom.rule;
 
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
-public class Then extends DefaultAbstractKnowWEObjectType {
+public class Then extends AbstractType {
 
 	@Override
 	protected void init() {

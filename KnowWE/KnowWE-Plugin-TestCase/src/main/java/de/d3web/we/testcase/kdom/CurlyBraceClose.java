@@ -20,10 +20,10 @@
 
 package de.d3web.we.testcase.kdom;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinder;
 
-public class CurlyBraceClose extends DefaultAbstractKnowWEObjectType {
+public class CurlyBraceClose extends AbstractType {
 
 	protected CurlyBraceClose() {
 		this.sectionFinder = new StringSectionFinder("}", true);

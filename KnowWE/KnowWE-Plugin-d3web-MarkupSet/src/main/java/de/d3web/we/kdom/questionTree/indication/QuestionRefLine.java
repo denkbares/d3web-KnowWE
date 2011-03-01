@@ -19,7 +19,7 @@
  */
 package de.d3web.we.kdom.questionTree.indication;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
@@ -28,7 +28,7 @@ import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.object.QuestionReference;
 
-public class QuestionRefLine extends DefaultAbstractKnowWEObjectType {
+public class QuestionRefLine extends AbstractType {
 
 	public static final String REF_KEYWORD = "&REF";
 
@@ -82,7 +82,7 @@ public class QuestionRefLine extends DefaultAbstractKnowWEObjectType {
 	// qRefLine.findSuccessor(QuestionRef.class);
 	//
 	// // current DashTreeElement
-	// Section<DashTreeElement> element = KnowWEObjectTypeUtils
+	// Section<DashTreeElement> element = TypeUtils
 	// .getAncestorOfType(qRefLine, DashTreeElement.class);
 	// // get dashTree-father
 	// Section<? extends DashTreeElement> dashTreeFather = DashTreeElement

@@ -4,6 +4,7 @@ import de.d3web.we.flow.type.FlowchartEditProvider;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.utils.KnowWEUtils;
@@ -22,7 +23,7 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer<DefaultMarkupType> {
 
 	@Override
 	protected String getHeaderName(KnowWEArticle article, Section<DefaultMarkupType> section, KnowWEUserContext user) {
-		Section<FlowchartType> flowchart = section.findSuccessor(FlowchartType.class);
+		Section<FlowchartType> flowchart = Sections.findSuccessor(section, FlowchartType.class);
 
 		if (flowchart == null) {
 			return "New flowchart";
@@ -35,7 +36,7 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer<DefaultMarkupType> {
 	@Override
 	protected void renderContents(KnowWEArticle article, Section<DefaultMarkupType> section, KnowWEUserContext user, StringBuilder string) {
 
-		Section<FlowchartType> flowchart = section.findSuccessor(FlowchartType.class);
+		Section<FlowchartType> flowchart = Sections.findSuccessor(section, FlowchartType.class);
 
 		if (flowchart == null) {
 			string.append("No flowchart created yet. ");

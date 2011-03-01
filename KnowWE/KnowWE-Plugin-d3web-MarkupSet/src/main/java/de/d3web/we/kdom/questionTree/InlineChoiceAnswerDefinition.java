@@ -20,8 +20,9 @@
 
 package de.d3web.we.kdom.questionTree;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.EmbracedContentFinder;
 import de.d3web.we.kdom.sectionFinder.UnquotedExpressionFinder;
@@ -38,7 +39,7 @@ import de.knowwe.core.dashtree.DashTreeElementContent;
  * @author Jochen
  * 
  */
-public class InlineChoiceAnswerDefinition extends DefaultAbstractKnowWEObjectType {
+public class InlineChoiceAnswerDefinition extends AbstractType {
 
 	public static final char ANSWERS_OPEN = '<';
 	public static final char ANSWERS_CLOSE = '>';
@@ -87,7 +88,8 @@ public class InlineChoiceAnswerDefinition extends DefaultAbstractKnowWEObjectTyp
 
 		@Override
 		public Section<? extends QuestionDefinition> getQuestionSection(Section<? extends AnswerDefinition> s) {
-			return s.findAncestorOfType(DashTreeElementContent.class).findSuccessor(
+			return Sections.findSuccessor(
+					Sections.findAncestorOfType(s, DashTreeElementContent.class),
 					QuestionDefinition.class);
 		}
 

@@ -43,8 +43,9 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.objects.TermReference;
@@ -109,9 +110,9 @@ public class QuestionDashTreeUtils {
 			return null;
 		}
 
-		Section<QuestionTreeAnswerDefinition> answerSec = father
-				.findSuccessor(QuestionTreeAnswerDefinition.class);
-		Section<QuestionDefinition> qSec = grandFather.findSuccessor(QuestionDefinition.class);
+		Section<QuestionTreeAnswerDefinition> answerSec = 
+				 Sections.findSuccessor(father, QuestionTreeAnswerDefinition.class);
+		Section<QuestionDefinition> qSec =  Sections.findSuccessor(grandFather, QuestionDefinition.class);
 
 		if (qSec == null) {
 			return null;
@@ -128,8 +129,8 @@ public class QuestionDashTreeUtils {
 			}
 		}
 
-		Section<NumericCondLine> numCondSec = father
-				.findSuccessor(NumericCondLine.class);
+		Section<NumericCondLine> numCondSec =
+					Sections.findSuccessor(father, NumericCondLine.class);
 
 		if (numCondSec != null && q instanceof QuestionNum) {
 			if (NumericCondLine.isIntervall(numCondSec)) {
@@ -178,16 +179,18 @@ public class QuestionDashTreeUtils {
 
 		Section<DashSubtree> rootQuestionSubtree = null;
 
-		Section<DashTreeElement> thisElement = s.findAncestorOfType(DashTreeElement.class);
+		Section<DashTreeElement> thisElement = Sections.findAncestorOfType(s, DashTreeElement.class);
 		if (s.get() instanceof QuestionDefinition && DashTreeUtils.getDashLevel(thisElement) == 0) {
-			rootQuestionSubtree = thisElement.findAncestorOfType(DashSubtree.class);
+			rootQuestionSubtree = Sections.findAncestorOfType(thisElement, DashSubtree.class);
 		}
 
 		if (rootQuestionSubtree == null) {
 			Section<DashSubtree> lvl1SubtreeAncestor = DashTreeUtils.getAncestorDashSubtree(s, 1);
 			if (lvl1SubtreeAncestor != null) {
-				Section<DashTreeElement> lvl1Element = lvl1SubtreeAncestor.findChildOfType(DashTreeElement.class);
-				Section<? extends KnowWETerm> termRefSection = lvl1Element.findSuccessor(KnowWETerm.class);
+				Section<DashTreeElement> lvl1Element = Sections.findChildOfType(
+						lvl1SubtreeAncestor, DashTreeElement.class);
+				Section<? extends KnowWETerm> termRefSection = Sections.findSuccessor(lvl1Element,
+						KnowWETerm.class);
 
 				if (termRefSection.get() instanceof QASetDefinition) {
 					rootQuestionSubtree = lvl1SubtreeAncestor;
@@ -223,8 +226,8 @@ public class QuestionDashTreeUtils {
 
 		if (change != null) return change;
 
-		List<Class<? extends KnowWEObjectType>> filteredTypes =
-				new ArrayList<Class<? extends KnowWEObjectType>>(1);
+		List<Class<? extends Type>> filteredTypes =
+				new ArrayList<Class<? extends Type>>(1);
 		filteredTypes.add(TermReference.class);
 
 		HashSet<Section<DashSubtree>> visited = new HashSet<Section<DashSubtree>>();
@@ -235,9 +238,9 @@ public class QuestionDashTreeUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static boolean isChangeInQuestionSubtree(KnowWEArticle article, Section<DashSubtree> s, List<Class<? extends KnowWEObjectType>> filteredTypes, HashSet<Section<DashSubtree>> visited) {
+	private static boolean isChangeInQuestionSubtree(KnowWEArticle article, Section<DashSubtree> s, List<Class<? extends Type>> filteredTypes, HashSet<Section<DashSubtree>> visited) {
 		List<Section<?>> nodes = new LinkedList<Section<?>>();
-		s.getAllNodesPostOrder(nodes);
+		Sections.getAllNodesPostOrder(s, nodes);
 		for (Section<?> node : nodes) {
 			if (node.get() instanceof TermDefinition) {
 				Section<TermDefinition> tdef = (Section<TermDefinition>) node;

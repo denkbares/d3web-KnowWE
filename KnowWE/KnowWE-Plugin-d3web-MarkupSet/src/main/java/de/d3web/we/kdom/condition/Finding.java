@@ -28,8 +28,9 @@ import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -80,9 +81,9 @@ public class Finding extends D3webCondition<Finding> {
 	@Override
 	protected Condition createCondition(KnowWEArticle article, Section<Finding> s) {
 
-		Section<QuestionReference> qRef = s.findSuccessor(QuestionReference.class);
+		Section<QuestionReference> qRef = Sections.findSuccessor(s, QuestionReference.class);
 
-		Section<AnswerReference> aRef = s.findSuccessor(AnswerReference.class);
+		Section<AnswerReference> aRef = Sections.findSuccessor(s, AnswerReference.class);
 
 		if (qRef != null && aRef != null) {
 			Choice answer = aRef.get().getTermObject(article, aRef);
@@ -104,7 +105,7 @@ class FindingFinder implements ISectionFinder {
 	private final AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+	public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
 		if (SplitUtility.containsUnquoted(text, "=")) {
 
 			// if the value is a number this is not taken as a Finding (but left

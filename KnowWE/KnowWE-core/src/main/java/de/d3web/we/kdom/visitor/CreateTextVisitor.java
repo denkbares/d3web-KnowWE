@@ -22,7 +22,7 @@ package de.d3web.we.kdom.visitor;
 
 import java.util.List;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
 
@@ -51,7 +51,7 @@ public class CreateTextVisitor implements Visitor {
 	private StringBuffer buffi;
 
 	@Override
-	public void visit(Section<? extends KnowWEObjectType> s) {
+	public void visit(Section<? extends Type> s) {
 		buffi = new StringBuffer();
 		renderSubtree(s, buffi);
 
@@ -61,13 +61,13 @@ public class CreateTextVisitor implements Visitor {
 		return buffi.toString();
 	}
 
-	private void renderSubtree(Section<? extends KnowWEObjectType> s, StringBuffer buffi) {
-		if (s.getObjectType() instanceof PlainText) {
+	private void renderSubtree(Section<? extends Type> s, StringBuffer buffi) {
+		if (s.get() instanceof PlainText) {
 			buffi.append(s.getOriginalText());
 		}
-		List<Section<? extends KnowWEObjectType>> children = s.getChildren();
+		List<Section<? extends Type>> children = s.getChildren();
 
-		for (Section<? extends KnowWEObjectType> section : children) {
+		for (Section<? extends Type> section : children) {
 			renderSubtree(section, buffi);
 		}
 

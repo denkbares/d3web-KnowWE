@@ -20,30 +20,15 @@
 
 package de.d3web.we.kdom.semanticAnnotation;
 
-import java.util.List;
+import de.d3web.we.kdom.AbstractType;
+import de.d3web.we.kdom.Sectionizable;
+import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+public class AnnotatedString extends AbstractType {
 
-public class AnnotatedString extends DefaultAbstractKnowWEObjectType {
-
-	@Override
-	public void init() {
-		this.sectionFinder = new AnnotatedStringSectionFinder();
-	}
-
-	public static class AnnotatedStringSectionFinder extends SectionFinder {
-
-		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
-			if (father.hasRightSonOfType(AnnotationMapSign.class, text)) {
-				return new AllTextSectionFinder().lookForSections(text, father, type);
-			}
-			return null;
+	public AnnotatedString(Sectionizable type) {
+		if (type != null) {
+			this.sectionFinder = new AllBeforeTypeSectionFinder(type);
 		}
 	}
 

@@ -20,13 +20,13 @@
 
 package de.d3web.we.kdom.xml;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.SectionIDDeclarant;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 
-public class XMLContent extends DefaultAbstractKnowWEObjectType implements SectionIDDeclarant {
+public class XMLContent extends AbstractType implements SectionIDDeclarant {
 
 
 
@@ -34,7 +34,7 @@ public class XMLContent extends DefaultAbstractKnowWEObjectType implements Secti
 		sectionFinder = new AllTextSectionFinder();
 	}
 
-	public XMLContent(KnowWEObjectType child) {
+	public XMLContent(Type child) {
 		this();
 		this.childrenTypes.add(child);
 	}
@@ -48,7 +48,7 @@ public class XMLContent extends DefaultAbstractKnowWEObjectType implements Secti
 	public static final String CONTENT_SUFFIX = "_content";
 
 	@Override
-	public String createSectionID(Section<? extends KnowWEObjectType> father) {
+	public String createSectionID(Section<? extends Type> father) {
 		return getEndOfId(father.getID()) + CONTENT_SUFFIX;
 	}
 

@@ -27,7 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.subtreeHandler.SuccessorNotReusedConstraint;
@@ -40,7 +40,7 @@ import de.d3web.we.kdom.subtreeHandler.SuccessorNotReusedConstraint;
  *        SubtreeHandlers to facilitate the incremental build of Articles
  * 
  */
-public abstract class OwlSubtreeHandler<T extends KnowWEObjectType> extends
+public abstract class OwlSubtreeHandler<T extends Type> extends
 		SubtreeHandler<T> {
 
 	public OwlSubtreeHandler() {

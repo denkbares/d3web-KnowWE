@@ -34,8 +34,9 @@ import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.flow.type.NodeType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.AbstractXMLType;
 
 /**
  * @author Reinhard Hatko
@@ -51,20 +52,20 @@ public class ComposedNodeHandler extends AbstractNodeHandler {
 	public boolean canCreateNode(KnowWEArticle article, KnowledgeBase kb,
 			Section<NodeType> nodeSection) {
 
-		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
+		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
 
 		if (nodeInfo == null) return false;
 
 		// String actionString =
 		// FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
 
-		return nodeInfo.findSuccessor(CallFlowActionType.class) != null;
+		return Sections.findSuccessor(nodeInfo, CallFlowActionType.class) != null;
 	}
 
 	public INode createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 
-		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
+		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
 		// String actionString =
 		// FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
 		//
@@ -76,7 +77,8 @@ public class ComposedNodeHandler extends AbstractNodeHandler {
 		// String flowName = actionString.substring(5, nodenameStart);
 		// String nodeName = actionString.substring(nodenameStart + 1,
 		// nodenameEnd);
-		Section<CallFlowActionType> section = nodeInfo.findSuccessor(CallFlowActionType.class);
+		Section<CallFlowActionType> section = Sections.findSuccessor(nodeInfo,
+				CallFlowActionType.class);
 		String flowName = CallFlowActionType.getFlowName(section);
 		String nodeName = CallFlowActionType.getStartNodeName(section);
 

@@ -44,7 +44,7 @@ import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.AbstractXMLType;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -127,7 +127,7 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 
 		for (Section<FlowchartType> section : flows) {
 
-			Map<String, String> attributeMap = AbstractXMLObjectType.getAttributeMapFor(section);
+			Map<String, String> attributeMap = AbstractXMLType.getAttributeMapFor(section);
 			String name = attributeMap.get("name");
 
 			builder.append("<div>");
@@ -196,7 +196,7 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 
 		if (session == null) return preview;
 
-		String flowID = AbstractXMLObjectType.getAttributeMapFor(section).get("fcid");
+		String flowID = AbstractXMLType.getAttributeMapFor(section).get("fcid");
 
 		CaseObjectSource flowSet = DiaFluxUtils.getFlowSet(session);
 

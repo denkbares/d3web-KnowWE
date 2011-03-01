@@ -23,7 +23,7 @@ package de.d3web.we.kdom.rendering;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.user.UserSettingsManager;
 
 /**
@@ -45,16 +45,16 @@ public class RendererManager {
 		return instance;
 	}
 
-	private Map<KnowWEObjectType, RendererSet> rendererToTypeMap = new HashMap<KnowWEObjectType, RendererSet>();
+	private Map<Type, RendererSet> rendererToTypeMap = new HashMap<Type, RendererSet>();
 
-	public KnowWEDomRenderer<? extends KnowWEObjectType> getRenderer(KnowWEObjectType type, String user, String topic) {
+	public KnowWEDomRenderer<? extends Type> getRenderer(Type type, String user, String topic) {
 
 		RenderingMode renderingType = UserSettingsManager.getInstance().getRenderingType(user,
 				topic);
 
 		RendererSet set = rendererToTypeMap.get(type);
 		if (set != null) {
-			KnowWEDomRenderer<? extends KnowWEObjectType> renderer = set.getRenderer(user, topic,
+			KnowWEDomRenderer<? extends Type> renderer = set.getRenderer(user, topic,
 					renderingType);
 			if (renderer != null) {
 				return renderer;
@@ -65,14 +65,14 @@ public class RendererManager {
 	}
 
 	/**
-	 * Sets a {@link CustomRenderer} for the {@link KnowWEObjectType} type to
+	 * Sets a {@link CustomRenderer} for the {@link Type} type to
 	 * the {@link RendererManager}.
 	 * 
-	 * @param type The {@link KnowWEObjectType} the renderer applies to
+	 * @param type The {@link Type} the renderer applies to
 	 * @param customRenderer The custom renderer for the
-	 *        {@link KnowWEObjectType};
+	 *        {@link Type};
 	 */
-	public void setRenderer(KnowWEObjectType type, CustomRenderer customRenderer) {
+	public void setRenderer(Type type, CustomRenderer customRenderer) {
 
 		RendererSet set = rendererToTypeMap.get(type);
 		if (set != null) {
@@ -86,12 +86,12 @@ public class RendererManager {
 	}
 
 	/**
-	 * Removes a {@link CustomRenderer} for the {@link KnowWEObjectType} type
+	 * Removes a {@link CustomRenderer} for the {@link Type} type
 	 * from the {@link RendererManager}.
 	 * 
-	 * @param type The {@link KnowWEObjectType} the renderer applies to
+	 * @param type The {@link Type} the renderer applies to
 	 */
-	public void removeRenderer(KnowWEObjectType type) {
+	public void removeRenderer(Type type) {
 		if (rendererToTypeMap.containsKey(type)) {
 			rendererToTypeMap.remove(type);
 		}

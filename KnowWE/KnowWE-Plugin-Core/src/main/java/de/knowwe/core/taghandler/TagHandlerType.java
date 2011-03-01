@@ -21,13 +21,13 @@ package de.knowwe.core.taghandler;
 
 
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.taghandler.TagHandler;
 import de.knowwe.plugin.Plugins;
 
-public class TagHandlerType extends DefaultAbstractKnowWEObjectType {
+public class TagHandlerType extends AbstractType {
 
 	@Override
 	protected void init() {
@@ -47,7 +47,7 @@ public class TagHandlerType extends DefaultAbstractKnowWEObjectType {
 	}
 
 	@Override
-	public KnowWEDomRenderer getRenderer() {
+	public KnowWEDomRenderer<TagHandlerType> getRenderer() {
 		return new TagRenderer();
 	}
 

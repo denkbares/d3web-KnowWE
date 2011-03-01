@@ -22,8 +22,8 @@ package de.d3web.we.kdom.rule;
 
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
@@ -34,7 +34,7 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
  *         Container for ConditionActionRule
  *
  */
-public class ConditionActionRule extends DefaultAbstractKnowWEObjectType implements IncrementalMarker {
+public class ConditionActionRule extends AbstractType implements IncrementalMarker {
 
 	public ConditionActionRule() {
 		sectionFinder = new RegexSectionFinder(
@@ -43,7 +43,7 @@ public class ConditionActionRule extends DefaultAbstractKnowWEObjectType impleme
 				Pattern.DOTALL);
 	}
 
-	public ConditionActionRule(AbstractKnowWEObjectType action) {
+	public ConditionActionRule(AbstractType action) {
 		sectionFinder = new RegexSectionFinder(
 				"(IF|WENN).*?(?=(\\s*?(?m)^\\s*?$\\s*|\\s*IF|\\s*WENN"
 						+ "|\\s*\\z))",

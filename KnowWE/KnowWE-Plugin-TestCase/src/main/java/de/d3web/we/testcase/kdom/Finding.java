@@ -23,8 +23,8 @@ package de.d3web.we.testcase.kdom;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.AnswerReferenceImpl;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
@@ -33,7 +33,7 @@ import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.utils.SplitUtility;
 
-public class Finding extends DefaultAbstractKnowWEObjectType {
+public class Finding extends AbstractType {
 
 	public Finding() {
 
@@ -51,7 +51,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 	public class FindingSectionFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			List<String> findings = SplitUtility.splitUnquoted(text, ",");
@@ -70,7 +70,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 	public class AnswerSectionFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			List<String> findings = SplitUtility.splitUnquoted(text, "=");
@@ -89,7 +89,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 	class QuestionSectionFinder implements ISectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section<?> father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			List<String> findings = SplitUtility.splitUnquoted(text, "=");

@@ -25,14 +25,14 @@ package de.d3web.we.kdom.basic;
 
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
 /**
  * @author kazamatzuri
  * 
  */
-public class VerbatimType extends DefaultAbstractKnowWEObjectType {
+public class VerbatimType extends AbstractType {
 
 	public static VerbatimType instance;
 
@@ -50,7 +50,7 @@ public class VerbatimType extends DefaultAbstractKnowWEObjectType {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.d3web.we.dom.AbstractKnowWEObjectType#init()
+	 * @see de.d3web.we.dom.AbstractType#init()
 	 */
 	@Override
 	protected void init() {

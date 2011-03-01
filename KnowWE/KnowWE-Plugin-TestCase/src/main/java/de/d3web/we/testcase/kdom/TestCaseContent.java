@@ -37,6 +37,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.StringReference;
@@ -69,7 +70,7 @@ public class TestCaseContent extends StringReference {
 
 	@Override
 	public String getTermName(Section<? extends KnowWETerm<String>> s) {
-		return DefaultMarkupType.getAnnotation(s.findAncestorOfType(TestCaseType.class),
+		return DefaultMarkupType.getAnnotation(Sections.findAncestorOfType(s, TestCaseType.class),
 				TestCaseType.ANNOTATION_MASTER);
 	}
 
@@ -97,7 +98,7 @@ public class TestCaseContent extends StringReference {
 
 				// Get all SequentialTestCase sections
 				List<Section<SequentialTestCase>> stcSections = new LinkedList<Section<SequentialTestCase>>();
-				s.findSuccessorsOfType(SequentialTestCase.class, stcSections);
+				Sections.findSuccessorsOfType(s, SequentialTestCase.class, stcSections);
 
 				// Process each SequentialTestCase section
 				for (Section<SequentialTestCase> stcSection : stcSections) {
@@ -132,7 +133,7 @@ public class TestCaseContent extends StringReference {
 
 			}
 			else {
-				Section<TestCaseType> father = s.findAncestorOfType(TestCaseType.class);
+				Section<TestCaseType> father = Sections.findAncestorOfType(s, TestCaseType.class);
 				return Arrays.asList((KDOMReportMessage) new SimpleMessageError(
 						"Unable to get knowledge base from article: "
 								+ DefaultMarkupType.getAnnotation(father,
@@ -143,7 +144,8 @@ public class TestCaseContent extends StringReference {
 		}
 
 		private void createSTCName(Section<SequentialTestCase> stcSection, int index, de.d3web.empiricaltesting.SequentialTestCase stc, List<KDOMReportMessage> messages) {
-			Section<SequentialTestCaseName> stcName = stcSection.findSuccessor(SequentialTestCaseName.class);
+			Section<SequentialTestCaseName> stcName = Sections.findSuccessor(stcSection,
+					SequentialTestCaseName.class);
 			if (stcName == null) {
 				messages.add(new SimpleMessageError("There is no name for STC" + index));
 			}
@@ -156,7 +158,7 @@ public class TestCaseContent extends StringReference {
 
 			// Get all RatedTestCase sections
 			List<Section<RatedTestCase>> rtcSections = new LinkedList<Section<RatedTestCase>>();
-			stcSection.findSuccessorsOfType(RatedTestCase.class, rtcSections);
+			Sections.findSuccessorsOfType(stcSection, RatedTestCase.class, rtcSections);
 
 			// Process each RatedTestCase section
 			for (Section<RatedTestCase> rtcSection : rtcSections) {
@@ -174,13 +176,13 @@ public class TestCaseContent extends StringReference {
 
 			// Get all Finding sections
 			List<Section<Finding>> findingSections = new LinkedList<Section<Finding>>();
-			rtcSection.findSuccessorsOfType(Finding.class, findingSections);
+			Sections.findSuccessorsOfType(rtcSection, Finding.class, findingSections);
 
 			// Process each Finding section
 			for (Section<Finding> findingSection : findingSections) {
 
 				// Get the QuestionReference section
-				Section<QuestionReference> questionSection = findingSection.findSuccessor(QuestionReference.class);
+				Section<QuestionReference> questionSection =  Sections.findSuccessor(findingSection, QuestionReference.class);
 
 				// Get the real Question
 				if (questionSection != null) {
@@ -197,7 +199,8 @@ public class TestCaseContent extends StringReference {
 					else {
 
 						// Get the value
-						Section<AnswerReference> valueSection = findingSection.findSuccessor(AnswerReference.class);
+						Section<AnswerReference> valueSection = Sections.findSuccessor(
+								findingSection, AnswerReference.class);
 
 						// Create error message if there is no value defined
 						if (valueSection == null) {
@@ -248,7 +251,7 @@ public class TestCaseContent extends StringReference {
 
 			// Get all RatedSolution sections
 			List<Section<RatedSolution>> ratedSolutionSections = new LinkedList<Section<RatedSolution>>();
-			rtcSection.findSuccessorsOfType(RatedSolution.class, ratedSolutionSections);
+			Sections.findSuccessorsOfType(rtcSection, RatedSolution.class, ratedSolutionSections);
 
 			// Process each RatedSolution section
 			for (Section<RatedSolution> ratedSolutionSection : ratedSolutionSections) {
@@ -256,7 +259,8 @@ public class TestCaseContent extends StringReference {
 				Solution solution = null;
 
 				// Get the SolutionReference section
-				Section<SolutionReference> solutionSection = ratedSolutionSection.findSuccessor(SolutionReference.class);
+				Section<SolutionReference> solutionSection = Sections.findSuccessor(
+						ratedSolutionSection, SolutionReference.class);
 
 				// Get the real Solution
 				if (solutionSection != null) {
@@ -280,7 +284,8 @@ public class TestCaseContent extends StringReference {
 				}
 
 				// Get the StateRating section
-				Section<StateRating> stateSection = ratedSolutionSection.findSuccessor(StateRating.class);
+				Section<StateRating> stateSection = Sections.findSuccessor(ratedSolutionSection,
+						StateRating.class);
 
 				// Create a real StateRating
 				if (stateSection != null) {
@@ -315,7 +320,7 @@ public class TestCaseContent extends StringReference {
 			// MyTestArticleManager)
 			if (kb != null
 					&& kb.getManager().getAllTerminologyObjects().size() == 2) {
-				Section<TestCaseType> father = s.findAncestorOfType(TestCaseType.class);
+				Section<TestCaseType> father = Sections.findAncestorOfType(s, TestCaseType.class);
 				String source = DefaultMarkupType.getAnnotation(father,
 						TestCaseType.ANNOTATION_MASTER);
 				KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(a.getWeb(),

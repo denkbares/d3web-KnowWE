@@ -23,7 +23,7 @@ package de.knowwe.core.taghandler;
 
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.taghandler.TagHandlerAttributeSubTreeHandler;
 
@@ -35,7 +35,7 @@ import de.d3web.we.taghandler.TagHandlerAttributeSubTreeHandler;
  * @author Johannes Dienst
  * 
  */
-public class TagHandlerTypeContent extends DefaultAbstractKnowWEObjectType {
+public class TagHandlerTypeContent extends AbstractType {
 
 	private final String tagHandlerName;
 

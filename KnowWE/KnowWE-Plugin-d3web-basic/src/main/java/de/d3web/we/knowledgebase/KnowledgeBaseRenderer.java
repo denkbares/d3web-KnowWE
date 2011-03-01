@@ -31,6 +31,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.defaultMarkup.AnnotationType;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
@@ -101,7 +102,8 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 		List<Section<? extends AnnotationType>> compileSections = DefaultMarkupType.getAnnotationSections(
 				section, KnowledgeBaseType.ANNOTATION_COMPILE);
 		for (Section<?> annotationSection : compileSections) {
-			Section<KnowledgeBaseCompileType> compileSection = annotationSection.findChildOfType(KnowledgeBaseCompileType.class);
+			Section<KnowledgeBaseCompileType> compileSection = Sections.findChildOfType(
+					annotationSection, KnowledgeBaseCompileType.class);
 			String packageName = compileSection.getOriginalText().trim();
 			renderCompile(article, packageName, string);
 		}

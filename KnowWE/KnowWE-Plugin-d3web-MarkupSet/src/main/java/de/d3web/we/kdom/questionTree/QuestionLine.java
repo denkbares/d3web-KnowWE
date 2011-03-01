@@ -32,10 +32,11 @@ import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.IncrementalMarker;
@@ -75,7 +76,7 @@ import de.knowwe.core.dashtree.DashTreeUtils;
  * @author Jochen
  * 
  */
-public class QuestionLine extends DefaultAbstractKnowWEObjectType {
+public class QuestionLine extends AbstractType {
 
 	public QuestionLine() {
 
@@ -131,8 +132,8 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public QuestionDefinition.QuestionType getQuestionType(Section<QuestionDefinition> s) {
 			return QuestionTypeDeclaration
-					.getQuestionType(s.getFather().findSuccessor(
-							QuestionTypeDeclaration.class));
+					.getQuestionType(Sections.findSuccessor(
+							s.getFather(), QuestionTypeDeclaration.class));
 		}
 
 		@Override
@@ -140,14 +141,16 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			return DashTreeUtils.getPositionInFatherDashSubtree(s);
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public Section<? extends QASetDefinition> getParentQASetSection(Section<? extends QuestionDefinition> qdef) {
 			Section<? extends DashTreeElementContent> fdtec = DashTreeUtils.getFatherDashTreeElementContent(qdef);
 			if (fdtec != null) {
-				Section<? extends QASetDefinition> qasetDef = fdtec.findSuccessor(QASetDefinition.class);
+				Section<? extends QASetDefinition> qasetDef = Sections.findSuccessor(fdtec,
+						QASetDefinition.class);
 				if (qasetDef == null) {
 					fdtec = DashTreeUtils.getFatherDashTreeElementContent(fdtec);
-					qasetDef = fdtec.findSuccessor(QASetDefinition.class);
+					qasetDef = Sections.findSuccessor(fdtec, QASetDefinition.class);
 				}
 				if (qasetDef != null) {
 					if (qasetDef.get() instanceof QuestionnaireDefinition
@@ -177,7 +180,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class NumBounds extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraint<NumBounds> {
+	static class NumBounds extends AbstractType implements IncrementalMarker, IncrementalConstraint<NumBounds> {
 
 		public static final char BOUNDS_OPEN = '(';
 		public static final char BOUNDS_CLOSE = ')';
@@ -213,8 +216,8 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 								this.getClass()));
 					}
 
-					Section<QuestionDefinition> qDef = s.getFather().findSuccessor(
-							QuestionDefinition.class);
+					Section<QuestionDefinition> qDef = Sections.findSuccessor(
+							 s.getFather(), QuestionDefinition.class);
 
 					if (qDef != null) {
 
@@ -324,7 +327,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class NumUnit extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraint<NumUnit> {
+	static class NumUnit extends AbstractType implements IncrementalMarker, IncrementalConstraint<NumUnit> {
 
 		public static final char UNIT_OPEN = '{';
 		public static final char UNIT_CLOSE = '}';
@@ -357,8 +360,8 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 				 */
 				@Override
 				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<NumUnit> s) {
-					Section<QuestionDefinition> qDef = s.getFather().findSuccessor(
-							QuestionDefinition.class);
+					Section<QuestionDefinition> qDef = Sections.findSuccessor(
+							s.getFather(), QuestionDefinition.class);
 
 					if (qDef != null) {
 
@@ -401,7 +404,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class AbstractFlag extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraint<AbstractFlag> {
+	static class AbstractFlag extends AbstractType implements IncrementalMarker, IncrementalConstraint<AbstractFlag> {
 
 		@Override
 		public boolean violatedConstraints(KnowWEArticle article, Section<AbstractFlag> s) {
@@ -418,8 +421,8 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 				@Override
 				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AbstractFlag> s) {
 
-					Section<QuestionDefinition> qDef = s.getFather().findSuccessor(
-							QuestionDefinition.class);
+					Section<QuestionDefinition> qDef = Sections.findSuccessor(
+							s.getFather(), QuestionDefinition.class);
 
 					if (qDef != null) {
 
@@ -455,7 +458,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class QuestionText extends DefaultAbstractKnowWEObjectType implements IncrementalMarker, IncrementalConstraint<QuestionText> {
+	static class QuestionText extends AbstractType implements IncrementalMarker, IncrementalConstraint<QuestionText> {
 
 		private static final String QTEXT_START_SYMBOL = "~";
 
@@ -475,8 +478,8 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 				@Override
 				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionText> sec) {
 
-					Section<QuestionDefinition> qDef = sec.getFather().findSuccessor(
-							QuestionDefinition.class);
+					Section<QuestionDefinition> qDef = Sections.findSuccessor(
+							sec.getFather(), QuestionDefinition.class);
 
 					if (qDef != null) {
 
@@ -521,7 +524,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * 
 	 */
 	static class QuestionTypeDeclaration extends
-			DefaultAbstractKnowWEObjectType {
+			AbstractType {
 
 		public static QuestionType getQuestionType(Section<QuestionTypeDeclaration> typeSection) {
 
@@ -573,7 +576,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 				@Override
 				public List<SectionFinderResult> lookForSections(String text,
-						Section<?> father, KnowWEObjectType type) {
+						Section<?> father, Type type) {
 
 					return SectionFinderResult
 							.createSingleItemList(new SectionFinderResult(

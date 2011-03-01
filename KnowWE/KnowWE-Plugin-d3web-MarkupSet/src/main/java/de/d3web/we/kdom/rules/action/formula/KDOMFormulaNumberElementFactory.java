@@ -10,6 +10,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.condition.NonTerminalCondition;
 import de.d3web.we.kdom.condition.QuestionNumReference;
 import de.d3web.we.kdom.condition.TerminalCondition;
@@ -43,7 +44,7 @@ public class KDOMFormulaNumberElementFactory {
 		if (c.get().isBraced(c)) {
 			Section<? extends NonTerminalCondition> braced = c.get().getBraced(c);
 			return createExpression(article,
-					braced.findSuccessor(CompositeFormula.class));
+						Sections.findSuccessor(braced, CompositeFormula.class));
 		}
 
 		// create division
@@ -58,12 +59,14 @@ public class KDOMFormulaNumberElementFactory {
 
 			// build first operand
 			Section<? extends CalcMethodType> div0 = divElements.get(0);
-			Section<CompositeFormula> compositeChild = div0.findChildOfType(CompositeFormula.class);
+			Section<CompositeFormula> compositeChild = Sections.findChildOfType(div0,
+					CompositeFormula.class);
 			FormulaNumberElement operand0 = createExpression(article, compositeChild);
 
 			// build second operand
 			Section<? extends CalcMethodType> div1 = divElements.get(1);
-			Section<CompositeFormula> compositeChild1 = div1.findChildOfType(CompositeFormula.class);
+			Section<CompositeFormula> compositeChild1 = Sections.findChildOfType(div1,
+					CompositeFormula.class);
 			FormulaNumberElement operand1 = createExpression(article, compositeChild1);
 
 			if (operand0 == null || operand1 == null) return null;
@@ -86,12 +89,14 @@ public class KDOMFormulaNumberElementFactory {
 
 			// build first operand
 			Section<? extends CalcMethodType> mult0 = multElems.get(0);
-			Section<CompositeFormula> compositeChild = mult0.findChildOfType(CompositeFormula.class);
+			Section<CompositeFormula> compositeChild = Sections.findChildOfType(mult0,
+					CompositeFormula.class);
 			FormulaNumberElement operand0 = createExpression(article, compositeChild);
 
 			// build second operand
 			Section<? extends CalcMethodType> mult1 = multElems.get(1);
-			Section<CompositeFormula> compositeChild1 = mult1.findChildOfType(CompositeFormula.class);
+			Section<CompositeFormula> compositeChild1 = Sections.findChildOfType(mult1,
+					CompositeFormula.class);
 			FormulaNumberElement operand1 = createExpression(article, compositeChild1);
 
 			if (operand0 == null || operand1 == null) return null;
@@ -114,12 +119,14 @@ public class KDOMFormulaNumberElementFactory {
 
 			// build first operand
 			Section<? extends CalcMethodType> add0 = addElems.get(0);
-			Section<CompositeFormula> compositeChild = add0.findChildOfType(CompositeFormula.class);
+			Section<CompositeFormula> compositeChild = Sections.findChildOfType(add0,
+					CompositeFormula.class);
 			FormulaNumberElement operand0 = createExpression(article, compositeChild);
 
 			// build second operand
 			Section<? extends CalcMethodType> add1 = addElems.get(1);
-			Section<CompositeFormula> compositeChild1 = add1.findChildOfType(CompositeFormula.class);
+			Section<CompositeFormula> compositeChild1 = Sections.findChildOfType(add1,
+					CompositeFormula.class);
 			FormulaNumberElement operand1 = createExpression(article, compositeChild1);
 
 			if (operand0 == null || operand1 == null) return null;
@@ -142,12 +149,14 @@ public class KDOMFormulaNumberElementFactory {
 
 			// build first operand
 			Section<? extends CalcMethodType> sub0 = subElems.get(0);
-			Section<CompositeFormula> compositeChild = sub0.findChildOfType(CompositeFormula.class);
+			Section<CompositeFormula> compositeChild = Sections.findChildOfType(sub0,
+					CompositeFormula.class);
 			FormulaNumberElement operand0 = createExpression(article, compositeChild);
 
 			// build second operand
 			Section<? extends CalcMethodType> sub1 = subElems.get(1);
-			Section<CompositeFormula> compositeChild1 = sub1.findChildOfType(CompositeFormula.class);
+			Section<CompositeFormula> compositeChild1 = Sections.findChildOfType(sub1,
+					CompositeFormula.class);
 			FormulaNumberElement operand1 = createExpression(article, compositeChild1);
 
 			if (operand0 == null || operand1 == null) return null;
@@ -163,12 +172,14 @@ public class KDOMFormulaNumberElementFactory {
 		if (c.get().isTerminal(c)) {
 			Section<? extends TerminalCondition> terminal = c.get().getTerminal(c);
 
-			Section<de.d3web.we.kdom.condition.Number> number = terminal.findChildOfType(de.d3web.we.kdom.condition.Number.class);
+			Section<de.d3web.we.kdom.condition.Number> number = Sections.findChildOfType(terminal,
+					de.d3web.we.kdom.condition.Number.class);
 			if (number != null) {
 				return new FormulaNumber(
 						de.d3web.we.kdom.condition.Number.getNumber(number));
 			}
-			Section<QuestionNumReference> qref = terminal.findChildOfType(QuestionNumReference.class);
+			Section<QuestionNumReference> qref = Sections.findChildOfType(terminal,
+					QuestionNumReference.class);
 			if (qref != null) {
 				Question question = qref.get().getTermObject(article, qref);
 				if (question instanceof QuestionNum) { // rather has to be

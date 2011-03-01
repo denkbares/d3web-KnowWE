@@ -24,9 +24,10 @@ import de.d3web.core.inference.condition.CondKnown;
 import de.d3web.core.inference.condition.CondUnknown;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.rendering.StyleRenderer;
@@ -79,8 +80,8 @@ public class CondKnownUnknown extends D3webCondition<CondKnownUnknown> {
 
 	@Override
 	protected Condition createCondition(KnowWEArticle article, Section<CondKnownUnknown> section) {
-		Section<QuestionReference> qRef = section.findSuccessor(QuestionReference.class);
-		Section<AssignmentType> valueSec = section.findSuccessor(AssignmentType.class);
+		Section<QuestionReference> qRef = Sections.findSuccessor(section, QuestionReference.class);
+		Section<AssignmentType> valueSec = Sections.findSuccessor(section, AssignmentType.class);
 
 		if (valueSec == null || qRef == null) {
 			// should not happen due to our regexp
@@ -117,7 +118,7 @@ public class CondKnownUnknown extends D3webCondition<CondKnownUnknown> {
 		return null;
 	}
 
-	private static class AssignmentType extends DefaultAbstractKnowWEObjectType {
+	private static class AssignmentType extends AbstractType {
 
 		@Override
 		protected void init() {

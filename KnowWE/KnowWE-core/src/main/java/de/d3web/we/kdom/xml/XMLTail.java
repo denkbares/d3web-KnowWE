@@ -23,8 +23,8 @@ package de.d3web.we.kdom.xml;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.SectionIDDeclarant;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -32,13 +32,13 @@ import de.d3web.we.kdom.rendering.NothingRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
-public class XMLTail extends DefaultAbstractKnowWEObjectType implements SectionIDDeclarant {
+public class XMLTail extends AbstractType implements SectionIDDeclarant {
 
 	public static final String SEPARATOR = "/";
 	public static final String TAIL_SUFFIX = "_tail";
 
 	@Override
-	public String createSectionID(Section<? extends KnowWEObjectType> father) {
+	public String createSectionID(Section<? extends Type> father) {
 		return getEndOfId(father.getID()) + TAIL_SUFFIX;
 	}
 
@@ -60,11 +60,11 @@ public class XMLTail extends DefaultAbstractKnowWEObjectType implements SectionI
 	public class XMLTailSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text2, Section father, KnowWEObjectType type) {
+		public List<SectionFinderResult> lookForSections(String text2, Section father, Type type) {
 
-			if (father.getObjectType() instanceof AbstractXMLObjectType) {
-				String text = AbstractXMLObjectType.getAttributeMapFor(father).get(
-						AbstractXMLObjectType.TAIL);
+			if (father.get() instanceof AbstractXMLType) {
+				String text = AbstractXMLType.getAttributeMapFor(father).get(
+						AbstractXMLType.TAIL);
 				if (text != null) {
 					int start = text2.lastIndexOf(text);
 					List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();

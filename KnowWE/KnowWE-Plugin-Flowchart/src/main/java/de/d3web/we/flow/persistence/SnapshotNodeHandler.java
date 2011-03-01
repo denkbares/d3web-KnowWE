@@ -35,7 +35,7 @@ import de.d3web.we.flow.type.SnapshotType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.AbstractXMLType;
 
 /**
  * @author Reinhard Hatko
@@ -51,7 +51,7 @@ public class SnapshotNodeHandler extends AbstractNodeHandler {
 	public boolean canCreateNode(KnowWEArticle article, KnowledgeBase kb,
 			Section<NodeType> nodeSection) {
 
-		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
+		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
 
 		return nodeInfo != null;
 
@@ -60,7 +60,7 @@ public class SnapshotNodeHandler extends AbstractNodeHandler {
 	public INode createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 
-		Section<AbstractXMLObjectType> nodeInfo = getNodeInfo(nodeSection);
+		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
 		String content = FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
 
 		if (content.length() > 10) content = content.substring(0, 10) + "...";

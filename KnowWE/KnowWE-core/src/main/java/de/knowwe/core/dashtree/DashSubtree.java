@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractType;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -44,7 +44,7 @@ import de.knowwe.core.CommentLineType;
  *         0..* subtrees as further children.
  * 
  */
-public class DashSubtree extends DefaultAbstractKnowWEObjectType {
+public class DashSubtree extends AbstractType {
 
 	@Override
 	protected void init() {
@@ -83,11 +83,11 @@ public class DashSubtree extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section<?> father, KnowWEObjectType type) {
+				Section<?> father, Type type) {
 
 			int level = 0;
 
-			KnowWEObjectType fatherType = father.getObjectType();
+			Type fatherType = father.get();
 			if (fatherType instanceof DashSubtree) {
 				level = DashTreeUtils.getDashLevel(father) + 1;
 			}
