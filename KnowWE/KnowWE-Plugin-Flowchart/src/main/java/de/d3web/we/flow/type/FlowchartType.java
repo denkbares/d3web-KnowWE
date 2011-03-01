@@ -20,6 +20,7 @@
 
 package de.d3web.we.flow.type;
 
+import de.d3web.diaFlux.flow.DiaFluxCaseObject;
 import de.d3web.we.flow.FlowchartRenderer;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
 import de.d3web.we.flow.type.FlowchartXMLHeadType.FlowchartTermDef;
@@ -53,7 +54,8 @@ public class FlowchartType extends AbstractXMLObjectType implements IncrementalM
 	protected void init() {
 		this.childrenTypes.add(FlowchartContentType.getInstance());
 		addSubtreeHandler(Priority.DEFAULT, new FlowchartSubTreeHandler());
-
+		// in Wiki mode we always want to have the trace be enabled
+		DiaFluxCaseObject.setTraceMode(true);
 	}
 
 	/**

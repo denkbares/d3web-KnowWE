@@ -55,28 +55,54 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 		// to the preview nodes using javascript/dhtml
 		String highlight = user.getUrlParameterMap().get("highlight");
 		if (highlight != null && highlight.equals("true")) {
+			// prepare some basic information
 			Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
 			DiaFluxCaseObject diaFluxCaseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
+			String secID = sec.getFather().getFather().getID();
+			String thisFlowchartName = FlowchartType.getFlowchartName(sec);
+
+			// first highlight traced nodes/edges to yellow
+			for (INode node : diaFluxCaseObject.getTracedNodes()) {
+				if (node.getFlow().getName().equals(thisFlowchartName)) {
+					addNodeHighlight(string, secID, node, "#BB0");
+				}
+			}
+			for (IEdge edge : diaFluxCaseObject.getTracedEdges()) {
+				if (edge.getStartNode().getFlow().getName().equals(thisFlowchartName)) {
+					addEdgeHighlight(string, secID, edge, "#BB0");
+				}
+			}
+			// then highlight all currently active nodes/edges to green
 			for (FlowRun run : diaFluxCaseObject.getRuns()) {
 				for (INode node : run.getActiveNodes()) {
-					if (node.getFlow().getName().equals(FlowchartType.getFlowchartName(sec))) {
-						String secID = sec.getFather().getFather().getID();
-						string.append(KnowWEUtils.maskHTML("<script>$('" + secID
-								+ "').getElement('div[id=" + node.getID()
-								+ "]').style.border='2px solid green';</script>"));
+					if (node.getFlow().getName().equals(thisFlowchartName)) {
+						addNodeHighlight(string, secID, node, "green");
 						for (IEdge edge : node.getOutgoingEdges()) {
 							if (hasFired(session, edge)) {
-								string.append(KnowWEUtils.maskHTML("<script>var child = $('"
-										+ secID
-										+ "').getElement('div[id="
-										+ edge.getID()
-										+ "]').firstChild; while (child) {if (child.className.match(/[hv]_line/)) {child.style.border='1px solid green';} child = child.nextSibling;}</script>\n"));
+								addEdgeHighlight(string, secID, edge, "green");
 							}
 						}
 					}
 				}
 			}
 		}
+	}
+
+	private void addNodeHighlight(StringBuilder result, String sectionID, INode node, String color) {
+		result.append(KnowWEUtils.maskHTML("<script>$('" + sectionID
+				+ "').getElement('div[id=" + node.getID()
+				+ "]').style.border='2px solid " + color + "';</script>"));
+	}
+
+	private void addEdgeHighlight(StringBuilder result, String sectionID, IEdge edge, String color) {
+		result.append(KnowWEUtils.maskHTML("<script>var child = $('"
+				+ sectionID
+				+ "').getElement('div[id="
+				+ edge.getID()
+				+ "]').firstChild; while (child) {"
+				+ "if (child.className.match(/[hv]_line/)) {"
+				+ "child.style.border='1px solid " + color + "';} "
+				+ "child = child.nextSibling;}</script>\n"));
 	}
 
 	private boolean hasFired(Session session, IEdge edge) {
