@@ -323,7 +323,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 		return injectSection;
 	}
-	
+
 	public boolean removeInjectedChildren() {
 		if (this.getChildren().size() == 1 && this.getChildren().get(0).get() instanceof InjectType) {
 			Section<?> injectSection = this.getChildren().remove(0);
@@ -1437,7 +1437,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		}
 	}
 
-
 	/**
 	 * Checks whether this Section or a successor is not reused. Sections and
 	 * successors with a KnowWEObjectType contained in the Set of classes will
@@ -1702,7 +1701,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * 
 	 * @see SubtreeHandler#create(KnowWEArticle, Section)
 	 */
-	@SuppressWarnings("unchecked")
 	public final void letSubtreeHandlersCreate(KnowWEArticle article, Priority p) {
 		List<SubtreeHandler<? extends KnowWEObjectType>> handlerList = objectType.getSubtreeHandlers().get(
 				p);
