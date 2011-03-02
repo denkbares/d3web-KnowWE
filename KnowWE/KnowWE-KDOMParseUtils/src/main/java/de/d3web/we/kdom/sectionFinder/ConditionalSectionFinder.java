@@ -29,11 +29,11 @@ import de.d3web.we.kdom.Section;
  * @author Jochen
  * @created 29.07.2010
  */
-public abstract class ConditionalSectionFinder implements ISectionFinder {
+public abstract class ConditionalSectionFinder implements SectionFinder {
 
-	ISectionFinder finder = null;
+	SectionFinder finder = null;
 
-	public ConditionalSectionFinder(ISectionFinder internalFinder) {
+	public ConditionalSectionFinder(SectionFinder internalFinder) {
 		this.finder = internalFinder;
 	}
 

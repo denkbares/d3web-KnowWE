@@ -25,8 +25,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.KnowWEUtils;
@@ -64,7 +64,7 @@ public class DashSubtree extends AbstractType {
 	 *         retrieved from father.
 	 * 
 	 */
-	class SubtreeFinder extends SectionFinder {
+	class SubtreeFinder implements SectionFinder {
 
 		Pattern p0 = Pattern.compile("^\\s*[\\w\"]+.*$",
 				Pattern.MULTILINE);

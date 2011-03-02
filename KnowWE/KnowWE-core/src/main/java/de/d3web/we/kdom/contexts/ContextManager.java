@@ -70,7 +70,7 @@ public class ContextManager {
 	 * @param section
 	 * @param context
 	 */
-	public void attachContext(Section section, Context context) {
+	public void attachContext(Section<?> section, Context context) {
 
 		KnowWEUtils.storeObject(section.getWeb(), section.getTitle(),
 				section.getID(), context.getCID(), context);
@@ -142,11 +142,11 @@ public class ContextManager {
 		throw new CloneNotSupportedException();
 	}
 
-	public Context getContextForClass(Section section, Class<? extends Context> c) {
+	public Context getContextForClass(Section<?> section, Class<? extends Context> c) {
 		return getContext(section, c.getName());
 	}
 
-	public Context getContext(Section section, String contextid) {
+	public Context getContext(Section<?> section, String contextid) {
 		return getContext(section, section, contextid);
 	}
 
@@ -157,7 +157,7 @@ public class ContextManager {
 	 * @param contextid
 	 * @return
 	 */
-	public Context getContext(Section section, Section originalSection, String contextid) {
+	public Context getContext(Section<?> section, Section<?> originalSection, String contextid) {
 		Object o = KnowWEUtils.getStoredObject(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(),
 				section.getID(), contextid);
 		if (o instanceof Context) {
@@ -200,15 +200,15 @@ public class ContextManager {
 			return artContextMap;
 		}
 
-		public Map<String, Context> getContextMapForSection(Section s) {
+		public Map<String, Context> getContextMapForSection(Section<?> s) {
 			return artContextMap.get(s);
 		}
 
-		public void put(Section s, Map<String, Context> map) {
+		public void put(Section<?> s, Map<String, Context> map) {
 			this.artContextMap.put(s, map);
 		}
 
-		public Map<String, Context> get(Section s) {
+		public Map<String, Context> get(Section<?> s) {
 			return this.artContextMap.get(s);
 		}
 

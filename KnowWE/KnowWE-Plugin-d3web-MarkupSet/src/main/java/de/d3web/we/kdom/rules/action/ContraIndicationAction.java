@@ -32,7 +32,7 @@ import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.objects.KnowWETerm;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.utils.KnowWEUtils;
@@ -71,7 +71,7 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 	static class QuestionReferenceInBrackets extends QuestionReference {
 
 		public QuestionReferenceInBrackets() {
-			this.sectionFinder = new ISectionFinder() {
+			this.sectionFinder = new SectionFinder() {
 
 				@Override
 				public List<SectionFinderResult> lookForSections(String text,

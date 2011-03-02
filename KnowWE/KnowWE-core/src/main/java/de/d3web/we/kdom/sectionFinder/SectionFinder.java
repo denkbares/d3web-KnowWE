@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- * Computer Science VI, University of Wuerzburg
+ * Copyright (C) 2010 University Wuerzburg, Computer Science VI
  * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -17,21 +16,36 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-
 package de.d3web.we.kdom.sectionFinder;
 
+import java.util.List;
+
+import de.d3web.we.kdom.Type;
+import de.d3web.we.kdom.Section;
+
 /**
- * @author Jochen
  * 
+ * @author Jochen
+ * @created 21.07.2010
  */
-// TODO: make SectionFinder to be an interface
+public interface SectionFinder {
 
-// the interface ISectionFinder should be used instead !
-@Deprecated
-public abstract class SectionFinder implements ISectionFinder {
-
-	// TODO: everywhere the interface ISectionFinder should be used to reference
-	// SectionFinders
-	// when done, this class will be deleted
+	/**
+	 * 
+	 * Allocates text parts for the type owning this sectionfinder. The
+	 * resulting SectionFinderResult list contains indices of substrings of the
+	 * passed text. These specified substrings will be allocated to this type.
+	 * Method will be called multiple times with various article fragments
+	 * depending on previous allocations of preceding types. If no interesting
+	 * section is found in a passed fragment, return 'null' or an empty list;
+	 * 
+	 * @param text Text fragment of the wiki article source
+	 * @param father TODO
+	 * @param type TODO
+	 * @return List of SectionFinderResults with informations about what part of
+	 *         the next belongs to the ObjectType calling the SectionFinder
+	 */
+	public List<SectionFinderResult> lookForSections(
+			String text, Section<?> father, Type type);
 
 }

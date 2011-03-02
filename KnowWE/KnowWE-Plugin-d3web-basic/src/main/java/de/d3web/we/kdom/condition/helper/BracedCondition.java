@@ -9,7 +9,7 @@ import de.d3web.we.kdom.condition.NonTerminalCondition;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SyntaxError;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.SplitUtility;
 
@@ -37,9 +37,9 @@ public class BracedCondition extends NonTerminalCondition {
  * @author Jochen
  * 
  */
-class EmbracedExpressionFinder implements ISectionFinder {
+class EmbracedExpressionFinder implements SectionFinder {
 
-	public static ISectionFinder createEmbracedExpressionFinder() {
+	public static SectionFinder createEmbracedExpressionFinder() {
 		ConstraintSectionFinder sectionFinder = new ConstraintSectionFinder(
 					new EmbracedExpressionFinder());
 		return sectionFinder;

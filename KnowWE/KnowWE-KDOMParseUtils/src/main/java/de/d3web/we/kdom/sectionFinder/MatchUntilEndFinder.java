@@ -22,8 +22,8 @@ package de.d3web.we.kdom.sectionFinder;
 
 import java.util.List;
 
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 
 /**
  * Takes the text from the beginning of the match of the given
@@ -32,7 +32,7 @@ import de.d3web.we.kdom.Section;
  * @author Jochen
  * 
  */
-public class MatchUntilEndFinder extends SectionFinder {
+public class MatchUntilEndFinder implements SectionFinder {
 
 	private final AbstractSingleResultFinder startFinder;
 
@@ -41,7 +41,7 @@ public class MatchUntilEndFinder extends SectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 		SectionFinderResult res = startFinder.lookForSection(text, father, type);
 		if (res != null) {

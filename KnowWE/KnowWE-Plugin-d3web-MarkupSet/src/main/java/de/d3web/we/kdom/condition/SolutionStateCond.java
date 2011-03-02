@@ -13,7 +13,7 @@ import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.type.AnonymousType;
@@ -52,7 +52,7 @@ public class SolutionStateCond extends D3webCondition<SolutionStateCond> {
 		this.childrenTypes.add(rating);
 	}
 
-	class SolutionStateCondFinder implements ISectionFinder {
+	class SolutionStateCondFinder implements SectionFinder {
 
 		private final AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
 

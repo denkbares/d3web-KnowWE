@@ -27,7 +27,7 @@ import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.StyleRenderer;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class SequentialTestCaseName extends AbstractType {
@@ -38,7 +38,7 @@ public class SequentialTestCaseName extends AbstractType {
 		this.setCustomRenderer(StyleRenderer.KEYWORDS);
 	}
 
-	public class SequentialTestCaseNameSectionFinder implements ISectionFinder {
+	public class SequentialTestCaseNameSectionFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {

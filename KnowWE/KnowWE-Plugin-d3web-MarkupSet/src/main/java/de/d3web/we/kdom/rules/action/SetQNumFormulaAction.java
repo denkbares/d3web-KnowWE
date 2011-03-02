@@ -21,7 +21,7 @@ import de.d3web.we.kdom.rules.action.formula.CompositeFormula;
 import de.d3web.we.kdom.rules.action.formula.KDOMFormulaNumberElementFactory;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.utils.SplitUtility;
@@ -59,7 +59,7 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 		this.childrenTypes.add(formula);
 	}
 
-	private class SetQuestionValueSectionFinder implements ISectionFinder {
+	private class SetQuestionValueSectionFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {

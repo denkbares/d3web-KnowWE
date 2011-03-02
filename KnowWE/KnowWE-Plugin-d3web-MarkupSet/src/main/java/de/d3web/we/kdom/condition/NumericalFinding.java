@@ -32,15 +32,15 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.report.message.InvalidNumberError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.utils.KnowWEUtils;
@@ -83,12 +83,12 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 		this.childrenTypes.add(num);
 	}
 
-	class NumericalFindingFinder extends SectionFinder {
+	class NumericalFindingFinder implements SectionFinder {
 
 		private final AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 			for (String comp : comparators) {
 				if (SplitUtility.containsUnquoted(text, comp)) {
 
@@ -117,7 +117,7 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 
 		String comparator =  Sections.findSuccessor(s, Comparator.class).getOriginalText();
 
-		Double number = numberSec.get().getNumber(numberSec);
+		Double number = Number.getNumber(numberSec);
 
 		if (number == null) {
 			InvalidNumberError error = new InvalidNumberError(

@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Type;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class SemanticAnnotation extends AbstractType {
@@ -40,7 +40,7 @@ public class SemanticAnnotation extends AbstractType {
 		super(new AnnotationSectionFinder());
 	}
 
-	public static class AnnotationSectionFinder implements ISectionFinder {
+	public static class AnnotationSectionFinder implements SectionFinder {
 
 		private final String PATTERN = ANNOTATIONBEGIN + "[\\w\\W]*?" + ANNOTATIONEND;
 

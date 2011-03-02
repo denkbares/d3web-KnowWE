@@ -28,8 +28,8 @@ import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SyntaxError;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -57,7 +57,7 @@ public class OverdashedElement extends AbstractType {
 		this.sectionFinder = new SectionFinder() {
 
 			@Override
-			public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
+			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 				// when there is no father, one dash is too much
 				int level = 1;
 

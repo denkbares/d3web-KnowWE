@@ -22,11 +22,11 @@ package de.d3web.we.kdom.sectionFinder;
 
 import java.util.List;
 
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.MultiSectionFinder;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 
-public class OneOfStringEnumFinder extends SectionFinder {
+public class OneOfStringEnumFinder implements SectionFinder {
 
 	MultiSectionFinder msf;
 
@@ -38,7 +38,7 @@ public class OneOfStringEnumFinder extends SectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		return msf.lookForSections(text, father, type);
 	}
 

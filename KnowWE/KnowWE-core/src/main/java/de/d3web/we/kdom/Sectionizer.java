@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.basic.PlainText;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 /**
@@ -86,7 +86,7 @@ public class Sectionizer implements Parser {
 
 		if (type == null || !(type instanceof Sectionizable)) return;
 
-		ISectionFinder finder = ((Sectionizable) type).getSectioFinder();
+		SectionFinder finder = ((Sectionizable) type).getSectioFinder();
 		if (finder == null) return;
 
 		List<SectionFinderResult> results = finder.lookForSections(text,

@@ -42,7 +42,7 @@ import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -59,7 +59,7 @@ public class SemanticAnnotationProperty extends AbstractType {
 		this.addSubtreeHandler(new SemanticAnnotationPropertySubTreeHandler());
 	}
 
-	public static class AnnotationPropertySectionFinder implements ISectionFinder {
+	public static class AnnotationPropertySectionFinder implements SectionFinder {
 
 		private final String PATTERN = "[(\\w:)?\\w]*::";
 

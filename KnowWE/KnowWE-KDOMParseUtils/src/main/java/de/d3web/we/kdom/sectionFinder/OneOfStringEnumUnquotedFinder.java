@@ -33,7 +33,7 @@ import de.d3web.we.kdom.Type;
  * @author Jochen
  * 
  */
-public class OneOfStringEnumUnquotedFinder implements ISectionFinder {
+public class OneOfStringEnumUnquotedFinder implements SectionFinder {
 
 	private final MultiSectionFinder msf;
 

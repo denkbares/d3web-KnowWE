@@ -28,7 +28,7 @@ public interface Context {
 
 	public Map<String, ? extends Object> getAttributes();
 
-	public boolean isValidForSection(Section s);
+	public boolean isValidForSection(Section<?> s);
 
 	public String getCID();
 

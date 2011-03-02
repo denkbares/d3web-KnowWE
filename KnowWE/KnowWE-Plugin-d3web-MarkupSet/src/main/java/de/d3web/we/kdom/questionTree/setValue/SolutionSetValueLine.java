@@ -42,7 +42,7 @@ import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.object.SolutionReference;
@@ -113,7 +113,7 @@ public class SolutionSetValueLine extends AbstractType {
 
 	private AnonymousType createArgumentType() {
 		AnonymousType typeDef = new AnonymousType(SETVALUE_ARGUMENT);
-		ISectionFinder typeFinder = new ISectionFinder() {
+		SectionFinder typeFinder = new SectionFinder() {
 
 			@Override
 			public List<SectionFinderResult> lookForSections(String text,

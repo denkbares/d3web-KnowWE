@@ -50,7 +50,7 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.kdom.sectionFinder.EmbracedContentFinder;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.MatchUntilEndFinder;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -572,7 +572,7 @@ public class QuestionLine extends AbstractType {
 				"yn", "jn", "num", "date", "text", "info" };
 
 		public QuestionTypeDeclaration() {
-			ISectionFinder typeFinder = new ISectionFinder() {
+			SectionFinder typeFinder = new SectionFinder() {
 
 				@Override
 				public List<SectionFinderResult> lookForSections(String text,

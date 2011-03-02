@@ -46,7 +46,7 @@ import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
@@ -173,7 +173,7 @@ public class QuestionSetValueLine extends AbstractType {
 	class AnswerReferenceInBrackets extends AnswerReference {
 
 		public AnswerReferenceInBrackets() {
-			this.sectionFinder = new ISectionFinder() {
+			this.sectionFinder = new SectionFinder() {
 
 				@Override
 				public List<SectionFinderResult> lookForSections(String text,

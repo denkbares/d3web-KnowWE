@@ -36,7 +36,7 @@ import de.d3web.we.kdom.Section;
  * @author Max Diez
  * @created 12.08.2010
  */
-public class AllTextFinderDivCorrectTrimmed implements ISectionFinder {
+public class AllTextFinderDivCorrectTrimmed implements SectionFinder {
 
 	public AllTextFinderDivCorrectTrimmed() {
 	}

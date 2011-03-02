@@ -24,8 +24,8 @@ import java.util.List;
 
 import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.rendering.DefaultTextRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -49,11 +49,11 @@ public class DashesPrefix extends AbstractType {
 		});
 	}
 
-	class DashesPrefixFinder extends SectionFinder {
+	class DashesPrefixFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section father, Type type) {
+				Section<?> father, Type type) {
 
 			int leadingSpaces = text.indexOf(text.trim());
 

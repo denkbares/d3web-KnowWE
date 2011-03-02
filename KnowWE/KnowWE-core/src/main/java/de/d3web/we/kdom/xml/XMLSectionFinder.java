@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.SectionID;
 import de.d3web.we.kdom.Type;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -41,7 +41,7 @@ import de.d3web.we.utils.KnowWEUtils;
  * @author astriffler
  * 
  */
-public class XMLSectionFinder implements ISectionFinder {
+public class XMLSectionFinder implements SectionFinder {
 
 	public static final String ATTRIBUTE_MAP_STORE_KEY = "attributeMap";
 

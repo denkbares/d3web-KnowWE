@@ -49,7 +49,7 @@ public class AnnotationContext extends StringContext {
 	}
 
 	@Override
-	public boolean isValidForSection(Section s) {
+	public boolean isValidForSection(Section<?> s) {
 		return true;
 	}
 

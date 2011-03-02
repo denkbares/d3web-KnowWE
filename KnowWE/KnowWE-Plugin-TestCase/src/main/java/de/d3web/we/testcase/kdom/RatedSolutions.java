@@ -26,7 +26,7 @@ import java.util.List;
 import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.SplitUtility;
 
@@ -37,7 +37,7 @@ public class RatedSolutions extends AbstractType {
 		this.sectionFinder = new RatedSolutionsSectionFinder();
 	}
 
-	public class RatedSolutionsSectionFinder implements ISectionFinder {
+	public class RatedSolutionsSectionFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {

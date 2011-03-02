@@ -28,7 +28,7 @@ public abstract class FullContext implements Context {
 	 * This Context is valid for all nodes beneath the context
 	 */
 	@Override
-	public boolean isValidForSection(Section s) {
+	public boolean isValidForSection(Section<?> s) {
 		return true;
 	}
 

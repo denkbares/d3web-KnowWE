@@ -30,7 +30,7 @@ import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.DefaultErrorRenderer;
 import de.d3web.we.kdom.report.MessageRenderer;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 public abstract class AbstractType implements Type, Sectionizable {
@@ -108,7 +108,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * 
 	 * @see Type#getSectioFinder()
 	 */
-	protected ISectionFinder sectionFinder;
+	protected SectionFinder sectionFinder;
 
 	/**
 	 * Allows to set a specific sectionFinder for this type
@@ -116,7 +116,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * @param sectionFinder
 	 */
 	@Override
-	public void setSectionFinder(ISectionFinder sectionFinder) {
+	public void setSectionFinder(SectionFinder sectionFinder) {
 		this.sectionFinder = sectionFinder;
 	}
 
@@ -138,7 +138,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 		init();
 	}
 
-	public AbstractType(ISectionFinder sectionFinder) {
+	public AbstractType(SectionFinder sectionFinder) {
 		this();
 		this.sectionFinder = sectionFinder;
 	}
@@ -293,7 +293,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * @see de.d3web.we.kdom.Sectionizable#getSectioFinder()
 	 */
 	@Override
-	public final ISectionFinder getSectioFinder() {
+	public final SectionFinder getSectioFinder() {
 		if (isActivated) {
 			return sectionFinder;
 		}

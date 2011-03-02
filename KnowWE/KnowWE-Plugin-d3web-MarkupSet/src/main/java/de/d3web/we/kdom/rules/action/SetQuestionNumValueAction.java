@@ -17,7 +17,7 @@ import de.d3web.we.kdom.auxiliary.Equals;
 import de.d3web.we.kdom.condition.QuestionNumReference;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.utils.SplitUtility;
@@ -49,7 +49,7 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 		/**
 		 * Searches the pattern qNum = <NUMBER>.
 		 */
-		private class SetNumValueActionSectionFinder implements ISectionFinder {
+		private class SetNumValueActionSectionFinder implements SectionFinder {
 
 
 			@Override

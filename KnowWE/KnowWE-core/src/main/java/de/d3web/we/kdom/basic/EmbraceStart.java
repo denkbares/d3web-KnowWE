@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -35,7 +35,7 @@ public class EmbraceStart extends AbstractType {
 		this.sectionFinder = new EmbraceStartSectionFinder(start);
 	}
 
-	class EmbraceStartSectionFinder extends SectionFinder {
+	class EmbraceStartSectionFinder implements SectionFinder {
 
 		private final String start;
 
@@ -45,7 +45,7 @@ public class EmbraceStart extends AbstractType {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section father, Type type) {
+				Section<?> father, Type type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			if (text.startsWith(start)) {

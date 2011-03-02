@@ -50,7 +50,7 @@ public class DefaultSubjectContext extends StringContext {
 	}
 
 	@Override
-	public boolean isValidForSection(Section s) {
+	public boolean isValidForSection(Section<?> s) {
 		return true;
 	}
 }

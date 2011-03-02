@@ -6,7 +6,7 @@ import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.NonTerminalCondition;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.SplitUtility;
 
@@ -24,7 +24,7 @@ public class BracedConditionContent extends NonTerminalCondition {
 		this.sectionFinder = new BracedConditionContentFinder();
 	}
 
-	class BracedConditionContentFinder implements ISectionFinder {
+	class BracedConditionContentFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {

@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 
 /**
  * A sectionfinder that uses a regex to split the section. Each
@@ -33,7 +33,7 @@ import de.d3web.we.kdom.Section;
  * 
  * @author Reinhard Hatko Created on: 10.12.2009
  */
-public class SplittingSectionFinder extends SectionFinder {
+public class SplittingSectionFinder implements SectionFinder {
 
 	private final Pattern pattern;
 
@@ -44,7 +44,7 @@ public class SplittingSectionFinder extends SectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 		Matcher tagMatcher = pattern.matcher(text);
 		List<SectionFinderResult> resultRegex = new ArrayList<SectionFinderResult>();

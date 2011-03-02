@@ -33,7 +33,7 @@ import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NoSuchObjectError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -67,7 +67,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 		});
 
 		QuestionReference question = new QuestionReference();
-		question.setSectionFinder(new ISectionFinder() {
+		question.setSectionFinder(new SectionFinder() {
 
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
@@ -102,7 +102,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 		return new de.d3web.core.inference.condition.CondKnown(q);
 	}
 
-	private class CondKnownFinder implements ISectionFinder {
+	private class CondKnownFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {

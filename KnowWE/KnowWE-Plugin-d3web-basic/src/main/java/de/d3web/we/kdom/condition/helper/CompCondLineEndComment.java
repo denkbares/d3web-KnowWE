@@ -9,7 +9,7 @@ import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.rendering.StyleRenderer;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.SplitUtility;
 
@@ -34,7 +34,7 @@ public class CompCondLineEndComment extends AbstractType {
 	 * 
 	 * 
 	 */
-	class LineEndCommentFinder implements ISectionFinder {
+	class LineEndCommentFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,

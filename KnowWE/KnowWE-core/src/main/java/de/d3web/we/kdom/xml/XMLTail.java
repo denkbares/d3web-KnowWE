@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.SectionIDDeclarant;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.NothingRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -57,10 +57,10 @@ public class XMLTail extends AbstractType implements SectionIDDeclarant {
 		return NothingRenderer.getInstance();
 	}
 
-	public class XMLTailSectionFinder extends SectionFinder {
+	public class XMLTailSectionFinder implements SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text2, Section father, Type type) {
+		public List<SectionFinderResult> lookForSections(String text2, Section<?> father, Type type) {
 
 			if (father.get() instanceof AbstractXMLType) {
 				String text = AbstractXMLType.getAttributeMapFor(father).get(

@@ -33,7 +33,7 @@ import de.d3web.we.kdom.Type;
  *         operation cutting off whitespace characters
  * 
  */
-public class AllTextFinderTrimmed implements ISectionFinder {
+public class AllTextFinderTrimmed implements SectionFinder {
 
 	public AllTextFinderTrimmed() {
 	}

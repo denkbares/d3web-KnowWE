@@ -22,8 +22,8 @@ package de.d3web.we.kdom.sectionFinder;
 
 import java.util.List;
 
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.utils.SplitUtility;
 
 /**
@@ -38,7 +38,7 @@ import de.d3web.we.utils.SplitUtility;
  * @author Jochen
  *
  */
-public class EmbracedContentFinder extends SectionFinder {
+public class EmbracedContentFinder implements SectionFinder {
 
 	private final char open;
 	private final char close;
@@ -56,7 +56,7 @@ public class EmbracedContentFinder extends SectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		int start = SplitUtility.indexOfUnquoted(text, "" + open);
 		if (start > -1) {
 			int end = SplitUtility.findIndexOfClosingBracket(text, start,

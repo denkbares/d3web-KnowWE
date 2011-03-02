@@ -31,7 +31,7 @@ import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.InvalidNumberError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
@@ -58,7 +58,7 @@ public class Number extends AbstractType {
 	// only one of them NumberFinder/NumberChecker makes sense to have for one
 	// Number-type
 
-	class NumberFinder implements ISectionFinder {
+	class NumberFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {

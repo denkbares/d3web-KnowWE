@@ -22,8 +22,8 @@ package de.d3web.we.kdom.sectionFinder;
 
 import java.util.List;
 
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 
 /**
  * @author Jochen
@@ -31,7 +31,7 @@ import de.d3web.we.kdom.Section;
  *         This SectionFinder simple takes all the text given for a section
  * 
  */
-public class AllTextSectionFinder extends SectionFinder {
+public class AllTextSectionFinder implements SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {

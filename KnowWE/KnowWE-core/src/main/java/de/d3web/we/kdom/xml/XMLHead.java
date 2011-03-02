@@ -29,7 +29,7 @@ import de.d3web.we.kdom.SectionIDDeclarant;
 import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.NothingRenderer;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class XMLHead extends AbstractType implements SectionIDDeclarant {
@@ -57,7 +57,7 @@ public class XMLHead extends AbstractType implements SectionIDDeclarant {
 		return NothingRenderer.getInstance();
 	}
 
-	public class XMLHeadSectionFinder implements ISectionFinder {
+	public class XMLHeadSectionFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text2, Section<?> father, Type type) {

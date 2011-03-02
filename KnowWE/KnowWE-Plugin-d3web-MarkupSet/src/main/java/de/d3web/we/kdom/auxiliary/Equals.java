@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -42,10 +42,9 @@ public class Equals extends AbstractType {
 		this.sectionFinder = new EqualsSectionFinder();
 	}
 
-	private class EqualsSectionFinder extends SectionFinder {
-
+	private class EqualsSectionFinder implements SectionFinder {
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			if (text.length() == 0) return null;
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();

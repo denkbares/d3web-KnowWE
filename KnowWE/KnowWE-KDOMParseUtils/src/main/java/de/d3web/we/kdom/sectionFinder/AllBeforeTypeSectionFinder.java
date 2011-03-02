@@ -28,7 +28,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sectionizable;
 import de.d3web.we.kdom.Type;
 
-public class AllBeforeTypeSectionFinder implements ISectionFinder {
+public class AllBeforeTypeSectionFinder implements SectionFinder {
 
 	Sectionizable markerType = null;
 
@@ -78,13 +78,13 @@ public class AllBeforeTypeSectionFinder implements ISectionFinder {
 		return null;
 	}
 
-	class AllBeforeTypeSectionFinderWrapper implements ISectionFinder {
+	class AllBeforeTypeSectionFinderWrapper implements SectionFinder {
 
-		private final ISectionFinder allBeforeThis;
+		private final SectionFinder allBeforeThis;
 
 		private final AllBeforeTypeSectionFinder getsAllBefore;
 
-		public AllBeforeTypeSectionFinderWrapper(ISectionFinder allBeforeThis, AllBeforeTypeSectionFinder getsAllBefore) {
+		public AllBeforeTypeSectionFinderWrapper(SectionFinder allBeforeThis, AllBeforeTypeSectionFinder getsAllBefore) {
 			this.allBeforeThis = allBeforeThis;
 			this.getsAllBefore = getsAllBefore;
 

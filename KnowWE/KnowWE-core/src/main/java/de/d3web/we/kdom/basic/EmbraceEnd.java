@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -35,9 +35,9 @@ public class EmbraceEnd extends AbstractType {
 		this.sectionFinder = new EmbraceEndSectionFinder(end);
 	}
 
-	class EmbraceEndSectionFinder extends SectionFinder {
+	class EmbraceEndSectionFinder implements SectionFinder {
 
-		private String end;
+		private final String end;
 
 		public EmbraceEndSectionFinder(String end) {
 			this.end = end;
@@ -45,7 +45,7 @@ public class EmbraceEnd extends AbstractType {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section father, Type type) {
+				Section<?> father, Type type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			if (text.endsWith(end)) {

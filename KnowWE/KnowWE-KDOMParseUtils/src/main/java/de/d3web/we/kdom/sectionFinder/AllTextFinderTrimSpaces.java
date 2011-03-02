@@ -22,8 +22,8 @@ package de.d3web.we.kdom.sectionFinder;
 
 import java.util.List;
 
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 
 /**
  * @author Jochen
@@ -34,7 +34,7 @@ import de.d3web.we.kdom.Section;
  * 
  * 
  */
-public class AllTextFinderTrimSpaces extends SectionFinder {
+public class AllTextFinderTrimSpaces implements SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {

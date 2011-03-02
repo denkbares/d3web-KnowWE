@@ -27,7 +27,7 @@ import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.AnswerReferenceImpl;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
@@ -48,7 +48,7 @@ public class Finding extends AbstractType {
 		this.sectionFinder = new FindingSectionFinder();
 	}
 
-	public class FindingSectionFinder implements ISectionFinder {
+	public class FindingSectionFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
@@ -67,7 +67,7 @@ public class Finding extends AbstractType {
 
 	}
 
-	public class AnswerSectionFinder implements ISectionFinder {
+	public class AnswerSectionFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
@@ -86,7 +86,7 @@ public class Finding extends AbstractType {
 
 	}
 
-	class QuestionSectionFinder implements ISectionFinder {
+	class QuestionSectionFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {

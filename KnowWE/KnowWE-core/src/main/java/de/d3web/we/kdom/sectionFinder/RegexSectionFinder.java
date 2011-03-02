@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Type;
 
-public class RegexSectionFinder extends SectionFinder {
+public class RegexSectionFinder implements SectionFinder {
 
 	private final Pattern pattern;
 	private final int group;
@@ -59,7 +59,7 @@ public class RegexSectionFinder extends SectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 		Matcher m = pattern.matcher(text);
 		/*

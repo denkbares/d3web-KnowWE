@@ -23,12 +23,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
-public class AnnotationFinder extends SectionFinder {
+public class AnnotationFinder implements SectionFinder {
 
 	private final static Pattern nextAnnotationPattern =
 			Pattern.compile("\\p{Space}+@\\w+", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE);
@@ -48,7 +48,7 @@ public class AnnotationFinder extends SectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 		int pos = 0;
 		while (text.length() > 0) {

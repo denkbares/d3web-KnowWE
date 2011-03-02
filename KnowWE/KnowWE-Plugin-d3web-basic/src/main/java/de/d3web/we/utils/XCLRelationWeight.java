@@ -26,15 +26,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class XCLRelationWeight extends AbstractType {
 
-	public class XCLRelationWeightSectionFinder extends SectionFinder {
+	public class XCLRelationWeightSectionFinder implements SectionFinder {
 
 		private final Pattern pattern;
 

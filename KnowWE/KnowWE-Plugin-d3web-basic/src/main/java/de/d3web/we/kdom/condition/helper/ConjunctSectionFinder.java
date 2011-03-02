@@ -10,15 +10,15 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.SplitUtility;
 
-public class ConjunctSectionFinder implements ISectionFinder {
+public class ConjunctSectionFinder implements SectionFinder {
 
 	private final String[] signs;
 
-	public static ISectionFinder createConjunctFinder(String[] signs) {
+	public static SectionFinder createConjunctFinder(String[] signs) {
 		ConstraintSectionFinder csf = new ConstraintSectionFinder(
 				new ConjunctSectionFinder(signs));
 		return csf;

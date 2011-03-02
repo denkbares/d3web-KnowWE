@@ -24,5 +24,5 @@ import de.d3web.we.kdom.Section;
 
 public interface SectionFilter {
 
-	public boolean accept(Section section);
+	public boolean accept(Section<?> section);
 }

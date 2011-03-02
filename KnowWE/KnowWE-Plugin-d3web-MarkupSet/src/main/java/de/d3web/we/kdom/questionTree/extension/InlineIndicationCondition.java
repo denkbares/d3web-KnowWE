@@ -29,7 +29,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.rules.RuleContentType;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.UnquotedExpressionFinder;
@@ -81,7 +81,7 @@ public class InlineIndicationCondition extends AbstractType {
 
 	}
 
-	private class InlineIndiFinder implements ISectionFinder {
+	private class InlineIndiFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {

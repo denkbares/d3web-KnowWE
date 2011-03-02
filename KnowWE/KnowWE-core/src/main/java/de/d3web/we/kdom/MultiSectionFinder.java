@@ -23,7 +23,7 @@ package de.d3web.we.kdom;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 /**
@@ -42,24 +42,24 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
  * 
  */
 
-public class MultiSectionFinder implements ISectionFinder {
+public class MultiSectionFinder implements SectionFinder {
 
-	private List<ISectionFinder> finders = null;
+	private List<SectionFinder> finders = null;
 
 	public MultiSectionFinder() {
-		this.finders = new ArrayList<ISectionFinder>();
+		this.finders = new ArrayList<SectionFinder>();
 	}
 
-	public MultiSectionFinder(ISectionFinder first) {
+	public MultiSectionFinder(SectionFinder first) {
 		this();
 		this.addSectionFinder(first);
 	}
 
-	public MultiSectionFinder(List<ISectionFinder> initialList) {
+	public MultiSectionFinder(List<SectionFinder> initialList) {
 		this.finders = initialList;
 	}
 
-	public void addSectionFinder(ISectionFinder f) {
+	public void addSectionFinder(SectionFinder f) {
 		this.finders.add(f);
 	}
 
@@ -85,7 +85,7 @@ public class MultiSectionFinder implements ISectionFinder {
 
 		if (finderNum >= finders.size()) return;
 
-		ISectionFinder finder = finders.get(finderNum);
+		SectionFinder finder = finders.get(finderNum);
 		
 		finderNum++;
 

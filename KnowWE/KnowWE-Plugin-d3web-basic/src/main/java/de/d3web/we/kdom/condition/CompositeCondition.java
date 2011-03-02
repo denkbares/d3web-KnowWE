@@ -36,7 +36,7 @@ import de.d3web.we.kdom.condition.helper.ConjunctSectionFinder;
 import de.d3web.we.kdom.constraint.AtMostOneFindingConstraint;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.type.AnonymousType;
@@ -318,7 +318,7 @@ class NegatedExpression extends NonTerminalCondition {
 		negationSign.setSectionFinder(finder);
 		this.addChildType(negationSign);
 
-		this.sectionFinder = new ISectionFinder() {
+		this.sectionFinder = new SectionFinder() {
 
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {

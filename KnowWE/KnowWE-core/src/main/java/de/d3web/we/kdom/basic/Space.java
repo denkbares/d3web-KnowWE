@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -36,11 +36,11 @@ public class Space extends AbstractType {
 		this.sectionFinder = new EmbracingSpaceSectionFinder();
 	}
 
-	class EmbracingSpaceSectionFinder extends SectionFinder {
+	class EmbracingSpaceSectionFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section father, Type type) {
+				Section<?> father, Type type) {
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 
 			String trimmed = text.trim();
