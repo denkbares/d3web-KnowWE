@@ -115,7 +115,7 @@ public class DefaultMarkupOwlHandler extends OwlSubtreeHandler<DefaultMarkupType
 
 			// add hasLink
 			addStringLiteral(bnode,
-					"hasLink", KnowWEUtils.getLink(section),
+					"hasLink", KnowWEUtils.getWikiLink(section),
 					io, helper);
 		}
 		catch (RepositoryException e) {

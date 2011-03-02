@@ -21,18 +21,28 @@
 package de.d3web.we.flow;
 
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import de.d3web.core.inference.condition.NoAnswerException;
 import de.d3web.core.inference.condition.UnknownAnswerException;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
+import de.d3web.diaFlux.flow.ComposedNode;
 import de.d3web.diaFlux.flow.DiaFluxCaseObject;
+import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowRun;
 import de.d3web.diaFlux.flow.IEdge;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
+import de.d3web.we.basic.D3webModule;
+import de.d3web.we.core.KnowWEArticleManager;
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
@@ -47,6 +57,10 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 	@Override
 	public void render(KnowWEArticle article, Section<FlowchartType> sec, KnowWEUserContext user, StringBuilder string) {
 
+		// render anchor to be able to link to that flowchart
+		String anchorName = KnowWEUtils.getAnchor(sec);
+		string.append(KnowWEUtils.maskHTML("<a name='" + anchorName + "'></a>"));
+
 		// render preview
 		String topic = sec.getArticle().getTitle();
 		String web = sec.getArticle().getWeb();
@@ -55,13 +69,13 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 		// render debug highlighting into the existing flowchart
 		// we do this by applying some additional styling
 		// to the preview nodes using javascript/dhtml
+		String secID = sec.getFather().getFather().getID();
+		String thisFlowchartName = FlowchartType.getFlowchartName(sec);
 		String highlight = user.getUrlParameterMap().get("highlight");
 		if (highlight != null && highlight.equals("true")) {
 			// prepare some basic information
 			Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
 			DiaFluxCaseObject diaFluxCaseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
-			String secID = sec.getFather().getFather().getID();
-			String thisFlowchartName = FlowchartType.getFlowchartName(sec);
 
 			// first highlight traced nodes/edges to yellow
 			for (INode node : diaFluxCaseObject.getTracedNodes()) {
@@ -88,6 +102,57 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 				}
 			}
 		}
+
+		addSubFlowLinks(string, article, sec);
+	}
+
+	private void addSubFlowLinks(StringBuilder result, KnowWEArticle article, Section<FlowchartType> section) {
+		// make sub-flowcharts links to be able to go to their definition
+		String secID = section.getFather().getFather().getID();
+		String thisFlowchartName = FlowchartType.getFlowchartName(section);
+		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(
+				article.getWeb()).getKB(article.getTitle());
+		if (kb == null) return;
+		Flow flow = DiaFluxUtils.getFlowSet(kb).getByName(thisFlowchartName);
+		if (flow == null) return;
+		for (ComposedNode node : flow.getNodesOfClass(ComposedNode.class)) {
+			// link to flowchart definition
+			Section<FlowchartType> calledSection = findFlowchartSection(
+					article.getWeb(), node.getCalledFlowName());
+			if (calledSection == null) continue;
+			String link = KnowWEUtils.getURLLink(calledSection);
+			result.append(KnowWEUtils.maskHTML("<script>var element = $('" + secID
+					+ "').getElement('div[id=" + node.getID()
+					+ "]'); "
+					+ "element.innerHTML='<a href=\"" + link
+					+ "\">'+element.innerHTML+'</a>';</script>"));
+		}
+	}
+
+	/**
+	 * 
+	 * @created 02.03.2011
+	 * @param calledFlowName
+	 * @return
+	 */
+	private Section<FlowchartType> findFlowchartSection(String web, String calledFlowName) {
+		KnowWEArticleManager manager = KnowWEEnvironment.getInstance().getArticleManager(web);
+
+		for (Iterator<KnowWEArticle> iterator = manager.getArticleIterator(); iterator.hasNext();) {
+			KnowWEArticle article = (KnowWEArticle) iterator.next();
+			List<Section<FlowchartType>> matches = new LinkedList<Section<FlowchartType>>();
+			Sections.findSuccessorsOfType(article.getSection(), FlowchartType.class, matches);
+			for (Section<FlowchartType> match : matches) {
+				String flowName = FlowchartType.getFlowchartName(match);
+				if (calledFlowName.equalsIgnoreCase(flowName)) {
+					// simply return the first matching flowchart in we found in
+					// any article
+					return match;
+				}
+			}
+		}
+		// not match in no article
+		return null;
 	}
 
 	private void addNodeHighlight(StringBuilder result, String sectionID, INode node, String color) {

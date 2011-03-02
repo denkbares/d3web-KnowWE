@@ -72,10 +72,10 @@ public class KnowWEUtils {
 	// }
 
 	/**
-	 * Creates a wiki-markup-styled to the section. The created link navigates
-	 * the user to the article of the section. If the section is rendered with
-	 * an anchor (see method {@link #getAnchor(Section)}) the page is also
-	 * scrolled to the section.
+	 * Creates a wiki-markup-styled link to this section. The created link
+	 * navigates the user to the article of the section. If the section is
+	 * rendered with an anchor (see method {@link #getAnchor(Section)}) the page
+	 * is also scrolled to the section.
 	 * <p>
 	 * Please not that the link will only work if it is put into "[" ... "]"
 	 * brackets and rendered through the wiki rendering pipeline.
@@ -83,13 +83,26 @@ public class KnowWEUtils {
 	 * @param section the section to create the link for
 	 * @return the created link
 	 */
-	public static String getLink(Section<?> section) {
+	public static String getWikiLink(Section<?> section) {
 		return section.getTitle() + "#" + Math.abs(section.getID().hashCode());
 	}
 
 	/**
+	 * Creates a &lt;a href="..."&gt; styled link to this section. The created
+	 * link navigates the user to the article of the section. If the section is
+	 * rendered with an anchor (see method {@link #getAnchor(Section)}) the page
+	 * is also scrolled to the section.
+	 * 
+	 * @param section the section to create the link for
+	 * @return the created link
+	 */
+	public static String getURLLink(Section<?> section) {
+		return "Wiki.jsp?page=" + section.getTitle() + "#" + getAnchor(section);
+	}
+
+	/**
 	 * Creates a unique anchor name for the section to link to. See method
-	 * {@link #getLink(Section)} for more details on how to use this method.
+	 * {@link #getWikiLink(Section)} for more details on how to use this method.
 	 * 
 	 * @param section the section to create the anchor for.
 	 * @return the unique anchor name
@@ -168,7 +181,7 @@ public class KnowWEUtils {
 	public static void clearMessages(String web, String title, String secID, Class<?> msgType) {
 		Map<String, Collection> messages = (Map<String, Collection>)
 				KnowWEEnvironment.getInstance().getKnowWEStoreManager(
-				web).getStoredObjectArticleDependent(title, secID, createMsgMapKey(msgType));
+						web).getStoredObjectArticleDependent(title, secID, createMsgMapKey(msgType));
 		if (messages != null) messages.clear();
 	}
 
@@ -348,12 +361,10 @@ public class KnowWEUtils {
 	@SuppressWarnings("unchecked")
 	private static <MSGType> Map<String, Collection<MSGType>> getMessagesMapModifiable(KnowWEArticle article,
 			Section<?> sec, Class<MSGType> msgType, int mode) {
-			return (Map<String, Collection<MSGType>>) KnowWEUtils.getStoredObject(sec.getWeb(),
+		return (Map<String, Collection<MSGType>>) KnowWEUtils.getStoredObject(sec.getWeb(),
 					article == null ? null : article.getTitle(), sec.getID(),
 					createMsgMapKey(msgType), mode);
 	}
-
-
 
 	public static Object getStoredObject(Section<?> s, String key) {
 		return getStoredObject(s.getWeb(), null, s.getID(), key);
