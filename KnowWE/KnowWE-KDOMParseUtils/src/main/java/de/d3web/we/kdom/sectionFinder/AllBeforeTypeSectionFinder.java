@@ -70,7 +70,8 @@ public class AllBeforeTypeSectionFinder implements SectionFinder {
 			List<SectionFinderResult> results = new ArrayList<SectionFinderResult>(findThese.size());
 			int start = text.indexOf(findThese.getFirst());
 			if (start >= 0) {
-				results.add(new SectionFinderResult(start, findThese.getFirst().length()));
+				results.add(new SectionFinderResult(start, start
+						+ findThese.getFirst().length()));
 				findThese.removeFirst();
 			}
 			return results;
