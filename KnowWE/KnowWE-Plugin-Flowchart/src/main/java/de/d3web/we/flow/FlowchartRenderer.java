@@ -33,6 +33,7 @@ import de.d3web.diaFlux.flow.ComposedNode;
 import de.d3web.diaFlux.flow.DiaFluxCaseObject;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowRun;
+import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.flow.IEdge;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
@@ -113,7 +114,9 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(
 				article.getWeb()).getKB(article.getTitle());
 		if (kb == null) return;
-		Flow flow = DiaFluxUtils.getFlowSet(kb).getByName(thisFlowchartName);
+		FlowSet flowSet = DiaFluxUtils.getFlowSet(kb);
+		if (flowSet == null) return;
+		Flow flow = flowSet.getByName(thisFlowchartName);
 		if (flow == null) return;
 		for (ComposedNode node : flow.getNodesOfClass(ComposedNode.class)) {
 			// link to flowchart definition
