@@ -175,3 +175,10 @@
 	z-index: 200; 
 	cursor: crosshair;
 }
+
+.defaultMarkup .Node a:link, .defaultMarkup .Node a:visited, .defaultMarkup .Node a:active {
+	color: black;
+}
+.defaultMarkup .Node a:hover {
+	color: #036;
+}
