@@ -23,8 +23,8 @@ package de.d3web.we.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 
 /**
  * This class offers some methods for the KnowWETypeBrowser and the
@@ -160,6 +160,30 @@ public class KnowWETypeUtils {
 		return true;
 	}
 
+	/**
+	 * retrieves a (the first occurring!) successor type in the type schema if
+	 * existing
+	 * 
+	 * 
+	 * @created 02.03.2011
+	 * @param <OT>
+	 * @param root
+	 * @param clazz
+	 * @return
+	 */
+	public static <OT extends Type> Type findSuccessorType(Type root, Class<OT> clazz) {
+		List<Type> childrenTypes = root.getAllowedChildrenTypes();
+		for (Type type : childrenTypes) {
+			if (type.isAssignableFromType(clazz)) {
+				return type;
+			}
+			Type t = findSuccessorType(type, clazz);
+			if (t != null) return t;
+		}
+
+		return null;
+	}
+	
 	/**
 	 * Get the father element of the given section specified by class.
 	 * 
