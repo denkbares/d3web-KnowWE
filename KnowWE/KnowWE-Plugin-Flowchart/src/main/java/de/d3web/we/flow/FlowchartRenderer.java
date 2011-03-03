@@ -31,12 +31,13 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
 import de.d3web.diaFlux.flow.ComposedNode;
 import de.d3web.diaFlux.flow.DiaFluxCaseObject;
+import de.d3web.diaFlux.flow.Edge;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowRun;
 import de.d3web.diaFlux.flow.FlowSet;
-import de.d3web.diaFlux.flow.IEdge;
-import de.d3web.diaFlux.flow.INode;
+import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
+import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -79,22 +80,22 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 			DiaFluxCaseObject diaFluxCaseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
 
 			// first highlight traced nodes/edges to yellow
-			for (INode node : diaFluxCaseObject.getTracedNodes()) {
+			for (Node node : diaFluxCaseObject.getTracedNodes()) {
 				if (node.getFlow().getName().equals(thisFlowchartName)) {
 					addNodeHighlight(string, secID, node, "#BB0");
 				}
 			}
-			for (IEdge edge : diaFluxCaseObject.getTracedEdges()) {
+			for (Edge edge : diaFluxCaseObject.getTracedEdges()) {
 				if (edge.getStartNode().getFlow().getName().equals(thisFlowchartName)) {
 					addEdgeHighlight(string, secID, edge, "#BB0");
 				}
 			}
 			// then highlight all currently active nodes/edges to green
 			for (FlowRun run : diaFluxCaseObject.getRuns()) {
-				for (INode node : run.getActiveNodes()) {
+				for (Node node : run.getActiveNodes()) {
 					if (node.getFlow().getName().equals(thisFlowchartName)) {
 						addNodeHighlight(string, secID, node, "green");
-						for (IEdge edge : node.getOutgoingEdges()) {
+						for (Edge edge : node.getOutgoingEdges()) {
 							if (hasFired(session, diaFluxCaseObject.getRuns(), edge)) {
 								addEdgeHighlight(string, secID, edge, "green");
 							}
@@ -158,13 +159,13 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 		return null;
 	}
 
-	private void addNodeHighlight(StringBuilder result, String sectionID, INode node, String color) {
+	private void addNodeHighlight(StringBuilder result, String sectionID, Node node, String color) {
 		result.append(KnowWEUtils.maskHTML("<script>$('" + sectionID
 				+ "').getElement('div[id=" + node.getID()
 				+ "]').style.border='2px solid " + color + "';</script>"));
 	}
 
-	private void addEdgeHighlight(StringBuilder result, String sectionID, IEdge edge, String color) {
+	private void addEdgeHighlight(StringBuilder result, String sectionID, Edge edge, String color) {
 		result.append(KnowWEUtils.maskHTML("<script>var child = $('"
 				+ sectionID
 				+ "').getElement('div[id="
@@ -175,7 +176,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 				+ "child = child.nextSibling;}</script>\n"));
 	}
 
-	private boolean hasFired(Session session, Collection<FlowRun> runs, IEdge edge) {
+	private boolean hasFired(Session session, Collection<FlowRun> runs, Edge edge) {
 		if (edge.getCondition() == null) return false;
 		try {
 			if (!edge.getCondition().eval(session)) return false;
@@ -187,7 +188,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 			return false;
 		}
 		for (FlowRun run : runs) {
-			if (edge.getStartNode().canFireEdges(session, run)) return true;
+			if (FluxSolver.evalToTrue(session, edge.getStartNode().getEdgePrecondition())) return true;
 		}
 		return false;
 	}

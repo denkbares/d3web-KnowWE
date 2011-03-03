@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.diaFlux.flow.INode;
+import de.d3web.diaFlux.flow.Node;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.we.flow.type.FlowchartType;
@@ -85,7 +85,7 @@ public class NodeHandlerManager implements NodeHandler {
 	}
 
 	@Override
-	public INode createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
+	public Node createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 		NodeHandler nodeHandler = findNodeHandler(article, kb, nodeSection);
 

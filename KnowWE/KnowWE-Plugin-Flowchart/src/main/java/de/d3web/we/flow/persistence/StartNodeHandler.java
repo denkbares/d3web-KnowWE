@@ -27,7 +27,7 @@ import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.FlowFactory;
-import de.d3web.diaFlux.flow.INode;
+import de.d3web.diaFlux.flow.Node;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.flow.type.NodeType;
@@ -56,7 +56,7 @@ public class StartNodeHandler extends AbstractNodeHandler {
 
 	}
 
-	public INode createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
+	public Node createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 
 		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);

@@ -35,8 +35,8 @@ import de.d3web.diaFlux.flow.DiaFluxCaseObject;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowRun;
 import de.d3web.diaFlux.flow.FlowSet;
-import de.d3web.diaFlux.flow.IEdge;
-import de.d3web.diaFlux.flow.INode;
+import de.d3web.diaFlux.flow.Edge;
+import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.flow.type.DiaFluxStateType;
@@ -99,7 +99,7 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 		builder.append("<div id='").append(sec.getID()).append("'>");
 
 		for (FlowRun run : DiaFluxUtils.getDiaFluxCaseObject(session).getRuns()) {
-			for (INode n : run.getActiveNodes()) {
+			for (Node n : run.getActiveNodes()) {
 				builder.append(n + ", ");
 			}
 			builder.append("\n----------------\n");
@@ -218,7 +218,7 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 		String[] nodes = preview.split("<DIV class=\"Node\" id=\"");
 		String[] edges = preview.split("<DIV class=\"Rule\" id=\"");
 
-		for (INode node : run.getActiveNodes()) {
+		for (Node node : run.getActiveNodes()) {
 
 			// if (!node.getFlow().getId().equals(flowID)) return preview;
 
@@ -229,9 +229,9 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 				}
 			}
 
-			List<IEdge> outgoingEdges = node.getOutgoingEdges();
+			List<Edge> outgoingEdges = node.getOutgoingEdges();
 
-			for (IEdge edge : outgoingEdges) {
+			for (Edge edge : outgoingEdges) {
 
 				String edgeId = edge.getID();
 

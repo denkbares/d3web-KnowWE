@@ -31,8 +31,8 @@ import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.FlowSet;
-import de.d3web.diaFlux.flow.IEdge;
-import de.d3web.diaFlux.flow.INode;
+import de.d3web.diaFlux.flow.Edge;
+import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.inference.ConditionTrue;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.io.DiaFluxPersistenceHandler;
@@ -103,9 +103,9 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		List<KDOMReportMessage> errors = new ArrayList<KDOMReportMessage>();
 
-		List<INode> nodes = createNodes(article, name, s, errors);
+		List<Node> nodes = createNodes(article, name, s, errors);
 
-		List<IEdge> edges = createEdges(article, s, nodes, errors);
+		List<Edge> edges = createEdges(article, s, nodes, errors);
 
 		Flow flow = FlowFactory.getInstance().createFlow(id, name, nodes, edges);
 		flow.setAutostart(autostart);
@@ -136,8 +136,8 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<IEdge> createEdges(KnowWEArticle article, Section<FlowchartType> flowSection, List<INode> nodes, List<KDOMReportMessage> errors) {
-		List<IEdge> result = new ArrayList<IEdge>();
+	private List<Edge> createEdges(KnowWEArticle article, Section<FlowchartType> flowSection, List<Node> nodes, List<KDOMReportMessage> errors) {
+		List<Edge> result = new ArrayList<Edge>();
 
 		List<Section<EdgeType>> edgeSections = new ArrayList<Section<EdgeType>>();
 		Section<XMLContent> flowcontent = ((AbstractXMLType) flowSection.get()).getContentChild(flowSection);
@@ -160,7 +160,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 			}
 			String sourceID = getXMLContentText(originSection);
 
-			INode source = DiaFluxPersistenceHandler.getNodeByID(sourceID, nodes);
+			Node source = DiaFluxPersistenceHandler.getNodeByID(sourceID, nodes);
 
 			if (source == null) {
 				String messageText = "No origin node found with id " + sourceID + " in edge " + id
@@ -181,7 +181,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 			String targetID = getXMLContentText(targetSection);
 
-			INode target = DiaFluxPersistenceHandler.getNodeByID(targetID, nodes);
+			Node target = DiaFluxPersistenceHandler.getNodeByID(targetID, nodes);
 
 			if (target == null) {
 				String messageText = "No target node found with id " + targetID + " in edge " + id
@@ -211,7 +211,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 				condition = ConditionTrue.INSTANCE;
 			}
 
-			IEdge edge = FlowFactory.getInstance().createEdge(id, source, target, condition);
+			Edge edge = FlowFactory.getInstance().createEdge(id, source, target, condition);
 
 			result.add(edge);
 
@@ -233,9 +233,9 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<INode> createNodes(KnowWEArticle article, String flowName, Section<FlowchartType> flowSection, List<KDOMReportMessage> errors) {
+	private List<Node> createNodes(KnowWEArticle article, String flowName, Section<FlowchartType> flowSection, List<KDOMReportMessage> errors) {
 
-		List<INode> result = new ArrayList<INode>();
+		List<Node> result = new ArrayList<Node>();
 		ArrayList<Section<NodeType>> nodeSections = new ArrayList<Section<NodeType>>();
 		Section<XMLContent> flowcontent = ((AbstractXMLType) flowSection.get()).getContentChild(flowSection);
 		Sections.findSuccessorsOfType(flowcontent, NodeType.class, nodeSections);
@@ -256,7 +256,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 			else {// handler can in general handle NodeType
 				String id = AbstractXMLType.getAttributeMapFor(nodeSection).get("fcid");
 
-				INode node = handler.createNode(article, kb, nodeSection, flowSection, id, errors);
+				Node node = handler.createNode(article, kb, nodeSection, flowSection, id, errors);
 
 				if (node != null) {
 					result.add(node);

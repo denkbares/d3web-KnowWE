@@ -27,7 +27,7 @@ import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.FlowFactory;
-import de.d3web.diaFlux.flow.INode;
+import de.d3web.diaFlux.flow.Node;
 import de.d3web.we.flow.type.ActionType;
 import de.d3web.we.flow.type.CallFlowActionType;
 import de.d3web.we.flow.type.FlowchartType;
@@ -56,27 +56,13 @@ public class ComposedNodeHandler extends AbstractNodeHandler {
 
 		if (nodeInfo == null) return false;
 
-		// String actionString =
-		// FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
-
 		return Sections.findSuccessor(nodeInfo, CallFlowActionType.class) != null;
 	}
 
-	public INode createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
+	public Node createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 
 		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
-		// String actionString =
-		// FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
-		//
-		// if (!actionString.startsWith("CALL[")) return null;
-		//
-		// int nodenameStart = actionString.indexOf('(');
-		// int nodenameEnd = actionString.indexOf(')');
-		//
-		// String flowName = actionString.substring(5, nodenameStart);
-		// String nodeName = actionString.substring(nodenameStart + 1,
-		// nodenameEnd);
 		Section<CallFlowActionType> section = Sections.findSuccessor(nodeInfo,
 				CallFlowActionType.class);
 		String flowName = CallFlowActionType.getFlowName(section);

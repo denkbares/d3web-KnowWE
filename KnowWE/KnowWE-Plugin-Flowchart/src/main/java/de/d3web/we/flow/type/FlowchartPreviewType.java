@@ -41,8 +41,6 @@ public class FlowchartPreviewType extends AbstractXMLType {
 
 	@Override
 	protected void init() {
-		super.init();
-
 		childrenTypes.add(FlowchartPreviewContentType.getInstance());
 	}
 }

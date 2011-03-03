@@ -22,7 +22,7 @@ import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.FlowFactory;
-import de.d3web.diaFlux.flow.INode;
+import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.flow.NOOPAction;
 import de.d3web.we.flow.type.DecisionType;
 import de.d3web.we.flow.type.FlowchartType;
@@ -50,7 +50,7 @@ public class DecisionNodeHandler extends AbstractNodeHandler {
 	}
 
 	@Override
-	public INode createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
+	public Node createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 
 		return FlowFactory.getInstance().createActionNode(id, NOOPAction.INSTANCE);

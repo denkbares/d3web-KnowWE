@@ -28,7 +28,7 @@ import java.util.List;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.FlowFactory;
-import de.d3web.diaFlux.flow.INode;
+import de.d3web.diaFlux.flow.Node;
 import de.d3web.we.flow.type.ActionType;
 import de.d3web.we.flow.type.CallFlowActionType;
 import de.d3web.we.flow.type.FlowchartType;
@@ -61,7 +61,7 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	public INode createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
+	public Node createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 
 		Section<D3webRuleAction> ruleAction = Sections.findSuccessor(nodeSection,

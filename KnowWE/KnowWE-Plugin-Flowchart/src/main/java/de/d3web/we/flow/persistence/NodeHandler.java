@@ -23,7 +23,7 @@ package de.d3web.we.flow.persistence;
 import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.diaFlux.flow.INode;
+import de.d3web.diaFlux.flow.Node;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.flow.type.NodeType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -59,7 +59,7 @@ public interface NodeHandler {
 	 * @param errors
 	 * @return
 	 */
-	INode createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection, Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors);
+	Node createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection, Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors);
 
 	/**
 	 * Returns the ObjectType of the NodeModel this handler handles.
