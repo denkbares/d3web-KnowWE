@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.packaging.KnowWEPackageManager;
@@ -1206,17 +1207,74 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 		}
 	}
 
+	/**
+	 * @see setType(Type newType, boolean create, KnowWEArticle article)
+	 * 
+	 *      create is true as default
+	 * 
+	 *      article is article of this section
+	 * 
+	 * @param newType
+	 */
+	public void setType(Type newType) {
+		setType(newType, true, this.getArticle());
+	}
+
+	/**
+	 * @see setType(Type newType, boolean create, KnowWEArticle article)
+	 * 
+	 * 
+	 *      article is article of this section
+	 * 
+	 * @param newType
+	 */
+	public void setType(Type newType, boolean create) {
+		setType(newType, create, this.getArticle());
+	}
+
+	/**
+	 * @see setType(Type newType, boolean create, KnowWEArticle article)
+	 * 
+	 *      create is true as default
+	 * 
+	 * @param newType
+	 */
+
+	public void setType(Type newType, KnowWEArticle a) {
+		setType(newType, true, a);
+	}
+
+	/**
+	 * overrides type
+	 * 
+	 * 
+	 * @created 03.03.2011
+	 * @param newType
+	 *            the new type to be set
+	 * @param create
+	 *            whether the handlers of the new type should be executed right
+	 *            afterwards
+	 * @param article
+	 *            the compilation context for removing old information (error
+	 *            messages)
+	 */
 	@SuppressWarnings("unchecked")
-	public boolean setType(Type newType) {
-		// if(objectType.getClass() != (newType.getClass()) &&
-		// objectType.getClass().isAssignableFrom(newType.getClass())) {
+	public void setType(Type newType, boolean create, KnowWEArticle article) {
+
+		// remove error messages from old type
+		TreeMap<Priority, List<SubtreeHandler<? extends Type>>> subtreeHandlers = this.get().getSubtreeHandlers();
+		for (Priority p : subtreeHandlers.keySet()) {
+			List<SubtreeHandler<? extends Type>> list = subtreeHandlers.get(p);
+			for (SubtreeHandler<? extends Type> subtreeHandler : list) {
+				KDOMReportMessage.clearMessages(article, this,
+						subtreeHandler.getClass());
+			}
+		}
+
 		this.type = (T) newType;
 		for (Priority p : type.getSubtreeHandlers().descendingKeySet()) {
 			letSubtreeHandlersCreate(getArticle(), p);
 		}
 
-		return true;
-		// }
-		// return false;
 	}
 }
