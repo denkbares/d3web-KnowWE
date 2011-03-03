@@ -34,9 +34,9 @@ import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalExcept
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.IncrementalMarker;
@@ -50,17 +50,17 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.kdom.sectionFinder.EmbracedContentFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.MatchUntilEndFinder;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.StringEnumChecker;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.subtreeHandler.IncrementalConstraint;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
-import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.object.QuestionDefinition.QuestionType;
+import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
@@ -91,9 +91,10 @@ public class QuestionLine extends AbstractType {
 			}
 		};
 
-		// allows to make inline-indications in question-definitions uncomment to activate:
-		//this.childrenTypes.add(new InlineIndicationCondition());
-		
+		// allows to make inline-indications in question-definitions uncomment
+		// to activate:
+		// this.childrenTypes.add(new InlineIndicationCondition());
+
 		// type of the question '[oc]'
 		this.childrenTypes.add(new QuestionTypeDeclaration());
 		// abstract flag: '<abstract>'
@@ -141,7 +142,6 @@ public class QuestionLine extends AbstractType {
 			return DashTreeUtils.getPositionInFatherDashSubtree(s);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public Section<? extends QASetDefinition> getParentQASetSection(Section<? extends QuestionDefinition> qdef) {
 			Section<? extends DashTreeElementContent> fdtec = DashTreeUtils.getFatherDashTreeElementContent(qdef);
@@ -217,7 +217,7 @@ public class QuestionLine extends AbstractType {
 					}
 
 					Section<QuestionDefinition> qDef = Sections.findSuccessor(
-							 s.getFather(), QuestionDefinition.class);
+								s.getFather(), QuestionDefinition.class);
 
 					if (qDef != null) {
 
@@ -591,7 +591,7 @@ public class QuestionLine extends AbstractType {
 				public void render(KnowWEArticle article, Section section, KnowWEUserContext user, StringBuilder string) {
 					StringBuilder temp = new StringBuilder();
 					super.render(article, section, user, temp);
-					string.append(temp.toString().replace("[", "~["));
+					string.append(temp.toString());
 				}
 			});
 			this.addSubtreeHandler(new StringEnumChecker<QuestionTypeDeclaration>(

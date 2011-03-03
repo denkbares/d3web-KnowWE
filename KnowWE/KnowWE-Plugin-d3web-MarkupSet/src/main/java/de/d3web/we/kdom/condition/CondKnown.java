@@ -25,9 +25,9 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -62,7 +62,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 			protected void renderContent(KnowWEArticle article, Section section, KnowWEUserContext user, StringBuilder string) {
 				StringBuilder buffer = new StringBuilder();
 				super.renderContent(article, section, user, buffer);
-				string.append(buffer.toString().replace("[", "~[").replace("]", "~]"));
+				string.append(buffer.toString());
 			}
 		});
 

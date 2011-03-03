@@ -21,8 +21,8 @@
 package de.d3web.we.kdom.rendering;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.tools.ToolMenuDecoratingRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -113,7 +113,10 @@ public class StyleRenderer extends KnowWEDomRenderer {
 	 * @param string the buffer to render into
 	 */
 	protected void renderContent(KnowWEArticle article, Section section, KnowWEUserContext user, StringBuilder string) {
-		DelegateRenderer.getInstance().render(article, section, user, string);
+		StringBuilder builder = new StringBuilder();
+		DelegateRenderer.getInstance().render(article, section, user, builder);
+		KnowWEUtils.maskJSPWikiMarkup(builder);
+		string.append(builder.toString());
 	}
 
 	public String getCssStyle() {

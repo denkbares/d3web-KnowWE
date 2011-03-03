@@ -759,25 +759,31 @@ public class KnowWEUtils {
 		}
 	}
 
-	// public static String getWebEnvironmentPath(String web) {
-	// ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
-	// String sessionDir = rb.getString("knowwe.config.path.currentWeb");
-	// sessionDir = sessionDir.replaceAll("\\$web\\$", web);
-	// sessionDir =
-	// getRealPath(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(),
-	// sessionDir);
-	// return sessionDir;
-	// }
+	/**
+	 * Masks [, ], ----, {{{ and }}} so that JSPWiki will render and not
+	 * interpret them, if the characters are already escaped, it will do nothing
+	 * 
+	 * @created 03.03.2011
+	 * @param builder
+	 */
+	public static void maskJSPWikiMarkup(StringBuilder builder) {
+		mask(builder, "[");
+		mask(builder, "]");
+		mask(builder, "----");
+		mask(builder, "{{{");
+		mask(builder, "}}}");
+	}
 
-	// public static URL getUrl(String path) {
-	// URL u = null;
-	// try {
-	// u = new File(path).toURI().toURL();
-	// } catch (MalformedURLException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// return u;
-	// }
+	private static void mask(StringBuilder buffer, String toReplace) {
+		int index = buffer.indexOf(toReplace);
+		while (index >= 0) {
+			// string starts with substring which should be replaced
+			// or the char before the substring is not ~
+			if (index == 0 || !buffer.substring(index - 1, index).equals("~")) {
+				buffer.replace(index, index + toReplace.length(), "~" + toReplace);
+			}
+			index = buffer.indexOf(toReplace, index + 1);
+		}
+	}
 
 }
