@@ -64,6 +64,7 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.knowwe.core.CommentLineType;
 import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
 
 /**
@@ -121,8 +122,8 @@ public class RuleContentType extends AbstractType {
 		rule.addChildType(ruleContent);
 
 		// register the configured rule-type as child
+		this.childrenTypes.add(new CommentLineType());
 		this.addChildType(rule);
-
 	}
 
 	/**
