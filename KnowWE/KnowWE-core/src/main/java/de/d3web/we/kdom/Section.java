@@ -1272,8 +1272,11 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 		}
 
 		this.type = (T) newType;
+
+		if (create) {
 		for (Priority p : type.getSubtreeHandlers().descendingKeySet()) {
 			letSubtreeHandlersCreate(getArticle(), p);
+		}
 		}
 
 	}
