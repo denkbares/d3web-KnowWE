@@ -1115,7 +1115,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 				p);
 		if (handlerList != null) {
 			for (SubtreeHandler handler : handlerList) {
-				letSubtreeHandlerCreate(article, handler);
+				if (handler != null) letSubtreeHandlerCreate(article, handler);
 			}
 		}
 
@@ -1191,7 +1191,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 				type.getSubtreeHandlers().get(p);
 		if (handlerList != null) {
 			for (SubtreeHandler handler : handlerList) {
-				letSubtreeHandlerDestroy(article, handler);
+				if (handler != null) letSubtreeHandlerDestroy(article, handler);
 			}
 		}
 
