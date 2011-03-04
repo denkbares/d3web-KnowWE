@@ -26,8 +26,8 @@ package de.d3web.we.flow.persistence;
 import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.Node;
+import de.d3web.diaFlux.flow.StartNode;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.flow.type.NodeType;
@@ -48,6 +48,7 @@ public class StartNodeHandler extends AbstractNodeHandler {
 		super(StartType.getInstance(), null);
 	}
 
+	@Override
 	public boolean canCreateNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection) {
 
 		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
@@ -56,6 +57,7 @@ public class StartNodeHandler extends AbstractNodeHandler {
 
 	}
 
+	@Override
 	public Node createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 
@@ -63,7 +65,7 @@ public class StartNodeHandler extends AbstractNodeHandler {
 
 		String name = FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
 
-		return FlowFactory.getInstance().createStartNode(id, name);
+		return new StartNode(id, name);
 
 	}
 

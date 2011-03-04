@@ -26,7 +26,7 @@ package de.d3web.we.flow.persistence;
 import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.diaFlux.flow.FlowFactory;
+import de.d3web.diaFlux.flow.EndNode;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
 import de.d3web.we.flow.type.ExitType;
@@ -64,7 +64,7 @@ public class ExitNodeHandler extends AbstractNodeHandler {
 
 		String endNodeName = FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
 
-		return FlowFactory.getInstance().createEndNode(id, endNodeName);
+		return new EndNode(id, endNodeName);
 
 	}
 

@@ -27,7 +27,7 @@ import java.util.List;
 
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.diaFlux.flow.FlowFactory;
+import de.d3web.diaFlux.flow.ActionNode;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.we.flow.type.ActionType;
 import de.d3web.we.flow.type.CallFlowActionType;
@@ -50,6 +50,7 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 		super(ActionType.getInstance());
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean canCreateNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection) {
 
@@ -60,6 +61,7 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 				&& actionSection.get().getClass() != CallFlowActionType.class;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public Node createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
@@ -73,7 +75,7 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 			return null;
 		}
 
-		return FlowFactory.getInstance().createActionNode(id, action);
+		return new ActionNode(id, action);
 
 	}
 

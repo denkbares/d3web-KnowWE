@@ -26,7 +26,7 @@ package de.d3web.we.flow.persistence;
 import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.diaFlux.flow.FlowFactory;
+import de.d3web.diaFlux.flow.ComposedNode;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.we.flow.type.ActionType;
 import de.d3web.we.flow.type.CallFlowActionType;
@@ -49,6 +49,7 @@ public class ComposedNodeHandler extends AbstractNodeHandler {
 		super(ActionType.getInstance(), "KnOffice");
 	}
 
+	@Override
 	public boolean canCreateNode(KnowWEArticle article, KnowledgeBase kb,
 			Section<NodeType> nodeSection) {
 
@@ -59,6 +60,7 @@ public class ComposedNodeHandler extends AbstractNodeHandler {
 		return Sections.findSuccessor(nodeInfo, CallFlowActionType.class) != null;
 	}
 
+	@Override
 	public Node createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 
@@ -68,7 +70,7 @@ public class ComposedNodeHandler extends AbstractNodeHandler {
 		String flowName = CallFlowActionType.getFlowName(section);
 		String nodeName = CallFlowActionType.getStartNodeName(section);
 
-		return FlowFactory.getInstance().createComposedNode(id, flowName, nodeName);
+		return new ComposedNode(id, flowName, nodeName);
 
 	}
 

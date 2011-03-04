@@ -28,10 +28,11 @@ import java.util.Map;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.Property;
+import de.d3web.diaFlux.flow.CommentNode;
+import de.d3web.diaFlux.flow.Edge;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.FlowSet;
-import de.d3web.diaFlux.flow.Edge;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.inference.ConditionTrue;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
@@ -107,7 +108,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		List<Edge> edges = createEdges(article, s, nodes, errors);
 
-		Flow flow = FlowFactory.getInstance().createFlow(id, name, nodes, edges);
+		Flow flow = FlowFactory.createFlow(id, name, nodes, edges);
 		flow.setAutostart(autostart);
 
 		flow.getInfoStore().addValue(Property.getProperty(ORIGIN, String.class), s.getID());
@@ -211,7 +212,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 				condition = ConditionTrue.INSTANCE;
 			}
 
-			Edge edge = FlowFactory.getInstance().createEdge(id, source, target, condition);
+			Edge edge = FlowFactory.createEdge(id, source, target, condition);
 
 			result.add(edge);
 
@@ -271,7 +272,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 							+ handler.getClass().getSimpleName() + " could not create node for: "
 							+ text, getClass()));
 
-					result.add(FlowFactory.getInstance().createCommentNode(id,
+					result.add(new CommentNode(id,
 							"Surrogate for node of type " + text));
 				}
 

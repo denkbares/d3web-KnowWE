@@ -26,8 +26,8 @@ package de.d3web.we.flow.persistence;
 import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.Node;
+import de.d3web.diaFlux.flow.SnapshotNode;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.flow.type.NodeType;
@@ -48,6 +48,7 @@ public class SnapshotNodeHandler extends AbstractNodeHandler {
 		super(SnapshotType.getInstance(), null);
 	}
 
+	@Override
 	public boolean canCreateNode(KnowWEArticle article, KnowledgeBase kb,
 			Section<NodeType> nodeSection) {
 
@@ -57,6 +58,7 @@ public class SnapshotNodeHandler extends AbstractNodeHandler {
 
 	}
 
+	@Override
 	public Node createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
 
@@ -65,7 +67,7 @@ public class SnapshotNodeHandler extends AbstractNodeHandler {
 
 		if (content.length() > 10) content = content.substring(0, 10) + "...";
 
-		return FlowFactory.getInstance().createSnapshotNode(id, content);
+		return new SnapshotNode(id, content);
 
 	}
 
