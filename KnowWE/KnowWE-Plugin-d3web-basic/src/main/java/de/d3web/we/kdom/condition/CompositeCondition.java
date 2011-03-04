@@ -26,9 +26,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.condition.helper.BracedCondition;
 import de.d3web.we.kdom.condition.helper.BracedConditionContent;
 import de.d3web.we.kdom.condition.helper.CompCondLineEndComment;
@@ -36,8 +36,8 @@ import de.d3web.we.kdom.condition.helper.ConjunctSectionFinder;
 import de.d3web.we.kdom.constraint.AtMostOneFindingConstraint;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.utils.SplitUtility;
@@ -81,11 +81,10 @@ public class CompositeCondition extends AbstractType {
 		// endline-comments
 		bracedContent.addChildType(this);
 
-		// ... a negated expression,...
-		NegatedExpression negatedExpression = new NegatedExpression();
-		this.childrenTypes.add(negatedExpression);
-		negatedExpression.addChildType(this); // a NegatedExpression again
-		// allows for a
+		// ... a disjuctive expression,...
+		Disjunct disj = new Disjunct();
+		this.addChildType(disj);
+		disj.addChildType(this); // Disjuncts again allow for a
 		// CompositeCondition
 
 		// ...a conjuctive expression,...
@@ -94,10 +93,11 @@ public class CompositeCondition extends AbstractType {
 		conj.addChildType(this); // Conjuncts again allow for a
 		// CompositeCondition
 
-		// ... a disjuctive expression,...
-		Disjunct disj = new Disjunct();
-		this.addChildType(disj);
-		disj.addChildType(this); // Disjuncts again allow for a
+		// ... a negated expression,...
+		NegatedExpression negatedExpression = new NegatedExpression();
+		this.childrenTypes.add(negatedExpression);
+		negatedExpression.addChildType(this); // a NegatedExpression again
+		// allows for a
 		// CompositeCondition
 
 		// ... or finally a TerminalCondition which stops the recursive descent
@@ -335,13 +335,3 @@ class NegatedExpression extends NonTerminalCondition {
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
