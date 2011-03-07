@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import de.d3web.we.kdom.rendering.DelegateRenderer;
@@ -136,6 +137,16 @@ public abstract class AbstractType implements Type, Sectionizable {
 		// "init" method is called, before it is completely initialized by its
 		// own constructor.
 		init();
+		ResourceBundle resourceBundle = ResourceBundle.getBundle("KnowWE_config");
+		String ignoreFlag = "packaging.ignorePackages";
+		if (resourceBundle.containsKey(ignoreFlag)) {
+			if (resourceBundle.getString(ignoreFlag).contains("true")) {
+				this.ignorePackageCompile = true;
+			}
+			if (resourceBundle.getString(ignoreFlag).contains("false")) {
+				this.ignorePackageCompile = false;
+			}
+		}
 	}
 
 	public AbstractType(SectionFinder sectionFinder) {
