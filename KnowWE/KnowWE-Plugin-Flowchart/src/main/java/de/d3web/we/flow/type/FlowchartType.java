@@ -25,22 +25,19 @@ import de.d3web.we.flow.FlowchartRenderer;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
 import de.d3web.we.flow.type.FlowchartXMLHeadType.FlowchartTermDef;
 import de.d3web.we.kdom.InvalidKDOMSchemaModificationOperation;
-import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.subtreeHandler.IncrementalConstraint;
 import de.d3web.we.kdom.xml.AbstractXMLType;
 import de.d3web.we.kdom.xml.XMLHead;
-import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * @author Reinhard Hatko
  * @created on: 09.10.2009
  */
-public class FlowchartType extends AbstractXMLType implements IncrementalMarker, IncrementalConstraint<FlowchartType> {
+public class FlowchartType extends AbstractXMLType implements IncrementalMarker {
 
 	protected KnowWEDomRenderer<FlowchartType> renderer = new FlowchartRenderer();
 
@@ -79,12 +76,6 @@ public class FlowchartType extends AbstractXMLType implements IncrementalMarker,
 
 	public static String getFlowchartName(Section<FlowchartType> sec) {
 		return Sections.findSuccessor(sec, FlowchartTermDef.class).getOriginalText();
-	}
-
-	@Override
-	public boolean violatedConstraints(KnowWEArticle article, Section<FlowchartType> s) {
-		return KnowWEUtils.getTerminologyHandler(
-				article.getWeb()).areTermDefinitionsModifiedFor(article);
 	}
 
 }

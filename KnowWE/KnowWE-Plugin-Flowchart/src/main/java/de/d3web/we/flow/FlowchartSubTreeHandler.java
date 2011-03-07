@@ -62,6 +62,7 @@ import de.d3web.we.kdom.subtreeHandler.ConstraintModule;
 import de.d3web.we.kdom.xml.AbstractXMLType;
 import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * 
@@ -131,7 +132,9 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		@Override
 		public boolean violatedConstraints(KnowWEArticle article, Section<FlowchartType> s) {
-			return s.isOrHasChangedSuccessor(article.getTitle(), filteredTypes);
+			return KnowWEUtils.getTerminologyHandler(article.getWeb()).areTermDefinitionsModifiedFor(
+					article)
+					|| s.isOrHasChangedSuccessor(article.getTitle(), filteredTypes);
 		}
 
 	}
