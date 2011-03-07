@@ -19,8 +19,11 @@
  */
 package de.d3web.we.kdom.defaultMarkup;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import de.d3web.we.core.packaging.PackageRenderUtils;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -31,7 +34,6 @@ import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMNotice;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.KDOMWarning;
-import de.d3web.we.tools.CustomTool;
 import de.d3web.we.tools.Tool;
 import de.d3web.we.tools.ToolUtils;
 import de.d3web.we.utils.KnowWEUtils;
@@ -75,39 +77,47 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		return toolbarHtml;
 	}
 
-	public static String renderMenu(Tool[] tools, String id) {
-		String menuHtml = "<div id='menu_" + id + "' class='markupMenu'>";
+	public static String renderMenu(Map<String, Map<String, List<Tool>>> tools, String id) {
+		StringBuffer menuHtml = new StringBuffer("<div id='menu_" + id + "' class='markupMenu'>");
 		
-		for (Tool tool : tools) {
-			String toolContent;
-			
-			if (tool instanceof CustomTool) {
-				toolContent = ((CustomTool) tool).render();
-				
-				// If a CustomTool returns null, do not render an item
-				if (toolContent == null) {
-					continue;
-				}
-			} else {
-				String icon = tool.getIconPath();
-				boolean hasIcon = icon != null && !icon.trim().isEmpty();
+		List<String> levelOneCategories = new ArrayList<String>(tools.keySet());
+		Collections.sort(levelOneCategories);
+		
+		for (String category : levelOneCategories) {
+			Map<String, List<Tool>> levelTwoTools = tools.get(category);
 
-				toolContent =
-					"<a class=\"markupMenuItem\"" +
-					" href=\"javascript:" + tool.getJSAction() + ";undefined;\"" +
-					" title=\"" + tool.getDescription() + "\">" +
-					(hasIcon ? ("<img src=\"" + icon + "\"></img>") : "") +
-					" " + tool.getTitle() +
-					"</a>";
+			List<String> levelTwoCategories = new ArrayList<String>(levelTwoTools.keySet());
+			Collections.sort(levelTwoCategories);
+			
+			for (String subcategory : levelTwoCategories) {
+				for (Tool t : tools.get(category).get(subcategory)) {
+					menuHtml.append(renderTool(t));
+				}
 			}
 			
-			menuHtml += "<div class=\"markupMenuItem" + ((tool instanceof CustomTool) ? "customMenuItem" : "") + "\">" + toolContent + "</div>";
+			if (!category.equals(levelOneCategories.get(levelOneCategories.size() - 1))) {
+				menuHtml.append("<span class=\"markupMenuDivider\">&nbsp;</span>");
+			}
 		}
-		menuHtml += "</div>";
 		
-		return menuHtml;
+		return menuHtml.append("</div>").toString();
 	}
-
+	
+	private static String renderTool(Tool tool) {
+		String icon = tool.getIconPath();
+		String jsAction = tool.getJSAction();		
+		boolean hasIcon = icon != null && !icon.trim().isEmpty();		
+		
+		return "<div class=\"markupMenuItem\">" + 
+		"<" + (jsAction == null ? "span" : "a") + " class=\"markupMenuItem\"" +
+		(jsAction != null ? " href=\"javascript:" + tool.getJSAction() + ";undefined;\"" : "" )+
+		" title=\"" + tool.getDescription() + "\">" +
+		(hasIcon ? ("<img src=\"" + icon + "\"></img>") : "") +
+		" " + tool.getTitle() +
+		"</" + (jsAction == null ? "span" : "a") + ">" +
+		"</div>";
+	}
+	
 	public static String renderMenuAnimation(String id) {
 		return "<script>\n" +
 				"var makeMenuFx = function() {\n" +
@@ -177,7 +187,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		string.append(KnowWEUtils.maskHTML("</div>")); // class=markupHeader
 
 		if (hasMenu) {
-			String menuHtml = renderMenu(tools, sectionID);
+			String menuHtml = renderMenu(ToolUtils.groupTools(tools), sectionID);
 			string.append(KnowWEUtils.maskHTML(menuHtml));
 		}
 

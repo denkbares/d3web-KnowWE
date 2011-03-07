@@ -169,5 +169,38 @@
         <parameter id="version" value="1.0" />
         <parameter id="priority" value="5" />
     </extension>
-    	
+    
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="KDOMReplaceTermNameAction">
+		<parameter id="class"
+			value="de.knowwe.core.action.KDOMReplaceTermNameAction" />
+		<parameter id="name" value="KDOMReplaceTermNameAction" />
+		<parameter id="description" value="Action KDOMReplaceTermNameAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>    
+    
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PageAppendHandler"
+		id="CorrectionAppendHandler">
+		<parameter id="class"
+			value="de.knowwe.core.correction.CorrectionAppendHandler" />
+		<parameter id="name" value="CorrectionAppendHandler" />
+		<parameter id="description" value="Dummy for adding CSS/JS" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="correction.js" />
+		<parameter id="css" value="KnowWE-Plugin-d3web-basic.css" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="CorrectionToolProvider">
+		<parameter id="class"
+			value="de.knowwe.core.correction.CorrectionToolProvider" />
+		<parameter id="name" value="CorrectionToolProvider" />
+		<parameter id="description"
+			value="Offers to quickly correct typos in term references." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="TermReference" />
+	</extension>
 </plugin>

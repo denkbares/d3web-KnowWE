@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.d3web.action;
+package de.knowwe.core.action;
 
 import java.io.IOException;
 import java.util.HashMap;

@@ -16,7 +16,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.knowwe.d3web.correction;
+package de.knowwe.core.correction;
 
 import de.d3web.we.kdom.rendering.PageAppendHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;

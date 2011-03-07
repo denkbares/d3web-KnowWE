@@ -18,6 +18,11 @@
  */
 package de.d3web.we.tools;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
@@ -34,7 +39,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class ToolMenuDecoratingRenderer<T extends Type> extends KnowWEDomRenderer<T> {
 
 	private final KnowWEDomRenderer<?> decoratedRenderer;
-
+	
 	public ToolMenuDecoratingRenderer(KnowWEDomRenderer<T> decoratedRenderer) {
 		this.decoratedRenderer = decoratedRenderer;
 	}
@@ -44,29 +49,9 @@ public class ToolMenuDecoratingRenderer<T extends Type> extends KnowWEDomRendere
 		// prepare tools
 		Tool[] tools = ToolUtils.getTools(article, sec, user);
 		boolean hasTools = tools != null && tools.length > 0;
-		
-		int customToolCount = 0;
-		boolean noCustomToolContent = false;
-		
-		if (hasTools) {
-			for (Tool t : tools) {
-				if (t instanceof CustomTool) {
-					customToolCount++;
-					
-					if (customToolCount == 1) {
-						noCustomToolContent = !((CustomTool) t).hasContent();
-					} else {
-						noCustomToolContent &= !(((CustomTool) t).hasContent());
-					}
-				}
-			}
-			
-			if (customToolCount == tools.length && noCustomToolContent) {
-				hasTools = false;
-			}
-		}
-		
+
 		String headerID = "header_" + sec.getID();
+		Map<String, Map<String, List<Tool>>> toolMap = ToolUtils.groupTools(tools);
 
 		if (hasTools) {
 			string.append(KnowWEUtils.maskHTML("<span " +
@@ -82,7 +67,7 @@ public class ToolMenuDecoratingRenderer<T extends Type> extends KnowWEDomRendere
 		decoratedRenderer.render(article, sec, user, string);
 		if (hasTools) {
 			string.append(KnowWEUtils.maskHTML("</span>"));
-			String menuHTML = DefaultMarkupRenderer.renderMenu(tools, sec.getID());
+			String menuHTML = DefaultMarkupRenderer.renderMenu(toolMap, sec.getID());
 			string.append(KnowWEUtils.maskHTML(
 					"<script>" +
 							"var makeMenuFx = function() {" +

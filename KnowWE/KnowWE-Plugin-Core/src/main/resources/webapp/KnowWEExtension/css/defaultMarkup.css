@@ -97,3 +97,12 @@
 	vertical-align:	-7px;
 }
 
+.markupMenuDivider {
+	line-height: 0px;
+	border-top: 1px solid #DDD;
+	display: block;
+}
+
+span.markupMenuItem {
+	padding: 0 !important;
+}
