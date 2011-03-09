@@ -20,6 +20,7 @@
 
 package de.d3web.we.flow.kbinfo;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,6 +54,7 @@ public class JSPHelper {
 
 	public String getArticleIDsAsArray() {
 		List<String> matches = getAllMatches("Article");
+		Collections.sort(matches);
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("[");
 		boolean first = true;

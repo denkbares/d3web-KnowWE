@@ -88,7 +88,7 @@ KBInfo._addToChache = function(infoObject) {
  */
 KBInfo.prepareInfoObject = function(nameOrIDOrArray) {
 	if (!nameOrIDOrArray) return;
-	if (Object.isString(nameOrIDOrArray)) nameOrIDOrArray = [nameOrIDOrArray];
+	if (DiaFluxUtils.isString(nameOrIDOrArray)) nameOrIDOrArray = [nameOrIDOrArray];
 	var ids = '';
 	for (var i=0; i<nameOrIDOrArray.length; i++) {
 		if (i>0) ids += ',';

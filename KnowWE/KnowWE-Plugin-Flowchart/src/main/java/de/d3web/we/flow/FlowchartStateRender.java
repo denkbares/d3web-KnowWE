@@ -28,7 +28,6 @@ import de.d3web.core.knowledge.InterviewObject;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.ValueObject;
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.core.session.CaseObjectSource;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.interviewmanager.Form;
 import de.d3web.diaFlux.flow.DiaFluxCaseObject;
@@ -198,9 +197,7 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 
 		String flowID = AbstractXMLType.getAttributeMapFor(section).get("fcid");
 
-		CaseObjectSource flowSet = DiaFluxUtils.getFlowSet(session);
-
-		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) session.getCaseObject(flowSet);
+		DiaFluxCaseObject caseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
 
 		preview = "\n" + preview + "\n";
 

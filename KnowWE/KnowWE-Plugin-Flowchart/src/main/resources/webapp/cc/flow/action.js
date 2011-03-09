@@ -557,7 +557,7 @@ ActionEditor.prototype.refreshValueInput = function() {
 
 	for (var i=0; i<actions.length; i++) {
 		var action = actions[i];
-		if (Object.isString(action)) 
+		if (DiaFluxUtils.isString(action)) 
 			continue;
 		
 		var actionValueString = action.getValueString();
@@ -596,7 +596,7 @@ ActionEditor.prototype.refreshValueInput = function() {
 			'onblur="this.parentNode.parentNode.__ActionEditor.hasInputFocus = false;">';
 	for (var i=0, value=0; i<actions.length; i++) {
 		var action = actions[i];
-		if (Object.isString(action)) {
+		if (DiaFluxUtils.isString(action)) {
 			html +=  '<optgroup label="--- ' + action + ' ---"></optgroup>';
 		}
 		else {

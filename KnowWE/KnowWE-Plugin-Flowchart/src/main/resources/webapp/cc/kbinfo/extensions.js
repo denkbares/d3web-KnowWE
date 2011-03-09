@@ -194,7 +194,7 @@ var CCMessage = {
 	},
 	
 	_add: function(severity, title, details) {
-		if (details && !Object.isString(details)) {	
+		if (details && !DiaFluxUtils.isString(details)) {	
 			details = Object.toHTML(details);
 		}		
 		CCMessage.messages.push({severity: severity, title: title, details: details});
@@ -273,12 +273,12 @@ Array.prototype.contains = function(item) {
 
 Array.prototype.equals = function(other) {
 	if (!other) return false;
-	if (!Object.isArray(other)) return false;
+	if (!DiaFluxUtils.isArray(other)) return false;
 	if (this.length != other.length) return false;
 	for (var i=0; i<this.length; i++) {
 		var item1 = this[i];
 		var item2 = other[i];
-		if (item1 && item1.equals && Object.isFunction(item1.equals)) {
+		if (item1 && item1.equals && DiaFluxUtils.isFunction(item1.equals)) {
 			if (!item1.equals(item2)) return false;
 		}
 		else {
@@ -313,6 +313,12 @@ String.prototype.escapeXML = function() {
 	return result;
 }
 
+String.prototype.escapeHTML = function() {
+    return this.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+
+
 String.prototype.parseXML = function() {
 	//for IE
 	if (window.ActiveXObject) {
@@ -333,19 +339,6 @@ String.prototype.parseXML = function() {
 	}
 }
 
-function showMessage(object) {
-	var result = 'null';
-	if (object) {
-		result = "<b>'"+Object.toHTML(object).escapeHTML()+"'</b>";
-		for (key in object) {
-			if (!Object.isFunction(object[key])) {
-				var value = object[key];
-				result += "<br>&nbsp;&nbsp;&nbsp;"+key+": "+(value ? Object.toHTML(value).escapeHTML() : value); 
-			}
-		}
-	}
-	document.getElementById('message').innerHTML = result;
-}
 	
 function createDottedLine(x1, y1, x2, y2, pixelSize, pixelColor, spacing, maxDots) {
 	var cx = x2 - x1;
@@ -380,4 +373,27 @@ function createDottedLine(x1, y1, x2, y2, pixelSize, pixelColor, spacing, maxDot
 	div.innerHTML = dotsHTML;
 	return div;
 }
+
+var DiaFluxUtils;
+
+if (!DiaFluxUtils){
+	
+	DiaFluxUtils = {};
+}
+
+DiaFluxUtils.isArray = function(obj) {
+   if (obj.constructor.toString().indexOf("Array") == -1)
+      return false;
+   else
+      return true;
+}
+
+DiaFluxUtils.isString = function(obj){
+	return typeof obj === "string";
+	
+}
+
+DiaFluxUtils.isFunction = function(object) {
+    return typeof object === "function";
+  }
 

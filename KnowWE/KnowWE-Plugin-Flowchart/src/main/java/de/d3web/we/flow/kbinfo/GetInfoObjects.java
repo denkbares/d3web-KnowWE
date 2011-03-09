@@ -177,7 +177,7 @@ public class GetInfoObjects extends AbstractAction {
 		if (flowSet != null) {
 			for (Flow flow : flowSet.getFlows()) {
 				buffer.append("\t\t<child>");
-				buffer.append(encodeXML(base.getId()) + "/" + flow.getId());
+				buffer.append(encodeXML(base.getId()) + "/" + flow.getName());
 				buffer.append("</child>\n");
 			}
 		}
@@ -197,20 +197,12 @@ public class GetInfoObjects extends AbstractAction {
 		else if (object instanceof QContainer) {
 			appendInfoObject(web, base, (QContainer) object, buffer);
 		}
+		else if (object instanceof Flow) {
+			appendInfoObject(web, base, (Flow) object, buffer);
+		}
 		else {
 
-			FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
-			if (flowSet != null) {
-				Flow flow = flowSet.getByName(objectID);
-				if (flow != null) {
-					appendInfoObject(web, base, flow, buffer);
-					return;
-				}
-				else {
-					buffer.append("<unknown id='" + objectID + "'></unknown>");
-
-				}
-			}
+			buffer.append("<unknown id='" + objectID + "'></unknown>");
 
 		}
 	}
@@ -287,12 +279,13 @@ public class GetInfoObjects extends AbstractAction {
 
 	private static void appendInfoObject(String web, KnowledgeBase service, Flow flow, StringBuffer buffer) {
 		String name = flow.getName();
-		String id = flow.getId();
+		// String id = flow.getId();
 		List<StartNode> startNodes = flow.getStartNodes();
 		List<EndNode> exitNodes = flow.getExitNodes();
 
 		buffer.append("\t<flowchart");
-		buffer.append(" id='").append(encodeXML(service.getId())).append("/").append(id).append("'");
+		buffer.append(" id='").append(encodeXML(service.getId())).append("/").append(name).append(
+				"'");
 		buffer.append(" name='").append(encodeXML(name)).append("'");
 		buffer.append(">\n");
 		for (StartNode node : startNodes) {

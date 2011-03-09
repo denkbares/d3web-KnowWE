@@ -131,16 +131,7 @@ Rule.prototype.render = function(selected) {
 	return dom;
 }
 
-Rule.prototype.createDraggable = function() {
-	var newDrag = new Draggable(this.getDOM(), {
-		ghosting: false,
-		revert: true, 
-		starteffect: null,
-		endeffect: null
-	});
-	newDrag.__rule = this;
-	return newDrag;	
-}
+
 
 
 Rule.prototype.intersects = function(x1, y1, x2, y2) {
@@ -164,6 +155,8 @@ Rule.prototype.intersects = function(x1, y1, x2, y2) {
 }
 
 
+
+
 Rule.prototype.select = function() {
 	this.flowchart.setSelection(this);
 }
@@ -181,7 +174,7 @@ Rule.prototype.notifyNodeChanged = function(node) {
 	if (this.guardPane) {
 		this.guardPane.checkProblems(this);
 	}
-	if (this.guard && !Object.isString(this.guard)) {
+	if (this.guard && !DiaFluxUtils.isString(this.guard)) {
 		this.guard.lookupDisplayHTML(this.sourceNode.getPossibleGuards());
 	}
 	this.setVisible(visible);
@@ -271,7 +264,6 @@ Rule.prototype.setCoordinates = function(coordinates) {
 
 Rule.prototype.getOtherNode = function(node) {
 	var result = (this.targetNode == node) ? this.sourceNode : this.targetNode;
-	//showMessage('Rule['+this.sourceNode.id+', '+this.targetNode.id+'].getOtherNode('+node+') --> '+result);
 	return result;
 }
 
@@ -288,28 +280,6 @@ Rule.prototype.destroy = function() {
 	this.setVisible(false);
 	this.flowchart.removeRule(this);
 }
-
-
-Rule.prototype.toXML = function() {
-	var xml = '\t<edge' +
-			(this.fcid ? ' fcid="'+this.fcid+'"' : '')+
-			'>\n';
-	xml += '\t\t<origin>'+this.sourceNode.getNodeModel().fcid+'</origin>\n';
-	xml += '\t\t<target>'+this.targetNode.getNodeModel().fcid+'</target>\n';
-	if (this.guard && this.guard.getMarkup() != 'NOP') {
-		if (Object.isString(this.guard)) {
-			xml += '\t\t<guard>' + this.guard + '</guard>\n';
-		}
-		else {
-			xml += '\t\t<guard markup="'+this.guard.getMarkup()+'">' +
-					this.guard.getConditionString()+
-					'</guard>\n';
-		}
-	}
-	xml += '\t</edge>\n';
-	return xml;
-}
-
 
 Rule.createFromXML = function(flowchart, xmlDom, pasteOptions) {
 	var id = pasteOptions.createID(xmlDom.getAttribute('fcid'));
@@ -349,16 +319,6 @@ function Anchor(node, x, y, type, slide) {
 	this.slide = slide;
 }
 
-/*
-Anchor.prototype.getPossibleGuards = function() {
-	var nodeModel = this.node.getNodeModel();
-	if (!this._possibleGuards || this._lastNodeModel != nodeModel) {
-		this._possibleGuards = Guard.createPossibleGuards(nodeModel);
-		this._lastNodeModel = nodeModel;
-	}
-	return this._possibleGuards;
-}
-*/
 
 Anchor.prototype.getGuardPosition = function() {
 	if (this.type == 'top') {
@@ -374,64 +334,3 @@ Anchor.prototype.getGuardPosition = function() {
 		return { left: 3, bottom: 0, height: 20 };
 	}
 }
-
-/*
-Anchor.prototype.createGuardEditorHTML = function(text, rule) {
-	if (!text) text = '---';
-	
-	var pos;
-	if (this.type == 'top') {
-		pos = 'left: 2px; bottom: 3px;';
-	}
-	else if (this.type == 'bottom') {
-		pos = 'left: 2px; top: 3px;'; 		
-	}
-	else if (this.type == 'left') {
-		pos = 'right: 3px; bottom: 0px;';
-	}
-	else {
-		pos = 'left: 3px; bottom: 0px;';
-	}
-	
-	// create selector for the possible guards
-	var guards = this.getPossibleGuards();
-	var condition = 
-		!rule.guard	? '' :
-		Object.isFunction(rule.guard.getConditionString) ? rule.guard.getConditionString() : 
-		Object.toHTML(rule.guard).escapeHTML();
-	var editor = '';
-	if (guards) {
-		var hasCondition = false;
-		for (var i=0; i<guards.length; i++) {
-			var guard = guards[i];
-			if (condition == guard.getConditionString()) hasCondition = true;
-			editor += '<option value=' + i + 
-					(condition == guard.getConditionString() ? ' selected': '') +
-					'>' + guard.getDisplayHTML() + '</option>';
-		}
-		if (!hasCondition) {
-			this._possibleGuards.push(guard);
-			editor += '<optgroup label="--- unerwarteter Wert ---"></optgroup>'
-			editor += '<option class=warning value='+guards.length+' selected>'+condition+'</option>'
-		}
-		editor = '<select class=guard onchange="' +
-				'var rule = this.up(\'.Rule\').__rule;' +
-				'var anchor = rule.getSourceAnchor();' +
-				'rule.setGuard(anchor._possibleGuards[this.value]);">' + 
-				editor + 
-				'</select>';
-	}
-	else {
-		//editor = '<input type=text value="'+condition+'"></input>';
-	}
-	
-	var html = 
-	'<div style="position:absolute; overflow: visible; z-index: 200; left: '+this.x+'px; top: '+this.y+'px; width: 0px; height: 0px;">' + 
-		'<div class=guard style="position:absolute; ' + pos + '">' + 
-			//'<input class=guard type=text value="' + text.escapeHTML() + '"></input>' +
-			editor +
-		'</div>' + 
-	'</div>';
-	return html;
-}
-*/

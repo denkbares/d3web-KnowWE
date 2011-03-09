@@ -27,15 +27,14 @@ import java.util.Map;
 
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.diaFlux.flow.CommentNode;
 import de.d3web.diaFlux.flow.Edge;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowFactory;
-import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.inference.ConditionTrue;
-import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.io.DiaFluxPersistenceHandler;
 import de.d3web.we.flow.persistence.NodeHandler;
 import de.d3web.we.flow.persistence.NodeHandlerManager;
@@ -96,7 +95,6 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		Map<String, String> attributeMap = AbstractXMLType.getAttributeMapFor(s);
 		String name = attributeMap.get("name");
-		String id = attributeMap.get("fcid");
 		boolean autostart = Boolean.parseBoolean(attributeMap.get("autostart"));
 
 		if (name == null || name.equals("")) {
@@ -109,23 +107,32 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		List<Edge> edges = createEdges(article, s, nodes, errors);
 
-		Flow flow = FlowFactory.createFlow(id, name, nodes, edges);
+		Flow flow = FlowFactory.createFlow(kb, name, nodes, edges);
 		flow.setAutostart(autostart);
 
 		flow.getInfoStore().addValue(Property.getProperty(ORIGIN, String.class), s.getID());
-
-		DiaFluxUtils.addFlow(flow, kb);
 
 		return errors;
 	}
 
 	@Override
 	public void destroy(KnowWEArticle article, Section<FlowchartType> s) {
-		FlowSet flowSet = DiaFluxUtils.getFlowSet(getKB(article));
-		Map<String, String> attributeMap = AbstractXMLType.getLastAttributeMapFor(s);
-		if (flowSet != null && attributeMap != null) {
-			flowSet.remove(attributeMap.get("fcid"));
+		KnowledgeBase kb = getKB(article);
+
+		Map<String, String> attributeMap =
+				AbstractXMLType.getLastAttributeMapFor(s);
+		if (attributeMap == null) {
+			attributeMap = AbstractXMLType.getAttributeMapFor(s);
 		}
+		if (attributeMap != null) {
+			String name = attributeMap.get("name");
+			TerminologyObject oldFlow = kb.getManager().search(name);
+			if (oldFlow != null) {
+				oldFlow.destroy();
+			}
+
+		}
+
 	}
 
 	private class FlowchartConstraintModule extends ConstraintModule<FlowchartType> {

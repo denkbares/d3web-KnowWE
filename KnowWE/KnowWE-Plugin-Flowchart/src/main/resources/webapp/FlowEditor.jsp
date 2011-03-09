@@ -65,23 +65,19 @@
 	String title = DiaFluxType.getFlowchartName(diafluxSection);
 %>
 
+<html>
+<head>
 <script>
 	var topic = "<%= topic %>";
 	var nodeID = "<%= kdomID %>";
 </script>
 
-<html>
-<head>
 <title>Edit Flowchart: <%= title %></title>
 	
 	<script src="cc/scriptaculous-js/lib/prototype.js" type="text/javascript"></script>
 	<script src="cc/scriptaculous-js/src/builder.js" type="text/javascript"></script>
 	<script src="cc/scriptaculous-js/src/effects.js" type="text/javascript"></script>
 	<script src="cc/scriptaculous-js/src/dragdrop.js" type="text/javascript"></script>
-	<!-- script src="cc/scriptaculous-js/src/controls.js" type="text/javascript"></script>
-	<script src="cc/scriptaculous-js/src/slider.js" type="text/javascript"></script>
-	<script src="cc/scriptaculous-js/src/sound.js" type="text/javascript"></script>
-	<script src="cc/scriptaculous-js/src/scriptaculous.js" type="text/javascript"></script-->
 	
 	<script src="cc/kbinfo/kbinfo.js" type="text/javascript"></script>
 	<script src="cc/kbinfo/extensions.js" type="text/javascript"></script>
@@ -89,15 +85,17 @@
 	<script src="cc/kbinfo/objectselect.js" type="text/javascript"></script>
 	<script src="cc/kbinfo/objecttree.js" type="text/javascript"></script>
 	
-	<script src="cc/flow/floweditor.js" type="text/javascript"></script>
 	<script src="cc/flow/flowchart.js" type="text/javascript"></script>
+	<script src="cc/flow/floweditor.js" type="text/javascript"></script>
 	<script src="cc/flow/action.js" type="text/javascript"></script>
+	<script src="cc/flow/actioneditor.js" type="text/javascript"></script>
 	<script src="cc/flow/guard.js" type="text/javascript"></script>
+	<script src="cc/flow/guardeditor.js" type="text/javascript"></script>
 	<script src="cc/flow/node.js" type="text/javascript"></script>
 	<script src="cc/flow/rule.js" type="text/javascript"></script>
+	<script src="cc/flow/ruleeditor.js" type="text/javascript"></script>
 	<script src="cc/flow/nodeeditor.js" type="text/javascript"></script>
 	<script src="cc/flow/router.js" type="text/javascript"></script>
-	<script src="cc/flow/rollup.js" type="text/javascript"></script>
 	
 	
 	<link rel="stylesheet" type="text/css" href="cc/kbinfo/dropdownlist.css"></link>
@@ -115,7 +113,7 @@
 </head>
 
 
-<body onload="KBInfo._updateCache($('ajaxKBInfo'));showEditor();">
+<body onload="new FlowEditor(<%= jspHelper.getArticleIDsAsArray() %>).showEditor();">
 
 <%-- default kbinfo objects delivered from server --%>
 <xml id="articleKBInfo" style="display:none;">
@@ -129,9 +127,7 @@
 
 
 <xml id="ajaxKBInfo" style="display:none;">
-	<kbinfo>
-
-	</kbinfo>
+	<kbinfo></kbinfo>
 </xml>
 
 
@@ -140,12 +136,12 @@
 </xml>
 
 <div> 
-	<ul class="toolbar" tyle="float: left; width: 40%;">
-		<li class="icon" id="saveClose" title="Save & Close" style="background-image:url(cc/image/toolbar/saveclose_flowchart_32.png);"></li><!--
-	  --><li class="icon" id="save" title="Save" style="background-image:url(cc/image/toolbar/save_flowchart_32.png);"></li><!--  
-	  --><li class="icon" id="refresh" title="Reload" style="background-image:url(cc/image/toolbar/reload_32.png);"></li><!--  
-	  --><li class="icon" id="close" title="Close" style="background-image:url(cc/image/toolbar/cancel_32.png);"></li><!--  
-	  --><li class="icon" id="delete" title="Delete" style="background-image:url(cc/image/toolbar/delete_flowchart_32.png);"></li>
+	<ul class="toolbar">
+		<li class="icon" id="saveClose" title="Save flowchart & Close editor" style="background-image:url(cc/image/toolbar/saveclose_flowchart_32.png);"></li><!--
+	  --><li class="icon" id="save" title="Save flowchart" style="background-image:url(cc/image/toolbar/save_flowchart_32.png);"></li><!--  
+	  --><li class="icon" id="refresh" title="Revert changes" style="background-image:url(cc/image/toolbar/reload_32.png);"></li><!--  
+	  --><li class="icon" id="close" title="Close editor" style="background-image:url(cc/image/toolbar/cancel_32.png);"></li><!--  
+	  --><li class="icon" id="delete" title="Delete flowchart" style="background-image:url(cc/image/toolbar/delete_flowchart_32.png);"></li>
 	</ul>
 	<div class="propertyArea">
 		<div>
@@ -155,7 +151,7 @@
 			<span class=propertyTitle>Height:</span><input type=text id="properties.editHeight" class="propertyText short"></input>
 		</div>	
 	</div>	
-	<ul class="toolbar" tyle="float: left; width: 60%;">
+	<ul class="toolbar">
 		<li class="icon NodePrototype" id="decision_prototype" title="Action node" style="background-image:url(cc/image/node_decorators/decision.png);"></li><!--
 	  --><li class="icon NodePrototype" id="start_prototype" title="Start node" style="background-image:url(cc/image/node_decorators/start.png);"></li><!--
 	  --><li class="icon NodePrototype" id="exit_prototype" title="Exit node" style="background-image:url(cc/image/node_decorators/exit.png);"></li><!--
@@ -170,121 +166,6 @@
 </div>
 
 <div id="contents" style="position:relative"></div>
-
-<script>
-	// kbinfo initialization
-	KBInfo._updateCache($('articleKBInfo'));
-	KBInfo._updateCache($('referredKBInfo'));
-	
-
-	// initialize wiki tree tool
-	new ObjectTree('objectTree', null, 
-		<%= jspHelper.getArticleIDsAsArray() %>
-	);
-
-	var theFlowchart = null;
-
-	// create example flowchart by delivered xml
-	function showEditor() {
-		theFlowchart = Flowchart.createFromXML('contents', $('flowchartSource'));
-		theFlowchart.setVisible(true);
-		$('properties.editName').value = theFlowchart.name || theFlowchart.id;
-		$('properties.editWidth').value = theFlowchart.width;
-		$('properties.editHeight').value = theFlowchart.height;
-		$('properties.autostart').checked = theFlowchart.autostart;
-		$('properties.editName').onchange = updateProperties;
-		$('properties.editWidth').onchange = updateProperties;
-		$('properties.editHeight').onchange = updateProperties;
-		$('properties.autostart').onchange = updateProperties;
-		
-		$('saveClose').observe('click', function(){saveFlowchart(true);});
-		$('save').observe('click', function(){saveFlowchart(false);});
-		$('refresh').observe('click', refresh);
-		
-		$('close').observe('click', closeEditor);
-		$('delete').observe('click', deleteFlowchart);
-		
-	}
-	
-	function updateProperties() {
-		theFlowchart.name = $('properties.editName').value;
-		theFlowchart.setSize($('properties.editWidth').value, $('properties.editHeight').value);
-		theFlowchart.autostart = $('properties.autostart').checked;
-	}
-	
-	function refresh(){
-		window.location.reload();
-	}
-	
-	function closeEditor(){
-		window.close();
-	}
-	
-	function deleteFlowchart() {
-		var result = confirm('Do you really want to delete the flowchart?');
-		if (result) {
-			_saveFlowchartText('', true);
-		}
-	}
-	
-	function saveFlowchart(closeOnSuccess) {
-		theFlowchart.setSelection(null, false, false);
-		var xml = theFlowchart.toXML(true); // include preview for us
-		_saveFlowchartText(xml, closeOnSuccess);
-	}
-	
-	function _saveFlowchartText(xml, closeOnSuccess) {
-		var url = "KnowWE.jsp";
-		new Ajax.Request(url, {
-			method: 'post',
-			parameters: {
-				action: 'SaveFlowchartAction',
-				KWiki_Topic: topic,			// article
-				TargetNamespace: nodeID,	// KDOM nodeID
-				KWikitext: xml				// content
-			},
-			onSuccess: function(transport) {
-				if (window.opener) window.opener.location.reload();
-				if (closeOnSuccess) window.close();
-			},
-			onFailure: function() {
-				CCMessage.warn(
-					'AJAX Error', 
-					'Changes could not be saved.');
-			},
-			onException: function(transport, exception) {
-				CCMessage.warn(
-					'AJAX Error, Saving most likely failed.',
-					exception
-					);
-			}
-		}); 		
-
-		
-	}
-
-	var dragOptions = { ghosting: true, revert: true, reverteffect: ObjectTree.revertEffect};
-
-	new Draggable('decision_prototype', dragOptions);
-	new Draggable('start_prototype', dragOptions);
-	new Draggable('exit_prototype', dragOptions);
-	new Draggable('comment_prototype', dragOptions);
-	new Draggable('snapshot_prototype', dragOptions);
-	
-	$('decision_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {action: { markup: 'KnOffice', expression: ''}}); };
-	$('start_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {start: 'Start'}); };
-	$('exit_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {exit: 'Exit'}); };
-	$('comment_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {comment: 'Comment'}); };
-	$('snapshot_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {snapshot: 'Snapshot'}); };
-	
-	function createActionNode(flowchart, left, top, nodeModel) {
-		nodeModel.position = {left: left, top: top};
-		var node = new Node(flowchart, nodeModel);
-		node.select();
-		node.edit();
-	};
-  
-</script>
 
 <wiki:Include page="<%=\"\"%>" />
 
