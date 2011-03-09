@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -62,7 +62,7 @@ import de.d3web.we.user.UserContext;
 
 /**
  * Render the quick interview -aka QuickI- in KnowWE --- HTML / JS / CSS based
- * 
+ *
  * @author Martina Freiberg
  * @created 15.07.2010
  */
@@ -84,7 +84,7 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Assembles and returns the HTML representation of the interview.
-	 * 
+	 *
 	 * @created 15.07.2010
 	 * @param c the session
 	 * @param web the web context
@@ -131,7 +131,7 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Returns the Plugin Header As String
-	 * 
+	 *
 	 * @created 15.07.2010
 	 * @return the plugin header HTML String
 	 */
@@ -139,7 +139,7 @@ public class QuickInterviewRenderer {
 		/*
 		 * // assemble JS string String relAt = " rel=\"{" + "web:'" + web +
 		 * "', " + "ns:'" + namespace + "'" + "}\" ";
-		 * 
+		 *
 		 * html.append("<h3>"); html.append("Quick Interview");
 		 * html.append("<div id='quickireset' class='reset pointer' title='" +
 		 * rb.getString("KnowWE.quicki.reset") + "'" + relAt + "></div>\n"); //
@@ -160,7 +160,7 @@ public class QuickInterviewRenderer {
 	 * Assembles the HTML representation of QContainers and Questions, starting
 	 * from the root QASet of the KB, recursively, and writes them into the
 	 * given StringBuffer
-	 * 
+	 *
 	 * @created 14.07.2010
 	 * @param topContainer the root container
 	 * @param buffer the StringBuffer
@@ -215,7 +215,7 @@ public class QuickInterviewRenderer {
 		// corresponding recursion
 		for (TerminologyObject qcontainerchild : topContainer.getChildren()) {
 
-			init = inits.contains(qcontainerchild) || isIndicated(topContainer);
+			init = inits.contains(qcontainerchild) || isIndicated(qcontainerchild);
 			if (!init && qcontainerchild instanceof QASet) {
 				init = !Collections.disjoint(Arrays.asList(qcontainerchild.getChildren()), inits);
 			}
@@ -263,7 +263,7 @@ public class QuickInterviewRenderer {
 	/**
 	 * Recursively walks through the questions of the hierarchy and calls
 	 * methods for appending their rendering
-	 * 
+	 *
 	 * @created 17.08.2010
 	 * @param topQuestion the root question
 	 * @param sb the StringBuffer
@@ -302,7 +302,7 @@ public class QuickInterviewRenderer {
 	/**
 	 * Assembles an own div for indicating questions/questionnaires that have
 	 * already been answered
-	 * 
+	 *
 	 * @created 26.08.2010
 	 * @param element the element that was already been answered
 	 * @param sb StringBuffer to append the div to
@@ -319,7 +319,7 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Assembles the div that displays icon and name of questionnaires
-	 * 
+	 *
 	 * @created 16.08.2010
 	 * @param container the qcontainer to be rendered
 	 * @param depth recursion depth
@@ -351,7 +351,7 @@ public class QuickInterviewRenderer {
 	/**
 	 * Assembles the HTML-string representation for one QA-Block, that is, one
 	 * question first, and the answers afterwards.
-	 * 
+	 *
 	 * @created 20.07.2010
 	 * @param question the question to be rendered
 	 * @param depth the depth of the recursion - for calculating identation
@@ -479,7 +479,7 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Assembles the HTML for rendering a one choice question
-	 * 
+	 *
 	 * @created 21.08.2010
 	 * @param q the question
 	 * @param list the list of possible choices
@@ -537,7 +537,7 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Assembles the HTML needed for displaying the (numerical) answer field
-	 * 
+	 *
 	 * @created 20.07.2010
 	 * @param q the question to which numerical answers are attached
 	 * @return the String for rendering numerical answer field
@@ -636,7 +636,7 @@ public class QuickInterviewRenderer {
 	// TODO: check Date input format
 	/**
 	 * Assembles the HTML representation of a date answer input
-	 * 
+	 *
 	 * @created 01.09.2010
 	 * @param q the date-question
 	 * @param sb the String Buffer, the HTML is attached to
@@ -696,7 +696,7 @@ public class QuickInterviewRenderer {
 	/**
 	 * Creates the HTML needed for displaying the answer alternatives of mc
 	 * choice answers.
-	 * 
+	 *
 	 * @created 01.09.2010
 	 * @param session
 	 * @param q
@@ -755,7 +755,7 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Assembles the HTML representation for rendering answer unknown
-	 * 
+	 *
 	 * @created 22.07.2010
 	 * @param web the web context
 	 * @param namespace the namespace
@@ -791,7 +791,7 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Assembles the HTML representation for a given Tag
-	 * 
+	 *
 	 * @created 22.07.2010
 	 * @param tag The String representation of the tag
 	 * @param text The text to be placed inside the tag
@@ -833,7 +833,7 @@ public class QuickInterviewRenderer {
 	/**
 	 * Checks, whether an answer value was already processed in the current
 	 * session
-	 * 
+	 *
 	 * @created 27.08.2010
 	 * @param sessionValue the sessionValue
 	 * @param value the value to be checked
@@ -853,7 +853,7 @@ public class QuickInterviewRenderer {
 	/**
 	 * Checks, whether the given TerminologyObject is currently indicated or
 	 * not.
-	 * 
+	 *
 	 * @created 30.10.2010
 	 * @param to the TerminologyObject to be checked.
 	 * @param bb
