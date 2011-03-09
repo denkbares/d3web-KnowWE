@@ -21,7 +21,7 @@ package de.d3web.we.kdom.rendering;
 
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.UserContext;
 
 /**
  * The AnchorKDOMRender prefixes a section with an HTML anchor. This anchor can
@@ -35,12 +35,12 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public abstract class AnchorKDOMRender extends KnowWEDomRenderer {
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, UserContext user, StringBuilder string) {
 		String head = "<a name=\"" + sec.getID() + "\" id=\"" + sec.getID() + "\"></a>";
 		string.append(head);
 
 		renderContent(sec, user, string);
 	}
 
-	public abstract void renderContent(Section sec, KnowWEUserContext user, StringBuilder string);
+	public abstract void renderContent(Section sec, UserContext user, StringBuilder string);
 }

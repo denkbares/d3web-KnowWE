@@ -30,7 +30,7 @@ import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.TestCase;
 import de.d3web.we.action.AbstractAction;
-import de.d3web.we.action.ActionContext;
+import de.d3web.we.action.UserActionContext;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.testcase.TestCaseUtils;
@@ -54,8 +54,8 @@ public class TestCaseRunAction extends AbstractAction {
 	private MessageFormat msgFormatter;
 
 	@Override
-	public void execute(ActionContext context) throws IOException {
-		this.rb = D3webModule.getKwikiBundle_d3web(context.getWikiContext());
+	public void execute(UserActionContext context) throws IOException {
+		this.rb = D3webModule.getKwikiBundle_d3web(context);
 		this.msgFormatter = new MessageFormat("");
 
 		String testCaseName = context.getParameter("testcase");

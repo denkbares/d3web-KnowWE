@@ -25,7 +25,7 @@ import java.util.List;
 
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.UserContext;
 
 public abstract class ConditionalRenderer extends KnowWEDomRenderer {
 
@@ -36,7 +36,7 @@ public abstract class ConditionalRenderer extends KnowWEDomRenderer {
 	}
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, UserContext user, StringBuilder string) {
 		StringBuilder b = new StringBuilder();
 		for (KnowWEDomRenderer r : conditionalRenderers) {
 			r.render(article, sec, user, b);
@@ -49,6 +49,6 @@ public abstract class ConditionalRenderer extends KnowWEDomRenderer {
 		renderDefault(sec, user, string);
 	}
 
-	protected abstract void renderDefault(Section sec, KnowWEUserContext user, StringBuilder string);
+	protected abstract void renderDefault(Section sec, UserContext user, StringBuilder string);
 
 }

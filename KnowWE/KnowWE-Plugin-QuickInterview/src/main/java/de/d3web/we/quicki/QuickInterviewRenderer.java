@@ -58,7 +58,7 @@ import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.UserContext;
 
 /**
  * Render the quick interview -aka QuickI- in KnowWE --- HTML / JS / CSS based
@@ -90,14 +90,14 @@ public class QuickInterviewRenderer {
 	 * @param web the web context
 	 * @return the String representation of the interview
 	 */
-	public static String renderInterview(Session c, String webb, KnowWEUserContext user) {
+	public static String renderInterview(Session c, String webb, UserContext user) {
 		// removed all static items and creating an instance instead
 		// otherwise parallel access from different users will make
 		// the rendering process fail
 		return new QuickInterviewRenderer(c, webb, user).render();
 	}
 
-	public QuickInterviewRenderer(Session c, String webb, KnowWEUserContext user) {
+	public QuickInterviewRenderer(Session c, String webb, UserContext user) {
 		// insert specific CSS
 		// buffi.append("<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/quicki.css' />");
 		this.kb = c.getKnowledgeBase();

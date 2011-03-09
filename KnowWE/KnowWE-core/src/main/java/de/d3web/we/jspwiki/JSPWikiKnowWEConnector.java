@@ -51,7 +51,8 @@ import com.ecyrd.jspwiki.preferences.Preferences;
 import com.ecyrd.jspwiki.providers.ProviderException;
 
 import de.d3web.we.action.KnowWEActionDispatcher;
-import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.action.UserActionContext;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.wikiConnector.ConnectorAttachment;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
@@ -79,13 +80,13 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 	@Override
 	public KnowWEActionDispatcher getActionDispatcher() {
-		return new JSPActionDispatcher();
+		return JSPActionDispatcher.getInstance();
 	}
 
 	@Override
-	public boolean writeArticleToWikiEnginePersistence(String name, String text, KnowWEParameterMap map) {
+	public boolean writeArticleToWikiEnginePersistence(String name, String text, UserContext user) {
 		try {
-			HttpServletRequest req = map.getRequest();
+			HttpServletRequest req = user.getRequest();
 			WikiContext context = engine.createContext(req, WikiContext.EDIT);
 			context.setPage(engine.getPage(name));
 
@@ -101,12 +102,6 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 			return false;
 		}
 	}
-
-	// @Override
-	// public boolean writeArticleToWikiEnginePersistence(String name, String
-	// text, KnowWEParameterMap map, boolean fullParse) {
-	// return writeArticleToWikiEnginePersistence(name, text, map);
-	// }
 
 	@Override
 	public LinkedList<String> getJarAttachments() {
@@ -699,8 +694,8 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	}
 
 	@Override
-	public String renderWikiSyntax(String pagedata, KnowWEParameterMap map) {
-		HttpServletRequest req = map.getRequest();
+	public String renderWikiSyntax(String pagedata, UserActionContext userContext) {
+		HttpServletRequest req = userContext.getRequest();
 		WikiContext context = engine.createContext(req, WikiContext.VIEW);
 		pagedata = engine.textToHTML(context, pagedata);
 		return pagedata;

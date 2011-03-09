@@ -25,18 +25,18 @@ import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.tools.DefaultTool;
 import de.d3web.we.tools.Tool;
 import de.d3web.we.tools.ToolProvider;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.UserContext;
 
 /**
  * A provider for adding a "Start a new build"-Tool for the CIDashboardType
- * 
+ *
  * @author Marc-Oliver Ochlast (denkbares GmbH)
  * @created 01.12.2010
  */
 public class CIDashboardToolProvider implements ToolProvider {
 
 	@Override
-	public Tool[] getTools(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext) {
+	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
 		String dashboardName = DefaultMarkupType.getAnnotation(section, CIDashboardType.NAME_KEY);
 		return new Tool[] { getStartNewBuildTool(dashboardName) };
 	}

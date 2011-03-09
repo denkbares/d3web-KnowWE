@@ -20,8 +20,8 @@
 
 package de.d3web.we.kdom.report;
 
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * Default renderer for error messages
@@ -52,12 +52,12 @@ public class DefaultErrorRenderer implements MessageRenderer {
 	}
 
 	@Override
-	public String postRenderMessage(KDOMReportMessage m, KnowWEUserContext user) {
+	public String postRenderMessage(KDOMReportMessage m, UserContext user) {
 		return KnowWEUtils.maskHTML("</span>");
 	}
 
 	@Override
-	public String preRenderMessage(KDOMReportMessage m, KnowWEUserContext user) {
+	public String preRenderMessage(KDOMReportMessage m, UserContext user) {
 		StringBuilder string = new StringBuilder();
 
 		string.append(KnowWEUtils.maskHTML("<span"));

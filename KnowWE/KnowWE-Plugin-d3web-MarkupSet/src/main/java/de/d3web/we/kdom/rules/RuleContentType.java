@@ -61,9 +61,9 @@ import de.d3web.we.kdom.rules.action.RuleAction;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderDivCorrectTrimmed;
 import de.d3web.we.kdom.subtreeHandler.SuccessorNotReusedConstraint;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.knowwe.core.CommentLineType;
 import de.knowwe.core.renderer.ReRenderSectionMarkerRenderer;
 
@@ -201,7 +201,7 @@ public class RuleContentType extends AbstractType {
 
 		@Override
 		public void render(KnowWEArticle article,
-				Section<ConditionActionRuleContent> sec, KnowWEUserContext user,
+				Section<ConditionActionRuleContent> sec, UserContext user,
 				StringBuilder string) {
 
 			Session session = D3webUtils.getSession(article.getTitle(), user,
@@ -238,7 +238,7 @@ public class RuleContentType extends AbstractType {
 		@SuppressWarnings("unchecked")
 		private void highlightRule(KnowWEArticle article,
 				Section<ConditionActionRuleContent> sec, Rule r, Session session,
-				KnowWEUserContext user, StringBuilder string) {
+				UserContext user, StringBuilder string) {
 
 			StringBuilder newContent = new StringBuilder();
 			if (r == null || session == null) {

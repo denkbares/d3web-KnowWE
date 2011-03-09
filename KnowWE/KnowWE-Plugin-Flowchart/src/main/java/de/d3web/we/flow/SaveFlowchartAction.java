@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -25,11 +25,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.d3web.we.action.AbstractAction;
-import de.d3web.we.action.ActionContext;
+import de.d3web.we.action.UserActionContext;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.flow.type.DiaFluxType;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -39,7 +38,7 @@ import de.d3web.we.kdom.Sections;
 /**
  * Receives a xml-encoded flowchart from the editor and replaces the old kdom
  * node with the new content
- * 
+ *
  * @author Reinhard Hatko
  * @created 24.11.2010
  */
@@ -47,26 +46,25 @@ public class SaveFlowchartAction extends AbstractAction {
 
 
 	@Override
-	public void execute(ActionContext context) throws IOException {
-		KnowWEParameterMap map = context.getKnowWEParameterMap();
+	public void execute(UserActionContext context) throws IOException {
 
-		String web = map.getWeb();
-		String nodeID = map.get(KnowWEAttributes.TARGET);
-		String topic = map.getTopic();
-		String newText = map.get(KnowWEAttributes.TEXT);
+		String web = context.getWeb();
+		String nodeID = context.getParameter(KnowWEAttributes.TARGET);
+		String topic = context.getTopic();
+		String newText = context.getParameter(KnowWEAttributes.TEXT);
 
 		if (nodeID == null) {
-			saveNewFlowchart(map, web, topic, newText);
+			saveNewFlowchart(context, web, topic, newText);
 		}
 		else {
-			replaceExistingFlowchart(map, web, nodeID, topic, newText);
+			replaceExistingFlowchart(context, web, nodeID, topic, newText);
 		}
 
 	}
 
 	/**
 	 * Saves a flowchart when the surrounding %%DiaFlux markup exists.
-	 * 
+	 *
 	 * @created 23.02.2011
 	 * @param map
 	 * @param web
@@ -75,7 +73,7 @@ public class SaveFlowchartAction extends AbstractAction {
 	 * @param newText
 	 */
 	@SuppressWarnings("unchecked")
-	private void replaceExistingFlowchart(KnowWEParameterMap map, String web, String nodeID, String topic, String newText) {
+	private void replaceExistingFlowchart(UserActionContext context, String web, String nodeID, String topic, String newText) {
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 		Section<DiaFluxType> diaFluxSection = (Section<DiaFluxType>) mgr.getArticle(topic).findSection(
 				nodeID);
@@ -85,7 +83,7 @@ public class SaveFlowchartAction extends AbstractAction {
 
 		// if flowchart is existing, replace flowchart
 		if (flowchartSection != null) {
-			save(map, topic, flowchartSection.getID(), newText);
+			save(context, topic, flowchartSection.getID(), newText);
 		}
 		else { // no flowchart, insert flowchart
 			StringBuilder builder = new StringBuilder("%%DiaFlux");
@@ -102,21 +100,22 @@ public class SaveFlowchartAction extends AbstractAction {
 				builder.append(diaFluxSection.getOriginalText().substring(9));
 			}
 
-			save(map, topic, nodeID, builder.toString());
+			save(context, topic, nodeID, builder.toString());
 		}
 	}
 
 	/**
 	 * Saves a flowchart for which no section exists in the article yet.
-	 * 
+	 *
 	 * @created 23.02.2011
 	 * @param map
 	 * @param web
 	 * @param topic
 	 * @param newText
 	 */
-	private void saveNewFlowchart(KnowWEParameterMap map, String web, String topic, String newText) {
-		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(map.getWeb());
+	private void saveNewFlowchart(UserActionContext context, String web, String topic, String newText) {
+		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(
+				context.getWeb());
 		KnowWEArticle article = mgr.getArticle(topic);
 		Section<KnowWEArticle> rootSection = article.getSection();
 
@@ -124,15 +123,16 @@ public class SaveFlowchartAction extends AbstractAction {
 		String newArticle = rootSection.getOriginalText() + "\r\n%%DiaFlux\r\n" + newText
 				+ "\r\n%\r\n";
 		String nodeID = rootSection.getID();
-			
-		save(map, topic, nodeID, newArticle);
+
+		save(context, topic, nodeID, newArticle);
 	}
 
-	private void save(KnowWEParameterMap map, String topic, String nodeID, String newText) {
+	private void save(UserActionContext context, String topic, String nodeID, String newText) {
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(nodeID, newText);
-		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(map.getWeb());
-		mgr.replaceKDOMNodesSaveAndBuild(map, topic, nodesMap);
+		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(
+				context.getWeb());
+		mgr.replaceKDOMNodesSaveAndBuild(context, topic, nodesMap);
 	}
 
 }

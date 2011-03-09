@@ -41,9 +41,9 @@ import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.subtreeHandler.IncrementalConstraint;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.tools.ToolMenuDecoratingRenderer;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.knowwe.core.renderer.ObjectInfoLinkRenderer;
 
 /**
@@ -87,7 +87,7 @@ public abstract class SolutionDefinition
 
 		@Override
 		public void render(KnowWEArticle article, Section<SolutionDefinition> sec,
-				KnowWEUserContext user, StringBuilder string) {
+				UserContext user, StringBuilder string) {
 
 			Session session = D3webUtils.getSession(article.getTitle(), user,
 					article.getWeb());

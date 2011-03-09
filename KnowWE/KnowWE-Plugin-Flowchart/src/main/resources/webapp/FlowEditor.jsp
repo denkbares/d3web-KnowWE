@@ -1,5 +1,4 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="de.d3web.we.kdom.Section"%>
 <%@ page import="de.d3web.we.kdom.KnowWEArticle"%>
@@ -8,32 +7,51 @@
 <%@ page import="de.d3web.we.jspwiki.*" %>
 <%@ page import="java.util.*" %>
 <%@ page import="de.d3web.we.core.*" %>
-<%@ page import="de.d3web.we.javaEnv.*" %>
 <%@ page import="de.d3web.we.wikiConnector.*" %>
 <%@ page import="de.d3web.we.action.*" %>
 <%@ page import="de.d3web.we.flow.kbinfo.*" %>
 <%@ page import="de.d3web.we.flow.*" %>
+<%@ page import="de.d3web.we.utils.*" %>
+<%@ page import="de.d3web.we.user.*" %>
 <%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %>
-
 <%
-    WikiEngine wiki = WikiEngine.getInstance( getServletConfig() );
-    // Create wiki context; authorization check not needed
-    WikiContext wikiContext = wiki.createContext( request, WikiContext.VIEW );
-
-    if (!KnowWEEnvironment.isInitialized()) {
+	//Create wiki context; authorization check not needed
+	WikiEngine wiki = WikiEngine.getInstance( getServletConfig() );
+	WikiContext wikiContext = wiki.createContext( request, WikiContext.VIEW );
+	
+	// Check if KnowWE is initialized
+	if (!KnowWEEnvironment.isInitialized()) {
 		KnowWEEnvironment.initKnowWE(new JSPWikiKnowWEConnector(wiki));
 	}
-	KnowWEEnvironment env = KnowWEEnvironment.getInstance();
-	KnowWEUserContextImpl userContext =  new KnowWEUserContextImpl(wikiContext.getWikiSession().getUserPrincipal().getName(), wikiContext.getHttpRequest().getParameterMap());
-	KnowWEParameterMap map = new KnowWEParameterMap(userContext, request, response, wiki.getServletContext(), env);
 	
-	map.put(KnowWEAttributes.USER, wikiContext.getWikiSession().getUserPrincipal().getName());
-	if(!map.containsKey(KnowWEAttributes.WEB)) {
-		map.put(KnowWEAttributes.WEB, "default_web");
+	// We need to do this, because the paramterMap is locked!
+	Map<String, String> parameters = UserContextUtil.getParameters(request);
+	
+	// Add user
+	if (!parameters.containsKey(KnowWEAttributes.USER)) {
+		parameters.put(KnowWEAttributes.USER, wikiContext.getWikiSession().getUserPrincipal().getName());
 	}
-	String topic = map.getTopic();
-	String web = map.getWeb();
-	KnowWEArticle article = env.getArticle(web, topic);
+	
+	// Add topic
+	if (!parameters.containsKey(KnowWEAttributes.TOPIC)) {
+		String topic = parameters.get("page");
+		if (topic == null) {
+			topic = KnowWEUtils.urldecode(wikiContext.getPage().getName());
+		}
+		parameters.put(KnowWEAttributes.TOPIC, topic);
+	}
+	
+	// Add web
+	if(!parameters.containsKey(KnowWEAttributes.WEB)) {
+		parameters.put(KnowWEAttributes.WEB, "default_web");
+	}
+	
+	// Create action context
+	UserActionContext context = new ActionContext(parameters.get("action"), ActionServlet.getActionFollowUpPath(request), parameters, request, response, wiki.getServletContext(), wikiContext);
+		
+	String topic = context.getTopic();
+	String web = context.getWeb();
+	KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(web, topic);
 	
 	if (article == null){
 		//TODO happens if article is no longer available
@@ -41,8 +59,8 @@
 		return;
 	}
 	
-	JSPHelper jspHelper = new JSPHelper(map);
-	String kdomID = map.get("kdomID");
+	JSPHelper jspHelper = new JSPHelper(context);
+	String kdomID = context.getParameter("kdomID");
 	Section diafluxSection = article.findSection(kdomID);
 	String title = DiaFluxType.getFlowchartName(diafluxSection);
 %>

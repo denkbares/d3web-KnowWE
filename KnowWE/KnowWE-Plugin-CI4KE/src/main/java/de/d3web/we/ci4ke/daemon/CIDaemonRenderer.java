@@ -7,13 +7,13 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class CIDaemonRenderer extends KnowWEDomRenderer<CIDaemonType> {
 
 	@Override
-	public void render(KnowWEArticle article, Section<CIDaemonType> section, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section<CIDaemonType> section, UserContext user, StringBuilder string) {
 
 		String dashboardName = DefaultMarkupType.getAnnotation(section,
 				CIDashboardType.NAME_KEY);

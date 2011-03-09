@@ -38,33 +38,33 @@ import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.rendering.ConditionalRenderer;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class StandardAnnotationRenderer extends ConditionalRenderer {
 
 	private static String TITLE_QUERY = "SELECT  ?title WHERE {  <URI> ns:hasTitle ?title }";
 
 	@Override
-	public void renderDefault(Section s, KnowWEUserContext user,
+	public void renderDefault(Section s, UserContext user,
 			StringBuilder string) {
 
 		Section<?> sec = s;
 		String object = "no object found";
-		Section<SimpleAnnotation> objectSection = 
+		Section<SimpleAnnotation> objectSection =
 				 Sections.findSuccessor(sec, SimpleAnnotation.class);
 		if (objectSection != null) {
 			object = objectSection.getOriginalText();
 		}
 
-		Section<AnnotatedString> astring = 
+		Section<AnnotatedString> astring =
 				 Sections.findSuccessor(sec, AnnotatedString.class);
 		String text = "";
 		if (astring != null) text = "''" + astring.getOriginalText() + "''";
 		else text = "<b>" + object + "</b>";
-		Section<SemanticAnnotationContent> content = 
+		Section<SemanticAnnotationContent> content =
 				 Sections.findSuccessor(sec, SemanticAnnotationContent.class);
-		Section<SemanticAnnotationPropertyName> propSection = 
+		Section<SemanticAnnotationPropertyName> propSection =
 				 Sections.findSuccessor(sec, SemanticAnnotationPropertyName.class);
 
 		String property = "no property found";
@@ -74,7 +74,7 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 
 		String subject = "no subject found";
 
-		Section<SemanticAnnotationSubject> subjectSection = 
+		Section<SemanticAnnotationSubject> subjectSection =
 				 Sections.findSuccessor(sec, SemanticAnnotationSubject.class);
 		if (subjectSection != null
 				&& subjectSection.getOriginalText().trim().length() > 0) {

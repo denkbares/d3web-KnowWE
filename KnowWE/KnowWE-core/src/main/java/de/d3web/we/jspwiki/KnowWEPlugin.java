@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -25,14 +25,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -58,6 +54,8 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.rendering.PageAppendHandler;
+import de.d3web.we.user.UserContext;
+import de.d3web.we.user.UserContextUtil;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
@@ -67,7 +65,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	/**
 	 * To initialize KnowWE.
-	 * 
+	 *
 	 * @see KnowWE_config.properties
 	 */
 	@Override
@@ -221,7 +219,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 
 		JSPWikiUserContext userContext = new JSPWikiUserContext(wikiContext,
-				parseRequestVariables(wikiContext));
+				UserContextUtil.getParameters(wikiContext.getHttpRequest()));
 
 		/*
 		 * The special pages MoreMenu, LeftMenu and LeftMenuFooter get extra
@@ -278,7 +276,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 					KnowWEEnvironment.DEFAULT_WEB, topicName);
 			if (article != null) {
 				String originalText = article.getSection().getOriginalText();
-				String parse = userContext.getUrlParameterMap().get("parse");
+				String parse = userContext.getParameter("parse");
 
 				boolean fullParse = parse != null
 						&& (parse.equals("full") || parse.equals("true"));
@@ -357,7 +355,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	/**
 	 * Loads ALL articles stored in the pageDir (which is specified in
 	 * jspwiki.properties).
-	 * 
+	 *
 	 * @created 07.06.2010
 	 * @param engine
 	 */
@@ -394,7 +392,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	}
 
-	private String renderKDOM(String content, JSPWikiUserContext userContext,
+	private String renderKDOM(String content, UserContext userContext,
 			KnowWEArticle article) {
 		if (article != null) {
 			StringBuilder articleString = new StringBuilder();
@@ -403,37 +401,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			return articleString.toString();
 		}
 		return content + "\n(no KDOM)";
-	}
-
-	/**
-	 * Parses the request variables (GET and POST) using a wiki context object.
-	 * 
-	 * @param context WikiContext to be used
-	 * @return A Map containing all request variables
-	 */
-	private Map<String, String> parseRequestVariables(WikiContext context) {
-		HttpServletRequest req = context.getHttpRequest();
-
-		Map<String, String> parameter = new HashMap<String, String>();
-
-		if (req == null) return parameter;
-
-		Enumeration p = req.getParameterNames();
-
-		while (p.hasMoreElements()) {
-			String param = (String) p.nextElement();
-			String parameter2 = req.getParameter(param);
-			if (param.equals("_editedtext")) continue;
-
-			// try {
-			parameter.put(param, parameter2);
-			// } catch (UnsupportedEncodingException e) {
-			// // parameter
-			// // .put(param, URLDecoder.decode(parameter2));
-			// }
-		}
-
-		return parameter;
 	}
 
 	/**
@@ -464,7 +431,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	/**
 	 * Adds the CSS and JS files to the current page.
-	 * 
+	 *
 	 * @param wikiContext
 	 */
 	private void includeDOMResources(WikiContext wikiContext) {

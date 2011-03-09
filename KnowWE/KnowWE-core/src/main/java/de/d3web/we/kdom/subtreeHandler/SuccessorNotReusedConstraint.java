@@ -20,8 +20,8 @@
 package de.d3web.we.kdom.subtreeHandler;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 
 /**
  * Registering this module to your SuptreeHandler lets him compile, if the

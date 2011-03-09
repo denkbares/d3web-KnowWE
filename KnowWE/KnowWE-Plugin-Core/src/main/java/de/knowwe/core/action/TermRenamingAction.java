@@ -30,7 +30,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import de.d3web.we.action.AbstractAction;
-import de.d3web.we.action.ActionContext;
+import de.d3web.we.action.UserActionContext;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -60,7 +60,7 @@ public class TermRenamingAction extends AbstractAction {
 	public static final String REPLACEMENT = "termreplacement";
 
 	@Override
-	public void execute(ActionContext context) throws IOException {
+	public void execute(UserActionContext context) throws IOException {
 
 		String web = context.getParameter(KnowWEAttributes.WEB);
 		String term = context.getParameter(TERMNAME);
@@ -99,7 +99,7 @@ public class TermRenamingAction extends AbstractAction {
 		generateMessage(failures, success, context);
 	}
 
-	private void generateMessage(Set<KnowWEArticle> failures, Set<KnowWEArticle> success, ActionContext context) throws IOException {
+	private void generateMessage(Set<KnowWEArticle> failures, Set<KnowWEArticle> success, UserActionContext context) throws IOException {
 		ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle();
 		Writer w = context.getWriter();
 		if (failures.size() == 0) {
@@ -128,13 +128,13 @@ public class TermRenamingAction extends AbstractAction {
 		}
 	}
 
-	private void renameTermDefinitions(Set<Section<? extends TermDefinition<?>>> definitions, String replacement, KnowWEArticleManager mgr, ActionContext context, Set<KnowWEArticle> failures, Set<KnowWEArticle> success) {
+	private void renameTermDefinitions(Set<Section<? extends TermDefinition<?>>> definitions, String replacement, KnowWEArticleManager mgr, UserActionContext context, Set<KnowWEArticle> failures, Set<KnowWEArticle> success) {
 		for (Section<? extends TermDefinition<?>> definition : definitions) {
 			if (KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(
 					definition.getTitle())) {
 				Map<String, String> nodesMap = new HashMap<String, String>();
 				nodesMap.put(definition.getID(), replacement);
-				mgr.replaceKDOMNodesSaveAndBuild(context.getKnowWEParameterMap(),
+				mgr.replaceKDOMNodesSaveAndBuild(context,
 						definition.getArticle().getTitle(), nodesMap);
 				success.add(definition.getArticle());
 			}
@@ -144,7 +144,7 @@ public class TermRenamingAction extends AbstractAction {
 		}
 	}
 
-	private void renameTermReferences(Set<Section<? extends TermReference<?>>> references, String replacement, KnowWEArticleManager mgr, ActionContext context, Set<KnowWEArticle> failures, Set<KnowWEArticle> success) {
+	private void renameTermReferences(Set<Section<? extends TermReference<?>>> references, String replacement, KnowWEArticleManager mgr, UserActionContext context, Set<KnowWEArticle> failures, Set<KnowWEArticle> success) {
 		Map<KnowWEArticle, List<Section<? extends TermReference<?>>>> groupedReferences = groupByArticle(references);
 		for (KnowWEArticle article : groupedReferences.keySet()) {
 			if (KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(
@@ -153,7 +153,7 @@ public class TermRenamingAction extends AbstractAction {
 				for (Section<? extends TermReference<?>> reference : groupedReferences.get(article)) {
 					nodesMap.put(reference.getID(), replacement);
 				}
-				mgr.replaceKDOMNodesSaveAndBuild(context.getKnowWEParameterMap(),
+				mgr.replaceKDOMNodesSaveAndBuild(context,
 							article.getTitle(), nodesMap);
 				success.add(article);
 			}

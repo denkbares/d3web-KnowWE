@@ -36,8 +36,8 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.KDOMWarning;
 import de.d3web.we.tools.Tool;
 import de.d3web.we.tools.ToolUtils;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDomRenderer<T> {
 
@@ -216,7 +216,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 	}
 
 	@Override
-	public void render(KnowWEArticle article, Section<T> section, KnowWEUserContext user, StringBuilder buffer) {
+	public void render(KnowWEArticle article, Section<T> section, UserContext user, StringBuilder buffer) {
 		String id = section.getID();
 		Tool[] tools = ToolUtils.getTools(article, section, user);
 
@@ -241,21 +241,21 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		renderDefaultMarkupStyled(header.toString(), content.toString(), id, tools, buffer);
 	}
 
-	protected void renderHeader(KnowWEArticle article, Section<T> section, KnowWEUserContext user, StringBuilder string) {
+	protected void renderHeader(KnowWEArticle article, Section<T> section, UserContext user, StringBuilder string) {
 		String icon = getHeaderIcon(article, section, user);
 		String title = getHeaderName(article, section, user);
 		string.append(renderHeader(icon, title));
 	}
 
-	protected String getHeaderName(KnowWEArticle article, Section<T> section, KnowWEUserContext user) {
+	protected String getHeaderName(KnowWEArticle article, Section<T> section, UserContext user) {
 		return section.get().getName();
 	}
 
-	protected String getHeaderIcon(KnowWEArticle article, Section<T> section, KnowWEUserContext user) {
+	protected String getHeaderIcon(KnowWEArticle article, Section<T> section, UserContext user) {
 		return this.iconPath;
 	}
 
-	protected void renderContents(KnowWEArticle article, Section<T> section, KnowWEUserContext user, StringBuilder string) {
+	protected void renderContents(KnowWEArticle article, Section<T> section, UserContext user, StringBuilder string) {
 		List<Section<?>> subsecs = section.getChildren();
 		Section<?> first = subsecs.get(0);
 		Section<?> last = subsecs.get(subsecs.size() - 1);
@@ -270,7 +270,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		}
 	}
 
-	protected void renderMessages(KnowWEArticle article, Section<? extends DefaultMarkupType> section, KnowWEUserContext user, StringBuilder string) {
+	protected void renderMessages(KnowWEArticle article, Section<? extends DefaultMarkupType> section, UserContext user, StringBuilder string) {
 		renderMessages(article, section, string);
 	}
 

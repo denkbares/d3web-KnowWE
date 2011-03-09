@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -23,9 +23,9 @@ package de.d3web.we.flow.kbinfo;
 import java.util.List;
 import java.util.UUID;
 
+import de.d3web.we.action.UserActionContext;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
@@ -34,19 +34,20 @@ import de.d3web.we.kdom.xml.AbstractXMLType;
 
 public class JSPHelper {
 
-	private final KnowWEParameterMap parameterMap;
+	private final UserActionContext userContext;
 
-	public JSPHelper(KnowWEParameterMap parameterMap) {
-		this.parameterMap = parameterMap;
-		if (this.parameterMap.getWeb() == null) {
-			this.parameterMap.put(KnowWEAttributes.WEB, KnowWEEnvironment.DEFAULT_WEB);
+	public JSPHelper(UserActionContext userContext) {
+		this.userContext = userContext;
+		if (this.userContext.getWeb() == null) {
+			this.userContext.getParameters().put(KnowWEAttributes.WEB,
+					KnowWEEnvironment.DEFAULT_WEB);
 		}
 	}
 
 	private List<String> getAllMatches(String className) {
 		return SearchInfoObjects.searchObjects(
 				KnowWEEnvironment.getInstance(),
-				this.parameterMap.getWeb(),
+				this.userContext.getWeb(),
 				null, className, 65535);
 	}
 
@@ -69,8 +70,8 @@ public class JSPHelper {
 	}
 
 	public String getKDOMNodeContent(String kdomID) {
-		return KnowWEEnvironment.getInstance().getNodeData(parameterMap.getWeb(),
-				parameterMap.getTopic(), kdomID);
+		return KnowWEEnvironment.getInstance().getNodeData(userContext.getWeb(),
+				userContext.getTopic(), kdomID);
 	}
 
 	public String getArticleInfoObjectsAsXML() {
@@ -79,11 +80,11 @@ public class JSPHelper {
 
 		// fill the response buffer
 		StringBuffer buffer = new StringBuffer();
-		GetInfoObjects.appendHeader(this.parameterMap, buffer);
+		GetInfoObjects.appendHeader(this.userContext, buffer);
 		for (String id : matches) {
-			GetInfoObjects.appendInfoObject(this.parameterMap.getWeb(), id, buffer);
+			GetInfoObjects.appendInfoObject(this.userContext.getWeb(), id, buffer);
 		}
-		GetInfoObjects.appendFooter(this.parameterMap, buffer);
+		GetInfoObjects.appendFooter(this.userContext, buffer);
 
 		// and done
 		return buffer.toString();
@@ -96,11 +97,11 @@ public class JSPHelper {
 
 		// fill the response buffer
 		StringBuffer buffer = new StringBuffer();
-		GetInfoObjects.appendHeader(this.parameterMap, buffer);
+		GetInfoObjects.appendHeader(this.userContext, buffer);
 		for (String id : matches) {
-			GetInfoObjects.appendInfoObject(this.parameterMap.getWeb(), id, buffer);
+			GetInfoObjects.appendInfoObject(this.userContext.getWeb(), id, buffer);
 		}
-		GetInfoObjects.appendFooter(this.parameterMap, buffer);
+		GetInfoObjects.appendFooter(this.userContext, buffer);
 
 		// and done
 		return buffer.toString();
@@ -108,8 +109,8 @@ public class JSPHelper {
 
 	@SuppressWarnings("unchecked")
 	public String loadFlowchart(String kdomID) {
-		String web = parameterMap.getWeb();
-		String topic = parameterMap.getTopic();
+		String web = userContext.getWeb();
+		String topic = userContext.getTopic();
 
 		Section<DefaultMarkupType> diaFluxSection = (Section<DefaultMarkupType>) KnowWEEnvironment.getInstance().getArticle(
 				web, topic).findSection(kdomID);
@@ -132,7 +133,7 @@ public class JSPHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @created 25.11.2010
 	 * @return
 	 */
@@ -145,7 +146,7 @@ public class JSPHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @created 23.02.2011
 	 * @return
 	 */
@@ -168,8 +169,8 @@ public class JSPHelper {
 	private String getFlowchartAttributeValue(String attributeName) {
 		Section<FlowchartType> section = Sections.findSuccessor(
 				KnowWEEnvironment.getInstance().getArticle(
-						parameterMap.getWeb(), parameterMap.getTopic()).findSection(
-						parameterMap.get("kdomID")), FlowchartType.class);
+						userContext.getWeb(), userContext.getTopic()).findSection(
+						userContext.getParameter("kdomID")), FlowchartType.class);
 
 		return AbstractXMLType.getAttributeMapFor(section).get(attributeName);
 	}

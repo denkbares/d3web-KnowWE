@@ -31,7 +31,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.we.action.KnowWEActionDispatcher;
-import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.action.UserActionContext;
+import de.d3web.we.user.UserContext;
 
 /**
  *
@@ -91,10 +92,10 @@ public interface KnowWEWikiConnector {
 	 *
 	 * @param name
 	 * @param text
-	 * @param map
+	 * @param context
 	 * @return
 	 */
-	public boolean writeArticleToWikiEnginePersistence(String name, String text, KnowWEParameterMap map);
+	public boolean writeArticleToWikiEnginePersistence(String name, String text, UserContext context);
 
 	/**
 	 * Saves the article (persistently) into the connected wiki
@@ -351,9 +352,9 @@ public interface KnowWEWikiConnector {
 	 * Renders given WIKI mark-up in the pagedata.
 	 *
 	 * @param pagedata The current data of the page.
-	 * @param map The parameters of the request.
+	 * @param userContext The parameters of the request.
 	 * @return The masked pagedata.
 	 */
-	public String renderWikiSyntax(String pagedata, KnowWEParameterMap map);
+	public String renderWikiSyntax(String pagedata, UserActionContext userContext);
 
 }

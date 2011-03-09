@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.we.action.AbstractAction;
-import de.d3web.we.action.ActionContext;
+import de.d3web.we.action.UserActionContext;
 import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -22,7 +22,7 @@ public class DownloadKnowledgeBase extends AbstractAction {
 	public static final String PARAM_FILENAME = "filename";
 
 	@Override
-	public void execute(ActionContext context) throws IOException {
+	public void execute(UserActionContext context) throws IOException {
 		String filename = context.getParameter(PARAM_FILENAME);
 		String topic = context.getParameter(KnowWEAttributes.TOPIC);
 		String web = context.getParameter(KnowWEAttributes.WEB);

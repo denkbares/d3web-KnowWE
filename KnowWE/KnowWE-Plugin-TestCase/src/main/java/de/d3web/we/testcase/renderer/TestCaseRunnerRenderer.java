@@ -28,8 +28,8 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.testcase.TestCaseUtils;
 import de.d3web.we.testcase.kdom.TestCaseRunnerType;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * Renderer for the TestCaseResultType.
@@ -48,7 +48,7 @@ public class TestCaseRunnerRenderer extends DefaultMarkupRenderer<TestCaseRunner
 	}
 
 	@Override
-	protected void renderContents(KnowWEArticle article, Section<TestCaseRunnerType> section, KnowWEUserContext user, StringBuilder string) {
+	protected void renderContents(KnowWEArticle article, Section<TestCaseRunnerType> section, UserContext user, StringBuilder string) {
 
 		this.rb = D3webModule.getKwikiBundle_d3web(user);
 		this.formatter = new MessageFormat("");

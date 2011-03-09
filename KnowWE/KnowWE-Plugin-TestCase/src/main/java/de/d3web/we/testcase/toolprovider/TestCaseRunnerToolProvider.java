@@ -24,7 +24,7 @@ import de.d3web.we.testcase.kdom.TestCaseRunnerType;
 import de.d3web.we.tools.DefaultTool;
 import de.d3web.we.tools.Tool;
 import de.d3web.we.tools.ToolProvider;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.UserContext;
 
 /**
  * ToolProvider which provides some download links for the TestCaseResultType.
@@ -35,7 +35,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class TestCaseRunnerToolProvider implements ToolProvider {
 
 	@Override
-	public Tool[] getTools(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext) {
+	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
 		String topic = TestCaseRunnerType.getTestCase(section);
 		Tool downloadPDF = getDownloadPDFTool(topic, article.getWeb(), section.getID());
 		Tool downloadGraphViz = getDownloadGraphVizTool(topic, article.getWeb(),

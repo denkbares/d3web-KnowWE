@@ -11,15 +11,15 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMWarning;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class SinglePackageReferenceRenderer extends KnowWEDomRenderer {
 
 	@Override
 	public void render(KnowWEArticle article,
 			Section sec,
-			KnowWEUserContext user,
+			UserContext user,
 			StringBuilder string) {
 
 		String packageName = sec.getOriginalText();

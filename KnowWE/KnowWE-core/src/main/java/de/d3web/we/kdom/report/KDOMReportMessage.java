@@ -26,8 +26,8 @@ import java.util.Collection;
 import java.util.Collections;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**

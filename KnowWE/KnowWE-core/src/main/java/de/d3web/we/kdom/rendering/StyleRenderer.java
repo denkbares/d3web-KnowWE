@@ -24,8 +24,8 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Type;
 import de.d3web.we.tools.ToolMenuDecoratingRenderer;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class StyleRenderer extends KnowWEDomRenderer {
 
@@ -89,7 +89,7 @@ public class StyleRenderer extends KnowWEDomRenderer {
 	}
 
 	@Override
-	public void render(KnowWEArticle article, Section section, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section section, UserContext user, StringBuilder string) {
 		string.append(KnowWEUtils.maskHTML("<span"));
 		if (cssClass != null) {
 			string.append(" class='").append(cssClass).append("'");
@@ -112,7 +112,7 @@ public class StyleRenderer extends KnowWEDomRenderer {
 	 * @param user the user to render for
 	 * @param string the buffer to render into
 	 */
-	protected void renderContent(KnowWEArticle article, Section section, KnowWEUserContext user, StringBuilder string) {
+	protected void renderContent(KnowWEArticle article, Section section, UserContext user, StringBuilder string) {
 		StringBuilder builder = new StringBuilder();
 		DelegateRenderer.getInstance().render(article, section, user, builder);
 		KnowWEUtils.maskJSPWikiMarkup(builder);

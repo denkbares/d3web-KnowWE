@@ -21,9 +21,9 @@
 package de.d3web.we.kdom.xml;
 
 import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.SectionIDDeclarant;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 
 public class XMLContent extends AbstractType implements SectionIDDeclarant {

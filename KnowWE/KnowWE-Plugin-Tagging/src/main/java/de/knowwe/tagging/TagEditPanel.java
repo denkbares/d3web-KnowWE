@@ -25,8 +25,8 @@ import java.util.Map;
 
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.taghandler.AbstractHTMLTagHandler;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class TagEditPanel extends AbstractHTMLTagHandler {
 
@@ -35,12 +35,12 @@ public class TagEditPanel extends AbstractHTMLTagHandler {
 	}
 
 	@Override
-	public String renderHTML(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, UserContext user,
 			Map<String, String> values, String web) {
 		return render(user);
 	}
 
-	public static String render(KnowWEUserContext user) {
+	public static String render(UserContext user) {
 		TaggingMangler tm = TaggingMangler.getInstance();
 		ArrayList<String> tags = tm.getPageTags(user.getTopic());
 		String output = "<p>";

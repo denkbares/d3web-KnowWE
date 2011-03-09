@@ -34,7 +34,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.we.action.KnowWEActionDispatcher;
-import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.action.UserActionContext;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.wikiConnector.ConnectorAttachment;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
@@ -157,7 +158,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	}
 
 	@Override
-	public boolean writeArticleToWikiEnginePersistence(String name, String text, KnowWEParameterMap map) {
+	public boolean writeArticleToWikiEnginePersistence(String name, String text, UserContext context) {
 		return true;
 	}
 
@@ -246,7 +247,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	}
 
 	@Override
-	public String renderWikiSyntax(String pagedata, KnowWEParameterMap map) {
+	public String renderWikiSyntax(String pagedata, UserActionContext userContext) {
 		return null;
 	}
 

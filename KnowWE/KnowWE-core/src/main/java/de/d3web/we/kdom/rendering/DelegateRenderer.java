@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -26,15 +26,15 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMNotice;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.KDOMWarning;
 import de.d3web.we.kdom.report.MessageRenderer;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class DelegateRenderer extends KnowWEDomRenderer {
 
@@ -58,9 +58,9 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 
 	@Override
 	public void render(KnowWEArticle article, Section section,
-			KnowWEUserContext user, StringBuilder builder) {
+			UserContext user, StringBuilder builder) {
 
-		boolean renderTypes = isRenderTypes(user.getUrlParameterMap());
+		boolean renderTypes = isRenderTypes(user.getParameters());
 		if (renderTypes) renderType(section, true, builder);
 
 		try {
@@ -100,7 +100,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		if (renderTypes) renderType(section, false, builder);
 	}
 
-	protected void renderSubSection(KnowWEArticle article, Section<?> subSection, KnowWEUserContext user, StringBuilder builder) {
+	protected void renderSubSection(KnowWEArticle article, Section<?> subSection, UserContext user, StringBuilder builder) {
 		renderAnchor(subSection, builder);
 
 		// any messageRenderer has pre- and post rendering hook
@@ -120,7 +120,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		renderMessagesPost(article, subSection, user, builder);
 	}
 
-	private void renderMessagesPost(KnowWEArticle article, Section<?> subSection, KnowWEUserContext user, StringBuilder builder) {
+	private void renderMessagesPost(KnowWEArticle article, Section<?> subSection, UserContext user, StringBuilder builder) {
 		// Render errors post
 		Collection<KDOMError> errors = KDOMReportMessage
 				.getErrors(article, subSection);
@@ -167,7 +167,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		}
 	}
 
-	private void renderMessagesPre(Section<?> subSection, KnowWEUserContext user, StringBuilder builder, KnowWEArticle article) {
+	private void renderMessagesPre(Section<?> subSection, UserContext user, StringBuilder builder, KnowWEArticle article) {
 		// Render warnings pre
 		Collection<KDOMWarning> warnings = KDOMReportMessage.getWarnings(article, subSection);
 		if (warnings != null && warnings.size() > 0) {
@@ -222,7 +222,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 	}
 
 	private KnowWEDomRenderer getRenderer(Section<?> section,
-			KnowWEUserContext user) {
+			UserContext user) {
 		KnowWEDomRenderer renderer = null;
 
 		Type objectType = section.get();

@@ -26,7 +26,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.tools.DefaultTool;
 import de.d3web.we.tools.Tool;
 import de.d3web.we.tools.ToolProvider;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.UserContext;
 
 /**
  * A tool provider to add some appropriate actions to the
@@ -38,12 +38,12 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class StyledSolutionPanelToolProvider implements ToolProvider {
 
 	@Override
-	public Tool[] getTools(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext) {
+	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
 		Tool clearSession = getSessionTool(article, section, userContext);
 		return new Tool[] { clearSession };
 	}
 
-	protected Tool getSessionTool(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext) {
+	protected Tool getSessionTool(KnowWEArticle article, Section<?> section, UserContext userContext) {
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(userContext);
 
 		// +

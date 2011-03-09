@@ -31,9 +31,9 @@ import java.util.regex.Pattern;
 
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 
 /**
  * Generic KDOM Search Engine

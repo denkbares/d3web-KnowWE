@@ -37,8 +37,8 @@ import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMWarning;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * Renders a knowledge base markup into the wiki page.
@@ -53,7 +53,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 	}
 
 	@Override
-	protected void renderContents(KnowWEArticle article, Section<KnowledgeBaseType> section, KnowWEUserContext user, StringBuilder string) {
+	protected void renderContents(KnowWEArticle article, Section<KnowledgeBaseType> section, UserContext user, StringBuilder string) {
 		String title = KnowledgeBaseType.getContent(section).trim();
 		String id = KnowledgeBaseType.getAnnotation(section, KnowledgeBaseType.ANNOTATION_ID);
 		String author = KnowledgeBaseType.getAnnotation(section,

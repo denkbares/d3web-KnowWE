@@ -38,9 +38,9 @@ import de.d3web.core.session.values.Unknown;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * Displays a configurable pane presenting derived solutions and abstractions.
@@ -66,7 +66,7 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 	}
 
 	@Override
-	protected void renderContents(KnowWEArticle article, Section<ShowSolutionsType> section, KnowWEUserContext user, StringBuilder string) {
+	protected void renderContents(KnowWEArticle article, Section<ShowSolutionsType> section, UserContext user, StringBuilder string) {
 		string.append(ShowSolutionsType.getText(section) + "\n");
 
 		String masterArticleName = ShowSolutionsType.getMaster(section);
@@ -276,7 +276,7 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 		else return value.toString();
 	}
 
-	private Session getSessionFor(String articleName, String webName, KnowWEUserContext user) {
+	private Session getSessionFor(String articleName, String webName, UserContext user) {
 		return D3webUtils.getSession(articleName, user, webName);
 	}
 

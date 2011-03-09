@@ -1,4 +1,11 @@
-<%@ page import="com.ecyrd.jspwiki.*" %><%@ page import="de.d3web.we.jspwiki.*" %><%@ page import="de.d3web.we.core.*" %><%@ page import="de.d3web.we.utils.*" %><%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %><%!
+<%@ page import="com.ecyrd.jspwiki.*" %>
+<%@ page import="de.d3web.we.jspwiki.*" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="de.d3web.we.action.*" %>
+<%@ page import="de.d3web.we.core.*" %>
+<%@ page import="de.d3web.we.utils.*" %>
+<%@ page import="de.d3web.we.user.*" %>
+<%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %><%!
 String findParam( PageContext ctx, String key )
     {
         ServletRequest req = ctx.getRequest();
@@ -10,20 +17,41 @@ String findParam( PageContext ctx, String key )
         return val;
     }
 %><%
-    WikiEngine wiki = WikiEngine.getInstance( getServletConfig() );
-    // Create wiki context; authorization check not needed
+	//Create wiki context; authorization check not needed
+	WikiEngine wiki = WikiEngine.getInstance( getServletConfig() );
     WikiContext wikiContext = wiki.createContext( request, WikiContext.VIEW );
 
+    // Check if KnowWE is initialized
     if (!KnowWEEnvironment.isInitialized()) {
 		KnowWEEnvironment.initKnowWE(new JSPWikiKnowWEConnector(wiki));
 	}
-	KnowWEEnvironment env = KnowWEEnvironment.getInstance();
-	JSPWikiUserContext context = new JSPWikiUserContext(wikiContext);
-	KnowWEParameterMap map = new KnowWEParameterMap(context,request,response,wiki.getServletContext(),env);
-	context.setUrlParameter(map);
+
+	// We need to do this, because the paramterMap is locked!
+	Map<String, String> parameters = UserContextUtil.getParameters(request);
 	
-	map.put("KWikiUser",wikiContext.getWikiSession().getUserPrincipal().getName());
+	// Add user
+	if (!parameters.containsKey(KnowWEAttributes.USER)) {
+		parameters.put(KnowWEAttributes.USER, wikiContext.getWikiSession().getUserPrincipal().getName());
+	}
 	
-	env.getDispatcher().performAction(map);
+	// Add topic
+	if (!parameters.containsKey(KnowWEAttributes.TOPIC)) {
+		String topic = parameters.get("page");
+		if (topic == null) {
+			topic = KnowWEUtils.urldecode(wikiContext.getPage().getName());
+		}
+		parameters.put(KnowWEAttributes.TOPIC, topic);
+	}
+	
+	// Add web
+	if(!parameters.containsKey(KnowWEAttributes.WEB)) {
+		parameters.put(KnowWEAttributes.WEB, "default_web");
+	}
+	
+	// Create action context
+	UserActionContext context = new ActionContext(parameters.get("action"), ActionServlet.getActionFollowUpPath(request), parameters, request, response, wiki.getServletContext(), wikiContext);
+	
+	// Perform action
+	KnowWEEnvironment.getInstance().getDispatcher().performAction(context);
 	
 %><wiki:Include page="<%=\"\"%>"/>

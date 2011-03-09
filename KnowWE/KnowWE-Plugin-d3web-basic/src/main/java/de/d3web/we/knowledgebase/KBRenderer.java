@@ -59,7 +59,7 @@ import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.taghandler.AbstractHTMLTagHandler;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.UserContext;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
@@ -76,13 +76,13 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	}
 
 	@Override
-	public String getDescription(KnowWEUserContext user) {
+	public String getDescription(UserContext user) {
 		return D3webModule.getKwikiBundle_d3web(user).getString(
 				"KnowWE.KBRenderer.description");
 	}
 
 	@Override
-	public String renderHTML(String topic, KnowWEUserContext user,
+	public String renderHTML(String topic, UserContext user,
 			Map<String, String> values, String web) {
 
 		D3webKnowledgeHandler knowledgeRepresentationHandler = D3webModule.getKnowledgeRepresentationHandler(KnowWEEnvironment.DEFAULT_WEB);
@@ -91,7 +91,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 		return renderHTML(web, topic, user, kb);
 	}
 
-	public String renderHTML(String web, String topic, KnowWEUserContext user, KnowledgeBase kb) {
+	public String renderHTML(String web, String topic, UserContext user, KnowledgeBase kb) {
 
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
 

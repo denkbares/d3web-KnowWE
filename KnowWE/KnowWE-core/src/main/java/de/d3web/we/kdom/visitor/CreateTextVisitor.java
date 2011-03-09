@@ -22,8 +22,8 @@ package de.d3web.we.kdom.visitor;
 
 import java.util.List;
 
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.basic.PlainText;
 
 public class CreateTextVisitor implements Visitor {

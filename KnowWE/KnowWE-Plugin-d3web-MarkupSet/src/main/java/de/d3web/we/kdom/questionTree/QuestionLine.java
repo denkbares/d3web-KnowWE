@@ -62,9 +62,9 @@ import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.object.QuestionDefinition.QuestionType;
 import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.knowwe.core.dashtree.DashTreeElementContent;
 import de.knowwe.core.dashtree.DashTreeUtils;
 
@@ -588,7 +588,7 @@ public class QuestionLine extends AbstractType {
 			this.setCustomRenderer(new StyleRenderer(StyleRenderer.OPERATOR.getCssStyle()) {
 
 				@Override
-				public void render(KnowWEArticle article, Section section, KnowWEUserContext user, StringBuilder string) {
+				public void render(KnowWEArticle article, Section section, UserContext user, StringBuilder string) {
 					StringBuilder temp = new StringBuilder();
 					super.render(article, section, user, temp);
 					string.append(temp.toString());

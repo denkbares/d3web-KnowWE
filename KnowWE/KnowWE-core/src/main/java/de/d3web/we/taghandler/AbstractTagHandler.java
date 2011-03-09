@@ -21,7 +21,7 @@
 package de.d3web.we.taghandler;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.UserContext;
 
 /**
  * @author Jochen
@@ -60,7 +60,7 @@ public abstract class AbstractTagHandler implements TagHandler {
 	}
 
 	@Override
-	public String getDescription(KnowWEUserContext user) {
+	public String getDescription(UserContext user) {
 		return KnowWEEnvironment.getInstance().getKwikiBundle(user).getString(
 				"KnowWE.Taghandler.standardDescription");
 	}

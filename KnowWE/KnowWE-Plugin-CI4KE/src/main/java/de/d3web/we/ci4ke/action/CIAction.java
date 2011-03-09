@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.net.URLDecoder;
 
 import de.d3web.we.action.AbstractAction;
-import de.d3web.we.action.ActionContext;
+import de.d3web.we.action.UserActionContext;
 import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
 import de.d3web.we.ci4ke.build.CIBuilder;
 import de.d3web.we.ci4ke.handling.CIDashboardRenderer;
@@ -32,14 +32,14 @@ import de.d3web.we.ci4ke.handling.CIDashboardRenderer;
 public class CIAction extends AbstractAction {
 
 	@Override
-	public void execute(ActionContext context) throws IOException {
+	public void execute(UserActionContext context) throws IOException {
 
 		String task = String.valueOf(context.getParameter("task"));
 
 		String dashboardName = String.valueOf(context.getParameter("id"));
 		dashboardName = URLDecoder.decode(dashboardName, "UTF-8");
 
-		String topic = context.getKnowWEParameterMap().getTopic();
+		String topic = context.getTopic();
 
 		if (task.equals("null") || dashboardName.equals("null")) {
 			throw new IOException(

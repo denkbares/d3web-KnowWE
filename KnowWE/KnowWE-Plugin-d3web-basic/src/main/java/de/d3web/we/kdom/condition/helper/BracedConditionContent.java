@@ -2,8 +2,8 @@ package de.d3web.we.kdom.condition.helper;
 
 import java.util.List;
 
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.NonTerminalCondition;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;

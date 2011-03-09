@@ -19,20 +19,20 @@
 package de.knowwe.core.correction;
 
 import de.d3web.we.kdom.rendering.PageAppendHandler;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.UserContext;
 
 /**
  * This append handler is a placebo (read: it does nothing) for loading
  * JavaScript and CSS for the TermReference correction functionality
  * via plugin.xml.
- * 
+ *
  * @author Alex Legler
- * @created 20.11.2010 
+ * @created 20.11.2010
  */
 public class CorrectionAppendHandler implements PageAppendHandler {
-	
+
 	@Override
-	public String getDataToAppend(String topic, String web, KnowWEUserContext user) {	
+	public String getDataToAppend(String topic, String web, UserContext user) {
 		return "";
 	}
 

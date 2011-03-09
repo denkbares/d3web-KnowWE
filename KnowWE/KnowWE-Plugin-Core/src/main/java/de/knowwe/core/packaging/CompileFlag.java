@@ -32,8 +32,8 @@ import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class CompileFlag extends DefaultMarkupType {
 
@@ -57,7 +57,7 @@ public class CompileFlag extends DefaultMarkupType {
 		@Override
 		public void render(KnowWEArticle article,
 				Section<CompileFlag> sec,
-				KnowWEUserContext user,
+				UserContext user,
 				StringBuilder string) {
 
 			List<Section<SinglePackageReference>> packageReferences = new LinkedList<Section<SinglePackageReference>>();

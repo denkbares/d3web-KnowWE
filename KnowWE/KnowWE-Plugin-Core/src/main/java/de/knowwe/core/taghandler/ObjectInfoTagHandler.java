@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -45,19 +45,19 @@ import de.d3web.we.taghandler.AbstractTagHandler;
 import de.d3web.we.terminology.TerminologyHandler;
 import de.d3web.we.tools.Tool;
 import de.d3web.we.tools.ToolUtils;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * ObjectInfo TagHandler
- * 
+ *
  * This TagHandler gathers information about a specified Object. The TagHanlder
  * shows the article in which the object is defined and all articles with
  * references to this object.
- * 
+ *
  * Additionally there is a possibility to rename this object in all articles and
  * to create a wiki page for this object.
- * 
+ *
  * @author Sebastian Furth
  * @created 01.12.2010
  */
@@ -96,7 +96,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public final String render(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext, Map<String, String> parameters) {
+	public final String render(KnowWEArticle article, Section<?> section, UserContext userContext, Map<String, String> parameters) {
 		panelCounter = 0;
 		sectionCounter = 0;
 		rb = KnowWEEnvironment.getInstance().getKwikiBundle();
@@ -112,9 +112,9 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return buffer.toString();
 	}
 
-	private String renderContent(KnowWEArticle article, Section<?> section, KnowWEUserContext user, Map<String, String> parameters) {
+	private String renderContent(KnowWEArticle article, Section<?> section, UserContext user, Map<String, String> parameters) {
 
-		Map<String, String> urlParameters = user.getUrlParameterMap();
+		Map<String, String> urlParameters = user.getParameters();
 
 		// First try the URL-Parameter, if null try the TagHandler-Parameter.
 		String objectName = urlParameters.get(OBJECTNAME) != null

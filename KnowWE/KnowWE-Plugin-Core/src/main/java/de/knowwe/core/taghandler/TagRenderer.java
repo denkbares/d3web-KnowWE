@@ -25,20 +25,20 @@ import java.util.Map;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.taghandler.TagHandler;
 import de.d3web.we.taghandler.TagHandlerAttributeSubTreeHandler;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class TagRenderer extends KnowWEDomRenderer<TagHandlerType> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void render(KnowWEArticle article, Section<TagHandlerType> sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section<TagHandlerType> sec, UserContext user, StringBuilder string) {
 		Section<TagHandlerTypeContent> attrContent = Sections.findChildOfType(sec,
 				TagHandlerTypeContent.class);
 		if (attrContent == null) {

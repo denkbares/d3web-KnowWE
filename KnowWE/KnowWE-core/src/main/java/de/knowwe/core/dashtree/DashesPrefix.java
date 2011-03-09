@@ -30,7 +30,7 @@ import de.d3web.we.kdom.rendering.DefaultTextRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.UserContext;
 
 public class DashesPrefix extends AbstractType {
 
@@ -40,7 +40,7 @@ public class DashesPrefix extends AbstractType {
 		this.setCustomRenderer(new KnowWEDomRenderer<Type>() {
 
 			@Override
-			public void render(KnowWEArticle article, Section<Type> sec, KnowWEUserContext user, StringBuilder string) {
+			public void render(KnowWEArticle article, Section<Type> sec, UserContext user, StringBuilder string) {
 				if (sec.getOriginalText().trim().startsWith("-")) {
 					string.append('~');
 				}

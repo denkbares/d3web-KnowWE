@@ -19,7 +19,7 @@
  */
 package de.d3web.we.kdom.rendering;
 
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.UserContext;
 
 /**
  * 
@@ -45,7 +45,7 @@ public interface PageAppendHandler {
 	 * @param user
 	 * @return
 	 */
-	public String getDataToAppend(String topic, String web, KnowWEUserContext user);
+	public String getDataToAppend(String topic, String web, UserContext user);
 
 	/**
 	 * Specifies whether the content should be inserted at the top/beginning

@@ -26,7 +26,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.tools.DefaultTool;
 import de.d3web.we.tools.Tool;
 import de.d3web.we.tools.ToolProvider;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.UserContext;
 import de.knowwe.core.taghandler.ObjectInfoTagHandler;
 
 /**
@@ -40,7 +40,7 @@ import de.knowwe.core.taghandler.ObjectInfoTagHandler;
 public class ObjectInfoToolProvider implements ToolProvider {
 
 	@Override
-	public Tool[] getTools(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext) {
+	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
 
 		Tool homepage = getCreateHomepageTool(article.getTitle(), article.getWeb(), section.getID());
 		return new Tool[] { homepage };

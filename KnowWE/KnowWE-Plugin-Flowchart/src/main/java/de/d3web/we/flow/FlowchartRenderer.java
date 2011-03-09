@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -46,18 +46,18 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
- * 
+ *
  * @author Reinhard Hatko
  */
 public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 
 	@Override
-	public void render(KnowWEArticle article, Section<FlowchartType> sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section<FlowchartType> sec, UserContext user, StringBuilder string) {
 
 		// render anchor to be able to link to that flowchart
 		String anchorName = KnowWEUtils.getAnchor(sec);
@@ -73,7 +73,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 		// to the preview nodes using javascript/dhtml
 		String secID = sec.getFather().getFather().getID();
 		String thisFlowchartName = FlowchartType.getFlowchartName(sec);
-		String highlight = user.getUrlParameterMap().get("highlight");
+		String highlight = user.getParameters().get("highlight");
 		if (highlight != null && highlight.equals("true")) {
 			// prepare some basic information
 			Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
@@ -134,7 +134,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 	}
 
 	/**
-	 * 
+	 *
 	 * @created 02.03.2011
 	 * @param calledFlowName
 	 * @return
@@ -193,7 +193,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 		return false;
 	}
 
-	private String createPreview(KnowWEArticle article, Section<FlowchartType> sec, KnowWEUserContext user, String web, String topic, StringBuilder builder) {
+	private String createPreview(KnowWEArticle article, Section<FlowchartType> sec, UserContext user, String web, String topic, StringBuilder builder) {
 
 		String preview = FlowchartUtils.createRenderablePreview(sec);
 

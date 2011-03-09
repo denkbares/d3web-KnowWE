@@ -23,9 +23,7 @@ package de.d3web.we.kdom.rule;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.objects.IncrementalMarker;
-import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
 /**

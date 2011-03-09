@@ -22,7 +22,6 @@ package de.knowwe.core.dashtree;
 import java.util.List;
 
 import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.InvalidKDOMSchemaModificationOperation;
 import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderDivCorrectTrimmed;

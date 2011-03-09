@@ -26,9 +26,9 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.IncrementalMarker;
@@ -42,8 +42,8 @@ import de.d3web.we.kdom.subtreeHandler.ConstraintModule.Operator;
 import de.d3web.we.kdom.subtreeHandler.ConstraintModule.Purpose;
 import de.d3web.we.object.SolutionDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.knowwe.core.dashtree.AncestorSubtreeChangeConstraint;
 import de.knowwe.core.dashtree.DashTreeElementContent;
 import de.knowwe.core.dashtree.DashTreeUtils;
@@ -86,7 +86,7 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 	private static final class SolutionDashTreeElementContentRenderer extends KnowWEDomRenderer<Type> {
 
 		@Override
-		public void render(KnowWEArticle article, Section<Type> sec, KnowWEUserContext user, StringBuilder string) {
+		public void render(KnowWEArticle article, Section<Type> sec, UserContext user, StringBuilder string) {
 			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID() + "'>"));
 			DelegateRenderer.getInstance().render(article, sec, user, string);
 			string.append(KnowWEUtils.maskHTML("</span>"));

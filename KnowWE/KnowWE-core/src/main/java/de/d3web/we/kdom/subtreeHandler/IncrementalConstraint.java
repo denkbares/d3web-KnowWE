@@ -21,8 +21,8 @@
 package de.d3web.we.kdom.subtreeHandler;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 
 
 public interface IncrementalConstraint<T extends Type> {

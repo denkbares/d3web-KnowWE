@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -28,12 +28,11 @@ import java.util.regex.Pattern;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.action.AbstractAction;
-import de.d3web.we.action.ActionContext;
+import de.d3web.we.action.UserActionContext;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 
@@ -65,7 +64,7 @@ public class UpdateSolutions extends AbstractAction {
 	}
 
 	@Override
-	public void execute(ActionContext context) throws IOException {
+	public void execute(UserActionContext context) throws IOException {
 		// get everything important from the parameter map
 		String web = context.getParameter(KnowWEAttributes.WEB);
 		String solutionText = context.getParameter("text");
@@ -79,7 +78,7 @@ public class UpdateSolutions extends AbstractAction {
 		KnowWEArticle article = artManager.getArticle(pageName);
 		KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
 		Section<KnowWEArticle> sec = article.getSection();
-		KnowWEParameterMap map = new KnowWEParameterMap(KnowWEAttributes.WEB, sec.getWeb());
+		context.getParameters().put(KnowWEAttributes.WEB, sec.getWeb());
 		String oldText = article.getSection().getOriginalText();
 
 		// get everything for the new solution
@@ -93,7 +92,7 @@ public class UpdateSolutions extends AbstractAction {
 		// save the new article
 		String newText = firstPart + newSolutionsSection + lastPart;
 		instance.getWikiConnector().writeArticleToWikiEnginePersistence(sec.getTitle(),
-				newText, map);
+				newText, context);
 
 		// remove leading and ending quotes
 		solutionText = UpdateQuestions.removeLeadingAndClosingQuotes(solutionText);

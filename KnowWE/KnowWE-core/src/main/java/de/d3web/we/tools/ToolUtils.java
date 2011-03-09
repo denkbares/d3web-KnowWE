@@ -10,8 +10,8 @@ import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.ScopeUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 
 public class ToolUtils {
@@ -31,8 +31,8 @@ public class ToolUtils {
 		}
 		return providers;
 	}
-	
-	public static Tool[] getTools(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext) {
+
+	public static Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
 		List<Tool> tools = new LinkedList<Tool>();
 		for (ToolProvider provider : getProviders(section)) {
 			Collections.addAll(tools, provider.getTools(article, section, userContext));

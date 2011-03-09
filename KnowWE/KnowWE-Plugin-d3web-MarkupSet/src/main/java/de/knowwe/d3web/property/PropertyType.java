@@ -40,9 +40,9 @@ import de.d3web.we.object.ContentDefinition;
 import de.d3web.we.object.IDObjectReference;
 import de.d3web.we.object.LocaleDefinition;
 import de.d3web.we.object.PropertyReference;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.Patterns;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * Adds the PropertyReviseSubtreeHandler to the Property line
@@ -60,7 +60,7 @@ public class PropertyType extends AbstractType implements IncrementalMarker, Inc
 	private static final class PropertyIDObbjetReferenceRenderer extends KnowWEDomRenderer<IDObjectReference> {
 
 		@Override
-		public void render(KnowWEArticle article, Section<IDObjectReference> sec, KnowWEUserContext user, StringBuilder string) {
+		public void render(KnowWEArticle article, Section<IDObjectReference> sec, UserContext user, StringBuilder string) {
 			NamedObject object = sec.get().getTermObject(article, sec);
 			KnowWEDomRenderer renderer;
 			if (object instanceof Question) {

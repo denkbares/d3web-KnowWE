@@ -22,8 +22,8 @@ package de.knowwe.core.taghandler;
 
 import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.MultiSectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 
 public class TagHandlerTypeEndSymbol extends AbstractType {
 

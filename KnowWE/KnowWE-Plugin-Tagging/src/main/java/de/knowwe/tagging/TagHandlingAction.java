@@ -20,22 +20,34 @@
 
 package de.knowwe.tagging;
 
-import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
+import java.io.IOException;
+
+import de.d3web.we.action.AbstractAction;
+import de.d3web.we.action.UserActionContext;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.KnowWEParameterMap;
 
-public class TagHandlingAction extends DeprecatedAbstractKnowWEAction {
+public class TagHandlingAction extends AbstractAction {
 
 	@Override
-	public String perform(KnowWEParameterMap parameterMap) {
+	public void execute(UserActionContext context) throws IOException {
+
+		String result = perform(context);
+		if (result != null && context.getWriter() != null) {
+			context.setContentType("text/html; charset=UTF-8");
+			context.getWriter().write(result);
+		}
+
+	}
+
+	private String perform(UserActionContext context) {
 		// String web = parameterMap.getWeb();
-		String topic = parameterMap.getTopic();
-		String tagaction = parameterMap.get(KnowWEAttributes.TAGGING_ACTION);
-		String tag = parameterMap.get(KnowWEAttributes.TAGGING_TAG);
+		String topic = context.getTopic();
+		String tagaction = context.getParameter(KnowWEAttributes.TAGGING_ACTION);
+		String tag = context.getParameter(KnowWEAttributes.TAGGING_TAG);
 
 		if (tagaction.equals("pagesearch")) {
-			String query = parameterMap.get(KnowWEAttributes.TAGGING_QUERY);
+			String query = context.getParameter(KnowWEAttributes.TAGGING_QUERY);
 			return TaggingMangler.getInstance().getResultPanel(query);
 		}
 
@@ -43,7 +55,7 @@ public class TagHandlingAction extends DeprecatedAbstractKnowWEAction {
 			return "error! null topic";
 		}
 		boolean b = KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(topic,
-				parameterMap.getRequest());
+				context.getRequest());
 
 		if (b == false) {
 			return "Your are not allowed to edit page";
@@ -51,13 +63,13 @@ public class TagHandlingAction extends DeprecatedAbstractKnowWEAction {
 
 		TaggingMangler tm = TaggingMangler.getInstance();
 		if (tagaction.equals("add")) {
-			tm.addTag(topic, tag, parameterMap);
+			tm.addTag(topic, tag, context);
 		}
 		else if (tagaction.equals("del")) {
-			tm.removeTag(topic, tag, parameterMap);
+			tm.removeTag(topic, tag, context);
 		}
 		else if (tagaction.equals("set")) {
-			tm.setTags(topic, tag, parameterMap);
+			tm.setTags(topic, tag, context);
 		}
 
 		return tag;

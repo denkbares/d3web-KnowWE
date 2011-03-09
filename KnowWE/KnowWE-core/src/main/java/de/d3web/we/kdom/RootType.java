@@ -27,7 +27,7 @@ import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.KDOMWarning;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.UserContext;
 
 /**
  * 
@@ -55,7 +55,7 @@ public class RootType extends AbstractType {
 		return new KnowWEDomRenderer<RootType>() {
 
 			@Override
-			public void render(KnowWEArticle article, Section<RootType> section, KnowWEUserContext user, StringBuilder string) {
+			public void render(KnowWEArticle article, Section<RootType> section, UserContext user, StringBuilder string) {
 				Collection<KDOMReportMessage> messages = KDOMReportMessage.getMessages(section,
 						article);
 				for (KDOMReportMessage message : messages) {

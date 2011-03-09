@@ -21,7 +21,7 @@ package de.knowwe.core.action;
 import java.io.IOException;
 
 import de.d3web.we.action.AbstractAction;
-import de.d3web.we.action.ActionContext;
+import de.d3web.we.action.UserActionContext;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.knowwe.core.taghandler.ObjectInfoTagHandler;
 
@@ -41,7 +41,7 @@ import de.knowwe.core.taghandler.ObjectInfoTagHandler;
 public class CreateObjectHomePageAction extends AbstractAction {
 
 	@Override
-	public void execute(ActionContext context) throws IOException {
+	public void execute(UserActionContext context) throws IOException {
 
 		String objectName = context.getParameter(ObjectInfoTagHandler.OBJECTNAME);
 		String currentArticle = context.getParameter("page");
@@ -57,7 +57,7 @@ public class CreateObjectHomePageAction extends AbstractAction {
 				String content = "[{KnowWEPlugin objectInfo , objectname=" + objectName
 							+ "}]";
 				KnowWEEnvironment.getInstance().getWikiConnector().createWikiPage(objectName,
-							content, context.getWikiContext().getUserName());
+							content, context.getUserName());
 			}
 
 		}

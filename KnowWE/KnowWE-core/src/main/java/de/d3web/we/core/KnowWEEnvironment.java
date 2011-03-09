@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -59,11 +59,11 @@ import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 import de.d3web.we.taghandler.TagHandler;
 import de.d3web.we.terminology.TerminologyHandler;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.user.UserSettingsManager;
 import de.d3web.we.utils.KnowWETypeSet;
 import de.d3web.we.utils.KnowWETypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 import de.knowwe.plugin.Instantiation;
 import de.knowwe.plugin.Plugins;
@@ -71,13 +71,13 @@ import dummies.KnowWETestWikiConnector;
 
 /**
  * @author Jochen
- * 
+ *
  *         This is the core class of KnowWE2. It manages the ArticleManager(s)
  *         and provides methods to access KnowWE-Articles, KnowWE-Modules and
  *         Parse-reports. Further it is connected to the used Wiki-engine,
  *         holding an instance of KnowWEWikiConnector and allows page saves.
- * 
- * 
+ *
+ *
  */
 
 public class KnowWEEnvironment {
@@ -140,13 +140,6 @@ public class KnowWEEnvironment {
 	 * ('default_web')
 	 */
 	private final Map<String, KnowWEStoreManager> knowWEStores = new HashMap<String, KnowWEStoreManager>();
-	// /**
-	// * The servlet context of the running application. Necessary to determine
-	// * the path of the running app on the server
-	// *
-	// * TODO cant this be factored out?
-	// */
-	// private ServletContext context;
 
 	/**
 	 * This is the link to the connected Wiki-engine. Allows saving pages etc.
@@ -155,14 +148,14 @@ public class KnowWEEnvironment {
 
 	/**
 	 * holding the default tag handlers of KnowWE2
-	 * 
+	 *
 	 * @see renderTags
 	 */
 	private final HashMap<String, TagHandler> tagHandlers = new HashMap<String, TagHandler>();
 
 	/**
 	 * grants access on the default tag handlers of KnowWE2
-	 * 
+	 *
 	 * @return HashMap holding the default tag handlers of KnowWE2
 	 */
 	public HashMap<String, TagHandler> getDefaultTagHandlers() {
@@ -174,9 +167,9 @@ public class KnowWEEnvironment {
 		return ResourceBundle.getBundle("KnowWE_messages");
 	}
 
-	public ResourceBundle getKwikiBundle(KnowWEUserContext user) {
+	public ResourceBundle getKwikiBundle(UserContext user) {
 
-		Locale.setDefault(wikiConnector.getLocale(user.getHttpRequest()));
+		Locale.setDefault(wikiConnector.getLocale(user.getRequest()));
 		return this.getKwikiBundle();
 	}
 
@@ -279,7 +272,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * Returns the KnowWEArticle object for a given web and pagename
-	 * 
+	 *
 	 * @param web
 	 * @param topic
 	 * @return
@@ -290,7 +283,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * returns the ArtilceManager for a given web
-	 * 
+	 *
 	 * @param web
 	 * @return
 	 */
@@ -314,7 +307,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * returns the PackageManager for a given web
-	 * 
+	 *
 	 * @param web
 	 * @return
 	 */
@@ -329,7 +322,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * returns the TerminologyHandler for a given web
-	 * 
+	 *
 	 * @param web
 	 * @return
 	 */
@@ -344,7 +337,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * returns the KnowWEStoreManager for a given web
-	 * 
+	 *
 	 * @param web
 	 * @return
 	 */
@@ -359,9 +352,9 @@ public class KnowWEEnvironment {
 
 	/**
 	 * private contructor
-	 * 
+	 *
 	 * @see getInstance()
-	 * 
+	 *
 	 * @param wiki Connector to the used core wiki engine
 	 */
 	/**
@@ -525,7 +518,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * Getter for KnowWEWikiConnector
-	 * 
+	 *
 	 * @return this.wikiConnector
 	 */
 	public KnowWEWikiConnector getWikiConnector() {
@@ -535,9 +528,9 @@ public class KnowWEEnvironment {
 	/**
 	 * returns the ActionDispatcher from the WikiConnector (JSPWiki: used by
 	 * KnowWE.jsp)
-	 * 
+	 *
 	 * TODO factor out in KnowWE.jsp
-	 * 
+	 *
 	 * @return
 	 */
 	public KnowWEActionDispatcher getDispatcher() {
@@ -566,7 +559,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * Called by the Core-Junit-Tests
-	 * 
+	 *
 	 * @param username
 	 * @param content
 	 * @param topic
@@ -587,7 +580,7 @@ public class KnowWEEnvironment {
 	/**
 	 * Knowledge Services (Kopic) needs to have an id. This is how a default id
 	 * is generated when users dont enter one.
-	 * 
+	 *
 	 * @param topic
 	 * @return
 	 */
@@ -612,7 +605,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * Collects all Types.
-	 * 
+	 *
 	 * @return
 	 */
 	public List<Type> getAllTypes() {
@@ -633,7 +626,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * @See KnowWETypeBrowserAction
-	 * 
+	 *
 	 * @param clazz
 	 * @return
 	 */

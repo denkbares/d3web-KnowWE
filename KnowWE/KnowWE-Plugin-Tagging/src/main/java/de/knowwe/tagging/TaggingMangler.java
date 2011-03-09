@@ -33,8 +33,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import de.d3web.we.action.UserActionContext;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -42,6 +42,7 @@ import de.d3web.we.kdom.Sections;
 import de.d3web.we.search.GenericSearchResult;
 import de.d3web.we.search.KnowWESearchProvider;
 import de.d3web.we.search.SearchTerm;
+import de.d3web.we.user.UserContext;
 
 /**
  * Centralized management of tags. Takes care of adding/removing tags. And
@@ -80,7 +81,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * @param pagename
 	 * @param tag
 	 */
-	public void addTag(String pagename, String tag, KnowWEParameterMap params) {
+	public void addTag(String pagename, String tag, UserActionContext context) {
 		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();
 		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				pagename);
@@ -111,10 +112,10 @@ public class TaggingMangler implements KnowWESearchProvider {
 			Map<String, String> nodesMap = new HashMap<String, String>();
 			nodesMap.put(keep.getID(), output);
 			ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB)
-					.replaceKDOMNodesSaveAndBuild(params, pagename, nodesMap);
+					.replaceKDOMNodesSaveAndBuild(context, pagename, nodesMap);
 		}
 		else {
-			addNewTagSection(pagename, tag, params);
+			addNewTagSection(pagename, tag, context);
 		}
 	}
 
@@ -125,7 +126,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * @param pagename
 	 * @param tag
 	 */
-	public void removeTag(String pagename, String tag, KnowWEParameterMap params) {
+	public void removeTag(String pagename, String tag, UserActionContext context) {
 		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();
 		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				pagename);
@@ -152,7 +153,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(keep.getID(), output);
 		ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB).replaceKDOMNodesSaveAndBuild(
-				params, pagename, nodesMap);
+				context, pagename, nodesMap);
 	}
 
 	/**
@@ -288,7 +289,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * @param topic
 	 * @param tag comma/space separated list of tags
 	 */
-	public void setTags(String topic, String tag, KnowWEParameterMap params) {
+	public void setTags(String topic, String tag, UserActionContext context) {
 		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();
 		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				topic);
@@ -312,10 +313,10 @@ public class TaggingMangler implements KnowWESearchProvider {
 			Map<String, String> nodesMap = new HashMap<String, String>();
 			nodesMap.put(keep.getID(), output);
 			ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB)
-					.replaceKDOMNodesSaveAndBuild(params, topic, nodesMap);
+					.replaceKDOMNodesSaveAndBuild(context, topic, nodesMap);
 		}
 		else {
-			addNewTagSection(topic, output, params);
+			addNewTagSection(topic, output, context);
 		}
 	}
 
@@ -324,7 +325,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 *
 	 */
 	public void addNewTagSection(String topic, String content,
-			KnowWEParameterMap params) {
+			UserActionContext context) {
 		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();
 		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				topic);
@@ -340,7 +341,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(asection.getID(), text);
 		ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB).replaceKDOMNodesSaveAndBuild(
-				params, topic, nodesMap);
+				context, topic, nodesMap);
 	}
 
 	public ArrayList<GenericSearchResult> searchPages(String querytags) {
@@ -459,7 +460,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 
 	@Override
 	public Collection<GenericSearchResult> search(Collection<SearchTerm> words,
-			KnowWEParameterMap map) {
+			UserContext user) {
 		Collection<GenericSearchResult> collection = new ArrayList<GenericSearchResult>();
 		for (SearchTerm searchTerm : words) {
 			collection.addAll(searchPages(searchTerm.getTerm()));

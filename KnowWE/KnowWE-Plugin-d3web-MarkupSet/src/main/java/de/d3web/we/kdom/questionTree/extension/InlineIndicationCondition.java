@@ -19,9 +19,9 @@ import de.d3web.indication.ActionInstantIndication;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.condition.Finding;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.NothingRenderer;
@@ -29,16 +29,16 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.rules.RuleContentType;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.UnquotedExpressionFinder;
 import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * This type allows to define within the definition of a question, when this
@@ -63,7 +63,7 @@ public class InlineIndicationCondition extends AbstractType {
 		open.setCustomRenderer(new KnowWEDomRenderer<Type>() {
 
 			@Override
-			public void render(KnowWEArticle article, Section<Type> sec, KnowWEUserContext user, StringBuilder string) {
+			public void render(KnowWEArticle article, Section<Type> sec, UserContext user, StringBuilder string) {
 				string.append(KnowWEUtils.maskHTML("<b>"));
 				string.append(sec.getOriginalText().substring(1).trim());
 				string.append(KnowWEUtils.maskHTML("</b>"));

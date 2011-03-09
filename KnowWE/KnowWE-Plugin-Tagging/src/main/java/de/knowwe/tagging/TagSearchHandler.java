@@ -25,8 +25,8 @@ import java.util.Map;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class TagSearchHandler extends AbstractTagHandler {
 
@@ -36,10 +36,10 @@ public class TagSearchHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext, Map<String, String> parameters) {
+	public String render(KnowWEArticle article, Section<?> section, UserContext userContext, Map<String, String> parameters) {
 
 		String querystring = null;
-		Map<String, String> par = userContext.getUrlParameterMap();
+		Map<String, String> par = userContext.getParameters();
 		if (par != null) {
 			String parameterName = "tag";
 			if (par.containsKey(parameterName)) {

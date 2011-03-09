@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -23,11 +23,10 @@ package de.d3web.we.flow.kbinfo;
 import java.io.IOException;
 
 import de.d3web.we.action.AbstractAction;
-import de.d3web.we.action.ActionContext;
+import de.d3web.we.action.UserActionContext;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 
@@ -100,7 +99,7 @@ public class AddSubFlowchart extends AbstractAction {
 	}
 
 	@Override
-	public void execute(ActionContext context) throws IOException {
+	public void execute(UserActionContext context) throws IOException {
 		// Logging.getInstance().addHandlerToLogger(Logging.getInstance().getLogger(),
 		// "AddSub.txt");
 		// get everything important from the parameter map
@@ -194,10 +193,9 @@ public class AddSubFlowchart extends AbstractAction {
 		String text = getSurrounding(oldText)[0] + flowchart
 				+ getSurrounding(oldText)[1];
 
-		KnowWEParameterMap map = new KnowWEParameterMap(KnowWEAttributes.WEB, sec.getWeb());
-
+		context.getParameters().put(KnowWEAttributes.WEB, sec.getWeb());
 		instance.getWikiConnector().writeArticleToWikiEnginePersistence(sec.getTitle(),
-				text, map);
+				text, context);
 
 		String flowID = name;
 

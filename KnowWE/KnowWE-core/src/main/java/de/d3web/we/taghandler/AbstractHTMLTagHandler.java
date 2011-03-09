@@ -24,8 +24,8 @@ import java.util.Map;
 
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * @author Jochen
@@ -41,7 +41,7 @@ public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public final String render(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext, Map<String, String> parameters) {
+	public final String render(KnowWEArticle article, Section<?> section, UserContext userContext, Map<String, String> parameters) {
 		return KnowWEUtils.maskHTML(renderHTML(article.getTitle(), userContext, parameters,
 				article.getWeb()));
 	}
@@ -57,6 +57,6 @@ public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 	 * @param parameters the parameters of the tag handler invocation
 	 * @return the resulting wiki markup text
 	 */
-	public abstract String renderHTML(String topic, KnowWEUserContext user, Map<String, String> parameters, String web);
+	public abstract String renderHTML(String topic, UserContext user, Map<String, String> parameters, String web);
 
 }

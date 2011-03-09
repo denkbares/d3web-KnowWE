@@ -25,8 +25,8 @@ import java.util.Collection;
 import java.util.List;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.ConstraintModule.Operator;
 import de.d3web.we.kdom.subtreeHandler.ConstraintModule.Purpose;

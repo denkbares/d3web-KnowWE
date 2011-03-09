@@ -170,6 +170,14 @@
         <parameter id="priority" value="5" />
     </extension>
     
+    <extension plugin-id="KnowWEExtensionPoints" point-id="SearchProvider" id="JSPWikiSearchProvider">
+		<parameter id="class" value="de.knowwe.core.jsp.JSPWikiSearchConnector" />
+		<parameter id="name" value="JSPWikiSearchProvider" />
+		<parameter id="description" value="KnowWESearchProvider JSPWikiSearchConnector" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5.0" />
+	</extension>
+    
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="KDOMReplaceTermNameAction">
 		<parameter id="class"

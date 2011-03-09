@@ -36,7 +36,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.subtreeHandler.IncrementalConstraint;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.UserContext;
 
 public class ArticleToPackageFlag extends DefaultMarkupType implements IncrementalConstraint<ArticleToPackageFlag> {
 
@@ -88,7 +88,7 @@ public class ArticleToPackageFlag extends DefaultMarkupType implements Increment
 	static class ArticleToPackageFlagRenderer extends KnowWEDomRenderer<AbstractType> {
 
 		@Override
-		public void render(KnowWEArticle article, Section<AbstractType> sec, KnowWEUserContext user, StringBuilder string) {
+		public void render(KnowWEArticle article, Section<AbstractType> sec, UserContext user, StringBuilder string) {
 			string.append("Added article to package '" + sec.getOriginalText() + "'.");
 
 		}

@@ -23,7 +23,7 @@ package de.d3web.we.flow.kbinfo;
 import java.io.IOException;
 
 import de.d3web.we.action.AbstractAction;
-import de.d3web.we.action.ActionContext;
+import de.d3web.we.action.UserActionContext;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -36,7 +36,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 public class GetKDOMNodeContent extends AbstractAction {
 
 	@Override
-	public void execute(ActionContext context) throws IOException {
+	public void execute(UserActionContext context) throws IOException {
 
 		String web = context.getParameter(KnowWEAttributes.WEB);
 		String nodeID = context.getParameter(KnowWEAttributes.TARGET);

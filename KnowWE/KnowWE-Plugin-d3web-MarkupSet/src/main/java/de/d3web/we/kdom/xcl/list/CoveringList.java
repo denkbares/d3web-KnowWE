@@ -31,10 +31,10 @@ import de.d3web.core.session.Session;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.Finding;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
@@ -61,10 +61,10 @@ import de.d3web.we.kdom.subtreeHandler.SuccessorNotReusedConstraint;
 import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.object.SolutionDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.XCLRelationWeight;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
@@ -121,7 +121,7 @@ public class CoveringList extends AbstractType {
 	private static final class CoveringListRenderer extends KnowWEDomRenderer<Type> {
 
 		@Override
-		public void render(KnowWEArticle article, Section<Type> sec, KnowWEUserContext user, StringBuilder string) {
+		public void render(KnowWEArticle article, Section<Type> sec, UserContext user, StringBuilder string) {
 			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID() + "'>"));
 			DelegateRenderer.getInstance().render(article, sec, user, string);
 			string.append(KnowWEUtils.maskHTML("</span>"));
@@ -360,7 +360,7 @@ public class CoveringList extends AbstractType {
 		public static final String KBID_KEY = "XCLRELATION_STORE_KEY";
 
 		@Override
-		public void render(KnowWEArticle article, Section<CoveringRelation> sec, KnowWEUserContext user, StringBuilder string) {
+		public void render(KnowWEArticle article, Section<CoveringRelation> sec, UserContext user, StringBuilder string) {
 
 			// wrapper for highlighting
 			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID()
@@ -413,7 +413,7 @@ public class CoveringList extends AbstractType {
 		 * @return
 		 */
 		private void renderRelation(KnowWEArticle article, Section<CoveringRelation> sec,
-				KnowWEUserContext user, boolean fulfilled, StringBuilder string, boolean highlight) {
+				UserContext user, boolean fulfilled, StringBuilder string, boolean highlight) {
 
 			StringBuilder buffi = new StringBuilder();
 
@@ -462,7 +462,7 @@ public class CoveringList extends AbstractType {
 		 */
 		@SuppressWarnings("unchecked")
 		private String renderRelationChild(KnowWEArticle article,
-				Section<?> sec, boolean fulfilled, KnowWEUserContext user,
+				Section<?> sec, boolean fulfilled, UserContext user,
 				String color) {
 			StringBuilder buffi = new StringBuilder();
 			Type type = sec.get();

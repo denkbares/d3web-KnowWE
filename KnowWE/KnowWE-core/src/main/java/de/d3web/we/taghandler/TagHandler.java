@@ -24,7 +24,7 @@ import java.util.Map;
 
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.UserContext;
 
 /**
  * @author Jochen
@@ -71,7 +71,7 @@ public interface TagHandler {
 	 * @param parameters the parameters of the tag handler invocation
 	 * @return the resulting wiki markup text
 	 */
-	public String render(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext, Map<String, String> parameters);
+	public String render(KnowWEArticle article, Section<?> section, UserContext userContext, Map<String, String> parameters);
 
 	/**
 	 * Returns an usage example of this tag handler.
@@ -88,6 +88,6 @@ public interface TagHandler {
 	 * @param user the current user the description is for
 	 * @return a description of the tag handler
 	 */
-	String getDescription(KnowWEUserContext user);
+	String getDescription(UserContext user);
 
 }

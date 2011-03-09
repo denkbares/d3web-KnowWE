@@ -24,7 +24,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.tools.DefaultTool;
 import de.d3web.we.tools.Tool;
 import de.d3web.we.tools.ToolProvider;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.UserContext;
 
 /**
  * 
@@ -34,12 +34,12 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class FlowchartEditProvider implements ToolProvider {
 
 	@Override
-	public Tool[] getTools(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext) {
+	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
 		Tool edit = getEditTool(article, section, userContext);
 		return edit != null ? new Tool[] { edit } : new Tool[] {};
 	}
 
-	private Tool getEditTool(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext) {
+	private Tool getEditTool(KnowWEArticle article, Section<?> section, UserContext userContext) {
 
 		String jsAction = createEditAction(section, userContext);
 
@@ -50,7 +50,7 @@ public class FlowchartEditProvider implements ToolProvider {
 				jsAction);
 	}
 
-	private static String createEditAction(Section<?> section, KnowWEUserContext userContext) {
+	private static String createEditAction(Section<?> section, UserContext userContext) {
 		String id = section.getID();
 		String topic = userContext.getTopic();
 		// TODO encoding has no real effect as it doesn't make it through the
@@ -73,7 +73,7 @@ public class FlowchartEditProvider implements ToolProvider {
 	 * 
 	 * @created 29.11.2010
 	 */
-	public static String createEditLink(Section<?> section, KnowWEUserContext userContext) {
+	public static String createEditLink(Section<?> section, UserContext userContext) {
 		return "javascript:" + createEditAction(section, userContext) + "undefined;";
 	}
 

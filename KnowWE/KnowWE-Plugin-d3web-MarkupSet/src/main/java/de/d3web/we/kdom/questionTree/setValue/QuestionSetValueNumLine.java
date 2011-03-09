@@ -51,9 +51,9 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.knowwe.core.dashtree.DashTreeUtils;
 
 public class QuestionSetValueNumLine extends AbstractType {
@@ -127,7 +127,7 @@ public class QuestionSetValueNumLine extends AbstractType {
 
 		@Override
 		public void render(KnowWEArticle article, Section<QuestionReference> sec,
-				KnowWEUserContext user, StringBuilder string) {
+				UserContext user, StringBuilder string) {
 			String embracedContent = sec.getOriginalText().substring(1,
 					sec.getOriginalText().length() - 1);
 			string

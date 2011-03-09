@@ -26,13 +26,13 @@ import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.tools.DefaultTool;
 import de.d3web.we.tools.Tool;
 import de.d3web.we.tools.ToolProvider;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.UserContext;
 import de.knowwe.d3web.action.DownloadKnowledgeBase;
 
 public class KnowledgeBaseDownloadProvider implements ToolProvider {
 
 	@Override
-	public Tool[] getTools(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext) {
+	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
 		// and provide both download and refresh as tools
 		Tool download = getDownloadTool(article, section, userContext);
 		Tool refresh = getRefreshTool(article, section, userContext);
@@ -40,7 +40,7 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 				refresh, download };
 	}
 
-	protected Tool getRefreshTool(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext) {
+	protected Tool getRefreshTool(KnowWEArticle article, Section<?> section, UserContext userContext) {
 		// tool to execute a full-parse onto the knowledge base
 		// may be removed in later releases (after moneypenny)
 		String jsAction = "var url = window.location.href;" +
@@ -55,7 +55,7 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 				jsAction);
 	}
 
-	protected Tool getDownloadTool(KnowWEArticle article, Section<?> section, KnowWEUserContext userContext) {
+	protected Tool getDownloadTool(KnowWEArticle article, Section<?> section, UserContext userContext) {
 		// tool to provide download capability
 		String kbName = DefaultMarkupType.getContent(section).trim();
 		if (kbName.isEmpty()) {

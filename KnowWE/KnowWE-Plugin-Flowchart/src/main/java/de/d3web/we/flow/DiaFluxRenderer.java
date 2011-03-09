@@ -7,8 +7,8 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * 
@@ -22,7 +22,7 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer<DefaultMarkupType> {
 	}
 
 	@Override
-	protected String getHeaderName(KnowWEArticle article, Section<DefaultMarkupType> section, KnowWEUserContext user) {
+	protected String getHeaderName(KnowWEArticle article, Section<DefaultMarkupType> section, UserContext user) {
 		Section<FlowchartType> flowchart = Sections.findSuccessor(section, FlowchartType.class);
 
 		if (flowchart == null) {
@@ -34,7 +34,7 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer<DefaultMarkupType> {
 	}
 
 	@Override
-	protected void renderContents(KnowWEArticle article, Section<DefaultMarkupType> section, KnowWEUserContext user, StringBuilder string) {
+	protected void renderContents(KnowWEArticle article, Section<DefaultMarkupType> section, UserContext user, StringBuilder string) {
 
 		Section<FlowchartType> flowchart = Sections.findSuccessor(section, FlowchartType.class);
 

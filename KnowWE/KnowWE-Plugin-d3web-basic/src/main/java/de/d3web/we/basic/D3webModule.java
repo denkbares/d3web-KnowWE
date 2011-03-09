@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -34,12 +34,11 @@ import javax.servlet.http.HttpServletRequest;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class D3webModule {
 
@@ -51,11 +50,11 @@ public class D3webModule {
 		return ResourceBundle.getBundle("KnowWE_plugin_d3web_messages");
 	}
 
-	public static ResourceBundle getKwikiBundle_d3web(KnowWEUserContext user) {
+	public static ResourceBundle getKwikiBundle_d3web(UserContext user) {
 		if (user == null) return getKwikiBundle_d3web();
 
 		Locale.setDefault(KnowWEEnvironment.getInstance().getWikiConnector()
-				.getLocale(user.getHttpRequest()));
+				.getLocale(user.getRequest()));
 		return getKwikiBundle_d3web();
 	}
 
@@ -94,7 +93,7 @@ public class D3webModule {
 	/**
 	 * On KnowWE initialisation> Loads the knowledgebases into the distributed
 	 * reasoning engine.
-	 * 
+	 *
 	 * @param context
 	 */
 	private static void loadData(ServletContext context) {
@@ -133,7 +132,7 @@ public class D3webModule {
 
 	/**
 	 * Returns a KnowledgeService for a given article name
-	 * 
+	 *
 	 * @param web
 	 * @param topic
 	 * @return
@@ -208,15 +207,15 @@ public class D3webModule {
 		return sessionDir;
 	}
 
-	public static String getSessionPath(KnowWEParameterMap parameterMap) {
-		String user = parameterMap.get(KnowWEAttributes.USER);
-		String web = parameterMap.get(KnowWEAttributes.WEB);
+	public static String getSessionPath(UserContext context) {
+		String user = context.getParameter(KnowWEAttributes.USER);
+		String web = context.getParameter(KnowWEAttributes.WEB);
 		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
 		String sessionDir = rb.getString("knowwe.config.path.sessions");
 		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
 		sessionDir = sessionDir.replaceAll("\\$user\\$", user);
 
-		sessionDir = getRealPath(parameterMap.getContext(), sessionDir);
+		sessionDir = getRealPath(context.getServletContext(), sessionDir);
 		return sessionDir;
 	}
 

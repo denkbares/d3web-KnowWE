@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -40,10 +40,9 @@ import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.TextValue;
 import de.d3web.we.action.AbstractAction;
-import de.d3web.we.action.ActionContext;
+import de.d3web.we.action.UserActionContext;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEAttributes;
-import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.d3web.event.FindingSetEvent;
@@ -51,33 +50,33 @@ import de.knowwe.d3web.event.FindingSetEvent;
 public class SetSingleFindingAction extends AbstractAction {
 
 	@Override
-	public void execute(ActionContext context) throws IOException {
-		KnowWEParameterMap map = context.getKnowWEParameterMap();
-		String result = setValue(map);
+	public void execute(UserActionContext context) throws IOException {
+		String result = setValue(context);
 		if (result != null && context.getWriter() != null) {
 			context.getWriter().write(result);
 		}
 
 	}
 
-	private String setValue(KnowWEParameterMap parameterMap) {
+	private String setValue(UserActionContext context) {
 
-		String objectid = parameterMap.get(KnowWEAttributes.SEMANO_OBJECT_ID);
-		String valuenum = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_NUM);
-		String valuedate = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_DATE);
-		String valueText = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_TEXT);
-		String topic = parameterMap.getTopic();
-		String user = parameterMap.get(KnowWEAttributes.USER);
-		String web = parameterMap.get(KnowWEAttributes.WEB);
+		String objectid = context.getParameter(KnowWEAttributes.SEMANO_OBJECT_ID);
+		String valuenum = context.getParameter(KnowWEAttributes.SEMANO_VALUE_NUM);
+		String valuedate = context.getParameter(KnowWEAttributes.SEMANO_VALUE_DATE);
+		String valueText = context.getParameter(KnowWEAttributes.SEMANO_VALUE_TEXT);
+		String topic = context.getTopic();
+		String user = context.getUserName();
+		String web = context.getWeb();
 		String namespace = null;
 		String term = null;
 		String valueid = null;
 		try {
-			namespace = java.net.URLDecoder.decode(parameterMap
-					.get(KnowWEAttributes.SEMANO_NAMESPACE), "UTF-8");
-			String tempValueID = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_ID);
+			namespace = java.net.URLDecoder.decode(
+					context.getParameter(KnowWEAttributes.SEMANO_NAMESPACE), "UTF-8");
+			String tempValueID = context.getParameter(KnowWEAttributes.SEMANO_VALUE_ID);
 			if (tempValueID != null) valueid = URLDecoder.decode(tempValueID, "UTF-8");
-			term = URLDecoder.decode(parameterMap.get(KnowWEAttributes.SEMANO_TERM_NAME), "UTF-8");
+			term = URLDecoder.decode(context.getParameter(KnowWEAttributes.SEMANO_TERM_NAME),
+					"UTF-8");
 		}
 		catch (UnsupportedEncodingException e1) {
 			// should not occur

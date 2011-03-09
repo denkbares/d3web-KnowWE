@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -42,12 +42,12 @@ import javax.servlet.ServletContext;
 
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.SectionID;
 import de.d3web.we.kdom.Sections;
 import de.d3web.we.terminology.TerminologyHandler;
+import de.d3web.we.user.UserContext;
 
 public class KnowWEUtils {
 
@@ -79,7 +79,7 @@ public class KnowWEUtils {
 	 * <p>
 	 * Please not that the link will only work if it is put into "[" ... "]"
 	 * brackets and rendered through the wiki rendering pipeline.
-	 * 
+	 *
 	 * @param section the section to create the link for
 	 * @return the created link
 	 */
@@ -92,7 +92,7 @@ public class KnowWEUtils {
 	 * link navigates the user to the article of the section. If the section is
 	 * rendered with an anchor (see method {@link #getAnchor(Section)}) the page
 	 * is also scrolled to the section.
-	 * 
+	 *
 	 * @param section the section to create the link for
 	 * @return the created link
 	 */
@@ -103,7 +103,7 @@ public class KnowWEUtils {
 	/**
 	 * Creates a unique anchor name for the section to link to. See method
 	 * {@link #getWikiLink(Section)} for more details on how to use this method.
-	 * 
+	 *
 	 * @param section the section to create the anchor for.
 	 * @return the unique anchor name
 	 */
@@ -116,7 +116,7 @@ public class KnowWEUtils {
 
 	/**
 	 * Clears all Messages for the given article and subtree.
-	 * 
+	 *
 	 * @param article is the article you want to clear the message for
 	 * @param sec is the root of the subtree you want to clear the message for
 	 */
@@ -129,7 +129,7 @@ public class KnowWEUtils {
 
 	/**
 	 * Clears all Messages for the given article and section.
-	 * 
+	 *
 	 * @param article is the article you want to clear the message for
 	 * @param sec is the section you want to clear the message for
 	 */
@@ -142,7 +142,7 @@ public class KnowWEUtils {
 	/**
 	 * Clears all Messages for the given article and section. Article
 	 * independent Messages are not cleared!
-	 * 
+	 *
 	 * @param web is the web you want to clear the message for
 	 * @param title is the title of the article you want to clear the message
 	 *        for
@@ -157,7 +157,7 @@ public class KnowWEUtils {
 	/**
 	 * Clears all Messages for the given article, section and msgType. Article
 	 * independent Messages are not cleared!
-	 * 
+	 *
 	 * @param article is the article you want to clear the message for
 	 * @param sec is the section you want to clear the message for
 	 * @param msgType is the Class of the message you want to clear
@@ -170,7 +170,7 @@ public class KnowWEUtils {
 	/**
 	 * Clears all Messages for the given web, title, section ID and msgType.
 	 * Article independent Messages are not cleared!
-	 * 
+	 *
 	 * @param web is the web you want to clear the message for
 	 * @param article is the title of the article you want to clear the message
 	 *        for
@@ -188,7 +188,7 @@ public class KnowWEUtils {
 	/**
 	 * Clears all Messages for the given article, section, source and msgType.
 	 * Article independent Messages are not cleared!
-	 * 
+	 *
 	 * @param article is the article you want to clear the message for
 	 * @param sec is the section you want to clear the message for
 	 * @param source is the Class the message you want to clear originate from
@@ -212,7 +212,7 @@ public class KnowWEUtils {
 	 * only be used once for the given set of parameters. If you use this method
 	 * a second time with the same parameters, the first Message gets
 	 * overwritten!</b>
-	 * 
+	 *
 	 * @param article is the article you want to store the message for
 	 * @param sec is the section you want to store the message for
 	 * @param source is the Class the message originate from
@@ -236,7 +236,7 @@ public class KnowWEUtils {
 	 * <b>ATTENTION: This method can only be used once for each article,
 	 * section, source and msgType. If you use this Method a second time with
 	 * the same parameters, the first Collection gets overwritten!</b>
-	 * 
+	 *
 	 * @param article is the article you want to store the messages for
 	 * @param sec is the section you want to store the messages for
 	 * @param source is the Class the messages originate from
@@ -260,7 +260,7 @@ public class KnowWEUtils {
 	/**
 	 * Returns an unmodifiable Collection containing all Messages of the KDOM
 	 * subtree with the given Section as root.
-	 * 
+	 *
 	 * @param article is the article you want the message from (not necessarily
 	 *        the same as <tt>sec.getArticle()</tt> because the Section could be
 	 *        included in another article)
@@ -282,7 +282,7 @@ public class KnowWEUtils {
 	/**
 	 * Returns an unmodifiable Collection containing all Messages of the Type
 	 * <tt>MSGType</tt>.
-	 * 
+	 *
 	 * @param article is the article you want the message from (not necessarily
 	 *        the same as <tt>sec.getArticle()</tt> because the Section could be
 	 *        included in another article)
@@ -305,7 +305,7 @@ public class KnowWEUtils {
 	/**
 	 * Returns an unmodifiable Collection containing all Messages of the Type
 	 * <tt>MSGType</tt> stored for the Class <tt>source</tt>.
-	 * 
+	 *
 	 * @param article is the article you want the message from (not necessarily
 	 *        the same as <tt>sec.getArticle()</tt> because the Section could be
 	 *        included in another article)
@@ -327,7 +327,7 @@ public class KnowWEUtils {
 	 * Returns the an unmodifiable Map containing all Messages of the Type
 	 * <tt>MSGType</tt>. The Collections are mapped after the String
 	 * <tt>source.getName()</tt>.
-	 * 
+	 *
 	 * @param article is the article you want the message from (not necessarily
 	 *        the same as <tt>sec.getArticle()</tt> because the Section could be
 	 *        included in another article)
@@ -352,7 +352,7 @@ public class KnowWEUtils {
 	/**
 	 * This method is private to avoid misuse (this map is modifiable).
 	 * <p/>
-	 * 
+	 *
 	 * mode 1: only get article dependent messages. <br/>
 	 * mode 2: only get article independent messages. <br/>
 	 * mode else: get article dependent messages if there are not article
@@ -410,7 +410,7 @@ public class KnowWEUtils {
 	/**
 	 * This method is private to avoid misuse (this map is modifiable).
 	 * <p/>
-	 * 
+	 *
 	 * mode 1: only get article dependent objects. <br/>
 	 * mode 2: only get article independent objects. <br/>
 	 * mode else: get article dependent objects if there are not article
@@ -450,7 +450,7 @@ public class KnowWEUtils {
 
 	/**
 	 * returns whether a text contains nothing except spaces and newlines
-	 * 
+	 *
 	 * @param text
 	 * @return
 	 */
@@ -491,9 +491,9 @@ public class KnowWEUtils {
 	// }
 
 	/**
-	 * 
+	 *
 	 * Unmasks output strings
-	 * 
+	 *
 	 * @param htmlContent
 	 * @return
 	 */
@@ -527,9 +527,9 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * 
+	 *
 	 * masks output strings
-	 * 
+	 *
 	 * @param htmlContent
 	 * @return
 	 */
@@ -639,15 +639,15 @@ public class KnowWEUtils {
 	// return sessionDir;
 	// }
 
-	public static String getSessionPath(KnowWEParameterMap parameterMap) {
-		String user = parameterMap.get(KnowWEAttributes.USER);
-		String web = parameterMap.get(KnowWEAttributes.WEB);
+	public static String getSessionPath(UserContext context) {
+		String user = context.getParameter(KnowWEAttributes.USER);
+		String web = context.getParameter(KnowWEAttributes.WEB);
 		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
 		String sessionDir = rb.getString("knowwe.config.path.sessions");
 		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
 		sessionDir = sessionDir.replaceAll("\\$user\\$", user);
 
-		sessionDir = getRealPath(parameterMap.getContext(), sessionDir);
+		sessionDir = getRealPath(context.getServletContext(), sessionDir);
 		return sessionDir;
 	}
 
@@ -677,7 +677,7 @@ public class KnowWEUtils {
 
 	/**
 	 * Escapes the given string for safely using user-input in web sites.
-	 * 
+	 *
 	 * @param text Text to escape
 	 * @return Sanitized text
 	 */
@@ -731,7 +731,7 @@ public class KnowWEUtils {
 
 	/**
 	 * Performs URL encoding on the sting
-	 * 
+	 *
 	 * @param text
 	 * @return URLencoded string
 	 */
@@ -746,7 +746,7 @@ public class KnowWEUtils {
 
 	/**
 	 * Performs URL decoding on the sting
-	 * 
+	 *
 	 * @param text URLencoded string
 	 * @return URLdecoded string
 	 */
@@ -757,12 +757,15 @@ public class KnowWEUtils {
 		catch (UnsupportedEncodingException e) {
 			return URLDecoder.decode(text);
 		}
+		catch (IllegalArgumentException e) {
+			return text;
+		}
 	}
 
 	/**
 	 * Masks [, ], ----, {{{ and }}} so that JSPWiki will render and not
 	 * interpret them, if the characters are already escaped, it will do nothing
-	 * 
+	 *
 	 * @created 03.03.2011
 	 * @param builder
 	 */

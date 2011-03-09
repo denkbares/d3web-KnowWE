@@ -32,7 +32,7 @@ import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.basic.SessionBroker;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.UserContext;
 
 public class D3webUtils {
 
@@ -63,7 +63,7 @@ public class D3webUtils {
 	/**
 	 * Gets the Session Object.
 	 */
-	public static Session getSession(String topic, KnowWEUserContext user, String web) {
+	public static Session getSession(String topic, UserContext user, String web) {
 
 		String sessionId = topic + ".." + KnowWEEnvironment.generateDefaultID(topic);
 		SessionBroker broker = D3webModule.getBroker(user.getUserName(), web);

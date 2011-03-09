@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -22,7 +22,7 @@ package de.d3web.we.action;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.util.Properties;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
@@ -30,13 +30,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.ecyrd.jspwiki.WikiContext;
+
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
-import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.user.AbstractUserContext;
 
 /**
- * This class offers everything needed to perform Actions.
+ * This class is a default implemantation of the UserActionContext interface.
  * 
  * The parameters of the request are accessible via getParameter(String
  * parametername). Be sure you know which parameters you have in your request.
@@ -51,7 +52,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Sebastian Furth
  * 
  */
-public class ActionContext {
+public class ActionContext extends AbstractUserContext implements UserActionContext {
 
 	public final String EXTENDED_PLUGIN_ID = "KnowWEExtensionPoints";
 	public final String EXTENDED_POINT_ID = "Action";
@@ -69,7 +70,7 @@ public class ActionContext {
 	/**
 	 * all parameters of the request
 	 */
-	private final Properties parameters;
+	private final Map<String, String> parameters;
 
 	/**
 	 * the request itself
@@ -87,14 +88,8 @@ public class ActionContext {
 	private final ServletContext servletContext;
 
 	/**
-	 * KnowWEParameterMap which stores most information redundantly, but is
-	 * absolutely necessary for KnowWEActions can be null for Non-KnowWEActions.
-	 */
-	private final KnowWEParameterMap map;
-
-	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param actionName Name of your action, equivalent to the ID specified in
 	 *        your plugin.xml
 	 * @param path optional parameter, only necessary for special servlets
@@ -104,16 +99,16 @@ public class ActionContext {
 	 * @param servletContext the servlet context
 	 * @param map optional parameter for KnowWEActions
 	 */
-	public ActionContext(String actionName, String path, Properties parameters,
+	public ActionContext(String actionName, String path, Map<String, String> parameters,
 			HttpServletRequest request, HttpServletResponse response,
-			ServletContext servletContext, KnowWEParameterMap map) {
+			ServletContext servletContext, WikiContext wikiContext) {
+		super(wikiContext);
 		this.actionName = actionName;
 		this.path = path;
 		this.parameters = parameters;
 		this.response = response;
 		this.request = request;
 		this.servletContext = servletContext;
-		this.map = map;
 	}
 
 	public Action getAction() {
@@ -135,23 +130,8 @@ public class ActionContext {
 		return this.path;
 	}
 
-	public Properties getParameters() {
+	public Map<String, String> getParameters() {
 		return this.parameters;
-	}
-
-	public String getParameter(String key) {
-		return this.parameters.getProperty(key);
-	}
-
-	public String getParameter(String key, String defaultValue) {
-		return this.parameters.getProperty(key, defaultValue);
-	}
-
-	public KnowWEUserContext getWikiContext() {
-		if (map != null) return this.map.getWikiContext();
-		Logger.getLogger(this.getClass().getName()).warning(
-				"No WikiContext found. getWikiContext() works only for KnowWEActions not for Servlets. Returned null.");
-		return null;
 	}
 
 	public ServletContext getServletContext() {
@@ -177,10 +157,6 @@ public class ActionContext {
 
 	public OutputStream getOutputStream() throws IOException {
 		return this.response.getOutputStream();
-	}
-
-	public KnowWEParameterMap getKnowWEParameterMap() {
-		return this.map;
 	}
 
 	public void setContentType(String mimetype) {

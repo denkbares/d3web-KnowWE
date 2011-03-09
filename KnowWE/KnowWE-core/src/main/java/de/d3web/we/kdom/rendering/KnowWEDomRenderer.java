@@ -21,9 +21,9 @@
 package de.d3web.we.kdom.rendering;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.kdom.Type;
+import de.d3web.we.user.UserContext;
 
 public abstract class KnowWEDomRenderer<T extends Type> {
 
@@ -39,6 +39,6 @@ public abstract class KnowWEDomRenderer<T extends Type> {
 	 * 
 	 * @return
 	 */
-	public abstract void render(KnowWEArticle article, Section<T> sec, KnowWEUserContext user, StringBuilder string);
+	public abstract void render(KnowWEArticle article, Section<T> sec, UserContext user, StringBuilder string);
 
 }
