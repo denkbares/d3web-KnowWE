@@ -325,6 +325,10 @@ public abstract class AbstractType implements Type, Sectionizable {
 		return Collections.unmodifiableList(childrenTypes);
 	}
 
+	public void clearAllowedChildren() {
+		this.childrenTypes = new ArrayList<Type>();
+	}
+
 	public boolean addChildType(Type t) {
 		return this.childrenTypes.add(t);
 	}
