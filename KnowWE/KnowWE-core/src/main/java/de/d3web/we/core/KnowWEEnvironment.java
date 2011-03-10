@@ -84,7 +84,7 @@ public class KnowWEEnvironment {
 
 	// private KnowWETopicLoader topicLoader;
 
-	private Type rootTypes;
+	private RootType rootTypes;
 	private List<Type> globalTypes = new ArrayList<Type>();
 	private List<PageAppendHandler> appendHandlers = new ArrayList<PageAppendHandler>();
 
@@ -567,7 +567,7 @@ public class KnowWEEnvironment {
 	 * @return
 	 */
 	public void processAndUpdateArticleJunit(String username, String content,
-			String topic, String web, Type rootType) {
+			String topic, String web, RootType rootType) {
 		this.rootTypes = rootType;
 		this.articleManagers.get(web).registerArticle(
 				KnowWEArticle.createArticle(content, topic, rootType, web));
@@ -599,7 +599,7 @@ public class KnowWEEnvironment {
 		return data;
 	}
 
-	public Type getRootType() {
+	public RootType getRootType() {
 		return rootTypes;
 	}
 

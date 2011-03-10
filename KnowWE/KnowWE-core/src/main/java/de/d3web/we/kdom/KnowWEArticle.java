@@ -90,12 +90,12 @@ public class KnowWEArticle extends AbstractType {
 
 	private final Set<String> classesCausingFullParse = new HashSet<String>();
 
-	public static KnowWEArticle createArticle(String text, String title, Type rootType,
+	public static KnowWEArticle createArticle(String text, String title, RootType rootType,
 			String web) {
 		return createArticle(text, title, rootType, web, false);
 	}
 
-	public static KnowWEArticle createArticle(String text, String title, Type rootType,
+	public static KnowWEArticle createArticle(String text, String title, RootType rootType,
 			String web, boolean fullParse) {
 
 		KnowWEArticle article = new KnowWEArticle(text, title, rootType,
@@ -113,7 +113,7 @@ public class KnowWEArticle extends AbstractType {
 	 * @param title
 	 * @param allowedObjects
 	 */
-	private KnowWEArticle(String text, String title, Type rootType,
+	private KnowWEArticle(String text, String title, RootType rootType,
 			String web, boolean fullParse) {
 
 		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
@@ -141,12 +141,12 @@ public class KnowWEArticle extends AbstractType {
 		ContextManager.getInstance().detachContexts(title);
 		KnowWEEnvironment.getInstance().getKnowWEStoreManager(web).clearStoreForArticle(title);
 
-		startTime = build(text, title, rootType, web, startTime);
+		startTime = build(text, title, web, startTime);
 
 		if (this.postDestroyFullParse) {
 			this.secondBuild = true;
 			this.idMap = new HashMap<String, Integer>();
-			build(text, title, rootType, web, startTime);
+			build(text, title, web, startTime);
 		}
 
 		// if for example a SubtreeHandlers uses
@@ -162,9 +162,7 @@ public class KnowWEArticle extends AbstractType {
 		lastVersion = null;
 	}
 
-	@SuppressWarnings("unchecked")
-	private long build(String text, String title, Type rootType,
-			String web, long startTime) {
+	private long build(String text, String title, String web, long startTime) {
 
 		this.postPreDestroy = false;
 		this.postDestroy = false;
@@ -175,7 +173,9 @@ public class KnowWEArticle extends AbstractType {
 		env.getArticleManager(web).registerSectionizingArticle(title);
 
 		// create Sections recursively
-		sec = (Section<KnowWEArticle>) getParser().parse(text, this, null, null, this);
+		sec = Section.createSection(text, this, null);
+		sec.article = this;
+		getRootType().getParser().parse(text, sec, this);
 
 		sec.absolutePositionStartInArticle = 0;
 		sec.clearReusedSuccessorRecursively();

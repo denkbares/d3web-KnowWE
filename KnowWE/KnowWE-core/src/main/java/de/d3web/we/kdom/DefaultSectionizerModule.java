@@ -27,7 +27,12 @@ public class DefaultSectionizerModule implements SectionizerModule {
 
 	@Override
 	public Section<?> createSection(String text, Type type, Section<?> father, KnowWEArticle article, SectionFinderResult result) {
-		Section<?> s = type.getParser().parse(text, type, result.getId(), father, article);
+		Parser parser = type.getParser();
+		// small hack, should be removed soon...
+		if (result.getParameterMap() != null && parser instanceof Sectionizer) {
+			((Sectionizer) parser).addParameterMap(result.getParameterMap());
+		}
+		Section<?> s = parser.parse(text, father, article);
 		return s;
 	}
 

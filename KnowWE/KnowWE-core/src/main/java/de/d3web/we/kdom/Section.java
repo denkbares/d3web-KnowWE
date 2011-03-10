@@ -91,21 +91,10 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	private String id;
 
 	/**
-	 * This is the part of the ID, that was specifically given for the ID of
-	 * this Section to be used instead of the name of the ObjectType.
-	 */
-	private String specificID;
-
-	/**
 	 * If the ID gets changed, e.g. by the update mechanism, the last version of
 	 * the ID gets stored here.
 	 */
 	private String lastID;
-
-	/**
-	 * Same as with lastId;
-	 */
-	private String lastSpecificID;
 
 	/**
 	 * Contains the text of this KDOM-node
@@ -146,12 +135,8 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 		return type;
 	}
 
-	public static <T extends Type> Section<T> createSection(String text, T o, Section<? extends Type> father, KnowWEArticle article, SectionID id) {
-		return new Section<T>(text, o, father, article, id);
-	}
-
-	public static <T extends Type> Section<T> createSection(String text, T o, Section<? extends Type> father, KnowWEArticle article) {
-		return new Section<T>(text, o, father, article, null);
+	public static <T extends Type> Section<T> createSection(String text, T o, Section<? extends Type> father) {
+		return new Section<T>(text, o, father);
 	}
 
 	/**
@@ -167,19 +152,14 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	 * @param beginIndexFather
 	 * @param article is the article this section is hooked in
 	 */
-	private Section(String text, T objectType, Section<?> father, KnowWEArticle article, SectionID sectionID) {
-
-		this.article = article;
+	private Section(String text, T objectType, Section<?> father) {
 		this.father = father;
-		if (father != null) this.father.addChild(this);
+		if (father != null) {
+			this.father.addChild(this);
+			this.article = father.getArticle();
+		}
 		this.text = text;
 		this.type = objectType;
-
-		if (sectionID != null) {
-			this.id = sectionID.toString();
-			this.specificID = sectionID.getSpecificID();
-		}
-
 	}
 
 	protected Section(KnowWEArticle article) {
@@ -243,7 +223,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	public Section<InjectType> injectChildren(InjectType injectType) {
 
 		Section<InjectType> injectSection = Section.createSection(
-				text, injectType, this, article, null);
+				text, injectType, this);
 
 		if (!this.get().getAllowedChildrenTypes().isEmpty()
 				|| this.getChildren().size() > 1
@@ -626,15 +606,6 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 		this.id = id;
 	}
 
-	protected void setSpecificID(String sID) {
-		this.lastSpecificID = this.specificID;
-		this.specificID = sID;
-	}
-
-	protected String getSpecificID() {
-		return this.specificID;
-	}
-
 	public String getID() {
 		if (id == null) {
 			if (type instanceof KnowWEArticle) {
@@ -652,9 +623,6 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 		return lastID == null ? getID() : lastID;
 	}
 
-	public String getLastSpecificID() {
-		return this.lastSpecificID;
-	}
 
 	/**
 	 * <b>IMPORTANT:</b> This is NOT the actual ID, this may NOT be unique and
@@ -1111,6 +1079,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	 * 
 	 * @see SubtreeHandler#create(KnowWEArticle, Section)
 	 */
+	@SuppressWarnings("unchecked")
 	public final void letSubtreeHandlersCreate(KnowWEArticle article, Priority p) {
 		List<SubtreeHandler<? extends Type>> handlerList = type.getSubtreeHandlers().get(
 				p);

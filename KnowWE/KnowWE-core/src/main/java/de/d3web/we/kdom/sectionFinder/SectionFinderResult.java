@@ -22,8 +22,7 @@ package de.d3web.we.kdom.sectionFinder;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import de.d3web.we.kdom.SectionID;
+import java.util.Map;
 
 public class SectionFinderResult implements Comparable<SectionFinderResult> {
 
@@ -31,16 +30,22 @@ public class SectionFinderResult implements Comparable<SectionFinderResult> {
 
 	protected int end = -1;
 
-	protected SectionID id = null;
+	protected Map<String, String> parameterMap = null;
 
-	public SectionFinderResult(int start, int end, SectionID id) {
-		this.id = id;
+	public static final String ATTRIBUTE_MAP_STORE_KEY = "attributeMap";
+
+	public SectionFinderResult(int start, int end, Map<String, String> parameterMap) {
+		this(start, end);
+		this.parameterMap = parameterMap;
+	}
+
+	public SectionFinderResult(int start, int end) {
 		this.start = start;
 		this.end = end;
 	}
 
-	public SectionFinderResult(int start, int end) {
-		this(start, end, null);
+	public Map<String, String> getParameterMap() {
+		return this.parameterMap;
 	}
 
 	public static List<SectionFinderResult> createSingleItemList(SectionFinderResult s) {
@@ -55,10 +60,6 @@ public class SectionFinderResult implements Comparable<SectionFinderResult> {
 		List<SectionFinderResult> resultList = new ArrayList<SectionFinderResult>();
 		resultList.add(s);
 		return resultList;
-	}
-
-	public SectionID getId() {
-		return id;
 	}
 
 	public int getStart() {

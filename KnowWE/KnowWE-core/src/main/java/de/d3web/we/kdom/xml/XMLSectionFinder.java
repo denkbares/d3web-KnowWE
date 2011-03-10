@@ -31,19 +31,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionID;
 import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * @author astriffler
  * 
  */
 public class XMLSectionFinder implements SectionFinder {
-
-	public static final String ATTRIBUTE_MAP_STORE_KEY = "attributeMap";
 
 	private final String tagNamePattern;
 
@@ -135,7 +131,7 @@ public class XMLSectionFinder implements SectionFinder {
 					// found single-tag
 					if (tagMatcher.group(4) != null) {
 						result.add(makeSectionFinderResult(sectionStart, tagMatcher.end(),
-								makeSectionID(father, parameterMap), parameterMap));
+								parameterMap));
 						parameterMap = new HashMap<String, String>();
 						foundTagName = new String();
 						continue;
@@ -152,7 +148,7 @@ public class XMLSectionFinder implements SectionFinder {
 				if (depth == 1 && foundTagName.equals(tagMatcher.group(2))) {
 					parameterMap.put(AbstractXMLType.TAIL, tagMatcher.group());
 					result.add(makeSectionFinderResult(sectionStart, tagMatcher.end(),
-							makeSectionID(father, parameterMap), parameterMap));
+							parameterMap));
 				}
 
 				// closing tags are counting backwards for the depth of the
@@ -170,29 +166,9 @@ public class XMLSectionFinder implements SectionFinder {
 		return result;
 	}
 
-	private SectionID makeSectionID(Section<?> father, Map<String, String> parameterMap) {
-
-		SectionID sectionID = null;
-
-		if (father != null) {
-			if (parameterMap.containsKey("id")) {
-				sectionID = new SectionID(father.getArticle(), parameterMap.get("id"));
-			}
-			else {
-				sectionID = new SectionID(father, parameterMap.get(AbstractXMLType.TAGNAME));
-			}
-			KnowWEUtils.storeObject(father.getWeb(), null, sectionID.toString(),
-					ATTRIBUTE_MAP_STORE_KEY, parameterMap);
-
-		}
-
-		return sectionID;
-		// makeSectionFinderResult(start, end, sectionID, parameterMap);
-	}
-
-	protected SectionFinderResult makeSectionFinderResult(int start, int end, SectionID sectionID,
+	protected SectionFinderResult makeSectionFinderResult(int start, int end,
 			Map<String, String> parameterMap) {
-		return new SectionFinderResult(start, end, sectionID);
+		return new SectionFinderResult(start, end, parameterMap);
 	}
 
 	// Everything below this line is for testing only!
@@ -220,7 +196,7 @@ public class XMLSectionFinder implements SectionFinder {
 		}
 
 		@Override
-		protected SectionFinderResult makeSectionFinderResult(int start, int end, SectionID sectionID, Map<String, String> parameterMap) {
+		protected SectionFinderResult makeSectionFinderResult(int start, int end, Map<String, String> parameterMap) {
 			paras = parameterMap;
 			return new SectionFinderResult(start, end);
 		}

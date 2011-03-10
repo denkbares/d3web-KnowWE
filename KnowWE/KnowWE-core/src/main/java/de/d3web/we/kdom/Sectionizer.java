@@ -22,6 +22,7 @@ package de.d3web.we.kdom;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,6 +30,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * @author Jochen, Albrecht
@@ -39,6 +41,18 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
  * 
  */
 public class Sectionizer implements Parser {
+
+	private Map<String, String> parameterMap = null;
+
+	public void addParameterMap(Map<String, String> map) {
+		this.parameterMap = map;
+	}
+
+	private final Type type;
+
+	public Sectionizer(Type type) {
+		this.type = type;
+	}
 
 	private static final List<SectionizerModule> sectionizerModules = new ArrayList<SectionizerModule>();
 
@@ -53,9 +67,15 @@ public class Sectionizer implements Parser {
 	}
 
 	@Override
-	public Section<?> parse(String text, Type type, SectionID id, Section<? extends Type> father, KnowWEArticle article) {
-		Section<?> section = Section.createSection(text, type, father, article, id);
+	public Section<?> parse(String text, Section<? extends Type> father, KnowWEArticle article) {
+		Section<?> section = Section.createSection(text, type, father);
 		
+		// small hack, should be removed soon...
+		if (parameterMap != null) {
+			KnowWEUtils.storeObject(null, section, SectionFinderResult.ATTRIBUTE_MAP_STORE_KEY,
+					parameterMap);
+		}
+
 		// fetches the allowed children types of the local type
 		ArrayList<Type> types = new ArrayList<Type>();
 		if (type.getAllowedChildrenTypes() != null) {

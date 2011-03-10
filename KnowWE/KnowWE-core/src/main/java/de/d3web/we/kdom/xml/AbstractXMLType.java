@@ -33,6 +33,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.subtreeHandler.ConstraintModule;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
@@ -70,14 +71,14 @@ public class AbstractXMLType extends AbstractType {
 	@SuppressWarnings("unchecked")
 	public static Map<String, String> getAttributeMapFor(Section<?> s) {
 		return (Map<String, String>) KnowWEUtils.getStoredObject(null, s,
-				XMLSectionFinder.ATTRIBUTE_MAP_STORE_KEY);
+				SectionFinderResult.ATTRIBUTE_MAP_STORE_KEY);
 
 	}
 
 	@SuppressWarnings("unchecked")
 	public static Map<String, String> getLastAttributeMapFor(Section<? extends AbstractXMLType> s) {
 		return (Map<String, String>) KnowWEUtils.getObjectFromLastVersion(null, s,
-				XMLSectionFinder.ATTRIBUTE_MAP_STORE_KEY);
+				SectionFinderResult.ATTRIBUTE_MAP_STORE_KEY);
 
 	}
 

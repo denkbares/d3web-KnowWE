@@ -312,7 +312,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	}
 
 	public Parser getParser() {
-		return new Sectionizer();
+		return new Sectionizer(this);
 	}
 
 	/*

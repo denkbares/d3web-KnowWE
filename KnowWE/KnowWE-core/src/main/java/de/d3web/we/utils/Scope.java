@@ -13,7 +13,6 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionID;
 import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.basic.QuotedType;
@@ -206,15 +205,14 @@ public class Scope {
 		Type o3 = new SquareBracedType(o4);
 		Type o2 = new QuotedType(o3);
 		Type o1 = new RoundBracedType(o2);
-		Type o0 = RootType.getInstance();
+		RootType o0 = RootType.getInstance();
 
-		KnowWEArticle article = KnowWEArticle.createArticle(t0, "test", o0, "myWeb");
-		Section<?> s0 = Section.createSection(t0, o0, null, article, new SectionID("id_root") {
-		});
-		Section<?> s1 = Section.createSection(t1, o1, s0, article);
-		Section<?> s2 = Section.createSection(t2, o2, s1, article);
-		Section<?> s3 = Section.createSection(t3, o3, s2, article);
-		Section<?> s4 = Section.createSection(t4, o4, s3, article);
+		KnowWEArticle.createArticle(t0, "test", o0, "myWeb");
+		Section<?> s0 = Section.createSection(t0, o0, null);
+		Section<?> s1 = Section.createSection(t1, o1, s0);
+		Section<?> s2 = Section.createSection(t2, o2, s1);
+		Section<?> s3 = Section.createSection(t3, o3, s2);
+		Section<?> s4 = Section.createSection(t4, o4, s3);
 
 		// these ones should be true
 		System.out.println(new Scope("").matches(s4)); // empty path is always

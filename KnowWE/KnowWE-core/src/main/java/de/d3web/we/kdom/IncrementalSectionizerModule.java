@@ -120,26 +120,8 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 						node.isOrHasReusedSuccessor = true;
 						// update pointer to article
 						node.article = article;
-
-						// if the result comes with an ID, use
-						// it
-						// for the found match
-						// update the id for all other nodes
-						if (result.getId() != null && node == s) {
-							node.setID(result.getId().toString());
-							node.setSpecificID(result.getId().getSpecificID());
-						}
-						else {
-							if (node.getSpecificID() == null) {
-								node.setID(new SectionID(node.father,
-										node.type).toString());
-							}
-							else {
-								node.setID(new SectionID(
-										node.getArticle(),
-										node.getSpecificID()).toString());
-							}
-						}
+						// reset id
+						node.setID(null);
 					}
 
 					if (lastStore != null) {
