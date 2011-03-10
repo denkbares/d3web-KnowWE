@@ -25,6 +25,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import de.d3web.core.inference.condition.NoAnswerException;
 import de.d3web.core.inference.condition.UnknownAnswerException;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -51,10 +54,12 @@ import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
- *
+ * 
  * @author Reinhard Hatko
  */
 public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
+
+	public static String HIGHLIGHT_KEY = "FlowHighlighting";
 
 	@Override
 	public void render(KnowWEArticle article, Section<FlowchartType> sec, UserContext user, StringBuilder string) {
@@ -74,7 +79,29 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 		String secID = sec.getFather().getFather().getID();
 		String thisFlowchartName = FlowchartType.getFlowchartName(sec);
 		String highlight = user.getParameters().get("highlight");
-		if (highlight != null && highlight.equals("true")) {
+		boolean dohighlighting = false;
+		HttpServletRequest request = user.getRequest();
+		// can be null when booting KnowWE
+		if (request != null) {
+			HttpSession httpSession = request.getSession();
+			// if highlight is null, use highlight from session
+			if (highlight == null) {
+				Boolean temp = (Boolean) httpSession.getAttribute(HIGHLIGHT_KEY);
+				if (temp != null) {
+					dohighlighting = temp.booleanValue();
+				}
+			}
+			else if (highlight.equals("true")) {
+				dohighlighting = true;
+				// save in session
+				httpSession.setAttribute(HIGHLIGHT_KEY, new Boolean(dohighlighting));
+			}
+			else if (highlight.equals("false")) {
+				// save false in session
+				httpSession.setAttribute(HIGHLIGHT_KEY, new Boolean(dohighlighting));
+			}
+		}
+		if (dohighlighting) {
 			// prepare some basic information
 			Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
 			DiaFluxCaseObject diaFluxCaseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
@@ -134,7 +161,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 	}
 
 	/**
-	 *
+	 * 
 	 * @created 02.03.2011
 	 * @param calledFlowName
 	 * @return
@@ -143,7 +170,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 		KnowWEArticleManager manager = KnowWEEnvironment.getInstance().getArticleManager(web);
 
 		for (Iterator<KnowWEArticle> iterator = manager.getArticleIterator(); iterator.hasNext();) {
-			KnowWEArticle article = (KnowWEArticle) iterator.next();
+			KnowWEArticle article = iterator.next();
 			List<Section<FlowchartType>> matches = new LinkedList<Section<FlowchartType>>();
 			Sections.findSuccessorsOfType(article.getSection(), FlowchartType.class, matches);
 			for (Section<FlowchartType> match : matches) {
@@ -187,9 +214,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 		catch (UnknownAnswerException e) {
 			return false;
 		}
-		for (FlowRun run : runs) {
-			if (FluxSolver.evalToTrue(session, edge.getStartNode().getEdgePrecondition())) return true;
-		}
+		if (FluxSolver.evalToTrue(session, edge.getStartNode().getEdgePrecondition())) return true;
 		return false;
 	}
 
