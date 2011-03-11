@@ -46,7 +46,7 @@ public interface UserContext {
 	 * @created 01.02.2011
 	 * @return boolean authentication state of the user
 	 */
-	public boolean userIsAuthenticated();
+	public boolean userIsAsserted();
 
 	/**
 	 * Returns the name of the current user.

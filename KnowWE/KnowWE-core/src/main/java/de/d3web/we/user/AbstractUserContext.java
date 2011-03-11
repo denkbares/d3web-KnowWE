@@ -28,7 +28,7 @@ import de.d3web.we.utils.KnowWEUtils;
 /**
  * Abstract UserContext implementation with standard implementations of some
  * methods for KnowWE.
- *
+ * 
  * @author Sebastian Furth (denkbares GmbH)
  * @created Mar 4, 2011
  */
@@ -41,8 +41,9 @@ public abstract class AbstractUserContext implements UserContext {
 	}
 
 	@Override
-	public boolean userIsAuthenticated() {
-		if (context.getWikiSession().isAuthenticated()) {
+	public boolean userIsAsserted() {
+		if (context.getWikiSession().isAuthenticated()
+				|| context.getWikiSession().isAsserted()) {
 			return true;
 		}
 		return false;
@@ -61,7 +62,7 @@ public abstract class AbstractUserContext implements UserContext {
 
 	/**
 	 * Returns the name of the current user.
-	 *
+	 * 
 	 * @created 04.03.2011
 	 * @return the user name
 	 */
@@ -76,7 +77,7 @@ public abstract class AbstractUserContext implements UserContext {
 
 	/**
 	 * Returns the topic of the article the user is currently visiting.
-	 *
+	 * 
 	 * @created 04.03.2011
 	 * @return the article's topic
 	 */
@@ -95,7 +96,7 @@ public abstract class AbstractUserContext implements UserContext {
 	/**
 	 * Returns the web of the user's is currently visiting. It is the web the
 	 * article belongs to.
-	 *
+	 * 
 	 * @created 04.03.2011
 	 * @return the article's web
 	 */
@@ -111,7 +112,9 @@ public abstract class AbstractUserContext implements UserContext {
 
 	@Override
 	public String getParameter(String key, String defaultValue) {
-		return this.getParameters().get(key) != null ? this.getParameters().get(key) : defaultValue;
+		return this.getParameters().get(key) != null
+				? this.getParameters().get(key)
+				: defaultValue;
 	}
 
 }
