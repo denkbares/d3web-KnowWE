@@ -22,15 +22,10 @@ package de.knowwe.core.dashtree;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.d3web.we.event.Event;
-import de.d3web.we.event.EventListener;
-import de.d3web.we.event.EventManager;
-import de.d3web.we.event.KDOMCreatedEvent;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
@@ -38,16 +33,9 @@ import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class DashTreeUtils implements EventListener {
+public class DashTreeUtils {
 
 	private static DashTreeUtils instance = null;
-
-	private static HashMap<String, HashMap<String, Boolean>> changeCache = new HashMap<String, HashMap<String, Boolean>>();
-
-	static {
-		EventManager.getInstance().registerListener(getInstance());
-	}
-
 
 	public static DashTreeUtils getInstance() {
 		if (instance == null) {
@@ -98,7 +86,8 @@ public class DashTreeUtils implements EventListener {
 	public static Section<? extends DashTreeElementContent> getFatherDashTreeElementContent(Section<?> s) {
 		Section<? extends DashTreeElement> dashTreeFatherElement = getFatherDashTreeElement(s);
 		if (dashTreeFatherElement != null) {
-			return Sections.findChildOfType(dashTreeFatherElement, DashTreeElementContent.class);
+			return Sections.findChildOfType(dashTreeFatherElement,
+					DashTreeElementContent.class);
 		}
 		return null;
 	}
@@ -153,7 +142,8 @@ public class DashTreeUtils implements EventListener {
 
 	public static int getPositionInFatherDashSubtree(Section<?> s) {
 
-		Section<DashSubtree> subTreeRoot = Sections.findAncestorOfType(s, DashSubtree.class);
+		Section<DashSubtree> subTreeRoot = Sections.findAncestorOfType(s,
+				DashSubtree.class);
 
 		if (subTreeRoot != null) {
 
@@ -193,7 +183,8 @@ public class DashTreeUtils implements EventListener {
 
 	public static boolean isChangeInAncestorSubtree(KnowWEArticle article, Section<?> s, int dashLevel, List<Class<? extends Type>> filteredTypes) {
 
-		Section<DashSubtree> subtreeAncestor = DashTreeUtils.getAncestorDashSubtree(s, dashLevel);
+		Section<DashSubtree> subtreeAncestor = DashTreeUtils.getAncestorDashSubtree(s,
+				dashLevel);
 
 		if (subtreeAncestor != null) {
 			return isChangeInSubtree(article, subtreeAncestor, filteredTypes);
@@ -203,23 +194,16 @@ public class DashTreeUtils implements EventListener {
 	}
 
 	public static boolean isChangeInSubtree(KnowWEArticle article, Section<DashSubtree> s, List<Class<? extends Type>> filteredTypes) {
-
-		HashMap<String, Boolean> changeCacheForArticle = getChangeCacheForArticle(article.getTitle());
-		Boolean change = changeCacheForArticle.get(createSectionFilteredTypesKey(s, filteredTypes));
-
-		if (change != null) return change;
-
 		HashSet<Section<DashSubtree>> visited = new HashSet<Section<DashSubtree>>();
 		visited.add(s);
-		change = isChangeInSubtree(article, s, filteredTypes, visited);
-		changeCacheForArticle.put(createSectionFilteredTypesKey(s, filteredTypes), change);
+		boolean change = isChangeInSubtree(article, s, filteredTypes, visited);
 		return change;
 	}
 
 	private static String createSectionFilteredTypesKey(Section<DashSubtree> s, List<Class<? extends Type>> filteredTypes) {
-		return s.getID() + " " + (filteredTypes == null ? "noFilter" : filteredTypes.toArray());
+		return s.getID() + " "
+				+ (filteredTypes == null ? "noFilter" : filteredTypes.toArray());
 	}
-
 
 	@SuppressWarnings("unchecked")
 	private static boolean isChangeInSubtree(KnowWEArticle article, Section<DashSubtree> s, List<Class<? extends Type>> filteredTypes, HashSet<Section<DashSubtree>> visited) {
@@ -230,7 +214,8 @@ public class DashTreeUtils implements EventListener {
 				Section<TermDefinition> tdef = (Section<TermDefinition>) node;
 				Collection<Section<? extends TermDefinition>> termDefs = new ArrayList<Section<? extends TermDefinition>>();
 				termDefs.addAll(KnowWEUtils.getTerminologyHandler(article.getWeb()).getRedundantTermDefiningSections(
-								article, tdef.get().getTermName(tdef), tdef.get().getTermScope()));
+								article, tdef.get().getTermName(tdef),
+						tdef.get().getTermScope()));
 				termDefs.add(KnowWEUtils.getTerminologyHandler(
 						article.getWeb()).getTermDefiningSection(article,
 						tdef.get().getTermName(tdef), tdef.get().getTermScope()));
@@ -252,28 +237,5 @@ public class DashTreeUtils implements EventListener {
 		}
 		return false;
 	}
-
-	public static HashMap<String, Boolean> getChangeCacheForArticle(String title) {
-		HashMap<String, Boolean> changeCacheForArticle = changeCache.get(title);
-		if (changeCacheForArticle == null) {
-			changeCacheForArticle = new HashMap<String, Boolean>();
-			changeCache.put(title, changeCacheForArticle);
-		}
-		return changeCacheForArticle;
-	}
-
-	@Override
-	public Collection<Class<? extends Event>> getEvents() {
-		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends
-				Event>>(1);
-		events.add(KDOMCreatedEvent.class);
-		return events;
-	}
-
-	@Override
-	public void notify(Event event) {
-		changeCache.remove(((KDOMCreatedEvent) event).getArticle().getTitle());
-	}
-
 
 }
