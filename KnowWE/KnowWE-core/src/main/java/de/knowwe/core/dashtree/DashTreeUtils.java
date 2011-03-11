@@ -193,8 +193,8 @@ public class DashTreeUtils {
 		return false;
 	}
 
-	public static boolean isChangeInSubtree(KnowWEArticle article, Section<DashSubtree> s, List<Class<? extends Type>> filteredTypes) {
-		HashSet<Section<DashSubtree>> visited = new HashSet<Section<DashSubtree>>();
+	public static boolean isChangeInSubtree(KnowWEArticle article, Section<? extends DashSubtree> s, List<Class<? extends Type>> filteredTypes) {
+		HashSet<Section<? extends DashSubtree>> visited = new HashSet<Section<? extends DashSubtree>>();
 		visited.add(s);
 		boolean change = isChangeInSubtree(article, s, filteredTypes, visited);
 		return change;
@@ -206,7 +206,7 @@ public class DashTreeUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static boolean isChangeInSubtree(KnowWEArticle article, Section<DashSubtree> s, List<Class<? extends Type>> filteredTypes, HashSet<Section<DashSubtree>> visited) {
+	private static boolean isChangeInSubtree(KnowWEArticle article, Section<? extends DashSubtree> s, List<Class<? extends Type>> filteredTypes, HashSet<Section<? extends DashSubtree>> visited) {
 		List<Section<?>> nodes = new LinkedList<Section<?>>();
 		Sections.getAllNodesPostOrder(s, nodes);
 		for (Section<?> node : nodes) {
