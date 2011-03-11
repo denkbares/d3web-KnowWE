@@ -26,13 +26,13 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 public class DefaultSectionizerModule implements SectionizerModule {
 
 	@Override
-	public Section<?> createSection(String text, Type type, Section<?> father, KnowWEArticle article, SectionFinderResult result) {
+	public Section<?> createSection(String text, Type type, Section<?> father, SectionFinderResult result) {
 		Parser parser = type.getParser();
 		// small hack, should be removed soon...
 		if (result.getParameterMap() != null && parser instanceof Sectionizer) {
 			((Sectionizer) parser).addParameterMap(result.getParameterMap());
 		}
-		Section<?> s = parser.parse(text, father, article);
+		Section<?> s = parser.parse(text, father);
 		return s;
 	}
 

@@ -67,7 +67,7 @@ public class Sectionizer implements Parser {
 	}
 
 	@Override
-	public Section<?> parse(String text, Section<? extends Type> father, KnowWEArticle article) {
+	public Section<?> parse(String text, Section<? extends Type> father) {
 		Section<?> section = Section.createSection(text, type, father);
 		
 		// small hack, should be removed soon...
@@ -90,13 +90,13 @@ public class Sectionizer implements Parser {
 		}
 		
 		if (!types.isEmpty()) {
-			splitToSections(section.getText(), section, article, types, 0);
+			splitToSections(section.getText(), section, types, 0);
 		}
 		
 		return section;
 	}
 
-	public void splitToSections(String text, Section<?> father, KnowWEArticle article, ArrayList<Type> types, int posInTypes) {
+	public void splitToSections(String text, Section<?> father, ArrayList<Type> types, int posInTypes) {
 
 		if (posInTypes > types.size()) return;
 
@@ -129,8 +129,8 @@ public class Sectionizer implements Parser {
 				}
 
 				if (lastEnd < r.getStart()) {
-					splitToSections(text.substring(lastEnd, r.getStart()), father,
-							article, types, type instanceof ExclusiveType
+					splitToSections(text.substring(lastEnd, r.getStart()), father, types,
+							type instanceof ExclusiveType
 									? types.size()
 									: posInTypes);
 				}
@@ -138,20 +138,19 @@ public class Sectionizer implements Parser {
 				Section<?> child = null;
 				String sectionText = text.substring(r.getStart(), r.getEnd());
 				for (SectionizerModule sModule : sectionizerModules) {
-					child = sModule.createSection(sectionText, type, father,
-							father.getArticle(), r);
+					child = sModule.createSection(sectionText, type, father, r);
 					if (child != null) break;
 				}
 				if (child == null) {
 					child = defaultSectionizerModule.createSection(sectionText, type,
-							father, father.getArticle(), r);
+							father, r);
 				}
 				createdSection = true;
 				lastEnd = r.getEnd();
 			}
 		}
 		if (lastEnd < text.length()) {
-			splitToSections(text.substring(lastEnd, text.length()), father, article,
+			splitToSections(text.substring(lastEnd, text.length()), father,
 					types, type instanceof ExclusiveType && createdSection
 							? types.size()
 							: posInTypes);

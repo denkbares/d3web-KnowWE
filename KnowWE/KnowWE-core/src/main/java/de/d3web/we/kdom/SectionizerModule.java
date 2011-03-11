@@ -25,6 +25,6 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public interface SectionizerModule {
 
-	public Section<?> createSection(String text, Type type, Section<?> father, KnowWEArticle article, SectionFinderResult result);
+	public Section<?> createSection(String text, Type type, Section<?> father, SectionFinderResult result);
 
 }

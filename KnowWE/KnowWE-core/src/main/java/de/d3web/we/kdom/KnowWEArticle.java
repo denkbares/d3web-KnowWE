@@ -141,12 +141,12 @@ public class KnowWEArticle extends AbstractType {
 		ContextManager.getInstance().detachContexts(title);
 		KnowWEEnvironment.getInstance().getKnowWEStoreManager(web).clearStoreForArticle(title);
 
-		startTime = build(text, title, web, startTime);
+		startTime = build(text, startTime);
 
 		if (this.postDestroyFullParse) {
 			this.secondBuild = true;
 			this.idMap = new HashMap<String, Integer>();
-			build(text, title, web, startTime);
+			build(text, startTime);
 		}
 
 		// if for example a SubtreeHandlers uses
@@ -162,7 +162,7 @@ public class KnowWEArticle extends AbstractType {
 		lastVersion = null;
 	}
 
-	private long build(String text, String title, String web, long startTime) {
+	private long build(String text, long startTime) {
 
 		this.postPreDestroy = false;
 		this.postDestroy = false;
@@ -175,7 +175,7 @@ public class KnowWEArticle extends AbstractType {
 		// create Sections recursively
 		sec = Section.createSection(text, this, null);
 		sec.article = this;
-		getRootType().getParser().parse(text, sec, this);
+		getRootType().getParser().parse(text, sec);
 
 		sec.absolutePositionStartInArticle = 0;
 		sec.clearReusedSuccessorRecursively();

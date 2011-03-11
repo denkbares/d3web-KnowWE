@@ -31,9 +31,10 @@ import de.d3web.we.kdom.store.SectionStore;
 public class IncrementalSectionizerModule implements SectionizerModule {
 
 	@Override
-	public Section<?> createSection(String text, Type type, Section<?> father, KnowWEArticle article, SectionFinderResult result) {
+	public Section<?> createSection(String text, Type type, Section<?> father, SectionFinderResult result) {
 
 		Section<?> s = null;
+		KnowWEArticle article = father.getArticle();
 		// Update mechanism
 		// try to get unchanged Sections from the last version
 		// of the article
