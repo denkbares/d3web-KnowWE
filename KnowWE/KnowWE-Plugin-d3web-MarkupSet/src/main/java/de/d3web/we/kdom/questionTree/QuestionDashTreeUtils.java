@@ -22,7 +22,6 @@ package de.d3web.we.kdom.questionTree;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,7 +68,8 @@ public class QuestionDashTreeUtils {
 	 * <tt>DashTreeElement.getDashTreeAncestors(Section s)</tt>, if <tt>s</tt>
 	 * is the child Section of an answer in a valid DashTree.
 	 * 
-	 * @param article TODO
+	 * @param article
+	 *            TODO
 	 */
 	public static Condition createCondition(
 			KnowWEArticle article, List<Section<? extends DashTreeElement>> ancestors) {
@@ -110,9 +110,10 @@ public class QuestionDashTreeUtils {
 			return null;
 		}
 
-		Section<QuestionTreeAnswerDefinition> answerSec = 
-				 Sections.findSuccessor(father, QuestionTreeAnswerDefinition.class);
-		Section<QuestionDefinition> qSec =  Sections.findSuccessor(grandFather, QuestionDefinition.class);
+		Section<QuestionTreeAnswerDefinition> answerSec =
+					Sections.findSuccessor(father, QuestionTreeAnswerDefinition.class);
+		Section<QuestionDefinition> qSec = Sections.findSuccessor(grandFather,
+				QuestionDefinition.class);
 
 		if (qSec == null) {
 			return null;
@@ -160,11 +161,14 @@ public class QuestionDashTreeUtils {
 
 		if (comparator.equals("=")) return new CondNumEqual(questionNum, valueOf);
 		else if (comparator.equals(">")) return new CondNumGreater(questionNum, valueOf);
-		else if (comparator.equals(">=")) return new CondNumGreaterEqual(questionNum, valueOf);
+		else if (comparator.equals(">=")) return new CondNumGreaterEqual(questionNum,
+				valueOf);
 		else if (comparator.equals("<")) return new CondNumLess(questionNum, valueOf);
-		else if (comparator.equals("<=")) return new CondNumLessEqual(questionNum, valueOf);
+		else if (comparator.equals("<=")) return new CondNumLessEqual(questionNum,
+				valueOf);
 		else {
-			KDOMReportMessage.storeSingleError(article, comp, QuestionDashTreeUtils.class,
+			KDOMReportMessage.storeSingleError(article, comp,
+					QuestionDashTreeUtils.class,
 					new SimpleMessageError("Unkown comparator '" + comparator + "'."));
 			return null;
 		}
@@ -179,17 +183,22 @@ public class QuestionDashTreeUtils {
 
 		Section<DashSubtree> rootQuestionSubtree = null;
 
-		Section<DashTreeElement> thisElement = Sections.findAncestorOfType(s, DashTreeElement.class);
-		if (s.get() instanceof QuestionDefinition && DashTreeUtils.getDashLevel(thisElement) == 0) {
-			rootQuestionSubtree = Sections.findAncestorOfType(thisElement, DashSubtree.class);
+		Section<DashTreeElement> thisElement = Sections.findAncestorOfType(s,
+				DashTreeElement.class);
+		if (s.get() instanceof QuestionDefinition
+				&& DashTreeUtils.getDashLevel(thisElement) == 0) {
+			rootQuestionSubtree = Sections.findAncestorOfType(thisElement,
+					DashSubtree.class);
 		}
 
 		if (rootQuestionSubtree == null) {
-			Section<DashSubtree> lvl1SubtreeAncestor = DashTreeUtils.getAncestorDashSubtree(s, 1);
+			Section<DashSubtree> lvl1SubtreeAncestor = DashTreeUtils.getAncestorDashSubtree(
+					s, 1);
 			if (lvl1SubtreeAncestor != null) {
 				Section<DashTreeElement> lvl1Element = Sections.findChildOfType(
 						lvl1SubtreeAncestor, DashTreeElement.class);
-				Section<? extends KnowWETerm> termRefSection = Sections.findSuccessor(lvl1Element,
+				Section<? extends KnowWETerm> termRefSection = Sections.findSuccessor(
+						lvl1Element,
 						KnowWETerm.class);
 
 				if (termRefSection.get() instanceof QASetDefinition) {
@@ -212,7 +221,6 @@ public class QuestionDashTreeUtils {
 
 		Section<DashSubtree> rootQuestionSubtree = getRootQuestionSubtree(article, s);
 
-
 		if (rootQuestionSubtree != null) {
 			return isChangeInQuestionSubtree(article, rootQuestionSubtree);
 		}
@@ -221,19 +229,13 @@ public class QuestionDashTreeUtils {
 
 	public static boolean isChangeInQuestionSubtree(KnowWEArticle article, Section<DashSubtree> s) {
 
-		HashMap<String, Boolean> changeCacheForArticle = DashTreeUtils.getChangeCacheForArticle(article.getTitle());
-		Boolean change = changeCacheForArticle.get(s.getID());
-
-		if (change != null) return change;
-
 		List<Class<? extends Type>> filteredTypes =
 				new ArrayList<Class<? extends Type>>(1);
 		filteredTypes.add(TermReference.class);
 
 		HashSet<Section<DashSubtree>> visited = new HashSet<Section<DashSubtree>>();
 		visited.add(s);
-		change = isChangeInQuestionSubtree(article, s, filteredTypes, visited);
-		changeCacheForArticle.put(s.getID(), change);
+		boolean change = isChangeInQuestionSubtree(article, s, filteredTypes, visited);
 		return change;
 	}
 
@@ -246,16 +248,19 @@ public class QuestionDashTreeUtils {
 				Section<TermDefinition> tdef = (Section<TermDefinition>) node;
 				Collection<Section<? extends TermDefinition>> termDefs = new ArrayList<Section<? extends TermDefinition>>();
 				termDefs.addAll(KnowWEUtils.getTerminologyHandler(article.getWeb()).getRedundantTermDefiningSections(
-								article, tdef.get().getTermName(tdef), tdef.get().getTermScope()));
+								article, tdef.get().getTermName(tdef),
+						tdef.get().getTermScope()));
 				termDefs.add(KnowWEUtils.getTerminologyHandler(
 						article.getWeb()).getTermDefiningSection(article,
 						tdef.get().getTermName(tdef), tdef.get().getTermScope()));
 				for (Section<?> tDef : termDefs) {
 					if (tDef != null && tDef != node) {
-						Section<DashSubtree> dashSubtree = getRootQuestionSubtree(article, tDef);
+						Section<DashSubtree> dashSubtree = getRootQuestionSubtree(
+								article, tDef);
 						if (dashSubtree != null && !visited.contains(dashSubtree)) {
 							visited.add(dashSubtree);
-							if (isChangeInQuestionSubtree(article, dashSubtree, filteredTypes,
+							if (isChangeInQuestionSubtree(article, dashSubtree,
+									filteredTypes,
 									visited)) {
 								return true;
 							}
