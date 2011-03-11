@@ -200,11 +200,6 @@ public class DashTreeUtils {
 		return change;
 	}
 
-	private static String createSectionFilteredTypesKey(Section<DashSubtree> s, List<Class<? extends Type>> filteredTypes) {
-		return s.getID() + " "
-				+ (filteredTypes == null ? "noFilter" : filteredTypes.toArray());
-	}
-
 	@SuppressWarnings("unchecked")
 	private static boolean isChangeInSubtree(KnowWEArticle article, Section<? extends DashSubtree> s, List<Class<? extends Type>> filteredTypes, HashSet<Section<? extends DashSubtree>> visited) {
 		List<Section<?>> nodes = new LinkedList<Section<?>>();
