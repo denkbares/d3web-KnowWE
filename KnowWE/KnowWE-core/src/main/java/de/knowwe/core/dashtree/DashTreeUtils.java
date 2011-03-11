@@ -36,7 +36,6 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.objects.TermDefinition;
-import de.d3web.we.kdom.objects.TermReference;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class DashTreeUtils implements EventListener {
@@ -179,33 +178,46 @@ public class DashTreeUtils implements EventListener {
 	 * Checks in the Subtree with the given dash level, if there are changed
 	 * Sections. Ignores TermReferences!
 	 */
-	public static boolean isChangeInAncestorSubtree(KnowWEArticle article, Section<?> s, int dashLevel) {
+	public static boolean isChangeInAncestorSubtree(KnowWEArticle article,
+			Section<?> s, int dashLevel) {
 
-		Section<DashSubtree> subtreeAncestor = DashTreeUtils.getAncestorDashSubtree(s, dashLevel);
+		Section<DashSubtree> subtreeAncestor =
+				DashTreeUtils.getAncestorDashSubtree(s, dashLevel);
 
 		if (subtreeAncestor != null) {
-			return isChangeInSubtree(article, subtreeAncestor);
+			return isChangeInSubtree(article, subtreeAncestor, null);
 
 		}
 		return false;
 	}
 
-	public static boolean isChangeInSubtree(KnowWEArticle article, Section<DashSubtree> s) {
+	public static boolean isChangeInAncestorSubtree(KnowWEArticle article, Section<?> s, int dashLevel, List<Class<? extends Type>> filteredTypes) {
+
+		Section<DashSubtree> subtreeAncestor = DashTreeUtils.getAncestorDashSubtree(s, dashLevel);
+
+		if (subtreeAncestor != null) {
+			return isChangeInSubtree(article, subtreeAncestor, filteredTypes);
+
+		}
+		return false;
+	}
+
+	public static boolean isChangeInSubtree(KnowWEArticle article, Section<DashSubtree> s, List<Class<? extends Type>> filteredTypes) {
 
 		HashMap<String, Boolean> changeCacheForArticle = getChangeCacheForArticle(article.getTitle());
-		Boolean change = changeCacheForArticle.get(s.getID());
+		Boolean change = changeCacheForArticle.get(createSectionFilteredTypesKey(s, filteredTypes));
 
 		if (change != null) return change;
-		
-		List<Class<? extends Type>> filteredTypes =
-			new ArrayList<Class<? extends Type>>(1);
-		filteredTypes.add(TermReference.class);
 
 		HashSet<Section<DashSubtree>> visited = new HashSet<Section<DashSubtree>>();
 		visited.add(s);
 		change = isChangeInSubtree(article, s, filteredTypes, visited);
-		changeCacheForArticle.put(s.getID(), change);
+		changeCacheForArticle.put(createSectionFilteredTypesKey(s, filteredTypes), change);
 		return change;
+	}
+
+	private static String createSectionFilteredTypesKey(Section<DashSubtree> s, List<Class<? extends Type>> filteredTypes) {
+		return s.getID() + " " + (filteredTypes == null ? "noFilter" : filteredTypes.toArray());
 	}
 
 
