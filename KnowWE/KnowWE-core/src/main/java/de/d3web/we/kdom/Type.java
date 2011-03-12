@@ -32,8 +32,8 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
  * @author Jochen
  * 
  *         This interface is the foundation of the KnowWE2 Knowledge-DOM
- *         type-system. To every node in this dom tree exactly one
- *         Type is associated.
+ *         type-system. To every node in this dom tree exactly one Type is
+ *         associated.
  * 
  *         A type defines itself by its SectionFinder, which allocates text
  *         parts to this type.
@@ -60,8 +60,14 @@ public interface Type {
 	 */
 	public KnowWEDomRenderer getRenderer();
 
-
-
+	/**
+	 * Returns the parser that can be used to parse the textual markup of this
+	 * type into a section of this type. The parser is responsible to build the
+	 * full kdom tree for the specified text.
+	 * 
+	 * @created 12.03.2011
+	 * @return the parser to be used to parse textual markup of this type
+	 */
 	public abstract Parser getParser();
 
 	/**
@@ -116,9 +122,9 @@ public interface Type {
 	public void setNotRecyclable(boolean notRecyclable);
 
 	public boolean isOrderSensitive();
-	
+
 	public boolean isIgnoringPackageCompile();
-	
+
 	public void setIgnorePackageCompile(boolean ignorePackageCompile);
 
 	public void setOrderSensitive(boolean orderSensitive);
