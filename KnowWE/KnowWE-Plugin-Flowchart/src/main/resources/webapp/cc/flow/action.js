@@ -695,7 +695,7 @@ ActionPane.prototype.render = function() {
 			Builder.node('img', {src: icon})
 		]));
 	}
-	childs.push((name && !name.blank()) ? name : '---');
+	childs.push((name && name.length != 0) ? name : '---');
 
 	var valueText = null;
 	var valueError = null;

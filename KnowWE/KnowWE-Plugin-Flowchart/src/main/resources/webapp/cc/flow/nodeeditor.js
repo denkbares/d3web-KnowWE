@@ -530,7 +530,7 @@ ArrowTool.prototype.render = function() {
 				"top:" + (this.node.getTop() + this.node.getHeight() - 13) + "px;"
 	},
 	[
-		Builder.build('<img src="'+Flowchart.imagePath+'tool_arrow.gif">')
+		Builder.node('img',{ src:'Flowchart.imagePath' + tool_arrow.gif})
 	]);
 	dom.__arrowTool = this;
 	return dom;
@@ -781,7 +781,7 @@ ArrowTool.prototype.render = function() {
 				"top:" + (this.node.getTop() + this.node.getHeight() - 13) + "px;"
 	},
 	[
-		Builder.build('<img src="'+Flowchart.imagePath+'tool_arrow.gif">')
+	 	Builder.node('img',{ src:Flowchart.imagePath + 'tool_arrow.gif'})
 	]);
 	dom.__arrowTool = this;
 	return dom;

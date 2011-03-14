@@ -75,11 +75,12 @@
 <title>Edit Flowchart: <%= title %></title>
 	
 	<script src="cc/scriptaculous-js/lib/prototype.js" type="text/javascript"></script>
-	<script src="cc/scriptaculous-js/src/builder.js" type="text/javascript"></script>
+	<script src="cc/flow/builder.js" type="text/javascript"></script>
 	<script src="cc/scriptaculous-js/src/effects.js" type="text/javascript"></script>
 	<script src="cc/scriptaculous-js/src/dragdrop.js" type="text/javascript"></script>
 	
 	<script src="cc/kbinfo/kbinfo.js" type="text/javascript"></script>
+	<script src="cc/kbinfo/events.js" type="text/javascript"></script>
 	<script src="cc/kbinfo/extensions.js" type="text/javascript"></script>
 	<script src="cc/kbinfo/dropdownlist.js" type="text/javascript"></script>
 	<script src="cc/kbinfo/objectselect.js" type="text/javascript"></script>

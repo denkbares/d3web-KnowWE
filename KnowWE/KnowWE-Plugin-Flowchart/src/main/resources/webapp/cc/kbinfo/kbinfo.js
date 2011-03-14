@@ -98,7 +98,7 @@ KBInfo.prepareInfoObject = function(nameOrIDOrArray) {
 	new Ajax.Request(url, {
 		method: 'get',
 		onSuccess: function(transport) {
-			//alert(transport.responseXML);
+		
 			KBInfo._updateCache(transport.responseXML);
 		},
 		onFailure: function() {
@@ -185,18 +185,7 @@ KBInfo.getInfoObject = function(nameOrIDOrArray) {
 	if (!nameOrIDOrArray) return null;
 };
 
-/**
- * Iterates all currently cached KBInfo objects 
- * using the given iterator function. 
- */
-KBInfo.iterateInfoObjects = function(iteratorFx) {
-	for (var key in KBInfo._cache.byID) {
-		var value = KBInfo._cache.byID[key];
-		if (!value) continue;
-		if (!value.getClassInstance) continue;
-		iteratorFx(value);
-	}
-}
+
 
 /**
  * Returns an array of all currently cached KBInfo objects, 
@@ -276,126 +265,130 @@ KBInfo.removeCacheChangeListener = function(listener, nameOrID) {
 }
 
 
-KBInfo.InfoObject = Class.create({
-	initialize: function(xmlDom) {
-		this.xmlDom = xmlDom;
-		this.id = this.xmlDom.getAttribute('id');
-		this.name = this.xmlDom.getAttribute('name');
-		this.description = KBInfo._getNodeValueIfExists(this.xmlDom, 'description');
-		//  we assume that every KBInfo may have child elements, 
-		// even this is not true for flowcharts
-		// For IE non-prototyype (non-extended) classes we use static method variant of Element.select
-		this.childs = KBInfo._collectNodeValues(this.xmlDom, 'child');
-	},
+
+KBInfo.InfoObject = function(xmlDom) {
+	if (!xmlDom)
+		return;
 	
-	/** 
-	 * Returns the class instance of this KBInfo object.
-	 */
-	getClassInstance: function() {
-		throw("KBInfo.InfoObject.getClassInstance() must be overwritten");
-	},
+	this.xmlDom = xmlDom;
+	this.id = this.xmlDom.getAttribute('id');
+	this.name = this.xmlDom.getAttribute('name');
+	this.description = KBInfo._getNodeValueIfExists(this.xmlDom, 'description');
+	//  we assume that every KBInfo may have child elements, 
+	// even this is not true for flowcharts
+	// For IE non-prototyype (non-extended) classes we use static method variant of Element.select
+	this.childs = KBInfo._collectNodeValues(this.xmlDom, 'child');
+}
 	
-	/** 
-	 * Returns the id of the referenced knowledgebase object.
-	 */
-	getID: function() {
-		return this.id;
-	},
+/** 
+ * Returns the class instance of this KBInfo object.
+ */
+KBInfo.InfoObject.prototype.getClassInstance = function() {
+	//throw("KBInfo.InfoObject.getClassInstance() must be overwritten");
+}
 	
-	/** 
-	 * Returns the short name of an InfoObject.
-	 */
-	getName: function() {
-		return this.name;
-	},
+/** 
+ * Returns the id of the referenced knowledgebase object.
+ */
+KBInfo.InfoObject.prototype.getID = function() {
+	return this.id;
+}
 	
-	/** 
-	 * Returns the description of an InfoObject.
-	 */
-	getDescription: function() {
-		return this.description;
-	},
+/** 
+ * Returns the short name of an InfoObject.
+ */
+KBInfo.InfoObject.prototype.getName = function() {
+	return this.name;
+}
 	
-	/** 
-	 * Returns the child objects of an InfoObject.
-	 */
-	getChilds: function() {
-		return this.childs;
-	},
+/** 
+ * Returns the description of an InfoObject.
+ */
+KBInfo.InfoObject.prototype.getDescription = function() {
+	return this.description;
+}
 	
-	/** 
-	 * Returns the url to the icon of this KBInfo object.
-	 */
-	getIconURL: function() {
-		return null;
-	},
+/** 
+ * Returns the child objects of an InfoObject.
+ */
+KBInfo.InfoObject.prototype.getChilds = function() {
+	return this.childs;
+}
 	
-	/** 
-	 * Returns the desired ToolTip-Text of an InfoObject.
-	 */
-	getToolTip: function() {
-		return this.name+' (#'+this.id+')'+
-			(this.text || this.description ? ': ' : '') + 
-			(this.text ? (' \n' + this.text) : '') + 
-			(this.description ? (' \n' + this.description) : '');
+/** 
+ * Returns the url to the icon of this KBInfo object.
+ */
+KBInfo.InfoObject.prototype.getIconURL = function() {
+	return null;
+}
+	
+/** 
+ * Returns the desired ToolTip-Text of an InfoObject.
+ */
+KBInfo.InfoObject.prototype.getToolTip = function() {
+	return this.name+' (#'+this.id+')'+
+		(this.text || this.description ? ': ' : '') + 
+		(this.text ? (' \n' + this.text) : '') + 
+		(this.description ? (' \n' + this.description) : '');
+}
+
+
+
+KBInfo.Question = function(xmlDom) {
+	KBInfo.InfoObject.call(this, xmlDom);
+	this.is_abstract = (this.xmlDom.getAttribute('abstract') == 'true');
+	this.type = this.xmlDom.getAttribute('type');
+	this.options = KBInfo._collectNodeValues(this.xmlDom, 'choice');
+	this.text = KBInfo._getNodeValueIfExists(this.xmlDom, 'text');
+	this.unit = KBInfo._getNodeValueIfExists(this.xmlDom, 'unit');
+	
+	var rangeNodes = this.xmlDom.getElementsByTagName('range');
+	if (rangeNodes && rangeNodes.length>0) {
+		this.range = [rangeNodes[0].getAttribute('min'), rangeNodes[0].getAttribute('max')];
 	}
-});
-
-KBInfo.Question = Class.create(
-	KBInfo.InfoObject, {
-
-	initialize: function($super, xmlDom) {
-		$super(xmlDom);
-		this.is_abstract = (this.xmlDom.getAttribute('abstract') == 'true');
-		this.type = this.xmlDom.getAttribute('type');
-		this.options = KBInfo._collectNodeValues(this.xmlDom, 'choice');
-		this.text = KBInfo._getNodeValueIfExists(this.xmlDom, 'text');
-		this.unit = KBInfo._getNodeValueIfExists(this.xmlDom, 'unit');
-		
-		var rangeNodes = this.xmlDom.getElementsByTagName('range');
-		if (rangeNodes && rangeNodes.length>0) {
-			this.range = [rangeNodes[0].getAttribute('min'), rangeNodes[0].getAttribute('max')];
-		}
-		else {
-			this.range = null;
-		}
-	},
-	
-	getOptions: function() {
-		return this.options;
-	},
-	
-	isAbstract: function() {
-		return this.is_abstract;
-	},
-	
-	getText: function() {
-		return this.text;
-	},
-	
-	getType: function() {
-		return this.type;
-	},
-	
-	getClassInstance: function() {
-		return KBInfo.Question;
-	},
-
-	getIconURL: function() {
-		var file = 
-			(this.type == KBInfo.Question.TYPE_OC) ? 'single' :
-			(this.type == KBInfo.Question.TYPE_MC) ? 'multiple' :
-			(this.type == KBInfo.Question.TYPE_BOOL) ? 'yesno' :
-			(this.type == KBInfo.Question.TYPE_NUM) ? 'num' :
-			(this.type == KBInfo.Question.TYPE_DATE) ? 'date' :
-			'text';
-		if (this.isAbstract()) file += '-abstract';
-		return KBInfo.imagePath + file + '.gif';
+	else {
+		this.range = null;
 	}
-});
+}
+
+/***/
+KBInfo.Question.prototype = new KBInfo.InfoObject();  
+	
+KBInfo.Question.prototype.getOptions = function() {
+	return this.options;
+},
+
+KBInfo.Question.prototype.isAbstract = function() {
+	return this.is_abstract;
+}
+
+KBInfo.Question.prototype.getText = function() {
+	return this.text;
+}
+
+KBInfo.Question.prototype.getType = function() {
+	return this.type;
+}
+
+KBInfo.Question.prototype.getClassInstance = function() {
+	return KBInfo.Question;
+}
+
+KBInfo.Question.prototype.getIconURL = function() {
+	var file = 
+		(this.type == KBInfo.Question.TYPE_OC) ? 'single' :
+		(this.type == KBInfo.Question.TYPE_MC) ? 'multiple' :
+		(this.type == KBInfo.Question.TYPE_BOOL) ? 'yesno' :
+		(this.type == KBInfo.Question.TYPE_NUM) ? 'num' :
+		(this.type == KBInfo.Question.TYPE_DATE) ? 'date' :
+		'text';
+	if (this.isAbstract()) file += '-abstract';
+	return KBInfo.imagePath + file + '.gif';
+}
+
 KBInfo.Question.getShortClassName = function() {
 	return "Question";
-};	
+}
 
 KBInfo.Question.TYPE_OC =	"oc";
 KBInfo.Question.TYPE_MC =	"mc";
@@ -405,89 +398,99 @@ KBInfo.Question.TYPE_DATE =	"date";
 KBInfo.Question.TYPE_TEXT =	"text";
 
 
-KBInfo.Solution = Class.create(
-	KBInfo.InfoObject, {
-	initialize: function($super, xmlDom) {
-		$super(xmlDom);
-	},
-	
-	getClassInstance: function() {
-		return KBInfo.Solution;
-	},
 
-	getIconURL: function() {
-		return KBInfo.imagePath + 'diagnosis.gif';
-	}
-});
+
+KBInfo.Solution = function(xmlDom) {
+	KBInfo.InfoObject.call(this, xmlDom);
+
+}
+/****/
+KBInfo.Solution.prototype = new KBInfo.InfoObject();  
+	
+KBInfo.Solution.prototype.getClassInstance = function() {
+	return KBInfo.Solution;
+}
+
+KBInfo.Solution.prototype.getIconURL = function() {
+	return KBInfo.imagePath + 'diagnosis.gif';
+}
+
 KBInfo.Solution.getShortClassName = function() {
 	return "Solution";
-};
+}
 	
 
-KBInfo.Flowchart = Class.create(
-	KBInfo.InfoObject, {
-	initialize: function($super, xmlDom) {
-		$super(xmlDom);
-		this.startNames = KBInfo._collectNodeValues(this.xmlDom, 'start');
-		this.exitNames = KBInfo._collectNodeValues(this.xmlDom, 'exit');
-	},
+
+KBInfo.Flowchart = function(xmlDom) {
+	KBInfo.InfoObject.call(this, xmlDom);
+	this.startNames = KBInfo._collectNodeValues(this.xmlDom, 'start');
+	this.exitNames = KBInfo._collectNodeValues(this.xmlDom, 'exit');
+}
+
+/***/
+KBInfo.Flowchart.prototype = new KBInfo.InfoObject();  
+
+KBInfo.Flowchart.prototype.getStartNames = function() {
+	return this.startNames;
+}
 	
-	getStartNames: function() {
-		return this.startNames;
-	},
+KBInfo.Flowchart.prototype.getExitNames = function() {
+	return this.exitNames;
+}
 	
-	getExitNames: function() {
-		return this.exitNames;
-	},
+KBInfo.Flowchart.prototype.getClassInstance = function() {
+	return KBInfo.Flowchart;
+}
 	
-	getClassInstance: function() {
-		return KBInfo.Flowchart;
-	},
+KBInfo.Flowchart.prototype.getIconURL = function() {
+	return KBInfo.imagePath + 'flowchart.gif';
+}
 	
-	getIconURL: function() {
-		return KBInfo.imagePath + 'flowchart.gif';
-	}
-	
-});
 KBInfo.Flowchart.getShortClassName = function() {
 	return "Flowchart";
-};
+}
 
 
-KBInfo.QSet = Class.create(
-	KBInfo.InfoObject, {
-	initialize: function($super, xmlDom) {
-		$super(xmlDom);
-	},
-	
-	getClassInstance: function() {
-		return KBInfo.QSet;
-	},
 
-	getIconURL: function() {
-		return KBInfo.imagePath + 'qset.gif';
-	}
-});
+KBInfo.QSet = function(xmlDom) {
+	KBInfo.InfoObject.call(this, xmlDom);
+}
+
+/***/
+KBInfo.QSet.prototype = new KBInfo.InfoObject(); 
+
+KBInfo.QSet.prototype.getClassInstance = function() {
+	return KBInfo.QSet;
+}
+
+KBInfo.QSet.prototype.getIconURL = function() {
+	return KBInfo.imagePath + 'qset.gif';
+}
+
 KBInfo.QSet.getShortClassName = function() {
 	return "QSet";
-};
+}
 	
 
-KBInfo.Article = Class.create(
-	KBInfo.InfoObject, {
-	initialize: function($super, xmlDom) {
-		$super(xmlDom);
-	},
-	
-	getClassInstance: function() {
-		return KBInfo.Article;
-	},
 
-	getIconURL: function() {
-		return KBInfo.imagePath + 'article.gif';
-	}
-});
+KBInfo.Article = function(xmlDom) {
+	KBInfo.InfoObject.call(this, xmlDom);
+
+}
+
+/****/
+KBInfo.Article.prototype = new KBInfo.InfoObject(); 
+	
+KBInfo.Article.prototype.getClassInstance = function() {
+	return KBInfo.Article;
+}
+
+KBInfo.Article.prototype.getIconURL = function() {
+	return KBInfo.imagePath + 'article.gif';
+}
 
 KBInfo.Article.getShortClassName = function() {
 	return "Article";
-};
+}
+
+

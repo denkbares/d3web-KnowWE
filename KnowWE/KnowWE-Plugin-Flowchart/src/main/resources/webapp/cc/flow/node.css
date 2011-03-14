@@ -1,7 +1,6 @@
 .Node {
 	position: absolute;
 	overflow: visible;
-	cursor: move;
 	font-family: Arial, Helvetica;
 	font-size:	10pt;
 	background-color: black;
@@ -91,6 +90,9 @@
 
 .Node .comment {
 	background-color: #1af; 
+}
+.Node .comment .title {
+	font-weight: normal;
 }
 
 .Node .snapshot {

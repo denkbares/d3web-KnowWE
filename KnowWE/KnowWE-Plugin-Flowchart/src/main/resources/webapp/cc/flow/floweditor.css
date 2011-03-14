@@ -128,6 +128,14 @@ ul.toolbar li:last-child {
 	z-index: -100;
 }
 
+.Node { 
+	cursor: move;
+}
+
+.Rule .rule_selector {
+	cursor: crosshair;	
+}
+
 .FlowchartGroup .trash {
 	position: absolute; 
 	overflow: visible; 

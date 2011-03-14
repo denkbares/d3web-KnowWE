@@ -45,92 +45,99 @@ Rule.prototype.setVisible = function(visible) {
 	}
 }
 
+
 Rule.prototype.render = function(selected) {
-	var html = '';
-	var highlight = 
-			'<div class="rule_highlight" style="position:absolute;' +
-			(!selected ? ' visibility: hidden;' : '') +
-			'">';
-	var selector = '<div onclick="this.parentNode.__rule.select();" style="position:absolute; visibility: visible; z-index:0;">';
+		var highlightDom, selectorDom;
+		
+		var ruleDom = Builder.node('div', {
+			id: this.fcid,
+			className: 'Rule'
+		},[highlightDom = Builder.node('div', {className :'rule_highlight'}), selectorDom = Builder.node('div', {className :'rule_selector'})]);
+		
+		for (var i = 0; i < this.coordinates.length - 1; i++) {
+			var x1 = this.coordinates[i][0];
+			var y1 = this.coordinates[i][1];
+			var x2 = this.coordinates[i+1][0];
+			var y2 = this.coordinates[i+1][1];
+			var x, y, w, h, clazz, arrow;
+			
+			if (x1 == x2) { // vertical line
+				x = x1;
+				y = Math.min(y1, y2);
+				w = 1;
+				h = Math.abs(y1 - y2)+1;
+				clazz = "v_line";
+				arrow = (y1 > y2) ? "arrow_up" : "arrow_down";
+			}
+			else { // horizontal line
+				x = Math.min(x1, x2);
+				y = y1;
+				w = Math.abs(x1 - x2)+1;
+				h = 1;
+				clazz = "h_line";
+				arrow = (x1 > x2) ? "arrow_left" : "arrow_right";
+			}
+			
+			if (i + 2 < this.coordinates.length)
+				arrow = "no_arrow"; 
+			
+			var segmentDom = Builder.node('div', {
+				className: clazz,
+				style : 'left: ' + x + 'px; top: ' + y + 'px; width: ' + w + 'px; height: ' + h + 'px;'
+			}, [
+			   
+			    Builder.node('div', {className: arrow})
+			  ]);
+			ruleDom.appendChild(segmentDom);
+			
+			selectorDom.appendChild( Builder.node('div', {className: 'rule_selector', style: 'position: absolute; overflow:hidden; ' +
+				'left: ' + (x-3) + 'px; ' +
+				'top: ' + (y-3) + 'px; ' +
+				'width: ' + (w+6) + 'px; ' +
+				'height: ' + (h+6) + 'px;'})); //.addEvent('click', function(e){this.select(); e.stop();}.bind(this)),
+			highlightDom.appendChild(Builder.node('div', {className: clazz + '_highlight', style : '' +
+				'left: ' + (x-1) + 'px; ' +
+				'top: ' + (y-1) + 'px; ' +
+				'width: ' + (w+2) + 'px; ' +
+				'height: ' + (h+2) + 'px;'}));
+			
+			
+			
+		}
 	
-	for (var i=0; i<this.coordinates.length-1; i++) {
-		var x1 = this.coordinates[i][0];
-		var y1 = this.coordinates[i][1];
-		var x2 = this.coordinates[i+1][0];
-		var y2 = this.coordinates[i+1][1];
-		var x, y, w, h, clazz, arrow;
-		if (x1==x2) {
-			// vertical line
-			x = x1;
-			y = Math.min(y1, y2);
-			w = 1;
-			h = Math.abs(y1 - y2)+1;
-			clazz = "v_line";
-			arrow = (y1 > y2) ? "arrow_up" : "arrow_down";
-		}
-		else {
-			// horizontal line
-			x = Math.min(x1, x2);
-			y = y1;
-			w = Math.abs(x1 - x2)+1;
-			h = 1;
-			clazz = "h_line";
-			arrow = (x1 > x2) ? "arrow_left" : "arrow_right";
-		}
-		if (i+2 < this.coordinates.length) arrow="no_arrow"; 
-		html += '<div class=' + clazz + ' style="position:absolute; overflow:visible; ' +
-			'left: ' + x + 'px; ' +
-			'top: ' + y + 'px; ' +
-			'width: ' + w + 'px; ' +
-			'height: ' + h + 'px;">' +
-			'<div class='+arrow+'></div>' +
-			'</div>';
-		highlight += 
-			// highlight
-			'<div ' +
-			'class=' + clazz + '_highlight ' +
-			'style="position: absolute; overflow:hidden; ' +
-			'left: ' + (x-1) + 'px; ' +
-			'top: ' + (y-1) + 'px; ' +
-			'width: ' + (w+2) + 'px; ' +
-			'height: ' + (h+2) + 'px;"></div>';
-		selector +=
-			// selector
-			'<div ' +
-			'style="position: absolute; overflow:hidden; ' +
-			'left: ' + (x-3) + 'px; ' +
-			'top: ' + (y-3) + 'px; ' +
-			'width: ' + (w+6) + 'px; ' +
-			'height: ' + (h+6) + 'px;"></div>';
-	}
+		if (this.sourceAnchor && this.coordinates.length > 0) {
+			var rect = this.sourceAnchor.getGuardPosition();
+			
+			var guardStyle = 'position:absolute;';
+				
+			if (rect.top) guardStyle += ' top: ' + rect.top + 'px; ';
+			if (rect.bottom) guardStyle += ' bottom: ' + rect.bottom + 'px; ';
+			if (rect.left) guardStyle += ' left: ' + rect.left + 'px; ';
+			if (rect.right) guardStyle += ' right: ' + rect.right + 'px; ';
+			if (rect.width) guardStyle += ' max-width: ' + rect.width + 'px; ';
+			if (rect.height) guardStyle += ' max-height: ' + rect.height + 'px; ';
+			
+			var guardDom = Builder.node('div', {
+				style: 'position:absolute; overflow: visible; ' +
+					'left: ' + this.coordinates[0][0] + 'px; top: ' + this.coordinates[0][1] + 'px; width: 0px; height: 0px;'
+			}, [
+			    this.guardRoot = Builder.node('div', {
+			    	className: 'guard', 
+			    	style: guardStyle
+			    	})
+			    ]);
+			
+			ruleDom.appendChild(guardDom);
+			
+			
+			
 
-	if (this.sourceAnchor && this.coordinates.length > 0) {
-		var rect = this.sourceAnchor.getGuardPosition();
-		html += 
-			'<div style="position:absolute; overflow: visible; ' +
-			'left: '+this.coordinates[0][0]+'px; top: '+this.coordinates[0][1]+'px; width: 0px; height: 0px;">' + 
-			'<div class="guard" style="position:absolute;';
-		if (rect.top) html += ' top: '+rect.top+'px; ';
-		if (rect.bottom) html += ' bottom: '+rect.bottom+'px; ';
-		if (rect.left) html += ' left: '+rect.left+'px; ';
-		if (rect.right) html += ' right: '+rect.right+'px; ';
-		if (rect.width) html += ' max-width: '+rect.width+'px; ';
-		if (rect.height) html += ' max-height: '+rect.height+'px; ';
-		html += '"></div></div>';
-	}
-	highlight += "</div>";
-	selector += "</div>";
-	
-	var dom = Builder.node('div', {
-		id: this.fcid,
-		className: 'Rule',
-		style: "position:absolute; left: 0px; top: 0px; overflow: visible; cursor: crosshair;"
-	});
-	dom.innerHTML = html + highlight + selector;
-	dom.__rule = this;
-	return dom;
+		}
+		ruleDom.appendChild(highlightDom);
+		ruleDom.appendChild(selectorDom);
+		ruleDom.__rule = this;
+		return ruleDom;
 }
-
 
 
 
@@ -181,7 +188,7 @@ Rule.prototype.notifyNodeChanged = function(node) {
 }
 
 Rule.prototype.getGuardRoot = function() {
-	return (this.dom ? this.dom.select('.guard')[0] : null);
+	return (this.dom ? this.guardRoot : null);
 }
 
 Rule.prototype.setSelectionVisible = function(isSelected) {

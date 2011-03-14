@@ -18,10 +18,10 @@ Guard.prototype.isPatternFor = function(other) {
 	// and the conditionString patterns matches
 	var regexp = this.getConditionString();
 	regexp = regexp.replace(/\$\{[:\w]*\}/gi, '__ANY__');
-	regexp = RegExp.escape(regexp);
+	regexp = DiaFluxUtils.escapeRegex(regexp); 
 	regexp = regexp.replace(/__ANY__/g, '.*');
-	var string = '/^\s*'+regexp+'\s*$/';
-	regexp = eval(string);
+	var string = '^\s*'+regexp+'\s*$';
+	regexp = new RegExp(string);
 	var test = regexp.test(other.getConditionString());
 	return test;
 }

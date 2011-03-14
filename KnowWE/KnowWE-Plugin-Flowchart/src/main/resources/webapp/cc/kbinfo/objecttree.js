@@ -55,7 +55,7 @@ ObjectTree.prototype.setRoots = function(roots) {
 }
 
 ObjectTree.prototype.render = function() {
-	if (!this.roots) return Builder.build(this.defaultHTML);
+	if (!this.roots) return Builder.build(this.defaultHTML); //TODO remove build
 	
 	var dom = Builder.node('div', {
 		className: 'ObjectTree',

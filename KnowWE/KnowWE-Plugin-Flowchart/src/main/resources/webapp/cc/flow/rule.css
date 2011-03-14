@@ -21,11 +21,38 @@
 	border-style: solid;
 }
 
+.Rule .changed {
+	position:absolute;
+	background-color: #000099;
+	border-color: #000099;
+	border-width: 2px; 
+	border-style: solid;
+}
+
 .Rule .guard, .Rule .guard {
 	font-family: Arial, Helvetica;
 	font-size: 8pt;
 	white-space: nowrap;
 }
+
+
+.Rule .rule_highlight {
+	visibility: hidden;
+	z-index: 10;
+}
+
+
+.Rule .rule_highlight .h_line_highlight, .Rule .rule_highlight .v_line_highlight {
+	background-color: red;
+	position: absolute;
+	z-index: 0;
+}
+
+.Rule .rule_selector {
+	position: absolute;
+	z-index: 5;
+}
+
 
 .Rule .guard .warning {
 	background-color: #ff8;
@@ -42,15 +69,10 @@
 
 .Rule .h_line, .Rule .v_line {
 	position: absolute;
-	overflow: hidden;
 	background-color: black;
 	z-index: 80;
 }
 
-.Rule .h_line_highlight, .Rule .v_line_highlight {
-	background-color: red;
-	z-index: 0;
-}
 
 .Rule .arrow_up {
 	position: absolute;

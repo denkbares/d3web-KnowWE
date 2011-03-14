@@ -26,6 +26,8 @@ import de.d3web.we.flow.type.FlowchartPreviewContentType;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.xml.AbstractXMLType;
+import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * 
@@ -76,7 +78,6 @@ public class FlowchartUtils {
 				"<link rel='stylesheet' type='text/css' href='cc/flow/guard.css'></link>" +
 				"<link rel='stylesheet' type='text/css' href='cc/flow/node.css'></link>" +
 				"<link rel='stylesheet' type='text/css' href='cc/flow/rule.css'></link>" +
-				"<style type='text/css'>.Node { cursor: default !important; }</style>" +
 				preview +
 				"</div>";
 	}
@@ -89,14 +90,62 @@ public class FlowchartUtils {
 	 * @return s the preview including styles, or null if no preview is present
 	 */
 	public static String createRenderablePreview(Section<FlowchartType> flowSection) {
-		String preview = extractPreview(flowSection);
+//		return createFlowchartRenderer(flowSection);
+		 String preview = extractPreview(flowSection);
+		
+		 if (preview == null) {
+		 return null;
+		 }
 
-		if (preview == null) {
-			return null;
-		}
-
-		return createRenderablePreview(preview);
+		 return createRenderablePreview(preview);
 
 	}
 
+	//experimental hack
+	public static String createFlowchartRenderer(Section<FlowchartType> section) {
+		String name = FlowchartType.getFlowchartName(section);
+		String source = section.getOriginalText();
+
+		String width = AbstractXMLType.getAttributeMapFor(section).get("width");
+		String height = AbstractXMLType.getAttributeMapFor(section).get("height");
+
+		String sourceID = name + "Source";
+		String initScript = "<script>Flowchart.createFromXML('" + name + "', $('" + sourceID
+				+ "')).setVisible(true);</script>\n";
+		String result = "\n<div>"
+				+
+				"<link rel='stylesheet' type='text/css' href='cc/flow/flowchart.css'></link>"
+				+
+				"<link rel='stylesheet' type='text/css' href='cc/flow/guard.css'></link>"
+				+
+				"<link rel='stylesheet' type='text/css' href='cc/flow/node.css'></link>"
+				+
+				"<link rel='stylesheet' type='text/css' href='cc/flow/rule.css'></link>"
+				+
+				"<script src='cc/flow/builder.js' type='text/javascript'></script>"
+				+
+				"<script src='cc/kbinfo/kbinfo.js' type='text/javascript'></script>"
+				+
+				"<script src='cc/flow/renderExtensions.js' type='text/javascript'></script>"
+				+
+				"<script src='cc/kbinfo/extensions.js' type='text/javascript'></script>"
+				+
+				"<script src='cc/flow/flowchart.js' type='text/javascript'></script>"
+				+
+				"<script src='cc/flow/action.js' type='text/javascript'></script>" +
+				"<script src='cc/flow/guard.js' type='text/javascript'></script>" +
+				"<script src='cc/flow/node.js' type='text/javascript'></script>" +
+				"<script src='cc/flow/rule.js' type='text/javascript'></script>" +
+				"<script src='cc/flow/router.js' type='text/javascript'></script>\n" +
+				"<xml id='" + sourceID + "' style ='display:none;'>{{{" + source + "}}}</xml>\n" +
+				"<xml id='referredKBInfo' style='display:none;'>" +
+				// jspHelper.getReferredInfoObjectsAsXML() +
+				"</xml>" +
+				"<div id='" + name + "' style='width:" + width + "px; height: " + height + "px;'>" +
+				initScript +
+				"</div>\n" +
+				"</div>\n";
+		return KnowWEUtils.maskHTML(result);
+
+	}
 }
