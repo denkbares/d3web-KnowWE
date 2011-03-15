@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 
 import de.d3web.we.action.UserActionContext;
 import de.d3web.we.event.ArticleRegisteredEvent;
+import de.d3web.we.event.ArticleUpdatesFinishedEvent;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.UpdatingDependenciesEvent;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -328,7 +329,10 @@ public class KnowWEArticleManager {
 			}
 			globalRefreshQueue.remove(title);
 		}
-		// this.articlesToRefresh = new TreeSet<String>();
+
+		if (globalRefreshQueue.isEmpty()) {
+			EventManager.getInstance().fireEvent(new ArticleUpdatesFinishedEvent());
+		}
 	}
 
 	public void clearArticleMap() {
