@@ -1,20 +1,20 @@
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.d3web.we.testcase.renderer;
 
@@ -53,7 +53,8 @@ public class TestCaseRunnerRenderer extends DefaultMarkupRenderer<TestCaseRunner
 		this.rb = D3webModule.getKwikiBundle_d3web(user);
 		this.formatter = new MessageFormat("");
 
-		string.append(mask("<strong>" + TestCaseRunnerType.getText(section) + "</strong><br />\n"));
+		string.append(mask("<strong>" + TestCaseRunnerType.getText(section)
+				+ "</strong><br />\n"));
 
 		String testCaseArticleName = TestCaseRunnerType.getTestCase(section);
 		TestCase testSuite = getTestSuiteFor(testCaseArticleName, article.getWeb());
@@ -64,13 +65,18 @@ public class TestCaseRunnerRenderer extends DefaultMarkupRenderer<TestCaseRunner
 		}
 		else {
 			string.append(mask("<div id='testcase-result' >"));
-			renderTestCaseDescription(string, testCaseArticleName, testSuite);
-			renderTestCaseRun(string, testSuite);
+			renderTestCaseDescription(string, testCaseArticleName, testSuite, inDebugMode(section));
+			renderTestCaseRun(string, testSuite, inDebugMode(section));
 			string.append(mask("</div>\n"));
 		}
+
 	}
 
-	private void renderTestCaseDescription(StringBuilder string, String testCaseTopic, TestCase testSuite) {
+	private boolean inDebugMode(Section<TestCaseRunnerType> section) {
+		return TestCaseRunnerType.getMode(section).equals(TestCaseRunnerType.MODE_DEBUG);
+	}
+
+	private void renderTestCaseDescription(StringBuilder string, String testCaseTopic, TestCase testSuite, boolean debugMode) {
 		string.append(mask("<img src='KnowWEExtension/d3web/icon/comment16.png' align='top' /> "));
 		String link = mask("<a href='Wiki.jsp?page=" + testCaseTopic
 				+ "'><span id='testcase-topic'>"
@@ -80,18 +86,30 @@ public class TestCaseRunnerRenderer extends DefaultMarkupRenderer<TestCaseRunner
 		string.append(mask("<br />\n"));
 	}
 
-	private void renderTestCaseRun(StringBuilder string, TestCase testSuite) {
-		String runText = rb.getString("KnowWE.TestCase.runbutton");
-		string.append(mask("<p onclick='runTestCase()' id='testcase-run-link'>"));
-		string.append(mask("<img "));
-		string.append("src='KnowWEExtension/d3web/icon/run24.png' ");
+	private void renderTestCaseRun(StringBuilder string, TestCase testSuite, boolean debug) {
+		String runText = "Run";
+		if (debug) {
+			runText = rb.getString("KnowWE.TestCase.debugbutton");
+
+		}
+		else {
+			runText = rb.getString("KnowWE.TestCase.runbutton");
+		}
+
+		if (debug) {
+			string.append(mask("<p onclick='debugTestCase()' id='testcase-run-link'>"));
+			string.append(mask("<img src='KnowWEExtension/images/testcase/debug.gif' "));
+		}
+		else {
+			string.append(mask("<p onclick='runTestCase()' id='testcase-run-link'>"));
+			string.append(mask("<img src='KnowWEExtension/images/testcase/run.gif' "));
+		}
 		string.append("alt='" + runText + "' ");
 		string.append("title='" + runText + "' ");
 		string.append("align='absmiddle' ");
 		string.append(mask("/> "));
 		string.append(mask("<strong>" + runText + "</strong></p>"));
 	}
-
 
 	private String mask(String string) {
 		return KnowWEUtils.maskHTML(string);
