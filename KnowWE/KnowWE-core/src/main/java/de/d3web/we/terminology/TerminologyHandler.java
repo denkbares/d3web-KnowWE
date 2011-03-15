@@ -202,14 +202,14 @@ public class TerminologyHandler implements EventListener {
 					// Section is from a different article, it will compiled
 					// there.
 					if (s.get().getTermScope() == KnowWETerm.GLOBAL) {
-						artMan.addAllArticlesToRefresh(termRefLogWrongClass.termDefiningSection.getReusedBySet());
+						artMan.addAllArticlesToUpdate(termRefLogWrongClass.termDefiningSection.getReusedBySet());
 						termRefLogWrongClass.termDefiningSection.clearReusedBySet();
 						for (Section<?> termDef : termRefLogWrongClass.getRedundantDefinitions()) {
-							artMan.addAllArticlesToRefresh(termDef.getReusedBySet());
+							artMan.addAllArticlesToUpdate(termDef.getReusedBySet());
 							termDef.clearReusedBySet();
 						}
 						for (Section<?> termRef : termRefLogWrongClass.getReferences()) {
-							artMan.addAllArticlesToRefresh(termRef.getReusedBySet());
+							artMan.addAllArticlesToUpdate(termRef.getReusedBySet());
 							termRef.clearReusedBySet();
 						}
 					}
@@ -255,14 +255,14 @@ public class TerminologyHandler implements EventListener {
 				else {
 
 					if (s.get().getTermScope() == KnowWETerm.GLOBAL) {
-						artMan.addAllArticlesToRefresh(termRefLog.termDefiningSection.getReusedBySet());
+						artMan.addAllArticlesToUpdate(termRefLog.termDefiningSection.getReusedBySet());
 						termRefLog.termDefiningSection.clearReusedBySet();
 						for (Section<?> termDef : termRefLog.getRedundantDefinitions()) {
-							artMan.addAllArticlesToRefresh(termDef.getReusedBySet());
+							artMan.addAllArticlesToUpdate(termDef.getReusedBySet());
 							termDef.clearReusedBySet();
 						}
 						for (Section<?> termRef : termRefLog.getReferences()) {
-							artMan.addAllArticlesToRefresh(termRef.getReusedBySet());
+							artMan.addAllArticlesToUpdate(termRef.getReusedBySet());
 							termRef.clearReusedBySet();
 						}
 					}
@@ -281,7 +281,7 @@ public class TerminologyHandler implements EventListener {
 				// now a TermDefinition to refer to
 				for (Section<? extends TermReference<TermObject>> termRef : termRefLog.getReferences()) {
 					if (termRef.get().getTermScope() == KnowWETerm.GLOBAL) {
-						artMan.addAllArticlesToRefresh(termRef.getReusedBySet());
+						artMan.addAllArticlesToUpdate(termRef.getReusedBySet());
 						termRef.clearReusedBySet();
 					}
 					else {
@@ -498,16 +498,16 @@ public class TerminologyHandler implements EventListener {
 					KnowWEArticleManager artMan = KnowWEEnvironment.getInstance().getArticleManager(
 							article.getWeb());
 
-					artMan.addAllArticlesToRefresh(termRefLog.termDefiningSection.getReusedBySet());
+					artMan.addAllArticlesToUpdate(termRefLog.termDefiningSection.getReusedBySet());
 					termRefLog.termDefiningSection.clearReusedBySet();
 
 					for (Section<?> termDef : termRefLog.getRedundantDefinitions()) {
-						artMan.addAllArticlesToRefresh(termDef.getReusedBySet());
+						artMan.addAllArticlesToUpdate(termDef.getReusedBySet());
 						termDef.clearReusedBySet();
 					}
 
 					for (Section<?> termRef : termRefLog.getReferences()) {
-						artMan.addAllArticlesToRefresh(termRef.getReusedBySet());
+						artMan.addAllArticlesToUpdate(termRef.getReusedBySet());
 						termRef.clearReusedBySet();
 					}
 

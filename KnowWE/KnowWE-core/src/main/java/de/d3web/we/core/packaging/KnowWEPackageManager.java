@@ -493,7 +493,7 @@ public class KnowWEPackageManager implements EventListener {
 						packReference);
 				for (String packagName : packagesToReferTo) {
 					if (changedPackages.contains(packagName) && !article.getTitle().equals(packagName)) {
-						KnowWEEnvironment.getInstance().getArticleManager(article.getWeb()).addArticleToRefresh(
+						KnowWEEnvironment.getInstance().getArticleManager(article.getWeb()).addArticleToUpdate(
 								packReference.getTitle());
 					}
 				}

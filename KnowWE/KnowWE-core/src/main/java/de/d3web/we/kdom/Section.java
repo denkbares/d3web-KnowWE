@@ -251,7 +251,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	public boolean removeInjectedChildren() {
 		if (this.getChildren().size() == 1 && this.getChildren().get(0).get() instanceof InjectType) {
 			Section<?> injectSection = this.getChildren().remove(0);
-			KnowWEEnvironment.getInstance().getArticleManager(getWeb()).addAllArticlesToRefresh(
+			KnowWEEnvironment.getInstance().getArticleManager(getWeb()).addAllArticlesToUpdate(
 					injectSection.getReusedBySet());
 			injectSection.clearReusedBySet();
 			return true;

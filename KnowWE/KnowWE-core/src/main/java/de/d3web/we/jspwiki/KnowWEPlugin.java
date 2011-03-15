@@ -388,7 +388,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 		KnowWEEnvironment.getInstance().getArticleManager(KnowWEEnvironment.DEFAULT_WEB).setInitializedArticles(
 				true);
-		KnowWEEnvironment.getInstance().getArticleManager(KnowWEEnvironment.DEFAULT_WEB).buildArticlesToRefresh();
+		KnowWEEnvironment.getInstance().getArticleManager(KnowWEEnvironment.DEFAULT_WEB).updateQueuedArticles();
 
 	}
 

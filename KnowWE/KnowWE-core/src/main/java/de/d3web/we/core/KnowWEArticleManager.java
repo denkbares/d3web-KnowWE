@@ -64,13 +64,19 @@ public class KnowWEArticleManager {
 	 */
 	private final Set<String> sectionizingArticles = new HashSet<String>();
 
-	private Set<String> articlesToRefresh = new TreeSet<String>();
+	private final TreeSet<String> currentRefreshQueue = new TreeSet<String>();
 
 	/**
 	 * List that keeps track of all articles that are updating their
 	 * dependencies at the moment.
 	 */
 	private final Set<String> updatingArticles = new HashSet<String>();
+
+	/**
+	 * List that keeps track of all articles, that are already queued for
+	 * updating and don't need to be queued again.
+	 */
+	private final HashSet<String> globalRefreshQueue = new HashSet<String>();
 
 	private boolean initializedArticles = false;
 
@@ -280,7 +286,7 @@ public class KnowWEArticleManager {
 
 		EventManager.getInstance().fireEvent(new UpdatingDependenciesEvent(article));
 
-		if (updateDependencies) buildArticlesToRefresh();
+		if (updateDependencies) updateQueuedArticles();
 
 		updatingArticles.remove(article.getTitle());
 		Logger.getLogger(this.getClass().getName()).log(
@@ -298,16 +304,31 @@ public class KnowWEArticleManager {
 		EventManager.getInstance().fireEvent(new ArticleRegisteredEvent(article));
 	}
 
-	public void buildArticlesToRefresh() {
-		for (String title : new ArrayList<String>(articlesToRefresh)) {
-			if (updatingArticles.contains(title)) continue;
-			KnowWEArticle newArt = KnowWEArticle.createArticle(
-					articleMap.get(title).getSection().getOriginalText(), title,
-					KnowWEEnvironment.getInstance().getRootType(), web, false);
-
-			registerArticle(newArt, true);
+	public void updateQueuedArticles() {
+		
+		List<String> localQueue = new ArrayList<String>();
+		while (!currentRefreshQueue.isEmpty()) {
+			String title = currentRefreshQueue.pollFirst();
+			if (!globalRefreshQueue.contains(title)) {
+				// Since this method is called recursively, we need a global
+				// queue to keep track of which articles are already queued.
+				// Don't queue (or update) articles in this call, if they are
+				// already queued further up in the call stack.
+				localQueue.add(title);
+				globalRefreshQueue.add(title);
+			}
 		}
-		this.articlesToRefresh = new TreeSet<String>();
+		
+		for (String title : localQueue) {
+			if (!updatingArticles.contains(title)) {
+				KnowWEArticle newArt = KnowWEArticle.createArticle(
+						articleMap.get(title).getSection().getOriginalText(), title,
+						KnowWEEnvironment.getInstance().getRootType(), web, false);
+				registerArticle(newArt, true);
+			}
+			globalRefreshQueue.remove(title);
+		}
+		// this.articlesToRefresh = new TreeSet<String>();
 	}
 
 	public void clearArticleMap() {
@@ -342,16 +363,16 @@ public class KnowWEArticleManager {
 		return Collections.unmodifiableSet(this.sectionizingArticles);
 	}
 
-	public Set<String> getDependenciesUpdatingArticles() {
+	public Set<String> getUpdatingArticles() {
 		return Collections.unmodifiableSet(this.updatingArticles);
 	}
 
-	public void addArticleToRefresh(String title) {
-		this.articlesToRefresh.add(title);
+	public void addArticleToUpdate(String title) {
+		this.currentRefreshQueue.add(title);
 	}
 
-	public void addAllArticlesToRefresh(Collection<String> titles) {
-		this.articlesToRefresh.addAll(titles);
+	public void addAllArticlesToUpdate(Collection<String> titles) {
+		this.currentRefreshQueue.addAll(titles);
 	}
 
 	public boolean hasInitializedArticles() {
