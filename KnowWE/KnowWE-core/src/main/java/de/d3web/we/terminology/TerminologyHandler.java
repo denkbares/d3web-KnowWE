@@ -69,11 +69,13 @@ public class TerminologyHandler implements EventListener {
 
 	private final Set<String> modifiedTermDefinitions = new HashSet<String>();
 
-	@SuppressWarnings("unchecked")
+
+	@SuppressWarnings("rawtypes")
 	private final Map<String, Map<TermIdentifier, TermReferenceLog>> termReferenceLogsMaps =
 			new HashMap<String, Map<TermIdentifier, TermReferenceLog>>();
 
-	@SuppressWarnings("unchecked")
+
+	@SuppressWarnings("rawtypes")
 	private final Map<TermIdentifier, TermReferenceLog> globalTermReferenceLogs =
 			new HashMap<TermIdentifier, TermReferenceLog>();
 
@@ -86,7 +88,7 @@ public class TerminologyHandler implements EventListener {
 		return web;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private Map<TermIdentifier, TermReferenceLog> getTermReferenceLogsMap(String title, int termScope) {
 		if (termScope == KnowWETerm.GLOBAL) {
 			return this.globalTermReferenceLogs;
@@ -99,7 +101,8 @@ public class TerminologyHandler implements EventListener {
 		return tmap;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({
+			"unchecked", "rawtypes" })
 	private <TermObject> TermReferenceLog<TermObject> getTermReferenceLog(KnowWEArticle article,
 			Section<? extends KnowWETerm<TermObject>> r) {
 		TermReferenceLog refLog = getTermReferenceLogsMap(
@@ -118,7 +121,8 @@ public class TerminologyHandler implements EventListener {
 				termScope).get(new TermIdentifier(termIdentifier));
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({
+			"unchecked", "rawtypes" })
 	private void removeTermReferenceLogsForArticle(KnowWEArticle article) {
 		Map<TermIdentifier, TermReferenceLog> logs = getTermReferenceLogsMap(article.getTitle(),
 				KnowWETerm.LOCAL);
@@ -361,7 +365,8 @@ public class TerminologyHandler implements EventListener {
 	 * @param s
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({
+			"unchecked", "rawtypes" })
 	public Section<? extends TermDefinition<?>> getTermDefiningSection(
 			KnowWEArticle article, String termIdentifier, int termScope) {
 
@@ -381,7 +386,8 @@ public class TerminologyHandler implements EventListener {
 	 * @param s
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({
+			"unchecked", "rawtypes" })
 	public Collection<Section<? extends TermDefinition>> getRedundantTermDefiningSections(
 			KnowWEArticle article, String termIdentifier, int termScope) {
 
@@ -395,7 +401,8 @@ public class TerminologyHandler implements EventListener {
 				0));
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({
+			"unchecked", "rawtypes" })
 	public Set<Section<? extends TermReference<?>>> getTermReferenceSections(KnowWEArticle article,
 			String termIdentifier, int termScope) {
 		TermReferenceLog refLog = getTermReferenceLog(article, termIdentifier, termScope);
@@ -581,7 +588,8 @@ public class TerminologyHandler implements EventListener {
 		return getAllTerms(title, KnowWETerm.LOCAL, null);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({
+			"unchecked", "rawtypes" })
 	public Collection<String> getAllTerms(String title, int scope, Class<?> termClass) {
 		Collection<TermReferenceLog> logs = getTermReferenceLogsMap(title, scope).values();
 		Collection<String> terms = new HashSet<String>();
@@ -663,7 +671,8 @@ public class TerminologyHandler implements EventListener {
 
 		private final String termIdentifierLowerCase;
 
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings({
+				"unchecked", "rawtypes" })
 		public TermIdentifier(KnowWEArticle article, Section<? extends KnowWETerm> s) {
 			if (s.get() instanceof NotUniqueKnowWETerm) {
 				Section<? extends NotUniqueKnowWETerm> nus = (Section<? extends NotUniqueKnowWETerm>) s;

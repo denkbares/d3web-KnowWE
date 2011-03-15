@@ -178,7 +178,8 @@ public class QuestionDashTreeUtils {
 	 * Checks if the Subtree of the root Question has changed. Ignores
 	 * TermReferences!
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({
+			"unchecked", "rawtypes" })
 	public static Section<DashSubtree> getRootQuestionSubtree(KnowWEArticle article, Section<?> s) {
 
 		Section<DashSubtree> rootQuestionSubtree = null;
@@ -239,7 +240,8 @@ public class QuestionDashTreeUtils {
 		return change;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({
+			"unchecked", "rawtypes" })
 	private static boolean isChangeInQuestionSubtree(KnowWEArticle article, Section<DashSubtree> s, List<Class<? extends Type>> filteredTypes, HashSet<Section<DashSubtree>> visited) {
 		List<Section<?>> nodes = new LinkedList<Section<?>>();
 		Sections.getAllNodesPostOrder(s, nodes);
@@ -268,7 +270,9 @@ public class QuestionDashTreeUtils {
 					}
 				}
 			}
-			if (node.isChanged(article.getTitle(), filteredTypes)) return true;
+			if (node.isChanged(article.getTitle(), filteredTypes)) {
+				return true;
+			}
 		}
 		return false;
 	}

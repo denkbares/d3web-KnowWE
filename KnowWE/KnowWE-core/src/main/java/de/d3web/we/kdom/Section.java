@@ -64,7 +64,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 
 	private HashSet<String> reusedBy = null;
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private HashMap<String, HashSet<Class<? extends SubtreeHandler>>> compiledBy = null;
 
 	private List<Integer> position = null;
@@ -170,7 +170,8 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	 * verbalizes this node
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({
+			"unchecked", "rawtypes" })
 	public String toString() {
 		return (type != null ? this.get().getClass().getSimpleName() + ": " : "")
 				+ "'" + (type != null && type instanceof KnowWETerm<?>
@@ -886,14 +887,14 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	/**
 	 * Sets all compiled states to false. This method does not affect includes.
 	 */
-	public void clearCompiledRecursively() {
-		this.compiledBy = null;
-		for (Section<? extends Type> child : getChildren()) {
-			if (child.getTitle().equals(getTitle())) {
-				child.clearCompiledRecursively();
-			}
-		}
-	}
+	// public void clearCompiledRecursively() {
+	// this.compiledBy = null;
+	// for (Section<? extends Type> child : getChildren()) {
+	// if (child.getTitle().equals(getTitle())) {
+	// child.clearCompiledRecursively();
+	// }
+	// }
+	// }
 
 	public void clearReusedBySet() {
 		this.reusedBy = null;
@@ -941,7 +942,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public boolean isCompiledBy(String title, SubtreeHandler handler) {
 		if (compiledBy == null) return false;
 		HashSet<Class<? extends SubtreeHandler>> compiledByHandlerSet =
@@ -955,7 +956,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 		return compiledBy.containsKey(title);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Map<String, HashSet<Class<? extends SubtreeHandler>>> getCompiledByMap() {
 		return compiledBy == null
 				? Collections.unmodifiableMap(
@@ -964,7 +965,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 				: Collections.unmodifiableMap(compiledBy);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public void setCompiledBy(String title, SubtreeHandler handler, boolean compiled) {
 		if (compiled) {
 			if (compiledBy == null) {
@@ -1079,19 +1080,20 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	 * 
 	 * @see SubtreeHandler#create(KnowWEArticle, Section)
 	 */
-	@SuppressWarnings("unchecked")
 	public final void letSubtreeHandlersCreate(KnowWEArticle article, Priority p) {
 		List<SubtreeHandler<? extends Type>> handlerList = type.getSubtreeHandlers().get(
 				p);
 		if (handlerList != null) {
-			for (SubtreeHandler handler : handlerList) {
+			for (@SuppressWarnings("rawtypes")
+			SubtreeHandler handler : handlerList) {
 				if (handler != null) letSubtreeHandlerCreate(article, handler);
 			}
 		}
 
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({
+			"unchecked", "rawtypes" })
 	public final void letSubtreeHandlerCreate(KnowWEArticle article, SubtreeHandler handler) {
 		if (handler.needsToCreate(article, this)
 				&& isMatchingPackageName(article, handler)) {
@@ -1155,19 +1157,20 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	 * 
 	 * @see SubtreeHandler#destroy(KnowWEArticle, Section)
 	 */
-	@SuppressWarnings("unchecked")
 	public final void letSubtreeHandlersDestroy(KnowWEArticle article, Priority p) {
 		List<SubtreeHandler<? extends Type>> handlerList =
 				type.getSubtreeHandlers().get(p);
 		if (handlerList != null) {
-			for (SubtreeHandler handler : handlerList) {
+			for (@SuppressWarnings("rawtypes")
+			SubtreeHandler handler : handlerList) {
 				if (handler != null) letSubtreeHandlerDestroy(article, handler);
 			}
 		}
 
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({
+			"unchecked", "rawtypes" })
 	public final void letSubtreeHandlerDestroy(KnowWEArticle article, SubtreeHandler handler) {
 		if (handler.needsToDestroy(article, this)) {
 			handler.destroy(article, this);

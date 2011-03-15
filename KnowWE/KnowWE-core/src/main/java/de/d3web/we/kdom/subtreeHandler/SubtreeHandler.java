@@ -27,6 +27,7 @@ import java.util.List;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Type;
+import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.ConstraintModule.Operator;
 import de.d3web.we.kdom.subtreeHandler.ConstraintModule.Purpose;
@@ -337,6 +338,10 @@ public abstract class SubtreeHandler<T extends Type> {
 			boolean notCompiled = !s.isCompiledBy(article.getTitle(), handler);
 			// if the current handler wasn't compiled yet
 			boolean notReused = !s.isReusedBy(article.getTitle());
+
+			// maybe we can skip the more complex checks...
+			if (fullparse || notReused || notCompiled) return true;
+
 			// if the current section was not reused during the KDOM update
 			// if it wasn't reused, the section has changed since the last
 			// version of the article, so this is a constraint for create
@@ -351,7 +356,7 @@ public abstract class SubtreeHandler<T extends Type> {
 			// handlers of a Type... they need to be checked too
 
 			// if one of these items is true, we need to create
-			return fullparse || notCompiled || notReused || changedPosition || typeConstraint;
+			return changedPosition || typeConstraint;
 		}
 
 	}
