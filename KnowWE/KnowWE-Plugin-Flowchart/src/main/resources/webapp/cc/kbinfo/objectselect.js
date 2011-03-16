@@ -13,7 +13,7 @@ function ObjectSelect(parent, kbInfoClasses, value, changeListener) {
 			var phrases = value.strip().split(' ');
 			var regexps = [];
 			for (var i=0; i<phrases.length; i++) {
-				regexps.push(eval("/"+phrases[i].escapeRegExp()+"/i"));
+				regexps.push(new RegExp(DiaFluxUtils.escapeRegex(phrases[i])));
 			}
 			return KBInfo.findInfoObjects(function(item) {
 				// if a class of objects is given, return if class does not match
@@ -195,7 +195,7 @@ ObjectSelect.prototype.renderListItem = function(item, index) {
 	if (this.value && !this.value.blank()) {
 		var phrases = this.value.strip().split(' ');
 		for (var i=0; i<phrases.length; i++) {
-			text = text.gsub(eval("/("+phrases[i].escapeRegExp()+")/i"), '<em>#{0}</em>');
+			text = text.gsub(new RegExp(DiaFluxUtils.escapeRegex(phrases[i]), 'i'), '<em>#{0}</em>');
 		}
 	}
 	if (icon) {
