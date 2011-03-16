@@ -21,12 +21,12 @@
    
 	<!-- Action Servlet -->
 	<servlet>
- 		<servlet-name>ActionServlet</servlet-name>
- 		<servlet-class>de.d3web.we.action.ActionServlet</servlet-class>
+		<servlet-name>JSPActionServlet</servlet-name>
+		<servlet-class>de.d3web.we.jspwiki.JSPActionServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
- 		<servlet-name>ActionServlet</servlet-name>
- 		<url-pattern>/action/*</url-pattern>
+		<servlet-name>JSPActionServlet</servlet-name>
+		<url-pattern>/action/*</url-pattern>
 	</servlet-mapping>
 
    <!--

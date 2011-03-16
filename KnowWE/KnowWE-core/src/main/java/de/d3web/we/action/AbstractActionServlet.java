@@ -29,13 +29,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ecyrd.jspwiki.WikiContext;
-import com.ecyrd.jspwiki.WikiEngine;
-
-import de.d3web.we.jspwiki.JSPAuthenticationManager;
-import de.d3web.we.user.AuthenticationManager;
-import de.d3web.we.user.UserContextUtil;
-
 /**
  * ActionServlet is a Servlet for ajax-based interview or any other user
  * interfaces.
@@ -93,12 +86,9 @@ import de.d3web.we.user.UserContextUtil;
  * @author Volker Belli (refactored by Sebastian Furth)
  *
  */
-public class ActionServlet extends HttpServlet {
+public abstract class AbstractActionServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 9190931066151487381L;
-
-	public ActionServlet() {
-	}
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -135,20 +125,7 @@ public class ActionServlet extends HttpServlet {
 
 	private void doPathAction(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-		WikiEngine wiki = WikiEngine.getInstance(getServletConfig());
-		WikiContext wikiContext = wiki.createContext(request, WikiContext.VIEW);
-		AuthenticationManager manager = new JSPAuthenticationManager(wikiContext);
-
-		// create action context
-	    ActionContext context = new ActionContext(
-				getActionName(request),
-				getActionFollowUpPath(request),
-				UserContextUtil.getParameters(request),
-				request,
-				response,
-				getServletContext(),
-				manager
-			);
+		UserActionContext context = createActionContext(request, response);
 		try {
 			// get action and execute it
 			Action cmd = context.getAction();
@@ -159,6 +136,8 @@ public class ActionServlet extends HttpServlet {
 			throw e;
 		}
 	}
+
+	protected abstract UserActionContext createActionContext(HttpServletRequest request, HttpServletResponse response);
 
 	private void doXmlActions(HttpServletRequest request, HttpServletResponse response, Reader xmlReader) throws IOException {
 		throw new IllegalStateException("not implemented yet");
