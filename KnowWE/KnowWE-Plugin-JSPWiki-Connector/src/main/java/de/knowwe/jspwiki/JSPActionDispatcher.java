@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.jspwiki;
+package de.knowwe.jspwiki;
 
 import java.io.IOException;
 import java.util.logging.Logger;

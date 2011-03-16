@@ -16,7 +16,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.d3web.we.jspwiki;
+package de.knowwe.jspwiki;
 
 import java.security.Principal;
 
@@ -27,7 +27,7 @@ import de.d3web.we.user.AuthenticationManager;
 /**
  * Implementation of the @link{AuthenticationManager} interface. All methods are
  * delegated to the @link{WikiContext} of JSPWiki.
- * 
+ *
  * @author Sebastian Furth (denkbares GmbH)
  * @created Mar 16, 2011
  */

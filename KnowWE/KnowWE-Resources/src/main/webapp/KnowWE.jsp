@@ -1,5 +1,5 @@
 <%@ page import="com.ecyrd.jspwiki.*" %>
-<%@ page import="de.d3web.we.jspwiki.*" %>
+<%@ page import="de.knowwe.jspwiki.*" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="de.d3web.we.action.*" %>
 <%@ page import="de.d3web.we.core.*" %>
@@ -52,7 +52,7 @@ String findParam( PageContext ctx, String key )
 	AuthenticationManager manager = new JSPAuthenticationManager(wikiContext);
 	
 	// Create action context
-	UserActionContext context = new ActionContext(parameters.get("action"), ActionServlet.getActionFollowUpPath(request), parameters, request, response, wiki.getServletContext(), manager);
+	UserActionContext context = new ActionContext(parameters.get("action"), AbstractActionServlet.getActionFollowUpPath(request), parameters, request, response, wiki.getServletContext(), manager);
 	
 	// Perform action
 	KnowWEEnvironment.getInstance().getDispatcher().performAction(context);
