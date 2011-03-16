@@ -151,6 +151,7 @@
 		<module>KnowWE-GlobalTestUtils</module>
 		<module>KnowWE-Plugin-Tagging</module>
 		<module>KnowWE-Plugin-Core</module>
+		<module>KnowWE-Plugin-KBRenderer</module>
 	</modules>
 	<repositories>
 		<repository>

@@ -1,3 +1,5 @@
+package de.knowwe.kbrenderer;
+
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
@@ -17,8 +19,6 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-
-package de.d3web.we.knowledgebase;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,8 +53,6 @@ import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.knowledge.terminology.info.Property.Autosave;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.utilities.Triple;
-import de.d3web.kernel.verbalizer.VerbalizationManager;
-import de.d3web.kernel.verbalizer.Verbalizer;
 import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -63,6 +61,8 @@ import de.d3web.we.user.UserContext;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
+import de.knowwe.kbrenderer.verbalizer.VerbalizationManager;
+import de.knowwe.kbrenderer.verbalizer.Verbalizer;
 
 public class KBRenderer extends AbstractHTMLTagHandler {
 
