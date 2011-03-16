@@ -152,6 +152,7 @@
 		<module>KnowWE-Plugin-Tagging</module>
 		<module>KnowWE-Plugin-Core</module>
 		<module>KnowWE-Plugin-KBRenderer</module>
+		<module>KnowWE-Plugin-JSPWiki-Connector</module>
 	</modules>
 	<repositories>
 		<repository>
