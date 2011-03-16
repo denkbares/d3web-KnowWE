@@ -146,9 +146,9 @@ public class TestCaseDebugAction extends TestCaseRunningAction {
 
 	private void writeFailedTestHeader(Writer writer, TestCaseBreakpoint breakpoint) throws IOException {
 		// writer.write(mask("<img src='KnowWEExtension/images/testcase/debug.gif' align='absmiddle' />"));
-		writer.write(mask(" First test case failed: </br>"));
+		writer.write(mask(" First test case failed: "));
 		writer.write(mask(breakpoint.testCase.getName() + " ("
-				+ breakpoint.numberOfRatedTestCase + ")</br>"));
+				+ breakpoint.numberOfRatedTestCase + ")"));
 	}
 
 	private TestCaseBreakpoint findFirstFailedTestCase(TestCase t) {
