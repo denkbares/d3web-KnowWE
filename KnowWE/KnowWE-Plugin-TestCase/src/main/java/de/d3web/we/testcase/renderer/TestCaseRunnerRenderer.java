@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -33,7 +33,7 @@ import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * Renderer for the TestCaseResultType.
- * 
+ *
  * @see TestCaseRunnerType
  * @author Sebastian Furth (denkbares GmbH)
  * @created 25/10/2010
@@ -73,7 +73,8 @@ public class TestCaseRunnerRenderer extends DefaultMarkupRenderer<TestCaseRunner
 	}
 
 	private boolean inDebugMode(Section<TestCaseRunnerType> section) {
-		return TestCaseRunnerType.getMode(section).equals(TestCaseRunnerType.MODE_DEBUG);
+		String mode = TestCaseRunnerType.getMode(section);
+		return mode != null && mode.equals(TestCaseRunnerType.MODE_DEBUG);
 	}
 
 	private void renderTestCaseDescription(StringBuilder string, String testCaseTopic, TestCase testSuite, boolean debugMode) {
@@ -117,7 +118,7 @@ public class TestCaseRunnerRenderer extends DefaultMarkupRenderer<TestCaseRunner
 
 	/**
 	 * Loads the required test case.
-	 * 
+	 *
 	 * @created 25/10/2010
 	 * @param article the article containing the test case
 	 * @param web current web
