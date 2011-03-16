@@ -28,16 +28,33 @@ import javax.servlet.http.HttpSession;
 
 import com.ecyrd.jspwiki.WikiContext;
 
+import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.user.AbstractUserContext;
 
 public class JSPWikiUserContext extends AbstractUserContext {
 
 	private final Map<String, String> urlParameter;
+	private final WikiContext context;
 
 	public JSPWikiUserContext(WikiContext context,
 			Map<String, String> urlParameter) {
-		super(context);
+		super(new JSPAuthenticationManager(context));
+		this.context = context;
 		this.urlParameter = urlParameter;
+		addDefaultAttributes();
+	}
+
+	private void addDefaultAttributes() {
+		// Add user
+		if (!urlParameter.containsKey(KnowWEAttributes.USER)) {
+			urlParameter.put(KnowWEAttributes.USER,
+					context.getWikiSession().getUserPrincipal().getName());
+		}
+		// Add topic
+		if (!urlParameter.containsKey(KnowWEAttributes.TOPIC)) {
+			urlParameter.put(KnowWEAttributes.TOPIC, context.getPage().getName());
+		}
+
 	}
 
 	@Override

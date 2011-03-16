@@ -30,27 +30,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.ecyrd.jspwiki.WikiContext;
-
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.we.user.AbstractUserContext;
+import de.d3web.we.user.AuthenticationManager;
 
 /**
  * This class is a default implemantation of the UserActionContext interface.
- * 
+ *
  * The parameters of the request are accessible via getParameter(String
  * parametername). Be sure you know which parameters you have in your request.
- * 
+ *
  * Additionally it is possible to write content to your pages via
  * getWriter().write() or to send Data in a response via getOutputStream().
- * 
+ *
  * Please note, that if you use this class with a KnowWEAction everything you
  * write via getWriter().write() will be written to the KnowWE.jsp where it is
  * applicable for further processing (via JavaScript etc.).
- * 
+ *
  * @author Sebastian Furth
- * 
+ *
  */
 public class ActionContext extends AbstractUserContext implements UserActionContext {
 
@@ -101,8 +100,8 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 	 */
 	public ActionContext(String actionName, String path, Map<String, String> parameters,
 			HttpServletRequest request, HttpServletResponse response,
-			ServletContext servletContext, WikiContext wikiContext) {
-		super(wikiContext);
+			ServletContext servletContext, AuthenticationManager manager) {
+		super(manager);
 		this.actionName = actionName;
 		this.path = path;
 		this.parameters = parameters;

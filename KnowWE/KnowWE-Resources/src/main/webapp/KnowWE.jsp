@@ -48,8 +48,11 @@ String findParam( PageContext ctx, String key )
 		parameters.put(KnowWEAttributes.WEB, "default_web");
 	}
 	
+	// Create AuthenticationManager instance
+	AuthenticationManager manager = new JSPAuthenticationManager(wikiContext);
+	
 	// Create action context
-	UserActionContext context = new ActionContext(parameters.get("action"), ActionServlet.getActionFollowUpPath(request), parameters, request, response, wiki.getServletContext(), wikiContext);
+	UserActionContext context = new ActionContext(parameters.get("action"), ActionServlet.getActionFollowUpPath(request), parameters, request, response, wiki.getServletContext(), manager);
 	
 	// Perform action
 	KnowWEEnvironment.getInstance().getDispatcher().performAction(context);

@@ -32,6 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
 
+import de.d3web.we.jspwiki.JSPAuthenticationManager;
+import de.d3web.we.user.AuthenticationManager;
 import de.d3web.we.user.UserContextUtil;
 
 /**
@@ -134,6 +136,8 @@ public class ActionServlet extends HttpServlet {
 	private void doPathAction(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		WikiEngine wiki = WikiEngine.getInstance(getServletConfig());
+		WikiContext wikiContext = wiki.createContext(request, WikiContext.VIEW);
+		AuthenticationManager manager = new JSPAuthenticationManager(wikiContext);
 
 		// create action context
 	    ActionContext context = new ActionContext(
@@ -143,7 +147,7 @@ public class ActionServlet extends HttpServlet {
 				request,
 				response,
 				getServletContext(),
-				wiki.createContext(request, WikiContext.VIEW)
+				manager
 			);
 		try {
 			// get action and execute it
