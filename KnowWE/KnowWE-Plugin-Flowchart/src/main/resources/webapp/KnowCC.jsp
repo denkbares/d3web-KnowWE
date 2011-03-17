@@ -1,6 +1,6 @@
 <%@ page contentType="text/xml;charset=UTF-8" %>
 <%@ page import="com.ecyrd.jspwiki.*" %>
-<%@ page import="de.knowwe.jspwiki.*" %>
+<%@ page import="de.d3web.we.jspwiki.*" %>
 <%@ page import="java.util.*" %>
 <%@ page import="de.d3web.we.core.*" %>
 <%@ page import="de.d3web.we.user.*" %>

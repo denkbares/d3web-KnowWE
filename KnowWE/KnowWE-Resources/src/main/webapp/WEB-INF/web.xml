@@ -22,7 +22,7 @@
 	<!-- Action Servlet -->
 	<servlet>
 		<servlet-name>JSPActionServlet</servlet-name>
-		<servlet-class>de.knowwe.jspwiki.JSPActionServlet</servlet-class>
+		<servlet-class>de.d3web.we.jspwiki.JSPActionServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>JSPActionServlet</servlet-name>

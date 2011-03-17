@@ -4,6 +4,6 @@
 		<class>com.matteo.filters.Strikethrough</class>
 	</filter>
 	<filter>
-		<class>de.knowwe.jspwiki.KnowWEPlugin</class>
+		<class>de.d3web.we.jspwiki.KnowWEPlugin</class>
 	</filter>
 </pagefilters>

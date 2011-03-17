@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.jspwiki;
+package de.d3web.we.jspwiki;
 
 import java.io.BufferedReader;
 import java.io.File;

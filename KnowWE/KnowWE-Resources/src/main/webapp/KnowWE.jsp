@@ -1,5 +1,5 @@
 <%@ page import="com.ecyrd.jspwiki.*" %>
-<%@ page import="de.knowwe.jspwiki.*" %>
+<%@ page import="de.d3web.we.jspwiki.*" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="de.d3web.we.action.*" %>
 <%@ page import="de.d3web.we.core.*" %>
