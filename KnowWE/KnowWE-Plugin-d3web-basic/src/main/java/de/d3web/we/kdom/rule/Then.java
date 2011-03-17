@@ -28,8 +28,7 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
 public class Then extends AbstractType {
 
-	@Override
-	protected void init() {
+	public Then() {
 		sectionFinder = new RegexSectionFinder("(DANN|THEN)", Pattern.MULTILINE);
 		this.setCustomRenderer(StyleRenderer.KEYWORDS);
 	}

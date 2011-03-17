@@ -24,6 +24,8 @@ import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.basic.EndLineComment;
 import de.d3web.we.kdom.condition.CompositeCondition;
+import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
+import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
@@ -40,13 +42,15 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 public class ConditionActionRuleContent extends AbstractType implements IncrementalMarker {
 
 	ConditionArea condArea = new ConditionArea();
+	ExceptionConditionArea exceptionCond = new ExceptionConditionArea();
 
 	public ConditionActionRuleContent(AbstractType action) {
 		this.sectionFinder = new AllTextFinderTrimmed();
 		this.addChildType(new If());
 		Then then = new Then();
 		this.addChildType(then);
-
+		Except except = new Except();
+		this.addChildType(except);
 		condArea.setSectionFinder(new AllBeforeTypeSectionFinder(then));
 		this.addChildType(condArea);
 
@@ -54,8 +58,17 @@ public class ConditionActionRuleContent extends AbstractType implements Incremen
 		endLineComment.setCustomRenderer(StyleRenderer.COMMENT);
 		this.addChildType(endLineComment);
 
-		action.setSectionFinder(new AllTextFinderTrimmed());
+		ConstraintSectionFinder constraintFinderAction = new ConstraintSectionFinder(
+				new AllTextFinderTrimmed());
+		constraintFinderAction.addConstraint(SingleChildConstraint.getInstance());
+		action.setSectionFinder(constraintFinderAction);
 		this.addChildType(action);
+
+		ConstraintSectionFinder constraintFinderExCond = new ConstraintSectionFinder(
+				new AllTextFinderTrimmed());
+		constraintFinderExCond.addConstraint(SingleChildConstraint.getInstance());
+		exceptionCond.setSectionFinder(constraintFinderExCond);
+		this.addChildType(exceptionCond);
 	}
 
 	/**
@@ -65,26 +78,7 @@ public class ConditionActionRuleContent extends AbstractType implements Incremen
 	 */
 	public void setTerminalConditions(List<Type> termConds) {
 		condArea.compCond.setAllowedTerminalConditions(termConds);
+		exceptionCond.compCond.setAllowedTerminalConditions(termConds);
 	}
 
-	/**
-	 * ConditionArea of the Condition-Action-Rule, instanciates the condition
-	 * composite
-	 * 
-	 * 
-	 * @author Jochen
-	 * 
-	 */
-	class ConditionArea extends AbstractType {
-
-		CompositeCondition compCond = null;
-
-		public ConditionArea() {
-			compCond = new CompositeCondition();
-			EndLineComment comment = new EndLineComment();
-			comment.setCustomRenderer(StyleRenderer.COMMENT);
-			this.addChildType(comment);
-			this.addChildType(compCond);
-		}
-	}
 }

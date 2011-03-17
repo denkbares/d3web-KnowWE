@@ -26,8 +26,7 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
 public class If extends AbstractType {
 
-	@Override
-	protected void init() {
+	public If() {
 		sectionFinder = new RegexSectionFinder("( *WENN\\s+| *IF\\s+)");
 		this.setCustomRenderer(StyleRenderer.KEYWORDS);
 	}
