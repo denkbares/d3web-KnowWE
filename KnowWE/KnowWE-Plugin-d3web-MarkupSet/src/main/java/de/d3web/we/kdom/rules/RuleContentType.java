@@ -220,11 +220,10 @@ public class RuleContentType extends AbstractType {
 		/**
 		 * Stores the Renderer used in <b>highlightRule<b>
 		 */
-		@SuppressWarnings("unchecked")
-		KnowWEDomRenderer firedRenderer = StyleRenderer.getRenderer(
+		StyleRenderer firedRenderer = StyleRenderer.getRenderer(
 						highlightMarker, "", "#CFFFCF");
 
-		KnowWEDomRenderer exceptionRenderer = StyleRenderer.getRenderer(
+		StyleRenderer exceptionRenderer = StyleRenderer.getRenderer(
 				highlightMarker, "", null);
 
 		/**
@@ -235,7 +234,6 @@ public class RuleContentType extends AbstractType {
 		 * @param session
 		 * @return
 		 */
-		@SuppressWarnings("unchecked")
 		private void highlightRule(KnowWEArticle article,
 				Section<ConditionActionRuleContent> sec, Rule r, Session session,
 				UserContext user, StringBuilder string) {
