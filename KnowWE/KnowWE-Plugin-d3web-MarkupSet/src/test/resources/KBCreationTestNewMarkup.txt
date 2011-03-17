@@ -82,8 +82,9 @@ IF Driving = insufficient power on partial load
 THEN "Real mileage  /100km" = ("Average mileage /100km" - 1)
 
 // Rule R13
-IF (Exhaust fumes = black) //EXCEPT Fuel = diesel
+IF (Exhaust fumes = black) 
 THEN Mechanical problem = P7
+EXCEPT Fuel = diesel
 
 // Rule R14
 IF (NOT Exhaust fumes = black) OR (NOT Fuel = unleaded gasoline)

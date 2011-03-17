@@ -56,6 +56,7 @@ import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.rule.ConditionActionRule;
 import de.d3web.we.kdom.rule.ConditionActionRuleContent;
+import de.d3web.we.kdom.rule.ExceptionConditionArea;
 import de.d3web.we.kdom.rules.action.D3webRuleAction;
 import de.d3web.we.kdom.rules.action.RuleAction;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderDivCorrectTrimmed;
@@ -90,7 +91,8 @@ public class RuleContentType extends AbstractType {
 
 		// configure the rule
 		ConditionActionRule rule = new ConditionActionRule();
-		ConditionActionRuleContent ruleContent = new ConditionActionRuleContent(new RuleAction());
+		ConditionActionRuleContent ruleContent = new ConditionActionRuleContent(
+				new RuleAction());
 		ruleContent.setCustomRenderer(new ReRenderSectionMarkerRenderer(
 				new RuleHighlightingRenderer()));
 		List<Type> termConds = new ArrayList<Type>();
@@ -149,11 +151,14 @@ public class RuleContentType extends AbstractType {
 				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed("Rule"));
 			}
 
-			Section<CompositeCondition> cond = Sections.findSuccessor(s, CompositeCondition.class);
-
+			// create condition
+			Section<CompositeCondition> cond = Sections.findSuccessor(s,
+					CompositeCondition.class);
 			Condition d3Cond = KDOMConditionFactory.createCondition(article, cond);
 
-			Section<D3webRuleAction> action = Sections.findSuccessor(s, D3webRuleAction.class);
+			// create action
+			Section<D3webRuleAction> action = Sections.findSuccessor(s,
+					D3webRuleAction.class);
 			if (action == null) {
 				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
 						D3webModule.getKwikiBundle_d3web().
@@ -161,15 +166,30 @@ public class RuleContentType extends AbstractType {
 								+ " : no valid action found"
 						));
 			}
-
 			PSAction d3action = action.get().getAction(article, action);
 
+			// create exception (if exists)
+			Section<ExceptionConditionArea> exceptionCondSec = Sections.findSuccessor(
+					s,
+					ExceptionConditionArea.class);
+			Condition exceptionCond = null;
+			if (exceptionCondSec != null) {
+				Section<CompositeCondition> exceptionCompCondSec = Sections.findSuccessor(
+						exceptionCondSec, CompositeCondition.class);
+				if (exceptionCompCondSec != null) {
+					exceptionCond = KDOMConditionFactory.createCondition(article,
+							exceptionCompCondSec);
+				}
+			}
+
+			// create actual rule
 			if (d3action != null && d3Cond != null) {
 				Rule r = RuleFactory.createRule(d3action, d3Cond,
-						null, null, action.get().getActionPSContext());
+						exceptionCond, null, action.get().getActionPSContext());
 				if (r != null) {
 					KnowWEUtils.storeObject(article, s, ruleStoreKey, r);
-					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage("Rule"));
+					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+							"Rule"));
 				}
 
 			}
@@ -183,7 +203,8 @@ public class RuleContentType extends AbstractType {
 
 		@Override
 		public void destroy(KnowWEArticle article, Section<ConditionActionRuleContent> rule) {
-			Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, rule, ruleStoreKey);
+			Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, rule,
+					ruleStoreKey);
 			if (kbr != null) {
 				kbr.remove();
 			}
@@ -249,7 +270,8 @@ public class RuleContentType extends AbstractType {
 						this.firedRenderer.render(article, sec, user, newContent);
 					}
 					else {
-						DelegateRenderer.getInstance().render(article, sec, user, newContent);
+						DelegateRenderer.getInstance().render(article, sec, user,
+								newContent);
 					}
 				}
 				catch (Exception e) {
