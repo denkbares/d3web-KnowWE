@@ -107,7 +107,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * The sectionFinder of this type, used to serve the getSectionFinder-method
 	 * of the Type interface
 	 * 
-	 * @see Type#getSectioFinder()
+	 * @see Type#getSectionFinder()
 	 */
 	protected SectionFinder sectionFinder;
 
@@ -304,7 +304,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * @see de.d3web.we.kdom.Sectionizable#getSectioFinder()
 	 */
 	@Override
-	public final SectionFinder getSectioFinder() {
+	public final SectionFinder getSectionFinder() {
 		if (isActivated) {
 			return sectionFinder;
 		}

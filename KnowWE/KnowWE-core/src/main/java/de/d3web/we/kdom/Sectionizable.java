@@ -7,7 +7,7 @@ public interface Sectionizable {
 
 	/**
 	 * @param sectionFinder is the SectionFinder that is later returned by
-	 *        {@link Sectionizable#getSectioFinder()};
+	 *        {@link Sectionizable#getSectionFinder()};
 	 */
 	public void setSectionFinder(SectionFinder sectionFinder);
 
@@ -17,6 +17,6 @@ public interface Sectionizable {
 	 *         SectionFinder should be returned. Else return a default
 	 *         SectionFinder.
 	 */
-	public abstract SectionFinder getSectioFinder();
+	public abstract SectionFinder getSectionFinder();
 
 }

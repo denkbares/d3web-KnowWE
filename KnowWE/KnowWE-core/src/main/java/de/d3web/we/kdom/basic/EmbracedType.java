@@ -74,7 +74,7 @@ public class EmbracedType extends AbstractType {
 								+ start.length(), trimmed.indexOf(end) + 1
 								- end.length());
 						List<SectionFinderResult> lookAheadSections = sBodyType
-								.getSectioFinder().lookForSections(body, father, type);
+								.getSectionFinder().lookForSections(body, father, type);
 						if (lookAheadSections != null
 								&& lookAheadSections.size() > 0) {
 							result.add(new SectionFinderResult(text.indexOf(start),
@@ -89,7 +89,7 @@ public class EmbracedType extends AbstractType {
 						String body = trimmed.substring(start.length(), trimmed
 								.length()
 								- end.length());
-						List<SectionFinderResult> lookAheadSections = sBodyType.getSectioFinder().lookForSections(
+						List<SectionFinderResult> lookAheadSections = sBodyType.getSectionFinder().lookForSections(
 								body, father, type);
 						if (lookAheadSections != null && lookAheadSections.size() > 0) {
 							result.add(new SectionFinderResult(text.indexOf(trimmed),

@@ -57,7 +57,7 @@ public class AllBeforeTypeSectionFinder implements SectionFinder {
 	 */
 	public AllBeforeTypeSectionFinder(Sectionizable type) {
 		this.markerType = type;
-		type.setSectionFinder(new AllBeforeTypeSectionFinderWrapper(type.getSectioFinder(), this));
+		type.setSectionFinder(new AllBeforeTypeSectionFinderWrapper(type.getSectionFinder(), this));
 	}
 
 	public void addStringToFind(String findThis) {

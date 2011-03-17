@@ -106,7 +106,7 @@ public class Sectionizer implements Parser {
 
 		if (type == null || !(type instanceof Sectionizable)) return;
 
-		SectionFinder finder = ((Sectionizable) type).getSectioFinder();
+		SectionFinder finder = ((Sectionizable) type).getSectionFinder();
 		if (finder == null) return;
 
 		List<SectionFinderResult> results = finder.lookForSections(text,
