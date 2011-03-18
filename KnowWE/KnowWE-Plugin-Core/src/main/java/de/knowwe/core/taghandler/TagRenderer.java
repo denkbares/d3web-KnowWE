@@ -86,11 +86,18 @@ public class TagRenderer extends KnowWEDomRenderer<TagHandlerType> {
 							// "'}\"" +
 							// ">"));
 						}
-						buffi.append(KnowWEUtils.maskHTML("<div id=\"" + key + "\">"));
+						String wrappingTag = "div";
+						if (attValues.containsKey("wrap")) {
+							if (attValues.get("wrap").contains("span")) {
+								wrappingTag = "span";
+							}
+						}
+						buffi.append(KnowWEUtils.maskHTML("<" + wrappingTag + " id=\""
+								+ key + "\">"));
 						String resultText =
 								handler.render(article, sec, user, attValues);
 						buffi.append(resultText).append(" \n");
-						buffi.append(KnowWEUtils.maskHTML("</div>"));
+						buffi.append(KnowWEUtils.maskHTML("</" + wrappingTag + ">"));
 						if (autoUpdate) {
 							// buffi.append(KnowWEUtils.maskHTML("</span>"));
 						}
