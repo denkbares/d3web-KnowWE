@@ -20,6 +20,9 @@
 
 package de.d3web.we.object;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
@@ -105,8 +108,17 @@ public abstract class AnswerReference
 		String answer = s.get().getTermName(s);
 
 		Section<QuestionReference> questionSection = getQuestionSection((Section<? extends AnswerReference>) s);
-		String question = questionSection.get().getTermName(questionSection);
-
+		
+		String question = null;
+		if (questionSection == null) {
+			// should not happen, if does check whether getQuestion() is
+			// (correctly) overridden by the (custom) AnswerDefintion
+			question = "questionNotFound";
+			Logger.getLogger(this.getClass().getName())
+					.log(Level.WARNING,
+							"QuestionSection for AnswerDefintion couldnt be found: '" +
+									answer + "'!");
+		}
 		return question + " " + answer;
 	}
 
