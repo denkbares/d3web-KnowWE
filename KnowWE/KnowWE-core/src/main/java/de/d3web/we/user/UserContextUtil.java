@@ -46,13 +46,22 @@ public class UserContextUtil {
 		Map<String, String> parameters = new HashMap<String, String>();
 		if (request != null) {
 			Enumeration<?> iter = request.getParameterNames();
+			boolean decode = checkForFlowChart(request.getParameter("action"));
 			while (iter.hasMoreElements()) {
 				String key = (String) iter.nextElement();
 				String value = request.getParameter(key);
-				parameters.put(key, KnowWEUtils.urldecode(value));
+				parameters.put(key, decode ? KnowWEUtils.urldecode(value) : value);
 			}
 		}
 		return parameters;
+	}
+
+	/**
+	 * Remove this ugly hack as soon as a proper solution for the double
+	 * encoding problem is found!
+	 */
+	private static boolean checkForFlowChart(String parameter) {
+		return (parameter != null && !parameter.equalsIgnoreCase("SaveFlowchartAction"));
 	}
 
 }
