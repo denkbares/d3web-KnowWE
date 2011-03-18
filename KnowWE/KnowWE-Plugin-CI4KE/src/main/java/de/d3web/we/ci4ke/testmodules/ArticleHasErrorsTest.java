@@ -31,6 +31,7 @@ import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
+ * This tests checks, if
  * 
  * @author Marc-Oliver Ochlast
  * @created 29.05.2010
@@ -58,21 +59,25 @@ public class ArticleHasErrorsTest extends AbstractCITest {
 			messages.addAll(KnowWEUtils.getMessages(moni, sec, KDOMError.class));
 		}
 
+		buffy.append(": <a href=\"Wiki.jsp?page=" + monitoredArticleTitle + "\"> "
+				+ monitoredArticleTitle + "</a><br />\n");
+		buffy.append("<ul>");
 		for (KDOMError message : messages) {
 			// This finds only messages, that are explicitly stored
 			// as Message.ERROR, because the Type Message.UNKNOWN_ERROR
 			// is not public!
 			hasError = true;
-			buffy.append("Error on monitored article: ");
-			buffy.append(message.getVerbalization());
-			buffy.append("<br/><br/>");
+			// buffy.append("Error on monitored article: ");
+			buffy.append("<li> " + message.getVerbalization() + "</li>");
 		}
+		buffy.append("</ul>");
+		buffy.append("<br/> <br/>");
 		if (hasError) {
 			return new CITestResult(TestResultType.FAILED, buffy.toString());
 		}
 		else {
 			return new CITestResult(TestResultType.SUCCESSFUL,
-					"No error on monitored Article!");
+					": None found.");
 		}
 	}
 }

@@ -82,9 +82,9 @@ public abstract class AbstractCITest implements CITest {
 	 *         parameters specified
 	 */
 	public boolean checkIfParametersAreSufficient(int numberOfParameters) {
-		for(int i=0; i<numberOfParameters; i++) {
+		for (int i = 0; i < numberOfParameters; i++) {
 			String parameter = getParameter(i);
-			if(parameter == null || parameter.trim().isEmpty()) {
+			if (parameter == null || parameter.trim().isEmpty()) {
 				return false;
 			}
 		}
