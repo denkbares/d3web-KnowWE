@@ -78,7 +78,8 @@
 <title>Edit Flowchart: <%= title %></title>
 	
 	<script src="cc/scriptaculous-js/lib/prototype.js" type="text/javascript"></script>
-	<script src="cc/flow/builder.js" type="text/javascript"></script>
+	<script src="cc/scriptaculous-js/src/builder.js" type="text/javascript"></script>
+	<!--  script src="cc/flow/builder.js" type="text/javascript"></script-->
 	<script src="cc/scriptaculous-js/src/effects.js" type="text/javascript"></script>
 	<script src="cc/scriptaculous-js/src/dragdrop.js" type="text/javascript"></script>
 	
