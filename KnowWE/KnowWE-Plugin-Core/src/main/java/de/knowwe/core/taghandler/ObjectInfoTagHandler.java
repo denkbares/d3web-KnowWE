@@ -184,30 +184,22 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 	private String renderObjectInfo(String objectName, String web, Map<String, String> parameters) {
 		StringBuilder html = new StringBuilder();
-
 		TerminologyHandler th = KnowWEUtils.getTerminologyHandler(web);
-		Section<? extends TermDefinition<?>> definition;
+
 		Set<Section<? extends TermDefinition<?>>> definitions = new HashSet<Section<? extends TermDefinition<?>>>();
 		Set<Section<? extends TermReference<?>>> references = new HashSet<Section<? extends TermReference<?>>>();
-		Set<Section<? extends TermReference<?>>> temp = new HashSet<Section<? extends TermReference<?>>>();
 
 		Iterator<KnowWEArticle> iter = KnowWEEnvironment.getInstance().getArticleManager(web).getArticleIterator();
 		KnowWEArticle currentArticle;
 
 		while (iter.hasNext()) {
 			currentArticle = iter.next();
-
-			// Check if there is a TermDefinition
-			definition = th.getTermDefiningSection(currentArticle, objectName, KnowWETerm.LOCAL);
-			if (definition != null) {
-				definitions.add(definition);
-			}
-
-			// Check if there are References
-			temp = th.getTermReferenceSections(currentArticle, objectName, KnowWETerm.LOCAL);
-			if (temp != null && temp.size() > 0) {
-				references.addAll(temp);
-			}
+			// Get global and local term definitions
+			getTermDefinitions(currentArticle, objectName, th, KnowWETerm.GLOBAL, definitions);
+			getTermDefinitions(currentArticle, objectName, th, KnowWETerm.LOCAL, definitions);
+			// Get global and local term refereces
+			getTermReferences(currentArticle, objectName, th, KnowWETerm.GLOBAL, references);
+			getTermReferences(currentArticle, objectName, th, KnowWETerm.LOCAL, references);
 		}
 
 		if (!checkParameter(HIDEDEF, parameters)) html.append(renderTermDefinitions(definitions));
@@ -215,6 +207,24 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				definitions));
 
 		return html.toString();
+	}
+
+	private void getTermDefinitions(KnowWEArticle currentArticle, String objectName, TerminologyHandler th, int scope, Set<Section<? extends TermDefinition<?>>> definitions) {
+		Section<? extends TermDefinition<?>> definition;
+		definition = th.getTermDefiningSection(currentArticle, objectName, scope);
+		if (definition != null) {
+			definitions.add(definition);
+		}
+
+	}
+
+	private void getTermReferences(KnowWEArticle currentArticle, String objectName, TerminologyHandler th, int scope, Set<Section<? extends TermReference<?>>> references) {
+		Set<Section<? extends TermReference<?>>> temp = new HashSet<Section<? extends TermReference<?>>>();
+		temp = th.getTermReferenceSections(currentArticle, objectName, scope);
+		if (temp != null && temp.size() > 0) {
+			references.addAll(temp);
+		}
+
 	}
 
 	private String renderTermDefinitions(Set<Section<? extends TermDefinition<?>>> definitions) {

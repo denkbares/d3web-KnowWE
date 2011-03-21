@@ -18,8 +18,6 @@
  */
 package de.d3web.we.kdom.objects;
 
-import java.net.URLEncoder;
-
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.tools.DefaultTool;
@@ -45,7 +43,7 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 		String objectName = KnowWEUtils.trimQuotes(section.getOriginalText());
 		String jsAction = "window.location.href = " +
 				"'Wiki.jsp?page=ObjectInfoPage&objectname=' + escape('" +
-				URLEncoder.encode(objectName) + "')";
+				KnowWEUtils.urlencode(objectName) + "')";
 		return new DefaultTool(
 				"KnowWEExtension/d3web/icon/infoPage16.png",
 				"Show Info Page",

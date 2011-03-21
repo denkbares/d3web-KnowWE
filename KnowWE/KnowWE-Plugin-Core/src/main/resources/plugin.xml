@@ -31,6 +31,8 @@
 		<parameter id="scope" value="QuestionnaireReference" />
 		<parameter id="scope" value="SolutionReference" />
 		<parameter id="scope" value="IDObjectReference" />
+		<parameter id="scope" value="URITermDefinition" />
+		<parameter id="scope" value="OWLTermReference" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
