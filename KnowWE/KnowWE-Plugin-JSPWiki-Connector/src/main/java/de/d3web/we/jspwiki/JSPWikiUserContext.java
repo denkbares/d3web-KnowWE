@@ -54,7 +54,10 @@ public class JSPWikiUserContext extends AbstractUserContext {
 		if (!urlParameter.containsKey(KnowWEAttributes.TOPIC)) {
 			urlParameter.put(KnowWEAttributes.TOPIC, context.getPage().getName());
 		}
-
+		// Add web
+		if (!urlParameter.containsKey(KnowWEAttributes.WEB)) {
+			urlParameter.put(KnowWEAttributes.WEB, "default_web");
+		}
 	}
 
 	@Override

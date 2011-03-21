@@ -19,7 +19,6 @@
 package de.d3web.we.user;
 
 import de.d3web.we.core.KnowWEAttributes;
-import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * Abstract UserContext implementation with standard implementations of some
@@ -47,10 +46,8 @@ public abstract class AbstractUserContext implements UserContext {
 	}
 
 	/**
-	 * Returns the name of the current user. The result of this method can be
-	 * null when the method is called within actions called by the
-	 * @link{ActionServlet}.
-	 *
+	 * Returns the name of the current user.
+	 * 
 	 * @created 04.03.2011
 	 * @return the user name
 	 */
@@ -60,9 +57,7 @@ public abstract class AbstractUserContext implements UserContext {
 	}
 
 	/**
-	 * Returns the topic of the article the user is currently visiting. The
-	 * result of this method can be null when the method is called within
-	 * actions called by the @link{ActionServlet}.
+	 * Returns the topic of the article the user is currently visiting.
 	 *
 	 * @created 04.03.2011
 	 * @return the article's topic
@@ -73,14 +68,13 @@ public abstract class AbstractUserContext implements UserContext {
 		if (page == null) {
 			page = this.getParameter("page");
 		}
-		return KnowWEUtils.urldecode(page);
+		return page;
 	}
 
 	/**
 	 * Returns the web of the user's is currently visiting. It is the web the
-	 * article belongs to. The result of this method can be null when the method
-	 * is called within actions called by the @link{ActionServlet}.
-	 * 
+	 * article belongs to.
+	 *
 	 * @created 04.03.2011
 	 * @return the article's web
 	 */
