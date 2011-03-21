@@ -55,7 +55,6 @@ function Node(flowchart, nodeModel) {
 	this.height = 0;
 	this.text = '';
 	this.setNodeModel(nodeModel);
-	this.snapManager = new SnapManager(this);
 	// add to parent flowchart
 	this.flowchart.addNode(this);
 	// and inherit the visibility
@@ -137,15 +136,9 @@ Node.prototype.setVisible = function(visible) {
 		this.dom = this.render();
 		this.flowchart.getContentPane().appendChild(this.dom);
 		this.updateFromView();
-		this.draggable = this.snapManager.createDraggable();
-		// make this node a possible target for the arrow tool
-		Droppables.add(this.getDOM(), {
-			accept: 'ArrowTool', 
-			hoverclass: 'Node_hover',
-			onDrop: function(draggable, droppable, event) {
-				draggable.__arrowTool.createRule(droppable.__node);
-			}
-		});
+		
+		this.createDraggable();
+		
 	}
 	else if (this.isVisible() && !visible) {
 		// ==> hide Node
@@ -154,14 +147,20 @@ Node.prototype.setVisible = function(visible) {
 			this.actionPane = null;
 		}
 		this.flowchart.removeFromSelection(this);
-		Droppables.remove(this.nodeModel.id);
-		this.stopEdit();
-		this.draggable.destroy();
+		this.stopEdit(); //TODO only defined for nodeEditor
+		this.destroyDraggable();
 		this.flowchart.getContentPane().removeChild(this.dom);
 		this.dom = null;
-		this.draggable = null;
 	}
 }
+
+
+
+//only implemented for editor
+Node.prototype.destroyDraggable = function() {}
+
+//only implemented for editor
+Node.prototype.createDraggable = function() {}
 
 Node.prototype.updateFromView = function() {
 	if (this.getDOM() != null) {

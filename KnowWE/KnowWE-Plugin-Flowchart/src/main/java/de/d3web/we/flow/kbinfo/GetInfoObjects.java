@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -53,6 +53,7 @@ import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.UserActionContext;
 import de.d3web.we.basic.WikiEnvironment;
 import de.d3web.we.basic.WikiEnvironmentManager;
+import de.d3web.we.user.UserContext;
 
 public class GetInfoObjects extends AbstractAction {
 
@@ -63,28 +64,28 @@ public class GetInfoObjects extends AbstractAction {
 	 * KnowWEEnvironment: Allgemeines Semantic Wiki auf OWL als Repraesentation
 	 * KDOM Engine. Verwaltet alle technischen Aspekte der Umgebung (z.B.
 	 * Plugins). Dieser hat noch nichts mit d3web zu tun.
-	 *
+	 * 
 	 * ArticeManager: Verwaltung der Wiki-Artikel. Fuer jedes Web kann es einen
 	 * Article-Manager geben. Dieser kann vom KnowWEEnvironment angefragt
 	 * werden. Dieser hat noch nichts mit d3web zu tun. Ein Article besteht im
 	 * wesentlichen aus dem KDOM-Baum
-	 *
+	 * 
 	 * KDOM: Baumstruktur des Wiki-Textes ohne Semantik
-	 *
+	 * 
 	 * WebEnvironmentManager: Verwaltet die DSPEnvironments, eines fuer jedes
 	 * Web des Wiki.
-	 *
+	 * 
 	 * DSPEnvironment: Verwaltung fuer diagnostischen Problemlösungsservices,
 	 * für alle Wissensbasen dieses Webs (z.B. unter anderem d3web-Services
 	 * (KnowledgeBase)). Ein Service entspricht einer Wissensbasis der
 	 * jeweiligen Engine (z.B. unter anderem d3web).
-	 *
+	 * 
 	 * KnowledgeService Service fuer eine Wissensbasis fuer eine Wiki-Seite. Der
 	 * Zugriff erfolgt ueber das DSPEnvironment über eine Wissensbasis-ID, die
 	 * aktuell aber eindeutig aus dem Wiki-Seiten-Namen erzeugt wird). Das
 	 * bedeutet, fuer jede Wiki-Seite gibt es aktuell genau (maximal) eine
 	 * Wissenbasis fuer genau (maximal) eine Engine.
-	 *
+	 * 
 	 * KnowledgeBase: Implementierung des KnowledgeServices fuer d3web.
 	 * Hierueber erhaelt man Zugriff auf die d3web Wissensbasis der jeweiligen
 	 * Wiki-Seite.
@@ -101,6 +102,20 @@ public class GetInfoObjects extends AbstractAction {
 
 		// prepare the buffer for the result
 		StringBuffer buffer = new StringBuffer();
+		getInfoObjectsForIDs(context, ids, buffer);
+
+		context.setContentType("text/xml");
+		context.getWriter().write(buffer.toString());
+	}
+
+	/**
+	 * 
+	 * @created 18.03.2011
+	 * @param context
+	 * @param ids
+	 * @param buffer 
+	 */
+	public static void getInfoObjectsForIDs(UserActionContext context, String ids, StringBuffer buffer) {
 		appendHeader(context, buffer);
 
 		// iterate through the requested Objects
@@ -112,16 +127,13 @@ public class GetInfoObjects extends AbstractAction {
 
 		// finish result
 		appendFooter(context, buffer);
-
-		context.setContentType("text/xml");
-		context.getWriter().write(buffer.toString());
 	}
 
-	public static void appendHeader(UserActionContext context, StringBuffer buffer) {
+	public static void appendHeader(UserContext userContext, StringBuffer buffer) {
 		buffer.append("<kbinfo>\n");
 	}
 
-	public static void appendFooter(UserActionContext context, StringBuffer buffer) {
+	public static void appendFooter(UserContext userContext, StringBuffer buffer) {
 		buffer.append("</kbinfo>");
 	}
 

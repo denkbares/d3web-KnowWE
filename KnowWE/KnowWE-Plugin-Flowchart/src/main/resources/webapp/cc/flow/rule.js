@@ -139,6 +139,8 @@ Rule.prototype.render = function(selected) {
 		return ruleDom;
 }
 
+Rule.prototype.createDraggable = function() {}
+
 
 
 Rule.prototype.intersects = function(x1, y1, x2, y2) {

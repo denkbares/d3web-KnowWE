@@ -19,14 +19,20 @@
  */
 package de.d3web.we.flow;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.flow.kbinfo.SearchInfoObjects;
 import de.d3web.we.flow.type.FlowchartPreviewContentType;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.objects.TermReference;
 import de.d3web.we.kdom.xml.AbstractXMLType;
+import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -87,27 +93,51 @@ public class FlowchartUtils {
 	 * 
 	 * @created 25.11.2010
 	 * @param flowSection
+	 * @param user
 	 * @return s the preview including styles, or null if no preview is present
 	 */
-	public static String createRenderablePreview(Section<FlowchartType> flowSection) {
-//		return createFlowchartRenderer(flowSection);
-		 String preview = extractPreview(flowSection);
-		
-		 if (preview == null) {
-		 return null;
-		 }
+	public static String createRenderablePreview(Section<FlowchartType> flowSection, UserContext user) {
+		// return createFlowchartRenderer(flowSection, user);
+		String preview = extractPreview(flowSection);
 
-		 return createRenderablePreview(preview);
+		if (preview == null) {
+			return null;
+		}
+
+		return createRenderablePreview(preview);
 
 	}
 
-	//experimental hack
-	public static String createFlowchartRenderer(Section<FlowchartType> section) {
+	// experimental hack
+	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user) {
 		String name = FlowchartType.getFlowchartName(section);
 		String source = section.getOriginalText();
 
 		String width = AbstractXMLType.getAttributeMapFor(section).get("width");
 		String height = AbstractXMLType.getAttributeMapFor(section).get("height");
+
+		KnowWEEnvironment knowWEEnv = KnowWEEnvironment.getInstance();
+		String phraseString = "";
+
+		List<Section<TermReference>> found = new LinkedList<Section<TermReference>>();
+		Sections.findSuccessorsOfType(section, TermReference.class, found);
+
+		StringBuilder builder = new StringBuilder();
+		for (Section<TermReference> term : found) {
+			if (builder.length() == 0) {
+				builder.append(term.getText());
+			}
+			else {
+				builder.append(",").append(term.getText());
+			}
+		}
+
+		List<String> searchObjects = SearchInfoObjects.searchObjects(knowWEEnv, user.getWeb(),
+				builder.toString(), null, 400);
+
+		if (user.getWeb() == null) return "";
+
+		SearchInfoObjects.searchObjects(knowWEEnv, user.getWeb(), phraseString, null, 200);
 
 		String sourceID = name + "Source";
 		String initScript = "<script>Flowchart.createFromXML('" + name + "', $('" + sourceID
@@ -137,7 +167,7 @@ public class FlowchartUtils {
 				"<script src='cc/flow/node.js' type='text/javascript'></script>" +
 				"<script src='cc/flow/rule.js' type='text/javascript'></script>" +
 				"<script src='cc/flow/router.js' type='text/javascript'></script>\n" +
-				"<xml id='" + sourceID + "' style ='display:none;'>{{{" + source + "}}}</xml>\n" +
+				"<xml id='" + sourceID + "' style ='display:none;'>" + source + "</xml>\n" +
 				"<xml id='referredKBInfo' style='display:none;'>" +
 				// jspHelper.getReferredInfoObjectsAsXML() +
 				"</xml>" +

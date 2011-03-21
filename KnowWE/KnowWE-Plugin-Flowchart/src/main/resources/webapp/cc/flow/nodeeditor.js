@@ -58,6 +58,37 @@ Node.prototype.moveBy = function(dLeft, dTop) {
 	this.moveTo(this.getLeft() + dLeft, this.getTop() + dTop);
 }
 
+
+//overrides empty implementation node.js
+Node.prototype.destroyDraggable = function() {
+
+	Droppables.remove(this.nodeModel.id);
+	this.draggable.destroy();
+	this.draggable = null;
+
+}
+
+
+//overrides empty implementation node.js
+Node.prototype.createDraggable = function() {
+	
+	if (!this.snapManager){
+		this.snapManager = new SnapManager(this);
+	}
+	
+	this.draggable = this.snapManager.createDraggable();
+	// make this node a possible target for the arrow tool
+	Droppables.add(this.getDOM(), {
+		accept: 'ArrowTool', 
+		hoverclass: 'Node_hover',
+		onDrop: function(draggable, droppable, event) {
+			draggable.__arrowTool.createRule(droppable.__node);
+		}
+	});
+}
+
+
+
 Node.prototype.moveTo = function(left, top) {
 	this.nodeModel.position.left = left;
 	this.nodeModel.position.top = top;

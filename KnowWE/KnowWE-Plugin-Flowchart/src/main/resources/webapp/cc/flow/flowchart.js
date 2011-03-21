@@ -188,31 +188,13 @@ Flowchart.prototype.render = function() {
 	]);
 	dom.__flowchart = this;
 
-	// initialize trash to delete nodes and rules
-	Droppables.add(trashPane, { 
-		accept: ['Node', 'Rule'],
-		hoverclass: 'trash_hover',
-		onDrop: function(draggable, droppable, event) {
-			if (draggable.__node) draggable.__node.destroy();
-			if (draggable.__rule) draggable.__rule.destroy();
-		}
-	});
-
-	// initialite drag from trees to the pane
-	Droppables.add(dom, { 
-		accept: ['NodePrototype'],
-		hoverclass: 'FlowchartGroup_hover',
-		onDrop: function(draggable, droppable, event) {
-			var p1 = draggable.cumulativeOffset();
-			var p2 = contentPane.cumulativeOffset();
-			var x = p1.left - p2.left;
-			var y = p1.top  - p2.top;
-			draggable.createNode(dom.__flowchart, x, y); // dom.__flowchart is defined above
-		}
-	});
+	this.createDroppables(dom, contentPane, trashPane);
 
 	return dom;
 }
+
+// implemented in floweditor.js
+Flowchart.prototype.createDroppables = function(dom, contentPane, trashPane) {}
 
 
 

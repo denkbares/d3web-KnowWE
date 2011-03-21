@@ -220,7 +220,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 
 	private String createPreview(KnowWEArticle article, Section<FlowchartType> sec, UserContext user, String web, String topic, StringBuilder builder) {
 
-		String preview = FlowchartUtils.createRenderablePreview(sec);
+		String preview = FlowchartUtils.createRenderablePreview(sec, user);
 
 		if (preview == null) {
 			return "No preview";
