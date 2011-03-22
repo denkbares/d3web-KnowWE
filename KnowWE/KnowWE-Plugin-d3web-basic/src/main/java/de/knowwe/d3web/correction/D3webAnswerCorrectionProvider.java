@@ -35,8 +35,9 @@ import de.knowwe.core.correction.CorrectionProvider;
 
 
 /**
+ * A Correction Provider for AnswerReference objects
  * 
- * @author alex
+ * @author Alex Legler
  * @created 04.03.2011 
  */
 public class D3webAnswerCorrectionProvider implements CorrectionProvider {

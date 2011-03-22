@@ -28,21 +28,20 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.TermReference;
-import de.d3web.we.object.AnswerReference;
 import de.d3web.we.terminology.TerminologyHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.knowwe.core.correction.CorrectionProvider;
 
 
 /**
+ * A basic correction provider for d3web term references
  * 
- * @author alex
+ * @author Alex Legler
  * @created 04.03.2011 
  */
 public class D3webCorrectionProvider implements CorrectionProvider {
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<String> getSuggestions(KnowWEArticle article, Section<?> section, int threshold) {
 		if (!(section.get() instanceof TermReference)) {
 			return null;
