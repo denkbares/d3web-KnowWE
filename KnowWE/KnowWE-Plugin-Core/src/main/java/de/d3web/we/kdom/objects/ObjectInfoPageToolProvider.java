@@ -24,7 +24,6 @@ import de.d3web.we.tools.DefaultTool;
 import de.d3web.we.tools.Tool;
 import de.d3web.we.tools.ToolProvider;
 import de.d3web.we.user.UserContext;
-import de.d3web.we.utils.KnowWEUtils;
 
 /**
  *
@@ -35,15 +34,20 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
-		Tool objectInfoPage = getObjectInfoPageTool(article, section, userContext);
-		return new Tool[] { objectInfoPage };
+		if (section.get() instanceof KnowWETerm<?>) {
+			@SuppressWarnings("unchecked")
+			Section<? extends KnowWETerm<?>> s = (Section<? extends KnowWETerm<?>>) section;
+			return new Tool[] { getObjectInfoPageTool(article, s, userContext) };
+		}
+		return new Tool[] {};
 	}
 
-	protected Tool getObjectInfoPageTool(KnowWEArticle article, Section<?> section, UserContext userContext) {
-		String objectName = KnowWEUtils.trimQuotes(section.getOriginalText());
+	protected Tool getObjectInfoPageTool(KnowWEArticle article, @SuppressWarnings("rawtypes") Section<? extends KnowWETerm> section, UserContext userContext) {
+		@SuppressWarnings("unchecked")
+		String objectName = section.get().getTermName(section);
 		String jsAction = "window.location.href = " +
-				"'Wiki.jsp?page=ObjectInfoPage&objectname=' + escape('" +
-				KnowWEUtils.urlencode(objectName) + "')";
+				"'Wiki.jsp?page=ObjectInfoPage&objectname=' + encodeURIComponent('" +
+				objectName + "')";
 		return new DefaultTool(
 				"KnowWEExtension/d3web/icon/infoPage16.png",
 				"Show Info Page",
