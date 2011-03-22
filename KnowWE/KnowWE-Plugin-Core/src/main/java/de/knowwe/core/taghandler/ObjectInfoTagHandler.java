@@ -117,9 +117,13 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		Map<String, String> urlParameters = user.getParameters();
 
 		// First try the URL-Parameter, if null try the TagHandler-Parameter.
-		String objectName = urlParameters.get(OBJECTNAME) != null
-				? KnowWEUtils.urldecode(urlParameters.get(OBJECTNAME))
-				: KnowWEUtils.urldecode(parameters.get(OBJECTNAME));
+		String objectName = null;
+		if (urlParameters.get(OBJECTNAME) != null) {
+			objectName = KnowWEUtils.urldecode(urlParameters.get(OBJECTNAME));
+		}
+		else if (parameters.get(OBJECTNAME) != null) {
+			objectName = KnowWEUtils.urldecode(parameters.get(OBJECTNAME));
+		}
 
 		// If name is not defined -> render search form!
 		if (objectName == null || objectName.isEmpty()) {
