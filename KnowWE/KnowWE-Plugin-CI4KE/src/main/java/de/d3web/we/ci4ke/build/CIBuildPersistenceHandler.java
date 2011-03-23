@@ -20,9 +20,13 @@
 
 package de.d3web.we.ci4ke.build;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -255,7 +259,9 @@ public class CIBuildPersistenceHandler {
 			XMLOutputter out = new XMLOutputter(Format.getPrettyFormat());
 
 			// out.output(xmlDocument, new FileWriter(xmlBuildFile));
-			out.output(xmlJDomTree, new FileWriter(xmlBuildFile));
+			Writer writer = new BufferedWriter(new OutputStreamWriter(
+						new FileOutputStream(xmlBuildFile), "UTF8"));
+			out.output(xmlJDomTree, writer);
 
 		}
 		catch (IOException e) {
