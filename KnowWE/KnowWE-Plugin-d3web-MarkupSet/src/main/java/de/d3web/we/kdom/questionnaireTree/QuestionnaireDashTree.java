@@ -28,7 +28,7 @@ public class QuestionnaireDashTree extends DashTree {
 
 	public QuestionnaireDashTree() {
 		this.setCustomRenderer(null);
-		replaceDashTreeElementContentType(this, new QuestionnaireDashTreeElementContent());
+		replaceDashTreeElementContentType(new QuestionnaireDashTreeElementContent());
 	}
 
 	/**

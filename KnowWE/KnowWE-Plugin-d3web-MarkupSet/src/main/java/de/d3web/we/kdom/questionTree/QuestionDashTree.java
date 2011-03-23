@@ -26,6 +26,6 @@ public class QuestionDashTree extends DashTree {
 
 	public QuestionDashTree() {
 		super();
-		this.replaceDashTreeElementContentType(this, new QuestionTreeElementContent());
+		this.replaceDashTreeElementContentType(new QuestionTreeElementContent());
 	}
 }

@@ -25,7 +25,7 @@ public class SolutionsDashTree extends DashTree {
 
 	public SolutionsDashTree() {
 		this.setCustomRenderer(null);
-		replaceDashTreeElementContentType(this, new SolutionDashTreeElementContent());
+		replaceDashTreeElementContentType(new SolutionDashTreeElementContent());
 	}
 
 }
