@@ -48,7 +48,7 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 		// crate List of valid terminals
 		List<Type> terminals = new ArrayList<Type>();
 		// terminals may either be numbers...
-		de.d3web.we.kdom.condition.Number number = new de.d3web.we.kdom.condition.Number();
+		de.d3web.we.kdom.basic.Number number = new de.d3web.we.kdom.basic.Number();
 		terminals.add(number);
 		// or QuestionNums..
 		QuestionNumReference qref = new QuestionNumReference();

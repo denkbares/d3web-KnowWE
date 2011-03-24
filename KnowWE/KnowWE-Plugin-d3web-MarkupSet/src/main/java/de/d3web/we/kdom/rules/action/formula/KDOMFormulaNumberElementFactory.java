@@ -172,11 +172,11 @@ public class KDOMFormulaNumberElementFactory {
 		if (c.get().isTerminal(c)) {
 			Section<? extends TerminalCondition> terminal = c.get().getTerminal(c);
 
-			Section<de.d3web.we.kdom.condition.Number> number = Sections.findChildOfType(terminal,
-					de.d3web.we.kdom.condition.Number.class);
+			Section<de.d3web.we.kdom.basic.Number> number = Sections.findChildOfType(terminal,
+					de.d3web.we.kdom.basic.Number.class);
 			if (number != null) {
 				return new FormulaNumber(
-						de.d3web.we.kdom.condition.Number.getNumber(number));
+						de.d3web.we.kdom.basic.Number.getNumber(number));
 			}
 			Section<QuestionNumReference> qref = Sections.findChildOfType(terminal,
 					QuestionNumReference.class);

@@ -36,7 +36,7 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 		public SetQuestionNumValueAction() {
 
 			this.sectionFinder = new SetNumValueActionSectionFinder();
-			de.d3web.we.kdom.condition.Number number = new de.d3web.we.kdom.condition.Number();
+			de.d3web.we.kdom.basic.Number number = new de.d3web.we.kdom.basic.Number();
 			Equals equ = new Equals();
 			QuestionReference qRef = new QuestionNumReference();
 			this.childrenTypes.add(equ);
@@ -77,13 +77,13 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 		@Override
 		public PSAction createAction(KnowWEArticle article, Section<SolutionValueAssignment> s) {
 		Section<QuestionReference> qRef = Sections.findSuccessor(s, QuestionReference.class);
-		Section<de.d3web.we.kdom.condition.Number> numberSec = Sections.findSuccessor(s,
-				de.d3web.we.kdom.condition.Number.class);
+		Section<de.d3web.we.kdom.basic.Number> numberSec = Sections.findSuccessor(s,
+				de.d3web.we.kdom.basic.Number.class);
 			if (numberSec == null || qRef == null) return null;
 
 			Question q = qRef.get().getTermObject(article, qRef);
 			
-		Double num = de.d3web.we.kdom.condition.Number.getNumber(numberSec);
+		Double num = de.d3web.we.kdom.basic.Number.getNumber(numberSec);
 		
 			
 			if(! (q instanceof QuestionNum)) return null;
