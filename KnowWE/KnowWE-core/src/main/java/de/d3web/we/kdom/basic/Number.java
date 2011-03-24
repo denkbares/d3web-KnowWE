@@ -38,8 +38,12 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 public class Number extends AbstractType {
 
 	public Number() {
-		this.setSectionFinder(new NumberFinder());
-		// NumberChecker only makes sense if NumberFinder is overwritten..
+		this(new NumberFinder());
+	}
+
+	public Number(SectionFinder f) {
+		this.setSectionFinder(f);
+		// NumberChecker only makes sense if NumberFinder is not Numberfinder
 		this.addSubtreeHandler(new NumberChecker());
 		this.setCustomRenderer(StyleRenderer.NUMBER);
 	}
@@ -55,8 +59,10 @@ public class Number extends AbstractType {
 		return null;
 	}
 
+}
 	// only one of them NumberFinder/NumberChecker makes sense to have for one
 	// Number-type
+
 
 	class NumberFinder implements SectionFinder {
 
@@ -91,4 +97,4 @@ public class Number extends AbstractType {
 
 	}
 
-}
+
