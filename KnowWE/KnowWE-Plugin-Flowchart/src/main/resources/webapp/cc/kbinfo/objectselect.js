@@ -13,7 +13,7 @@ function ObjectSelect(parent, kbInfoClasses, value, changeListener) {
 			var phrases = value.strip().split(' ');
 			var regexps = [];
 			for (var i=0; i<phrases.length; i++) {
-				regexps.push(new RegExp(DiaFluxUtils.escapeRegex(phrases[i])));
+				regexps.push(new RegExp(DiaFluxUtils.escapeRegex(phrases[i]), 'i'));
 			}
 			return KBInfo.findInfoObjects(function(item) {
 				// if a class of objects is given, return if class does not match

@@ -125,7 +125,7 @@ KBInfo.searchInfoObject = function(phrase, classArray, maxCount, onResult) {
 			classesParam += classArray[i].getShortClassName();
 		}
 	}
-	var phraseParam = '&phrase='+RegExp.escape(phrase);
+	var phraseParam = '&phrase='+DiaFluxUtils.escapeRegex(phrase);
 	var maxCountParam = maxCount ? '&maxcount='+maxCount : '';
 	var url = "KnowCC.jsp?action=SearchInfoObjects" 
 			+ classesParam 

@@ -75,12 +75,12 @@ Guard.prototype.getValues = function(patternGuard) {
 	if (this.isFormula()){
 		
 		pattern = pattern.replace(/\$\{[:\w]*\}/gi, '__ANY__');
-		pattern = RegExp.escape(pattern);
+		pattern = DiaFluxUtils.escapeRegex(pattern);
 		pattern = pattern.replace(/__ANY__/g, '(.*)');
 		
 	} else {
 		pattern = pattern.replace(/\$\{[:\w]*\}/gi, '__ANY__');
-		pattern = RegExp.escape(pattern);
+		pattern = DiaFluxUtils.escapeRegex(pattern);
 		pattern = pattern.replace(/__ANY__/g, '([^\\s]*)');
 		
 	}
