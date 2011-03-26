@@ -65,12 +65,12 @@ KNOWWE.plugin.correction = function() {
 			var params = {
 					action : 'KDOMReplaceTermNameAction',
 					TargetNamespace :  sectionID,
-					KWiki_Topic : KNOWWE.helper.gup('page')
+					KWiki_Topic : KNOWWE.helper.gup('page'),
+					KWikitext : encodeURIComponent(correction.replace(/\s*$/im,""))
 			};
 
 			var options = {
 					url : KNOWWE.core.util.getURL(params),
-					data : 'KWikitext='+encodeURIComponent(correction.replace(/\s*$/im,"")),
 					loader : true,
 					response : {
 						action : 'none',
