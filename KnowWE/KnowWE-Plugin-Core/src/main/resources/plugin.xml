@@ -210,7 +210,6 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="correction.js" />
-		<parameter id="css" value="KnowWE-Plugin-d3web-basic.css" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"

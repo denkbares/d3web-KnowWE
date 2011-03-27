@@ -49,7 +49,11 @@ public class CorrectionToolProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
 		List<String> suggestions = new LinkedList<String>();
-
+		
+		if (!section.hasErrorInSubtree(article)) {
+			return new Tool[0];
+		}
+		
 		for (CorrectionProvider c : getProviders(section)) {
 			List<String> s = c.getSuggestions(article, section, THRESH);
 
@@ -58,7 +62,7 @@ public class CorrectionToolProvider implements ToolProvider {
 			}
 		}
 
-		if (suggestions == null || suggestions.size() == 0) {
+		if (suggestions.size() == 0) {
 			return new Tool[0];
 		}
 
