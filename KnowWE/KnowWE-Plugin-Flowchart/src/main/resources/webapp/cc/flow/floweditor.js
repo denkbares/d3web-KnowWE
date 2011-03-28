@@ -316,11 +316,11 @@ FlowEditor.prototype._saveFlowchartText = function(xml, closeOnSuccess) {
 
 //Flowchart event handlers
 //register select click events for flowchart
-//CCEvents.addClassListener('click', 'FlowchartGroup', 
-//	function(event) {
-//		this.__flowchart.setSelection(null);
-//	}
-//);
+CCEvents.addClassListener('click', 'FlowchartGroup', 
+	function(event) {
+		this.__flowchart.setSelection(null);
+	}
+);
 CCEvents.addClassListener('keydown', 'FlowchartGroup', 
 	function(event) {
 		this.__flowchart.handleKeyEvent(event);
