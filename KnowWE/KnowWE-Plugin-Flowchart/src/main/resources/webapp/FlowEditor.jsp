@@ -152,8 +152,8 @@
 		<div>
 			<span class="propertyTitle">Name:</span><input type=text id="properties.editName" class="propertyText long"></input>
 			<span class="propertyTitle">Autostart:</span><input type="checkbox" id="properties.autostart" title="Defines if all startnodes of this flowchart are activated on session start."></input>
-			<span class=propertyTitle>Width:</span><input type=text id="properties.editWidth" class="propertyText short"></input>
-			<span class=propertyTitle>Height:</span><input type=text id="properties.editHeight" class="propertyText short"></input>
+			<input type=hidden id="properties.editWidth" class="propertyText short"></input>
+			<input type=hidden id="properties.editHeight" class="propertyText short"></input>
 		</div>	
 	</div>	
 	<ul class="toolbar">

@@ -36,6 +36,20 @@ FlowEditor.prototype.showEditor = function(){
 	$('close').observe('click', this.closeEditor);
 	$('delete').observe('click', this.deleteFlowchart);
 	
+	$('arrowLeftIncrease').observe('click', function(){FlowEditor.increaseSize('left');});
+	$('arrowRightIncrease').observe('click', function(){FlowEditor.increaseSize('right');});
+	$('arrowTopIncrease').observe('click', function(){FlowEditor.increaseSize('top');});
+	$('arrowBottomIncrease').observe('click', function(){FlowEditor.increaseSize('bottom');});
+	
+	$('arrowLeftDecrease').observe('click', function(){FlowEditor.decreaseSize('left');});
+	$('arrowRightDecrease').observe('click', function(){FlowEditor.decreaseSize('right');});
+	$('arrowTopDecrease').observe('click', function(){FlowEditor.decreaseSize('top');});
+	$('arrowBottomDecrease').observe('click', function(){FlowEditor.decreaseSize('bottom');});
+		
+	theFlowchart.getContentPane().observe('mousedown', function(event) {FlowEditor.massSelectDown(event);})
+	theFlowchart.getContentPane().observe('mouseup', function(event) {FlowEditor.massSelectUp(event);})
+	theFlowchart.getContentPane().observe('mousemove', function(event) {FlowEditor.massSelectMove(event);})
+	
 	var dragOptions = { ghosting: true, revert: true, reverteffect: ObjectTree.revertEffect};
 
 	new Draggable('decision_prototype', dragOptions);
@@ -52,6 +66,150 @@ FlowEditor.prototype.showEditor = function(){
 	
 	
 	
+}
+
+// increase the size of the flowchart via arrows at the top, bottom, left or right
+FlowEditor.increaseSize = function(direction) {
+	var height = parseInt(theFlowchart.height);
+	var width = parseInt(theFlowchart.width);
+
+	if (direction === 'bottom') {
+		theFlowchart.setSize(width, height + 100);
+	} else if (direction === 'top') {
+		theFlowchart.setSize(width, height + 100);
+		for (var i = 0; i < theFlowchart.nodes.length; i++) {
+			theFlowchart.nodes[i].moveBy(0, 100);
+		}
+	} else if (direction === 'right') {
+		theFlowchart.setSize(width + 100, height);
+	} else if (direction === 'left') {
+		theFlowchart.setSize(width + 100, height);
+		for (var i = 0; i < theFlowchart.nodes.length; i++) {
+			theFlowchart.nodes[i].moveBy(100, 0);
+		}
+	}
+	FlowEditor.rearrangeArrows()
+}
+
+FlowEditor.decreaseSize = function(direction) {
+	var height = parseInt(theFlowchart.height);
+	var width = parseInt(theFlowchart.width);
+
+	var max = theFlowchart.getMaxObjects();
+	var min = theFlowchart.getMinObjects();
+	var dif, change;
+	
+	if (direction === 'bottom') {
+		dif = height - max[1];
+		change = Math.min(100, dif);
+		theFlowchart.setSize(width, (height - change));
+	} else if (direction === 'right') {
+		dif = height - max[0];
+		change = Math.min(100, dif);
+		theFlowchart.setSize((width - change), height);
+	} else if (direction === 'left') {
+		dif = min[0] - 40;
+		change = Math.min(100, dif);
+		for ( var i = 0; i < theFlowchart.nodes.length; i++) {
+			theFlowchart.nodes[i].moveBy(-change, 0);
+		}
+		theFlowchart.setSize((width - change), height);
+
+	} else if (direction === 'top') {
+		dif = min[1] - 40;
+		change = Math.min(100, dif);
+		for ( var i = 0; i < theFlowchart.nodes.length; i++) {
+			theFlowchart.nodes[i].moveBy(0, -change);
+		}
+		theFlowchart.setSize(width, (height - change));
+	}
+	FlowEditor.rearrangeArrows()
+
+}
+
+FlowEditor.rearrangeArrows = function() {
+	var leftContainer = $('arrowLeftIncrease').parentNode.parentNode;
+	var rightContainer = $('arrowRightIncrease').parentNode.parentNode;
+	var upContainer = $('arrowTopIncrease').parentNode.parentNode;
+	var downContainer = $('arrowBottomIncrease').parentNode.parentNode;
+	
+	var width = theFlowchart.width;
+	var height = theFlowchart.height;
+	var xMid = theFlowchart.width / 2;
+	var yMid = theFlowchart.height / 2;
+	
+	leftContainer.style.left = '1px';
+	leftContainer.style.top = (yMid - 50) + 'px';
+	rightContainer.style.left = (width - 100) + 'px';
+	rightContainer.style.top = (yMid -50) + 'px';
+	upContainer.style.left = (xMid - 50) + 'px';
+	upContainer.style.top = '5px;'
+	downContainer.style.left = (xMid - 50) + 'px';
+	downContainer.style.top = (height - 100) + 'px';
+}
+
+
+FlowEditor.massSelectDown = function(event) {
+	FlowEditor.SelectX = event.layerX;
+	FlowEditor.SelectY = event.layerY;
+	FlowEditor.moveStarted = true;
+
+
+	event.stop();
+}
+
+FlowEditor.massSelectMove = function(event) {
+	var selectTool = $('select_tool');
+	if (selectTool) {
+		selectTool.parentNode.removeChild(selectTool);
+	}
+	if (FlowEditor.moveStarted) {
+		var startX = FlowEditor.SelectX;
+		var startY = FlowEditor.SelectY;
+		var endX = event.layerX;
+		var endY = event.layerY;
+
+		var lineDOM = SelectTool.createSelectionBox(startX, startY, endX, endY, 1, 'grey', 0, 1000);
+		theFlowchart.getContentPane().appendChild(lineDOM);
+		
+		
+		var newSelection = [];
+		for ( var i = 0; i < theFlowchart.nodes.length; i++) {
+			if (theFlowchart.nodes[i].intersects(startX, startY, endX, endY)) {
+				newSelection.push(theFlowchart.nodes[i]);
+			}
+		}
+		var current = theFlowchart.selection;
+		var currentSelection = current[0];
+		if ((currentSelection && !currentSelection.guardEditor) || newSelection.size() !== 0) {
+			theFlowchart.setSelection(newSelection, false, false);
+		} 
+	}
+}
+
+FlowEditor.massSelectUp = function(event) {
+	var startX = FlowEditor.SelectX;
+	var startY = FlowEditor.SelectY;
+	var endX = event.layerX;
+	var endY = event.layerY;
+	
+	
+	var newSelection = [];
+	for ( var i = 0; i < theFlowchart.nodes.length; i++) {
+		if (theFlowchart.nodes[i].intersects(startX, startY, endX, endY)) {
+			newSelection.push(theFlowchart.nodes[i]);
+		}
+	}
+	var current = theFlowchart.selection;
+	var currentSelection = current[0];
+	if ((currentSelection && !currentSelection.guardEditor) || newSelection.size() !== 0) {
+		theFlowchart.setSelection(newSelection, false, false);
+	} 
+	FlowEditor.moveStarted = false;
+	var selectTool = $('select_tool');
+	if (selectTool) {
+		selectTool.parentNode.removeChild(selectTool);
+	}
 }
 
 FlowEditor.createActionNode = function(flowchart, left, top, nodeModel) {
@@ -155,11 +313,11 @@ FlowEditor.prototype._saveFlowchartText = function(xml, closeOnSuccess) {
 
 //Flowchart event handlers
 //register select click events for flowchart
-CCEvents.addClassListener('click', 'FlowchartGroup', 
-	function(event) {
-		this.__flowchart.setSelection(null);
-	}
-);
+//CCEvents.addClassListener('click', 'FlowchartGroup', 
+//	function(event) {
+//		this.__flowchart.setSelection(null);
+//	}
+//);
 CCEvents.addClassListener('keydown', 'FlowchartGroup', 
 	function(event) {
 		this.__flowchart.handleKeyEvent(event);
@@ -419,7 +577,89 @@ Flowchart.prototype.toPreviewHTML = function(node) {
 	return html;
 }
 
+var SelectTool = {}
 
+SelectTool.createSelectionBox = function(x1, y1, x2, y2, pixelSize, pixelColor, spacing, maxDots) {
+	var temp;
+	if (x2 < x1) {
+		temp = x1;
+		x1 = x2;
+		x2 = temp;
+	}
+	
+	if (y2 < y1) {
+		temp = y1;
+		y1 = y2;
+		y2 = temp;
+	}
+	
+	var cx = x2 - x1;
+	var cy = y2 - y1;
+
+	var dotCountX = cx / (spacing + pixelSize);
+	var dotCountY = cy / (spacing + pixelSize);
+	if (maxDots && dotCountX > maxDots) dotCountX = maxDots;
+	if (maxDots && dotCountY > maxDots) dotCountY = maxDots;
+	var dx = cx / dotCountX;
+	var dy = cy / dotCountY;
+
+	var x = x1;
+	var y = y1;
+	var dotsHTML = '';
+	for (var i = 0; i < dotCountX; i++) {
+		dotsHTML += '<div style="position:absolute; overflow:hidden; ' +
+		'left:' + Math.ceil(x-pixelSize/2) + 'px; ' +
+		'top:' + y + 'px; ' +
+		'width:' + pixelSize + 'px; ' +
+		'height:' + pixelSize + 'px; ' +
+		'background-color: ' + pixelColor + ';"></div>';
+		
+		x += dx;
+	}
+	x = x1;
+	for (var i = 0; i < dotCountX; i++) {
+		dotsHTML += '<div style="position:absolute; overflow:hidden; ' +
+		'left:' + Math.ceil(x-pixelSize/2) + 'px; ' +
+		'top:' + y2 + 'px; ' +
+		'width:' + pixelSize + 'px; ' +
+		'height:' + pixelSize + 'px; ' +
+		'background-color: ' + pixelColor + ';"></div>';
+		
+		x += dx;
+	}
+	
+	for (var i = 0; i < dotCountY; i++) {
+		dotsHTML += '<div style="position:absolute; overflow:hidden; ' +
+		'left:' + x1 + 'px; ' +
+		'top:' + Math.ceil(y-pixelSize/2) + 'px; ' +
+		'width:' + pixelSize + 'px; ' +
+		'height:' + pixelSize + 'px; ' +
+		'background-color: ' + pixelColor + ';"></div>';
+		
+		y += dy;
+	}
+	y = y1;
+	
+	for (var i = 0; i < dotCountY; i++) {
+		dotsHTML += '<div style="position:absolute; overflow:hidden; ' +
+		'left:' + x2 + 'px; ' +
+		'top:' + Math.ceil(y-pixelSize/2) + 'px; ' +
+		'width:' + pixelSize + 'px; ' +
+		'height:' + pixelSize + 'px; ' +
+		'background-color: ' + pixelColor + ';"></div>';
+		
+		y += dy;
+	}
+	
+	
+	var div = Builder.node('div', {
+		id: 'select_tool',
+		style: 'position:absolute; overflow:visible; ' +
+		 		'top: 0px; left: 0px; width:1px; height:1px;'
+	});
+	div.innerHTML = dotsHTML;
+	return div;
+}
 
 
 
