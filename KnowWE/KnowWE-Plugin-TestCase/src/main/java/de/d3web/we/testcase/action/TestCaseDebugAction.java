@@ -31,6 +31,9 @@ import de.d3web.empiricaltesting.Finding;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.TestCase;
+import de.d3web.empiricaltesting.caseAnalysis.functions.Diff;
+import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
+import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysis;
 import de.d3web.we.action.UserActionContext;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.basic.SessionBroker;
@@ -77,7 +80,9 @@ public class TestCaseDebugAction extends TestCaseRunningAction {
 			writer.write(rb.getString("KnowWE.TestCase.loaderror"));
 		}
 		else {
-			if (t.totalPrecision() == 1.0 && t.totalRecall() == 1.0) {
+			TestCaseAnalysis analysis = (TestCaseAnalysis) TestCaseAnalysis.getInstance();
+			TestCaseAnalysisReport result = analysis.runAndAnalyze(t);
+			if (result.precision() == 1.0 && result.recall() == 1.0) {
 				writer.write(renderTestCasePassed(t));
 
 			}
@@ -86,7 +91,7 @@ public class TestCaseDebugAction extends TestCaseRunningAction {
 
 			}
 			else {
-				TestCaseBreakpoint breakpoint = findFirstFailedTestCase(t);
+				TestCaseBreakpoint breakpoint = findFirstFailedTestCase(t, result);
 				if (breakpoint.isEmpty()) {
 					writer.write("Internal error: no failed test case found.");
 					return;
@@ -151,18 +156,21 @@ public class TestCaseDebugAction extends TestCaseRunningAction {
 				+ breakpoint.numberOfRatedTestCase + ")"));
 	}
 
-	private TestCaseBreakpoint findFirstFailedTestCase(TestCase t) {
+	private TestCaseBreakpoint findFirstFailedTestCase(TestCase t, TestCaseAnalysisReport result) {
 		TestCaseBreakpoint breakpoint = new TestCaseBreakpoint();
 		for (SequentialTestCase testCase : t.getRepository()) {
-			int noOfRatedTestCase = 0;
-			for (RatedTestCase ratedTestCase : testCase.getCases()) {
-				if (!ratedTestCase.isCorrect()) {
-					breakpoint.testCase = testCase;
-					breakpoint.ratedTestCase = ratedTestCase;
-					breakpoint.numberOfRatedTestCase = noOfRatedTestCase;
-					return breakpoint;
+			if (result.hasDiff(testCase)) {
+				int noOfRatedTestCase = 0;
+				Diff stcDiff = result.getDiffFor(testCase);
+				for (RatedTestCase ratedTestCase : testCase.getCases()) {
+					if (stcDiff.hasDiff(ratedTestCase)) {
+						breakpoint.testCase = testCase;
+						breakpoint.ratedTestCase = ratedTestCase;
+						breakpoint.numberOfRatedTestCase = noOfRatedTestCase;
+						return breakpoint;
+					}
+					noOfRatedTestCase++;
 				}
-				noOfRatedTestCase++;
 			}
 		}
 		return breakpoint;

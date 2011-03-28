@@ -148,7 +148,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer<CIDashboardType> 
 				buffy.append("<div class='ci-collapsible-box'>");
 				// buffy.append("<b>";
 
-				// Render Test Result
+				// Render Test TestCaseAnalysisReport
 				String s = e.getAttributeValue("result");
 				if (s != null && !s.isEmpty()) {
 					TestResultType buildResult = TestResultType.valueOf(s);

@@ -99,7 +99,7 @@ public class CIBuildPersistenceHandler {
 	}
 
 	/**
-	 * Creates a new CI-Build Result-Writer for a CIDashboard
+	 * Creates a new CI-Build TestCaseAnalysisReport-Writer for a CIDashboard
 	 * 
 	 * @param dashboardID
 	 */

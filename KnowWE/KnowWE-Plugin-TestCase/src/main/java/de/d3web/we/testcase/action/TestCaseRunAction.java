@@ -27,6 +27,9 @@ import de.d3web.empiricaltesting.RatedSolution;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.TestCase;
+import de.d3web.empiricaltesting.caseAnalysis.functions.Diff;
+import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
+import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysis;
 import de.d3web.we.action.UserActionContext;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEAttributes;
@@ -67,7 +70,9 @@ public class TestCaseRunAction extends TestCaseRunningAction {
 	}
 
 	private String renderTestCaseResult(TestCase t) {
-		if (t.totalPrecision() == 1.0 && t.totalRecall() == 1.0) {
+		TestCaseAnalysis analysis = (TestCaseAnalysis) TestCaseAnalysis.getInstance();
+		TestCaseAnalysisReport result = analysis.runAndAnalyze(t);
+		if (result.precision() == 1.0 && result.recall() == 1.0) {
 			return renderTestCasePassed(t);
 
 		}
@@ -76,10 +81,10 @@ public class TestCaseRunAction extends TestCaseRunningAction {
 
 		}
 
-		return renderTestCaseFailed(t);
+		return renderTestCaseFailed(t, result);
 	}
 
-	private String renderTestCaseFailed(TestCase t) {
+	private String renderTestCaseFailed(TestCase t, TestCaseAnalysisReport result) {
 		StringBuilder html = new StringBuilder();
 
 		// TestCase failed text and red bulb
@@ -91,21 +96,21 @@ public class TestCaseRunAction extends TestCaseRunningAction {
 		html.append("</strong>");
 		html.append("</p>");
 
-		// TestCase Result Detais
+		// TestCase TestCaseAnalysisReport Detais
 		html.append("<p style='margin-left:22px'>");
 		html.append("Precision: ");
-		html.append(formatter.format(t.totalPrecision()));
+		html.append(formatter.format(result.precision()));
 		html.append("<br />");
 		html.append("Recall: ");
-		html.append(formatter.format(t.totalRecall()));
+		html.append(formatter.format(result.recall()));
 		html.append("</p>\n");
 
-		html.append(renderDifferenceDetails(t));
+		html.append(renderDifferenceDetails(t, result));
 
 		return html.toString();
 	}
 
-	private String renderDifferenceDetails(TestCase t) {
+	private String renderDifferenceDetails(TestCase t, TestCaseAnalysisReport result) {
 
 		StringBuilder html = new StringBuilder();
 
@@ -121,13 +126,13 @@ public class TestCaseRunAction extends TestCaseRunningAction {
 
 		// Table containing details
 		html.append("<div id='testcase-detail-panel' style='display:none'>");
-		html.append(renderDetailResultTable(t));
+		html.append(renderDetailResultTable(t, result));
 		html.append("</div>\n");
 
 		return html.toString();
 	}
 
-	private String renderDetailResultTable(TestCase t) {
+	private String renderDetailResultTable(TestCase t, TestCaseAnalysisReport result) {
 
 		StringBuilder html = new StringBuilder();
 		StringBuilder temp = new StringBuilder();
@@ -138,9 +143,10 @@ public class TestCaseRunAction extends TestCaseRunningAction {
 
 		// HTML-Code
 		for (SequentialTestCase stc : t.getRepository()) {
+			Diff stcDiff = result.getDiffFor(stc);
 			temp = new StringBuilder();
 			for (RatedTestCase rtc : stc.getCases()) {
-				if (!rtc.isCorrect()) {
+				if (stcDiff.hasDiff(rtc)) {
 					temp.append("<tr>");
 					temp.append("<th colspan='2' >");
 					temp.append("Rated-Test-Case ");

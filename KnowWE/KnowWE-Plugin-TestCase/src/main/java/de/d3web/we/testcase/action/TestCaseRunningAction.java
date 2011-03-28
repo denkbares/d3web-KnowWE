@@ -25,6 +25,8 @@ import java.util.ResourceBundle;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.TestCase;
+import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
+import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysis;
 import de.d3web.we.action.AbstractAction;
 
 /**
@@ -50,13 +52,15 @@ public abstract class TestCaseRunningAction extends AbstractAction {
 		html.append("</strong>");
 		html.append("</p>");
 
-		// TestCase Result Detais
+		// TestCase TestCaseAnalysisReport Detais
+		TestCaseAnalysis analysis = (TestCaseAnalysis) TestCaseAnalysis.getInstance();
+		TestCaseAnalysisReport result = analysis.runAndAnalyze(t);
 		html.append("<p style='margin-left:22px'>");
 		html.append("Precision: ");
-		html.append(t.totalPrecision());
+		html.append(result.precision());
 		html.append("<br />");
 		html.append("Recall: ");
-		html.append(t.totalRecall());
+		html.append(result.recall());
 		html.append("<br /><br />");
 		html.append("</p>");
 
@@ -80,13 +84,15 @@ public abstract class TestCaseRunningAction extends AbstractAction {
 		html.append("</strong>");
 		html.append("</p>");
 
-		// TestCase Result Detais
+		// TestCase TestCaseAnalysisReport Detais
+		TestCaseAnalysis analysis = (TestCaseAnalysis) TestCaseAnalysis.getInstance();
+		TestCaseAnalysisReport result = analysis.runAndAnalyze(t);
 		html.append("<p style='margin-left:22px'>");
 		html.append("Precision: ");
-		html.append(formatter.format(t.totalPrecision()));
+		html.append(formatter.format(result.precision()));
 		html.append("<br />");
 		html.append("Recall: ");
-		html.append(formatter.format(t.totalRecall()));
+		html.append(formatter.format(result.recall()));
 		html.append("<br /><br />");
 		html.append(rb.getString("KnowWE.TestCase.notconsistent"));
 		html.append("</p>\n");

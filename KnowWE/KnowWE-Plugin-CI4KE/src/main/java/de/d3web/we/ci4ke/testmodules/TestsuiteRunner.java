@@ -21,6 +21,8 @@
 package de.d3web.we.ci4ke.testmodules;
 
 import de.d3web.empiricaltesting.TestCase;
+import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
+import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysis;
 import de.d3web.we.ci4ke.testing.AbstractCITest;
 import de.d3web.we.ci4ke.testing.CITestResult;
 import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
@@ -40,17 +42,20 @@ public class TestsuiteRunner extends AbstractCITest {
 		TestCase suite = TestCaseUtils.loadTestSuite(
 				monitoredArticleTitle, KnowWEEnvironment.DEFAULT_WEB);
 
+		TestCaseAnalysis analysis = (TestCaseAnalysis) TestCaseAnalysis.getInstance();
+		TestCaseAnalysisReport result = analysis.runAndAnalyze(suite);
+
 		if (suite != null) {
 			if (!suite.isConsistent()) {
 				return new CITestResult(TestResultType.FAILED, "Testsuite is not consistent!");
 			}
-			else if (suite.totalRecall() == 1.0 && suite.totalPrecision() == 1.0) {
+			else if (result.recall() == 1.0 && result.precision() == 1.0) {
 				return new CITestResult(TestResultType.SUCCESSFUL, "Testsuite passed!");
 			}
 			else {
 				return new CITestResult(TestResultType.FAILED,
-						"Testsuite failed! (Total Precision: " + suite.totalPrecision() +
-								", Total Recall: " + suite.totalRecall() + ")");
+						"Testsuite failed! (Total Precision: " + result.precision() +
+								", Total Recall: " + result.recall() + ")");
 			}
 		}
 		else {
