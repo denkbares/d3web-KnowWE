@@ -46,9 +46,9 @@ FlowEditor.prototype.showEditor = function(){
 	$('arrowTopDecrease').observe('click', function(){FlowEditor.decreaseSize('top');});
 	$('arrowBottomDecrease').observe('click', function(){FlowEditor.decreaseSize('bottom');});
 		
-	theFlowchart.getContentPane().observe('mousedown', function(event) {FlowEditor.massSelectDown(event);})
-	theFlowchart.getContentPane().observe('mouseup', function(event) {FlowEditor.massSelectUp(event);})
-	theFlowchart.getContentPane().observe('mousemove', function(event) {FlowEditor.massSelectMove(event);})
+//	theFlowchart.getContentPane().observe('mousedown', function(event) {FlowEditor.massSelectDown(event);})
+//	theFlowchart.getContentPane().observe('mouseup', function(event) {FlowEditor.massSelectUp(event);})
+//	theFlowchart.getContentPane().observe('mousemove', function(event) {FlowEditor.massSelectMove(event);})
 	
 	var dragOptions = { ghosting: true, revert: true, reverteffect: ObjectTree.revertEffect};
 
@@ -104,7 +104,7 @@ FlowEditor.decreaseSize = function(direction) {
 		change = Math.min(100, dif);
 		theFlowchart.setSize(width, (height - change));
 	} else if (direction === 'right') {
-		dif = height - max[0];
+		dif = width - max[0];
 		change = Math.min(100, dif);
 		theFlowchart.setSize((width - change), height);
 	} else if (direction === 'left') {
@@ -153,7 +153,8 @@ FlowEditor.massSelectDown = function(event) {
 	FlowEditor.SelectX = event.layerX;
 	FlowEditor.SelectY = event.layerY;
 	FlowEditor.moveStarted = true;
-
+	FlowEditor.difX = event.clientX - event.layerX;
+	FlowEditor.difY = event.clientY - event.layerY;
 
 	event.stop();
 }
@@ -166,9 +167,11 @@ FlowEditor.massSelectMove = function(event) {
 	if (FlowEditor.moveStarted) {
 		var startX = FlowEditor.SelectX;
 		var startY = FlowEditor.SelectY;
-		var endX = event.layerX;
-		var endY = event.layerY;
+		var endX = event.clientX - FlowEditor.difX;
+		var endY = event.clientY - FlowEditor.difY;
 
+
+		
 		var lineDOM = SelectTool.createSelectionBox(startX, startY, endX, endY, 1, 'grey', 0, 1000);
 		theFlowchart.getContentPane().appendChild(lineDOM);
 		
