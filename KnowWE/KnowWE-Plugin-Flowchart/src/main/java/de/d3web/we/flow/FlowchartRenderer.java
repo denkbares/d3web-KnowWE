@@ -200,7 +200,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 				+ "]').firstChild; while (child) {"
 				+ "if (child.className.match(/[hv]_line/)) {"
 				+ "child.style.border='1px solid " + color + "';} "
-				+ "child = child.nextSibling;}</script>\n"));
+				+ "child = child.nextSibling;}</script>"));
 	}
 
 	private boolean hasFired(Session session, Collection<FlowRun> runs, Edge edge) {
