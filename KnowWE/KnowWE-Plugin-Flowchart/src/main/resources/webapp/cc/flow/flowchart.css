@@ -1,14 +1,9 @@
-
 .Flowchart {
 	position:	relative;
-	#background-color: #eee;
 	background-image: url(../image/grid_10.png);
 	background-position: 1px 1px;
 	overflow:	auto;
-	
 }
-
-
 
 .Flowchart .h_snapline {
 	position: absolute;
@@ -23,6 +18,3 @@
 	border-left: 1px dotted black;
 	z-index: 0;
 }
-
-
-

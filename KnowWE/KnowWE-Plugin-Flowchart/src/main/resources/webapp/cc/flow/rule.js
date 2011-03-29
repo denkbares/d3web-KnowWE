@@ -331,15 +331,15 @@ function Anchor(node, x, y, type, slide) {
 
 Anchor.prototype.getGuardPosition = function() {
 	if (this.type == 'top') {
-		return { left: 2, bottom: 3, width: 50 };
+		return { left: 3, bottom: 4, width: 50 };
 	}
 	else if (this.type == 'bottom') {
-		return { left: 2, top: 3, width: 50 };
+		return { left: 3, top: 2, width: 50 };
 	}
 	else if (this.type == 'left') {
-		return { right: 3, bottom: 0, height: 20 };
+		return { right: 5, bottom: 0, height: 20 };
 	}
 	else {
-		return { left: 3, bottom: 0, height: 20 };
+		return { left: 7, bottom: 0, height: 20 };
 	}
 }

@@ -142,7 +142,7 @@ ul.toolbar li:last-child {
 	width: 64px; 
 	height: 64px;
 	left: 0px;
-	top: -67px;
+	top: -85px;
 	background-image: url(../image/trash64.png);
 	z-index:1000;
 }

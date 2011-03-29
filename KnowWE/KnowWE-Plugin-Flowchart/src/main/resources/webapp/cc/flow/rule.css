@@ -77,37 +77,37 @@
 .Rule .arrow_up {
 	position: absolute;
 	overflow: hidden;
-	left: -2px;
+	left: -4px;
 	top: 0px;
-	width: 5px;
-	height: 6px;
+	width: 9px;
+	height: 9px;
 	background-image: url(../image/arrow_up.gif); 
 }
 .Rule .arrow_down {
 	position: absolute;
 	overflow: hidden;
-	left: -2px;
+	left: -4px;
 	bottom: 0px;
-	width: 5px;
-	height: 6px;
+	width: 9px;
+	height: 9px;
 	background-image: url(../image/arrow_down.gif); 
 }
 .Rule .arrow_left {
 	position: absolute;
 	overflow: hidden;
 	left: 0px;
-	top: -2px;
-	width: 6px;
-	height: 5px;
+	top: -4px;
+	width: 9px;
+	height: 9px;
 	background-image: url(../image/arrow_left.gif); 
 }
 .Rule .arrow_right {
 	position: absolute;
 	overflow: hidden;
 	right: 0px;
-	top: -2px;
-	width: 6px;
-	height: 5px;
+	top: -4px;
+	width: 9px;
+	height: 9px;
 	background-image: url(../image/arrow_right.gif); 
 }
 
