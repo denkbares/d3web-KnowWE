@@ -88,7 +88,7 @@ FlowEditor.increaseSize = function(direction) {
 			theFlowchart.nodes[i].moveBy(100, 0);
 		}
 	}
-	FlowEditor.rearrangeArrows()
+	FlowEditor.rearrangeArrows();
 }
 
 FlowEditor.decreaseSize = function(direction) {
@@ -108,22 +108,26 @@ FlowEditor.decreaseSize = function(direction) {
 		change = Math.min(100, dif);
 		theFlowchart.setSize((width - change), height);
 	} else if (direction === 'left') {
-		dif = min[0] - 40;
+		dif = min[0] - 30;
 		change = Math.min(100, dif);
-		for ( var i = 0; i < theFlowchart.nodes.length; i++) {
-			theFlowchart.nodes[i].moveBy(-change, 0);
+		if (change > 0) {
+			for ( var i = 0; i < theFlowchart.nodes.length; i++) {
+				theFlowchart.nodes[i].moveBy(-change, 0);
+			}
+			theFlowchart.setSize((width - change), height);
 		}
-		theFlowchart.setSize((width - change), height);
 
 	} else if (direction === 'top') {
-		dif = min[1] - 40;
+		dif = min[1] - 30;
 		change = Math.min(100, dif);
-		for ( var i = 0; i < theFlowchart.nodes.length; i++) {
-			theFlowchart.nodes[i].moveBy(0, -change);
+		if (change > 0) {
+			for ( var i = 0; i < theFlowchart.nodes.length; i++) {
+				theFlowchart.nodes[i].moveBy(0, -change);
+			}
+			theFlowchart.setSize(width, (height - change));
 		}
-		theFlowchart.setSize(width, (height - change));
 	}
-	FlowEditor.rearrangeArrows()
+	FlowEditor.rearrangeArrows();
 
 }
 
@@ -150,13 +154,20 @@ FlowEditor.rearrangeArrows = function() {
 
 
 FlowEditor.massSelectDown = function(event) {
+	
+	// prevent this event from taking over newly dragged in nodes
+	if (event.target.nodeName === 'INPUT'
+			|| event.target.nodeName === 'TEXTAREA') {
+		return;
+	}
+	
 	FlowEditor.SelectX = event.layerX;
 	FlowEditor.SelectY = event.layerY;
 	FlowEditor.moveStarted = true;
 	FlowEditor.difX = event.clientX - event.layerX;
 	FlowEditor.difY = event.clientY - event.layerY;
 
-	event.stop();
+	event.stop(); 
 }
 
 FlowEditor.massSelectMove = function(event) {
@@ -182,8 +193,8 @@ FlowEditor.massSelectMove = function(event) {
 				newSelection.push(theFlowchart.nodes[i]);
 			}
 		}
-		var current = theFlowchart.selection;
-		var currentSelection = current[0];
+
+		var currentSelection = theFlowchart.selection[0];
 		if ((currentSelection && !currentSelection.guardEditor) || newSelection.size() !== 0) {
 			theFlowchart.setSelection(newSelection, false, false);
 		} 
@@ -191,10 +202,17 @@ FlowEditor.massSelectMove = function(event) {
 }
 
 FlowEditor.massSelectUp = function(event) {
+	
+	// prevent this event from taking over newly dragged in nodes
+	if (event.target.nodeName === 'INPUT'
+		|| event.target.nodeName === 'TEXTAREA') {
+		return;
+	}
+	
 	var startX = FlowEditor.SelectX;
 	var startY = FlowEditor.SelectY;
-	var endX = event.layerX;
-	var endY = event.layerY;
+	var endX = event.clientX - FlowEditor.difX;
+	var endY = event.clientY - FlowEditor.difY;
 	
 	
 	var newSelection = [];
@@ -203,8 +221,8 @@ FlowEditor.massSelectUp = function(event) {
 			newSelection.push(theFlowchart.nodes[i]);
 		}
 	}
-	var current = theFlowchart.selection;
-	var currentSelection = current[0];
+
+	var currentSelection = theFlowchart.selection[0];
 	if ((currentSelection && !currentSelection.guardEditor) || newSelection.size() !== 0) {
 		theFlowchart.setSelection(newSelection, false, false);
 	} 
