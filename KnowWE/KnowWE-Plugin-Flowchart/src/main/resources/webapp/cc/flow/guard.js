@@ -52,6 +52,7 @@ Guard.prototype.lookupDisplayHTML = function(guardPatterns) {
 			var values = this.getValues(guard);
 			// und erzeuge auf Werte passendes displayHTML
 			this.displayHTML = guard.getDisplayHTML(values);
+			this.unit = guard.unit;
 			return;
 		}
 	}
