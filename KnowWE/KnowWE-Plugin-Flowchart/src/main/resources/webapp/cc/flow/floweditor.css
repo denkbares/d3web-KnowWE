@@ -152,7 +152,7 @@ ul.toolbar li:last-child {
 }
 
 #arrowLeftIncrease {
-	top: 10px;
+	margin-top: 10px;
 	height: 15px;
 	width: 15px;
 	background-image: url(../image/resize_arrows/arrow-left.png);
@@ -161,7 +161,7 @@ ul.toolbar li:last-child {
 }
 
 #arrowLeftDecrease {
-	top: 30px;
+	margin-top: 30px;
 	height: 15px;
 	width: 15px;
 	background-image: url(../image/resize_arrows/arrow-right.png);
@@ -248,7 +248,7 @@ ul.toolbar li:last-child {
 	opacity: 1;
 }
 
-.ContainerLvl2Left {
+#ContainerLvl2Left {
 	top: 25px;
 	height: 50px;
 	width: 50px;

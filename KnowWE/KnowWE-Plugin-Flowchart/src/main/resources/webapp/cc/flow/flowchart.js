@@ -59,7 +59,6 @@ Flowchart.prototype.setVisible = function(visible) {
 		// before showing childs, parent must be visible to enable dragging library
 		for (var i=0; i<this.nodes.length; i++) this.nodes[i].setVisible(visible);
 		for (var i=0; i<this.rules.length; i++) this.rules[i].setVisible(visible);
-		this.createArrows();
 	}
 	else if (this.isVisible() && !visible) {
 		// ==> hide Node
@@ -322,89 +321,6 @@ Flowchart.prototype.getMinObjects = function() {
 	return [minX, minY];
 }
 
-Flowchart.prototype.createArrows = function() {
-	var horizontalMid = this.width / 2;
-	var verticalMid = this.height / 2;
-	
-	
-	var leftContainer = Builder.node('div', {
-		className : 'ContainerLvl1',
-		style : 'left: 1px; top:' + (verticalMid - 50) + 'px;'
-	}, [Builder.node('div', {
-		id : 'ContainerLvl2Left',
-	})]); 
-	
-	var arrowLeftIncrease = Builder.node('div', {
-		id : 'arrowLeftIncrease'
-	});
-	
-	var arrowLeftDecrease = Builder.node('div', {
-		id : 'arrowLeftDecrease'
-	});
-	
-	var rightContainer = Builder.node('div', {
-		className : 'ContainerLvl1',
-		style: 'left: ' + (this.width - 100) + 'px; top:' + (verticalMid -50) + 'px;'
-	}, [Builder.node('div', {
-		id : 'ContainerLvl2Right',
-	}) ]); 
-	
-	var arrowRightIncrease = Builder.node('div', {
-		id : 'arrowRightIncrease'
-	});
-	
-	var arrowRightDecrease = Builder.node('div', {
-		id : 'arrowRightDecrease'
-	});
-	
-	
-		
-	var topContainer = Builder.node('div', {
-		className : 'ContainerLvl1',
-		style: 'left: ' + (horizontalMid - 50)  + 'px; top: 5px;'
-	}, [Builder.node('div', {
-		id : 'ContainerLvl2Top',
-	}) ]); 
-		
-	
-	var arrowTopIncrease = Builder.node('div', {
-		id : 'arrowTopIncrease'
-	});
-	
-	var arrowTopDecrease = Builder.node('div', {
-		id : 'arrowTopDecrease'
-	}); 
-		
 
-	var bottomContainer = Builder.node('div', {
-		className : 'ContainerLvl1',
-		style: 'left: ' + (horizontalMid - 50) + 'px; top: ' + (this.height - 100) + 'px;'
-	}, [Builder.node('div', {
-		id : 'ContainerLvl2Bottom',
-	})]); 
-	
-	var arrowBottomIncrease = Builder.node('div', {
-		id : 'arrowBottomIncrease'
-	}); 
-	
-	var arrowBottomDecrease = Builder.node('div', {
-		id : 'arrowBottomDecrease'
-	}); 
-	
-	
-	this.getContentPane().appendChild(leftContainer);
-	this.getContentPane().appendChild(rightContainer);
-	this.getContentPane().appendChild(topContainer);
-	this.getContentPane().appendChild(bottomContainer);
-
-	$('ContainerLvl2Bottom').appendChild(arrowBottomIncrease);
-	$('ContainerLvl2Bottom').appendChild(arrowBottomDecrease);
-	$('ContainerLvl2Top').appendChild(arrowTopIncrease);
-	$('ContainerLvl2Top').appendChild(arrowTopDecrease);
-	$('ContainerLvl2Right').appendChild(arrowRightIncrease);
-	$('ContainerLvl2Right').appendChild(arrowRightDecrease);
-	$('ContainerLvl2Left').appendChild(arrowLeftIncrease);
-	$('ContainerLvl2Left').appendChild(arrowLeftDecrease);	
-}
 
 
