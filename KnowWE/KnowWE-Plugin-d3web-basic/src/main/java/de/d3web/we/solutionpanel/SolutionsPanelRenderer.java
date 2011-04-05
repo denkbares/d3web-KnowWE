@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2010 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -32,6 +32,7 @@ import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
+import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
@@ -54,7 +55,7 @@ import de.d3web.we.utils.KnowWEUtils;
  * <li>@show_digits: 0..NUMBER of fractional digits to be shown
  * <li>@master: Name of the article with the knowledge base
  * </ul>
- * 
+ *
  * @author Joachim Baumeister (denkbares GmbH)
  * @created 15.10.2010
  */
@@ -249,7 +250,7 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 	 * Renders the string representation of the specified value. For a
 	 * {@link NumValue} the float is truncated to its integer value, when
 	 * possible.
-	 * 
+	 *
 	 * @created 19.10.2010
 	 * @param value the specified value
 	 * @return A string representation of the specified value.
@@ -271,6 +272,11 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 			else {
 				return "" + Math.round(numValue);
 			}
+		}
+		else if (value instanceof MultipleChoiceValue) {
+			String mcText = value.toString();
+			// remove the brackets
+			return mcText.substring(1, mcText.length() - 1);
 		}
 		else if (value instanceof Unknown || value instanceof UndefinedValue) return "-";
 		else return value.toString();
