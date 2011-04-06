@@ -280,3 +280,9 @@ ul.toolbar li:last-child {
 	margin-top: 20px;
 	margin-left: 25px;
 }
+div#resizeHandle{
+	height: 20px;
+	width: 20px;
+	cursor: move;
+	background-image: url(../image/handle.png);
+}

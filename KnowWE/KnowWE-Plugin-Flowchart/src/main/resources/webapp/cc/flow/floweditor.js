@@ -56,7 +56,86 @@ FlowEditor.prototype.showEditor = function(){
 	$('snapshot_prototype').createNode = function(flowchart, left, top) { FlowEditor.createActionNode(flowchart, left, top, {snapshot: 'Snapshot'}); };
 	
 	FlowEditor.createArrows();
+	FlowEditor.createResizeHandle();
 }
+
+FlowEditor.createResizeHandle = function() {
+	var handle = Builder.node('div', {
+		id : 'resizeHandle',
+		style: 'position: absolute; right: 0px; bottom: 0px;'
+	});
+	theFlowchart.getContentPane().appendChild(handle);
+	FlowEditor.DragCorner(theFlowchart.getContentPane(),'resizeHandle');
+}
+
+FlowEditor.repositionHandle = function() {
+	var handle = $('resizeHandle');
+	if (handle) {
+		handle.setStyle({
+	    	  right: '0px',
+	    	  bottom: '0px'
+		});
+	}
+}
+
+FlowEditor.DragCorner = function(container, handle) {
+    var container = $(container);
+    var handle = $(handle);
+    
+    /* Add property to container to store position variables */
+    container.moveposition = {x:0, y:0};
+    
+    function moveListener(event) {
+       /* Calculate how far the mouse moved */
+       var moved = {
+                   x:(event.pointerX() - container.moveposition.x),
+                   y:(event.pointerY() - container.moveposition.y)
+       };
+       
+       var max = theFlowchart.getMaxObjects();
+       max[0] += container.moveposition.x - theFlowchart.width + 50;
+       max[1] += container.moveposition.y - theFlowchart.height + 50;
+       
+       var newX = event.pointerX();
+       var newY = event.pointerY();
+       
+       
+       // if the container would be too close to the objects
+       if ((max[0] >= newX) && (moved.x < 0)) {
+    	   newX = max[0];
+    	   moved.x = 0;
+       }
+       if ((max[1] >= newY) && (moved.y < 0)) {
+    	   newY = max[1];
+    	   moved.y = 0;
+       }
+    	   
+       container.moveposition = {x:newX, y:newY};
+
+       theFlowchart.setSize(theFlowchart.width + moved.x, theFlowchart.height + moved.y);
+
+       handle.setStyle({
+    	  right: '0px',
+    	  bottom: '0px'
+       });
+       FlowEditor.rearrangeArrows();
+    }
+    
+    /* Listen for 'mouse down' on handle to start the move listener */
+    handle.observe('mousedown', function(event) {
+       /* Set starting x/y */
+       container.moveposition = {x:event.pointerX(),y:event.pointerY()};
+       /* Start listening for mouse move on body */
+       Event.observe(document.body,'mousemove',moveListener);
+       event.stop();
+    });
+    
+    /* Listen for 'mouse up' to cancel 'move' listener */
+    Event.observe(document.body,'mouseup', function(event) {
+       Event.stopObserving(document.body,'mousemove',moveListener);
+    });
+}
+ 
 
 FlowEditor.createArrows = function() {
 	
@@ -82,7 +161,7 @@ FlowEditor.createArrows = function() {
 		className : 'ContainerLvl1',
 		style : 'left: 1px; top:' + (verticalMid - 50) + 'px;'
 	}, [l2 = Builder.node('div', {
-		id : 'ContainerLvl2Left',
+		id : 'ContainerLvl2Left'
 	})]); 
 	
 	var arrowLeftIncrease = Builder.node('div', {
@@ -100,7 +179,7 @@ FlowEditor.createArrows = function() {
 		className : 'ContainerLvl1',
 		style: 'left: ' + (theFlowchart.width - 100) + 'px; top:' + (verticalMid -50) + 'px;'
 	}, [r2 = Builder.node('div', {
-		id : 'ContainerLvl2Right',
+		id : 'ContainerLvl2Right'
 	}) ]); 
 	
 	var arrowRightIncrease = Builder.node('div', {
@@ -118,7 +197,7 @@ FlowEditor.createArrows = function() {
 		className : 'ContainerLvl1',
 		style: 'left: ' + (horizontalMid - 50)  + 'px; top: 5px;'
 	}, [t2 = Builder.node('div', {
-		id : 'ContainerLvl2Top',
+		id : 'ContainerLvl2Top'
 	}) ]); 
 		
 	
@@ -136,7 +215,7 @@ FlowEditor.createArrows = function() {
 		className : 'ContainerLvl1',
 		style: 'left: ' + (horizontalMid - 50) + 'px; top: ' + (theFlowchart.height - 100) + 'px;'
 	}, [b2 = Builder.node('div', {
-		id : 'ContainerLvl2Bottom',
+		id : 'ContainerLvl2Bottom'
 	})]); 
 	
 	var arrowBottomIncrease = Builder.node('div', {
@@ -178,7 +257,6 @@ FlowEditor.createArrows = function() {
 }
 
 FlowEditor.arrowMinSpacing = 50;
-
 
 // move the nodes far enough away from the border, so the increase/decrease
 // buttons are not hidden
@@ -245,6 +323,7 @@ FlowEditor.increaseSize = function(direction) {
 		}
 	}
 	FlowEditor.rearrangeArrows();
+	FlowEditor.repositionHandle();
 }
 
 FlowEditor.decreaseSize = function(direction) {
@@ -288,6 +367,7 @@ FlowEditor.decreaseSize = function(direction) {
 		}
 	}
 	FlowEditor.rearrangeArrows();
+	FlowEditor.repositionHandle();
 
 }
 
@@ -296,6 +376,10 @@ FlowEditor.rearrangeArrows = function() {
 	var rightContainer = $('ContainerLvl1Right');
 	var upContainer = $('ContainerLvl1Top');
 	var downContainer = $('ContainerLvl1Bottom');
+	
+	if (!leftContainer || !rightContainer || !upContainer || !downContainer) {
+		return;
+	}
 	
 	var width = theFlowchart.width;
 	var height = theFlowchart.height;
@@ -325,7 +409,8 @@ FlowEditor.massSelectDown = function(event) {
 	
 	// prevent this event from taking over newly dragged in nodes
 	if (event.target.nodeName === 'INPUT'
-			|| event.target.nodeName === 'TEXTAREA') {
+			|| event.target.nodeName === 'TEXTAREA' 
+				|| event.target.id === 'resizeHandle') {
 		return;
 	}
 	
