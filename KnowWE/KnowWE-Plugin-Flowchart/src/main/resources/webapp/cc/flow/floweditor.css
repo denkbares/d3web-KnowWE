@@ -283,6 +283,6 @@ ul.toolbar li:last-child {
 div#resizeHandle{
 	height: 20px;
 	width: 20px;
-	cursor: move;
+	cursor: nw-resize;
 	background-image: url(../image/handle.png);
 }
