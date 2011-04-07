@@ -126,13 +126,13 @@ FlowEditor.DragCorner = function(container, handle) {
        /* Set starting x/y */
        container.moveposition = {x:event.pointerX(),y:event.pointerY()};
        /* Start listening for mouse move on body */
-       Event.observe(document.body,'mousemove',moveListener);
+       Event.observe(document,'mousemove',moveListener);
        event.stop();
     });
     
     /* Listen for 'mouse up' to cancel 'move' listener */
-    Event.observe(document.body,'mouseup', function(event) {
-       Event.stopObserving(document.body,'mousemove',moveListener);
+    Event.observe(document,'mouseup', function(event) {
+       Event.stopObserving(document,'mousemove',moveListener);
     });
 }
  
