@@ -72,6 +72,7 @@ import de.d3web.we.utils.KnowWEUtils;
 public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> {
 
 	public static final String ORIGIN = "diafluxorigin";
+	public static final String ICON = "diafluxicon";
 
 	private final List<Class<? extends Type>> filteredTypes =
 			new ArrayList<Class<? extends Type>>(0);
@@ -111,6 +112,9 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		flow.setAutostart(autostart);
 
 		flow.getInfoStore().addValue(Property.getProperty(ORIGIN, String.class), s.getID());
+
+		String icon = attributeMap.get("icon");
+		flow.getInfoStore().addValue(Property.getProperty(ICON, String.class), icon);
 
 		return errors;
 	}

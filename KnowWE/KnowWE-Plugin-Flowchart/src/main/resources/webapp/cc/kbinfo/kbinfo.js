@@ -425,6 +425,7 @@ KBInfo.Flowchart = function(xmlDom) {
 	KBInfo.InfoObject.call(this, xmlDom);
 	this.startNames = KBInfo._collectNodeValues(this.xmlDom, 'start');
 	this.exitNames = KBInfo._collectNodeValues(this.xmlDom, 'exit');
+	this.icon = this.xmlDom.getAttribute('icon');
 }
 
 /***/
@@ -443,7 +444,8 @@ KBInfo.Flowchart.prototype.getClassInstance = function() {
 }
 	
 KBInfo.Flowchart.prototype.getIconURL = function() {
-	return KBInfo.imagePath + 'flowchart.gif';
+	var iconName = this.icon || 'flowchart.gif'
+	return KBInfo.imagePath + iconName;
 }
 	
 KBInfo.Flowchart.getShortClassName = function() {

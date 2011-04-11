@@ -44,6 +44,7 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
+import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.diaFlux.flow.EndNode;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowSet;
@@ -53,6 +54,7 @@ import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.UserActionContext;
 import de.d3web.we.basic.WikiEnvironment;
 import de.d3web.we.basic.WikiEnvironmentManager;
+import de.d3web.we.flow.FlowchartSubTreeHandler;
 import de.d3web.we.user.UserContext;
 
 public class GetInfoObjects extends AbstractAction {
@@ -113,7 +115,7 @@ public class GetInfoObjects extends AbstractAction {
 	 * @created 18.03.2011
 	 * @param context
 	 * @param ids
-	 * @param buffer 
+	 * @param buffer
 	 */
 	public static void getInfoObjectsForIDs(UserActionContext context, String ids, StringBuffer buffer) {
 		appendHeader(context, buffer);
@@ -299,6 +301,13 @@ public class GetInfoObjects extends AbstractAction {
 		buffer.append(" id='").append(encodeXML(service.getId())).append("/").append(name).append(
 				"'");
 		buffer.append(" name='").append(encodeXML(name)).append("'");
+
+		String iconName = flow.getInfoStore().getValue(
+				Property.getProperty(FlowchartSubTreeHandler.ICON, String.class));
+		if (iconName != null && !iconName.isEmpty()) {
+			buffer.append(" icon='").append(encodeXML(iconName)).append("'");
+		}
+
 		buffer.append(">\n");
 		for (StartNode node : startNodes) {
 			buffer.append("\t\t<start>").append(encodeXML(node.getName())).append("</start>\n");
