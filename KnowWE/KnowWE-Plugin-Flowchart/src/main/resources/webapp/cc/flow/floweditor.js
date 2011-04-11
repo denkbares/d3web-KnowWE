@@ -801,6 +801,8 @@ Flowchart.prototype.toPreviewHTML = function(node) {
 	if (node.nodeName == '#text') return node.data;
 	if (node.style.display == 'none') return '';
 	if (node.style.visibility == 'hidden') return '';
+	if (node.className == 'ContainerLvl1') return '';
+	if (node.id.startsWith('resizeHandle')) return '';
 	var size = Element.getDimensions(node);
 	var html = '<' + node.nodeName; 
 	if (node.className)	html += ' class="' + node.className + '"';
