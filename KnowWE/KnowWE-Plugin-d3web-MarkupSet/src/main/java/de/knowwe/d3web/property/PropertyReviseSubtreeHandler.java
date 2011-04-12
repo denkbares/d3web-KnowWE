@@ -66,6 +66,14 @@ public class PropertyReviseSubtreeHandler extends D3webSubtreeHandler<PropertyTy
 			return MessageUtils.syntaxErrorAsList("Property value is missing for property "
 					+ property);
 		}
+		if (content.startsWith(PropertyType.ESCAPE) && content.endsWith(PropertyType.ESCAPE)) {
+			content = content.substring(PropertyType.ESCAPE.length(), content.length()
+					- PropertyType.ESCAPE.length());
+		}
+		else if (content.startsWith("\"") && content.endsWith("\"")) {
+			content = content.replaceAll("\\\\\"", "\"");
+		}
+
 		Locale locale = InfoStore.NO_LANGUAGE;
 		if (localeSection != null) {
 			locale = localeSection.get().getTermObject(article, localeSection);

@@ -18,7 +18,6 @@
  */
 package de.knowwe.d3web.property;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.terminology.Choice;
@@ -50,6 +49,8 @@ import de.d3web.we.utils.KnowWEUtils;
  * @created 10.11.2010
  */
 public class PropertyType extends AbstractType implements IncrementalMarker, IncrementalConstraint<PropertyType> {
+
+	public static final String ESCAPE = "\"\"\"";
 
 	/**
 	 * 
@@ -94,7 +95,8 @@ public class PropertyType extends AbstractType implements IncrementalMarker, Inc
 		// no " = and line breaks allowed, dots are allowed
 		String unquotedContent = "(?:[^\"=\\n\\r])+";
 		// starts and ends with """
-		String trippleQuoted = "\"\"\"(?:[^\"]|\"(?!\"\")(?s).)+\"\"\"";
+		String trippleQuoted = ESCAPE + "(?:[^" + ESCAPE.substring(0, 1) + "]|\"(?!"
+				+ ESCAPE.substring(1) + ")(?s).)+" + ESCAPE;
 		String content = "(" + quoted + "|" + trippleQuoted + "|" + unquotedContent + ")+";
 		String connector = "\\s*=\\s*";
 		String pattern = "^ *" + leftSide + connector + content;
