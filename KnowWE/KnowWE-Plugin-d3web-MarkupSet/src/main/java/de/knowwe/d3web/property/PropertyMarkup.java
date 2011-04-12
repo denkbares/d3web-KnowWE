@@ -21,7 +21,6 @@ package de.knowwe.d3web.property;
 import de.d3web.we.core.packaging.KnowWEPackageManager;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.core.TextLine;
 
 /**
  * Markup the add properties to an NamedObject
@@ -35,7 +34,7 @@ public class PropertyMarkup extends DefaultMarkupType {
 
 	static {
 		m = new DefaultMarkup("Property");
-		m.addContentType(new TextLine(new PropertyType()));
+		m.addContentType(new PropertyType());
 		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME, false);
 	}
 

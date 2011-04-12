@@ -18,6 +18,7 @@
  */
 package de.knowwe.d3web.property;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.terminology.Choice;
@@ -33,7 +34,6 @@ import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.StyleRenderer;
-import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.subtreeHandler.IncrementalConstraint;
 import de.d3web.we.object.ContentDefinition;
@@ -42,7 +42,6 @@ import de.d3web.we.object.LocaleDefinition;
 import de.d3web.we.object.PropertyReference;
 import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.utils.Patterns;
 
 /**
  * Adds the PropertyReviseSubtreeHandler to the Property line
@@ -83,19 +82,25 @@ public class PropertyType extends AbstractType implements IncrementalMarker, Inc
 	}
 
 	public PropertyType() {
-		setSectionFinder(new AllTextFinderTrimmed());
-		String quoted = Patterns.quoted;
-		// no " . # and = allowed
-		String unquotedName = "(?:[^\".=#])+";
+		// all quoted strings, " can be masked by \
+		// quoted strings need at least one char
+		String quoted = "(?:\"[^\"\\\\]+(?:\\\\.[^\"\\\\]*)*\")";
+		// no " . # = and line breaks allowed
+		String unquotedName = "(?:[^\".=#\\n\\r])+";
 		String name = "(?:" + quoted + "|" + unquotedName + ")";
 		String language = "(\\.\\w{2}(?:\\.\\w{2})?)?";
 		String idObject = "(" + name + "(?:#" + name + ")?" + ")";
 		String leftSide = idObject + "\\.(" + name + ")" + language;
-		// no " and = allowed, dots are allowed
-		String unquotedContent = "(?:[^\"=])+";
-		String content = "(" + quoted + "|" + unquotedContent + ")";
-		String pattern = leftSide + "\\s*=" + content;
-		Pattern p = Pattern.compile(pattern);
+		// no " = and line breaks allowed, dots are allowed
+		String unquotedContent = "(?:[^\"=\\n\\r])+";
+		// starts and ends with """
+		String trippleQuoted = "\"\"\"(?:[^\"]|\"(?!\"\")(?s).)+\"\"\"";
+		String content = "(" + quoted + "|" + trippleQuoted + "|" + unquotedContent + ")+";
+		String connector = "\\s*=\\s*";
+		String pattern = "^ *" + leftSide + connector + content;
+		Pattern p = Pattern.compile(pattern, Pattern.MULTILINE);
+
+		setSectionFinder(new RegexSectionFinder(p));
 
 		// Locale
 		LocaleDefinition ld = new LocaleDefinition();
@@ -104,7 +109,8 @@ public class PropertyType extends AbstractType implements IncrementalMarker, Inc
 
 		// Content
 		ContentDefinition cd = new ContentDefinition();
-		cd.setSectionFinder(new RegexSectionFinder(Pattern.compile("=\\s*" + content), 1));
+		cd.setSectionFinder(new RegexSectionFinder(Pattern.compile(connector + content), 1));
+		cd.setCustomRenderer(StyleRenderer.PROPERTY);
 		this.childrenTypes.add(cd);
 
 		// Property
@@ -115,6 +121,7 @@ public class PropertyType extends AbstractType implements IncrementalMarker, Inc
 		// NamedObject
 		IDObjectReference idor = new IDObjectReference();
 		idor.setSectionFinder(new RegexSectionFinder(Pattern.compile(idObject + "\\."), 1));
+
 		idor.setCustomRenderer(new PropertyIDObbjetReferenceRenderer());
 		this.childrenTypes.add(idor);
 
