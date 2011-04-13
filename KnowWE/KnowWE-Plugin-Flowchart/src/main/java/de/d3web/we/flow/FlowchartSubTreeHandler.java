@@ -114,7 +114,9 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		flow.getInfoStore().addValue(Property.getProperty(ORIGIN, String.class), s.getID());
 
 		String icon = attributeMap.get("icon");
-		flow.getInfoStore().addValue(Property.getProperty(ICON, String.class), icon);
+		if (icon != null) {
+			flow.getInfoStore().addValue(Property.getProperty(ICON, String.class), icon);
+		}
 
 		return errors;
 	}
