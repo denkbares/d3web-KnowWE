@@ -135,11 +135,11 @@ public class FlowchartDiffProvider implements DiffProvider {
 				String changedFlowchartID = changedFlowchart(p1, p2);
 
 				String v1 = p1.substring(p1.indexOf("<flowchart fcid=\"" + changedFlowchartID));
-				v1 = v1.substring(0, v1.indexOf("</preview></flowchart>"))
+				v1 = v1.substring(0, v1.indexOf("</preview>"))
 						+ "</preview></flowchart>";
 
 				String v2 = p2.substring(p2.indexOf("<flowchart fcid=\"" + changedFlowchartID));
-				v2 = v2.substring(0, v2.indexOf("</preview></flowchart>"))
+				v2 = v2.substring(0, v2.indexOf("</preview>"))
 						+ "</preview></flowchart>";
 
 				List<FlowchartNode> f1 = getNodes(v1);
@@ -234,7 +234,8 @@ public class FlowchartDiffProvider implements DiffProvider {
 					"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objecttree.css'></link>"
 					+
 					"<link rel='stylesheet' type='text/css' href='cc/flow/flowchart.css'></link>" +
-					"<link rel='stylesheet' type='text/css' href='cc/flow/floweditor.css'></link>" +
+					// "<link rel='stylesheet' type='text/css' href='cc/flow/floweditor.css'></link>"
+					// +
 					"<link rel='stylesheet' type='text/css' href='cc/flow/guard.css'></link>" +
 					"<link rel='stylesheet' type='text/css' href='cc/flow/node.css'></link>" +
 					"<link rel='stylesheet' type='text/css' href='cc/flow/nodeeditor.css'></link>" +
