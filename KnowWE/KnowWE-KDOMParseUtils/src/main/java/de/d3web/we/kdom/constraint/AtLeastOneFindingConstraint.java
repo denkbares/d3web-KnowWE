@@ -22,8 +22,8 @@ package de.d3web.we.kdom.constraint;
 
 import java.util.List;
 
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class AtLeastOneFindingConstraint implements SectionFinderConstraint {
@@ -39,14 +39,14 @@ public class AtLeastOneFindingConstraint implements SectionFinderConstraint {
 
 	@Override
 	public <T extends Type> void filterCorrectResults(
-			List<SectionFinderResult> found, Section<?> father, Class<T> type) {
+			List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
 		// one cannot do anything
 
 	}
 
 	@Override
 	public <T extends Type> boolean satisfiesConstraint(List<SectionFinderResult> found,
-			Section<?> father, Class<T> type) {
+			Section<?> father, Class<T> type, String text) {
 		if (found.size() >= 1) {
 			return true;
 		}

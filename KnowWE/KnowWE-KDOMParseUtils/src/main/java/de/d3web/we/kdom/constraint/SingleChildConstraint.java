@@ -20,12 +20,11 @@
 
 package de.d3web.we.kdom.constraint;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class SingleChildConstraint implements SectionFinderConstraint {
@@ -41,22 +40,16 @@ public class SingleChildConstraint implements SectionFinderConstraint {
 
 	@Override
 	public <T extends Type> void filterCorrectResults(
-			List<SectionFinderResult> found, Section<?> father, Class<T> type) {
+			List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
 
-		if (!satisfiesConstraint(found, father, type)) {
+		if (!satisfiesConstraint(found, father, type, text)) {
 			found.clear();
-		}
-		else {
-			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			SectionFinderResult e = found.get(0);
-			result.clear();
-			result.add(e);
 		}
 	}
 
 	@Override
 	public <T extends Type> boolean satisfiesConstraint(List<SectionFinderResult> found,
-			Section<?> father, Class<T> type) {
+			Section<?> father, Class<T> type, String text) {
 		List<Section<T>> findChildrenOfType = Sections.findChildrenOfType(father, type);
 		if (findChildrenOfType != null && findChildrenOfType.size() > 0) {
 			return false;

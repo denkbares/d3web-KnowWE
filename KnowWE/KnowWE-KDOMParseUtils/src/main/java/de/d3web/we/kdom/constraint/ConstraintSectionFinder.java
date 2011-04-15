@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -86,7 +86,7 @@ public class ConstraintSectionFinder implements SectionFinder {
 		List<SectionFinderResult> result = finder.lookForSections(text, father, type);
 		if (result != null) {
 			Collections.sort(result);
-			applyConstraints(result, father, type.getClass());
+			applyConstraints(result, father, type.getClass(), text);
 		}
 
 		return result;
@@ -102,13 +102,13 @@ public class ConstraintSectionFinder implements SectionFinder {
 	 */
 
 	private void applyConstraints(List<SectionFinderResult> results, Section<?> father,
-			Class<? extends Type> ob) {
+			Class<? extends Type> ob, String text) {
 
 		if (constraintList == null) return;
 
 		for (SectionFinderConstraint sectionFinderConstraint : constraintList) {
-			if (!sectionFinderConstraint.satisfiesConstraint(results, father, ob)) {
-				sectionFinderConstraint.filterCorrectResults(results, father, ob);
+			if (!sectionFinderConstraint.satisfiesConstraint(results, father, ob, text)) {
+				sectionFinderConstraint.filterCorrectResults(results, father, ob, text);
 			}
 		}
 
