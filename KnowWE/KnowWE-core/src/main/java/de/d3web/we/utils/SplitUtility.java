@@ -110,6 +110,31 @@ public class SplitUtility {
 	}
 
 	/**
+	 * return whether some position in a string is in quotes or not
+	 * 
+	 * @param text
+	 * @param symbol
+	 * @return
+	 */
+	public static boolean isQuoted(String text, int index) {
+		boolean quoted = false;
+		// scanning the text
+		for (int i = 0; i < text.length(); i++) {
+
+			// toggle quote state
+			if (text.charAt(i) == '"') {
+				quoted = !quoted;
+			}
+			// when symbol discovered return quoted
+			if ((i == index)) {
+				return quoted;
+			}
+
+		}
+		return false;
+	}
+
+	/**
 	 * scans the 'text' for the last occurrence of 'symbol' which is not
 	 * embraced in quotes ('"')
 	 * 
