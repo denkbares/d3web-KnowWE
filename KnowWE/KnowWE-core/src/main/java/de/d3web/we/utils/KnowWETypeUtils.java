@@ -23,8 +23,10 @@ package de.d3web.we.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Type;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 
 /**
  * This class offers some methods for the KnowWETypeBrowser and the
@@ -56,32 +58,23 @@ public class KnowWETypeUtils {
 		return cleaned;
 	}
 
-	// /**
-	// * Get the father element of the current cell content section. Search as
-	// long as the section
-	// * is instance of AbstractXMLObjectType. Used to get the
-	// <code>Table</code> section itself.
-	// *
-	// * @param child
-	// * @return
-	// */
-	// @Deprecated
-	// public static Section getAncestorOfType(Section child, String classname)
-	// {
-	// if( child == null )
-	// return null;
-	//		
-	// try {
-	// if( Class.forName( classname ).isAssignableFrom(
-	// child.get().getClass() ) ) return child;
-	// } catch (ClassNotFoundException e) {
-	// e.printStackTrace();
-	// return null;
-	// }
-	//		 
-	// return getAncestorOfType(child.getFather(), classname);
-	// }
-
+	/**
+	 * Injects a given renderer to a subtype in the hierarchy
+	 * 
+	 * @created 15.04.2011
+	 * @param root
+	 * @param clazz
+	 * @param renderer
+	 */
+	public static void injectRendererToSuccessorType(Type root, Class<? extends Type> clazz, KnowWEDomRenderer<?> renderer) {
+		KnowWETypeSet set = new KnowWETypeSet();
+		getAllChildrenTypesRecursive(root, set);
+		for (Type t : set.toList()) {
+			if (t.isAssignableFromType(clazz)) {
+				((AbstractType) t).setCustomRenderer(renderer);
+			}
+		}
+	}
 	/**
 	 * Getting of all ChildrenTypes of a Type.
 	 * 

@@ -125,6 +125,7 @@ public class DashTreeUtils {
 	 * Delivers the (dash-)level of the element by counting leading '-'
 	 * 
 	 * @param s
+	 *            Only works for DashSubtree oder DashTreeElement sections
 	 * @return
 	 */
 	public static int getDashLevel(Section<?> s) {
