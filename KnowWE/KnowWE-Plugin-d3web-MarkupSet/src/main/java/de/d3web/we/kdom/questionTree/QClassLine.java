@@ -31,6 +31,9 @@ import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
+import de.d3web.we.kdom.constraint.SingleChildConstraint;
+import de.d3web.we.kdom.constraint.UnquotedConstraint;
 import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
@@ -69,7 +72,10 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 	static class QuestionTreeQuestionnaireDefinition extends QuestionnaireDefinition {
 
 		public QuestionTreeQuestionnaireDefinition() {
-			setSectionFinder(new AllTextFinderTrimmed());
+			ConstraintSectionFinder csf = new ConstraintSectionFinder(
+					new AllTextFinderTrimmed());
+			csf.addConstraint(SingleChildConstraint.getInstance());
+			setSectionFinder(csf);
 		}
 
 		@Override
@@ -184,7 +190,11 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 
 		public InitNumber() {
 
-			this.setSectionFinder(new RegexSectionFinder("#\\d*"));
+			ConstraintSectionFinder initNumberFinder = new ConstraintSectionFinder(
+					new RegexSectionFinder("#\\d*"));
+			initNumberFinder.addConstraint(UnquotedConstraint.getInstance());
+			initNumberFinder.addConstraint(SingleChildConstraint.getInstance());
+			this.setSectionFinder(initNumberFinder);
 
 			this.addSubtreeHandler(new D3webSubtreeHandler<InitNumber>() {
 
