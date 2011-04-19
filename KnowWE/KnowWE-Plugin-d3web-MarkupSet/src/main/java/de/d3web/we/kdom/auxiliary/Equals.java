@@ -19,14 +19,8 @@
  */
 package de.d3web.we.kdom.auxiliary;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Type;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.sectionFinder.UnquotedExpressionFinder;
 
 /**
  * @author Johannes Dienst
@@ -39,20 +33,7 @@ public class Equals extends AbstractType {
 
 	@Override
 	public void init() {
-		this.sectionFinder = new EqualsSectionFinder();
+		this.sectionFinder = new UnquotedExpressionFinder(SIGN);
 	}
 
-	private class EqualsSectionFinder implements SectionFinder {
-		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-
-			if (text.length() == 0) return null;
-			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			int start = text.indexOf(SIGN);
-			if (start == -1) return null;
-			result.add(new SectionFinderResult(start, start + 1));
-			return result;
-		}
-
-	}
 }
