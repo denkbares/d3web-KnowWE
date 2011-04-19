@@ -25,7 +25,6 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
-import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -81,8 +80,8 @@ public class IDObjectReference extends D3webTermReference<NamedObject> {
 			}
 			KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(
 					article.getWeb()).getKB(article.getTitle());
-			NamedObject idObject = KnowledgeBaseUtils.findTerminologyObjectByName(
-					idObjectName, kb);
+			NamedObject idObject = kb.getManager().search(idObjectName);
+			// KnowledgeBaseUtils.findTerminologyObjectByName(idObjectName, kb);
 			if (idObject instanceof QuestionChoice && choiceString != null) {
 				QuestionChoice qc = (QuestionChoice) idObject;
 				idObject = null;
