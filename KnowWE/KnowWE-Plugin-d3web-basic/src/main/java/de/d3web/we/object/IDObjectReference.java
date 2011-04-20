@@ -18,10 +18,13 @@
  */
 package de.d3web.we.object;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -80,8 +83,7 @@ public class IDObjectReference extends D3webTermReference<NamedObject> {
 			}
 			KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(
 					article.getWeb()).getKB(article.getTitle());
-			NamedObject idObject = kb.getManager().search(idObjectName);
-			// KnowledgeBaseUtils.findTerminologyObjectByName(idObjectName, kb);
+			NamedObject idObject = findTerminologyObjectByName(idObjectName, kb);
 			if (idObject instanceof QuestionChoice && choiceString != null) {
 				QuestionChoice qc = (QuestionChoice) idObject;
 				idObject = null;
@@ -92,6 +94,27 @@ public class IDObjectReference extends D3webTermReference<NamedObject> {
 				}
 			}
 			return idObject;
+		}
+		return null;
+	}
+
+	/**
+	 * Finds the {@link TerminologyObject} with the specified name. This method
+	 * is case insensitive
+	 * 
+	 * @created 10.11.2010
+	 * @param name Name of the {@link TerminologyObject}
+	 * @return {@link TerminologyObject} with the specified name
+	 */
+	private static TerminologyObject findTerminologyObjectByName(String name, KnowledgeBase knowledgeBase) {
+		List<TerminologyObject> objects = new LinkedList<TerminologyObject>();
+		objects.addAll(knowledgeBase.getManager().getQContainers());
+		objects.addAll(knowledgeBase.getManager().getSolutions());
+		objects.addAll(knowledgeBase.getManager().getQuestions());
+		for (TerminologyObject object : objects) {
+			if (object.getName().equalsIgnoreCase(name)) {
+				return object;
+			}
 		}
 		return null;
 	}
