@@ -27,6 +27,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.d3web.core.utilities.Pair;
 import de.d3web.we.ci4ke.handling.CIConfig;
@@ -134,6 +136,11 @@ public class CIBuilder {
 					// store this
 					futureResults.add(new Pair<String, Future<CITestResult>>(testName, res));
 				}
+			}
+			else {
+				// TODO here is some feedback inside the wiki necessary
+				Logger.getLogger(CIBuilder.class.getName()).log(Level.WARNING,
+						"CITest class not found: '" + testName + "'");
 			}
 		}
 

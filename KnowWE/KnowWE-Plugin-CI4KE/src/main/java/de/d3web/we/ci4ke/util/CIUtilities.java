@@ -37,8 +37,8 @@ import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.d3web.we.ci4ke.testing.CITest;
-import de.d3web.we.ci4ke.testing.DynamicCITestManager;
 import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.testing.DynamicCITestManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -216,6 +216,8 @@ public class CIUtilities {
 				}
 			}
 			catch (ClassNotFoundException e1) {
+				Logger.getLogger(CIUtilities.class.getName()).log(Level.WARNING,
+						"CITest class not found: '" + testClassName + "'");
 			}
 		}
 
