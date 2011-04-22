@@ -175,7 +175,7 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 			PluginEntry pluginEntry = pc.getPluginEntry(PSMethodXCL.PLUGIN_ID);
 			if (pluginEntry == null) {
 				Plugin plugin = PluginManager.getInstance().getPlugin(PSMethodXCL.PLUGIN_ID);
-				pluginEntry = new PluginEntry(plugin, false, true);
+				pluginEntry = new PluginEntry(plugin);
 				pc.addEntry(pluginEntry);
 			}
 
