@@ -42,7 +42,6 @@ import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.d3web.we.terminology.TerminologyHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.MessageUtils;
@@ -69,6 +68,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 	public abstract QuestionType getQuestionType(Section<QuestionDefinition> s);
 
+	@SuppressWarnings("rawtypes")
 	public abstract Section<? extends QASetDefinition> getParentQASetSection(Section<? extends QuestionDefinition> qdef);
 
 	public abstract int getPosition(Section<QuestionDefinition> s);
@@ -83,14 +83,15 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			Section<QuestionDefinition> qidSection = (s);
 			String name = qidSection.get().getTermName(qidSection);
 
-			TerminologyHandler tHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
-
-			if (!tHandler.registerTermDefinition(article, s)) {
-				return new ArrayList<KDOMReportMessage>(0);
+			boolean alreadyRegistered = false;
+			if (!KnowWEUtils.getTerminologyHandler(article.getWeb())
+					.registerTermDefinition(article, s)) {
+				alreadyRegistered = true;
 			}
 
 			KnowledgeBase kb = getKB(article);
 
+			@SuppressWarnings("rawtypes")
 			Section<? extends QASetDefinition> parentQASetSection =
 					s.get().getParentQASetSection(s);
 
@@ -98,7 +99,14 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			if (parentQASetSection != null) {
 				parent = (QASet) parentQASetSection.get().getTermObject(article, parentQASetSection);
 			}
-			if (parent == null) parent = kb.getRootQASet();
+			if (parent == null) {
+				parent = kb.getRootQASet();
+			} else {
+				if (alreadyRegistered) {
+					parent.addChild(s.get().getTermObject(article, s));
+					return new ArrayList<KDOMReportMessage>(0);
+				}
+			}
 
 			QuestionType questionType = qidSection.get().getQuestionType(
 					qidSection);
