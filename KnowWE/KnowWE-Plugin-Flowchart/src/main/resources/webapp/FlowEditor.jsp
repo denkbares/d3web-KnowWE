@@ -1,5 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="de.d3web.plugin.Extension"%>
+<%@ page import="de.d3web.plugin.JPFPluginManager"%>
 <%@ page import="de.d3web.we.kdom.Section"%>
 <%@ page import="de.d3web.we.kdom.KnowWEArticle"%>
 <%@ page import="de.d3web.we.flow.type.DiaFluxType"%>
@@ -102,6 +104,22 @@
 	<script src="cc/flow/nodeeditor.js" type="text/javascript"></script>
 	<script src="cc/flow/router.js" type="text/javascript"></script>
 	
+<%
+	Extension[] extensions = JPFPluginManager.getInstance().getExtensions(DiaFluxEditorEnhancement.PLUGIN_ID, DiaFluxEditorEnhancement.EXTENSION_POINT_ID);
+	for (Extension extension : extensions){
+		DiaFluxEditorEnhancement enh = (DiaFluxEditorEnhancement) extension.getNewInstance();
+		
+		for (String script : enh.getScripts()) {
+			out.println("<script src='" + script + "' type='text/javascript'></script>");
+		}
+
+		for (String style : enh.getStylesheets()) {
+			out.println("<link rel='stylesheet' type='text/css' href='" + style + "'></link>");
+		}
+		
+	}
+
+%>	
 	
 	<link rel="stylesheet" type="text/css" href="cc/kbinfo/dropdownlist.css"></link>
 	<link rel="stylesheet" type="text/css" href="cc/kbinfo/objectselect.css"></link>
@@ -157,11 +175,11 @@
 		</div>	
 	</div>	
 	<ul class="toolbar">
-		<li class="icon NodePrototype" id="decision_prototype" title="Action node" style="background-image:url(cc/image/node_decorators/decision.png);"></li><!--
-	  --><li class="icon NodePrototype" id="start_prototype" title="Start node" style="background-image:url(cc/image/node_decorators/start.png);"></li><!--
-	  --><li class="icon NodePrototype" id="exit_prototype" title="Exit node" style="background-image:url(cc/image/node_decorators/exit.png);"></li><!--
-	  --><li class="icon NodePrototype" id="comment_prototype" title="Comment node" style="background-image:url(cc/image/node_decorators/comment.png);"></li><!--
-	  --><li class="icon NodePrototype" id="snapshot_prototype" title="Snapshot node" style="background-image:url(cc/image/node_decorators/snapshot.png);"></li><!--
+		<li class="iconsmall NodePrototype" id="decision_prototype" title="Action node" style="background-image:url(cc/image/node_decorators/decision.png);"></li><!--
+	  --><li class="iconsmall NodePrototype" id="start_prototype" title="Start node" style="background-image:url(cc/image/node_decorators/start.png);"></li><!--
+	  --><li class="iconsmall NodePrototype" id="exit_prototype" title="Exit node" style="background-image:url(cc/image/node_decorators/exit.png);"></li><!--
+	  --><li class="iconsmall NodePrototype" id="comment_prototype" title="Comment node" style="background-image:url(cc/image/node_decorators/comment.png);"></li><!--
+	  --><li class="iconsmall NodePrototype" id="snapshot_prototype" title="Snapshot node" style="background-image:url(cc/image/node_decorators/snapshot.png);"></li><!--
 	  -->
 	</ul>
 </div>

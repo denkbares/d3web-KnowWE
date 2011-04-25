@@ -52,6 +52,14 @@ ul.toolbar li.icon {
     background-position: 5px center;
 }
 
+ul.toolbar li.iconsmall {
+	height:32px;
+    min-width: 37px; 
+    /*padding-right: 2px;*/
+    background-repeat: no-repeat;
+    background-position: 12px center;
+}
+
 ul.toolbar li.selected, ul.toolbar li:hover {
     background-color: rgba(80, 80, 80, 0.25);
 }
