@@ -494,6 +494,23 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		
+		<profile>
+			<id>proketproperties-plugin</id>
+			<activation>
+				<property>
+					<name>proketproperties-plugin</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>d3web-Plugin-ProKEtProperties</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 
 		<profile>
 			<id>denkbares</id>
