@@ -20,6 +20,7 @@
 
 package de.d3web.we.flow.type;
 
+import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.xml.AbstractXMLType;
 import de.d3web.we.object.QuestionReference;
 
@@ -45,7 +46,8 @@ public class DecisionType extends AbstractXMLType {
 
 	@Override
 	protected void init() {
-
-		addChildType(new QuestionReference());
+		QuestionReference questionReference = new QuestionReference();
+		questionReference.setSectionFinder(new AllTextFinderTrimmed());
+		addChildType(questionReference);
 	}
 }
