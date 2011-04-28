@@ -27,7 +27,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.LinkedList;
 
-public class Utils {
+public class TestUtils {
 
 	public static String readBytes(Reader r) {
 		int zeichen = 0;

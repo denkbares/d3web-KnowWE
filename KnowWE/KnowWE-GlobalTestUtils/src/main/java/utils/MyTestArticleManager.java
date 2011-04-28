@@ -56,7 +56,7 @@ public class MyTestArticleManager {
 
 		if (!getInstance().articles.containsKey(filename)) {
 			// Read File containing content
-			String content = Utils.readTxtFile(filename);
+			String content = TestUtils.readTxtFile(filename);
 			KnowWEArticle article = createArcticleFromSourceFile(content, filename);
 			getInstance().articles.put(filename, article);
 
