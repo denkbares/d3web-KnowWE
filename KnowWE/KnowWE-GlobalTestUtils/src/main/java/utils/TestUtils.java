@@ -25,7 +25,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
+
+import de.d3web.we.action.ActionContext;
+import de.d3web.we.action.UserActionContext;
+import de.d3web.we.core.KnowWEAttributes;
+import de.d3web.we.core.KnowWEEnvironment;
 
 public class TestUtils {
 
@@ -112,5 +119,24 @@ public class TestUtils {
 			e.printStackTrace();
 		}
 		return inContent.toString();
+	}
+
+	/**
+	 * Creates an @link{UserActionContext} for test purposes. Both parameters
+	 * are optional (in case you don't need the Action...)
+	 * 
+	 * @created Apr 28, 2011
+	 * @param actionName <strong>optional:</strong> The name of the desired
+	 *        Action
+	 * @param path <strong>optional:</strong> special path (very unlikely that
+	 *        you need this)
+	 * @return
+	 */
+	public static UserActionContext createTestActionContext(String actionName, String path) {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put(KnowWEAttributes.WEB, KnowWEEnvironment.DEFAULT_WEB);
+		map.put(KnowWEAttributes.USER, "Test User");
+		return new ActionContext(actionName != null ? actionName : "", path != null ? path : "",
+				map, null, null, null, null);
 	}
 }
