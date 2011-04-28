@@ -34,7 +34,7 @@ import de.d3web.we.kdom.Type;
 public class AllTextSectionFinder implements SectionFinder {
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		if (text.length() > 0) {
 			return SectionFinderResult.createSingleItemList(new SectionFinderResult(0,
 					text.length()));
