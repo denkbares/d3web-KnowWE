@@ -30,6 +30,8 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.Type;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -59,10 +61,11 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 		Question q = qRef.get().getTermObject(article, qRef);
 
 		if (!(q instanceof QuestionNum)) {
-			// TODO some reasonable error handling here!
+			KDOMReportMessage.storeSingleError(article, s, this.getClass(), new SimpleMessageError(
+					"The question '" + qRef.get().getTermName(qRef) + "' must be numerical."));
 		}
-
-		if (number1 != null && number2 != null && q != null && q instanceof QuestionNum) {
+		else if (number1 != null && number2 != null && q != null && q instanceof QuestionNum) {
+			KDOMReportMessage.clearMessages(article, s, this.getClass());
 			return new CondNumIn((QuestionNum) q, number1, number2);
 		}
 		return null;

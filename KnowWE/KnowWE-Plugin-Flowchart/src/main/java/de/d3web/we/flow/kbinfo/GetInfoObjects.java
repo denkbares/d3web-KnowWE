@@ -151,13 +151,14 @@ public class GetInfoObjects extends AbstractAction {
 		WikiEnvironment env = WikiEnvironmentManager.getInstance().getEnvironments(web);
 		KnowledgeBase service = env.getService(serviceID);
 
-		if (service == null) {
-			// it is possible (and allowed) that an article has no
-			// KnowledgeService
-			// but (!): we do only list those having articles!
-			// TODO: log a warning here
-		}
-		else if (objectID == null) {
+		// if (service == null) {
+		// it is possible (and allowed) that an article has no
+		// KnowledgeService
+		// but (!): we do only list those having articles!
+		// TODO: log a warning here
+		// }
+		// else
+		if (objectID == null) {
 			// we want to have the article itself
 			appendInfoObject(web, service, buffer);
 		}

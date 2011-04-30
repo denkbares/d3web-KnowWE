@@ -40,6 +40,7 @@ import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
@@ -101,7 +102,8 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			}
 			if (parent == null) {
 				parent = kb.getRootQASet();
-			} else {
+			}
+			else {
 				if (alreadyRegistered) {
 					parent.addChild(s.get().getTermObject(article, s));
 					return new ArrayList<KDOMReportMessage>(0);
@@ -143,26 +145,22 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 				q = new QuestionText(parent, name);
 			}
 			else {
-				// no valid type...
+				return MessageUtils.asList(new SimpleMessageError(
+						"No valid question type found for question '" + name + "'"));
+
 			}
 
-			if (q != null) {
-				// ok everything went well
-				// set position right in case this is an incremental update
-				if (!article.isFullParse()) {
-					parent.addChild(q, s.get().getPosition(s));
-				}
-
-				// store object in section
-				qidSection.get().storeTermObject(article, qidSection, q);
-
-				// return success message
-				return MessageUtils.objectCreatedAsList(q);
+			// ok everything went well
+			// set position right in case this is an incremental update
+			if (!article.isFullParse()) {
+				parent.addChild(q, s.get().getPosition(s));
 			}
-			else {
-				return Arrays.asList((KDOMReportMessage) new ObjectCreationError(name,
-						this.getClass()));
-			}
+
+			// store object in section
+			qidSection.get().storeTermObject(article, qidSection, q);
+
+			// return success message
+			return MessageUtils.objectCreatedAsList(q);
 
 		}
 

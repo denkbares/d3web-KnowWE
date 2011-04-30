@@ -116,14 +116,14 @@ class FindingFinder implements SectionFinder {
 			String answer = list.get(1);
 			boolean isNumber = false;
 			try {
-				Double d = Double.parseDouble(answer);
-				if (answer.contains("d") || answer.contains("D")) {
-					// TODO find better way to check
-					// '5D' is parsed to a valid double '5.0'
-				}
-				else {
-					isNumber = true;
-				}
+				Double.parseDouble(answer);
+				// if (answer.contains("d") || answer.contains("D")) {
+				// TODO find better way to check
+				// '5D' is parsed to a valid double '5.0'
+				// }
+				// else {
+				isNumber = true;
+				// }
 			}
 			catch (NumberFormatException e) {
 			}
@@ -136,4 +136,3 @@ class FindingFinder implements SectionFinder {
 	}
 
 }
-

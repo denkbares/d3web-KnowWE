@@ -78,14 +78,14 @@ public class TagRenderer extends KnowWEDomRenderer<TagHandlerType> {
 					if (defaultTagHandlers.containsKey(key)) {
 						TagHandler handler = defaultTagHandlers.get(key);
 						boolean autoUpdate = handler.requiresAutoUpdate();
-						if (autoUpdate) {
-							// buffi.append(KnowWEUtils.maskHTML(
-							// "<span class=\"ReRenderSectionMarker\"" +
-							// " id=\"" + id + "\"" +
-							// " rel=\"{id:'" + id +
-							// "'}\"" +
-							// ">"));
-						}
+						// if (autoUpdate) {
+						// buffi.append(KnowWEUtils.maskHTML(
+						// "<span class=\"ReRenderSectionMarker\"" +
+						// " id=\"" + id + "\"" +
+						// " rel=\"{id:'" + id +
+						// "'}\"" +
+						// ">"));
+						// }
 						String wrappingTag = "div";
 						if (attValues.containsKey("wrap")) {
 							if (attValues.get("wrap").contains("span")) {
@@ -98,9 +98,9 @@ public class TagRenderer extends KnowWEDomRenderer<TagHandlerType> {
 								handler.render(article, sec, user, attValues);
 						buffi.append(resultText).append(" \n");
 						buffi.append(KnowWEUtils.maskHTML("</" + wrappingTag + ">"));
-						if (autoUpdate) {
-							// buffi.append(KnowWEUtils.maskHTML("</span>"));
-						}
+						// if (autoUpdate) {
+						// buffi.append(KnowWEUtils.maskHTML("</span>"));
+						// }
 					}
 				}
 
