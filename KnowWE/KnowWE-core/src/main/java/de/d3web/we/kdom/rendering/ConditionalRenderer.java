@@ -27,6 +27,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.user.UserContext;
 
+@SuppressWarnings("rawtypes")
 public abstract class ConditionalRenderer extends KnowWEDomRenderer {
 
 	protected List<KnowWEDomRenderer> conditionalRenderers = new ArrayList<KnowWEDomRenderer>();
@@ -40,9 +41,7 @@ public abstract class ConditionalRenderer extends KnowWEDomRenderer {
 		StringBuilder b = new StringBuilder();
 		for (KnowWEDomRenderer r : conditionalRenderers) {
 			r.render(article, sec, user, b);
-			// TODO is test null or "". Johannes
-			String test = b.toString();
-			if (test != null || test.equals("")) {
+			if (b.length() == 0) {
 				return;
 			}
 		}

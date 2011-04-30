@@ -98,14 +98,25 @@ public class RuleContentType extends AbstractType {
 		List<Type> termConds = new ArrayList<Type>();
 
 		// add all the various allowed TerminalConditions here
+		boolean notAttached = false;
 		try {
 			// TODO remove this evil workaround
 			// when updating KnowWE architecture
-			termConds.add((Type) Class.forName("cc.knowwe.tdb.EvalConditionType").newInstance());
+			this.childrenTypes.add((Type) Class.forName(
+						"cc.knowwe.tdb.EvalAssignActionType").newInstance());
 		}
-		catch (Throwable e) {
+		catch (InstantiationException e) {
+			notAttached = true;
+		}
+		catch (IllegalAccessException e) {
+			notAttached = true;
+		}
+		catch (ClassNotFoundException e) {
+			notAttached = true;
+		}
+		if (notAttached) {
 			Logger.getLogger("KnowWE").log(Level.INFO,
-					"cc.knowwe.tdb.EvalConditionType is not attached");
+					"cc.knowwe.tdb.EvalAssignActionType is not attached");
 		}
 		termConds.add(new SolutionStateCond());
 		termConds.add(new UserRatingConditionType());

@@ -34,16 +34,27 @@ public class RuleAction extends AbstractType {
 	@Override
 	protected void init() {
 		sectionFinder = new AllTextSectionFinder();
+		boolean notAttached = false;
 		try {
 			// TODO remove this evil workaround
 			// when updating KnowWE architecture
 			this.childrenTypes.add((Type) Class.forName(
-					"cc.knowwe.tdb.EvalAssignActionType").newInstance());
+						"cc.knowwe.tdb.EvalAssignActionType").newInstance());
 		}
-		catch (Throwable e) {
+		catch (InstantiationException e) {
+			notAttached = true;
+		}
+		catch (IllegalAccessException e) {
+			notAttached = true;
+		}
+		catch (ClassNotFoundException e) {
+			notAttached = true;
+		}
+		if (notAttached) {
 			Logger.getLogger("KnowWE").log(Level.INFO,
 					"cc.knowwe.tdb.EvalAssignActionType is not attached");
 		}
+
 		EndLineComment comment = new EndLineComment();
 		comment.setCustomRenderer(StyleRenderer.COMMENT);
 		this.childrenTypes.add(comment);
