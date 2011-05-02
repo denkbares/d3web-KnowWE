@@ -102,8 +102,7 @@ public class RuleContentType extends AbstractType {
 		try {
 			// TODO remove this evil workaround
 			// when updating KnowWE architecture
-			this.childrenTypes.add((Type) Class.forName(
-						"cc.knowwe.tdb.EvalAssignActionType").newInstance());
+			termConds.add((Type) Class.forName("cc.knowwe.tdb.EvalConditionType").newInstance());
 		}
 		catch (InstantiationException e) {
 			notAttached = true;
@@ -116,7 +115,7 @@ public class RuleContentType extends AbstractType {
 		}
 		if (notAttached) {
 			Logger.getLogger("KnowWE").log(Level.INFO,
-					"cc.knowwe.tdb.EvalAssignActionType is not attached");
+					"cc.knowwe.tdb.EvalConditionType is not attached");
 		}
 		termConds.add(new SolutionStateCond());
 		termConds.add(new UserRatingConditionType());

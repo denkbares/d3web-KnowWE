@@ -52,8 +52,8 @@ public class GuardType extends AbstractXMLType {
 		try {
 			// TODO remove this evil workaround
 			// when updating KnowWE architecture
-			this.childrenTypes.add((Type) Class.forName(
-						"cc.knowwe.tdb.EvalAssignActionType").newInstance());
+			types.add((Type) Class.forName(
+					"cc.knowwe.tdb.EvalConditionType").newInstance());
 		}
 		catch (InstantiationException e) {
 			notAttached = true;
@@ -66,7 +66,7 @@ public class GuardType extends AbstractXMLType {
 		}
 		if (notAttached) {
 			Logger.getLogger("KnowWE").log(Level.INFO,
-					"cc.knowwe.tdb.EvalAssignActionType is not attached");
+					"cc.knowwe.tdb.EvalConditionType is not attached at GuardType");
 		}
 
 		types.add(new NodeActiveConditionType());
