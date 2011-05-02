@@ -76,7 +76,7 @@ public class KnowledgeRepresentationManager {
 			try {
 				handler.finishArticle(art);
 			}
-			catch (Throwable e) {
+			catch (Exception e) {
 				List<KDOMReportMessage> messages = new ArrayList<KDOMReportMessage>();
 				messages.add(new SimpleMessageError(
 						"This page's content caused a serious initialitation error:\n" +

@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -65,7 +65,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	/**
 	 * To initialize KnowWE.
-	 *
+	 * 
 	 * @see KnowWE_config.properties
 	 */
 	@Override
@@ -149,7 +149,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				initKnowWEEnvironmentIfNeeded(context.getEngine());
 			}
 		}
-		catch (Throwable t) {
+		catch (Exception t) {
 			System.out.println("****Exception EXECUTE***");
 			t.printStackTrace();
 		}
@@ -355,7 +355,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	/**
 	 * Loads ALL articles stored in the pageDir (which is specified in
 	 * jspwiki.properties).
-	 *
+	 * 
 	 * @created 07.06.2010
 	 * @param engine
 	 */
@@ -431,7 +431,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	/**
 	 * Adds the CSS and JS files to the current page.
-	 *
+	 * 
 	 * @param wikiContext
 	 */
 	private void includeDOMResources(WikiContext wikiContext) {

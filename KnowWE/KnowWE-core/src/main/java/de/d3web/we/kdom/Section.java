@@ -619,11 +619,9 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 		return id;
 	}
 
-
 	public String getLastID() {
 		return lastID == null ? getID() : lastID;
 	}
-
 
 	/**
 	 * <b>IMPORTANT:</b> This is NOT the actual ID, this may NOT be unique and
@@ -818,8 +816,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 
 	/**
 	 * Checks whether this Section or a successor is not reused. Sections and
-	 * successors with a Type contained in the Set of classes will
-	 * be ignored.
+	 * successors with a Type contained in the Set of classes will be ignored.
 	 * 
 	 * @created 10.07.2010
 	 * @param title is the article, for which to check.
@@ -1116,7 +1113,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 				// + (System.currentTimeMillis() - time) + " " +
 				// getOriginalText());
 			}
-			catch (Throwable e) {
+			catch (Exception e) {
 				e.printStackTrace();
 				String text = "Unexpected internal error in subtree handler '" + handler
 						+ "' : "
@@ -1221,14 +1218,11 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	 * 
 	 * 
 	 * @created 03.03.2011
-	 * @param newType
-	 *            the new type to be set
-	 * @param create
-	 *            whether the handlers of the new type should be executed right
-	 *            afterwards
-	 * @param article
-	 *            the compilation context for removing old information (error
-	 *            messages)
+	 * @param newType the new type to be set
+	 * @param create whether the handlers of the new type should be executed
+	 *        right afterwards
+	 * @param article the compilation context for removing old information
+	 *        (error messages)
 	 */
 	@SuppressWarnings("unchecked")
 	public void setType(Type newType, boolean create, KnowWEArticle article) {
@@ -1246,9 +1240,9 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 		this.type = (T) newType;
 
 		if (create) {
-		for (Priority p : type.getSubtreeHandlers().descendingKeySet()) {
-			letSubtreeHandlersCreate(getArticle(), p);
-		}
+			for (Priority p : type.getSubtreeHandlers().descendingKeySet()) {
+				letSubtreeHandlersCreate(getArticle(), p);
+			}
 		}
 
 	}
