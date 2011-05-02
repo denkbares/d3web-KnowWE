@@ -20,6 +20,8 @@
 
 package de.d3web.we.search;
 
+import java.util.Arrays;
+
 /**
  * A class for search-results of the KnowWE-MultiSearch
  * 
@@ -34,7 +36,7 @@ public class GenericSearchResult {
 
 	public GenericSearchResult(String page, String[] contexts, int score) {
 		this.pagename = page;
-		this.contexts = contexts;
+		this.contexts = Arrays.copyOf(contexts, contexts.length);
 		this.score = score;
 	}
 
@@ -51,7 +53,7 @@ public class GenericSearchResult {
 	}
 
 	public void setContexts(String[] contexts) {
-		this.contexts = contexts;
+		this.contexts = Arrays.copyOf(contexts, contexts.length);
 	}
 
 	public int getScore() {

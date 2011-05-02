@@ -22,6 +22,7 @@ package de.knowwe.d3web.resource;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -51,7 +52,7 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 
 		private ByteArrayResource(String path, byte[] bytes) {
 			this.path = path;
-			this.bytes = bytes;
+			this.bytes = Arrays.copyOf(bytes, bytes.length);
 		}
 
 		@Override

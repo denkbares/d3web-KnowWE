@@ -25,7 +25,7 @@ public class ConjunctSectionFinder implements SectionFinder {
 	}
 
 	private ConjunctSectionFinder(String[] signs) {
-		this.signs = signs;
+		this.signs = Arrays.copyOf(signs, signs.length);
 
 	}
 
@@ -39,16 +39,16 @@ public class ConjunctSectionFinder implements SectionFinder {
 					CompositeCondition.BRACE_OPEN, CompositeCondition.BRACE_CLOSED);
 			// store all found operator sign oc indices and its length
 			for (Integer integer : indicesOfUnbraced) {
-				
-				//when (binary) operator has index 0, no valid first operand is possible
-				//thus not a valid operator
-				//in this case skip finding
-				if(integer == 0) continue;
-				
-				//same if binary is at the end of the expression
-				if(integer == text.length()-symbol.length()) continue;
-				
-				
+
+				// when (binary) operator has index 0, no valid first operand is
+				// possible
+				// thus not a valid operator
+				// in this case skip finding
+				if (integer == 0) continue;
+
+				// same if binary is at the end of the expression
+				if (integer == text.length() - symbol.length()) continue;
+
 				allFoundOps.put(integer, symbol.length());
 			}
 
