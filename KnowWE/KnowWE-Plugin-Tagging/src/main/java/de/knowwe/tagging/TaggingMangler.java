@@ -385,7 +385,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 				querystring, "q");
 		for (String cur : pages) {
 			// TODO better search? better contexts..
-			result.add(new GenericSearchResult(cur, null, 1));
+			result.add(new GenericSearchResult(cur, new String[] {}, 1));
 		}
 		return result;
 	}
