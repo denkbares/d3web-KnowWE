@@ -95,11 +95,10 @@ public class PropertyType extends AbstractType implements IncrementalMarker, Inc
 		// no " = and line breaks allowed, dots are allowed
 		String unquotedContent = "(?:[^\"=\\n\\r])+";
 		// starts and ends with """
-		String trippleQuoted = ESCAPE + "(?:[^" + ESCAPE.substring(0, 1) + "]|\"(?!"
-				+ ESCAPE.substring(1) + ")(?s).)+" + ESCAPE;
+		String trippleQuoted = ESCAPE + "(?:(?s)(?!" + ESCAPE + ").)+" + ESCAPE;
 		String content = "(" + quoted + "|" + trippleQuoted + "|" + unquotedContent + ")+";
 		String connector = "\\s*=\\s*";
-		String pattern = "^ *" + leftSide + connector + content;
+		String pattern = "^ *" + leftSide + connector + content + "\\s*$";
 		Pattern p = Pattern.compile(pattern, Pattern.MULTILINE);
 
 		setSectionFinder(new RegexSectionFinder(p));
