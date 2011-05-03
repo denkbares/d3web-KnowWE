@@ -357,4 +357,11 @@ public interface KnowWEWikiConnector {
 	 */
 	public String renderWikiSyntax(String pagedata, UserActionContext userContext);
 
+	/**
+	 * Get all users.
+	 * 
+	 * @return The usernames.
+	 */
+	public String[] getAllUsers();
+
 }
