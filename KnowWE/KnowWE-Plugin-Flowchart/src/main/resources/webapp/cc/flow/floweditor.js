@@ -56,7 +56,7 @@ FlowEditor.prototype.showEditor = function(){
 	$('snapshot_prototype').createNode = function(flowchart, left, top) { FlowEditor.createActionNode(flowchart, left, top, {snapshot: 'Snapshot'}); };
 	
 	FlowEditor.createArrows();
-	FlowEditor.createResizeHandle();
+	//FlowEditor.createResizeHandle();
 }
 
 FlowEditor.createResizeHandle = function() {
