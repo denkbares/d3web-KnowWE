@@ -33,6 +33,11 @@ FlowEditor.prototype.showEditor = function(){
 	$('save').observe('click', function(){this.saveFlowchart(false);}.bind(this));
 	$('refresh').observe('click', this.revert);
 	
+	$('x_larger').observe('click', function(){FlowEditor.increaseSize('right');});
+	$('x_smaller').observe('click', function(){FlowEditor.decreaseSize('right');});
+	$('y_larger').observe('click', function(){FlowEditor.increaseSize('bottom');});
+	$('y_smaller').observe('click', function(){FlowEditor.decreaseSize('bottom');});
+	
 	$('close').observe('click', this.closeEditor);
 	$('delete').observe('click', this.deleteFlowchart);
 	

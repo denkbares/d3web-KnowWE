@@ -173,7 +173,13 @@
 			<input type=hidden id="properties.editWidth" class="propertyText short"></input>
 			<input type=hidden id="properties.editHeight" class="propertyText short"></input>
 		</div>	
-	</div>	
+	</div>
+	<ul class="toolbar">
+		<li class="icon" id="x_larger" title="Increase with" style="background-image:url(cc/image/toolbar/x_larger.png);"></li><!--
+	  --><li class="icon" id="x_smaller" title="Decrease with" style="background-image:url(cc/image/toolbar/x_smaller.png);"></li><!--  
+	  --><li class="icon" id="y_larger" title="Increase hight" style="background-image:url(cc/image/toolbar/y_larger.png);"></li><!--  
+	  --><li class="icon" id="y_smaller" title="Decrease hight" style="background-image:url(cc/image/toolbar/y_smaller.png);"></li>
+	</ul>	
 	<ul class="toolbar">
 		<li class="iconsmall NodePrototype" id="decision_prototype" title="Action node" style="background-image:url(cc/image/node_decorators/decision.png);"></li><!--
 	  --><li class="iconsmall NodePrototype" id="start_prototype" title="Start node" style="background-image:url(cc/image/node_decorators/start.png);"></li><!--
