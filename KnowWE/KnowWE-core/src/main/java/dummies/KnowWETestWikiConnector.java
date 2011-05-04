@@ -292,4 +292,10 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public String[] getAllActiveUsers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

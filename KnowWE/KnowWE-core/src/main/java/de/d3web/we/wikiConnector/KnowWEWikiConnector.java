@@ -364,4 +364,10 @@ public interface KnowWEWikiConnector {
 	 */
 	public String[] getAllUsers();
 
+	/**
+	 * Get all active users.
+	 * 
+	 * @return The usernames of all active users.
+	 */
+	public String[] getAllActiveUsers();
 }

@@ -45,6 +45,7 @@ import com.ecyrd.jspwiki.WikiPage;
 import com.ecyrd.jspwiki.attachment.Attachment;
 import com.ecyrd.jspwiki.attachment.AttachmentManager;
 import com.ecyrd.jspwiki.auth.AuthorizationManager;
+import com.ecyrd.jspwiki.auth.SessionMonitor;
 import com.ecyrd.jspwiki.auth.WikiSecurityException;
 import com.ecyrd.jspwiki.auth.permissions.PagePermission;
 import com.ecyrd.jspwiki.auth.permissions.PermissionFactory;
@@ -738,6 +739,19 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		}
 
 		return users;
+	}
+
+	@Override
+	public String[] getAllActiveUsers() {
+		String[] activeUsers = null;
+
+		Principal[] princ = SessionMonitor.getInstance(engine).userPrincipals();
+		activeUsers = new String[princ.length];
+		for (int i = 0; i < princ.length; i++) {
+			activeUsers[i] = princ[i].getName();
+		}
+
+		return activeUsers;
 	}
 
 }
