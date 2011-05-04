@@ -518,7 +518,7 @@ FlowEditor.prototype.closeEditor = function(){
 FlowEditor.prototype.deleteFlowchart = function() {
 	var result = confirm('Do you really want to delete the flowchart?');
 	if (result) {
-		this._saveFlowchartText('', true);
+		FlowEditor.prototype._saveFlowchartText('', true);
 	}
 }
 
