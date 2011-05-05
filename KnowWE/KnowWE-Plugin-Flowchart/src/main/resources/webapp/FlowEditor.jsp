@@ -181,11 +181,11 @@
 	  --><li class="icon" id="y_smaller" title="Decrease hight" style="background-image:url(cc/image/toolbar/y_smaller.png);"></li>
 	</ul>	
 	<ul class="toolbar">
-		<li class="iconsmall NodePrototype" id="decision_prototype" title="Action node" style="background-image:url(cc/image/node_decorators/decision.png);"></li><!--
-	  --><li class="iconsmall NodePrototype" id="start_prototype" title="Start node" style="background-image:url(cc/image/node_decorators/start.png);"></li><!--
-	  --><li class="iconsmall NodePrototype" id="exit_prototype" title="Exit node" style="background-image:url(cc/image/node_decorators/exit.png);"></li><!--
-	  --><li class="iconsmall NodePrototype" id="comment_prototype" title="Comment node" style="background-image:url(cc/image/node_decorators/comment.png);"></li><!--
-	  --><li class="iconsmall NodePrototype" id="snapshot_prototype" title="Snapshot node" style="background-image:url(cc/image/node_decorators/snapshot.png);"></li><!--
+		<li class="icon NodePrototype" id="decision_prototype" title="Action node" style="background-image:url(cc/image/node_decorators/decision_32.png);"></li><!--
+	  --><li class="icon NodePrototype" id="start_prototype" title="Start node" style="background-image:url(cc/image/node_decorators/start_32.png);"></li><!--
+	  --><li class="icon NodePrototype" id="exit_prototype" title="Exit node" style="background-image:url(cc/image/node_decorators/exit_32.png);"></li><!--
+	  --><li class="icon NodePrototype" id="comment_prototype" title="Comment node" style="background-image:url(cc/image/node_decorators/comment_32.png);"></li><!--
+	  --><li class="icon NodePrototype" id="snapshot_prototype" title="Snapshot node" style="background-image:url(cc/image/node_decorators/snapshot_32.png);"></li><!--
 	  -->
 	</ul>
 </div>
