@@ -175,8 +175,8 @@
 		</div>	
 	</div>
 	<ul class="toolbar">
-		<li class="icon" id="x_larger" title="Increase with" style="background-image:url(cc/image/toolbar/x_larger.png);"></li><!--
-	  --><li class="icon" id="x_smaller" title="Decrease with" style="background-image:url(cc/image/toolbar/x_smaller.png);"></li><!--  
+		<li class="icon" id="x_larger" title="Increase width" style="background-image:url(cc/image/toolbar/x_larger.png);"></li><!--
+	  --><li class="icon" id="x_smaller" title="Decrease width" style="background-image:url(cc/image/toolbar/x_smaller.png);"></li><!--  
 	  --><li class="icon" id="y_larger" title="Increase hight" style="background-image:url(cc/image/toolbar/y_larger.png);"></li><!--  
 	  --><li class="icon" id="y_smaller" title="Decrease hight" style="background-image:url(cc/image/toolbar/y_smaller.png);"></li>
 	</ul>	
