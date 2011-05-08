@@ -161,7 +161,7 @@ Action.prototype._extractInfoObjectName = function(string) {
 	if (result && result.length > 2 && result[2]) return result[2];
 	
 	// 'KEYWORD' '[' <name> '(' <value> ')' ']'
-	nameExpr = /^\s*([\w!]+)\[(.+)\((.+)\)\]\s*$/i;
+	nameExpr = /^\s*([\w!]+)\[(.+?)\((.+)\)\]\s*$/i;
 	result = nameExpr.exec(string);
 	if (result && result.length > 3 && result[2]) return result[2];
 	
@@ -207,7 +207,7 @@ Action.prototype._extractValueString = function(string) {
 	
 	// 'KEYWORD' '[' <name> '(' <value> ')' ']'
 //	nameExpr = /^\s*([\w!]+)\[(\w+)\((\w+)\)\]\s*$/i;
-	nameExpr = /^\s*([\w!]+)\[(.+)\((.+)\)\]\s*$/i;
+	nameExpr = /^\s*([\w!]+)\[(.+?)\((.+)\)\]\s*$/i;
 	result = nameExpr.exec(string);
 	if (result && result.length > 3 && result[3]) return result[3];
 	
@@ -726,5 +726,4 @@ ActionPane.prototype.render = function() {
 ActionPane.prototype.destroy = function() {
 	this.setVisible(false);
 }
-
 

@@ -18,6 +18,7 @@
  */
 package de.d3web.we.flow.type;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.core.inference.PSAction;
@@ -38,8 +39,18 @@ public class CallFlowActionType extends D3webRuleAction<CallFlowActionType> {
 
 	public static final int FLOWCHART_GROUP = 1;
 	public static final int STARTNODE_GROUP = 2;
-	public static final String REGEX = "CALL\\[([^\\]]*)\\(([^)]*)\\)\\]";
+	public static final String REGEX = "CALL\\[(.*?)\\((.*?)\\)\\]";
 	public static final Pattern PATTERN = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
+
+	public static void main(String[] args) {
+		String test = "CALL[BMI-SelectTherapy(Mild therapy üöäß&amp;%$§`´&lt;#&gt;/\\|=,!()[]{};:_-)]";
+		Matcher m = Pattern.compile(REGEX).matcher(test);
+		m.find();
+		System.out.println(m.group());
+		System.out.println(m.group(1));
+		System.out.println(m.group(2));
+		System.out.println(m.group(3));
+	}
 
 	@Override
 	protected void init() {
@@ -51,7 +62,7 @@ public class CallFlowActionType extends D3webRuleAction<CallFlowActionType> {
 
 		StartNodeReference startNodeReference = new StartNodeReference();
 		startNodeReference.setSectionFinder(new RegexSectionFinder(
-				Pattern.compile("\\(([^)]*)\\)"), 1));
+				Pattern.compile("\\((.*)\\)"), 1));
 		addChildType(startNodeReference);
 	}
 
