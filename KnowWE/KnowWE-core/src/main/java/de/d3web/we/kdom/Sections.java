@@ -364,7 +364,7 @@ public class Sections {
 			return;
 		}
 		for (Section sec : section.getChildren()) {
-			Sections.findSuccessorsOfType(section, class1, depth - 1, found);
+			Sections.findSuccessorsOfType(sec, class1, depth - 1, found);
 		}
 	
 	}
