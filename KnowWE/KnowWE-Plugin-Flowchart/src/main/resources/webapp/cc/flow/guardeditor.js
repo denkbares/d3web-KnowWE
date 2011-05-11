@@ -120,12 +120,17 @@ GuardEditor.prototype.updateInputField = function() {
 				if (formula){ // enlarge input field for formulas
 					inputs[0].addClassName("formula");
 					
-				}else {
+				} else {
 					inputs[0].removeClassName("formula");
 					
 				}
 			}
 			inputs[i].show();
+			//focuses the first of the inputs
+			if (i == 0){
+				inputs[0].focus();
+				inputs[0].select();
+			}
 		}
 		else {
 			inputs[i].hide();
