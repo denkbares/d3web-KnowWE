@@ -31,6 +31,7 @@ import de.d3web.we.kdom.condition.CondKnownUnknown;
 import de.d3web.we.kdom.condition.Finding;
 import de.d3web.we.kdom.condition.NumericalFinding;
 import de.d3web.we.kdom.condition.NumericalIntervallFinding;
+import de.d3web.we.kdom.condition.SolutionStateCond;
 import de.d3web.we.kdom.condition.UserRatingConditionType;
 import de.d3web.we.kdom.xml.AbstractXMLType;
 
@@ -69,6 +70,7 @@ public class GuardType extends AbstractXMLType {
 					"cc.knowwe.tdb.EvalConditionType is not attached at GuardType");
 		}
 
+		types.add(new SolutionStateCond());
 		types.add(new NodeActiveConditionType());
 		types.add(new UserRatingConditionType());
 		types.add(new CondKnownUnknown());
