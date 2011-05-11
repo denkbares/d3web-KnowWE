@@ -88,18 +88,18 @@ FlowEditor.DragCorner = function(container, handle) {
     var handle = $(handle);
     
     /* Add property to container to store position variables */
-    container.moveposition = {x:0, y:0};
+    var moveposition = {x:0, y:0};
     
     function moveListener(event) {
        /* Calculate how far the mouse moved */
        var moved = {
-                   x:(event.pointerX() - container.moveposition.x),
-                   y:(event.pointerY() - container.moveposition.y)
+                   x:(event.pointerX() - moveposition.x),
+                   y:(event.pointerY() - moveposition.y)
        };
        
        var max = theFlowchart.getMaxObjects();
-       max[0] += container.moveposition.x - theFlowchart.width + 50;
-       max[1] += container.moveposition.y - theFlowchart.height + 50;
+       max[0] += moveposition.x - theFlowchart.width + 50;
+       max[1] += moveposition.y - theFlowchart.height + 50;
        
        var newX = event.pointerX();
        var newY = event.pointerY();
@@ -115,7 +115,7 @@ FlowEditor.DragCorner = function(container, handle) {
     	   moved.y = 0;
        }
     	   
-       container.moveposition = {x:newX, y:newY};
+       moveposition = {x:newX, y:newY};
 
        theFlowchart.setSize(theFlowchart.width + moved.x, theFlowchart.height + moved.y);
 
@@ -129,7 +129,7 @@ FlowEditor.DragCorner = function(container, handle) {
     /* Listen for 'mouse down' on handle to start the move listener */
     handle.observe('mousedown', function(event) {
        /* Set starting x/y */
-       container.moveposition = {x:event.pointerX(),y:event.pointerY()};
+       moveposition = {x:event.pointerX(),y:event.pointerY()};
        /* Start listening for mouse move on body */
        Event.observe(document,'mousemove',moveListener);
        event.stop();
