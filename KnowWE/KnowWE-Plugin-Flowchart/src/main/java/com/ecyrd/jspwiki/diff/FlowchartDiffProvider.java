@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 import org.apache.commons.jrcs.diff.AddDelta;
 import org.apache.commons.jrcs.diff.ChangeDelta;
@@ -50,11 +49,11 @@ import com.ecyrd.jspwiki.i18n.InternationalizationManager;
 import de.d3web.we.flow.diff.FlowchartEdge;
 import de.d3web.we.flow.diff.FlowchartNode;
 import de.d3web.we.flow.diff.FlowchartNodeType;
-import de.d3web.we.logging.Logging;
 
 public class FlowchartDiffProvider implements DiffProvider {
 
-	private static final Logger log = Logger.getLogger(FlowchartDiffProvider.class.getName());
+	// private static final Logger log =
+	// Logger.getLogger(FlowchartDiffProvider.class.getName());
 
 	private static final String CSS_DIFF_ADDED = "<tr><td class=\"diffadd\">";
 	private static final String CSS_DIFF_REMOVED = "<tr><td class=\"diffrem\">";
@@ -97,8 +96,6 @@ public class FlowchartDiffProvider implements DiffProvider {
 	 * @return Full HTML diff.
 	 */
 	public String makeDiffHtml(WikiContext ctx, String p1, String p2) {
-		Logging.getInstance().addHandlerToLogger(Logging.getInstance().getLogger(),
-				"MakeDiffHtml.txt");
 
 		String diffResult = "";
 
@@ -214,7 +211,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 		}
 		catch (DifferentiationFailedException e) {
 			diffResult = "makeDiff failed with DifferentiationFailedException";
-			log.severe(diffResult + e.getMessage());
+			// log.severe(diffResult + e.getMessage());
 		}
 
 		return diffResult;
@@ -410,7 +407,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 				edges.get(edges.size() - 1).setGuard(guard);
 			}
 		}
-		Logging.getInstance().info("edges: " + edges);
+		// Logging.getInstance().info("edges: " + edges);
 		return edges;
 	}
 
@@ -552,7 +549,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 
 		String temp = version;
 
-		Logging.getInstance().info(version);
+		// Logging.getInstance().info(version);
 
 		// get the lower part of the flowchart
 		version = version.substring(version.indexOf("<DIV class=\"Flowchart\""));
