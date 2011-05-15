@@ -3,10 +3,23 @@
 CCEvents.addClassListener('click', 'ArrowTool', function(event) {/*NOP, but avoid bubbling*/});
 
 
-//register select click events for flowchart
+//register select click events for rule
 CCEvents.addClassListener('click', 'Rule', 
 	function(event) {
-		this.__rule.select();
+		if (!this.__rule.flowchart.isSelected(this.__rule)) {
+			if (this.__rule) this.__rule.select(DiaFluxUtils.isControlKey(event));
+		}
+		
+		if (event.isRightClick()) {
+			contextMenuFlowchart.close();
+			contextMenuNode.close();
+			contextMenuRule.show(event, this.__rule);
+		} else {
+			contextMenuNode.close();
+			contextMenuFlowchart.close();
+			contextMenuRule.close();
+			
+		}
 	}
 );
 

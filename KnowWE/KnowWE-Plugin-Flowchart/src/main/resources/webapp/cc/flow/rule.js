@@ -164,10 +164,18 @@ Rule.prototype.intersects = function(x1, y1, x2, y2) {
 }
 
 
+Rule.prototype.getGuard = function() {
+	return this.guard;
+}
 
 
-Rule.prototype.select = function() {
-	this.flowchart.setSelection(this);
+Rule.prototype.select = function(multipleSelectionMode) {
+	var selected = this.flowchart.isSelected(this);
+	// select it 
+	// (add/remove to selection in multipleSelectionMode otherwise set as only selection)
+	this.flowchart.setSelection(this, 
+		multipleSelectionMode && !selected, 
+		multipleSelectionMode && selected);
 }
 
 Rule.prototype.setGuard = function(guard) {

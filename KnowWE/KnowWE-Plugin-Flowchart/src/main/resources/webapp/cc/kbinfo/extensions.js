@@ -228,4 +228,13 @@ DiaFluxUtils.escapeRegex = function(regexString) {
 	return regexString.replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
 }
 
+DiaFluxUtils.isControlKey = function(event) {
+	var altKey = event.altKey;
+	var metaKey = event.metaKey;
+	var ctrlKey = event.ctrlKey;
+
+	return ctrlKey | altKey | metaKey; 
+}
+
+
 

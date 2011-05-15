@@ -69,6 +69,23 @@ Flowchart.prototype.setVisible = function(visible) {
 	}
 }
 
+
+/**
+* Gets left cumulative offset of flowchart content pane.
+* @return left offset of flowchart
+*/
+Flowchart.prototype.getLeft = function() {
+	return $(this.id).cumulativeOffset().left;
+}
+
+/**
+* Gets top cumulative offset of flowchart content pane.
+* @return top offset of flowchart
+*/
+Flowchart.prototype.getTop = function() {
+	return $(this.id).cumulativeOffset().top;
+}
+
 Flowchart.prototype.addNode = function(node) {
 	this.nodes.push(node);
 }

@@ -518,6 +518,7 @@ FlowEditor.prototype.closeEditor = function(){
 FlowEditor.prototype.deleteFlowchart = function() {
 	var result = confirm('Do you really want to delete the flowchart?');
 	if (result) {
+	//TODO
 		FlowEditor.prototype._saveFlowchartText('', true);
 	}
 }
@@ -588,15 +589,26 @@ FlowEditor.prototype._saveFlowchartText = function(xml, closeOnSuccess) {
 
 
 
-
-
 //Flowchart event handlers
 //register select click events for flowchart
 CCEvents.addClassListener('click', 'FlowchartGroup', 
 	function(event) {
 		this.__flowchart.setSelection(null);
+		if (!event.isRightClick()) {
+			contextMenuFlowchart.close();
+			contextMenuNode.close();
+			contextMenuRule.close();
+		}
+		// this code circumvents browser bugs
+		else {
+			contextMenuNode.close();
+			contextMenuRule.close();
+			contextMenuFlowchart.show(event, this.__flowchart.getSelection());
+		}
+
 	}
 );
+
 CCEvents.addClassListener('keydown', 'FlowchartGroup', 
 	function(event) {
 		this.__flowchart.handleKeyEvent(event);
@@ -675,9 +687,19 @@ Flowchart.prototype.copySelectionToClipboard = function() {
 }
 
 Flowchart.prototype.pasteFromClipboard = function() {
-	//alert("paste not implemented yet:\n\n"+CCClipboard.fromClipboard());
+
+	// BUGFIX: when clipboard is empty CCClipboard is null
+	//         therefore this has to be checked to avoid NPE
+	if (CCClipboard.fromClipboard() == null)
+		return;
+	
 	var xmlDom = CCClipboard.fromClipboard().parseXML();
 	this.addFromXML(xmlDom, 20, 20);
+}
+
+Flowchart.prototype.cut = function() {
+	this.copySelectionToClipboard();
+	this.trashSelection();
 }
 
 Flowchart.prototype.trashSelection = function() {
@@ -719,6 +741,13 @@ Flowchart.prototype.getVSnaps = function() {
 	return result;
 }
 
+/**
+ * Getter for selected Nodes/Rules.
+ * @return selected Nodes/Rules
+ */
+Flowchart.prototype.getSelection = function() {	
+	return this.selection;
+}
 
 /**
  * Flowchart.removeFromSelection
@@ -942,5 +971,21 @@ SelectTool.createSelectionBox = function(x1, y1, x2, y2, pixelSize, pixelColor, 
 	return div;
 }
 
+
+
+/**
+ * Create a new node at the given position in the flowchart.
+ * @param flowchart flowchart in which node is inserted
+ * @param x x coordinate of node position (relative to flowchart)
+ * @param y y coordinate of node position (relative to flowchart)
+ */
+FlowEditor.newNode = function(flowchart, x, y, type) {
+	
+	var nodeProt = $(type + '_prototype');
+	
+	if (!nodeProt) return;
+	
+	nodeProt.createNode(flowchart, x - flowchart.getLeft(), y - flowchart.getTop());
+}
 
 

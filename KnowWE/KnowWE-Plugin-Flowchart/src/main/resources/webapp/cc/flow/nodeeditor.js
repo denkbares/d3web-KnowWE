@@ -2,11 +2,21 @@
 //Node event handlers
 //register select and edit click events for node
 CCEvents.addClassListener('click', 'Node', 
-	function(event) {
-		var ctrlKey = event.ctrlKey;
-		var altKey = event.altKey;
-		var metaKey = event.metaKey;
-		if (this.__node) this.__node.select(ctrlKey | altKey | metaKey);
+		function(event) {
+
+		if (!this.__node.flowchart.isSelected(this.__node)) {
+			if (this.__node) this.__node.select(DiaFluxUtils.isControlKey(event));
+		}
+	
+		if (event.isRightClick()) {
+			contextMenuFlowchart.close();
+			contextMenuRule.close();
+			contextMenuNode.show(event, this.__node);
+		} else {
+			contextMenuNode.close();
+			contextMenuFlowchart.close();
+			contextMenuRule.close();
+		}
 	}
 );
 
@@ -26,14 +36,6 @@ Node.prototype.edit = function() {
 	}
 	// eventuell vorhandene Artefakte (nach cancel) aufraeumen
 	this.stopEdit();
-	// und neuen Editor oeffnen
-//	var modalBackground = Builder.node('div', {
-//		style: 'position: fixed; left: 0; top: 0; width: 100%; height: 100%; ' +
-//				'z-index: 1000; background-color:#333333; ' +
-//				'opacity: 0.40; filter: alpha(opacity=40);'
-//	});
-//	var pos = this.getDOM().cumulativeOffset();
-//	this.flowchart.getContentPane().parentNode.appendChild(modalBackground);
 	this.nodeEditor = new NodeEditor(
 		this.flowchart.getContentPane(), 
 		this.nodeModel, 
@@ -136,101 +138,6 @@ Node.prototype.toXML = function() {
 	xml += '\t</node>\n';
 	return xml;
 }
-
-
-//Node event handlers
-//register select and edit click events for node
-CCEvents.addClassListener('click', 'Node', 
-	function(event) {
-		var ctrlKey = event.ctrlKey;
-		var altKey = event.altKey;
-		var metaKey = event.metaKey;
-		if (this.__node) this.__node.select(ctrlKey | altKey | metaKey);
-	}
-);
-
-CCEvents.addClassListener('dblclick', 'Node', 
-	function(event) {
-	//avoids error when dblclick on prototype
-		if (this.__node)
-			this.__node.edit();
-	}
-);
-
-
-Node.prototype.edit = function() {
-	if (this.nodeEditor && this.nodeEditor.isVisible()) {
-		// wenn editor bereits sichtbar, dann nichts machen
-		return;
-	}
-	// eventuell vorhandene Artefakte (nach cancel) aufraeumen
-	this.stopEdit();
-	// und neuen Editor oeffnen
-//	var modalBackground = Builder.node('div', {
-//		style: 'position: fixed; left: 0; top: 0; width: 100%; height: 100%; ' +
-//				'z-index: 1000; background-color:#333333; ' +
-//				'opacity: 0.40; filter: alpha(opacity=40);'
-//	});
-//	var pos = this.getDOM().cumulativeOffset();
-//	this.flowchart.getContentPane().parentNode.appendChild(modalBackground);
-	this.nodeEditor = new NodeEditor(
-		this.flowchart.getContentPane(), 
-		this.nodeModel, 
-		'position:absolute; ' +
-//		'position:fixed; opacity: 1.0; filter: alpha(opacity=100);' +
-		'left: ' + (this.getLeft()) + 'px; ' +
-		'top: ' + (this.getTop()) + 'px;',
-		function(nodeEditor) {
-			this.setNodeModel(nodeEditor.getNodeModel());
-		}.bind(this)
-	);
-}
-
-Node.prototype.stopEdit = function() {
-	if (this.nodeEditor) {
-		this.nodeEditor.destroy();
-		this.nodeEditor = null;
-	}
-}
-
-Node.prototype.moveBy = function(dLeft, dTop) {
-	this.moveTo(this.getLeft() + dLeft, this.getTop() + dTop);
-}
-
-
-Node.prototype.toXML = function() {
-	var xml = '\t<node fcid="'+this.nodeModel.fcid+'">\n';
-	xml += '\t\t<position left="'+this.getLeft()+'" top="'+this.getTop()+'"></position>\n';
-	if (this.nodeModel.start) {
-		xml += '\t\t<start>'+this.nodeModel.start.escapeXML()+'</start>\n';
-	}
-	else if (this.nodeModel.exit) {
-		xml += '\t\t<exit>'+this.nodeModel.exit.escapeXML()+'</exit>\n';
-	}
-	else if (this.nodeModel.comment) {
-		xml += '\t\t<comment>'+this.nodeModel.comment.escapeXML()+'</comment>\n';
-	}
-	else if (this.nodeModel.snapshot) {
-		xml += '\t\t<snapshot>'+this.nodeModel.snapshot.escapeXML()+'</snapshot>\n';
-	}
-	else if (this.nodeModel.action) {
-		var action = this.nodeModel.action;
-
-		if (action.markup == 'NOP') {
-				xml += '\t\t<decision>' + 
-				(action.expression ? action.expression : '') + 
-				'</decision>\n';
-				
-		} else { 
-			xml += '\t\t<action markup="' + action.markup + '">' + 
-			(action.expression ? action.expression : '') + 
-			'</action>\n';
-		}
-	}
-	xml += '\t</node>\n';
-	return xml;
-}
-
 
 function NodeEditor(parent, nodeModel, style, onSuccess) {
 	this.parent = $(parent);
