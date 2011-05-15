@@ -496,6 +496,24 @@
 			</dependencies>
 		</profile>
 
+		<!-- DiaFlux Refactoring -->
+		<profile>
+			<id>diafluxrefactoring-plugin</id>
+			<activation>
+				<property>
+					<name>diafluxrefactoring-plugin</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-DiaFlux-Refactoring</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
 		<!-- Shared Plugin -->
 		<profile>
 			<id>KnowWE-Plugin-Shared</id>
