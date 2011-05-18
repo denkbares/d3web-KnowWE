@@ -45,10 +45,10 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
 
-import de.d3web.core.utilities.Pair;
 import de.d3web.we.ci4ke.testing.CITestResult;
 import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
 import de.d3web.we.ci4ke.util.CIUtilities;
+import de.d3web.we.ci4ke.util.Pair;
 
 public class CIBuildPersistenceHandler {
 

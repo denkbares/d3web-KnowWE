@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<parent>
 		<artifactId>KnowWE</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
 		<version>0.2-SNAPSHOT</version>
 	</parent>
-	
+
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-Plugin-CI4KE</artifactId>
 	<version>0.2-SNAPSHOT</version>
 	<name>KnowWE Plugin: Continuous Integration</name>
 	<description>KnowWE-Plugin: Continuous Integration for Knowledge Engineering</description>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -32,11 +33,8 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<dependencies>
-
-
-
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -71,22 +69,6 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Plugin-TestCase</artifactId>
-			<version>0.2-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-			<dependency>
-			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>d3web-Plugin-DiaFlux</artifactId>
-			<version>0.2-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-	
 	</dependencies>
-	
-	
+
 </project>

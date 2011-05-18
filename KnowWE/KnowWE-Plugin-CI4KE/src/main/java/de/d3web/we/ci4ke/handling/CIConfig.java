@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import de.d3web.core.utilities.Pair;
 import de.d3web.we.ci4ke.handling.CIDashboardType.CIBuildTriggers;
 import de.d3web.we.ci4ke.util.CIUtilities;
+import de.d3web.we.ci4ke.util.Pair;
 
 public final class CIConfig implements Cloneable {
 

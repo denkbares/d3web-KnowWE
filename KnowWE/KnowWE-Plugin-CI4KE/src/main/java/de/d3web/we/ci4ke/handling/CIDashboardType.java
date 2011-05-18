@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.core.utilities.Pair;
+import de.d3web.we.ci4ke.util.Pair;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -113,7 +113,7 @@ public class CIDashboardType extends DefaultMarkupType {
 					return msgs;
 				}
 			}
-			
+
 			if (trigger.equals(CIBuildTriggers.onSave) && monitoredArticles.isEmpty()) {
 				msgs.add(new SimpleMessageError("Invalid trigger: " + CIBuildTriggers.onSave
 						+ " requires attached articles to monitor."));
@@ -129,7 +129,7 @@ public class CIDashboardType extends DefaultMarkupType {
 					DefaultMarkupType.getAnnotationSections(s, TEST_KEY);
 
 			// iterate over all @test-Annotations
-			for(Section<?> annoSection : annotationSections) {
+			for (Section<?> annoSection : annotationSections) {
 				String annotationText = annoSection.getOriginalText();
 				matcher = pattern.matcher(annotationText);
 				if (matcher.find()) {
@@ -149,9 +149,9 @@ public class CIDashboardType extends DefaultMarkupType {
 			}
 
 			CIConfig config = new CIConfig(dashboardName, s.getArticle().getTitle(), tests, trigger);
-			
-			 // Parse the trigger-parameter and (eventually) register
-			 // a CIHook
+
+			// Parse the trigger-parameter and (eventually) register
+			// a CIHook
 			if (trigger.equals(CIBuildTriggers.onSave)) {
 				// Hook registrieren
 				CIHook ciHook = new CIHook(article.getTitle(), dashboardName, monitoredArticles);
@@ -160,7 +160,7 @@ public class CIDashboardType extends DefaultMarkupType {
 				KnowWEUtils.storeObject(s.getArticle().getWeb(), s.getTitle(), s.getID(),
 						CIHook.CIHOOK_STORE_KEY, ciHook);
 			}
-			
+
 			// Alright, everything seems to be ok. Let's store the CIConfig in
 			// the store
 
@@ -190,9 +190,9 @@ public class CIDashboardType extends DefaultMarkupType {
 	 * @return true if the name of the section is unique in the wiki
 	 */
 	public static boolean dashboardNameIsUnique(Section<CIDashboardType> section) {
-		
+
 		String thisDashboardName = CIDashboardType.getAnnotation(section, NAME_KEY);
-		
+
 		List<Section<CIDashboardType>> sectionList = new ArrayList<Section<CIDashboardType>>();
 		for (KnowWEArticle article : KnowWEEnvironment.getInstance().
 				getArticleManager(section.getWeb()).getArticles()) {
@@ -209,6 +209,5 @@ public class CIDashboardType extends DefaultMarkupType {
 		}
 		return true;
 	}
-	
 
 }
