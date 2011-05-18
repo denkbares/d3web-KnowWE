@@ -129,6 +129,12 @@
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-CITestModules-d3web</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Flowchart</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
@@ -325,7 +331,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
 		<!-- TestCaseExecutor Module -->
 		<profile>
 			<id>testcaseexecutor-plugin</id>
