@@ -876,15 +876,6 @@ font-size:120%;
 /* -------------- Flowchart           --------------- */
 /* ################################################## */
 
-/*
- due to bug in IE6+7 collapse box body has to be relative positioned,
- otherwise flowchart is visible through closed collapse box.
- see also: http://www.rowanw.com/bugs/overflow_relative.htm 
-*/
-.collapsebody{
-    position: relative;
-} 
-
 div.collapsible-questiontree {
     background:none repeat scroll 0 0 #F9F9F9;
     border:1px solid #DDDDDD;
