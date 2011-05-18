@@ -153,6 +153,7 @@
 		<module>KnowWE-Plugin-Core</module>
 		<module>KnowWE-Plugin-KBRenderer</module>
 		<module>KnowWE-Plugin-JSPWiki-Connector</module>
+		<module>KnowWE-Plugin-CITestModules-d3web</module>
 	</modules>
 	<repositories>
 		<repository>

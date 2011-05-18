@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-CITestModules-d3web" version="0.0.1">
+	
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+	</requires>
+	
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CITest"
+		id="TestsuiteRunner">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.testmodules.TestsuiteRunner" />
+		<parameter id="name" value="TestsuiteRunner" />
+		<parameter id="description" value="CITest TestsuiteRunner" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CITest"
+		id="EmptyQuestionnaireTest">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.testmodules.EmptyQuestionnaireTest" />
+		<parameter id="name" value="EmptyQuestionnaireTest" />
+		<parameter id="description" value="CITest EmptyQuestionnaireTest" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+</plugin>
