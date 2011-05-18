@@ -55,7 +55,7 @@ public class UserContextUtil {
 				String value = request.getParameter(key);
 				parameters.put(key, decode ? KnowWEUtils.urldecode(value) : value);
 			}
-			if (request.getMethod() != null && request.getMethod() == "POST") {
+			if (request.getMethod() != null && request.getMethod().equals("POST")) {
 				try {
 					BufferedReader br = new BufferedReader(new InputStreamReader(
 							request.getInputStream()));
