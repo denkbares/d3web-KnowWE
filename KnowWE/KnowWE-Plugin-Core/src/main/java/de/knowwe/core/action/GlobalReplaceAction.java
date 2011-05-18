@@ -53,8 +53,12 @@ public class GlobalReplaceAction extends AbstractAction {
 		String web = context.getWeb();
 
 		// replaceFindings auspacken
-		String replacements = context.getParameter(KnowWEAttributes.TEXT);
-		if (replacements == null) return rb.getString("KnowWE.renamingtool.noreplacements");
+		String replacements = context.getParameter("data");
+		if (replacements == null) return rb.getString("KnowWE.renamingtool.noreplacments");
+
+		// 'Kwikitext=' abschneiden
+		replacements = replacements.substring(10);
+
 		String[] replacementArray = replacements.split("__");
 
 		Map<Section, List<WordBasedRenameFinding>> findingsPerSection = new HashMap<Section, List<WordBasedRenameFinding>>();
