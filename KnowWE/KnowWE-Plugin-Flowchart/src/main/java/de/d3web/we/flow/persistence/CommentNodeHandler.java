@@ -65,8 +65,6 @@ public class CommentNodeHandler extends AbstractNodeHandler {
 		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
 		String content = FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
 
-		if (content.length() > 10) content = content.substring(0, 10) + "...";
-
 		return new CommentNode(id, content);
 
 	}
