@@ -202,7 +202,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		// render content
 		// Returns are replaced to avoid JSPWiki to render <p> </p>, do not edit
 		// the following line!
-		string.append(content.replace("\n", KnowWEUtils.maskHTML("<span>\n</span>")));
+		string.append(content.replaceAll("(\r?\n){2}", KnowWEUtils.maskHTML("<span>\n</span><span>\n</span>")));
 
 		// and close the box(es)
 		string.append(KnowWEUtils.maskHTML("</div>")); // class=markupText

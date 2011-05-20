@@ -68,6 +68,7 @@ public class ToolMenuDecoratingRenderer<T extends Type> extends KnowWEDomRendere
 		if (hasTools) {
 			string.append(KnowWEUtils.maskHTML("</span>"));
 			String menuHTML = DefaultMarkupRenderer.renderMenu(toolMap, sec.getID());
+			menuHTML = menuHTML.replace("'", "\\'").replace("</div>", "</div>' + \n '");
 			string.append(KnowWEUtils.maskHTML(
 					"<script>" +
 							"var makeMenuFx = function() {" +
@@ -82,7 +83,7 @@ public class ToolMenuDecoratingRenderer<T extends Type> extends KnowWEDomRendere
 							// "  requestToolsPopupMenu(a, '" + sec.getID() +
 							// "');" +
 							"  showToolsPopupMenu(a, '" +
-							menuHTML.replace("'", "\\'") + "');" +
+							menuHTML + "');" +
 							"};" +
 							"};" +
 							"makeMenuFx();" +
