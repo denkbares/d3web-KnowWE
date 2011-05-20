@@ -46,8 +46,49 @@ public interface CorrectionProvider {
 	 * @param article The article the misspelled reference is in
 	 * @param section The section the misspelled reference is in
 	 * @param threshold The maximium Levenshtein distance suggestions can have. (KnowWE includes an implementation in secondstring/com.wcohen.ss.Levenstein)
-	 * @return A list of Strings containing the found suggestions.
+	 * @return A list of {@link Suggestion} objects containing the found suggestions and their distances.
 	 */
-	public List<String> getSuggestions(KnowWEArticle article, Section<?> section, int threshold); 
+	public List<Suggestion> getSuggestions(KnowWEArticle article, Section<?> section, int threshold);
+	
+	/**
+	 * Encapsulates a Suggesion found by a CorrectionProvider.
+	 * 
+	 * @author Alex Legler
+	 * @created 20.05.2011
+	 */
+	public class Suggestion implements Comparable<Suggestion> {
+		private String suggestion;
+		private int distance;
+		
+		public Suggestion(String suggestion, int distance) {
+			this.suggestion = suggestion;
+			this.distance = distance;
+		}
+
+		/**
+		 * Returns the suggested replacement string
+		 * 
+		 * @created 20.05.2011
+		 * @return The suggested string
+		 */
+		public String getSuggestion() {
+			return suggestion;
+		}
+		
+		/**
+		 * Returns the distance from the misspelled string, used for sorting
+		 * 
+		 * @created 20.05.2011
+		 * @return distance
+		 */
+		public int getDistance() {
+			return distance;
+		}
+
+		@Override
+		public int compareTo(Suggestion other) {
+				return other.distance - distance;
+		}
+	}
 	
 }

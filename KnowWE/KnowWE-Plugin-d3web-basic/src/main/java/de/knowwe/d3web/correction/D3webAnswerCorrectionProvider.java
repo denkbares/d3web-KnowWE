@@ -44,7 +44,7 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<String> getSuggestions(KnowWEArticle article, Section<?> section, int threshold) {
+	public List<CorrectionProvider.Suggestion> getSuggestions(KnowWEArticle article, Section<?> section, int threshold) {
 		if (!(section.get() instanceof TermReference)) {
 			return null;
 		}
@@ -62,7 +62,7 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 		);
 
 		String originalText = section.getOriginalText();
-		List<String> suggestions = new LinkedList<String>();
+		List<CorrectionProvider.Suggestion> suggestions = new LinkedList<CorrectionProvider.Suggestion>();
 		Levenstein l = new Levenstein();
 
 		for (String match : localTermMatches) {
@@ -74,7 +74,8 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 			name = parts.length == 1 ? parts[0] : parts[1];
 			type = parts.length == 2 ? parts[0] : null;
 
-			if (l.score(originalText, name) >= -threshold) {
+			double score = l.score(originalText, name);
+			if (score >= -threshold) {
 				// Special case: AnswerReference: Also check that the defining Question matches
 				AnswerReference answerReference = (AnswerReference) termReference;
 				String question = answerReference.getQuestionSection((Section<? extends AnswerReference>) section).getOriginalText(); // TODO: -> getTermName()
@@ -83,7 +84,7 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 					continue;
 				}
 
-				suggestions.add(name);
+				suggestions.add(new CorrectionProvider.Suggestion(name, (int)score));
 			}
 		}
 

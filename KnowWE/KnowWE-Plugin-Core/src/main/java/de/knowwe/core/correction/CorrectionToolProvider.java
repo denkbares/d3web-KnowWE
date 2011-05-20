@@ -18,6 +18,7 @@
  */
 package de.knowwe.core.correction;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,19 +49,21 @@ public class CorrectionToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
-		List<String> suggestions = new LinkedList<String>();
+		List<CorrectionProvider.Suggestion> suggestions = new LinkedList<CorrectionProvider.Suggestion>();
 		
 		if (!section.hasErrorInSubtree(article)) {
 			return new Tool[0];
 		}
 		
 		for (CorrectionProvider c : getProviders(section)) {
-			List<String> s = c.getSuggestions(article, section, THRESH);
+			List<CorrectionProvider.Suggestion> s = c.getSuggestions(article, section, THRESH);
 
 			if (s != null) {
 				suggestions.addAll(s);
 			}
 		}
+		
+		Collections.sort(suggestions);
 
 		if (suggestions.size() == 0) {
 			return new Tool[0];
@@ -79,9 +82,9 @@ public class CorrectionToolProvider implements ToolProvider {
 		for (int i = 0; i < suggestions.size(); i++) {
 			tools[i+1] = new DefaultTool(
 					"KnowWEExtension/images/correction_change.gif",
-					suggestions.get(i),
+					suggestions.get(i).getSuggestion(),
 					"",
-					"KNOWWE.plugin.correction.doCorrection('" + section.getID() + "', '" + suggestions.get(i) + "');",
+					"KNOWWE.plugin.correction.doCorrection('" + section.getID() + "', '" + suggestions.get(i).getSuggestion() + "');",
 					"correct/item"
 			);
 		}
