@@ -51,7 +51,7 @@ public interface CorrectionProvider {
 	public List<Suggestion> getSuggestions(KnowWEArticle article, Section<?> section, int threshold);
 	
 	/**
-	 * Encapsulates a Suggesion found by a CorrectionProvider.
+	 * Encapsulates a Suggestion found by a CorrectionProvider.
 	 * 
 	 * @author Alex Legler
 	 * @created 20.05.2011
