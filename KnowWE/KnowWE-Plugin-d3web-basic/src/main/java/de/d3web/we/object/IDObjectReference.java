@@ -83,7 +83,7 @@ public class IDObjectReference extends D3webTermReference<NamedObject> {
 			}
 			KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(
 					article.getWeb()).getKB(article.getTitle());
-			NamedObject idObject = findTerminologyObjectByName(idObjectName, kb);
+			NamedObject idObject = findNamedObjectByName(idObjectName, kb);
 			if (idObject instanceof QuestionChoice && choiceString != null) {
 				QuestionChoice qc = (QuestionChoice) idObject;
 				idObject = null;
@@ -106,7 +106,8 @@ public class IDObjectReference extends D3webTermReference<NamedObject> {
 	 * @param name Name of the {@link TerminologyObject}
 	 * @return {@link TerminologyObject} with the specified name
 	 */
-	private static TerminologyObject findTerminologyObjectByName(String name, KnowledgeBase knowledgeBase) {
+	private static NamedObject findNamedObjectByName(String name, KnowledgeBase knowledgeBase) {
+		if (name.equals("KNOWLEDGEBASE")) return knowledgeBase;
 		List<TerminologyObject> objects = new LinkedList<TerminologyObject>();
 		objects.addAll(knowledgeBase.getManager().getQContainers());
 		objects.addAll(knowledgeBase.getManager().getSolutions());
