@@ -68,6 +68,8 @@ public class KnowledgeBaseType extends DefaultMarkupType implements IncrementalM
 	public static final String ANNOTATION_COMPILE = "uses";
 	public static final String ANNOTATION_FILENAME = "filename";
 	public static final String ANNOTATION_UNKNOWNBYDEFAULT = "unknownByDefault";
+	public static final String ANNOTATION_STATUS = "status";
+	public static final String ANNOTATION_AFFILIATION = "affiliation";
 
 	private static final DefaultMarkup MARKUP;
 
@@ -81,6 +83,8 @@ public class KnowledgeBaseType extends DefaultMarkupType implements IncrementalM
 		MARKUP.addAnnotation(ANNOTATION_VERSION, false);
 		MARKUP.addAnnotation(ANNOTATION_FILENAME, false);
 		MARKUP.addAnnotation(ANNOTATION_UNKNOWNBYDEFAULT, false);
+		MARKUP.addAnnotation(ANNOTATION_STATUS, false);
+		MARKUP.addAnnotation(ANNOTATION_AFFILIATION, false);
 	}
 
 	public KnowledgeBaseType() {
@@ -101,6 +105,8 @@ public class KnowledgeBaseType extends DefaultMarkupType implements IncrementalM
 				String comment = getAnnotation(section, ANNOTATION_COMMENT);
 				String version = getAnnotation(section, ANNOTATION_VERSION);
 				String filename = getAnnotation(section, ANNOTATION_FILENAME);
+				String status = getAnnotation(section, ANNOTATION_STATUS);
+				String affiliation = getAnnotation(section, ANNOTATION_AFFILIATION);
 				Boolean unknownbydefault = Boolean.valueOf(getAnnotation(section,
 						ANNOTATION_UNKNOWNBYDEFAULT));
 
@@ -113,6 +119,9 @@ public class KnowledgeBaseType extends DefaultMarkupType implements IncrementalM
 				if (comment != null) infoStore.addValue(MMInfo.DESCRIPTION, comment);
 				if (version != null) infoStore.addValue(BasicProperties.VERSION, version);
 				if (filename != null) infoStore.addValue(BasicProperties.FILENAME, filename);
+				if (status != null) infoStore.addValue(BasicProperties.STATUS, status);
+				if (affiliation != null) infoStore.addValue(BasicProperties.AFFILIATION,
+						affiliation);
 				if (unknownbydefault != null)
 					infoStore.addValue(BasicProperties.UNKNOWN_VISIBLE, unknownbydefault);
 
