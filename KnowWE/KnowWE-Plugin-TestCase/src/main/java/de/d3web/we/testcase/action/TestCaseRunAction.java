@@ -51,13 +51,18 @@ public class TestCaseRunAction extends TestCaseRunningAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		rb = D3webModule.getKwikiBundle_d3web(context);
-		msgFormatter = new MessageFormat("");
-
 		String testCaseName = context.getParameter("testcase");
 		String web = context.getParameter(KnowWEAttributes.WEB);
 
 		TestCase t = TestCaseUtils.loadTestSuite(testCaseName, web);
+		renderTests(context, t);
+
+	}
+
+	public void renderTests(UserActionContext context, TestCase t) throws IOException {
+		rb = D3webModule.getKwikiBundle_d3web(context);
+		msgFormatter = new MessageFormat("");
+
 		if (t == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"Test case was null. Unable to execute it.");
@@ -66,7 +71,6 @@ public class TestCaseRunAction extends TestCaseRunningAction {
 		else {
 			context.getWriter().write(renderTestCaseResult(t));
 		}
-
 	}
 
 	private String renderTestCaseResult(TestCase t) {
