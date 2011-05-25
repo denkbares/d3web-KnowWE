@@ -114,7 +114,7 @@ public class KnowledgeBaseType extends DefaultMarkupType implements IncrementalM
 				if (version != null) infoStore.addValue(BasicProperties.VERSION, version);
 				if (filename != null) infoStore.addValue(BasicProperties.FILENAME, filename);
 				if (unknownbydefault != null)
-					infoStore.addValue(BasicProperties.UNKNOWNBYDEFAULT, unknownbydefault);
+					infoStore.addValue(BasicProperties.UNKNOWN_VISIBLE, unknownbydefault);
 
 					return null;
 				}
