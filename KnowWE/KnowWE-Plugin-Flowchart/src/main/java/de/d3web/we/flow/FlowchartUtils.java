@@ -25,6 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.flow.kbinfo.JSPHelper;
 import de.d3web.we.flow.kbinfo.SearchInfoObjects;
 import de.d3web.we.flow.type.FlowchartPreviewContentType;
 import de.d3web.we.flow.type.FlowchartType;
@@ -97,13 +98,13 @@ public class FlowchartUtils {
 	 * @return s the preview including styles, or null if no preview is present
 	 */
 	public static String createRenderablePreview(Section<FlowchartType> flowSection, UserContext user) {
-		// return createFlowchartRenderer(flowSection, user);
+		//return createFlowchartRenderer(flowSection, user);
 		String preview = extractPreview(flowSection);
-
+		
 		if (preview == null) {
 			return null;
 		}
-
+		
 		return createRenderablePreview(preview);
 
 	}
@@ -112,12 +113,12 @@ public class FlowchartUtils {
 	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user) {
 		String name = FlowchartType.getFlowchartName(section);
 		String source = section.getOriginalText();
+		String web = user.getWeb();
 
 		String width = AbstractXMLType.getAttributeMapFor(section).get("width");
 		String height = AbstractXMLType.getAttributeMapFor(section).get("height");
 
 		KnowWEEnvironment knowWEEnv = KnowWEEnvironment.getInstance();
-		String phraseString = "";
 
 		List<Section<TermReference>> found = new LinkedList<Section<TermReference>>();
 		Sections.findSuccessorsOfType(section, TermReference.class, found);
@@ -132,16 +133,18 @@ public class FlowchartUtils {
 			}
 		}
 
-		List<String> searchObjects = SearchInfoObjects.searchObjects(knowWEEnv, user.getWeb(),
+		List<String> searchObjects = SearchInfoObjects.searchObjects(knowWEEnv, web,
 				builder.toString(), null, 400);
 
 		if (user.getWeb() == null) return "";
 
-		SearchInfoObjects.searchObjects(knowWEEnv, user.getWeb(), phraseString, null, 200);
 
 		String sourceID = name + "Source";
-		String initScript = "<script>Flowchart.createFromXML('" + name + "', $('" + sourceID
-				+ "')).setVisible(true);</script>\n";
+		String initScript = "<script>" +
+				"KBInfo._updateCache($('referredKBInfo'));" +
+				"Flowchart.createFromXML('" + name + "', $('" + sourceID
+				+ "')).setVisible(true);\n" +
+						"</script>\n";
 		String result = "\n<div>"
 				+
 				"<link rel='stylesheet' type='text/css' href='cc/flow/flowchart.css'></link>"
@@ -169,7 +172,7 @@ public class FlowchartUtils {
 				"<script src='cc/flow/router.js' type='text/javascript'></script>\n" +
 				"<xml id='" + sourceID + "' style ='display:none;'>" + source + "</xml>\n" +
 				"<xml id='referredKBInfo' style='display:none;'>" +
-				// jspHelper.getReferredInfoObjectsAsXML() +
+				JSPHelper.getReferrdInfoObjectsAsXML(web) +
 				"</xml>" +
 				"<div id='" + name + "' style='width:" + width + "px; height: " + height + "px;'>" +
 				initScript +

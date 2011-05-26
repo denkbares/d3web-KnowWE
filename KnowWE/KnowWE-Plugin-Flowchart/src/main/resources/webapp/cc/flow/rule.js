@@ -32,14 +32,13 @@ Rule.prototype.setVisible = function(visible) {
 		var selected = this.flowchart.isSelected(this);
 		this.dom = this.render(selected);
 		this.flowchart.getContentPane().appendChild(this.dom);
-		this.draggable = this.createDraggable();
+		this.createDraggable();
 		this.setGuardVisible(!selected, selected);
 	}
 	else if (this.isVisible() && !visible) {
 		// ==> hide Node
 		this.setGuardVisible(false, false);
-		this.draggable.destroy();
-		this.draggable = null;
+		this.destroyDraggable();
 		this.flowchart.getContentPane().removeChild(this.dom);
 		this.dom = null;
 	}
@@ -139,7 +138,11 @@ Rule.prototype.render = function(selected) {
 		return ruleDom;
 }
 
+// only implemented in editor
 Rule.prototype.createDraggable = function() {}
+
+// only implemented in editor
+Rule.prototype.destroyDraggable = function() {}
 
 
 

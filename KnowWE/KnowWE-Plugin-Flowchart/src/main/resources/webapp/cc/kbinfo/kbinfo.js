@@ -211,7 +211,7 @@ KBInfo._fireCacheChangeEvent = function(changedInfoObjects) {
 	// call all general Listeners
 	var listeners = KBInfo._cache.listeners['#_allKBInfoObjects'];
 	if (listeners) {
-		listeners = listeners.clone();
+		listeners = listeners.slice();
 		for (var i=0; i<listeners.length; i++) {
 			listeners[i](changedInfoObjects);
 		}
@@ -220,14 +220,14 @@ KBInfo._fireCacheChangeEvent = function(changedInfoObjects) {
 	for (var k=0; k<changedInfoObjects.length; k++) {
 		var listeners = KBInfo._cache.listeners[changedInfoObjects[k].getID().toLowerCase()];
 		if (listeners) {
-			listeners = listeners.clone();
+			listeners = listeners.slice();
 			for (var i=0; i<listeners.length; i++) {
 				listeners[i]([changedInfoObjects[k]]);
 			}
 		}		
 		var listeners = KBInfo._cache.listeners[changedInfoObjects[k].getName().toLowerCase()];
 		if (listeners) {
-			listeners = listeners.clone();
+			listeners = listeners.slice();
 			for (var i=0; i<listeners.length; i++) {
 				listeners[i]([changedInfoObjects[k]]);
 			}

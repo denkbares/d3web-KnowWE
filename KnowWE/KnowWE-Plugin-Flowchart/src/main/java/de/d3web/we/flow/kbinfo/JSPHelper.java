@@ -45,15 +45,15 @@ public class JSPHelper {
 		}
 	}
 
-	private List<String> getAllMatches(String className) {
+	private static List<String> getAllMatches(String className, String web) {
 		return SearchInfoObjects.searchObjects(
 				KnowWEEnvironment.getInstance(),
-				this.userContext.getWeb(),
+				web,
 				null, className, 65535);
 	}
 
 	public String getArticleIDsAsArray() {
-		List<String> matches = getAllMatches("Article");
+		List<String> matches = getAllMatches("Article", this.userContext.getWeb());
 		Collections.sort(matches);
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("[");
@@ -78,35 +78,40 @@ public class JSPHelper {
 
 	public String getArticleInfoObjectsAsXML() {
 		// search for matches
-		List<String> matches = getAllMatches("Article");
+		List<String> matches = getAllMatches("Article", this.userContext.getWeb());
 
 		// fill the response buffer
 		StringBuffer buffer = new StringBuffer();
-		GetInfoObjects.appendHeader(this.userContext, buffer);
+		GetInfoObjects.appendHeader(buffer);
 		for (String id : matches) {
 			GetInfoObjects.appendInfoObject(this.userContext.getWeb(), id, buffer);
 		}
-		GetInfoObjects.appendFooter(this.userContext, buffer);
+		GetInfoObjects.appendFooter(buffer);
 
 		// and done
 		return buffer.toString();
 	}
 
 	public String getReferredInfoObjectsAsXML() {
+		return getReferrdInfoObjectsAsXML(this.userContext.getWeb());
+	}
+
+	public static String getReferrdInfoObjectsAsXML(String web) {
 		// TODO: extract used object ids from flowchart as a list
 		// for now we simply use all existing objects
-		List<String> matches = getAllMatches(null);
+		List<String> matches = getAllMatches(null, web);
 
 		// fill the response buffer
 		StringBuffer buffer = new StringBuffer();
-		GetInfoObjects.appendHeader(this.userContext, buffer);
+		GetInfoObjects.appendHeader(buffer);
 		for (String id : matches) {
-			GetInfoObjects.appendInfoObject(this.userContext.getWeb(), id, buffer);
+			GetInfoObjects.appendInfoObject(web, id, buffer);
 		}
-		GetInfoObjects.appendFooter(this.userContext, buffer);
+		GetInfoObjects.appendFooter(buffer);
 
 		// and done
 		return buffer.toString();
+
 	}
 
 	@SuppressWarnings("unchecked")

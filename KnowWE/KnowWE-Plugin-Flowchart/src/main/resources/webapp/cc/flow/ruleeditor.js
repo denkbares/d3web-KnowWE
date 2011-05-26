@@ -23,7 +23,7 @@ CCEvents.addClassListener('click', 'Rule',
 	}
 );
 
-
+//overrides empty implementation in rule.js
 Rule.prototype.createDraggable = function() {
 	var newDrag = new Draggable(this.getDOM(), {
 		ghosting: false,
@@ -32,9 +32,14 @@ Rule.prototype.createDraggable = function() {
 		endeffect: null
 	});
 	newDrag.__rule = this;
-	return newDrag;	
+	this.draggable = newDrag;	
 }
 
+//overrides empty implementation in rule.js
+Rule.prototype.destroyDraggable = function() {
+	this.draggable.destroy();
+	this.draggable = null;
+}
 
 
 Rule.prototype.toXML = function() {

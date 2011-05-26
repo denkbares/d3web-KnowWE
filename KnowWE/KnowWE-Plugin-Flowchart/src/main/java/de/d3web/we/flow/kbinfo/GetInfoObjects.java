@@ -55,7 +55,6 @@ import de.d3web.we.action.UserActionContext;
 import de.d3web.we.basic.WikiEnvironment;
 import de.d3web.we.basic.WikiEnvironmentManager;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
-import de.d3web.we.user.UserContext;
 
 public class GetInfoObjects extends AbstractAction {
 
@@ -104,7 +103,7 @@ public class GetInfoObjects extends AbstractAction {
 
 		// prepare the buffer for the result
 		StringBuffer buffer = new StringBuffer();
-		getInfoObjectsForIDs(context, ids, buffer);
+		getInfoObjectsForIDs(context.getWeb(), ids, buffer);
 
 		context.setContentType("text/xml");
 		context.getWriter().write(buffer.toString());
@@ -113,29 +112,29 @@ public class GetInfoObjects extends AbstractAction {
 	/**
 	 * 
 	 * @created 18.03.2011
-	 * @param context
+	 * @param web
 	 * @param ids
 	 * @param buffer
 	 */
-	public static void getInfoObjectsForIDs(UserActionContext context, String ids, StringBuffer buffer) {
-		appendHeader(context, buffer);
+	public static void getInfoObjectsForIDs(String web, String ids, StringBuffer buffer) {
+		appendHeader(buffer);
 
 		// iterate through the requested Objects
 		String[] idArray = ids.split(",");
 		for (int i = 0; i < idArray.length; i++) {
 			String id = idArray[i];
-			appendInfoObject(context.getWeb(), id, buffer);
+			appendInfoObject(web, id, buffer);
 		}
 
 		// finish result
-		appendFooter(context, buffer);
+		appendFooter(buffer);
 	}
 
-	public static void appendHeader(UserContext userContext, StringBuffer buffer) {
+	public static void appendHeader(StringBuffer buffer) {
 		buffer.append("<kbinfo>\n");
 	}
 
-	public static void appendFooter(UserContext userContext, StringBuffer buffer) {
+	public static void appendFooter(StringBuffer buffer) {
 		buffer.append("</kbinfo>");
 	}
 
@@ -151,19 +150,14 @@ public class GetInfoObjects extends AbstractAction {
 		WikiEnvironment env = WikiEnvironmentManager.getInstance().getEnvironments(web);
 		KnowledgeBase service = env.getService(serviceID);
 
-		// if (service == null) {
-		// it is possible (and allowed) that an article has no
-		// KnowledgeService
-		// but (!): we do only list those having articles!
-		// TODO: log a warning here
-		// }
-		// else
 		if (objectID == null) {
 			// we want to have the article itself
 			appendInfoObject(web, service, buffer);
 		}
-		// look for an object inside the knowledgebase
-		appendInfoObject(web, service, objectID, buffer);
+		else { // look for an object inside the knowledgebase
+			appendInfoObject(web, service, objectID, buffer);
+		}
+
 	}
 
 	private static void appendInfoObject(String web, KnowledgeBase base, StringBuffer buffer) {
