@@ -57,7 +57,7 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 		TermReference<?> termReference = ((TermReference<?>) section.get());		
 
 		Collection<String> localTermMatches = terminologyHandler.getAllLocalTermsOfType(
-				section.getArticle().getTitle(),
+				article.getTitle(),
 				termReference.getTermObjectClass()
 		);
 
