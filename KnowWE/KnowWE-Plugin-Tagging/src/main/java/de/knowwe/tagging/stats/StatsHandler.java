@@ -25,11 +25,10 @@ package de.knowwe.tagging.stats;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
@@ -115,7 +114,7 @@ public class StatsHandler extends AbstractHTMLTagHandler {
 		buffy.append(renderline("Tags", erg.size() + ""));
 		buffy.append(renderline("Tags:", ""));
 
-		HashMap<String, Float> tags = de.knowwe.tagging.TaggingMangler.getInstance().getAllTagsWithWeight();
+		Map<String, Float> tags = de.knowwe.tagging.TaggingMangler.getInstance().getAllTagsWithWeight();
 		SortedMap<String, Float> sortedtags = new TreeMap<String, Float>(
 				new ValueComparer(tags));
 		sortedtags.putAll(tags);

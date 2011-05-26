@@ -22,7 +22,6 @@ package de.knowwe.tagging;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +38,8 @@ public class TagCloud extends AbstractHTMLTagHandler {
 	@Override
 	public String renderHTML(String topic, UserContext user,
 			Map<String, String> values, String web) {
-		HashMap<String, Integer> weightedlist = TaggingMangler.getInstance().getCloudList(8, 20);
+		Map<String, Integer> weightedlist = TaggingMangler.getInstance().getCloudList(8,
+				20);
 		String output = "<p>";
 		// TagSearch.jsp?query=test+auto&ok=Find!&start=0&maxitems=20
 		List<String> tlist = new ArrayList<String>();

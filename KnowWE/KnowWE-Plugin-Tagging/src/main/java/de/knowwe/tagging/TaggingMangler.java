@@ -162,7 +162,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * @param tag
 	 * @return
 	 */
-	public ArrayList<String> getPages(String tag) {
+	public List<String> getPages(String tag) {
 		String lns = SemanticCoreDelegator.getInstance().getUpper().getLocaleNS();
 		String querystring = "";
 		try {
@@ -211,7 +211,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 *
 	 * @return
 	 */
-	public ArrayList<String> getAllTags() {
+	public List<String> getAllTags() {
 		ArrayList<String> erg = new ArrayList<String>();
 		for (String cur : getAllTagsWithDuplicates())
 			if (!erg.contains(cur)) erg.add(cur);
@@ -226,14 +226,14 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * @param maxSize
 	 * @return
 	 */
-	public HashMap<String, Integer> getCloudList(int minSize, int maxSize) {
+	public Map<String, Integer> getCloudList(int minSize, int maxSize) {
 		if (minSize > maxSize) {
 			int t = minSize;
 			minSize = maxSize;
 			maxSize = t;
 		}
-		HashMap<String, Integer> result = new HashMap<String, Integer>();
-		HashMap<String, Float> weighted = getAllTagsWithWeight();
+		Map<String, Integer> result = new HashMap<String, Integer>();
+		Map<String, Float> weighted = getAllTagsWithWeight();
 		float factor = maxSize - minSize;
 		for (Entry<String, Float> cur : weighted.entrySet()) {
 			result.put(cur.getKey(), Math.round(minSize
@@ -247,8 +247,8 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 *
 	 * @return
 	 */
-	public HashMap<String, Float> getAllTagsWithWeight() {
-		ArrayList<String> tags = getAllTagsWithDuplicates();
+	public Map<String, Float> getAllTagsWithWeight() {
+		List<String> tags = getAllTagsWithDuplicates();
 		HashMap<String, Float> countlist = new HashMap<String, Float>();
 		float max = 0;
 		for (String cur : tags) {
@@ -275,7 +275,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 		return weighted;
 	}
 
-	private ArrayList<String> getAllTagsWithDuplicates() {
+	private List<String> getAllTagsWithDuplicates() {
 		String querystring = "SELECT ?q \n" + "WHERE {\n"
 				+ "?t rdf:object ?q .\n" + "?t rdf:predicate ns:hasTag .\n"
 				+ "}";
@@ -344,7 +344,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 				context, topic, nodesMap);
 	}
 
-	public ArrayList<GenericSearchResult> searchPages(String querytags) {
+	public List<GenericSearchResult> searchPages(String querytags) {
 
 		String[] tags = querytags.split(" ");
 		ArrayList<GenericSearchResult> result = new ArrayList<GenericSearchResult>();
@@ -393,7 +393,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 	public String getResultPanel(String queryString) {
 
 		if (queryString != null) {
-			ArrayList<GenericSearchResult> pages = searchPages(queryString);
+			List<GenericSearchResult> pages = searchPages(queryString);
 			Collections.sort(pages, new Comparator<GenericSearchResult>() {
 
 				@Override
