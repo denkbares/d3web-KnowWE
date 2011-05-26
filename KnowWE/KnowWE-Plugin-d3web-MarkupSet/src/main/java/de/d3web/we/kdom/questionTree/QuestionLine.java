@@ -40,6 +40,7 @@ import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.IncrementalMarker;
+import de.d3web.we.kdom.questionTree.extension.InlineContraIndicationCondition;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -93,7 +94,7 @@ public class QuestionLine extends AbstractType {
 
 		// allows to make inline-indications in question-definitions uncomment
 		// to activate:
-		// this.childrenTypes.add(new InlineIndicationCondition());
+		// this.childrenTypes.add(new InlineContraIndicationCondition());
 
 		// type of the question '[oc]'
 		this.childrenTypes.add(new QuestionTypeDeclaration());

@@ -8,14 +8,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.Rule;
+import de.d3web.core.inference.condition.CondNot;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.QASet;
-import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.indication.ActionContraIndication;
-import de.d3web.indication.ActionInstantIndication;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -26,6 +23,7 @@ import de.d3web.we.kdom.condition.Finding;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.NothingRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.rules.RuleContentType;
@@ -34,7 +32,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.UnquotedExpressionFinder;
 import de.d3web.we.kdom.type.AnonymousType;
-import de.d3web.we.object.QuestionDefinition;
+import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
@@ -47,12 +45,12 @@ import de.d3web.we.utils.SplitUtility;
  * @author Jochen
  * @created 23.12.2010
  */
-public class InlineIndicationCondition extends AbstractType {
+public class InlineContraIndicationCondition extends AbstractType {
 
 	private static final String START_KEY = "&\\s*?(Nur falls|Only if):?";
 	private static final String END_KEY = "&";
 
-	public InlineIndicationCondition() {
+	public InlineContraIndicationCondition() {
 		this.addSubtreeHandler(new CreateIndicationRulesHandler());
 		this.setSectionFinder(new InlineIndiFinder());
 
@@ -99,51 +97,45 @@ public class InlineIndicationCondition extends AbstractType {
 
 	}
 
-	static class CreateIndicationRulesHandler extends D3webSubtreeHandler<InlineIndicationCondition> {
+	static class CreateIndicationRulesHandler extends D3webSubtreeHandler<InlineContraIndicationCondition> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<InlineIndicationCondition> s) {
-			Section<Finding> finding =  Sections.findSuccessor(s, Finding.class);
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<InlineContraIndicationCondition> s) {
+			Section<Finding> finding = Sections.findSuccessor(s, Finding.class);
 
-			Section<QuestionDefinition> qDef = Sections.findSuccessor(s.getFather(),
-					QuestionDefinition.class);
-			Collection<KDOMReportMessage> collection = new HashSet<KDOMReportMessage>();
+			@SuppressWarnings("rawtypes")
+			Section<QASetDefinition> qDef = Sections.findSuccessor(s.getFather(),
+					QASetDefinition.class);
+			Collection<KDOMReportMessage> msgs = new HashSet<KDOMReportMessage>();
 			if (finding != null && qDef != null) {
 
-				Question question = qDef.get().getTermObject(article, qDef);
-
-				// create instant-indication rule with the specified condition
-				Condition condition = finding.get().getCondition(article, finding);
-				ActionInstantIndication actionInstantIndication = new ActionInstantIndication();
-				List<QASet> obs = new ArrayList<QASet>();
-				obs.add(question);
-				actionInstantIndication.setQASets(obs);
-				collection = createRule(article, s, actionInstantIndication, condition);
+				@SuppressWarnings("unchecked")
+				QASet qaset = (QASet) qDef.get().getTermObject(article, qDef);
 
 				// create an contraIndication-rule that always fires at
 				// beginning
-				ActionContraIndication actionContraIndication = new ActionContraIndication();
 				List<QASet> obsContra = new ArrayList<QASet>();
-				obsContra.add(question);
-				actionContraIndication.setQASets(obsContra);
-				// Collection<KDOMReportMessage> collection2 =
-				// createRule(article, s,
-				// actionContraIndication, new CondUnknown(question));
-				// Todo handle these messages
-
+				obsContra.add(qaset);
+				Condition condition = finding.get().getCondition(article, finding);
+				if (condition == null) {
+					msgs.add(new SimpleMessageError("Could not create condition"));
+				}
+				else {
+					msgs = createRule(article, s, obsContra, new CondNot(
+							condition));
+				}
 			}
 
-			return collection;
+			return msgs;
 		}
 
-		private Collection<KDOMReportMessage> createRule(KnowWEArticle article, Section<InlineIndicationCondition> s, PSAction d3action, Condition d3Cond) {
+		private Collection<KDOMReportMessage> createRule(KnowWEArticle article, Section<InlineContraIndicationCondition> s, List<QASet> d3action, Condition d3Cond) {
 			if (s.hasErrorInSubtree(article)) {
 				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed("Rule"));
 			}
 
 			if (d3action != null && d3Cond != null) {
-				Rule r = RuleFactory.createRule(d3action, d3Cond,
-						null, null, null);
+				Rule r = RuleFactory.createContraIndicationRule(d3action, d3Cond);
 				if (r != null) {
 					KnowWEUtils.storeObject(article, s, RuleContentType.ruleStoreKey, r);
 					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage("Rule"));
