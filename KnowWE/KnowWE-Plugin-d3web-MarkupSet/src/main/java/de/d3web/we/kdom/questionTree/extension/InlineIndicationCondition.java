@@ -12,8 +12,8 @@ import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.CondNot;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.QASet;
+import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -23,9 +23,9 @@ import de.d3web.we.kdom.condition.Finding;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.NothingRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
+import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.rules.RuleContentType;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -45,12 +45,12 @@ import de.d3web.we.utils.SplitUtility;
  * @author Jochen
  * @created 23.12.2010
  */
-public class InlineContraIndicationCondition extends AbstractType {
+public class InlineIndicationCondition extends AbstractType {
 
 	private static final String START_KEY = "&\\s*?(Nur falls|Only if):?";
 	private static final String END_KEY = "&";
 
-	public InlineContraIndicationCondition() {
+	public InlineIndicationCondition() {
 		this.addSubtreeHandler(new CreateIndicationRulesHandler());
 		this.setSectionFinder(new InlineIndiFinder());
 
@@ -97,10 +97,15 @@ public class InlineContraIndicationCondition extends AbstractType {
 
 	}
 
-	static class CreateIndicationRulesHandler extends D3webSubtreeHandler<InlineContraIndicationCondition> {
+	static class CreateIndicationRulesHandler extends D3webSubtreeHandler<InlineIndicationCondition> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<InlineContraIndicationCondition> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<InlineIndicationCondition> s) {
+
+			if (s.hasErrorInSubtree(article)) {
+				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed("Rule"));
+			}
+
 			Section<Finding> finding = Sections.findSuccessor(s, Finding.class);
 
 			@SuppressWarnings("rawtypes")
@@ -112,42 +117,34 @@ public class InlineContraIndicationCondition extends AbstractType {
 				@SuppressWarnings("unchecked")
 				QASet qaset = (QASet) qDef.get().getTermObject(article, qDef);
 
-				// create an contraIndication-rule that always fires at
-				// beginning
-				List<QASet> obsContra = new ArrayList<QASet>();
-				obsContra.add(qaset);
 				Condition condition = finding.get().getCondition(article, finding);
 				if (condition == null) {
-					msgs.add(new SimpleMessageError("Could not create condition"));
+					msgs.add(new ObjectCreationError(Condition.class.getSimpleName(),
+							this.getClass()));
+					return msgs;
 				}
-				else {
-					msgs = createRule(article, s, obsContra, new CondNot(
-							condition));
+
+				// create an contraIndication-rule
+				List<QASet> qasets = new ArrayList<QASet>();
+				qasets.add(qaset);
+
+				Rule r = RuleFactory.createContraIndicationRule(qasets, new CondNot(condition));
+				Rule r2 = null;
+				if (qaset instanceof QContainer) {
+					r2 = RuleFactory.createIndicationRule(qasets, condition);
 				}
-			}
-
-			return msgs;
-		}
-
-		private Collection<KDOMReportMessage> createRule(KnowWEArticle article, Section<InlineContraIndicationCondition> s, List<QASet> d3action, Condition d3Cond) {
-			if (s.hasErrorInSubtree(article)) {
-				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed("Rule"));
-			}
-
-			if (d3action != null && d3Cond != null) {
-				Rule r = RuleFactory.createContraIndicationRule(d3action, d3Cond);
-				if (r != null) {
+				if (r == null || (qaset instanceof QContainer && r2 == null)) {
+					msgs.add(new ObjectCreationError(Rule.class.getSimpleName(),
+								this.getClass()));
+				}
+				if (r != null && !(qaset instanceof QContainer && r2 == null)) {
 					KnowWEUtils.storeObject(article, s, RuleContentType.ruleStoreKey, r);
 					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage("Rule"));
 				}
 
 			}
 
-			// should not happen
-			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
-					D3webModule.getKwikiBundle_d3web().
-							getString("KnowWE.rulesNew.notcreated")
-					));
+			return msgs;
 		}
 
 	}

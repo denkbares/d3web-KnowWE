@@ -35,7 +35,7 @@ import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.constraint.UnquotedConstraint;
 import de.d3web.we.kdom.objects.IncrementalMarker;
-import de.d3web.we.kdom.questionTree.extension.InlineContraIndicationCondition;
+import de.d3web.we.kdom.questionTree.extension.InlineIndicationCondition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
@@ -63,7 +63,7 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 
 		// allows to make inline-indications in question-definitions uncomment
 		// to activate:
-		//this.childrenTypes.add(new InlineContraIndicationCondition());
+		// this.childrenTypes.add(new InlineIndicationCondition());
 
 		// add description-type via '~'
 		this.addChildType(new ObjectDescription(MMInfo.DESCRIPTION));
