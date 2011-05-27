@@ -22,6 +22,7 @@ package de.d3web.we.kdom.objects;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.ResourceBundle;
 
 import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -29,7 +30,9 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NoSuchObjectError;
 import de.d3web.we.kdom.report.message.ObjectFound;
+import de.d3web.we.kdom.report.message.ObjectNotUniquelyDefinedError;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.terminology.TerminologyHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -111,7 +114,8 @@ public abstract class TermReference<TermObject>
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<TermReference<TermObject>> s) {
 
-			KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermReference(article, s);
+			KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermReference(
+					article, s);
 
 			String termName = s.get().getTermName(s);
 
@@ -119,6 +123,20 @@ public abstract class TermReference<TermObject>
 				return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(
 						s.get().getTermObjectDisplayName(),
 						termName));
+			}
+
+			// check for duplicateBlockingMode and recompile term if necessary
+			ResourceBundle bundle = ResourceBundle.getBundle("KnowWE_config");
+			if (bundle.containsKey(TerminologyHandler.BLOCK_DUPLICATE_DEFS_KEY)) {
+				if (bundle.getString(TerminologyHandler.BLOCK_DUPLICATE_DEFS_KEY).equalsIgnoreCase(
+						"true")) {
+					boolean blockedByDuplicateDefinitions = KnowWEUtils.getTerminologyHandler(
+							article.getWeb()).isBlockedByDuplicateDefinitions(article, s);
+					if (blockedByDuplicateDefinitions) {
+						return Arrays.asList((KDOMReportMessage) new ObjectNotUniquelyDefinedError(
+								" Revise definitions!"));
+					}
+				}
 			}
 
 			// TODO: give meaningful information about the object
@@ -130,7 +148,8 @@ public abstract class TermReference<TermObject>
 
 		@Override
 		public void destroy(KnowWEArticle article, Section<TermReference<TermObject>> s) {
-			KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermReference(article, s);
+			KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermReference(
+					article, s);
 		}
 
 	}
