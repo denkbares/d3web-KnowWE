@@ -501,6 +501,25 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		
+		<!-- Onte Plugin -->
+		<profile>
+			<id>onte-plugin</id>
+			<activation>
+				<property>
+					<name>onte-plugin</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Onte</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		
 
 		<!-- DiaFlux Refactoring -->
 		<profile>
