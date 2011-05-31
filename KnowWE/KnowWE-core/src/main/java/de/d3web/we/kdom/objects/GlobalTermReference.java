@@ -1,5 +1,6 @@
 package de.d3web.we.kdom.objects;
 
+
 /**
  * 
  * An abstract class for TermReferences that are always acting in the global
@@ -14,7 +15,7 @@ public abstract class GlobalTermReference<TermObject> extends TermReference<Term
 
 	public GlobalTermReference(Class<TermObject> termObjectClass) {
 		super(termObjectClass);
-		this.setTermScope(KnowWETerm.GLOBAL);
+		this.setTermScope(Scope.GLOBAL);
 	}
 	
 }

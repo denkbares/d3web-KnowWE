@@ -23,6 +23,7 @@ package de.d3web.we.kdom.objects;
 import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.terminology.TerminologyHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -40,11 +41,28 @@ public abstract class TermDefinition<TermObject>
 		extends AbstractType
 		implements KnowWETerm<TermObject> {
 
+	public static enum MultiDefMode {
+		/**
+		 * Multiple definitions of one term are allowed. If there is more than
+		 * one definition of a term, the additional definitions are just
+		 * references to the actual definition (highest in priority and first in
+		 * the text).
+		 */
+		ACTIVE,
+		/**
+		 * Multiple definitions of one term are not allowed. A definition is
+		 * only valid if there is exactly one of it.
+		 */
+		INACTIVE
+	}
+
 	protected String key;
 
 	protected Class<TermObject> termObjectClass;
 
-	private int termScope = KnowWETerm.LOCAL;
+	private Scope termScope = Scope.LOCAL;
+
+	private MultiDefMode multiDefMode = MultiDefMode.ACTIVE;
 
 	public TermDefinition(Class<TermObject> termObjectClass) {
 		if (termObjectClass == null) {
@@ -54,6 +72,7 @@ public abstract class TermDefinition<TermObject>
 		this.key = termObjectClass.getName() + "_STORE_KEY";
 	}
 
+	@Override
 	public Class<TermObject> getTermObjectClass() {
 		return this.termObjectClass;
 	}
@@ -66,11 +85,12 @@ public abstract class TermDefinition<TermObject>
 	public TermObject getTermObject(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> s) {
 		// in case the of duplicate definitions, get the one that has actually
 		// created the TermObject
-		Section<? extends TermDefinition<TermObject>> defSec = KnowWEUtils.getTerminologyHandler(
-				s.getWeb()).getTermDefiningSection(article, s);
+		TerminologyHandler tHandler = KnowWEUtils.getTerminologyHandler(s.getWeb());
+		Section<? extends TermDefinition<TermObject>> defSec = tHandler.getTermDefiningSection(article, s);
 		if (defSec != null) s = defSec;
+		if (!tHandler.isDefinedTerm(article, s)) return null;
 		return (TermObject) KnowWEUtils.getStoredObject(
-				s.get().getTermScope() == KnowWETerm.GLOBAL ? null : article, s, key);
+				s.get().getTermScope() == Scope.GLOBAL ? null : article, s, key);
 	}
 
 	/**
@@ -83,7 +103,7 @@ public abstract class TermDefinition<TermObject>
 	@SuppressWarnings("unchecked")
 	public TermObject getTermObjectFromLastVersion(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> s) {
 		return (TermObject) KnowWEUtils.getObjectFromLastVersion(
-				s.get().getTermScope() == KnowWETerm.GLOBAL ? null : article, s, key);
+				s.get().getTermScope() == Scope.GLOBAL ? null : article, s, key);
 	}
 
 	/**
@@ -92,24 +112,32 @@ public abstract class TermDefinition<TermObject>
 	 * needed for the further compilation process
 	 */
 	public void storeTermObject(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> s, TermObject q) {
-		KnowWEUtils.storeObject(s.get().getTermScope() == KnowWETerm.GLOBAL ? null : article, s,
+		KnowWEUtils.storeObject(s.get().getTermScope() == Scope.GLOBAL ? null : article, s,
 				key, q);
 	}
 
 	@Override
-	public int getTermScope() {
+	public Scope getTermScope() {
 		return this.termScope;
 	}
 
 	@Override
-	public void setTermScope(int termScope) {
+	public void setTermScope(Scope termScope) {
 		this.termScope = termScope;
-		if (termScope == KnowWETerm.GLOBAL) {
+		if (termScope == Scope.GLOBAL) {
 			this.setIgnorePackageCompile(true);
 		}
 		else {
 			this.setIgnorePackageCompile(false);
 		}
+	}
+	
+	public MultiDefMode getMultiDefMode() {
+		return this.multiDefMode;
+	}
+
+	public void setMultiDefMode(MultiDefMode mode) {
+		this.multiDefMode = mode;
 	}
 
 }

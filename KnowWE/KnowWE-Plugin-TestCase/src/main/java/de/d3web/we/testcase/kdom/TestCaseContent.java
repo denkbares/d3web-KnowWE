@@ -61,7 +61,7 @@ import de.d3web.we.utils.KnowWEUtils;
 public class TestCaseContent extends StringReference {
 
 	protected TestCaseContent() {
-		this.setTermScope(KnowWETerm.GLOBAL);
+		this.setTermScope(Scope.GLOBAL);
 		this.setIgnorePackageCompile(true);
 		this.sectionFinder = new AllTextSectionFinder();
 		this.childrenTypes.add(new SequentialTestCase());

@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,10 +42,13 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
+import de.d3web.we.kdom.objects.KnowWETerm.Scope;
 import de.d3web.we.kdom.objects.NotUniqueKnowWETerm;
 import de.d3web.we.kdom.objects.TermDefinition;
+import de.d3web.we.kdom.objects.TermDefinition.MultiDefMode;
 import de.d3web.we.kdom.objects.TermReference;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.message.MultipleTermDefinitionsError;
 import de.d3web.we.kdom.report.message.OccupiedTermError;
 import de.d3web.we.kdom.report.message.TermNameCaseWarning;
 
@@ -63,8 +65,6 @@ import de.d3web.we.kdom.report.message.TermNameCaseWarning;
  * 
  */
 public class TerminologyHandler implements EventListener {
-
-	public static final String BLOCK_DUPLICATE_DEFS_KEY = "compile.blockDuplicateDefs";
 
 	private final String web;
 
@@ -90,8 +90,8 @@ public class TerminologyHandler implements EventListener {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private Map<TermIdentifier, TermReferenceLog> getTermReferenceLogsMap(String title, int termScope) {
-		if (termScope == KnowWETerm.GLOBAL) {
+	private Map<TermIdentifier, TermReferenceLog> getTermReferenceLogsMap(String title, Scope termScope) {
+		if (termScope == Scope.GLOBAL) {
 			return this.globalTermReferenceLogs;
 		}
 		Map<TermIdentifier, TermReferenceLog> tmap = termReferenceLogsMaps.get(title);
@@ -102,15 +102,14 @@ public class TerminologyHandler implements EventListener {
 		return tmap;
 	}
 
-	@SuppressWarnings( {
+	@SuppressWarnings({
 			"unchecked", "rawtypes" })
 	private <TermObject> TermReferenceLog<TermObject> getTermReferenceLog(KnowWEArticle article,
 			Section<? extends KnowWETerm<TermObject>> r) {
 		TermReferenceLog refLog = getTermReferenceLogsMap(
-				r.get().getTermScope() == KnowWETerm.GLOBAL ? null : article.getTitle(),
+				r.get().getTermScope() == Scope.GLOBAL ? null : article.getTitle(),
 				r.get().getTermScope()).get(new TermIdentifier(article, r));
-		if (refLog != null
-				&& refLog.getTermObjectClass().equals(r.get().getTermObjectClass())) {
+		if (refLog != null && refLog.getTermObjectClass().equals(r.get().getTermObjectClass())) {
 			return refLog;
 		}
 		else {
@@ -118,18 +117,16 @@ public class TerminologyHandler implements EventListener {
 		}
 	}
 
-	private TermReferenceLog<?> getTermReferenceLog(KnowWEArticle article, String termIdentifier, int termScope) {
-		return getTermReferenceLogsMap(
-				termScope == KnowWETerm.GLOBAL ? null : article.getTitle(),
+	private TermReferenceLog<?> getTermReferenceLog(KnowWEArticle article, String termIdentifier, Scope termScope) {
+		return getTermReferenceLogsMap(termScope == Scope.GLOBAL ? null : article.getTitle(),
 				termScope).get(new TermIdentifier(termIdentifier));
 	}
 
-	@SuppressWarnings( {
+	@SuppressWarnings({
 			"unchecked", "rawtypes" })
 	private void removeTermReferenceLogsForArticle(KnowWEArticle article) {
-		Map<TermIdentifier, TermReferenceLog> logs = getTermReferenceLogsMap(
-				article.getTitle(),
-				KnowWETerm.LOCAL);
+		Map<TermIdentifier, TermReferenceLog> logs = getTermReferenceLogsMap(article.getTitle(),
+				Scope.LOCAL);
 		for (TermReferenceLog log : new LinkedList<TermReferenceLog>(logs.values())) {
 			if (log.termDefiningSection != null) {
 				this.unregisterTermDefinition(article, log.termDefiningSection);
@@ -138,12 +135,10 @@ public class TerminologyHandler implements EventListener {
 		termReferenceLogsMaps.remove(article.getTitle());
 
 		logs = getTermReferenceLogsMap(article.getTitle(),
-				KnowWETerm.GLOBAL);
+				Scope.GLOBAL);
 		for (TermReferenceLog log : new LinkedList<TermReferenceLog>(logs.values())) {
-			if (log.termDefiningSection != null
-					&&
-					log.termDefiningSection.getArticle().getTitle().equals(
-							article.getTitle())) {
+			if (log.termDefiningSection != null &&
+					log.termDefiningSection.getArticle().getTitle().equals(article.getTitle())) {
 				this.unregisterTermDefinition(article, log.termDefiningSection);
 			}
 			else {
@@ -168,8 +163,7 @@ public class TerminologyHandler implements EventListener {
 	 * 
 	 * TODO: This methods gets huge... find a way to simplify or shorten it.
 	 * 
-	 * @param s
-	 *            is the term defining section.
+	 * @param s is the term defining section.
 	 * @param <TermObject>
 	 * @returns true if the sections was registered as the defining section for
 	 *          this term. false else.
@@ -177,15 +171,13 @@ public class TerminologyHandler implements EventListener {
 	public <TermObject> boolean registerTermDefinition(KnowWEArticle article,
 			Section<? extends TermDefinition<TermObject>> s) {
 
-		KnowWEArticleManager artMan = KnowWEEnvironment.getInstance().getArticleManager(
-				article.getWeb());
 		Collection<KDOMReportMessage> msgs = new LinkedList<KDOMReportMessage>();
 		Priority p = article.getReviseIterator().getCurrentPriority();
 		TermIdentifier termIdentifier = new TermIdentifier(article, s);
 		TermReferenceLog<TermObject> termRefLog = getTermReferenceLog(article, s);
+		// if the termRefLog is null, it could still be, that there is a log
+		// for the same term, but a different termObjectClass
 		if (termRefLog == null) {
-			// if the termRefLog is null, it could still be, that there is a log
-			// for the same term, but a different termObjectClass
 			TermReferenceLog<?> termRefLogWrongClass = getTermReferenceLog(article,
 					new TermIdentifier(article, s).toString(), s.get().getTermScope());
 			if (termRefLogWrongClass != null) {
@@ -196,66 +188,38 @@ public class TerminologyHandler implements EventListener {
 				// If there is no term defining section or a definition with
 				// lower priority or with the same priority, but further down in
 				// the article, then that old termRefLog is no longer valid
-				if (termRefLogWrongClass.termDefiningSection == null
-						||
+				if (termRefLogWrongClass.termDefiningSection == null ||
 						termRefLogWrongClass.priorityOfDefiningSection.compareTo(p) < 0
 							|| (termRefLogWrongClass.priorityOfDefiningSection.compareTo(p) == 0
 									&& termRefLogWrongClass.termDefiningSection.compareTo(s) > 0)) {
 
-					// A TermDefinition with a different termObjectClass was
-					// added before another already existing or with higher
-					// priority than the existing TermDefinition with the same
-					// term....
-					// If the scope is LOCAL, we need a full reparse, because
-					// we are already past the destroy step.
-					// If the scope is GLOBAL, we need a full reparse for the
-					// same reason, but only if the last TermDefinition
-					// originates from the article currently compiled. If the
-					// Section is from a different article, it will compiled
-					// there.
-					if (s.get().getTermScope() == KnowWETerm.GLOBAL) {
-						artMan.addAllArticlesToUpdate(termRefLogWrongClass.termDefiningSection.getReusedBySet());
-						termRefLogWrongClass.termDefiningSection.clearReusedBySet();
-						for (Section<?> termDef : termRefLogWrongClass.getRedundantDefinitions()) {
-							artMan.addAllArticlesToUpdate(termDef.getReusedBySet());
-							termDef.clearReusedBySet();
-						}
-						for (Section<?> termRef : termRefLogWrongClass.getReferences()) {
-							artMan.addAllArticlesToUpdate(termRef.getReusedBySet());
-							termRef.clearReusedBySet();
-						}
-					}
-					if (s.get().getTermScope() == KnowWETerm.LOCAL
-							|| termRefLogWrongClass.termDefiningSection.getArticle().getTitle().equals(
-									article.getTitle())) {
-						article.setFullParse(this.getClass());
-					}
+					globalRecompilationOfTerm(article, s, termRefLogWrongClass);
 				}
 				KDOMReportMessage.storeMessages(article, s, this.getClass(), msgs);
 				return false;
 			}
 		}
+		// so the termRefLog is not null
 		else {
-			// so the termRefLog is not null
 			// there is already a term defining section registered for this term
 			if (termRefLog.termDefiningSection != null) {
 				if (termRefLog.termDefiningSection == s
 						|| termRefLog.getRedundantDefinitions().contains(s)) {
 					// this should not happen
 					Logger.getLogger(this.getClass().getName())
-							.log(Level.WARNING,
-									"Tried to register same TermDefinition twice: '" +
-											termIdentifier + "'!");
+							.log(Level.WARNING, "Tried to register same TermDefinition twice: '" +
+									termIdentifier + "'!");
 					// now registration will be ignored
 					KDOMReportMessage.storeMessages(article, s, this.getClass(), msgs);
 					return false;
 				}
+				// If there is already a definition with higher priority or
+				// the same priority but further up in the article, this
+				// definition is redundant.
 				else if (termRefLog.priorityOfDefiningSection.compareTo(p) > 0
 							|| (termRefLog.priorityOfDefiningSection.compareTo(p) == 0
 									&& termRefLog.termDefiningSection.compareTo(s) < 0)) {
-					// If there is already a definition with higher priority or
-					// the same priority but further up in the article, this
-					// definition is redundant.
+
 					termRefLog.addRedundantTermDefinition(s);
 					String termName = termRefLog.termDefiningSection.get().getTermName(
 							termRefLog.termDefiningSection);
@@ -263,71 +227,88 @@ public class TerminologyHandler implements EventListener {
 					if (!termName.equals(redTermName)) {
 						msgs.add(new TermNameCaseWarning(termName));
 					}
-
-					// check for duplicateBlockingMode and recompile term if
-					// necessary
-					ResourceBundle bundle = ResourceBundle.getBundle("KnowWE_config");
-					if (bundle.containsKey(BLOCK_DUPLICATE_DEFS_KEY)) {
-						if (bundle.getString(BLOCK_DUPLICATE_DEFS_KEY).equalsIgnoreCase(
-								"true")) {
-							globalRecompilationOfTerm(artMan, termRefLog);
-						}
+					if (termRefLog.termDefiningSection.get().getMultiDefMode() == MultiDefMode.INACTIVE) {
+						globalRecompilationOfTerm(article, s, termRefLog);
+						MultipleTermDefinitionsError mtde = new MultipleTermDefinitionsError(
+								termName);
+						msgs.add(mtde);
+						KDOMReportMessage.storeSingleError(article, termRefLog.termDefiningSection,
+								this.getClass(), mtde);
 					}
 
 					KDOMReportMessage.storeMessages(article, s, this.getClass(), msgs);
 					return false;
 				}
 				else {
-
-					if (s.get().getTermScope() == KnowWETerm.GLOBAL) {
-						globalRecompilationOfTerm(artMan, termRefLog);
-					}
-					if (s.get().getTermScope() == KnowWETerm.LOCAL
-							|| termRefLog.termDefiningSection.getArticle().getTitle().equals(
-									article.getTitle())) {
-						article.setFullParse(this.getClass());
+					if (globalRecompilationOfTerm(article, s, termRefLog)) {
 						KDOMReportMessage.storeMessages(article, s, this.getClass(), msgs);
 						return false;
 					}
 				}
 			}
+			// There already is a termRefLog, but no term defining section.
+			// TermReferences need to be compiled again, because there is
+			// now a TermDefinition to refer to.
 			else {
-				// there already was a termRefLog, but not term defining section
-				// TermReferences need to be compiled again, because there is
-				// now a TermDefinition to refer to
 				for (Section<? extends TermReference<TermObject>> termRef : termRefLog.getReferences()) {
-					if (termRef.get().getTermScope() == KnowWETerm.GLOBAL) {
+					if (termRef.get().getTermScope() == Scope.GLOBAL) {
+						KnowWEArticleManager artMan = KnowWEEnvironment.getInstance().getArticleManager(
+								article.getWeb());
 						artMan.addAllArticlesToUpdate(termRef.getReusedBySet());
 						termRef.clearReusedBySet();
 					}
 					else {
 						termRef.setReusedBy(article.getTitle(), false);
 					}
-
 				}
 			}
 		}
-		getTermReferenceLogsMap(article.getTitle(), s.get().getTermScope()).put(
-				termIdentifier,
+		getTermReferenceLogsMap(article.getTitle(), s.get().getTermScope()).put(termIdentifier,
 				new TermReferenceLog<TermObject>(s.get().getTermObjectClass(), s, p));
-		if (s.get().getTermScope() == KnowWETerm.LOCAL) {
+		if (s.get().getTermScope() == Scope.LOCAL) {
 			modifiedTermDefinitions.add(article.getTitle());
 		}
 		KDOMReportMessage.storeMessages(article, s, this.getClass(), msgs);
 		return true;
 	}
 
-	private <TermObject> void globalRecompilationOfTerm(KnowWEArticleManager artMan, TermReferenceLog<TermObject> termRefLog) {
-		artMan.addAllArticlesToUpdate(termRefLog.termDefiningSection.getReusedBySet());
-		termRefLog.termDefiningSection.clearReusedBySet();
-		for (Section<?> termDef : termRefLog.getRedundantDefinitions()) {
-			artMan.addAllArticlesToUpdate(termDef.getReusedBySet());
-			termDef.clearReusedBySet();
+	/**
+	 * A TermDefinition with a different termObjectClass was added before
+	 * another already existing or with higher priority than the existing
+	 * TermDefinition with the same term.... If the scope is LOCAL, we need a
+	 * full reparse, because we are already past the destroy step. If the scope
+	 * is GLOBAL, we need a full reparse for the same reason, but only if the
+	 * last TermDefinition originates from the article currently compiled. If
+	 * the Section is from a different article, it will compiled there.
+	 * 
+	 * @return whether one can skip after the call of this method because of a
+	 *         full parse.
+	 */
+	private <TermObject> boolean globalRecompilationOfTerm(KnowWEArticle article,
+			Section<? extends TermDefinition<TermObject>> s,
+			TermReferenceLog<?> termRefLog) {
+
+		KnowWEArticleManager artMan = KnowWEEnvironment.getInstance().getArticleManager(
+				article.getWeb());
+		if (s.get().getTermScope() == Scope.GLOBAL) {
+			artMan.addAllArticlesToUpdate(termRefLog.termDefiningSection.getReusedBySet());
+			termRefLog.termDefiningSection.clearReusedBySet();
+			for (Section<?> termDef : termRefLog.getRedundantDefinitions()) {
+				artMan.addAllArticlesToUpdate(termDef.getReusedBySet());
+				termDef.clearReusedBySet();
+			}
+			for (Section<?> termRef : termRefLog.getReferences()) {
+				artMan.addAllArticlesToUpdate(termRef.getReusedBySet());
+				termRef.clearReusedBySet();
+			}
 		}
-		for (Section<?> termRef : termRefLog.getReferences()) {
-			artMan.addAllArticlesToUpdate(termRef.getReusedBySet());
-			termRef.clearReusedBySet();
+		if (s.get().getTermScope() == Scope.LOCAL
+				|| (termRefLog.termDefiningSection.getArticle().getTitle().equals(
+						article.getTitle()) && s.compareTo(termRefLog.termDefiningSection) < 0)) {
+			article.setFullParse(this.getClass());
+			return true;
 		}
+		return false;
 	}
 
 	public <TermObject> void registerTermReference(KnowWEArticle article, Section<? extends TermReference<TermObject>> s) {
@@ -345,8 +326,7 @@ public class TerminologyHandler implements EventListener {
 				KDOMReportMessage.storeMessages(article, s, this.getClass(), msgs);
 				return;
 			}
-			terRefLog = new TermReferenceLog<TermObject>(s.get().getTermObjectClass(),
-					null, null);
+			terRefLog = new TermReferenceLog<TermObject>(s.get().getTermObjectClass(), null, null);
 			getTermReferenceLogsMap(article.getTitle(), s.get().getTermScope()).put(
 					new TermIdentifier(article, s), terRefLog);
 		}
@@ -363,13 +343,18 @@ public class TerminologyHandler implements EventListener {
 	}
 
 	/**
-	 * Returns whether a term is defined through an TermDefinition
+	 * Returns whether a term is defined through a TermDefinition.
 	 */
-	public boolean isDefinedTerm(KnowWEArticle article, String termIdentifier, int termScope) {
-		TermReferenceLog<?> termRef = getTermReferenceLog(article, termIdentifier,
-				termScope);
+	public boolean isDefinedTerm(KnowWEArticle article, String termIdentifier, Scope termScope) {
+		TermReferenceLog<?> termRef = getTermReferenceLog(article, termIdentifier, termScope);
 		if (termRef != null) {
-			return termRef.termDefiningSection != null;
+			if (termRef.termDefiningSection != null) {
+				if (termRef.termDefiningSection.get().getMultiDefMode() == MultiDefMode.INACTIVE
+						&& !termRef.getRedundantDefinitions().isEmpty()) {
+					return false;
+				}
+				return true;
+			}
 		}
 		return false;
 	}
@@ -378,9 +363,8 @@ public class TerminologyHandler implements EventListener {
 	 * Returns whether there are TermReferences for this Term, but no
 	 * TermDefinition
 	 */
-	public boolean isUndefinedTerm(KnowWEArticle article, String termIdentifier, int termScope) {
-		TermReferenceLog<?> termRef = getTermReferenceLog(article, termIdentifier,
-				termScope);
+	public boolean isUndefinedTerm(KnowWEArticle article, String termIdentifier, Scope termScope) {
+		TermReferenceLog<?> termRef = getTermReferenceLog(article, termIdentifier, termScope);
 		if (termRef != null) {
 			return termRef.termDefiningSection == null;
 		}
@@ -394,10 +378,10 @@ public class TerminologyHandler implements EventListener {
 	 * @param s
 	 * @return
 	 */
-	@SuppressWarnings( {
+	@SuppressWarnings({
 			"unchecked", "rawtypes" })
 	public Section<? extends TermDefinition<?>> getTermDefiningSection(
-			KnowWEArticle article, String termIdentifier, int termScope) {
+			KnowWEArticle article, String termIdentifier, Scope termScope) {
 
 		TermReferenceLog refLog = getTermReferenceLog(article, termIdentifier, termScope);
 
@@ -415,10 +399,10 @@ public class TerminologyHandler implements EventListener {
 	 * @param s
 	 * @return
 	 */
-	@SuppressWarnings( {
+	@SuppressWarnings({
 			"unchecked", "rawtypes" })
 	public Collection<Section<? extends TermDefinition>> getRedundantTermDefiningSections(
-			KnowWEArticle article, String termIdentifier, int termScope) {
+			KnowWEArticle article, String termIdentifier, Scope termScope) {
 
 		TermReferenceLog refLog = getTermReferenceLog(article, termIdentifier, termScope);
 
@@ -430,18 +414,17 @@ public class TerminologyHandler implements EventListener {
 				0));
 	}
 
-	@SuppressWarnings( {
+	@SuppressWarnings({
 			"unchecked", "rawtypes" })
 	public Set<Section<? extends TermReference<?>>> getTermReferenceSections(KnowWEArticle article,
-			String termIdentifier, int termScope) {
+			String termIdentifier, Scope termScope) {
 		TermReferenceLog refLog = getTermReferenceLog(article, termIdentifier, termScope);
 
 		if (refLog != null) {
 			return Collections.unmodifiableSet(refLog.getReferences());
 		}
 
-		return Collections.unmodifiableSet(new HashSet<Section<? extends TermReference<?>>>(
-				0));
+		return Collections.unmodifiableSet(new HashSet<Section<? extends TermReference<?>>>(0));
 	}
 
 	/**
@@ -500,14 +483,6 @@ public class TerminologyHandler implements EventListener {
 				0));
 	}
 
-	public <TermObject> boolean isBlockedByDuplicateDefinitions(
-			KnowWEArticle article, Section<? extends KnowWETerm<TermObject>> s) {
-
-		TermReferenceLog<TermObject> refLog = getTermReferenceLog(article, s);
-
-		return refLog.isBlockedByDuplicates();
-	}
-
 	public <TermObject> Set<Section<? extends TermReference<TermObject>>> getTermReferenceSections(
 			KnowWEArticle article, Section<? extends KnowWETerm<TermObject>> s) {
 
@@ -539,14 +514,22 @@ public class TerminologyHandler implements EventListener {
 		if (termRefLog != null) {
 			if (s == termRefLog.termDefiningSection) {
 
-				if (s.get().getTermScope() == KnowWETerm.GLOBAL) {
+				if (s.get().getTermScope() == Scope.GLOBAL) {
 					KnowWEArticleManager artMan = KnowWEEnvironment.getInstance().getArticleManager(
 							article.getWeb());
 
 					artMan.addAllArticlesToUpdate(termRefLog.termDefiningSection.getReusedBySet());
 					termRefLog.termDefiningSection.clearReusedBySet();
 
-					globalRecompilationOfTerm(termRefLog, artMan);
+					for (Section<?> termDef : termRefLog.getRedundantDefinitions()) {
+						artMan.addAllArticlesToUpdate(termDef.getReusedBySet());
+						termDef.clearReusedBySet();
+					}
+
+					for (Section<?> termRef : termRefLog.getReferences()) {
+						artMan.addAllArticlesToUpdate(termRef.getReusedBySet());
+						termRef.clearReusedBySet();
+					}
 
 				}
 				else {
@@ -561,34 +544,22 @@ public class TerminologyHandler implements EventListener {
 						new TermIdentifier(article, s));
 			}
 			else {
-				boolean wasBlocked = termRefLog.isBlockedByDuplicates();
 				termRefLog.getRedundantDefinitions().remove(s);
-				boolean isBlockedAfterRemov = termRefLog.isBlockedByDuplicates();
-				if (wasBlocked && !isBlockedAfterRemov) { // became valid
-					globalRecompilationOfTerm(termRefLog, KnowWEEnvironment.getInstance().getArticleManager(
-									article.getWeb()));
+				
+				if (termRefLog.getRedundantDefinitions().isEmpty()
+						&& termRefLog.termDefiningSection.get().getMultiDefMode() == MultiDefMode.INACTIVE) {
+					
+					globalRecompilationOfTerm(article, s, termRefLog);
+
+					KDOMReportMessage.clearMessages(article, termRefLog.termDefiningSection,
+							this.getClass());
 				}
 			}
-			if (s.get().getTermScope() == KnowWETerm.LOCAL) {
+			if (s.get().getTermScope() == Scope.LOCAL) {
 				modifiedTermDefinitions.add(article.getTitle());
 			}
 		}
-	}
-
-	private <TermObject> void globalRecompilationOfTerm(TermReferenceLog<TermObject> termRefLog, KnowWEArticleManager artMan) {
-		if (termRefLog.termDefiningSection != null) {
-			artMan.addAllArticlesToUpdate(termRefLog.termDefiningSection.getReusedBySet());
-			termRefLog.termDefiningSection.clearReusedBySet();
-		}
-		for (Section<?> termDef : termRefLog.getRedundantDefinitions()) {
-			artMan.addAllArticlesToUpdate(termDef.getReusedBySet());
-			termDef.clearReusedBySet();
-		}
-
-		for (Section<?> termRef : termRefLog.getReferences()) {
-			artMan.addAllArticlesToUpdate(termRef.getReusedBySet());
-			termRef.clearReusedBySet();
-		}
+		KDOMReportMessage.clearMessages(article, s, this.getClass());
 	}
 
 	public <TermObject> void unregisterTermReference(KnowWEArticle article, Section<? extends TermReference<TermObject>> s) {
@@ -608,7 +579,7 @@ public class TerminologyHandler implements EventListener {
 	 * @created 03.11.2010
 	 */
 	public Collection<String> getAllGlobalTermsOfType(Class<?> termClass) {
-		return getAllTerms(null, KnowWETerm.GLOBAL, termClass);
+		return getAllTerms(null, Scope.GLOBAL, termClass);
 	}
 
 	/**
@@ -617,7 +588,7 @@ public class TerminologyHandler implements EventListener {
 	 * @created 03.11.2010
 	 */
 	public Collection<String> getAllGlobalTerms() {
-		return getAllTerms(null, KnowWETerm.GLOBAL, null);
+		return getAllTerms(null, Scope.GLOBAL, null);
 	}
 
 	/**
@@ -627,7 +598,7 @@ public class TerminologyHandler implements EventListener {
 	 * @created 03.11.2010
 	 */
 	public Collection<String> getAllLocalTermsOfType(String title, Class<?> termClass) {
-		return getAllTerms(title, KnowWETerm.LOCAL, termClass);
+		return getAllTerms(title, Scope.LOCAL, termClass);
 	}
 
 	/**
@@ -637,18 +608,17 @@ public class TerminologyHandler implements EventListener {
 	 * @created 03.11.2010
 	 */
 	public Collection<String> getAllLocalTerms(String title) {
-		return getAllTerms(title, KnowWETerm.LOCAL, null);
+		return getAllTerms(title, Scope.LOCAL, null);
 	}
 
-	@SuppressWarnings( {
+	@SuppressWarnings({
 			"unchecked", "rawtypes" })
-	public Collection<String> getAllTerms(String title, int scope, Class<?> termClass) {
+	public Collection<String> getAllTerms(String title, Scope scope, Class<?> termClass) {
 		Collection<TermReferenceLog> logs = getTermReferenceLogsMap(title, scope).values();
 		Collection<String> terms = new HashSet<String>();
 		for (TermReferenceLog tl : logs) {
 			if (tl.termDefiningSection != null
-					&& (termClass == null || tl.getTermObjectClass().isAssignableFrom(
-							termClass))) {
+					&& (termClass == null || tl.getTermObjectClass().isAssignableFrom(termClass))) {
 				terms.add(new TermIdentifier(tl.termDefiningSection.getArticle(),
 						tl.termDefiningSection).toString());
 			}
@@ -663,8 +633,8 @@ public class TerminologyHandler implements EventListener {
 	 * 
 	 * @author Jochen, Albrecht
 	 * 
-	 * @param <TermObject>
-	 *            is the Class of the term object associated with the term.
+	 * @param <TermObject> is the Class of the term object associated with the
+	 *        term.
 	 */
 	class TermReferenceLog<TermObject> {
 
@@ -687,17 +657,6 @@ public class TerminologyHandler implements EventListener {
 			this.priorityOfDefiningSection = p;
 			this.termObjectClass = termObjectClass;
 			this.termDefiningSection = s;
-		}
-
-		public boolean isBlockedByDuplicates() {
-			int count = 0;
-			if (termDefiningSection != null) count = 1;
-
-			count += redundantTermDefiningSections.size();
-
-			if (count > 1) return true;
-
-			return false;
 		}
 
 		public Class<TermObject> getTermObjectClass() {
@@ -735,7 +694,7 @@ public class TerminologyHandler implements EventListener {
 
 		private final String termIdentifierLowerCase;
 
-		@SuppressWarnings( {
+		@SuppressWarnings({
 				"unchecked", "rawtypes" })
 		public TermIdentifier(KnowWEArticle article, Section<? extends KnowWETerm> s) {
 			if (s.get() instanceof NotUniqueKnowWETerm) {
@@ -784,8 +743,7 @@ public class TerminologyHandler implements EventListener {
 
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
-		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(
-				2);
+		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(2);
 		events.add(FullParseEvent.class);
 		events.add(ArticleCreatedEvent.class);
 		return events;

@@ -35,7 +35,7 @@ import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
-import de.d3web.we.kdom.objects.KnowWETerm;
+import de.d3web.we.kdom.objects.KnowWETerm.Scope;
 import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.objects.TermReference;
 import de.d3web.we.kdom.search.Result;
@@ -199,11 +199,11 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		while (iter.hasNext()) {
 			currentArticle = iter.next();
 			// Get global and local term definitions
-			getTermDefinitions(currentArticle, objectName, th, KnowWETerm.GLOBAL, definitions);
-			getTermDefinitions(currentArticle, objectName, th, KnowWETerm.LOCAL, definitions);
+			getTermDefinitions(currentArticle, objectName, th, Scope.GLOBAL, definitions);
+			getTermDefinitions(currentArticle, objectName, th, Scope.LOCAL, definitions);
 			// Get global and local term refereces
-			getTermReferences(currentArticle, objectName, th, KnowWETerm.GLOBAL, references);
-			getTermReferences(currentArticle, objectName, th, KnowWETerm.LOCAL, references);
+			getTermReferences(currentArticle, objectName, th, Scope.GLOBAL, references);
+			getTermReferences(currentArticle, objectName, th, Scope.LOCAL, references);
 		}
 
 		if (!checkParameter(HIDEDEF, parameters)) html.append(renderTermDefinitions(definitions));
@@ -213,7 +213,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return html.toString();
 	}
 
-	private void getTermDefinitions(KnowWEArticle currentArticle, String objectName, TerminologyHandler th, int scope, Set<Section<? extends TermDefinition<?>>> definitions) {
+	private void getTermDefinitions(KnowWEArticle currentArticle, String objectName, TerminologyHandler th, Scope scope, Set<Section<? extends TermDefinition<?>>> definitions) {
 		Section<? extends TermDefinition<?>> definition;
 		definition = th.getTermDefiningSection(currentArticle, objectName, scope);
 		if (definition != null) {
@@ -222,7 +222,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 	}
 
-	private void getTermReferences(KnowWEArticle currentArticle, String objectName, TerminologyHandler th, int scope, Set<Section<? extends TermReference<?>>> references) {
+	private void getTermReferences(KnowWEArticle currentArticle, String objectName, TerminologyHandler th, Scope scope, Set<Section<? extends TermReference<?>>> references) {
 		Set<Section<? extends TermReference<?>>> temp = new HashSet<Section<? extends TermReference<?>>>();
 		temp = th.getTermReferenceSections(currentArticle, objectName, scope);
 		if (temp != null && temp.size() > 0) {

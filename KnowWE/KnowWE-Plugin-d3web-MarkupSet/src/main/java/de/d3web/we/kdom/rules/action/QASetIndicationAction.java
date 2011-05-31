@@ -33,7 +33,7 @@ import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
-import de.d3web.we.kdom.objects.KnowWETerm;
+import de.d3web.we.kdom.objects.KnowWETerm.Scope;
 import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NoSuchObjectError;
@@ -112,9 +112,9 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AnonymousType> s) {
 			TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
 			String termName = KnowWEUtils.trimQuotes(s.getOriginalText());
-			if (terminologyHandler.isDefinedTerm(article, termName, KnowWETerm.LOCAL)) {
+			if (terminologyHandler.isDefinedTerm(article, termName, Scope.LOCAL)) {
 				Section<? extends TermDefinition> termDefinitionSection = terminologyHandler.getTermDefiningSection(
-						article, termName, KnowWETerm.LOCAL);
+						article, termName, Scope.LOCAL);
 				Class<?> objectClazz = termDefinitionSection.get().getTermObjectClass();
 				if (Question.class.isAssignableFrom(objectClazz)) {
 					s.clearReusedBySet();

@@ -22,15 +22,14 @@ package de.d3web.we.kdom.objects;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.ResourceBundle;
 
 import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.objects.TermDefinition.MultiDefMode;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NoSuchObjectError;
 import de.d3web.we.kdom.report.message.ObjectFound;
-import de.d3web.we.kdom.report.message.ObjectNotUniquelyDefinedError;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.terminology.TerminologyHandler;
 import de.d3web.we.utils.KnowWEUtils;
@@ -52,7 +51,7 @@ public abstract class TermReference<TermObject>
 		extends AbstractType
 		implements KnowWETerm<TermObject> {
 
-	private int termScope = KnowWETerm.LOCAL;
+	private Scope termScope = Scope.LOCAL;
 
 	protected Class<TermObject> termObjectClass;
 
@@ -76,13 +75,18 @@ public abstract class TermReference<TermObject>
 	 * to.
 	 */
 	public final TermObject getTermObject(KnowWEArticle article, Section<? extends TermReference<TermObject>> s) {
-		Section<? extends TermDefinition<TermObject>> defSec = KnowWEUtils.getTerminologyHandler(
-				s.getWeb()).getTermDefiningSection(article, s);
+		TerminologyHandler tHandler = KnowWEUtils.getTerminologyHandler(s.getWeb());
+		Section<? extends TermDefinition<TermObject>> defSec = tHandler.getTermDefiningSection(
+				article, s);
 		if (defSec != null) {
 			TermObject c = defSec.get().getTermObject(article, defSec);
 			if (c != null) return c;
 		}
-		return getTermObjectFallback(article, s);
+		if (defSec == null || defSec.get().getMultiDefMode() == MultiDefMode.ACTIVE
+				|| tHandler.getRedundantTermDefiningSections(article, defSec).isEmpty()) {
+			return getTermObjectFallback(article, s);
+		}
+		return null;
 	}
 
 	/**
@@ -94,14 +98,14 @@ public abstract class TermReference<TermObject>
 	}
 
 	@Override
-	public int getTermScope() {
+	public Scope getTermScope() {
 		return this.termScope;
 	}
 
 	@Override
-	public void setTermScope(int termScope) {
+	public void setTermScope(Scope termScope) {
 		this.termScope = termScope;
-		if (termScope == KnowWETerm.GLOBAL) {
+		if (termScope == Scope.GLOBAL) {
 			this.setIgnorePackageCompile(true);
 		}
 		else {
@@ -123,20 +127,6 @@ public abstract class TermReference<TermObject>
 				return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(
 						s.get().getTermObjectDisplayName(),
 						termName));
-			}
-
-			// check for duplicateBlockingMode and recompile term if necessary
-			ResourceBundle bundle = ResourceBundle.getBundle("KnowWE_config");
-			if (bundle.containsKey(TerminologyHandler.BLOCK_DUPLICATE_DEFS_KEY)) {
-				if (bundle.getString(TerminologyHandler.BLOCK_DUPLICATE_DEFS_KEY).equalsIgnoreCase(
-						"true")) {
-					boolean blockedByDuplicateDefinitions = KnowWEUtils.getTerminologyHandler(
-							article.getWeb()).isBlockedByDuplicateDefinitions(article, s);
-					if (blockedByDuplicateDefinitions) {
-						return Arrays.asList((KDOMReportMessage) new ObjectNotUniquelyDefinedError(
-								" Revise definitions!"));
-					}
-				}
 			}
 
 			// TODO: give meaningful information about the object

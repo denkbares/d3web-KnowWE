@@ -20,7 +20,7 @@ public abstract class PackageCompileType extends StringDefinition implements Pac
 
 	public PackageCompileType() {
 		this.subtreeHandler.clear();
-		this.setTermScope(KnowWETerm.GLOBAL);
+		this.setTermScope(Scope.GLOBAL);
 		this.sectionFinder = new AllTextSectionFinder();
 		this.setIgnorePackageCompile(true);
 		this.addSubtreeHandler(Priority.PRECOMPILE_LOW, new PackageCompileHandler());

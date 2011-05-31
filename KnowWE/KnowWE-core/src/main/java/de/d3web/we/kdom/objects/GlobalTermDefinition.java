@@ -13,7 +13,8 @@ public abstract class GlobalTermDefinition<TermObject> extends TermDefinition<Te
 
 	public GlobalTermDefinition(Class<TermObject> termObjectClass) {
 		super(termObjectClass);
-		this.setTermScope(KnowWETerm.GLOBAL);
+		this.setTermScope(Scope.GLOBAL);
+		this.setMultiDefMode(MultiDefMode.INACTIVE);
 	}
 
 }

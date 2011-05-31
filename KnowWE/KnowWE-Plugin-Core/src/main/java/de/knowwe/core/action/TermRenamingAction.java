@@ -36,7 +36,7 @@ import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.KnowWETerm;
+import de.d3web.we.kdom.objects.KnowWETerm.Scope;
 import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.objects.TermReference;
 import de.d3web.we.terminology.TerminologyHandler;
@@ -79,13 +79,13 @@ public class TermRenamingAction extends AbstractAction {
 			currentArticle = iter.next();
 
 			// Check if there is a TermDefinition
-			definition = th.getTermDefiningSection(currentArticle, term, KnowWETerm.LOCAL);
+			definition = th.getTermDefiningSection(currentArticle, term, Scope.LOCAL);
 			if (definition != null) {
 				definitions.add(definition);
 			}
 
 			// Check if there are References
-			temp = th.getTermReferenceSections(currentArticle, term, KnowWETerm.LOCAL);
+			temp = th.getTermReferenceSections(currentArticle, term, Scope.LOCAL);
 			if (temp != null && temp.size() > 0) {
 				references.addAll(temp);
 			}

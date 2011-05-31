@@ -32,26 +32,27 @@ import de.d3web.we.kdom.Section;
  */
 public interface KnowWETerm<TermObject> extends IncrementalMarker {
 
-	/**
-	 * LOCAL terms are valid only for the master compiling them.
-	 * <p/>
-	 * Example: questions, answers, solution...
-	 */
-	public static final int LOCAL = 0;
-
-	/**
-	 * GLOBAL terms are valid for the whole wiki, disregarding packages,
-	 * respectively masters articles.
-	 * <p/>
-	 * Example: semantic/owl statements.
-	 */
-	public static final int GLOBAL = 1;
+	public static enum Scope {
+		/**
+		 * LOCAL terms are valid only for the master compiling them.
+		 * <p/>
+		 * Example: questions, answers, solution...
+		 */
+		LOCAL,
+		/**
+		 * GLOBAL terms are valid for the whole wiki, disregarding packages,
+		 * respectively masters articles.
+		 * <p/>
+		 * Example: semantic/owl statements.
+		 */
+		GLOBAL
+	}
 
 	public String getTermName(Section<? extends KnowWETerm<TermObject>> s);
 
 	public Class<TermObject> getTermObjectClass();
 
-	public int getTermScope();
+	public Scope getTermScope();
 
-	public void setTermScope(int termScope);
+	public void setTermScope(Scope termScope);
 }
