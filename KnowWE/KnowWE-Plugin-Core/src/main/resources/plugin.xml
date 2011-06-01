@@ -33,8 +33,8 @@
 		<parameter id="scope" value="AnswerDefinition" />
 		<parameter id="scope" value="SolutionReference" />
 		<parameter id="scope" value="IDObjectReference" />
-		<parameter id="scope" value="URITermDefinition" />
-		<parameter id="scope" value="OWLTermReference" />
+		<parameter id="scope" value="AbstractIRITermDefinition" />
+		<parameter id="scope" value="IRITermReference" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
