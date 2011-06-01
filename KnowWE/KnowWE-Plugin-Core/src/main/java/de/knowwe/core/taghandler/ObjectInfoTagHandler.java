@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -50,14 +50,14 @@ import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * ObjectInfo TagHandler
- *
+ * 
  * This TagHandler gathers information about a specified Object. The TagHanlder
  * shows the article in which the object is defined and all articles with
  * references to this object.
- *
+ * 
  * Additionally there is a possibility to rename this object in all articles and
  * to create a wiki page for this object.
- *
+ * 
  * @author Sebastian Furth
  * @created 01.12.2010
  */
@@ -99,7 +99,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	public final String render(KnowWEArticle article, Section<?> section, UserContext userContext, Map<String, String> parameters) {
 		panelCounter = 0;
 		sectionCounter = 0;
-		rb = KnowWEEnvironment.getInstance().getKwikiBundle();
+		rb = KnowWEEnvironment.getInstance().getKwikiBundle(userContext);
 		String content = renderContent(article, section, userContext, parameters);
 		Section<TagHandlerTypeContent> tagNameSection = Sections.findSuccessor(section,
 				TagHandlerTypeContent.class);
@@ -130,20 +130,52 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			return KnowWEUtils.maskHTML(renderLookUpForm(article));
 		}
 
+		// Get TermDefinitions and TermReferences
+		TerminologyHandler th = KnowWEUtils.getTerminologyHandler(article.getWeb());
+		Set<Section<? extends TermDefinition<?>>> definitions = new HashSet<Section<? extends TermDefinition<?>>>();
+		Set<Section<? extends TermReference<?>>> references = new HashSet<Section<? extends TermReference<?>>>();
+
+		Iterator<KnowWEArticle> iter = KnowWEEnvironment.getInstance().getArticleManager(
+				article.getWeb()).getArticleIterator();
+		KnowWEArticle currentArticle;
+
+		while (iter.hasNext()) {
+			currentArticle = iter.next();
+			// Get global and local term definitions
+			getTermDefinitions(currentArticle, objectName, th, Scope.GLOBAL, definitions);
+			getTermDefinitions(currentArticle, objectName, th, Scope.LOCAL, definitions);
+			// Get global and local term refereces
+			getTermReferences(currentArticle, objectName, th, Scope.GLOBAL, references);
+			getTermReferences(currentArticle, objectName, th, Scope.LOCAL, references);
+		}
+
+		// Render
 		StringBuilder html = new StringBuilder();
-		html.append(renderHeader(objectName));
+		html.append(renderHeader(objectName, definitions));
 		html.append(renderRenamingForm(objectName, article.getWeb(), parameters));
-		html.append(renderObjectInfo(objectName, article.getWeb(), parameters));
+		html.append(renderObjectInfo(definitions, references, parameters));
 		html.append(renderPlainTextOccurrences(objectName, article.getWeb(), parameters));
 
 		return KnowWEUtils.maskHTML(html.toString());
 	}
 
-	private String renderHeader(String objectName) {
+	private String renderHeader(String objectName, Set<Section<? extends TermDefinition<?>>> definitions) {
 		StringBuilder html = new StringBuilder();
-		html.append("<strong><span id=\"objectinfo-src\">");
+		html.append("<h3><span id=\"objectinfo-src\">");
 		html.append(objectName);
-		html.append("</span></strong><br />\n");
+		html.append("</span>");
+		// Render type of (first) TermDefinition
+		if (definitions != null) {
+			for (Section<? extends TermDefinition<?>> definition : definitions) {
+				html.append(" <em>(");
+				html.append(definition.get().getTermObjectClass().getSimpleName());
+				html.append(")</em>");
+				break;
+			}
+
+		}
+
+		html.append("</h3>\n");
 		return html.toString();
 	}
 
@@ -186,30 +218,11 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				html.toString());
 	}
 
-	private String renderObjectInfo(String objectName, String web, Map<String, String> parameters) {
+	private String renderObjectInfo(Set<Section<? extends TermDefinition<?>>> definitions, Set<Section<? extends TermReference<?>>> references, Map<String, String> parameters) {
 		StringBuilder html = new StringBuilder();
-		TerminologyHandler th = KnowWEUtils.getTerminologyHandler(web);
-
-		Set<Section<? extends TermDefinition<?>>> definitions = new HashSet<Section<? extends TermDefinition<?>>>();
-		Set<Section<? extends TermReference<?>>> references = new HashSet<Section<? extends TermReference<?>>>();
-
-		Iterator<KnowWEArticle> iter = KnowWEEnvironment.getInstance().getArticleManager(web).getArticleIterator();
-		KnowWEArticle currentArticle;
-
-		while (iter.hasNext()) {
-			currentArticle = iter.next();
-			// Get global and local term definitions
-			getTermDefinitions(currentArticle, objectName, th, Scope.GLOBAL, definitions);
-			getTermDefinitions(currentArticle, objectName, th, Scope.LOCAL, definitions);
-			// Get global and local term refereces
-			getTermReferences(currentArticle, objectName, th, Scope.GLOBAL, references);
-			getTermReferences(currentArticle, objectName, th, Scope.LOCAL, references);
-		}
-
 		if (!checkParameter(HIDEDEF, parameters)) html.append(renderTermDefinitions(definitions));
 		if (!checkParameter(HIDEREFS, parameters)) html.append(renderTermReferences(references,
 				definitions));
-
 		return html.toString();
 	}
 
