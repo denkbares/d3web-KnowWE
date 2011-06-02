@@ -46,6 +46,20 @@ public class DashTreeUtils {
 
 	protected DashTreeUtils() {
 	}
+	
+	public static List<Section<DashTreeElement>> findSuccessorDashtreeElements(Section<? extends DashTreeElement> element) {
+		List<Section<DashTreeElement>> found = new ArrayList<Section<DashTreeElement>>();
+		Sections.findSuccessorsOfType(element.getFather(),DashTreeElement.class,found);
+		found.remove(element); //remove self
+		return found;
+	}
+	
+	public static List<Section<DashTreeElement>> findChildrenDashtreeElements(Section<? extends DashTreeElement> element) {
+		List<Section<DashTreeElement>> found = new ArrayList<Section<DashTreeElement>>();
+		Sections.findSuccessorsOfType(element.getFather(),DashTreeElement.class,2,found);
+		found.remove(element); //remove self
+		return found;
+	}
 
 	public static Section<? extends DashTreeElement> getFatherDashTreeElement(Section<?> s) {
 		Section<? extends DashSubtree> dashSubtree = getFatherDashSubtree(s);
