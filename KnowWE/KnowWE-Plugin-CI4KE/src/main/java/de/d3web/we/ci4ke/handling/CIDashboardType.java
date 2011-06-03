@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -62,12 +63,31 @@ public class CIDashboardType extends DefaultMarkupType {
 
 	public CIDashboardType() {
 		super(MARKUP);
-		this.addSubtreeHandler(new DashboardSubtreeHandler());
+		this.addSubtreeHandler(new DashboardSubtreeHandler(readIgnoreFlag()));
 		// this.setCustomRenderer(new DashboardRenderer());
 		this.setCustomRenderer(new CIDashboardRenderer());
 	}
+	
+	private boolean readIgnoreFlag() {
+		ResourceBundle resourceBundle = ResourceBundle.getBundle("KnowWE_config");
+		String ignoreFlag = "packaging.ignorePackages";
+		boolean ignorePackageCompile = false;
+		if (resourceBundle.containsKey(ignoreFlag)) {
+			if (resourceBundle.getString(ignoreFlag).contains("true")) {
+				ignorePackageCompile = true;
+			}
+			if (resourceBundle.getString(ignoreFlag).contains("false")) {
+				ignorePackageCompile = false;
+			}
+		}
+		return ignorePackageCompile;
+	}
 
 	private class DashboardSubtreeHandler extends SubtreeHandler<CIDashboardType> {
+		
+		public DashboardSubtreeHandler(boolean ignorePackageCompile) {
+			super(ignorePackageCompile);
+		}
 
 		@Override
 		public boolean isIgnoringPackageCompile() {
