@@ -44,14 +44,14 @@ public class ArticleHasErrorsTest extends AbstractCITest {
 		StringBuffer buffy = new StringBuffer();
 
 		String monitoredArticleTitle = getParameter(0);
-		if (monitoredArticleTitle.isEmpty()) {
-			return new CITestResult(TestResultType.FAILED, "Parameter 0 was invalid!");
+		if (monitoredArticleTitle == null || monitoredArticleTitle.isEmpty()) {
+			return new CITestResult(TestResultType.FAILED, ": Parameter 0 was invalid!");
 		}
 
 		KnowWEArticle moni = KnowWEEnvironment.getInstance().getArticle(
 				KnowWEEnvironment.DEFAULT_WEB, monitoredArticleTitle);
 		if (moni == null) {
-			return new CITestResult(TestResultType.FAILED, "MonitoredArticle not found or invalid!");
+			return new CITestResult(TestResultType.FAILED, ": MonitoredArticle not found or invalid!");
 		}
 
 		Collection<KDOMError> messages = new LinkedList<KDOMError>();
