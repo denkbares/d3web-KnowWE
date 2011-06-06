@@ -20,6 +20,8 @@
 
 package de.d3web.we.utils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.Collection;
 
 public class Strings {
@@ -180,5 +182,20 @@ public class Strings {
 			if (tc != pc) return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Writes the stack trace of a throwable instance into a string.
+	 * 
+	 * @created 06.06.2011
+	 * @param e the throwable to be printed into the string
+	 * @return the stack trace
+	 */
+	public static String stackTrace(Throwable e) {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		PrintStream printStream = new PrintStream(out);
+		e.printStackTrace(printStream);
+		printStream.flush();
+		return out.toString();
 	}
 }

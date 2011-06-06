@@ -35,12 +35,14 @@ import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.d3web.we.ci4ke.handling.CIHook;
 import de.d3web.we.ci4ke.testing.CITest;
 import de.d3web.we.ci4ke.testing.CITestResult;
+import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.d3web.we.ci4ke.util.Pair;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.utils.Strings;
 
 public class CIBuilder {
 
@@ -153,18 +155,23 @@ public class CIBuilder {
 			String testname = runningTest.getA();
 			Future<CITestResult> futureResult = runningTest.getB();
 
+			CITestResult testResult;
 			try {
-				resultset.addTestResult(testname,
-							futureResult.get());
+				testResult = futureResult.get();
 			}
 			catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.getLogger(getClass().getName()).log(Level.WARNING,
+						"ci-test execuption interupted", e);
+				testResult = new CITestResult(Type.ERROR,
+						"ci-test execuption interupted: \n" + Strings.stackTrace(e));
 			}
 			catch (ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.getLogger(getClass().getName()).log(Level.WARNING,
+						"ci-test internal error", e.getCause());
+				testResult = new CITestResult(Type.ERROR,
+						"ci-test internal error: \n" + Strings.stackTrace(e));
 			}
+			resultset.addTestResult(testname, testResult);
 		}
 
 		// write the resultset to XML
