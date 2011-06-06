@@ -206,7 +206,7 @@ public abstract class AnswerDefinition
 				}
 				else {
 					a = KnowledgeBaseUtils.addChoiceAnswer((QuestionChoice) q,
-							getShortAnswerName(name, qDef.get().getTermIdentifier(qDef)),
+							s.get().getTermName(s),
 							s.get().getPosition(s));
 
 				}
@@ -249,16 +249,17 @@ public abstract class AnswerDefinition
 			// hooked in in the last KDOM.
 		}
 	}
+	
+	@Override
+	public String getTermName(Section<? extends KnowWETerm<Choice>> s) {
+		return  KnowWEUtils.trimQuotes(s.getOriginalText());
+	}
 
 	/**
 	 * 
 	 * creates a global unique identifier for an answer by use of the question
 	 * name (which is globally unique)
 	 * 
-	 * inverse function of:
-	 * @see AnswerDefinition.getShortAnswerName()
-	 * 
-	 * IMPORTANT: Don't modify one without the other
 	 * 
 	 * @created 06.06.2011
 	 * @param answer
@@ -267,23 +268,6 @@ public abstract class AnswerDefinition
 	 */
 	public static String createAnswerIdentifierForQuestion(String answer, String question) {
 		return question + " " + answer;
-	}
-
-	/**
-	 * returns the short answer name, that is only unique within the scope of the question.
-	 * 
-	 * inverse function of:
-	 * @see AnswerDefinition.createAnswerIdentifierForQuestion()
-	 * 
-	 * IMPORTANT: Don't modify one without the other
-	 * 
-	 * @created 06.06.2011
-	 * @param answerindentifier
-	 * @param question
-	 * @return 
-	 */
-	public static String getShortAnswerName(String answerindentifier, String question) {
-		return answerindentifier.substring(question.length() + 1).trim();
 	}
 
 }

@@ -35,6 +35,7 @@ import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.NotUniqueKnowWETerm;
 import de.d3web.we.kdom.objects.TermReference;
 import de.d3web.we.kdom.rendering.StyleRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * 
@@ -69,6 +70,11 @@ public abstract class AnswerReference
 		
 		//should not happen
 		return super.getTermIdentifier(s);
+	}
+	
+	@Override
+	public String getTermName(Section<? extends KnowWETerm<Choice>> s) {
+		return  KnowWEUtils.trimQuotes(s.getOriginalText());
 	}
 
 	@Override
