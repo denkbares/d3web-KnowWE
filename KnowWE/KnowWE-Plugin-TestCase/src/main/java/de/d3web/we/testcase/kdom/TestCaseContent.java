@@ -69,7 +69,7 @@ public class TestCaseContent extends StringReference {
 	}
 
 	@Override
-	public String getTermName(Section<? extends KnowWETerm<String>> s) {
+	public String getTermIdentifier(Section<? extends KnowWETerm<String>> s) {
 		return DefaultMarkupType.getAnnotation(Sections.findAncestorOfType(s, TestCaseType.class),
 				TestCaseType.ANNOTATION_MASTER);
 	}
