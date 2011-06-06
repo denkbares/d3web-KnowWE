@@ -71,7 +71,7 @@ public abstract class TermReference<TermObject>
 	public abstract String getTermObjectDisplayName();
 
 	/**
-	 * Allows quick and simple access to the object this sections is refering
+	 * Allows quick and simple access to the object this sections is referring
 	 * to.
 	 */
 	public final TermObject getTermObject(KnowWEArticle article, Section<? extends TermReference<TermObject>> s) {

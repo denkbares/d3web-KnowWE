@@ -23,6 +23,14 @@ package de.d3web.we.kdom.objects;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 
+/**
+ * 
+ * Please don't use!
+ * Several feature of KnowWE won't work correctly.
+ * Override getTermName() method to make create unique identifiers.
+ * 
+ */
+@Deprecated
 public interface NotUniqueKnowWETerm<TermObject> {
 
 	public String getUniqueTermIdentifier(KnowWEArticle article, Section<? extends KnowWETerm<TermObject>> s);
