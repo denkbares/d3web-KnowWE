@@ -19,10 +19,6 @@
  */
 
 package de.d3web.we.object;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
@@ -32,7 +28,6 @@ import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
-import de.d3web.we.kdom.objects.NotUniqueKnowWETerm;
 import de.d3web.we.kdom.objects.TermReference;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.utils.KnowWEUtils;
@@ -56,6 +51,7 @@ public abstract class AnswerReference
 	}
 	
 	@Override
+	@SuppressWarnings(value = { "unchecked" })
 	public String getTermIdentifier(Section<? extends KnowWETerm<Choice>> s) {
 		// here we should return a unique identifier including the question name as namespace
 		
@@ -122,30 +118,6 @@ public abstract class AnswerReference
 	 * @return
 	 */
 	public abstract Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s);
-
-	/*
-	@Override
-	@SuppressWarnings("unchecked")
-	public String getUniqueTermIdentifier(KnowWEArticle article, Section<? extends KnowWETerm<Choice>> s) {
-
-		String answer = s.get().getTermName(s);
-
-		Section<QuestionReference> questionSection = getQuestionSection((Section<? extends AnswerReference>) s);
-		
-		String question = null;
-		if (questionSection == null) {
-			// should not happen, if does check whether getQuestion() is
-			// (correctly) overridden by the (custom) AnswerDefintion
-			question = "questionNotFound";
-			Logger.getLogger(this.getClass().getName())
-					.log(Level.WARNING,
-							"QuestionSection for AnswerDefintion couldnt be found: '" +
-									answer + "'!");
-		}
-		return createAnswerIdentifierForQuestion(answer, question);
-	}
-*/
-
 
 	@Override
 	public String getTermObjectDisplayName() {

@@ -22,9 +22,6 @@ package de.d3web.we.object;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -35,7 +32,6 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
-import de.d3web.we.kdom.objects.NotUniqueKnowWETerm;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
@@ -91,6 +87,7 @@ public abstract class AnswerDefinition
 	}
 
 	@Override
+	@SuppressWarnings(value = { "unchecked" })
 	public String getTermIdentifier(Section<? extends KnowWETerm<Choice>> s) {
 		// here we should return a unique identifier including the question name
 		// as namespace
@@ -108,29 +105,6 @@ public abstract class AnswerDefinition
 		return super.getTermIdentifier(s);
 	}
 
-	/*
-	 * @Override
-	 * 
-	 * @SuppressWarnings("unchecked") public String
-	 * getUniqueTermIdentifier(KnowWEArticle article, Section<? extends
-	 * KnowWETerm<Choice>> s) {
-	 * 
-	 * String answer = s.get().getTermName(s);
-	 * 
-	 * Section<? extends QuestionDefinition> qdef = (Section<? extends
-	 * QuestionDefinition>) KnowWEUtils.getStoredObject(article, s,
-	 * QUESTION_FOR_ANSWER_KEY); if (qdef == null) { qdef =
-	 * getQuestionSection((Section<AnswerDefinition>) s); }
-	 * 
-	 * String question = null; if (qdef == null) { // should not happen, if does
-	 * check whether getQuestion() is // (correctly) overridden by the (custom)
-	 * AnswerDefintion question = "questionNotFound";
-	 * Logger.getLogger(this.getClass().getName()) .log(Level.WARNING,
-	 * "QuestionSection for AnswerDefintion couldnt be found: '" + answer +
-	 * "'!"); } else { question = qdef.get().getTermName(qdef); }
-	 * 
-	 * return question + " " + answer; }
-	 */
 	/**
 	 * 
 	 * @author Jochen
