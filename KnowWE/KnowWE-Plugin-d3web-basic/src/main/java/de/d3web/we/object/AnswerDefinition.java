@@ -61,7 +61,7 @@ import de.d3web.we.utils.KnowWEUtils;
  */
 public abstract class AnswerDefinition
 		extends D3webTermDefinition<Choice>
-		implements IncrementalConstraint<AnswerDefinition>, NotUniqueKnowWETerm<Choice> {
+		implements IncrementalConstraint<AnswerDefinition>{
 
 	private static final String QUESTION_FOR_ANSWER_KEY = "QUESTION_FOR_ANSWER_KEY";
 
@@ -91,34 +91,46 @@ public abstract class AnswerDefinition
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public String getUniqueTermIdentifier(KnowWEArticle article, Section<? extends KnowWETerm<Choice>> s) {
+	public String getTermName(Section<? extends KnowWETerm<Choice>> s) {
+		// here we should return a unique identifier including the question name
+		// as namespace
+		KnowWETerm<Choice> knowWETerm = s.get();
+		if (knowWETerm instanceof AnswerDefinition) {
+			Section<AnswerDefinition> sec = ((Section<AnswerDefinition>) s);
+			Section<? extends QuestionDefinition> questionSection = sec.get().getQuestionSection(
+					sec);
+			String question = questionSection.get().getTermName(questionSection);
 
-		String answer = s.get().getTermName(s);
-
-		Section<? extends QuestionDefinition> qdef = (Section<? extends QuestionDefinition>)
-				KnowWEUtils.getStoredObject(article, s, QUESTION_FOR_ANSWER_KEY);
-		if (qdef == null) {
-			qdef = getQuestionSection((Section<AnswerDefinition>) s);
+			return createAnswerIdentifierForQuestion(super.getTermName(sec), question);
 		}
 
-		String question = null;
-		if (qdef == null) {
-			// should not happen, if does check whether getQuestion() is
-			// (correctly) overridden by the (custom) AnswerDefintion
-			question = "questionNotFound";
-			Logger.getLogger(this.getClass().getName())
-					.log(Level.WARNING,
-							"QuestionSection for AnswerDefintion couldnt be found: '" +
-									answer + "'!");
-		}
-		else {
-			question = qdef.get().getTermName(qdef);
-		}
-
-		return question + " " + answer;
+		// should not happen
+		return super.getTermName(s);
 	}
 
+	/*
+	 * @Override
+	 * 
+	 * @SuppressWarnings("unchecked") public String
+	 * getUniqueTermIdentifier(KnowWEArticle article, Section<? extends
+	 * KnowWETerm<Choice>> s) {
+	 * 
+	 * String answer = s.get().getTermName(s);
+	 * 
+	 * Section<? extends QuestionDefinition> qdef = (Section<? extends
+	 * QuestionDefinition>) KnowWEUtils.getStoredObject(article, s,
+	 * QUESTION_FOR_ANSWER_KEY); if (qdef == null) { qdef =
+	 * getQuestionSection((Section<AnswerDefinition>) s); }
+	 * 
+	 * String question = null; if (qdef == null) { // should not happen, if does
+	 * check whether getQuestion() is // (correctly) overridden by the (custom)
+	 * AnswerDefintion question = "questionNotFound";
+	 * Logger.getLogger(this.getClass().getName()) .log(Level.WARNING,
+	 * "QuestionSection for AnswerDefintion couldnt be found: '" + answer +
+	 * "'!"); } else { question = qdef.get().getTermName(qdef); }
+	 * 
+	 * return question + " " + answer; }
+	 */
 	/**
 	 * 
 	 * @author Jochen
@@ -136,7 +148,8 @@ public abstract class AnswerDefinition
 			String name = s.get().getTermName(s);
 
 			Section<? extends QuestionDefinition> qDef = s.get().getQuestionSection(s);
-			KnowWEUtils.storeObject(article, s, AnswerDefinition.QUESTION_FOR_ANSWER_KEY, qDef);
+			KnowWEUtils.storeObject(article, s, AnswerDefinition.QUESTION_FOR_ANSWER_KEY,
+					qDef);
 			// storing the current question needs to happen first, so the method
 			// getUniqueTermIdentifier() can use the right question.
 
@@ -151,7 +164,8 @@ public abstract class AnswerDefinition
 				if (article != s.getArticle()) {
 					KnowWEEnvironment.getInstance().getArticleManager(s.getWeb()).registerArticle(
 							KnowWEArticle.createArticle(
-									s.getArticle().getSection().getOriginalText(), s.getTitle(),
+									s.getArticle().getSection().getOriginalText(),
+									s.getTitle(),
 									KnowWEEnvironment.getInstance().getRootType(),
 									s.getWeb(), true), false);
 				}
@@ -191,7 +205,8 @@ public abstract class AnswerDefinition
 					}
 				}
 				else {
-					a = KnowledgeBaseUtils.addChoiceAnswer((QuestionChoice) q, name,
+					a = KnowledgeBaseUtils.addChoiceAnswer((QuestionChoice) q,
+							getShortAnswerName(name, qDef.get().getTermName(qDef)),
 							s.get().getPosition(s));
 
 				}
@@ -233,6 +248,42 @@ public abstract class AnswerDefinition
 			// the stored question which is still the one the answer was
 			// hooked in in the last KDOM.
 		}
+	}
+
+	/**
+	 * 
+	 * creates a global unique identifier for an answer by use of the question
+	 * name (which is globally unique)
+	 * 
+	 * inverse function of:
+	 * @see AnswerDefinition.getShortAnswerName()
+	 * 
+	 * IMPORTANT: Don't modify one without the other
+	 * 
+	 * @created 06.06.2011
+	 * @param answer
+	 * @param question
+	 * @return
+	 */
+	public static String createAnswerIdentifierForQuestion(String answer, String question) {
+		return question + " " + answer;
+	}
+
+	/**
+	 * returns the short answer name, that is only unique within the scope of the question.
+	 * 
+	 * inverse function of:
+	 * @see AnswerDefinition.createAnswerIdentifierForQuestion()
+	 * 
+	 * IMPORTANT: Don't modify one without the other
+	 * 
+	 * @created 06.06.2011
+	 * @param answerindentifier
+	 * @param question
+	 * @return 
+	 */
+	public static String getShortAnswerName(String answerindentifier, String question) {
+		return answerindentifier.substring(question.length() + 1).trim();
 	}
 
 }

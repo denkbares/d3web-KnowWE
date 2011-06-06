@@ -47,12 +47,28 @@ import de.d3web.we.kdom.rendering.StyleRenderer;
  * 
  */
 public abstract class AnswerReference
-		extends D3webTermReference<Choice>
-		implements NotUniqueKnowWETerm<Choice> {
+		extends D3webTermReference<Choice> {
 
 	public AnswerReference() {
 		super(Choice.class);
 		this.setCustomRenderer(StyleRenderer.CHOICE);
+	}
+	
+	@Override
+	public String getTermName(Section<? extends KnowWETerm<Choice>> s) {
+		// here we should return a unique identifier including the question name as namespace
+		
+		KnowWETerm<Choice> knowWETerm = s.get();
+		if(knowWETerm instanceof AnswerReference) {
+			Section<AnswerReference> sec = ((Section<AnswerReference>)s);
+			Section<QuestionReference> questionSection = sec.get().getQuestionSection(sec);
+			String question = questionSection.get().getTermName(questionSection);
+			
+			return AnswerDefinition.createAnswerIdentifierForQuestion(super.getTermName(sec), question);
+		}
+		
+		//should not happen
+		return super.getTermName(s);
 	}
 
 	@Override
@@ -101,6 +117,7 @@ public abstract class AnswerReference
 	 */
 	public abstract Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s);
 
+	/*
 	@Override
 	@SuppressWarnings("unchecked")
 	public String getUniqueTermIdentifier(KnowWEArticle article, Section<? extends KnowWETerm<Choice>> s) {
@@ -119,8 +136,10 @@ public abstract class AnswerReference
 							"QuestionSection for AnswerDefintion couldnt be found: '" +
 									answer + "'!");
 		}
-		return question + " " + answer;
+		return createAnswerIdentifierForQuestion(answer, question);
 	}
+*/
+
 
 	@Override
 	public String getTermObjectDisplayName() {
