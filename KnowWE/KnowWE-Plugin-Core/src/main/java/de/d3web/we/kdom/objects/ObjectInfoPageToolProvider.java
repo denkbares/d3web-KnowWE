@@ -44,7 +44,7 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 
 	protected Tool getObjectInfoPageTool(KnowWEArticle article, @SuppressWarnings("rawtypes") Section<? extends KnowWETerm> section, UserContext userContext) {
 		@SuppressWarnings("unchecked")
-		String objectName = section.get().getTermName(section);
+		String objectName = section.get().getTermIdentifier(section);
 		String jsAction = "window.location.href = " +
 				"'Wiki.jsp?page=ObjectInfoPage&objectname=' + encodeURIComponent('" +
 				objectName + "')";
