@@ -288,6 +288,12 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	}
 
 	@Override
+	public String wikiSyntaxToHtml(String syntax) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public String[] getAllUsers() {
 		// TODO Auto-generated method stub
 		return null;

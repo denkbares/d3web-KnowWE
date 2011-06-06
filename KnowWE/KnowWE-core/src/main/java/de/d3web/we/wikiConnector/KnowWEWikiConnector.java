@@ -358,6 +358,15 @@ public interface KnowWEWikiConnector {
 	public String renderWikiSyntax(String pagedata, UserActionContext userContext);
 
 	/**
+	 * Converts a given String in Wiki-Markup to HTML.
+	 * 
+	 * @created 06.06.2011
+	 * @param syntax
+	 * @return
+	 */
+	public String wikiSyntaxToHtml(String syntax);
+	
+	/**
 	 * Get all users.
 	 * 
 	 * @return The usernames.

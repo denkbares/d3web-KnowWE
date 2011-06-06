@@ -110,9 +110,9 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		try {
 			LinkedList<String> sortedAttList = new LinkedList<String>();
 			AttachmentManager attachmentManager = this.engine
-					.getAttachmentManager();
+			.getAttachmentManager();
 			Collection<Attachment> attList = attachmentManager
-					.getAllAttachments();
+			.getAllAttachments();
 
 			for (Attachment p : attList) {
 
@@ -156,7 +156,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 			if (!isPageLocked(wikiPage)) {
 				setPageLocked(wikiPage, "WIKI-ENGINE");
 				AttachmentManager attachmentManager = this.engine
-						.getAttachmentManager();
+				.getAttachmentManager();
 
 				Attachment att = new Attachment(engine, wikiPage,
 						attachmentFile.getName());
@@ -188,7 +188,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 			try {
 				storageDir = WikiEngine.getRequiredProperty(this.engine
 						.getWikiProperties(),
-						"jspwiki.basicAttachmentProvider.storageDir");
+				"jspwiki.basicAttachmentProvider.storageDir");
 				jarPath += storageDir;
 			}
 			catch (NoRequiredPropertyException e) {
@@ -209,7 +209,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 			// Fixes a bug in which the getVersion returns -1 instead of 1;
 			int version = this.getMeAttachment(jarName)
-					.getVersion();
+			.getVersion();
 			String fileSuffix = jarName.substring(jarName.lastIndexOf("."));
 			if (version == -1) {
 				int i = 1;
@@ -318,7 +318,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 		try {
 			content = this.engine.getPureText(this.engine.getPage(topic))
-					+ content;
+			+ content;
 			WikiContext context = new WikiContext(this.engine, this.engine
 					.getPage(topic));
 			this.engine.saveText(context, content);
@@ -650,7 +650,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 			// the conversion is typesafe!
 			@SuppressWarnings("unchecked")
 			Collection<Attachment> attList = this.engine.getAttachmentManager().
-					listAttachments(this.engine.getPage(pageName));
+			listAttachments(this.engine.getPage(pageName));
 
 			for (Attachment att : attList) {
 				attachmentList.add(att.getFileName());
@@ -722,6 +722,12 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		return false;
 	}
 
+	@Override
+	public String wikiSyntaxToHtml(String syntax) {
+		WikiContext context = this.engine.createContext(null, WikiContext.VIEW);
+		String html = engine.textToHTML(context, syntax);
+		return html;
+	}
 	@Override
 	public String[] getAllUsers() {
 		String[] users = null;
