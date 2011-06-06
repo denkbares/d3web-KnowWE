@@ -26,7 +26,7 @@ import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.ci4ke.testing.AbstractCITest;
 import de.d3web.we.ci4ke.testing.CITestResult;
-import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.core.KnowWEEnvironment;
 
 /**
@@ -50,6 +50,8 @@ public class EmptyQuestionnaireTest extends AbstractCITest {
 		// get the first parameter = article whose KB should be searched for
 		// empty questionnaires
 		String articleName = getParameter(0);
+		String config = "knowledge base article: " + articleName;
+
 		// get the KB of this article
 		KnowledgeBase kb = D3webModule.getAD3webKnowledgeServiceInTopic(
 				KnowWEEnvironment.DEFAULT_WEB, articleName);
@@ -65,11 +67,11 @@ public class EmptyQuestionnaireTest extends AbstractCITest {
 				String failedMessage = "Article '" + articleName +
 						"' has empty questionnaires: " +
 						createHTMLListFromStringList(emptyQASets);
-				return new CITestResult(TestResultType.FAILED, failedMessage);
+				return new CITestResult(Type.FAILED, failedMessage, config);
 			}
 		}
 		// it seems everything was fine:
-		return new CITestResult(TestResultType.SUCCESSFUL);
+		return new CITestResult(Type.SUCCESSFUL, null, config);
 	}
 
 	private String createHTMLListFromStringList(List<String> list) {

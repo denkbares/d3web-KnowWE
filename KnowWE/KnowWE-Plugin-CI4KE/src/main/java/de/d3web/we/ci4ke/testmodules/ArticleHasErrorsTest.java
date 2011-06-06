@@ -23,7 +23,7 @@ import java.util.LinkedList;
 
 import de.d3web.we.ci4ke.testing.AbstractCITest;
 import de.d3web.we.ci4ke.testing.CITestResult;
-import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -44,14 +44,16 @@ public class ArticleHasErrorsTest extends AbstractCITest {
 		StringBuffer buffy = new StringBuffer();
 
 		String monitoredArticleTitle = getParameter(0);
+		String config = "article: " + monitoredArticleTitle;
+
 		if (monitoredArticleTitle == null || monitoredArticleTitle.isEmpty()) {
-			return new CITestResult(TestResultType.FAILED, ": Parameter 0 was invalid!");
+			return new CITestResult(Type.FAILED, "Parameter 0 was invalid!", config);
 		}
 
 		KnowWEArticle moni = KnowWEEnvironment.getInstance().getArticle(
 				KnowWEEnvironment.DEFAULT_WEB, monitoredArticleTitle);
 		if (moni == null) {
-			return new CITestResult(TestResultType.FAILED, ": MonitoredArticle not found or invalid!");
+			return new CITestResult(Type.FAILED, "MonitoredArticle not found or invalid!", config);
 		}
 
 		Collection<KDOMError> messages = new LinkedList<KDOMError>();
@@ -73,11 +75,10 @@ public class ArticleHasErrorsTest extends AbstractCITest {
 		buffy.append("</ul>");
 		buffy.append("<br/> <br/>");
 		if (hasError) {
-			return new CITestResult(TestResultType.FAILED, buffy.toString());
+			return new CITestResult(Type.FAILED, buffy.toString(), config);
 		}
 		else {
-			return new CITestResult(TestResultType.SUCCESSFUL,
-					": None found.");
+			return new CITestResult(Type.SUCCESSFUL, null, config);
 		}
 	}
 }

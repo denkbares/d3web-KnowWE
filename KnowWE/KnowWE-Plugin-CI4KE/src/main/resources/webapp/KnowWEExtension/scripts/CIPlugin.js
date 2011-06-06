@@ -106,6 +106,7 @@ function makeCIBoxesCollapsible( dashboardID ){
         span._setText('+ ');
         
         var heading = panels[i].getElementsByTagName('h4')[0];
+        if (!heading) continue;
         if(!heading.innerHTML.startsWith('<span>')){
              span._injectTop( heading );
         }

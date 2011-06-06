@@ -47,4 +47,5 @@ public interface CITest extends Callable<CITestResult> {
 	 * @param parameters
 	 */
 	public void setParameters(List<String> parameters);
+
 }

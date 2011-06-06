@@ -22,45 +22,49 @@ package de.d3web.we.ci4ke.testing;
 
 public final class CITestResult implements Comparable<CITestResult> {
 
-	public enum TestResultType {
+	public enum Type {
 		SUCCESSFUL,
 		FAILED,
 		ERROR
 	}
 
-	private final TestResultType result;
+	private final Type type;
+	private final String message;
+	private final String configuration;
 
-	public TestResultType getResultType() {
-		return result;
+	public CITestResult(Type type) {
+		this(type, null, null);
 	}
 
-	private final String testResultMessage;
-
-	public CITestResult(TestResultType result) {
-		this.result = result;
-		this.testResultMessage = "";
+	public CITestResult(Type type, String message) {
+		this(type, message, null);
 	}
 
-	public CITestResult(TestResultType result, String resultMessage) {
-		this.result = result;
-		this.testResultMessage = resultMessage;
+	public CITestResult(Type type, String message, String configuration) {
+		this.type = type;
+		this.message = message;
+		this.configuration = configuration;
 	}
 
 	public boolean isSuccessful() {
-		return result == TestResultType.SUCCESSFUL;
+		return type == Type.SUCCESSFUL;
 	}
 
-	public String getTestResultMessage() {
-		if (testResultMessage != null && !testResultMessage.isEmpty()) {
-			return testResultMessage;
-		}
-		else return "";
+	public Type getType() {
+		return type;
+	}
 
+	public String getMessage() {
+		return message;
+	}
+
+	public String getConfiguration() {
+		return configuration;
 	}
 
 	@Override
 	public String toString() {
-		return result.toString() + " - " + getTestResultMessage();
+		return type.toString() + " - " + getMessage();
 	}
 
 	/**
@@ -68,6 +72,26 @@ public final class CITestResult implements Comparable<CITestResult> {
 	 */
 	@Override
 	public int compareTo(CITestResult tr) {
-		return result.compareTo(tr.getResultType());
+		return type.compareTo(tr.getType());
+	}
+
+	/**
+	 * Returns if the test result described by this object has a message
+	 * 
+	 * @created 30.05.2011
+	 * @return if this result has a message
+	 */
+	public boolean hasMessage() {
+		return this.message != null && !this.message.isEmpty();
+	}
+
+	/**
+	 * Returns if the test result described by this object has a configuration
+	 * 
+	 * @created 30.05.2011
+	 * @return if this result has a configuration
+	 */
+	public boolean hasConfiguration() {
+		return this.configuration != null && !this.configuration.isEmpty();
 	}
 }

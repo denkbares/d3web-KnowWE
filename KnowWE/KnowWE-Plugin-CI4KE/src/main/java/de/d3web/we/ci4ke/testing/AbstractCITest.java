@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import de.d3web.we.ci4ke.handling.CIConfig;
-import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 
@@ -103,7 +103,7 @@ public abstract class AbstractCITest implements CITest {
 		String errorMessage = "The number of arguments for the test '"
 				+ this.getClass().getSimpleName() + "' are not sufficient. Please specify "
 				+ numberOfParametersNeeded + " arguments!";
-		return new CITestResult(TestResultType.ERROR, errorMessage);
+		return new CITestResult(Type.ERROR, errorMessage);
 	}
 
 	public Collection<KnowWEArticle> getArticlesMatchingPattern(Pattern pattern) {

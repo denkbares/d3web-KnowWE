@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.d3web.we.ci4ke.testing.CITestResult;
-import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.ci4ke.util.Pair;
 
 /**
@@ -69,14 +69,14 @@ public final class CIBuildResultset {
 	 * @created 03.06.2010
 	 * @return
 	 */
-	public TestResultType getOverallResult() {
+	public Type getOverallResult() {
 
-		TestResultType overallResult = TestResultType.SUCCESSFUL;
+		Type overallResult = Type.SUCCESSFUL;
 		for (Pair<String, CITestResult> resultPair : results) {
 			CITestResult testResult = resultPair.getB();
-			if (testResult != null && testResult.getResultType().
+			if (testResult != null && testResult.getType().
 					compareTo(overallResult) > 0) {
-				overallResult = testResult.getResultType();
+				overallResult = testResult.getType();
 			}
 		}
 		return overallResult;
@@ -89,8 +89,8 @@ public final class CIBuildResultset {
 			CITestResult testResult = resultPair.getB();
 
 			sb.append(testName + ": ");
-			if (testResult.getTestResultMessage().length() > 0) {
-				sb.append(testResult.getTestResultMessage());
+			if (testResult.hasMessage()) {
+				sb.append(testResult.getMessage());
 			}
 			else {
 				sb.append("(no resultmessage)");

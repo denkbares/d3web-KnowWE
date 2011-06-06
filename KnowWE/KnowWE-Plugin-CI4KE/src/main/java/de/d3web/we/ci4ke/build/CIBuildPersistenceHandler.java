@@ -46,7 +46,7 @@ import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
 
 import de.d3web.we.ci4ke.testing.CITestResult;
-import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.d3web.we.ci4ke.util.Pair;
 
@@ -211,7 +211,7 @@ public class CIBuildPersistenceHandler {
 
 			// find the "worst" testResult
 			// which defines the overall result of this build
-			TestResultType overallResult = resultset.getOverallResult();
+			Type overallResult = resultset.getOverallResult();
 			build.setAttribute(CIBuilder.BUILD_RESULT, overallResult.name());
 
 			// xmlDocument.getRootElement().setAttribute(CIBuilder.
@@ -227,11 +227,15 @@ public class CIBuildPersistenceHandler {
 
 				Element e = new Element("test");
 				e.setAttribute("name", testname);
-				e.setAttribute("result", testresult.getResultType().toString());
+				e.setAttribute("result", testresult.getType().toString());
 
-				if (testresult.getTestResultMessage().length() > 0) {
+				if (testresult.hasMessage()) {
 					e.setAttribute("message",
-							testresult.getTestResultMessage());
+							testresult.getMessage());
+				}
+				if (testresult.hasConfiguration()) {
+					e.setAttribute("configuration",
+							testresult.getConfiguration());
 				}
 				tests.addContent(e);
 			}
@@ -358,7 +362,7 @@ public class CIBuildPersistenceHandler {
 				// starting with a nice image...
 				s = e.getAttributeValue("result");
 				if (s != null && !s.isEmpty()) {
-					TestResultType buildResult = TestResultType.valueOf(s);
+					Type buildResult = Type.valueOf(s);
 					sb.append(CIUtilities.renderResultType(buildResult, 16));
 				}
 				sb.append("</td><td>");
@@ -410,7 +414,7 @@ public class CIBuildPersistenceHandler {
 		Object o = selectSingleNode("builds/@actualBuildStatus");
 		if (o instanceof Attribute) {
 			String actualStatus = ((Attribute) o).getValue();
-			return CIUtilities.renderResultType(TestResultType.valueOf(actualStatus), pixelSize);
+			return CIUtilities.renderResultType(Type.valueOf(actualStatus), pixelSize);
 		}
 		return "";
 	}

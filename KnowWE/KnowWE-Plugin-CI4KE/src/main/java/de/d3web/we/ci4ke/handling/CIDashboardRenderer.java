@@ -23,7 +23,7 @@ import java.util.List;
 import org.jdom.Element;
 
 import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
-import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -59,7 +59,8 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer<CIDashboardType> 
 			String dashboardName = DefaultMarkupType.getAnnotation(section,
 					CIDashboardType.NAME_KEY);
 			String dashboardNameEscaped = CIUtilities.utf8Escape(dashboardName);
-			string.append(KnowWEUtils.maskHTML("<div id='" + dashboardNameEscaped + "'>"));
+			string.append(KnowWEUtils.maskHTML("<div id='" + dashboardNameEscaped
+					+ "' class='ci-title'>"));
 			string.append(KnowWEUtils.maskHTML(renderDashboardContents(dashboardName,
 					article.getTitle())));
 			string.append(KnowWEUtils.maskHTML("</div>"));
@@ -98,7 +99,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer<CIDashboardType> 
 				+ "-column-left' class='ci-column-left'>");
 		string.append("<div id='" + dashboardNameEscaped
 				+ "-build-table'>");
-		string.append(handler.renderNewestBuilds(5));
+		string.append(handler.renderNewestBuilds(10));
 		string.append("</div></div>");
 
 		// render the build-details pane
@@ -148,30 +149,40 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer<CIDashboardType> 
 				buffy.append("<div class='ci-collapsible-box'>");
 				// buffy.append("<b>";
 
-				// Render Test TestCaseAnalysisReport
-				String s = e.getAttributeValue("result");
-				if (s != null && !s.isEmpty()) {
-					TestResultType buildResult = TestResultType.valueOf(s);
+				// prepare some information
+				String name = e.getAttributeValue("name");
+				String result = e.getAttributeValue("result");
+				String message = e.getAttributeValue("message");
+				String config = e.getAttributeValue("configuration");
+
+				// render bullet
+				if (result != null && !result.isEmpty()) {
+					Type buildResult = Type.valueOf(result);
 					buffy.append(CIUtilities.renderResultType(buildResult, 16));
 				}
-				// Render Test-Name
-				s = e.getAttributeValue("name");
-				if (s != null && !s.isEmpty()) {
-					buffy.append(s);
+
+				buffy.append("<span class='ci-test-title'>");
+				// render test-name
+				if (name != null && !name.isEmpty()) {
+					buffy.append(name);
 				}
 
-				// buffy.append("</b>");
-
-				// Render Test Message (if existent)
-				buffy.append("<span>"); // style=\"display: none;\">");
-				s = e.getAttributeValue("message");
-				if (s != null && !s.isEmpty()) {
-					buffy.append(s);
+				// render test-configuration (if existent)
+				if (config != null && !config.isEmpty()) {
+					buffy.append("<span class='ci-configuration'>");
+					buffy.append(" (").append(config).append(")");
+					buffy.append("</span>");
 				}
-
 				buffy.append("</span>");
 
-				buffy.append("</div>\n");
+				// render test-message (if existent)
+				if (message != null && !message.isEmpty()) {
+					buffy.append("<div class='ci-message'>"); // style=\"display: none;\">");
+					buffy.append(message);
+					buffy.append("</div>");
+				}
+
+				buffy.append("</div>");
 			}
 		}
 		buffy.append("</div>");

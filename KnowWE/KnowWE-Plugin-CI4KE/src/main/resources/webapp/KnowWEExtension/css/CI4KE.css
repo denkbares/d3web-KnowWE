@@ -22,11 +22,15 @@
 	{ 
 /*	border: thin solid #000000; */
 	float: left; 
+	min-height: 100%;
+	border-right: 1px solid #DDD;
 	/* width: 24%; */
 	}
 .ci-build-details-wrapper
 	{ 
 	float: left; 
+	border-left: 1px solid #DDD;
+	margin-left: -1px;	
 	/* width: 75%; */
 	}
 .ci-column-middle
@@ -42,9 +46,26 @@
 	width: 10%;
 	}
 */
+
+.ci-title {
+	border-bottom: 1px solid #DDD;
+	padding: 0px 0px 6px 0px;
+	}
+
+.ci-message {
+	margin-left: 17px;
+	padding-left: 4px;
+	border-left: 2px solid #88F;
+	font-size: 10px;
+	}
+
+.ci-configuration {
+	color: #888;
+	}
+
 .ci-collapsible-box
 	{
-	border: thin solid #96BBD9;
+	/*border: thin solid #96BBD9;*/
 	padding: 3px 5px;
 	}
 .ci-collapsible-box h4 

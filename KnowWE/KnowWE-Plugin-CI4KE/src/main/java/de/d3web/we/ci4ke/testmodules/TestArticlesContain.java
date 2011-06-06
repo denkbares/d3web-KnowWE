@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 
 import de.d3web.we.ci4ke.testing.AbstractCITest;
 import de.d3web.we.ci4ke.testing.CITestResult;
-import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.kdom.KnowWEArticle;
 
 /**
@@ -46,7 +46,9 @@ public class TestArticlesContain extends AbstractCITest {
 
 		String articlesPattern = getParameter(0);
 		String searchForKeyword = getParameter(1);
-		
+
+		String configuration = "article: " + articlesPattern +
+				"; forbidden text: " + searchForKeyword;
 		Pattern pattern = Pattern.compile(articlesPattern);
 
 		List<String> namesOfArticlesWhichContainKeyword = new LinkedList<String>();
@@ -59,15 +61,17 @@ public class TestArticlesContain extends AbstractCITest {
 		}
 
 		// If at least one article was found, this test is FAILED
-		if (namesOfArticlesWhichContainKeyword.size() > 0) {
-			return new CITestResult(TestResultType.FAILED,
-						"<b>The following articles contain the keyword '" +
-								searchForKeyword + "': " + de.d3web.we.utils.Strings.concat(", ",
-										namesOfArticlesWhichContainKeyword) + "</b>");
+		int count = namesOfArticlesWhichContainKeyword.size();
+		if (count > 0) {
+			String message = "<b>Forbidden text found in " + count + " articles:</b>\n" +
+					"<ul><li>" + de.d3web.we.utils.Strings.concat("</li>\n<li>",
+							namesOfArticlesWhichContainKeyword) + "</li></ul>";
+			return new CITestResult(Type.FAILED, message, configuration);
 		}
 		else {
-			return new CITestResult(TestResultType.SUCCESSFUL);
+			return new CITestResult(Type.SUCCESSFUL, null, configuration);
 		}
 
 	}
+
 }

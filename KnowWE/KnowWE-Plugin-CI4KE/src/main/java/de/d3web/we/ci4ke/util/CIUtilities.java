@@ -37,7 +37,7 @@ import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.d3web.we.ci4ke.testing.CITest;
-import de.d3web.we.ci4ke.testing.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.ci4ke.testing.DynamicCITestManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -229,7 +229,7 @@ public class CIUtilities {
 
 	// RENDER - HELPERS
 
-	public static String renderResultType(TestResultType resultType, int pixelSize) {
+	public static String renderResultType(Type resultType, int pixelSize) {
 
 		String imgBulb = "<img src='KnowWEExtension/ci4ke/images/" +
 				pixelSize + "x" + pixelSize
