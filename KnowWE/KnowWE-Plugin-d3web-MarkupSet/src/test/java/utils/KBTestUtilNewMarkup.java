@@ -274,7 +274,9 @@ public class KBTestUtilNewMarkup {
 		QContainer qc2 = createdKB.getManager().searchQContainer("Technical Examinations");
 		// - "Idle speed system o.k.?" [yn]
 		// createdKBM.createQuestionYN("Q9", "Idle speed system o.k.?", qc2);
-		new QuestionYN(qc2, "Idle speed system o.k.?");
+		
+		//new QuestionYN(qc2, "Idle speed system o.k.?");
+		new QuestionOC(qc2, "Idle speed system o.k.?", "Yes", "No");
 	}
 
 	/**

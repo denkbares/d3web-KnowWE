@@ -57,7 +57,10 @@ Observations
 - Other [text]
 
 Technical Examinations
-- "Idle speed system o.k.?" [yn]
+//- "Idle speed system o.k.?" [yn]
+- "Idle speed system o.k.?" [oc]
+-- Yes
+-- No
 %
 
 %%Rule
