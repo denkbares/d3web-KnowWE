@@ -59,7 +59,7 @@ public class ExitType extends AbstractXMLType {
 		}
 
 		@Override
-		public String getTermName(Section<? extends KnowWETerm<String>> s) {
+		public String getTermIdentifier(Section<? extends KnowWETerm<String>> s) {
 			String nodeName = s.getOriginalText();
 			Section<FlowchartType> flowchart = Sections.findAncestorOfType(s, FlowchartType.class);
 			String flowchartName = FlowchartType.getFlowchartName(flowchart);

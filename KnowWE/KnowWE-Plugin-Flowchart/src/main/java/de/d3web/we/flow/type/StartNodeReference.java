@@ -31,7 +31,7 @@ import de.d3web.we.kdom.objects.StringReference;
 public class StartNodeReference extends StringReference {
 
 	@Override
-	public String getTermName(Section<? extends KnowWETerm<String>> s) {
+	public String getTermIdentifier(Section<? extends KnowWETerm<String>> s) {
 		Section<FlowchartReference> ref = Sections.findSuccessor(s.getFather(),
 				FlowchartReference.class);
 

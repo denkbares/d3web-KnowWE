@@ -48,7 +48,7 @@ public class FlowchartXMLHeadType extends XMLHead {
 
 
 		@Override
-		public String getTermName(Section<? extends KnowWETerm<String>> s) {
+		public String getTermIdentifier(Section<? extends KnowWETerm<String>> s) {
 			return s.getOriginalText();
 		}
 
