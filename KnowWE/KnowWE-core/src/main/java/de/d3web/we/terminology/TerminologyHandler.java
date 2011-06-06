@@ -44,7 +44,6 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
-import de.d3web.we.kdom.objects.NotUniqueKnowWETerm;
 import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.objects.TermReference;
 import de.d3web.we.kdom.objects.KnowWETerm.Scope;
@@ -199,8 +198,10 @@ public class TerminologyHandler implements EventListener {
 				if (termRefLogWrongClass.getDefiningSection() == null
 						||
 						termRefLogWrongClass.getPriorityOfDefiningSection().compareTo(p) < 0
-							|| (termRefLogWrongClass.getPriorityOfDefiningSection().compareTo(p) == 0
-									&& termRefLogWrongClass.getDefiningSection().compareTo(s) > 0)) {
+							|| (termRefLogWrongClass.getPriorityOfDefiningSection().compareTo(
+									p) == 0
+									&& termRefLogWrongClass.getDefiningSection().compareTo(
+											s) > 0)) {
 
 					globalRecompilationOfTerm(article, s, termRefLogWrongClass);
 				}
@@ -314,7 +315,8 @@ public class TerminologyHandler implements EventListener {
 				termRef.clearReusedBySet();
 			}
 		}
-		if (s.get().getMultiDefMode() == MultiDefMode.ACTIVE && (s.get().getTermScope() == Scope.LOCAL
+		if (s.get().getMultiDefMode() == MultiDefMode.ACTIVE
+				&& (s.get().getTermScope() == Scope.LOCAL
 				|| (termRefLog.getDefiningSection().getArticle().getTitle().equals(
 						article.getTitle()) && s.compareTo(termRefLog.getDefiningSection()) < 0))) {
 			article.setFullParse(this.getClass());
@@ -678,8 +680,8 @@ public class TerminologyHandler implements EventListener {
 			}
 
 			this.termObjectClass = termObjectClass;
-			if(p != null && s != null) {
-			addDefiningSection(p, s);
+			if (p != null && s != null) {
+				addDefiningSection(p, s);
 			}
 
 		}
@@ -706,16 +708,16 @@ public class TerminologyHandler implements EventListener {
 		public void addRedundantTermDefinition(Section<? extends TermDefinition<TermObject>> s, Priority p) {
 			addDefiningSection(p, s);
 		}
-		
+
 		public Section<? extends TermDefinition<TermObject>> getDefiningSection() {
-			if(this.definingSections.isEmpty()) return null;
+			if (this.definingSections.isEmpty()) return null;
 			// high priorities have high number, hence lastEntry...
 			return this.definingSections.lastEntry().getValue().first();
 		}
 
 		public Set<Section<? extends TermDefinition<TermObject>>> getRedundantDefinitions() {
 			Set<Section<? extends TermDefinition<TermObject>>> result = new HashSet<Section<? extends TermDefinition<TermObject>>>();
-			for(Priority p : this.definingSections.keySet()) {
+			for (Priority p : this.definingSections.keySet()) {
 				Set<Section<? extends TermDefinition<TermObject>>> secs = this.definingSections.get(p);
 				result.addAll(secs);
 			}
@@ -749,13 +751,9 @@ public class TerminologyHandler implements EventListener {
 		@SuppressWarnings( {
 				"unchecked", "rawtypes" })
 		public TermIdentifier(KnowWEArticle article, Section<? extends KnowWETerm> s) {
-			if (s.get() instanceof NotUniqueKnowWETerm) {
-				Section<? extends NotUniqueKnowWETerm> nus = (Section<? extends NotUniqueKnowWETerm>) s;
-				termIdentifier = nus.get().getUniqueTermIdentifier(article, nus);
-			}
-			else {
-				termIdentifier = s.get().getTermIdentifier(s);
-			}
+
+			termIdentifier = s.get().getTermIdentifier(s);
+
 			this.termIdentifierLowerCase = this.termIdentifier.toLowerCase();
 		}
 
