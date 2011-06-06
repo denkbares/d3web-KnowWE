@@ -121,7 +121,7 @@ public abstract class TermReference<TermObject>
 			KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermReference(
 					article, s);
 
-			String termName = s.get().getTermName(s);
+			String termName = s.get().getTermIdentifier(s);
 
 			if (s.get().getTermObject(article, s) == null) {
 				return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(

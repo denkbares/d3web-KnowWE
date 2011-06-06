@@ -27,7 +27,7 @@ public abstract class PackageCompileType extends StringDefinition implements Pac
 	}
 
 	@Override
-	public String getTermName(Section<? extends KnowWETerm<String>> s) {
+	public String getTermIdentifier(Section<? extends KnowWETerm<String>> s) {
 		return s.getTitle();
 	}
 
@@ -79,7 +79,7 @@ public abstract class PackageCompileType extends StringDefinition implements Pac
 				article.getReviseIterator().addRootSectionToRevise(sectionOfPackage);
 			}
 
-			s.get().storeTermObject(article, s, s.get().getTermName(s));
+			s.get().storeTermObject(article, s, s.get().getTermIdentifier(s));
 			KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
 					article, s);
 

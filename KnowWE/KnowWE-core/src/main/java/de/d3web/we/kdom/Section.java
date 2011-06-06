@@ -175,7 +175,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	public String toString() {
 		return (type != null ? this.get().getClass().getSimpleName() + ": " : "")
 				+ "'" + (type != null && type instanceof KnowWETerm<?>
-						? ((KnowWETerm) type).getTermName(this)
+						? ((KnowWETerm) type).getTermIdentifier(this)
 						: this.getText()) + "'";
 	}
 

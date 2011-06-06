@@ -65,10 +65,10 @@ public abstract class StringDefinition extends TermDefinition<String> {
 			if (defSec != s) {
 				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
 						s.get().getName()
-								+ ": " + s.get().getTermName(s), s));
+								+ ": " + s.get().getTermIdentifier(s), s));
 			}
 
-			s.get().storeTermObject(article, s, s.get().getTermName(s));
+			s.get().storeTermObject(article, s, s.get().getTermIdentifier(s));
 
 			return new ArrayList<KDOMReportMessage>(0);
 		}

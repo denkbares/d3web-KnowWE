@@ -231,9 +231,9 @@ public class TerminologyHandler implements EventListener {
 									&& termRefLog.getDefiningSection().compareTo(s) < 0)) {
 
 					termRefLog.addRedundantTermDefinition(s, p);
-					String termName = termRefLog.getDefiningSection().get().getTermName(
+					String termName = termRefLog.getDefiningSection().get().getTermIdentifier(
 							termRefLog.getDefiningSection());
-					String redTermName = s.get().getTermName(s);
+					String redTermName = s.get().getTermIdentifier(s);
 					if (!termName.equals(redTermName)) {
 						msgs.add(new TermNameCaseWarning(termName));
 					}
@@ -344,8 +344,8 @@ public class TerminologyHandler implements EventListener {
 					new TermIdentifier(article, s), terRefLog);
 		}
 		if (terRefLog.getDefiningSection() != null) {
-			String refTermName = s.get().getTermName(s);
-			String termName = terRefLog.getDefiningSection().get().getTermName(
+			String refTermName = s.get().getTermIdentifier(s);
+			String termName = terRefLog.getDefiningSection().get().getTermIdentifier(
 					terRefLog.getDefiningSection());
 			if (!termName.equals(refTermName)) {
 				msgs.add(new TermNameCaseWarning(termName));
@@ -754,7 +754,7 @@ public class TerminologyHandler implements EventListener {
 				termIdentifier = nus.get().getUniqueTermIdentifier(article, nus);
 			}
 			else {
-				termIdentifier = s.get().getTermName(s);
+				termIdentifier = s.get().getTermIdentifier(s);
 			}
 			this.termIdentifierLowerCase = this.termIdentifier.toLowerCase();
 		}

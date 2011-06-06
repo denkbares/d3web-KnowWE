@@ -48,7 +48,15 @@ public interface KnowWETerm<TermObject> extends IncrementalMarker {
 		GLOBAL
 	}
 
-	public String getTermName(Section<? extends KnowWETerm<TermObject>> s);
+	/**
+	 * 
+	 * Needs to return a global/package-wide unique name/identifier for this term 
+	 * 
+	 * @created 06.06.2011
+	 * @param s
+	 * @return 
+	 */
+	public String getTermIdentifier(Section<? extends KnowWETerm<TermObject>> s);
 
 	public Class<TermObject> getTermObjectClass();
 
