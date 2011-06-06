@@ -57,6 +57,17 @@ public interface KnowWETerm<TermObject> extends IncrementalMarker {
 	 * @return 
 	 */
 	public String getTermIdentifier(Section<? extends KnowWETerm<TermObject>> s);
+	
+	/**
+	 * Returns the (potentially short or abbreviated) name of this Term.
+	 * WARNING: This name is not necessarily globally/package-wide unique
+	 * 
+	 * 
+	 * @created 06.06.2011
+	 * @param s
+	 * @return 
+	 */
+	public String getTermName(Section<? extends KnowWETerm<TermObject>> s);
 
 	public Class<TermObject> getTermObjectClass();
 

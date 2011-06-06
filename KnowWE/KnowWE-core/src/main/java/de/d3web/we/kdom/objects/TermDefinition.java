@@ -139,5 +139,12 @@ public abstract class TermDefinition<TermObject>
 	public void setMultiDefMode(MultiDefMode mode) {
 		this.multiDefMode = mode;
 	}
+	
+	@Override
+	public String getTermName(Section<? extends KnowWETerm<TermObject>> s) {
+		// As default the term name is identical with the identifier
+		// however, this method may be overridden
+		return getTermIdentifier(s);
+	}
 
 }
