@@ -86,7 +86,7 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 		}
 
 		@Override
-		public String getTermName(Section<? extends KnowWETerm<Question>> s) {
+		public String getTermIdentifier(Section<? extends KnowWETerm<Question>> s) {
 			String text = s.getOriginalText().trim();
 			String questionName = "";
 			if (text.indexOf(OPEN) == 0 && text.lastIndexOf(CLOSE) == text.length() - 1) {

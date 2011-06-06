@@ -37,14 +37,14 @@ public class QuestionNumReference extends QuestionReference {
 			if (question == null) {
 				return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(
 						s.get().getName()
-								+ ": " + s.get().getTermName(s)));
+								+ ": " + s.get().getTermIdentifier(s)));
 			}
 
 			// check for QuestionNum
 			if (!(question instanceof QuestionNum)) {
 				return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(
 						s.get().getName()
-								+ " QuestionNum expected:  " + s.get().getTermName(s)));
+								+ " QuestionNum expected:  " + s.get().getTermIdentifier(s)));
 			}
 
 			return new ArrayList<KDOMReportMessage>(0);

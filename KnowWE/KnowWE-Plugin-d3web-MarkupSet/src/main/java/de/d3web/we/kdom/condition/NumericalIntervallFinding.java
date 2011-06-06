@@ -62,7 +62,7 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 
 		if (!(q instanceof QuestionNum)) {
 			KDOMReportMessage.storeSingleError(article, s, this.getClass(), new SimpleMessageError(
-					"The question '" + qRef.get().getTermName(qRef) + "' must be numerical."));
+					"The question '" + qRef.get().getTermIdentifier(qRef) + "' must be numerical."));
 		}
 		else if (number1 != null && number2 != null && q != null && q instanceof QuestionNum) {
 			KDOMReportMessage.clearMessages(article, s, this.getClass());

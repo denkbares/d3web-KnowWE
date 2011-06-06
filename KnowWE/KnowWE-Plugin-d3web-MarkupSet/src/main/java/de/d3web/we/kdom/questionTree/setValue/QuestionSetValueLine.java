@@ -111,7 +111,7 @@ public class QuestionSetValueLine extends AbstractType {
 			Section<AnswerReference> answerSec = Sections.findSuccessor(
 					s.getFather(), AnswerReference.class);
 
-			String answerName = answerSec.get().getTermName(answerSec);
+			String answerName = answerSec.get().getTermIdentifier(answerSec);
 
 			if (q != null) {
 				Choice a = null;
@@ -193,7 +193,7 @@ public class QuestionSetValueLine extends AbstractType {
 		}
 
 		@Override
-		public String getTermName(Section<? extends KnowWETerm<Choice>> s) {
+		public String getTermIdentifier(Section<? extends KnowWETerm<Choice>> s) {
 			String text = s.getOriginalText().trim();
 			String answer = "";
 			if (text.indexOf(OPEN) == 0 && text.lastIndexOf(CLOSE) == text.length() - 1) {

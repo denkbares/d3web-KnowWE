@@ -250,11 +250,11 @@ public class QuestionDashTreeUtils {
 				Section<TermDefinition> tdef = (Section<TermDefinition>) node;
 				Collection<Section<? extends TermDefinition>> termDefs = new ArrayList<Section<? extends TermDefinition>>();
 				termDefs.addAll(KnowWEUtils.getTerminologyHandler(article.getWeb()).getRedundantTermDefiningSections(
-								article, tdef.get().getTermName(tdef),
+								article, tdef.get().getTermIdentifier(tdef),
 						tdef.get().getTermScope()));
 				termDefs.add(KnowWEUtils.getTerminologyHandler(
 						article.getWeb()).getTermDefiningSection(article,
-						tdef.get().getTermName(tdef), tdef.get().getTermScope()));
+						tdef.get().getTermIdentifier(tdef), tdef.get().getTermScope()));
 				for (Section<?> tDef : termDefs) {
 					if (tDef != null && tDef != node) {
 						Section<DashSubtree> dashSubtree = getRootQuestionSubtree(
