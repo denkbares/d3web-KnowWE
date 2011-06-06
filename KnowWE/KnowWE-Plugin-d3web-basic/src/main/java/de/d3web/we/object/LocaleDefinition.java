@@ -43,7 +43,7 @@ public class LocaleDefinition extends TermDefinition<Locale> {
 	}
 
 	@Override
-	public String getTermName(Section<? extends KnowWETerm<Locale>> s) {
+	public String getTermIdentifier(Section<? extends KnowWETerm<Locale>> s) {
 		return s.getOriginalText().trim();
 	}
 

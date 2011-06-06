@@ -44,7 +44,7 @@ public class PropertyReference extends D3webTermReference<Property> {
 	public Property getTermObjectFallback(KnowWEArticle article, Section<? extends TermReference<Property>> s) {
 		if (s.get() instanceof PropertyReference) {
 			try {
-				return Property.getUntypedProperty(s.get().getTermName(s));
+				return Property.getUntypedProperty(s.get().getTermIdentifier(s));
 			}
 			catch (NoSuchElementException e) {
 				return null;

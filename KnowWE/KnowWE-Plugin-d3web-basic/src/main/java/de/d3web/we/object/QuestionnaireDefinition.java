@@ -66,7 +66,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
 				Section<QuestionnaireDefinition> s) {
 
-			String name = s.get().getTermName(s);
+			String name = s.get().getTermIdentifier(s);
 
 			if (!KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
 					article, s)) {
@@ -92,7 +92,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 										QuestionnaireDefinition.class);
 					if (parentQclass != null) {
 						QASet localParent = kb.getManager().searchQContainer(
-								parentQclass.get().getTermName(
+								parentQclass.get().getTermIdentifier(
 										parentQclass));
 						if (localParent != null) {
 							parent = localParent;

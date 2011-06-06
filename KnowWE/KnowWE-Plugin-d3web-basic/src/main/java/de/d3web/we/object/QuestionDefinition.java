@@ -82,7 +82,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 				Section<QuestionDefinition> s) {
 
 			Section<QuestionDefinition> qidSection = (s);
-			String name = qidSection.get().getTermName(qidSection);
+			String name = qidSection.get().getTermIdentifier(qidSection);
 
 			boolean alreadyRegistered = false;
 			if (!KnowWEUtils.getTerminologyHandler(article.getWeb())
@@ -188,9 +188,9 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 		private void handleYNChoices(KnowWEArticle article, Section<QuestionDefinition> s) {
 			List<Section<?>> refs = new LinkedList<Section<?>>();
 			refs.addAll(KnowWEUtils.getTerminologyHandler(article.getWeb()).getTermReferenceSections(
-					article, s.get().getTermName(s) + " Yes", s.get().getTermScope()));
+					article, s.get().getTermIdentifier(s) + " Yes", s.get().getTermScope()));
 			refs.addAll(KnowWEUtils.getTerminologyHandler(article.getWeb()).getTermReferenceSections(
-					article, s.get().getTermName(s) + " No", s.get().getTermScope()));
+					article, s.get().getTermIdentifier(s) + " No", s.get().getTermScope()));
 			for (Section<?> ref : refs) {
 				ref.clearReusedBySet();
 			}

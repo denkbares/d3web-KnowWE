@@ -62,7 +62,7 @@ public class IDObjectReference extends D3webTermReference<NamedObject> {
 	}
 
 	@Override
-	public String getTermName(Section<? extends KnowWETerm<NamedObject>> s) {
+	public String getTermIdentifier(Section<? extends KnowWETerm<NamedObject>> s) {
 		return s.getOriginalText();
 	}
 
@@ -74,7 +74,7 @@ public class IDObjectReference extends D3webTermReference<NamedObject> {
 			String namePattern = "(" + Patterns.quoted + "|" + unquotedNamePattern + ")";
 			String idObjectPattern = namePattern + "(?:#" + namePattern + ")?";
 			Pattern p = Pattern.compile(idObjectPattern);
-			Matcher matcher = p.matcher(s.get().getTermName(s));
+			Matcher matcher = p.matcher(s.get().getTermIdentifier(s));
 			if (!matcher.matches()) return null;
 			String idObjectName = KnowWEUtils.trimQuotes(matcher.group(1));
 			String choiceString = matcher.group(2);

@@ -49,7 +49,7 @@ public class QuestionnaireReference extends D3webTermReference<QContainer> {
 
 		if (s.get() instanceof QuestionnaireReference) {
 			Section<QuestionnaireReference> sec = (Section<QuestionnaireReference>) s;
-			String qcName = sec.get().getTermName(sec);
+			String qcName = sec.get().getTermIdentifier(sec);
 
 			KnowledgeBase kb =
 					D3webModule.getKnowledgeRepresentationHandler(

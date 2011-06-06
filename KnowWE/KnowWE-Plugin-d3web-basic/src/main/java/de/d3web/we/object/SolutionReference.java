@@ -47,7 +47,7 @@ public class SolutionReference extends D3webTermReference<Solution> {
 		if (s.get() instanceof SolutionReference) {
 
 			Section<SolutionReference> sec = (Section<SolutionReference>) s;
-			String solutionName = sec.get().getTermName(sec);
+			String solutionName = sec.get().getTermIdentifier(sec);
 
 			KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(
 					article.getWeb()).getKB(article.getTitle());

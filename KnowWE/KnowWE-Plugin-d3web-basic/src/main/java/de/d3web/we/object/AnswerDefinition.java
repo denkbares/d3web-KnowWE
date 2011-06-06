@@ -91,7 +91,7 @@ public abstract class AnswerDefinition
 	}
 
 	@Override
-	public String getTermName(Section<? extends KnowWETerm<Choice>> s) {
+	public String getTermIdentifier(Section<? extends KnowWETerm<Choice>> s) {
 		// here we should return a unique identifier including the question name
 		// as namespace
 		KnowWETerm<Choice> knowWETerm = s.get();
@@ -99,13 +99,13 @@ public abstract class AnswerDefinition
 			Section<AnswerDefinition> sec = ((Section<AnswerDefinition>) s);
 			Section<? extends QuestionDefinition> questionSection = sec.get().getQuestionSection(
 					sec);
-			String question = questionSection.get().getTermName(questionSection);
+			String question = questionSection.get().getTermIdentifier(questionSection);
 
-			return createAnswerIdentifierForQuestion(super.getTermName(sec), question);
+			return createAnswerIdentifierForQuestion(super.getTermIdentifier(sec), question);
 		}
 
 		// should not happen
-		return super.getTermName(s);
+		return super.getTermIdentifier(s);
 	}
 
 	/*
@@ -145,7 +145,7 @@ public abstract class AnswerDefinition
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
 				Section<AnswerDefinition> s) {
 
-			String name = s.get().getTermName(s);
+			String name = s.get().getTermIdentifier(s);
 
 			Section<? extends QuestionDefinition> qDef = s.get().getQuestionSection(s);
 			KnowWEUtils.storeObject(article, s, AnswerDefinition.QUESTION_FOR_ANSWER_KEY,
@@ -206,7 +206,7 @@ public abstract class AnswerDefinition
 				}
 				else {
 					a = KnowledgeBaseUtils.addChoiceAnswer((QuestionChoice) q,
-							getShortAnswerName(name, qDef.get().getTermName(qDef)),
+							getShortAnswerName(name, qDef.get().getTermIdentifier(qDef)),
 							s.get().getPosition(s));
 
 				}

@@ -55,20 +55,20 @@ public abstract class AnswerReference
 	}
 	
 	@Override
-	public String getTermName(Section<? extends KnowWETerm<Choice>> s) {
+	public String getTermIdentifier(Section<? extends KnowWETerm<Choice>> s) {
 		// here we should return a unique identifier including the question name as namespace
 		
 		KnowWETerm<Choice> knowWETerm = s.get();
 		if(knowWETerm instanceof AnswerReference) {
 			Section<AnswerReference> sec = ((Section<AnswerReference>)s);
 			Section<QuestionReference> questionSection = sec.get().getQuestionSection(sec);
-			String question = questionSection.get().getTermName(questionSection);
+			String question = questionSection.get().getTermIdentifier(questionSection);
 			
-			return AnswerDefinition.createAnswerIdentifierForQuestion(super.getTermName(sec), question);
+			return AnswerDefinition.createAnswerIdentifierForQuestion(super.getTermIdentifier(sec), question);
 		}
 		
 		//should not happen
-		return super.getTermName(s);
+		return super.getTermIdentifier(s);
 	}
 
 	@Override
@@ -80,9 +80,9 @@ public abstract class AnswerReference
 			Section<AnswerReference> sec = (Section<AnswerReference>) s;
 
 			Section<QuestionReference> ref = sec.get().getQuestionSection(sec);
-			String questionName = ref.get().getTermName(ref);
+			String questionName = ref.get().getTermIdentifier(ref);
 
-			String answerName = sec.get().getTermName(sec);
+			String answerName = sec.get().getTermIdentifier(sec);
 
 			KnowledgeBase kb =
 					D3webModule.getKnowledgeRepresentationHandler(

@@ -126,7 +126,7 @@ public abstract class SolutionDefinition
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
 				Section<SolutionDefinition> s) {
 
-			String name = s.get().getTermName(s);
+			String name = s.get().getTermIdentifier(s);
 
 			if (!KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
 					article, s)) {
