@@ -633,15 +633,11 @@ public class TerminologyHandler implements EventListener {
 	@SuppressWarnings( {
 			"unchecked", "rawtypes" })
 	public Collection<String> getAllTerms(String title, Scope scope, Class<?> termClass) {
-		Collection<TermReferenceLog> logs = getTermReferenceLogsMap(title, scope).values();
+		Collection<Section<? extends TermDefinition>> allTermDefs = getAllTermDefs(title, scope, termClass);
 		Collection<String> terms = new HashSet<String>();
-		for (TermReferenceLog tl : logs) {
-			if (tl.getDefiningSection() != null
-					&& (termClass == null || tl.getTermObjectClass().isAssignableFrom(
-							termClass))) {
-				terms.add(new TermIdentifier(tl.getDefiningSection().getArticle(),
-						tl.getDefiningSection()).toString());
-			}
+		for (Section<? extends TermDefinition> sec : allTermDefs) {
+			terms.add(new TermIdentifier(sec.getArticle(),
+						sec).toString());
 		}
 		return terms;
 	}
