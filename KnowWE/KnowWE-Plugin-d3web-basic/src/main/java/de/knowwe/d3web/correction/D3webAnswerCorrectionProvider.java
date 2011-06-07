@@ -27,8 +27,10 @@ import com.wcohen.ss.Levenstein;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.objects.TermReference;
 import de.d3web.we.object.AnswerReference;
+import de.d3web.we.object.QuestionReference;
 import de.d3web.we.terminology.TerminologyHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.knowwe.core.correction.CorrectionProvider;
@@ -54,9 +56,10 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 		}
 
 		TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(KnowWEEnvironment.DEFAULT_WEB);
-		TermReference<?> termReference = ((TermReference<?>) section.get());		
+		TermReference<?> termReference = ((TermReference<?>) section.get());
+		Section<AnswerReference> refSec = ((Section<AnswerReference>)section);
 
-		Collection<String> localTermMatches = terminologyHandler.getAllLocalTermsOfType(
+		Collection<Section<? extends TermDefinition>> localTermMatches = terminologyHandler.getAllLocalTermsDefsOfType(
 				article.getTitle(),
 				termReference.getTermObjectClass()
 		);
@@ -65,26 +68,21 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 		List<CorrectionProvider.Suggestion> suggestions = new LinkedList<CorrectionProvider.Suggestion>();
 		Levenstein l = new Levenstein();
 
-		for (String match : localTermMatches) {
-			String name;
-			String type;
+		for (Section<? extends TermDefinition> match : localTermMatches) {
 
-			String[] parts = match.split(" ");
-
-			name = parts.length == 1 ? parts[0] : parts[1];
-			type = parts.length == 2 ? parts[0] : null;
-
-			double score = l.score(originalText, name);
+			AnswerReference answerReference = (AnswerReference) termReference;
+			Section<QuestionReference> questionSection = answerReference.getQuestionSection((Section<? extends AnswerReference>) section);
+			String question = questionSection.get().getTermIdentifier(questionSection);
+			// Special case: AnswerReference: Also check that the defining Question matches
+			if (! (refSec.get().getTermIdentifier(refSec).startsWith(question))) {
+				continue;
+			}
+			
+			double score = l.score(originalText, match.get().getTermName(match));
 			if (score >= -threshold) {
-				// Special case: AnswerReference: Also check that the defining Question matches
-				AnswerReference answerReference = (AnswerReference) termReference;
-				String question = answerReference.getQuestionSection((Section<? extends AnswerReference>) section).getOriginalText(); // TODO: -> getTermName()
+				
 
-				if (!question.equals(type)) {
-					continue;
-				}
-
-				suggestions.add(new CorrectionProvider.Suggestion(name, (int)score));
+				suggestions.add(new CorrectionProvider.Suggestion(match.get().getTermName(match), (int)score));
 			}
 		}
 
