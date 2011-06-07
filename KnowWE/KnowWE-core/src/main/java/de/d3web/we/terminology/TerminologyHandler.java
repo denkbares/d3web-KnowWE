@@ -645,6 +645,67 @@ public class TerminologyHandler implements EventListener {
 		}
 		return terms;
 	}
+	
+	/**
+	 * Returns all global terms of the given class (e.g. Question, String,...).
+	 * 
+	 * @created 03.11.2010
+	 */
+	 @SuppressWarnings( {
+			"unchecked", "rawtypes" })
+	public Collection<Section<? extends TermDefinition>> getAllGlobalTermDefsOfType(Class<?> termClass) {
+		return getAllTermDefs(null, Scope.GLOBAL, termClass);
+	}
+
+	/**
+	 * Returns all global terms.
+	 * 
+	 * @created 03.11.2010
+	 */
+	 @SuppressWarnings( {
+			"unchecked", "rawtypes" })
+	public Collection<Section<? extends TermDefinition>> getAllGlobalTermDefs() {
+		return getAllTermDefs(null, Scope.GLOBAL, null);
+	}
+
+	/**
+	 * Returns all local terms of the given class (e.g. Question, String,...),
+	 * that are compiled in the article with the given title.
+	 * 
+	 * @created 03.11.2010
+	 */
+	 @SuppressWarnings( {
+			"unchecked", "rawtypes" })
+	public Collection<Section<? extends TermDefinition>> getAllLocalTermsDefsOfType(String title, Class<?> termClass) {
+		return getAllTermDefs(title, Scope.LOCAL, termClass);
+	}
+
+	/**
+	 * Returns all local terms that are compiled in the article with the given
+	 * title.
+	 * 
+	 * @created 03.11.2010
+	 */
+	 @SuppressWarnings( {
+			"unchecked", "rawtypes" })
+	public Collection<Section<? extends TermDefinition>> getAllLocalTermDefs(String title) {
+		return getAllTermDefs(title, Scope.LOCAL, null);
+	}
+
+	@SuppressWarnings( {
+			"unchecked", "rawtypes" })
+	public Collection<Section<? extends TermDefinition>> getAllTermDefs(String title, Scope scope, Class<?> termClass) {
+		Collection<TermReferenceLog> logs = getTermReferenceLogsMap(title, scope).values();
+		Collection<Section<? extends TermDefinition>> terms = new HashSet<Section<? extends TermDefinition>>();
+		for (TermReferenceLog tl : logs) {
+			if (tl.getDefiningSection() != null
+					&& (termClass == null || tl.getTermObjectClass().isAssignableFrom(
+							termClass))) {
+				terms.add(tl.getDefiningSection());
+			}
+		}
+		return terms;
+	}
 
 	/**
 	 * 
