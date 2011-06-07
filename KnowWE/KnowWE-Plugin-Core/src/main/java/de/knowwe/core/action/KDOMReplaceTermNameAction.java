@@ -82,7 +82,9 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 		}
 
 		TermReference t = (TermReference) section.get();
-		String newNodeText = section.getOriginalText().replace(t.getTermIdentifier(section), newText);
+		String originalText = section.getOriginalText();
+		String oldTermName = t.getTermName(section);
+		String newNodeText = originalText.replace(oldTermName, newText);
 
 		nodesMap.put(nodeID, newNodeText);
 		mgr.replaceKDOMNodesSaveAndBuild(context, name, nodesMap);
