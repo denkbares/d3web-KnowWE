@@ -182,7 +182,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 		}
 
 		/**
-		 * Special treatment for QuestionYN, since there may be no actual term
+		 * Special treatment for QuestionYN, since there may be no actual terms
 		 * definitions for the answers.
 		 */
 		private void handleYNChoices(KnowWEArticle article, Section<QuestionDefinition> s) {

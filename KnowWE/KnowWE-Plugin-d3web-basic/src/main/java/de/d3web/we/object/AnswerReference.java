@@ -84,7 +84,7 @@ public abstract class AnswerReference
 			Section<QuestionReference> ref = sec.get().getQuestionSection(sec);
 			String questionName = ref.get().getTermIdentifier(ref);
 
-			String answerName = sec.get().getTermIdentifier(sec);
+			String answerName = sec.get().getTermName(sec);
 
 			KnowledgeBase kb =
 					D3webModule.getKnowledgeRepresentationHandler(
