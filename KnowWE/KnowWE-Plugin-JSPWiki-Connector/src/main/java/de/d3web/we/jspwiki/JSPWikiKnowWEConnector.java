@@ -289,15 +289,18 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 		try {
 			// References Updaten.
-			// this.engine.getReferenceManager().updateReferences(
-			// att.getName(),
-			// new java.util.Vector() );
+			this.engine.getReferenceManager().updateReferences(topic,
+	                    this.engine.getReferenceManager().findCreated()); 
 			wp.setAuthor(author);
 			this.engine.getPageManager().putPageText(wp, content);
 			this.engine.getSearchManager().reindexPage(wp);
 
 		}
 		catch (ProviderException e) {
+			return null;
+		}
+		catch(NullPointerException e) {
+			//should only happen on wiki initialization
 			return null;
 		}
 
