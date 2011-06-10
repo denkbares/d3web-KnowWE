@@ -44,7 +44,6 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.diaFlux.flow.EndNode;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowSet;
@@ -55,6 +54,7 @@ import de.d3web.we.action.UserActionContext;
 import de.d3web.we.basic.WikiEnvironment;
 import de.d3web.we.basic.WikiEnvironmentManager;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
+import de.d3web.we.flow.FlowchartUtils;
 
 public class GetInfoObjects extends AbstractAction {
 
@@ -297,8 +297,11 @@ public class GetInfoObjects extends AbstractAction {
 				"'");
 		buffer.append(" name='").append(encodeXML(name)).append("'");
 
-		String iconName = flow.getInfoStore().getValue(
-				Property.getProperty(FlowchartSubTreeHandler.ICON, String.class));
+		// String iconName = flow.getInfoStore().getValue(
+		// Property.getProperty(FlowchartSubTreeHandler.ICON, String.class));
+		String iconName = (String) FlowchartUtils.getFlowProperty(flow,
+				FlowchartSubTreeHandler.ICON_KEY);
+
 		if (iconName != null && !iconName.isEmpty()) {
 			buffer.append(" icon='").append(encodeXML(iconName)).append("'");
 		}

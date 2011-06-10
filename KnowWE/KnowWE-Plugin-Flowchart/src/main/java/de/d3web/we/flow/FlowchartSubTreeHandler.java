@@ -28,7 +28,6 @@ import java.util.Map;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.diaFlux.flow.CommentNode;
 import de.d3web.diaFlux.flow.Edge;
 import de.d3web.diaFlux.flow.Flow;
@@ -71,8 +70,10 @@ import de.d3web.we.utils.KnowWEUtils;
  */
 public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> {
 
-	public static final String ORIGIN = "diafluxorigin";
-	public static final String ICON = "diafluxicon";
+	public static final String ORIGIN_KEY = "diafluxorigin";
+	public static final String ICON_KEY = "diafluxicon";
+	// public static final String ORIGIN = "diafluxorigin";
+	// public static final String ICON = "diafluxicon";
 
 	private final List<Class<? extends Type>> filteredTypes =
 			new ArrayList<Class<? extends Type>>(0);
@@ -111,11 +112,15 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		Flow flow = FlowFactory.createFlow(kb, name, nodes, edges);
 		flow.setAutostart(autostart);
 
-		flow.getInfoStore().addValue(Property.getProperty(ORIGIN, String.class), s.getID());
+		FlowchartUtils.storeFlowProperty(flow, ORIGIN_KEY, s.getID());
+		// flow.getInfoStore().addValue(Property.getProperty(ORIGIN,
+		// String.class), s.getID());
 
 		String icon = attributeMap.get("icon");
 		if (icon != null) {
-			flow.getInfoStore().addValue(Property.getProperty(ICON, String.class), icon);
+			FlowchartUtils.storeFlowProperty(flow, ICON_KEY, icon);
+			// flow.getInfoStore().addValue(Property.getProperty(ICON,
+			// String.class), icon);
 		}
 
 		return errors;

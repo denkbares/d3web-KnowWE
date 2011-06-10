@@ -19,11 +19,15 @@
  */
 package de.d3web.we.flow;
 
+import java.util.HashMap;
+import java.util.WeakHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.d3web.diaFlux.flow.Flow;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.JPFPluginManager;
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.flow.kbinfo.JSPHelper;
 import de.d3web.we.flow.type.FlowchartPreviewContentType;
 import de.d3web.we.flow.type.FlowchartType;
@@ -52,7 +56,44 @@ public class FlowchartUtils {
 			"cc/flow/flowchart.css", "cc/flow/guard.css", "cc/flow/node.css",
 			"cc/flow/rule.css", "cc/flow/rendering.css" };
 
+	private static final HashMap<String, WeakHashMap<Flow, HashMap<String, Object>>> flowPropertyStore =
+			new HashMap<String, WeakHashMap<Flow, HashMap<String, Object>>>();
+
 	private FlowchartUtils() {
+	}
+
+	public static Object storeFlowProperty(Flow flow, String key, Object property) {
+		return storeFlowProperty(KnowWEEnvironment.DEFAULT_WEB, flow, key, property);
+	}
+
+	public static Object getFlowProperty(Flow flow, String key) {
+		return getFlowProperty(KnowWEEnvironment.DEFAULT_WEB, flow, key);
+	}
+
+	public static Object storeFlowProperty(String web, Flow flow, String key, Object property) {
+		return getPropertyMapForFlow(web, flow).put(key, property);
+	}
+
+	public static Object getFlowProperty(String web, Flow flow, String key) {
+		return getPropertyMapForFlow(web, flow).get(key);
+	}
+
+	private static HashMap<String, Object> getPropertyMapForFlow(String web, Flow flow) {
+		HashMap<String, Object> propertyMapForFlow = getFlowPropertyMapForWeb(web).get(flow);
+		if (propertyMapForFlow == null) {
+			propertyMapForFlow = new HashMap<String, Object>();
+			getFlowPropertyMapForWeb(web).put(flow, propertyMapForFlow);
+		}
+		return propertyMapForFlow;
+	}
+
+	private static WeakHashMap<Flow, HashMap<String, Object>> getFlowPropertyMapForWeb(String web) {
+		WeakHashMap<Flow, HashMap<String, Object>> webMap = flowPropertyStore.get(web);
+		if (webMap == null) {
+			webMap = new WeakHashMap<Flow, HashMap<String, Object>>();
+			flowPropertyStore.put(web, webMap);
+		}
+		return webMap;
 	}
 
 	/**
@@ -104,14 +145,14 @@ public class FlowchartUtils {
 	 * @return s the preview including styles, or null if no preview is present
 	 */
 	public static String createRenderablePreview(Section<FlowchartType> flowSection, UserContext user) {
-		//return createFlowchartRenderer(flowSection, user);
-		 String preview = extractPreview(flowSection);
-		
-		 if (preview == null) {
-			 return null;
-		 }
-		
-		 return createRenderablePreview(preview);
+		// return createFlowchartRenderer(flowSection, user);
+		String preview = extractPreview(flowSection);
+
+		if (preview == null) {
+			return null;
+		}
+
+		return createRenderablePreview(preview);
 
 	}
 
