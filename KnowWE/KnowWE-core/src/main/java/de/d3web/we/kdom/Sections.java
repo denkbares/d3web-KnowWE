@@ -12,7 +12,6 @@ import java.util.Set;
 import de.d3web.we.kdom.basic.EmbracedType;
 import de.d3web.we.kdom.basic.PlainText;
 
-
 public class Sections {
 
 	/**
@@ -99,6 +98,7 @@ public class Sections {
 	/**
 	 * checks whether this node has a son of type class1 beeing left from the
 	 * given substring.
+	 * 
 	 * @param section TODO
 	 * @param class1
 	 * @param text
@@ -124,6 +124,7 @@ public class Sections {
 
 	/**
 	 * Scanning subtree for Section with given id
+	 * 
 	 * @param section TODO
 	 * @param id2
 	 * 
@@ -172,6 +173,7 @@ public class Sections {
 
 	/**
 	 * Searches the ancestor for this section for a given class
+	 * 
 	 * @param section TODO
 	 * @param clazz
 	 * 
@@ -180,16 +182,19 @@ public class Sections {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <OT extends Type> Section<OT> findAncestorOfType(Section<?> section, Class<OT> clazz) {
-	
+
 		if (section.father == null) return null;
-	
-		if (clazz.isAssignableFrom(section.father.get().getClass())) return (Section<OT>) section.father;
-	
-		return section.father != null ? Sections.findAncestorOfType(section.father, clazz) : null;
+
+		if (clazz.isAssignableFrom(section.father.get().getClass())) {
+			return (Section<OT>) section.father;
+		}
+
+		return Sections.findAncestorOfType(section.father, clazz);
 	}
 
 	/**
 	 * Searches the ancestor for this section for a given collection of classes
+	 * 
 	 * @param section TODO
 	 * @param clazz
 	 * @param <OT>
@@ -211,6 +216,7 @@ public class Sections {
 	 * section can't be its own ancestor. Furthermore, if an ancestor is just a
 	 * subtype of the given class, it will be ignored. For other purposes, use
 	 * the following method:
+	 * 
 	 * @param section TODO
 	 * @param clazz
 	 * 
@@ -230,10 +236,11 @@ public class Sections {
 	/**
 	 * Searches the ancestor for this section for a given collection of classes.
 	 * The ancestor with the lowest distance to this section will be returned.
+	 * 
 	 * @param section TODO
 	 * @param clazz
-	 * @see findAncestorOfExactType For other purposes, use the
-	 *      following method:
+	 * @see findAncestorOfExactType For other purposes, use the following
+	 *      method:
 	 * @see findAncestorOfTypes
 	 * @param <OT>
 	 * @return
@@ -250,6 +257,7 @@ public class Sections {
 	/**
 	 * Searches the Children of a Section and only the children of a Section for
 	 * a given class
+	 * 
 	 * @param section TODO
 	 * @param section
 	 */
@@ -266,6 +274,7 @@ public class Sections {
 	/**
 	 * Searches the Children of a Section and only the children of a Section for
 	 * a given class
+	 * 
 	 * @param section TODO
 	 * @param section
 	 */
@@ -279,16 +288,26 @@ public class Sections {
 
 	@SuppressWarnings("unchecked")
 	public static <OT extends Type> Section<OT> findSuccessor(Section<?> section, Class<OT> class1) {
-	
+
 		if (class1.isAssignableFrom(section.get().getClass())) {
 			return (Section<OT>) section;
 		}
-		for (Section sec : section.getChildren()) {
+		for (Section<?> sec : section.getChildren()) {
 			Section<OT> s = Sections.findSuccessor(sec, class1);
 			if (s != null) return s;
 		}
-	
+
 		return null;
+	}
+
+	/**
+	 * Finds all successors of type <code>class1</code> in the KDOM below this
+	 * Section.
+	 */
+	public static <OT extends Type> List<Section<OT>> findSuccessorsOfType(Section<?> section, Class<OT> class1) {
+		List<Section<OT>> result = new LinkedList<Section<OT>>();
+		findSuccessorsOfType(section, class1, result);
+		return result;
 	}
 
 	/**
@@ -297,7 +316,7 @@ public class Sections {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <OT extends Type> void findSuccessorsOfType(Section<?> section, Class<OT> class1, List<Section<OT>> found) {
-	
+
 		if (class1.isAssignableFrom(section.get().getClass())) {
 			found.add((Section<OT>) section);
 		}
@@ -314,7 +333,7 @@ public class Sections {
 	 */
 	@SuppressWarnings("unchecked")
 	public static void findSuccessorsOfTypeUntyped(Section<?> section, Class class1, List<Section<?>> found) {
-	
+
 		if (class1.isAssignableFrom(section.get().getClass())) {
 			found.add(section);
 		}
@@ -326,11 +345,12 @@ public class Sections {
 	/**
 	 * Finds all successors of type <code>class1</code> in the KDOM below this
 	 * Section and stores them in a Map, using their originalText as key.
+	 * 
 	 * @param section TODO
 	 */
 	@SuppressWarnings("unchecked")
 	public static <OT extends Type> void findSuccessorsOfTypeAsMap(Section<?> section, Class<OT> class1, Map<String, Section<OT>> found) {
-	
+
 		if (class1.isAssignableFrom(section.get().getClass())) {
 			Section tmp = found.get(section.getOriginalText());
 			// only replace the finding by this Section, if this Section is not
@@ -344,7 +364,7 @@ public class Sections {
 		for (Section sec : section.getChildren()) {
 			Sections.findSuccessorsOfTypeAsMap(sec, class1, found);
 		}
-	
+
 	}
 
 	/**
@@ -356,7 +376,7 @@ public class Sections {
 	@SuppressWarnings("unchecked")
 	public static <OT extends Type> void findSuccessorsOfType(Section<?> section, Class<OT> class1,
 			int depth, List<Section<OT>> found) {
-	
+
 		if (class1.isAssignableFrom(section.get().getClass())) {
 			found.add((Section<OT>) section);
 		}
@@ -366,7 +386,7 @@ public class Sections {
 		for (Section sec : section.getChildren()) {
 			Sections.findSuccessorsOfType(sec, class1, depth - 1, found);
 		}
-	
+
 	}
 
 	/**
@@ -376,14 +396,15 @@ public class Sections {
 	 * the <tt>index</tt> to the index of the ObjectType of this Section in the
 	 * path. </p> Stores found successors in a Map of Sections, using their
 	 * originalTexts as key.
+	 * 
 	 * @param section TODO
 	 */
-	
+
 	public static void findSuccessorsOfTypeAtTheEndOfPath(
 			Section<?> section,
 			List<Class<? extends Type>> path,
 			int index, Map<String, List<Section<?>>> found) {
-	
+
 		if (index < path.size() - 1
 				&& path.get(index).isAssignableFrom(section.get().getClass())) {
 			for (Section<? extends Type> sec : section.getChildren()) {
@@ -399,7 +420,7 @@ public class Sections {
 			}
 			equalSections.add(section);
 		}
-	
+
 	}
 
 	/**
@@ -414,7 +435,7 @@ public class Sections {
 			List<Class<? extends Type>> path,
 			int index,
 			List<Section<? extends Type>> found) {
-	
+
 		if (index < path.size() - 1
 				&& path.get(index).isAssignableFrom(s.get().getClass())) {
 			for (Section<? extends Type> child : s.getChildren()) {
@@ -425,8 +446,7 @@ public class Sections {
 				&& path.get(index).isAssignableFrom(s.get().getClass())) {
 			found.add(s);
 		}
-	
-	}
 
+	}
 
 }

@@ -35,6 +35,15 @@ import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
+/**
+ * This class describes a plain floating point number to be parsed out of some
+ * wiki text. "plain" means that the number must be in Java-specific coding,
+ * using a '.' to separate the digits and without any thousand-grouping
+ * characters.
+ * 
+ * @author Jochen Reutelshöfer, Volker Belli
+ * @created 13.06.2011
+ */
 public class Number extends AbstractType {
 
 	public Number() {
@@ -48,53 +57,57 @@ public class Number extends AbstractType {
 		this.setCustomRenderer(StyleRenderer.NUMBER);
 	}
 
-	public static Double getNumber(Section<Number> s) {
+	/**
+	 * Returns the number parsed out of the sections text, or null if the number
+	 * is not a valid (and plain) floating point number.
+	 * 
+	 * @created 13.06.2011
+	 * @param section the section to parse the number from
+	 * @return the parsed number
+	 */
+	public static Double getNumber(Section<Number> section) {
 		try {
-			return Double.parseDouble(s.getOriginalText().trim());
+			return Double.parseDouble(section.getOriginalText().trim());
 		}
-		catch (Exception e) {
-
+		catch (NumberFormatException e) {
+			return null;
 		}
-
-		return null;
 	}
 
 }
-	// only one of them NumberFinder/NumberChecker makes sense to have for one
-	// Number-type
 
+// only one of them NumberFinder/NumberChecker makes sense to have for one
+// Number-type
 
-	class NumberFinder implements SectionFinder {
+class NumberFinder implements SectionFinder {
 
-		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-			String trim = text.trim();
-			try {
-				Double.parseDouble(trim);
-				return new AllTextFinderTrimmed().lookForSections(text, father, type);
-			}
-			catch (Exception e) {
-				return null;
-			}
+	@Override
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
+		String trim = text.trim();
+		try {
+			Double.parseDouble(trim);
+			return new AllTextFinderTrimmed().lookForSections(text, father, type);
 		}
-
+		catch (Exception e) {
+			return null;
+		}
 	}
 
-	class NumberChecker extends SubtreeHandler<Number> {
+}
 
-		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<Number> s) {
-			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
-			String trim = s.getOriginalText().trim();
-			try {
-				Double.parseDouble(trim);
-			}
-			catch (Exception e) {
-				msgs.add(new InvalidNumberError(trim));
-			}
-			return msgs;
+class NumberChecker extends SubtreeHandler<Number> {
+
+	@Override
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<Number> s) {
+		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
+		String trim = s.getOriginalText().trim();
+		try {
+			Double.parseDouble(trim);
 		}
-
+		catch (Exception e) {
+			msgs.add(new InvalidNumberError(trim));
+		}
+		return msgs;
 	}
 
-
+}

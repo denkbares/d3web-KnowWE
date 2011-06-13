@@ -100,6 +100,15 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="GetKnowledgeBaseResourceAction">
+		<parameter id="class" value="de.knowwe.d3web.action.GetKnowledgeBaseResourceAction" />
+		<parameter id="name" value="GetKnowledgeBaseResourceAction" />
+		<parameter id="description" value="Action to get a knowledge base resource. The pathname behind the action specified the resource to be loaded." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="CorrectionProvider"
 		id="D3webCorrectionProvider">
 		<parameter id="class"

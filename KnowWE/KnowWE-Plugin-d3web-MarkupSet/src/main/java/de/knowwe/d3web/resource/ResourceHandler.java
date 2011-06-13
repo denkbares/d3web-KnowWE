@@ -19,10 +19,6 @@
 
 package de.knowwe.d3web.resource;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -45,32 +41,6 @@ import de.d3web.we.wikiConnector.ConnectorAttachment;
  */
 public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 
-	private final static class ByteArrayResource implements Resource {
-
-		private final String path;
-		private final byte[] bytes;
-
-		private ByteArrayResource(String path, byte[] bytes) {
-			this.path = path;
-			this.bytes = Arrays.copyOf(bytes, bytes.length);
-		}
-
-		@Override
-		public long getSize() {
-			return bytes.length;
-		}
-
-		@Override
-		public InputStream getInputStream() throws IOException {
-			return new ByteArrayInputStream(bytes);
-		}
-
-		@Override
-		public String getPathName() {
-			return path;
-		}
-	}
-
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ResourceType> section) {
 		KnowledgeBase kb = getKB(article);
@@ -82,6 +52,22 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 		String sourcePath =
 				DefaultMarkupType.getAnnotation(section, ResourceType.ANNOTATION_SRC);
 
+		return addResource(section.getArticle(), kb, content, sourcePath, destinationPath);
+	}
+
+	/**
+	 * Adds a resource into the knowledge base resource storage.
+	 * 
+	 * @created 11.06.2011
+	 * @param article the article of the defining section
+	 * @param kb the knowledge base to store the resource into
+	 * @param content the content to be stored (or null if an attachment should
+	 *        be used)
+	 * @param sourcePath the wiki attachment path of the file to be stored
+	 * @param destinationPath the resource path to store the content in
+	 * @return the errors occurred or null if successful
+	 */
+	private static Collection<KDOMReportMessage> addResource(KnowWEArticle article, KnowledgeBase kb, String content, String sourcePath, String destinationPath) {
 		boolean hasContent = content != null && !content.trim().isEmpty();
 		boolean hasDestinationPath = destinationPath != null && !destinationPath.trim().isEmpty();
 		boolean hasSourcePath = sourcePath != null && !sourcePath.trim().isEmpty();
@@ -117,7 +103,7 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 			}
 			else {
 				sourceFile = sourcePath.trim();
-				sourceArticle = section.getArticle().getTitle();
+				sourceArticle = article.getTitle();
 			}
 			// is we have no destination path, we use the attachments path
 			if (destinationPath == null) {
@@ -127,14 +113,7 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 				return MessageUtils.syntaxErrorAsList("empty destination path");
 			}
 			// do the search
-			Collection<ConnectorAttachment> attachments =
-					KnowWEEnvironment.getInstance().getWikiConnector().getAttachments();
-			for (ConnectorAttachment attachment : attachments) {
-				if (!attachment.getFileName().equalsIgnoreCase(sourceFile)) continue;
-				if (!attachment.getParentName().equalsIgnoreCase(sourceArticle)) continue;
-				resource = new WikiAttachmentResource(destinationPath, attachment);
-				break;
-			}
+			resource = getAttachmentResource(destinationPath, sourceFile, sourceArticle);
 			if (resource == null) {
 				return MessageUtils.syntaxErrorAsList("no attachment " + sourcePath + " found");
 			}
@@ -157,6 +136,30 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 		else {
 			return null;
 		}
+	}
+
+	/**
+	 * Searches the wiki attachments for the specified attachment, denoted by
+	 * "attachmentName" and "articleName". If such an attachment is found, a
+	 * resource of this attachment will be constructed and returned. If no such
+	 * attachment is found, null is returned. Both, "attachmentName" and
+	 * "articleName" are treated case-insensitive.
+	 * 
+	 * @created 12.06.2011
+	 * @param path the pathname for the resource to be constructed
+	 * @param attachmentName the filename of the attachment to be searched for
+	 * @param articleName the article name of the attachment to be searched for
+	 * @return the constructed resource
+	 */
+	private static Resource getAttachmentResource(String path, String attachmentName, String articleName) {
+		Collection<ConnectorAttachment> attachments =
+				KnowWEEnvironment.getInstance().getWikiConnector().getAttachments();
+		for (ConnectorAttachment attachment : attachments) {
+			if (!attachment.getFileName().equalsIgnoreCase(attachmentName)) continue;
+			if (!attachment.getParentName().equalsIgnoreCase(articleName)) continue;
+			return new WikiAttachmentResource(path, attachment);
+		}
+		return null;
 	}
 
 }

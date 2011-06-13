@@ -19,6 +19,7 @@
  */
 
 package de.d3web.we.object;
+
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
@@ -49,28 +50,30 @@ public abstract class AnswerReference
 		super(Choice.class);
 		this.setCustomRenderer(StyleRenderer.CHOICE);
 	}
-	
+
 	@Override
 	@SuppressWarnings(value = { "unchecked" })
 	public String getTermIdentifier(Section<? extends KnowWETerm<Choice>> s) {
-		// here we should return a unique identifier including the question name as namespace
-		
+		// here we should return a unique identifier including the question name
+		// as namespace
+
 		KnowWETerm<Choice> knowWETerm = s.get();
-		if(knowWETerm instanceof AnswerReference) {
-			Section<AnswerReference> sec = ((Section<AnswerReference>)s);
+		if (knowWETerm instanceof AnswerReference) {
+			Section<AnswerReference> sec = ((Section<AnswerReference>) s);
 			Section<QuestionReference> questionSection = sec.get().getQuestionSection(sec);
 			String question = questionSection.get().getTermIdentifier(questionSection);
-			
-			return AnswerDefinition.createAnswerIdentifierForQuestion(super.getTermIdentifier(sec), question);
+
+			return AnswerDefinition.createAnswerIdentifierForQuestion(super.getTermIdentifier(sec),
+					question);
 		}
-		
-		//should not happen
+
+		// should not happen
 		return super.getTermIdentifier(s);
 	}
-	
+
 	@Override
 	public String getTermName(Section<? extends KnowWETerm<Choice>> s) {
-		return  KnowWEUtils.trimQuotes(s.getOriginalText());
+		return KnowWEUtils.trimQuotes(s.getOriginalText());
 	}
 
 	@Override
@@ -106,16 +109,11 @@ public abstract class AnswerReference
 
 	/**
 	 * returns the section of the corresponding question-reference for this
-	 * answer
-	 * 
-	 * @param s
-	 * @return
-	 */
-	/**
+	 * answer.
 	 * 
 	 * @created 26.07.2010
-	 * @param s
-	 * @return
+	 * @param s the section of this choice
+	 * @return the section of the question
 	 */
 	public abstract Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s);
 
