@@ -329,7 +329,7 @@ KNOWWE.plugin.quicki = function(){
             	// if not already contained, attach value
             	if(mcanswervals.indexOf(toreplace)==-1){
             		mcanswervals += oid;
-                    mcanswervals += "#####"
+                    mcanswervals += "#####";
             	}
             	// get the newly assembled, complete mc fact without the last "#####"
             	mcvals = mcanswervals.substring(0, mcanswervals.length-5);
@@ -344,7 +344,7 @@ KNOWWE.plugin.quicki = function(){
             	
             	// save mcvalues
             	var mcvalsOld = mcanswervals.substring(0, mcanswervals.length-5);
-            	
+
             	// if value is alerady contained, remove it
             	if(mcanswervals.indexOf(toreplace)!=-1){
             		mcanswervals = mcanswervals.replace(toreplace, '');
@@ -854,6 +854,15 @@ KNOWWE.plugin.quicki = function(){
 			        	try {
 	                		KNOWWE.plugin.quicki.initialize();
 	                		//KNOWWE.plugin.quicki.selectBox();
+	                		
+	                		/* recollect all mcanswervals*/
+			        		mcanswervals = '';
+			        		_KS('.answerMCClicked').each(function(element){
+			        			var rel = eval("(" + element.getAttribute('rel') + ")");
+        						mcanswervals += rel.choice;
+                    			mcanswervals += "#####"
+            				});
+            				
 	                		if (rememberedToFocus) {
         						_KS(rememberedToFocus).focus();
             					_KS(rememberedToFocus).select();
