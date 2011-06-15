@@ -170,8 +170,7 @@ public class QuestionSetValueNumLine extends AbstractType {
 					action.setQuestion(q);
 					action.setValue(new FormulaNumber(d));
 
-					Rule r = RuleFactory.createRule(action, cond, null, null,
-							PSMethodAbstraction.class);
+					Rule r = RuleFactory.createRule(action, cond, null, PSMethodAbstraction.class);
 					if (r != null) {
 						KnowWEUtils.storeObject(article, s, SETVALUE_ARGUMENT, r);
 						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(

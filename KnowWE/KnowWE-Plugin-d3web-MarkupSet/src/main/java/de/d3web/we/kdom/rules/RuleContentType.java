@@ -195,7 +195,7 @@ public class RuleContentType extends AbstractType {
 			// create actual rule
 			if (d3action != null && d3Cond != null) {
 				Rule r = RuleFactory.createRule(d3action, d3Cond,
-						exceptionCond, null, action.get().getActionPSContext());
+						exceptionCond, action.get().getActionPSContext());
 				if (r != null) {
 					KnowWEUtils.storeObject(article, s, ruleStoreKey, r);
 					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(

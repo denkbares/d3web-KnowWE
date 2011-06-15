@@ -142,8 +142,7 @@ public class QuestionSetValueLine extends AbstractType {
 
 						Rule r = null;
 						if (ac != null) {
-							r = RuleFactory.createRule(ac, cond, null, null,
-									PSMethodAbstraction.class);
+							r = RuleFactory.createRule(ac, cond, null, PSMethodAbstraction.class);
 						}
 
 						if (r != null) {

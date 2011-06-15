@@ -26,8 +26,8 @@ import java.util.List;
 
 import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.abstraction.formula.Operator;
-import de.d3web.abstraction.formula.QNumWrapper;
 import de.d3web.abstraction.formula.Operator.Operation;
+import de.d3web.abstraction.formula.QNumWrapper;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
@@ -47,10 +47,9 @@ import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
-import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Rating.State;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
@@ -274,8 +273,8 @@ public class KBTestUtilNewMarkup {
 		QContainer qc2 = createdKB.getManager().searchQContainer("Technical Examinations");
 		// - "Idle speed system o.k.?" [yn]
 		// createdKBM.createQuestionYN("Q9", "Idle speed system o.k.?", qc2);
-		
-		//new QuestionYN(qc2, "Idle speed system o.k.?");
+
+		// new QuestionYN(qc2, "Idle speed system o.k.?");
 		new QuestionOC(qc2, "Idle speed system o.k.?", "Yes", "No");
 	}
 
@@ -565,7 +564,7 @@ public class KBTestUtilNewMarkup {
 				new Rating(State.ESTABLISHED));
 		ActionNextQASet ruleAction = new ActionIndication();
 		ruleAction.setQASets(action);
-		RuleFactory.createRule(ruleAction, condState, null, null, PSMethodStrategic.class);
+		RuleFactory.createRule(ruleAction, condState, null, PSMethodStrategic.class);
 	}
 
 	/**
