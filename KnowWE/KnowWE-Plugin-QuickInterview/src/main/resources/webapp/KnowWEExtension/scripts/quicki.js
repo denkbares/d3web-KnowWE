@@ -303,6 +303,21 @@ KNOWWE.plugin.quicki = function(){
          * 		event - the event fired by the mc answer val that was clicked
          */
         answerMCCollect : function( event ) {
+        	
+        	/* 
+        	 * This is a Workaround, because the mcanswervals
+        	 * are reset somewhere in the js even if there are
+        	 * set values you can see in the Quick-Interview!
+        	 * Johannes
+        	 * recollect all mcanswervals
+        	 * */
+			mcanswervals = '';
+			_KS('.answerMCClicked').each(function(element){
+			    var rel = eval("(" + element.getAttribute('rel') + ")");
+        		mcanswervals += rel.choice;
+                mcanswervals += "#####"
+            });
+        	
             var el = _KE.target(event); 	// get the clicked element
             _KE.cancel( event );
             
