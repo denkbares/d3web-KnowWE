@@ -42,6 +42,7 @@ import de.d3web.core.session.values.TextValue;
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.UserActionContext;
 import de.d3web.we.basic.D3webModule;
+import de.d3web.we.basic.SessionBroker;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.utils.D3webUtils;
@@ -71,12 +72,14 @@ public class SetSingleFindingAction extends AbstractAction {
 		String term = null;
 		String valueid = null;
 		try {
+			topic = java.net.URLDecoder.decode(topic, "UTF-8");
 			namespace = java.net.URLDecoder.decode(
 					context.getParameter(KnowWEAttributes.SEMANO_NAMESPACE), "UTF-8");
 			String tempValueID = context.getParameter(KnowWEAttributes.SEMANO_VALUE_ID);
 			if (tempValueID != null) valueid = URLDecoder.decode(tempValueID, "UTF-8");
-			term = URLDecoder.decode(context.getParameter(KnowWEAttributes.SEMANO_TERM_NAME),
-					"UTF-8");
+			if (term != null)
+				term = URLDecoder.decode(context.getParameter(KnowWEAttributes.SEMANO_TERM_NAME),"UTF-8");
+			if (objectid != null) objectid = URLDecoder.decode(objectid, "UTF-8");
 		}
 		catch (UnsupportedEncodingException e1) {
 			// should not occur
@@ -90,8 +93,19 @@ public class SetSingleFindingAction extends AbstractAction {
 		}
 
 		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(web).getKB(
-					topic);
-		Session session = D3webUtils.getSession(topic, user, web);
+				topic);
+		if (kb.getName() == null) {
+			KnowledgeBase base = D3webUtils.getFirstKnowledgeBase(web);
+			if (base != null)
+				kb = base;
+		}
+
+		SessionBroker broker = D3webModule.getBroker(user, web);
+		Session session = broker.getServiceSession(kb.getId());
+		if (session == null) {
+			session = D3webUtils.getFirstSession(context.getWeb(),
+					context.getUserName(), context.getTopic());
+		}
 		Blackboard blackboard = session.getBlackboard();
 
 		// Necessary for FindingSetEvent

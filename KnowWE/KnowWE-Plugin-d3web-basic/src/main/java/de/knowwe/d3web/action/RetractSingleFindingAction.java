@@ -23,25 +23,22 @@ package de.knowwe.d3web.action;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.Session;
-import de.d3web.core.session.Value;
 import de.d3web.core.session.blackboard.Blackboard;
 import de.d3web.core.session.blackboard.Fact;
-import de.d3web.core.session.values.DateValue;
-import de.d3web.core.session.values.NumValue;
+import de.d3web.core.session.blackboard.FactFactory;
+import de.d3web.core.session.values.Unknown;
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.UserActionContext;
 import de.d3web.we.basic.D3webModule;
+import de.d3web.we.basic.SessionBroker;
 import de.d3web.we.core.KnowWEAttributes;
+import de.d3web.we.event.EventManager;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.d3web.event.FindingSetEvent;
 
 /**
  * An action that is performed for retracting a single value e.g. in Quick
@@ -64,8 +61,8 @@ public class RetractSingleFindingAction extends AbstractAction {
 	private String retractValue(UserActionContext context) {
 
 		String objectid = context.getParameter(KnowWEAttributes.SEMANO_OBJECT_ID);
-		String valuenum = context.getParameter(KnowWEAttributes.SEMANO_VALUE_NUM);
-		String valuedate = context.getParameter(KnowWEAttributes.SEMANO_VALUE_DATE);
+		//		String valuenum = context.getParameter(KnowWEAttributes.SEMANO_VALUE_NUM);
+		//		String valuedate = context.getParameter(KnowWEAttributes.SEMANO_VALUE_DATE);
 		String topic = context.getTopic();
 		String user = context.getUserName();
 		String web = context.getWeb();
@@ -74,9 +71,11 @@ public class RetractSingleFindingAction extends AbstractAction {
 		String term = null;
 		String valueid = null;
 		try {
+			topic = java.net.URLDecoder.decode(topic, "UTF-8");
 			namespace = java.net.URLDecoder.decode(context.getParameter(KnowWEAttributes.SEMANO_NAMESPACE), "UTF-8");
 			valueid = URLDecoder.decode(context.getParameter(KnowWEAttributes.SEMANO_VALUE_ID), "UTF-8");
 			term = URLDecoder.decode(context.getParameter(KnowWEAttributes.SEMANO_TERM_NAME), "UTF-8");
+			if (objectid != null) objectid = URLDecoder.decode(objectid, "UTF-8");
 		}
 		catch (UnsupportedEncodingException e1) {
 			// should not occur
@@ -91,41 +90,64 @@ public class RetractSingleFindingAction extends AbstractAction {
 
 		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(web).getKB(
 				topic);
-		Session session = D3webUtils.getSession(topic, user, web);
+
+		if (kb.getName() == null) {
+			KnowledgeBase base = D3webUtils.getFirstKnowledgeBase(web);
+			if (base != null)
+				kb = base;
+		}
+
+		SessionBroker broker = D3webModule.getBroker(user, web);
+		Session session = broker.getServiceSession(kb.getId());
+		if (session == null) {
+			session = D3webUtils.getFirstSession(context.getWeb(),
+					context.getUserName(), context.getTopic());
+		}
 		Blackboard blackboard = session.getBlackboard();
 
 		Question question = kb.getManager().searchQuestion(objectid);
 		if (question != null) {
+			//
+			//			Value value = null;
+			//			if (valueid != null) {
+			//				value = KnowledgeBaseUtils.findValue(question, valueid);
+			//			}
+			//			else if (valuenum != null) {
+			//				value = new NumValue(Double.parseDouble(valuenum));
+			//			}
+			//			else if (valuedate != null) {
+			//				final DateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+			//				try {
+			//					Date date = format.parse(valuedate);
+			//					value = new DateValue(date);
+			//				}
+			//				catch (ParseException e) {
+			//					e.printStackTrace();
+			//				}
+			//			}
+			//
+			//			if (value != null) {
 
-			Value value = null;
-			if (valueid != null) {
-				value = KnowledgeBaseUtils.findValue(question, valueid);
+			Unknown unknown = Unknown.getInstance();
+			synchronized(session) {
+				Fact fact = FactFactory.createUserEnteredFact(question, unknown);
+				blackboard.addValueFact(fact);
 			}
-			else if (valuenum != null) {
-				value = new NumValue(Double.parseDouble(valuenum));
-			}
-			else if (valuedate != null) {
-				final DateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-				try {
-					Date date = format.parse(valuedate);
-					value = new DateValue(date);
-				}
-				catch (ParseException e) {
-					e.printStackTrace();
-				}
-			}
+			EventManager.getInstance().fireEvent(
+					new FindingSetEvent(question, unknown, namespace, web, user));
 
-			if (value != null) {
 
-				Fact fact = blackboard.getValueFact(question);
-				if (fact.getValue().equals(value)) {
-					blackboard.removeValueFact(fact);
-				}
+			// TODO old Code: Set this to Unknown should be used
+			// 6.2011 Johannes
+			//				Fact fact = blackboard.getValueFact(question);
+			//				if (fact.getValue().equals(value)) {
+			//					blackboard.removeValueFact(fact);
+			//				}
 
-				// need a FindingRetractedEvent?!
-				// EventManager.getInstance().fireEvent(
-				// new FindingSetEvent(question, value, namespace, web, user));
-			}
+			// need a FindingRetractedEvent?!
+			// EventManager.getInstance().fireEvent(
+			// new FindingSetEvent(question, value, namespace, web, user));
+			//			}
 		}
 
 		return null;

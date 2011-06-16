@@ -140,11 +140,41 @@ public class D3webUtils {
 			throw new IllegalArgumentException("Argument 'web' and/or 'topic' was null!");
 		}
 		D3webKnowledgeHandler knowledgeHandler =
-				D3webModule.getKnowledgeRepresentationHandler(web);
+			D3webModule.getKnowledgeRepresentationHandler(web);
 		if (knowledgeHandler != null) {
 			KnowledgeBase kb = knowledgeHandler.getKB(topic);
 			return kb;
 		}
 		return null;
+	}
+
+	/**
+	 * Gets the first usable KnowledgeBase of a web.
+	 * 
+	 * @created 16.06.2011
+	 * @param web
+	 * @return
+	 */
+	public static KnowledgeBase getFirstKnowledgeBase(String web) {
+		D3webKnowledgeHandler knowledgeHandler =
+			D3webModule.getKnowledgeRepresentationHandler(web);
+		D3webKnowledgeHandler repHandler = D3webModule.getKnowledgeRepresentationHandler(web);
+		String[] topics = knowledgeHandler.getKnowledgeTopics();
+		KnowledgeBase base = null;
+		for (String t : topics) {
+			base = repHandler.getKB(t);
+			if (base.getName() != null)
+				return base;
+		}
+		return null;
+	}
+
+	public static Session getFirstSession(String web, String user, String topic) {
+
+		KnowledgeBase kb = D3webUtils.getFirstKnowledgeBase(web);
+		SessionBroker broker = D3webModule.getBroker(user, web);
+		Session session = broker.getServiceSession(kb.getId());
+
+		return session;
 	}
 }
