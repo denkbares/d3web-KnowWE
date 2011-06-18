@@ -67,7 +67,6 @@ public class KnowledgeBaseType extends DefaultMarkupType implements IncrementalM
 	public static final String ANNOTATION_COMMENT = "comment";
 	public static final String ANNOTATION_COMPILE = "uses";
 	public static final String ANNOTATION_FILENAME = "filename";
-	public static final String ANNOTATION_UNKNOWNBYDEFAULT = "unknownByDefault";
 	public static final String ANNOTATION_STATUS = "status";
 	public static final String ANNOTATION_AFFILIATION = "affiliation";
 
@@ -82,7 +81,6 @@ public class KnowledgeBaseType extends DefaultMarkupType implements IncrementalM
 		MARKUP.addAnnotation(ANNOTATION_ID, false);
 		MARKUP.addAnnotation(ANNOTATION_VERSION, false);
 		MARKUP.addAnnotation(ANNOTATION_FILENAME, false);
-		MARKUP.addAnnotation(ANNOTATION_UNKNOWNBYDEFAULT, false);
 		MARKUP.addAnnotation(ANNOTATION_STATUS, false);
 		MARKUP.addAnnotation(ANNOTATION_AFFILIATION, false);
 	}
@@ -107,8 +105,6 @@ public class KnowledgeBaseType extends DefaultMarkupType implements IncrementalM
 				String filename = getAnnotation(section, ANNOTATION_FILENAME);
 				String status = getAnnotation(section, ANNOTATION_STATUS);
 				String affiliation = getAnnotation(section, ANNOTATION_AFFILIATION);
-				Boolean unknownbydefault = Boolean.valueOf(getAnnotation(section,
-						ANNOTATION_UNKNOWNBYDEFAULT));
 
 				// and write it to the knowledge base
 				if (id != null) kb.setId(id);
@@ -122,11 +118,8 @@ public class KnowledgeBaseType extends DefaultMarkupType implements IncrementalM
 				if (status != null) infoStore.addValue(BasicProperties.STATUS, status);
 				if (affiliation != null) infoStore.addValue(BasicProperties.AFFILIATION,
 						affiliation);
-				if (unknownbydefault != null)
-					infoStore.addValue(BasicProperties.UNKNOWN_VISIBLE, unknownbydefault);
-
-					return null;
-				}
+				return null;
+			}
 		});
 	}
 
