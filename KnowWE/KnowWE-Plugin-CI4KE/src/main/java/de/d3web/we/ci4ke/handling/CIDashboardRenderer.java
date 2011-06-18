@@ -90,9 +90,9 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer<CIDashboardType> 
 		// if at least one build has been executed: Render forecast icons:
 		if (handler.getCurrentBuildNumber() > 0) {
 			string.append(handler.renderCurrentBuildStatus(22) + "  ");
-			string.append(handler.renderBuildHealthReport(22));
+			string.append(handler.renderBuildHealthReport(22) + "  ");
 		}
-		string.append("   " + dashboardName + "</h3>");
+		string.append(dashboardName + "</h3>");
 
 		// render the last five builds:
 		string.append("<div id='" + dashboardNameEscaped
@@ -136,54 +136,59 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer<CIDashboardType> 
 
 		Element buildNr = (Element) handler.selectSingleNode("builds/build[@nr="
 				+ selectedBuildNumber + "]"); // e.getAttributeValue("executed")
-		String buildDate = buildNr.getAttributeValue("executed");
-		if (buildDate == null) buildDate = "";
-		buffy.append("<H4>Build #" + selectedBuildNumber +
-				" (" + buildDate + ")" +
-				"</H4>");
+		if (buildNr != null) {
+			String buildDate = buildNr.getAttributeValue("executed");
+			if (buildDate == null) buildDate = "";
+			buffy.append("<H4>Build #" + selectedBuildNumber +
+					" (" + buildDate + ")" +
+					"</H4>");
 
-		for (Object o : tests) {
-			if (o instanceof Element) {
-				Element e = (Element) o;
+			for (Object o : tests) {
+				if (o instanceof Element) {
+					Element e = (Element) o;
 
-				buffy.append("<div class='ci-collapsible-box'>");
-				// buffy.append("<b>";
+					buffy.append("<div class='ci-collapsible-box'>");
+					// buffy.append("<b>";
 
-				// prepare some information
-				String name = e.getAttributeValue("name");
-				String result = e.getAttributeValue("result");
-				String message = e.getAttributeValue("message");
-				String config = e.getAttributeValue("configuration");
+					// prepare some information
+					String name = e.getAttributeValue("name");
+					String result = e.getAttributeValue("result");
+					String message = e.getAttributeValue("message");
+					String config = e.getAttributeValue("configuration");
 
-				// render bullet
-				if (result != null && !result.isEmpty()) {
-					Type buildResult = Type.valueOf(result);
-					buffy.append(CIUtilities.renderResultType(buildResult, 16));
-				}
+					// render bullet
+					if (result != null && !result.isEmpty()) {
+						Type buildResult = Type.valueOf(result);
+						buffy.append(CIUtilities.renderResultType(buildResult, 16));
+					}
 
-				buffy.append("<span class='ci-test-title'>");
-				// render test-name
-				if (name != null && !name.isEmpty()) {
-					buffy.append(name);
-				}
+					buffy.append("<span class='ci-test-title'>");
+					// render test-name
+					if (name != null && !name.isEmpty()) {
+						buffy.append(name);
+					}
 
-				// render test-configuration (if existent)
-				if (config != null && !config.isEmpty()) {
-					buffy.append("<span class='ci-configuration'>");
-					buffy.append(" (").append(config).append(")");
+					// render test-configuration (if existent)
+					if (config != null && !config.isEmpty()) {
+						buffy.append("<span class='ci-configuration'>");
+						buffy.append(" (").append(config).append(")");
+						buffy.append("</span>");
+					}
 					buffy.append("</span>");
-				}
-				buffy.append("</span>");
 
-				// render test-message (if existent)
-				if (message != null && !message.isEmpty()) {
-					buffy.append("<div class='ci-message'>"); // style=\"display: none;\">");
-					buffy.append(message);
+					// render test-message (if existent)
+					if (message != null && !message.isEmpty()) {
+						buffy.append("<div class='ci-message'>"); // style=\"display: none;\">");
+						buffy.append(message);
+						buffy.append("</div>");
+					}
+
 					buffy.append("</div>");
 				}
-
-				buffy.append("</div>");
 			}
+		}
+		else {
+			buffy.append("<div class='ci-no-details'>No build selected.</div>");
 		}
 		buffy.append("</div>");
 		return buffy.toString();

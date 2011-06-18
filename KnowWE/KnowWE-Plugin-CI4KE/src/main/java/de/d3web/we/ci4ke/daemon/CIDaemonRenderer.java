@@ -49,15 +49,7 @@ public class CIDaemonRenderer extends KnowWEDomRenderer<CIDaemonType> {
 				+ "\">";
 		string.append(srclink);
 
-		if (handler.getCurrentBuildNumber() > 0) {
-			string.append(handler.renderCurrentBuildStatus(16));
-		}
-		else {
-			string.append("<span class='warning'>");
-			string.append("No builds found for the CIDashboard name '" + dashboardName + "'.");
-			string.append("</span>");
-			return string.toString();
-		}
+		string.append(handler.renderCurrentBuildStatus(16));
 		string.append("</a>");
 
 		return string.toString();

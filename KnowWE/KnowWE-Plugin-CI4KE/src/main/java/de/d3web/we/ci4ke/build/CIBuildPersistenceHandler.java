@@ -416,7 +416,9 @@ public class CIBuildPersistenceHandler {
 			String actualStatus = ((Attribute) o).getValue();
 			return CIUtilities.renderResultType(Type.valueOf(actualStatus), pixelSize);
 		}
-		return "";
+		else {
+			return CIUtilities.renderResultType(Type.ERROR, pixelSize);
+		}
 	}
 
 	/**
