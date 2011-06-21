@@ -1108,39 +1108,16 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 				}
 				KDOMReportMessage.storeMessages(article, this, handler.getClass(), msgs);
 				setCompiledBy(article.getTitle(), handler, true);
-				// System.out.println(handler.getClass().getSimpleName());
-				// System.out.println(handler.getClass().getSimpleName() + " "
-				// + (System.currentTimeMillis() - time) + " " +
-				// getOriginalText());
 			}
 			catch (Exception e) {
 				e.printStackTrace();
 				String text = "Unexpected internal error in subtree handler '" + handler
-						+ "' : "
-						+ e.toString();
+						+ "' : " + e.toString();
 				SimpleMessageError msg = new SimpleMessageError(text);
 
 				Logging.getInstance().severe(text);
 				KDOMReportMessage.storeSingleError(getArticle(), this, getClass(), msg);
-				// TODO: vb: store the error also in the article. (see below for
-				// more details)
-				//
-				// Idea 1:
-				// Any unexpected error (and therefore catched here) of the
-				// ReviseSubtreeHandlers shall be remarked at the "article"
-				// object. When rendering the article page, the error should be
-				// placed at the top level. A KnowWEPlugin to list all erroneous
-				// articles as links with its errors shall be introduced. A call
-				// to this plugin should be placed in the LeftMenu-page.
-				//
-				// Idea 2:
-				// The errors are not marked at the article, but as a special
-				// message type is added to this section. When rendering the
-				// page, the error message should be placed right before the
-				// section and the content of the section as original text in
-				// pre-formatted style (no renderer used!):
-				// {{{ <div class=error>EXCEPTION WITH MESSAGE</div> ORIGINAL
-				// TEXT }}}
+
 			}
 		}
 	}
@@ -1170,9 +1147,17 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 			"unchecked", "rawtypes" })
 	public final void letSubtreeHandlerDestroy(KnowWEArticle article, SubtreeHandler handler) {
 		if (handler.needsToDestroy(article, this)) {
-			handler.destroy(article, this);
-			setCompiledBy(article.getTitle(), handler, false);
-			// System.out.println(handler.getClass().getSimpleName());
+			try {
+				handler.destroy(article, this);
+				setCompiledBy(article.getTitle(), handler, false);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				Logging.getInstance().severe(
+						"Unexpected internal error in subtree handler '" + handler
+								+ "' : " + e.toString());
+
+			}
 		}
 	}
 
