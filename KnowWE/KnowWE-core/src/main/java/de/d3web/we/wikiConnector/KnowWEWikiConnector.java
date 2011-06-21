@@ -35,22 +35,22 @@ import de.d3web.we.action.UserActionContext;
 import de.d3web.we.user.UserContext;
 
 /**
- *
+ * 
  * This interface defines how KnowWE (and KnowWE-Plugins) can interact with the
  * underlying wiki engine. An implementation provides KnowWE access to
  * attachments file, page sources, user rights, edit locks and much more.
- *
+ * 
  * To connect a wiki engine with KnowWE this interface needs to be implemented.
- *
+ * 
  * @author Jochen
- *
+ * 
  */
 
 public interface KnowWEWikiConnector {
 
 	/**
 	 * Checks whether the user is member of a given group
-	 *
+	 * 
 	 * @param username
 	 * @param groupname
 	 * @param r
@@ -60,14 +60,14 @@ public interface KnowWEWikiConnector {
 
 	/**
 	 * Return the absolute path of the web-application
-	 *
+	 * 
 	 * @return path of the web-application
 	 */
 	public String getRealPath();
 
 	/**
 	 * Returns the current servlet-context object
-	 *
+	 * 
 	 * @return
 	 */
 	public ServletContext getServletContext();
@@ -75,21 +75,21 @@ public interface KnowWEWikiConnector {
 	/**
 	 * Returns a path to savely store owl files to. The path must be outside the
 	 * webapps dir to prevent the files to be deleted during a wiki-redeploy
-	 *
+	 * 
 	 */
 	public String getSavePath();
 
 	/**
 	 * Return the ActionDispatcher which is responsible to receive the
 	 * http-request for the KnowWE-actions
-	 *
+	 * 
 	 * @return
 	 */
 	public KnowWEActionDispatcher getActionDispatcher();
 
 	/**
 	 * Saves the article (persistently) into the connected wiki
-	 *
+	 * 
 	 * @param name
 	 * @param text
 	 * @param context
@@ -99,12 +99,13 @@ public interface KnowWEWikiConnector {
 
 	/**
 	 * Saves the article (persistently) into the connected wiki
-	 *
+	 * 
 	 * @param name
 	 * @param text
 	 * @param map
-	 * @param fullParse possibility to force the full parsing of the page (only
-	 *        for KnowWETestWikiConnector working)
+	 * @param fullParse
+	 *            possibility to force the full parsing of the page (only for
+	 *            KnowWETestWikiConnector working)
 	 * @return
 	 */
 	// public boolean writeArticleToWikiEnginePersistence(String name, String
@@ -112,7 +113,7 @@ public interface KnowWEWikiConnector {
 
 	/**
 	 * Returns a list of all jar attachment files of the wiki
-	 *
+	 * 
 	 * @return
 	 */
 	public List<String> getJarAttachments();
@@ -124,7 +125,7 @@ public interface KnowWEWikiConnector {
 
 	/**
 	 * Returns the filenames of the attachments of the given wiki page
-	 *
+	 * 
 	 * @param pageName
 	 * @return
 	 */
@@ -132,7 +133,7 @@ public interface KnowWEWikiConnector {
 
 	/**
 	 * Returns the path of the folder where the attachments are stored
-	 *
+	 * 
 	 * @param JarName
 	 * @return
 	 */
@@ -140,7 +141,7 @@ public interface KnowWEWikiConnector {
 
 	/**
 	 * Returns the URL of the running wiki
-	 *
+	 * 
 	 * @return
 	 */
 	public String getBaseUrl();
@@ -148,7 +149,7 @@ public interface KnowWEWikiConnector {
 	/**
 	 * Returns the most current version of the source text of the wiki page with
 	 * the given name as one string
-	 *
+	 * 
 	 * @param name
 	 * @return
 	 */
@@ -156,7 +157,7 @@ public interface KnowWEWikiConnector {
 
 	/**
 	 * Gets the most current version number of the article with the given name
-	 *
+	 * 
 	 * @param name
 	 * @return
 	 */
@@ -164,9 +165,11 @@ public interface KnowWEWikiConnector {
 
 	/**
 	 * Returns the given version of the source text of the wiki page
-	 *
-	 * @param name the name of the article
-	 * @param version the version number of the article source to be retrieved
+	 * 
+	 * @param name
+	 *            the name of the article
+	 * @param version
+	 *            the version number of the article source to be retrieved
 	 * @return the source of the article, or null if the given version does not
 	 *         exist
 	 */
@@ -174,10 +177,12 @@ public interface KnowWEWikiConnector {
 
 	/**
 	 * Gets the author of the specified version of the given article ( by name )
-	 *
+	 * 
 	 * @created 14.06.2010
-	 * @param name the name of the article which has to be selected
-	 * @param version the version number of which the author has to be returned
+	 * @param name
+	 *            the name of the article which has to be selected
+	 * @param version
+	 *            the version number of which the author has to be returned
 	 * @return the author of the specified version or null
 	 */
 	public String getAuthor(String name, int version);
@@ -186,10 +191,12 @@ public interface KnowWEWikiConnector {
 
 	/**
 	 * Gets the Date when the specified version of the article was last modified
-	 *
+	 * 
 	 * @created 17.07.2010
-	 * @param name the name of the article
-	 * @param version the version of the article
+	 * @param name
+	 *            the name of the article
+	 * @param version
+	 *            the version of the article
 	 * @return the Date when the selected articleversion was modified
 	 */
 	public Date getLastModifiedDate(String name, int version);
@@ -197,7 +204,7 @@ public interface KnowWEWikiConnector {
 	/**
 	 * Returns a map of all wiki pages with page names as key and page sources
 	 * as values
-	 *
+	 * 
 	 * @param web
 	 * @return
 	 */
@@ -205,7 +212,7 @@ public interface KnowWEWikiConnector {
 
 	/**
 	 * tests if a page of the given name exists
-	 *
+	 * 
 	 * @param Topic
 	 * @return
 	 */
@@ -214,7 +221,7 @@ public interface KnowWEWikiConnector {
 	/**
 	 * Creates a new Wiki page with given name and content and author in the
 	 * connected wiki
-	 *
+	 * 
 	 * @param topic
 	 * @param newContent
 	 * @param author
@@ -224,7 +231,7 @@ public interface KnowWEWikiConnector {
 
 	/**
 	 * Appends some content to the wiki page with the given name
-	 *
+	 * 
 	 * @param topic
 	 * @param pageContent
 	 * @return
@@ -233,15 +240,16 @@ public interface KnowWEWikiConnector {
 
 	/**
 	 * Checks whether a user can edit a given page
-	 *
+	 * 
 	 * @param articlename
 	 * @return
 	 */
+	@Deprecated
 	public boolean userCanEditPage(String articlename);
 
 	/**
 	 * Checks whether a user can edit a given page
-	 *
+	 * 
 	 * @param articlename
 	 * @param r
 	 * @return
@@ -268,7 +276,7 @@ public interface KnowWEWikiConnector {
 	/**
 	 * Checks whether a page has a editing lock (due to another user who has
 	 * startet to edit it)
-	 *
+	 * 
 	 * @param articlename
 	 * @return
 	 */
@@ -277,7 +285,7 @@ public interface KnowWEWikiConnector {
 	/**
 	 * Sets an editing lock on the page, denoting that the page is currently
 	 * editing by the given user.
-	 *
+	 * 
 	 * @param articlename
 	 * @param user
 	 * @return
@@ -286,14 +294,14 @@ public interface KnowWEWikiConnector {
 
 	/**
 	 * Removes a page editing lock
-	 *
+	 * 
 	 * @param articlename
 	 */
 	public void undoPageLocked(String articlename);
 
 	/**
 	 * Checks whether a given page is locked by the given user
-	 *
+	 * 
 	 * @param articlename
 	 * @param user
 	 * @return
@@ -302,14 +310,14 @@ public interface KnowWEWikiConnector {
 
 	/**
 	 * reads the default locale of the connected wiki
-	 *
+	 * 
 	 * @return
 	 */
 	public Locale getLocale();
 
 	/**
 	 * reads the locale which was configured by the current user
-	 *
+	 * 
 	 * @param request
 	 * @return
 	 */
@@ -319,11 +327,12 @@ public interface KnowWEWikiConnector {
 	 * Creates a link to an article with the given text to display as link text
 	 * in the syntax of the specific wiki. If the link text is null or empty it
 	 * is omitted.
-	 *
-	 *
-	 * @param articleName name of the article to link to
-	 * @param linkText the text to show for the link. can be empty String or
-	 *        null
+	 * 
+	 * 
+	 * @param articleName
+	 *            name of the article to link to
+	 * @param linkText
+	 *            the text to show for the link. can be empty String or null
 	 * @return s a string representing a link to the given article in wiki
 	 *         syntax
 	 */
@@ -332,7 +341,7 @@ public interface KnowWEWikiConnector {
 	/**
 	 * Return a Map from pageNames to the number of (edited) versions of this
 	 * page
-	 *
+	 * 
 	 * @return
 	 */
 	public Map<String, Integer> getVersionCounts();
@@ -340,19 +349,23 @@ public interface KnowWEWikiConnector {
 	/**
 	 * Stores an File as an attachment to the given page. Returns whether the
 	 * operation was successful or not.
-	 *
-	 * @param wikiPage the name of the page, to which this attachment should be
-	 *        stored
-	 * @param attachmentFile the attachment to be stored
+	 * 
+	 * @param wikiPage
+	 *            the name of the page, to which this attachment should be
+	 *            stored
+	 * @param attachmentFile
+	 *            the attachment to be stored
 	 * @return
 	 */
 	boolean storeAttachment(String wikiPage, File attachmentFile);
 
 	/**
 	 * Renders given WIKI mark-up in the pagedata.
-	 *
-	 * @param pagedata The current data of the page.
-	 * @param userContext The parameters of the request.
+	 * 
+	 * @param pagedata
+	 *            The current data of the page.
+	 * @param userContext
+	 *            The parameters of the request.
 	 * @return The masked pagedata.
 	 */
 	public String renderWikiSyntax(String pagedata, UserActionContext userContext);
@@ -365,7 +378,7 @@ public interface KnowWEWikiConnector {
 	 * @return
 	 */
 	public String wikiSyntaxToHtml(String syntax);
-	
+
 	/**
 	 * Get all users.
 	 * 
