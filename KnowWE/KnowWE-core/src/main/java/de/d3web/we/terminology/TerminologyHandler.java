@@ -530,14 +530,15 @@ public class TerminologyHandler implements EventListener {
 	public <TermObject> void unregisterTermDefinition(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> s) {
 		TermReferenceLog<TermObject> termRefLog = getTermReferenceLog(article, s);
 		if (termRefLog != null) {
-			if (s == termRefLog.getDefiningSection()) {
+			Section<? extends TermDefinition<TermObject>> definingSection = termRefLog.getDefiningSection();
+			if (s == definingSection) {
 
 				if (s.get().getTermScope() == Scope.GLOBAL) {
 					KnowWEArticleManager artMan = KnowWEEnvironment.getInstance().getArticleManager(
 							article.getWeb());
 
-					artMan.addAllArticlesToUpdate(termRefLog.getDefiningSection().getReusedBySet());
-					termRefLog.getDefiningSection().clearReusedBySet();
+					artMan.addAllArticlesToUpdate(definingSection.getReusedBySet());
+					definingSection.clearReusedBySet();
 
 					for (Section<?> termDef : termRefLog.getRedundantDefinitions()) {
 						artMan.addAllArticlesToUpdate(termDef.getReusedBySet());
@@ -562,15 +563,16 @@ public class TerminologyHandler implements EventListener {
 						new TermIdentifier(article, s));
 			}
 			else {
-				termRefLog.getRedundantDefinitions().remove(s);
+				termRefLog.removeDefinition(s);
 
-				if (termRefLog.getRedundantDefinitions().isEmpty()
-						&& termRefLog.getDefiningSection().get().getMultiDefMode() == MultiDefMode.INACTIVE) {
+				if (definingSection != null
+						&& termRefLog.getRedundantDefinitions().isEmpty()
+						&& definingSection.get().getMultiDefMode() == MultiDefMode.INACTIVE) {
 
 					globalRecompilationOfTerm(article, s, termRefLog);
 
 					KDOMReportMessage.clearMessages(article,
-							termRefLog.getDefiningSection(),
+							definingSection,
 							this.getClass());
 				}
 			}
@@ -633,7 +635,8 @@ public class TerminologyHandler implements EventListener {
 	@SuppressWarnings( {
 			"unchecked", "rawtypes" })
 	public Collection<String> getAllTerms(String title, Scope scope, Class<?> termClass) {
-		Collection<Section<? extends TermDefinition>> allTermDefs = getAllTermDefs(title, scope, termClass);
+		Collection<Section<? extends TermDefinition>> allTermDefs = getAllTermDefs(title,
+				scope, termClass);
 		Collection<String> terms = new HashSet<String>();
 		for (Section<? extends TermDefinition> sec : allTermDefs) {
 			terms.add(new TermIdentifier(sec.getArticle(),
@@ -641,13 +644,13 @@ public class TerminologyHandler implements EventListener {
 		}
 		return terms;
 	}
-	
+
 	/**
 	 * Returns all global terms of the given class (e.g. Question, String,...).
 	 * 
 	 * @created 03.11.2010
 	 */
-	 @SuppressWarnings( {
+	@SuppressWarnings( {
 			"unchecked", "rawtypes" })
 	public Collection<Section<? extends TermDefinition>> getAllGlobalTermDefsOfType(Class<?> termClass) {
 		return getAllTermDefs(null, Scope.GLOBAL, termClass);
@@ -658,7 +661,7 @@ public class TerminologyHandler implements EventListener {
 	 * 
 	 * @created 03.11.2010
 	 */
-	 @SuppressWarnings( {
+	@SuppressWarnings( {
 			"unchecked", "rawtypes" })
 	public Collection<Section<? extends TermDefinition>> getAllGlobalTermDefs() {
 		return getAllTermDefs(null, Scope.GLOBAL, null);
@@ -670,7 +673,7 @@ public class TerminologyHandler implements EventListener {
 	 * 
 	 * @created 03.11.2010
 	 */
-	 @SuppressWarnings( {
+	@SuppressWarnings( {
 			"unchecked", "rawtypes" })
 	public Collection<Section<? extends TermDefinition>> getAllLocalTermsDefsOfType(String title, Class<?> termClass) {
 		return getAllTermDefs(title, Scope.LOCAL, termClass);
@@ -682,7 +685,7 @@ public class TerminologyHandler implements EventListener {
 	 * 
 	 * @created 03.11.2010
 	 */
-	 @SuppressWarnings( {
+	@SuppressWarnings( {
 			"unchecked", "rawtypes" })
 	public Collection<Section<? extends TermDefinition>> getAllLocalTermDefs(String title) {
 		return getAllTermDefs(title, Scope.LOCAL, null);
@@ -770,6 +773,18 @@ public class TerminologyHandler implements EventListener {
 			if (this.definingSections.isEmpty()) return null;
 			// high priorities have high number, hence lastEntry...
 			return this.definingSections.lastEntry().getValue().first();
+		}
+
+		public boolean removeDefinition(Section<? extends TermDefinition<TermObject>> s) {
+			for (Priority p : this.definingSections.keySet()) {
+				Set<Section<? extends TermDefinition<TermObject>>> secs = this.definingSections.get(p);
+				if (secs.remove(s)) {
+					return true;
+				}
+			}
+
+			return false;
+
 		}
 
 		public Set<Section<? extends TermDefinition<TermObject>>> getRedundantDefinitions() {
