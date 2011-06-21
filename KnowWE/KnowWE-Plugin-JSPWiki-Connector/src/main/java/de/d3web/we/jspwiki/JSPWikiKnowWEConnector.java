@@ -60,9 +60,9 @@ import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 /**
  * For code documentation look at the KnowWEWikiConnector interface definition
- *
+ * 
  * @author Jochen
- *
+ * 
  */
 public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
@@ -110,9 +110,9 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		try {
 			LinkedList<String> sortedAttList = new LinkedList<String>();
 			AttachmentManager attachmentManager = this.engine
-			.getAttachmentManager();
+					.getAttachmentManager();
 			Collection<Attachment> attList = attachmentManager
-			.getAllAttachments();
+					.getAllAttachments();
 
 			for (Attachment p : attList) {
 
@@ -156,7 +156,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 			if (!isPageLocked(wikiPage)) {
 				setPageLocked(wikiPage, "WIKI-ENGINE");
 				AttachmentManager attachmentManager = this.engine
-				.getAttachmentManager();
+						.getAttachmentManager();
 
 				Attachment att = new Attachment(engine, wikiPage,
 						attachmentFile.getName());
@@ -188,7 +188,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 			try {
 				storageDir = WikiEngine.getRequiredProperty(this.engine
 						.getWikiProperties(),
-				"jspwiki.basicAttachmentProvider.storageDir");
+						"jspwiki.basicAttachmentProvider.storageDir");
 				jarPath += storageDir;
 			}
 			catch (NoRequiredPropertyException e) {
@@ -209,7 +209,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 			// Fixes a bug in which the getVersion returns -1 instead of 1;
 			int version = this.getMeAttachment(jarName)
-			.getVersion();
+					.getVersion();
 			String fileSuffix = jarName.substring(jarName.lastIndexOf("."));
 			if (version == -1) {
 				int i = 1;
@@ -290,7 +290,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		try {
 			// References Updaten.
 			this.engine.getReferenceManager().updateReferences(topic,
-	                    this.engine.getReferenceManager().findCreated()); 
+						this.engine.getReferenceManager().findCreated());
 			wp.setAuthor(author);
 			this.engine.getPageManager().putPageText(wp, content);
 			this.engine.getSearchManager().reindexPage(wp);
@@ -299,14 +299,13 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		catch (ProviderException e) {
 			return null;
 		}
-		catch(NullPointerException e) {
-			//should only happen on wiki initialization
+		catch (NullPointerException e) {
+			// should only happen on wiki initialization
 			return null;
 		}
 
 		return this.engine.getPureText(wp);
 	}
-
 
 	@Override
 	public boolean doesPageExist(String topic) {
@@ -321,7 +320,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 		try {
 			content = this.engine.getPureText(this.engine.getPage(topic))
-			+ content;
+					+ content;
 			WikiContext context = new WikiContext(this.engine, this.engine
 					.getPage(topic));
 			this.engine.saveText(context, content);
@@ -346,7 +345,8 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
+			if ((this.engine == null) || (this.engine.getPage(name) == null))
+				return null;
 		}
 		catch (NullPointerException e) {
 			return null;
@@ -366,7 +366,8 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
+			if ((this.engine == null) || (this.engine.getPage(name) == null))
+				return null;
 		}
 		catch (NullPointerException e) {
 			return null;
@@ -394,7 +395,8 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
+			if ((this.engine == null) || (this.engine.getPage(name) == null))
+				return null;
 		}
 		catch (NullPointerException e) {
 			return null;
@@ -416,7 +418,8 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
+			if ((this.engine == null) || (this.engine.getPage(name) == null))
+				return null;
 		}
 		catch (NullPointerException e) {
 			return null;
@@ -444,7 +447,8 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
+			if ((this.engine == null) || (this.engine.getPage(name) == null))
+				return null;
 		}
 		catch (NullPointerException e) {
 			return null;
@@ -482,10 +486,14 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	 * Checks if the current user has the rights to edit the given page. Returns
 	 * TRUE if the user has editing permission, otherwise FALSE and editing of
 	 * the page is denied.
-	 *
+	 * 
+	 * Not working properly USE userCanEditPage(String, HttpServletRequest)
+	 * instead
+	 * 
 	 * @param articlename
 	 */
 	@Override
+	@Deprecated
 	public boolean userCanEditPage(String articlename) {
 		WikiPage page = new WikiPage(engine, articlename);
 		WikiContext context = new WikiContext(this.engine, this.engine
@@ -500,9 +508,10 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	 * Checks if the current user has the rights to edit the given page. Returns
 	 * TRUE if the user has editing permission, otherwise FALSE and editing of
 	 * the page is denied.
-	 *
+	 * 
 	 * @param articlename
-	 * @param r HttpRequest
+	 * @param r
+	 *            HttpRequest
 	 */
 	@Override
 	public boolean userCanEditPage(String articlename, HttpServletRequest r) {
@@ -520,7 +529,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	 * Checks if the current user has the rights to view the given page. Returns
 	 * TRUE if the user has viewing permission, otherwise FALSE and viewing the
 	 * page is denied.
-	 *
+	 * 
 	 * @param articlename
 	 */
 	@Override
@@ -538,9 +547,10 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	 * Checks if the current user has the rights to show the given page. Returns
 	 * TRUE if the user has showing permission, otherwise FALSE and showing of
 	 * the page is denied.
-	 *
+	 * 
 	 * @param articlename
-	 * @param r HttpRequest
+	 * @param r
+	 *            HttpRequest
 	 */
 	@Override
 	public boolean userCanViewPage(String articlename, HttpServletRequest r) {
@@ -558,7 +568,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	 * Checks if the current page has an access lock. If TRUE no user other then
 	 * the lock owner can edit the page. If FALSE the current page has no lock
 	 * and can be edited by anyone.
-	 *
+	 * 
 	 * @param articlename
 	 */
 	@Override
@@ -572,7 +582,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	/**
 	 * Checks if the current page has been locked by the current user. Returns
 	 * TRUE if yes, FALSE otherwise.
-	 *
+	 * 
 	 * @param articlename
 	 * @param user
 	 * @return
@@ -591,7 +601,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 	/**
 	 * Locks a page in the WIKI so no other user can edit the page.
-	 *
+	 * 
 	 * @param articlename
 	 */
 	@Override
@@ -607,7 +617,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	/**
 	 * Removes a page lock from a certain page in the WIKI so other users can
 	 * edit the page.
-	 *
+	 * 
 	 * @param articlename
 	 */
 	@Override
@@ -653,7 +663,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 			// the conversion is typesafe!
 			@SuppressWarnings("unchecked")
 			Collection<Attachment> attList = this.engine.getAttachmentManager().
-			listAttachments(this.engine.getPage(pageName));
+					listAttachments(this.engine.getPage(pageName));
 
 			for (Attachment att : attList) {
 				attachmentList.add(att.getFileName());
@@ -731,6 +741,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		String html = engine.textToHTML(context, syntax);
 		return html;
 	}
+
 	@Override
 	public String[] getAllUsers() {
 		String[] users = null;
