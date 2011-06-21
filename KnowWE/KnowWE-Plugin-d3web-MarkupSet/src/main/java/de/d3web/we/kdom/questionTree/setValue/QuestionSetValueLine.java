@@ -37,7 +37,6 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.Type;
-import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
 import de.d3web.we.kdom.questionTree.RootQuestionChangeConstraint;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -76,7 +75,7 @@ public class QuestionSetValueLine extends AbstractType {
 			}
 		};
 
-		AnswerReferenceInBrackets argumentType = new AnswerReferenceInBrackets();
+		AnswerPart argumentType = new AnswerPart();
 		this.childrenTypes.add(argumentType);
 		this.childrenTypes.add(createObjectRefTypeBefore(argumentType));
 
@@ -111,7 +110,7 @@ public class QuestionSetValueLine extends AbstractType {
 			Section<AnswerReference> answerSec = Sections.findSuccessor(
 					s.getFather(), AnswerReference.class);
 
-			String answerName = answerSec.get().getTermIdentifier(answerSec);
+			String answerName = answerSec.get().getTermName(answerSec);
 
 			if (q != null) {
 				Choice a = null;
@@ -142,7 +141,8 @@ public class QuestionSetValueLine extends AbstractType {
 
 						Rule r = null;
 						if (ac != null) {
-							r = RuleFactory.createRule(ac, cond, null, PSMethodAbstraction.class);
+							r = RuleFactory.createRule(ac, cond, null,
+									PSMethodAbstraction.class);
 						}
 
 						if (r != null) {
@@ -169,9 +169,9 @@ public class QuestionSetValueLine extends AbstractType {
 	 * @author Jochen
 	 * @created 26.07.2010
 	 */
-	class AnswerReferenceInBrackets extends AnswerReference {
+	class AnswerPart extends AbstractType {
 
-		public AnswerReferenceInBrackets() {
+		public AnswerPart() {
 			this.sectionFinder = new SectionFinder() {
 
 				@Override
@@ -184,22 +184,30 @@ public class QuestionSetValueLine extends AbstractType {
 									SplitUtility.indexOfUnquoted(text, CLOSE) + 1));
 				}
 			};
+
+			AnswerReferenceInsideBracket answerReferenceInsideBracket = new AnswerReferenceInsideBracket();
+			answerReferenceInsideBracket.setSectionFinder(new SectionFinder() {
+				@Override
+				public List<SectionFinderResult> lookForSections(String text,
+						Section<?> father, Type type) {
+
+					return SectionFinderResult
+							.createSingleItemList(new SectionFinderResult(
+									1,
+									text.length() - 1));
+				}
+			});
+			this.addChildType(answerReferenceInsideBracket);
 		}
 
-		@Override
-		public Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s) {
-			return Sections.findSuccessor(s.getFather(), QuestionReference.class);
-		}
+		class AnswerReferenceInsideBracket extends AnswerReference {
 
-		@Override
-		public String getTermIdentifier(Section<? extends KnowWETerm<Choice>> s) {
-			String text = s.getOriginalText().trim();
-			String answer = "";
-			if (text.indexOf(OPEN) == 0 && text.lastIndexOf(CLOSE) == text.length() - 1) {
-				answer = text.substring(1, text.length() - 1).trim();
+			@Override
+			public Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s) {
+				return Sections.findSuccessor(s.getFather().getFather(),
+						QuestionReference.class);
 			}
 
-			return KnowWEUtils.trimQuotes(answer);
 		}
 
 	}
