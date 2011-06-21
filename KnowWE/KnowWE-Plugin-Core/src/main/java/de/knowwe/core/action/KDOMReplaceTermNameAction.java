@@ -35,15 +35,19 @@ import de.d3web.we.kdom.objects.TermReference;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
- * This Action replaces a term name contained in a single KDOM node.
- * Before performing the change, the users privileges are checked.
- *
- * <p>Needed Parameters:</p>
+ * This Action replaces a term name contained in a single KDOM node. Before
+ * performing the change, the users privileges are checked.
+ * 
+ * <p>
+ * Needed Parameters:
+ * </p>
  * <ul>
- *  <li><tt>{@link KnowWEAttributes.TARGET}:</tt> The KDOM node of which the content will be replaced</li>
- *  <li><tt>{@link KnowWEAtrributes.TEXT}:</tt> The new term reference inside the node</li>
+ * <li><tt>{@link KnowWEAttributes.TARGET}:</tt> The KDOM node of which the content
+ * will be replaced</li>
+ * <li><tt>{@link KnowWEAtrributes.TEXT}:</tt> The new term reference inside the
+ * node</li>
  * </ul>
- *
+ * 
  * @author Alex Legler
  * @created 05.01.2011
  */
@@ -63,18 +67,21 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 
 		// Check for user access
-		if (!KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(name)) {
+		if (!KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(name,
+				context.getRequest())) {
 			context.sendError(403, "You do not have the permission to edit this page.");
 			return;
 		}
 
-		// Prepare new text, urldecode and strip whitespaces that JSPWiki might have added
+		// Prepare new text, urldecode and strip whitespaces that JSPWiki might
+		// have added
 		newText = KnowWEUtils.urldecode(newText);
 		newText = newText.replaceAll("\\s*$", "");
 
 		Map<String, String> nodesMap = new HashMap<String, String>();
 
-		Section<?> section = Sections.findSuccessor(mgr.getArticle(name).getSection(), nodeID);
+		Section<?> section = Sections.findSuccessor(mgr.getArticle(name).getSection(),
+				nodeID);
 
 		if (!(section.get() instanceof TermReference<?>)) {
 			context.sendError(500, "Invalid section type");
