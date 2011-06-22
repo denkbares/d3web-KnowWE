@@ -89,6 +89,32 @@ public interface CorrectionProvider {
 		public int compareTo(Suggestion other) {
 				return other.distance - distance;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result
+					+ ((suggestion == null) ? 0 : suggestion.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Suggestion other = (Suggestion) obj;
+			if (suggestion == null) {
+				if (other.suggestion != null)
+					return false;
+			} else if (!suggestion.equals(other.suggestion))
+				return false;
+			return true;
+		}
 	}
 	
 }

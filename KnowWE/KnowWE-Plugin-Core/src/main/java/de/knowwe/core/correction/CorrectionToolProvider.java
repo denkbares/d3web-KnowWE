@@ -19,8 +19,10 @@
 package de.knowwe.core.correction;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
@@ -42,27 +44,29 @@ import de.d3web.we.utils.ScopeUtils;
  * @created 19.12.2010
  */
 public class CorrectionToolProvider implements ToolProvider {
-	/**
-	 * The max Levensthein distance for finding matches.
-	 */
-	private static final int THRESH = 5;
-
 	@Override
 	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
 		List<CorrectionProvider.Suggestion> suggestions = new LinkedList<CorrectionProvider.Suggestion>();
+		ResourceBundle wikiConfig = ResourceBundle.getBundle("KnowWE_config");
+		
+		int threshold = Integer.valueOf(wikiConfig.getString("knowweplugin.correction.threshold"));
 		
 		if (!section.hasErrorInSubtree(article)) {
 			return new Tool[0];
 		}
 		
 		for (CorrectionProvider c : getProviders(section)) {
-			List<CorrectionProvider.Suggestion> s = c.getSuggestions(article, section, THRESH);
+			List<CorrectionProvider.Suggestion> s = c.getSuggestions(article, section, threshold);
 
 			if (s != null) {
 				suggestions.addAll(s);
 			}
 		}
 		
+		// Ensure there are no duplicates
+		suggestions = new LinkedList<CorrectionProvider.Suggestion>(new HashSet<CorrectionProvider.Suggestion>(suggestions));
+		
+		// Sort by ascending distance
 		Collections.sort(suggestions);
 
 		if (suggestions.size() == 0) {
