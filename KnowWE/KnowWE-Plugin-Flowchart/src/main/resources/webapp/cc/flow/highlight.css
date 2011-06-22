@@ -1,0 +1,10 @@
+.Flowchart .highlightActive {
+	border: 2px solid green;
+}
+
+
+.Flowchart .highlightSnap {
+	border: 2px solid #BB0;
+}
+	
+

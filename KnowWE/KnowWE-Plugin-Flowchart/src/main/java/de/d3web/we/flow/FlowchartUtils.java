@@ -50,11 +50,11 @@ public class FlowchartUtils {
 			"cc/flow/builder.js", "cc/kbinfo/kbinfo.js", "cc/flow/renderExtensions.js",
 			"cc/kbinfo/extensions.js", "cc/flow/flowchart.js",
 			"cc/flow/action.js", "cc/flow/guard.js", "cc/flow/node.js", "cc/flow/rule.js",
-			"cc/flow/router.js" };
+			"cc/flow/router.js", "cc/flow/highlight.js" };
 
-	private static final String[] CSS = new String[] {
+	public static final String[] CSS = new String[] {
 			"cc/flow/flowchart.css", "cc/flow/guard.css", "cc/flow/node.css",
-			"cc/flow/rule.css", "cc/flow/rendering.css" };
+			"cc/flow/rule.css", "cc/flow/rendering.css", "cc/flow/highlight.css" };
 
 	private static final HashMap<String, WeakHashMap<Flow, HashMap<String, Object>>> flowPropertyStore =
 			new HashMap<String, WeakHashMap<Flow, HashMap<String, Object>>>();
@@ -160,6 +160,11 @@ public class FlowchartUtils {
 	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user) {
 		String name = FlowchartType.getFlowchartName(section);
 		String source = section.getOriginalText();
+		int previewIndex = source.lastIndexOf("<preview");
+		// remove preview
+		if (previewIndex != -1) {
+			source = source.substring(0, previewIndex) + "</flowchart>";
+		}
 		String web = user.getWeb();
 
 		String width = AbstractXMLType.getAttributeMapFor(section).get("width");
@@ -170,9 +175,9 @@ public class FlowchartUtils {
 		String sourceID = name + "Source";
 		String initScript = "<script>" +
 				"KBInfo._updateCache($('referredKBInfo'));" +
-				"Flowchart.createFromXML('" + name + "', $('" + sourceID
-				+ "')).setVisible(true);\n" +
-						"</script>\n";
+				"var flowchart = Flowchart.createFromXML('" + name + "', $('" + sourceID + "'));" +
+				"KNOWWE.helper.observer.notify('flowchartrendered', {flow: flowchart});" +
+				"</script>\n";
 
 		StringBuilder result = new StringBuilder("\n<div>");
 
@@ -184,7 +189,7 @@ public class FlowchartUtils {
 			result.append("<script src='" + jsfile + "' type='text/javascript'></script>");
 		}
 
-		addDisplayPlugins(result);
+		addDisplayPlugins(result, user, section);
 
 		result.append("\n");
 		result.append("<xml id='" + sourceID + "' style ='display:none;'>" + source + "</xml>\n");
@@ -204,12 +209,16 @@ public class FlowchartUtils {
 	 * 
 	 * @created 26.05.2011
 	 * @param result
+	 * @param user
+	 * @param section
 	 */
-	public static void addDisplayPlugins(StringBuilder result) {
+	public static void addDisplayPlugins(StringBuilder result, UserContext user, Section<FlowchartType> section) {
 		Extension[] extensions = JPFPluginManager.getInstance().getExtensions(
 				DiaFluxDisplayEnhancement.PLUGIN_ID, DiaFluxDisplayEnhancement.EXTENSION_POINT_ID);
 		for (Extension extension : extensions) {
 			DiaFluxDisplayEnhancement enh = (DiaFluxDisplayEnhancement) extension.getNewInstance();
+
+			if (!enh.activate(section, user)) continue;
 
 			for (String script : enh.getScripts()) {
 				result.append("<script src='" + script + "' type='text/javascript'></script>");
