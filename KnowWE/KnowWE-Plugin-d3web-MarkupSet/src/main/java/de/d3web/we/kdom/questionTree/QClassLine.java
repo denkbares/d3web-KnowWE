@@ -31,11 +31,11 @@ import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.constraint.UnquotedConstraint;
 import de.d3web.we.kdom.objects.IncrementalMarker;
-import de.d3web.we.kdom.questionTree.extension.InlineIndicationCondition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
@@ -51,6 +51,7 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.dashtree.DashTreeElement;
 import de.knowwe.core.dashtree.DashTreeElementContent;
 import de.knowwe.core.dashtree.DashTreeUtils;
+import de.knowwe.plugin.Plugins;
 
 public class QClassLine extends AbstractType implements IncrementalMarker {
 
@@ -58,13 +59,11 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 
 		initSectionFinder();
 
+		for (Type childType : Plugins.getTypes(this.getClass().getName())) {
+			addChildType(childType);
+		}
 		// at first the init-number
 		this.childrenTypes.add(new InitNumber());
-
-		// allows to make inline-indications in question-definitions uncomment
-		// to activate:
-		// this.childrenTypes.add(new InlineIndicationCondition());
-
 		// add description-type via '~'
 		this.addChildType(new ObjectDescription(MMInfo.DESCRIPTION));
 

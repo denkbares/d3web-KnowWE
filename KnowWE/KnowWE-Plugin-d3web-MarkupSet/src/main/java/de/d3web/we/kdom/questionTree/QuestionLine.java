@@ -40,7 +40,6 @@ import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.IncrementalMarker;
-import de.d3web.we.kdom.questionTree.extension.InlineIndicationCondition;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -68,6 +67,7 @@ import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
 import de.knowwe.core.dashtree.DashTreeElementContent;
 import de.knowwe.core.dashtree.DashTreeUtils;
+import de.knowwe.plugin.Plugins;
 
 /**
  * QuestionLine of the QuestionTree, here Questions can be defined
@@ -92,9 +92,9 @@ public class QuestionLine extends AbstractType {
 			}
 		};
 
-		// allows to make inline-indications in question-definitions uncomment
-		// to activate:
-		// this.childrenTypes.add(new InlineIndicationCondition());
+		for (Type childType : Plugins.getTypes(this.getClass().getName())) {
+			addChildType(childType);
+		}
 
 		// type of the question '[oc]'
 		this.childrenTypes.add(new QuestionTypeDeclaration());
@@ -143,6 +143,7 @@ public class QuestionLine extends AbstractType {
 			return DashTreeUtils.getPositionInFatherDashSubtree(s);
 		}
 
+		@SuppressWarnings("rawtypes")
 		@Override
 		public Section<? extends QASetDefinition> getParentQASetSection(Section<? extends QuestionDefinition> qdef) {
 			Section<? extends DashTreeElementContent> fdtec = DashTreeUtils.getFatherDashTreeElementContent(qdef);

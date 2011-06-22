@@ -22,6 +22,7 @@ package de.d3web.we.object;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -57,7 +58,7 @@ import de.d3web.we.utils.KnowWEUtils;
  */
 public abstract class AnswerDefinition
 		extends D3webTermDefinition<Choice>
-		implements IncrementalConstraint<AnswerDefinition>{
+		implements IncrementalConstraint<AnswerDefinition> {
 
 	private static final String QUESTION_FOR_ANSWER_KEY = "QUESTION_FOR_ANSWER_KEY";
 
@@ -119,7 +120,7 @@ public abstract class AnswerDefinition
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
 				Section<AnswerDefinition> s) {
 
-			String name = s.get().getTermIdentifier(s);
+			String name = s.get().getTermName(s);
 
 			Section<? extends QuestionDefinition> qDef = s.get().getQuestionSection(s);
 			KnowWEUtils.storeObject(article, s, AnswerDefinition.QUESTION_FOR_ANSWER_KEY,
@@ -223,10 +224,10 @@ public abstract class AnswerDefinition
 			// hooked in in the last KDOM.
 		}
 	}
-	
+
 	@Override
 	public String getTermName(Section<? extends KnowWETerm<Choice>> s) {
-		return  KnowWEUtils.trimQuotes(s.getOriginalText());
+		return KnowWEUtils.trimQuotes(s.getOriginalText());
 	}
 
 	/**

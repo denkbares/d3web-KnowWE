@@ -311,6 +311,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 		return null;
 	}
 
+	@Override
 	public Parser getParser() {
 		return new Sectionizer(this);
 	}
