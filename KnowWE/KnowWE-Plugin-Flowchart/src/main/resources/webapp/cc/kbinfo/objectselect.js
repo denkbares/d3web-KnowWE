@@ -26,14 +26,13 @@ function ObjectSelect(parent, kbInfoClasses, value, changeListener) {
 				}
 				// and true if all phrases have matched
 				return true;
-			}.bind(this),
-			11);
+			}.bind(this), value, 9);
 		}
 		else {
 			return null;
 		}
 	}.bind(this);
-	this.items = this.suggestionFx(this.value);;
+	this.items = this.suggestionFx(this.value);
 	this.handleBlur();
 	this.cacheListener = function(changedInfoObjects) {this.handleCacheChange(changedInfoObjects);}.bind(this);
 	KBInfo.addCacheChangeListener(this.cacheListener);

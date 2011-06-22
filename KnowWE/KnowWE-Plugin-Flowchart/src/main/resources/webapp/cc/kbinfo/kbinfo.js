@@ -191,17 +191,27 @@ KBInfo.getInfoObject = function(nameOrIDOrArray) {
  * Returns an array of all currently cached KBInfo objects, 
  * that meets the given condition function. 
  */
-KBInfo.findInfoObjects = function(conditionFx, maxCount) {
+KBInfo.findInfoObjects = function(conditionFx, searchedValue, maxCount) {
 	var result = [];
 	var count = 0;
 	for (var key in KBInfo._cache.byID) {
 		var value = KBInfo._cache.byID[key];
 		if (!value) continue;
 		if (!value.getClassInstance) continue;
-		if (conditionFx(value)) {
+		
+		//Even if we have enough hits according to maxCount
+		//we have to make sure that the searched InfoObject is included if it comes later
+		//e.g. looking for question 'f' is not possible, if many objects contain an f
+		if (count >= maxCount)  {
+			if (searchedValue.toLowerCase() == value.name.toLowerCase()) {
+				result.push(value);
+				break;
+			}
+		}
+		else if (conditionFx(value)) {
 			result.push(value);
 			count++;
-			if (count >= maxCount) break;
+			
 		}
 	}
 	return result;
