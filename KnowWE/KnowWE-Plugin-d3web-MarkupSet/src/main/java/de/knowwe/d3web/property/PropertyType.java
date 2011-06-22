@@ -20,6 +20,7 @@ package de.knowwe.d3web.property;
 
 import java.util.regex.Pattern;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QContainer;
@@ -59,6 +60,8 @@ public class PropertyType extends AbstractType implements IncrementalMarker, Inc
 	 */
 	private static final class PropertyIDObbjetReferenceRenderer extends KnowWEDomRenderer<IDObjectReference> {
 
+		@SuppressWarnings({
+				"rawtypes", "unchecked" })
 		@Override
 		public void render(KnowWEArticle article, Section<IDObjectReference> sec, UserContext user, StringBuilder string) {
 			NamedObject object = sec.get().getTermObject(article, sec);
@@ -74,6 +77,9 @@ public class PropertyType extends AbstractType implements IncrementalMarker, Inc
 			}
 			else if (object instanceof Choice) {
 				renderer = StyleRenderer.CHOICE;
+			}
+			else if (object instanceof KnowledgeBase) {
+				renderer = StyleRenderer.Questionaire;
 			}
 			else {
 				renderer = PlainText.getInstance().getRenderer();

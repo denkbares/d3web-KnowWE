@@ -107,7 +107,7 @@ public class IDObjectReference extends D3webTermReference<NamedObject> {
 	 * @return {@link TerminologyObject} with the specified name
 	 */
 	private static NamedObject findNamedObjectByName(String name, KnowledgeBase knowledgeBase) {
-		if (name.equals("KNOWLEDGEBASE")) return knowledgeBase;
+		if (name.equals("KNOWLEDGEBASE") || name.equals(knowledgeBase.getName())) return knowledgeBase;
 		List<TerminologyObject> objects = new LinkedList<TerminologyObject>();
 		objects.addAll(knowledgeBase.getManager().getQContainers());
 		objects.addAll(knowledgeBase.getManager().getSolutions());
