@@ -20,7 +20,6 @@
 
 package de.d3web.we.flow;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,8 +27,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import de.d3web.core.inference.condition.NoAnswerException;
-import de.d3web.core.inference.condition.UnknownAnswerException;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
 import de.d3web.diaFlux.flow.ComposedNode;
@@ -123,7 +120,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 					if (node.getFlow().getName().equals(thisFlowchartName)) {
 						addNodeHighlight(string, secID, node, "green");
 						for (Edge edge : node.getOutgoingEdges()) {
-							if (hasFired(session, diaFluxCaseObject.getRuns(), edge)) {
+							if (FluxSolver.evalEdge(session, edge)) {
 								addEdgeHighlight(string, secID, edge, "green");
 							}
 						}
@@ -201,21 +198,6 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 				+ "if (child.className.match(/[hv]_line/)) {"
 				+ "child.style.border='1px solid " + color + "';} "
 				+ "child = child.nextSibling;}</script>"));
-	}
-
-	private boolean hasFired(Session session, Collection<FlowRun> runs, Edge edge) {
-		if (edge.getCondition() == null) return false;
-		try {
-			if (!edge.getCondition().eval(session)) return false;
-		}
-		catch (NoAnswerException e) {
-			return false;
-		}
-		catch (UnknownAnswerException e) {
-			return false;
-		}
-		if (FluxSolver.evalToTrue(session, edge.getStartNode().getEdgePrecondition())) return true;
-		return false;
 	}
 
 	private String createPreview(KnowWEArticle article, Section<FlowchartType> sec, UserContext user, String web, String topic, StringBuilder builder) {
