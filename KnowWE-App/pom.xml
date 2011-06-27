@@ -464,6 +464,25 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		
+		<!-- CaseViz plugin -->
+		<profile>
+			<id>caseviz</id>
+			<activation>
+				<property>
+					<name>caseviz</name>
+				</property>
+			</activation>
+
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-d3web-CaseViz</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 
 		<!-- TestcaseTable plugin -->
 		<profile>
