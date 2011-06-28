@@ -156,8 +156,13 @@ public class FlowchartUtils {
 
 	}
 
-	// experimental hack
+	// extended experimental hack
 	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user) {
+		return createFlowchartRenderer(section, user, null);
+	}
+
+	// experimental hack
+	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String parentElement) {
 		String name = FlowchartType.getFlowchartName(section);
 		String source = section.getOriginalText();
 		int previewIndex = source.lastIndexOf("<preview");
@@ -173,6 +178,7 @@ public class FlowchartUtils {
 		if (user.getWeb() == null) return "";
 
 		String sourceID = name + "Source";
+		name = (parentElement != null) ? parentElement : name;
 		String initScript = "<script>" +
 				"KBInfo._updateCache($('referredKBInfo'));" +
 				"var flowchart = Flowchart.createFromXML('" + name + "', $('" + sourceID + "'));" +
