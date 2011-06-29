@@ -72,6 +72,8 @@
 
 <html>
 <head>
+<link rel="shortcut icon" type="image/x-icon" href="/KnowWE/images/favicon.ico" />
+<link rel="icon" type="image/x-icon" href="/KnowWE/images/favicon.ico" />
 <script>
 	var topic = "<%= topic %>";
 	var nodeID = "<%= kdomID %>";
