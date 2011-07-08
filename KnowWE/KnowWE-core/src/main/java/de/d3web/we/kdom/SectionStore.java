@@ -31,20 +31,70 @@ public class SectionStore {
 
 	private HashMap<String, HashMap<String, Object>> store = null;
 
+	/**
+	 * Has the same behavior as
+	 * {@link SectionStore#getObject(KnowWEArticle, String)} with <tt>null</tt>
+	 * as the {@link KnowWEArticle} argument. Use this if the Object was stored
+	 * the same way (<tt>null</tt> as the {@link KnowWEArticle} argument or the
+	 * method {@link SectionStore#storeObject(String, Object)}.
+	 * 
+	 * @created 08.07.2011
+	 * @param key is the key for which the object was stored
+	 * @return the previously stored Object for this key or <tt>null</tt>, if no
+	 *         Object was stored
+	 */
 	public Object getObject(String key) {
 		return getObject(null, key);
 	}
 
+	/**
+	 * @created 08.07.2011
+	 * @param article is the {@link KnowWEArticle} for which the Object was
+	 *        stored
+	 * @param key is the key, for which the Object was stored
+	 * @return the previously stored Object for the given key and article, or
+	 *         <tt>null</tt>, if no Object was stored
+	 */
 	public Object getObject(KnowWEArticle article, String key) {
 		HashMap<String, Object> storeForArticle = getStoreForArticle(article);
 		if (storeForArticle == null) return null;
 		return storeForArticle.get(key);
 	}
 
+	/**
+	 * Stores the given Object for the given key.<br/>
+	 * <b>Attention:</b> Be aware, that some times an Object should only be
+	 * stored in the context of a certain {@link KnowWEArticle}. Example: An
+	 * Object was created, because the Section was compiled for a certain
+	 * {@link KnowWEArticle}. If the Section however gets compiled again for
+	 * another {@link KnowWEArticle}, the Object would not be created or a
+	 * different {@link Object} would be created. In this case you have to use
+	 * the method
+	 * {@link SectionStore#storeObject(KnowWEArticle, String, Object)} to be
+	 * able to differentiate between the {@link KnowWEArticle}s.
+	 * 
+	 * @created 08.07.2011
+	 * @param key is the key for which the Object should be stored
+	 * @param object is the object to be stored
+	 */
 	public void storeObject(String key, Object object) {
 		storeObject(null, key, object);
 	}
 
+	/**
+	 * Stores the given Object for the given key and {@link KnowWEArticle}.
+	 * <b>Attention:</b> If the Object you want to store is independent from the
+	 * {@link KnowWEArticle} that will or has compiled this {@link SectionStore}
+	 * 's {@link Section}, you can either set the {@link KnowWEArticle} argument
+	 * to <tt>null</tt> or use the method
+	 * {@link SectionStore#storeObject(String, Object)} instead (same for
+	 * applies for retrieving the Object later via the getObject - methods).
+	 * 
+	 * @created 08.07.2011
+	 * @param article
+	 * @param key
+	 * @param object
+	 */
 	public void storeObject(KnowWEArticle article, String key, Object object) {
 		HashMap<String, Object> storeForArticle = getStoreForArticle(article);
 		if (storeForArticle == null) {
