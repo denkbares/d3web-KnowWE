@@ -69,7 +69,7 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 
 	@Override
 	public void destroy(KnowWEArticle article, Section<KnowWETerm<?>> s) {
-		Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, s,
+		Rule kbr = (Rule) s.getSectionStore().getObject(article,
 				indicationStoreKey);
 		if (kbr != null) kbr.remove();
 	}
@@ -105,10 +105,10 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 			// + " - no dashTreeFather found"));
 		}
 
-		Section<QuestionTreeAnswerDefinition> answerSec = 
-				 Sections.findSuccessor(dashTreeFather, QuestionTreeAnswerDefinition.class);
-		Section<NumericCondLine> numCondSec = 
-				 Sections.findSuccessor(dashTreeFather, NumericCondLine.class);
+		Section<QuestionTreeAnswerDefinition> answerSec =
+					Sections.findSuccessor(dashTreeFather, QuestionTreeAnswerDefinition.class);
+		Section<NumericCondLine> numCondSec =
+					Sections.findSuccessor(dashTreeFather, NumericCondLine.class);
 
 		if (answerSec != null || numCondSec != null) {
 

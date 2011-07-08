@@ -213,7 +213,7 @@ public class RuleContentType extends AbstractType {
 
 		@Override
 		public void destroy(KnowWEArticle article, Section<ConditionActionRuleContent> rule) {
-			Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, rule,
+			Rule kbr = (Rule) rule.getSectionStore().getObject(article,
 					ruleStoreKey);
 			if (kbr != null) {
 				kbr.remove();
@@ -237,8 +237,7 @@ public class RuleContentType extends AbstractType {
 
 			Session session = D3webUtils.getSession(article.getTitle(), user,
 					article.getWeb());
-			Rule rule = (Rule) KnowWEUtils.getStoredObject(sec.getWeb(), sec
-					.getTitle(), sec.getID(),
+			Rule rule = (Rule) KnowWEUtils.getStoredObject(sec.getArticle(), sec,
 					RuleContentType.ruleStoreKey);
 
 			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID() + "'>"));

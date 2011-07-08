@@ -75,13 +75,6 @@ public class AbstractXMLType extends AbstractType {
 
 	}
 
-	@SuppressWarnings("unchecked")
-	public static Map<String, String> getLastAttributeMapFor(Section<? extends AbstractXMLType> s) {
-		return (Map<String, String>) KnowWEUtils.getObjectFromLastVersion(null, s,
-				SectionFinderResult.ATTRIBUTE_MAP_STORE_KEY);
-
-	}
-
 	// public static Map<String, String> getAttributeMapFor(
 	// Section<? extends AbstractXMLObjectType> s) {
 	// return (Map<String, String>) KnowWEUtils.getStoredObject(s.getWeb(), s

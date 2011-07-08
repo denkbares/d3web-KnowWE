@@ -261,7 +261,7 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 
 					if (qDef != null) {
 						// remove init number value from registration in KB
-						QContainer questionnaire = qDef.get().getTermObjectFromLastVersion(article,
+						QContainer questionnaire = qDef.get().getTermObject(article,
 								qDef);
 						getKB(article).removeInitQuestion(
 								questionnaire);

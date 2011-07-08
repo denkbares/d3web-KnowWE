@@ -86,23 +86,11 @@ public abstract class TermDefinition<TermObject>
 		// in case the of duplicate definitions, get the one that has actually
 		// created the TermObject
 		TerminologyHandler tHandler = KnowWEUtils.getTerminologyHandler(s.getWeb());
-		Section<? extends TermDefinition<TermObject>> defSec = tHandler.getTermDefiningSection(article, s);
+		Section<? extends TermDefinition<TermObject>> defSec = tHandler.getTermDefiningSection(
+				article, s);
 		if (defSec != null) s = defSec;
 		if (!tHandler.isDefinedTerm(article, s)) return null;
 		return (TermObject) KnowWEUtils.getStoredObject(
-				s.get().getTermScope() == Scope.GLOBAL ? null : article, s, key);
-	}
-
-	/**
-	 * If a Section is not reused in the current KDOM, its stored object will
-	 * not be found in the current SectionStore (unlike the stored object of
-	 * reused Sections). It will however still reside in the last SectionStore,
-	 * so you can use this method to sill get it from there, e.g. to destroy it
-	 * in the method destroy in the SubtreeHandler.
-	 */
-	@SuppressWarnings("unchecked")
-	public TermObject getTermObjectFromLastVersion(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> s) {
-		return (TermObject) KnowWEUtils.getObjectFromLastVersion(
 				s.get().getTermScope() == Scope.GLOBAL ? null : article, s, key);
 	}
 
@@ -131,7 +119,7 @@ public abstract class TermDefinition<TermObject>
 			this.setIgnorePackageCompile(false);
 		}
 	}
-	
+
 	public MultiDefMode getMultiDefMode() {
 		return this.multiDefMode;
 	}
@@ -139,7 +127,7 @@ public abstract class TermDefinition<TermObject>
 	public void setMultiDefMode(MultiDefMode mode) {
 		this.multiDefMode = mode;
 	}
-	
+
 	@Override
 	public String getTermName(Section<? extends KnowWETerm<TermObject>> s) {
 		// As default the term name is identical with the identifier

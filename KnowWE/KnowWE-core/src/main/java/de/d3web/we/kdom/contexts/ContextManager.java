@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -48,8 +47,8 @@ public class ContextManager {
 	}
 
 	public void attachContextForClass(Section section, Context c) {
-		Object o = KnowWEUtils.getStoredObject(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(),
-				section.getID(), c.getClass().getName());
+		Object o = KnowWEUtils.getStoredObject(section.getArticle(), section,
+				c.getClass().getName());
 		if (o != null && (o instanceof Set)) {
 			Set<Context> contextSet = ((Set<Context>) o);
 			contextSet.add(c);
@@ -57,8 +56,8 @@ public class ContextManager {
 		else {
 			Set<Context> contextSet = new HashSet<Context>();
 			contextSet.add(c);
-			KnowWEUtils.storeObject(section.getWeb(), section.getTitle(),
-					section.getID(), c.getClass().getName(), contextSet);
+			KnowWEUtils.storeObject(section.getArticle(), section, c.getClass().getName(),
+					contextSet);
 
 		}
 
@@ -72,8 +71,7 @@ public class ContextManager {
 	 */
 	public void attachContext(Section<?> section, Context context) {
 
-		KnowWEUtils.storeObject(section.getWeb(), section.getTitle(),
-				section.getID(), context.getCID(), context);
+		KnowWEUtils.storeObject(section.getArticle(), section, context.getCID(), context);
 
 		// String title = section.getArticle().getTitle();
 		// ArticleContextMap art = contextmap.get(title);
@@ -158,8 +156,7 @@ public class ContextManager {
 	 * @return
 	 */
 	public Context getContext(Section<?> section, Section<?> originalSection, String contextid) {
-		Object o = KnowWEUtils.getStoredObject(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(),
-				section.getID(), contextid);
+		Object o = KnowWEUtils.getStoredObject(section.getArticle(), section, contextid);
 		if (o instanceof Context) {
 			if (((Context) o).isValidForSection(section)) {
 				return (Context) o;

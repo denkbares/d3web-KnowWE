@@ -299,7 +299,7 @@ public class CoveringList extends AbstractType {
 				Section<SolutionDefinition> soltuionDef = getCorrespondingSolutionDef(article, s);
 
 				if (soltuionDef == null) return;
-				Solution solution = soltuionDef.get().getTermObjectFromLastVersion(article,
+				Solution solution = soltuionDef.get().getTermObject(article,
 						soltuionDef);
 
 				if (solution == null) return;
@@ -307,7 +307,7 @@ public class CoveringList extends AbstractType {
 						XCLModel.KNOWLEDGE_KIND);
 
 				if (xclModel == null) return;
-				XCLRelation rel = (XCLRelation) KnowWEUtils.getObjectFromLastVersion(article, s,
+				XCLRelation rel = (XCLRelation) s.getSectionStore().getObject(article,
 						relationStoreKey);
 
 				if (rel == null) return;
@@ -366,8 +366,7 @@ public class CoveringList extends AbstractType {
 			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID()
 					+ "' class = 'XCLRelationInList'>"));
 
-			XCLRelation relation = (XCLRelation) KnowWEUtils.getStoredObject(sec
-					.getArticle().getWeb(), sec.getTitle(), sec.getID(),
+			XCLRelation relation = (XCLRelation) KnowWEUtils.getStoredObject(sec.getArticle(), sec,
 					KBID_KEY);
 
 			if (relation == null) {

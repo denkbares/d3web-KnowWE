@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -42,15 +42,16 @@ import de.d3web.we.event.EventManager;
 import de.d3web.we.event.UpdatingDependenciesEvent;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.SectionID;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 import dummies.KnowWETestWikiConnector;
 
 /**
  * @author Jochen
- *
+ * 
  *         Manages all the articles of one web in a HashMap
- *
+ * 
  */
 public class KnowWEArticleManager {
 
@@ -117,7 +118,7 @@ public class KnowWEArticleManager {
 
 	/**
 	 * Servs the KnowWEArticle for a given article name
-	 *
+	 * 
 	 * @param title
 	 * @return
 	 */
@@ -142,7 +143,7 @@ public class KnowWEArticleManager {
 	 * collects the originalTexts deep through the KDOM and appends the new text
 	 * (instead of the originalText) for the nodes with an ID in the nodesMap.
 	 * Finally the article is saved with this new content.
-	 *
+	 * 
 	 * @param context
 	 * @param title
 	 * @param nodesMap containing pairs of the nodeID and the new text for this
@@ -203,7 +204,7 @@ public class KnowWEArticleManager {
 
 	/**
 	 * Looks in KDOM of given article for the Section object with given nodeID
-	 *
+	 * 
 	 * @param title
 	 * @param nodeID
 	 * @return null if article or node not found
@@ -220,18 +221,12 @@ public class KnowWEArticleManager {
 	/**
 	 * Looks in KDOM for the Section object with given nodeID The article name
 	 * is not needed because it is part of the nodeID
-	 *
+	 * 
 	 * @param nodeID
 	 * @return null if article or node not found
 	 */
 	public Section<?> findNode(String nodeID) {
-		String articleName;
-		if (nodeID.contains("/")) {
-			articleName = nodeID.substring(0, nodeID.indexOf("/"));
-		}
-		else {
-			articleName = nodeID;
-		}
+		String articleName = SectionID.getArticleNameFromID(nodeID);
 		return findNode(articleName, nodeID);
 	}
 
@@ -255,7 +250,7 @@ public class KnowWEArticleManager {
 	/**
 	 * Registers an changed article in the manager and also updates depending
 	 * articles.
-	 *
+	 * 
 	 * @created 14.12.2010
 	 * @param article is the changed article to register
 	 */
@@ -266,7 +261,7 @@ public class KnowWEArticleManager {
 	/**
 	 * Registers an changed article in the manager and also updates depending
 	 * articles.
-	 *
+	 * 
 	 * @created 14.12.2010
 	 * @param article is the changed article to register
 	 * @param updateDependencies determines whether to update dependencies with
@@ -306,7 +301,7 @@ public class KnowWEArticleManager {
 	}
 
 	public void updateQueuedArticles() {
-		
+
 		List<String> localQueue = new ArrayList<String>();
 		while (!currentRefreshQueue.isEmpty()) {
 			String title = currentRefreshQueue.pollFirst();
@@ -319,7 +314,7 @@ public class KnowWEArticleManager {
 				globalRefreshQueue.add(title);
 			}
 		}
-		
+
 		for (String title : localQueue) {
 			if (!updatingArticles.contains(title)) {
 				KnowWEArticle newArt = KnowWEArticle.createArticle(
@@ -342,7 +337,7 @@ public class KnowWEArticleManager {
 	/**
 	 * Deletes the given article from the article map and invalidates all
 	 * knowledge content that was in the article.
-	 *
+	 * 
 	 * @param article The article to delete
 	 */
 	public void deleteArticle(KnowWEArticle article) {

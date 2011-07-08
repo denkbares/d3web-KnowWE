@@ -97,8 +97,7 @@ public class QuestionSetValueLine extends AbstractType {
 
 		@Override
 		public void destroy(KnowWEArticle article, Section<QuestionReference> s) {
-			Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, s,
-					SETVALUE_ARGUMENT);
+			Rule kbr = (Rule) s.getSectionStore().getObject(article, SETVALUE_ARGUMENT);
 			if (kbr != null) kbr.remove();
 		}
 
@@ -187,6 +186,7 @@ public class QuestionSetValueLine extends AbstractType {
 
 			AnswerReferenceInsideBracket answerReferenceInsideBracket = new AnswerReferenceInsideBracket();
 			answerReferenceInsideBracket.setSectionFinder(new SectionFinder() {
+
 				@Override
 				public List<SectionFinderResult> lookForSections(String text,
 						Section<?> father, Type type) {

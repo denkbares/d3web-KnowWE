@@ -148,7 +148,7 @@ public class QuestionSetValueNumLine extends AbstractType {
 
 		@Override
 		public void destroy(KnowWEArticle article, Section<QuestionReference> s) {
-			Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, s,
+			Rule kbr = (Rule) s.getSectionStore().getObject(article,
 					SETVALUE_ARGUMENT);
 			if (kbr != null) kbr.remove();
 		}

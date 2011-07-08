@@ -37,7 +37,6 @@ import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
-import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.subtreeHandler.IncrementalConstraint;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.tools.ToolMenuDecoratingRenderer;
@@ -146,17 +145,10 @@ public abstract class SolutionDefinition
 
 				Solution solution = new Solution(kb.getRootSolution(), name);
 
-				if (solution != null) {
-					s.get().storeTermObject(article, s, solution);
-					return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
-							solution.getClass().getSimpleName()
-									+ " " + solution.getName()));
-				}
-				else {
-					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
-							name,
-							this.getClass()));
-				}
+				s.get().storeTermObject(article, s, solution);
+				return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
+						solution.getClass().getSimpleName()
+								+ " " + solution.getName()));
 
 			}
 
@@ -164,7 +156,7 @@ public abstract class SolutionDefinition
 
 		@Override
 		public void destroy(KnowWEArticle article, Section<SolutionDefinition> solution) {
-			Solution kbsol = solution.get().getTermObjectFromLastVersion(article, solution);
+			Solution kbsol = solution.get().getTermObject(article, solution);
 			if (kbsol != null) {
 				D3webUtils.removeRecursively(kbsol);
 				KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(

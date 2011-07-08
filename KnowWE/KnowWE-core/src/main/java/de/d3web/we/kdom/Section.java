@@ -80,6 +80,12 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	protected boolean isExpanded = false;
 
 	/**
+	 * Store for this Section. Can be used to store infos or Objects for this
+	 * Section.
+	 */
+	private final SectionStore sectionStore = new SectionStore();
+
+	/**
 	 * Specifies whether the orignialText was changed without changing the
 	 * ancestor ones
 	 */
@@ -314,12 +320,25 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	}
 
 	/**
+	 * @created 08.07.2011
+	 * @return the {@link SectionStore} for this {@link Section};
+	 */
+	public SectionStore getSectionStore() {
+		return sectionStore;
+	}
+
+	/**
+	 * Please used getText() instead.
+	 * 
 	 * @return the text of this Section/Node
 	 */
 	public String getOriginalText() {
 		return text;
 	}
 
+	/**
+	 * @return the text of this Section/Node
+	 */
 	public String getText() {
 		return text;
 	}
@@ -335,7 +354,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	 * 
 	 * @param text
 	 */
-	public void setOriginalText(String newText) {
+	public void setText(String newText) {
 		this.text = newText;
 		this.isDirty = true;
 		// setting the isDirty flag to true for all ancestor sections
@@ -378,7 +397,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	 */
 	public void setOriginalTextSetLeaf(String nodeID, String replacingText) {
 		if (this.getID().equals(nodeID)) {
-			this.setOriginalText(replacingText);
+			this.setText(replacingText);
 			this.removeAllChildren();
 			return;
 		}

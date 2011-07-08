@@ -116,7 +116,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 		public void destroy(KnowWEArticle article,
 				Section<QuestionnaireDefinition> s) {
 
-			QContainer q = s.get().getTermObjectFromLastVersion(article, s);
+			QContainer q = s.get().getTermObject(article, s);
 			if (q != null) {
 				D3webUtils.removeRecursively(q);
 				KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(

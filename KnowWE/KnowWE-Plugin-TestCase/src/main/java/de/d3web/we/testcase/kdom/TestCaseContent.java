@@ -124,7 +124,7 @@ public class TestCaseContent extends StringReference {
 					testSuite.setRepository(repository);
 
 					// Store the test suite
-					KnowWEUtils.storeObject(s.getArticle().getWeb(), s.getTitle(), s.getID(),
+					KnowWEUtils.storeObject(article, s,
 							TestCaseType.TESTCASEKEY, testSuite);
 					messages.add(new ObjectCreatedMessage(
 							"Test Suite successfully created with "
@@ -182,7 +182,8 @@ public class TestCaseContent extends StringReference {
 			for (Section<Finding> findingSection : findingSections) {
 
 				// Get the QuestionReference section
-				Section<QuestionReference> questionSection =  Sections.findSuccessor(findingSection, QuestionReference.class);
+				Section<QuestionReference> questionSection = Sections.findSuccessor(findingSection,
+						QuestionReference.class);
 
 				// Get the real Question
 				if (questionSection != null) {

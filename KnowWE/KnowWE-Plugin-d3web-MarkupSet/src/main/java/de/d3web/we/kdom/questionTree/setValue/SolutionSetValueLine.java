@@ -155,7 +155,7 @@ public class SolutionSetValueLine extends AbstractType {
 
 		@Override
 		public void destroy(KnowWEArticle article, Section<SolutionReference> s) {
-			Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, s,
+			Rule kbr = (Rule) s.getSectionStore().getObject(article,
 					SETVALUE_ARGUMENT);
 			if (kbr != null) kbr.remove();
 		}

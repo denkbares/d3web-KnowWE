@@ -168,7 +168,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 		public void destroy(KnowWEArticle article,
 				Section<QuestionDefinition> s) {
 
-			Question q = s.get().getTermObjectFromLastVersion(article, s);
+			Question q = s.get().getTermObject(article, s);
 
 			if (q != null) {
 				D3webUtils.removeRecursively(q);

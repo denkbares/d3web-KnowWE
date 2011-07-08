@@ -131,10 +131,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		KnowledgeBase kb = getKB(article);
 
 		Map<String, String> attributeMap =
-				AbstractXMLType.getLastAttributeMapFor(s);
-		if (attributeMap == null) {
-			attributeMap = AbstractXMLType.getAttributeMapFor(s);
-		}
+				AbstractXMLType.getAttributeMapFor(s);
 		if (attributeMap != null) {
 			String name = attributeMap.get("name");
 			TerminologyObject oldFlow = kb.getManager().search(name);

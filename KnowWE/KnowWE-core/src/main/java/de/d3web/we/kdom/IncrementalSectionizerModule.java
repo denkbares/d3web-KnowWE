@@ -24,9 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.kdom.store.SectionStore;
 
 public class IncrementalSectionizerModule implements SectionizerModule {
 
@@ -107,12 +105,6 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 					// (Section<Include>) node);
 					// }
 
-					SectionStore lastStore = KnowWEEnvironment.getInstance().getKnowWEStoreManager(
-							father.getWeb()).getLastSectionStore(father.getTitle(),
-							node.getID());
-					SectionStore lastArtIndStore = KnowWEEnvironment.getInstance().getKnowWEStoreManager(
-							father.getWeb()).getLastArticleIndependentSectionStore(node.getID());
-
 					// don't do the following if the node is
 					// included
 					if (node.getTitle().equals(father.getTitle())) {
@@ -125,19 +117,6 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 						node.setID(null);
 					}
 
-					if (lastStore != null) {
-						// reuse last section store
-						KnowWEEnvironment.getInstance().getKnowWEStoreManager(
-								father.getWeb()).putSectionStore(
-										father.getTitle(), node.getID(),
-								lastStore);
-					}
-					if (lastArtIndStore != null) {
-						// reuse last article independent section store
-						KnowWEEnvironment.getInstance().getKnowWEStoreManager(
-								father.getWeb()).putArticleIndependentSectionStore(node.getID(),
-										lastArtIndStore);
-					}
 				}
 			}
 

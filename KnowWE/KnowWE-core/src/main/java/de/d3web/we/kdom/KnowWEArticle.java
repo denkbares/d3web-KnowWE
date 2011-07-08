@@ -40,14 +40,13 @@ import de.d3web.we.event.PreCompileFinishedEvent;
 import de.d3web.we.kdom.ReviseIterator.SectionPriorityTuple;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
-import de.d3web.we.kdom.store.SectionStore;
 
 /**
  * @author Jochen
  * 
  *         This class is the representation of one wiki article in KnowWE. It is
- *         a Type that always forms the root node and only the root
- *         node of each KDOM document-parse-tree.
+ *         a Type that always forms the root node and only the root node of each
+ *         KDOM document-parse-tree.
  * 
  * 
  * 
@@ -139,7 +138,6 @@ public class KnowWEArticle extends AbstractType {
 
 		// clear store before rebuilding
 		ContextManager.getInstance().detachContexts(title);
-		KnowWEEnvironment.getInstance().getKnowWEStoreManager(web).clearStoreForArticle(title);
 
 		startTime = build(text, startTime);
 
@@ -256,18 +254,7 @@ public class KnowWEArticle extends AbstractType {
 			lastVersion.reviseIterator.setIteratorStop(p);
 			while (lastVersion.reviseIterator.hasNext()) {
 				SectionPriorityTuple tuple = lastVersion.reviseIterator.next();
-				Section<?> s = tuple.getSection();
-				if (!s.getTitle().equals(title) && s.isReusedBy(title)) {
-					// get last section store, if this is a section from a
-					// different article but is reused by this article
-					SectionStore lastStore = KnowWEEnvironment.getInstance().getKnowWEStoreManager(
-							web).getLastSectionStore(title, s.getID());
-					if (lastStore != null) {
-						KnowWEEnvironment.getInstance().getKnowWEStoreManager(
-								web).putSectionStore(title, s.getID(), lastStore);
-					}
-				}
-				s.letSubtreeHandlersDestroy(this, tuple.getPriority());
+				tuple.getSection().letSubtreeHandlersDestroy(this, tuple.getPriority());
 			}
 
 		}
@@ -281,7 +268,6 @@ public class KnowWEArticle extends AbstractType {
 			tuple.getSection().letSubtreeHandlersCreate(this, tuple.getPriority());
 		}
 	}
-
 
 	/**
 	 * Returns Section with given id if exists in KDOM of this article, else
@@ -508,7 +494,7 @@ public class KnowWEArticle extends AbstractType {
 
 		this.fullParse = true;
 	}
-	
+
 	public Set<String> getClassesCausingFullParse() {
 		return this.classesCausingFullParse;
 	}

@@ -67,7 +67,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		// this.setCustomRenderer(new DashboardRenderer());
 		this.setCustomRenderer(new CIDashboardRenderer());
 	}
-	
+
 	private boolean readIgnoreFlag() {
 		ResourceBundle resourceBundle = ResourceBundle.getBundle("KnowWE_config");
 		String ignoreFlag = "packaging.ignorePackages";
@@ -84,7 +84,7 @@ public class CIDashboardType extends DefaultMarkupType {
 	}
 
 	private class DashboardSubtreeHandler extends SubtreeHandler<CIDashboardType> {
-		
+
 		public DashboardSubtreeHandler(boolean ignorePackageCompile) {
 			super(ignorePackageCompile);
 		}
@@ -177,22 +177,21 @@ public class CIDashboardType extends DefaultMarkupType {
 				CIHook ciHook = new CIHook(article.getTitle(), dashboardName, monitoredArticles);
 				CIHookManager.getInstance().registerHook(ciHook);
 				// Store to be able to unregister in destroy method
-				KnowWEUtils.storeObject(s.getArticle().getWeb(), s.getTitle(), s.getID(),
+				KnowWEUtils.storeObject(article, s,
 						CIHook.CIHOOK_STORE_KEY, ciHook);
 			}
 
 			// Alright, everything seems to be ok. Let's store the CIConfig in
 			// the store
 
-			KnowWEUtils.storeObject(s.getArticle().getWeb(), s.getTitle(), s.getID(),
-					CIConfig.CICONFIG_STORE_KEY, config);
+			KnowWEUtils.storeObject(article, s, CIConfig.CICONFIG_STORE_KEY, config);
 
 			return new ArrayList<KDOMReportMessage>(0);
 		}
 
 		@Override
 		public void destroy(KnowWEArticle article, Section<CIDashboardType> s) {
-			CIHook ciHook = (CIHook) KnowWEUtils.getObjectFromLastVersion(article, s,
+			CIHook ciHook = (CIHook) s.getSectionStore().getObject(article,
 					CIHook.CIHOOK_STORE_KEY);
 			if (ciHook != null) {
 				CIHookManager.getInstance().unregisterHook(ciHook);

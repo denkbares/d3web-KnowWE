@@ -131,7 +131,7 @@ public class GlobalReplaceAction extends AbstractAction {
 			// den Rest nach dem letzten match hintendranhaengen
 			buff.append(sec.getOriginalText().substring(lastEnd, sec.getOriginalText().length()));
 			// section text overridden => KDOM dirty
-			sec.setOriginalText(buff.toString());
+			sec.setText(buff.toString());
 			sec.removeAllChildren();
 		}
 
