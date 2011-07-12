@@ -271,22 +271,33 @@ KNOWWE.core.util = function(){
         },
         /**
          * Function: replace
-         * Used to replace elements in the DOM tree. All elements given in the ids
-         * array are replaced with the value of the second parameter. If one
-         * element is not found, nothing happens.
+         * Used to replace elements in the DOM tree. The parameter 'elements'
+         * contains the HTML of the element one wants to replace. Multiple 
+         * elements can easily replaced since the function not only replaces the 
+         * root element in the elements HTML string but every element found on 
+         * the top level. For example:
+         * 
+         * <ul>
+         * <li><div id='replaceMe'>lorem ipsum</div> replaces an element in the DOM
+         * with id equal 'replaceMe'</li>
+         * <li><div id='replaceMe'>lorem ipsum</div><div id='replaceMe2'>lorem 
+         * ipsum</div>: replaces both elements in the DOM if found</li>
+         * </ul>
+         * 
+         * The value for 'elements' often is a result from an AJAX query. So make 
+         * sure to validate the response properly before handling it here.
          * 
          * Parameters:
-         *     ids - The ids of the elements that should be replaced.
-         *     value - The value used for replacement.
+         *     elements - The elements used for replacement.
          */
-        replace : function(ids, value){
+        replace : function(elements){
         	
-            for( var i = 0; i < ids.length; i++){
-                if( typeof ids[i] != 'string' ) continue;
+            //for( var i = 0; i < ids.length; i++){
+            //    if( typeof ids[i] != 'string' ) continue;
                 
-                  var oldDOM = document.getElementById( ids[i] );
+                  //var oldDOM = document.getElementById( ids[i] );
                   var newDOMwrapper = document.createElement("div");
-                  newDOMwrapper.innerHTML = value;
+                  newDOMwrapper.innerHTML = elements;
                   
                   var domChildNodes = newDOMwrapper.children;
                   
@@ -295,9 +306,9 @@ KNOWWE.core.util = function(){
                       oldDOM = document.getElementById(newDOM.id);
                       if(oldDOM) {
                           oldDOM.parentNode.replaceChild( newDOM, oldDOM );
-                  	  }
+                      }
                   }
-            }
+            //}
         }
     }
 }();

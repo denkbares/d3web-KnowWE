@@ -515,7 +515,7 @@ KNOWWE.helper.ajax = function ( options ) {
 	                    KNOWWE.core.util.replaceElement( ids, http.responseText);
 	                    break;                    
 	                case 'replace':
-	                    KNOWWE.core.util.replace( ids, http.responseText);
+	                    KNOWWE.core.util.replace(http.responseText);
 	                    break;                    
 	                case 'string':
 	                    if( http.responseText.startsWith('@info@')){
