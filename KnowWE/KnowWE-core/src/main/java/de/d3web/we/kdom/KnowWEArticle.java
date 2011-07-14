@@ -26,12 +26,12 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.core.KnowWEEnvironment.CompilationMode;
 import de.d3web.we.event.ArticleCreatedEvent;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.FullParseEvent;
@@ -132,8 +132,7 @@ public class KnowWEArticle extends AbstractType {
 
 		boolean defFullParse = fullParse
 				|| lastVersion == null
-				|| ResourceBundle.getBundle("KnowWE_config").getString("incremental.fullparse")
-						.contains("true");
+				|| KnowWEEnvironment.getInstance().getCompilationMode() == CompilationMode.DEFAULT;
 		this.fullParse = defFullParse;
 
 		// clear store before rebuilding

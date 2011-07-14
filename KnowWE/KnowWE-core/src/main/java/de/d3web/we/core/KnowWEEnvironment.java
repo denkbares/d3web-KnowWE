@@ -204,6 +204,20 @@ public class KnowWEEnvironment {
 
 	public static final boolean GLOBAL_TYPES_ENABLED = true;
 
+	public enum CompilationMode {
+		INCREMENTAL, DEFAULT
+	}
+
+	private CompilationMode currentCompilationMode = CompilationMode.DEFAULT;
+
+	public void setCompilationMode(CompilationMode mode) {
+		currentCompilationMode = mode;
+	}
+
+	public CompilationMode getCompilationMode() {
+		return currentCompilationMode;
+	}
+
 	/**
 	 * Singleton instance
 	 */
@@ -344,15 +358,19 @@ public class KnowWEEnvironment {
 
 			System.out.println("INITIALISING KNOWWE ENVIRONMENT...");
 			ResourceBundle bundle = ResourceBundle.getBundle("KnowWE_config");
-			if (bundle != null && !(wiki instanceof KnowWETestWikiConnector)) {
-				// convert the $web_app$-variable from the resourcebundle
-				// defaultJarsPath = KnowWEUtils.getRealPath(context, bundle
-				// .getString("path_to_jars"));
+			if (bundle != null) {
+				if (!(wiki instanceof KnowWETestWikiConnector)) {
+					// convert the $web_app$-variable from the resourcebundle
+					// defaultJarsPath = KnowWEUtils.getRealPath(context, bundle
+					// .getString("path_to_jars"));
 
-				knowweExtensionPath = KnowWEUtils.getRealPath(wikiConnector
-						.getServletContext(), bundle
-						.getString("path_to_knowweextension"));
-
+					knowweExtensionPath = KnowWEUtils.getRealPath(wikiConnector
+							.getServletContext(), bundle
+							.getString("path_to_knowweextension"));
+				}
+				if (bundle.getString("compilation.mode").contains("incremental")) {
+					this.setCompilationMode(CompilationMode.INCREMENTAL);
+				}
 			}
 			if (wiki instanceof KnowWETestWikiConnector) {
 				KnowWETestWikiConnector connector = (KnowWETestWikiConnector) wiki;
