@@ -34,6 +34,7 @@ import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalExcept
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.Type;
@@ -196,7 +197,7 @@ public class QuestionLine extends AbstractType {
 			this.setCustomRenderer(StyleRenderer.NUMBER);
 			this.setSectionFinder(new EmbracedContentFinder(BOUNDS_OPEN, BOUNDS_CLOSE));
 
-			this.addSubtreeHandler(new D3webSubtreeHandler<NumBounds>() {
+			this.addSubtreeHandler(Priority.HIGH, new D3webSubtreeHandler<NumBounds>() {
 
 				/**
 				 * creates the bound-property for a bound-definition
@@ -351,7 +352,7 @@ public class QuestionLine extends AbstractType {
 
 			this.setSectionFinder(new EmbracedContentFinder(UNIT_OPEN, UNIT_CLOSE));
 
-			this.addSubtreeHandler(new D3webSubtreeHandler<NumUnit>() {
+			this.addSubtreeHandler(Priority.HIGH, new D3webSubtreeHandler<NumUnit>() {
 
 				/**
 				 * creates the unit-property for a unit-definition
@@ -418,7 +419,7 @@ public class QuestionLine extends AbstractType {
 					"<abstract>", "<abstrakt>" });
 			this.setCustomRenderer(StyleRenderer.KEYWORDS);
 
-			this.addSubtreeHandler(new D3webSubtreeHandler<AbstractFlag>() {
+			this.addSubtreeHandler(Priority.HIGH, new D3webSubtreeHandler<AbstractFlag>() {
 
 				@Override
 				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AbstractFlag> s) {
@@ -475,7 +476,7 @@ public class QuestionLine extends AbstractType {
 					QTEXT_START_SYMBOL));
 
 			this.setCustomRenderer(StyleRenderer.PROMPT);
-			this.addSubtreeHandler(new D3webSubtreeHandler<QuestionText>() {
+			this.addSubtreeHandler(Priority.HIGH, new D3webSubtreeHandler<QuestionText>() {
 
 				@Override
 				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionText> sec) {
