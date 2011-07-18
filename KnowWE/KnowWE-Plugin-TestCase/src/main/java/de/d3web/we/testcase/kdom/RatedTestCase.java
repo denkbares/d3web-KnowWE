@@ -26,6 +26,8 @@ import java.util.List;
 import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Type;
+import de.d3web.we.kdom.basic.SquareBracedType;
+import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.SplitUtility;
@@ -33,6 +35,12 @@ import de.d3web.we.utils.SplitUtility;
 public class RatedTestCase extends AbstractType {
 
 	public RatedTestCase() {
+		// for timestamps like [5h31m5s]
+		SquareBracedType bracedType = new SquareBracedType(new TimeStampType());
+		bracedType.setSteal(true);
+		bracedType.setCustomRenderer(StyleRenderer.NUMBER);
+
+		childrenTypes.add(bracedType);
 		childrenTypes.add(new Findings());
 		childrenTypes.add(new RatedSolutions());
 		this.sectionFinder = new RatedTestCaseSectionFinder();

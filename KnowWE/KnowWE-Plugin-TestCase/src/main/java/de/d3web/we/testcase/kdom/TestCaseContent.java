@@ -22,6 +22,7 @@ package de.d3web.we.testcase.kdom;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -165,10 +166,31 @@ public class TestCaseContent extends StringReference {
 
 				int rtcIndex = rtcSections.indexOf(rtcSection);
 				de.d3web.empiricaltesting.RatedTestCase rtc = new de.d3web.empiricaltesting.RatedTestCase();
+				setTimeStamp(rtcSection, rtc);
 				createFindings(rtcSection, stcIndex, rtcIndex, rtc, kb, messages);
 				createRatedSolutions(rtcSection, stcIndex, rtcIndex, rtc, kb, messages);
 				stc.add(rtc);
 			}
+
+		}
+
+		/**
+		 * Sets the time of the RTC if a timestamp is supplied in the section.
+		 * 
+		 * @created 18.07.2011
+		 * @param rtcSection
+		 * @param rtc
+		 */
+		private void setTimeStamp(Section<RatedTestCase> rtcSection, de.d3web.empiricaltesting.RatedTestCase rtc) {
+
+			Section<TimeStampType> timestamp = Sections.findSuccessor(rtcSection,
+					TimeStampType.class);
+
+			if (timestamp == null) return;
+
+			long timeInMillis = TimeStampType.getTimeInMillis(timestamp);
+
+			rtc.setTimeStamp(new Date(timeInMillis));
 
 		}
 
