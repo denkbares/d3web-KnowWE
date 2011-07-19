@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="KnowWEExtensionPoints" version="0.0.1">
-<!-- This plugin only defines extension points for KnowWE. -->
-	
+	<!-- This plugin only defines extension points for KnowWE. -->
+
 	<extension-point id="Instantiation">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
@@ -10,7 +10,7 @@
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
 	</extension-point>
-	
+
 	<extension-point id="Action">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
@@ -18,7 +18,7 @@
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
 	</extension-point>
-	
+
 	<extension-point id="KnowledgeRepresentationHandler">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
@@ -26,7 +26,7 @@
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
 	</extension-point>
-	
+
 	<extension-point id="Type">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
@@ -34,10 +34,10 @@
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
 		<parameter-def id="scope" />
-		<parameter-def id="script" multiplicity="any"/>
-		<parameter-def id="css" multiplicity="any"/>
+		<parameter-def id="script" multiplicity="any" />
+		<parameter-def id="css" multiplicity="any" />
 	</extension-point>
-	
+
 	<extension-point id="ToolProvider">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
@@ -45,30 +45,30 @@
 		<parameter-def id="version" />
 		<parameter-def id="scope" multiplicity="one-or-more" />
 		<parameter-def id="priority" type="number" />
-		<parameter-def id="script" multiplicity="any"/>
-		<parameter-def id="css" multiplicity="any"/>
+		<parameter-def id="script" multiplicity="any" />
+		<parameter-def id="css" multiplicity="any" />
 	</extension-point>
-	
+
 	<extension-point id="TagHandler">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
 		<parameter-def id="description" />
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
-		<parameter-def id="script" multiplicity="any"/>
-		<parameter-def id="css" multiplicity="any"/>
+		<parameter-def id="script" multiplicity="any" />
+		<parameter-def id="css" multiplicity="any" />
 	</extension-point>
-	
+
 	<extension-point id="PageAppendHandler">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
 		<parameter-def id="description" />
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
-		<parameter-def id="script" multiplicity="any"/>
-		<parameter-def id="css" multiplicity="any"/>
+		<parameter-def id="script" multiplicity="any" />
+		<parameter-def id="css" multiplicity="any" />
 	</extension-point>
-	
+
 	<extension-point id="SemanticCoreImpl">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
@@ -76,7 +76,7 @@
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
 	</extension-point>
-	
+
 	<extension-point id="EventListener">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
@@ -84,7 +84,7 @@
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
 	</extension-point>
-	
+
 	<extension-point id="SectionizerModule">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
@@ -92,7 +92,7 @@
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
 	</extension-point>
-	
+
 	<extension-point id="SearchProvider">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
@@ -100,7 +100,7 @@
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
 	</extension-point>
-	
+
 	<extension-point id="CITest">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
@@ -108,15 +108,15 @@
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
 	</extension-point>
-	
+
 	<extension-point id="DefaultMarkupSubtreeHandler">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
 		<parameter-def id="description" />
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
-	</extension-point>	
-	
+	</extension-point>
+
 	<extension-point id="CorrectionProvider">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
@@ -124,6 +124,15 @@
 		<parameter-def id="version" />
 		<parameter-def id="scope" multiplicity="one-or-more" />
 		<parameter-def id="priority" type="number" />
-	</extension-point>	
-	
+	</extension-point>
+
+	<extension-point id="WikibookRenderer">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
+
 </plugin>
