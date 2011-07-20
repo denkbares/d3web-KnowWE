@@ -63,16 +63,19 @@ public class Sectionizer implements Parser {
 	}
 
 	public static void setDefaultSectionizerModule(SectionizerModule defSectionizerModule) {
-		if (defSectionizerModule != null) defaultSectionizerModule = defSectionizerModule;
+		if (defSectionizerModule != null) {
+			defaultSectionizerModule = defSectionizerModule;
+		}
 	}
 
 	@Override
 	public Section<?> parse(String text, Section<? extends Type> father) {
 		Section<?> section = Section.createSection(text, type, father);
-		
+
 		// small hack, should be removed soon...
 		if (parameterMap != null) {
-			KnowWEUtils.storeObject(null, section, SectionFinderResult.ATTRIBUTE_MAP_STORE_KEY,
+			KnowWEUtils.storeObject(null, section,
+					SectionFinderResult.ATTRIBUTE_MAP_STORE_KEY,
 					parameterMap);
 		}
 
@@ -88,11 +91,11 @@ public class Sectionizer implements Parser {
 				&& type.allowesGlobalTypes()) {
 			types.addAll(KnowWEEnvironment.getInstance().getGlobalTypes());
 		}
-		
+
 		if (!types.isEmpty()) {
 			splitToSections(section.getText(), section, types, 0);
 		}
-		
+
 		return section;
 	}
 
@@ -100,7 +103,9 @@ public class Sectionizer implements Parser {
 
 		if (posInTypes > types.size()) return;
 
-		Type type = posInTypes == types.size() ? PlainText.getInstance() : types.get(posInTypes);
+		Type type = posInTypes == types.size()
+				? PlainText.getInstance()
+				: types.get(posInTypes);
 
 		posInTypes++;
 
@@ -121,10 +126,13 @@ public class Sectionizer implements Parser {
 					continue;
 				}
 
-				if (r.getStart() < lastEnd || r.getStart() > r.getEnd()) {
-					Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
+				if (r.getStart() < lastEnd || r.getStart() > r.getEnd()
+						|| r.getStart() < 0 || r.getEnd() > text.length()) {
+					Logger.getLogger(this.getClass().getName()).log(
+							Level.WARNING,
 							"Invalid SectionFinderResults for the Type '"
-									+ type.getName() + "'. Results: " + results + ". Result " + r
+									+ type.getName() + "'. Results: " + results
+									+ ". Result " + r
 									+ " will be skipped.");
 					continue;
 				}
