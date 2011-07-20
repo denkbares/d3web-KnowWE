@@ -58,11 +58,12 @@ public class ConditionActionRuleContent extends AbstractType implements Incremen
 		endLineComment.setCustomRenderer(StyleRenderer.COMMENT);
 		this.addChildType(endLineComment);
 
+		ActionArea ae = new ActionArea(action);
 		ConstraintSectionFinder constraintFinderAction = new ConstraintSectionFinder(
 				new AllTextFinderTrimmed());
 		constraintFinderAction.addConstraint(SingleChildConstraint.getInstance());
-		action.setSectionFinder(constraintFinderAction);
-		this.addChildType(action);
+		ae.setSectionFinder(constraintFinderAction);
+		this.addChildType(ae);
 
 		ConstraintSectionFinder constraintFinderExCond = new ConstraintSectionFinder(
 				new AllTextFinderTrimmed());
