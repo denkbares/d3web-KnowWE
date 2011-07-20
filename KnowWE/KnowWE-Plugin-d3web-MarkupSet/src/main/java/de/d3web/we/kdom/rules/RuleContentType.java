@@ -91,8 +91,13 @@ public class RuleContentType extends AbstractType {
 
 		// configure the rule
 		ConditionActionRule rule = new ConditionActionRule();
+		RuleAction ruleAction = new RuleAction();
 		ConditionActionRuleContent ruleContent = new ConditionActionRuleContent(
-				new RuleAction());
+				ruleAction);
+
+		// add handler to create the rules in the d3web knowledge base
+		ruleAction.addSubtreeHandler(new RuleCompiler());
+
 		ruleContent.setCustomRenderer(new ReRenderSectionMarkerRenderer(
 				new RuleHighlightingRenderer()));
 		List<Type> termConds = new ArrayList<Type>();
@@ -126,9 +131,6 @@ public class RuleContentType extends AbstractType {
 		termConds.add(new NumericalFinding());
 		termConds.add(new NumericalIntervallFinding());
 		ruleContent.setTerminalConditions(termConds);
-
-		// add handler to create the rules in the d3web knowledge base
-		ruleContent.addSubtreeHandler(new RuleCompiler());
 
 		// register the configured rule-content-type as child
 		rule.addChildType(ruleContent);
