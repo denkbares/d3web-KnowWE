@@ -31,6 +31,7 @@ import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.SplitUtility;
+import de.d3web.we.utils.StringFragment;
 
 public class RatedTestCase extends AbstractType {
 
@@ -52,11 +53,12 @@ public class RatedTestCase extends AbstractType {
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			List<String> cases = SplitUtility.splitUnquoted(text, ";");
-			for (String string : cases) {
-				int indexOf = text.indexOf(string);
+			List<StringFragment> cases = SplitUtility.splitUnquoted(text, ";");
+			for (StringFragment string : cases) {
+				int indexOf = string.getStartTrimmed();
 				SectionFinderResult s =
-						new SectionFinderResult(indexOf, indexOf + string.length() + 1);
+						new SectionFinderResult(indexOf, indexOf + string.lengthTrimmed()
+								+ 1);
 				result.add(s);
 			}
 

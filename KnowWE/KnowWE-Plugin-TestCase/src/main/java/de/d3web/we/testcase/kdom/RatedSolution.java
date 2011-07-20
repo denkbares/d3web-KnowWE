@@ -30,6 +30,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.SolutionReference;
 import de.d3web.we.utils.SplitUtility;
+import de.d3web.we.utils.StringFragment;
 
 public class RatedSolution extends AbstractType {
 
@@ -47,17 +48,16 @@ public class RatedSolution extends AbstractType {
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			List<String> findings = SplitUtility.splitUnquoted(text, ",");
-			for (String finding : findings) {
-				int indexOf = text.indexOf(finding);
+			List<StringFragment> findings = SplitUtility.splitUnquoted(text, ",");
+			for (StringFragment finding : findings) {
 				SectionFinderResult s =
-						new SectionFinderResult(indexOf, indexOf + finding.length());
+						new SectionFinderResult(finding.getStartTrimmed(),
+								finding.getEndTrimmed());
 				result.add(s);
 			}
 
 			return result;
 		}
-
 	}
 
 	public class SolutionSectionFinder implements SectionFinder {
@@ -66,11 +66,11 @@ public class RatedSolution extends AbstractType {
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			List<String> solution = SplitUtility.splitUnquoted(text, "(");
+			List<StringFragment> solution = SplitUtility.splitUnquoted(text, "(");
 
-			String solutionText = solution.get(0).trim();
-			int start = text.indexOf(solutionText);
-			int end = start + solutionText.length();
+			StringFragment stringFragment = solution.get(0);
+			int start = stringFragment.getStartTrimmed();
+			int end = stringFragment.getEndTrimmed();
 
 			SectionFinderResult s =
 					new SectionFinderResult(start, end);

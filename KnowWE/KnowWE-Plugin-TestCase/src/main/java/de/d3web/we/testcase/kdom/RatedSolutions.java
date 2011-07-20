@@ -29,6 +29,7 @@ import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.SplitUtility;
+import de.d3web.we.utils.StringFragment;
 
 public class RatedSolutions extends AbstractType {
 
@@ -43,10 +44,10 @@ public class RatedSolutions extends AbstractType {
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			List<String> ratedsolutions = SplitUtility.splitUnquoted(text, ":");
+			List<StringFragment> ratedsolutions = SplitUtility.splitUnquoted(text, ":");
 
 			if (ratedsolutions.size() > 1) {
-				int start = text.indexOf(ratedsolutions.get(1));
+				int start = ratedsolutions.get(1).getStartTrimmed();
 				int end = text.lastIndexOf(";");
 				SectionFinderResult s =
 						new SectionFinderResult(start, end);

@@ -29,6 +29,7 @@ import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.SplitUtility;
+import de.d3web.we.utils.StringFragment;
 
 public class Findings extends AbstractType {
 
@@ -43,10 +44,10 @@ public class Findings extends AbstractType {
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			List<String> findings = SplitUtility.splitUnquoted(text, ":");
+			List<StringFragment> findings = SplitUtility.splitUnquoted(text, ":");
 
-			int start = text.indexOf(findings.get(0));
-			int end = start + findings.get(0).length();
+			int start = text.indexOf(findings.get(0).getContent().trim());
+			int end = start + findings.get(0).getContent().trim().length();
 			SectionFinderResult s =
 					new SectionFinderResult(start, end);
 			result.add(s);

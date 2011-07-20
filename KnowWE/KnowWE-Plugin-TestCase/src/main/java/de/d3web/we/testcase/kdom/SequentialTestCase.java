@@ -29,13 +29,14 @@ import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.SplitUtility;
+import de.d3web.we.utils.StringFragment;
 
 /**
  * SequentialTestCaseKDOM This class represents the sequentialTestCases in the
  * KDOM
- *
+ * 
  * @author Sebastian Furth
- *
+ * 
  */
 public class SequentialTestCase extends AbstractType {
 
@@ -52,11 +53,11 @@ public class SequentialTestCase extends AbstractType {
 
 			List<SectionFinderResult> matches = new ArrayList<SectionFinderResult>();
 
-			List<String> cases = SplitUtility.splitUnquoted(text, "}");
+			List<StringFragment> cases = SplitUtility.splitUnquoted(text, "}");
 
-			for (String s : cases) {
-				int start = text.indexOf(s);
-				int end = start + s.length();
+			for (StringFragment s : cases) {
+				int start = s.getStartTrimmed();
+				int end = s.getEndTrimmed();
 				while (text.charAt(end) != '}') {
 					end++;
 				}

@@ -32,6 +32,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.utils.SplitUtility;
+import de.d3web.we.utils.StringFragment;
 
 public class Finding extends AbstractType {
 
@@ -54,11 +55,14 @@ public class Finding extends AbstractType {
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			List<String> findings = SplitUtility.splitUnquoted(text, ",");
-			for (String finding : findings) {
-				int indexOf = text.indexOf(finding);
+			List<StringFragment> findings = SplitUtility.splitUnquoted(text, ",");
+			for (StringFragment finding : findings) {
+
+				// this might be dangerous when identical findings occur !
+				int indexOf = finding.getStart();
 				SectionFinderResult s =
-						new SectionFinderResult(indexOf, indexOf + finding.length());
+						new SectionFinderResult(indexOf, indexOf
+								+ finding.getContent().length());
 				result.add(s);
 			}
 
@@ -73,10 +77,10 @@ public class Finding extends AbstractType {
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			List<String> findings = SplitUtility.splitUnquoted(text, "=");
+			List<StringFragment> findings = SplitUtility.splitUnquoted(text, "=");
 
-			int start = text.indexOf(findings.get(1));
-			int end = start + findings.get(1).length();
+			int start = text.indexOf(findings.get(1).getContent().trim());
+			int end = start + findings.get(1).getContent().trim().length();
 
 			SectionFinderResult s = new SectionFinderResult(start, end);
 			result.add(s);
@@ -92,10 +96,10 @@ public class Finding extends AbstractType {
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			List<String> findings = SplitUtility.splitUnquoted(text, "=");
+			List<StringFragment> findings = SplitUtility.splitUnquoted(text, "=");
 
-			int start = text.indexOf(findings.get(0));
-			int end = start + findings.get(0).length();
+			int start = text.indexOf(findings.get(0).getContent().trim());
+			int end = start + findings.get(0).getContent().trim().length();
 
 			SectionFinderResult s =
 					new SectionFinderResult(start, end);
