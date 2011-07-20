@@ -19,6 +19,7 @@ import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.object.SolutionReference;
 import de.d3web.we.utils.SplitUtility;
+import de.d3web.we.utils.StringFragment;
 
 /**
  * 
@@ -59,10 +60,10 @@ public class SolutionStateCond extends D3webCondition<SolutionStateCond> {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
 			if (SplitUtility.containsUnquoted(text, "=")) {
-				List<String> list = SplitUtility.splitUnquoted(text, "=");
+				List<StringFragment> list = SplitUtility.splitUnquoted(text, "=");
 				// Hotfix for AOB when there is nothing behind the "="
 				if (list.size() < 2) return null;
-				String answer = list.get(1);
+				String answer = list.get(1).getContent().trim();
 
 				// check if solution-state can be found
 				boolean isSolutionState = false;
@@ -86,8 +87,10 @@ public class SolutionStateCond extends D3webCondition<SolutionStateCond> {
 
 	@Override
 	protected Condition createCondition(KnowWEArticle article, Section<SolutionStateCond> s) {
-		Section<SolutionReference> sRef =  Sections.findSuccessor(s, SolutionReference.class);
-		Section<SolutionStateType> state =  Sections.findSuccessor(s, SolutionStateType.class);
+		Section<SolutionReference> sRef = Sections.findSuccessor(s,
+				SolutionReference.class);
+		Section<SolutionStateType> state = Sections.findSuccessor(s,
+				SolutionStateType.class);
 		if (sRef != null && state != null) {
 			Solution solution = sRef.get().getTermObject(article, sRef);
 			Rating.State solutionState = SolutionStateType.getSolutionState(state);

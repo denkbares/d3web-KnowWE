@@ -41,6 +41,7 @@ import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.utils.SplitUtility;
+import de.d3web.we.utils.StringFragment;
 
 /**
  * A type implementing simple choice condition as child-type of
@@ -81,7 +82,8 @@ public class Finding extends D3webCondition<Finding> {
 	@Override
 	protected Condition createCondition(KnowWEArticle article, Section<Finding> s) {
 
-		Section<QuestionReference> qRef = Sections.findSuccessor(s, QuestionReference.class);
+		Section<QuestionReference> qRef = Sections.findSuccessor(s,
+				QuestionReference.class);
 
 		Section<AnswerReference> aRef = Sections.findSuccessor(s, AnswerReference.class);
 
@@ -110,13 +112,13 @@ class FindingFinder implements SectionFinder {
 
 			// if the value is a number this is not taken as a Finding (but left
 			// for NumericalFinding)
-			List<String> list = SplitUtility.splitUnquoted(text, "=");
+			List<StringFragment> list = SplitUtility.splitUnquoted(text, "=");
 			// Hotfix for AOB when there is nothing behind the "="
 			if (list.size() < 2) return null;
-			String answer = list.get(1);
+			StringFragment answer = list.get(1);
 			boolean isNumber = false;
 			try {
-				Double.parseDouble(answer);
+				Double.parseDouble(answer.getContent().trim());
 				// if (answer.contains("d") || answer.contains("D")) {
 				// TODO find better way to check
 				// '5D' is parsed to a valid double '5.0'
