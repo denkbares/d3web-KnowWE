@@ -25,6 +25,26 @@ public class StringFragment {
 		return offset + content.length();
 	}
 
+	public int length() {
+		return content.length();
+	}
+
+	public String getContentTrimmed() {
+		return content.trim();
+	}
+
+	public int getStartTrimmed() {
+		return offset + (content.indexOf(content.trim()));
+	}
+
+	public int getEndTrimmed() {
+		return getStartTrimmed() + lengthTrimmed();
+	}
+
+	public int lengthTrimmed() {
+		return content.trim().length();
+	}
+
 	public String getFatherString() {
 		return fatherString;
 	}

@@ -35,11 +35,12 @@ public class SplitUtility {
 	 * @param splitSymbol
 	 * @return
 	 */
-	public static List<String> splitUnquoted(String text, String splitSymbol) {
+	public static List<StringFragment> splitUnquoted(String text, String splitSymbol) {
 		boolean quoted = false;
-		List<String> parts = new ArrayList<String>();
+		List<StringFragment> parts = new ArrayList<StringFragment>();
 		StringBuffer actualPart = new StringBuffer();
 		// scanning the text
+		int startOfNewPart = 0;
 		for (int i = 0; i < text.length(); i++) {
 			// toggle quote state
 			if (text.charAt(i) == '"') {
@@ -51,16 +52,17 @@ public class SplitUtility {
 			}
 			if ((i + splitSymbol.length() <= text.length())
 					&& text.subSequence(i, i + splitSymbol.length()).equals(splitSymbol)) {
-				parts.add(actualPart.toString().trim());
+				parts.add(new StringFragment(actualPart.toString(), startOfNewPart, text));
 				actualPart = new StringBuffer();
 				i += splitSymbol.length() - 1;
+				startOfNewPart = i + 1;
 				continue;
 			}
 			actualPart.append(text.charAt(i));
 
 		}
 		if (!actualPart.toString().matches("\\s*")) {
-			parts.add(actualPart.toString().trim());
+			parts.add(new StringFragment(actualPart.toString(), startOfNewPart, text));
 		}
 		return parts;
 	}
