@@ -52,14 +52,11 @@ public class ActionArea extends AbstractType {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-			List<StringFragment> actions = SplitUtility.splitUnquoted(text, ";;;");
+			List<StringFragment> actions = SplitUtility.splitUnquoted(text, ";");
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			int index = 0;
 			for (StringFragment string : actions) {
-				// int startIndex = calcStartIndex(actions, index);
 				result.add(new SectionFinderResult(string.getStart(), string.getStart()
 						+ string.getContent().length()));
-				index++;
 			}
 			return result;
 		}
