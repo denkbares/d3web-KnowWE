@@ -64,14 +64,6 @@ public class ActionArea extends AbstractType {
 			return result;
 		}
 
-		private int calcStartIndex(List<String> array, int index) {
-			int start = 0;
-			for (int i = 0; i < index; i++) {
-				start += array.get(i).length();
-				start += 1; // splitting sign
-			}
-			return start;
-		}
 
 	}
 
