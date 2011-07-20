@@ -147,29 +147,31 @@ public class RuleContentType extends AbstractType {
 	 *         (if it doesn't have errors)
 	 * 
 	 */
-	class RuleCompiler extends D3webSubtreeHandler<ConditionActionRuleContent> {
+	class RuleCompiler extends D3webSubtreeHandler<RuleAction> {
 
 		public RuleCompiler() {
-			this.registerConstraintModule(new SuccessorNotReusedConstraint<ConditionActionRuleContent>());
+			this.registerConstraintModule(new SuccessorNotReusedConstraint<RuleAction>());
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ConditionActionRuleContent> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<RuleAction> actionS) {
 
-			if (!article.isFullParse()) destroy(article, s);
+			Section<ConditionActionRuleContent> rule = Sections.findAncestorOfType(actionS, ConditionActionRuleContent.class);
+			
+			if (!article.isFullParse()) destroy(article, actionS);
 
-			if (s.hasErrorInSubtree(article)) {
+			if (rule.hasErrorInSubtree(article)) {
 				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed("Rule"));
 			}
 
 			// create condition
-			Section<CompositeCondition> cond = Sections.findSuccessor(s,
+			Section<CompositeCondition> cond = Sections.findSuccessor(rule,
 					CompositeCondition.class);
 			Condition d3Cond = KDOMConditionFactory.createCondition(article, cond);
 
 			// create action
-			Section<D3webRuleAction> action = Sections.findSuccessor(s,
+			Section<D3webRuleAction> action = Sections.findSuccessor(actionS,
 					D3webRuleAction.class);
 			if (action == null) {
 				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
@@ -182,7 +184,7 @@ public class RuleContentType extends AbstractType {
 
 			// create exception (if exists)
 			Section<ExceptionConditionArea> exceptionCondSec = Sections.findSuccessor(
-					s,
+					rule,
 					ExceptionConditionArea.class);
 			Condition exceptionCond = null;
 			if (exceptionCondSec != null) {
@@ -199,7 +201,7 @@ public class RuleContentType extends AbstractType {
 				Rule r = RuleFactory.createRule(d3action, d3Cond,
 						exceptionCond, action.get().getActionPSContext());
 				if (r != null) {
-					KnowWEUtils.storeObject(article, s, ruleStoreKey, r);
+					KnowWEUtils.storeObject(article, actionS, ruleStoreKey, r);
 					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
 							"Rule"));
 				}
@@ -214,7 +216,7 @@ public class RuleContentType extends AbstractType {
 		}
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<ConditionActionRuleContent> rule) {
+		public void destroy(KnowWEArticle article, Section<RuleAction> rule) {
 			Rule kbr = (Rule) rule.getSectionStore().getObject(article,
 					ruleStoreKey);
 			if (kbr != null) {
