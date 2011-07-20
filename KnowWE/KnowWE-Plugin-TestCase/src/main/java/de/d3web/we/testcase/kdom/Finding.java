@@ -79,11 +79,15 @@ public class Finding extends AbstractType {
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			List<StringFragment> findings = SplitUtility.splitUnquoted(text, "=");
 
-			int start = text.indexOf(findings.get(1).getContent().trim());
-			int end = start + findings.get(1).getContent().trim().length();
+			if (!findings.isEmpty()) {
+				int start = text.indexOf(findings.get(1).getContent().trim());
+				int end = start + findings.get(1).getContent().trim().length();
 
-			SectionFinderResult s = new SectionFinderResult(start, end);
-			result.add(s);
+				SectionFinderResult s = new SectionFinderResult(start, end);
+
+				result.add(s);
+
+			}
 
 			return result;
 		}

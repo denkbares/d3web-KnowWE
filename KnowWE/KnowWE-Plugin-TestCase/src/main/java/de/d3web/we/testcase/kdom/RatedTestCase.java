@@ -43,6 +43,7 @@ public class RatedTestCase extends AbstractType {
 
 		childrenTypes.add(bracedType);
 		childrenTypes.add(new Findings());
+		childrenTypes.add(new RatedFindings());
 		childrenTypes.add(new RatedSolutions());
 		this.sectionFinder = new RatedTestCaseSectionFinder();
 	}

@@ -57,6 +57,9 @@ public class TestCaseRunnerRenderer extends DefaultMarkupRenderer<TestCaseRunner
 				+ "</strong><br />\n"));
 
 		String testCaseArticleName = TestCaseRunnerType.getTestCase(section);
+
+		if (testCaseArticleName.equals("this")) testCaseArticleName = section.getArticle().getTitle();
+
 		TestCase testSuite = getTestSuiteFor(testCaseArticleName, article.getWeb());
 		if (testSuite == null) {
 			string.append(mask("<img src='KnowWEExtension/d3web/icon/uses_error16.gif' align='top' /> "));

@@ -30,18 +30,20 @@ import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.SplitUtility;
 import de.d3web.we.utils.StringFragment;
+import de.knowwe.core.CommentLineType;
 
 /**
  * SequentialTestCaseKDOM This class represents the sequentialTestCases in the
  * KDOM
- * 
+ *
  * @author Sebastian Furth
- * 
+ *
  */
 public class SequentialTestCase extends AbstractType {
 
 	public SequentialTestCase() {
 		this.sectionFinder = new SequentialTestCaseSectionFinder();
+		this.childrenTypes.add(new CommentLineType());
 		this.childrenTypes.add(new SequentialTestCaseName());
 		this.childrenTypes.add(new RatedTestCases());
 	}

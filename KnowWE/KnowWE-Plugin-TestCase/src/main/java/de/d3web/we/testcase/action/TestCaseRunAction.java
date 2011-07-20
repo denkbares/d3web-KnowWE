@@ -23,13 +23,15 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.logging.Logger;
 
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.empiricaltesting.RatedSolution;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.TestCase;
+import de.d3web.empiricaltesting.caseAnalysis.RTCDiff;
 import de.d3web.empiricaltesting.caseAnalysis.functions.Diff;
-import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
 import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysis;
+import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
 import de.d3web.we.action.UserActionContext;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.core.KnowWEAttributes;
@@ -141,8 +143,6 @@ public class TestCaseRunAction extends TestCaseRunningAction {
 		StringBuilder html = new StringBuilder();
 		StringBuilder temp = new StringBuilder();
 
-		temp.append("");
-
 		temp.append("</table>");
 
 		// HTML-Code
@@ -157,33 +157,71 @@ public class TestCaseRunAction extends TestCaseRunningAction {
 					temp.append(stc.getCases().indexOf(rtc) + 1);
 					temp.append("</th>");
 					temp.append("</tr>");
+
+					if (rtc.getExpectedSolutions().size() > 0
+							|| rtc.getDerivedSolutions().size() > 0) {
+
+						temp.append("<tr>");
+						temp.append("<th>");
+						temp.append(rb.getString("KnowWE.TestCase.expected"));
+						temp.append("</th>");
+						temp.append("<th>");
+						temp.append(rb.getString("KnowWE.TestCase.derived"));
+						temp.append("</th>");
+						temp.append("</tr>");
+						temp.append("<tr>");
+						temp.append("<td>");
+						temp.append("<ul>");
+						Collections.sort(rtc.getExpectedSolutions(),
+								new RatedSolution.RatingComparatorByName());
+						for (RatedSolution rs : rtc.getExpectedSolutions()) {
+							temp.append("<li>");
+							temp.append(rs.toString());
+							temp.append("</li>");
+						}
+						temp.append("</ul>");
+						temp.append("</td>");
+						temp.append("<td>");
+						temp.append("<ul>");
+						Collections.sort(rtc.getDerivedSolutions(),
+								new RatedSolution.RatingComparatorByName());
+						for (RatedSolution rs : rtc.getDerivedSolutions()) {
+							temp.append("<li>");
+							temp.append(rs.toString());
+							temp.append("</li>");
+						}
+						temp.append("</ul>");
+						temp.append("</td>");
+						temp.append("</tr>");
+					}
+
 					temp.append("<tr>");
 					temp.append("<th>");
-					temp.append(rb.getString("KnowWE.TestCase.expected"));
+					temp.append(rb.getString("KnowWE.TestCase.expectedFindings"));
 					temp.append("</th>");
 					temp.append("<th>");
-					temp.append(rb.getString("KnowWE.TestCase.derived"));
+					temp.append(rb.getString("KnowWE.TestCase.derivedFindings"));
 					temp.append("</th>");
 					temp.append("</tr>");
+
+					// expected findings
 					temp.append("<tr>");
 					temp.append("<td>");
 					temp.append("<ul>");
-					Collections.sort(rtc.getExpectedSolutions(),
-							new RatedSolution.RatingComparatorByName());
-					for (RatedSolution rs : rtc.getExpectedSolutions()) {
+					RTCDiff diff = stcDiff.getDiff(rtc);
+					for (TerminologyObject obj : diff.getDiffObjects()) {
 						temp.append("<li>");
-						temp.append(rs.toString());
+						temp.append(obj.getName() + " = " + diff.getDiffFor(obj).expected);
 						temp.append("</li>");
 					}
 					temp.append("</ul>");
 					temp.append("</td>");
+
 					temp.append("<td>");
 					temp.append("<ul>");
-					Collections.sort(rtc.getDerivedSolutions(),
-							new RatedSolution.RatingComparatorByName());
-					for (RatedSolution rs : rtc.getDerivedSolutions()) {
+					for (TerminologyObject obj : diff.getDiffObjects()) {
 						temp.append("<li>");
-						temp.append(rs.toString());
+						temp.append(diff.getDiffFor(obj).derived);
 						temp.append("</li>");
 					}
 					temp.append("</ul>");

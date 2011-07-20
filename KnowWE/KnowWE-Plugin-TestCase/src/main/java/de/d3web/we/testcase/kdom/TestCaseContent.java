@@ -39,6 +39,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.basic.Number;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.StringReference;
@@ -168,8 +169,111 @@ public class TestCaseContent extends StringReference {
 				de.d3web.empiricaltesting.RatedTestCase rtc = new de.d3web.empiricaltesting.RatedTestCase();
 				setTimeStamp(rtcSection, rtc);
 				createFindings(rtcSection, stcIndex, rtcIndex, rtc, kb, messages);
+				createRatedFindings(rtcSection, stcIndex, rtcIndex, rtc, kb, messages);
 				createRatedSolutions(rtcSection, stcIndex, rtcIndex, rtc, kb, messages);
 				stc.add(rtc);
+			}
+
+		}
+
+		/**
+		 * 
+		 * @created 19.07.2011
+		 * @param rtcSection
+		 * @param stcIndex
+		 * @param rtcIndex
+		 * @param rtc
+		 * @param kb
+		 * @param messages
+		 */
+		private void createRatedFindings(Section<RatedTestCase> rtcSection, int stcIndex, int rtcIndex, de.d3web.empiricaltesting.RatedTestCase rtc, KnowledgeBase kb, List<KDOMReportMessage> messages) {
+
+			// Get all Finding sections
+			List<Section<RatedFinding>> findingSections = new LinkedList<Section<RatedFinding>>();
+			Sections.findSuccessorsOfType(rtcSection, RatedFinding.class, findingSections);
+
+			// Process each Finding section
+			for (Section<RatedFinding> findingSection : findingSections) {
+
+				// Get the QuestionReference section
+				Section<QuestionReference> questionSection = Sections.findSuccessor(findingSection,
+						QuestionReference.class);
+
+				// Get the real Question
+				if (questionSection != null) {
+					String questionText = clean(questionSection.getOriginalText());
+					Question question = kb.getManager().searchQuestion(
+							questionText);
+
+					// Create error message if there is no question with this
+					// name in the KB
+					if (question == null) {
+						messages.add(new NoSuchObjectError(
+								clean(questionSection.getOriginalText().trim())));
+					}
+					else {
+
+
+						// Check if the question is a QuestionNum
+						if (question instanceof QuestionNum) {
+
+							Section<Number> valueSection = Sections.findSuccessor(
+									findingSection, Number.class);
+
+							if (valueSection == null) {
+								messages.add(new SimpleMessageError(
+										"The value has to be a number for Question: "
+												+ clean(questionSection.getOriginalText().trim())));
+								continue;
+							}
+
+							try {
+
+								double value = Double.parseDouble(clean(valueSection.getOriginalText().trim()));
+								rtc.addExpectedFinding(new de.d3web.empiricaltesting.Finding(
+										question,
+										new NumValue(value)));
+							}
+							catch (NumberFormatException e) {
+								messages.add(new SimpleMessageError(
+										"The value has to be a number for Question: "
+												+ clean(questionSection.getOriginalText().trim())));
+							}
+						}
+						// If not, it is a QuestionChoice
+						else {
+
+							// Get the value
+							Section<AnswerReference> valueSection = Sections.findSuccessor(
+									findingSection, AnswerReference.class);
+
+							// Create error message if there is no value defined
+							if (valueSection == null) {
+								messages.add(new SimpleMessageError(
+										"There is no Value defined for Question: "
+												+ clean(questionSection.getOriginalText().trim())));
+								return;
+							}
+
+							Value value = KnowledgeBaseUtils.findValue(question,
+									clean(valueSection.getOriginalText().trim()));
+							if (value == null) {
+								messages.add(new NoSuchObjectError(
+										clean(valueSection.getOriginalText().trim())));
+							}
+							else {
+								rtc.addExpectedFinding(new de.d3web.empiricaltesting.Finding(
+										question, value));
+							}
+						}
+					}
+				}
+				else {
+					messages.add(new SimpleMessageError(
+							"There is no Question defined in expected Finding "
+									+ findingSections.indexOf(findingSection) +
+									" in RTC " + rtcIndex + " in STC " + stcIndex));
+				}
 			}
 
 		}
