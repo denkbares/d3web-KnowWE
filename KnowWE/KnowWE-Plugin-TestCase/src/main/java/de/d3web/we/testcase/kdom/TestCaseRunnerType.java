@@ -55,6 +55,7 @@ public class TestCaseRunnerType extends DefaultMarkupType {
 
 	public TestCaseRunnerType() {
 		super(MARKUP);
+		this.setIgnorePackageCompile(true);
 		this.setCustomRenderer(this.getRenderer());
 		KnowWERessourceLoader.getInstance().add("testcase.js",
 				KnowWERessourceLoader.RESOURCE_SCRIPT);
