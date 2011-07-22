@@ -9,6 +9,7 @@ import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.session.values.Unknown;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
@@ -20,6 +21,7 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.QuestionReference;
+import de.d3web.we.object.UnknownValueType;
 import de.d3web.we.utils.SplitUtility;
 
 /**
@@ -38,6 +40,7 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 		Equals equ = new Equals();
 		QuestionReference qRef = new QuestionNumReference();
 		this.childrenTypes.add(equ);
+		this.childrenTypes.add(new UnknownValueType());
 		this.childrenTypes.add(number);
 		this.childrenTypes.add(qRef);
 		qRef.setSectionFinder(new AllBeforeTypeSectionFinder(equ));
@@ -73,21 +76,38 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 
 	@Override
 	public PSAction createAction(KnowWEArticle article, Section<SolutionValueAssignment> s) {
+		Object value;
+
+		if (Sections.findSuccessor(s, UnknownValueType.class) != null) {
+			value = Unknown.getInstance();
+		} else {
+			Section<de.d3web.we.kdom.basic.Number> numberSec = Sections
+					.findSuccessor(s, de.d3web.we.kdom.basic.Number.class);
+
+			if (numberSec == null)
+				return null;
+
+			value = new FormulaNumber(
+					de.d3web.we.kdom.basic.Number.getNumber(numberSec));
+		}
+
 		Section<QuestionReference> qRef = Sections.findSuccessor(s, QuestionReference.class);
-		Section<de.d3web.we.kdom.basic.Number> numberSec = Sections.findSuccessor(s,
-				de.d3web.we.kdom.basic.Number.class);
-		if (numberSec == null || qRef == null) return null;
+
+		if (qRef == null)
+			return null;
 
 		Question q = qRef.get().getTermObject(article, qRef);
 
-		Double num = de.d3web.we.kdom.basic.Number.getNumber(numberSec);
-
 		if (!(q instanceof QuestionNum)) return null;
 		QuestionNum qnum = (QuestionNum) q;
-		if (qnum == null || num == null) return null;
+
+		if (qnum == null || value == null)
+			return null;
+
 		ActionSetValue a = new ActionSetValue();
 		a.setQuestion(q);
-		a.setValue(new FormulaNumber(num));
+		a.setValue(value);
+
 		return a;
 	}
 
