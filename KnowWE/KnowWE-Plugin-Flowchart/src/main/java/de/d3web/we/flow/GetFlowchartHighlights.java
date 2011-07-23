@@ -59,6 +59,10 @@ public class GetFlowchartHighlights extends AbstractAction {
 		Section<DiaFluxType> diaFluxSec = (Section<DiaFluxType>) articleManager.findNode(kdomid);
 
 		Section<FlowchartType> flowchart = Sections.findSuccessor(diaFluxSec, FlowchartType.class);
+		if (flowchart == null) {
+			context.getWriter().write("<flow></flow>");
+			return;
+		}
 		String flowName = FlowchartType.getFlowchartName(flowchart);
 
 		KnowWEArticle article = PackageRenderUtils.checkArticlesCompiling(diaFluxSec.getArticle(),

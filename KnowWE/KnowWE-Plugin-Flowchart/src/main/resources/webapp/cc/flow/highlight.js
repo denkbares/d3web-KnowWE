@@ -47,6 +47,9 @@ DiaFlux.Highlight.highlight = function(response) {
 	var doc = this.responseXML;
 	
 	var flowid = doc.getElementsByTagName('flow')[0].getAttribute('id');
+	if (!flowid) {
+		return
+	}
 	var prefix = doc.getElementsByTagName('flow')[0].getAttribute('prefix');
 	var nodes = doc.getElementsByTagName('node');
 	var edges = doc.getElementsByTagName('edge');
