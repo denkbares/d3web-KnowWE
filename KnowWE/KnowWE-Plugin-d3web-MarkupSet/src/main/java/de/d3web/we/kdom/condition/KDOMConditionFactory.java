@@ -119,6 +119,11 @@ public class KDOMConditionFactory {
 			}
 
 			Condition cond = termChild.get().getCondition(article, termChild);
+			
+			if (cond == null) {
+				Logger.getLogger(KDOMConditionFactory.class.getName()).warning("No condition found for: " + termChild);
+				return null;
+			}
 
 			return cond;
 		}
