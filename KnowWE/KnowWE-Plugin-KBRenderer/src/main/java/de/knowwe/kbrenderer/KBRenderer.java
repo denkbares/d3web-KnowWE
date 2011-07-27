@@ -265,6 +265,12 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 		text.append(" --> ");
 		text.append(VerbalizationManager.getInstance().verbalize(
 				r.getAction(), VerbalizationManager.RenderingFormat.HTML, parameterMap));
+
+		if (r.getException() != null) {
+			text.append(" EXCEPT ");
+			text.append(VerbalizationManager.getInstance().verbalize(
+					r.getException(), VerbalizationManager.RenderingFormat.PLAIN_TEXT, parameterMap));
+		}
 		text.append("<br/>\n");
 
 		renderedRule = text.toString();
