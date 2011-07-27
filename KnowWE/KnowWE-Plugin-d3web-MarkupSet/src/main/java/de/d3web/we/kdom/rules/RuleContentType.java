@@ -35,6 +35,7 @@ import de.d3web.core.session.Session;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.Type;
@@ -96,7 +97,7 @@ public class RuleContentType extends AbstractType {
 				ruleAction);
 
 		// add handler to create the rules in the d3web knowledge base
-		ruleAction.addSubtreeHandler(new RuleCompiler());
+		ruleAction.addSubtreeHandler(Priority.LOW, new RuleCompiler());
 
 		ruleContent.setCustomRenderer(new ReRenderSectionMarkerRenderer(
 				new RuleHighlightingRenderer()));
@@ -157,8 +158,9 @@ public class RuleContentType extends AbstractType {
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<RuleAction> actionS) {
 
-			Section<ConditionActionRuleContent> rule = Sections.findAncestorOfType(actionS, ConditionActionRuleContent.class);
-			
+			Section<ConditionActionRuleContent> rule = Sections.findAncestorOfType(actionS,
+					ConditionActionRuleContent.class);
+
 			if (!article.isFullParse()) destroy(article, actionS);
 
 			if (rule.hasErrorInSubtree(article)) {

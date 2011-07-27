@@ -112,18 +112,14 @@ public class KDOMConditionFactory {
 
 			Section<? extends D3webCondition> termChild = Sections.findChildOfType(terminal,
 					D3webCondition.class);
-			
+
 			if (termChild == null) {
-				Logger.getLogger(KDOMConditionFactory.class.getName()).warning("Could not create Condition for: " + terminal.getFather());
+				Logger.getLogger(KDOMConditionFactory.class.getName()).warning(
+						"Could not create Condition for: " + terminal.getFather());
 				return null;
 			}
 
 			Condition cond = termChild.get().getCondition(article, termChild);
-			
-			if (cond == null) {
-				Logger.getLogger(KDOMConditionFactory.class.getName()).warning("No condition found for: " + termChild);
-				return null;
-			}
 
 			return cond;
 		}
