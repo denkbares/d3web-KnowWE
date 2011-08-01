@@ -108,15 +108,13 @@ public class RuleContentType extends AbstractType {
 		try {
 			// TODO remove this evil workaround
 			// when updating KnowWE architecture
-			termConds.add((Type) Class.forName("cc.knowwe.tdb.EvalConditionType").newInstance());
-		}
-		catch (InstantiationException e) {
+			termConds.add((Type) Class.forName(
+					"cc.knowwe.tdb.EvalConditionType").newInstance());
+		} catch (InstantiationException e) {
 			notAttached = true;
-		}
-		catch (IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 			notAttached = true;
-		}
-		catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			notAttached = true;
 		}
 		if (notAttached) {
@@ -151,50 +149,57 @@ public class RuleContentType extends AbstractType {
 	class RuleCompiler extends D3webSubtreeHandler<RuleAction> {
 
 		public RuleCompiler() {
-			this.registerConstraintModule(new SuccessorNotReusedConstraint<RuleAction>());
+			this
+					.registerConstraintModule(new SuccessorNotReusedConstraint<RuleAction>());
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<RuleAction> actionS) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article,
+				Section<RuleAction> actionS) {
 
-			Section<ConditionActionRuleContent> rule = Sections.findAncestorOfType(actionS,
-					ConditionActionRuleContent.class);
+			Section<ConditionActionRuleContent> rule = Sections
+					.findAncestorOfType(actionS,
+							ConditionActionRuleContent.class);
 
-			if (!article.isFullParse()) destroy(article, actionS);
+			if (!article.isFullParse())
+				destroy(article, actionS);
 
 			if (rule.hasErrorInSubtree(article)) {
-				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed("Rule"));
+				return Arrays
+						.asList((KDOMReportMessage) new CreateRelationFailed(
+								"Rule"));
 			}
 
 			// create condition
 			Section<CompositeCondition> cond = Sections.findSuccessor(rule,
 					CompositeCondition.class);
-			Condition d3Cond = KDOMConditionFactory.createCondition(article, cond);
+			Condition d3Cond = KDOMConditionFactory.createCondition(article,
+					cond);
 
 			// create action
 			Section<D3webRuleAction> action = Sections.findSuccessor(actionS,
 					D3webRuleAction.class);
 			if (action == null) {
-				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
-						D3webModule.getKwikiBundle_d3web().
-								getString("KnowWE.rulesNew.notcreated")
-								+ " : no valid action found"
-						));
+				return Arrays
+						.asList((KDOMReportMessage) new CreateRelationFailed(
+								D3webModule.getKwikiBundle_d3web().getString(
+										"KnowWE.rulesNew.notcreated")
+										+ " : no valid action found"));
 			}
 			PSAction d3action = action.get().getAction(article, action);
 
 			// create exception (if exists)
-			Section<ExceptionConditionArea> exceptionCondSec = Sections.findSuccessor(
-					rule,
-					ExceptionConditionArea.class);
+			Section<ExceptionConditionArea> exceptionCondSec = Sections
+					.findSuccessor(rule, ExceptionConditionArea.class);
 			Condition exceptionCond = null;
 			if (exceptionCondSec != null) {
-				Section<CompositeCondition> exceptionCompCondSec = Sections.findSuccessor(
-						exceptionCondSec, CompositeCondition.class);
+				Section<CompositeCondition> exceptionCompCondSec = Sections
+						.findSuccessor(exceptionCondSec,
+								CompositeCondition.class);
 				if (exceptionCompCondSec != null) {
-					exceptionCond = KDOMConditionFactory.createCondition(article,
-							exceptionCompCondSec);
+					exceptionCond = KDOMConditionFactory.createCondition(
+							article, exceptionCompCondSec);
 				}
 			}
 
@@ -204,17 +209,17 @@ public class RuleContentType extends AbstractType {
 						exceptionCond, action.get().getActionPSContext());
 				if (r != null) {
 					KnowWEUtils.storeObject(article, actionS, ruleStoreKey, r);
-					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
-							"Rule"));
+					return Arrays
+							.asList((KDOMReportMessage) new ObjectCreatedMessage(
+									"Rule"));
 				}
 
 			}
 
 			// should not happen
 			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
-					D3webModule.getKwikiBundle_d3web().
-							getString("KnowWE.rulesNew.notcreated")
-					));
+					D3webModule.getKwikiBundle_d3web().getString(
+							"KnowWE.rulesNew.notcreated")));
 		}
 
 		@Override
@@ -234,7 +239,8 @@ public class RuleContentType extends AbstractType {
 	 *         Highlights Rules according to state.
 	 * 
 	 */
-	class RuleHighlightingRenderer extends KnowWEDomRenderer<ConditionActionRuleContent> {
+	class RuleHighlightingRenderer extends
+			KnowWEDomRenderer<ConditionActionRuleContent> {
 
 		@Override
 		public void render(KnowWEArticle article,
@@ -243,10 +249,16 @@ public class RuleContentType extends AbstractType {
 
 			Session session = D3webUtils.getSession(article.getTitle(), user,
 					article.getWeb());
-			Rule rule = (Rule) KnowWEUtils.getStoredObject(sec.getArticle(), sec,
-					RuleContentType.ruleStoreKey);
+			Section<RuleAction> ruleAction = Sections.findSuccessor(sec,
+					RuleAction.class);
+			Rule rule = null;
+			if (ruleAction != null) {
+				rule = (Rule) KnowWEUtils.getStoredObject(article, ruleAction,
+						RuleContentType.ruleStoreKey);
+			}
 
-			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID() + "'>"));
+			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID()
+					+ "'>"));
 			this.highlightRule(article, sec, rule, session, user, string);
 			string.append(KnowWEUtils.maskHTML("</span>"));
 		}
@@ -257,7 +269,7 @@ public class RuleContentType extends AbstractType {
 		 * Stores the Renderer used in <b>highlightRule<b>
 		 */
 		StyleRenderer firedRenderer = StyleRenderer.getRenderer(
-						highlightMarker, "", "#CFFFCF");
+				highlightMarker, "", "#CFFFCF");
 
 		StyleRenderer exceptionRenderer = StyleRenderer.getRenderer(
 				highlightMarker, "", null);
@@ -271,26 +283,25 @@ public class RuleContentType extends AbstractType {
 		 * @return
 		 */
 		private void highlightRule(KnowWEArticle article,
-				Section<ConditionActionRuleContent> sec, Rule r, Session session,
-				UserContext user, StringBuilder string) {
+				Section<ConditionActionRuleContent> sec, Rule r,
+				Session session, UserContext user, StringBuilder string) {
 
 			StringBuilder newContent = new StringBuilder();
 			if (r == null || session == null) {
-				DelegateRenderer.getInstance().
-						render(article, sec, user, newContent);
-			}
-			else {
+				DelegateRenderer.getInstance().render(article, sec, user,
+						newContent);
+			} else {
 				try {
 					if (r.hasFired(session)) {
-						this.firedRenderer.render(article, sec, user, newContent);
-					}
-					else {
-						DelegateRenderer.getInstance().render(article, sec, user,
+						this.firedRenderer.render(article, sec, user,
 								newContent);
+					} else {
+						DelegateRenderer.getInstance().render(article, sec,
+								user, newContent);
 					}
-				}
-				catch (Exception e) {
-					this.exceptionRenderer.render(article, sec, user, newContent);
+				} catch (Exception e) {
+					this.exceptionRenderer.render(article, sec, user,
+							newContent);
 				}
 			}
 			string.append(newContent.toString());
