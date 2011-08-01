@@ -227,7 +227,7 @@ public class CoveringList extends AbstractType {
 						XCLModel xclModel = solution.getKnowledgeStore().getKnowledge(
 								XCLModel.KNOWLEDGE_KIND);
 
-						if (xclModel != null) {
+ 						if (xclModel != null) {
 
 							if (cond != null) {
 
@@ -366,7 +366,7 @@ public class CoveringList extends AbstractType {
 			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID()
 					+ "' class = 'XCLRelationInList'>"));
 
-			XCLRelation relation = (XCLRelation) KnowWEUtils.getStoredObject(sec.getArticle(), sec,
+			XCLRelation relation = (XCLRelation) KnowWEUtils.getStoredObject(article, sec,
 					KBID_KEY);
 
 			if (relation == null) {
