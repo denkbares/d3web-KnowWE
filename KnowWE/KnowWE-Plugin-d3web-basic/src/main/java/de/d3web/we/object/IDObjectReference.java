@@ -63,7 +63,7 @@ public class IDObjectReference extends D3webTermReference<NamedObject> {
 
 	@Override
 	public String getTermIdentifier(Section<? extends KnowWETerm<NamedObject>> s) {
-		return s.getOriginalText();
+		return s.getOriginalText().trim();
 	}
 
 	@Override
