@@ -46,14 +46,14 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<PropertyDeclarationType> s) {
 		// get NamedObject
-		Section<NamedObjectType> namendObjectSection = Sections.findSuccessor(s,
-				NamedObjectType.class);
+		Section<NamedObjectReference> namendObjectSection = Sections.findSuccessor(s,
+				NamedObjectReference.class);
 		Section<PropertyType> propertySection = Sections.findSuccessor(s,
 				PropertyType.class);
 		if (namendObjectSection == null) {
 			return MessageUtils.syntaxErrorAsList("No NamedObject found.");
 		}
-		NamedObject object = namendObjectSection.get().getNamedObject(article, namendObjectSection);
+		NamedObject object = namendObjectSection.get().getTermObject(article, namendObjectSection);
 		if (object == null) {
 			return MessageUtils.asList(new NoSuchObjectError(namendObjectSection.getText().trim()));
 		}
@@ -112,12 +112,12 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 
 	@Override
 	public void destroy(KnowWEArticle article, Section<PropertyDeclarationType> s) {
-		Section<NamedObjectType> idobjectSection = Sections.findSuccessor(s,
-				NamedObjectType.class);
+		Section<NamedObjectReference> idobjectSection = Sections.findSuccessor(s,
+				NamedObjectReference.class);
 		Section<PropertyType> propertySection = Sections.findSuccessor(s,
 				PropertyType.class);
 		if (idobjectSection == null) return;
-		NamedObject object = idobjectSection.get().getNamedObject(article, idobjectSection);
+		NamedObject object = idobjectSection.get().getTermObject(article, idobjectSection);
 		if (object == null) return;
 		if (propertySection == null) return;
 		Property<?> property = propertySection.get().getProperty(propertySection);

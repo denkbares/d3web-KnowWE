@@ -64,7 +64,7 @@ public class PropertyDeclarationType extends AbstractType implements Incremental
 		Pattern p = Pattern.compile(propertyDeclaration, Pattern.MULTILINE + Pattern.DOTALL);
 		setSectionFinder(new RegexSectionFinder(p, 1));
 
-		this.childrenTypes.add(new NamedObjectType());
+		this.childrenTypes.add(new NamedObjectReference());
 
 		this.childrenTypes.add(new PropertyType());
 		this.childrenTypes.add(new LocaleType());

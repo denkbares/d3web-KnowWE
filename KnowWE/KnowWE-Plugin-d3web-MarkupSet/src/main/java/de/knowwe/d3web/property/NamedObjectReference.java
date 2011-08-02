@@ -27,15 +27,16 @@ import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.basic.PlainText;
+import de.d3web.we.kdom.objects.TermReference;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.object.AnswerReference;
+import de.d3web.we.object.D3webTermReference;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
@@ -48,9 +49,12 @@ import de.d3web.we.utils.KnowWEUtils;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 02.08.2011
  */
-public class NamedObjectType extends AbstractType {
+public class NamedObjectReference extends D3webTermReference<NamedObject> {
 
-	public NamedObjectType() {
+	public NamedObjectReference() {
+		super(NamedObject.class);
+		this.subtreeHandler.clear();
+
 		this.setCustomRenderer(new NamedObjectRenderer());
 		String questionAnswerPattern =
 				"^\\s*(" + PropertyDeclarationType.NAME + "\\s*(?:#\\s*"
@@ -77,33 +81,18 @@ public class NamedObjectType extends AbstractType {
 
 	}
 
-	public NamedObject getNamedObject(KnowWEArticle article, Section<NamedObjectType> s) {
-		Section<PropertyAnswerReference> propertyAnswerReference = Sections.findChildOfType(s,
-				PropertyAnswerReference.class);
-		if (propertyAnswerReference != null) {
-			return propertyAnswerReference.get().getTermObject(article, propertyAnswerReference);
-		}
-		String name = KnowWEUtils.trimQuotes(s.getText().trim());
-		KnowledgeBase knowledgeBase = D3webModule.getKnowledgeRepresentationHandler(
-				article.getWeb()).getKB(article.getTitle());
-		if (name.equals("KNOWLEDGEBASE") || name.equals(knowledgeBase.getName())) {
-			return knowledgeBase;
-		}
-		return knowledgeBase.getManager().search(name);
-	}
-
 	/**
 	 * 
 	 * @author volker_belli
 	 * @created 15.12.2010
 	 */
-	private static final class NamedObjectRenderer extends KnowWEDomRenderer<NamedObjectType> {
+	private static final class NamedObjectRenderer extends KnowWEDomRenderer<NamedObjectReference> {
 
 		@SuppressWarnings({
 				"rawtypes", "unchecked" })
 		@Override
-		public void render(KnowWEArticle article, Section<NamedObjectType> sec, UserContext user, StringBuilder string) {
-			NamedObject object = sec.get().getNamedObject(article, sec);
+		public void render(KnowWEArticle article, Section<NamedObjectReference> sec, UserContext user, StringBuilder string) {
+			NamedObject object = sec.get().getTermObject(article, sec);
 			KnowWEDomRenderer renderer;
 			if (object instanceof Question) {
 				renderer = StyleRenderer.Question;
@@ -125,6 +114,27 @@ public class NamedObjectType extends AbstractType {
 			}
 			renderer.render(article, sec, user, string);
 		}
+	}
+
+	@Override
+	public NamedObject getTermObjectFallback(KnowWEArticle article, Section<? extends TermReference<NamedObject>> s) {
+		Section<PropertyAnswerReference> propertyAnswerReference = Sections.findChildOfType(s,
+				PropertyAnswerReference.class);
+		if (propertyAnswerReference != null) {
+			return propertyAnswerReference.get().getTermObject(article, propertyAnswerReference);
+		}
+		String name = KnowWEUtils.trimQuotes(s.getText().trim());
+		KnowledgeBase knowledgeBase = D3webModule.getKnowledgeRepresentationHandler(
+				article.getWeb()).getKB(article.getTitle());
+		if (name.equals("KNOWLEDGEBASE") || name.equals(knowledgeBase.getName())) {
+			return knowledgeBase;
+		}
+		return knowledgeBase.getManager().search(name);
+	}
+
+	@Override
+	public String getTermObjectDisplayName() {
+		return NamedObject.class.getSimpleName();
 	}
 
 }

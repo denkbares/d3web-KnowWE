@@ -32,7 +32,7 @@
 		<parameter id="scope" value="AnswerReference" />
 		<parameter id="scope" value="AnswerDefinition" />
 		<parameter id="scope" value="SolutionReference" />
-		<parameter id="scope" value="IDObjectReference" />
+		<parameter id="scope" value="NamedObjectReference" />
 		<parameter id="scope" value="AbstractIRITermDefinition" />
 		<parameter id="scope" value="IRITermReference" />
 	</extension>
