@@ -41,14 +41,14 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
  */
 public class TimeStampType extends AbstractType {
 
-	private static final String DURATION = "\\s*(\\d+)\\s*(ms|s|sec|m|min|h|d)\\s*";
+	private static final String DURATION = "\\s*(\\d+)\\s*(ms|s|min|h|d)\\s*";
 	private static final String TIMESTAMP = "(" + DURATION + ")+";
 
 	private static final long[] TIME_FACTORS = {
-			1, 1000, 1000, 60 * 1000, 60 * 1000, 60 * 60 * 1000, 24 * 60 * 60 * 1000 };
+			1, 1000, 60 * 1000, 60 * 60 * 1000, 24 * 60 * 60 * 1000 };
 
 	private static final String[] TIME_UNITS = {
-			"ms", "s", "sec", "m", "min", "h", "d" };
+			"ms", "s", "min", "h", "d" };
 
 	// TODO does not work with isvalid
 	private static final Pattern DURATION_PATTERN = Pattern.compile(
@@ -69,6 +69,8 @@ public class TimeStampType extends AbstractType {
 	}
 
 	public static String createTimeAsTimeStamp(long time) {
+		if (time == 0) return "0s";
+
 		String t = "";
 		for (int i = TIME_FACTORS.length - 1; i >= 0; i--) {
 			long factor = TIME_FACTORS[i];

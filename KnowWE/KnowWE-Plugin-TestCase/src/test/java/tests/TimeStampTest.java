@@ -18,6 +18,8 @@
  */
 package tests;
 
+import java.util.Random;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -39,16 +41,12 @@ public class TimeStampTest {
 
 		Assert.assertTrue(TimeStampType.isValid("1ms"));
 		Assert.assertTrue(TimeStampType.isValid("1s"));
-		Assert.assertTrue(TimeStampType.isValid("1sec"));
-		Assert.assertTrue(TimeStampType.isValid("1m"));
 		Assert.assertTrue(TimeStampType.isValid("1min"));
 		Assert.assertTrue(TimeStampType.isValid("1h"));
 		Assert.assertTrue(TimeStampType.isValid("1d"));
 
 		Assert.assertTrue(TimeStampType.isValid("0ms"));
 		Assert.assertTrue(TimeStampType.isValid("0s"));
-		Assert.assertTrue(TimeStampType.isValid("0sec"));
-		Assert.assertTrue(TimeStampType.isValid("0m"));
 		Assert.assertTrue(TimeStampType.isValid("0min"));
 		Assert.assertTrue(TimeStampType.isValid("0h"));
 		Assert.assertTrue(TimeStampType.isValid("0d"));
@@ -73,20 +71,45 @@ public class TimeStampTest {
 	@Test
 	public final void testGetTimeInMillisString() {
 
-		Assert.assertEquals(TimeStampType.getTimeInMillis("1ms"), 1);
-		Assert.assertEquals(TimeStampType.getTimeInMillis("1s"), 1000);
-		Assert.assertEquals(TimeStampType.getTimeInMillis("1sec"), 1000);
-		Assert.assertEquals(TimeStampType.getTimeInMillis("1m"), 1000 * 60);
-		Assert.assertEquals(TimeStampType.getTimeInMillis("1min"), 1000 * 60);
-		Assert.assertEquals(TimeStampType.getTimeInMillis("1h"), 1000 * 60 * 60);
-		Assert.assertEquals(TimeStampType.getTimeInMillis("1d"), 1000 * 60 * 60 * 24);
+		Assert.assertEquals(1, TimeStampType.getTimeInMillis("1ms"));
+		Assert.assertEquals(1000, TimeStampType.getTimeInMillis("1s"));
+		Assert.assertEquals(1000 * 60, TimeStampType.getTimeInMillis("1min"));
+		Assert.assertEquals(1000 * 60 * 60, TimeStampType.getTimeInMillis("1h"));
+		Assert.assertEquals(1000 * 60 * 60 * 24, TimeStampType.getTimeInMillis("1d"));
 
-		Assert.assertEquals(TimeStampType.getTimeInMillis("1ms1s1m1h1d"), 1 + 1000 + 1000 * 60
-				+ 1000 * 60 * 60 + 1000 * 60 * 60 * 24);
+		Assert.assertEquals(1 + 1000 + 1000 * 60
+				+ 1000 * 60 * 60 + 1000 * 60 * 60 * 24,
+				TimeStampType.getTimeInMillis("1ms1s1min1h1d"));
 
-		Assert.assertEquals(TimeStampType.getTimeInMillis("10ms10s10m10h10d"),
-				(1 + 1000 + 1000 * 60 + 1000 * 60 * 60 + 1000 * 60 * 60 * 24) * 10);
+		Assert.assertEquals((1 + 1000 + 1000 * 60 + 1000 * 60 * 60 + 1000 * 60 * 60 * 24) * 10,
+				TimeStampType.getTimeInMillis("10ms10s10min10h10d"));
 
+	}
+
+	@Test
+	public void millisToTimeStamp() throws Exception {
+		Assert.assertEquals("1ms", TimeStampType.createTimeAsTimeStamp(1));
+		Assert.assertEquals("1s", TimeStampType.createTimeAsTimeStamp(1000));
+		Assert.assertEquals("1min", TimeStampType.createTimeAsTimeStamp(1000 * 60));
+		Assert.assertEquals("1h", TimeStampType.createTimeAsTimeStamp(1000 * 60 * 60));
+		Assert.assertEquals("1d", TimeStampType.createTimeAsTimeStamp(1000 * 60 * 60 * 24));
+
+		Assert.assertEquals("1d1h1min1s1ms",
+				TimeStampType.createTimeAsTimeStamp(1 + 1000 + 1000 * 60
+				+ 1000 * 60 * 60 + 1000 * 60 * 60 * 24));
+
+		Assert.assertEquals((1 + 1000 + 1000 * 60 + 1000 * 60 * 60 + 1000 * 60 * 60 * 24) * 10,
+				TimeStampType.getTimeInMillis("10d10h10min10s10ms"));
+
+		Random random = new Random();
+		for (int i = 0; i < 10; i++) {
+			long l = Math.abs(random.nextInt(2000000000));
+			String timeStamp = TimeStampType.createTimeAsTimeStamp(l);
+			long millis = TimeStampType.getTimeInMillis(timeStamp);
+			// System.out.println(timeStamp);
+			Assert.assertEquals(l, millis);
+
+		}
 	}
 
 }
