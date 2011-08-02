@@ -97,7 +97,7 @@ public abstract class AnswerReference
 			Question question = kb.getManager().searchQuestion(questionName);
 			if (question != null && question instanceof QuestionChoice) {
 				return KnowledgeBaseUtils.findChoice((QuestionChoice) question,
-						answerName);
+						answerName, false);
 
 			}
 

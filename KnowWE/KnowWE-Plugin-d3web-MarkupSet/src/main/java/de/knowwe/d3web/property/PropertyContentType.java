@@ -18,7 +18,6 @@
  */
 package de.knowwe.d3web.property;
 
-import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.terminology.info.Property;
@@ -27,24 +26,29 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.StyleRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
-public class PropertyType extends AbstractType {
+/**
+ * Represents the content to be set to a {@link Property}.
+ * 
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 02.08.2011
+ */
+public class PropertyContentType extends AbstractType {
 
-	public PropertyType() {
-		this.setSectionFinder(new RegexSectionFinder(
-				Pattern.compile("^\\s*\\.\\s*(" + PropertyDeclarationType.NAME + ")\\s*"), 1));
-		this.setCustomRenderer(StyleRenderer.PROPERTY);
+	public PropertyContentType() {
+		this.setSectionFinder(new RegexSectionFinder("^\\s*=\\s*(.+)\\s*", Pattern.DOTALL, 1));
+		this.setCustomRenderer(StyleRenderer.CONTENT);
 	}
 
-	@SuppressWarnings("rawtypes")
-	public Property getProperty(Section<PropertyType> s) {
-		if (s.get() instanceof PropertyType) {
-			try {
-				return Property.getUntypedProperty(s.getText().trim());
-			}
-			catch (NoSuchElementException e) {
-			}
+	public String getPropertyContent(Section<PropertyContentType> s) {
+		StringBuilder content = new StringBuilder(s.getText());
+		int start = 0;
+		int end = content.length() - 1;
+		while (start < end && content.charAt(start) == '"') {
+			start++;
 		}
-		return null;
+		while (end >= start && content.charAt(end) == '"') {
+			end--;
+		}
+		return content.substring(start, end + 1);
 	}
-
 }

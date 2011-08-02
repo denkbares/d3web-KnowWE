@@ -69,7 +69,7 @@ public abstract class TermReference<TermObject>
 	}
 
 	public abstract String getTermObjectDisplayName();
-	
+
 	@Override
 	public String getTermName(Section<? extends KnowWETerm<TermObject>> s) {
 		// As default the term name is identical with the identifier

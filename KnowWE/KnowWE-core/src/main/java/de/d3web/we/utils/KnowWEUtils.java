@@ -594,31 +594,6 @@ public class KnowWEUtils {
 		return trimmed;
 	}
 
-	// public static Broker getBroker(Model model) {
-	// int i;
-	// String web = (String) BasicUtils.getModelAttribute(model,
-	// KnowWEAttributes.WEB, String.class, true);
-	// Broker broker = (Broker) BasicUtils.getModelAttribute(model,
-	// KnowWEAttributes.getBrokerConstant(web), Broker.class, true);
-	// if(broker == null) {
-	// DPSEnvironment env = KnowWEUtils.getEnvironment(model);
-	// String userID = (String) BasicUtils.getModelAttribute(model,
-	// KnowWEAttributes.USER, String.class, true);
-	// if(userID == null || userID.equals(DPSEnvironment.defaultUser) ||
-	// userID.trim().equals("")) {
-	// broker = env.createBroker(userID);
-	// model.setAttribute(KnowWEAttributes.getBrokerConstant(web), broker,
-	// model.getWebApp());
-	// } else {
-	// broker = env.getBroker(userID);
-	// model.setAttribute(KnowWEAttributes.getBrokerConstant(web), broker,
-	// model.getWebApp());
-	// }
-	// }
-	// return broker;
-	// }
-	//
-
 	public static String getRealPath(ServletContext context, String varPath) {
 		if (varPath.indexOf("$webapp_path$") != -1) {
 			String realPath = context.getRealPath("");
@@ -630,18 +605,6 @@ public class KnowWEUtils {
 		}
 		return varPath;
 	}
-
-	// public static String getSessionPath(String user, String web) {
-	// ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
-	// String sessionDir = rb.getString("knowwe.config.path.sessions");
-	// sessionDir = sessionDir.replaceAll("\\$web\\$", web);
-	// sessionDir = sessionDir.replaceAll("\\$user\\$", user);
-	//
-	// sessionDir =
-	// getRealPath(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(),
-	// sessionDir);
-	// return sessionDir;
-	// }
 
 	public static String getSessionPath(UserContext context) {
 		String user = context.getParameter(KnowWEAttributes.USER);

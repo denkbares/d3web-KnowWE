@@ -34,7 +34,7 @@ public class PropertyMarkup extends DefaultMarkupType {
 
 	static {
 		m = new DefaultMarkup("Property");
-		m.addContentType(new PropertyType());
+		m.addContentType(new PropertyDeclarationType());
 		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME, false);
 	}
 

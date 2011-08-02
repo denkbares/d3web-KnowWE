@@ -31,11 +31,14 @@ public class StyleRenderer extends KnowWEDomRenderer {
 
 	public static final StyleRenderer KEYWORDS = new StyleRenderer("color:rgb(0, 0, 0)");
 	public static final StyleRenderer OPERATOR = new StyleRenderer("color:rgb(40, 40, 160)");
-	public static final StyleRenderer PROPERTY = new StyleRenderer("color:rgb(40, 40, 160)");
+	public static final StyleRenderer PROPERTY = new StyleRenderer("color:rgb(30, 40, 100)");
 	public static final StyleRenderer CONDITION = new StyleRenderer("color:rgb(0, 128, 0)");
 	public static final StyleRenderer PROMPT = new StyleRenderer("color:rgb(0, 128, 0)");
 	public static final StyleRenderer NUMBER = new StyleRenderer("color:rgb(125, 80, 102)");
 	public static final StyleRenderer COMMENT = new StyleRenderer("color:rgb(160, 160, 160)");
+	public static final StyleRenderer CONTENT = new StyleRenderer("color:rgb(80, 80, 80)");
+	public static final StyleRenderer LOCALE = new StyleRenderer("color:rgb(0, 128, 128)");
+
 	public static final KnowWEDomRenderer<Type> CHOICE = new ToolMenuDecoratingRenderer<Type>(
 			new StyleRenderer("color:rgb(40, 40, 160)"));
 	public static final KnowWEDomRenderer<Type> SOLUTION = new ToolMenuDecoratingRenderer<Type>(

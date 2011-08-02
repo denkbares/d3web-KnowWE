@@ -16,46 +16,38 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.object;
+package de.knowwe.d3web.property;
 
-import java.util.NoSuchElementException;
+import java.util.Locale;
 
-import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.TermReference;
+import de.d3web.we.kdom.rendering.StyleRenderer;
+import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
 /**
+ * Represents a java {@link Locale}. getLocale(...) returns a Locale
+ * representing the text content of the Section.
  * 
- * @author Markus Friedrich (denkbares GmbH)
- * @created 12.11.2010
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 02.08.2011
  */
-@SuppressWarnings("rawtypes")
-public class PropertyReference extends D3webTermReference<Property> {
+public class LocaleType extends AbstractType {
 
-	/**
-	 * @param termObjectClass
-	 */
-	public PropertyReference() {
-		super(Property.class);
+	public LocaleType() {
+		this.setSectionFinder(new RegexSectionFinder("^\\s*\\.\\s*(\\w{2}(?:\\.\\w{2})?)\\s*", 1));
+		this.setCustomRenderer(StyleRenderer.LOCALE);
 	}
 
-	@Override
-	public Property getTermObjectFallback(KnowWEArticle article, Section<? extends TermReference<Property>> s) {
-		if (s.get() instanceof PropertyReference) {
-			try {
-				return Property.getUntypedProperty(s.get().getTermIdentifier(s));
-			}
-			catch (NoSuchElementException e) {
-				return null;
-			}
+	public Locale getLocale(Section<LocaleType> s) {
+		String text = s.getText();
+		if (text.contains(".")) {
+			String[] split = text.split("\\.");
+			return new Locale(split[0], split[1]);
 		}
-		return null;
-	}
-
-	@Override
-	public String getTermObjectDisplayName() {
-		return "Property";
+		else {
+			return new Locale(text);
+		}
 	}
 
 }
