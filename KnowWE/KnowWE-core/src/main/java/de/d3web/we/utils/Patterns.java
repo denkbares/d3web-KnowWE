@@ -95,7 +95,7 @@ public final class Patterns {
 	/**
 	 * RegEx for an XCL.
 	 */
-	public static String XCLIST =
+	public static final String XCLIST =
 			"^" + SPACETABS + // at line start there may be nb-whitespace,
 					"(?>" + // diagnosis
 					D3IDENTIFIER +
@@ -123,6 +123,17 @@ public final class Patterns {
 	/**
 	 * A pattern for all quoted strings " can be masked by \
 	 */
-	public static String quoted = "(?:\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\")";
+	public static final String quoted = "(?:\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\")";
+
+	/**
+	 * A Pattern for jspwiki links. The link text is captured in group 1, the
+	 * optional page reference in group 2. This pattern can handle masked '['
+	 * (i.e., '[[').
+	 */
+	public static final String JSPWIKI_LINK =
+			"(?<!\\[)\\[(?!\\[)" + // opening bracket (except, if masked)
+			"([^]|]+)" + // link text (captured)
+			"(?:\\|([^]]+))?" + // optional reference
+			"\\]"; // closing bracket
 
 }
