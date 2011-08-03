@@ -51,8 +51,8 @@ public class TimeStampTest {
 		Assert.assertTrue(TimeStampType.isValid("0h"));
 		Assert.assertTrue(TimeStampType.isValid("0d"));
 
-		Assert.assertTrue(TimeStampType.isValid("1ms1s1m1h1d"));
-		Assert.assertTrue(TimeStampType.isValid("10ms10s10m10h10d"));
+		Assert.assertTrue(TimeStampType.isValid("1ms1s1min1h1d"));
+		Assert.assertTrue(TimeStampType.isValid("10ms10s10min10h10d"));
 
 		Assert.assertFalse(TimeStampType.isValid("0.1ms"));
 		Assert.assertFalse(TimeStampType.isValid("1a"));
