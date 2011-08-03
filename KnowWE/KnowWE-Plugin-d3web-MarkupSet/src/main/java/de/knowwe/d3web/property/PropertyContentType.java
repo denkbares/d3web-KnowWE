@@ -40,7 +40,7 @@ public class PropertyContentType extends AbstractType {
 	}
 
 	public String getPropertyContent(Section<PropertyContentType> s) {
-		StringBuilder content = new StringBuilder(s.getText());
+		StringBuilder content = new StringBuilder(s.getText().trim());
 		int start = 0;
 		int end = content.length() - 1;
 		while (start < end && content.charAt(start) == '"') {
