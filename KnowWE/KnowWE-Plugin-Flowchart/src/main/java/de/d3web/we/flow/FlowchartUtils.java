@@ -45,7 +45,7 @@ import de.d3web.we.utils.KnowWEUtils;
 public class FlowchartUtils {
 
 	public static final String PREVIEW_REGEX = "\\s*<!\\[CDATA\\[\\s*(.*)\\s*\\]\\]>\\s*";
-	public static final Pattern PREVIEW_PATTERN = Pattern.compile(PREVIEW_REGEX);
+	public static final Pattern PREVIEW_PATTERN = Pattern.compile(PREVIEW_REGEX, Pattern.DOTALL);
 	public static final String[] JS = new String[] {
 			"cc/flow/builder.js", "cc/kbinfo/kbinfo.js", "cc/flow/renderExtensions.js",
 			"cc/kbinfo/extensions.js", "cc/flow/flowchart.js",
