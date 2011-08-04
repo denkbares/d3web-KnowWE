@@ -28,6 +28,8 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.d3web.we.action.ActionContext;
 import de.d3web.we.action.UserActionContext;
@@ -138,5 +140,15 @@ public class TestUtils {
 		map.put(KnowWEAttributes.USER, "Test User");
 		return new ActionContext(actionName != null ? actionName : "", path != null ? path : "",
 				map, null, null, null, null);
+	}
+
+	public static int countMatches(String text, String regex) {
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(text);
+		int count = 0;
+		while (matcher.find()) {
+			count++;
+		}
+		return count;
 	}
 }
