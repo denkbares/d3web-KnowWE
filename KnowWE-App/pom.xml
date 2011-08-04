@@ -663,6 +663,23 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		
+		<profile>
+			<id>knowsec-plugin</id>
+			<activation>
+				<property>
+					<name>knowsec-plugin</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-KnowSEC</artifactId>
+					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 
 		<profile>
 			<id>denkbares</id>
