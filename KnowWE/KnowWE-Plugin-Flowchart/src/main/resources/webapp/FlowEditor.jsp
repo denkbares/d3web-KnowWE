@@ -58,6 +58,15 @@
 	String web = context.getWeb();
 	KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(web, topic);
 	
+	
+	boolean canEditPage = KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(
+			topic, context.getRequest());
+	
+	if (!canEditPage){
+		out.println("<h3>Do not have the permission to edit article: '" + topic + "'.</h3>");
+		return;
+	}
+	
 	if (article == null){
 		//TODO happens if article is no longer available
 		out.println("<h3>Article not found: '" + topic + "'.</h3>");
