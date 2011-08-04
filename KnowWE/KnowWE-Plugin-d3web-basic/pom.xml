@@ -56,16 +56,15 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Plugin-SemanticCore</artifactId>
+			<artifactId>KnowWE-Plugin-Core</artifactId>
 			<version>${project.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Plugin-Core</artifactId>
-			<version>${project.version}</version>
-			<type>jar</type>
+			<artifactId>KnowWE-KDOMParseUtils</artifactId>
+			<version>0.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>		
 	</dependencies>

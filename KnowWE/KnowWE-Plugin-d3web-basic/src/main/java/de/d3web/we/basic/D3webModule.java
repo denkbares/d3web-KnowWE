@@ -34,8 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.semantic.ISemanticCore;
-import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
@@ -68,18 +66,12 @@ public class D3webModule {
 
 	public static void initModule(ServletContext context) {
 
-		// boolean registerRenderer = KnowWEEnvironment.getInstance()
-		// .registerConditionalRendererToType(Annotation.class,
-		// new AnnotationInlineAnswerRenderer());
-		// if (!registerRenderer) {
-		// Logger.getLogger(KnowWEUtils.class.getName()).warning(
-		// "Failed to register Renderer for Type: "
-		// + Annotation.class.getName() + " - "
-		// + AnnotationInlineAnswerRenderer.class.getName());
-		//
-		// }
+
 
 		// Introduce my ontology parts to the core
+		// Ontology parts currently not part of d3web-basic
+		
+		/*
 		ISemanticCore sc = SemanticCoreDelegator.getInstance();
 		if (sc != null) {
 			sc.getUpper().loadOwlFile(
@@ -88,6 +80,7 @@ public class D3webModule {
 							+ File.separatorChar + ontfile));
 			loadData(context);
 		}
+		*/
 	}
 
 	/**
