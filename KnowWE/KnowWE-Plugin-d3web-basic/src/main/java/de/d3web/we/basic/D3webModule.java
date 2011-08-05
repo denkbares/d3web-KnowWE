@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -41,7 +41,8 @@ import de.d3web.we.utils.KnowWEUtils;
 public class D3webModule {
 
 	private static final String defaultJarsPath = "/var/lib/tomcat-6/webapps/JSPWiki/KnowWEExtension/KBrepository/";
-	private static final String ontfile = "d3web.owl";
+
+	// private static final String ontfile = "d3web.owl";
 
 	public static ResourceBundle getKwikiBundle_d3web() {
 
@@ -66,27 +67,22 @@ public class D3webModule {
 
 	public static void initModule(ServletContext context) {
 
-
-
 		// Introduce my ontology parts to the core
 		// Ontology parts currently not part of d3web-basic
-		
+
 		/*
-		ISemanticCore sc = SemanticCoreDelegator.getInstance();
-		if (sc != null) {
-			sc.getUpper().loadOwlFile(
-					new File(KnowWEEnvironment.getInstance()
-							.getKnowWEExtensionPath()
-							+ File.separatorChar + ontfile));
-			loadData(context);
-		}
-		*/
+		 * ISemanticCore sc = SemanticCoreDelegator.getInstance(); if (sc !=
+		 * null) { sc.getUpper().loadOwlFile( new
+		 * File(KnowWEEnvironment.getInstance() .getKnowWEExtensionPath() +
+		 * File.separatorChar + ontfile)); }
+		 */
+		loadData(context);
 	}
 
 	/**
 	 * On KnowWE initialisation> Loads the knowledgebases into the distributed
 	 * reasoning engine.
-	 *
+	 * 
 	 * @param context
 	 */
 	private static void loadData(ServletContext context) {
@@ -125,7 +121,7 @@ public class D3webModule {
 
 	/**
 	 * Returns a KnowledgeService for a given article name
-	 *
+	 * 
 	 * @param web
 	 * @param topic
 	 * @return
