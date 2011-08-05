@@ -19,6 +19,7 @@
  */
 package de.knowwe.core.renderer;
 
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Type;
@@ -66,13 +67,13 @@ public class GenericHTMLRenderer<T extends Type> extends KnowWEDomRenderer<T> {
 		if (attributes != null && attributes.length > 0) {
 			string.append(" ");
 			for (int i = 0; i < attributes.length; i += 2) {
-				string.append(attributes[i]).append("=\"");
+				string.append(attributes[i]).append(KnowWEUtils.maskHTML("=\""));
 				
 				if (i < attributes.length && attributes[i+1] != null) {
-					string.append(attributes[i+1].replace("\"", "\\\""));
+					string.append(attributes[i+1].replace("\"", "&quot;"));
 				}
 				
-				string.append("\"");
+				string.append(KnowWEUtils.maskHTML("\""));
 				
 				if ((i + 2) < attributes.length) {
 					string.append(" ");
