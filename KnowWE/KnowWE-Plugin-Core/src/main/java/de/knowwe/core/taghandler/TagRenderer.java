@@ -92,7 +92,7 @@ public class TagRenderer extends KnowWEDomRenderer<TagHandlerType> {
 							}
 						}
 						buffi.append(KnowWEUtils.maskHTML("<" + wrappingTag + " id=\""
-								+ key + "\">"));
+								+ key +"_"+sec.getID()+ "\">"));
 						String resultText =
 								handler.render(article, sec, user, attValues);
 						buffi.append(resultText).append(" \n");
