@@ -18,8 +18,6 @@
  */
 package de.d3web.we.flow;
 
-import de.d3web.we.flow.type.FlowchartType;
-import de.d3web.we.kdom.Section;
 import de.d3web.we.user.UserContext;
 
 /**
@@ -33,7 +31,7 @@ public interface DiaFluxDisplayEnhancement {
 	public static final String PLUGIN_ID = "KnowWE-Plugin-DiaFlux";
 	public static final String EXTENSION_POINT_ID = "DiaFluxDisplayEnhancement";
 
-	boolean activate(Section<FlowchartType> section, UserContext user);
+	boolean activate(UserContext user);
 
 	String[] getScripts();
 

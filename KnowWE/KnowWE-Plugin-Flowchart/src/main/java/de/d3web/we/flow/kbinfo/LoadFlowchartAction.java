@@ -27,23 +27,39 @@ import de.d3web.we.action.UserActionContext;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.flow.FlowchartUtils;
+import de.d3web.we.flow.type.FlowchartType;
+import de.d3web.we.kdom.Section;
 
 /**
  * @author Reinhard Hatko
  * 
  *         Created: 18.06.2010
  */
-public class GetKDOMNodeContent extends AbstractAction {
+public class LoadFlowchartAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
 		String web = context.getParameter(KnowWEAttributes.WEB);
 		String nodeID = context.getParameter(KnowWEAttributes.TARGET);
-		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 
-		context.setContentType("text/plain; charset=UTF-8");
-		context.getWriter().write(mgr.findNode(nodeID).getOriginalText());
+		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
+		Section<FlowchartType> section = (Section<FlowchartType>) mgr.findNode(nodeID);
+		if (section == null) {
+			// TODO error handling
+		}
+		else {
+
+			String source = FlowchartUtils.getFlowSourceWithoutPreview(section);
+
+			// TODO fix xml-soup of source and set content type to xml
+			context.setContentType("text/plain; charset=UTF-8");
+			String escapeXml = source;
+			context.getWriter().write(escapeXml);
+			
+			
+		}
 
 	}
 

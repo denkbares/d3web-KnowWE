@@ -20,6 +20,8 @@
 package de.d3web.we.flow;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.ResourceBundle;
 import java.util.WeakHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,6 +31,7 @@ import de.d3web.plugin.Extension;
 import de.d3web.plugin.JPFPluginManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.flow.kbinfo.JSPHelper;
+import de.d3web.we.flow.type.DiaFluxType;
 import de.d3web.we.flow.type.FlowchartPreviewContentType;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
@@ -44,6 +47,7 @@ import de.d3web.we.utils.KnowWEUtils;
  */
 public class FlowchartUtils {
 
+	private static final String DIAFLUX_SCOPE = "diaflux";
 	public static final String PREVIEW_REGEX = "\\s*<!\\[CDATA\\[\\s*(.*)\\s*\\]\\]>\\s*";
 	public static final Pattern PREVIEW_PATTERN = Pattern.compile(PREVIEW_REGEX, Pattern.DOTALL);
 	public static final String[] JS = new String[] {
@@ -54,7 +58,7 @@ public class FlowchartUtils {
 
 	public static final String[] CSS = new String[] {
 			"cc/flow/flowchart.css", "cc/flow/guard.css", "cc/flow/node.css",
-			"cc/flow/rule.css", "cc/flow/rendering.css", "cc/flow/highlight.css" };
+			"cc/flow/rule.css", "cc/flow/rendering.css" };
 
 	private static final HashMap<String, WeakHashMap<Flow, HashMap<String, Object>>> flowPropertyStore =
 			new HashMap<String, WeakHashMap<Flow, HashMap<String, Object>>>();
@@ -145,47 +149,57 @@ public class FlowchartUtils {
 	 * @return s the preview including styles, or null if no preview is present
 	 */
 	public static String createRenderablePreview(Section<FlowchartType> flowSection, UserContext user) {
-		// return createFlowchartRenderer(flowSection, user);
-		String preview = extractPreview(flowSection);
+		ResourceBundle wikiConfig = ResourceBundle.getBundle("KnowWE_config");
+		boolean render = Boolean.valueOf(wikiConfig.getString("knowweplugin.diaflux.render"));
 
-		if (preview == null) {
-			return null;
+		if (render) {
+			return KnowWEUtils.maskHTML(createFlowchartRenderer(flowSection, user, DIAFLUX_SCOPE));
 		}
+		else {
+			String preview = extractPreview(flowSection);
 
-		return createRenderablePreview(preview);
+			if (preview == null) {
+				return null;
+			}
+
+			return createRenderablePreview(preview);
+		}
 
 	}
 
 	// extended experimental hack
-	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user) {
-		return createFlowchartRenderer(section, user, null);
+	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String scope) {
+		String parent = FlowchartType.getFlowchartName(section);
+		return createFlowchartRenderer(section, user, parent, scope);
 	}
 
 	// experimental hack
-	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String parentElement) {
-		String name = FlowchartType.getFlowchartName(section);
-		String source = section.getOriginalText();
-		int previewIndex = source.lastIndexOf("<preview");
-		// remove preview
-		if (previewIndex != -1) {
-			source = source.substring(0, previewIndex) + "</flowchart>";
-		}
-		String web = user.getWeb();
+	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String parent, String scope) {
+
+		if (user.getWeb() == null) return "";
 
 		String width = AbstractXMLType.getAttributeMapFor(section).get("width");
 		String height = AbstractXMLType.getAttributeMapFor(section).get("height");
 
-		if (user.getWeb() == null) return "";
+		StringBuilder result = new StringBuilder("<div>");
 
-		String sourceID = name + "Source";
-		name = (parentElement != null) ? parentElement : name;
-		String initScript = "<script>" +
-				"KBInfo._updateCache($('referredKBInfo'));" +
-				"var flowchart = Flowchart.createFromXML('" + name + "', $('" + sourceID + "'));" +
-				"KNOWWE.helper.observer.notify('flowchartrendered', {flow: flowchart});" +
-				"</script>\n";
+		// if (isInsertRessources(section)) {
+			insertDiafluxRessources(result, user);
+			addDisplayPlugins(result, user, scope);
+		// }
 
-		StringBuilder result = new StringBuilder("\n<div>");
+		result.append("\n");
+		result.append("<div id='" + parent + "' style='width:" + width + "px; height: "
+				+ height + "px;'>");
+		result.append("<script>");
+		result.append("Flowchart.loadFlowchart('" + section.getID() + "', '" + parent + "');");
+		result.append("</script></div></div>\n");
+
+		return result.toString();
+
+	}
+
+	public static void insertDiafluxRessources(StringBuilder result, UserContext user) {
 
 		for (String cssfile : CSS) {
 			result.append("<link rel='stylesheet' type='text/css' href='" + cssfile + "'></link>");
@@ -195,20 +209,18 @@ public class FlowchartUtils {
 			result.append("<script src='" + jsfile + "' type='text/javascript'></script>");
 		}
 
-		addDisplayPlugins(result, user, section);
-
-		result.append("\n");
-		result.append("<xml id='" + sourceID + "' style ='display:none;'>" + source + "</xml>\n");
 		result.append("<xml id='referredKBInfo' style='display:none;'>");
-		result.append(JSPHelper.getReferrdInfoObjectsAsXML(web));
-		result.append("</xml>");
-		result.append("<div id='" + name + "' style='width:" + width + "px; height: " + height
-				+ "px;'>");
-		result.append(initScript);
-		result.append("</div>\n</div>\n");
+		result.append(JSPHelper.getReferrdInfoObjectsAsXML(user.getWeb()));
+		result.append("</xml>\n");
+		result.append("<script>KBInfo._updateCache($('referredKBInfo'));</script>");
+	}
 
-		return KnowWEUtils.maskHTML(result.toString());
+	private static boolean isInsertRessources(Section<FlowchartType> section) {
+		Section<DiaFluxType> diaFluxType = Sections.findAncestorOfType(section, DiaFluxType.class);
 
+		// load JS and CSS only for first DiaFluxSection in page
+		return Sections.findSuccessorsOfType(section.getArticle().getSection(), DiaFluxType.class).indexOf(
+				diaFluxType) == 0;
 	}
 
 	/**
@@ -218,22 +230,45 @@ public class FlowchartUtils {
 	 * @param user
 	 * @param section
 	 */
-	public static void addDisplayPlugins(StringBuilder result, UserContext user, Section<FlowchartType> section) {
+	public static void addDisplayPlugins(StringBuilder result, UserContext user, String scope) {
 		Extension[] extensions = JPFPluginManager.getInstance().getExtensions(
 				DiaFluxDisplayEnhancement.PLUGIN_ID, DiaFluxDisplayEnhancement.EXTENSION_POINT_ID);
+		next:
 		for (Extension extension : extensions) {
-			DiaFluxDisplayEnhancement enh = (DiaFluxDisplayEnhancement) extension.getNewInstance();
 
-			if (!enh.activate(section, user)) continue;
+			List<String> scopes = extension.getParameters("scope");
 
-			for (String script : enh.getScripts()) {
-				result.append("<script src='" + script + "' type='text/javascript'></script>");
+			for (String extScope : scopes) {
+				if (extScope.equalsIgnoreCase(scope)) {
+
+					DiaFluxDisplayEnhancement enh = (DiaFluxDisplayEnhancement) extension.getNewInstance();
+
+					if (!enh.activate(user)) continue next;
+
+					for (String script : enh.getScripts()) {
+						result.append("<script src='" + script
+								+ "' type='text/javascript'></script>");
+					}
+
+					for (String style : enh.getStylesheets()) {
+						result.append("<link rel='stylesheet' type='text/css' href='" + style
+								+ "'></link>");
+					}
+				}
 			}
 
-			for (String style : enh.getStylesheets()) {
-				result.append("<link rel='stylesheet' type='text/css' href='" + style + "'></link>");
-			}
 
 		}
+	}
+	
+	public static String getFlowSourceWithoutPreview(Section<FlowchartType> section) {
+		String source = section.getOriginalText();
+		int previewIndex = source.lastIndexOf("<preview");
+		// remove preview
+		if (previewIndex != -1) {
+			source = source.substring(0, previewIndex) + "</flowchart>";
+		}
+		
+		return source;
 	}
 }

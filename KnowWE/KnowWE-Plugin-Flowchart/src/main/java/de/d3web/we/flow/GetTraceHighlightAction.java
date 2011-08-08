@@ -20,6 +20,7 @@ package de.d3web.we.flow;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.d3web.core.session.Session;
@@ -47,7 +48,11 @@ import de.d3web.we.utils.D3webUtils;
  * @author Reinhard Hatko
  * @created 08.06.2011
  */
-public class GetFlowchartHighlights extends AbstractAction {
+public class GetTraceHighlightAction extends AbstractAction {
+
+	private static final String PREFIX = "trace";
+	private static final String TRACE_ACTIVE_CLASS = PREFIX + "Active";
+	private static final String TRACE_SNAP_CLASS = PREFIX + "Snap";
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -71,51 +76,63 @@ public class GetFlowchartHighlights extends AbstractAction {
 		Session session = D3webUtils.getSession(article.getTitle(), context, article.getWeb());
 
 		StringBuilder builder = new StringBuilder();
-		appendHeader(builder, flowName);
+		appendHeader(builder, flowName, PREFIX);
 
 		DiaFluxCaseObject diaFluxCaseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
 		Flow flow = DiaFluxUtils.getFlowSet(session).get(flowName);
 
-		List<Edge> egdes = new ArrayList<Edge>(flow.getEdges());
-		List<Node> nodes = new ArrayList<Node>(flow.getNodes());
+
+		List<Edge> snappedEdges = new LinkedList<Edge>();
+		List<Node> snappedNodes = new LinkedList<Node>();
+
+		List<Edge> activeEdges = new LinkedList<Edge>();
+		List<Node> activeNodes = new LinkedList<Node>();
 
 		// first highlight traced nodes/edges to yellow
 		for (Node node : diaFluxCaseObject.getTracedNodes()) {
 			if (node.getFlow().getName().equals(flowName)) {
-				nodes.remove(node);
-				addNodeHighlight(builder, node, "highlightSnap");
+				snappedNodes.add(node);
 			}
 		}
 		for (Edge edge : diaFluxCaseObject.getTracedEdges()) {
 			if (edge.getStartNode().getFlow().getName().equals(flowName)) {
-				egdes.remove(edge);
-				addEdgeHighlight(builder, edge, "highlightSnap");
+				snappedEdges.add(edge);
 			}
 		}
 		// then highlight all currently active nodes/edges to green
 		for (FlowRun run : diaFluxCaseObject.getRuns()) {
 			for (Node node : run.getActiveNodes()) {
 				if (node.getFlow().getName().equals(flowName)) {
-					nodes.remove(node);
-					addNodeHighlight(builder, node, "highlightActive");
+					activeNodes.add(node);
 					for (Edge edge : node.getOutgoingEdges()) {
 						if (FluxSolver.evalEdge(session, edge)) {
-							egdes.remove(edge);
-							addEdgeHighlight(builder, edge, "highlightActive");
+							activeEdges.add(edge);
 						}
 					}
 				}
 			}
 		}
 
-		// clear classes on all remaining nodes and edges
-		for (Node node : nodes) {
-			addNodeHighlight(builder, node, "");
-		}
+		snappedNodes.removeAll(activeNodes);
+		snappedEdges.removeAll(activeEdges);
 
-		for (Edge edge : egdes) {
-			addEdgeHighlight(builder, edge, "");
-		}
+		addNodeHighlight(builder, snappedNodes, TRACE_SNAP_CLASS);
+		addEdgeHighlight(builder, snappedEdges, TRACE_SNAP_CLASS);
+
+		addNodeHighlight(builder, activeNodes, TRACE_ACTIVE_CLASS);
+		addEdgeHighlight(builder, activeEdges, TRACE_ACTIVE_CLASS);
+
+		List<Edge> remainingEdges = new ArrayList<Edge>(flow.getEdges());
+		List<Node> remainingNodes = new ArrayList<Node>(flow.getNodes());
+		remainingEdges.removeAll(activeEdges);
+		remainingEdges.removeAll(snappedEdges);
+
+		remainingNodes.removeAll(activeNodes);
+		remainingNodes.removeAll(snappedNodes);
+
+		// clear classes on all remaining nodes and edges
+		addNodeHighlight(builder, remainingNodes, "");
+		addEdgeHighlight(builder, remainingEdges, "");
 
 		appendFooter(builder);
 
@@ -129,35 +146,41 @@ public class GetFlowchartHighlights extends AbstractAction {
 	 * @created 08.06.2011
 	 * @param builder
 	 */
-	private void appendFooter(StringBuilder builder) {
+	public static void appendFooter(StringBuilder builder) {
 		builder.append("</flow>");
 		builder.append("\r");
 
 	}
 
-	private void appendHeader(StringBuilder builder, String flowName) {
+	public static void appendHeader(StringBuilder builder, String flowName, String prefix) {
 
 		builder.append("<flow id='");
 		builder.append(flowName);
-		builder.append("' prefix ='highlight'>\r");
+		builder.append("' prefix ='" + PREFIX + "'>\r");
 
 	}
 
-	private void addEdgeHighlight(StringBuilder builder, Edge edge, String cssclass) {
-		builder.append("<edge id='");
-		builder.append(edge.getID());
-		builder.append("'>");
-		builder.append(cssclass);
-		builder.append("</edge>\r");
+	public static void addEdgeHighlight(StringBuilder builder, List<Edge> edges, String cssclass) {
+
+		for (Edge edge : edges) {
+			builder.append("<edge id='");
+			builder.append(edge.getID());
+			builder.append("'>");
+			builder.append(cssclass);
+			builder.append("</edge>\r");
+		}
 
 	}
 
-	private void addNodeHighlight(StringBuilder builder, Node node, String cssclass) {
-		builder.append("<node id='");
-		builder.append(node.getID());
-		builder.append("'>");
-		builder.append(cssclass);
-		builder.append("</node>\r");
+	public static void addNodeHighlight(StringBuilder builder, List<Node> nodes, String cssclass) {
+
+		for (Node node : nodes) {
+			builder.append("<node id='");
+			builder.append(node.getID());
+			builder.append("'>");
+			builder.append(cssclass);
+			builder.append("</node>\r");
+		}
 	}
 
 }

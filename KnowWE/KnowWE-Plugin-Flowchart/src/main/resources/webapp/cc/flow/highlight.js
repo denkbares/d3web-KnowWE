@@ -4,18 +4,12 @@ if (typeof DiaFlux == "undefined" || !DiaFlux) {
 
 DiaFlux.Highlight = {};
 
-DiaFlux.Highlight.getHighlights = function(){
-	
-	var elem = this.flow.getContentPane();
-	
-	while (elem &&!elem.className.contains("defaultMarkupFrame")){
-		elem = elem.parentNode;
-	}
-		
+DiaFlux.Highlight.getHighlights = function(actionName, master){
 	
 	params = {
-		action : 'GetFlowchartHighlights',
-        kdomid: elem.id
+		action : actionName,
+        kdomid: this.flow.kdomid,
+        master: master
 	};
 	
 	var options = {
@@ -29,17 +23,6 @@ DiaFlux.Highlight.getHighlights = function(){
 	
 		
 } 
-
-DiaFlux.Highlight.refreshAllHighlights = function() {
-	
-	var flows = document.getElementsBySelector('.FlowchartGroup');
-	
-	for ( var i = 0; i < flows.length; i++) {
-		DiaFlux.Highlight.getHighlights.call({flow: flows[i].__flowchart});
-	}
-		
-} 
-
 
 
 DiaFlux.Highlight.highlight = function(response) {
@@ -92,6 +75,5 @@ DiaFlux.Highlight.setHighlightClass = function(elem, clazz, prefix) {
 }
 
 
-KNOWWE.helper.observer.subscribe("flowchartrendered", DiaFlux.Highlight.getHighlights);
-KNOWWE.helper.observer.subscribe("update", DiaFlux.Highlight.refreshAllHighlights);
+
 

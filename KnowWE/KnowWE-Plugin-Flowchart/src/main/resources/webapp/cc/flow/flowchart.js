@@ -1,4 +1,5 @@
 
+
 function Flowchart(parent, id, width, height, idCounter) {
 	this.parent = $(parent);
 	this.id = id || this.createID('sheet');
@@ -14,6 +15,41 @@ function Flowchart(parent, id, width, height, idCounter) {
 }
 
 Flowchart.imagePath = "cc/image/";
+
+Flowchart.loadFlowchart = function(kdomid, parent){
+	
+	var params = {
+		action : 'LoadFlowchartAction',
+		TargetNamespace : kdomid
+	};
+
+	// options for AJAX request
+	options = {
+		url : KNOWWE.core.util.getURL(params),
+		response : {
+			fn : function() {
+				KNOWWE.core.util.updateProcessingState(-1);
+				var xml = document.createElement('xml');
+				xml.innerHTML = this.responseText;
+				
+				var flow = Flowchart.createFromXML(parent, xml);
+				flow.kdomid = kdomid;
+				KNOWWE.helper.observer.notify('flowchartrendered', {flow: flow});
+			},
+			onError : function() {
+				//TODO handle error
+				KNOWWE.core.util.updateProcessingState(-1);
+			}
+		}
+	};
+
+	// send AJAX request
+	KNOWWE.core.util.updateProcessingState(1);
+	new _KA(options).send();
+	
+	
+	
+}
 
 Flowchart.prototype.createID = function(prefix) {
 	this.idCounter++;

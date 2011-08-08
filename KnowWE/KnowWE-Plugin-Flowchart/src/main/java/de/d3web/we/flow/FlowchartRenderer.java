@@ -23,6 +23,7 @@ package de.d3web.we.flow;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -69,6 +70,13 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 		String topic = sec.getArticle().getTitle();
 		String web = sec.getArticle().getWeb();
 		string.append(createPreview(article, sec, user, web, topic, string));
+
+		ResourceBundle wikiConfig = ResourceBundle.getBundle("KnowWE_config");
+		boolean render = Boolean.valueOf(wikiConfig.getString("knowweplugin.diaflux.render"));
+
+		if (render) {
+			return;
+		}
 
 		// render debug highlighting into the existing flowchart
 		// we do this by applying some additional styling
@@ -163,7 +171,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 	 * @param calledFlowName
 	 * @return
 	 */
-	private Section<FlowchartType> findFlowchartSection(String web, String calledFlowName) {
+	public static Section<FlowchartType> findFlowchartSection(String web, String calledFlowName) {
 		KnowWEArticleManager manager = KnowWEEnvironment.getInstance().getArticleManager(web);
 
 		for (Iterator<KnowWEArticle> iterator = manager.getArticleIterator(); iterator.hasNext();) {

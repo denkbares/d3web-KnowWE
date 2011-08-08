@@ -39,8 +39,20 @@
 		<parameter-def id="description" />
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
+		<parameter-def id="scope" multiplicity="one-or-more"/>
 	</extension-point>
 	
+	
+	<extension plugin-id="KnowWE-Plugin-DiaFlux" point-id="DiaFluxDisplayEnhancement"
+		id="DiaFluxTraceHighlight">
+		<parameter id="class"
+			value="de.d3web.we.flow.DiaFluxTraceHighlight" />
+		<parameter id="name" value="DiaFluxTraceHighlight" />
+		<parameter id="description" value="DiaFluxTraceHighlight" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="diaflux" />
+	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="DiaFluxType">
@@ -85,11 +97,11 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="GetFlowchartHighlights">
+		id="GetTraceHighlightAction">
 		<parameter id="class"
-			value="de.d3web.we.flow.GetFlowchartHighlights" />
-		<parameter id="name" value="GetFlowchartHighlights" />
-		<parameter id="description" value="Action GetFlowchartHighlights" />
+			value="de.d3web.we.flow.GetTraceHighlightAction" />
+		<parameter id="name" value="GetTraceHighlightAction" />
+		<parameter id="description" value="Action GetTraceHighlightAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
@@ -100,6 +112,16 @@
 			value="de.d3web.we.flow.SaveFlowchartAction" />
 		<parameter id="name" value="SaveFlowchartAction" />
 		<parameter id="description" value="Action SaveFlowchartAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+			
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="LoadFlowchartAction">
+		<parameter id="class"
+			value="de.d3web.we.flow.kbinfo.LoadFlowchartAction" />
+		<parameter id="name" value="LoadFlowchartAction" />
+		<parameter id="description" value="Action LoadFlowchartAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
@@ -156,5 +178,6 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="/DiaFlux" />
 	</extension>
+	
 	
 </plugin>

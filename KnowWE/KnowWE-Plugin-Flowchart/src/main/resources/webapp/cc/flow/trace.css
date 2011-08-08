@@ -1,9 +1,9 @@
-.Flowchart .highlightActive {
+.Flowchart .traceActive {
 	border: 2px solid green;
 }
 
 
-.Flowchart .highlightSnap {
+.Flowchart .traceSnap {
 	border: 2px solid #BB0;
 }
 	

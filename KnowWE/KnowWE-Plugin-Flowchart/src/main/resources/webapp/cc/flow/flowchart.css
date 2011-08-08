@@ -3,6 +3,8 @@
 	background-image: url(../image/grid_10.png);
 	background-position: 1px 1px;
 	overflow:	auto;
+	/* DefaultMarkup sets white-space to pre -> No wrap in nodes */
+	white-space: normal;
 }
 
 .Flowchart .h_snapline {
