@@ -36,7 +36,6 @@ import de.d3web.we.flow.type.FlowchartPreviewContentType;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sections;
-import de.d3web.we.kdom.xml.AbstractXMLType;
 import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -168,29 +167,31 @@ public class FlowchartUtils {
 	}
 
 	// extended experimental hack
-	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String scope) {
+	private static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String scope) {
 		String parent = FlowchartType.getFlowchartName(section);
-		return createFlowchartRenderer(section, user, parent, scope);
+		return createFlowchartRenderer(section, user, parent, scope, isInsertRessources(section));
+	}
+
+	// this only exists for compatibility reasons with DiaFluxDialog.
+	// TODO Remove later
+	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String parent, String scope) {
+		return createFlowchartRenderer(section, user, parent, scope, true);
 	}
 
 	// experimental hack
-	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String parent, String scope) {
+	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String parent, String scope, boolean insertRessources) {
 
 		if (user.getWeb() == null) return "";
 
-		String width = AbstractXMLType.getAttributeMapFor(section).get("width");
-		String height = AbstractXMLType.getAttributeMapFor(section).get("height");
-
 		StringBuilder result = new StringBuilder("<div>");
 
-		// if (isInsertRessources(section)) {
+		if (insertRessources) {
 			insertDiafluxRessources(result, user);
 			addDisplayPlugins(result, user, scope);
-		// }
+		}
 
 		result.append("\n");
-		result.append("<div id='" + parent + "' style='width:" + width + "px; height: "
-				+ height + "px;'>");
+		result.append("<div id='" + parent + "'>");
 		result.append("<script>");
 		result.append("Flowchart.loadFlowchart('" + section.getID() + "', '" + parent + "');");
 		result.append("</script></div></div>\n");
