@@ -91,8 +91,14 @@ public class TagRenderer extends KnowWEDomRenderer<TagHandlerType> {
 								wrappingTag = "span";
 							}
 						}
-						buffi.append(KnowWEUtils.maskHTML("<" + wrappingTag + " id=\""
-								+ key +"_"+sec.getID()+ "\">"));
+						if (key.equals("quickinterview")) {
+							buffi.append(KnowWEUtils.maskHTML("<" + wrappingTag + " id=\""
+									+ key + "\">"));
+						}
+						else {
+							buffi.append(KnowWEUtils.maskHTML("<" + wrappingTag + " id=\""
+									+ key + "_" + sec.getID() + "\">"));
+						}
 						String resultText =
 								handler.render(article, sec, user, attValues);
 						buffi.append(resultText).append(" \n");
