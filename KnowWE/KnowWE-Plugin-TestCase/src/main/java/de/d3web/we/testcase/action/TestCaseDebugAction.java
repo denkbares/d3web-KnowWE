@@ -32,8 +32,8 @@ import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.TestCase;
 import de.d3web.empiricaltesting.caseAnalysis.functions.Diff;
-import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
 import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysis;
+import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
 import de.d3web.we.action.UserActionContext;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.basic.SessionBroker;
@@ -80,14 +80,14 @@ public class TestCaseDebugAction extends TestCaseRunningAction {
 			writer.write(rb.getString("KnowWE.TestCase.loaderror"));
 		}
 		else {
-			TestCaseAnalysis analysis = (TestCaseAnalysis) TestCaseAnalysis.getInstance();
+			TestCaseAnalysis analysis = TestCaseAnalysis.getInstance();
 			TestCaseAnalysisReport result = analysis.runAndAnalyze(t);
 			if (result.precision() == 1.0 && result.recall() == 1.0) {
-				writer.write(renderTestCasePassed(t));
+				writer.write(renderTestCasePassed(t, result));
 
 			}
 			else if (!t.isConsistent()) {
-				writer.write(renderTestCaseNotConsistent(t));
+				writer.write(renderTestCaseNotConsistent(t, result));
 
 			}
 			else {

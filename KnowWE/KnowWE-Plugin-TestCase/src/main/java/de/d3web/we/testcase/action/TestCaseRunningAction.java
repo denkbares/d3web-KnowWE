@@ -26,7 +26,6 @@ import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.TestCase;
 import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
-import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysis;
 import de.d3web.we.action.AbstractAction;
 
 /**
@@ -40,7 +39,7 @@ public abstract class TestCaseRunningAction extends AbstractAction {
 	protected final DecimalFormat formatter = new DecimalFormat("0.00");
 	protected MessageFormat msgFormatter;
 
-	protected String renderTestCasePassed(TestCase t) {
+	protected String renderTestCasePassed(TestCase t, TestCaseAnalysisReport result) {
 		StringBuilder html = new StringBuilder();
 
 		// TestCase passed text and green bulb
@@ -52,9 +51,6 @@ public abstract class TestCaseRunningAction extends AbstractAction {
 		html.append("</strong>");
 		html.append("</p>");
 
-		// TestCase TestCaseAnalysisReport Detais
-		TestCaseAnalysis analysis = (TestCaseAnalysis) TestCaseAnalysis.getInstance();
-		TestCaseAnalysisReport result = analysis.runAndAnalyze(t);
 		html.append("<p style='margin-left:22px'>");
 		html.append("Precision: ");
 		html.append(result.precision());
@@ -72,7 +68,7 @@ public abstract class TestCaseRunningAction extends AbstractAction {
 		return msgFormatter.format(arguments);
 	}
 
-	protected String renderTestCaseNotConsistent(TestCase t) {
+	protected String renderTestCaseNotConsistent(TestCase t, TestCaseAnalysisReport result) {
 		StringBuilder html = new StringBuilder();
 
 		// TestCase failed text and red bulb
@@ -84,9 +80,7 @@ public abstract class TestCaseRunningAction extends AbstractAction {
 		html.append("</strong>");
 		html.append("</p>");
 
-		// TestCase TestCaseAnalysisReport Detais
-		TestCaseAnalysis analysis = (TestCaseAnalysis) TestCaseAnalysis.getInstance();
-		TestCaseAnalysisReport result = analysis.runAndAnalyze(t);
+		// TestCase TestCaseAnalysisReport Details
 		html.append("<p style='margin-left:22px'>");
 		html.append("Precision: ");
 		html.append(formatter.format(result.precision()));
@@ -161,6 +155,6 @@ public abstract class TestCaseRunningAction extends AbstractAction {
 		}
 
 		// Not very nice but prevents double listing of RTCs
-		return message.substring(0, message.length() / 2).toString();
+		return message.substring(0, message.length() / 2);
 	}
 }

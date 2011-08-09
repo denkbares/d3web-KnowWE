@@ -76,14 +76,14 @@ public class TestCaseRunAction extends TestCaseRunningAction {
 	}
 
 	private String renderTestCaseResult(TestCase t) {
-		TestCaseAnalysis analysis = (TestCaseAnalysis) TestCaseAnalysis.getInstance();
+		TestCaseAnalysis analysis = TestCaseAnalysis.getInstance();
 		TestCaseAnalysisReport result = analysis.runAndAnalyze(t);
 		if (result.precision() == 1.0 && result.recall() == 1.0) {
-			return renderTestCasePassed(t);
+			return renderTestCasePassed(t, result);
 
 		}
 		else if (!t.isConsistent()) {
-			return renderTestCaseNotConsistent(t);
+			return renderTestCaseNotConsistent(t, result);
 
 		}
 
