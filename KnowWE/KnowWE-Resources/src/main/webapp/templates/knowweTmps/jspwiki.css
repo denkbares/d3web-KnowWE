@@ -39,6 +39,7 @@
 }
 #header .userbox {
 	float:right;
+	white-space: nowrap;
 }
 #header .pagename {
 	float:left;
@@ -48,7 +49,7 @@
 	float:right;
 }
 #header .breadcrumbs {
-	clear:both;
+	clear:left;
 }
 #favorites {
 	float:left;
@@ -1053,6 +1054,11 @@ a.action.workflow,
 a.action.login,
 a.action.logout {
 }
+
+#searchTools, #recentSearches {
+	display: none;
+}
+	
 #searchTools a.action, .userbox a.action, a.action.edit, a.action.more {
 	padding:0.25em 0.5em;
 	text-decoration:none;

@@ -1122,8 +1122,7 @@ KNOWWE.helper.selector.filter = function(){
             }
             selector = selector.replace(/\./, '');
             if(!context.className) return new Array();
-            
-            if( context.className.indexOf( selector ) !== -1 ){
+            if(context.className.indexOf && context.className.indexOf( selector ) !== -1 ){
                 return context;
             }
             return new Array();

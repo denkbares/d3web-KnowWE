@@ -42,6 +42,10 @@ import de.d3web.we.basic.D3webModule;
 public class GetKnowledgeBaseResourceAction extends AbstractAction {
 
 	private static final MimetypesFileTypeMap MIMETYPE_MAP = new MimetypesFileTypeMap();
+	static {
+		// the default map is missing png files, so we add them manually
+		MIMETYPE_MAP.addMimeTypes("image/png png pnG pNg pNG Png PnG PNg PNG");
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
