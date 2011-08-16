@@ -1,6 +1,7 @@
 var KBInfo = { 
 		
-	imagePath: "cc/image/kbinfo/"
+	imagePath: "cc/image/kbinfo/",
+	cachePrefix : "#DiaFlux_"
 	
 };
 
@@ -76,9 +77,16 @@ KBInfo._updateCache = function(xmlDom) {
 KBInfo._cache = { byID: [], byName: [], listeners: {} };
 
 KBInfo._addToChache = function(infoObject) {
-	KBInfo._cache.byID[infoObject.getID().toLowerCase()] = infoObject;
-	KBInfo._cache.byName[infoObject.getName().toLowerCase()] = infoObject;
+	KBInfo._cache.byID[KBInfo.createKey(infoObject.getID())] = infoObject;
+	KBInfo._cache.byName[KBInfo.createKey(infoObject.getName())] = infoObject;
 };
+
+/**
+ * creates the key for for name/InfoObject pairs in cache
+ */
+KBInfo.createKey = function(name) {
+	return KBInfo.cachePrefix + name.toLowerCase();
+}
 
 /**
  * Gives the cache the hint that this info object(s) will be required later on.
@@ -171,8 +179,8 @@ KBInfo.searchInfoObject = function(phrase, classArray, maxCount, onResult) {
  */
 KBInfo.lookupInfoObject = function(nameOrIDOrArray) {
 	if (!nameOrIDOrArray) return null;
-	return KBInfo._cache.byID[nameOrIDOrArray.toLowerCase()] 
-		|| KBInfo._cache.byName[nameOrIDOrArray.toLowerCase()];
+	return KBInfo._cache.byID[KBInfo.createKey(nameOrIDOrArray)] 
+		|| KBInfo._cache.byName[KBInfo.createKey(nameOrIDOrArray)];
 };
 
 /**
@@ -228,14 +236,14 @@ KBInfo._fireCacheChangeEvent = function(changedInfoObjects) {
 	}
 	// call all specific listeners for every changed info object
 	for (var k=0; k<changedInfoObjects.length; k++) {
-		var listeners = KBInfo._cache.listeners[changedInfoObjects[k].getID().toLowerCase()];
+		var listeners = KBInfo._cache.listeners[KBInfo.createKey(changedInfoObjects[k].getID())];
 		if (listeners) {
 			listeners = listeners.slice();
 			for (var i=0; i<listeners.length; i++) {
 				listeners[i]([changedInfoObjects[k]]);
 			}
 		}		
-		var listeners = KBInfo._cache.listeners[changedInfoObjects[k].getName().toLowerCase()];
+		var listeners = KBInfo._cache.listeners[KBInfo.createKey(changedInfoObjects[k].getName())];
 		if (listeners) {
 			listeners = listeners.slice();
 			for (var i=0; i<listeners.length; i++) {
@@ -252,7 +260,7 @@ KBInfo._fireCacheChangeEvent = function(changedInfoObjects) {
  * only be called for updates to this object.
  */
 KBInfo.addCacheChangeListener = function(listener, nameOrID) {
-	var key = nameOrID ? nameOrID.toLowerCase() : '#_allKBInfoObjects';
+	var key = nameOrID ? KBInfo.createKey(nameOrID) : '#_allKBInfoObjects';
 	if (KBInfo._cache.listeners[key]) {
 		KBInfo._cache.listeners[key].push(listener);
 	}
@@ -268,7 +276,7 @@ KBInfo.addCacheChangeListener = function(listener, nameOrID) {
  * with exactly the same signature as the listener has been registered.
  */
 KBInfo.removeCacheChangeListener = function(listener, nameOrID) {
-	var key = nameOrID ? nameOrID.toLowerCase() : '#_allKBInfoObjects';
+	var key = nameOrID ? KBInfo.createKey(nameOrID) : '#_allKBInfoObjects';
 	if (KBInfo._cache.listeners[key]) {
 		KBInfo._cache.listeners[key].remove(listener);
 	}
