@@ -130,7 +130,7 @@ public class FlowchartUtils {
 	 * @return
 	 */
 	public static String createRenderablePreview(String preview) {
-		return "<div>" +
+		return "<div style='white-space: normal;'>" +
 				"<link rel='stylesheet' type='text/css' href='cc/flow/flowchart.css'></link>" +
 				"<link rel='stylesheet' type='text/css' href='cc/flow/guard.css'></link>" +
 				"<link rel='stylesheet' type='text/css' href='cc/flow/node.css'></link>" +
@@ -234,8 +234,7 @@ public class FlowchartUtils {
 	public static void addDisplayPlugins(StringBuilder result, UserContext user, String scope) {
 		Extension[] extensions = JPFPluginManager.getInstance().getExtensions(
 				DiaFluxDisplayEnhancement.PLUGIN_ID, DiaFluxDisplayEnhancement.EXTENSION_POINT_ID);
-		next:
-		for (Extension extension : extensions) {
+		next: for (Extension extension : extensions) {
 
 			List<String> scopes = extension.getParameters("scope");
 
@@ -258,10 +257,9 @@ public class FlowchartUtils {
 				}
 			}
 
-
 		}
 	}
-	
+
 	public static String getFlowSourceWithoutPreview(Section<FlowchartType> section) {
 		String source = section.getOriginalText();
 		int previewIndex = source.lastIndexOf("<preview");
@@ -269,7 +267,7 @@ public class FlowchartUtils {
 		if (previewIndex != -1) {
 			source = source.substring(0, previewIndex) + "</flowchart>";
 		}
-		
+
 		return source;
 	}
 }

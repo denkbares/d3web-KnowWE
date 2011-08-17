@@ -79,45 +79,51 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 
 	public static String renderMenu(Map<String, Map<String, List<Tool>>> tools, String id) {
 		StringBuffer menuHtml = new StringBuffer("<div id='menu_" + id + "' class='markupMenu'>");
-		
+
 		List<String> levelOneCategories = new ArrayList<String>(tools.keySet());
 		Collections.sort(levelOneCategories);
-		
+
 		for (String category : levelOneCategories) {
 			Map<String, List<Tool>> levelTwoTools = tools.get(category);
 
 			List<String> levelTwoCategories = new ArrayList<String>(levelTwoTools.keySet());
 			Collections.sort(levelTwoCategories);
-			
+
 			for (String subcategory : levelTwoCategories) {
 				for (Tool t : tools.get(category).get(subcategory)) {
 					menuHtml.append(renderTool(t));
 				}
 			}
-			
+
 			if (!category.equals(levelOneCategories.get(levelOneCategories.size() - 1))) {
 				menuHtml.append("<span class=\"markupMenuDivider\">&nbsp;</span>");
 			}
 		}
-		
+
 		return menuHtml.append("</div>").toString();
 	}
-	
+
 	private static String renderTool(Tool tool) {
 		String icon = tool.getIconPath();
-		String jsAction = tool.getJSAction();		
-		boolean hasIcon = icon != null && !icon.trim().isEmpty();		
-		
-		return "<div class=\"markupMenuItem\">" + 
-		"<" + (jsAction == null ? "span" : "a") + " class=\"markupMenuItem\"" +
-		(jsAction != null ? " href=\"javascript:" + tool.getJSAction() + ";undefined;\"" : "" )+
-		" title=\"" + tool.getDescription() + "\">" +
-		(hasIcon ? ("<img src=\"" + icon + "\"></img>") : "") +
-		" " + tool.getTitle() +
-		"</" + (jsAction == null ? "span" : "a") + ">" +
-		"</div>";
+		String jsAction = tool.getJSAction();
+		boolean hasIcon = icon != null && !icon.trim().isEmpty();
+
+		return "<div class=\"markupMenuItem\">"
+				+
+				"<"
+				+ (jsAction == null ? "span" : "a")
+				+ " class=\"markupMenuItem\""
+				+
+				(jsAction != null
+						? " href=\"javascript:" + tool.getJSAction() + ";undefined;\""
+						: "") +
+				" title=\"" + tool.getDescription() + "\">" +
+				(hasIcon ? ("<img src=\"" + icon + "\"></img>") : "") +
+				" " + tool.getTitle() +
+				"</" + (jsAction == null ? "span" : "a") + ">" +
+				"</div>";
 	}
-	
+
 	public static String renderMenuAnimation(String id) {
 		return "<script>\n" +
 				"var makeMenuFx = function() {\n" +
@@ -202,7 +208,8 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		// render content
 		// Returns are replaced to avoid JSPWiki to render <p> </p>, do not edit
 		// the following line!
-		string.append(content.replaceAll("(\r?\n){2}", KnowWEUtils.maskHTML("<span>\n</span><span>\n</span>")));
+		string.append(content.replaceAll("(\r?\n){2}",
+				KnowWEUtils.maskHTML("<span>\n</span><span>\n</span>")));
 
 		// and close the box(es)
 		string.append(KnowWEUtils.maskHTML("</div>")); // class=markupText
@@ -238,7 +245,9 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		renderMessages(article, section, content);
 		renderContents(article, section, user, content);
 
+		buffer.append(KnowWEUtils.maskHTML("<div class='type_" + section.get().getName() + "'>\n"));
 		renderDefaultMarkupStyled(header.toString(), content.toString(), id, tools, buffer);
+		buffer.append(KnowWEUtils.maskHTML("</div>\n"));
 	}
 
 	protected void renderHeader(KnowWEArticle article, Section<T> section, UserContext user, StringBuilder string) {
