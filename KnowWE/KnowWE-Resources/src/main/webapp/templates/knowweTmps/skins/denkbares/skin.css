@@ -185,6 +185,14 @@ hr, .hr, .clearbox {
 	clear:both;
 }
 
+#favorites hr {
+	background-image: url(left-menu-break.png);
+	background-position: center;
+	background-repeat: no-repeat;
+	border: none;
+	height: 1px;
+}
+
 /* +++ 210 Page titles, headings, and paragraphs +++ */
 .titlebox {
 	color:#555;
