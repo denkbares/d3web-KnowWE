@@ -871,6 +871,41 @@ th.changenote, td.changenote {
 }
 
 /* +++ 470 PageActions +++ */
+#actionsTop {
+	margin: 0 5px 0px 0px;
+	border-right: 1px solid #9ACBFB;
+	padding-right: 0px;
+}
+
+#actionsTop > ul {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+}
+
+#actionsTop > ul > li {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	border-left: 1px solid #9ACBFB;
+	background-image: url(tab-back.png);
+	background-position: left bottom;
+	background-repeat: repeat-x;
+}
+
+#actionsTop > ul > li > a {
+	margin: 0px 0px 0px 0px;
+	padding-right: 10px;
+	padding-left: 10px;
+	padding-top: 4px;
+	border: none;
+	background: none;
+}
+#actionsTop > ul > li > a.action.more {
+	padding-right: 1.5em;
+	background-image: url(../../images/arrdownsmall.gif);
+	background-position: 95% center;
+	background-repeat: no-repeat;
+}
+
 .pageactions {
 	line-height:1.5;
 }
@@ -1278,12 +1313,12 @@ table.calendar tr.weekdays {
 .tabs {
 	clear:both;
 	padding:0.5em;
-	border:1px solid #ddd;
+	border:1px solid #9ACBFB;
 	margin-bottom:0.5em;
 }
 .tabmenu {
-	padding:0 1em;
-	font-weight:bold;
+	padding: 0 1em;
+	font-weight: normal;
 } 
 /* nested tabs should not allow floated stuff to appear next to the tabmenu - ugh */
 .tabs .tabmenu {
@@ -1304,10 +1339,10 @@ table.calendar tr.weekdays {
 	margin:0 0 -1px -1px;
 	padding:0.25em 0.5em;
 	border-top:1px solid #fff;
-	border-left:1px solid #ddd;
-	border-right:1px solid #ddd;
+	border-left:1px solid #9ACBFB;
+	border-right:1px solid #9ACBFB;
 	border-bottom: 0px;
-	color:gray;
+	color:	#036;
 	background:#f9f9f9;
 	background-image: url(tab-back.png);
 	background-position: left bottom;
@@ -1319,6 +1354,7 @@ table.calendar tr.weekdays {
 }
 .tabmenu a:hover {
 	background:#eee;
+	color: blue;
 }
 .tabmenu a.activetab {
 	color:black;
@@ -1767,23 +1803,23 @@ div.coverflow .knob {
 	height:15px;
 }
 
-.type_DiaFlux > .defaultMarkupFrame {
+.type_DiaFlux.defaultMarkupFrame {
 	display: inline-block;
 	margin-left: -1px;
 }
 
-.type_DiaFlux > .defaultMarkupFrame:hover {
+.type_DiaFlux.defaultMarkupFrame:hover {
 	border-right: 0px;
 	border-left: 0px;
 	border-bottom: 0px;
 	margin-bottom: 0px;	
 }
 
-.type_DiaFlux > .defaultMarkupFrame > .defaultMarkup .markupText {
+.type_DiaFlux.defaultMarkupFrame > .defaultMarkup .markupText {
 	padding: 0px;
 	margin: -1px;
 }
-.type_DiaFlux > .defaultMarkupFrame > .defaultMarkup {
+.type_DiaFlux.defaultMarkupFrame > .defaultMarkup {
 	border-right: 0px;
 	border-bottom: 0px;
 	border-left: 1px solid #D1CFF1;
