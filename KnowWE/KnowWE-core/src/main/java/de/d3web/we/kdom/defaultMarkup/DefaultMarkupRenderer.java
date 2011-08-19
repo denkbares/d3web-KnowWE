@@ -167,9 +167,15 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 	}
 
 	public static void renderDefaultMarkupStyled(String header, String content, String sectionID, Tool[] tools, StringBuilder string) {
+		renderDefaultMarkupStyled(header, content, sectionID, null, tools, string);
+	}
 
+	public static void renderDefaultMarkupStyled(String header, String content, String sectionID, String cssClassName, Tool[] tools, StringBuilder string) {
+
+		String cssClass = "defaultMarkupFrame";
+		if (cssClassName != null) cssClass += " " + cssClassName;
 		string.append(KnowWEUtils.maskHTML("<div id=\"" + sectionID
-				+ "\" class='defaultMarkupFrame'>\n"));
+				+ "\" class='" + cssClass + "'>\n"));
 
 		boolean hasTools = tools != null && tools.length > 0;
 		boolean hasMenu = hasTools;
@@ -245,9 +251,10 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		renderMessages(article, section, content);
 		renderContents(article, section, user, content);
 
-		buffer.append(KnowWEUtils.maskHTML("<div class='type_" + section.get().getName() + "'>\n"));
-		renderDefaultMarkupStyled(header.toString(), content.toString(), id, tools, buffer);
-		buffer.append(KnowWEUtils.maskHTML("</div>\n"));
+		String cssClassName = "type_" + section.get().getName();
+		renderDefaultMarkupStyled(
+				header.toString(), content.toString(),
+				id, cssClassName, tools, buffer);
 	}
 
 	protected void renderHeader(KnowWEArticle article, Section<T> section, UserContext user, StringBuilder string) {
