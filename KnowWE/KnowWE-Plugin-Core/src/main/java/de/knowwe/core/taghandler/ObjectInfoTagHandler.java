@@ -107,8 +107,9 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		Tool[] tools = ToolUtils.getTools(article, tagNameSection, userContext);
 
 		StringBuilder buffer = new StringBuilder();
+		String cssClassName = "type_" + section.get().getName();
 		DefaultMarkupRenderer.renderDefaultMarkupStyled(
-				getTagName(), content, sectionID, tools, buffer);
+				getTagName(), content, sectionID, cssClassName, tools, buffer);
 		return buffer.toString();
 	}
 
