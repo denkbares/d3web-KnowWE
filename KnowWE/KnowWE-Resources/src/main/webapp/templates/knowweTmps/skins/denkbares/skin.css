@@ -670,15 +670,6 @@ a.tool:hover, .btn:hover {
 #searchbarhelp {
 }
 #findSuggestionMenu {
-	position:absolute;
-	color:white;
-	background-color:rgba(0,0,0,0.7);
-	-moz-border-radius:10px;
-	-webkit-border-radius:5px;
-	-webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
-	z-index:10;
-	font-size:85%;
-	overflow:hidden;
 }
 /* ie6 hack */
 * html #findSuggestionMenu {

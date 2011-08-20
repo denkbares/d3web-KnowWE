@@ -23,6 +23,7 @@
   </title>
   <meta name="robots" content="noindex,follow" />
   <wiki:Include page="commonheader.jsp"/>
+  <script type="text/javascript" src="KnowWEExtension/scripts/KnowWE-Plugin-AutoComplete.js"></script>
 </head>
 
 <body <wiki:CheckRequestContext context='edit'>class="edit"</wiki:CheckRequestContext><wiki:CheckRequestContext context='comment'>class="comment"</wiki:CheckRequestContext> >

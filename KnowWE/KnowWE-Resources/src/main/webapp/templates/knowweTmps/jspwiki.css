@@ -761,7 +761,10 @@ label[for="edittoc"] {
 #searchbarhelp {
 }
 #findSuggestionMenu {
-	position:absolute;
+	max-height: 66%;
+	top: 20px;
+	left: 20px;
+	position:fixed;
 	color:white;
 	background-color:rgba(0,0,0,0.7);
 	-moz-border-radius:10px;
@@ -769,7 +772,18 @@ label[for="edittoc"] {
 	-webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
 	z-index:10;
 	font-size:85%;
-	overflow:hidden;
+	overflow-x:hidden;
+	overflow-y:auto;
+	min-width:210px;
+}
+#findSuggestionMenu_Tooltip {
+	max-width: 450px;
+	position: fixed;
+	left: 20px;
+	border: 1px solid #7F7F66;
+	background-color: #FFFFCC;
+	font-size: 10px;
+	padding: 2px;
 }
 /* ie6 hack */
 * html #findSuggestionMenu {
