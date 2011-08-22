@@ -88,14 +88,4 @@ public interface Tool {
 	 */
 	String getCategory();
 
-	/**
-	 * Returns the ID of the tool. The ID is set as an attribute to the html
-	 * representation of the tool, to be able to easily access the tool via
-	 * javascript.
-	 * 
-	 * @created 22.08.2011
-	 * @return The ID of the tool.
-	 */
-	String getID();
-
 }

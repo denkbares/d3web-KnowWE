@@ -108,21 +108,19 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		String jsAction = tool.getJSAction();
 		boolean hasIcon = icon != null && !icon.trim().isEmpty();
 
-		return "<div "
-				+ (tool.getID() != null ? "id=\"" + tool.getID() + "\" " : "")
-				+ "class=\"markupMenuItem\">"
+		return "<div class=\"" + tool.getClass().getSimpleName() + "\" >"
+				+ "<div class=\"markupMenuItem\">"
 				+ "<"
 				+ (jsAction == null ? "span" : "a")
 				+ " class=\"markupMenuItem\""
-				+
-				(jsAction != null
+				+ (jsAction != null
 						? " href=\"javascript:" + tool.getJSAction() + ";undefined;\""
 						: "") +
 				" title=\"" + tool.getDescription() + "\">" +
 				(hasIcon ? ("<img src=\"" + icon + "\"></img>") : "") +
 				" " + tool.getTitle() +
 				"</" + (jsAction == null ? "span" : "a") + ">" +
-				"</div>";
+				"</div></div>";
 	}
 
 	public static String renderMenuAnimation(String id) {

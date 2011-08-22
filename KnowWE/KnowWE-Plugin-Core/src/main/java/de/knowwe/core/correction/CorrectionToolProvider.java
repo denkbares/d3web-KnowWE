@@ -83,7 +83,6 @@ public class CorrectionToolProvider implements ToolProvider {
 				KnowWEEnvironment.getInstance().getKwikiBundle().getString("KnowWE.Correction.do"),
 				KnowWEEnvironment.getInstance().getKwikiBundle().getString("KnowWE.Correction.do"),
 				null,
-				null,
 				"correct"
 				);
 
@@ -94,7 +93,6 @@ public class CorrectionToolProvider implements ToolProvider {
 					"",
 					"KNOWWE.plugin.correction.doCorrection('" + section.getID() + "', '"
 							+ suggestions.get(i).getSuggestion() + "');",
-					null,
 					"correct/item"
 					);
 		}
