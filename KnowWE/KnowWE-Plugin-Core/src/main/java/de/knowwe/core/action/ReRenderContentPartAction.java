@@ -21,7 +21,6 @@ package de.knowwe.core.action;
  */
 
 import java.io.IOException;
-import java.util.List;
 
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.UserActionContext;
@@ -54,8 +53,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 		KnowWEArticle article = mgr.getArticle(topic);
 
-		Section<? extends Type> root = article.getSection();
-		Section<? extends Type> secWithNodeID = getSectionFromCurrentID(nodeID, root);
+		Section<? extends Type> secWithNodeID = mgr.findNode(nodeID);
 
 		article = PackageRenderUtils.checkArticlesCompiling(article, secWithNodeID);
 
@@ -92,27 +90,6 @@ public class ReRenderContentPartAction extends AbstractAction {
 			return KnowWEUtils.unmaskHTML(pagedata);
 		}
 		return null;
-	}
-
-	/**
-	 * Searches for a section with the node id from the
-	 * <code>SetQuickEditFlagAction</code>. The resulting section will be
-	 * re-rendered and updated in the view.
-	 *
-	 * @param nodeID
-	 * @param root
-	 * @param found
-	 */
-	private Section<? extends Type> getSectionFromCurrentID(String nodeID, Section<? extends Type> root) {
-		if (root.getID().equals(nodeID)) return root;
-
-		Section<? extends Type> found = null;
-		List<Section<? extends Type>> children = root.getChildren();
-		for (Section<? extends Type> section : children) {
-			found = getSectionFromCurrentID(nodeID, section);
-			if (found != null) return found;
-		}
-		return found;
 	}
 
 	@Override
