@@ -63,18 +63,18 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 	}
 
 	public static String renderToolbar(Tool[] tools) {
-		String toolbarHtml = " | <div class='markupTools'> ";
+		StringBuilder toolbarHtml = new StringBuilder(" | <div class='markupTools'> ");
 		for (Tool tool : tools) {
-			toolbarHtml +=
+			toolbarHtml.append(
 					" <a href=\"javascript:" + tool.getJSAction() + ";undefined;\">" +
 							"<img " +
 							"title=\"" + tool.getDescription() + "\" " +
 							"src=\"" + tool.getIconPath() + "\"></img>" +
-							"</a>";
+							"</a>");
 
 		}
-		toolbarHtml += "</div>";
-		return toolbarHtml;
+		toolbarHtml.append("</div>");
+		return toolbarHtml.toString();
 	}
 
 	public static String renderMenu(Map<String, Map<String, List<Tool>>> tools, String id) {
@@ -91,7 +91,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 
 			for (String subcategory : levelTwoCategories) {
 				for (Tool t : tools.get(category).get(subcategory)) {
-					menuHtml.append(renderTool(t));
+					menuHtml.append(renderToolAsMenuItem(t));
 				}
 			}
 
@@ -103,14 +103,15 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		return menuHtml.append("</div>").toString();
 	}
 
-	private static String renderTool(Tool tool) {
+	private static String renderToolAsMenuItem(Tool tool) {
 		String icon = tool.getIconPath();
 		String jsAction = tool.getJSAction();
 		boolean hasIcon = icon != null && !icon.trim().isEmpty();
 
-		return "<div class=\"markupMenuItem\">"
-				+
-				"<"
+		return "<div "
+				+ (tool.getID() != null ? "id=\"" + tool.getID() + "\" " : "")
+				+ "class=\"markupMenuItem\">"
+				+ "<"
 				+ (jsAction == null ? "span" : "a")
 				+ " class=\"markupMenuItem\""
 				+
@@ -252,6 +253,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		renderContents(article, section, user, content);
 
 		String cssClassName = "type_" + section.get().getName();
+
 		renderDefaultMarkupStyled(
 				header.toString(), content.toString(),
 				id, cssClassName, tools, buffer);

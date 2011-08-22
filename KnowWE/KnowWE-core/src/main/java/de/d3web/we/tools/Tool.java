@@ -66,28 +66,36 @@ public interface Tool {
 	 * @return the javascript action to be executed
 	 */
 	String getJSAction();
-	
+
 	/**
 	 * Returns the category of the tool.
 	 * 
 	 * Three types of categories are possible:
 	 * <ul>
 	 * <li><i>(null/empty):</i> Item will not be grouped.</li>
-	 * <li><tt>category</tt>: Item belongs to group <em>category</em>
-	 * 	   and will be on top of this category (likely used for group headers).
-	 * </li>
-	 * <li><tt>category/subcategory</tt>: Item belongs to group <em>category</em>
-	 *     and will be sorted according to <em>subcategory</em>.
-	 * </li>
+	 * <li><tt>category</tt>: Item belongs to group <em>category</em> and will
+	 * be on top of this category (likely used for group headers).</li>
+	 * <li><tt>category/subcategory</tt>: Item belongs to group
+	 * <em>category</em> and will be sorted according to <em>subcategory</em>.</li>
 	 * </ul>
 	 * 
-	 * Generally, tools are displayed in alphabetical order of their category, then subcategory
-	 * and then in order as given by the getTools() method of {@link ToolUtils}.
+	 * Generally, tools are displayed in alphabetical order of their category,
+	 * then subcategory and then in order as given by the getTools() method of
+	 * {@link ToolUtils}.
 	 * 
 	 * @created 20.02.2011
 	 * @return The category of the tool
 	 */
 	String getCategory();
-	
+
+	/**
+	 * Returns the ID of the tool. The ID is set as an attribute to the html
+	 * representation of the tool, to be able to easily access the tool via
+	 * javascript.
+	 * 
+	 * @created 22.08.2011
+	 * @return The ID of the tool.
+	 */
+	String getID();
 
 }

@@ -32,19 +32,20 @@ public class DefaultTool implements Tool {
 	private final String description;
 	private final String jsAction;
 	private final String category;
+	private final String id;
 
-	public DefaultTool(String iconPath, String title, String description, String jsAction, String category) {
+	public DefaultTool(String iconPath, String title, String description, String jsAction, String id, String category) {
 		this.iconPath = iconPath;
 		this.title = title;
 		this.description = description;
 		this.jsAction = jsAction;
+		this.id = id;
 		this.category = category;
 	}
-	
-	public DefaultTool(String iconPath, String title, String description, String jsAction) {
-		this(iconPath, title, description, jsAction, null);
-	}
 
+	public DefaultTool(String iconPath, String title, String description, String jsAction) {
+		this(iconPath, title, description, jsAction, null, null);
+	}
 
 	@Override
 	public String getIconPath() {
@@ -69,6 +70,11 @@ public class DefaultTool implements Tool {
 	@Override
 	public String getCategory() {
 		return category;
+	}
+
+	@Override
+	public String getID() {
+		return id;
 	}
 
 }
