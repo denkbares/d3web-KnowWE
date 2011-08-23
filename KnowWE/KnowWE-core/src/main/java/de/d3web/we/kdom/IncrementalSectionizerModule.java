@@ -113,8 +113,6 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 						node.isOrHasReusedSuccessor = true;
 						// update pointer to article
 						node.article = article;
-						// reset id
-						node.setID(null);
 					}
 
 				}

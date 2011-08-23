@@ -45,7 +45,7 @@ public class LoadFlowchartAction extends AbstractAction {
 		String nodeID = context.getParameter(KnowWEAttributes.TARGET);
 
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
-		Section<FlowchartType> section = (Section<FlowchartType>) mgr.findNode(nodeID);
+		Section<FlowchartType> section = (Section<FlowchartType>) mgr.getSection(nodeID);
 		if (section == null) {
 			// TODO error handling
 		}

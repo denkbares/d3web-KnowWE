@@ -38,7 +38,7 @@
 	if (!parameters.containsKey(KnowWEAttributes.TOPIC)) {
 		String topic = parameters.get("page");
 		if (topic == null) {
-			topic = KnowWEUtils.urldecode(wikiContext.getPage().getName());
+	topic = KnowWEUtils.urldecode(wikiContext.getPage().getName());
 		}
 		parameters.put(KnowWEAttributes.TOPIC, topic);
 	}
@@ -60,7 +60,7 @@
 	
 	
 	boolean canEditPage = KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(
-			topic, context.getRequest());
+	topic, context.getRequest());
 	
 	if (!canEditPage){
 		out.println("<h3>Do not have the permission to edit article: '" + topic + "'.</h3>");
@@ -75,7 +75,7 @@
 	
 	JSPHelper jspHelper = new JSPHelper(context);
 	String kdomID = context.getParameter("kdomID");
-	Section diafluxSection = article.findSection(kdomID);
+	Section diafluxSection = article.getSection(kdomID);
 	String title = DiaFluxType.getFlowchartName(diafluxSection);
 %>
 

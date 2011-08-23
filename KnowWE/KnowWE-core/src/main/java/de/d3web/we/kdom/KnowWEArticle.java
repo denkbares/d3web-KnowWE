@@ -65,8 +65,6 @@ public class KnowWEArticle extends AbstractType {
 	 */
 	private Section<KnowWEArticle> sec;
 
-	private Map<String, Integer> idMap = new HashMap<String, Integer>();
-
 	private KnowWEArticle lastVersion;
 
 	private final long startTimeOverall;
@@ -142,7 +140,6 @@ public class KnowWEArticle extends AbstractType {
 
 		if (this.postDestroyFullParse) {
 			this.secondBuild = true;
-			this.idMap = new HashMap<String, Integer>();
 			build(text, startTime);
 		}
 
@@ -265,30 +262,6 @@ public class KnowWEArticle extends AbstractType {
 		while (reviseIterator.hasNext()) {
 			SectionPriorityTuple tuple = reviseIterator.next();
 			tuple.getSection().letSubtreeHandlersCreate(this, tuple.getPriority());
-		}
-	}
-
-	/**
-	 * Returns Section with given id if exists in KDOM of this article, else
-	 * null
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public Section<? extends Type> findSection(String id) {
-		return Sections.findSuccessor(sec, id);
-
-	}
-
-	protected int checkID(String id) {
-		if (!idMap.containsKey(id)) {
-			idMap.put(id, 1);
-			return 1;
-		}
-		else {
-			int num = idMap.get(id) + 1;
-			idMap.put(id, num);
-			return num;
 		}
 	}
 

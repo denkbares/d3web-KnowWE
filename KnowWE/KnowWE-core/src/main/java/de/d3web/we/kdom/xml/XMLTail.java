@@ -25,26 +25,16 @@ import java.util.List;
 
 import de.d3web.we.kdom.AbstractType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionIDDeclarant;
 import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.NothingRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
-public class XMLTail extends AbstractType implements SectionIDDeclarant {
+public class XMLTail extends AbstractType {
 
 	public static final String SEPARATOR = "/";
 	public static final String TAIL_SUFFIX = "_tail";
-
-	@Override
-	public String createSectionID(Section<? extends Type> father) {
-		return getEndOfId(father.getID()) + TAIL_SUFFIX;
-	}
-
-	private String getEndOfId(String id) {
-		return id.substring(id.lastIndexOf(SEPARATOR) + 1);
-	}
 
 	@Override
 	protected void init() {

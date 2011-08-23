@@ -92,15 +92,9 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	private boolean isDirty = false;
 
 	/**
-	 * The id of this node, unique in an article
+	 * The ID of this Section.
 	 */
-	private String id;
-
-	/**
-	 * If the ID gets changed, e.g. by the update mechanism, the last version of
-	 * the ID gets stored here.
-	 */
-	private String lastID;
+	private String id = null;
 
 	/**
 	 * Contains the text of this KDOM-node
@@ -166,6 +160,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 		}
 		this.text = text;
 		this.type = objectType;
+		KnowWEEnvironment.getInstance().getArticleManager(getWeb()).registerSection(this);
 	}
 
 	protected Section(KnowWEArticle article) {
@@ -579,6 +574,9 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	}
 
 	public String getWeb() {
+		if (this.type instanceof KnowWEArticle) {
+			return ((KnowWEArticle) type).getWeb();
+		}
 		return this.article.getWeb();
 	}
 
@@ -610,7 +608,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 			simpleName = simpleName += "(" + this.get().getName() + ")";
 		}
 		buffi.append(simpleName);
-		buffi.append(", ID: " + getShortId());
+		buffi.append(", ID: " + getID());
 		buffi.append(", length: " + this.getOriginalText().length() + " ("
 				+ offSetFromFatherText + ")" + ", children: " + getChildren().size());
 		String ot = this.getOriginalText().length() < 50 ? text : text.substring(0,
@@ -621,40 +619,11 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 		return buffi.toString();
 	}
 
-	protected void setID(String id) {
-		this.lastID = this.id;
-		this.id = id;
-	}
-
 	public String getID() {
 		if (id == null) {
-			if (type instanceof KnowWEArticle) {
-				this.id = new SectionID(getTitle()).toString();
-			}
-			else {
-				this.id = new SectionID(father, type).toString();
-			}
+			id = KnowWEEnvironment.getInstance().getArticleManager(getWeb()).generateID();
 		}
 		return id;
-	}
-
-	public String getLastID() {
-		return lastID == null ? getID() : lastID;
-	}
-
-	/**
-	 * <b>IMPORTANT:</b> This is NOT the actual ID, this may NOT be unique and
-	 * this should ONLY be used in situations where a short version of the ID is
-	 * needed e.g. to make it easier to read for humans in debugging, logging
-	 * and similar stuff.
-	 */
-	public String getShortId() {
-		String temp = id;
-		if (temp.contains(SectionID.SEPARATOR)) {
-			temp = temp.substring(0, temp.indexOf(SectionID.SEPARATOR) + 1) + "..."
-					+ temp.substring(temp.lastIndexOf(SectionID.SEPARATOR));
-		}
-		return temp;
 	}
 
 	public void removeChild(Section<? extends Type> s) {

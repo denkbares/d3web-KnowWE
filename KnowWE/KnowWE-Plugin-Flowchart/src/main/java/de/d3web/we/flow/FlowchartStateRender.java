@@ -85,7 +85,7 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 			if (origin == null) continue;
 
 			Section<FlowchartType> node = (Section<FlowchartType>) KnowWEEnvironment.getInstance().getArticleManager(
-					article.getWeb()).findNode(origin);
+					article.getWeb()).getSection(origin);
 			flows.add(node);
 		}
 

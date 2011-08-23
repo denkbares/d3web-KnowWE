@@ -38,6 +38,7 @@ import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 
 public class GlobalReplaceAction extends AbstractAction {
 
@@ -83,7 +84,7 @@ public class GlobalReplaceAction extends AbstractAction {
 						+ rb.getString("KnowWE.renamingtool.msg.noarticle") + article + "</div>";
 			}
 			modifiedArticles.add(art);
-			Section sec = art.findSection(nodeID);
+			Section<?> sec = Sections.getSection(nodeID);
 
 			// organize replacementRequests per sections
 			if (findingsPerSection.containsKey(sec)) {
@@ -105,7 +106,7 @@ public class GlobalReplaceAction extends AbstractAction {
 		int count = 0;
 		// Ersetzungen vornehmen
 		for (Entry<Section, List<WordBasedRenameFinding>> entry : findingsPerSection.entrySet()) {
-			Section sec = entry.getKey();
+			Section<?> sec = entry.getKey();
 			List<WordBasedRenameFinding> list = entry.getValue();
 			Collections.sort(list);
 			StringBuffer buff = new StringBuffer();

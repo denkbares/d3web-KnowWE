@@ -72,8 +72,7 @@ public class JSPHelper {
 	}
 
 	public String getKDOMNodeContent(String kdomID) {
-		return KnowWEEnvironment.getInstance().getNodeData(userContext.getWeb(),
-				userContext.getTopic(), kdomID);
+		return KnowWEEnvironment.getInstance().getSectionText(userContext.getWeb(), kdomID);
 	}
 
 	public String getArticleInfoObjectsAsXML() {
@@ -117,10 +116,8 @@ public class JSPHelper {
 	@SuppressWarnings("unchecked")
 	public String loadFlowchart(String kdomID) {
 		String web = userContext.getWeb();
-		String topic = userContext.getTopic();
 
-		Section<DefaultMarkupType> diaFluxSection = (Section<DefaultMarkupType>) KnowWEEnvironment.getInstance().getArticle(
-				web, topic).findSection(kdomID);
+		Section<DefaultMarkupType> diaFluxSection = (Section<DefaultMarkupType>) Sections.getSection(kdomID);
 
 		if (diaFluxSection == null) {
 			throw new IllegalArgumentException("Could not find flowchart at: "
@@ -134,8 +131,7 @@ public class JSPHelper {
 			return getEmptyFlowchart();
 		}
 
-		String nodeData = KnowWEEnvironment.getInstance().getNodeData(web,
-				topic, flowchart.getID());
+		String nodeData = KnowWEEnvironment.getInstance().getSectionText(web, flowchart.getID());
 		return nodeData;
 	}
 
@@ -175,9 +171,7 @@ public class JSPHelper {
 
 	private String getFlowchartAttributeValue(String attributeName) {
 		Section<FlowchartType> section = Sections.findSuccessor(
-				KnowWEEnvironment.getInstance().getArticle(
-						userContext.getWeb(), userContext.getTopic()).findSection(
-						userContext.getParameter("kdomID")), FlowchartType.class);
+				Sections.getSection(userContext.getParameter("kdomID")), FlowchartType.class);
 
 		return AbstractXMLType.getAttributeMapFor(section).get(attributeName);
 	}

@@ -21,14 +21,10 @@
 package de.d3web.we.kdom.xml;
 
 import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionIDDeclarant;
 import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 
-public class XMLContent extends AbstractType implements SectionIDDeclarant {
-
-
+public class XMLContent extends AbstractType {
 
 	public XMLContent() {
 		sectionFinder = new AllTextSectionFinder();
@@ -42,18 +38,6 @@ public class XMLContent extends AbstractType implements SectionIDDeclarant {
 	@Override
 	public String getName() {
 		return this.getClass().getSimpleName();
-	}
-
-	public static final String SEPARATOR = "/";
-	public static final String CONTENT_SUFFIX = "_content";
-
-	@Override
-	public String createSectionID(Section<? extends Type> father) {
-		return getEndOfId(father.getID()) + CONTENT_SUFFIX;
-	}
-
-	private String getEndOfId(String id) {
-		return id.substring(id.lastIndexOf(SEPARATOR) + 1);
 	}
 
 }

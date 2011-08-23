@@ -584,13 +584,12 @@ public class KnowWEEnvironment {
 		return topic + "_KB";
 	}
 
-	public String getNodeData(String web, String topic, String nodeID) {
-		if (web == null || topic == null) return null;
-		KnowWEArticle art = this.articleManagers.get(web).getArticle(topic);
-		Section<?> sec = art.findSection(nodeID);
-		String data = "Node not found: " + nodeID;
+	public String getSectionText(String web, String id) {
+		if (web == null) return null;
+		Section<?> sec = getArticleManager(web).getSection(id);
+		String data = "Section not found: " + id;
 		if (sec != null) {
-			data = sec.getOriginalText();
+			data = sec.getText();
 		}
 		return data;
 	}

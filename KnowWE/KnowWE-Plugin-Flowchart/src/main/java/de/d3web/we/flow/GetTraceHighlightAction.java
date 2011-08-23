@@ -61,7 +61,7 @@ public class GetTraceHighlightAction extends AbstractAction {
 		String web = context.getWeb();
 
 		KnowWEArticleManager articleManager = KnowWEEnvironment.getInstance().getArticleManager(web);
-		Section<DiaFluxType> diaFluxSec = (Section<DiaFluxType>) articleManager.findNode(kdomid);
+		Section<DiaFluxType> diaFluxSec = (Section<DiaFluxType>) articleManager.getSection(kdomid);
 
 		Section<FlowchartType> flowchart = Sections.findSuccessor(diaFluxSec, FlowchartType.class);
 		if (flowchart == null) {

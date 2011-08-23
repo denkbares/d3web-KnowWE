@@ -42,7 +42,6 @@ import de.d3web.we.event.EventManager;
 import de.d3web.we.event.UpdatingDependenciesEvent;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionID;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 import dummies.KnowWETestWikiConnector;
@@ -58,7 +57,12 @@ public class KnowWEArticleManager {
 	/**
 	 * Stores KnowWEArticles for article-names
 	 */
-	private HashMap<String, KnowWEArticle> articleMap = new java.util.HashMap<String, KnowWEArticle>();
+	private HashMap<String, KnowWEArticle> articleMap = new HashMap<String, KnowWEArticle>();
+
+	/**
+	 * Stores Sections for their IDs.
+	 */
+	private final Map<String, Section<?>> sectionMap = new HashMap<String, Section<?>>(2048);
 
 	/**
 	 * List that keeps track of all articles that are sectionizing at the
@@ -83,6 +87,8 @@ public class KnowWEArticleManager {
 	private boolean initializedArticles = false;
 
 	private final String web;
+
+	private long idCounter = 0;
 
 	public String jarsPath;
 	public String reportPath;
@@ -203,31 +209,16 @@ public class KnowWEArticleManager {
 	}
 
 	/**
-	 * Looks in KDOM of given article for the Section object with given nodeID
-	 * 
-	 * @param title
-	 * @param nodeID
-	 * @return null if article or node not found
-	 * @see findNode(String nodeID)
+	 * @param id is the ID of the Section to be returned
+	 * @return the Section for the given ID or null if no Section exists for
+	 *         this ID.
 	 */
-	public Section<?> findNode(String title, String nodeID) {
-		if (nodeID == null || title == null) return null;
-
-		KnowWEArticle art = this.getArticle(title);
-		if (art == null) return null;
-		return art.findSection(nodeID);
+	public Section<?> getSection(String id) {
+		return sectionMap.get(id);
 	}
 
-	/**
-	 * Looks in KDOM for the Section object with given nodeID The article name
-	 * is not needed because it is part of the nodeID
-	 * 
-	 * @param nodeID
-	 * @return null if article or node not found
-	 */
-	public Section<?> findNode(String nodeID) {
-		String articleName = SectionID.getArticleNameFromID(nodeID);
-		return findNode(articleName, nodeID);
+	public void registerSection(Section<?> section) {
+		sectionMap.put(section.getID(), section);
 	}
 
 	private void appendTextReplaceNode(Section<?> sec,
@@ -269,6 +260,14 @@ public class KnowWEArticleManager {
 	 */
 	public void registerArticle(KnowWEArticle article, boolean updateDependencies) {
 
+		KnowWEArticle lastArticleVersion = articleMap.get(article.getTitle());
+		if (lastArticleVersion != null) {
+			// long time = System.currentTimeMillis();
+			unregisterSectionRecursively(lastArticleVersion, lastArticleVersion.getSection());
+			// System.out.println(System.currentTimeMillis() - time);
+			// System.out.println(sectionMap.size());
+		}
+
 		// store new article
 		articleMap.put(article.getTitle(), article);
 
@@ -298,6 +297,13 @@ public class KnowWEArticleManager {
 						+ (System.currentTimeMillis() - article.getStartTime())
 						+ "ms <<====");
 		EventManager.getInstance().fireEvent(new ArticleRegisteredEvent(article));
+	}
+
+	private void unregisterSectionRecursively(KnowWEArticle lastArticleVersion, Section<?> section) {
+		if (section.getArticle() == lastArticleVersion) sectionMap.remove(section.getID());
+		for (Section<?> childSection : section.getChildren()) {
+			unregisterSectionRecursively(lastArticleVersion, childSection);
+		}
 	}
 
 	public void updateQueuedArticles() {
@@ -380,6 +386,10 @@ public class KnowWEArticleManager {
 
 	public void setInitializedArticles(boolean b) {
 		initializedArticles = true;
+	}
+
+	public String generateID() {
+		return "#" + Long.toHexString(idCounter++);
 	}
 
 }

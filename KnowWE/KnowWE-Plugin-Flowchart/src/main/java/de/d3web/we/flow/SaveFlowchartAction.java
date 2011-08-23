@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -38,12 +38,11 @@ import de.d3web.we.kdom.Sections;
 /**
  * Receives a xml-encoded flowchart from the editor and replaces the old kdom
  * node with the new content
- *
+ * 
  * @author Reinhard Hatko
  * @created 24.11.2010
  */
 public class SaveFlowchartAction extends AbstractAction {
-
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -64,7 +63,7 @@ public class SaveFlowchartAction extends AbstractAction {
 
 	/**
 	 * Saves a flowchart when the surrounding %%DiaFlux markup exists.
-	 *
+	 * 
 	 * @created 23.02.2011
 	 * @param map
 	 * @param web
@@ -74,8 +73,7 @@ public class SaveFlowchartAction extends AbstractAction {
 	 */
 	@SuppressWarnings("unchecked")
 	private void replaceExistingFlowchart(UserActionContext context, String web, String nodeID, String topic, String newText) {
-		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
-		Section<DiaFluxType> diaFluxSection = (Section<DiaFluxType>) mgr.getArticle(topic).findSection(
+		Section<DiaFluxType> diaFluxSection = (Section<DiaFluxType>) Sections.getSection(
 				nodeID);
 
 		Section<FlowchartType> flowchartSection = Sections.findSuccessor(diaFluxSection,
@@ -106,7 +104,7 @@ public class SaveFlowchartAction extends AbstractAction {
 
 	/**
 	 * Saves a flowchart for which no section exists in the article yet.
-	 *
+	 * 
 	 * @created 23.02.2011
 	 * @param map
 	 * @param web

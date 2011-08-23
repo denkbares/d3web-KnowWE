@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.basic.EmbracedType;
 import de.d3web.we.kdom.basic.PlainText;
 
@@ -123,20 +124,14 @@ public class Sections {
 	}
 
 	/**
-	 * Scanning subtree for Section with given id
-	 * 
-	 * @param section TODO
-	 * @param id2
-	 * 
-	 * @return
+	 * @param id is the ID of the Section to be found.
+	 * @return the Section with the given ID or null if such a Section does not
+	 *         exist.
 	 */
-	public static Section<? extends Type> findSuccessor(Section<?> section, String id2) {
-		if (section.getID().equals(id2)) return section;
-		for (Section<? extends Type> child : section.getChildren()) {
-			Section<? extends Type> s = Sections.findSuccessor(child, id2);
-			if (s != null) return s;
-		}
-		return null;
+	public static Section<? extends Type> getSection(String id) {
+
+		return KnowWEEnvironment.getInstance().getArticleManager(
+				KnowWEEnvironment.DEFAULT_WEB).getSection(id);
 	}
 
 	public static Section<? extends Type> findSmallestNodeContaining(Section<?> section, int start, int end) {

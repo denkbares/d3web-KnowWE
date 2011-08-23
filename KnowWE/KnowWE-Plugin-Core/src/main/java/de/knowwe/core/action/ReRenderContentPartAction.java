@@ -53,7 +53,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 		KnowWEArticle article = mgr.getArticle(topic);
 
-		Section<? extends Type> secWithNodeID = mgr.findNode(nodeID);
+		Section<? extends Type> secWithNodeID = mgr.getSection(nodeID);
 
 		article = PackageRenderUtils.checkArticlesCompiling(article, secWithNodeID);
 
