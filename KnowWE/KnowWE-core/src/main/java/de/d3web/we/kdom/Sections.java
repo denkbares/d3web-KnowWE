@@ -3,17 +3,24 @@ package de.d3web.we.kdom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.basic.EmbracedType;
 import de.d3web.we.kdom.basic.PlainText;
 
 public class Sections {
+
+	private static long idCounter = 0;
+
+	/**
+	 * Stores Sections by their IDs.
+	 */
+	private static final Map<String, Section<?>> sectionMap = new HashMap<String, Section<?>>(2048);
 
 	/**
 	 * Returns all Nodes down to the given depth. Includes are not considered as
@@ -121,17 +128,6 @@ public class Sections {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * @param id is the ID of the Section to be found.
-	 * @return the Section with the given ID or null if such a Section does not
-	 *         exist.
-	 */
-	public static Section<? extends Type> getSection(String id) {
-
-		return KnowWEEnvironment.getInstance().getArticleManager(
-				KnowWEEnvironment.DEFAULT_WEB).getSection(id);
 	}
 
 	public static Section<? extends Type> findSmallestNodeContaining(Section<?> section, int start, int end) {
@@ -442,6 +438,27 @@ public class Sections {
 			found.add(s);
 		}
 
+	}
+
+	public static String getNewSectionID() {
+		return "#" + Long.toHexString(idCounter++);
+	}
+
+	/**
+	 * @param id is the ID of the Section to be returned
+	 * @return the Section for the given ID or null if no Section exists for
+	 *         this ID.
+	 */
+	public static Section<?> getSection(String id) {
+		return sectionMap.get(id);
+	}
+
+	public static void registerSection(Section<?> section) {
+		sectionMap.put(section.getID(), section);
+	}
+
+	public static void unregisterSection(Section<?> section) {
+		sectionMap.remove(section.getID());
 	}
 
 }

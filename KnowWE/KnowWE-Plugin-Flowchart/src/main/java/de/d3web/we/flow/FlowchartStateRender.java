@@ -36,11 +36,11 @@ import de.d3web.diaFlux.flow.FlowRun;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.flow.type.DiaFluxStateType;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLType;
 import de.d3web.we.user.UserContext;
@@ -84,8 +84,8 @@ public class FlowchartStateRender extends KnowWEDomRenderer<DiaFluxStateType> {
 
 			if (origin == null) continue;
 
-			Section<FlowchartType> node = (Section<FlowchartType>) KnowWEEnvironment.getInstance().getArticleManager(
-					article.getWeb()).getSection(origin);
+			Section<FlowchartType> node = (Section<FlowchartType>) Sections.getSection(
+					origin);
 			flows.add(node);
 		}
 

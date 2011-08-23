@@ -72,7 +72,7 @@ public class JSPHelper {
 	}
 
 	public String getKDOMNodeContent(String kdomID) {
-		return KnowWEEnvironment.getInstance().getSectionText(userContext.getWeb(), kdomID);
+		return KnowWEEnvironment.getInstance().getSectionText(kdomID);
 	}
 
 	public String getArticleInfoObjectsAsXML() {
@@ -115,7 +115,6 @@ public class JSPHelper {
 
 	@SuppressWarnings("unchecked")
 	public String loadFlowchart(String kdomID) {
-		String web = userContext.getWeb();
 
 		Section<DefaultMarkupType> diaFluxSection = (Section<DefaultMarkupType>) Sections.getSection(kdomID);
 
@@ -131,7 +130,7 @@ public class JSPHelper {
 			return getEmptyFlowchart();
 		}
 
-		String nodeData = KnowWEEnvironment.getInstance().getSectionText(web, flowchart.getID());
+		String nodeData = KnowWEEnvironment.getInstance().getSectionText(flowchart.getID());
 		return nodeData;
 	}
 

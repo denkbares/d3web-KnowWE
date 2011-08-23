@@ -42,6 +42,7 @@ import de.d3web.we.event.EventManager;
 import de.d3web.we.event.UpdatingDependenciesEvent;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 import dummies.KnowWETestWikiConnector;
@@ -58,11 +59,6 @@ public class KnowWEArticleManager {
 	 * Stores KnowWEArticles for article-names
 	 */
 	private HashMap<String, KnowWEArticle> articleMap = new HashMap<String, KnowWEArticle>();
-
-	/**
-	 * Stores Sections for their IDs.
-	 */
-	private final Map<String, Section<?>> sectionMap = new HashMap<String, Section<?>>(2048);
 
 	/**
 	 * List that keeps track of all articles that are sectionizing at the
@@ -87,8 +83,6 @@ public class KnowWEArticleManager {
 	private boolean initializedArticles = false;
 
 	private final String web;
-
-	private long idCounter = 0;
 
 	public String jarsPath;
 	public String reportPath;
@@ -208,19 +202,6 @@ public class KnowWEArticleManager {
 		return newArticleSourceText;
 	}
 
-	/**
-	 * @param id is the ID of the Section to be returned
-	 * @return the Section for the given ID or null if no Section exists for
-	 *         this ID.
-	 */
-	public Section<?> getSection(String id) {
-		return sectionMap.get(id);
-	}
-
-	public void registerSection(Section<?> section) {
-		sectionMap.put(section.getID(), section);
-	}
-
 	private void appendTextReplaceNode(Section<?> sec,
 			Map<String, String> nodesMap, StringBuffer newText) {
 		if (nodesMap.containsKey(sec.getID())) {
@@ -263,7 +244,8 @@ public class KnowWEArticleManager {
 		KnowWEArticle lastArticleVersion = articleMap.get(article.getTitle());
 		if (lastArticleVersion != null) {
 			// long time = System.currentTimeMillis();
-			unregisterSectionRecursively(lastArticleVersion, lastArticleVersion.getSection());
+			unregisterSectionRecursively(lastArticleVersion,
+					lastArticleVersion.getSection());
 			// System.out.println(System.currentTimeMillis() - time);
 			// System.out.println(sectionMap.size());
 		}
@@ -300,7 +282,7 @@ public class KnowWEArticleManager {
 	}
 
 	private void unregisterSectionRecursively(KnowWEArticle lastArticleVersion, Section<?> section) {
-		if (section.getArticle() == lastArticleVersion) sectionMap.remove(section.getID());
+		if (section.getArticle() == lastArticleVersion) Sections.unregisterSection(section);
 		for (Section<?> childSection : section.getChildren()) {
 			unregisterSectionRecursively(lastArticleVersion, childSection);
 		}
@@ -386,10 +368,6 @@ public class KnowWEArticleManager {
 
 	public void setInitializedArticles(boolean b) {
 		initializedArticles = true;
-	}
-
-	public String generateID() {
-		return "#" + Long.toHexString(idCounter++);
 	}
 
 }

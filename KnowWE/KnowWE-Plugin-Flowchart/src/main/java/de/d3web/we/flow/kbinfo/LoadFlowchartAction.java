@@ -24,12 +24,11 @@ import java.io.IOException;
 
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.UserActionContext;
-import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.flow.FlowchartUtils;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 
 /**
  * @author Reinhard Hatko
@@ -44,8 +43,7 @@ public class LoadFlowchartAction extends AbstractAction {
 		String web = context.getParameter(KnowWEAttributes.WEB);
 		String nodeID = context.getParameter(KnowWEAttributes.TARGET);
 
-		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
-		Section<FlowchartType> section = (Section<FlowchartType>) mgr.getSection(nodeID);
+		Section<FlowchartType> section = (Section<FlowchartType>) Sections.getSection(nodeID);
 		if (section == null) {
 			// TODO error handling
 		}
@@ -57,8 +55,7 @@ public class LoadFlowchartAction extends AbstractAction {
 			context.setContentType("text/plain; charset=UTF-8");
 			String escapeXml = source;
 			context.getWriter().write(escapeXml);
-			
-			
+
 		}
 
 	}

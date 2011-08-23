@@ -54,7 +54,8 @@ public class GetSubflowLinksAction extends AbstractAction {
 		String web = context.getWeb();
 
 		KnowWEArticleManager articleManager = KnowWEEnvironment.getInstance().getArticleManager(web);
-		Section<DiaFluxType> diaFluxSec = (Section<DiaFluxType>) articleManager.getSection(kdomid);
+		Section<DiaFluxType> diaFluxSec = (Section<DiaFluxType>) Sections.getSection(
+				kdomid);
 
 		Section<FlowchartType> flowchart = Sections.findSuccessor(diaFluxSec, FlowchartType.class);
 		if (flowchart == null) {

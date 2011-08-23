@@ -33,8 +33,6 @@ import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.UserActionContext;
-import de.d3web.we.core.KnowWEArticleManager;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.packaging.PackageRenderUtils;
 import de.d3web.we.flow.type.DiaFluxType;
 import de.d3web.we.flow.type.FlowchartType;
@@ -60,8 +58,7 @@ public class GetTraceHighlightAction extends AbstractAction {
 		String kdomid = context.getParameter("kdomid");
 		String web = context.getWeb();
 
-		KnowWEArticleManager articleManager = KnowWEEnvironment.getInstance().getArticleManager(web);
-		Section<DiaFluxType> diaFluxSec = (Section<DiaFluxType>) articleManager.getSection(kdomid);
+		Section<DiaFluxType> diaFluxSec = (Section<DiaFluxType>) Sections.getSection(kdomid);
 
 		Section<FlowchartType> flowchart = Sections.findSuccessor(diaFluxSec, FlowchartType.class);
 		if (flowchart == null) {
@@ -80,7 +77,6 @@ public class GetTraceHighlightAction extends AbstractAction {
 
 		DiaFluxCaseObject diaFluxCaseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
 		Flow flow = DiaFluxUtils.getFlowSet(session).get(flowName);
-
 
 		List<Edge> snappedEdges = new LinkedList<Edge>();
 		List<Node> snappedNodes = new LinkedList<Node>();

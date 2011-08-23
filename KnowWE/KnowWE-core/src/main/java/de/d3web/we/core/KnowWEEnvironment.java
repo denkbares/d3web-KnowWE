@@ -50,6 +50,7 @@ import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sectionizer;
 import de.d3web.we.kdom.SectionizerModule;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.rendering.ConditionalRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -584,9 +585,8 @@ public class KnowWEEnvironment {
 		return topic + "_KB";
 	}
 
-	public String getSectionText(String web, String id) {
-		if (web == null) return null;
-		Section<?> sec = getArticleManager(web).getSection(id);
+	public String getSectionText(String id) {
+		Section<?> sec = Sections.getSection(id);
 		String data = "Section not found: " + id;
 		if (sec != null) {
 			data = sec.getText();
@@ -651,4 +651,5 @@ public class KnowWEEnvironment {
 			out.write(buf, 0, len);
 		}
 	}
+
 }
