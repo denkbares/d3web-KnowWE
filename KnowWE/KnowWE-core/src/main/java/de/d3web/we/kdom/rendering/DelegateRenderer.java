@@ -109,12 +109,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 
 		// use subSection's renderer
 		KnowWEDomRenderer renderer = getRenderer(subSection, user);
-		if (renderer == null) {
-			DefaultTextRenderer.getInstance().render(article, subSection, user, builder);
-		}
-		else {
-			renderer.render(article, subSection, user, builder);
-		}
+		renderer.render(article, subSection, user, builder);
 
 		// then call post rendering for all messages of this subsection
 		renderMessagesPost(article, subSection, user, builder);
@@ -221,9 +216,8 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		builder.append(KnowWEUtils.maskHTML("&gt;</sub>"));
 	}
 
-	private KnowWEDomRenderer getRenderer(Section<?> section,
-			UserContext user) {
-		KnowWEDomRenderer renderer = null;
+	public static KnowWEDomRenderer<?> getRenderer(Section<?> section, UserContext user) {
+		KnowWEDomRenderer<?> renderer = null;
 
 		Type objectType = section.get();
 		if (renderer == null) {
@@ -232,6 +226,9 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		}
 		if (renderer == null) {
 			renderer = objectType.getRenderer();
+		}
+		if (renderer == null) {
+			renderer = DefaultTextRenderer.getInstance();
 		}
 		return renderer;
 	}

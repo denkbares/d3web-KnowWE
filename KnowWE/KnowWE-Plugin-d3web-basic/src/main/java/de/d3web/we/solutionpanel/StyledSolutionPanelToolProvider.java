@@ -30,7 +30,7 @@ import de.d3web.we.user.UserContext;
 
 /**
  * A tool provider to add some appropriate actions to the
- * {@link SolutionsPanelRenderer}, e.g., clear case, refresh.
+ * {@link ShowSolutionsRenderer}, e.g., clear case, refresh.
  * 
  * @author Joachim Baumeister (denkbares GmbH)
  * @created 19.10.2010

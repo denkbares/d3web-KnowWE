@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2010 denkbares GmbH
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -38,7 +38,9 @@ import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
+import de.d3web.we.kdom.Sections;
+import de.d3web.we.kdom.defaultMarkup.ContentType;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.user.UserContext;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
@@ -55,22 +57,24 @@ import de.d3web.we.utils.KnowWEUtils;
  * <li>@show_digits: 0..NUMBER of fractional digits to be shown
  * <li>@master: Name of the article with the knowledge base
  * </ul>
- *
+ * 
  * @author Joachim Baumeister (denkbares GmbH)
  * @created 15.10.2010
  */
-public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsType> {
+public class ShowSolutionsContentRenderer extends KnowWEDomRenderer<ContentType> {
 
-	public SolutionsPanelRenderer() {
-		// TODO: here we can also add an icon for the renderer
-		super(false);
+	public ShowSolutionsContentRenderer() {
 	}
 
 	@Override
-	protected void renderContents(KnowWEArticle article, Section<ShowSolutionsType> section, UserContext user, StringBuilder string) {
-		string.append(ShowSolutionsType.getText(section) + "\n");
+	public void render(KnowWEArticle article, Section<ContentType> section, UserContext user, StringBuilder string) {
+		string.append(KnowWEUtils.maskHTML("<span id='" + section.getID() + "'>"));
+		String text = section.getOriginalText();
+		if (!text.isEmpty()) {
+			string.append(text + "\n");
+		}
 
-		String masterArticleName = ShowSolutionsType.getMaster(section);
+		String masterArticleName = ShowSolutionsType.getMaster(getShowSolutionsSection(section));
 		Session session = getSessionFor(masterArticleName, article.getWeb(), user);
 		if (session == null) {
 			string.append("No knowledge base for: " + masterArticleName + "\n");
@@ -79,18 +83,24 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 			string.append(renderSolutions(section, session));
 			string.append(renderAbstractions(section, session));
 		}
+		string.append(KnowWEUtils.maskHTML("</span>"));
+	}
+
+	private Section<ShowSolutionsType> getShowSolutionsSection(Section<ContentType> section) {
+		return Sections.findAncestorOfType(section, ShowSolutionsType.class);
 	}
 
 	/**
 	 * Renders the derived abstractions when panel opted for it.
 	 */
-	private StringBuffer renderAbstractions(Section<?> section, Session session) {
+	private StringBuffer renderAbstractions(Section<ContentType> section, Session session) {
 		// Check, if the shown abstractions are limited to a number of
 		// questionnaires
-		String[] allowedQuestionnaires = ShowSolutionsType.getShownAbstraction(section);
+		Section<ShowSolutionsType> parentSection = getShowSolutionsSection(section);
+		String[] allowedQuestionnaires = ShowSolutionsType.getShownAbstraction(parentSection);
 
 		StringBuffer buffer = new StringBuffer();
-		if (ShowSolutionsType.shouldShowAbstractions(section)) {
+		if (ShowSolutionsType.shouldShowAbstractions(parentSection)) {
 			List<Question> abstractions = new ArrayList<Question>();
 			for (Question question : session.getBlackboard().getAnsweredQuestions()) {
 				Boolean isAbstract = question.getInfoStore().getValue(
@@ -148,20 +158,21 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 	/**
 	 * Renders the derived solutions when panel opted for it.
 	 */
-	private StringBuffer renderSolutions(Section<?> section, final Session session) {
+	private StringBuffer renderSolutions(Section<ContentType> section, final Session session) {
 		StringBuffer content = new StringBuffer();
 		List<Solution> allSolutions = new ArrayList<Solution>();
+		Section<ShowSolutionsType> parentSection = getShowSolutionsSection(section);
 
 		// collect the solutions to be presented
 		// --- established solutions are presented by default and have to be
 		// --- opted out
-		if (ShowSolutionsType.shouldShowEstablished(section)) {
+		if (ShowSolutionsType.shouldShowEstablished(parentSection)) {
 			allSolutions.addAll(session.getBlackboard().getSolutions(State.ESTABLISHED));
 		}
-		if (ShowSolutionsType.shouldShowSuggested(section)) {
+		if (ShowSolutionsType.shouldShowSuggested(parentSection)) {
 			allSolutions.addAll(session.getBlackboard().getSolutions(State.SUGGESTED));
 		}
-		if (ShowSolutionsType.shouldShowExcluded(section)) {
+		if (ShowSolutionsType.shouldShowExcluded(parentSection)) {
 			allSolutions.addAll(session.getBlackboard().getSolutions(State.EXCLUDED));
 		}
 
@@ -223,7 +234,7 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 		return KnowWEUtils.maskHTML(string);
 	}
 
-	private void addListItem(StringBuffer buffer, Question question, Session session, Section<?> section) {
+	private void addListItem(StringBuffer buffer, Question question, Session session, Section<ContentType> section) {
 		// TODO: look for internationalization and only print getName,
 		// when no intlz is available
 		// buffer.append("* ");
@@ -250,17 +261,17 @@ public class SolutionsPanelRenderer extends DefaultMarkupRenderer<ShowSolutionsT
 	 * Renders the string representation of the specified value. For a
 	 * {@link NumValue} the float is truncated to its integer value, when
 	 * possible.
-	 *
+	 * 
 	 * @created 19.10.2010
 	 * @param value the specified value
 	 * @return A string representation of the specified value.
 	 */
-	private String formatValue(Value value, Section<?> section) {
+	private String formatValue(Value value, Section<ContentType> section) {
 
 		if (value instanceof NumValue) {
 			Double numValue = (Double) value.getValue();
 			// check, if we need to round the value
-			int digits = ShowSolutionsType.numberOfShownDigits(section);
+			int digits = ShowSolutionsType.numberOfShownDigits(getShowSolutionsSection(section));
 			if (digits >= 0) {
 				double d = Math.pow(10, digits);
 				numValue = (Math.round(numValue * d) / d);

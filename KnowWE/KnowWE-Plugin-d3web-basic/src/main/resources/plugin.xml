@@ -21,11 +21,23 @@
 			value="de.d3web.we.knowledgebase.KnowledgeBaseDownloadProvider" />
 		<parameter id="name" value="KnowledgeBaseDownloadProvider" />
 		<parameter id="description"
-			value="Offer a download button to download the knowledge base as an knowledge archive." />
+			value="Offers a download button to download the knowledge base as an knowledge archive." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="/KnowledgeBase" />
 	</extension>
+
+	<!-- extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="StyledSolutionPanelToolProvider">
+		<parameter id="class"
+			value="de.d3web.we.solutionpanel.StyledSolutionPanelToolProvider" />
+		<parameter id="name" value="StyledSolutionPanelToolProvider" />
+		<parameter id="description"
+			value="Offers a restart button for the current session." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="/ShowSolutions" />
+	</extension -->
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="KnowledgeBaseType">

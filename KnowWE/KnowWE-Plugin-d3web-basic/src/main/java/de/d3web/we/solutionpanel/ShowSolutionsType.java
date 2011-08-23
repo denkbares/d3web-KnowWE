@@ -19,6 +19,8 @@
 package de.d3web.we.solutionpanel;
 
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Type;
+import de.d3web.we.kdom.defaultMarkup.ContentType;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -66,24 +68,31 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	public ShowSolutionsType() {
 		super(MARKUP);
 		this.setCustomRenderer(this.getRenderer());
+		for (Type type : this.getAllowedChildrenTypes()) {
+			if (type instanceof ContentType) {
+				((ContentType) type).setCustomRenderer(
+						new ReRenderSectionMarkerRenderer<ContentType>(
+								new ShowSolutionsContentRenderer()));
+			}
+		}
 	}
 
-	public static String getText(Section<?> sec) {
+	public static String getText(Section<ShowSolutionsType> sec) {
 		assert sec.get() instanceof ShowSolutionsType;
 		return DefaultMarkupType.getContent(sec);
 	}
 
-	public static String getMaster(Section<?> section) {
+	public static String getMaster(Section<ShowSolutionsType> section) {
 		assert section.get() instanceof ShowSolutionsType;
 		return DefaultMarkupType.getAnnotation(section, ANNOTATION_MASTER);
 	}
 
-	public static String[] getShownAbstraction(Section<?> section) {
+	public static String[] getShownAbstraction(Section<ShowSolutionsType> section) {
 		assert section.get() instanceof ShowSolutionsType;
 		return DefaultMarkupType.getAnnotations(section, ALLOWED_DERIVATIONS);
 	}
 
-	public static boolean shouldShowEstablished(Section<?> section) {
+	public static boolean shouldShowEstablished(Section<ShowSolutionsType> section) {
 		if (foundAnnotation(section, ANNOTATION_ESTABLISHED)) {
 			return shouldShow(section, ANNOTATION_ESTABLISHED);
 		}
@@ -93,26 +102,26 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		}
 	}
 
-	private static boolean foundAnnotation(Section<?> section, String annotation) {
+	private static boolean foundAnnotation(Section<ShowSolutionsType> section, String annotation) {
 		assert section.get() instanceof ShowSolutionsType;
 		String value = DefaultMarkupType.getAnnotation(section, annotation);
 		if (!MARKUP.getAnnotation(annotation).matches(value)) return false;
 		else return true;
 	}
 
-	public static boolean shouldShowSuggested(Section<?> section) {
+	public static boolean shouldShowSuggested(Section<ShowSolutionsType> section) {
 		return shouldShow(section, ANNOTATION_SUGGESTED);
 	}
 
-	public static boolean shouldShowExcluded(Section<?> section) {
+	public static boolean shouldShowExcluded(Section<ShowSolutionsType> section) {
 		return shouldShow(section, ANNOTATION_EXCLUDED);
 	}
 
-	public static boolean shouldShowAbstractions(Section<?> section) {
+	public static boolean shouldShowAbstractions(Section<ShowSolutionsType> section) {
 		return shouldShow(section, ANNOTATION_ABSTRACTIONS);
 	}
 
-	public static int numberOfShownDigits(Section<?> section) {
+	public static int numberOfShownDigits(Section<ShowSolutionsType> section) {
 		assert section.get() instanceof ShowSolutionsType;
 		String val = DefaultMarkupType.getAnnotation(section, SHOW_DIGITS);
 		int iVal = 10;
@@ -125,7 +134,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		return iVal;
 	}
 
-	private static boolean shouldShow(Section<?> section, String annotation) {
+	private static boolean shouldShow(Section<ShowSolutionsType> section, String annotation) {
 		assert section.get() instanceof ShowSolutionsType;
 		String value = DefaultMarkupType.getAnnotation(section, annotation);
 		if (!MARKUP.getAnnotation(annotation).matches(value)) return false;
@@ -144,7 +153,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 
 	@Override
 	public KnowWEDomRenderer<ShowSolutionsType> getRenderer() {
-		return new ReRenderSectionMarkerRenderer<ShowSolutionsType>(new SolutionsPanelRenderer());
+		return new ShowSolutionsRenderer();
 	}
 
 }
