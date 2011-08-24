@@ -1,4 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<%@page import="de.d3web.we.kdom.Sections"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="de.d3web.plugin.Extension"%>
 <%@ page import="de.d3web.plugin.JPFPluginManager"%>
@@ -75,7 +76,7 @@
 	
 	JSPHelper jspHelper = new JSPHelper(context);
 	String kdomID = context.getParameter("kdomID");
-	Section diafluxSection = article.getSection(kdomID);
+	Section diafluxSection = Sections.getSection(kdomID);
 	String title = DiaFluxType.getFlowchartName(diafluxSection);
 %>
 
