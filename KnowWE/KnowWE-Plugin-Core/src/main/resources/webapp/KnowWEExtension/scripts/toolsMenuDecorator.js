@@ -22,7 +22,7 @@ function showToolsPopupMenu(nodeID, menuHTML) {
 	});
 	document.body.appendChild(par);
 	par.innerHTML = 
-		"<div class='defaultMarkupFrame'>" +
+		"<div class='toolMenuFrame'>" +
 		"<div style='width:"+w+"px;height:"+h+"px;' onclick='hideToolsPopupMenu();'></div>" +
 		menuHTML + 
 		"</div>";
