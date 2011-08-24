@@ -441,7 +441,7 @@ public class Sections {
 	}
 
 	public static String getNewSectionID() {
-		return "#" + Long.toHexString(idCounter++);
+		return Long.toHexString(idCounter++);
 	}
 
 	/**
