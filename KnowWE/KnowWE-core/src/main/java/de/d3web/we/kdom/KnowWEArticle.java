@@ -309,34 +309,34 @@ public class KnowWEArticle extends AbstractType {
 			new HashMap<String, Map<String, List<Section<?>>>>();
 
 	/**
-	 * Finds all children with the same path of ObjectTypes in the KDOM. The
-	 * <tt>path</tt> has to start with theKnowWEArticle and end with the
-	 * ObjectType of the Sections you are looking for.
+	 * Finds all children with the same path of Types in the KDOM. The
+	 * <tt>path</tt> has to start with the type KnowWEArticle and end with the
+	 * Type of the Sections you are looking for.
 	 * 
 	 * @return Map of Sections, using their originalText as key.
 	 */
-	public Map<String, List<Section<?>>> findChildrenOfTypeMap(List<Class<? extends Type>> path) {
+	public Map<String, List<Section<?>>> findSectionsWithTypePathAsMap(List<Class<? extends Type>> path) {
 		String stringPath = path.toString();
 		Map<String, List<Section<? extends Type>>> foundChildren = knownResults.get(stringPath);
 		if (foundChildren == null) {
 			foundChildren = new HashMap<String, List<Section<? extends Type>>>();
-			Sections.findSuccessorsOfTypeAtTheEndOfPath(sec, path, 0, foundChildren);
+			Sections.findSuccessorsWithTypePath(sec, path, 0, foundChildren);
 			knownResults.put(stringPath, foundChildren);
 		}
 		return foundChildren;
 	}
 
 	/**
-	 * Finds all children with the same path of ObjectTypes in the KDOM. The
+	 * Finds all children with the same path of Types in the KDOM. The
 	 * <tt>path</tt> has to start with theKnowWEArticle and end with the
 	 * ObjectType of the Sections you are looking for.
 	 * 
 	 * @return List of Sections
 	 */
-	public List<Section<? extends Type>> findChildrenOfTypeList(
+	public List<Section<? extends Type>> findSectionsWithTypePathAsList(
 			LinkedList<Class<? extends Type>> path) {
 		List<Section<? extends Type>> foundChildren = new ArrayList<Section<? extends Type>>();
-		Sections.findSuccessorsOfTypeAtTheEndOfPath(sec, path, 0, foundChildren);
+		Sections.findSuccessorsWithTypePath(sec, path, 0, foundChildren);
 		return foundChildren;
 	}
 

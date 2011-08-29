@@ -642,7 +642,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	 * @return a List of ObjectTypes beginning at the KnowWWEArticle and ending
 	 *         at this Section. Returns <tt>null</tt> if no path is found.
 	 */
-	public List<Class<? extends Type>> getPathFromArticleToThis() {
+	public List<Class<? extends Type>> getTypePathFromArticleToThis() {
 		LinkedList<Class<? extends Type>> path = new LinkedList<Class<? extends Type>>();
 
 		path.add(get().getClass());

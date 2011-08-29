@@ -391,7 +391,7 @@ public class Sections {
 	 * @param section TODO
 	 */
 
-	public static void findSuccessorsOfTypeAtTheEndOfPath(
+	public static void findSuccessorsWithTypePath(
 			Section<?> section,
 			List<Class<? extends Type>> path,
 			int index, Map<String, List<Section<?>>> found) {
@@ -399,7 +399,7 @@ public class Sections {
 		if (index < path.size() - 1
 				&& path.get(index).isAssignableFrom(section.get().getClass())) {
 			for (Section<? extends Type> sec : section.getChildren()) {
-				Sections.findSuccessorsOfTypeAtTheEndOfPath(sec, path, index + 1, found);
+				Sections.findSuccessorsWithTypePath(sec, path, index + 1, found);
 			}
 		}
 		else if (index == path.size() - 1
@@ -422,7 +422,7 @@ public class Sections {
 	 * path. </p> Stores found successors in a List of Sections
 	 * 
 	 */
-	public static void findSuccessorsOfTypeAtTheEndOfPath(Section<?> s,
+	public static void findSuccessorsWithTypePath(Section<?> s,
 			List<Class<? extends Type>> path,
 			int index,
 			List<Section<? extends Type>> found) {
@@ -430,7 +430,7 @@ public class Sections {
 		if (index < path.size() - 1
 				&& path.get(index).isAssignableFrom(s.get().getClass())) {
 			for (Section<? extends Type> child : s.getChildren()) {
-				Sections.findSuccessorsOfTypeAtTheEndOfPath(child, path, index + 1, found);
+				Sections.findSuccessorsWithTypePath(child, path, index + 1, found);
 			}
 		}
 		else if (index == path.size() - 1
