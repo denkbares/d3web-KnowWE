@@ -574,6 +574,23 @@
 			</dependencies>
 		</profile>
 		
+		<!-- DiaFlux Coverage -->
+		<profile>
+			<id>diafluxcoverage</id>
+			<activation>
+				<property>
+					<name>diafluxcoverage</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-DiaFlux-Coverage</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 		
 		<!-- DiaFlux Dialog -->
 		<profile>
@@ -593,8 +610,42 @@
 			</dependencies>
 		</profile>
 		
+		<!-- KBDebug -->
+		<profile>
+			<id>kbdebug</id>
+			<activation>
+				<property>
+					<name>kbdebug</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-d3web-Debug</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+				
+		<!-- JournalImport -->
+		<profile>
+			<id>journalimport</id>
+			<activation>
+				<property>
+					<name>journalimport</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-JournalUtils</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 		
-
 		<!-- Shared Plugin -->
 		<profile>
 			<id>KnowWE-Plugin-Shared</id>
@@ -868,6 +919,24 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Comment</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-DiaFlux-Coverage</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-d3web-Debug</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-JournalUtils</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
