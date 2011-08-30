@@ -21,6 +21,7 @@
 package de.d3web.we.wikiConnector;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -392,4 +393,23 @@ public interface KnowWEWikiConnector {
 	 * @return The usernames of all active users.
 	 */
 	public String[] getAllActiveUsers();
+
+	/**
+	 * Returns the Attachment given by the supplied path.
+	 * 
+	 * @created 30.08.2011
+	 * @param path
+	 * @return the attachment or null, if it does not exist.
+	 */
+	ConnectorAttachment getAttachment(String path);
+
+	/**
+	 * 
+	 * @created 30.08.2011
+	 * @param wikiPage
+	 * @param filename
+	 * @param stream
+	 * @return
+	 */
+	boolean storeAttachment(String wikiPage, String filename, InputStream stream);
 }

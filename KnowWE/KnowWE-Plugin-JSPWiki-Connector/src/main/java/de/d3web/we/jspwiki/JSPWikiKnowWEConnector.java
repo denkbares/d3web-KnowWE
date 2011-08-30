@@ -21,7 +21,10 @@
 package de.d3web.we.jspwiki;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Date;
@@ -151,7 +154,37 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	}
 
 	@Override
+	public ConnectorAttachment getAttachment(String path) {
+		try {
+			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
+			Attachment attachment = attachmentManager.getAttachmentInfo(path);
+
+			if (attachment == null) return null;
+			else return new JSPWikiConnectorAttachment(attachment, attachmentManager);
+
+		}
+		catch (ProviderException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
+	@Override
 	public boolean storeAttachment(String wikiPage, File attachmentFile) {
+		try {
+			return storeAttachment(wikiPage, attachmentFile.getName(), new FileInputStream(
+					attachmentFile));
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return false;
+		}
+
+	}
+
+	@Override
+	public boolean storeAttachment(String wikiPage, String filename, InputStream stream) {
 		try {
 			if (!isPageLocked(wikiPage)) {
 				setPageLocked(wikiPage, "WIKI-ENGINE");
@@ -159,8 +192,8 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 						.getAttachmentManager();
 
 				Attachment att = new Attachment(engine, wikiPage,
-						attachmentFile.getName());
-				attachmentManager.storeAttachment(att, attachmentFile);
+						filename);
+				attachmentManager.storeAttachment(att, stream);
 
 				undoPageLocked(wikiPage);
 				return true;

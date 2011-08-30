@@ -22,6 +22,7 @@ package dummies;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -303,5 +304,17 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	public String[] getAllActiveUsers() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public ConnectorAttachment getAttachment(String path) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean storeAttachment(String wikiPage, String filename, InputStream stream) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
