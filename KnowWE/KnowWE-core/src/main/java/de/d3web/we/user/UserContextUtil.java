@@ -27,6 +27,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -55,17 +57,29 @@ public class UserContextUtil {
 				String value = request.getParameter(key);
 				parameters.put(key, decode ? KnowWEUtils.urldecode(value) : value);
 			}
-			if (request.getMethod() != null && request.getMethod().equals("POST")) {
-				try {
-					BufferedReader br = new BufferedReader(new InputStreamReader(
-							request.getInputStream()));
-					parameters.put("data", br.readLine());
-				}
-				catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			if (request.getMethod() != null &&
+					request.getMethod().equals("POST")) {
 
+				// do not handle file uploads, leave this to the action
+				if (!ServletFileUpload.isMultipartContent(request)) {
+
+					try {
+						BufferedReader br = new BufferedReader(new InputStreamReader(
+								request.getInputStream()));
+
+						String line;
+						StringBuilder bob = new StringBuilder();
+
+						while ((line = br.readLine()) != null) {
+							bob.append(line.toString()).append("\n");
+						}
+
+						parameters.put("data", bob.toString());
+					}
+					catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 		return parameters;
