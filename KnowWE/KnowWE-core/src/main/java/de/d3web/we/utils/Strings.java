@@ -185,6 +185,34 @@ public class Strings {
 	}
 
 	/**
+	 * Returns whether the specified {@link String} is null or only consists of
+	 * whitespaces.
+	 * <p>
+	 * The method returns as follows:
+	 * <ul>
+	 * <li>StringUtils.isBlank(null): true
+	 * <li>StringUtils.isBlank(""): true
+	 * <li>StringUtils.isBlank(" "): true
+	 * <li>StringUtils.isBlank(" d3web "): false
+	 * </ul>
+	 * 
+	 * @param text the string to be checked
+	 * @return <code>true</code> iff the string has no non-whitespace character
+	 */
+	public static boolean isBlank(String text) {
+		int strLen;
+		if (text == null || (strLen = text.length()) == 0) {
+			return true;
+		}
+		for (int i = 0; i < strLen; i++) {
+			if ((Character.isWhitespace(text.charAt(i)) == false)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Writes the stack trace of a throwable instance into a string.
 	 * 
 	 * @created 06.06.2011
