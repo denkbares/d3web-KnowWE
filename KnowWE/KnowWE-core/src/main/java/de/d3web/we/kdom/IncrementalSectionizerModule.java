@@ -95,7 +95,7 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 	private Section<?> findMatchingSection(Section<?> father, Type type, String text) {
 		// get path of of types the Section to be
 		// created would have
-		List<Class<? extends Type>> path = father.getTypePathFromArticleToThis();
+		List<Class<? extends Type>> path = Sections.getTypePathFromRootToSection(father);
 		path.add(type.getClass());
 
 		// find all Sections with same path of Types

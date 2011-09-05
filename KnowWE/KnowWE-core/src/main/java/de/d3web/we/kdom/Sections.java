@@ -104,14 +104,8 @@ public class Sections {
 	}
 
 	/**
-	 * checks whether this node has a son of type class1 beeing left from the
+	 * Checks whether this node has a son of type class1 beeing left from the
 	 * given substring.
-	 * 
-	 * @param section TODO
-	 * @param class1
-	 * @param text
-	 * 
-	 * @return
 	 */
 	public static boolean hasLeftSonOfType(Section<?> section, Class<? extends Type> class1, String text) {
 		if (section.get() instanceof EmbracedType) {
@@ -163,13 +157,7 @@ public class Sections {
 	}
 
 	/**
-	 * Searches the ancestor for this section for a given class
-	 * 
-	 * @param section TODO
-	 * @param clazz
-	 * 
-	 * @param <OT>
-	 * @return
+	 * Searches the ancestor for the given section for a given class.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <OT extends Type> Section<OT> findAncestorOfType(Section<?> section, Class<OT> clazz) {
@@ -184,13 +172,8 @@ public class Sections {
 	}
 
 	/**
-	 * Searches the ancestor for this section for a given collection of classes
-	 * 
-	 * @param section TODO
-	 * @param clazz
-	 * @param <OT>
-	 * @return
-	 * 
+	 * Finds the nearest ancestor for the given section for the given collection
+	 * of classes.
 	 */
 	public static Section<? extends Type> findAncestorOfTypes(Section<?> section, Collection<Class<? extends Type>> classes) {
 		for (Class<? extends Type> class1 : classes) {
@@ -203,17 +186,11 @@ public class Sections {
 	}
 
 	/**
-	 * Searches the ancestor for this section for a given class. Note: Here, a
-	 * section can't be its own ancestor. Furthermore, if an ancestor is just a
-	 * subtype of the given class, it will be ignored. For other purposes, use
-	 * the following method:
+	 * Finds the ancestor for the given section for the given class. Note: Here,
+	 * a section can't be its own ancestor. Furthermore, if an ancestor is just
+	 * a subtype of the given class, it will be ignored. For other purposes, use
+	 * the following method: {@link Sections#findAncestorOfType(Section, Class)}
 	 * 
-	 * @param section TODO
-	 * @param clazz
-	 * 
-	 * @see findAncestorOfType
-	 * @param <OT>
-	 * @return
 	 * @author Franz Schwab
 	 */
 	public static <OT extends Type> Section<OT> findAncestorOfExactType(Section<?> section, Class<OT> clazz) {
@@ -225,16 +202,10 @@ public class Sections {
 	}
 
 	/**
-	 * Searches the ancestor for this section for a given collection of classes.
-	 * The ancestor with the lowest distance to this section will be returned.
+	 * Finds the ancestor for the given section for a given collection of
+	 * classes. The ancestor with the lowest distance to this section will be
+	 * returned.
 	 * 
-	 * @param section TODO
-	 * @param clazz
-	 * @see findAncestorOfExactType For other purposes, use the following
-	 *      method:
-	 * @see findAncestorOfTypes
-	 * @param <OT>
-	 * @return
 	 * @author Franz Schwab
 	 */
 	public static Section<? extends Type> findAncestorOfExactType(Section<?> section, Collection<Class<? extends Type>> classes) {
@@ -246,11 +217,7 @@ public class Sections {
 	}
 
 	/**
-	 * Searches the Children of a Section and only the children of a Section for
-	 * a given class
-	 * 
-	 * @param section TODO
-	 * @param section
+	 * Finds the first child with the given type in the given Section.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <OT extends Type> Section<OT> findChildOfType(Section<?> section, Class<OT> class1) {
@@ -263,11 +230,8 @@ public class Sections {
 	}
 
 	/**
-	 * Searches the Children of a Section and only the children of a Section for
-	 * a given class
-	 * 
-	 * @param section TODO
-	 * @param section
+	 * Finds all children with the given Type in the children of the given
+	 * Section.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <OT extends Type> List<Section<OT>> findChildrenOfType(Section<?> section, Class<OT> clazz) {
@@ -277,6 +241,10 @@ public class Sections {
 		return result;
 	}
 
+	/**
+	 * Finds the first successors of type <code>class1</code> in the KDOM below
+	 * the given Section.
+	 */
 	@SuppressWarnings("unchecked")
 	public static <OT extends Type> Section<OT> findSuccessor(Section<?> section, Class<OT> class1) {
 
@@ -292,8 +260,8 @@ public class Sections {
 	}
 
 	/**
-	 * Finds all successors of type <code>class1</code> in the KDOM below this
-	 * Section.
+	 * Finds all successors of type <code>class1</code> in the KDOM below the
+	 * given Section.
 	 */
 	public static <OT extends Type> List<Section<OT>> findSuccessorsOfType(Section<?> section, Class<OT> class1) {
 		List<Section<OT>> result = new LinkedList<Section<OT>>();
@@ -302,8 +270,8 @@ public class Sections {
 	}
 
 	/**
-	 * Finds all successors of type <code>class1</code> in the KDOM below this
-	 * Section.
+	 * Finds all successors of type <code>class1</code> in the KDOM below the
+	 * given Section.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <OT extends Type> void findSuccessorsOfType(Section<?> section, Class<OT> class1, List<Section<OT>> found) {
@@ -317,12 +285,11 @@ public class Sections {
 	}
 
 	/**
-	 * Finds all successors of type <code>class1</code> in the KDOM below this
-	 * Section.
-	 * 
-	 * @param section TODO
+	 * Finds all successors of type <code>class1</code> in the KDOM below the
+	 * given Section.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({
+			"unchecked", "rawtypes" })
 	public static void findSuccessorsOfTypeUntyped(Section<?> section, Class class1, List<Section<?>> found) {
 
 		if (class1.isAssignableFrom(section.get().getClass())) {
@@ -334,16 +301,15 @@ public class Sections {
 	}
 
 	/**
-	 * Finds all successors of type <code>class1</code> in the KDOM below this
-	 * Section and stores them in a Map, using their originalText as key.
-	 * 
-	 * @param section TODO
+	 * Finds all successors of type <code>class1</code> in the KDOM below the
+	 * argument Section and stores them in a Map, using their originalText as
+	 * key.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <OT extends Type> void findSuccessorsOfTypeAsMap(Section<?> section, Class<OT> class1, Map<String, Section<OT>> found) {
 
 		if (class1.isAssignableFrom(section.get().getClass())) {
-			Section tmp = found.get(section.getOriginalText());
+			Section<OT> tmp = found.get(section.getOriginalText());
 			// only replace the finding by this Section, if this Section is not
 			// reused
 			// but the Section already in the map is reused
@@ -352,7 +318,7 @@ public class Sections {
 				found.put((section).getOriginalText(), (Section<OT>) section);
 			}
 		}
-		for (Section sec : section.getChildren()) {
+		for (Section<?> sec : section.getChildren()) {
 			Sections.findSuccessorsOfTypeAsMap(sec, class1, found);
 		}
 
@@ -360,9 +326,7 @@ public class Sections {
 
 	/**
 	 * Finds all successors of type <code>class1</code> in the KDOM to the depth
-	 * of <code>depth</code> below this Section.
-	 * 
-	 * @param section TODO
+	 * of <code>depth</code> below the argument Section.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <OT extends Type> void findSuccessorsOfType(Section<?> section, Class<OT> class1,
@@ -374,7 +338,7 @@ public class Sections {
 		if (depth == 0) {
 			return;
 		}
-		for (Section sec : section.getChildren()) {
+		for (Section<?> sec : section.getChildren()) {
 			Sections.findSuccessorsOfType(sec, class1, depth - 1, found);
 		}
 
@@ -382,15 +346,11 @@ public class Sections {
 
 	/**
 	 * Finds all successors of type <tt>class1</tt> in the KDOM at the end of
-	 * the given path of ancestors. If your <tt>path</tt> starts with the
-	 * ObjectType of this Section, set <tt>index</tt> to <tt>0</tt>. Else set
-	 * the <tt>index</tt> to the index of the ObjectType of this Section in the
-	 * path. </p> Stores found successors in a Map of Sections, using their
-	 * originalTexts as key.
-	 * 
-	 * @param section TODO
+	 * the given path of ancestors. If your <tt>path</tt> starts with the Type
+	 * of the given Section, set <tt>index</tt> to <tt>0</tt>. Else set the
+	 * <tt>index</tt> to the index of the Type of this Section in the path. </p>
+	 * Stores found successors in a Map of Sections, using their texts as key.
 	 */
-
 	public static void findSuccessorsWithTypePath(
 			Section<?> section,
 			List<Class<? extends Type>> path,
@@ -420,7 +380,6 @@ public class Sections {
 	 * ObjectType of this Section, set <tt>index</tt> to <tt>0</tt>. Else set
 	 * the <tt>index</tt> to the index of the ObjectType of this Section in the
 	 * path. </p> Stores found successors in a List of Sections
-	 * 
 	 */
 	public static void findSuccessorsWithTypePath(Section<?> s,
 			List<Class<? extends Type>> path,
@@ -438,6 +397,29 @@ public class Sections {
 			found.add(s);
 		}
 
+	}
+
+	/**
+	 * @return a List of ObjectTypes beginning at the KnowWWEArticle and ending
+	 *         at the argument Section. Returns <tt>null</tt> if no path is
+	 *         found.
+	 */
+	public static List<Class<? extends Type>> getTypePathFromRootToSection(Section<? extends Type> section) {
+		LinkedList<Class<? extends Type>> path = new LinkedList<Class<? extends Type>>();
+
+		path.add(section.get().getClass());
+		Section<? extends Type> father = section.getFather();
+		while (father != null) {
+			path.addFirst(father.get().getClass());
+			father = father.getFather();
+		}
+
+		if (path.getFirst().isAssignableFrom(KnowWEArticle.class)) {
+			return path;
+		}
+		else {
+			return null;
+		}
 	}
 
 	public static String getNewSectionID() {

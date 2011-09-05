@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -634,52 +633,6 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	public void removeChildren(List<Section<? extends Type>> removeList) {
 		for (Section<? extends Type> s : removeList) {
 			this.removeChild(s);
-		}
-	}
-
-	/**
-	 * 
-	 * @return a List of ObjectTypes beginning at the KnowWWEArticle and ending
-	 *         at this Section. Returns <tt>null</tt> if no path is found.
-	 */
-	public List<Class<? extends Type>> getTypePathFromArticleToThis() {
-		LinkedList<Class<? extends Type>> path = new LinkedList<Class<? extends Type>>();
-
-		path.add(get().getClass());
-		Section<? extends Type> father = getFather();
-		while (father != null) {
-			path.addFirst(father.get().getClass());
-			father = father.getFather();
-		}
-
-		if (path.getFirst().isAssignableFrom(KnowWEArticle.class)) {
-			return path;
-		}
-		else {
-			return null;
-		}
-	}
-
-	/**
-	 * 
-	 * @return a List of ObjectTypes beginning at the given Section and ending
-	 *         at this Section. Returns <tt>null</tt> if no path is found.
-	 */
-	public List<Class<? extends Type>> getPathFromGivenSectionToThis(Section<? extends Type> sec) {
-		LinkedList<Class<? extends Type>> path = new LinkedList<Class<? extends Type>>();
-
-		Section<? extends Type> father = getFather();
-		while (father != null && father != sec) {
-			path.addFirst(father.get().getClass());
-			father = father.getFather();
-		}
-		path.addFirst(father.get().getClass());
-
-		if (path.getFirst().isAssignableFrom(sec.getClass())) {
-			return path;
-		}
-		else {
-			return null;
 		}
 	}
 
