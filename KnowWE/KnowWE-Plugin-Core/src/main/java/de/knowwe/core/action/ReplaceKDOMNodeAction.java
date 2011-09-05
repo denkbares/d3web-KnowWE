@@ -46,7 +46,7 @@ import de.d3web.we.utils.KnowWEUtils;
  */
 public class ReplaceKDOMNodeAction extends AbstractAction {
 
-	private String perform(UserActionContext context) {
+	private String perform(UserActionContext context) throws IOException {
 		String web = context.getWeb();
 		String nodeID = context.getParameter(KnowWEAttributes.TARGET);
 		String name = context.getTopic();

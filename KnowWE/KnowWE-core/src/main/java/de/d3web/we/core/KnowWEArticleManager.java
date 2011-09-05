@@ -21,6 +21,7 @@
 package de.d3web.we.core;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,6 +43,7 @@ import de.d3web.we.event.EventManager;
 import de.d3web.we.event.UpdatingDependenciesEvent;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 import dummies.KnowWETestWikiConnector;
@@ -140,38 +142,59 @@ public class KnowWEArticleManager {
 	/**
 	 * Replaces KDOM-nodes with the given texts, but not in the KDOM itself. It
 	 * collects the originalTexts deep through the KDOM and appends the new text
-	 * (instead of the originalText) for the nodes with an ID in the nodesMap.
+	 * (instead of the original text) for the nodes with an ID in the nodesMap.
 	 * Finally the article is saved with this new content.
 	 * 
 	 * @param context
 	 * @param title
 	 * @param nodesMap containing pairs of the nodeID and the new text for this
 	 *        node
-	 * @return
+	 * @return true if the nodes were successfully replaced, false else
+	 * @throws IOException
 	 */
-	public String replaceKDOMNodesSaveAndBuild(UserActionContext context, String title,
-			Map<String, String> nodesMap) {
-		// String user = map.getUser();
-		String web = context.getWeb();
-		KnowWEArticle art = this.getArticle(title);
-		if (art == null) return "article not found: " + title;
-		Section<KnowWEArticle> root = art.getSection();
-		StringBuffer newText = new StringBuffer();
-		appendTextReplaceNode(root, nodesMap, newText);
+	public boolean replaceKDOMNodesSaveAndBuild(UserActionContext context, String title,
+			Map<String, String> nodesMap) throws IOException {
 
-		String newArticleSourceText = newText.toString();
+		// check if article exists
+		KnowWEArticle art = getArticle(title);
+		if (art == null) {
+			context.sendError(404, "Article '" + title + "' could not be found.");
+			return false;
+		}
+
+		// check if all the ids exist
+		for (String id : nodesMap.keySet()) {
+			if (Sections.getSection(id) == null) {
+				context.sendError(409, "Section '" + id
+						+ "' could not be found, possibly because somebody else"
+						+ " has edited the article.");
+				return false;
+			}
+		}
+
+		// check for user access
+		if (!KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(title,
+				context.getRequest())) {
+			context.sendError(403, "You do not have the permission to edit this article.");
+			return false;
+		}
+
+		StringBuffer newText = new StringBuffer();
+		appendTextReplaceNode(art.getSection(), nodesMap, newText);
+
+		String newArticleText = newText.toString();
 		KnowWEWikiConnector wikiConnector = KnowWEEnvironment.getInstance().getWikiConnector();
 		wikiConnector.writeArticleToWikiEnginePersistence(
-				title, newArticleSourceText, context);
+				title, newArticleText, context);
 
 		if (wikiConnector instanceof KnowWETestWikiConnector) {
-			// this is only needed for the test environment, in the running
+			// This is only needed for the test environment. In the running
 			// wiki, this is automatically called after the change to the
-			// persistence
+			// persistence.
 			KnowWEEnvironment.getInstance().buildAndRegisterArticle(context.getUserName(),
-					newArticleSourceText, title, web);
+					newArticleText, title, context.getWeb());
 		}
-		return "done";
+		return true;
 	}
 
 	/**
@@ -190,23 +213,22 @@ public class KnowWEArticleManager {
 			String title, Map<String, String> nodesMap) {
 		KnowWEArticle art = this.getArticle(title);
 		if (art == null) return "article not found: " + title;
-		Section<?> root = art.getSection();
-		StringBuffer newText = new StringBuffer();
-		appendTextReplaceNode(root, nodesMap, newText);
 
-		String newArticleSourceText = newText.toString();
-		// saveUpdatedArticle(new KnowWEArticle(newArticleSourceText,
-		// articleName,
-		// KnowWEEnvironment.getInstance().getRootTypes(), this.web));
-		return newArticleSourceText;
+		StringBuffer newText = new StringBuffer();
+		appendTextReplaceNode(art.getSection(), nodesMap, newText);
+
+		return newText.toString();
 	}
 
 	private void appendTextReplaceNode(Section<?> sec,
 			Map<String, String> nodesMap, StringBuffer newText) {
-		if (nodesMap.containsKey(sec.getID())) {
-			newText.append(nodesMap.get(sec.getID()));
+
+		String text = nodesMap.get(sec.getID());
+		if (text != null) {
+			newText.append(text);
 			return;
 		}
+
 		List<Section<?>> children = sec.getChildren();
 		if (children == null || children.isEmpty()
 				|| sec.hasSharedChildren()) {

@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -20,6 +20,7 @@
 
 package de.knowwe.tagging;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -47,9 +48,9 @@ import de.d3web.we.user.UserContext;
 /**
  * Centralized management of tags. Takes care of adding/removing tags. And
  * answers tag-queries.
- *
+ * 
  * @author Fabian Haupt
- *
+ * 
  */
 public class TaggingMangler implements KnowWESearchProvider {
 
@@ -77,11 +78,12 @@ public class TaggingMangler implements KnowWESearchProvider {
 	/**
 	 * adds a tag to a page. The new tag is added into the <tags></tags> part.
 	 * If there is none, it's created at the end of the page
-	 *
+	 * 
 	 * @param pagename
 	 * @param tag
+	 * @throws IOException
 	 */
-	public void addTag(String pagename, String tag, UserActionContext context) {
+	public void addTag(String pagename, String tag, UserActionContext context) throws IOException {
 		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();
 		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				pagename);
@@ -122,11 +124,12 @@ public class TaggingMangler implements KnowWESearchProvider {
 	/**
 	 * removes a tag from a page. <tags></tags> is checked first. If the tag is
 	 * not found there, the page is checked for inline annotations.
-	 *
+	 * 
 	 * @param pagename
 	 * @param tag
+	 * @throws IOException
 	 */
-	public void removeTag(String pagename, String tag, UserActionContext context) {
+	public void removeTag(String pagename, String tag, UserActionContext context) throws IOException {
 		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();
 		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				pagename);
@@ -158,7 +161,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 
 	/**
 	 * returns a list of pages that are tagged with the given tag.
-	 *
+	 * 
 	 * @param tag
 	 * @return
 	 */
@@ -182,7 +185,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 	/**
 	 * Creates a list of tags this page is associated with. Always returns a
 	 * list. Any errors result in an empty list.
-	 *
+	 * 
 	 * @param pagename the topic in question
 	 * @return a list a tags for this topic
 	 */
@@ -208,7 +211,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 
 	/**
 	 * returns a list of all existing tags
-	 *
+	 * 
 	 * @return
 	 */
 	public List<String> getAllTags() {
@@ -221,7 +224,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 	/**
 	 * returns a hashmap of the tags and an integer, that can be used as
 	 * font-size (scaled between minSize and maxSize)
-	 *
+	 * 
 	 * @param minSize
 	 * @param maxSize
 	 * @return
@@ -244,7 +247,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 
 	/**
 	 * returns a list of all existing tags with normalized weights
-	 *
+	 * 
 	 * @return
 	 */
 	public Map<String, Float> getAllTagsWithWeight() {
@@ -285,11 +288,12 @@ public class TaggingMangler implements KnowWESearchProvider {
 
 	/**
 	 * sets tags to tag and replaces old ones
-	 *
+	 * 
 	 * @param topic
 	 * @param tag comma/space separated list of tags
+	 * @throws IOException
 	 */
-	public void setTags(String topic, String tag, UserActionContext context) {
+	public void setTags(String topic, String tag, UserActionContext context) throws IOException {
 		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();
 		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				topic);
@@ -322,10 +326,12 @@ public class TaggingMangler implements KnowWESearchProvider {
 
 	/**
 	 * adds a new tags-section - the hardcore way
-	 *
+	 * 
+	 * @throws IOException
+	 * 
 	 */
 	public void addNewTagSection(String topic, String content,
-			UserActionContext context) {
+			UserActionContext context) throws IOException {
 		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();
 		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				topic);

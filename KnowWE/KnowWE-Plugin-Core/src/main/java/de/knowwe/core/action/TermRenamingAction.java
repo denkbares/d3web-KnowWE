@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -50,7 +50,7 @@ import de.d3web.we.utils.KnowWEUtils;
  * <li>termreplacement</li>
  * <li>web</li>
  * </ul>
- *
+ * 
  * @author Sebastian Furth
  * @created Dec 15, 2010
  */
@@ -128,10 +128,16 @@ public class TermRenamingAction extends AbstractAction {
 		}
 	}
 
-	private void renameTermDefinitions(Set<Section<? extends TermDefinition<?>>> definitions, String replacement, KnowWEArticleManager mgr, UserActionContext context, Set<KnowWEArticle> failures, Set<KnowWEArticle> success) {
+	private void renameTermDefinitions(Set<Section<? extends TermDefinition<?>>> definitions,
+			String replacement,
+			KnowWEArticleManager mgr,
+			UserActionContext context,
+			Set<KnowWEArticle> failures,
+			Set<KnowWEArticle> success) throws IOException {
+
 		for (Section<? extends TermDefinition<?>> definition : definitions) {
 			if (KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(
-					definition.getTitle())) {
+					definition.getTitle(), context.getRequest())) {
 				Map<String, String> nodesMap = new HashMap<String, String>();
 				nodesMap.put(definition.getID(), replacement);
 				mgr.replaceKDOMNodesSaveAndBuild(context,
@@ -144,11 +150,16 @@ public class TermRenamingAction extends AbstractAction {
 		}
 	}
 
-	private void renameTermReferences(Set<Section<? extends TermReference<?>>> references, String replacement, KnowWEArticleManager mgr, UserActionContext context, Set<KnowWEArticle> failures, Set<KnowWEArticle> success) {
+	private void renameTermReferences(Set<Section<? extends TermReference<?>>> references,
+			String replacement, KnowWEArticleManager mgr,
+			UserActionContext context,
+			Set<KnowWEArticle> failures,
+			Set<KnowWEArticle> success) throws IOException {
+
 		Map<KnowWEArticle, List<Section<? extends TermReference<?>>>> groupedReferences = groupByArticle(references);
 		for (KnowWEArticle article : groupedReferences.keySet()) {
 			if (KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(
-					article.getTitle())) {
+					article.getTitle(), context.getRequest())) {
 				Map<String, String> nodesMap = new HashMap<String, String>();
 				for (Section<? extends TermReference<?>> reference : groupedReferences.get(article)) {
 					nodesMap.put(reference.getID(), replacement);

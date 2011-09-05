@@ -70,9 +70,10 @@ public class SaveFlowchartAction extends AbstractAction {
 	 * @param nodeID
 	 * @param topic
 	 * @param newText
+	 * @throws IOException
 	 */
 	@SuppressWarnings("unchecked")
-	private void replaceExistingFlowchart(UserActionContext context, String web, String nodeID, String topic, String newText) {
+	private void replaceExistingFlowchart(UserActionContext context, String web, String nodeID, String topic, String newText) throws IOException {
 		Section<DiaFluxType> diaFluxSection = (Section<DiaFluxType>) Sections.getSection(
 				nodeID);
 
@@ -110,8 +111,9 @@ public class SaveFlowchartAction extends AbstractAction {
 	 * @param web
 	 * @param topic
 	 * @param newText
+	 * @throws IOException
 	 */
-	private void saveNewFlowchart(UserActionContext context, String web, String topic, String newText) {
+	private void saveNewFlowchart(UserActionContext context, String web, String topic, String newText) throws IOException {
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(
 				context.getWeb());
 		KnowWEArticle article = mgr.getArticle(topic);
@@ -125,7 +127,7 @@ public class SaveFlowchartAction extends AbstractAction {
 		save(context, topic, nodeID, newArticle);
 	}
 
-	private void save(UserActionContext context, String topic, String nodeID, String newText) {
+	private void save(UserActionContext context, String topic, String nodeID, String newText) throws IOException {
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(nodeID, newText);
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(
