@@ -69,6 +69,8 @@ public class KnowWEArticle extends AbstractType {
 
 	private final long startTimeOverall;
 
+	private long currentStartTime;
+
 	private boolean fullParse;
 
 	private final boolean reParse;
@@ -117,7 +119,7 @@ public class KnowWEArticle extends AbstractType {
 				"====>> Starting to build article '" + title + "' ====>>");
 
 		this.startTimeOverall = System.currentTimeMillis();
-		long startTime = startTimeOverall;
+		this.currentStartTime = this.startTimeOverall;
 		this.title = title;
 		this.web = web;
 		this.childrenTypes.add(rootType);
@@ -126,21 +128,19 @@ public class KnowWEArticle extends AbstractType {
 		boolean unchangedContent = lastVersion != null
 				&& lastVersion.getSection().getOriginalText().equals(text);
 
-		reParse = unchangedContent && fullParse;
+		this.reParse = unchangedContent && fullParse;
 
 		boolean defFullParse = fullParse
 				|| lastVersion == null
 				|| KnowWEEnvironment.getInstance().getCompilationMode() == CompilationMode.DEFAULT;
+
 		this.fullParse = defFullParse;
 
-		// clear store before rebuilding
-		ContextManager.getInstance().detachContexts(title);
-
-		startTime = build(text, startTime);
+		build(text);
 
 		if (this.postDestroyFullParse) {
 			this.secondBuild = true;
-			build(text, startTime);
+			build(text);
 		}
 
 		// if for example a SubtreeHandlers uses
@@ -152,19 +152,47 @@ public class KnowWEArticle extends AbstractType {
 							classesCausingFullParse.toString());
 		}
 
-		// prevent memory leak
+		// important! prevents memory leak
 		lastVersion = null;
 	}
 
-	private long build(String text, long startTime) {
+	private void build(String text) {
 
 		this.postPreDestroy = false;
 		this.postDestroy = false;
 
-		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
+		detachContext();
 
-		// ============ Build KDOM =============
-		env.getArticleManager(web).registerSectionizingArticle(title);
+		sectionizeArticle(text);
+
+		Logger.getLogger(this.getClass().getName()).log(
+				Level.FINE,
+				"<- Built KDOM in "
+						+ (System.currentTimeMillis() - currentStartTime) + "ms <-");
+		currentStartTime = System.currentTimeMillis();
+
+		initContext();
+
+		preCompile();
+
+		compile();
+
+		postCompile();
+
+		Logger.getLogger(this.getClass().getName()).log(
+				Level.FINE,
+				"<- Built Knowledge in "
+						+ (System.currentTimeMillis() - currentStartTime) + "ms <-");
+		currentStartTime = System.currentTimeMillis();
+	}
+
+	private void detachContext() {
+		ContextManager.getInstance().detachContexts(title);
+	}
+
+	private void sectionizeArticle(String text) {
+
+		KnowWEEnvironment.getInstance().getArticleManager(web).registerSectionizingArticle(title);
 
 		// create Sections recursively
 		sec = Section.createSection(text, this, null);
@@ -173,76 +201,67 @@ public class KnowWEArticle extends AbstractType {
 
 		sec.absolutePositionStartInArticle = 0;
 		sec.clearReusedSuccessorRecursively();
-		if (this.lastVersion != null) {
+
+		if (lastVersion != null) {
 			lastVersion.getSection().clearReusedOfOldSectionsRecursively(this);
+			unregisterSectionIDRecursively(lastVersion.getSection());
 		}
 
 		EventManager.getInstance().fireEvent(new KDOMCreatedEvent(this));
 
-		env.getArticleManager(web).unregisterSectionizingArticles(title);
+		KnowWEEnvironment.getInstance().getArticleManager(web).unregisterSectionizingArticles(title);
+	}
 
-		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINE,
-				"<- Built KDOM in "
-						+ (System.currentTimeMillis() - startTime) + "ms <-");
-		startTime = System.currentTimeMillis();
+	private void initContext() {
+		DefaultSubjectContext con = new DefaultSubjectContext();
+		con.setSubject(title);
+		ContextManager.getInstance().attachContext(sec, con);
+	}
 
+	private void preCompile() {
 		if (this.fullParse) {
 			EventManager.getInstance().fireEvent(new FullParseEvent(this));
 		}
 
-		// init DefaultSolutionContext
-		if (env != null) {
-			DefaultSubjectContext con = new DefaultSubjectContext();
-			con.setSubject(title);
-			ContextManager.getInstance().attachContext(sec, con);
+		// destroy
+		if (!this.fullParse && this.lastVersion != null) {
+			lastVersion.reviseIterator.reset();
 		}
-
-		// ============ Precompile =============
-		// destroy (precompile)
-		if (!this.fullParse && this.lastVersion != null) lastVersion.reviseIterator.reset();
 		destroy(Priority.PRECOMPILE_LOW);
 		this.postPreDestroy = true;
 
-		// create (precompile)
+		// create
 		reviseIterator = new ReviseIterator();
 		reviseIterator.addRootSectionToRevise(sec);
 		create(Priority.PRECOMPILE_LOW);
 		EventManager.getInstance().fireEvent(new PreCompileFinishedEvent(this));
+	}
 
-		// ============ Compile =============
-		// destroy (compile)
+	private void compile() {
+
+		// destroy
 		destroy(Priority.LOWEST);
 		this.postDestroy = true;
 
-		// init KnowledgeRepHandler
-		env.getKnowledgeRepresentationManager(web)
+		KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(web)
 				.initArticle(this);
 
-		// create (compile)
+		// create
 		if (this.postPreDestroyFullParse && !this.secondBuild) {
 			reviseIterator = new ReviseIterator();
 			reviseIterator.addRootSectionToRevise(sec);
 		}
 		create(Priority.LOWEST);
+	}
 
-		// ============ Postcompile =============
+	private void postCompile() {
 
 		for (Section<?> node : reviseIterator.getAllSections()) {
 			node.setReusedBy(title, true);
 		}
 
-		// finish KnowledgeRepHandler
-		env.getKnowledgeRepresentationManager(web)
+		KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(web)
 				.finishArticle(this);
-
-		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINE,
-				"<- Built Knowledge in "
-						+ (System.currentTimeMillis() - startTime) + "ms <-");
-		startTime = System.currentTimeMillis();
-
-		return startTime;
 	}
 
 	private void destroy(Priority p) {
@@ -262,6 +281,13 @@ public class KnowWEArticle extends AbstractType {
 		while (reviseIterator.hasNext()) {
 			SectionPriorityTuple tuple = reviseIterator.next();
 			tuple.getSection().letSubtreeHandlersCreate(this, tuple.getPriority());
+		}
+	}
+
+	private void unregisterSectionIDRecursively(Section<?> section) {
+		Sections.unregisterSectionID(section);
+		for (Section<?> childSection : section.getChildren()) {
+			unregisterSectionIDRecursively(childSection);
 		}
 	}
 

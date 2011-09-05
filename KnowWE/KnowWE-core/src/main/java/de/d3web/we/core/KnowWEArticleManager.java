@@ -42,7 +42,6 @@ import de.d3web.we.event.EventManager;
 import de.d3web.we.event.UpdatingDependenciesEvent;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Sections;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 import dummies.KnowWETestWikiConnector;
@@ -241,15 +240,6 @@ public class KnowWEArticleManager {
 	 */
 	public void registerArticle(KnowWEArticle article, boolean updateDependencies) {
 
-		KnowWEArticle lastArticleVersion = articleMap.get(article.getTitle());
-		if (lastArticleVersion != null) {
-			// long time = System.currentTimeMillis();
-			unregisterSectionRecursively(lastArticleVersion,
-					lastArticleVersion.getSection());
-			// System.out.println(System.currentTimeMillis() - time);
-			// System.out.println(sectionMap.size());
-		}
-
 		// store new article
 		articleMap.put(article.getTitle(), article);
 
@@ -279,13 +269,6 @@ public class KnowWEArticleManager {
 						+ (System.currentTimeMillis() - article.getStartTime())
 						+ "ms <<====");
 		EventManager.getInstance().fireEvent(new ArticleRegisteredEvent(article));
-	}
-
-	private void unregisterSectionRecursively(KnowWEArticle lastArticleVersion, Section<?> section) {
-		if (section.getArticle() == lastArticleVersion) Sections.unregisterSection(section);
-		for (Section<?> childSection : section.getChildren()) {
-			unregisterSectionRecursively(lastArticleVersion, childSection);
-		}
 	}
 
 	public void updateQueuedArticles() {

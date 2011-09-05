@@ -15,8 +15,6 @@ import de.d3web.we.kdom.basic.PlainText;
 
 public class Sections {
 
-	private static long idCounter = 0;
-
 	/**
 	 * Stores Sections by their IDs.
 	 */
@@ -422,8 +420,41 @@ public class Sections {
 		}
 	}
 
-	public static String getNewSectionID() {
-		return Long.toHexString(idCounter++);
+	/**
+	 * Generates an ID for the given Section and also registers the Section in a
+	 * HashMap to allow searches for this Section later. The ID is the hash code
+	 * of the following String: Title of the Article containing the Section,
+	 * type path from the Section to the root and the content of the Section.
+	 * Hash collisions are resolved.
+	 * 
+	 * @created 05.09.2011
+	 * @param section is the Section for which the ID is generated and which is
+	 *        then registered
+	 * @return the ID for the given Section
+	 */
+	public static String generateAndRegisterSectionID(Section<?> section) {
+		String title = section.getTitle();
+		if (title == null) title = "";
+		List<Class<? extends Type>> typePath = getTypePathFromRootToSection(section);
+		String typePathString = typePath == null ? "" : typePath.toString();
+		String hashString = title + typePathString + section.getText();
+
+		int hashCode = hashString.hashCode();
+		String id = Integer.toHexString(hashCode);
+		synchronized (sectionMap) {
+			while (sectionMap.containsKey(id)) {
+				id = Integer.toHexString(++hashCode);
+			}
+			sectionMap.put(id, section);
+		}
+		return id;
+	}
+
+	public static void unregisterSectionID(Section<?> section) {
+		synchronized (sectionMap) {
+			sectionMap.remove(section.getID());
+			section.clearID();
+		}
 	}
 
 	/**
@@ -432,15 +463,9 @@ public class Sections {
 	 *         this ID.
 	 */
 	public static Section<?> getSection(String id) {
-		return sectionMap.get(id);
-	}
-
-	public static void registerSection(Section<?> section) {
-		sectionMap.put(section.getID(), section);
-	}
-
-	public static void unregisterSection(Section<?> section) {
-		sectionMap.remove(section.getID());
+		synchronized (sectionMap) {
+			return sectionMap.get(id);
+		}
 	}
 
 }

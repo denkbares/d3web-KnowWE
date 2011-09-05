@@ -159,7 +159,6 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 		}
 		this.text = text;
 		this.type = objectType;
-		Sections.registerSection(this);
 	}
 
 	protected Section(KnowWEArticle article) {
@@ -620,9 +619,13 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 
 	public String getID() {
 		if (id == null) {
-			id = Sections.getNewSectionID();
+			id = Sections.generateAndRegisterSectionID(this);
 		}
 		return id;
+	}
+
+	protected void clearID() {
+		id = null;
 	}
 
 	public void removeChild(Section<? extends Type> s) {
