@@ -38,8 +38,6 @@ import de.d3web.we.event.FullParseEvent;
 import de.d3web.we.event.KDOMCreatedEvent;
 import de.d3web.we.event.PreCompileFinishedEvent;
 import de.d3web.we.kdom.ReviseIterator.SectionPriorityTuple;
-import de.d3web.we.kdom.contexts.ContextManager;
-import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 
 /**
  * @author Jochen
@@ -161,8 +159,6 @@ public class KnowWEArticle extends AbstractType {
 		this.postPreDestroy = false;
 		this.postDestroy = false;
 
-		detachContext();
-
 		sectionizeArticle(text);
 
 		Logger.getLogger(this.getClass().getName()).log(
@@ -170,8 +166,6 @@ public class KnowWEArticle extends AbstractType {
 				"<- Built KDOM in "
 						+ (System.currentTimeMillis() - currentStartTime) + "ms <-");
 		currentStartTime = System.currentTimeMillis();
-
-		initContext();
 
 		preCompile();
 
@@ -184,10 +178,6 @@ public class KnowWEArticle extends AbstractType {
 				"<- Built Knowledge in "
 						+ (System.currentTimeMillis() - currentStartTime) + "ms <-");
 		currentStartTime = System.currentTimeMillis();
-	}
-
-	private void detachContext() {
-		ContextManager.getInstance().detachContexts(title);
 	}
 
 	private void sectionizeArticle(String text) {
@@ -210,12 +200,6 @@ public class KnowWEArticle extends AbstractType {
 		EventManager.getInstance().fireEvent(new KDOMCreatedEvent(this));
 
 		KnowWEEnvironment.getInstance().getArticleManager(web).unregisterSectionizingArticles(title);
-	}
-
-	private void initContext() {
-		DefaultSubjectContext con = new DefaultSubjectContext();
-		con.setSubject(title);
-		ContextManager.getInstance().attachContext(sec, con);
 	}
 
 	private void preCompile() {
