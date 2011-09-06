@@ -80,7 +80,7 @@ public class TestCaseDebugAction extends TestCaseRunningAction {
 			writer.write(rb.getString("KnowWE.TestCase.loaderror"));
 		}
 		else {
-			TestCaseAnalysis analysis = TestCaseAnalysis.getInstance();
+			TestCaseAnalysis analysis = new TestCaseAnalysis();
 			TestCaseAnalysisReport result = analysis.runAndAnalyze(t);
 			if (result.precision() == 1.0 && result.recall() == 1.0) {
 				writer.write(renderTestCasePassed(t, result));

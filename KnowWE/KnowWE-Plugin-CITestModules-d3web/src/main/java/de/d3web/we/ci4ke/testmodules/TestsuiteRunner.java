@@ -43,7 +43,7 @@ public class TestsuiteRunner extends AbstractCITest {
 		TestCase suite = TestCaseUtils.loadTestSuite(
 				monitoredArticleTitle, KnowWEEnvironment.DEFAULT_WEB);
 
-		TestCaseAnalysis analysis = TestCaseAnalysis.getInstance();
+		TestCaseAnalysis analysis = new TestCaseAnalysis();
 		TestCaseAnalysisReport result = analysis.runAndAnalyze(suite);
 
 		if (suite != null) {

@@ -76,7 +76,7 @@ public class TestCaseRunAction extends TestCaseRunningAction {
 	}
 
 	private String renderTestCaseResult(TestCase t) {
-		TestCaseAnalysis analysis = TestCaseAnalysis.getInstance();
+		TestCaseAnalysis analysis = new TestCaseAnalysis();
 		TestCaseAnalysisReport result = analysis.runAndAnalyze(t);
 		if (result.precision() == 1.0 && result.recall() == 1.0) {
 			return renderTestCasePassed(t, result);
