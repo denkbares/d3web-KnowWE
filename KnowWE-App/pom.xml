@@ -592,24 +592,6 @@
 			</dependencies>
 		</profile>
 		
-		<!-- DiaFlux Dialog -->
-		<profile>
-			<id>diafluxdialog-plugin</id>
-			<activation>
-				<property>
-					<name>diafluxdialog-plugin</name>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-DiaFlux-Dialog</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-		
 		<!-- KBDebug -->
 		<profile>
 			<id>kbdebug</id>
