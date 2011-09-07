@@ -158,7 +158,7 @@ public class KnowWEArticleManager {
 		// check if article exists
 		KnowWEArticle art = getArticle(title);
 		if (art == null) {
-			context.sendError(404, "Article '" + title + "' could not be found.");
+			context.sendError(404, "Page '" + title + "' could not be found.");
 			return false;
 		}
 
@@ -167,7 +167,7 @@ public class KnowWEArticleManager {
 			if (Sections.getSection(id) == null) {
 				context.sendError(409, "Section '" + id
 						+ "' could not be found, possibly because somebody else"
-						+ " has edited the article.");
+						+ " has edited the page.");
 				return false;
 			}
 		}
@@ -175,7 +175,7 @@ public class KnowWEArticleManager {
 		// check for user access
 		if (!KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(title,
 				context.getRequest())) {
-			context.sendError(403, "You do not have the permission to edit this article.");
+			context.sendError(403, "You do not have the permission to edit this page.");
 			return false;
 		}
 
