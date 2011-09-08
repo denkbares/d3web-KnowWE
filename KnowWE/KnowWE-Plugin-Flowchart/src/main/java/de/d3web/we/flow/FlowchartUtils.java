@@ -172,11 +172,6 @@ public class FlowchartUtils {
 		return createFlowchartRenderer(section, user, parent, scope, isInsertRessources(section));
 	}
 
-	// this only exists for compatibility reasons with DiaFluxDialog.
-	// TODO Remove later
-	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String parent, String scope) {
-		return createFlowchartRenderer(section, user, parent, scope, true);
-	}
 
 	// experimental hack
 	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String parent, String scope, boolean insertRessources) {
