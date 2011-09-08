@@ -45,22 +45,22 @@ public class PropertyDeclarationType extends AbstractType implements Incremental
 
 	public PropertyDeclarationType() {
 
-		String trippleQuotes = "\"\"\"";
-		String noTrippleQuotes = "(?!" + trippleQuotes + ")";
-		String noTrippleQuotesFollowedByAnyChar = "(?:" + noTrippleQuotes + ".)";
+		String tripleQuotes = "\"\"\"";
+		String noTripleQuotes = "(?!" + tripleQuotes + ")";
+		String anyCharButNoTripleQuotes = "(?:" + noTripleQuotes + ".)";
 
-		String singleLinePropertyDeclaration = noTrippleQuotesFollowedByAnyChar + "+?$"
-						+ "(?!\\s*" + trippleQuotes + ")";
+		String singleLinePropertyDeclaration = anyCharButNoTripleQuotes + "+?$\\s*"
+						+ "(?!\\s*" + tripleQuotes + ")";
+		// the singleLinePropertyDeclaration is a line that does not contain
+		// triple quotes and also is not followed by a line that starts (maybe
+		// after some white spaces) with a triple quote
 
-		String multiLinePropertyDeclaration = noTrippleQuotesFollowedByAnyChar + "+?"
-				+ trippleQuotes
-				+ noTrippleQuotesFollowedByAnyChar + "+?"
-				+ trippleQuotes + "\\s*$";
+		String multiLinePropertyDeclaration = ".+?" + tripleQuotes + ".+?" + tripleQuotes + "\\s*$";
 
 		String propertyDeclaration = "^\\s*("
 				+ singleLinePropertyDeclaration + "|"
 				+ multiLinePropertyDeclaration + ")";
-		
+
 		Pattern p = Pattern.compile(propertyDeclaration, Pattern.MULTILINE + Pattern.DOTALL);
 		setSectionFinder(new RegexSectionFinder(p, 1));
 
