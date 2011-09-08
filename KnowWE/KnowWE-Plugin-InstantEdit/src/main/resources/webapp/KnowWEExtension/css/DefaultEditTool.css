@@ -1,0 +1,15 @@
+.defaultEditTool {
+	font-size: 13px;
+	min-height: 100px;
+	display: block;
+	border: 1px dashed black;
+	background-color: ivory;
+	padding: 5px;
+	margin-bottom: 8px;
+	width: 100%;
+	resize: vertical;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}

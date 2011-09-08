@@ -1,0 +1,40 @@
+.nested-tool-menu {
+	display: inline-block;
+}
+
+.nested-tool-menu .controls {
+	display: none;
+}
+
+.nested-tool-menu:hover .controls {
+	display: inline;
+}
+
+.nested-tool-menu:hover {
+	top: -1px;
+	bottom: -1px;
+	left: -1px;
+	right: -15px;
+	border: 1px dotted gray;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+}
+
+.saveCancelButtons {
+	padding-bottom: 10px;
+}
+
+.editarea a.action.save, .editarea a.action.cancel {
+	padding: 0.25em 0.5em;
+	margin: 0 4px 0 0;
+	display: inline;
+	text-decoration: none;
+	line-height: normal;
+	border: 1px solid #DDD;
+	background: #F9F9F9;
+	white-space: nowrap;
+	box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	-ms-box-sizing: content-box;
+	-webkit-box-sizing: content-box;
+}
