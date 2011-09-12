@@ -75,18 +75,7 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="DiaFluxStateType">
-		<parameter id="class"
-			value="de.d3web.we.flow.type.DiaFluxStateType" />
-		<parameter id="name" value="DiaFluxStateType" />
-		<parameter id="description" value="Type DiaFluxStateType" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="scope" value="root" />
-	</extension>
-	
+		
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GetInfoObjects">
 		<parameter id="class"
