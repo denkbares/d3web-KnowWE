@@ -118,7 +118,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 						: "") +
 				" title=\"" + tool.getDescription() + "\">" +
 				(hasIcon ? ("<img src=\"" + icon + "\"></img>") : "") +
-				" " + tool.getTitle() +
+				" <span>" + tool.getTitle() + "</span>" +
 				"</" + (jsAction == null ? "span" : "a") + ">" +
 				"</div></div>";
 	}
