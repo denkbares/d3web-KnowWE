@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -46,10 +46,10 @@ import de.d3web.we.utils.SplitUtility;
  * This class defines a KDOM-Schema to parse composite conditions as known from
  * proposition logics, using 'AND', 'OR', 'NOT' as keywords and brackets '(' and
  * ')' for to express association boundaries
- * 
- * 
+ *
+ *
  * @author Jochen
- * 
+ *
  */
 public class CompositeCondition extends AbstractType {
 
@@ -106,10 +106,10 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * Sets the set of terminalConditions for this CompositeCondition
-	 * 
+	 *
 	 * Any terminal that is not accepted by one of these will be marked by an
 	 * UnrecognizedTerminalCondition causing an error
-	 * 
+	 *
 	 * @param types
 	 */
 	public void setAllowedTerminalConditions(List<Type> types) {
@@ -118,21 +118,21 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * tells whether a CompositeCondition is a disjunction
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
-	public boolean isDisjunction(Section<CompositeCondition> c) {
+	public boolean isDisjunction(Section<? extends CompositeCondition> c) {
 		return getDisjuncts(c).size() > 0;
 	}
 
 	/**
 	 * returns the disjuncts of a disjunction
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
-	public List<Section<? extends NonTerminalCondition>> getDisjuncts(Section<CompositeCondition> c) {
+	public List<Section<? extends NonTerminalCondition>> getDisjuncts(Section<? extends CompositeCondition> c) {
 
 		List<Section<? extends NonTerminalCondition>> result = new ArrayList<Section<? extends NonTerminalCondition>>();
 		List<Section<Disjunct>> childrenOfType = Sections.findChildrenOfType(c, Disjunct.class);
@@ -143,21 +143,21 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * tells whether a CompositeCondition is a Conjunction
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
-	public boolean isConjunction(Section<CompositeCondition> c) {
+	public boolean isConjunction(Section<? extends CompositeCondition> c) {
 		return getConjuncts(c).size() > 0;
 	}
 
 	/**
 	 * returns the conjunts of a conjunction
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
-	public List<Section<? extends NonTerminalCondition>> getConjuncts(Section<CompositeCondition> c) {
+	public List<Section<? extends NonTerminalCondition>> getConjuncts(Section<? extends CompositeCondition> c) {
 
 		List<Section<? extends NonTerminalCondition>> result = new ArrayList<Section<? extends NonTerminalCondition>>();
 		List<Section<Conjunct>> childrenOfType = Sections.findChildrenOfType(c, Conjunct.class);
@@ -168,7 +168,7 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * tells whether a CompositeCondition is a bracedexpression
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -178,7 +178,7 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * returns the BracedCondition
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -191,21 +191,21 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * tells whether a CompositeCondition is a NegatedExpression
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
-	public boolean isNegation(Section<CompositeCondition> c) {
+	public boolean isNegation(Section<? extends CompositeCondition> c) {
 		return getNegation(c) != null;
 	}
 
 	/**
 	 * returns the NegatedExpression of a Negation
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
-	public Section<? extends NonTerminalCondition> getNegation(Section<CompositeCondition> c) {
+	public Section<? extends NonTerminalCondition> getNegation(Section<? extends CompositeCondition> c) {
 		Section<? extends NonTerminalCondition> negEx = Sections.findChildOfType(c,
 				NegatedExpression.class);
 		return negEx;
@@ -213,7 +213,7 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * tells whether this CompositeCondition is a TerminalCondition
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -223,7 +223,7 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * returns the TerminalCondition of a (terminal-)CompositeCondition
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -234,7 +234,7 @@ public class CompositeCondition extends AbstractType {
 	}
 
 	/**
-	 * 
+	 *
 	 * @created 03.08.2010
 	 * @param trimmed
 	 * @return
@@ -260,11 +260,11 @@ public class CompositeCondition extends AbstractType {
 
 /**
  * @author Jochen
- * 
+ *
  *         Type for a disjunct element in the CompositeCondition
- * 
+ *
  *         example: 'a OR b' here 'a' and 'b' are nodes of type disjunct
- * 
+ *
  */
 class Disjunct extends NonTerminalCondition implements de.d3web.we.kdom.ExclusiveType {
 
@@ -278,11 +278,11 @@ class Disjunct extends NonTerminalCondition implements de.d3web.we.kdom.Exclusiv
 
 /**
  * @author Jochen
- * 
+ *
  *         Type for a conjunct element in the CompositeCondition
- * 
+ *
  *         example: 'a AND b' here 'a' and 'b' are nodes of type conjunct
- * 
+ *
  */
 class Conjunct extends NonTerminalCondition implements de.d3web.we.kdom.ExclusiveType {
 
@@ -298,11 +298,11 @@ class Conjunct extends NonTerminalCondition implements de.d3web.we.kdom.Exclusiv
 
 /**
  * @author Jochen
- * 
+ *
  *         Type for a negated element in the CompositeCondition
- * 
+ *
  *         example: 'NOT b' here 'b' is not nodes of type NegatedExpression
- * 
+ *
  */
 class NegatedExpression extends NonTerminalCondition {
 
