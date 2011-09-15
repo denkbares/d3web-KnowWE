@@ -251,14 +251,11 @@ KNOWWE.plugin.instantEdit = function() {
     	},
     	
     	disableDefaultEditTool : function() {
-			$$('div.DefaultEditTool').setStyles({
-				display: "none" 
-			});
+			$$('div.DefaultEditTool').setStyle("display", "none");
     	},
     	
     	enableDefaultEditTool : function() {
-    		$$('div.DefaultEditTool').setStyles({
-			});
+    		$$('div.DefaultEditTool').setStyle("display", null);
     	}
     }
 }();
