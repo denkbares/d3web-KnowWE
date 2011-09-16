@@ -256,13 +256,15 @@ public class FlowchartUtils {
 	}
 
 	public static String getFlowSourceWithoutPreview(Section<FlowchartType> section) {
-		String source = section.getOriginalText();
+		return removePreview(section.getOriginalText());
+	}
+
+	public static String removePreview(String source) {
 		int previewIndex = source.lastIndexOf("<preview");
 		// remove preview
 		if (previewIndex != -1) {
 			source = source.substring(0, previewIndex) + "</flowchart>";
 		}
-
 		return source;
 	}
 }

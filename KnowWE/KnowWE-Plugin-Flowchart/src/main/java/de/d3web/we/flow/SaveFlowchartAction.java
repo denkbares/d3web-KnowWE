@@ -23,6 +23,7 @@ package de.d3web.we.flow;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.UserActionContext;
@@ -52,11 +53,22 @@ public class SaveFlowchartAction extends AbstractAction {
 		String topic = context.getTopic();
 		String newText = context.getParameter(KnowWEAttributes.TEXT);
 
-		if (nodeID == null) {
-			saveNewFlowchart(context, web, topic, newText);
+		ResourceBundle wikiConfig = ResourceBundle.getBundle("KnowWE_config");
+		boolean render = Boolean.valueOf(wikiConfig.getString("knowweplugin.diaflux.render"));
+
+		String source;
+		if (render) {
+			source = FlowchartUtils.removePreview(newText);
 		}
 		else {
-			replaceExistingFlowchart(context, web, nodeID, topic, newText);
+			source = newText;
+		}
+
+		if (nodeID == null) {
+			saveNewFlowchart(context, web, topic, source);
+		}
+		else {
+			replaceExistingFlowchart(context, web, nodeID, topic, source);
 		}
 
 	}
@@ -105,6 +117,8 @@ public class SaveFlowchartAction extends AbstractAction {
 
 	/**
 	 * Saves a flowchart for which no section exists in the article yet.
+	 * Currently only used, when extracting a module with
+	 * DiaFlux-Refactoring-Plugin.
 	 * 
 	 * @created 23.02.2011
 	 * @param map
