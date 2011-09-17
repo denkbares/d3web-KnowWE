@@ -1,7 +1,7 @@
 DiaFlux.Trace = {}
 
 DiaFlux.Trace.getTrace = function(){
-	DiaFlux.Highlight.getHighlights.call(this, 'GetTraceHighlightAction');
+	DiaFlux.Highlight.getHighlights.call(this, 'GetTraceHighlightAction', {});
 	
 }
 

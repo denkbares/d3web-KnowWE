@@ -4,13 +4,16 @@ if (typeof DiaFlux == "undefined" || !DiaFlux) {
 
 DiaFlux.Highlight = {};
 
-DiaFlux.Highlight.getHighlights = function(actionName, master){
+DiaFlux.Highlight.getHighlights = function(actionName, infos){
 	
-	params = {
+	var params = {
 		action : actionName,
-        kdomid: this.flow.kdomid,
-        master: master
+        kdomid: this.flow.kdomid
 	};
+	
+	for ( var prop in infos) {
+		params[prop] = infos[prop];
+	}
 	
 	var options = {
 		url: KNOWWE.core.util.getURL( params ),
