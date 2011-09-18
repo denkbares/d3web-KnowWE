@@ -35,11 +35,12 @@ import de.d3web.we.action.AbstractAction;
  */
 public abstract class TestCaseRunningAction extends AbstractAction {
 
-	protected ResourceBundle rb;
-	protected final DecimalFormat formatter = new DecimalFormat("0.00");
-	protected MessageFormat msgFormatter;
+	protected static final DecimalFormat formatter = new DecimalFormat("0.00");
 
-	protected String renderTestCasePassed(TestCase t, TestCaseAnalysisReport result) {
+	// protected ResourceBundle rb;
+	// protected MessageFormat msgFormatter;
+
+	protected static String renderTestCasePassed(TestCase t, TestCaseAnalysisReport result, ResourceBundle rb, MessageFormat mf) {
 		StringBuilder html = new StringBuilder();
 
 		// TestCase passed text and green bulb
@@ -47,7 +48,7 @@ public abstract class TestCaseRunningAction extends AbstractAction {
 		html.append("<img src='KnowWEExtension/images/green_bulb.gif' width='16' height='16' /> ");
 		html.append("<strong>");
 		html.append(loadMessage("KnowWE.TestCase.passed",
-				new Object[] { t.getRepository().size() }));
+				new Object[] { t.getRepository().size() }, rb, mf));
 		html.append("</strong>");
 		html.append("</p>");
 
@@ -63,12 +64,12 @@ public abstract class TestCaseRunningAction extends AbstractAction {
 		return html.toString();
 	}
 
-	protected String loadMessage(String key, Object[] arguments) {
+	protected static String loadMessage(String key, Object[] arguments, ResourceBundle rb, MessageFormat msgFormatter) {
 		msgFormatter.applyPattern(rb.getString(key));
 		return msgFormatter.format(arguments);
 	}
 
-	protected String renderTestCaseNotConsistent(TestCase t, TestCaseAnalysisReport result) {
+	protected static String renderTestCaseNotConsistent(TestCase t, TestCaseAnalysisReport result, ResourceBundle rb, MessageFormat mf) {
 		StringBuilder html = new StringBuilder();
 
 		// TestCase failed text and red bulb
@@ -76,7 +77,7 @@ public abstract class TestCaseRunningAction extends AbstractAction {
 		html.append("<img src='KnowWEExtension/images/red_bulb.gif' width='16' height='16' /> ");
 		html.append("<strong>");
 		html.append(loadMessage("KnowWE.TestCase.failed",
-				new Object[] { t.getRepository().size() }));
+				new Object[] { t.getRepository().size() }, rb, mf));
 		html.append("</strong>");
 		html.append("</p>");
 
@@ -91,12 +92,12 @@ public abstract class TestCaseRunningAction extends AbstractAction {
 		html.append(rb.getString("KnowWE.TestCase.notconsistent"));
 		html.append("</p>\n");
 
-		html.append(renderNotConsistentDetails(t));
+		html.append(renderNotConsistentDetails(t, rb));
 
 		return html.toString();
 	}
 
-	private String renderNotConsistentDetails(TestCase t) {
+	private static String renderNotConsistentDetails(TestCase t, ResourceBundle rb) {
 		StringBuilder html = new StringBuilder();
 
 		// Pointer and Text
@@ -107,14 +108,14 @@ public abstract class TestCaseRunningAction extends AbstractAction {
 		// Div containing details
 		html.append("<div id='testcase-detail-panel' class='hidden'>");
 		html.append("<p style='margin-left:22px'>");
-		html.append(findInconsistentRTC(t));
+		html.append(findInconsistentRTC(t, rb));
 		html.append("</p>");
 		html.append("</div>\n");
 
 		return html.toString();
 	}
 
-	private String findInconsistentRTC(TestCase t) {
+	private static String findInconsistentRTC(TestCase t, ResourceBundle rb) {
 
 		StringBuilder message = new StringBuilder();
 

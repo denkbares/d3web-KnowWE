@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.MessageFormat;
 import java.util.Date;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -66,8 +67,8 @@ public class TestCaseDebugAction extends TestCaseRunningAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		rb = D3webModule.getKwikiBundle_d3web(context);
-		msgFormatter = new MessageFormat("");
+		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(context);
+		MessageFormat msgFormatter = new MessageFormat("");
 
 		String testCaseName = context.getParameter("testcase");
 		String web = context.getParameter(KnowWEAttributes.WEB);
@@ -83,11 +84,11 @@ public class TestCaseDebugAction extends TestCaseRunningAction {
 			TestCaseAnalysis analysis = new TestCaseAnalysis();
 			TestCaseAnalysisReport result = analysis.runAndAnalyze(t);
 			if (result.precision() == 1.0 && result.recall() == 1.0) {
-				writer.write(renderTestCasePassed(t, result));
+				writer.write(renderTestCasePassed(t, result, rb, msgFormatter));
 
 			}
 			else if (!t.isConsistent()) {
-				writer.write(renderTestCaseNotConsistent(t, result));
+				writer.write(renderTestCaseNotConsistent(t, result, rb, msgFormatter));
 
 			}
 			else {

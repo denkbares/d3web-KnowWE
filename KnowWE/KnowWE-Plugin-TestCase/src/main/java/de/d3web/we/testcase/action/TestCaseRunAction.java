@@ -21,6 +21,7 @@ package de.d3web.we.testcase.action;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import de.d3web.core.knowledge.TerminologyObject;
@@ -57,40 +58,56 @@ public class TestCaseRunAction extends TestCaseRunningAction {
 		String web = context.getParameter(KnowWEAttributes.WEB);
 
 		TestCase t = TestCaseUtils.loadTestSuite(testCaseName, web);
+
 		renderTests(context, t);
 
 	}
 
-	public void renderTests(UserActionContext context, TestCase t) throws IOException {
-		rb = D3webModule.getKwikiBundle_d3web(context);
-		msgFormatter = new MessageFormat("");
+	public static void renderTests(UserActionContext context, TestCase t) throws IOException {
+		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(context);
+		MessageFormat mf = new MessageFormat("");
 
 		if (t == null) {
-			Logger.getLogger(this.getClass().getName()).warning(
+			Logger.getLogger(TestCaseRunAction.class.getName()).warning(
 					"Test case was null. Unable to execute it.");
 			context.getWriter().write(rb.getString("KnowWE.TestCase.loaderror"));
 		}
 		else {
-			context.getWriter().write(renderTestCaseResult(t));
+			context.getWriter().write(renderTestCaseResult(t, rb, mf));
 		}
 	}
 
-	private String renderTestCaseResult(TestCase t) {
+	public static String renderTestCaseResult(TestCase t, ResourceBundle rb, MessageFormat mf) {
 		TestCaseAnalysis analysis = new TestCaseAnalysis();
 		TestCaseAnalysisReport result = analysis.runAndAnalyze(t);
+		return renderTestAnalysisResult(t, result, rb, mf);
+
+	}
+
+	/**
+	 * 
+	 * @created 16.09.2011
+	 * @param t
+	 * @param result
+	 * @param rb
+	 * @param mf
+	 * @return
+	 */
+	public static String renderTestAnalysisResult(TestCase t, TestCaseAnalysisReport result, ResourceBundle rb, MessageFormat mf) {
 		if (result.precision() == 1.0 && result.recall() == 1.0) {
-			return renderTestCasePassed(t, result);
+			return renderTestCasePassed(t, result, rb, mf);
 
 		}
 		else if (!t.isConsistent()) {
-			return renderTestCaseNotConsistent(t, result);
+			return renderTestCaseNotConsistent(t, result, rb, mf);
 
 		}
-
-		return renderTestCaseFailed(t, result);
+		else {
+			return renderTestCaseFailed(t, result, rb, mf);
+		}
 	}
 
-	private String renderTestCaseFailed(TestCase t, TestCaseAnalysisReport result) {
+	private static String renderTestCaseFailed(TestCase t, TestCaseAnalysisReport result, ResourceBundle rb, MessageFormat mf) {
 		StringBuilder html = new StringBuilder();
 
 		// TestCase failed text and red bulb
@@ -98,7 +115,7 @@ public class TestCaseRunAction extends TestCaseRunningAction {
 		html.append("<img src='KnowWEExtension/images/red_bulb.gif' width='16' height='16' /> ");
 		html.append("<strong>");
 		html.append(loadMessage("KnowWE.TestCase.failed",
-				new Object[] { t.getRepository().size() }));
+				new Object[] { t.getRepository().size() }, rb, mf));
 		html.append("</strong>");
 		html.append("</p>");
 
@@ -111,12 +128,12 @@ public class TestCaseRunAction extends TestCaseRunningAction {
 		html.append(formatter.format(result.recall()));
 		html.append("</p>\n");
 
-		html.append(renderDifferenceDetails(t, result));
+		html.append(renderDifferenceDetails(t, result, rb));
 
 		return html.toString();
 	}
 
-	private String renderDifferenceDetails(TestCase t, TestCaseAnalysisReport result) {
+	private static String renderDifferenceDetails(TestCase t, TestCaseAnalysisReport result, ResourceBundle rb) {
 
 		StringBuilder html = new StringBuilder();
 
@@ -132,13 +149,13 @@ public class TestCaseRunAction extends TestCaseRunningAction {
 
 		// Table containing details
 		html.append("<div id='testcase-detail-panel' style='display:none'>");
-		html.append(renderDetailResultTable(t, result));
+		html.append(renderDetailResultTable(t, result, rb));
 		html.append("</div>\n");
 
 		return html.toString();
 	}
 
-	private String renderDetailResultTable(TestCase t, TestCaseAnalysisReport result) {
+	private static String renderDetailResultTable(TestCase t, TestCaseAnalysisReport result, ResourceBundle rb) {
 
 		StringBuilder html = new StringBuilder();
 		StringBuilder temp = new StringBuilder();
