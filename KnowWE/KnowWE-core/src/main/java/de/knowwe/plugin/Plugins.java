@@ -56,6 +56,8 @@ public class Plugins {
 	public static final String EXTENDED_POINT_SemanticCore = "SemanticCoreImpl";
 	public static final String EXTENDED_POINT_EventListener = "EventListener";
 	public static final String EXTENDED_POINT_SearchProvider = "SearchProvider";
+	public static final String EXTENDED_POINT_TERMINOLOGY = "Terminology";
+
 
 	/**
 	 * Returns all plugged Instantiations These are used to initialize plugins.
