@@ -1817,10 +1817,12 @@ div.coverflow .knob {
 .type_DiaFlux.defaultMarkupFrame > .defaultMarkup .markupText {
 	padding: 0px;
 	margin: -1px;
+	white-space: normal;
 }
+
 .type_DiaFlux.defaultMarkupFrame > .defaultMarkup {
-	border-right: 0px;
-	border-bottom: 0px;
+	border-right: 1px solid #D1CFF1;
+	border-bottom: 1px solid #D1CFF1;
 	border-left: 1px solid #D1CFF1;
 	border-top: 1px solid #D1CFF1;
 	overflow-y: hidden;
