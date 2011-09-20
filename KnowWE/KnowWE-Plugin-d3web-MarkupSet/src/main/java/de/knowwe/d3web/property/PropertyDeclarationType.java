@@ -40,7 +40,7 @@ import de.d3web.we.utils.Patterns;
 public class PropertyDeclarationType extends AbstractType implements IncrementalMarker, IncrementalConstraint<PropertyDeclarationType> {
 
 	public static final String QUOTED_NAME = Patterns.quoted;
-	public static final String UNQUOTED_NAME = "(?:[^\".=#\\n\\r])+";
+	public static final String UNQUOTED_NAME = "[^\".=#\\n\\r]+";
 	public static final String NAME = "(?:" + QUOTED_NAME + "|" + UNQUOTED_NAME + ")";
 
 	public PropertyDeclarationType() {
