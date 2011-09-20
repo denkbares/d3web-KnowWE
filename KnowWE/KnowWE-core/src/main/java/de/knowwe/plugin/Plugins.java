@@ -48,6 +48,7 @@ public class Plugins {
 	public static final String EXTENDED_POINT_KnowWEAction = "Action";
 	public static final String EXTENDED_POINT_KnowledgeRepresentationHandler = "KnowledgeRepresentationHandler";
 	public static final String EXTENDED_POINT_Type = "Type";
+	public static final String EXTENDED_POINT_SubtreeHandler = "SubtreeHandler";
 	public static final String EXTENDED_POINT_ToolProvider = "ToolProvider";
 	public static final String EXTENDED_POINT_TagHandler = "TagHandler";
 	public static final String EXTENDED_POINT_PageAppendHandler = "PageAppendHandler";
@@ -57,7 +58,6 @@ public class Plugins {
 	public static final String EXTENDED_POINT_EventListener = "EventListener";
 	public static final String EXTENDED_POINT_SearchProvider = "SearchProvider";
 	public static final String EXTENDED_POINT_TERMINOLOGY = "Terminology";
-
 
 	/**
 	 * Returns all plugged Instantiations These are used to initialize plugins.

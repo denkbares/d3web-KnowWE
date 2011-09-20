@@ -27,12 +27,15 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
+import de.d3web.plugin.Extension;
+import de.d3web.plugin.PluginManager;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.DefaultErrorRenderer;
 import de.d3web.we.kdom.report.MessageRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.knowwe.plugin.Plugins;
 
 public abstract class AbstractType implements Type, Sectionizable {
 
@@ -50,7 +53,13 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * 
 	 * @see SubtreeHandler
 	 */
-	protected TreeMap<Priority, List<SubtreeHandler<? extends Type>>> subtreeHandler = new TreeMap<Priority, List<SubtreeHandler<? extends Type>>>();
+	private final TreeMap<Priority, List<SubtreeHandler<? extends Type>>> subtreeHandler = new TreeMap<Priority, List<SubtreeHandler<? extends Type>>>();
+
+	/**
+	 * SubtreeHandlers are plugged lazy, because the PluginManager is not
+	 * initialized on startup.
+	 */
+	private boolean subtreeHandlersPlugged = false;
 
 	/**
 	 * types can be activated and deactivated in KnowWE this field is holding
@@ -149,6 +158,23 @@ public abstract class AbstractType implements Type, Sectionizable {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	private void addPluggedSubtreeHandlers() {
+		if (!PluginManager.isInitialized()) return;
+		Extension[] extensions = PluginManager.getInstance().getExtensions(
+				Plugins.EXTENDED_PLUGIN_ID,
+				Plugins.EXTENDED_POINT_SubtreeHandler);
+		for (Extension e : extensions) {
+			if (e.getParameter("scope").equals(this.getClass().getName())) {
+				@SuppressWarnings("rawtypes")
+				SubtreeHandler handler = (SubtreeHandler) e.getSingleton();
+				int priorityValue = Integer.parseInt(e.getParameter("handlerpriority"));
+				Priority priority = Priority.getPriority(priorityValue);
+				addSubtreeHandler(priority, handler);
+			}
+		}
+	}
+
 	public AbstractType(SectionFinder sectionFinder) {
 		this();
 		this.sectionFinder = sectionFinder;
@@ -161,12 +187,16 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 */
 	@Override
 	public final TreeMap<Priority, List<SubtreeHandler<? extends Type>>> getSubtreeHandlers() {
+		if (!subtreeHandlersPlugged) {
+			subtreeHandlersPlugged = true;
+			addPluggedSubtreeHandlers();
+		}
 		return subtreeHandler;
 	}
 
 	@Override
 	public final List<SubtreeHandler<? extends Type>> getSubtreeHandlers(Priority p) {
-		List<SubtreeHandler<? extends Type>> handlers = subtreeHandler.get(p);
+		List<SubtreeHandler<? extends Type>> handlers = getSubtreeHandlers().get(p);
 		if (handlers == null) {
 			handlers = new ArrayList<SubtreeHandler<? extends Type>>();
 			subtreeHandler.put(p, handlers);
@@ -178,7 +208,8 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * Registers the given SubtreeHandlers with the given Priority.
 	 */
 	public final void addSubtreeHandler(Priority p, SubtreeHandler<? extends Type> handler) {
-		getSubtreeHandlers(p).add(handler);
+		if (p == null) p = Priority.DEFAULT;
+		addSubtreeHandler(-1, p, handler);
 	}
 
 	/**
@@ -186,14 +217,19 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * of SubtreeHandlers of the given Priority.
 	 */
 	public final void addSubtreeHandler(int pos, Priority p, SubtreeHandler<? extends Type> handler) {
-		getSubtreeHandlers(p).add(pos, handler);
+		if (pos < 0) {
+			getSubtreeHandlers(p).add(handler);
+		}
+		else {
+			getSubtreeHandlers(p).add(pos, handler);
+		}
 	}
 
 	/**
 	 * Registers the given SubtreeHandlers with Priority.DEFAULT.
 	 */
 	public void addSubtreeHandler(SubtreeHandler<? extends Type> handler) {
-		getSubtreeHandlers(Priority.DEFAULT).add(handler);
+		addSubtreeHandler(null, handler);
 	}
 
 	public void replaceChildType(Type type,
@@ -328,6 +364,10 @@ public abstract class AbstractType implements Type, Sectionizable {
 
 	public void clearAllowedChildren() {
 		this.childrenTypes = new ArrayList<Type>();
+	}
+
+	public void clearSubtreeHandlers() {
+		this.subtreeHandler.clear();
 	}
 
 	public boolean addChildType(Type t) {

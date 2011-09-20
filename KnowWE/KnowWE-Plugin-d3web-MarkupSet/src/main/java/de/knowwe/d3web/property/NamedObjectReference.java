@@ -53,7 +53,7 @@ public class NamedObjectReference extends D3webTermReference<NamedObject> {
 
 	public NamedObjectReference() {
 		super(NamedObject.class);
-		this.subtreeHandler.clear();
+		this.clearSubtreeHandlers();
 
 		this.setCustomRenderer(new NamedObjectRenderer());
 		String questionAnswerPattern =

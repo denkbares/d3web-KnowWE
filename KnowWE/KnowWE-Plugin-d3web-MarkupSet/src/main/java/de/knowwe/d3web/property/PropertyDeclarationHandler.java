@@ -38,7 +38,7 @@ import de.d3web.we.utils.MessageUtils;
  * 
  * Syntax of the line: IDOBjectName.Property(.Language(.Country)?)? = content
  * 
- * @author Markus Friedrich (denkbares GmbH)
+ * @author Markus Friedrich, Albrecht Striffler (denkbares GmbH)
  * @created 10.11.2010
  */
 public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDeclarationType> {

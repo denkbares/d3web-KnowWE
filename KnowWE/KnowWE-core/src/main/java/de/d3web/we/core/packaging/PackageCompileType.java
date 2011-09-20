@@ -19,7 +19,7 @@ import de.d3web.we.utils.KnowWEUtils;
 public abstract class PackageCompileType extends StringDefinition implements PackageReference {
 
 	public PackageCompileType() {
-		this.subtreeHandler.clear();
+		this.clearSubtreeHandlers();
 		this.setTermScope(Scope.GLOBAL);
 		this.sectionFinder = new AllTextSectionFinder();
 		this.setIgnorePackageCompile(true);
@@ -107,5 +107,3 @@ public abstract class PackageCompileType extends StringDefinition implements Pac
 	}
 
 }
-
-

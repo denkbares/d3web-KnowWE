@@ -19,7 +19,7 @@ public class QuestionNumReference extends QuestionReference {
 
 	public QuestionNumReference() {
 		super();
-		this.subtreeHandler.clear();
+		this.clearSubtreeHandlers();
 		this.addSubtreeHandler(Priority.HIGH, new QuestionNumRegistrationHandler());
 
 	}
