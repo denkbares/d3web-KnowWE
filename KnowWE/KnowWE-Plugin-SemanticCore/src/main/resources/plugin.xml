@@ -30,7 +30,7 @@
 		<parameter id="name" value="SemanticAnnotation" />
 		<parameter id="description" value="Type SemanticAnnotation" />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="4" />
+		<parameter id="priority" value="1000" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="KnowWE-Plugin-SemanticCore.js" />
 	</extension>
