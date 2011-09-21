@@ -17,7 +17,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.d3web.property;
+package de.knowwe.d3web.property.init;
 
 import java.util.Collection;
 
@@ -33,6 +33,10 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.MessageUtils;
+import de.knowwe.d3web.property.NamedObjectReference;
+import de.knowwe.d3web.property.PropertyContentType;
+import de.knowwe.d3web.property.PropertyDeclarationType;
+import de.knowwe.d3web.property.PropertyType;
 
 /**
  * Further checks some constraints with init properties to add proper error

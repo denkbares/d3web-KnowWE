@@ -86,17 +86,6 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="InitValueType">
-		<parameter id="class"
-			value="de.knowwe.d3web.initValue.InitValueType" />
-		<parameter id="name" value="InitValueType" />
-		<parameter id="description" value="Markup to add init values to questions." />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="7.0" />
-		<parameter id="scope" value="root" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="Resource">
 		<parameter id="class" value="de.knowwe.d3web.resource.ResourceType" />
 		<parameter id="name" value="Resource" />
@@ -130,7 +119,7 @@
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="SubtreeHandler"
 		id="InitPropertyHandler">
-		<parameter id="class" value="de.knowwe.d3web.property.InitPropertyHandler" />
+		<parameter id="class" value="de.knowwe.d3web.property.init.InitPropertyHandler" />
 		<parameter id="name" value="InitPropertyHandler" />
 		<parameter id="description" value="Handler InitPropertyHandler" />
 		<parameter id="version" value="1.0" />
