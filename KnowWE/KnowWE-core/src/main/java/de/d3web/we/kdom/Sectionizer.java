@@ -115,7 +115,14 @@ public class Sectionizer implements Parser {
 
 		SectionFinder finder = ((Sectionizable) type).getSectionFinder();
 		if (finder != null) {
-			results = finder.lookForSections(text, father, type);
+			try {
+				results = finder.lookForSections(text, father, type);
+			}
+			catch (Exception e) {
+				Logger.getLogger(this.getClass().getName()).severe(
+						e.getClass().getSimpleName() + " while sectionizing");
+				e.printStackTrace();
+			}
 		}
 
 		int lastEnd = 0;
