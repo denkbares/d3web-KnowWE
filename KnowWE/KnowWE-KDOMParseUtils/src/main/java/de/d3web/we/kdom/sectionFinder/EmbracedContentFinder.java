@@ -61,6 +61,7 @@ public class EmbracedContentFinder implements SectionFinder {
 		if (start > -1) {
 			int end = SplitUtility.findIndexOfClosingBracket(text, start,
 						open, close);
+			if (end < 0) return null;
 
 			// if chains restriction uninitialized, take all
 			if (chains == -1) {
