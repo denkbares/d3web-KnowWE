@@ -30,7 +30,8 @@
         <parameter id="script" value="TextArea.js" />
         <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
         <parameter id="css" value="DefaultEditTool.css" />       
-        <parameter id="scope" value="/DefaultMarkupType" />       
+        <parameter id="scope" value="/DefaultMarkupType" />
+        <parameter id="scope" value="MemoContentType" />  
     </extension>
     
     <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
