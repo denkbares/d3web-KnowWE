@@ -1942,3 +1942,8 @@ div.coverflow .knob {
 	width:100px;
 	height:15px;
 }
+
+.defaultMarkup .markupText .FlowchartGroup {
+	overflow-x: auto;
+}
+

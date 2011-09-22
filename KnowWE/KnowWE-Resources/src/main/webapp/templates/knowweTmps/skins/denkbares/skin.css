@@ -1814,6 +1814,10 @@ div.coverflow .knob {
 	margin-bottom: 0px;	
 }
 
+.defaultMarkup .markupText .FlowchartGroup {
+	overflow-x: auto;
+}
+
 .type_DiaFlux.defaultMarkupFrame > .defaultMarkup .markupText {
 	padding: 0px;
 	margin: -1px;
