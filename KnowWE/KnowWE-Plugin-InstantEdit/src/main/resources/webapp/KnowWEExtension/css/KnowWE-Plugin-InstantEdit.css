@@ -26,7 +26,6 @@
 
 .editarea a.action.save, .editarea a.action.cancel {
 	padding: 0.25em 0.5em;
-	margin: 0 4px 0 0;
 	display: inline;
 	text-decoration: none;
 	line-height: normal;

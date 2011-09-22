@@ -30,8 +30,7 @@ KNOWWE.plugin.defaultEditTool = function() {
 	    },
 	    
 	    generateWikiText : function(id) {
-	    	return  $(createTextAreaID(id)).value;
-
+	    	return $(createTextAreaID(id)).value;
 	    }
     }
 }();

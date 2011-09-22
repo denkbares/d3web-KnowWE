@@ -220,7 +220,7 @@ KNOWWE.plugin.instantEdit = function() {
     			+ "')\">Cancel</a>\n";
     		
     		// maybe return a object with these two buttons
-    		return "<div class='saveCancelButtons'>" + saveButton + cancelButton + "</div>";
+    		return "<div class='saveCancelButtons'><table><tr><td>" + saveButton + "</td><td>" +  cancelButton + "</td></tr></table></div>";
     	},
         
         handleEditToolButtonVisibility : function() {
