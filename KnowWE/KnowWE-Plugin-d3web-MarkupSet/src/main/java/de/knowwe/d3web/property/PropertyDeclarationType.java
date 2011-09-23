@@ -55,11 +55,11 @@ public class PropertyDeclarationType extends AbstractType implements Incremental
 		// triple quotes and also is not followed by a line that starts (maybe
 		// after some white spaces) with a triple quote
 
-		String multiLinePropertyDeclaration = ".+?" + tripleQuotes + ".+?" + tripleQuotes + "\\s*$";
+		String multiLinePropertyDeclaration = ".+?" + tripleQuotes + ".+?" + tripleQuotes;
 
 		String propertyDeclaration = "^\\s*("
 				+ singleLinePropertyDeclaration + "|"
-				+ multiLinePropertyDeclaration + ")";
+				+ multiLinePropertyDeclaration + ")\\s*?(^|\\z)";
 
 		Pattern p = Pattern.compile(propertyDeclaration, Pattern.MULTILINE + Pattern.DOTALL);
 		setSectionFinder(new RegexSectionFinder(p, 1));
