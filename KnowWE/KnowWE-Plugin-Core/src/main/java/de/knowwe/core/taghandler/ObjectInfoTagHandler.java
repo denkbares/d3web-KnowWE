@@ -109,7 +109,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		StringBuilder buffer = new StringBuilder();
 		String cssClassName = "type_" + section.get().getName();
 		DefaultMarkupRenderer.renderDefaultMarkupStyled(
-				getTagName(), content, sectionID, cssClassName, tools, buffer);
+				getTagName(), content, sectionID, cssClassName, tools, buffer, null);
 		return buffer.toString();
 	}
 

@@ -45,6 +45,12 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 
 	private final boolean renderCompileWarnings;
 
+	private ToolsRenderMode renderMode = ToolsRenderMode.MENU;
+
+	public enum ToolsRenderMode {
+		MENU, TOOLBAR
+	}
+
 	public DefaultMarkupRenderer() {
 		this(null, true);
 	}
@@ -62,15 +68,24 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		this.renderCompileWarnings = renderCompileWarnings;
 	}
 
+	public ToolsRenderMode getRenderMode() {
+		return renderMode;
+	}
+
+	public void setRenderMode(ToolsRenderMode renderMode) {
+		this.renderMode = renderMode;
+	}
+
 	public static String renderToolbar(Tool[] tools) {
-		StringBuilder toolbarHtml = new StringBuilder(" | <div class='markupTools'> ");
+		StringBuilder toolbarHtml = new StringBuilder("<div class='markupTools'> ");
 		for (Tool tool : tools) {
-			toolbarHtml.append(
-					" <a href=\"javascript:" + tool.getJSAction() + ";undefined;\">" +
-							"<img " +
-							"title=\"" + tool.getDescription() + "\" " +
-							"src=\"" + tool.getIconPath() + "\"></img>" +
-							"</a>");
+			toolbarHtml.append("<div class=\""
+					+ tool.getClass().getSimpleName() + "\" >" +
+					"<a href=\"javascript:" + tool.getJSAction() + ";undefined;\">" +
+					"<img " +
+					"title=\"" + tool.getDescription() + "\" " +
+					"src=\"" + tool.getIconPath() + "\"></img>" +
+					"</a></div>");
 
 		}
 		toolbarHtml.append("</div>");
@@ -166,10 +181,16 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 	}
 
 	public static void renderDefaultMarkupStyled(String header, String content, String sectionID, Tool[] tools, StringBuilder string) {
-		renderDefaultMarkupStyled(header, content, sectionID, null, tools, string);
+		renderDefaultMarkupStyled(header, content, sectionID, null, tools, string, null);
 	}
 
-	public static void renderDefaultMarkupStyled(String header, String content, String sectionID, String cssClassName, Tool[] tools, StringBuilder string) {
+	public static void renderDefaultMarkupStyled(String header,
+			String content,
+			String sectionID,
+			String cssClassName,
+			Tool[] tools,
+			StringBuilder string,
+			ToolsRenderMode rendermode) {
 
 		String cssClass = "defaultMarkupFrame";
 		if (cssClassName != null) cssClass += " " + cssClassName;
@@ -177,8 +198,9 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 				+ "\" class='" + cssClass + "'>\n"));
 
 		boolean hasTools = tools != null && tools.length > 0;
-		boolean hasMenu = hasTools;
-		boolean hasToolbar = false;
+		if (rendermode == null) rendermode = ToolsRenderMode.MENU;
+		boolean hasMenu = hasTools && rendermode == ToolsRenderMode.MENU;
+		boolean hasToolbar = hasTools && !hasMenu;
 
 		String toolbarHtml = "";
 		if (hasToolbar) {
@@ -186,8 +208,10 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		}
 
 		string.append(KnowWEUtils.maskHTML(
-				"<div id='header_" + sectionID + "' " +
-						"class='markupHeaderFrame'>"));
+				"<div id='header_" + sectionID + "' "
+						+ "class='markupHeaderFrame"
+						+ (hasMenu ? " headerMenu" : " headerToolbar")
+						+ "'>"));
 		string.append(KnowWEUtils.maskHTML("<div class='markupHeader'>"));
 		string.append(header);
 		if (hasMenu) {
@@ -223,8 +247,8 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 
 		if (hasMenu) {
 			string.append(KnowWEUtils.maskHTML(renderMenuAnimation(sectionID)));
+			string.append(KnowWEUtils.maskHTML(renderHeaderAnimation(sectionID)));
 		}
-		string.append(KnowWEUtils.maskHTML(renderHeaderAnimation(sectionID)));
 	}
 
 	@Override
@@ -254,7 +278,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 
 		renderDefaultMarkupStyled(
 				header.toString(), content.toString(),
-				id, cssClassName, tools, buffer);
+				id, cssClassName, tools, buffer, renderMode);
 	}
 
 	protected void renderHeader(KnowWEArticle article, Section<T> section, UserContext user, StringBuilder string) {

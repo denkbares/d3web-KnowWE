@@ -15,7 +15,7 @@
       sr:sailImpl [
          sail:sailType "swiftowlim:Sail" ;
          owlim:ruleset "owl-max" ;
-	 	 owlim:partialRDFS  "true" ;
+	 	 owlim:partialRDFS  "owl-max-optimized" ;
          owlim:noPersist "true" ;
          owlim:entity-index-size "200000" ;
          owlim:jobsize "200" ;

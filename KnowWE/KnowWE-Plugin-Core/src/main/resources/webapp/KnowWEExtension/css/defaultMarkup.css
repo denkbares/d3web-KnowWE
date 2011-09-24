@@ -5,6 +5,7 @@
 /* ################################################## */
 
 .defaultMarkupFrame {
+	border: 		1px solid #DDD;
 	position:		relative;
 	margin:			0px 0px 0px 0px;
 	padding:		0px 0px 0px 0px;
@@ -12,7 +13,6 @@
 
 .defaultMarkup {
 	position:		relative;
-	border: 		1px solid #DDD;
 	background-color: #F9F9F9; 
 	margin-right:	0em;
 	margin-left:	0em;
@@ -26,23 +26,49 @@
 	padding:		3px 3px 3px 3px;
 }
 
-.defaultMarkupFrame .markupHeader {
+.defaultMarkupFrame .headerMenu .markupHeader {
 	overflow: 		hidden;
 	padding:		3px 10px 3px 10px; 
 }
 
+.defaultMarkupFrame .headerToolbar .markupHeader {
+	overflow: 		hidden;
+	padding:		3px; 
+}
+
+.headerToolbar .markupHeader span {
+	font-weight: 	bold;
+}
+
+.headerToolbar .markupHeader .markupTools {
+	margin-left: 	10px;
+}
+
+.headerToolbar .markupHeader .markupTools div {
+	display: 		inline;
+	padding: 		3px;
+}
+
 .defaultMarkupFrame .markupHeaderFrame {
-	position:		absolute; 
 	top:			1px; 
-	right:			1px; 
-	border-left:	1px solid #DDD; 
-	border-bottom:	1px solid #DDD; 
-	border-bottom-left-radius: 10px;
-	-moz-border-radius-bottomleft: 10px;
-	background-color: white; 
 	white-space:	nowrap;
 	z-index:		1000;
 	overflow: 		visible;
+}
+
+.defaultMarkupFrame .headerMenu {
+	background-color: white; 
+	right:			1px; 
+	position:		absolute; 
+	border-left:	1px solid #DDD;
+	border-bottom:	1px solid #DDD; 
+	border-bottom-left-radius: 10px;
+	-moz-border-radius-bottomleft: 10px;
+}
+
+.defaultMarkupFrame .headerToolbar {
+	background-color: #DDD; 
+	left:			1px; 
 }
 
 .defaultMarkupFrame .markupTools {
@@ -93,8 +119,12 @@
 	color:				#003DF5;
 }
 
-.defaultMarkupFrame .markupHeader .markupIcon {
+.defaultMarkupFrame .headerMenu .markupIcon {
 	vertical-align:	-7px;
+}
+
+.defaultMarkupFrame .headerToolbar .markupIcon {
+	vertical-align:	-3.5px;
 }
 
 .markupMenuDivider {
