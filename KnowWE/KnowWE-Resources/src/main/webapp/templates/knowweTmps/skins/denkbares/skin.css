@@ -1838,15 +1838,15 @@ div.coverflow .knob {
 	border-right: 0px;
 	border-left: 0px;
 	border-bottom: 0px;
+	border-right: 1px solid white;
+	border-left: 1px solid white;
+	border-bottom: 1px solid white;
 }
 
 .defaultMarkupFrame:hover {
 	border-right: 1px solid #DDD;
 	border-left: 1px solid #DDD;
 	border-bottom: 1px solid #DDD;
-	margin-right: -1px;
-	margin-left: -1px;
-	margin-bottom: -1px;
 	background-color: #F9F9F9;
 }
 

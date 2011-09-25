@@ -122,7 +122,7 @@ public class DefaultMarkupType extends AbstractType {
 						"(.*?)" + // CONTENT --> anything in multiple lines
 						// (reluctant
 						// match)
-						"^\\p{Blank}*/?%\\p{Blank}*$" + // "/%" or "%" in a line
+						"^\\p{Blank}*/?%\\s*?(^|\\z)" + // "/%" or "%" in a line
 						")" +
 						// or single-line content with termination
 						"|(?:" +

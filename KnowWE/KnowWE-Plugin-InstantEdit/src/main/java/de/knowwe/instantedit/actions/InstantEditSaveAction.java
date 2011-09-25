@@ -26,6 +26,8 @@ import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.UserActionContext;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sections;
 
 /**
  * Saves the changed Section.
@@ -63,9 +65,21 @@ public class InstantEditSaveAction extends AbstractAction {
 		String id = context.getParameter("KdomNodeId");
 		String web = context.getParameter(KnowWEAttributes.WEB);
 		String value = context.getParameter("data");
-		
-		// for some reason it seems that a new line is added while sending the data.
-		if (value.endsWith("\n")) value = value.substring(0, value.length() - 1);
+
+		Section<?> section = Sections.getSection(id);
+		if (section != null) {
+			// if the user is editing a section from another article
+			topic = section.getTitle();
+		}
+
+		if (value.equals("POST\n")) {
+			value = "";
+		}
+
+		// for some reason it seems that a new line is added while sending the
+		// data.
+		// if (value.endsWith("\n")) value = value.substring(0, value.length() -
+		// 1);
 
 		// errors and security are handled inside replaceKDOMNodesSaveAndBuild
 		Map<String, String> nodesMap = new HashMap<String, String>();
