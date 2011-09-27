@@ -38,6 +38,7 @@
 
 .headerToolbar .markupHeader span {
 	font-weight: 	bold;
+	padding-left: 	5px;
 }
 
 .headerToolbar .markupHeader .markupTools {
