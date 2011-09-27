@@ -143,7 +143,7 @@ KNOWWE.plugin.instantEdit = function() {
         save : function(id, newWikiText) {
             
         	if (newWikiText == null) {
-        		newWikiText =  KNOWWE.plugin.instantEdit.toolNameSpace[id].generateWikiText(id);        		
+      			newWikiText =  KNOWWE.plugin.instantEdit.toolNameSpace[id].generateWikiText(id);        
         	}
         	
             var params = {
@@ -179,11 +179,14 @@ KNOWWE.plugin.instantEdit = function() {
 		 *            id The id of the DOM element
 		 */        
         cancel : function(id) {
-            KNOWWE.plugin.instantEdit.disable(id, true);
+    		KNOWWE.plugin.instantEdit.disable(id, true);
         },
         
         deleteSection : function(id) {
-        	KNOWWE.plugin.instantEdit.save(id, "");
+        	var del = confirm("Do you really want to delete this content?");
+        	if (del) {  
+        		KNOWWE.plugin.instantEdit.save(id, "");
+        	}
         }, 
         
     	wikiText : new Object(),

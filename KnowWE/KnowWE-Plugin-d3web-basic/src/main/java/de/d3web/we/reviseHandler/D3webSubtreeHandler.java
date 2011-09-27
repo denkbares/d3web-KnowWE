@@ -63,7 +63,7 @@ public abstract class D3webSubtreeHandler<T extends Type> extends SubtreeHandler
 	 * @see SubtreeHandler#destroy(KnowWEArticle, Section)
 	 */
 	@Override
-	public void destroy(KnowWEArticle article, Section<T> s) {
+	public void destroy(KnowWEArticle article, Section<T> section) {
 		article.setFullParse(this.getClass());
 		return;
 	}
@@ -77,9 +77,9 @@ public abstract class D3webSubtreeHandler<T extends Type> extends SubtreeHandler
 		}
 
 		@Override
-		public boolean violatedConstraints(KnowWEArticle article, Section<T2> s) {
+		public boolean violatedConstraints(KnowWEArticle article, Section<T2> section) {
 			// For compatibility reasons with non incremental SubtreeHandlers,
-			// we check for the interface IncrementalMarker. Be default, all
+			// we check for the interface IncrementalMarker. By default, all
 			// TermDefinitions and TermReferences implement this interface,
 			// because they are already handled correctly in the incremental
 			// context.
@@ -99,8 +99,8 @@ public abstract class D3webSubtreeHandler<T extends Type> extends SubtreeHandler
 			// Section is neither a TermDefinition nor a TermReference and
 			// therefore isn't notified of this modification, we also need a
 			// full parse.
-			if (!(s.get() instanceof IncrementalMarker)) {
-				if (!s.isReusedBy(article.getTitle()) || KnowWEUtils.getTerminologyHandler(
+			if (!(section.get() instanceof IncrementalMarker)) {
+				if (!section.isReusedBy(article.getTitle()) || KnowWEUtils.getTerminologyHandler(
 							article.getWeb()).areTermDefinitionsModifiedFor(article)) {
 					article.setFullParse(this.getClass());
 				}
@@ -117,7 +117,7 @@ public abstract class D3webSubtreeHandler<T extends Type> extends SubtreeHandler
 		}
 
 		@Override
-		public boolean violatedConstraints(KnowWEArticle article, Section<T2> s) {
+		public boolean violatedConstraints(KnowWEArticle article, Section<T2> section) {
 			// Here we have the same issue as inside the D3webCreateConstraints.
 			// If the Type does not implement the Interface
 			// IncrementalMarker, we have to assume, that the type is not
@@ -126,8 +126,9 @@ public abstract class D3webSubtreeHandler<T extends Type> extends SubtreeHandler
 			// because it is not made for incremental compilation, we need to
 			// destroy (and create again later), because it is possible that it
 			// is affected by that modification.
-			return !(s.get() instanceof IncrementalMarker) && KnowWEUtils.getTerminologyHandler(
-					article.getWeb()).areTermDefinitionsModifiedFor(
+			return !(section.get() instanceof IncrementalMarker)
+					&& KnowWEUtils.getTerminologyHandler(
+							article.getWeb()).areTermDefinitionsModifiedFor(
 							article);
 		}
 

@@ -27,7 +27,6 @@ import java.util.List;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Type;
-import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.ConstraintModule.Operator;
 import de.d3web.we.kdom.subtreeHandler.ConstraintModule.Purpose;
@@ -104,14 +103,14 @@ public abstract class SubtreeHandler<T extends Type> {
 	 * @param article is the article that calls this method... not necessarily
 	 *        the article the Section is hooked into directly, since Sections
 	 *        can also be included!
-	 * @param s is the Section from which you want to create something
+	 * @param section is the Section from which you want to create something
 	 * @return true if this handler needs to create, false if not.
 	 */
-	public final boolean needsToCreate(KnowWEArticle article, Section<T> s) {
+	public final boolean needsToCreate(KnowWEArticle article, Section<T> section) {
 		for (ConstraintModule<T> cm : constraintModulesDONT) {
 			if (cm.PURPOSE.equals(Purpose.DESTROY)) continue;
 			// skip modules with wrong purpose
-			if (cm.violatedConstraints(article, s)) {
+			if (cm.violatedConstraints(article, section)) {
 				// if one of the modules with Operator.DONT_COMPILE_IF_VIOLATED
 				// detects violated constraints, return false to prevent calling
 				// of the create() method
@@ -121,7 +120,7 @@ public abstract class SubtreeHandler<T extends Type> {
 		for (ConstraintModule<T> cm : constraintModulesDO) {
 			if (cm.PURPOSE.equals(Purpose.DESTROY)) continue;
 			// skip modules with wrong purpose
-			if (cm.violatedConstraints(article, s)) {
+			if (cm.violatedConstraints(article, section)) {
 				// if one of the modules with Operator.COMPILE_IF_VIOLATED
 				// detects violated constraints, return true to call the
 				// create() method
@@ -141,9 +140,9 @@ public abstract class SubtreeHandler<T extends Type> {
 	 * @param article is the article that calls this method... not necessarily
 	 *        the article the Section is hooked into directly, since Sections
 	 *        can also be included!
-	 * @param s is the Section from which you want to create something
+	 * @param section is the Section from which you want to create something
 	 */
-	public abstract Collection<KDOMReportMessage> create(KnowWEArticle article, Section<T> s);
+	public abstract Collection<KDOMReportMessage> create(KnowWEArticle article, Section<T> section);
 
 	/**
 	 * If this method returns false, the method<tt>destroy(KnowWEArticle,
@@ -156,14 +155,15 @@ public abstract class SubtreeHandler<T extends Type> {
 	 * @param article is the last version of the article that calls this
 	 *        method... not necessarily the article the Section is hooked into
 	 *        directly, since Sections can also be included!
-	 * @param s is the old, not reused Section whose stuff you want to destroy
+	 * @param section is the old, not reused Section whose stuff you want to
+	 *        destroy
 	 * @return true if this handler needs to destroy, false if not.
 	 */
-	public final boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
+	public final boolean needsToDestroy(KnowWEArticle article, Section<T> section) {
 		for (ConstraintModule<T> cm : constraintModulesDONT) {
 			if (cm.PURPOSE.equals(Purpose.CREATE)) continue;
 			// skip modules with wrong purpose
-			if (cm.violatedConstraints(article, s)) {
+			if (cm.violatedConstraints(article, section)) {
 				// if one of the modules with Operator.DONT_COMPILE_IF_VIOLATED
 				// detects violated constraints, return false to prevent calling
 				// of the destroy() method
@@ -173,7 +173,7 @@ public abstract class SubtreeHandler<T extends Type> {
 		for (ConstraintModule<T> cm : constraintModulesDO) {
 			if (cm.PURPOSE.equals(Purpose.CREATE)) continue;
 			// skip modules with wrong purpose
-			if (cm.violatedConstraints(article, s)) {
+			if (cm.violatedConstraints(article, section)) {
 				// if one of the modules with Operator.COMPILE_IF_VIOLATED
 				// detects violated constraints, return true to call the
 				// destroy() method
@@ -215,9 +215,10 @@ public abstract class SubtreeHandler<T extends Type> {
 	 * @param article is the last version of the article that calls this
 	 *        method... not necessarily the article the Section is hooked into
 	 *        directly, since Sections can also be included!
-	 * @param s is the old, not reused Section whose stuff you want to destroy
+	 * @param section is the old, not reused Section whose stuff you want to
+	 *        destroy
 	 */
-	public void destroy(KnowWEArticle article, Section<T> s) {
+	public void destroy(KnowWEArticle article, Section<T> section) {
 
 	}
 
@@ -314,10 +315,9 @@ public abstract class SubtreeHandler<T extends Type> {
 			// aborted and a second build is started
 			return firstBuild && postDestroyFullParse;
 		}
-		
+
 	}
 
-	
 	private class CreateConstraintsDO<T2 extends Type> extends ConstraintModule<T2> {
 
 		private final SubtreeHandler<T2> handler;
@@ -329,15 +329,15 @@ public abstract class SubtreeHandler<T extends Type> {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public boolean violatedConstraints(KnowWEArticle article, Section<T2> s) {
+		public boolean violatedConstraints(KnowWEArticle article, Section<T2> section) {
 
 			boolean fullparse = article.isFullParse();
 			// fullparse means, that the article is compiled non incremental,
 			// respectively that the all handlers and section need to be
 			// compiled
-			boolean notCompiled = !s.isCompiledBy(article.getTitle(), handler);
+			boolean notCompiled = !section.isCompiledBy(article.getTitle(), handler);
 			// if the current handler wasn't compiled yet
-			boolean notReused = !s.isReusedBy(article.getTitle());
+			boolean notReused = !section.isReusedBy(article.getTitle());
 
 			// maybe we can skip the more complex checks...
 			if (fullparse || notReused || notCompiled) return true;
@@ -345,13 +345,13 @@ public abstract class SubtreeHandler<T extends Type> {
 			// if the current section was not reused during the KDOM update
 			// if it wasn't reused, the section has changed since the last
 			// version of the article, so this is a constraint for create
-			boolean changedPosition = s.get().isOrderSensitive()
-					&& s.isPositionChangedFor(article.getTitle());
+			boolean changedPosition = section.get().isOrderSensitive()
+					&& section.isPositionChangedFor(article.getTitle());
 			// if the section is order sensitive, we need to check, if the
 			// position of the section has changed
-			boolean typeConstraint = s.get() instanceof IncrementalConstraint
-					&& ((IncrementalConstraint<T2>) s.get()).violatedConstraints(
-					article, s);
+			boolean typeConstraint = section.get() instanceof IncrementalConstraint
+					&& ((IncrementalConstraint<T2>) section.get()).violatedConstraints(
+							article, section);
 			// it is possible to define additional constraints for the all
 			// handlers of a Type... they need to be checked too
 
@@ -371,10 +371,10 @@ public abstract class SubtreeHandler<T extends Type> {
 		}
 
 		@Override
-		public boolean violatedConstraints(KnowWEArticle article, Section<T2> s) {
+		public boolean violatedConstraints(KnowWEArticle article, Section<T2> section) {
 
 			boolean fullparse = article.isFullParse();
-			boolean notCompiled = !s.isCompiledBy(article.getTitle(), handler);
+			boolean notCompiled = !section.isCompiledBy(article.getTitle(), handler);
 
 			// in case of a fullparse we do not destroy, a clean state has to be
 			// generated e.g. via the FullparseEvent
@@ -398,11 +398,12 @@ public abstract class SubtreeHandler<T extends Type> {
 			// if the section was not reused during the update of the KDOM, we
 			// need to destroy its content... it was either removed from the
 			// article or replaced by something else
-			boolean changedPosition = s.get().isOrderSensitive() && s.isPositionChangedFor(article.getTitle());
+			boolean changedPosition = s.get().isOrderSensitive()
+					&& s.isPositionChangedFor(article.getTitle());
 			// if the position of a order sensitive section has changed, we need
 			// to destroy, because it will be created later in the new context
 			boolean typeConstraint = (s.get() instanceof IncrementalConstraint<?>
-			 && ((IncrementalConstraint<T2>) s.get()).violatedConstraints(
+					&& ((IncrementalConstraint<T2>) s.get()).violatedConstraints(
 							article, s));
 			// also check constraints defined in the Type for all
 			// handlers of the type
