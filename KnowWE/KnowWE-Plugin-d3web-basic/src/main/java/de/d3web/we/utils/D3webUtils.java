@@ -63,11 +63,15 @@ public class D3webUtils {
 	/**
 	 * Gets the Session Object.
 	 */
-	public static Session getSession(String topic, UserContext user, String web) {
+	public static Session getSession(UserContext user) {
+		return getSession(user.getTopic(), user.getUserName(), user.getWeb());
+	}
 
-		String sessionId = topic + ".." + KnowWEEnvironment.generateDefaultID(topic);
-		SessionBroker broker = D3webModule.getBroker(user.getUserName(), web);
-		return broker.getServiceSession(sessionId);
+	/**
+	 * Gets the Session Object.
+	 */
+	public static Session getSession(String topic, UserContext user, String web) {
+		return getSession(topic, user.getUserName(), web);
 	}
 
 	/**
@@ -140,7 +144,7 @@ public class D3webUtils {
 			throw new IllegalArgumentException("Argument 'web' and/or 'topic' was null!");
 		}
 		D3webKnowledgeHandler knowledgeHandler =
-			D3webModule.getKnowledgeRepresentationHandler(web);
+				D3webModule.getKnowledgeRepresentationHandler(web);
 		if (knowledgeHandler != null) {
 			KnowledgeBase kb = knowledgeHandler.getKB(topic);
 			return kb;
@@ -157,14 +161,13 @@ public class D3webUtils {
 	 */
 	public static KnowledgeBase getFirstKnowledgeBase(String web) {
 		D3webKnowledgeHandler knowledgeHandler =
-			D3webModule.getKnowledgeRepresentationHandler(web);
+				D3webModule.getKnowledgeRepresentationHandler(web);
 		D3webKnowledgeHandler repHandler = D3webModule.getKnowledgeRepresentationHandler(web);
 		String[] topics = knowledgeHandler.getKnowledgeTopics();
 		KnowledgeBase base = null;
 		for (String t : topics) {
 			base = repHandler.getKB(t);
-			if (base.getName() != null)
-				return base;
+			if (base.getName() != null) return base;
 		}
 		return null;
 	}
