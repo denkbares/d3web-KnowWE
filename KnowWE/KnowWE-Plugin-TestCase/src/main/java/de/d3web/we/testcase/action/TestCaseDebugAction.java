@@ -113,7 +113,7 @@ public class TestCaseDebugAction extends TestCaseRunningAction {
 
 		// Create a new session
 		String kbid = knowledgeBase.getId();
-		Session session = broker.getServiceSession(kbid);
+		Session session = broker.getSession(kbid);
 
 		// Run to the breakpoint
 		int currentPosition = 0;

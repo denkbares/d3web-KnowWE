@@ -20,12 +20,19 @@
 
 package de.d3web.we.utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.records.SessionConversionFactory;
+import de.d3web.core.records.SessionRecord;
+import de.d3web.core.records.io.SessionPersistenceManager;
 import de.d3web.core.session.Session;
 import de.d3web.scoring.Score;
 import de.d3web.we.basic.D3webKnowledgeHandler;
@@ -64,7 +71,7 @@ public class D3webUtils {
 	 * Gets the Session Object.
 	 */
 	public static Session getSession(UserContext user) {
-		return getSession(user.getTopic(), user.getUserName(), user.getWeb());
+		return getSession(user.getTitle(), user.getUserName(), user.getWeb());
 	}
 
 	/**
@@ -79,14 +86,33 @@ public class D3webUtils {
 	 */
 	public static Session getSession(String topic, String user, String web) {
 
-		String sessionId = topic + ".." + KnowWEEnvironment.generateDefaultID(topic);
+		String sessionId = KnowWEEnvironment.generateDefaultID(topic);
 		SessionBroker broker = D3webModule.getBroker(user, web);
-		return broker.getServiceSession(sessionId);
+		return broker.getSession(sessionId);
 	}
 
 	public static Collection<Session> getSessions(String user, String web) {
 		SessionBroker broker = D3webModule.getBroker(user, web);
-		return broker.getServiceSessions();
+		return broker.getSessions();
+	}
+
+	public static boolean storeSessionRecordsAsAttachment(Collection<Session> sessions, String attachmentArticle, String attachmentName) throws IOException {
+
+		Collection<SessionRecord> sessionRecords = new LinkedList<SessionRecord>();
+
+		for (Session session : sessions) {
+			sessionRecords.add(SessionConversionFactory.copyToSessionRecord(
+					session));
+		}
+
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+		SessionPersistenceManager.getInstance().saveSessions(outputStream, sessionRecords);
+
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+
+		return KnowWEEnvironment.getInstance().getWikiConnector()
+				.storeAttachment(attachmentArticle, attachmentName, inputStream);
 	}
 
 	public static Score getScoreForString(String argument) {
@@ -176,7 +202,7 @@ public class D3webUtils {
 
 		KnowledgeBase kb = D3webUtils.getFirstKnowledgeBase(web);
 		SessionBroker broker = D3webModule.getBroker(user, web);
-		Session session = broker.getServiceSession(kb.getId());
+		Session session = broker.getSession(kb.getId());
 
 		return session;
 	}

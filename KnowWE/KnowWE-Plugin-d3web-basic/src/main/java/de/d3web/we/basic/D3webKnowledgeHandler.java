@@ -113,12 +113,12 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	@Override
 	public void initArticle(KnowWEArticle art) {
 		WikiEnvironment env = D3webModule.getDPSE(web);
-		String id = art.getTitle() + ".." + KnowWEEnvironment.generateDefaultID(art.getTitle());
-		KnowledgeBase service = env.getService(id);
+		String id = KnowWEEnvironment.generateDefaultID(art.getTitle());
+		KnowledgeBase service = env.getKnowledgeBase(id);
 		if (service != null) {
-			env.removeService(service);
+			env.removeKnowledgeBase(service);
 			for (SessionBroker broker : env.getBrokers()) {
-				broker.removeServiceSession(service.getId());
+				broker.removeSession(service.getId());
 			}
 		}
 		if (!art.isSecondBuild()) {

@@ -31,7 +31,7 @@ import de.d3web.core.session.SessionFactory;
 
 public class WikiEnvironment {
 
-	private Map<String, KnowledgeBase> services;
+	private Map<String, KnowledgeBase> knowledgeBases;
 	private Map<String, SessionBroker> brokers;
 
 	/**
@@ -41,12 +41,12 @@ public class WikiEnvironment {
 	private final Map<Session, Map<String, Object>> sessionInfoStore = new WeakHashMap<Session, Map<String, Object>>();
 
 	public WikiEnvironment() {
-		services = new HashMap<String, KnowledgeBase>();
+		knowledgeBases = new HashMap<String, KnowledgeBase>();
 		brokers = new HashMap<String, SessionBroker>();
 	}
 
 	private void clear() {
-		services = new HashMap<String, KnowledgeBase>();
+		knowledgeBases = new HashMap<String, KnowledgeBase>();
 		brokers = new HashMap<String, SessionBroker>();
 	}
 
@@ -54,25 +54,25 @@ public class WikiEnvironment {
 		clear();
 	}
 
-	public void addService(KnowledgeBase base) {
-		KnowledgeBase oldService = getService(base.getId());
+	public void addKnowledgeBase(KnowledgeBase base) {
+		KnowledgeBase oldService = getKnowledgeBase(base.getId());
 		if (oldService != null) {
-			removeService(oldService);
+			removeKnowledgeBase(oldService);
 		}
-		services.put(base.getId(), base);
+		knowledgeBases.put(base.getId(), base);
 
 	}
 
-	public void removeService(KnowledgeBase service) {
-		services.remove(service.getId());
+	public void removeKnowledgeBase(KnowledgeBase service) {
+		knowledgeBases.remove(service.getId());
 	}
 
 	private SessionBroker createBroker(String userID) {
 		SessionBroker result = new SessionBroker(this);
-		for (KnowledgeBase each : services.values()) {
-			Session serviceSession = this.createServiceSession(
+		for (KnowledgeBase each : knowledgeBases.values()) {
+			Session session = this.createSession(
 					each.getId());
-			result.addServiceSession(each.getId(), serviceSession);
+			result.addSession(each.getId(), session);
 		}
 		return result;
 	}
@@ -95,16 +95,16 @@ public class WikiEnvironment {
 
 	}
 
-	public KnowledgeBase getService(String id) {
-		return services.get(id);
+	public KnowledgeBase getKnowledgeBase(String id) {
+		return knowledgeBases.get(id);
 	}
 
-	public Collection<KnowledgeBase> getServices() {
-		return services.values();
+	public Collection<KnowledgeBase> getKnowledgeBases() {
+		return knowledgeBases.values();
 	}
 
-	public Session createServiceSession(String id) {
-		KnowledgeBase service = services.get(id);
+	public Session createSession(String id) {
+		KnowledgeBase service = knowledgeBases.get(id);
 		if (service != null) {
 			return SessionFactory.createSession(service);
 		}

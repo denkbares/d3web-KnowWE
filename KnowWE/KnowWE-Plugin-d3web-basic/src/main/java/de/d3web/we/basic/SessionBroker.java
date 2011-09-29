@@ -31,28 +31,29 @@ import de.d3web.core.session.SessionFactory;
 public class SessionBroker {
 
 	private final WikiEnvironment environment;
-	private Map<String, Session> serviceSessions;
+	private Map<String, Session> sessions;
 
 	public SessionBroker(WikiEnvironment environment) {
 		super();
 		this.environment = environment;
-		serviceSessions = new HashMap<String, Session>();
+		sessions = new HashMap<String, Session>();
 	}
 
-	public Collection<Session> getServiceSessions() {
-		return serviceSessions.values();
+	public Collection<Session> getSessions() {
+		return sessions.values();
 	}
 
-	public Session getServiceSession(String id) {
-		return serviceSessions.get(id);
+	public Session getSession(String id) {
+		return sessions.get(id);
 	}
 
-	public void addServiceSession(String id, Session serviceSession) {
-		serviceSessions.put(id, serviceSession);
+	public void addSession(String id, Session session) {
+
+		sessions.put(id, session);
 	}
 
-	public void removeServiceSession(String id) {
-		serviceSessions.remove(id);
+	public void removeSession(String id) {
+		sessions.remove(id);
 	}
 
 	public void clear() {
@@ -60,12 +61,12 @@ public class SessionBroker {
 		 * HOTFIX : reinit all d3webKnowledgeServiceSessions to update changed
 		 * knowledgebases
 		 */
-		java.util.Set<String> serviceIDs = serviceSessions.keySet();
-		serviceSessions = new HashMap<String, Session>();
+		java.util.Set<String> serviceIDs = sessions.keySet();
+		sessions = new HashMap<String, Session>();
 		for (String string : serviceIDs) {
-			removeServiceSession(string);
-			KnowledgeBase service = environment.getService(string);
-			addServiceSession(service.getId(), SessionFactory.createSession(service));
+			removeSession(string);
+			KnowledgeBase service = environment.getKnowledgeBase(string);
+			addSession(service.getId(), SessionFactory.createSession(service));
 		}
 
 	}

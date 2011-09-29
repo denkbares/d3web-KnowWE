@@ -578,11 +578,11 @@ public class KnowWEEnvironment {
 	 * Knowledge Services (Kopic) needs to have an id. This is how a default id
 	 * is generated when users dont enter one.
 	 * 
-	 * @param topic
+	 * @param title
 	 * @return
 	 */
-	public static String generateDefaultID(String topic) {
-		return topic + "_KB";
+	public static String generateDefaultID(String title) {
+		return title;
 	}
 
 	public String getSectionText(String id) {

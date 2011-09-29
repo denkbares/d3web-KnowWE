@@ -123,17 +123,17 @@ public class D3webModule {
 	 * Returns a KnowledgeService for a given article name
 	 * 
 	 * @param web
-	 * @param topic
+	 * @param title
 	 * @return
 	 */
-	public static KnowledgeBase getAD3webKnowledgeServiceInTopic(
-			String web, String topic) {
-		WikiEnvironment env = WikiEnvironmentManager.getInstance()
-				.getEnvironment(web, defaultJarsPath);
-		Collection<KnowledgeBase> coll = env.getServices();
-		for (KnowledgeBase knowledgeService : coll) {
-			if (knowledgeService.getId().startsWith(topic + "..")) {
-				return knowledgeService;
+	public static KnowledgeBase getKnowledgeBase(
+			String web, String title) {
+
+		Collection<KnowledgeBase> knowledgeBases = WikiEnvironmentManager.getInstance()
+				.getEnvironment(web, defaultJarsPath).getKnowledgeBases();
+		for (KnowledgeBase knowledgeBase : knowledgeBases) {
+			if (knowledgeBase.getId().equals(KnowWEEnvironment.generateDefaultID(title))) {
+				return knowledgeBase;
 			}
 		}
 

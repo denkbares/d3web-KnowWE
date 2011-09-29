@@ -53,7 +53,7 @@ public class EmptyQuestionnaireTest extends AbstractCITest {
 		String config = "knowledge base article: " + articleName;
 
 		// get the KB of this article
-		KnowledgeBase kb = D3webModule.getAD3webKnowledgeServiceInTopic(
+		KnowledgeBase kb = D3webModule.getKnowledgeBase(
 				KnowWEEnvironment.DEFAULT_WEB, articleName);
 		if (kb != null) {
 			List<String> emptyQASets = new ArrayList<String>();

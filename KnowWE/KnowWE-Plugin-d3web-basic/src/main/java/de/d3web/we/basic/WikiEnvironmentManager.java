@@ -82,8 +82,8 @@ public class WikiEnvironmentManager {
 	public WikiEnvironment getEnvironments(String web) {
 
 		/* HOTFIX for lazy initialization without persistence */
-		if (web.equals("default_web") && environments.get(web) == null) {
-			this.createEnvironment("default_web");
+		if (web.equals(KnowWEEnvironment.DEFAULT_WEB) && environments.get(web) == null) {
+			this.createEnvironment(KnowWEEnvironment.DEFAULT_WEB);
 		}
 		return environments.get(web);
 	}
@@ -93,16 +93,15 @@ public class WikiEnvironmentManager {
 	}
 
 	public static void registerKnowledgeBase(KnowledgeBase base, String topic, String webname) {
-		base.setId(topic + ".."
-				+ KnowWEEnvironment.generateDefaultID(topic));
+		base.setId(KnowWEEnvironment.generateDefaultID(topic));
 		WikiEnvironment env = D3webModule.getDPSE(webname);
 
-		env.addService(base);
+		env.addKnowledgeBase(base);
 
 		for (SessionBroker broker : env.getBrokers()) {
-			Session serviceSession = env.createServiceSession(
+			Session session = env.createSession(
 					base.getId());
-			broker.addServiceSession(base.getId(), serviceSession);
+			broker.addSession(base.getId(), session);
 		}
 	}
 }

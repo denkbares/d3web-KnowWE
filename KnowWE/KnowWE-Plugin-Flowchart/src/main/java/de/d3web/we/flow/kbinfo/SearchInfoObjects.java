@@ -93,7 +93,7 @@ public class SearchInfoObjects extends AbstractAction {
 		List<String> result = new LinkedList<String>();
 
 		// the examine objects inside the articles
-		for (KnowledgeBase base : env.getServices()) {
+		for (KnowledgeBase base : env.getKnowledgeBases()) {
 			// for each found knowledgebase, iterate through their objects
 			// and search for the given names
 			// and ignore all names we have already found

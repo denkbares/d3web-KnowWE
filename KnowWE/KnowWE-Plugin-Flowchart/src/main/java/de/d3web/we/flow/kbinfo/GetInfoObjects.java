@@ -148,7 +148,7 @@ public class GetInfoObjects extends AbstractAction {
 
 		// String web = parameterMap.getWeb();
 		WikiEnvironment env = WikiEnvironmentManager.getInstance().getEnvironments(web);
-		KnowledgeBase service = env.getService(serviceID);
+		KnowledgeBase service = env.getKnowledgeBase(serviceID);
 
 		if (objectID == null) {
 			// we want to have the article itself
@@ -165,7 +165,7 @@ public class GetInfoObjects extends AbstractAction {
 		// filters KnowWE-Doc from object tree
 		if (id.startsWith("Doc ")) return;
 		//
-		String name = id.substring(0, id.indexOf(".."));
+		String name = id;
 		buffer.append("\t<article");
 		buffer.append(" id='").append(encodeXML(id)).append("'");
 		buffer.append(" name='").append(name).append("'");

@@ -33,12 +33,12 @@ public abstract class KnowWEDomRenderer<T extends Type> {
 	 * @param article is the article this Section is displayed in... not
 	 *        necessarily the article the Section is hooked into directly, since
 	 *        Sections can also be included!
-	 * @param sec
+	 * @param section
 	 * @param user
 	 * @param string
 	 * 
 	 * @return
 	 */
-	public abstract void render(KnowWEArticle article, Section<T> sec, UserContext user, StringBuilder string);
+	public abstract void render(KnowWEArticle article, Section<T> section, UserContext user, StringBuilder string);
 
 }

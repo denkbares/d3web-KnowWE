@@ -75,6 +75,11 @@ public class TestUserContext implements UserContext {
 
 	@Override
 	public String getTopic() {
+		return getTitle();
+	}
+
+	@Override
+	public String getTitle() {
 		return article.getTitle();
 	}
 
