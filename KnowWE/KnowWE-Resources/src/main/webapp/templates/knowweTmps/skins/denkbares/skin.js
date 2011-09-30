@@ -97,3 +97,70 @@ if (SearchBox) {
 		}
 	}
 };
+
+
+var DenkbaresSkin = {};
+
+/**
+ * Initialize cutting edge favorite scrolling
+ */
+DenkbaresSkin.initFavScroll = function () {
+	if (DenkbaresSkin.isInitialized) return;
+	var element = $("favorites");
+	if (!element) return;
+	DenkbaresSkin.isInitialized = true;
+	DenkbaresSkin.originY = element.offsetTop;
+	// initialize some additional events
+	document.body.onclick = DenkbaresSkin.checkDocSizeScroll;
+};
+
+/**
+ * Quick convenience function to be called every time
+ * the document size may have changed.
+ * Unfortunately this cannot be traced by an event. 
+ */
+DenkbaresSkin.checkDocSizeScroll = function () {
+	//alert("check");
+	var docHeight = window.getScrollHeight();
+	if (DenkbaresSkin.docHeight == docHeight) return;
+	DenkbaresSkin.docHeight = docHeight;
+	DenkbaresSkin.checkFavScroll();
+};
+
+/**
+ * Adapt the left menu favorites to the screen
+ * so that the display size is optimally used.
+ */
+DenkbaresSkin.checkFavScroll = function () {
+	DenkbaresSkin.initFavScroll();
+	var element = $("favorites");
+	if (!element) return;
+	var originY = DenkbaresSkin.originY;
+	var docHeight = window.getScrollHeight();
+	var favHeight = element.clientHeight;
+	var favBottom = originY + favHeight; 
+	var scrollY = window.getScrollTop();
+	var scrollMax = window.getScrollHeight() - window.getHeight();
+	var favToScroll = favHeight - window.getHeight();
+	if (scrollY <= originY) {
+		// when reaching top of page
+		// align fav originally to page
+		element.style.position = "absolute";
+		element.style.top = originY+"px";
+	}
+	else if (scrollMax - scrollY <= favToScroll) {
+		// when reaching end of page
+		// align bottom of fav to bottom of page
+		element.style.position = "absolute";
+		element.style.top = (docHeight - favHeight)+"px";
+	}
+	else {
+		// otherwise fix fav to the top of the viewport
+		element.style.position = "fixed";
+		element.style.top = "0px";
+	}
+};
+
+
+window.onresize = DenkbaresSkin.checkFavScroll;
+window.onscroll = DenkbaresSkin.checkFavScroll;
