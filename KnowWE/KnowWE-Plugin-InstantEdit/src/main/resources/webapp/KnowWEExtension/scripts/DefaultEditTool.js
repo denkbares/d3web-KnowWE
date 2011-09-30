@@ -18,8 +18,6 @@ KNOWWE.plugin.defaultEditTool = function() {
 	    	if (typeof AutoComplete != "undefined") AutoComplete.initialize(textarea);
 	        TextArea.initialize(textarea);
 	        
-	        KNOWWE.plugin.instantEdit.disableDefaultEditTool();
-	        
 	        textarea.focus();
 	        textarea.style.height = (textarea.scrollHeight + 15) + "px";
 	    },

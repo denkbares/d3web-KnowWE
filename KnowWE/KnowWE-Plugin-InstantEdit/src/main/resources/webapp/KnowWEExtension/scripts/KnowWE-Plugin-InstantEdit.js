@@ -67,7 +67,11 @@ KNOWWE.plugin.instantEdit = function() {
 			+ id
 			+ "')\">Delete</a>\n";
 	}
-	 
+	
+	function hideTools() {
+		$$('.markupTools').setStyle("display", "none");
+	}
+	
     return {
     	
     	toolNameSpace : new Object(),
@@ -97,6 +101,7 @@ KNOWWE.plugin.instantEdit = function() {
                             
                             toolNameSpace.postProcessHTML(id);
                             bindUnloadFunctions(id);
+                            hideTools();
                     	}
                     },
                     onError : KNOWWE.plugin.instantEdit.onErrorBehavior,
