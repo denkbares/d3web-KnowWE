@@ -309,17 +309,21 @@ KNOWWE.plugin.quicki = function(){
         	 * are reset somewhere in the js even if there are
         	 * set values you can see in the Quick-Interview!
         	 * Johannes
-        	 * recollect all mcanswervals
+        	 * recollect all mcanswervals belonging to question
         	 * */
+        	var el = _KE.target(event); 	// get the clicked element
+            _KE.cancel( event );
+            
+            var clickedRel = eval("(" + el.getAttribute('rel') + ")");
+            var questionID = clickedRel.qid;
 			mcanswervals = '';
 			_KS('.answerMCClicked').each(function(element){
 			    var rel = eval("(" + element.getAttribute('rel') + ")");
-        		mcanswervals += rel.choice;
-                mcanswervals += "#####"
+			    if (rel.qid == questionID) {
+			    	mcanswervals += rel.choice;
+                	mcanswervals += "#####"
+			    }
             });
-        	
-            var el = _KE.target(event); 	// get the clicked element
-            _KE.cancel( event );
             
             // TODO new algorithm for mc vals:
         	// if a not highlighted answer is clicked it is
