@@ -7,7 +7,7 @@ KNOWWE.plugin.defaultEditTool = function() {
     return {
     	
 	    generateHTML : function(id) {
-	    	return "<textarea id = " + createTextAreaID(id) + " class='defaultEditTool' style='height: " + $(id).clientHeight + "px;'>" 
+	    	return "<textarea id = " + createTextAreaID(id) + " class='defaultEditTool' style='height: " + $(id).clientHeight + "px;'>"
 		    	+ KNOWWE.plugin.instantEdit.getWikiText(id)
 		    	+ "</textarea>"
 		    	+ KNOWWE.plugin.instantEdit.getSaveCancelDeleteButtons(id);
@@ -19,7 +19,10 @@ KNOWWE.plugin.defaultEditTool = function() {
 	        TextArea.initialize(textarea);
 	        
 	        textarea.focus();
-	        textarea.style.height = (textarea.scrollHeight + 15) + "px";
+	        while (textarea.clientHeight == textarea.scrollHeight) {
+	        	 textarea.style.height = textarea.clientHeight - 5 + "px";
+	        }
+	        textarea.style.height = textarea.scrollHeight + 15 + "px";
 	    },
 	    
 	    unloadCondition : function(id) {
