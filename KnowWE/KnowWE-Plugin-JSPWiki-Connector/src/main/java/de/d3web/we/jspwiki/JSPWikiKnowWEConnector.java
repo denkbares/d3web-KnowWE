@@ -194,6 +194,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 				Attachment att = new Attachment(engine, wikiPage,
 						filename);
+				att.setAuthor(user);
 				attachmentManager.storeAttachment(att, stream);
 
 				if (isNotLocked) undoPageLocked(wikiPage);
