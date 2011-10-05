@@ -96,7 +96,7 @@ public class D3webUtils {
 		return broker.getSessions();
 	}
 
-	public static boolean storeSessionRecordsAsAttachment(Collection<Session> sessions, String attachmentArticle, String attachmentName) throws IOException {
+	public static boolean storeSessionRecordsAsAttachment(String user, Collection<Session> sessions, String attachmentArticle, String attachmentName) throws IOException {
 
 		Collection<SessionRecord> sessionRecords = new LinkedList<SessionRecord>();
 
@@ -112,7 +112,7 @@ public class D3webUtils {
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
 
 		return KnowWEEnvironment.getInstance().getWikiConnector()
-				.storeAttachment(attachmentArticle, attachmentName, inputStream);
+				.storeAttachment(attachmentArticle, attachmentName, user, inputStream);
 	}
 
 	public static Score getScoreForString(String argument) {

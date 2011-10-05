@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -171,9 +171,9 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	}
 
 	@Override
-	public boolean storeAttachment(String wikiPage, File attachmentFile) {
+	public boolean storeAttachment(String wikiPage, String user, File attachmentFile) {
 		try {
-			return storeAttachment(wikiPage, attachmentFile.getName(), new FileInputStream(
+			return storeAttachment(wikiPage, attachmentFile.getName(), user, new FileInputStream(
 					attachmentFile));
 		}
 		catch (FileNotFoundException e) {
@@ -184,10 +184,11 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	}
 
 	@Override
-	public boolean storeAttachment(String wikiPage, String filename, InputStream stream) {
+	public boolean storeAttachment(String wikiPage, String filename, String user, InputStream stream) {
 		try {
-			if (!isPageLocked(wikiPage)) {
-				setPageLocked(wikiPage, "WIKI-ENGINE");
+			boolean isNotLocked = !isPageLocked(wikiPage);
+			if (isPageLockedCurrentUser(wikiPage, user) || isNotLocked) {
+				if (isNotLocked) setPageLocked(wikiPage, "WIKI-ENGINE");
 				AttachmentManager attachmentManager = this.engine
 						.getAttachmentManager();
 
@@ -195,7 +196,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 						filename);
 				attachmentManager.storeAttachment(att, stream);
 
-				undoPageLocked(wikiPage);
+				if (isNotLocked) undoPageLocked(wikiPage);
 				return true;
 			}
 			else return false;
@@ -378,8 +379,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null))
-				return null;
+			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
 		}
 		catch (NullPointerException e) {
 			return null;
@@ -399,8 +399,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null))
-				return null;
+			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
 		}
 		catch (NullPointerException e) {
 			return null;
@@ -428,8 +427,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null))
-				return null;
+			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
 		}
 		catch (NullPointerException e) {
 			return null;
@@ -451,8 +449,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null))
-				return null;
+			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
 		}
 		catch (NullPointerException e) {
 			return null;
@@ -480,8 +477,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null))
-				return null;
+			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
 		}
 		catch (NullPointerException e) {
 			return null;
@@ -543,8 +539,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	 * the page is denied.
 	 * 
 	 * @param articlename
-	 * @param r
-	 *            HttpRequest
+	 * @param r HttpRequest
 	 */
 	@Override
 	public boolean userCanEditPage(String articlename, HttpServletRequest r) {
@@ -582,8 +577,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	 * the page is denied.
 	 * 
 	 * @param articlename
-	 * @param r
-	 *            HttpRequest
+	 * @param r HttpRequest
 	 */
 	@Override
 	public boolean userCanViewPage(String articlename, HttpServletRequest r) {

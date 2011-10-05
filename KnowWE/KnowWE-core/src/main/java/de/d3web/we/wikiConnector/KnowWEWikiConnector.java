@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -104,9 +104,8 @@ public interface KnowWEWikiConnector {
 	 * @param name
 	 * @param text
 	 * @param map
-	 * @param fullParse
-	 *            possibility to force the full parsing of the page (only for
-	 *            KnowWETestWikiConnector working)
+	 * @param fullParse possibility to force the full parsing of the page (only
+	 *        for KnowWETestWikiConnector working)
 	 * @return
 	 */
 	// public boolean writeArticleToWikiEnginePersistence(String name, String
@@ -167,10 +166,8 @@ public interface KnowWEWikiConnector {
 	/**
 	 * Returns the given version of the source text of the wiki page
 	 * 
-	 * @param name
-	 *            the name of the article
-	 * @param version
-	 *            the version number of the article source to be retrieved
+	 * @param name the name of the article
+	 * @param version the version number of the article source to be retrieved
 	 * @return the source of the article, or null if the given version does not
 	 *         exist
 	 */
@@ -180,10 +177,8 @@ public interface KnowWEWikiConnector {
 	 * Gets the author of the specified version of the given article ( by name )
 	 * 
 	 * @created 14.06.2010
-	 * @param name
-	 *            the name of the article which has to be selected
-	 * @param version
-	 *            the version number of which the author has to be returned
+	 * @param name the name of the article which has to be selected
+	 * @param version the version number of which the author has to be returned
 	 * @return the author of the specified version or null
 	 */
 	public String getAuthor(String name, int version);
@@ -194,10 +189,8 @@ public interface KnowWEWikiConnector {
 	 * Gets the Date when the specified version of the article was last modified
 	 * 
 	 * @created 17.07.2010
-	 * @param name
-	 *            the name of the article
-	 * @param version
-	 *            the version of the article
+	 * @param name the name of the article
+	 * @param version the version of the article
 	 * @return the Date when the selected articleversion was modified
 	 */
 	public Date getLastModifiedDate(String name, int version);
@@ -330,10 +323,9 @@ public interface KnowWEWikiConnector {
 	 * is omitted.
 	 * 
 	 * 
-	 * @param articleName
-	 *            name of the article to link to
-	 * @param linkText
-	 *            the text to show for the link. can be empty String or null
+	 * @param articleName name of the article to link to
+	 * @param linkText the text to show for the link. can be empty String or
+	 *        null
 	 * @return s a string representing a link to the given article in wiki
 	 *         syntax
 	 */
@@ -351,22 +343,20 @@ public interface KnowWEWikiConnector {
 	 * Stores an File as an attachment to the given page. Returns whether the
 	 * operation was successful or not.
 	 * 
-	 * @param wikiPage
-	 *            the name of the page, to which this attachment should be
-	 *            stored
-	 * @param attachmentFile
-	 *            the attachment to be stored
+	 * @param wikiPage the name of the page, to which this attachment should be
+	 *        stored
+	 * @param user is the user wanting to store the attachment (important for
+	 *        lock of the page)
+	 * @param attachmentFile the attachment to be stored
 	 * @return
 	 */
-	boolean storeAttachment(String wikiPage, File attachmentFile);
+	boolean storeAttachment(String wikiPage, String user, File attachmentFile);
 
 	/**
 	 * Renders given WIKI mark-up in the pagedata.
 	 * 
-	 * @param pagedata
-	 *            The current data of the page.
-	 * @param userContext
-	 *            The parameters of the request.
+	 * @param pagedata The current data of the page.
+	 * @param userContext The parameters of the request.
 	 * @return The masked pagedata.
 	 */
 	public String renderWikiSyntax(String pagedata, UserActionContext userContext);
@@ -408,8 +398,10 @@ public interface KnowWEWikiConnector {
 	 * @created 30.08.2011
 	 * @param wikiPage
 	 * @param filename
+	 * @param user is the user wanting to store the attachment (important for
+	 *        lock of the page)
 	 * @param stream
 	 * @return
 	 */
-	boolean storeAttachment(String wikiPage, String filename, InputStream stream);
+	boolean storeAttachment(String wikiPage, String filename, String user, InputStream stream);
 }
