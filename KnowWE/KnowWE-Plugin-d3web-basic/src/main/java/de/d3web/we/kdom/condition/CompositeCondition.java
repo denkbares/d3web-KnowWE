@@ -172,7 +172,7 @@ public class CompositeCondition extends AbstractType {
 	 * @param c
 	 * @return
 	 */
-	public boolean isBraced(Section<CompositeCondition> c) {
+	public boolean isBraced(Section<? extends CompositeCondition> c) {
 		return getBraced(c) != null;
 	}
 
@@ -182,7 +182,7 @@ public class CompositeCondition extends AbstractType {
 	 * @param c
 	 * @return
 	 */
-	public Section<? extends NonTerminalCondition> getBraced(Section<CompositeCondition> c) {
+	public Section<? extends NonTerminalCondition> getBraced(Section<? extends CompositeCondition> c) {
 
 		Section<? extends BracedCondition> childrenOfType = Sections.findChildOfType(c,
 				BracedCondition.class);
@@ -217,7 +217,7 @@ public class CompositeCondition extends AbstractType {
 	 * @param c
 	 * @return
 	 */
-	public boolean isTerminal(Section<CompositeCondition> c) {
+	public boolean isTerminal(Section<? extends CompositeCondition> c) {
 		return getTerminal(c) != null;
 	}
 
@@ -227,7 +227,7 @@ public class CompositeCondition extends AbstractType {
 	 * @param c
 	 * @return
 	 */
-	public Section<? extends TerminalCondition> getTerminal(Section<CompositeCondition> c) {
+	public Section<? extends TerminalCondition> getTerminal(Section<? extends CompositeCondition> c) {
 		Section<? extends TerminalCondition> terminal = Sections.findChildOfType(c,
 				TerminalCondition.class);
 		return terminal;
