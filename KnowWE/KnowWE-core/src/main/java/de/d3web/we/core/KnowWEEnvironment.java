@@ -535,23 +535,32 @@ public class KnowWEEnvironment {
 	}
 
 	/**
-	 * Called from the Wikiplugin when article is saved. Parses and updates
-	 * inner knowledge representation of KnowWE2
+	 * Builds an {@link KnowWEArticle} and registers it in the
+	 * {@link KnowWEArticleManager}.
 	 */
-	public void buildAndRegisterArticle(String username, String content,
-			String topic, String web) {
-		buildAndRegisterArticle(username, content, topic, web, false);
-
+	public KnowWEArticle buildAndRegisterArticle(String content,
+			String title, String web) {
+		return buildAndRegisterArticle(content, title, web, false);
 	}
 
-	public void buildAndRegisterArticle(String username, String content,
-			String topic, String web, boolean fullParse) {
+	/**
+	 * Builds an {@link KnowWEArticle} and registers it in the
+	 * {@link KnowWEArticleManager}.
+	 */
+	public KnowWEArticle buildAndRegisterArticle(String content,
+			String title, String web, boolean fullParse) {
+
+		if (KnowWEArticle.isArticleCurrentlyBuilding(title)) {
+			return getArticle(DEFAULT_WEB, title);
+		}
 
 		// create article with the new content
-		KnowWEArticle article = KnowWEArticle.createArticle(content, topic, KnowWEEnvironment
+		KnowWEArticle article = KnowWEArticle.createArticle(content, title, KnowWEEnvironment
 				.getInstance().getRootType(), web);
 
 		this.getArticleManager(web).registerArticle(article);
+
+		return article;
 	}
 
 	/**

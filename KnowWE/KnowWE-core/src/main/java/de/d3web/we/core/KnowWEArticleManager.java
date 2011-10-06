@@ -61,12 +61,6 @@ public class KnowWEArticleManager {
 	 */
 	private HashMap<String, KnowWEArticle> articleMap = new HashMap<String, KnowWEArticle>();
 
-	/**
-	 * List that keeps track of all articles that are sectionizing at the
-	 * moment.
-	 */
-	private final Set<String> sectionizingArticles = new HashSet<String>();
-
 	private final TreeSet<String> currentRefreshQueue = new TreeSet<String>();
 
 	/**
@@ -191,8 +185,8 @@ public class KnowWEArticleManager {
 			// This is only needed for the test environment. In the running
 			// wiki, this is automatically called after the change to the
 			// persistence.
-			KnowWEEnvironment.getInstance().buildAndRegisterArticle(context.getUserName(),
-					newArticleText, title, context.getWeb());
+			KnowWEEnvironment.getInstance().buildAndRegisterArticle(newArticleText, title,
+					context.getWeb());
 		}
 		return true;
 	}
@@ -334,25 +328,13 @@ public class KnowWEArticleManager {
 	 * @param article The article to delete
 	 */
 	public void deleteArticle(KnowWEArticle article) {
-		KnowWEEnvironment.getInstance().buildAndRegisterArticle("", "",
+		KnowWEEnvironment.getInstance().buildAndRegisterArticle("",
 				article.getTitle(), web, true);
 
 		articleMap.remove(article.getTitle());
 
 		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
 				"-> Deleted article '" + article.getTitle() + "'" + " from " + web);
-	}
-
-	public void unregisterSectionizingArticles(String title) {
-		this.sectionizingArticles.remove(title);
-	}
-
-	public void registerSectionizingArticle(String title) {
-		this.sectionizingArticles.add(title);
-	}
-
-	public Set<String> getSectionizingArticles() {
-		return Collections.unmodifiableSet(this.sectionizingArticles);
 	}
 
 	public Set<String> getUpdatingArticles() {
@@ -367,11 +349,11 @@ public class KnowWEArticleManager {
 		this.currentRefreshQueue.addAll(titles);
 	}
 
-	public boolean hasInitializedArticles() {
+	public boolean areArticlesInitialized() {
 		return initializedArticles;
 	}
 
-	public void setInitializedArticles(boolean b) {
+	public void setArticlesInitialized(boolean b) {
 		initializedArticles = true;
 	}
 

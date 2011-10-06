@@ -21,6 +21,7 @@
 package de.d3web.we.kdom;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -87,6 +88,12 @@ public class KnowWEArticle extends AbstractType {
 
 	private final Set<String> classesCausingFullParse = new HashSet<String>();
 
+	private static Set<String> currentlyBuildingArticles = Collections.synchronizedSet(new HashSet<String>());
+
+	public static boolean isArticleCurrentlyBuilding(String title) {
+		return currentlyBuildingArticles.contains(title);
+	}
+
 	public static KnowWEArticle createArticle(String text, String title, RootType rootType,
 			String web) {
 		return createArticle(text, title, rootType, web, false);
@@ -95,10 +102,23 @@ public class KnowWEArticle extends AbstractType {
 	public static KnowWEArticle createArticle(String text, String title, RootType rootType,
 			String web, boolean fullParse) {
 
+		if (isArticleCurrentlyBuilding(title)) {
+			Logger.getLogger(KnowWEArticle.class.getName()).severe(
+					"The article '"
+							+ title
+							+ "' is build more than once at the same time, "
+							+ "this should not be done! Developer please check with "
+							+ "KnowWEArticle#isArticleCurrentlyBuilding(String) first!");
+		}
+
+		currentlyBuildingArticles.add(title);
+
 		KnowWEArticle article = new KnowWEArticle(text, title, rootType,
 				web, fullParse);
 
 		EventManager.getInstance().fireEvent(new ArticleCreatedEvent(article));
+
+		currentlyBuildingArticles.remove(title);
 
 		return article;
 	}
@@ -182,8 +202,6 @@ public class KnowWEArticle extends AbstractType {
 
 	private void sectionizeArticle(String text) {
 
-		KnowWEEnvironment.getInstance().getArticleManager(web).registerSectionizingArticle(title);
-
 		// create Sections recursively
 		sec = Section.createSection(text, this, null);
 		sec.article = this;
@@ -198,8 +216,6 @@ public class KnowWEArticle extends AbstractType {
 		}
 
 		EventManager.getInstance().fireEvent(new KDOMCreatedEvent(this));
-
-		KnowWEEnvironment.getInstance().getArticleManager(web).unregisterSectionizingArticles(title);
 	}
 
 	private void preCompile() {

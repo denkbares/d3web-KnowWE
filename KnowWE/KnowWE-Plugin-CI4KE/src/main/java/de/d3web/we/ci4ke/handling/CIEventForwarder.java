@@ -45,7 +45,7 @@ public class CIEventForwarder implements EventListener {
 		if (event instanceof ArticleRegisteredEvent) {
 			ArticleRegisteredEvent arEvent = (ArticleRegisteredEvent) event;
 			if (KnowWEEnvironment.getInstance().getArticleManager(
-					arEvent.getArticle().getWeb()).hasInitializedArticles()) {
+					arEvent.getArticle().getWeb()).areArticlesInitialized()) {
 				CIHookManager.getInstance().triggerHooks(
 						((ArticleRegisteredEvent) event).getArticle().getTitle());
 			}
