@@ -53,7 +53,7 @@ import de.d3web.we.utils.SplitUtility;
  */
 public class CompositeCondition extends AbstractType {
 
-	private final TerminalCondition terminalCondition = new TerminalCondition();
+	protected final TerminalCondition terminalCondition = new TerminalCondition();
 
 	public static char BRACE_OPEN = '(';
 	public static char BRACE_CLOSED = ')';
