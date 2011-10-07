@@ -20,7 +20,10 @@ KNOWWE.plugin.defaultEditTool = function() {
 	        
 	        textarea.focus();
 	        while (textarea.clientHeight == textarea.scrollHeight) {
-	        	 textarea.style.height = textarea.clientHeight - 5 + "px";
+	        	var tempHeight = textarea.style.height; 
+	        	textarea.style.height = textarea.clientHeight - 5 + "px";
+	        	// abort if we are below minHeight and the height does not change anymore
+	        	if (textarea.style.height == tempHeight) break;
 	        }
 	        textarea.style.height = textarea.scrollHeight + 15 + "px";
 	    },
