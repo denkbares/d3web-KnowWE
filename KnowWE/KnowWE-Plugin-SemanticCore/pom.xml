@@ -55,12 +55,18 @@
 		</plugins>
 	</build>
 	
+	<repositories>
+		<repository>
+			<id>openrdf-repo</id>
+			<url>http://repo.aduna-software.org/maven2/releases/</url>
+		</repository>
+	</repositories>
+	
 	<dependencies>
-			<dependency>
-			<groupId>org.openrdf</groupId>
-			<artifactId>sesame</artifactId>
-			<version>2.3.2</version>
-			<classifier>onejar</classifier>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-runtime</artifactId>
+			<version>2.5.1</version>
 		</dependency>
 				<dependency>
 			<groupId>com.ontotext</groupId>
@@ -104,6 +110,11 @@
 			<artifactId>KnowWE-KDOMParseUtils</artifactId>
 			<version>0.2-SNAPSHOT</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-Rdf2GoSemanticCore</artifactId>
+			<version>0.2-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
