@@ -61,7 +61,7 @@ public class InstantEditSaveAction extends AbstractAction {
 	 */
 	private String handle(UserActionContext context) throws IOException {
 
-		String topic = context.getTopic();
+		String topic = context.getTitle();
 		String id = context.getParameter("KdomNodeId");
 		String web = context.getParameter(KnowWEAttributes.WEB);
 		String value = context.getParameter("data");

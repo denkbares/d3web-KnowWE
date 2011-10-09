@@ -47,27 +47,6 @@ KNOWWE.plugin.instantEdit = function() {
 		return openingDiv + lockedHTML + html + closingDiv;
 	}
 	
-	function getSaveButton(id) {
-		return "<a class=\"action save\" " 
-			+ "href=\"javascript:KNOWWE.plugin.instantEdit.save('"
-			+ id
-			+ "')\">Save</a>\n";
-	}
-	
-	function getCancelButton(id) {
-		return "<a class=\"action cancel\" "
-			+ "href=\"javascript:KNOWWE.plugin.instantEdit.cancel('"
-			+ id
-			+ "')\">Cancel</a>\n";
-	}
-	
-	function getDeleteButton(id) {
-		return "<a class=\"action delete\"" 
-			+ "href=\"javascript:KNOWWE.plugin.instantEdit.deleteSection('"
-			+ id
-			+ "')\">Delete</a>\n";
-	}
-	
 	function hideTools() {
 		$$('.markupTools').setStyle("display", "none");
 	}
@@ -151,15 +130,22 @@ KNOWWE.plugin.instantEdit = function() {
       			newWikiText =  KNOWWE.plugin.instantEdit.toolNameSpace[id].generateWikiText(id);        
         	}
         	
+        	var saveMode = KNOWWE.plugin.instantEdit.toolNameSpace[id].saveMode;
+        	
+        	var saveAction = 'InstantEditSaveAction';
+        	if (saveMode == "addArticle") {
+        		saveAction = 'InstantEditAddArticleAction';
+        	}
+        	
             var params = {
-                action : 'InstantEditSaveAction',
+                action : saveAction,
                 KdomNodeId : id,
+                
             }
-                 
+
             var options = {
                 url : KNOWWE.core.util.getURL(params),
                 data : newWikiText,
-                "empty" : "true",
                 response : {
                     action : 'none',
                     fn : function() {
@@ -177,6 +163,7 @@ KNOWWE.plugin.instantEdit = function() {
             }
             new _KA(options).send();  
         },
+        
         /**
 		 * Cancel the instant edit action. Restore the original text.
 		 * 
@@ -246,20 +233,48 @@ KNOWWE.plugin.instantEdit = function() {
         	}
         },
         
+    	getSaveButton : function(id) {
+    		return "<a class=\"action save\" " 
+    			+ "href=\"javascript:KNOWWE.plugin.instantEdit.save('"
+    			+ id
+    			+ "')\">Save</a>";
+    	},
+    	
+    	getCancelButton : function(id) {
+    		return "<a class=\"action cancel\" "
+    			+ "href=\"javascript:KNOWWE.plugin.instantEdit.cancel('"
+    			+ id
+    			+ "')\">Cancel</a>";
+    	},
+    	
+    	getDeleteButton : function(id) {
+    		return "<a class=\"action delete\"" 
+    			+ "href=\"javascript:KNOWWE.plugin.instantEdit.deleteSection('"
+    			+ id
+    			+ "')\">Delete</a>";
+    	},
+        
     	getSaveCancelButtons : function(id) {
-    		return "<div class='saveCancelButtons'><table><tr>" +
-    				"<td>" + getSaveButton(id) + "</td>" +
-    				"<td>" +  getCancelButton(id) + "</td>" +
-    				"</tr></table></div>";
+    		return KNOWWE.plugin.instantEdit.getButtonsTable(new Array(
+    				KNOWWE.plugin.instantEdit.getSaveButton(id),
+    				KNOWWE.plugin.instantEdit.getCancelButton(id)));
     	},
     	
     	getSaveCancelDeleteButtons : function(id) {
-    		return "<div class='saveCancelButtons'><table><tr>" +
-    				"<td>" + getSaveButton(id) + "</td>" +
-    				"<td>" +  getCancelButton(id) + "</td>" +
-    				"<td>       </td>" +
-    				"<td>" +  getDeleteButton(id) + "</td>" +
-    				"</tr></table></div>";
+    		return KNOWWE.plugin.instantEdit.getButtonsTable(new Array(
+    				KNOWWE.plugin.instantEdit.getSaveButton(id), 
+    				KNOWWE.plugin.instantEdit.getCancelButton(id), 
+    				"       ",  
+    				KNOWWE.plugin.instantEdit.getDeleteButton(id)));
+    	},
+    	
+    	getButtonsTable : function(buttons) {
+    		var table = "<div class='buttons'><table><tr>";
+    		for (var i = 0; i < buttons.length; i++) {
+    			table += "<td>" + buttons[i] + "</td>\n";
+    		}
+    		table += "</tr></table></div>";
+    		return table;
     	},
         
         handleEditToolButtonVisibility : function() {

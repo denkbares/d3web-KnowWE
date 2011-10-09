@@ -19,7 +19,7 @@ public class CheckCanEditPageAction extends AbstractAction {
 
 	private String handle(UserActionContext context) throws IOException {
 
-		String topic = context.getTopic();
+		String topic = context.getTitle();
 
 		if (KnowWEEnvironment.getInstance().getArticle(context.getWeb(), topic) == null) {
 			context.sendError(404, "Page '" + topic + "' could not be found.");

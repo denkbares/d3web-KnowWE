@@ -58,7 +58,7 @@ public class InstantEditEnableAction extends AbstractAction {
 	 */
 	private String handle(UserActionContext context) throws IOException {
 
-		String topic = context.getTopic();
+		String topic = context.getTitle();
 		String web = context.getWeb();
 		String id = context.getParameter("KdomNodeId");
 
