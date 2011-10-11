@@ -119,29 +119,48 @@ KNOWWE.plugin.instantEdit = function() {
         /**
 		 * Save the changes to the article.
 		 * 
-		 * @param String
-		 *            id The id of the DOM element
-		 * @param String
-		 *            value The old text of the section
+		 * @param id is the id of the DOM element
 		 */
         save : function(id, newWikiText) {
             
         	if (newWikiText == null) {
-      			newWikiText =  KNOWWE.plugin.instantEdit.toolNameSpace[id].generateWikiText(id);        
-        	}
-        	
-        	var saveMode = KNOWWE.plugin.instantEdit.toolNameSpace[id].saveMode;
-        	
-        	var saveAction = 'InstantEditSaveAction';
-        	if (saveMode == "addArticle") {
-        		saveAction = 'InstantEditAddArticleAction';
+        		newWikiText =  KNOWWE.plugin.instantEdit.toolNameSpace[id].generateWikiText(id);        		
         	}
         	
             var params = {
-                action : saveAction,
+                action : 'InstantEditSaveAction',
                 KdomNodeId : id,
-                
             }
+
+            KNOWWE.plugin.instantEdit.sendChanges(id, params, newWikiText); 
+        },
+        
+        /**
+		 * Adds a new article with the given articleText. The title of the new 
+		 * article is given by the current tools function getNewArticleTitle();
+		 * 
+		 * @param id is the id of the source DOM element
+		 */
+        add : function(id, title, newWikiText) {
+            
+        	if (newWikiText == null) {
+        		newWikiText =  KNOWWE.plugin.instantEdit.toolNameSpace[id].generateWikiText(id);        		
+        	}
+        	if (title == null) {        		
+        		var title = KNOWWE.plugin.instantEdit.toolNameSpace[id].getNewArticleTitle(id); 	
+        	}
+        	
+            var params = {
+                action : 'InstantEditAddArticleAction',
+                KdomNodeId : id,
+				KWiki_Topic : title,
+            }
+            
+            KNOWWE.plugin.instantEdit.sendChanges(id, params, newWikiText);
+            
+        },
+        
+        sendChanges : function(id, params, newWikiText) {
 
             var options = {
                 url : KNOWWE.core.util.getURL(params),
@@ -181,18 +200,28 @@ KNOWWE.plugin.instantEdit = function() {
         	}
         }, 
         
+        deleteArticle : function(id) {
+        	var del = confirm("Do you really want to delete this content?");
+        	if (del) {
+        		var title = KNOWWE.plugin.instantEdit.toolNameSpace[id].getCurrentArticleTitle(id); 	
+        		KNOWWE.plugin.instantEdit.add(id, title, "");
+        	}
+        }, 
+        
     	wikiText : new Object(),
     	
-        getWikiText : function(id) {
+        getWikiText : function(id, actionName) {
         	
         	var tempWikiText = KNOWWE.plugin.instantEdit.wikiText[id];
         	
         	if (tempWikiText != null) return tempWikiText;
         	
+        	if (actionName == null) actionName = 'GetWikiTextAction';
+        	
         	var params = {
-                action : 'GetWikiTextAction',
+                action : actionName,
                 KdomNodeId : id,
-            };        
+            };         
             
             var options = {
                 url : KNOWWE.core.util.getURL(params),
@@ -200,10 +229,7 @@ KNOWWE.plugin.instantEdit = function() {
                 response : {
                    action : 'none',
                    fn : function() {
-                	   // var cleanedUpWikiText = this.responseText.replace(
-                	   // new RegExp( "\\r", "g" ),
-                	   // ""
-                	   // );
+
                 	   KNOWWE.plugin.instantEdit.wikiText[id] = this.responseText;
                    },
                    onError : KNOWWE.plugin.instantEdit.onErrorBehavior,
@@ -214,6 +240,7 @@ KNOWWE.plugin.instantEdit = function() {
             return KNOWWE.plugin.instantEdit.wikiText[id];
         },
         
+        // Maybe return given messages instead
         onErrorBehavior : function() {
         	if (this.status == null) return;
         	switch (this.status) {
@@ -240,6 +267,13 @@ KNOWWE.plugin.instantEdit = function() {
     			+ "')\">Save</a>";
     	},
     	
+    	getAddArticleButton : function(id) {
+    		return "<a class=\"action add\" " 
+    			+ "href=\"javascript:KNOWWE.plugin.instantEdit.add('"
+    			+ id
+    			+ "')\">Save</a>";
+    	},
+    	
     	getCancelButton : function(id) {
     		return "<a class=\"action cancel\" "
     			+ "href=\"javascript:KNOWWE.plugin.instantEdit.cancel('"
@@ -247,25 +281,18 @@ KNOWWE.plugin.instantEdit = function() {
     			+ "')\">Cancel</a>";
     	},
     	
-    	getDeleteButton : function(id) {
+    	getDeleteSectionButton : function(id) {
     		return "<a class=\"action delete\"" 
     			+ "href=\"javascript:KNOWWE.plugin.instantEdit.deleteSection('"
     			+ id
     			+ "')\">Delete</a>";
     	},
-        
-    	getSaveCancelButtons : function(id) {
-    		return KNOWWE.plugin.instantEdit.getButtonsTable(new Array(
-    				KNOWWE.plugin.instantEdit.getSaveButton(id),
-    				KNOWWE.plugin.instantEdit.getCancelButton(id)));
-    	},
     	
-    	getSaveCancelDeleteButtons : function(id) {
-    		return KNOWWE.plugin.instantEdit.getButtonsTable(new Array(
-    				KNOWWE.plugin.instantEdit.getSaveButton(id), 
-    				KNOWWE.plugin.instantEdit.getCancelButton(id), 
-    				"       ",  
-    				KNOWWE.plugin.instantEdit.getDeleteButton(id)));
+    	getDeleteArticleButton : function(id) {
+    		return "<a class=\"action delete\"" 
+    			+ "href=\"javascript:KNOWWE.plugin.instantEdit.deleteArticle('"
+    			+ id
+    			+ "')\">Delete</a>";
     	},
     	
     	getButtonsTable : function(buttons) {
@@ -275,6 +302,14 @@ KNOWWE.plugin.instantEdit = function() {
     		}
     		table += "</tr></table></div>";
     		return table;
+    	},
+    	
+    	getSaveCancelDeleteButtons : function(id) {
+    		return KNOWWE.plugin.instantEdit.getButtonsTable(new Array(
+    				KNOWWE.plugin.instantEdit.getSaveButton(id), 
+    				KNOWWE.plugin.instantEdit.getCancelButton(id), 
+    				"       ",  
+    				KNOWWE.plugin.instantEdit.getDeleteSectionButton(id)));
     	},
         
         handleEditToolButtonVisibility : function() {

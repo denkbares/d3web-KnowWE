@@ -211,6 +211,11 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	public String preTranslate(WikiContext wikiContext, String content)
 			throws FilterException {
 
+		String title = wikiContext.getRealPage().getName();
+		if (KnowWEArticle.isArticleCurrentlyBuilding(title)) {
+			return content;
+		}
+
 		initKnowWEEnvironmentIfNeeded(wikiContext.getEngine());
 
 		initializeAllArticlesIfNeeded(wikiContext.getEngine());
@@ -228,7 +233,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		 * The special pages MoreMenu, LeftMenu and LeftMenuFooter get extra
 		 * calls: they are handled and rendered from the KDOMs in the following
 		 */
-		String title = wikiContext.getRealPage().getName();
 		List<String> supportArticleNames = Arrays.asList(MORE_MENU, LEFT_MENU, LEFT_MENU_FOOTER);
 		if (supportArticleNames.contains(title)) {
 			KnowWEArticle supportArticle = KnowWEEnvironment.getInstance()

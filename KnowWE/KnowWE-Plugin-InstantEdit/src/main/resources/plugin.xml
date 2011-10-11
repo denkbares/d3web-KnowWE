@@ -30,7 +30,16 @@
         <parameter id="script" value="TextArea.js" />
         <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
         <parameter id="css" value="DefaultEditTool.css" />       
-        <parameter id="scope" value="/DefaultMarkupType" />
+        <parameter id="scope" value="KnowledgeBaseType" />
+        <parameter id="scope" value="QuestionTree" />
+        <parameter id="scope" value="QuestionnaireTreeMarkup" />
+        <parameter id="scope" value="ResourceType" />
+        <parameter id="scope" value="PropertyMarkup" />
+        <parameter id="scope" value="RulesMarkup" />
+        <parameter id="scope" value="ShowSolutionsType" />
+        <parameter id="scope" value="SolutionTreeMarkup" />
+        <parameter id="scope" value="CoveringListMarkup" />
+        <parameter id="scope" value="CoveringListSettingsMarkup" />
     </extension>
     
     <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
@@ -39,6 +48,16 @@
             value="de.knowwe.instantedit.actions.InstantEditSaveAction" />
         <parameter id="name" value="InstantEditSaveAction" />
         <parameter id="description" value="Action InstantEditSaveAction" />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="5" />
+    </extension>
+    
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+        id="InstantEditAddArticleAction">
+        <parameter id="class"
+            value="de.knowwe.instantedit.actions.InstantEditAddArticleAction" />
+        <parameter id="name" value="InstantEditAddArticleAction" />
+        <parameter id="description" value="Action InstantEditAddArticleAction" />
         <parameter id="version" value="1.0" />
         <parameter id="priority" value="5" />
     </extension>
@@ -81,6 +100,6 @@
         <parameter id="description" value="Action CheckCanEditPageAction" />
         <parameter id="version" value="1.0" />
         <parameter id="priority" value="5" />
-    </extension> 
+    </extension>
     
 </plugin>
