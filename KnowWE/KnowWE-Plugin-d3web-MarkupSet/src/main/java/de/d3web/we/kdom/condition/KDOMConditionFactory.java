@@ -44,7 +44,7 @@ import de.d3web.we.kdom.Sections;
 public class KDOMConditionFactory {
 
 	@SuppressWarnings("unchecked")
-	public static Condition createCondition(KnowWEArticle article, Section<CompositeCondition> c) {
+	public static Condition createCondition(KnowWEArticle article, Section<? extends CompositeCondition> c) {
 		if (c == null) return null;
 
 		// if braced - delegate to next composite
