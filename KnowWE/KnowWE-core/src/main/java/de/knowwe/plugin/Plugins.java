@@ -26,14 +26,14 @@ import java.util.List;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
-import de.d3web.we.action.Action;
-import de.d3web.we.core.KnowWERessourceLoader;
-import de.d3web.we.kdom.IncrementalSectionizerModule;
-import de.d3web.we.kdom.SectionizerModule;
-import de.d3web.we.kdom.Type;
-import de.d3web.we.kdom.rendering.PageAppendHandler;
-import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
-import de.d3web.we.taghandler.TagHandler;
+import de.knowwe.core.KnowWERessourceLoader;
+import de.knowwe.core.action.Action;
+import de.knowwe.core.append.PageAppendHandler;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.IncrementalSectionizerModule;
+import de.knowwe.core.kdom.parsing.SectionizerModule;
+import de.knowwe.core.taghandler.TagHandler;
+import de.knowwe.knowRep.KnowledgeRepresentationHandler;
 
 /**
  * Provides utilities methods for Plugins used in KnowWE

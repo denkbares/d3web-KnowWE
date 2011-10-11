@@ -36,9 +36,9 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.plugin.test.InitPluginManager;
-import de.d3web.we.core.packaging.KnowWEPackageManager;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.logging.Logging;
+import de.knowwe.core.compile.packaging.KnowWEPackageManager;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.logging.Logging;
 
 /**
  * This class tests whether the Questions are created as expected.

@@ -19,14 +19,14 @@
  */
 package de.d3web.we.kdom.questionTree.indication;
 
-import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
-import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
-import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
-import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.object.QuestionReference;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.kdom.AnonymousType;
+import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
+import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
 
 public class QuestionRefLine extends AbstractType {
 

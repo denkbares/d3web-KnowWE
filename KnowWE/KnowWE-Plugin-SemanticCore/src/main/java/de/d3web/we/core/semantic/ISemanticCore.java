@@ -35,11 +35,11 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
 
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.wikiConnector.KnowWEWikiConnector;
+import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.wikiConnector.KnowWEWikiConnector;
 
 public interface ISemanticCore {
 

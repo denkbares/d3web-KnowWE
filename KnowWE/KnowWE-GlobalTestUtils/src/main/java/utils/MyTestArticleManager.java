@@ -21,8 +21,8 @@ package utils;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.KnowWEArticle;
+import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.kdom.KnowWEArticle;
 import dummies.KnowWETestWikiConnector;
 
 /**

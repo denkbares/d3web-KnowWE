@@ -31,9 +31,9 @@ import java.util.Set;
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
+import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.knowRep.KnowledgeRepresentationHandler;
 
 /**
  * D3webKnowledgeHandler. Handles Knowledge and its recycling.

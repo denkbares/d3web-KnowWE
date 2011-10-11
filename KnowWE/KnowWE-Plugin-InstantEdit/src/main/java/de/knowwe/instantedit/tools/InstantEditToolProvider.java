@@ -18,11 +18,11 @@
  */
 package de.knowwe.instantedit.tools;
 
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.tools.Tool;
-import de.d3web.we.tools.ToolProvider;
-import de.d3web.we.user.UserContext;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.user.UserContext;
+import de.knowwe.tools.Tool;
+import de.knowwe.tools.ToolProvider;
 
 /**
  * InstantEdit Tool.

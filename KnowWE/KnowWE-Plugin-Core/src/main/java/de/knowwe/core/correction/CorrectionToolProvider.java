@@ -26,14 +26,14 @@ import java.util.ResourceBundle;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.tools.DefaultTool;
-import de.d3web.we.tools.Tool;
-import de.d3web.we.tools.ToolProvider;
-import de.d3web.we.user.UserContext;
-import de.d3web.we.utils.ScopeUtils;
+import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.ScopeUtils;
+import de.knowwe.tools.DefaultTool;
+import de.knowwe.tools.Tool;
+import de.knowwe.tools.ToolProvider;
 
 /**
  * This ToolProvider provides quick fixes for correcting small mistakes (typos)

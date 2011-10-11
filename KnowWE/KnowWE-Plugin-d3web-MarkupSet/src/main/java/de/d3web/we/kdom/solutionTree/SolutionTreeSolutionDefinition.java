@@ -20,10 +20,10 @@
 
 package de.d3web.we.kdom.solutionTree;
 
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
 import de.d3web.we.object.SolutionDefinition;
-import de.knowwe.core.dashtree.DashTreeUtils;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.kdom.dashtree.DashTreeUtils;
 
 public class SolutionTreeSolutionDefinition extends SolutionDefinition {
 

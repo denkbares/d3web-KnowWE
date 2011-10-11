@@ -23,9 +23,9 @@ package de.d3web.we.quicki;
 import java.util.Map;
 
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.core.KnowWERessourceLoader;
-import de.d3web.we.taghandler.AbstractHTMLTagHandler;
-import de.d3web.we.user.UserContext;
+import de.knowwe.core.KnowWERessourceLoader;
+import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
+import de.knowwe.core.user.UserContext;
 
 public class QuickInterviewTagHandler extends AbstractHTMLTagHandler {
 

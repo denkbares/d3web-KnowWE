@@ -29,15 +29,15 @@ import java.util.regex.Pattern;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.JPFPluginManager;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.flow.kbinfo.JSPHelper;
 import de.d3web.we.flow.type.DiaFluxType;
 import de.d3web.we.flow.type.FlowchartPreviewContentType;
 import de.d3web.we.flow.type.FlowchartType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Sections;
-import de.d3web.we.user.UserContext;
-import de.d3web.we.utils.KnowWEUtils;
+import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * 

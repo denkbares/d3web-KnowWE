@@ -21,10 +21,10 @@ package de.knowwe.d3web.property;
 import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.StyleRenderer;
-import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
  * Represents the content to be set to a {@link Property}.

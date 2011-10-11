@@ -19,8 +19,8 @@
  */
 package de.d3web.we.kdom.auxiliary;
 
-import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.sectionFinder.UnquotedExpressionFinder;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.kdom.sectionFinder.UnquotedExpressionFinder;
 
 /**
  * @author Johannes Dienst

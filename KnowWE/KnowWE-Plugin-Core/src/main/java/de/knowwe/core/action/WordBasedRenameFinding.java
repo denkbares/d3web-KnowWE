@@ -20,7 +20,7 @@
 
 package de.knowwe.core.action;
 
-import de.d3web.we.kdom.Section;
+import de.knowwe.core.kdom.parsing.Section;
 
 /**
  * Renaming Tool and some other classes use this class to display their results

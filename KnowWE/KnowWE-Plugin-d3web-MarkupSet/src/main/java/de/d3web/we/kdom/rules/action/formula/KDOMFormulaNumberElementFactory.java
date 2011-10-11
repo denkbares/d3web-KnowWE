@@ -8,13 +8,13 @@ import de.d3web.abstraction.formula.Operator;
 import de.d3web.abstraction.formula.QNumWrapper;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Sections;
 import de.d3web.we.kdom.condition.NonTerminalCondition;
 import de.d3web.we.kdom.condition.QuestionNumReference;
 import de.d3web.we.kdom.condition.TerminalCondition;
 import de.d3web.we.kdom.rules.action.formula.CompositeFormula.CalcMethodType;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 
 /**
  * Factory to create formula according to de.d3web.abstraction.formula format
@@ -172,11 +172,11 @@ public class KDOMFormulaNumberElementFactory {
 		if (c.get().isTerminal(c)) {
 			Section<? extends TerminalCondition> terminal = c.get().getTerminal(c);
 
-			Section<de.d3web.we.kdom.basic.Number> number = Sections.findChildOfType(terminal,
-					de.d3web.we.kdom.basic.Number.class);
+			Section<de.knowwe.core.kdom.basicType.Number> number = Sections.findChildOfType(terminal,
+					de.knowwe.core.kdom.basicType.Number.class);
 			if (number != null) {
 				return new FormulaNumber(
-						de.d3web.we.kdom.basic.Number.getNumber(number));
+						de.knowwe.core.kdom.basicType.Number.getNumber(number));
 			}
 			Section<QuestionNumReference> qref = Sections.findChildOfType(terminal,
 					QuestionNumReference.class);

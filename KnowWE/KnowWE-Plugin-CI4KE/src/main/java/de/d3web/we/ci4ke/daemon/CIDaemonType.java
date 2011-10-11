@@ -19,8 +19,8 @@
 package de.d3web.we.ci4ke.daemon;
 
 import de.d3web.we.ci4ke.handling.CIDashboardType;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * 

@@ -23,10 +23,10 @@ package de.d3web.we.ci4ke.handling;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.event.ArticleRegisteredEvent;
-import de.d3web.we.event.Event;
-import de.d3web.we.event.EventListener;
+import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.event.Event;
+import de.knowwe.core.event.EventListener;
+import de.knowwe.event.ArticleRegisteredEvent;
 
 public class CIEventForwarder implements EventListener {
 

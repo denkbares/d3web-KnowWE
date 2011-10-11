@@ -21,10 +21,10 @@ package de.knowwe.core.taghandler;
 
 
 
-import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
-import de.d3web.we.taghandler.TagHandler;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.taghandler.TagHandler;
 import de.knowwe.plugin.Plugins;
 
 public class TagHandlerType extends AbstractType {

@@ -37,7 +37,7 @@ import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.Unknown;
-import de.d3web.we.event.Event;
+import de.knowwe.core.event.Event;
 
 /**
  * The Finding Set Event. Which will be fired each time a finding is set in the

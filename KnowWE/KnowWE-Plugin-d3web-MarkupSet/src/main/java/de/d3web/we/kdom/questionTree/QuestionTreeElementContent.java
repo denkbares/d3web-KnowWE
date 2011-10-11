@@ -25,7 +25,7 @@ import de.d3web.we.kdom.questionTree.indication.QuestionRefLine;
 import de.d3web.we.kdom.questionTree.setValue.QuestionSetValueLine;
 import de.d3web.we.kdom.questionTree.setValue.QuestionSetValueNumLine;
 import de.d3web.we.kdom.questionTree.setValue.SolutionSetValueLine;
-import de.knowwe.core.dashtree.DashTreeElementContent;
+import de.knowwe.kdom.dashtree.DashTreeElementContent;
 
 public class QuestionTreeElementContent extends DashTreeElementContent {
 

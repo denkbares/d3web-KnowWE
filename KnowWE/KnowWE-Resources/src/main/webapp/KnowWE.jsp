@@ -1,4 +1,4 @@
-<%@ page import="com.ecyrd.jspwiki.*" %><%@ page import="de.d3web.we.jspwiki.*" %><%@ page import="java.util.Map" %><%@ page import="de.d3web.we.action.*" %><%@ page import="de.d3web.we.core.*" %><%@ page import="de.d3web.we.utils.*" %><%@ page import="de.d3web.we.user.*" %><%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %><%!
+<%@ page import="com.ecyrd.jspwiki.*" %><%@ page import="de.knowwe.jspwiki.*" %><%@ page import="de.knowwe.core.user.*" %><%@ page import="de.knowwe.core.action.*" %><%@ page import="de.knowwe.core.utils.*" %><%@ page import="java.util.Map" %><%@ page import="de.d3web.we.action.*" %><%@ page import="de.knowwe.core.*" %><%@ page import="de.knowwe.utils.*" %><%@ page import="de.knowwe.user.*" %><%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %><%!
 String findParam( PageContext ctx, String key )
     {
         ServletRequest req = ctx.getRequest();

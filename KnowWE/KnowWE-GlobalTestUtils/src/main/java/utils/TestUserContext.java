@@ -26,9 +26,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import de.d3web.we.core.KnowWEAttributes;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.user.UserContext;
+import de.knowwe.core.KnowWEAttributes;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.user.UserContext;
 
 /**
  * 

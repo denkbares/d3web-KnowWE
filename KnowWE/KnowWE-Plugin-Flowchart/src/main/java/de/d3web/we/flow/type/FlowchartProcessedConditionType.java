@@ -23,10 +23,10 @@ import java.util.regex.Pattern;
 
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.diaFlux.inference.FlowchartProcessedCondition;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.D3webCondition;
-import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
 /**
  * 

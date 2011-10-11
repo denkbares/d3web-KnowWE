@@ -21,15 +21,15 @@ package de.knowwe.d3web.property;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Priority;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.IncrementalMarker;
-import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
-import de.d3web.we.kdom.subtreeHandler.IncrementalConstraint;
-import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.utils.Patterns;
+import de.knowwe.core.compile.IncrementalConstraint;
+import de.knowwe.core.compile.IncrementalMarker;
+import de.knowwe.core.compile.Priority;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Patterns;
 
 /**
  * One Property definition inside the PropertyMarkup.

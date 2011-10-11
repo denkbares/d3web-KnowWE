@@ -20,8 +20,8 @@
 
 package de.d3web.we.testcase.kdom;
 
-import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.sectionFinder.StringSectionFinder;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.kdom.sectionFinder.StringSectionFinder;
 
 public class CurlyBraceClose extends AbstractType {
 

@@ -19,8 +19,8 @@
  */
 package de.d3web.we.object;
 
-import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.sectionFinder.OneOfStringEnumFinder;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.kdom.sectionFinder.OneOfStringEnumFinder;
 
 public class ScoreValue extends AbstractType{
 	

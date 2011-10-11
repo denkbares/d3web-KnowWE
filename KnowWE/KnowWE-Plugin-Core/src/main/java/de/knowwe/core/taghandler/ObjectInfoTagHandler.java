@@ -28,25 +28,25 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Sections;
-import de.d3web.we.kdom.basic.PlainText;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
-import de.d3web.we.kdom.objects.KnowWETerm.Scope;
-import de.d3web.we.kdom.objects.TermDefinition;
-import de.d3web.we.kdom.objects.TermReference;
-import de.d3web.we.kdom.search.Result;
-import de.d3web.we.kdom.search.SearchEngine;
-import de.d3web.we.kdom.search.SearchOption;
-import de.d3web.we.taghandler.AbstractTagHandler;
-import de.d3web.we.terminology.TerminologyHandler;
-import de.d3web.we.tools.Tool;
-import de.d3web.we.tools.ToolUtils;
-import de.d3web.we.user.UserContext;
-import de.d3web.we.utils.KnowWEUtils;
+import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.compile.TerminologyHandler;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.basicType.PlainText;
+import de.knowwe.core.kdom.objects.TermDefinition;
+import de.knowwe.core.kdom.objects.TermReference;
+import de.knowwe.core.kdom.objects.KnowWETerm.Scope;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.taghandler.AbstractTagHandler;
+import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.search.Result;
+import de.knowwe.kdom.search.SearchEngine;
+import de.knowwe.kdom.search.SearchOption;
+import de.knowwe.tools.Tool;
+import de.knowwe.tools.ToolUtils;
 
 /**
  * ObjectInfo TagHandler

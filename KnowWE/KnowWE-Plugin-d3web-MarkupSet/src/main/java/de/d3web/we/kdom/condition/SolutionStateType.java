@@ -1,9 +1,9 @@
 package de.d3web.we.kdom.condition;
 
 import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.DefaultTextRenderer;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
 
 /**
  * 

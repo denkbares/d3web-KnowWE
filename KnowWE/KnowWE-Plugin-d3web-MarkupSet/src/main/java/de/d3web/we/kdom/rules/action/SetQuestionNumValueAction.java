@@ -10,19 +10,19 @@ import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.session.values.Unknown;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Sections;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.auxiliary.Equals;
 import de.d3web.we.kdom.condition.QuestionNumReference;
-import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
-import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.UnknownValueType;
-import de.d3web.we.utils.SplitUtility;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.kdom.sectionFinder.SectionFinder;
+import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 
 /**
  * 
@@ -36,7 +36,7 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 	public SetQuestionNumValueAction() {
 
 		this.sectionFinder = new SetNumValueActionSectionFinder();
-		de.d3web.we.kdom.basic.Number number = new de.d3web.we.kdom.basic.Number();
+		de.knowwe.core.kdom.basicType.Number number = new de.knowwe.core.kdom.basicType.Number();
 		Equals equ = new Equals();
 		QuestionReference qRef = new QuestionNumReference();
 		this.childrenTypes.add(equ);
@@ -81,14 +81,14 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 		if (Sections.findSuccessor(s, UnknownValueType.class) != null) {
 			value = Unknown.getInstance();
 		} else {
-			Section<de.d3web.we.kdom.basic.Number> numberSec = Sections
-					.findSuccessor(s, de.d3web.we.kdom.basic.Number.class);
+			Section<de.knowwe.core.kdom.basicType.Number> numberSec = Sections
+					.findSuccessor(s, de.knowwe.core.kdom.basicType.Number.class);
 
 			if (numberSec == null)
 				return null;
 
 			value = new FormulaNumber(
-					de.d3web.we.kdom.basic.Number.getNumber(numberSec));
+					de.knowwe.core.kdom.basicType.Number.getNumber(numberSec));
 		}
 
 		Section<QuestionReference> qRef = Sections.findSuccessor(s, QuestionReference.class);

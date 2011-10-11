@@ -33,11 +33,11 @@ import de.d3web.empiricaltesting.caseAnalysis.RTCDiff;
 import de.d3web.empiricaltesting.caseAnalysis.functions.Diff;
 import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysis;
 import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
-import de.d3web.we.action.UserActionContext;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.testcase.TestCaseUtils;
 import de.d3web.we.testcase.kdom.TestCaseRunnerType;
+import de.knowwe.core.KnowWEAttributes;
+import de.knowwe.core.action.UserActionContext;
 
 /**
  * KnowWEAction which is used to run a test case and to display the result of

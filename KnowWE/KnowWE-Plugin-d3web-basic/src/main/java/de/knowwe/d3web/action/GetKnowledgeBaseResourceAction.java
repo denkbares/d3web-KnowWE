@@ -27,9 +27,9 @@ import javax.activation.MimetypesFileTypeMap;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
-import de.d3web.we.action.AbstractAction;
-import de.d3web.we.action.UserActionContext;
 import de.d3web.we.basic.D3webModule;
+import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.UserActionContext;
 
 /**
  * Delivers a multimedia file attached to the knowledge base through the

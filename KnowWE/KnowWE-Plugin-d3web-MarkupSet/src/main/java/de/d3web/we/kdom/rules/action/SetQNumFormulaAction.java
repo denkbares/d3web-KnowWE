@@ -11,20 +11,20 @@ import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Sections;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.auxiliary.Equals;
 import de.d3web.we.kdom.condition.QuestionNumReference;
 import de.d3web.we.kdom.rules.action.formula.CompositeFormula;
 import de.d3web.we.kdom.rules.action.formula.KDOMFormulaNumberElementFactory;
-import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
-import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.object.QuestionReference;
-import de.d3web.we.utils.SplitUtility;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.kdom.sectionFinder.SectionFinder;
+import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 
 /**
  * An type for an action which calculates the value of a QuestionNum by a
@@ -48,7 +48,7 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 		// crate List of valid terminals
 		List<Type> terminals = new ArrayList<Type>();
 		// terminals may either be numbers...
-		de.d3web.we.kdom.basic.Number number = new de.d3web.we.kdom.basic.Number();
+		de.knowwe.core.kdom.basicType.Number number = new de.knowwe.core.kdom.basicType.Number();
 		terminals.add(number);
 		// or QuestionNums..
 		QuestionNumReference qref = new QuestionNumReference();

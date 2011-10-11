@@ -35,12 +35,12 @@ import de.d3web.empiricaltesting.TestCase;
 import de.d3web.empiricaltesting.caseAnalysis.functions.Diff;
 import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysis;
 import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
-import de.d3web.we.action.UserActionContext;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.basic.SessionBroker;
-import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.testcase.TestCaseUtils;
-import de.d3web.we.utils.KnowWEUtils;
+import de.knowwe.core.KnowWEAttributes;
+import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * The action to debug a suite of test cases, i.e., the run stops when a test

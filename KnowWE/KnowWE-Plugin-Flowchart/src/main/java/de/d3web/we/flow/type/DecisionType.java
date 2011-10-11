@@ -20,9 +20,9 @@
 
 package de.d3web.we.flow.type;
 
-import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.xml.AbstractXMLType;
 import de.d3web.we.object.QuestionReference;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.kdom.xml.AbstractXMLType;
 
 /**
  * 

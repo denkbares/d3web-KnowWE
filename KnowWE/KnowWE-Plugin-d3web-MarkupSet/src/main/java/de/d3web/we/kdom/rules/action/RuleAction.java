@@ -23,11 +23,11 @@ package de.d3web.we.kdom.rules.action;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Type;
-import de.d3web.we.kdom.basic.EndLineComment;
-import de.d3web.we.kdom.rendering.StyleRenderer;
-import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.basicType.EndLineComment;
+import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.kdom.renderer.StyleRenderer;
 
 public class RuleAction extends AbstractType {
 

@@ -20,16 +20,16 @@
 
 package de.d3web.we.kdom.questionTree;
 
-import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Sections;
-import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.EmbracedContentFinder;
-import de.d3web.we.kdom.sectionFinder.UnquotedExpressionFinder;
-import de.d3web.we.kdom.type.AnonymousType;
 import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.QuestionDefinition;
-import de.knowwe.core.dashtree.DashTreeElementContent;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.kdom.AnonymousType;
+import de.knowwe.kdom.dashtree.DashTreeElementContent;
+import de.knowwe.kdom.sectionFinder.EmbracedContentFinder;
+import de.knowwe.kdom.sectionFinder.UnquotedExpressionFinder;
 
 /**
  * This type is a child-type of QuestionLine and allows for the definition of

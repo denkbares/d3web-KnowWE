@@ -19,10 +19,10 @@
  */
 package de.d3web.we.kdom.questionTree;
 
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Type;
-import de.d3web.we.kdom.subtreeHandler.ConstraintModule;
+import de.knowwe.core.compile.ConstraintModule;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
 
 /**
  * Registering this module to your SuptreeHandler lets him compile, if there was

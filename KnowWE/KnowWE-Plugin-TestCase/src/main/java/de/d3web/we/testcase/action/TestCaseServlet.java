@@ -26,10 +26,10 @@ import java.io.IOException;
 import de.d3web.empiricaltesting.TestCase;
 import de.d3web.empiricaltesting.writer.TestSuiteKnOfficeWriter;
 import de.d3web.empiricaltesting.writer.TestSuiteXMLWriter;
-import de.d3web.we.action.AbstractAction;
-import de.d3web.we.action.UserActionContext;
-import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.testcase.TestCaseUtils;
+import de.knowwe.core.KnowWEAttributes;
+import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.UserActionContext;
 
 public class TestCaseServlet extends AbstractAction {
 

@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import de.d3web.core.knowledge.Resource;
-import de.d3web.we.wikiConnector.ConnectorAttachment;
+import de.knowwe.core.wikiConnector.ConnectorAttachment;
 
 /**
  * Resource for storing an attachment of an Wikipage. See also:

@@ -20,7 +20,7 @@
 
 package de.d3web.we.kdom.questionTree;
 
-import de.knowwe.core.dashtree.DashTree;
+import de.knowwe.kdom.dashtree.DashTree;
 
 public class QuestionDashTree extends DashTree {
 

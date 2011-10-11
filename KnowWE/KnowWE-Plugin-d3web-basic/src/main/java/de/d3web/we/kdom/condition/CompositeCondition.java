@@ -25,22 +25,22 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Sections;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.condition.helper.BracedCondition;
 import de.d3web.we.kdom.condition.helper.BracedConditionContent;
 import de.d3web.we.kdom.condition.helper.CompCondLineEndComment;
 import de.d3web.we.kdom.condition.helper.ConjunctSectionFinder;
-import de.d3web.we.kdom.constraint.AtMostOneFindingConstraint;
-import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
-import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.OneOfStringEnumFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.kdom.type.AnonymousType;
-import de.d3web.we.utils.SplitUtility;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.kdom.sectionFinder.SectionFinder;
+import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.kdom.AnonymousType;
+import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
+import de.knowwe.kdom.constraint.ConstraintSectionFinder;
+import de.knowwe.kdom.sectionFinder.OneOfStringEnumFinder;
 
 /**
  * This class defines a KDOM-Schema to parse composite conditions as known from
@@ -266,7 +266,7 @@ public class CompositeCondition extends AbstractType {
  *         example: 'a OR b' here 'a' and 'b' are nodes of type disjunct
  *
  */
-class Disjunct extends NonTerminalCondition implements de.d3web.we.kdom.ExclusiveType {
+class Disjunct extends NonTerminalCondition implements de.knowwe.core.kdom.ExclusiveType {
 
 	@Override
 	protected void init() {
@@ -284,7 +284,7 @@ class Disjunct extends NonTerminalCondition implements de.d3web.we.kdom.Exclusiv
  *         example: 'a AND b' here 'a' and 'b' are nodes of type conjunct
  *
  */
-class Conjunct extends NonTerminalCondition implements de.d3web.we.kdom.ExclusiveType {
+class Conjunct extends NonTerminalCondition implements de.knowwe.core.kdom.ExclusiveType {
 
 	static String[] CONJ_SIGNS = {
 			"AND", "UND", "&" };

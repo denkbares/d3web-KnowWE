@@ -39,13 +39,13 @@ import org.openrdf.query.TupleQueryResult;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.event.Event;
-import de.d3web.we.event.EventListener;
-import de.d3web.we.event.FullParseEvent;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
-import de.d3web.we.kdom.Section;
+import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.event.Event;
+import de.knowwe.core.event.EventListener;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.event.FullParseEvent;
 import de.knowwe.plugin.Instantiation;
 import de.knowwe.plugin.Plugins;
 

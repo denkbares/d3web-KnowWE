@@ -19,9 +19,9 @@
  */
 package de.d3web.we.kdom.solutionTree;
 
-import de.d3web.we.core.packaging.KnowWEPackageManager;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.core.compile.packaging.KnowWEPackageManager;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class SolutionTreeMarkup extends DefaultMarkupType {
 

@@ -20,12 +20,12 @@
 
 package de.d3web.we.kdom.questionTree;
 
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Sections;
 import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.QuestionDefinition;
-import de.knowwe.core.dashtree.DashTreeUtils;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.kdom.dashtree.DashTreeUtils;
 
 public class QuestionTreeAnswerDefinition extends AnswerDefinition {
 

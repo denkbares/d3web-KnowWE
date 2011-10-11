@@ -13,7 +13,7 @@
 	</runtime>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="SearchProvider" id="JSPWikiSearchProvider">
-		<parameter id="class" value="de.d3web.we.jspwiki.JSPWikiSearchConnector" />
+		<parameter id="class" value="de.knowwe.jspwiki.JSPWikiSearchConnector" />
 		<parameter id="name" value="JSPWikiSearchProvider" />
 		<parameter id="description" value="KnowWESearchProvider JSPWikiSearchConnector" />
 		<parameter id="version" value="1.0" />

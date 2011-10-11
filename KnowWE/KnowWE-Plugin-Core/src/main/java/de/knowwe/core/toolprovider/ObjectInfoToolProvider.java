@@ -20,14 +20,14 @@ package de.knowwe.core.toolprovider;
 
 import java.util.ResourceBundle;
 
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.tools.DefaultTool;
-import de.d3web.we.tools.Tool;
-import de.d3web.we.tools.ToolProvider;
-import de.d3web.we.user.UserContext;
+import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.taghandler.ObjectInfoTagHandler;
+import de.knowwe.core.user.UserContext;
+import de.knowwe.tools.DefaultTool;
+import de.knowwe.tools.Tool;
+import de.knowwe.tools.ToolProvider;
 
 /**
  * ToolProvider for the ObjectInfoTagHandler.

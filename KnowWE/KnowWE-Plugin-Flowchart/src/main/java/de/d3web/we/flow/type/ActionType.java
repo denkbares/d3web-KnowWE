@@ -22,9 +22,9 @@ package de.d3web.we.flow.type;
 
 import java.util.ArrayList;
 
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.rules.action.RuleAction;
-import de.d3web.we.kdom.xml.AbstractXMLType;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.kdom.xml.AbstractXMLType;
 
 /**
  * 

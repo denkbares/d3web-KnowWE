@@ -20,10 +20,10 @@
 
 package de.d3web.we.kdom.condition;
 
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Sections;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 
 public class AnswerReferenceImpl extends AnswerReference {
 

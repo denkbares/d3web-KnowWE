@@ -23,11 +23,11 @@ package de.d3web.we.ci4ke.action;
 import java.io.IOException;
 import java.net.URLDecoder;
 
-import de.d3web.we.action.AbstractAction;
-import de.d3web.we.action.UserActionContext;
 import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
 import de.d3web.we.ci4ke.build.CIBuilder;
 import de.d3web.we.ci4ke.handling.CIDashboardRenderer;
+import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.UserActionContext;
 
 public class CIAction extends AbstractAction {
 

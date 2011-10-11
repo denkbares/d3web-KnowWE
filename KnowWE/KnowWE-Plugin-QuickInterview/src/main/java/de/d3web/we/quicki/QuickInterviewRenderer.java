@@ -58,7 +58,7 @@ import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.user.UserContext;
+import de.knowwe.core.user.UserContext;
 
 /**
  * Render the quick interview -aka QuickI- in KnowWE --- HTML / JS / CSS based

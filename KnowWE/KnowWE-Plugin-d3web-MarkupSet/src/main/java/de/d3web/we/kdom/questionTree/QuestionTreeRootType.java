@@ -20,8 +20,8 @@
 
 package de.d3web.we.kdom.questionTree;
 
-import de.d3web.we.core.packaging.KnowWEPackageManager;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.core.compile.packaging.KnowWEPackageManager;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 
 public class QuestionTreeRootType extends QuestionTree {
 

@@ -19,7 +19,7 @@
  */
 package de.d3web.we.kdom.condition;
 
-import de.d3web.we.kdom.AbstractType;
+import de.knowwe.core.kdom.AbstractType;
 
 /**
  * 

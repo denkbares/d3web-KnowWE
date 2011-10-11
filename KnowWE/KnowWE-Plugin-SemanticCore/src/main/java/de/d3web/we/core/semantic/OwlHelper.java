@@ -50,8 +50,8 @@ import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
-import de.d3web.we.kdom.Type;
-import de.d3web.we.kdom.Section;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
 
 /**
  * @author kazamatzuri

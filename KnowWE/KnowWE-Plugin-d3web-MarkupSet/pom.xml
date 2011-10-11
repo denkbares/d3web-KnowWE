@@ -9,7 +9,6 @@
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-Plugin-d3web-MarkupSet</artifactId>
 	<name>KnowWE Plugin: d3web-MarkupSet</name>
-	<version>0.2-SNAPSHOT</version>
 	<description>A set of markups for terminology, decision trees, rules and covering lists</description>
 
 	<build>

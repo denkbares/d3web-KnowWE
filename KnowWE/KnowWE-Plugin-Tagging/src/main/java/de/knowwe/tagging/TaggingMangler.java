@@ -34,16 +34,16 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.d3web.we.action.UserActionContext;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Sections;
-import de.d3web.we.search.GenericSearchResult;
-import de.d3web.we.search.KnowWESearchProvider;
-import de.d3web.we.search.SearchTerm;
-import de.d3web.we.user.UserContext;
+import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.user.UserContext;
+import de.knowwe.search.GenericSearchResult;
+import de.knowwe.search.KnowWESearchProvider;
+import de.knowwe.search.SearchTerm;
 
 /**
  * Centralized management of tags. Takes care of adding/removing tags. And

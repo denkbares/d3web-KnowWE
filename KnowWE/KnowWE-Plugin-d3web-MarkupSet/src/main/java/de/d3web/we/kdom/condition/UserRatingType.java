@@ -1,9 +1,9 @@
 package de.d3web.we.kdom.condition;
 
-import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.UserRatingConditionType.UserEvaluation;
-import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
 /**
  * Type for possible evaluations of solutions by the user.

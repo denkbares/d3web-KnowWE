@@ -5,17 +5,17 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Sections;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.condition.NonTerminalCondition;
 import de.d3web.we.kdom.condition.helper.BracedCondition;
 import de.d3web.we.kdom.condition.helper.BracedConditionContent;
 import de.d3web.we.kdom.condition.helper.CompCondLineEndComment;
 import de.d3web.we.kdom.condition.helper.ConjunctSectionFinder;
-import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.utils.SplitUtility;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.utils.SplitUtility;
 
 public class CompositeFormula extends AbstractType {
 
@@ -260,7 +260,7 @@ public class CompositeFormula extends AbstractType {
 	 *         example: 'a AND b' here 'a' and 'b' are nodes of type conjunct
 	 * 
 	 */
-	abstract class CalcMethodType extends NonTerminalCondition implements de.d3web.we.kdom.ExclusiveType {
+	abstract class CalcMethodType extends NonTerminalCondition implements de.knowwe.core.kdom.ExclusiveType {
 
 		public CalcMethodType(String sign) {
 

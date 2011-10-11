@@ -32,14 +32,14 @@ import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.SemanticCoreUtil;
 import de.d3web.we.core.semantic.UpperOntology;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Sections;
-import de.d3web.we.kdom.contexts.Context;
-import de.d3web.we.kdom.contexts.ContextManager;
-import de.d3web.we.kdom.contexts.DefaultSubjectContext;
-import de.d3web.we.kdom.rendering.ConditionalRenderer;
-import de.d3web.we.user.UserContext;
-import de.d3web.we.utils.KnowWEUtils;
+import de.knowwe.core.contexts.Context;
+import de.knowwe.core.contexts.ContextManager;
+import de.knowwe.core.contexts.DefaultSubjectContext;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.renderer.ConditionalRenderer;
 
 public class StandardAnnotationRenderer extends ConditionalRenderer {
 

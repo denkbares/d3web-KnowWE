@@ -22,8 +22,8 @@ package de.d3web.we.core.semantic;
 
 import org.openrdf.model.URI;
 
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.contexts.StringContext;
+import de.knowwe.core.contexts.StringContext;
+import de.knowwe.core.kdom.parsing.Section;
 
 public class DefaultURIContext extends StringContext {
 

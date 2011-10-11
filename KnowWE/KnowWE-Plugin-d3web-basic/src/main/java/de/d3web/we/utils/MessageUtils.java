@@ -24,10 +24,10 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.we.kdom.report.KDOMError;
-import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.report.SyntaxError;
-import de.d3web.we.kdom.report.message.NewObjectCreated;
+import de.knowwe.core.report.KDOMError;
+import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.SyntaxError;
+import de.knowwe.report.message.NewObjectCreated;
 
 public final class MessageUtils {
 

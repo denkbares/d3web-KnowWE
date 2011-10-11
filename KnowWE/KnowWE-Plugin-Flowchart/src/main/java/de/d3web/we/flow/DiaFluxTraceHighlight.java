@@ -21,7 +21,7 @@ package de.d3web.we.flow;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import de.d3web.we.user.UserContext;
+import de.knowwe.core.user.UserContext;
 
 
 /**

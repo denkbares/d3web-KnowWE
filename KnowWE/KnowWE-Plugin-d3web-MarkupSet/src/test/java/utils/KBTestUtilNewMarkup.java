@@ -62,9 +62,9 @@ import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.scoring.Score;
 import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelationType;
+import de.knowwe.core.kdom.KnowWEArticle;
 
 /**
  * This Class loads the KnowledgeBase which will be tested.

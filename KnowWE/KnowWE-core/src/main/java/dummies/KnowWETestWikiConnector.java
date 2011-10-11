@@ -34,11 +34,11 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import de.d3web.we.action.KnowWEActionDispatcher;
-import de.d3web.we.action.UserActionContext;
-import de.d3web.we.user.UserContext;
-import de.d3web.we.wikiConnector.ConnectorAttachment;
-import de.d3web.we.wikiConnector.KnowWEWikiConnector;
+import de.knowwe.core.action.KnowWEActionDispatcher;
+import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.user.UserContext;
+import de.knowwe.core.wikiConnector.ConnectorAttachment;
+import de.knowwe.core.wikiConnector.KnowWEWikiConnector;
 
 /**
  * Used in the tests. A WikiConnector is needed to initialize the

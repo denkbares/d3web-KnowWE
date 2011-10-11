@@ -18,8 +18,8 @@
  */
 package de.d3web.we.testcase.renderer;
 
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.d3web.we.testcase.kdom.TestCaseType;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 
 /**
  * Renderer for the Default Markup TestCaseType

@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 import de.d3web.we.ci4ke.testing.AbstractCITest;
 import de.d3web.we.ci4ke.testing.CITestResult;
 import de.d3web.we.ci4ke.testing.CITestResult.Type;
-import de.d3web.we.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.KnowWEArticle;
 
 /**
  * This test can search articles (specified by a regexp pattern) for a keyword.
@@ -64,7 +64,7 @@ public class TestArticlesContain extends AbstractCITest {
 		int count = namesOfArticlesWhichContainKeyword.size();
 		if (count > 0) {
 			String message = "<b>Forbidden text found in " + count + " articles:</b>\n" +
-					"<ul><li>" + de.d3web.we.utils.Strings.concat("</li>\n<li>",
+					"<ul><li>" + de.knowwe.core.utils.Strings.concat("</li>\n<li>",
 							namesOfArticlesWhichContainKeyword) + "</li></ul>";
 			return new CITestResult(Type.FAILED, message, configuration);
 		}

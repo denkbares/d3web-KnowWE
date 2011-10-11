@@ -20,8 +20,8 @@ package de.knowwe.core.correction;
 
 import java.util.List;
 
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.parsing.Section;
 
 /**
  * The common interface for term correction providers.

@@ -1,6 +1,6 @@
 package de.knowwe.instantedit.tools;
 
-import de.d3web.we.tools.DefaultTool;
+import de.knowwe.tools.DefaultTool;
 
 public class DefaultEditTool extends DefaultTool {
 

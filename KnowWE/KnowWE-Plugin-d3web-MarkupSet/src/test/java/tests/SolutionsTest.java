@@ -32,8 +32,8 @@ import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.plugin.test.InitPluginManager;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.logging.Logging;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.logging.Logging;
 
 /**
  * This class tests whether the Diagnoses are created as expected.

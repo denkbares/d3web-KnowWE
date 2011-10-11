@@ -20,9 +20,9 @@
 
 package de.d3web.we.kdom.semanticAnnotation;
 
-import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.Sectionizable;
-import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.parsing.Sectionizable;
+import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 
 public class AnnotatedString extends AbstractType {
 

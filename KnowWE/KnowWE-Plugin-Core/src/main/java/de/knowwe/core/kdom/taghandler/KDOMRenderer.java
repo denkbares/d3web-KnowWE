@@ -22,10 +22,10 @@ package de.knowwe.core.kdom.taghandler;
 
 import java.util.Map;
 
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.visitor.RenderKDOMVisitor;
-import de.d3web.we.taghandler.AbstractHTMLTagHandler;
-import de.d3web.we.user.UserContext;
+import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
+import de.knowwe.core.user.UserContext;
+import de.knowwe.kdom.visitor.RenderKDOMVisitor;
 
 public class KDOMRenderer extends AbstractHTMLTagHandler {
 

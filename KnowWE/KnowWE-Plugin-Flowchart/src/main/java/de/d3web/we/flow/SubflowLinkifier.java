@@ -18,7 +18,7 @@
  */
 package de.d3web.we.flow;
 
-import de.d3web.we.user.UserContext;
+import de.knowwe.core.user.UserContext;
 
 
 /**

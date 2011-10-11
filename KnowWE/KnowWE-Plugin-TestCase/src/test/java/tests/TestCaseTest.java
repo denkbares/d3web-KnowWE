@@ -27,8 +27,8 @@ import utils.MyTestArticleManager;
 import utils.TSUtil;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.plugin.test.InitPluginManager;
-import de.d3web.we.core.packaging.KnowWEPackageManager;
-import de.d3web.we.kdom.KnowWEArticle;
+import de.knowwe.core.compile.packaging.KnowWEPackageManager;
+import de.knowwe.core.kdom.KnowWEArticle;
 
 /**
  * This class tests whether the TestCases are equal

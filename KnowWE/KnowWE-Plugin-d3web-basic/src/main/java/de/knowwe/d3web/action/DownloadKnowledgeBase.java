@@ -10,12 +10,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
-import de.d3web.we.action.AbstractAction;
-import de.d3web.we.action.UserActionContext;
 import de.d3web.we.basic.D3webKnowledgeHandler;
-import de.d3web.we.core.KnowWEAttributes;
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
+import de.knowwe.core.KnowWEAttributes;
+import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.UserActionContext;
+import de.knowwe.knowRep.KnowledgeRepresentationHandler;
 
 public class DownloadKnowledgeBase extends AbstractAction {
 

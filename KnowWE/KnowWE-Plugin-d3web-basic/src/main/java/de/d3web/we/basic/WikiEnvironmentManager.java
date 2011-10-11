@@ -27,7 +27,7 @@ import java.util.Map;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
-import de.d3web.we.core.KnowWEEnvironment;
+import de.knowwe.core.KnowWEEnvironment;
 
 public class WikiEnvironmentManager {
 

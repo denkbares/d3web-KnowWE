@@ -26,11 +26,11 @@ package de.d3web.we.core.semantic;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Type;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
-import de.d3web.we.kdom.subtreeHandler.SuccessorNotReusedConstraint;
+import de.knowwe.core.compile.SuccessorNotReusedConstraint;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 
 /**
  * @author kazamatzuri

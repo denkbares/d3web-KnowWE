@@ -24,14 +24,14 @@ import de.d3web.diaFlux.flow.DiaFluxCaseObject;
 import de.d3web.we.flow.FlowchartRenderer;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
 import de.d3web.we.flow.type.FlowchartXMLHeadType.FlowchartTermDef;
-import de.d3web.we.kdom.InvalidKDOMSchemaModificationOperation;
-import de.d3web.we.kdom.Priority;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Sections;
-import de.d3web.we.kdom.objects.IncrementalMarker;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.xml.AbstractXMLType;
-import de.d3web.we.kdom.xml.XMLHead;
+import de.knowwe.core.compile.IncrementalMarker;
+import de.knowwe.core.compile.Priority;
+import de.knowwe.core.kdom.InvalidKDOMSchemaModificationOperation;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.kdom.xml.AbstractXMLType;
+import de.knowwe.kdom.xml.XMLHead;
 
 /**
  * @author Reinhard Hatko

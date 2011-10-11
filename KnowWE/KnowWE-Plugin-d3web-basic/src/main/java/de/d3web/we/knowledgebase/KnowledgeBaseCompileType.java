@@ -22,9 +22,9 @@ package de.d3web.we.knowledgebase;
 import java.util.Arrays;
 import java.util.List;
 
-import de.d3web.we.core.packaging.PackageCompileType;
-import de.d3web.we.core.packaging.PackageReference;
-import de.d3web.we.kdom.Section;
+import de.knowwe.core.compile.packaging.PackageCompileType;
+import de.knowwe.core.compile.packaging.PackageReference;
+import de.knowwe.core.kdom.parsing.Section;
 
 /**
  * Implementation of a compile type to handle the uses-annotations of a

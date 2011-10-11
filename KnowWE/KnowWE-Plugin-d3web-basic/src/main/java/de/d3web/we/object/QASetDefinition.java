@@ -20,9 +20,9 @@
 package de.d3web.we.object;
 
 import de.d3web.core.knowledge.terminology.QASet;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.subtreeHandler.IncrementalConstraint;
+import de.knowwe.core.compile.IncrementalConstraint;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.parsing.Section;
 
 /**
  * Abstract type for the Definition of QASets, i.e. questions and

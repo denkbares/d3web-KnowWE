@@ -19,7 +19,7 @@
  */
 package de.d3web.we.kdom.solutionTree;
 
-import de.knowwe.core.dashtree.DashTree;
+import de.knowwe.kdom.dashtree.DashTree;
 
 public class SolutionsDashTree extends DashTree {
 

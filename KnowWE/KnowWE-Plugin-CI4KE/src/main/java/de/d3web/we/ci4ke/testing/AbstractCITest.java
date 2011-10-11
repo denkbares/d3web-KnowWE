@@ -28,8 +28,8 @@ import java.util.regex.Pattern;
 
 import de.d3web.we.ci4ke.handling.CIConfig;
 import de.d3web.we.ci4ke.testing.CITestResult.Type;
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.KnowWEArticle;
+import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.kdom.KnowWEArticle;
 
 /**
  * An abstract implementation of a CITest, which implements the init(CIConfig)

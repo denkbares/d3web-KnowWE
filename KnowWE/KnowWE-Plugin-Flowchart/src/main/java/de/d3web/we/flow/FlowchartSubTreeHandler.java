@@ -45,22 +45,22 @@ import de.d3web.we.flow.type.NodeType;
 import de.d3web.we.flow.type.OriginType;
 import de.d3web.we.flow.type.PositionType;
 import de.d3web.we.flow.type.TargetType;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Sections;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
-import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.report.SimpleMessageError;
-import de.d3web.we.kdom.report.SyntaxError;
-import de.d3web.we.kdom.report.message.NoSuchObjectError;
-import de.d3web.we.kdom.report.message.ObjectCreationError;
-import de.d3web.we.kdom.subtreeHandler.ConstraintModule;
-import de.d3web.we.kdom.xml.AbstractXMLType;
-import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.d3web.we.utils.KnowWEUtils;
+import de.knowwe.core.compile.ConstraintModule;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.SimpleMessageError;
+import de.knowwe.core.report.SyntaxError;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.xml.AbstractXMLType;
+import de.knowwe.kdom.xml.XMLContent;
+import de.knowwe.report.message.NoSuchObjectError;
+import de.knowwe.report.message.ObjectCreationError;
 
 /**
  * 

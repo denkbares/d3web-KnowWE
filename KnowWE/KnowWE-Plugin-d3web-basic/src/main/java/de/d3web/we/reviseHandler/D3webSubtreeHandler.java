@@ -24,13 +24,13 @@ import java.util.logging.Logger;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Type;
-import de.d3web.we.kdom.objects.IncrementalMarker;
-import de.d3web.we.kdom.subtreeHandler.ConstraintModule;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
-import de.d3web.we.utils.KnowWEUtils;
+import de.knowwe.core.compile.ConstraintModule;
+import de.knowwe.core.compile.IncrementalMarker;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
+import de.knowwe.core.utils.KnowWEUtils;
 
 public abstract class D3webSubtreeHandler<T extends Type> extends SubtreeHandler<T> {
 

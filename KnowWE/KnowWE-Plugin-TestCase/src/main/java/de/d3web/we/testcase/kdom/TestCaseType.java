@@ -18,9 +18,9 @@
  */
 package de.d3web.we.testcase.kdom;
 
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.testcase.renderer.TestCaseRenderer;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * TestCaseType for defining test cases in wiki markup.

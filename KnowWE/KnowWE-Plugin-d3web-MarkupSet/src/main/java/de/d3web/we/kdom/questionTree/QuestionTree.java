@@ -20,8 +20,8 @@
 
 package de.d3web.we.kdom.questionTree;
 
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class QuestionTree extends DefaultMarkupType {
 

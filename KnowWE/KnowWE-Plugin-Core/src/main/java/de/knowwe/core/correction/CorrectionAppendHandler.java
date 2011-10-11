@@ -18,8 +18,8 @@
  */
 package de.knowwe.core.correction;
 
-import de.d3web.we.kdom.rendering.PageAppendHandler;
-import de.d3web.we.user.UserContext;
+import de.knowwe.core.append.PageAppendHandler;
+import de.knowwe.core.user.UserContext;
 
 /**
  * This append handler is a placebo (read: it does nothing) for loading

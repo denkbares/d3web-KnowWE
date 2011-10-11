@@ -18,9 +18,9 @@
  */
 package de.d3web.we.flow.type;
 
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.KnowWETerm;
-import de.d3web.we.kdom.objects.StringReference;
+import de.knowwe.core.kdom.objects.KnowWETerm;
+import de.knowwe.core.kdom.objects.StringReference;
+import de.knowwe.core.kdom.parsing.Section;
 
 /**
  * 

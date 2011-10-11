@@ -18,12 +18,12 @@
  */
 package de.d3web.we.testcase.kdom;
 
-import de.d3web.we.core.KnowWERessourceLoader;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.testcase.renderer.TestCaseRunnerRenderer;
+import de.knowwe.core.KnowWERessourceLoader;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * DefaultMarkup-Type for the test suite result. This type needs the obligatory

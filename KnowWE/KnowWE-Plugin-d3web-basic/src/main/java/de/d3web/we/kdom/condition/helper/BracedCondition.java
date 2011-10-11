@@ -2,16 +2,16 @@ package de.d3web.we.kdom.condition.helper;
 
 import java.util.List;
 
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Type;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.NonTerminalCondition;
-import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
-import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.report.SyntaxError;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.utils.SplitUtility;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.sectionFinder.SectionFinder;
+import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.SyntaxError;
+import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 
 /**
  * @author Jochen

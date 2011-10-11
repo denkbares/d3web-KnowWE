@@ -19,10 +19,10 @@
  */
 package de.d3web.we.kdom.questionnaireTree;
 
-import de.d3web.we.kdom.objects.IncrementalMarker;
 import de.d3web.we.kdom.questionTree.QClassLine;
-import de.knowwe.core.dashtree.DashTree;
-import de.knowwe.core.dashtree.DashTreeElementContent;
+import de.knowwe.core.compile.IncrementalMarker;
+import de.knowwe.kdom.dashtree.DashTree;
+import de.knowwe.kdom.dashtree.DashTreeElementContent;
 
 public class QuestionnaireDashTree extends DashTree {
 

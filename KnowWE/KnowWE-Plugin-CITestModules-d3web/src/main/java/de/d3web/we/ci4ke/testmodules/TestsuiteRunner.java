@@ -26,8 +26,8 @@ import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
 import de.d3web.we.ci4ke.testing.AbstractCITest;
 import de.d3web.we.ci4ke.testing.CITestResult;
 import de.d3web.we.ci4ke.testing.CITestResult.Type;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.testcase.TestCaseUtils;
+import de.knowwe.core.KnowWEEnvironment;
 
 public class TestsuiteRunner extends AbstractCITest {
 

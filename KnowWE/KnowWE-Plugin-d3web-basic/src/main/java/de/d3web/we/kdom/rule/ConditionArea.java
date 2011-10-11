@@ -18,10 +18,10 @@
  */
 package de.d3web.we.kdom.rule;
 
-import de.d3web.we.kdom.AbstractType;
-import de.d3web.we.kdom.basic.EndLineComment;
 import de.d3web.we.kdom.condition.CompositeCondition;
-import de.d3web.we.kdom.rendering.StyleRenderer;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.basicType.EndLineComment;
+import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
  * ConditionArea of the Condition-Action-Rule, instanciates the condition

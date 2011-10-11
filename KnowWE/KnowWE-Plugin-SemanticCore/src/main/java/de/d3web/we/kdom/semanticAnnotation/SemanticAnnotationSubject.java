@@ -23,7 +23,7 @@
  */
 package de.d3web.we.kdom.semanticAnnotation;
 
-import de.d3web.we.kdom.AbstractType;
+import de.knowwe.core.kdom.AbstractType;
 
 /**
  * @author kazamatzuri
