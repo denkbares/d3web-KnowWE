@@ -27,7 +27,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class If extends AbstractType {
 
 	public If() {
-		sectionFinder = new RegexSectionFinder("( *WENN\\s+| *IF\\s+)");
+		sectionFinder = new RegexSectionFinder(ConditionActionRule.RULE_START);
 		this.setCustomRenderer(StyleRenderer.KEYWORDS);
 	}
 

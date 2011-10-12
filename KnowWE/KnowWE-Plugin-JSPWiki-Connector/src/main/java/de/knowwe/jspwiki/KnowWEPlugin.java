@@ -211,11 +211,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	public String preTranslate(WikiContext wikiContext, String content)
 			throws FilterException {
 
-		String title = wikiContext.getRealPage().getName();
-		if (KnowWEArticle.isArticleCurrentlyBuilding(title)) {
-			return content;
-		}
-
 		initKnowWEEnvironmentIfNeeded(wikiContext.getEngine());
 
 		initializeAllArticlesIfNeeded(wikiContext.getEngine());
@@ -233,6 +228,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		 * The special pages MoreMenu, LeftMenu and LeftMenuFooter get extra
 		 * calls: they are handled and rendered from the KDOMs in the following
 		 */
+		String title = wikiContext.getRealPage().getName();
 		List<String> supportArticleNames = Arrays.asList(MORE_MENU, LEFT_MENU, LEFT_MENU_FOOTER);
 		if (supportArticleNames.contains(title)) {
 			KnowWEArticle supportArticle = KnowWEEnvironment.getInstance()
@@ -265,38 +261,41 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			boolean fullParse = parse != null && (parse.equals("full") || parse.equals("true"));
 
 			if (fullParse || !originalText.equals(content)) {
-				KnowWEEnvironment.getInstance().buildAndRegisterArticle(content, title,
+				article = KnowWEEnvironment.getInstance().buildAndRegisterArticle(content, title,
 						KnowWEEnvironment.DEFAULT_WEB, fullParse);
 			}
 
 			StringBuilder articleHTML = new StringBuilder();
 
-			// Render Pre-PageAppendHandlers
-			List<PageAppendHandler> appendhandlers = KnowWEEnvironment.getInstance()
-					.getAppendHandlers();
-			for (PageAppendHandler pageAppendHandler : appendhandlers) {
-				if (pageAppendHandler.isPre()) {
-					articleHTML.append(pageAppendHandler.getDataToAppend(
-							title, KnowWEEnvironment.DEFAULT_WEB,
-							userContext));
+			if (article != null) {
+
+				// Render Pre-PageAppendHandlers
+				List<PageAppendHandler> appendhandlers = KnowWEEnvironment.getInstance()
+						.getAppendHandlers();
+				for (PageAppendHandler pageAppendHandler : appendhandlers) {
+					if (pageAppendHandler.isPre()) {
+						articleHTML.append(pageAppendHandler.getDataToAppend(
+								title, KnowWEEnvironment.DEFAULT_WEB,
+								userContext));
+					}
 				}
-			}
 
-			// RENDER PAGE
-			article.getRenderer().render(article, article.getSection(),
-					userContext, articleHTML);
+				// RENDER PAGE
+				article.getRenderer().render(article, article.getSection(),
+						userContext, articleHTML);
 
-			// Render Post-PageAppendHandlers
-			for (PageAppendHandler pageAppendHandler : appendhandlers) {
-				if (!pageAppendHandler.isPre()) {
-					articleHTML.append(pageAppendHandler.getDataToAppend(
-							title, KnowWEEnvironment.DEFAULT_WEB,
-							userContext));
+				// Render Post-PageAppendHandlers
+				for (PageAppendHandler pageAppendHandler : appendhandlers) {
+					if (!pageAppendHandler.isPre()) {
+						articleHTML.append(pageAppendHandler.getDataToAppend(
+								title, KnowWEEnvironment.DEFAULT_WEB,
+								userContext));
+					}
 				}
-			}
 
-			// adds the js and css to the page
-			includeDOMResources(wikiContext);
+				// adds the js and css to the page
+				includeDOMResources(wikiContext);
+			}
 
 			return articleHTML.toString();
 		}

@@ -34,15 +34,17 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
  */
 public class ConditionActionRule extends AbstractType implements IncrementalMarker {
 
-	private static final String RULE_START = "(?:IF|WENN)";
+	public static final String RULE_START = "^\\s*(?:IF|WENN)";
 
 	public ConditionActionRule() {
 		this(null);
 	}
 
 	public ConditionActionRule(AbstractType action) {
+		// from the beginning of the rule until before the beginning of the next
+		// rule, an empty line or the end of the parent section
 		sectionFinder = new RegexSectionFinder(
-				RULE_START + ".*?(?=\\s*?(^\\s*?$|^\\s*" + RULE_START + "|\\z))",
+				RULE_START + ".*?(?=\\s*?(" + RULE_START + "|^\\s*?$|\\z))",
 				Pattern.DOTALL + Pattern.MULTILINE);
 		if (action != null) {
 			this.addChildType(new ConditionActionRuleContent(action));
