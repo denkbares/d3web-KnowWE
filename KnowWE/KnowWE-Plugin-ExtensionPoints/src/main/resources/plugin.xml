@@ -38,7 +38,6 @@
 		<parameter-def id="css" multiplicity="any" />
 	</extension-point>
 	
-	<!--
 	<extension-point id="SubtreeHandler">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
@@ -48,7 +47,7 @@
 		<parameter-def id="handlerpriority" type="number" />
 		<parameter-def id="scope" />
 	</extension-point>
--->
+
 	<extension-point id="ToolProvider">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
