@@ -244,6 +244,9 @@ KNOWWE.plugin.instantEdit = function() {
         onErrorBehavior : function() {
         	if (this.status == null) return;
         	switch (this.status) {
+        	  case 0:
+        		// server not running, do nothing.
+        		break;
         	  case 403:
           	    alert("You are not authorized to change this page.");
         	    break;
