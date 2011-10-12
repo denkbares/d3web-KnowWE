@@ -210,7 +210,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		string.append(KnowWEUtils.maskHTML(
 				"<div id='header_" + sectionID + "' "
 						+ "class='markupHeaderFrame"
-						+ (hasMenu ? " headerMenu" : " headerToolbar")
+						+ (hasToolbar ? " headerToolbar" : " headerMenu")
 						+ "'>"));
 		string.append(KnowWEUtils.maskHTML("<div class='markupHeader'>"));
 		string.append(header);
