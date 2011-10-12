@@ -429,7 +429,7 @@ jspwiki.specialPage.UserPreferences = UserPreferences.jsp
 #
 #  jspwiki.plugin.searchPath = org.myorganisation.jspwiki.myplugins,com.foobar.myplugins
 #
-jspwiki.plugin.searchPath = de.jave.jspwiki.plugins,de.d3web.we.jspwiki,de.d3web.we.jspwiki.comment,cc.wiki.plugin
+jspwiki.plugin.searchPath = de.jave.jspwiki.plugins,de.knowwe.jspwiki,de.d3web.we.jspwiki.comment,cc.wiki.plugin
 
 #############################################################################
 #
