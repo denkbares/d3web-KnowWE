@@ -1,4 +1,4 @@
-<%@page import="de.d3web.we.core.*"%><%@ page import="java.util.*,java.io.*"%><%!
+<%@page import="de.knowwe.core.*"%><%@ page import="java.util.*,java.io.*"%><%!
 String findParam( PageContext ctx, String key )
     {
         ServletRequest req = ctx.getRequest();
@@ -37,7 +37,7 @@ String findParam( PageContext ctx, String key )
 	} else if (filename.endsWith(".jar")) {
 		//set the content type
 		response.setContentType ("application/jar");
-		de.d3web.we.knowRep.KnowledgeRepresentationHandler handler = KnowWEEnvironment.getInstance()
+		de.knowwe.knowRep.KnowledgeRepresentationHandler handler = KnowWEEnvironment.getInstance()
 			.getKnowledgeRepresentationManager(web).getHandler("d3web");
 		if (handler != null) {
 			java.net.URL home = handler.saveKnowledge(topic);
