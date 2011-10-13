@@ -51,11 +51,21 @@ KNOWWE.plugin.instantEdit = function() {
 		$$('.markupTools').setStyle("display", "none");
 	}
 	
+	function showAjaxLoader(id) {
+		var ajaxLoaderGif = new Element("img", {
+			'src' : 'KnowWEExtension/images/ajax-100.gif',
+			'class' : 'ajaxloader',
+		});
+		$(id).appendChild(ajaxLoaderGif);
+	}
+	
     return {
     	
     	toolNameSpace : new Object(),
     	
         enable : function(id, toolNameSpace) {
+        	
+        	showAjaxLoader(id);
         	
         	KNOWWE.plugin.instantEdit.toolNameSpace[id] = toolNameSpace;
         	
@@ -122,6 +132,8 @@ KNOWWE.plugin.instantEdit = function() {
 		 * @param id is the id of the DOM element
 		 */
         save : function(id, newWikiText) {
+        	
+        	showAjaxLoader(id);
             
         	if (newWikiText == null) {
         		newWikiText =  KNOWWE.plugin.instantEdit.toolNameSpace[id].generateWikiText(id);        		
@@ -142,6 +154,8 @@ KNOWWE.plugin.instantEdit = function() {
 		 * @param id is the id of the source DOM element
 		 */
         add : function(id, title, newWikiText) {
+        	
+        	showAjaxLoader(id);
             
         	if (newWikiText == null) {
         		newWikiText =  KNOWWE.plugin.instantEdit.toolNameSpace[id].generateWikiText(id);        		
