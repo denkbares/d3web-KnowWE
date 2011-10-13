@@ -163,7 +163,7 @@ public class SolutionSetValueLine extends AbstractType {
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<SolutionReference> s) {
 
-			Solution sol = s.get().getTermObject(s.getArticle(), s);
+			Solution sol = s.get().getTermObject(article, s);
 
 			String argument = getArgumentString(s);
 
