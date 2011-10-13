@@ -34,10 +34,23 @@ public class DiaFluxTraceHighlight implements DiaFluxDisplayEnhancement {
 	public static final String[] SCRIPTS = new String[] { "cc/flow/trace.js" };
 	public static final String[] CSSS = new String[] { "cc/flow/trace.css" };
 	
-	public static String HIGHLIGHT_KEY = "FlowHighlighting";
+	public static final String HIGHLIGHT_KEY = "FlowHighlighting";
+	public static final String TRACE_HIGHLIGHT = "trace";
+	public static final String NO_HIGHLIGHT = "none";
 
 	@Override
-	public boolean activate(UserContext user) {
+	public boolean activate(UserContext user, String scope) {
+		return checkForHighlight(user, TRACE_HIGHLIGHT);
+
+	}
+
+	/**
+	 * 
+	 * @created 10.10.2011
+	 * @param user
+	 * @return
+	 */
+	public static boolean checkForHighlight(UserContext user, String value) {
 		HttpServletRequest request = user.getRequest();
 		String highlight = user.getParameters().get("highlight");
 		// can be null when booting KnowWE
@@ -45,24 +58,24 @@ public class DiaFluxTraceHighlight implements DiaFluxDisplayEnhancement {
 			HttpSession httpSession = request.getSession();
 			// if highlight is null, use highlight from session
 			if (highlight == null) {
-				Boolean temp = (Boolean) httpSession.getAttribute(HIGHLIGHT_KEY);
-				if (temp == null)
-					return false;
-					else
-				return temp.booleanValue();
+				String temp = (String) httpSession.getAttribute(HIGHLIGHT_KEY);
+				if (temp == null) return false;
+				else return temp.equalsIgnoreCase(value);
 			}
-			else if (highlight.equals("true")) {
+			else if (highlight.equalsIgnoreCase(value)) {
 				// save in session
-				httpSession.setAttribute(HIGHLIGHT_KEY, Boolean.TRUE);
+				httpSession.setAttribute(HIGHLIGHT_KEY, value);
 				return true;
 			}
-			else {
-				httpSession.setAttribute(HIGHLIGHT_KEY, Boolean.FALSE);
+			else if (highlight.equalsIgnoreCase(NO_HIGHLIGHT)) {
+				// save in session
+				httpSession.setAttribute(HIGHLIGHT_KEY, NO_HIGHLIGHT);
 				return false;
 			}
+			else return false;
+
 		}
 		else return false;
-
 	}
 
 	@Override

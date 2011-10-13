@@ -18,8 +18,6 @@
  */
 package de.d3web.we.flow;
 
-import javax.servlet.http.HttpServletRequest;
-
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
@@ -42,29 +40,17 @@ public class HighlightProvider implements ToolProvider {
 	}
 
 	protected Tool getHighlightTool(KnowWEArticle article, Section<?> section, UserContext userContext) {
-		String highlight = userContext.getParameters().get("highlight");
-		boolean dohighlighting = false;
-		// if there is no parameter, use the parameter from the map
-		if (highlight == null) {
-			HttpServletRequest request = userContext.getRequest();
-			if (request != null) {
-				Boolean temp = (Boolean) request.getSession().getAttribute(
-							FlowchartRenderer.HIGHLIGHT_KEY);
-				if (temp != null) {
-					dohighlighting = temp.booleanValue();
-				}
-			}
-		}
-		else if (highlight.equals("true")) {
-			dohighlighting = true;
-		}
+		boolean dohighlighting =
+				DiaFluxTraceHighlight.checkForHighlight(userContext,
+						DiaFluxTraceHighlight.TRACE_HIGHLIGHT);
+
 		if (dohighlighting) {
 			String jsAction = "var url = window.location.href;" +
 					"if (url.search('highlight')!=-1)" +
-					"{url = url.replace(/highlight=true/g, 'highlight=false');}" +
+					"{url = url.replace(/highlight=[^&]*/g, 'highlight=none');}" +
 					"else {" +
 					"if (url.indexOf('?') == -1) {url += '?';}" +
-					"url = url.replace(/\\?/g,'?highlight=false&');}" +
+					"url = url.replace(/\\?/g,'?highlight=none&');}" +
 					"window.location = url;";
 			return new DefaultTool(
 					"KnowWEExtension/flowchart/icon/debug16.png",
@@ -75,10 +61,10 @@ public class HighlightProvider implements ToolProvider {
 		else {
 			String jsAction = "var url = window.location.href;" +
 					"if (url.search('highlight')!=-1)" +
-					"{url = url.replace(/highlight=false/g, 'highlight=true');}" +
+					"{url = url.replace(/highlight=[^&]*/g, 'highlight=trace');}" +
 					"else {" +
 					"if (url.indexOf('?') == -1) {url += '?';}" +
-					"url = url.replace(/\\?/g,'?highlight=true&');}" +
+					"url = url.replace(/\\?/g,'?highlight=trace&');}" +
 					"window.location = url;";
 			return new DefaultTool(
 					"KnowWEExtension/flowchart/icon/debug16.png",

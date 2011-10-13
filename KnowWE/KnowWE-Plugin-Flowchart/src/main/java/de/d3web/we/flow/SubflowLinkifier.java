@@ -29,7 +29,7 @@ import de.knowwe.core.user.UserContext;
 public class SubflowLinkifier implements DiaFluxDisplayEnhancement {
 
 	@Override
-	public boolean activate(UserContext user) {
+	public boolean activate(UserContext user, String scope) {
 		return true;
 	}
 

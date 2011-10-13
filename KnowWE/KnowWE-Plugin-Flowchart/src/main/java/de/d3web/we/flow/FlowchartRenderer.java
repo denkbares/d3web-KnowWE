@@ -20,9 +20,6 @@
 
 package de.d3web.we.flow;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,11 +39,8 @@ import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.KnowWEArticleManager;
-import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -57,7 +51,6 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 
-	public static String HIGHLIGHT_KEY = "FlowHighlighting";
 
 	@Override
 	public void render(KnowWEArticle article, Section<FlowchartType> sec, UserContext user, StringBuilder string) {
@@ -74,6 +67,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 		ResourceBundle wikiConfig = ResourceBundle.getBundle("KnowWE_config");
 		boolean render = Boolean.valueOf(wikiConfig.getString("knowweplugin.diaflux.render"));
 
+		// if rendering is enabled, the highlighting is done via AJAX
 		if (render) {
 			return;
 		}
@@ -91,19 +85,21 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 			HttpSession httpSession = request.getSession();
 			// if highlight is null, use highlight from session
 			if (highlight == null) {
-				Boolean temp = (Boolean) httpSession.getAttribute(HIGHLIGHT_KEY);
+				String temp = (String) httpSession.getAttribute(DiaFluxTraceHighlight.HIGHLIGHT_KEY);
 				if (temp != null) {
-					dohighlighting = temp.booleanValue();
+					dohighlighting = temp.equalsIgnoreCase(DiaFluxTraceHighlight.TRACE_HIGHLIGHT);
 				}
 			}
-			else if (highlight.equals("true")) {
+			else if (highlight.equals(DiaFluxTraceHighlight.TRACE_HIGHLIGHT)) {
 				dohighlighting = true;
 				// save in session
-				httpSession.setAttribute(HIGHLIGHT_KEY, new Boolean(dohighlighting));
+				httpSession.setAttribute(DiaFluxTraceHighlight.HIGHLIGHT_KEY,
+						DiaFluxTraceHighlight.TRACE_HIGHLIGHT);
 			}
-			else if (highlight.equals("false")) {
+			else if (highlight.equals(DiaFluxTraceHighlight.NO_HIGHLIGHT)) {
 				// save false in session
-				httpSession.setAttribute(HIGHLIGHT_KEY, new Boolean(dohighlighting));
+				httpSession.setAttribute(DiaFluxTraceHighlight.HIGHLIGHT_KEY,
+						DiaFluxTraceHighlight.NO_HIGHLIGHT);
 			}
 		}
 		if (dohighlighting) {
@@ -153,7 +149,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 		if (flow == null) return;
 		for (ComposedNode node : flow.getNodesOfClass(ComposedNode.class)) {
 			// link to flowchart definition
-			Section<FlowchartType> calledSection = findFlowchartSection(
+			Section<FlowchartType> calledSection = FlowchartUtils.findFlowchartSection(
 					article.getWeb(), node.getCalledFlowName());
 			if (calledSection == null) continue;
 			String link = KnowWEUtils.getURLLink(calledSection);
@@ -163,32 +159,6 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 					+ "element.innerHTML='<a href=\"" + link
 					+ "\">'+element.innerHTML+'</a>';</script>"));
 		}
-	}
-
-	/**
-	 * 
-	 * @created 02.03.2011
-	 * @param calledFlowName
-	 * @return
-	 */
-	public static Section<FlowchartType> findFlowchartSection(String web, String calledFlowName) {
-		KnowWEArticleManager manager = KnowWEEnvironment.getInstance().getArticleManager(web);
-
-		for (Iterator<KnowWEArticle> iterator = manager.getArticleIterator(); iterator.hasNext();) {
-			KnowWEArticle article = iterator.next();
-			List<Section<FlowchartType>> matches = new LinkedList<Section<FlowchartType>>();
-			Sections.findSuccessorsOfType(article.getSection(), FlowchartType.class, matches);
-			for (Section<FlowchartType> match : matches) {
-				String flowName = FlowchartType.getFlowchartName(match);
-				if (calledFlowName.equalsIgnoreCase(flowName)) {
-					// simply return the first matching flowchart in we found in
-					// any article
-					return match;
-				}
-			}
-		}
-		// not match in no article
-		return null;
 	}
 
 	private void addNodeHighlight(StringBuilder result, String sectionID, Node node, String color) {

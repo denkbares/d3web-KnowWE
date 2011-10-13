@@ -56,7 +56,6 @@ public class GetTraceHighlightAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 
 		String kdomid = context.getParameter("kdomid");
-		String web = context.getWeb();
 
 		Section<DiaFluxType> diaFluxSec = (Section<DiaFluxType>) Sections.getSection(kdomid);
 

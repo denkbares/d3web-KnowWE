@@ -20,6 +20,8 @@
 package de.d3web.we.flow;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.WeakHashMap;
@@ -33,7 +35,9 @@ import de.d3web.we.flow.kbinfo.JSPHelper;
 import de.d3web.we.flow.type.DiaFluxType;
 import de.d3web.we.flow.type.FlowchartPreviewContentType;
 import de.d3web.we.flow.type.FlowchartType;
+import de.knowwe.core.KnowWEArticleManager;
 import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
@@ -46,7 +50,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class FlowchartUtils {
 
-	private static final String DIAFLUX_SCOPE = "diaflux";
+	public static final String DIAFLUX_SCOPE = "diaflux";
 	public static final String PREVIEW_REGEX = "\\s*<!\\[CDATA\\[\\s*(.*)\\s*\\]\\]>\\s*";
 	public static final Pattern PREVIEW_PATTERN = Pattern.compile(PREVIEW_REGEX, Pattern.DOTALL);
 	public static final String[] JS = new String[] {
@@ -238,7 +242,7 @@ public class FlowchartUtils {
 
 					DiaFluxDisplayEnhancement enh = (DiaFluxDisplayEnhancement) extension.getNewInstance();
 
-					if (!enh.activate(user)) continue next;
+					if (!enh.activate(user, scope)) continue next;
 
 					for (String script : enh.getScripts()) {
 						result.append("<script src='" + script
@@ -266,5 +270,31 @@ public class FlowchartUtils {
 			source = source.substring(0, previewIndex) + "</flowchart>";
 		}
 		return source;
+	}
+
+	/**
+	 * 
+	 * @created 02.03.2011
+	 * @param calledFlowName
+	 * @return
+	 */
+	public static Section<FlowchartType> findFlowchartSection(String web, String calledFlowName) {
+		KnowWEArticleManager manager = KnowWEEnvironment.getInstance().getArticleManager(web);
+	
+		for (Iterator<KnowWEArticle> iterator = manager.getArticleIterator(); iterator.hasNext();) {
+			KnowWEArticle article = iterator.next();
+			List<Section<FlowchartType>> matches = new LinkedList<Section<FlowchartType>>();
+			Sections.findSuccessorsOfType(article.getSection(), FlowchartType.class, matches);
+			for (Section<FlowchartType> match : matches) {
+				String flowName = FlowchartType.getFlowchartName(match);
+				if (calledFlowName.equalsIgnoreCase(flowName)) {
+					// simply return the first matching flowchart in we found in
+					// any article
+					return match;
+				}
+			}
+		}
+		// not match in no article
+		return null;
 	}
 }
