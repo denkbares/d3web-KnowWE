@@ -1,11 +1,11 @@
 <%@ page contentType="text/xml;charset=UTF-8" %>
 <%@ page import="com.ecyrd.jspwiki.*" %>
-<%@ page import="de.d3web.we.jspwiki.*" %>
+<%@ page import="de.knowwe.jspwiki.*" %>
 <%@ page import="java.util.*" %>
-<%@ page import="de.d3web.we.core.*" %>
-<%@ page import="de.d3web.we.user.*" %>
-<%@ page import="de.d3web.we.action.*" %>
-<%@ page import="de.d3web.we.utils.*" %>
+<%@ page import="de.knowwe.core.*" %>
+<%@ page import="de.knowwe.core.user.*" %>
+<%@ page import="de.knowwe.core.action.*" %>
+<%@ page import="de.knowwe.core.utils.*" %>
 <%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %>
 <%
 	//Create wiki context; authorization check not needed

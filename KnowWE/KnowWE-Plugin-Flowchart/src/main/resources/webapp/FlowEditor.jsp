@@ -1,21 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<%@page import="de.d3web.we.kdom.Sections"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="de.d3web.plugin.Extension"%>
 <%@ page import="de.d3web.plugin.JPFPluginManager"%>
-<%@ page import="de.d3web.we.kdom.Section"%>
-<%@ page import="de.d3web.we.kdom.KnowWEArticle"%>
+<%@ page import="de.knowwe.core.kdom.parsing.Section"%>
+<%@ page import="de.knowwe.core.kdom.parsing.Sections"%>
+<%@ page import="de.knowwe.core.kdom.KnowWEArticle"%>
 <%@ page import="de.d3web.we.flow.type.DiaFluxType"%>
 <%@ page import="com.ecyrd.jspwiki.*" %>
-<%@ page import="de.d3web.we.jspwiki.*" %>
+<%@ page import="de.knowwe.jspwiki.*" %>
 <%@ page import="java.util.*" %>
-<%@ page import="de.d3web.we.core.*" %>
-<%@ page import="de.d3web.we.wikiConnector.*" %>
-<%@ page import="de.d3web.we.action.*" %>
+<%@ page import="de.knowwe.core.*" %>
+<%@ page import="de.knowwe.core.utils.*" %>
+<%@ page import="de.knowwe.core.action.*" %>
 <%@ page import="de.d3web.we.flow.kbinfo.*" %>
 <%@ page import="de.d3web.we.flow.*" %>
 <%@ page import="de.d3web.we.utils.*" %>
-<%@ page import="de.d3web.we.user.*" %>
+<%@ page import="de.knowwe.core.user.*" %>
 <%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %>
 <%
 	//Create wiki context; authorization check not needed
