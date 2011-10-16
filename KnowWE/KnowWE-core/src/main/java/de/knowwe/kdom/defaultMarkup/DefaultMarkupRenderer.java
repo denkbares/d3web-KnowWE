@@ -199,8 +199,8 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 
 		boolean hasTools = tools != null && tools.length > 0;
 		if (rendermode == null) rendermode = ToolsRenderMode.MENU;
-		boolean hasMenu = hasTools && rendermode == ToolsRenderMode.MENU;
-		boolean hasToolbar = hasTools && !hasMenu;
+		boolean hasToolbar = rendermode == ToolsRenderMode.TOOLBAR;
+		boolean hasMenu = rendermode == ToolsRenderMode.MENU;
 
 		String toolbarHtml = "";
 		if (hasToolbar) {
@@ -221,7 +221,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		// string.append("\n");
 		string.append(KnowWEUtils.maskHTML("</div>")); // class=markupHeader
 
-		if (hasMenu) {
+		if (hasTools && hasMenu) {
 			String menuHtml = renderMenu(ToolUtils.groupTools(tools), sectionID);
 			string.append(KnowWEUtils.maskHTML(menuHtml));
 		}
@@ -246,8 +246,8 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		string.append(KnowWEUtils.maskHTML("</div>"));
 
 		if (hasMenu) {
-			string.append(KnowWEUtils.maskHTML(renderMenuAnimation(sectionID)));
 			string.append(KnowWEUtils.maskHTML(renderHeaderAnimation(sectionID)));
+			string.append(KnowWEUtils.maskHTML(renderMenuAnimation(sectionID)));
 		}
 	}
 

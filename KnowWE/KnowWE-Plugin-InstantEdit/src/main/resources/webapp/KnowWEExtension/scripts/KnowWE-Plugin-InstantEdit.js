@@ -53,10 +53,16 @@ KNOWWE.plugin.instantEdit = function() {
 	
 	function showAjaxLoader(id) {
 		var ajaxLoaderGif = new Element("img", {
+			'id' : 'loader_' + id,
 			'src' : 'KnowWEExtension/images/ajax-100.gif',
 			'class' : 'ajaxloader',
 		});
 		$(id).appendChild(ajaxLoaderGif);
+	}
+	
+	function hideAjaxLoader(id) {
+		var ajaxLoaderGif = $('loader_' + id);
+		ajaxLoaderGif.parentNode.removeChild(ajaxLoaderGif);
 	}
 	
     return {
@@ -97,6 +103,8 @@ KNOWWE.plugin.instantEdit = function() {
                 }
             };
             new _KA(options).send();
+            
+        	hideAjaxLoader(id);
         },
         
         
