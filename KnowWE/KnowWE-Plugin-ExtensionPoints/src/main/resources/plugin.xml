@@ -152,5 +152,13 @@
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
 	</extension-point>
+	
+	<extension-point id="CompileScript">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="scope" multiplicity="one" />
+	</extension-point>
 
 </plugin>
