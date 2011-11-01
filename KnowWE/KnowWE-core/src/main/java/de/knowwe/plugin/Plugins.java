@@ -58,6 +58,7 @@ public class Plugins {
 	public static final String EXTENDED_POINT_EventListener = "EventListener";
 	public static final String EXTENDED_POINT_SearchProvider = "SearchProvider";
 	public static final String EXTENDED_POINT_TERMINOLOGY = "Terminology";
+	public static final String EXTENDED_POINT_COMPILESCRIPT = "CompileScript";
 
 	/**
 	 * Returns all plugged Instantiations These are used to initialize plugins.
