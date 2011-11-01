@@ -130,13 +130,13 @@ public class D3webUtils {
 		if (argument.equals("?")) {
 			score = Score.P5;
 		}
-		if (argument.equals("excluded")) {
+		if (argument.equalsIgnoreCase("excluded")) {
 			score = Score.N7;
 		}
-		if (argument.equals("established")) {
+		if (argument.equalsIgnoreCase("established")) {
 			score = Score.P7;
 		}
-		if (argument.equals("suggested")) {
+		if (argument.equalsIgnoreCase("suggested")) {
 			score = Score.P5;
 		}
 

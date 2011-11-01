@@ -25,10 +25,10 @@ import de.knowwe.kdom.sectionFinder.OneOfStringEnumFinder;
 public class ScoreValue extends AbstractType{
 	
 	public enum ScoreKey { N7, N6, N5, N4, N3, N2, N1, N0, P0, P1, P2, P3, P4, P5, P6, P7, ESTABLISHED, ETABLIERT, SUGGESTED, VERDAECHTIGT};
-	
+	protected String[] values;
 	
 	public ScoreValue() {
-		String[] values = new String[ScoreKey.values().length];
+		 values = new String[ScoreKey.values().length];
 		for (int i = 0; i < ScoreKey.values().length; i++) {
 			values[i] = ScoreKey.values()[i].toString();
 		}
