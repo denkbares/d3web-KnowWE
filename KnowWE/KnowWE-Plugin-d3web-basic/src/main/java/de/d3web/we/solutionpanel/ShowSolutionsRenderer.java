@@ -53,6 +53,7 @@ public class ShowSolutionsRenderer extends DefaultMarkupRenderer<ShowSolutionsTy
 	protected void renderContents(KnowWEArticle article, Section<ShowSolutionsType> section, UserContext user, StringBuilder string) {
 		// only render the content section
 		Section<?> child = DefaultMarkupType.getContentSection(section);
+		if (child == null) return; // noting to render
 		KnowWEDomRenderer renderer = DelegateRenderer.getRenderer(child, user);
 		renderer.render(article, child, user, string);
 	}
