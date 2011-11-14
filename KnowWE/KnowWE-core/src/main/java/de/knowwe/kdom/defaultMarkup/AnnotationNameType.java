@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
- * Computer Science VI, University of Wuerzburg
+ * Copyright (C) 2011 University Wuerzburg, Computer Science VI
  * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -17,7 +16,6 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-
 package de.knowwe.kdom.defaultMarkup;
 
 import java.util.regex.Pattern;
@@ -25,20 +23,22 @@ import java.util.regex.Pattern;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
-public class AnnotationType extends AbstractType {
+/**
+ * Sections with this type contain the start of the annotation.
+ * 
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 11.11.2011
+ */
+public class AnnotationNameType extends AbstractType {
 
 	private final DefaultMarkup.Annotation annotation;
 
-	public AnnotationType(DefaultMarkup.Annotation annotation) {
+	public AnnotationNameType(DefaultMarkup.Annotation annotation) {
 		this.annotation = annotation;
 
-		String annotationPattern = "^\\s*(@" + annotation.getName() + ".*?)\\s*?(?=^\\s*@|/?%|\\z)";
+		this.setSectionFinder(new RegexSectionFinder(Pattern.compile("^@"
+				+ annotation.getName() + "\\s*[:=]?", Pattern.CASE_INSENSITIVE)));
 
-		this.setSectionFinder(new RegexSectionFinder(Pattern.compile(annotationPattern,
-				Pattern.CASE_INSENSITIVE + Pattern.MULTILINE + Pattern.DOTALL), 1));
-
-		this.addChildType(new AnnotationNameType(annotation));
-		this.addChildType(new AnnotationContentType(annotation));
 	}
 
 	/**

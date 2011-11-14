@@ -39,7 +39,7 @@ import de.knowwe.core.report.KDOMReportMessage;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.ExactlyOneFindingConstraint;
-import de.knowwe.kdom.defaultMarkup.AnnotationType;
+import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.sectionFinder.NonEmptyLineSectionFinder;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
@@ -147,7 +147,7 @@ public class ListSolutionType extends AbstractType implements IncrementalMarker 
 		private void setThresholdsAndMinSupport(Section<DefaultMarkupType> defaultMarkupType, XCLModel m) {
 
 			// handle ESTABLISHED_THRESHOLD
-			Section<? extends AnnotationType> estaAnnoSection = DefaultMarkupType.getAnnotationSection(
+			Section<? extends AnnotationContentType> estaAnnoSection = DefaultMarkupType.getAnnotationContentSection(
 					defaultMarkupType,
 					CoveringListMarkup.ESTABLISHED_THRESHOLD);
 
@@ -167,7 +167,7 @@ public class ListSolutionType extends AbstractType implements IncrementalMarker 
 			}
 
 			// handle SUGGESTED_THRESHOLD
-			Section<? extends AnnotationType> suggAnnoSection = DefaultMarkupType.getAnnotationSection(
+			Section<? extends AnnotationContentType> suggAnnoSection = DefaultMarkupType.getAnnotationContentSection(
 					defaultMarkupType,
 					CoveringListMarkup.SUGGESTED_THRESHOLD);
 
@@ -186,7 +186,7 @@ public class ListSolutionType extends AbstractType implements IncrementalMarker 
 			}
 
 			// handle MIN_SUPPORT
-			Section<? extends AnnotationType> minAnnoSection = DefaultMarkupType.getAnnotationSection(
+			Section<? extends AnnotationContentType> minAnnoSection = DefaultMarkupType.getAnnotationContentSection(
 					defaultMarkupType,
 					CoveringListMarkup.MIN_SUPPORT);
 			if (minAnnoSection != null) {

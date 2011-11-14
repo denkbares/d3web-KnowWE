@@ -377,9 +377,9 @@ public class Sections {
 
 	/**
 	 * Finds all successors of type <tt>class1</tt> in the KDOM at the end of
-	 * the given path of ancestors. If your <tt>path</tt> starts with the
-	 * ObjectType of this Section, set <tt>index</tt> to <tt>0</tt>. Else set
-	 * the <tt>index</tt> to the index of the ObjectType of this Section in the
+	 * the given path of ancestors. If your <tt>path</tt> starts with the Type
+	 * of this Section, set <tt>index</tt> to <tt>0</tt>. Else set the
+	 * <tt>index</tt> to the index of the ObjectType of this Section in the
 	 * path. </p> Stores found successors in a List of Sections
 	 */
 	public static void findSuccessorsWithTypePath(Section<?> s,

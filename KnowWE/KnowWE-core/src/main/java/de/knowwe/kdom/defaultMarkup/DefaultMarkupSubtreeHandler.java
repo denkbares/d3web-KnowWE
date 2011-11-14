@@ -51,8 +51,8 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 		// check defined annotations
 		for (Annotation annotation : this.markup.getAnnotations()) {
 			String name = annotation.getName();
-			Section<? extends AnnotationType> annotationSection =
-					DefaultMarkupType.getAnnotationSection(markupSection, name);
+			Section<? extends AnnotationContentType> annotationSection =
+					DefaultMarkupType.getAnnotationContentSection(markupSection, name);
 
 			// check existence of mandatory annotation
 			if (annotationSection == null && annotation.isMandatory()) {
@@ -68,8 +68,8 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 			String value = null;
 			Annotation packageAnno = this.markup.getAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME);
 			if (packageAnno != null) {
-				Section<? extends AnnotationType> annotationSection =
-						DefaultMarkupType.getAnnotationSection(markupSection, packageAnno.getName());
+				Section<? extends AnnotationContentType> annotationSection =
+						DefaultMarkupType.getAnnotationContentSection(markupSection, packageAnno.getName());
 				if (annotationSection != null) {
 					value = annotationSection.getOriginalText();
 				}
@@ -90,9 +90,9 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 		}
 
 		// check annotated sections
-		List<Section<AnnotationType>> subSections = Sections.findChildrenOfType(markupSection,
-				AnnotationType.class);
-		for (Section<AnnotationType> annotationSection : subSections) {
+		List<Section<AnnotationContentType>> subSections = Sections.findChildrenOfType(markupSection,
+				AnnotationContentType.class);
+		for (Section<AnnotationContentType> annotationSection : subSections) {
 			// check annotations pattern
 			Annotation annotation = annotationSection.get().getAnnotation();
 			String text = annotationSection.getOriginalText();

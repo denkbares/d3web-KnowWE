@@ -36,7 +36,7 @@ import de.knowwe.core.report.KDOMError;
 import de.knowwe.core.report.KDOMWarning;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.kdom.defaultMarkup.AnnotationType;
+import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -99,7 +99,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 		// render used packages and their erroneous pages
 		string.append(KnowWEUtils.maskHTML("<div style='padding-top:1em;'>"));
 		// string.append(KnowWEUtils.maskHTML("<hr>\n"));
-		List<Section<? extends AnnotationType>> compileSections = DefaultMarkupType.getAnnotationSections(
+		List<Section<? extends AnnotationContentType>> compileSections = DefaultMarkupType.getAnnotationContentSections(
 				section, KnowledgeBaseType.ANNOTATION_COMPILE);
 		for (Section<?> annotationSection : compileSections) {
 			Section<KnowledgeBaseCompileType> compileSection = Sections.findChildOfType(

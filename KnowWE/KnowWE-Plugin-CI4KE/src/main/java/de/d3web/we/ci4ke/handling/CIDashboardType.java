@@ -38,7 +38,7 @@ import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.KDOMReportMessage;
 import de.knowwe.core.report.SimpleMessageError;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.kdom.defaultMarkup.AnnotationType;
+import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -145,8 +145,8 @@ public class CIDashboardType extends DefaultMarkupType {
 			// List<String>>();
 			List<Pair<String, List<String>>> tests = new ArrayList<Pair<String, List<String>>>();
 
-			List<Section<? extends AnnotationType>> annotationSections =
-					DefaultMarkupType.getAnnotationSections(s, TEST_KEY);
+			List<Section<? extends AnnotationContentType>> annotationSections =
+					DefaultMarkupType.getAnnotationContentSections(s, TEST_KEY);
 
 			// iterate over all @test-Annotations
 			for (Section<?> annoSection : annotationSections) {

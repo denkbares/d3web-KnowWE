@@ -21,6 +21,7 @@
 package de.knowwe.kdom.defaultMarkup;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -109,19 +110,14 @@ public class DefaultMarkupType extends AbstractType {
 				// Declaration
 				"^\\p{Blank}*%%$NAME$\\p{Blank}*" +
 						"(?:" +
-						// multi-line content with termination
-						// starts with an empty rest of the line (only comment
-						// is allowed)
+						// multi-line content with termination starts with an
+						// empty rest of the line (only comment is allowed)
 						// and followed by any text terminated by "/%" or a
-						// single "%" in
-						// a line with no other content
-						"(?:[:=]?\\p{Blank}*(?://[^$]*?)?$" + // only comment
-						// allowed
-						// before
-						// end-of-line
+						// single "%" in a line with no other content
+						"(?:[:=]?\\p{Blank}*(?://[^$]*?)?$" +
+						// only comment allowed before end-of-line
 						"(.*?)" + // CONTENT --> anything in multiple lines
-						// (reluctant
-						// match)
+						// (reluctant match)
 						"^\\p{Blank}*/?%\\s*?(^|\\z)" + // "/%" or "%" in a line
 						")" +
 						// or single-line content with termination
@@ -129,11 +125,7 @@ public class DefaultMarkupType extends AbstractType {
 						// at least one non-whitespace character followed by any
 						// non-line-break item
 						"[:=\\p{Blank}]\\p{Blank}*([^/][^$]*?)$" + // CONTENT
-						// -->
-						// anything
-						// in a single
-						// line
-						// (reluctant match)
+						// --> anything in a single line (reluctant match)
 						"))";
 
 	private final DefaultMarkup markup;
@@ -220,7 +212,7 @@ public class DefaultMarkupType extends AbstractType {
 	 *         {@link DefaultMarkupType}
 	 */
 	public static String getAnnotation(Section<?> section, String name) {
-		Section<?> annotationSection = getAnnotationSection(section, name);
+		Section<?> annotationSection = getAnnotationContentSection(section, name);
 		if (annotationSection == null) return null;
 		return annotationSection.getOriginalText();
 	}
@@ -237,7 +229,8 @@ public class DefaultMarkupType extends AbstractType {
 	 * @return the content strings of the found annotation
 	 */
 	public static String[] getAnnotations(Section<?> section, String name) {
-		List<Section<? extends AnnotationType>> annotationSections = getAnnotationSections(section,
+		List<Section<? extends AnnotationContentType>> annotationSections = getAnnotationContentSections(
+				section,
 				name);
 		String[] result = new String[annotationSections.size()];
 		int position = 0;
@@ -248,10 +241,10 @@ public class DefaultMarkupType extends AbstractType {
 	}
 
 	/**
-	 * Returns the first annotation section of the specified name. If the
-	 * section is not of type "DefaultMarkup" an IllegalArgumentException is
-	 * thrown. If there is no annotation section with the specified name, null
-	 * is returned.
+	 * Returns the content section of the first annotation with the specified
+	 * name. If the section is not of type "DefaultMarkup" an
+	 * IllegalArgumentException is thrown. If there is no annotation with the
+	 * specified name, null is returned.
 	 * 
 	 * @param section the section to be searched
 	 * @param name the name of the annotation
@@ -259,26 +252,26 @@ public class DefaultMarkupType extends AbstractType {
 	 * @throws IllegalArgumentException if the specified section is not of
 	 *         {@link DefaultMarkupType}
 	 */
-	public static Section<? extends AnnotationType> getAnnotationSection(Section<?> section, String name) {
+	@SuppressWarnings("unchecked")
+	public static Section<? extends AnnotationContentType> getAnnotationContentSection(Section<? extends Type> section, String name) {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
 			throw new IllegalArgumentException("section not of type DefaultMarkupType");
 		}
-		List<Section<AnnotationType>> children = Sections.findChildrenOfType(section,
-				AnnotationType.class);
-		for (Section<AnnotationType> child : children) {
+
+		for (Section<? extends Type> child : findAnnotationContentTypes(section)) {
 			String childName = child.get().getName();
 			if (childName.equalsIgnoreCase(name)) {
-				return child;
+				return (Section<? extends AnnotationContentType>) child;
 			}
 		}
 		return null;
 	}
 
 	/**
-	 * Returns all annotations section of the specified name. If the section is
-	 * not of type "DefaultMarkup" an IllegalArgumentException is thrown. If
-	 * there is no annotation section with the specified name, an empty list is
-	 * returned.
+	 * Returns the content section of all annotations section of the specified
+	 * name. If the section is not of type "DefaultMarkup" an
+	 * IllegalArgumentException is thrown. If there is no annotation with the
+	 * specified name, an empty list is returned.
 	 * 
 	 * @param section the section to be searched
 	 * @param name the name of the annotation
@@ -286,20 +279,30 @@ public class DefaultMarkupType extends AbstractType {
 	 * @throws IllegalArgumentException if the specified section is not of
 	 *         {@link DefaultMarkupType}
 	 */
-	public static List<Section<? extends AnnotationType>> getAnnotationSections(Section<?> section, String name) {
+	@SuppressWarnings("unchecked")
+	public static List<Section<? extends AnnotationContentType>> getAnnotationContentSections(Section<?> section, String name) {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
 			throw new IllegalArgumentException("section not of type DefaultMarkupType");
 		}
-		List<Section<AnnotationType>> children = Sections.findChildrenOfType(section,
-				AnnotationType.class);
-		List<Section<? extends AnnotationType>> results = new ArrayList<Section<? extends AnnotationType>>();
-		for (Section<AnnotationType> child : children) {
+		List<Section<? extends AnnotationContentType>> results = new ArrayList<Section<? extends AnnotationContentType>>();
+		for (Section<? extends Type> child : findAnnotationContentTypes(section)) {
 			String childName = child.get().getName();
 			if (childName.equalsIgnoreCase(name)) {
-				results.add(child);
+				results.add((Section<? extends AnnotationContentType>) child);
 			}
 		}
 		return results;
+	}
+
+	private static List<Section<? extends Type>> findAnnotationContentTypes(Section<? extends Type> section) {
+		List<Section<? extends Type>> children = new LinkedList<Section<? extends Type>>();
+		List<Class<? extends Type>> path = new ArrayList<Class<? extends Type>>(3);
+		path.add(section.get().getClass());
+		path.add(AnnotationType.class);
+		path.add(AnnotationContentType.class);
+		Sections.findSuccessorsWithTypePath(section,
+				path, 0, children);
+		return children;
 	}
 
 	/**
