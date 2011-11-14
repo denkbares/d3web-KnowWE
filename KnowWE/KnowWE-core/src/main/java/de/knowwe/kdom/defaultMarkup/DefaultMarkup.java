@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
+import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 
 public class DefaultMarkup {
@@ -38,6 +39,7 @@ public class DefaultMarkup {
 		private final boolean mandatory;
 		private final Pattern pattern; // optional
 
+		private final Collection<Type> nameTypes = new LinkedList<Type>();
 		private final Collection<Type> types = new LinkedList<Type>();
 
 		private Annotation(String name, boolean mandatory, Pattern pattern) {
@@ -80,11 +82,10 @@ public class DefaultMarkup {
 		}
 
 		/**
-		 * Return all {@link Type}s that may be accepted as the
-		 * content text of the annotation. These types will be used to
-		 * sectionize, parse and render the annotations content text, if there
-		 * is no other renderer/parser defined in the parent's
-		 * {@link DefaultMarkupType}.
+		 * Return all {@link Type}s that may be accepted as the content text of
+		 * the annotation. These types will be used to sectionize (parse) and
+		 * render the annotations content text, if there is no other
+		 * renderer/parser defined in the parent's {@link DefaultMarkupType}.
 		 * <p>
 		 * The annotation may also contain any other text. It will be recognized
 		 * as {@link PlainText}, such in any other section or wiki-page. It is
@@ -93,8 +94,12 @@ public class DefaultMarkup {
 		 * 
 		 * @return the Types of this annotation
 		 */
-		public Type[] getTypes() {
+		public Type[] getContentTypes() {
 			return this.types.toArray(new Type[this.types.size()]);
+		}
+
+		public Type[] getNameTypes() {
+			return this.nameTypes.toArray(new Type[this.nameTypes.size()]);
 		}
 
 		public Pattern getPattern() {
@@ -193,7 +198,7 @@ public class DefaultMarkup {
 				new Annotation[this.annotations.size()]);
 	}
 
-	public void addAnnotationType(String name, Type type) {
+	public void addAnnotationContentType(String name, Type type) {
 		Annotation annotation = getAnnotation(name);
 		if (annotation == null) {
 			throw new IllegalArgumentException("no such annotation defined: "
@@ -202,15 +207,24 @@ public class DefaultMarkup {
 		annotation.types.add(type);
 	}
 
+	public void addAnnotationNameType(String name, Type type) {
+		Annotation annotation = getAnnotation(name);
+		if (annotation == null) {
+			throw new IllegalArgumentException("no such annotation defined: "
+					+ name);
+		}
+		annotation.nameTypes.add(type);
+	}
+
 	public void addContentType(Type type) {
 		this.types.add(type);
 	}
 
 	/**
-	 * Return all {@link Type}s that may be accepted as the content
-	 * text of the mark-up. These types will be used to sectionize, parse and
-	 * render the mark-up's content text, if there is no other renderer/parser
-	 * defined in the parent's {@link DefaultMarkupType}.
+	 * Return all {@link Type}s that may be accepted as the content text of the
+	 * mark-up. These types will be used to sectionize, parse and render the
+	 * mark-up's content text, if there is no other renderer/parser defined in
+	 * the parent's {@link DefaultMarkupType}.
 	 * <p>
 	 * The mark-up may also contain any other text. It will be recognized as
 	 * {@link PlainText}, such in any other section or wiki-page. It is in

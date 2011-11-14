@@ -34,7 +34,7 @@ public class AnnotationContentType extends AbstractType {
 
 		this.setSectionFinder(new AllTextFinderTrimmed());
 
-		Collections.addAll(this.childrenTypes, this.annotation.getTypes());
+		Collections.addAll(this.childrenTypes, this.annotation.getContentTypes());
 	}
 
 	/**

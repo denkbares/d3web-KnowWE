@@ -75,7 +75,7 @@ public class KnowledgeBaseType extends DefaultMarkupType implements IncrementalM
 	static {
 		MARKUP = new DefaultMarkup("KnowledgeBase");
 		MARKUP.addAnnotation(ANNOTATION_COMPILE, true);
-		MARKUP.addAnnotationType(ANNOTATION_COMPILE, new KnowledgeBaseCompileType());
+		MARKUP.addAnnotationContentType(ANNOTATION_COMPILE, new KnowledgeBaseCompileType());
 		MARKUP.addAnnotation(ANNOTATION_AUTHOR, false);
 		MARKUP.addAnnotation(ANNOTATION_COMMENT, false);
 		MARKUP.addAnnotation(ANNOTATION_ID, false);

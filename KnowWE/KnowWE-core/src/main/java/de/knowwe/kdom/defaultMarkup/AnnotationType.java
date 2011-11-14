@@ -36,7 +36,6 @@ public class AnnotationType extends AbstractType {
 
 		this.setSectionFinder(new RegexSectionFinder(Pattern.compile(annotationPattern,
 				Pattern.CASE_INSENSITIVE + Pattern.MULTILINE + Pattern.DOTALL), 1));
-
 		this.addChildType(new AnnotationNameType(annotation));
 		this.addChildType(new AnnotationContentType(annotation));
 	}

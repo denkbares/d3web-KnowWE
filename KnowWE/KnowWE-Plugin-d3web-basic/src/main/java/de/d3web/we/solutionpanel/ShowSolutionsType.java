@@ -62,7 +62,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 
 		QuestionnaireReference qc = new QuestionnaireReference();
 		qc.setSectionFinder(new AllTextFinderTrimmed());
-		MARKUP.addAnnotationType(ALLOWED_DERIVATIONS, qc);
+		MARKUP.addAnnotationContentType(ALLOWED_DERIVATIONS, qc);
 	}
 
 	public ShowSolutionsType() {
