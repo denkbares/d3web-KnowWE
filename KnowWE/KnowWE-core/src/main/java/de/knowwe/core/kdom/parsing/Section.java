@@ -1068,7 +1068,8 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 			catch (Exception e) {
 				e.printStackTrace();
 				String text = "Unexpected internal error in subtree handler '" + handler
-						+ "' : " + e.toString();
+						+ "' while creating for section '" + getID() + "' in article '"
+						+ getTitle() + "': " + e.toString();
 				SimpleMessageError msg = new SimpleMessageError(text);
 
 				Logging.getInstance().severe(text);
@@ -1111,7 +1112,8 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 				e.printStackTrace();
 				Logging.getInstance().severe(
 						"Unexpected internal error in subtree handler '" + handler
-								+ "' : " + e.toString());
+								+ "' while destroying for section '" + getID() + "' in article '"
+								+ getTitle() + "': " + e.toString());
 
 			}
 		}
