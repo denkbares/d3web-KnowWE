@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -101,11 +102,13 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 		// string.append(KnowWEUtils.maskHTML("<hr>\n"));
 		List<Section<? extends AnnotationContentType>> compileSections = DefaultMarkupType.getAnnotationContentSections(
 				section, KnowledgeBaseType.ANNOTATION_COMPILE);
-		for (Section<?> annotationSection : compileSections) {
+		for (Iterator<Section<? extends AnnotationContentType>> sectionIter = compileSections.iterator(); sectionIter.hasNext();) {
+			Section<?> annotationSection = sectionIter.next();
 			Section<KnowledgeBaseCompileType> compileSection = Sections.findChildOfType(
 					annotationSection, KnowledgeBaseCompileType.class);
 			String packageName = compileSection.getOriginalText().trim();
 			renderCompile(article, packageName, string);
+			if (sectionIter.hasNext()) string.append(KnowWEUtils.maskHTML("<br/>"));
 		}
 		string.append(KnowWEUtils.maskHTML("</div>"));
 	}
