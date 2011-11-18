@@ -37,12 +37,12 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.KDOMReportMessage;
 import de.knowwe.core.report.SimpleMessageError;
 import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.kdom.renderer.StyleRenderer;
 
 public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> {
 
 	public NumericalIntervallFinding() {
 		this.setSectionFinder(new NumericalIntervallFinder());
-
 		this.addChildType(new Intervall());
 		QuestionReference questionRef = new QuestionReference();
 		questionRef.setSectionFinder(new AllTextFinderTrimmed());
@@ -138,6 +138,7 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 		}
 
 		public Intervall() {
+			this.setCustomRenderer(StyleRenderer.NUMBER);
 			this.setSectionFinder(new SectionFinder() {
 
 				@Override
