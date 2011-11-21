@@ -1,4 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<%@page import="de.knowwe.core.wikiConnector.KnowWEWikiConnector"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="de.d3web.plugin.Extension"%>
 <%@ page import="de.d3web.plugin.JPFPluginManager"%>
@@ -35,14 +36,18 @@
 		parameters.put(KnowWEAttributes.USER, wikiContext.getWikiSession().getUserPrincipal().getName());
 	}
 	
-	// Add topic
-	if (!parameters.containsKey(KnowWEAttributes.TOPIC)) {
-		String topic = parameters.get("page");
-		if (topic == null) {
-	topic = KnowWEUtils.urldecode(wikiContext.getPage().getName());
-		}
-		parameters.put(KnowWEAttributes.TOPIC, topic);
+	String kdomID = parameters.get("kdomID");
+	Section diafluxSection = Sections.getSection(kdomID);
+	
+	if (diafluxSection == null){
+		out.println("<h3>Flowchart not found. Please try opening the editor again.</h3>");
+		out.println("<script>if (window.opener) window.opener.location.reload();</script>");
+		
+		return;
 	}
+	
+	// Add topic as containing section of flowchart
+	parameters.put(KnowWEAttributes.TOPIC, diafluxSection.getTitle());
 	
 	// Add web
 	if(!parameters.containsKey(KnowWEAttributes.WEB)) {
@@ -55,12 +60,17 @@
 	// Create action context
 	UserActionContext context = new ActionContext(parameters.get("action"), AbstractActionServlet.getActionFollowUpPath(request), parameters, request, response, wiki.getServletContext(), manager);
 	
-	String topic = context.getTopic();
+	String topic = context.getTitle();
 	String web = context.getWeb();
 	KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(web, topic);
+	if (article == null){
+		//TODO happens if article is no longer available
+		out.println("<h3>Article not found: '" + topic + "'.</h3>");
+		return;
+	}
 	
-	
-	boolean canEditPage = KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(
+	KnowWEWikiConnector connector = KnowWEEnvironment.getInstance().getWikiConnector();
+	boolean canEditPage = connector.userCanEditPage(
 	topic, context.getRequest());
 	
 	if (!canEditPage){
@@ -68,16 +78,16 @@
 		return;
 	}
 	
-	if (article == null){
-		//TODO happens if article is no longer available
-		out.println("<h3>Article not found: '" + topic + "'.</h3>");
-		return;
-	}
+	//TODO how to handle leftover pagelocks?
+// 	boolean locked = connector.isPageLocked(topic);
+// 	if (locked) {
+// 		out.println("<h3>The article is currently being edited.</h3>");
+// 		return;
+// 	}
 	
-	JSPHelper jspHelper = new JSPHelper(context);
-	String kdomID = context.getParameter("kdomID");
-	Section diafluxSection = Sections.getSection(kdomID);
+	
 	String title = DiaFluxType.getFlowchartName(diafluxSection);
+	JSPHelper jspHelper = new JSPHelper(context);
 %>
 
 <html>
@@ -93,7 +103,6 @@
 	
 	<script src="cc/scriptaculous-js/lib/prototype.js" type="text/javascript"></script>
 	<script src="cc/scriptaculous-js/src/builder.js" type="text/javascript"></script>
-	<!--  script src="cc/flow/builder.js" type="text/javascript"></script-->
 	<script src="cc/scriptaculous-js/src/effects.js" type="text/javascript"></script>
 	<script src="cc/scriptaculous-js/src/dragdrop.js" type="text/javascript"></script>
 	
@@ -107,7 +116,6 @@
 	<script src="cc/flow/flowchart.js" type="text/javascript"></script>
 	<script src="cc/flow/floweditor.js" type="text/javascript"></script>
 	<script src="cc/flow/action.js" type="text/javascript"></script>
-	<script src="cc/flow/actioneditor.js" type="text/javascript"></script>
 	<script src="cc/flow/guard.js" type="text/javascript"></script>
 	<script src="cc/flow/guardeditor.js" type="text/javascript"></script>
 	<script src="cc/flow/node.js" type="text/javascript"></script>

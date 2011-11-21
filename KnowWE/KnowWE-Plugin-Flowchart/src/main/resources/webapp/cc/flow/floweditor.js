@@ -570,6 +570,13 @@ FlowEditor.prototype._saveFlowchartText = function(xml, closeOnSuccess) {
 		onSuccess: function(transport) {
 			if (window.opener) window.opener.location.reload();
 			if (closeOnSuccess) window.close();
+			//set Url according to new section id
+			if (transport.responseText) {
+				var loc = window.location.href;
+				loc = loc.replace(/kdomID=[^&]*/,'kdomID=' + transport.responseText);
+				window.location.replace(loc);
+			}
+				
 		},
 		onFailure: function() {
 			CCMessage.warn(

@@ -18,7 +18,6 @@
  */
 package de.d3web.we.flow.type;
 
-import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
@@ -52,7 +51,6 @@ public class FlowchartEditProvider implements ToolProvider {
 
 	private static String createEditAction(Section<?> section, UserContext userContext) {
 		String id = section.getID();
-		String topic = userContext.getTopic();
 		// TODO encoding has no real effect as it doesn't make it through the
 		// rendering pipeline. e.g. '&' is encoded to %26, but is '&' again on
 		// the article. When opening the editor, the article can not be found.
@@ -61,8 +59,7 @@ public class FlowchartEditProvider implements ToolProvider {
 		// }
 		// catch (UnsupportedEncodingException e) {}
 		String url =
-				"FlowEditor.jsp?kdomID=" + id + "&" +
-						KnowWEAttributes.TOPIC + "=" + topic;
+				"FlowEditor.jsp?kdomID=" + id;
 		String winID = id.replaceAll("[^\\w]", "_");
 		String jsAction = "window.open('" + url + "', '" + winID + "');";
 		return jsAction;

@@ -24,6 +24,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.d3web.we.flow.type.DiaFluxType;
 import de.d3web.we.flow.type.FlowchartType;
@@ -32,9 +35,13 @@ import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.TerminologyHandler;
 import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.objects.KnowWETerm.Scope;
+import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Receives a xml-encoded flowchart from the editor and replaces the old kdom
@@ -50,7 +57,7 @@ public class SaveFlowchartAction extends AbstractAction {
 
 		String web = context.getWeb();
 		String nodeID = context.getParameter(KnowWEAttributes.TARGET);
-		String topic = context.getTopic();
+		String topic = context.getTitle();
 		String newText = context.getParameter(KnowWEAttributes.TEXT);
 
 		ResourceBundle wikiConfig = ResourceBundle.getBundle("KnowWE_config");
@@ -92,6 +99,8 @@ public class SaveFlowchartAction extends AbstractAction {
 		Section<FlowchartType> flowchartSection = Sections.findSuccessor(diaFluxSection,
 				FlowchartType.class);
 
+		Set<String> articles = KnowWEEnvironment.getInstance().getPackageManager(web).getArticlesReferringTo(flowchartSection);
+
 		// if flowchart is existing, replace flowchart
 		if (flowchartSection != null) {
 			save(context, topic, flowchartSection.getID(), newText);
@@ -113,6 +122,49 @@ public class SaveFlowchartAction extends AbstractAction {
 
 			save(context, topic, nodeID, builder.toString());
 		}
+		
+		
+		String id = getSectionID(web, newText, articles);
+
+		if (id != null) {
+			context.getWriter().write(id);
+		}
+		else {
+			// TODO
+		}
+	}
+
+	/*
+	 * TODO returns the new ID of the section to deliver it to the editor. There
+	 * should be a cleaner way.
+	 * 
+	 */
+	private String getSectionID(String web, String newText, Set<String> articles) {
+		if (articles.isEmpty()) {
+			// TODO
+			return null;
+		}
+
+		Matcher matcher = Pattern.compile("name=\"([^\"]*)\"", Pattern.CASE_INSENSITIVE).matcher(
+				newText);
+		if (!matcher.find()) {
+			//TODO what now??
+			return null;
+		}
+		
+		String flowname = matcher.group(1);
+
+		String title = articles.iterator().next();
+		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(web, title);
+		
+		TerminologyHandler handler = KnowWEUtils.getTerminologyHandler(web);
+		Section<? extends TermDefinition<?>> section = handler.getTermDefiningSection(article,
+				flowname, Scope.LOCAL);
+		
+		Section<DiaFluxType> diafluxSec = Sections.findAncestorOfExactType(section,
+				DiaFluxType.class);
+
+		return diafluxSec.getID();
 	}
 
 	/**
@@ -139,6 +191,7 @@ public class SaveFlowchartAction extends AbstractAction {
 		String nodeID = rootSection.getID();
 
 		save(context, topic, nodeID, newArticle);
+		
 	}
 
 	private void save(UserActionContext context, String topic, String nodeID, String newText) throws IOException {
@@ -147,6 +200,7 @@ public class SaveFlowchartAction extends AbstractAction {
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(
 				context.getWeb());
 		mgr.replaceKDOMNodesSaveAndBuild(context, topic, nodesMap);
+
 	}
 
 }

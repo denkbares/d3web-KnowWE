@@ -40,7 +40,6 @@ public class LoadFlowchartAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String web = context.getParameter(KnowWEAttributes.WEB);
 		String nodeID = context.getParameter(KnowWEAttributes.TARGET);
 
 		Section<FlowchartType> section = (Section<FlowchartType>) Sections.getSection(nodeID);

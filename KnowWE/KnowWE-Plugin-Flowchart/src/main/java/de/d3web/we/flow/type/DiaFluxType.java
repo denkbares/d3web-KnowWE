@@ -51,7 +51,7 @@ public class DiaFluxType extends DefaultMarkupType {
 		setCustomRenderer(new DiaFluxRenderer());
 	}
 
-	public static String getFlowchartName(Section<DefaultMarkupType> diaFluxSection) {
+	public static String getFlowchartName(Section<DiaFluxType> diaFluxSection) {
 
 		Section<FlowchartType> flowchart = Sections.findSuccessor(diaFluxSection,
 				FlowchartType.class);
