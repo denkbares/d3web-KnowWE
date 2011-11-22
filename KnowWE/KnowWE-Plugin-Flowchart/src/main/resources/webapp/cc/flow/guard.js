@@ -61,14 +61,19 @@ Guard.prototype.lookupDisplayHTML = function(guardPatterns) {
 }
 
 Guard.prototype.countVariables = function() {
-	var regexp = /\$\{[:\w]*\}/i;
-	var count = 0;
+	return this.getVariableTypes().length;
+}
+
+Guard.prototype.getVariableTypes = function() {
+	var regexp = /\$\{([:\w]*)\}/gi;
+	var result =[];
 	var text = this.getConditionString();
-	while (text.search(regexp) >= 0) {
-		text = text.replace(regexp, '');
-		count++;
+	var match;
+
+	while((match = regexp.exec(text)) != null) {
+		result.push(match[1]);
 	}
-	return count;
+	return result;
 }
 
 Guard.prototype.getValues = function(patternGuard) {
@@ -86,7 +91,7 @@ Guard.prototype.getValues = function(patternGuard) {
 		
 	}
 	
-	var regexp = eval('/'+pattern+'/gi')
+	var regexp = new RegExp(pattern,'gi');
 	var result = regexp.exec(this.conditionString);
 	var slice = result.slice(1);
 	return slice;
@@ -155,14 +160,15 @@ Guard.createPossibleGuards = function(nodeModel) {
 				for (var i=0; i<options.length; i++) {
 					result.push(new Guard('KnOffice', 'NOT("'+infoObject.getName()+'" = "'+options[i]+'")', '&ne; ' + options[i]));
 				}
-				result.push('Formula');
-				result.push(new Guard('timeDB', 'eval(${formula})', '${formula}'));
 				break;
 			// currently add no options for other values
 			case KBInfo.Question.TYPE_DATE:
+//				result.push('Time');
+//				result.push(new Guard('KnOffice', 'eval('+infoObject.getName()+' < (now - ${time}))', '&gt; ${time} ago'));
+//				result.push(new Guard('KnOffice', 'eval('+infoObject.getName()+' <= (now - ${time}))', '&ge; ${time} ago'));
+//				result.push(new Guard('KnOffice', 'eval('+infoObject.getName()+' >= (now - ${time}))', '&le; ${time} ago'));
+//				result.push(new Guard('KnOffice', 'eval('+infoObject.getName()+' > (now - ${time}))', '&lt; ${time} ago'));
 			case KBInfo.Question.TYPE_TEXT:
-				result.push('Formula');
-				result.push(new Guard('timeDB', 'eval(${formula})', '${formula}'));
 				break
 			case KBInfo.Question.TYPE_NUM:
 				result.push('Test value');
@@ -177,10 +183,9 @@ Guard.createPossibleGuards = function(nodeModel) {
 				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" >= ${num} AND "'+infoObject.getName()+'" < ${num}', '[ ${num} .. ${num} [', unit));
 				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" > ${num} AND "'+infoObject.getName()+'" <= ${num}', '] ${num} .. ${num} ]', unit));
 				result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" > ${num} AND "'+infoObject.getName()+'" < ${num}', '] ${num} .. ${num} [', unit));
-				result.push('Formula');
-				result.push(new Guard('timeDB', 'eval(${formula})', '${formula}'));
-				break;
 		}
+		result.push('Formula');
+		result.push(new Guard('timeDB', 'eval(${formula})', '${formula}'));
 		result.push('Common');
 		result.push(new Guard('KnOffice', 'KNOWN["'+infoObject.getName()+'"]', 'known'));
 		result.push(new Guard('KnOffice', 'NOT(KNOWN["'+infoObject.getName()+'"])', 'unknown'));
@@ -267,6 +272,36 @@ GuardPane.prototype.checkProblems = function(rule) {
 			this.problem = 'empty formula';
 		}
 		
+		if (sourceModel.action){
+			var action = new Action(sourceModel.action.markup, sourceModel.action.expression);
+			var infoObject = KBInfo.lookupInfoObject(action.getInfoObjectName());
+			if (infoObject.getClassInstance() == KBInfo.Question) {
+				switch (infoObject.getType()) {
+				
+				case KBInfo.Question.TYPE_DATE:
+					var allGuards = Guard.createPossibleGuards(sourceModel);
+					
+					for (var i = 0; i < allGuards.length; i++){
+						if (DiaFluxUtils.isString(allGuards[i])) continue;
+						if (allGuards[i].isPatternFor(this.guard)) {
+							var types = allGuards[i].getVariableTypes();
+							if (types.length == 1 && types[0] == 'time'){
+								var time = this.guard.getValues(allGuards[i]);
+								if (time == ''){
+									this.problem ='missing time string';
+								} 
+								else if (!new RegExp("(\d+\s*ms|s|min|h|d\s*)+$","i").exec(time)) {
+									this.problem ='invalid time string: ' + time;
+								}
+							} 
+						}
+					}
+					
+					break;
+				}
+				
+			}
+		}
 	}
 
 	
