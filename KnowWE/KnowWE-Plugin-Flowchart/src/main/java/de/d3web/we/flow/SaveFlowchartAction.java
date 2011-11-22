@@ -99,11 +99,15 @@ public class SaveFlowchartAction extends AbstractAction {
 		Section<FlowchartType> flowchartSection = Sections.findSuccessor(diaFluxSection,
 				FlowchartType.class);
 
-		Set<String> articles = KnowWEEnvironment.getInstance().getPackageManager(web).getArticlesReferringTo(flowchartSection);
+		// new ID for section to be transmitted to the editor
+		String id = null;
 
 		// if flowchart is existing, replace flowchart
 		if (flowchartSection != null) {
+			Set<String> articles = KnowWEEnvironment.getInstance().getPackageManager(web).getArticlesReferringTo(
+					flowchartSection);
 			save(context, topic, flowchartSection.getID(), newText);
+			id = getSectionID(web, newText, articles);
 		}
 		else { // no flowchart, insert flowchart
 			StringBuilder builder = new StringBuilder("%%DiaFlux");
@@ -124,13 +128,20 @@ public class SaveFlowchartAction extends AbstractAction {
 		}
 		
 		
-		String id = getSectionID(web, newText, articles);
-
+		// if new sectionID was found, transfer it to the editor
 		if (id != null) {
 			context.getWriter().write(id);
 		}
 		else {
 			// TODO
+			// This happens, if now flowchart section was found, i.e. if it was
+			// created with this saving OR if it is not compiled in any article.
+			// Then, the editor can not be reused and must be closed and opened
+			// again.
+			// ATM, the workaround was, to remove the "save-only" button in the
+			// editor
+			// it can be activated again, if the new section id can be found in
+			// any case.
 		}
 	}
 

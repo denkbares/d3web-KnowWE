@@ -30,7 +30,7 @@ FlowEditor.prototype.showEditor = function(){
 	$('properties.autostart').onchange = this.updateProperties;
 	
 	$('saveClose').observe('click', function(){this.saveFlowchart(true);}.bind(this));
-	$('save').observe('click', function(){this.saveFlowchart(false);}.bind(this));
+	//$('save').observe('click', function(){this.saveFlowchart(false);}.bind(this));
 	$('refresh').observe('click', this.revert);
 	
 	$('x_larger').observe('click', function(){FlowEditor.increaseSize('right');});
