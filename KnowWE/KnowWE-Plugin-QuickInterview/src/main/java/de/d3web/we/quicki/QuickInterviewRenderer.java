@@ -381,33 +381,33 @@ public class QuickInterviewRenderer {
 		// width of the question front section, i.e. total width - identation
 		int w = 320 - d;
 		String divText = getText(question);
-		if (divText.length() > 35) {
-			divText = question.getName().substring(0, 34) + "...";
-
-			// Question Text > 35 chars --> display shortened,
-			// render the first cell displaying the Question in a separate div,
-			// then call method for rendering a question's answers in another
-			// div
-			sb.append("\n<div id='" + question.getName() + "' " +
-					"parent='" + parent.getName() + "' " +
-					"class='questionTT' " +
-					"style='width: " + w + "px; display: inline-block;' title='"
-					+ getText(question)
-					+ "' >"
-					+ divText + "</div>");
-
-		}
-		else {
-			// Question Text < 35 chars --> display the whole no tooltip
-			// render the first cell displaying the Question in a separate div,
-			// then call method for rendering a question's answers in another
-			// div
-			sb.append("\n<div id='" + question.getName() + "' " +
+		// if (divText.length() > 35) {
+		// divText = question.getName().substring(0, 34) + "...";
+		//
+		// // Question Text > 35 chars --> display shortened,
+		// // render the first cell displaying the Question in a separate div,
+		// // then call method for rendering a question's answers in another
+		// // div
+		// sb.append("\n<div id='" + question.getName() + "' " +
+		// "parent='" + parent.getName() + "' " +
+		// "class='questionTT' " +
+		// "style='width: " + w + "px; display: inline-block;' title='"
+		// + getText(question)
+		// + "' >"
+		// + divText + "</div>");
+		//
+		// }
+		// else {
+		// Question Text < 35 chars --> display the whole no tooltip
+		// render the first cell displaying the Question in a separate div,
+		// then call method for rendering a question's answers in another
+		// div
+		sb.append("\n<div id='" + question.getName() + "' " +
 					"parent='" + parent.getName() + "' " +
 					"class='question' " +
 					"style='width: " + w + "px; display: inline-block;' >"
 					+ divText + "</div>");
-		}
+		// }
 		sb.append("</td><td>");
 
 		if (question instanceof QuestionOC) {
