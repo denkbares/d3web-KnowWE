@@ -69,13 +69,13 @@ public class EmbracedContentFinder implements SectionFinder {
 		int start = SplitUtility.indexOfUnquoted(text, "" + open);
 		if (start > -1) {
 			int end = SplitUtility.findIndexOfClosingBracket(text, start,
-						open, close);
+					open, close);
 			if (end < 0) return null;
 
 			int startIndex = start;
 			int endIndex = end + 1;
 			if (contentOnly) { // cut out open and close char
-				startIndex = start - 1;
+				startIndex = start + 1;
 				endIndex = end;
 			}
 
