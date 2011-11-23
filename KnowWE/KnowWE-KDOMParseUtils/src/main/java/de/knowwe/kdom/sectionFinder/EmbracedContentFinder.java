@@ -45,10 +45,17 @@ public class EmbracedContentFinder implements SectionFinder {
 	private final char open;
 	private final char close;
 	private int chains = -1;
+	private boolean contentOnly = false;
 
 	public EmbracedContentFinder(char open, char close) {
 		this.close = close;
 		this.open = open;
+	}
+
+	public EmbracedContentFinder(char open, char close, boolean contentOnly) {
+		this.close = close;
+		this.open = open;
+		this.contentOnly = contentOnly;
 	}
 
 	public EmbracedContentFinder(char open, char close, int chains) {
@@ -65,18 +72,25 @@ public class EmbracedContentFinder implements SectionFinder {
 						open, close);
 			if (end < 0) return null;
 
+			int startIndex = start;
+			int endIndex = end + 1;
+			if (contentOnly) { // cut out open and close char
+				startIndex = start - 1;
+				endIndex = end;
+			}
+
 			// if chains restriction uninitialized, take all
 			if (chains == -1) {
-				return SectionFinderResult.createSingleItemResultList(start,
-						end + 1);
+				return SectionFinderResult.createSingleItemResultList(startIndex,
+						endIndex);
 			}
 			else {
 				// else check chain restriction
-				String content = text.substring(start,
-						end + 1);
+				String content = text.substring(startIndex,
+						endIndex);
 				if (SplitUtility.getCharacterChains(content).length == chains) {
-					return SectionFinderResult.createSingleItemResultList(start,
-							end + 1);
+					return SectionFinderResult.createSingleItemResultList(startIndex,
+							endIndex);
 				}
 			}
 
