@@ -28,8 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.Indication.State;
 import de.d3web.core.knowledge.InterviewObject;
@@ -557,11 +555,7 @@ public class QuickInterviewRenderer {
 			}
 		}
 
-		Pattern pattern = Pattern.compile("(.0)$");
-		Matcher matcher = pattern.matcher(value);
-		if (matcher.find()) {
-			value = value.substring(0, value.indexOf("."));
-		}
+		value = value.replaceAll("(?<=[\\.\\d]+?)0+$", "").replaceAll("\\.$", "");
 
 		String id = getID();
 		String unit = "";
