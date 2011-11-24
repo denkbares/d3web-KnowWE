@@ -68,184 +68,6 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		this.renderCompileWarnings = renderCompileWarnings;
 	}
 
-	public ToolsRenderMode getRenderMode() {
-		return renderMode;
-	}
-
-	public void setRenderMode(ToolsRenderMode renderMode) {
-		this.renderMode = renderMode;
-	}
-
-	public String renderToolbar(Tool[] tools) {
-		StringBuilder toolbarHtml = new StringBuilder("<div class='markupTools'> ");
-		for (Tool tool : tools) {
-			toolbarHtml.append("<div class=\""
-					+ tool.getClass().getSimpleName() + "\" >" +
-					"<a href=\"javascript:" + tool.getJSAction() + ";undefined;\">" +
-					"<img " +
-					"title=\"" + tool.getDescription() + "\" " +
-					"src=\"" + tool.getIconPath() + "\"></img>" +
-					"</a></div>");
-
-		}
-		toolbarHtml.append("</div>");
-		return toolbarHtml.toString();
-	}
-
-	public String renderMenu(Map<String, Map<String, List<Tool>>> tools, String id) {
-		StringBuffer menuHtml = new StringBuffer("<div id='menu_" + id + "' class='markupMenu'>");
-
-		List<String> levelOneCategories = new ArrayList<String>(tools.keySet());
-		Collections.sort(levelOneCategories);
-
-		for (String category : levelOneCategories) {
-			Map<String, List<Tool>> levelTwoTools = tools.get(category);
-
-			List<String> levelTwoCategories = new ArrayList<String>(levelTwoTools.keySet());
-			Collections.sort(levelTwoCategories);
-
-			for (String subcategory : levelTwoCategories) {
-				for (Tool t : tools.get(category).get(subcategory)) {
-					menuHtml.append(renderToolAsMenuItem(t));
-				}
-			}
-
-			if (!category.equals(levelOneCategories.get(levelOneCategories.size() - 1))) {
-				menuHtml.append("<span class=\"markupMenuDivider\">&nbsp;</span>");
-			}
-		}
-
-		return menuHtml.append("</div>").toString();
-	}
-
-	private String renderToolAsMenuItem(Tool tool) {
-		String icon = tool.getIconPath();
-		String jsAction = tool.getJSAction();
-		boolean hasIcon = icon != null && !icon.trim().isEmpty();
-
-		return "<div class=\"" + tool.getClass().getSimpleName() + "\" >"
-				+ "<div class=\"markupMenuItem\">"
-				+ "<"
-				+ (jsAction == null ? "span" : "a")
-				+ " class=\"markupMenuItem\""
-				+ (jsAction != null
-						? " href=\"javascript:" + tool.getJSAction() + ";undefined;\""
-						: "") +
-				" title=\"" + tool.getDescription() + "\">" +
-				(hasIcon ? ("<img src=\"" + icon + "\"></img>") : "") +
-				" <span>" + tool.getTitle() + "</span>" +
-				"</" + (jsAction == null ? "span" : "a") + ">" +
-				"</div></div>";
-	}
-
-	public String renderMenuAnimation(String id) {
-		return "<script>\n" +
-				"var makeMenuFx = function() {\n" +
-				"var a=$('header_" + id + "'),c=$('menu_" + id + "');\n" +
-				"if(!a||!c){}\n" +
-				"var b=c.effect(\"opacity\",{wait:false}).set(0);\n" +
-				"a.adopt(c).set({href:\"#\",events:{" +
-				"mouseout:function(){b.start(0);}," +
-				"click:function(){b.start(0.9);}," +
-				"mouseover:function(){b.start(0.9);}}});" +
-				"};" +
-				"makeMenuFx();" +
-				"</script>\n";
-	}
-
-	public String renderTitleAnimation(String id) {
-		return "<script>\n" +
-				"var makeTitleFx = function() {\n" +
-				"var a=$('header_" + id + "');\n" +
-				"var b=a.effect(\"opacity\",{wait:false,duration:200}).set(0.3);\n" +
-				"var d=a.effect(\"max-width\",{wait:false}).set(35);\n" +
-				"a.set({href:\"#\",events:{" +
-				"mouseout:function(){b.start(0.3);d.start(35);a.style['z-index']=1000;}," +
-				"click:function(){b.start(1);d.start(250);a.style['z-index']=1500;}," +
-				"mouseover:function(){b.start(1);d.start(250);a.style['z-index']=1500;}}});" +
-				"};" +
-				"makeTitleFx();" +
-				"</script>\n";
-	}
-
-	public String renderTitle(String iconPath, String title) {
-		String result = "";
-		// render icon
-		if (iconPath != null) {
-			result = "<img class='markupIcon' src='" + iconPath + "'></img> ";
-		}
-
-		// render heading
-		result += "<span>" + title + "</span>";
-		return KnowWEUtils.maskHTML(result);
-	}
-
-	public void renderDefaultMarkupStyled(String title,
-			String content,
-			String sectionID,
-			String cssClassName,
-			Tool[] tools,
-			UserContext user,
-			StringBuilder string) {
-
-		String cssClass = "defaultMarkupFrame";
-		if (cssClassName != null) cssClass += " " + cssClassName;
-		string.append(KnowWEUtils.maskHTML("<div id=\"" + sectionID
-				+ "\" class='" + cssClass + "'>\n"));
-
-		boolean hasTools = tools != null && tools.length > 0;
-		if (renderMode == null) renderMode = ToolsRenderMode.MENU;
-		boolean hasToolbar = renderMode == ToolsRenderMode.TOOLBAR;
-		boolean hasMenu = renderMode == ToolsRenderMode.MENU;
-
-		string.append(KnowWEUtils.maskHTML(
-				"<div id='header_" + sectionID + "' "
-						+ "class='markupHeaderFrame"
-						+ (hasToolbar ? " headerToolbar" : " headerMenu")
-						+ "'>"));
-
-		string.append(KnowWEUtils.maskHTML("<div class='markupHeader'>"));
-		string.append(title);
-		if (hasMenu) {
-			string.append(KnowWEUtils.maskHTML("<span class='markupMenuIndicator' />"));
-		}
-
-		if (hasToolbar) {
-			string.append(KnowWEUtils.maskHTML(renderToolbar(tools)));
-		}
-		// string.append("\n");
-		string.append(KnowWEUtils.maskHTML("</div>")); // class=markupHeader
-
-		if (hasTools && hasMenu) {
-			String menuHtml = renderMenu(ToolUtils.groupTools(tools), sectionID);
-			string.append(KnowWEUtils.maskHTML(menuHtml));
-		}
-
-		string.append(KnowWEUtils.maskHTML("</div>")); // class=markupHeaderFrame
-
-		// render pre-formatted box
-		string.append(KnowWEUtils.maskHTML("<div id=\"box_" + sectionID
-				+ "\" class='defaultMarkup'>"));
-		string.append(KnowWEUtils.maskHTML("<div id=\"content_" + sectionID
-				+ "\" class='markupText'>"));
-
-		// render content
-		// Returns are replaced to avoid JSPWiki to render <p> </p>, do not edit
-		// the following line!
-		string.append(content.replaceAll("(\r?\n){2}",
-				KnowWEUtils.maskHTML("<span>\n</span><span>\n</span>")));
-
-		// and close the box(es)
-		string.append(KnowWEUtils.maskHTML("</div>")); // class=markupText
-		string.append(KnowWEUtils.maskHTML("</div>")); // class=defaultMarkup
-		string.append(KnowWEUtils.maskHTML("</div>"));
-
-		if (hasMenu) {
-			string.append(KnowWEUtils.maskHTML(renderTitleAnimation(sectionID)));
-			string.append(KnowWEUtils.maskHTML(renderMenuAnimation(sectionID)));
-		}
-	}
-
 	@Override
 	public void render(KnowWEArticle article, Section<T> section, UserContext user, StringBuilder buffer) {
 		String id = section.getID();
@@ -282,32 +104,24 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		string.append(renderTitle(icon, title));
 	}
 
-	protected String getTitleName(KnowWEArticle article, Section<T> section, UserContext user) {
-		return section.get().getName();
-	}
-
 	protected String getTitleIcon(KnowWEArticle article, Section<T> section, UserContext user) {
 		return this.iconPath;
 	}
 
-	@SuppressWarnings("unchecked")
-	protected void renderContents(KnowWEArticle article, Section<T> section, UserContext user, StringBuilder string) {
-		List<Section<?>> subsecs = section.getChildren();
-		Section<?> first = subsecs.get(0);
-		Section<?> last = subsecs.get(subsecs.size() - 1);
-		for (Section<?> subsec : subsecs) {
-			if (subsec == first && subsec.get() instanceof PlainText) {
-				continue;
-			}
-			if (subsec == last && subsec.get() instanceof PlainText) {
-				continue;
-			}
-			subsec.get().getRenderer().render(article, subsec, user, string);
-		}
+	protected String getTitleName(KnowWEArticle article, Section<T> section, UserContext user) {
+		return section.get().getName();
 	}
 
-	protected void renderMessages(KnowWEArticle article, Section<? extends DefaultMarkupType> section, UserContext user, StringBuilder string) {
-		renderMessages(article, section, string);
+	protected String renderTitle(String iconPath, String title) {
+		String result = "";
+		// render icon
+		if (iconPath != null) {
+			result = "<img class='markupIcon' src='" + iconPath + "'></img> ";
+		}
+
+		// render heading
+		result += "<span>" + title + "</span>";
+		return result;
 	}
 
 	public static void renderMessages(KnowWEArticle article, Section<? extends DefaultMarkupType> section, StringBuilder string) {
@@ -317,7 +131,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 				KDOMWarning.class), string);
 	}
 
-	private static void renderKDOMReportMessageBlock(Collection<? extends KDOMReportMessage> messages, StringBuilder string) {
+	public static void renderKDOMReportMessageBlock(Collection<? extends KDOMReportMessage> messages, StringBuilder string) {
 		if (messages == null) return;
 		if (messages.size() == 0) return;
 
@@ -340,4 +154,206 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		}
 		string.append(KnowWEUtils.maskHTML("</span>"));
 	}
+
+	@SuppressWarnings("unchecked")
+	protected void renderContents(KnowWEArticle article, Section<T> section, UserContext user, StringBuilder string) {
+		List<Section<?>> subsecs = section.getChildren();
+		Section<?> first = subsecs.get(0);
+		Section<?> last = subsecs.get(subsecs.size() - 1);
+		for (Section<?> subsec : subsecs) {
+			if (subsec == first && subsec.get() instanceof PlainText) {
+				continue;
+			}
+			if (subsec == last && subsec.get() instanceof PlainText) {
+				continue;
+			}
+			subsec.get().getRenderer().render(article, subsec, user, string);
+		}
+	}
+
+	public void renderDefaultMarkupStyled(String title,
+			String content,
+			String sectionID,
+			String cssClassName,
+			Tool[] tools,
+			UserContext user,
+			StringBuilder string) {
+
+		String cssClass = "defaultMarkupFrame";
+		if (cssClassName != null) cssClass += " " + cssClassName;
+		string.append(KnowWEUtils.maskHTML("<div id=\"" + sectionID + "\" class='" + cssClass
+				+ "'>\n"));
+
+		renderHeader(title, sectionID, tools, user, string);
+
+		// render pre-formatted box
+		string.append(KnowWEUtils.maskHTML("<div id=\"box_" + sectionID
+				+ "\" class='defaultMarkup'>"));
+		string.append(KnowWEUtils.maskHTML("<div id=\"content_" + sectionID
+				+ "\" class='markupText'>"));
+
+		// render content
+		// Returns are replaced to avoid JSPWiki to render <p> </p>, do not edit
+		// the following line!
+		string.append(content.replaceAll("(\r?\n){2}",
+				KnowWEUtils.maskHTML("<span>\n</span><span>\n</span>")));
+
+		// and close the box(es)
+		string.append(KnowWEUtils.maskHTML("</div>")); // class=markupText
+		string.append(KnowWEUtils.maskHTML("</div>")); // class=defaultMarkup
+		string.append(KnowWEUtils.maskHTML("</div>"));
+
+		if (renderMode == ToolsRenderMode.MENU) {
+			string.append(KnowWEUtils.maskHTML(renderTitleAnimation(sectionID)));
+			string.append(KnowWEUtils.maskHTML(renderMenuAnimation(sectionID)));
+		}
+
+	}
+
+	protected void renderHeader(String title,
+			String sectionID,
+			Tool[] tools,
+			UserContext user,
+			StringBuilder string) {
+
+		StringBuilder temp = new StringBuilder();
+
+		String renderModerClass = renderMode == ToolsRenderMode.TOOLBAR
+				? " headerToolbar"
+				: " headerMenu";
+		String openingDiv = "<div id='header_" + sectionID + "' class='markupHeaderFrame"
+				+ renderModerClass + "'>";
+
+		temp.append(openingDiv);
+
+		temp.append("<div class='markupHeader'>");
+		temp.append(title);
+
+		if (renderMode == ToolsRenderMode.MENU) {
+			temp.append("<span class='markupMenuIndicator' />");
+		}
+		else if (renderMode == ToolsRenderMode.TOOLBAR) {
+			temp.append(renderToolbar(tools, user));
+		}
+
+		temp.append("</div>"); // class=markupHeader
+
+		if (renderMode == ToolsRenderMode.MENU) {
+			temp.append(renderMenu(tools, sectionID, user));
+		}
+
+		temp.append("</div>"); // class=markupHeaderFrame
+
+		string.append(KnowWEUtils.maskHTML(temp.toString()));
+
+	}
+
+	protected String renderToolbar(Tool[] tools, UserContext user) {
+		StringBuilder toolbarHtml = new StringBuilder("<div class='markupTools'> ");
+		for (Tool tool : tools) {
+			toolbarHtml.append("<div class=\""
+					+ tool.getClass().getSimpleName() + "\" >" +
+					"<a href=\"javascript:" + tool.getJSAction() + ";undefined;\">" +
+					"<img " +
+					"title=\"" + tool.getDescription() + "\" " +
+					"src=\"" + tool.getIconPath() + "\"></img>" +
+					"</a></div>");
+		}
+		toolbarHtml.append("</div>");
+		return toolbarHtml.toString();
+	}
+
+	public String renderMenu(Tool[] tools, String id, UserContext user) {
+
+		if (tools == null || tools.length == 0) return "";
+
+		Map<String, Map<String, List<Tool>>> groupedTools = ToolUtils.groupTools(tools);
+
+		StringBuffer menuHtml = new StringBuffer("<div id='menu_" + id + "' class='markupMenu'>");
+
+		List<String> levelOneCategories = new ArrayList<String>(groupedTools.keySet());
+		Collections.sort(levelOneCategories);
+
+		for (String category : levelOneCategories) {
+			Map<String, List<Tool>> levelTwoTools = groupedTools.get(category);
+
+			List<String> levelTwoCategories = new ArrayList<String>(levelTwoTools.keySet());
+			Collections.sort(levelTwoCategories);
+
+			for (String subcategory : levelTwoCategories) {
+				for (Tool t : groupedTools.get(category).get(subcategory)) {
+					menuHtml.append(renderToolAsMenuItem(t));
+				}
+			}
+
+			if (!category.equals(levelOneCategories.get(levelOneCategories.size() - 1))) {
+				menuHtml.append("<span class=\"markupMenuDivider\">&nbsp;</span>");
+			}
+		}
+
+		return menuHtml.append("</div>").toString();
+	}
+
+	protected String renderToolAsMenuItem(Tool tool) {
+		String icon = tool.getIconPath();
+		String jsAction = tool.getJSAction();
+		boolean hasIcon = icon != null && !icon.trim().isEmpty();
+
+		return "<div class=\"" + tool.getClass().getSimpleName() + "\" >"
+				+ "<div class=\"markupMenuItem\">"
+				+ "<"
+				+ (jsAction == null ? "span" : "a")
+				+ " class=\"markupMenuItem\""
+				+ (jsAction != null
+						? " href=\"javascript:" + tool.getJSAction() + ";undefined;\""
+						: "") +
+				" title=\"" + tool.getDescription() + "\">" +
+				(hasIcon ? ("<img src=\"" + icon + "\"></img>") : "") +
+				" <span>" + tool.getTitle() + "</span>" +
+				"</" + (jsAction == null ? "span" : "a") + ">" +
+				"</div></div>";
+	}
+
+	protected String renderTitleAnimation(String id) {
+		return "<script>\n" +
+				"var makeTitleFx = function() {\n" +
+				"var a=$('header_" + id + "');\n" +
+				"var b=a.effect(\"opacity\",{wait:false,duration:200}).set(0.3);\n" +
+				"var d=a.effect(\"max-width\",{wait:false}).set(35);\n" +
+				"a.set({href:\"#\",events:{" +
+				"mouseout:function(){b.start(0.3);d.start(35);a.style['z-index']=1000;}," +
+				"click:function(){b.start(1);d.start(250);a.style['z-index']=1500;}," +
+				"mouseover:function(){b.start(1);d.start(250);a.style['z-index']=1500;}}});" +
+				"};" +
+				"makeTitleFx();" +
+				"</script>\n";
+	}
+
+	protected String renderMenuAnimation(String id) {
+		return "<script>\n" +
+				"var makeMenuFx = function() {\n" +
+				"var a=$('header_" + id + "'),c=$('menu_" + id + "');\n" +
+				"if(!a||!c){}\n" +
+				"var b=c.effect(\"opacity\",{wait:false}).set(0);\n" +
+				"a.adopt(c).set({href:\"#\",events:{" +
+				"mouseout:function(){b.start(0);}," +
+				"click:function(){b.start(0.9);}," +
+				"mouseover:function(){b.start(0.9);}}});" +
+				"};" +
+				"makeMenuFx();" +
+				"</script>\n";
+	}
+
+	public void renderMessages(KnowWEArticle article, Section<? extends DefaultMarkupType> section, UserContext user, StringBuilder string) {
+		renderMessages(article, section, string);
+	}
+
+	public ToolsRenderMode getRenderMode() {
+		return renderMode;
+	}
+
+	public void setRenderMode(ToolsRenderMode renderMode) {
+		this.renderMode = renderMode;
+	}
+
 }

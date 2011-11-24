@@ -18,9 +18,6 @@
  */
 package de.knowwe.tools;
 
-import java.util.List;
-import java.util.Map;
-
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -53,7 +50,6 @@ public class ToolMenuDecoratingRenderer<T extends Type> extends KnowWEDomRendere
 		boolean hasTools = tools != null && tools.length > 0;
 
 		String headerID = "header_" + sec.getID();
-		Map<String, Map<String, List<Tool>>> toolMap = ToolUtils.groupTools(tools);
 
 		if (hasTools) {
 			string.append(KnowWEUtils.maskHTML("<span " +
@@ -69,7 +65,7 @@ public class ToolMenuDecoratingRenderer<T extends Type> extends KnowWEDomRendere
 		decoratedRenderer.render(article, sec, user, string);
 		if (hasTools) {
 			string.append(KnowWEUtils.maskHTML("</span>"));
-			String menuHTML = defaultMarkupRenderer.renderMenu(toolMap, sec.getID());
+			String menuHTML = defaultMarkupRenderer.renderMenu(tools, sec.getID(), user);
 			menuHTML = menuHTML.replace("'", "\\'").replace("</div>", "</div>' + \n '");
 			string.append(KnowWEUtils.maskHTML(
 					"<script>" +
