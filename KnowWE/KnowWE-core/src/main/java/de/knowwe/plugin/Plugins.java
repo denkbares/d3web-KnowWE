@@ -249,8 +249,9 @@ public class Plugins {
 			List<String> scripts = e.getParameters("script");
 			if (scripts != null) {
 				for (String s : scripts) {
-					if (!files.contains(s))
+					if (!files.contains(s)) {
 						files.add(s);
+					}
 				}
 			}
 		}
