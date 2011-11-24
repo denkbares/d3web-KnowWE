@@ -215,14 +215,14 @@ public class Plugins {
 	 * Initializes the Javascript files
 	 */
 	public static void initJS() {
-		HashSet<String> files = new HashSet<String>();
-		addStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+		List<String> files = new ArrayList<String>();
+		addScripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_PageAppendHandler));
-		addStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+		addScripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_Type));
-		addStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+		addScripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_TagHandler));
-		addStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+		addScripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_ToolProvider));
 		for (String s : files) {
 			KnowWERessourceLoader.getInstance().add(s, KnowWERessourceLoader.RESOURCE_SCRIPT);
@@ -244,12 +244,13 @@ public class Plugins {
 		}
 	}
 
-	private static void addStripts(HashSet<String> files, Extension[] extensions) {
+	private static void addScripts(List<String> files, Extension[] extensions) {
 		for (Extension e : extensions) {
 			List<String> scripts = e.getParameters("script");
 			if (scripts != null) {
 				for (String s : scripts) {
-					files.add(s);
+					if (!files.contains(s))
+						files.add(s);
 				}
 			}
 		}
