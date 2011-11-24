@@ -22,7 +22,7 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer<DefaultMarkupType> {
 	}
 
 	@Override
-	protected String getHeaderName(KnowWEArticle article, Section<DefaultMarkupType> section, UserContext user) {
+	protected String getTitleName(KnowWEArticle article, Section<DefaultMarkupType> section, UserContext user) {
 		Section<FlowchartType> flowchart = Sections.findSuccessor(section, FlowchartType.class);
 
 		if (flowchart == null) {

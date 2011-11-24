@@ -76,7 +76,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		this.renderMode = renderMode;
 	}
 
-	public static String renderToolbar(Tool[] tools) {
+	public String renderToolbar(Tool[] tools) {
 		StringBuilder toolbarHtml = new StringBuilder("<div class='markupTools'> ");
 		for (Tool tool : tools) {
 			toolbarHtml.append("<div class=\""
@@ -92,7 +92,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		return toolbarHtml.toString();
 	}
 
-	public static String renderMenu(Map<String, Map<String, List<Tool>>> tools, String id) {
+	public String renderMenu(Map<String, Map<String, List<Tool>>> tools, String id) {
 		StringBuffer menuHtml = new StringBuffer("<div id='menu_" + id + "' class='markupMenu'>");
 
 		List<String> levelOneCategories = new ArrayList<String>(tools.keySet());
@@ -118,7 +118,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		return menuHtml.append("</div>").toString();
 	}
 
-	private static String renderToolAsMenuItem(Tool tool) {
+	private String renderToolAsMenuItem(Tool tool) {
 		String icon = tool.getIconPath();
 		String jsAction = tool.getJSAction();
 		boolean hasIcon = icon != null && !icon.trim().isEmpty();
@@ -138,7 +138,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 				"</div></div>";
 	}
 
-	public static String renderMenuAnimation(String id) {
+	public String renderMenuAnimation(String id) {
 		return "<script>\n" +
 				"var makeMenuFx = function() {\n" +
 				"var a=$('header_" + id + "'),c=$('menu_" + id + "');\n" +
@@ -153,9 +153,9 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 				"</script>\n";
 	}
 
-	public static String renderHeaderAnimation(String id) {
+	public String renderTitleAnimation(String id) {
 		return "<script>\n" +
-				"var makeHeaderFx = function() {\n" +
+				"var makeTitleFx = function() {\n" +
 				"var a=$('header_" + id + "');\n" +
 				"var b=a.effect(\"opacity\",{wait:false,duration:200}).set(0.3);\n" +
 				"var d=a.effect(\"max-width\",{wait:false}).set(35);\n" +
@@ -164,11 +164,11 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 				"click:function(){b.start(1);d.start(250);a.style['z-index']=1500;}," +
 				"mouseover:function(){b.start(1);d.start(250);a.style['z-index']=1500;}}});" +
 				"};" +
-				"makeHeaderFx();" +
+				"makeTitleFx();" +
 				"</script>\n";
 	}
 
-	public static String renderHeader(String iconPath, String title) {
+	public String renderTitle(String iconPath, String title) {
 		String result = "";
 		// render icon
 		if (iconPath != null) {
@@ -180,17 +180,13 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		return KnowWEUtils.maskHTML(result);
 	}
 
-	public static void renderDefaultMarkupStyled(String header, String content, String sectionID, Tool[] tools, StringBuilder string) {
-		renderDefaultMarkupStyled(header, content, sectionID, null, tools, string, null);
-	}
-
-	public static void renderDefaultMarkupStyled(String header,
+	public void renderDefaultMarkupStyled(String title,
 			String content,
 			String sectionID,
 			String cssClassName,
 			Tool[] tools,
-			StringBuilder string,
-			ToolsRenderMode rendermode) {
+			UserContext user,
+			StringBuilder string) {
 
 		String cssClass = "defaultMarkupFrame";
 		if (cssClassName != null) cssClass += " " + cssClassName;
@@ -198,26 +194,25 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 				+ "\" class='" + cssClass + "'>\n"));
 
 		boolean hasTools = tools != null && tools.length > 0;
-		if (rendermode == null) rendermode = ToolsRenderMode.MENU;
-		boolean hasToolbar = rendermode == ToolsRenderMode.TOOLBAR;
-		boolean hasMenu = rendermode == ToolsRenderMode.MENU;
-
-		String toolbarHtml = "";
-		if (hasToolbar) {
-			toolbarHtml = renderToolbar(tools);
-		}
+		if (renderMode == null) renderMode = ToolsRenderMode.MENU;
+		boolean hasToolbar = renderMode == ToolsRenderMode.TOOLBAR;
+		boolean hasMenu = renderMode == ToolsRenderMode.MENU;
 
 		string.append(KnowWEUtils.maskHTML(
 				"<div id='header_" + sectionID + "' "
 						+ "class='markupHeaderFrame"
 						+ (hasToolbar ? " headerToolbar" : " headerMenu")
 						+ "'>"));
+
 		string.append(KnowWEUtils.maskHTML("<div class='markupHeader'>"));
-		string.append(header);
+		string.append(title);
 		if (hasMenu) {
 			string.append(KnowWEUtils.maskHTML("<span class='markupMenuIndicator' />"));
 		}
-		string.append(KnowWEUtils.maskHTML(toolbarHtml));
+
+		if (hasToolbar) {
+			string.append(KnowWEUtils.maskHTML(renderToolbar(tools)));
+		}
 		// string.append("\n");
 		string.append(KnowWEUtils.maskHTML("</div>")); // class=markupHeader
 
@@ -246,7 +241,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		string.append(KnowWEUtils.maskHTML("</div>"));
 
 		if (hasMenu) {
-			string.append(KnowWEUtils.maskHTML(renderHeaderAnimation(sectionID)));
+			string.append(KnowWEUtils.maskHTML(renderTitleAnimation(sectionID)));
 			string.append(KnowWEUtils.maskHTML(renderMenuAnimation(sectionID)));
 		}
 	}
@@ -256,9 +251,9 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		String id = section.getID();
 		Tool[] tools = ToolUtils.getTools(article, section, user);
 
-		// render Header
-		StringBuilder header = new StringBuilder();
-		renderHeader(article, section, user, header);
+		// render markup title
+		StringBuilder markupTitle = new StringBuilder();
+		renderTitle(article, section, user, markupTitle);
 
 		// create content
 		StringBuilder content = new StringBuilder();
@@ -277,24 +272,25 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		String cssClassName = "type_" + section.get().getName();
 
 		renderDefaultMarkupStyled(
-				header.toString(), content.toString(),
-				id, cssClassName, tools, buffer, renderMode);
+				markupTitle.toString(), content.toString(),
+				id, cssClassName, tools, user, buffer);
 	}
 
-	protected void renderHeader(KnowWEArticle article, Section<T> section, UserContext user, StringBuilder string) {
-		String icon = getHeaderIcon(article, section, user);
-		String title = getHeaderName(article, section, user);
-		string.append(renderHeader(icon, title));
+	protected void renderTitle(KnowWEArticle article, Section<T> section, UserContext user, StringBuilder string) {
+		String icon = getTitleIcon(article, section, user);
+		String title = getTitleName(article, section, user);
+		string.append(renderTitle(icon, title));
 	}
 
-	protected String getHeaderName(KnowWEArticle article, Section<T> section, UserContext user) {
+	protected String getTitleName(KnowWEArticle article, Section<T> section, UserContext user) {
 		return section.get().getName();
 	}
 
-	protected String getHeaderIcon(KnowWEArticle article, Section<T> section, UserContext user) {
+	protected String getTitleIcon(KnowWEArticle article, Section<T> section, UserContext user) {
 		return this.iconPath;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void renderContents(KnowWEArticle article, Section<T> section, UserContext user, StringBuilder string) {
 		List<Section<?>> subsecs = section.getChildren();
 		Section<?> first = subsecs.get(0);

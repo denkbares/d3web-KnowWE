@@ -24,8 +24,6 @@ import java.io.IOException;
 
 import de.knowwe.core.KnowWEArticleManager;
 import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.action.AbstractAction;
-import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.packaging.PackageRenderUtils;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
@@ -49,12 +47,14 @@ public class ReRenderContentPartAction extends AbstractAction {
 
 		String web = context.getWeb();
 		String nodeID = context.getParameter("KdomNodeId");
-		String topic = context.getTopic();
 
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
-		KnowWEArticle article = mgr.getArticle(topic);
 
 		Section<? extends Type> secWithNodeID = Sections.getSection(nodeID);
+
+		String title = secWithNodeID.getTitle();
+
+		KnowWEArticle article = mgr.getArticle(title);
 
 		article = PackageRenderUtils.checkArticlesCompiling(article, secWithNodeID);
 
@@ -63,7 +63,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 
 			Type type = secWithNodeID.get();
 			KnowWEDomRenderer renderer = RendererManager.getInstance().getRenderer(type,
-					context.getUserName(), topic);
+					context.getUserName(), title);
 
 			if (renderer != null) {
 				renderer.render(article, secWithNodeID, context, b);

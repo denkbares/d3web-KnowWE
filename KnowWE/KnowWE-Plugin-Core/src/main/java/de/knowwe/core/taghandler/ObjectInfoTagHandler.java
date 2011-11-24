@@ -32,12 +32,11 @@ import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.compile.TerminologyHandler;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.basicType.PlainText;
+import de.knowwe.core.kdom.objects.KnowWETerm.Scope;
 import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.objects.TermReference;
-import de.knowwe.core.kdom.objects.KnowWETerm.Scope;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.taghandler.AbstractTagHandler;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -74,6 +73,9 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	private int panelCounter = 0;
 	private int sectionCounter = 0;
 
+	private static DefaultMarkupRenderer<DefaultMarkupType> defaultMarkupRenderer =
+			new DefaultMarkupRenderer<DefaultMarkupType>();
+
 	// KnowWE-ResourceBundle
 	private ResourceBundle rb;
 
@@ -108,8 +110,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 		StringBuilder buffer = new StringBuilder();
 		String cssClassName = "type_" + section.get().getName();
-		DefaultMarkupRenderer.renderDefaultMarkupStyled(
-				getTagName(), content, sectionID, cssClassName, tools, buffer, null);
+		defaultMarkupRenderer.renderDefaultMarkupStyled(
+				getTagName(), content, sectionID, cssClassName, tools, userContext, buffer);
 		return buffer.toString();
 	}
 

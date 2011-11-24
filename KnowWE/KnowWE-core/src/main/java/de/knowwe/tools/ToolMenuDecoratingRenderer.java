@@ -18,8 +18,6 @@
  */
 package de.knowwe.tools;
 
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +28,7 @@ import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * 
@@ -39,7 +38,10 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 public class ToolMenuDecoratingRenderer<T extends Type> extends KnowWEDomRenderer<T> {
 
 	private final KnowWEDomRenderer<?> decoratedRenderer;
-	
+
+	private static DefaultMarkupRenderer<DefaultMarkupType> defaultMarkupRenderer =
+			new DefaultMarkupRenderer<DefaultMarkupType>();
+
 	public ToolMenuDecoratingRenderer(KnowWEDomRenderer<T> decoratedRenderer) {
 		this.decoratedRenderer = decoratedRenderer;
 	}
@@ -67,7 +69,7 @@ public class ToolMenuDecoratingRenderer<T extends Type> extends KnowWEDomRendere
 		decoratedRenderer.render(article, sec, user, string);
 		if (hasTools) {
 			string.append(KnowWEUtils.maskHTML("</span>"));
-			String menuHTML = DefaultMarkupRenderer.renderMenu(toolMap, sec.getID());
+			String menuHTML = defaultMarkupRenderer.renderMenu(toolMap, sec.getID());
 			menuHTML = menuHTML.replace("'", "\\'").replace("</div>", "</div>' + \n '");
 			string.append(KnowWEUtils.maskHTML(
 					"<script>" +
