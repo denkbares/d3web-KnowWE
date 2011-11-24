@@ -111,7 +111,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		StringBuilder buffer = new StringBuilder();
 		String cssClassName = "type_" + section.get().getName();
 		defaultMarkupRenderer.renderDefaultMarkupStyled(
-				getTagName(), content, sectionID, cssClassName, tools, userContext, buffer);
+				getTagName(), content, sectionID, cssClassName, tools, userContext,
+				buffer);
 		return buffer.toString();
 	}
 
@@ -134,7 +135,6 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		}
 
 		// Get TermDefinitions and TermReferences
-		TerminologyHandler th = KnowWEUtils.getTerminologyHandler(article.getWeb());
 		Set<Section<? extends TermDefinition<?>>> definitions = new HashSet<Section<? extends TermDefinition<?>>>();
 		Set<Section<? extends TermReference<?>>> references = new HashSet<Section<? extends TermReference<?>>>();
 
@@ -145,11 +145,15 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		while (iter.hasNext()) {
 			currentArticle = iter.next();
 			// Get global and local term definitions
-			getTermDefinitions(currentArticle, objectName, th, Scope.GLOBAL, definitions);
-			getTermDefinitions(currentArticle, objectName, th, Scope.LOCAL, definitions);
+			getTermDefinitions(currentArticle, objectName, article, Scope.GLOBAL,
+					definitions);
+			getTermDefinitions(currentArticle, objectName, article, Scope.LOCAL,
+					definitions);
 			// Get global and local term refereces
-			getTermReferences(currentArticle, objectName, th, Scope.GLOBAL, references);
-			getTermReferences(currentArticle, objectName, th, Scope.LOCAL, references);
+			getTermReferences(currentArticle, objectName, article, Scope.GLOBAL,
+					references);
+			getTermReferences(currentArticle, objectName, article, Scope.LOCAL,
+					references);
 		}
 
 		// Render
@@ -223,13 +227,17 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 	private String renderObjectInfo(Set<Section<? extends TermDefinition<?>>> definitions, Set<Section<? extends TermReference<?>>> references, Map<String, String> parameters) {
 		StringBuilder html = new StringBuilder();
-		if (!checkParameter(HIDEDEF, parameters)) html.append(renderTermDefinitions(definitions));
-		if (!checkParameter(HIDEREFS, parameters)) html.append(renderTermReferences(references,
-				definitions));
+		if (!checkParameter(HIDEDEF, parameters))
+			html.append(renderTermDefinitions(definitions));
+		if (!checkParameter(HIDEREFS, parameters))
+			html.append(renderTermReferences(references,
+					definitions));
 		return html.toString();
 	}
 
-	private void getTermDefinitions(KnowWEArticle currentArticle, String objectName, TerminologyHandler th, Scope scope, Set<Section<? extends TermDefinition<?>>> definitions) {
+	protected void getTermDefinitions(KnowWEArticle currentArticle, String objectName, KnowWEArticle context, Scope scope, Set<Section<? extends TermDefinition<?>>> definitions) {
+		TerminologyHandler th = KnowWEUtils.getTerminologyHandler(context.getWeb());
+
 		Section<? extends TermDefinition<?>> definition;
 		definition = th.getTermDefiningSection(currentArticle, objectName, scope);
 		if (definition != null) {
@@ -238,7 +246,9 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 	}
 
-	private void getTermReferences(KnowWEArticle currentArticle, String objectName, TerminologyHandler th, Scope scope, Set<Section<? extends TermReference<?>>> references) {
+	protected void getTermReferences(KnowWEArticle currentArticle, String objectName, KnowWEArticle context, Scope scope, Set<Section<? extends TermReference<?>>> references) {
+		TerminologyHandler th = KnowWEUtils.getTerminologyHandler(context.getWeb());
+
 		Set<Section<? extends TermReference<?>>> temp = new HashSet<Section<? extends TermReference<?>>>();
 		temp = th.getTermReferenceSections(currentArticle, objectName, scope);
 		if (temp != null && temp.size() > 0) {
@@ -357,7 +367,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		StringBuilder html = new StringBuilder();
 
 		// Search for plain text occurrences
-		SearchEngine se = new SearchEngine(KnowWEEnvironment.getInstance().getArticleManager(web));
+		SearchEngine se = new SearchEngine(
+				KnowWEEnvironment.getInstance().getArticleManager(web));
 		se.setOption(SearchOption.FUZZY);
 		se.setOption(SearchOption.CASE_INSENSITIVE);
 		se.setOption(SearchOption.DOTALL);
@@ -377,19 +388,24 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 					appropriateSections = true;
 					innerHTML.append("<li>");
 					innerHTML.append("<pre style=\"margin:1em -1em;\">");
-					String textBefore = r.getAdditionalContext(-35).replaceAll("(\\{|\\})", "");
-					if (!article.getSection().getOriginalText().startsWith(textBefore)) innerHTML.append("...");
+					String textBefore = r.getAdditionalContext(-35).replaceAll(
+							"(\\{|\\})", "");
+					if (!article.getSection().getOriginalText().startsWith(textBefore))
+						innerHTML.append("...");
 					innerHTML.append(textBefore);
 					innerHTML.append("<a href=\"Wiki.jsp?page=");
 					innerHTML.append(article.getTitle());
 					innerHTML.append("#");
 					innerHTML.append(s.getID());
 					innerHTML.append("\" >");
-					innerHTML.append(s.getOriginalText().substring(r.getStart(), r.getEnd()));
+					innerHTML.append(s.getOriginalText().substring(r.getStart(),
+							r.getEnd()));
 					innerHTML.append("</a>");
-					String textAfter = r.getAdditionalContext(40).replaceAll("(\\{|\\})", "");
+					String textAfter = r.getAdditionalContext(40).replaceAll("(\\{|\\})",
+							"");
 					innerHTML.append(textAfter);
-					if (!article.getSection().getOriginalText().endsWith(textAfter)) innerHTML.append("...");
+					if (!article.getSection().getOriginalText().endsWith(textAfter))
+						innerHTML.append("...");
 					innerHTML.append("</pre>");
 					innerHTML.append("</li>");
 				}
@@ -402,7 +418,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			}
 		}
 
-		return renderSection(rb.getString("KnowWE.ObjectInfoTagHandler.plaintextoccurrences"),
+		return renderSection(
+				rb.getString("KnowWE.ObjectInfoTagHandler.plaintextoccurrences"),
 				html.toString());
 	}
 
