@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -244,9 +245,19 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		WikiEngine engine = wikiContext.getEngine();
 		String pureText = "";
 		if (engine != null) {
-			pureText = engine.getPureText(wikiContext.getPage().getName(),
+			pureText = engine.getPureText(title,
 					wikiContext.getPage().getVersion());
 			if (!content.equals(pureText)) return content;
+		}
+		Set<String> titles = KnowWEEnvironment.getInstance().getArticleManager(
+				KnowWEEnvironment.DEFAULT_WEB).getTitles();
+		if (!titles.contains(title)) {
+			for (String availableTitle : titles) {
+				if (title.equalsIgnoreCase(availableTitle)) {
+					return "The page \"" + title + "\" does not exist, did you mean \"["
+							+ availableTitle + "]\"?";
+				}
+			}
 		}
 		try {
 
