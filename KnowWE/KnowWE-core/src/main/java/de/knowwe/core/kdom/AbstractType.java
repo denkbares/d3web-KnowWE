@@ -194,7 +194,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	public final TreeMap<Priority, List<SubtreeHandler<? extends Type>>> getSubtreeHandlers() {
 		if (!subtreeHandlersPlugged) {
 			subtreeHandlersPlugged = true;
-			//addPluggedSubtreeHandlers();
+			addPluggedSubtreeHandlers();
 		}
 		return subtreeHandler;
 	}
