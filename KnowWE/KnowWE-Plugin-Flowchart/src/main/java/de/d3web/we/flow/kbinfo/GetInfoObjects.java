@@ -120,7 +120,13 @@ public class GetInfoObjects extends AbstractAction {
 		appendHeader(buffer);
 
 		// iterate through the requested Objects
-		String[] idArray = ids.split(",");
+		String[] idArray = ids.split("\",\"");
+		if (idArray.length > 0) { // remove leading/trailing " on first/last
+									// entry
+			idArray[0] = idArray[0].substring(1, idArray[0].length());
+			idArray[idArray.length - 1] = idArray[idArray.length - 1].substring(0,
+					idArray[idArray.length - 1].length() - 1);
+		}
 		for (int i = 0; i < idArray.length; i++) {
 			String id = idArray[i];
 			appendInfoObject(web, id, buffer);
