@@ -54,7 +54,7 @@ Rule.prototype.toXML = function() {
 		}
 		else {
 			xml += '\t\t<guard markup="'+this.guard.getMarkup()+'">' +
-					this.guard.getConditionString()+
+					this.guard.toXML(this) +
 					'</guard>\n';
 		}
 	}

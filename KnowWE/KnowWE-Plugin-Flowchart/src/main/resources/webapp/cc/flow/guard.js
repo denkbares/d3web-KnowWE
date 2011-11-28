@@ -44,7 +44,7 @@ Guard.prototype.getDisplayHTML = function(values) {
 
 Guard.prototype.lookupDisplayHTML = function(guardPatterns) {
 	if (!guardPatterns) return;
-	for (var i=guardPatterns.length - 1; i>0; --i) {
+	for (var i=0; i < guardPatterns.length; i++) {
 		var guard = guardPatterns[i];
 		if (DiaFluxUtils.isString(guard)) continue;
 		if (guard.isPatternFor(this)) {
@@ -120,6 +120,38 @@ Guard.inject = function(text, values) {
 	return text;
 }
 
+Guard.createFromXML = function(flowchart, xmlDom, pasteOptions, sourceNode) {
+	
+	if (!xmlDom || xmlDom.length == 0) {
+		return new Guard('NOP', ' ', ' ');
+	}
+		
+	var markup = xmlDom[0].getAttribute('markup') || 'KnOffice';
+	var conditionString = KBInfo._nodeText(xmlDom[0]);
+	
+	//removes lhs from binary operation
+	if (markup == 'timeDB') {
+		
+		var infoObject = sourceNode.getBaseObject();
+		if (infoObject) {
+			var name = DiaFluxUtils.escapeRegex(infoObject.getName());
+			var regexString = "^eval\\(" + name + "\\s*(<|<=|>|>=|!=|=)(.*)\\)";
+			var regex = new RegExp(regexString,"i");
+			var match = regex.exec(conditionString);
+			
+			if (match){
+				conditionString = "eval(" + match[1] + "" + match[2] +")";
+			}	
+		}
+	}
+	
+	guard = new Guard(markup, conditionString);
+	guard.lookupDisplayHTML(sourceNode.getPossibleGuards());
+	
+	return guard;
+}
+
+
 
 Guard.createPossibleGuards = function(nodeModel) {
 	if (!nodeModel) return null;
@@ -162,12 +194,13 @@ Guard.createPossibleGuards = function(nodeModel) {
 				}
 				break;
 			// currently add no options for other values
-			case KBInfo.Question.TYPE_DATE:
-//				result.push('Time');
-//				result.push(new Guard('KnOffice', 'eval('+infoObject.getName()+' < (now - ${time}))', '&gt; ${time} ago'));
-//				result.push(new Guard('KnOffice', 'eval('+infoObject.getName()+' <= (now - ${time}))', '&ge; ${time} ago'));
-//				result.push(new Guard('KnOffice', 'eval('+infoObject.getName()+' >= (now - ${time}))', '&le; ${time} ago'));
-//				result.push(new Guard('KnOffice', 'eval('+infoObject.getName()+' > (now - ${time}))', '&lt; ${time} ago'));
+			case KBInfo.Question.TYPE_DATE: 
+				result.push('Time');
+				result.push(new Guard('timeDB', 'eval('+infoObject.getName()+' < (now - ${duration}))', '&gt; ${duration} ago'));
+				result.push(new Guard('timeDB', 'eval('+infoObject.getName()+' <= (now - ${duration}))', '&ge; ${duration} ago'));
+				result.push(new Guard('timeDB', 'eval('+infoObject.getName()+' >= (now - ${duration}))', '&le; ${duration} ago'));
+				result.push(new Guard('timeDB', 'eval('+infoObject.getName()+' > (now - ${duration}))', '&lt; ${duration} ago'));
+				break;
 			case KBInfo.Question.TYPE_TEXT:
 				break
 			case KBInfo.Question.TYPE_NUM:
@@ -285,13 +318,14 @@ GuardPane.prototype.checkProblems = function(rule) {
 						if (DiaFluxUtils.isString(allGuards[i])) continue;
 						if (allGuards[i].isPatternFor(this.guard)) {
 							var types = allGuards[i].getVariableTypes();
-							if (types.length == 1 && types[0] == 'time'){
-								var time = this.guard.getValues(allGuards[i]);
-								if (time == ''){
-									this.problem ='missing time string';
+							if (types.length == 1 && types[0] == 'duration') {
+								var duration = this.guard.getValues(allGuards[i]);
+								if (duration == ''){
+									this.problem ='missing duration string';
+									break;
 								} 
-								else if (!new RegExp("(\d+\s*ms|s|min|h|d\s*)+$","i").exec(time)) {
-									this.problem ='invalid time string: ' + time;
+								if (!/^\s*(:?\d+\s*(:?ms|s|min|h|d)\s*)$/i.exec(duration)) {
+									this.problem ='invalid duration string: ' + duration;
 								}
 							} 
 						}

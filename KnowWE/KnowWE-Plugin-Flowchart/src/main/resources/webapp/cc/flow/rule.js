@@ -313,15 +313,8 @@ Rule.createFromXML = function(flowchart, xmlDom, pasteOptions) {
 	
 	var guard = null;
 	var guardDoms = xmlDom.getElementsByTagName('guard');
-	if (guardDoms && guardDoms.length > 0) {
-		var markup = guardDoms[0].getAttribute('markup') || 'KnOffice';
-		var conditionString = KBInfo._nodeText(guardDoms[0]);
-		guard = new Guard(markup, conditionString);
-		guard.lookupDisplayHTML(sourceNode.getPossibleGuards());
-	}
-	else {
-		guard = new Guard('NOP', ' ', ' ');
-	}
+	
+	var guard = Guard.createFromXML(flowchart, guardDoms, pasteOptions, sourceNode);
 	
 	return new Rule(id, sourceNode, guard, targetNode);
 }

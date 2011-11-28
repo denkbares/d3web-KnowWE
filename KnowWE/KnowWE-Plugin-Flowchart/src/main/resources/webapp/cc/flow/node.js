@@ -181,8 +181,11 @@ Node.prototype.getCenterY = function() {
 }
 
 Node.prototype.getBaseObject = function() {
-	if (!this.action) return null;
-	return KBInfo.lookupInfoObject(this.action.getInfoObjectName());
+	var nodeModel = this.getNodeModel();
+	if (!nodeModel.action) return null;
+	
+	var action = new Action(nodeModel.action.markup, nodeModel.action.expression);
+	return KBInfo.lookupInfoObject(action.getInfoObjectName());
 }
 
 Node.prototype.render = function() {

@@ -1,3 +1,28 @@
+Guard.prototype.toXML = function(rule) {
+	var condition = this.getConditionString();
+
+	if (this.markup == 'timeDB') {
+		var regex =/^eval\(\s*(<|<=|>|>=|!=|=)(.*)\)/i;
+		var match = regex.exec(condition);
+		if (match) {
+			var nodeModel = rule.getSourceNode().getNodeModel();
+			
+			if (!nodeModel.action)
+				return condition; //TODO right? 
+			
+			var action = new Action(nodeModel.action.markup, nodeModel.action.expression);
+			
+			return "eval("+action.getInfoObjectName() + " " + match[1] + match[2] + ")";
+			
+		
+		}
+		
+	}
+	else {
+		return condition;
+	}
+
+}
 
 /**
  * GuardEditor
@@ -17,7 +42,7 @@
  	this.selectedIndex = -1;
  	
  	if (this.initialGuard) {
-	 	for (var i=0; i<this.possibleGuards.length; i++) {
+	 	for (var i=this.possibleGuards.length -1; i > 0; i--) {
 	 		var guard = this.possibleGuards[i];
 	 		if (DiaFluxUtils.isString(guard)) continue;
 	 		// das erste selektieren, dass fuer den Guard Vorlage ist 
