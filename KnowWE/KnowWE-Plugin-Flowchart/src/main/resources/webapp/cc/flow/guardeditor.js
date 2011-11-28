@@ -2,25 +2,22 @@ Guard.prototype.toXML = function(rule) {
 	var condition = this.getConditionString();
 
 	if (this.markup == 'timeDB') {
+		//test for short condition (left out lhs with binary op)
 		var regex =/^eval\(\s*(<|<=|>|>=|!=|=)(.*)\)/i;
 		var match = regex.exec(condition);
 		if (match) {
 			var nodeModel = rule.getSourceNode().getNodeModel();
 			
-			if (!nodeModel.action)
-				return condition; //TODO right? 
+			if (!nodeModel.action) return condition;
 			
 			var action = new Action(nodeModel.action.markup, nodeModel.action.expression);
 			
 			return "eval("+action.getInfoObjectName() + " " + match[1] + match[2] + ")";
-			
-		
 		}
 		
 	}
-	else {
-		return condition;
-	}
+	
+	return condition;
 
 }
 

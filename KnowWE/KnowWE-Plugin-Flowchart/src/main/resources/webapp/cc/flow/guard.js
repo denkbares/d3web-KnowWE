@@ -196,10 +196,10 @@ Guard.createPossibleGuards = function(nodeModel) {
 			// currently add no options for other values
 			case KBInfo.Question.TYPE_DATE: 
 				result.push('Time');
-				result.push(new Guard('timeDB', 'eval('+infoObject.getName()+' < (now - ${duration}))', '&gt; ${duration} ago'));
-				result.push(new Guard('timeDB', 'eval('+infoObject.getName()+' <= (now - ${duration}))', '&ge; ${duration} ago'));
-				result.push(new Guard('timeDB', 'eval('+infoObject.getName()+' >= (now - ${duration}))', '&le; ${duration} ago'));
-				result.push(new Guard('timeDB', 'eval('+infoObject.getName()+' > (now - ${duration}))', '&lt; ${duration} ago'));
+				result.push(new Guard('timeDB', 'eval((now - ${duration}) > '+infoObject.getName()+')', '&gt; ${duration} ago'));
+				result.push(new Guard('timeDB', 'eval((now - ${duration}) < '+infoObject.getName()+')', '&lt; ${duration} ago'));
+				result.push(new Guard('timeDB', 'eval((now - ${duration}) >= '+infoObject.getName()+')', '&ge; ${duration} ago'));
+				result.push(new Guard('timeDB', 'eval((now - ${duration}) <= '+infoObject.getName()+')', '&le; ${duration} ago'));
 				break;
 			case KBInfo.Question.TYPE_TEXT:
 				break
