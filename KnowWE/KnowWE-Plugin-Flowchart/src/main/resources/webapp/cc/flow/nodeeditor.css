@@ -83,12 +83,13 @@
 	z-index: 30;
 }
 
-.NodeEditor button {
-}
-
 .NodeEditor button.ok {
 	min-width: 60px;
 }
 
 .NodeEditor button.cancel {
+}
+
+.ActionEditor textarea.formula{
+	width: 300px;
 }

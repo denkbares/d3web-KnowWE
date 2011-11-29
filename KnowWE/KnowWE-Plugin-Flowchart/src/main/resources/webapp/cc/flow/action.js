@@ -277,7 +277,6 @@ Action.createPossibleActions = function(infoObject) {
 		if (!infoObject.isAbstract()) {
 			result.push('Ask question');			
 			// questions can be asked
-			//removed conversion to json-string @20091102
 			result.push(new Action('KnOffice', name));
 			result.push(new Action('KnOffice', 'INSTANT['+name+']'));
 			result.push(new Action('KnOffice', 'ALWAYS['+name+']'));
@@ -288,12 +287,6 @@ Action.createPossibleActions = function(infoObject) {
 		switch (infoObject.getType()) {
 			//add yes/no value
 			case KBInfo.Question.TYPE_BOOL:
-				// for now we receive also choices for boolean questions 
-				// from the server so treat them similar to oc questions
-				//result.push(new Action('KnOffice', Action._createExpression(name, 'YES')));
-				//result.push(new Action('KnOffice', Action._createExpression(name, 'NO')));
-				//break;
-			//add choices of oc/mc value
 			case KBInfo.Question.TYPE_OC:
 			case KBInfo.Question.TYPE_MC:
 				var options = infoObject.getOptions();
@@ -333,7 +326,6 @@ Action.createPossibleActions = function(infoObject) {
 	}
 	else if (infoObject.getClassInstance() == KBInfo.QSet) {
 		result.push('Ask questionnaire');			
-		//removed conversion to json-string @20091102
 		result.push(new Action('KnOffice', name));
 
 	}
@@ -398,7 +390,6 @@ ActionEditor.prototype.getAnswers = function() {
 }
 
 ActionEditor.prototype.handleObjectSelected = function() {
-	//alert("object changed");
 	this.refreshValueInput();
 }
 
@@ -462,13 +453,7 @@ ActionEditor.prototype.getFormulaString = function() {
 	
 	return Action._extractFormulaExpression(this.selectedAction.markup, this.selectedAction.valueString)
 	
-//	if (this.selectedAction.markup == 'KnOffice')
-//		return formula.substring(1, formula.length-1);
-//	else if (this.selectedAction.markup == 'timeDB')
-//		return formula.substring(5, formula.length-1);
-//	else
-//		return '()';
-	
+
 }
 	
 ActionEditor.prototype.render = function() {
@@ -481,42 +466,13 @@ ActionEditor.prototype.render = function() {
 	[
 		Builder.node('div', {className: 'object'}),	// ObjectSelect parent
 		Builder.node('div', {className: 'value'}),	// value dropdown parent
-		Builder.node('input', {
-			className: 'input', type: 'text', value: formula, 
-			style: 'display: none;'
-		})
+		Builder.node('textarea', {
+			className: 'input formula', type: 'text', style: 'display: none;'
+		},[formula])
 	]);
 	dom.__ActionEditor = this;
 	return dom;
 }
-
-
-
-// Helper
-function getElementsByClassName(class_name)
-{
-  var all_obj,ret_obj=new Array(),j=0,teststr;
-
-  if(document.all)all_obj=document.all;
-  else if(document.getElementsByTagName && !document.all)
-    all_obj=document.getElementsByTagName("*");
-
-  for(i=0;i<all_obj.length;i++)
-  {
-    if(all_obj[i].className.indexOf(class_name)!=-1)
-    {
-      teststr=","+all_obj[i].className.split(" ").join(",")+",";
-      if(teststr.indexOf(","+class_name+",")!=-1)
-      {
-        ret_obj[j]=all_obj[i];
-        j++;
-      }
-    }
-  }
-  return ret_obj;
-}
-
-
 
 
 ActionEditor.prototype.refreshValueInput = function() {
