@@ -93,8 +93,11 @@ Guard.prototype.getValues = function(patternGuard) {
 	
 	var regexp = new RegExp(pattern,'gi');
 	var result = regexp.exec(this.conditionString);
-	var slice = result.slice(1);
-	return slice;
+	if (!result) {
+		return ""; 
+	} else {
+		return result.slice(1);
+	}
 }
 
 Guard.prototype.inject = function(values) {
