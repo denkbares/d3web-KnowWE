@@ -19,8 +19,14 @@ Guard.prototype.isPatternFor = function(other) {
 	var regexp = this.getConditionString();
 	regexp = regexp.replace(/\$\{[:\w]*\}/gi, '__ANY__');
 	regexp = DiaFluxUtils.escapeRegex(regexp); 
-	regexp = regexp.replace(/__ANY__/g, '.*');
-	var string = '^\s*'+regexp+'\s*$';
+	
+	if (this.isFormula()){
+		regexp = regexp.replace(/__ANY__/g, '(.*)');
+	} else {
+		regexp = regexp.replace(/__ANY__/g, '([^\\s]*)');
+	}
+	
+	var string = '^\\s*'+regexp+'\\s*$';
 	regexp = new RegExp(string);
 	var test = regexp.test(other.getConditionString());
 	return test;
@@ -78,17 +84,13 @@ Guard.prototype.getVariableTypes = function() {
 
 Guard.prototype.getValues = function(patternGuard) {
 	var pattern = patternGuard.getConditionString();
+	pattern = pattern.replace(/\$\{[:\w]*\}/gi, '__ANY__');
+	pattern = DiaFluxUtils.escapeRegex(pattern);
+
 	if (this.isFormula()){
-		
-		pattern = pattern.replace(/\$\{[:\w]*\}/gi, '__ANY__');
-		pattern = DiaFluxUtils.escapeRegex(pattern);
 		pattern = pattern.replace(/__ANY__/g, '(.*)');
-		
 	} else {
-		pattern = pattern.replace(/\$\{[:\w]*\}/gi, '__ANY__');
-		pattern = DiaFluxUtils.escapeRegex(pattern);
 		pattern = pattern.replace(/__ANY__/g, '([^\\s]*)');
-		
 	}
 	
 	var regexp = new RegExp(pattern,'gi');
