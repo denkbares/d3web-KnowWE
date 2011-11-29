@@ -56,6 +56,7 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.CommentLineType;
+import de.knowwe.core.kdom.basicType.UnrecognizedSyntaxType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -110,11 +111,14 @@ public class RuleContentType extends AbstractType {
 			// when updating KnowWE architecture
 			termConds.add((Type) Class.forName(
 					"cc.knowwe.tdb.EvalConditionType").newInstance());
-		} catch (InstantiationException e) {
+		}
+		catch (InstantiationException e) {
 			notAttached = true;
-		} catch (IllegalAccessException e) {
+		}
+		catch (IllegalAccessException e) {
 			notAttached = true;
-		} catch (ClassNotFoundException e) {
+		}
+		catch (ClassNotFoundException e) {
 			notAttached = true;
 		}
 		if (notAttached) {
@@ -137,6 +141,7 @@ public class RuleContentType extends AbstractType {
 		// register the configured rule-type as child
 		this.childrenTypes.add(new CommentLineType());
 		this.addChildType(rule);
+		this.addChildType(new UnrecognizedSyntaxType());
 	}
 
 	/**
@@ -162,8 +167,7 @@ public class RuleContentType extends AbstractType {
 					.findAncestorOfType(actionS,
 							ConditionActionRuleContent.class);
 
-			if (!article.isFullParse())
-				destroy(article, actionS);
+			if (!article.isFullParse()) destroy(article, actionS);
 
 			if (rule.hasErrorInSubtree(article)) {
 				return Arrays
@@ -290,16 +294,19 @@ public class RuleContentType extends AbstractType {
 			if (r == null || session == null) {
 				DelegateRenderer.getInstance().render(article, sec, user,
 						newContent);
-			} else {
+			}
+			else {
 				try {
 					if (r.hasFired(session)) {
 						this.firedRenderer.render(article, sec, user,
 								newContent);
-					} else {
+					}
+					else {
 						DelegateRenderer.getInstance().render(article, sec,
 								user, newContent);
 					}
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					this.exceptionRenderer.render(article, sec, user,
 							newContent);
 				}

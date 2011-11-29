@@ -43,7 +43,7 @@ public final class Patterns {
 	/**
 	 * RegEx for a linebreak: optional \r followed by \n
 	 */
-	public static final String LINEBREAK = "\\r?\\n";
+	public static final String LINEBREAK = "(?:\\r?\\n|\\z)";
 
 	/**
 	 * RegEx for non-breaking spaces (blanks or tabs)
@@ -132,8 +132,8 @@ public final class Patterns {
 	 */
 	public static final String JSPWIKI_LINK =
 			"(?<!\\[)\\[(?!\\[)" + // opening bracket (except, if masked)
-			"([^]|]+)" + // link text (captured)
-			"(?:\\|([^]]+))?" + // optional reference
-			"\\]"; // closing bracket
+					"([^]|]+)" + // link text (captured)
+					"(?:\\|([^]]+))?" + // optional reference
+					"\\]"; // closing bracket
 
 }
