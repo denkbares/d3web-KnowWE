@@ -102,7 +102,7 @@ KBInfo.prepareInfoObject = function(nameOrIDOrArray) {
 		if (i>0) ids += ',';
 		ids += '"' + nameOrIDOrArray[i] + '"';
 	}
-	var url = "KnowCC.jsp?action=GetInfoObjects&ids=" + encodeURIComponent(ids);
+	var url = "KnowWE.jsp?action=GetInfoObjects&ids=" + encodeURIComponent(ids);
 	new Ajax.Request(url, {
 		method: 'get',
 		onSuccess: function(transport) {
@@ -135,7 +135,7 @@ KBInfo.searchInfoObject = function(phrase, classArray, maxCount, onResult) {
 	}
 	var phraseParam = '&phrase='+DiaFluxUtils.escapeRegex(phrase);
 	var maxCountParam = maxCount ? '&maxcount='+maxCount : '';
-	var url = "KnowCC.jsp?action=SearchInfoObjects" 
+	var url = "KnowWE.jsp?action=SearchInfoObjects" 
 			+ classesParam 
 			+ phraseParam
 			+ maxCountParam;

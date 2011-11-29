@@ -80,15 +80,15 @@ public class JSPHelper {
 		List<String> matches = getAllMatches("Article", this.userContext.getWeb());
 
 		// fill the response buffer
-		StringBuffer buffer = new StringBuffer();
-		GetInfoObjects.appendHeader(buffer);
+		StringBuilder bob = new StringBuilder();
+		GetInfoObjects.appendHeader(bob);
 		for (String id : matches) {
-			GetInfoObjects.appendInfoObject(this.userContext.getWeb(), id, buffer);
+			GetInfoObjects.appendInfoObject(this.userContext.getWeb(), id, bob);
 		}
-		GetInfoObjects.appendFooter(buffer);
+		GetInfoObjects.appendFooter(bob);
 
 		// and done
-		return buffer.toString();
+		return bob.toString();
 	}
 
 	public String getReferredInfoObjectsAsXML() {
@@ -101,15 +101,15 @@ public class JSPHelper {
 		List<String> matches = getAllMatches(null, web);
 
 		// fill the response buffer
-		StringBuffer buffer = new StringBuffer();
-		GetInfoObjects.appendHeader(buffer);
+		StringBuilder bob = new StringBuilder();
+		GetInfoObjects.appendHeader(bob);
 		for (String id : matches) {
-			GetInfoObjects.appendInfoObject(web, id, buffer);
+			GetInfoObjects.appendInfoObject(web, id, bob);
 		}
-		GetInfoObjects.appendFooter(buffer);
+		GetInfoObjects.appendFooter(bob);
 
 		// and done
-		return buffer.toString();
+		return bob.toString();
 
 	}
 

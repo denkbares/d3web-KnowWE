@@ -52,6 +52,7 @@ public class SearchInfoObjects extends AbstractAction {
 
 		int maxCount = (max != null) ? Integer.parseInt(max) : 100;
 		String result = search(KnowWEEnvironment.getInstance(), web, phrase, classes, maxCount);
+		context.setContentType("text/xml; charset=UTF-8");
 		context.getWriter().write(result);
 	}
 

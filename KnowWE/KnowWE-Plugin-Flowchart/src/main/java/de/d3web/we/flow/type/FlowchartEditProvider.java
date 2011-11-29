@@ -59,7 +59,7 @@ public class FlowchartEditProvider implements ToolProvider {
 		// }
 		// catch (UnsupportedEncodingException e) {}
 		String url =
-				"FlowEditor.jsp?kdomID=" + id;
+				"DiaFluxEditor.jsp?kdomID=" + id;
 		String winID = id.replaceAll("[^\\w]", "_");
 		String jsAction = "window.open('" + url + "', '" + winID + "');";
 		return jsAction;

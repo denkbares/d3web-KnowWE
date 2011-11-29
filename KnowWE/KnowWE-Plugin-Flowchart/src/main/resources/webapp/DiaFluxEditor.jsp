@@ -64,7 +64,7 @@
 	String web = context.getWeb();
 	KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(web, topic);
 	if (article == null){
-		//TODO happens if article is no longer available
+		// happens if article is no longer available
 		out.println("<h3>Article not found: '" + topic + "'.</h3>");
 		return;
 	}
@@ -145,8 +145,6 @@
 	<link rel="stylesheet" type="text/css" href="cc/kbinfo/dropdownlist.css"></link>
 	<link rel="stylesheet" type="text/css" href="cc/kbinfo/objectselect.css"></link>
 	<link rel="stylesheet" type="text/css" href="cc/kbinfo/objecttree.css"></link>
-
-
 	<link rel="stylesheet" type="text/css" href="cc/flow/floweditor.css"></link>
 	<link rel="stylesheet" type="text/css" href="cc/flow/flowchart.css"></link>
 	<link rel="stylesheet" type="text/css" href="cc/flow/nodeeditor.css"></link>
@@ -154,33 +152,24 @@
 	<link rel="stylesheet" type="text/css" href="cc/flow/rule.css"></link>
 	<link rel="stylesheet" type="text/css" href="cc/flow/guard.css"></link>
 	<link rel="stylesheet" type="text/css" href="cc/flow/contextmenu.css"></link>
-	
 </head>
-
-
 <body onload="new FlowEditor(<%= jspHelper.getArticleIDsAsArray() %>).showEditor();">
 
 <%-- default kbinfo objects delivered from server --%>
 <xml id="articleKBInfo" style="display:none;">
 <%= jspHelper.getArticleInfoObjectsAsXML() %>
 </xml>
-
 <%-- default kbinfo objects delivered from server --%>
 <xml id="referredKBInfo" style="display:none;">
 <%= jspHelper.getReferredInfoObjectsAsXML() %>
 </xml>
-
-
 <xml id="ajaxKBInfo" style="display:none;">
 	<kbinfo></kbinfo>
 </xml>
-
-
 <xml id="flowchartSource" style="display:none;">
 <%= jspHelper.loadFlowchart(request.getParameter("kdomID")) %>
 </xml>
-
-<div> 
+<div id="toolbar"> 
 	<ul class="toolbar">
 		<li class="icon" id="saveClose" title="Save flowchart & Close editor" style="background-image:url(cc/image/toolbar/saveclose_flowchart_32.png);"></li><!--
 	  --><!--li class="icon" id="save" title="Save flowchart" style="background-image:url(cc/image/toolbar/save_flowchart_32.png);"--></li><!--  
@@ -215,10 +204,6 @@
 <div id="leftMenu" class="leftMenu">
 	<div id="objectTree"></div>
 </div>
-
-<div id="contents" style="position:relative"></div>
-
-<wiki:Include page="<%=\"\"%>" />
-
+<div id="contents"></div>
 </body>
 </html>

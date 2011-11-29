@@ -94,19 +94,20 @@ public class GetInfoObjects extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		// prepare parameters
 		String ids = context.getParameter("ids");
+
+		String result;
 		if (ids == null || ids.isEmpty()) {
-			context.getWriter().write("<kbinfo></kbinfo>");
-			return;
+			result = "<kbinfo></kbinfo>";
+		}
+		else {
+			StringBuilder bob = new StringBuilder();
+			getInfoObjectsForIDs(context.getWeb(), ids, bob);
+			result = bob.toString();
 		}
 
-		// prepare the buffer for the result
-		StringBuffer buffer = new StringBuffer();
-		getInfoObjectsForIDs(context.getWeb(), ids, buffer);
-
-		context.setContentType("text/xml");
-		context.getWriter().write(buffer.toString());
+		context.setContentType("text/xml; charset=UTF-8");
+		context.getWriter().write(result);
 	}
 
 	/**
@@ -114,10 +115,10 @@ public class GetInfoObjects extends AbstractAction {
 	 * @created 18.03.2011
 	 * @param web
 	 * @param ids
-	 * @param buffer
+	 * @param bob
 	 */
-	public static void getInfoObjectsForIDs(String web, String ids, StringBuffer buffer) {
-		appendHeader(buffer);
+	public static void getInfoObjectsForIDs(String web, String ids, StringBuilder bob) {
+		appendHeader(bob);
 
 		// iterate through the requested Objects
 		String[] idArray = ids.split("\",\"");
@@ -129,22 +130,22 @@ public class GetInfoObjects extends AbstractAction {
 		}
 		for (int i = 0; i < idArray.length; i++) {
 			String id = idArray[i];
-			appendInfoObject(web, id, buffer);
+			appendInfoObject(web, id, bob);
 		}
 
 		// finish result
-		appendFooter(buffer);
+		appendFooter(bob);
 	}
 
-	public static void appendHeader(StringBuffer buffer) {
-		buffer.append("<kbinfo>\n");
+	public static void appendHeader(StringBuilder bob) {
+		bob.append("<kbinfo>\n");
 	}
 
-	public static void appendFooter(StringBuffer buffer) {
-		buffer.append("</kbinfo>");
+	public static void appendFooter(StringBuilder bob) {
+		bob.append("</kbinfo>");
 	}
 
-	public static void appendInfoObject(String web, String id, StringBuffer buffer) {
+	public static void appendInfoObject(String web, String id, StringBuilder bob) {
 		// TODO: perhaps not the most elegant solution, but works as '/' is not
 		// allowed in article names, the first '/' must be separating the KB
 		// name from the object name.
@@ -158,24 +159,24 @@ public class GetInfoObjects extends AbstractAction {
 
 		if (objectID == null) {
 			// we want to have the article itself
-			appendInfoObject(web, service, buffer);
+			appendInfoObject(web, service, bob);
 		}
 		else { // look for an object inside the knowledgebase
-			appendInfoObject(web, service, objectID, buffer);
+			appendInfoObject(web, service, objectID, bob);
 		}
 
 	}
 
-	private static void appendInfoObject(String web, KnowledgeBase base, StringBuffer buffer) {
+	private static void appendInfoObject(String web, KnowledgeBase base, StringBuilder bob) {
 		String id = base.getId();
 		// filters KnowWE-Doc from object tree
 		if (id.startsWith("Doc ")) return;
 		//
 		String name = id;
-		buffer.append("\t<article");
-		buffer.append(" id='").append(encodeXML(id)).append("'");
-		buffer.append(" name='").append(name).append("'");
-		buffer.append(">");
+		bob.append("\t<article");
+		bob.append(" id='").append(encodeXML(id)).append("'");
+		bob.append(" name='").append(name).append("'");
+		bob.append(">");
 		// children of an article are all Solutions of P000 and all QSets of
 		// Q000
 		// as well as the flowcharts
@@ -186,64 +187,64 @@ public class GetInfoObjects extends AbstractAction {
 				qsets.add(object);
 			}
 		}
-		appendChilds(web, base, qsets.toArray(new TerminologyObject[qsets.size()]), buffer);
-		appendChilds(web, base, base.getRootSolution(), buffer);
+		appendChilds(web, base, qsets.toArray(new TerminologyObject[qsets.size()]), bob);
+		appendChilds(web, base, base.getRootSolution(), bob);
 		FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
 		if (flowSet != null) {
 			for (Flow flow : flowSet.getFlows()) {
-				buffer.append("\t\t<child>");
-				buffer.append(encodeXML(base.getId()) + "/" + flow.getName());
-				buffer.append("</child>\n");
+				bob.append("\t\t<child>");
+				bob.append(encodeXML(base.getId()) + "/" + flow.getName());
+				bob.append("</child>\n");
 			}
 		}
-		buffer.append("\t</article>\n");
+		bob.append("\t</article>\n");
 	}
 
-	private static void appendInfoObject(String web, KnowledgeBase base, String objectID, StringBuffer buffer) {
+	private static void appendInfoObject(String web, KnowledgeBase base, String objectID, StringBuilder bob) {
 		if (base == null) return;
 		NamedObject object = base.getManager().search(objectID);
 
 		if (object instanceof Solution) {
-			appendInfoObject(web, base, (Solution) object, buffer);
+			appendInfoObject(web, base, (Solution) object, bob);
 		}
 		else if (object instanceof Question) {
-			appendInfoObject(web, base, (Question) object, buffer);
+			appendInfoObject(web, base, (Question) object, bob);
 		}
 		else if (object instanceof QContainer) {
-			appendInfoObject(web, base, (QContainer) object, buffer);
+			appendInfoObject(web, base, (QContainer) object, bob);
 		}
 		else if (object instanceof Flow) {
-			appendInfoObject(web, base, (Flow) object, buffer);
+			appendInfoObject(web, base, (Flow) object, bob);
 		}
 		else {
 
-			buffer.append("<unknown id='" + objectID + "'></unknown>");
+			bob.append("<unknown id='" + objectID + "'></unknown>");
 
 		}
 	}
 
-	private static void appendInfoObject(String web, KnowledgeBase service, Solution object, StringBuffer buffer) {
-		buffer.append("\t<solution");
-		buffer.append(" id='").append(encodeXML(service.getId())).append("/").append(
+	private static void appendInfoObject(String web, KnowledgeBase service, Solution object, StringBuilder bob) {
+		bob.append("\t<solution");
+		bob.append(" id='").append(encodeXML(service.getId())).append("/").append(
 				object.getName()).append(
 				"'");
-		buffer.append(" name='").append(encodeXML(object.getName())).append("'");
-		buffer.append(">\n");
-		appendChilds(web, service, object, buffer);
-		buffer.append("\t</solution>\n");
+		bob.append(" name='").append(encodeXML(object.getName())).append("'");
+		bob.append(">\n");
+		appendChilds(web, service, object, bob);
+		bob.append("\t</solution>\n");
 	}
 
-	private static void appendInfoObject(String web, KnowledgeBase service, Question object, StringBuffer buffer) {
-		buffer.append("\t<question");
-		buffer.append(" id='").append(encodeXML(service.getId())).append("/").append(
+	private static void appendInfoObject(String web, KnowledgeBase service, Question object, StringBuilder bob) {
+		bob.append("\t<question");
+		bob.append(" id='").append(encodeXML(service.getId())).append("/").append(
 				object.getName()).append(
 				"'");
-		buffer.append(" name='").append(encodeXML(object.getName())).append("'");
+		bob.append(" name='").append(encodeXML(object.getName())).append("'");
 		if (BasicProperties.isAbstract(object)) {
-			buffer.append(" abstract='true'");
+			bob.append(" abstract='true'");
 		}
-		buffer.append(" type='");
-		buffer.append(
+		bob.append(" type='");
+		bob.append(
 				(object instanceof QuestionYN) ? "bool" :
 						(object instanceof QuestionOC) ? "oc" :
 								(object instanceof QuestionMC) ? "mc" :
@@ -252,13 +253,13 @@ public class GetInfoObjects extends AbstractAction {
 														(object instanceof QuestionText) ? "text" :
 																"???"
 				);
-		buffer.append("'");
-		buffer.append(">\n");
-		appendChilds(web, service, object, buffer);
+		bob.append("'");
+		bob.append(">\n");
+		appendChilds(web, service, object, bob);
 
 		if (object instanceof QuestionChoice) {
 			for (Choice answer : ((QuestionChoice) object).getAllAlternatives()) {
-				buffer.append("\t\t<choice>").append(encodeXML(answer.getName())).append(
+				bob.append("\t\t<choice>").append(encodeXML(answer.getName())).append(
 						"</choice>\n");
 			}
 		}
@@ -268,40 +269,40 @@ public class GetInfoObjects extends AbstractAction {
 				NumericalInterval interval = infoStore.getValue(
 						BasicProperties.QUESTION_NUM_RANGE);
 				// TODO: check for open/closed
-				buffer.append("<range min='").append(interval.getLeft()).append("' ");
-				buffer.append("max='").append(interval.getRight()).append("'></range>");
+				bob.append("<range min='").append(interval.getLeft()).append("' ");
+				bob.append("max='").append(interval.getRight()).append("'></range>");
 			}
 			if (infoStore.contains(MMInfo.UNIT)) {
 				String value = infoStore.getValue(MMInfo.UNIT);
 
-				buffer.append("<unit>").append(value).append("</unit>");
+				bob.append("<unit>").append(value).append("</unit>");
 			}
 
 		}
-		buffer.append("\t</question>\n");
+		bob.append("\t</question>\n");
 	}
 
-	private static void appendInfoObject(String web, KnowledgeBase service, QContainer object, StringBuffer buffer) {
-		buffer.append("\t<qset");
-		buffer.append(" id='").append(encodeXML(service.getId())).append("/").append(
+	private static void appendInfoObject(String web, KnowledgeBase service, QContainer object, StringBuilder bob) {
+		bob.append("\t<qset");
+		bob.append(" id='").append(encodeXML(service.getId())).append("/").append(
 				object.getName()).append(
 				"'");
-		buffer.append(" name='").append(encodeXML(object.getName())).append("'");
-		buffer.append(">\n");
-		appendChilds(web, service, object, buffer);
-		buffer.append("\t</qset>\n");
+		bob.append(" name='").append(encodeXML(object.getName())).append("'");
+		bob.append(">\n");
+		appendChilds(web, service, object, bob);
+		bob.append("\t</qset>\n");
 	}
 
-	private static void appendInfoObject(String web, KnowledgeBase service, Flow flow, StringBuffer buffer) {
+	private static void appendInfoObject(String web, KnowledgeBase service, Flow flow, StringBuilder bob) {
 		String name = flow.getName();
 		// String id = flow.getId();
 		List<StartNode> startNodes = flow.getStartNodes();
 		List<EndNode> exitNodes = flow.getExitNodes();
 
-		buffer.append("\t<flowchart");
-		buffer.append(" id='").append(encodeXML(service.getId())).append("/").append(name).append(
+		bob.append("\t<flowchart");
+		bob.append(" id='").append(encodeXML(service.getId())).append("/").append(name).append(
 				"'");
-		buffer.append(" name='").append(encodeXML(name)).append("'");
+		bob.append(" name='").append(encodeXML(name)).append("'");
 
 		// String iconName = flow.getInfoStore().getValue(
 		// Property.getProperty(FlowchartSubTreeHandler.ICON, String.class));
@@ -309,28 +310,28 @@ public class GetInfoObjects extends AbstractAction {
 				FlowchartSubTreeHandler.ICON_KEY);
 
 		if (iconName != null && !iconName.isEmpty()) {
-			buffer.append(" icon='").append(encodeXML(iconName)).append("'");
+			bob.append(" icon='").append(encodeXML(iconName)).append("'");
 		}
 
-		buffer.append(">\n");
+		bob.append(">\n");
 		for (StartNode node : startNodes) {
-			buffer.append("\t\t<start>").append(encodeXML(node.getName())).append("</start>\n");
+			bob.append("\t\t<start>").append(encodeXML(node.getName())).append("</start>\n");
 		}
 		for (EndNode node : exitNodes) {
-			buffer.append("\t\t<exit>").append(encodeXML(node.getName())).append("</exit>\n");
+			bob.append("\t\t<exit>").append(encodeXML(node.getName())).append("</exit>\n");
 		}
-		buffer.append("\t</flowchart>\n");
+		bob.append("\t</flowchart>\n");
 	}
 
-	private static void appendChilds(String web, KnowledgeBase service, TerminologyObject object, StringBuffer buffer) {
-		appendChilds(web, service, object.getChildren(), buffer);
+	private static void appendChilds(String web, KnowledgeBase service, TerminologyObject object, StringBuilder bob) {
+		appendChilds(web, service, object.getChildren(), bob);
 	}
 
-	private static void appendChilds(String web, KnowledgeBase service, TerminologyObject[] childs, StringBuffer buffer) {
+	private static void appendChilds(String web, KnowledgeBase service, TerminologyObject[] childs, StringBuilder bob) {
 		for (TerminologyObject child : childs) {
-			buffer.append("\t\t<child>");
-			buffer.append(encodeXML(service.getId()) + "/" + child.getName());
-			buffer.append("</child>\n");
+			bob.append("\t\t<child>");
+			bob.append(encodeXML(service.getId()) + "/" + child.getName());
+			bob.append("</child>\n");
 		}
 	}
 

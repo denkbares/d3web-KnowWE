@@ -115,15 +115,15 @@ public class UpdateSolutions extends AbstractAction {
 
 		if (diagnosisID != null) {
 
-			StringBuffer buffer = new StringBuffer();
-			buffer.append("<kbinfo>");
+			StringBuilder bob = new StringBuilder();
+			bob.append("<kbinfo>");
 			// TODO hotfix
 			String test = pageName + ".." + pageName + "_KB/" + diagnosisID;
 
-			GetInfoObjects.appendInfoObject(web, test, buffer);
-			buffer.append("</kbinfo>");
+			GetInfoObjects.appendInfoObject(web, test, bob);
+			bob.append("</kbinfo>");
 			context.setContentType("text/xml; charset=UTF-8");
-			context.getWriter().write(buffer.toString());
+			context.getWriter().write(bob.toString());
 
 		}
 		else {
