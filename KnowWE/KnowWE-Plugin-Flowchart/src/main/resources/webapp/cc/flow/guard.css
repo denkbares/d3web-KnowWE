@@ -4,27 +4,11 @@
 	white-space: nowrap;
 }
 
-.GuardEditor .value {
-}
-
 .GuardEditor input {
 	width: 40px;
 	margin-right: 4px;
 }
 
-.GuardEditor input.formula{
-	width: 170px;
-	margin-right: 4px;	
-}
-
-.Rule .guard .addedText {
-	color: green;
-}
-
-.Rule .guard .removedText {
-	color: red;
-}
-
-.Rule .guard .changedText {
-	color: blue;
+.GuardEditor textarea.formula{
+	width: 200px;
 }

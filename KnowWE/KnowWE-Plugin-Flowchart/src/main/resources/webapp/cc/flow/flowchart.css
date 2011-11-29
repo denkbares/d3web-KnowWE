@@ -6,17 +6,3 @@
 	/* DefaultMarkup sets white-space to pre -> No wrap in nodes */
 	white-space: normal;
 }
-
-.Flowchart .h_snapline {
-	position: absolute;
-	overflow: hidden;
-	border-top: 1px dotted black;
-	z-index: 0;
-}
-
-.Flowchart .v_snapline {
-	position: absolute;
-	overflow: hidden;
-	border-left: 1px dotted black;
-	z-index: 0;
-}

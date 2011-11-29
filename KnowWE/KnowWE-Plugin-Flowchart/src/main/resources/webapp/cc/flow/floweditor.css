@@ -8,40 +8,27 @@ body {
 	border-radius: 3px 3px 3px 3px;
 	-moz-border-radius: 3px 3px 3px 3px;
 	min-height: 500px;
-	
-	/*
-	background-color: red;
-	overflow:scroll;
-	overflow-x: hidden;
-	overflow-y: scroll;
-	*/
 }
 
 ul.toolbar {
 	list-style-type: none;
 	margin: 0px;
 	padding: 0px;
-	background-color: #eee;
 	color: #000;
 	text-align: left;
 	display: inline-block;
 }
 
 ul.toolbar li {
-
 	display: inline-block;
 	margin: 0px;
 	padding: 3px 5px 3px 5px;
 	min-width: 100px;
 	min-height: 16px;
-	
-	
 	border: 1px solid rgba(0, 0, 0, 0.5);
 	border-width: 1px 0px 1px 1px;
-	
 	font-size: 8pt;
 	font-weight: bold;
-		
 }
 
 ul.toolbar li.icon {
@@ -55,7 +42,6 @@ ul.toolbar li.icon {
 ul.toolbar li.iconsmall {
 	height:32px;
     min-width: 37px; 
-    /*padding-right: 2px;*/
     background-repeat: no-repeat;
     background-position: 12px center;
 }
@@ -79,13 +65,9 @@ ul.toolbar li:last-child {
 
 .propertyArea div{
 	padding: 8px 0px 0px 0px;
-
 }
 
 .propertyArea {
-	/*
-	height: 31px;
-	*/
 	padding: 0px 2px;
 	height: 38px;
 	display: inline-block;
@@ -93,7 +75,6 @@ ul.toolbar li:last-child {
 	border-radius: 3px 3px 3px 3px;
 	-moz-border-radius: 3px 3px 3px 3px;
 	vertical-align: top;
-	
 }
 
 .propertyArea .propertyTitle {
@@ -158,6 +139,23 @@ ul.toolbar li:last-child {
 .FlowchartGroup .trash_hover {
 	background-image: url(../image/trash64-highlight.png);
 }
+
+
+.Flowchart .h_snapline {
+	position: absolute;
+	overflow: hidden;
+	border-top: 1px dotted black;
+	z-index: 0;
+}
+
+.Flowchart .v_snapline {
+	position: absolute;
+	overflow: hidden;
+	border-left: 1px dotted black;
+	z-index: 0;
+}
+
+
 
 #arrowLeftIncrease {
 	margin-top: 10px;
