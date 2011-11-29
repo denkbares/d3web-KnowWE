@@ -19,6 +19,7 @@
 package de.knowwe.d3web.property;
 
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -35,7 +36,8 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class LocaleType extends AbstractType {
 
 	public LocaleType() {
-		this.setSectionFinder(new RegexSectionFinder("^\\s*\\.\\s*(\\w{2}(?:\\.\\w{2})?)\\s*", 1));
+		this.setSectionFinder(new RegexSectionFinder(
+				Pattern.compile("^\\s*\\.\\s*(\\w{2}(?:\\.\\w{2})?)\\s*"), 1));
 		this.setCustomRenderer(StyleRenderer.LOCALE);
 	}
 
