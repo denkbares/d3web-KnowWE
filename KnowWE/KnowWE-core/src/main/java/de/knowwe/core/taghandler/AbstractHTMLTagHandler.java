@@ -36,14 +36,26 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 
+	private boolean maskJSPWikiSyntax = false;
+
 	public AbstractHTMLTagHandler(String name) {
 		super(name);
 	}
 
+	public void setMaskJSPWikiSyntax(boolean mask) {
+		this.maskJSPWikiSyntax = mask;
+	}
+
 	@Override
 	public final String render(KnowWEArticle article, Section<?> section, UserContext userContext, Map<String, String> parameters) {
-		return KnowWEUtils.maskHTML(renderHTML(article.getTitle(), userContext, parameters,
-				article.getWeb()));
+
+		String renderedHTML = renderHTML(article.getTitle(), userContext, parameters,
+				article.getWeb());
+		String masked = KnowWEUtils.maskHTML(renderedHTML);
+		if (maskJSPWikiSyntax) {
+			masked = KnowWEUtils.maskJSPWikiMarkup(masked);
+		}
+		return masked;
 	}
 
 	/**

@@ -72,6 +72,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 
 	public KBRenderer() {
 		super("renderKnowledge");
+		this.setMaskJSPWikiSyntax(true);
 		parameterMap.put(Verbalizer.IS_SINGLE_LINE, Boolean.TRUE);
 	}
 

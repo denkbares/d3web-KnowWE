@@ -734,6 +734,18 @@ public class KnowWEUtils {
 	 * interpret them, if the characters are already escaped, it will do nothing
 	 * 
 	 * @created 03.03.2011
+	 */
+	public static String maskJSPWikiMarkup(String string) {
+		StringBuilder temp = new StringBuilder(string);
+		maskJSPWikiMarkup(temp);
+		return temp.toString();
+	}
+
+	/**
+	 * Masks [, ], ----, {{{, }}} and %% so that JSPWiki will render and not
+	 * interpret them, if the characters are already escaped, it will do nothing
+	 * 
+	 * @created 03.03.2011
 	 * @param builder
 	 */
 	public static void maskJSPWikiMarkup(StringBuilder builder) {

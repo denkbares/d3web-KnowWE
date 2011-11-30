@@ -46,10 +46,7 @@ public class RenderKDOMVisitor implements Visitor {
 		buffi.append(" <span style=\"color:black\" title=\"");
 		buffi.append(" ID: " + s.getID() + "\n");
 		buffi.append("\">");
-		String escapedHTML = KnowWEUtils.escapeHTML(s.verbalize());
-		StringBuilder temp = new StringBuilder(escapedHTML);
-		KnowWEUtils.maskJSPWikiMarkup(temp);
-		buffi.append(temp.toString());
+		buffi.append(KnowWEUtils.escapeHTML(s.verbalize()));
 		buffi.append("</span>\n <br />"); // \n only to avoid HTML-code being
 											// cut by JspWiki (String.length >
 											// 10000)

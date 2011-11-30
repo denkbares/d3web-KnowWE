@@ -31,6 +31,7 @@ public class KDOMRenderer extends AbstractHTMLTagHandler {
 
 	public KDOMRenderer() {
 		super("renderKDOM");
+		this.setMaskJSPWikiSyntax(true);
 	}
 
 	@Override
