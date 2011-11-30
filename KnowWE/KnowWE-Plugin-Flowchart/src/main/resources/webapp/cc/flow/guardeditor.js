@@ -230,7 +230,9 @@ GuardEditor.prototype.render = function() {
 }
 
 GuardEditor.prototype.createInputFields = function(){
-	if (this.getGuard().isFormula()) {
+	var guard = this.getGuard();
+	
+	if (guard && guard.isFormula()) {
 		return [
 		    Builder.node('textarea', {className: 'input formula', style: 'display: none;', onBlur: 'this.parentNode.parentNode.__GuardEditor.handleInput();', rows: 1},[this.values.length > 0 ? this.values[0] : '']),
 		    //this one should never be visible, but avoids to see '${num} when switching from formula to interval
