@@ -24,37 +24,36 @@ import java.util.Collections;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
 public class ContentType extends AbstractType {
 
-	private final static int FLAGS = Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL;
-	private final static String SECTION_REGEXP =
+	private final DefaultMarkup markup;
+
+	private final static int FLAGS = Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
+			| Pattern.DOTALL;
+
+	private final static String REGEX =
 			// prefix (declare the markup section)
 			"^\\p{Blank}*%%$NAME$\\p{Blank}*[:=\\p{Space}]" +
 					// skip empty lines before content
 					"(?:\\p{Space}*[\\r\\n]+)*" +
 					// 100921 by ochlast: New content matching! This means:
 					// "From now on match everything, that begins NOT with a
-					// sequence of spaces, followed by an @ at the beginning of
+					// sequence of spaces, followed by an @ at the beginning
+					// of
 					// the line."
-					"((?:(?!^(?:\\p{Space}*)@\\w+).)*?)" +
+					"((?:(?!$LINESTART$\\p{Space}*@\\w+).)*?)" +
 					// skip emtpy lines after content
 					"(?:\\p{Space}*[\\r\\n]+)*" +
 					// suffix: terminate-tag or end-of-input or declare next
 					// parameter
-					"(?:(?:^\\p{Blank}*/?%\\p{Blank}*$)" +
-					"|" +
-					"(?:\\z)" +
-					"|" +
-					"(?:\\p{Space}+@\\w+))";
-
-	private final DefaultMarkup markup;
+					"(^\\p{Blank}*/?%\\p{Blank}*$" +
+					"|\\z|" +
+					"\\p{Space}+@\\w+)";
 
 	public ContentType(DefaultMarkup markup) {
 		this.markup = markup;
-		Pattern pattern = getContentPattern(this.markup.getName());
-		this.setSectionFinder(new RegexSectionFinder(pattern, 1));
+		this.setSectionFinder(new AdaptiveMarkupFinder(markup.getName(), REGEX, FLAGS, 1));
 		Collections.addAll(this.childrenTypes, this.markup.getTypes());
 	}
 
@@ -64,18 +63,5 @@ public class ContentType extends AbstractType {
 	@Override
 	public String getName() {
 		return "content";
-	}
-
-	/**
-	 * Returns the pattern to match the default block of a default mark-up
-	 * section.
-	 * 
-	 * @param markupName the name of the parent section (opened by
-	 *        "%%&lt;markupName&gt;")
-	 * @return the pattern to match the default block of the section
-	 */
-	public static Pattern getContentPattern(String markupName) {
-		String regexp = SECTION_REGEXP.replace("$NAME$", markupName);
-		return Pattern.compile(regexp, FLAGS);
 	}
 }

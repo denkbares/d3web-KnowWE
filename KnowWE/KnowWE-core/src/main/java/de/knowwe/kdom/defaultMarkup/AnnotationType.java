@@ -23,19 +23,19 @@ package de.knowwe.kdom.defaultMarkup;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
 public class AnnotationType extends AbstractType {
 
 	private final DefaultMarkup.Annotation annotation;
 
+	private static final String REGEX = "$LINESTART$\\s*(@$NAME$.*?)\\s*?(?=$LINESTART$\\s*@|/?%|\\z)";
+
+	private static final int FLAGS = Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
+			| Pattern.DOTALL;
+
 	public AnnotationType(DefaultMarkup.Annotation annotation) {
 		this.annotation = annotation;
-
-		String annotationPattern = "^\\s*(@" + annotation.getName() + ".*?)\\s*?(?=^\\s*@|/?%|\\z)";
-
-		this.setSectionFinder(new RegexSectionFinder(Pattern.compile(annotationPattern,
-				Pattern.CASE_INSENSITIVE + Pattern.MULTILINE + Pattern.DOTALL), 1));
+		this.setSectionFinder(new AdaptiveMarkupFinder(annotation.getName(), REGEX, FLAGS, 1));
 		this.addChildType(new AnnotationNameType(annotation));
 		this.addChildType(new AnnotationContentType(annotation));
 	}

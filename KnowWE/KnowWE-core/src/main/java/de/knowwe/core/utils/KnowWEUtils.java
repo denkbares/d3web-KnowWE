@@ -648,7 +648,7 @@ public class KnowWEUtils {
 	 * @param text Text to escape
 	 * @return Sanitized text
 	 */
-	public static String html_escape(String text) {
+	public static String escapeHTML(String text) {
 		if (text == null) return null;
 
 		return text.replaceAll("&", "&amp;").
@@ -730,7 +730,7 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Masks [, ], ----, {{{ and }}} so that JSPWiki will render and not
+	 * Masks [, ], ----, {{{, }}} and %% so that JSPWiki will render and not
 	 * interpret them, if the characters are already escaped, it will do nothing
 	 * 
 	 * @created 03.03.2011
@@ -742,6 +742,7 @@ public class KnowWEUtils {
 		mask(builder, "----");
 		mask(builder, "{{{");
 		mask(builder, "}}}");
+		mask(builder, "%%");
 	}
 
 	private static void mask(StringBuilder buffer, String toReplace) {
