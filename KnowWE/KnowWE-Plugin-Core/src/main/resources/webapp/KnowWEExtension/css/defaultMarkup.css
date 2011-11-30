@@ -22,7 +22,7 @@
 }
 
 .defaultMarkup .markupText {
-	white-space:	pre;
+	white-space:	pre-wrap;
 	padding:		3px 3px 3px 3px;
 }
 
