@@ -66,7 +66,7 @@ Rule.prototype.render = function(selected) {
 				w = 1;
 				h = Math.abs(y1 - y2)+1;
 				clazz = "v_line";
-				arrow = (y1 > y2) ? "arrow_up" : "arrow_down";
+				arrow = "arrow " + ((y1 > y2) ? "arrow_up" : "arrow_down");
 			}
 			else { // horizontal line
 				x = Math.min(x1, x2);
@@ -74,7 +74,7 @@ Rule.prototype.render = function(selected) {
 				w = Math.abs(x1 - x2)+1;
 				h = 1;
 				clazz = "h_line";
-				arrow = (x1 > x2) ? "arrow_left" : "arrow_right";
+				arrow = "arrow " + ((x1 > x2) ? "arrow_left" : "arrow_right");
 			}
 			
 			if (i + 2 < this.coordinates.length)
@@ -93,15 +93,12 @@ Rule.prototype.render = function(selected) {
 				'left: ' + (x-3) + 'px; ' +
 				'top: ' + (y-3) + 'px; ' +
 				'width: ' + (w+6) + 'px; ' +
-				'height: ' + (h+6) + 'px;'})); //.addEvent('click', function(e){this.select(); e.stop();}.bind(this)),
+				'height: ' + (h+6) + 'px;'}));
 			highlightDom.appendChild(Builder.node('div', {className: clazz + '_highlight', style : '' +
 				'left: ' + (x-1) + 'px; ' +
 				'top: ' + (y-1) + 'px; ' +
 				'width: ' + (w+2) + 'px; ' +
 				'height: ' + (h+2) + 'px;'}));
-			
-			
-			
 		}
 	
 		if (this.sourceAnchor && this.coordinates.length > 0) {
@@ -127,9 +124,6 @@ Rule.prototype.render = function(selected) {
 			    ]);
 			
 			ruleDom.appendChild(guardDom);
-			
-			
-			
 
 		}
 		ruleDom.appendChild(highlightDom);
@@ -143,8 +137,6 @@ Rule.prototype.createDraggable = function() {}
 
 // only implemented in editor
 Rule.prototype.destroyDraggable = function() {}
-
-
 
 Rule.prototype.intersects = function(x1, y1, x2, y2) {
 	var xMin = Math.min(x1, x2);
@@ -166,11 +158,9 @@ Rule.prototype.intersects = function(x1, y1, x2, y2) {
 	}
 }
 
-
 Rule.prototype.getGuard = function() {
 	return this.guard;
 }
-
 
 Rule.prototype.select = function(multipleSelectionMode) {
 	var selected = this.flowchart.isSelected(this);
@@ -212,10 +202,16 @@ Rule.prototype.setSelectionVisible = function(isSelected) {
 		// TODO: avoid using id as dom id(s)
 		hightlight.style.visibility = 'visible';
 		this.setGuardVisible(false, true);
+		this.arrowTool = new RuleArrowTool(this);
+		this.arrowTool.setVisible(true);
 	}
 	else {
 		hightlight.style.visibility = 'hidden';
 		this.setGuardVisible(true, false);
+		if (this.arrowTool) {
+			this.arrowTool.destroy();
+			this.arrowTool = null;
+		}
 	}
 }
 

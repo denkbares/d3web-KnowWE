@@ -11,12 +11,10 @@
 	white-space: nowrap;
 }
 
-
 .Rule .rule_highlight {
 	visibility: hidden;
 	z-index: 10;
 }
-
 
 .Rule .rule_highlight .h_line_highlight, .Rule .rule_highlight .v_line_highlight {
 	background-color: red;
@@ -28,7 +26,6 @@
 	position: absolute;
 	z-index: 100;
 }
-
 
 .Rule .guard .warning {
 	background-color: #ff8;
@@ -49,37 +46,36 @@
 	z-index: 80;
 }
 
-
-.Rule .arrow_up {
+.Rule .arrow {
 	position: absolute;
 	overflow: hidden;
+}
+
+.Rule .arrow_up {
 	left: -4px;
 	top: 0px;
 	width: 9px;
 	height: 9px;
 	background-image: url(../image/arrow_up.gif); 
 }
+
 .Rule .arrow_down {
-	position: absolute;
-	overflow: hidden;
 	left: -4px;
 	bottom: 0px;
 	width: 9px;
 	height: 9px;
 	background-image: url(../image/arrow_down.gif); 
 }
+
 .Rule .arrow_left {
-	position: absolute;
-	overflow: hidden;
 	left: 0px;
 	top: -4px;
 	width: 9px;
 	height: 9px;
 	background-image: url(../image/arrow_left.gif); 
 }
+
 .Rule .arrow_right {
-	position: absolute;
-	overflow: hidden;
 	right: 0px;
 	top: -4px;
 	width: 9px;

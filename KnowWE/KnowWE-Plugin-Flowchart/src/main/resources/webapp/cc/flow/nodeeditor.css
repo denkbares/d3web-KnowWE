@@ -93,3 +93,34 @@
 .ActionEditor textarea.formula{
 	width: 300px;
 }
+
+.Node_hover {
+	overflow: visible;
+	border: 2px solid red;
+}
+
+.ArrowTool {
+	position: absolute; 
+	overflow:visible; 
+	width:26px;
+	height:26px;
+	z-index: 200; 
+	cursor: crosshair;
+}
+
+.ArrowTool_right {
+	background-image: url(../image/tool_arrow_right.gif);
+}
+
+.ArrowTool_left {
+	background-image: url(../image/tool_arrow_left.gif);
+}
+
+.ArrowTool_up {
+	background-image: url(../image/tool_arrow_up.gif);
+}
+
+.ArrowTool_down {
+	background-image: url(../image/tool_arrow_down.gif);
+}
+

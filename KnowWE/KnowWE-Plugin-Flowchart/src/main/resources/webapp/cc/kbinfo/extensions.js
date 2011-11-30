@@ -166,41 +166,6 @@ String.prototype.parseXML = function() {
 	}
 }
 
-	
-function createDottedLine(x1, y1, x2, y2, pixelSize, pixelColor, spacing, maxDots) {
-	var cx = x2 - x1;
-	var cy = y2 - y1;
-	var len = Math.sqrt(cx*cx + cy*cy);
-	var dotCount = len / (spacing + pixelSize);
-	if (maxDots && dotCount > maxDots) dotCount = maxDots;
-	var dx = cx / dotCount;
-	var dy = cy / dotCount;
-
-	var x = x1;
-	var y = y1;
-	var dotsHTML = '';
-	for (var i=0; i<dotCount; i++) {
-		// make Dot
-		dotsHTML += '<div style="position:absolute; overflow:hidden; ' +
-					'left:' + Math.ceil(x-pixelSize/2) + 'px; ' +
-					'top:' + Math.ceil(y-pixelSize/2) + 'px; ' +
-					'width:' + pixelSize + 'px; ' +
-					'height:' + pixelSize + 'px; ' +
-					'background-color: ' + pixelColor + ';"></div>';
-		//parentDIV.appendChild(dot);
-		// proceed to next dot
-		x += dx;
-		y += dy;
-	}
-	
-	var div = Builder.node('div', {
-		 style: 'position:absolute; overflow:visible; ' +
-		 		'top: 0px; left: 0px; width:1px; height:1px;'
-	});
-	div.innerHTML = dotsHTML;
-	return div;
-}
-
 var DiaFluxUtils;
 
 if (!DiaFluxUtils){
@@ -236,5 +201,38 @@ DiaFluxUtils.isControlKey = function(event) {
 	return ctrlKey | altKey | metaKey; 
 }
 
+DiaFluxUtils.createDottedLine = function(x1, y1, x2, y2, pixelSize, pixelColor, spacing, maxDots) {
+	var cx = x2 - x1;
+	var cy = y2 - y1;
+	var len = Math.sqrt(cx*cx + cy*cy);
+	var dotCount = len / (spacing + pixelSize);
+	if (maxDots && dotCount > maxDots) dotCount = maxDots;
+	var dx = cx / dotCount;
+	var dy = cy / dotCount;
+
+	var x = x1;
+	var y = y1;
+	var dotsHTML = '';
+	for (var i=0; i<dotCount; i++) {
+		// make Dot
+		dotsHTML += '<div style="position:absolute; overflow:hidden; ' +
+					'left:' + Math.ceil(x-pixelSize/2) + 'px; ' +
+					'top:' + Math.ceil(y-pixelSize/2) + 'px; ' +
+					'width:' + pixelSize + 'px; ' +
+					'height:' + pixelSize + 'px; ' +
+					'background-color: ' + pixelColor + ';"></div>';
+		//parentDIV.appendChild(dot);
+		// proceed to next dot
+		x += dx;
+		y += dy;
+	}
+	
+	var div = Builder.node('div', {
+		 style: 'position:absolute; overflow:visible; ' +
+		 		'top: 0px; left: 0px; width:1px; height:1px;'
+	});
+	div.innerHTML = dotsHTML;
+	return div;
+}
 
 

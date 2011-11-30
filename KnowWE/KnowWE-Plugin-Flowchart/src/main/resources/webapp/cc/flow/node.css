@@ -8,12 +8,6 @@
 	z-index: 100;
 }
 
-.Node_hover {
-	overflow: visible;
-	border: 2px solid red;
-}
-
-
 .Node .title {
 	font-weight: bold;
 }
@@ -149,11 +143,6 @@
 .Node .ActionPane .icon {
 	position: relative;
 	top: 2px;
-}
-
-.ArrowTool {
-	z-index: 200; 
-	cursor: crosshair;
 }
 
 .defaultMarkup .Node a:link, .defaultMarkup .Node a:visited, .defaultMarkup .Node a:active {

@@ -461,15 +461,9 @@ ArrowTool.prototype.destroy = function() {
 ArrowTool.prototype.render = function() {
 	var dom = Builder.node('div', {
 		id: this.node.nodeModel.fcid+'_arrow_tool',
-		className: 'ArrowTool',
-		style: "position: absolute; overflow:visible; " +
-				"width: 0px; height: 0px;" +
-				"left: " + (this.node.getLeft() + this.node.getWidth() - 13) + "px; " +
-				"top:" + (this.node.getTop() + this.node.getHeight() - 13) + "px;"
-	},
-	[
-	 	Builder.node('img',{ src:Flowchart.imagePath + 'tool_arrow.gif'})
-	]);
+		className: 'ArrowTool ArrowTool_right',
+		style: "left: " + (this.node.getLeft() + this.node.getWidth() - 13) + "px; " +
+				"top:" + (this.node.getTop() + this.node.getHeight() - 13) + "px;"});
 	dom.__arrowTool = this;
 	return dom;
 }
@@ -512,7 +506,7 @@ ArrowTool.prototype.showLine = function(x, y) {
 	if (x && y && this.dom) {
 		var x1 = this.node.getCenterX();
 		var y1 = this.node.getCenterY();
-		this.lineDOM = createDottedLine(x1, y1, x+13, y+13, 2, 'red', 5, 100);
+		this.lineDOM = DiaFluxUtils.createDottedLine(x1, y1, x+13, y+13, 2, 'red', 5, 100);
 		this.flowchart.getContentPane().appendChild(this.lineDOM);
 	}
 }
