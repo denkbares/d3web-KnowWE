@@ -59,13 +59,6 @@ public class CompositeCondition extends AbstractType {
 	public static char BRACE_CLOSED = ')';
 
 	public CompositeCondition() {
-		this(new String[] {
-				"AND", "UND", "&" }, new String[] {
-				"OR", "ODER", "|" }, new String[] {
-				"NOT", "NICHT", "!" });
-	}
-
-	public CompositeCondition(String[] keys_and, String[] keys_or, String[] keys_not) {
 
 		// this composite takes everything it gets => needs suitable wrapper
 		// type as father
@@ -89,19 +82,19 @@ public class CompositeCondition extends AbstractType {
 		bracedContent.addChildType(this);
 
 		// ... a disjuctive expression,...
-		Disjunct disj = new Disjunct(keys_or);
+		Disjunct disj = new Disjunct();
 		this.addChildType(disj);
 		disj.addChildType(this); // Disjuncts again allow for a
 		// CompositeCondition
 
 		// ...a conjuctive expression,...
-		Conjunct conj = new Conjunct(keys_and);
+		Conjunct conj = new Conjunct();
 		this.addChildType(conj);
 		conj.addChildType(this); // Conjuncts again allow for a
 		// CompositeCondition
 
 		// ... a negated expression,...
-		NegatedExpression negatedExpression = new NegatedExpression(keys_not);
+		NegatedExpression negatedExpression = new NegatedExpression();
 		this.childrenTypes.add(negatedExpression);
 		negatedExpression.addChildType(this); // a NegatedExpression again
 		// allows for a
@@ -142,8 +135,7 @@ public class CompositeCondition extends AbstractType {
 	public List<Section<? extends NonTerminalCondition>> getDisjuncts(Section<? extends CompositeCondition> c) {
 
 		List<Section<? extends NonTerminalCondition>> result = new ArrayList<Section<? extends NonTerminalCondition>>();
-		List<Section<Disjunct>> childrenOfType = Sections.findChildrenOfType(c,
-				Disjunct.class);
+		List<Section<Disjunct>> childrenOfType = Sections.findChildrenOfType(c, Disjunct.class);
 
 		result.addAll(childrenOfType);
 		return result;
@@ -168,8 +160,7 @@ public class CompositeCondition extends AbstractType {
 	public List<Section<? extends NonTerminalCondition>> getConjuncts(Section<? extends CompositeCondition> c) {
 
 		List<Section<? extends NonTerminalCondition>> result = new ArrayList<Section<? extends NonTerminalCondition>>();
-		List<Section<Conjunct>> childrenOfType = Sections.findChildrenOfType(c,
-				Conjunct.class);
+		List<Section<Conjunct>> childrenOfType = Sections.findChildrenOfType(c, Conjunct.class);
 
 		result.addAll(childrenOfType);
 		return result;
@@ -277,16 +268,11 @@ public class CompositeCondition extends AbstractType {
  */
 class Disjunct extends NonTerminalCondition implements de.knowwe.core.kdom.ExclusiveType {
 
-	String[] keys;
-
-	public Disjunct(String[] keys) {
-		this.keys = keys;
-	}
-
 	@Override
 	protected void init() {
 
-		this.sectionFinder = ConjunctSectionFinder.createConjunctFinder(keys);
+		this.sectionFinder = ConjunctSectionFinder.createConjunctFinder(new String[] {
+				"OR", "ODER", "|" });
 	}
 }
 
@@ -300,15 +286,12 @@ class Disjunct extends NonTerminalCondition implements de.knowwe.core.kdom.Exclu
  */
 class Conjunct extends NonTerminalCondition implements de.knowwe.core.kdom.ExclusiveType {
 
-	String[] keys;
-
-	public Conjunct(String[] keys) {
-		this.keys = keys;
-	}
+	static String[] CONJ_SIGNS = {
+			"AND", "UND", "&" };
 
 	@Override
 	protected void init() {
-		this.setSectionFinder(ConjunctSectionFinder.createConjunctFinder(keys));
+		this.setSectionFinder(ConjunctSectionFinder.createConjunctFinder(CONJ_SIGNS));
 	}
 
 }
@@ -323,17 +306,14 @@ class Conjunct extends NonTerminalCondition implements de.knowwe.core.kdom.Exclu
  */
 class NegatedExpression extends NonTerminalCondition {
 
-	String[] keys;
-
-	public NegatedExpression(String[] keys) {
-		this.keys = keys;
-	}
+	static String[] NEG_SIGNS = {
+			"NOT", "NICHT", "!" };
 
 	@Override
 	protected void init() {
 		AnonymousType negationSign = new AnonymousType("NegationSign");
 		ConstraintSectionFinder finder = new ConstraintSectionFinder(
-				new OneOfStringEnumFinder(keys),
+				new OneOfStringEnumFinder(NEG_SIGNS),
 				AtMostOneFindingConstraint.getInstance());
 		negationSign.setSectionFinder(finder);
 		this.addChildType(negationSign);
@@ -343,7 +323,7 @@ class NegatedExpression extends NonTerminalCondition {
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 				String trimmed = text.trim();
-				for (String sign : keys) {
+				for (String sign : NEG_SIGNS) {
 					if (trimmed.startsWith(sign)) {
 						return new AllTextFinderTrimmed().lookForSections(text,
 								father, type);
