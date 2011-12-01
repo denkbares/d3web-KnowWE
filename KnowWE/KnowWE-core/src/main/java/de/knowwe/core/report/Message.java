@@ -31,7 +31,7 @@ import de.knowwe.core.kdom.parsing.Section;
  * @author Albrecht Striffler (denkbares GmbH)
  * 
  */
-public class Message {
+public final class Message {
 
 	public enum Type {
 		NOTICE, WARNING, ERROR
