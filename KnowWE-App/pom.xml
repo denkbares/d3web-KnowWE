@@ -242,6 +242,25 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		
+		<!-- DiaFlux Dialog -->
+		<profile>
+			<id>diafluxdialog</id>
+			<activation>
+				<property>
+					<name>diafluxdialog</name>
+				</property>
+			</activation>
+
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-DiaFlux-Dialog</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 
 		<!-- Continuous Integration plugin -->
 		<profile>
@@ -610,6 +629,24 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-Debug</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		
+		<!-- DiaFlux Anomalies -->
+		<profile>
+			<id>diaflux-anomalies</id>
+			<activation>
+				<property>
+					<name>diaflux-anomalies</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-DiaFlux-Anomalies</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
