@@ -51,7 +51,7 @@ public class LoadFlowchartAction extends AbstractAction {
 			String source = FlowchartUtils.getFlowSourceWithoutPreview(section);
 
 			// TODO fix xml-soup of source and set content type to xml
-			context.setContentType("text/plain; charset=UTF-8");
+			context.setContentType("text/html; charset=UTF-8");
 			String escapeXml = source;
 			context.getWriter().write(escapeXml);
 

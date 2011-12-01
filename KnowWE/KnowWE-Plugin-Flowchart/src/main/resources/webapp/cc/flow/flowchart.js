@@ -29,7 +29,7 @@ Flowchart.loadFlowchart = function(kdomid, parent){
 		response : {
 			fn : function() {
 				KNOWWE.core.util.updateProcessingState(-1);
-				var xml = document.createElement('xml');
+				var xml = document.createElement('data');
 				xml.innerHTML = this.responseText;
 				
 				var flow = Flowchart.createFromXML(parent, xml);

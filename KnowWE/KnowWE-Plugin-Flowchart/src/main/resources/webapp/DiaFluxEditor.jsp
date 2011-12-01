@@ -156,19 +156,19 @@
 <body onload="new FlowEditor(<%= jspHelper.getArticleIDsAsArray() %>).showEditor();">
 
 <%-- default kbinfo objects delivered from server --%>
-<xml id="articleKBInfo" style="display:none;">
+<data id="articleKBInfo" style="display:none;">
 <%= jspHelper.getArticleInfoObjectsAsXML() %>
-</xml>
+</data>
 <%-- default kbinfo objects delivered from server --%>
-<xml id="referredKBInfo" style="display:none;">
+<data id="referredKBInfo" style="display:none;">
 <%= jspHelper.getReferredInfoObjectsAsXML() %>
-</xml>
-<xml id="ajaxKBInfo" style="display:none;">
+</data>
+<data id="ajaxKBInfo" style="display:none;">
 	<kbinfo></kbinfo>
-</xml>
-<xml id="flowchartSource" style="display:none;">
+</data>
+<data id="flowchartSource" style="display:none;">
 <%= jspHelper.loadFlowchart(request.getParameter("kdomID")) %>
-</xml>
+</data>
 <div id="toolbar"> 
 	<ul class="toolbar">
 		<li class="icon" id="saveClose" title="Save flowchart & Close editor" style="background-image:url(cc/image/toolbar/saveclose_flowchart_32.png);"></li><!--

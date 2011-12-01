@@ -209,9 +209,9 @@ public class FlowchartUtils {
 			result.append("<script src='" + jsfile + "' type='text/javascript'></script>");
 		}
 
-		result.append("<xml id='referredKBInfo' style='display:none;'>");
+		result.append("<data id='referredKBInfo' style='display:none;'>");
 		result.append(JSPHelper.getReferrdInfoObjectsAsXML(user.getWeb()));
-		result.append("</xml>\n");
+		result.append("</data>\n");
 		result.append("<script>KBInfo._updateCache($('referredKBInfo'));</script>");
 	}
 
