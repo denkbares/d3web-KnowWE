@@ -141,7 +141,7 @@ RuleArrowTool.prototype.createDraggable = function() {
 }
 
 RuleArrowTool.prototype.createRule = function(targetNode) {
-	if (this.rule.getTargetNode() != targetNode) {
+	if (this.rule.getTargetNode() != targetNode && this.rule.getSourceNode() != targetNode) {
 		var rule = new Rule(this.rule.fcid, this.rule.getSourceNode(), this.rule.getGuard(), targetNode);
 		this.rule.destroy();
 		rule.select();
