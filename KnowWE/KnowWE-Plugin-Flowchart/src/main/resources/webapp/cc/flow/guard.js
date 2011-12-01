@@ -313,7 +313,7 @@ GuardPane.prototype.checkProblems = function(rule) {
 		if (sourceModel.action){
 			var action = new Action(sourceModel.action.markup, sourceModel.action.expression);
 			var infoObject = KBInfo.lookupInfoObject(action.getInfoObjectName());
-			if (infoObject.getClassInstance() == KBInfo.Question) {
+			if (infoObject  && infoObject.getClassInstance() == KBInfo.Question) {
 				switch (infoObject.getType()) {
 				
 				case KBInfo.Question.TYPE_DATE:
