@@ -13,13 +13,12 @@ import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.SplitUtility;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.MatchUntilEndFinder;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
-import de.knowwe.report.message.ObjectCreatedMessage;
-import de.knowwe.report.message.ObjectCreationError;
 
 /**
  * A type to allow for the definition of (extended) question-text for a question
@@ -43,7 +42,7 @@ public class ObjectDescription extends AbstractType {
 		this.addSubtreeHandler(new SubtreeHandler<ObjectDescription>() {
 
 			@Override
-			public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ObjectDescription> sec) {
+			public Collection<Message> create(KnowWEArticle article, Section<ObjectDescription> sec) {
 
 				Section<TermDefinition> qDef = Sections.findSuccessor(
 						sec.getFather(), TermDefinition.class);
@@ -63,7 +62,7 @@ public class ObjectDescription extends AbstractType {
 						String objectDescriptionText = ObjectDescription.getObjectDescriptionText(sec);
 						if (prop.equals(MMInfo.PROMPT)) {
 							object.getInfoStore().addValue(MMInfo.PROMPT, objectDescriptionText);
-							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+							return Arrays.asList(Messages.objectCreatedNotice(
 									D3webModule.getKwikiBundle_d3web()
 											.getString(
 													"KnowWE.questiontree.questiontextcreated")
@@ -74,12 +73,12 @@ public class ObjectDescription extends AbstractType {
 							object.getInfoStore().addValue(
 									prop,
 									objectDescriptionText);
-							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+							return Messages.asList(Messages.objectCreatedNotice(
 									"Explanation set: " + objectDescriptionText));
 						}
 					}
 				}
-				return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+				return Messages.asList(Messages.objectCreationError(
 							D3webModule.getKwikiBundle_d3web()
 									.getString("KnowWE.questiontree.questiontext"),
 							this.getClass()));

@@ -31,9 +31,8 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.report.KDOMError;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SyntaxError;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.Patterns;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
@@ -113,8 +112,8 @@ public class CondKnownUnknown extends D3webCondition<CondKnownUnknown> {
 			return new CondUnknown(question);
 		}
 
-		KDOMError msg = new SyntaxError("unexpected internal error");
-		KDOMReportMessage.storeSingleError(article, section, getClass(), msg);
+		Message msg = Messages.syntaxError("unexpected internal error");
+		Messages.storeMessage(article, section, getClass(), msg);
 		return null;
 	}
 

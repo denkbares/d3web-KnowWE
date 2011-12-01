@@ -19,7 +19,6 @@
 package de.d3web.we.kdom.rules.action;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,16 +34,16 @@ import de.d3web.we.object.QuestionnaireReference;
 import de.knowwe.core.compile.ModifiedTermsConstraint;
 import de.knowwe.core.compile.TerminologyHandler;
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.objects.KnowWETerm.Scope;
+import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.AnonymousType;
-import de.knowwe.report.message.NoSuchObjectError;
 
 /**
  * 
@@ -109,7 +108,7 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 		}
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AnonymousType> s) {
+		public Collection<Message> create(KnowWEArticle article, Section<AnonymousType> s) {
 			TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
 			String termName = KnowWEUtils.trimQuotes(s.getOriginalText());
 			if (terminologyHandler.isDefinedTerm(article, termName, Scope.LOCAL)) {
@@ -119,21 +118,21 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 				if (Question.class.isAssignableFrom(objectClazz)) {
 					s.clearReusedBySet();
 					s.setType(new QuestionReference());
-					return new ArrayList<KDOMReportMessage>(0);
+					return new ArrayList<Message>(0);
 				}
 				if (QContainer.class.isAssignableFrom(objectClazz)) {
 					s.clearReusedBySet();
 					s.setType(new QuestionnaireReference());
-					return new ArrayList<KDOMReportMessage>(0);
+					return new ArrayList<Message>(0);
 				}
 
-				return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(
+				return Messages.asList(Messages.noSuchObjectError(
 						termName + "is defined as: "
 								+ objectClazz.getName()
 								+ " - expected was Question or Questionnaire"));
 			}
 
-			return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(
+			return Messages.asList(Messages.noSuchObjectError(
 					"Could not find '" + termName
 							+ "' - expected was Question or Questionnaire"));
 		}

@@ -20,7 +20,6 @@
 
 package de.d3web.we.kdom.questionTree;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.InfoStore;
@@ -41,7 +40,8 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.SplitUtility;
 import de.knowwe.kdom.dashtree.DashTreeElement;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
@@ -50,8 +50,6 @@ import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
 import de.knowwe.kdom.sectionFinder.MatchUntilEndFinder;
 import de.knowwe.kdom.sectionFinder.OneOfStringEnumFinder;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
-import de.knowwe.report.message.ObjectCreatedMessage;
-import de.knowwe.report.message.ObjectCreationError;
 
 /**
  * Answerline of the questionTree; a dashTreeElement is an AnswerLine if its
@@ -86,11 +84,10 @@ public class AnswerLine extends AbstractType {
 
 		// description text - startet by '~'
 		this.childrenTypes.add(new AnswerText());
-		
+
 		QuestionTreeAnswerDefinition aid = new QuestionTreeAnswerDefinition();
 		aid.setSectionFinder(new AllTextFinderTrimmed());
 		this.childrenTypes.add(aid);
-		
 
 	}
 
@@ -98,8 +95,8 @@ public class AnswerLine extends AbstractType {
 	 * Allows for the definition of abstract-flagged questions Syntax is:
 	 * "<init>"
 	 * 
-	 * The subtreehandler creates the corresponding
-	 * BasicProperties.INIT in the knoweldge base
+	 * The subtreehandler creates the corresponding BasicProperties.INIT in the
+	 * knoweldge base
 	 * 
 	 * 
 	 * @author Jochen
@@ -115,7 +112,7 @@ public class AnswerLine extends AbstractType {
 			this.addSubtreeHandler(new SubtreeHandler<InitFlag>() {
 
 				@Override
-				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<InitFlag> s) {
+				public Collection<Message> create(KnowWEArticle article, Section<InitFlag> s) {
 
 					Section<AnswerDefinition> aDef = Sections.findSuccessor(
 							s.getFather(), AnswerDefinition.class);
@@ -142,12 +139,12 @@ public class AnswerLine extends AbstractType {
 							}
 
 						}
-						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+						return Messages.asList(Messages.objectCreatedNotice(
 								D3webModule.getKwikiBundle_d3web()
 										.getString("KnowWE.questiontree.abstractquestion")));
 
 					}
-					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+					return Messages.asList(Messages.objectCreationError(
 							D3webModule.getKwikiBundle_d3web()
 									.getString("KnowWE.questiontree.abstractflag"),
 							this.getClass()));
@@ -155,7 +152,7 @@ public class AnswerLine extends AbstractType {
 			});
 		}
 	}
-	
+
 	/**
 	 * A type to allow for the definition of (extended) question-text for a
 	 * question leaded by '~'
@@ -184,12 +181,12 @@ public class AnswerLine extends AbstractType {
 			this.addSubtreeHandler(new D3webSubtreeHandler<AnswerText>() {
 
 				@Override
-				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AnswerText> sec) {
+				public Collection<Message> create(KnowWEArticle article, Section<AnswerText> sec) {
 
 					Section<AnswerDefinition> aDef = Sections.findSuccessor(
 							sec.getFather(), AnswerDefinition.class);
-					
-					Section<? extends QuestionDefinition> qSec = aDef.get().getQuestionSection(aDef); 
+
+					Section<? extends QuestionDefinition> qSec = aDef.get().getQuestionSection(aDef);
 
 					if (aDef != null && qSec != null) {
 
@@ -199,11 +196,11 @@ public class AnswerLine extends AbstractType {
 						if (question != null && choice != null) {
 							choice.getInfoStore().addValue(MMInfo.PROMPT,
 									AnswerText.getAnswerText(sec));
-							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+							return Messages.asList(Messages.objectCreatedNotice(
 									"Answer text set"));
 						}
 					}
-					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+					return Messages.asList(Messages.objectCreationError(
 							D3webModule.getKwikiBundle_d3web()
 									.getString("KnowWE.questiontree.questiontext"),
 							this.getClass()));

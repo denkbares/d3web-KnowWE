@@ -37,7 +37,7 @@ import de.d3web.we.kdom.rules.action.D3webRuleAction;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
 
 /**
  * @author Reinhard Hatko
@@ -64,7 +64,7 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Node createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
-			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
+			Section<FlowchartType> flowSection, String id, List<Message> errors) {
 
 		Section<D3webRuleAction> ruleAction = Sections.findSuccessor(nodeSection,
 				D3webRuleAction.class);

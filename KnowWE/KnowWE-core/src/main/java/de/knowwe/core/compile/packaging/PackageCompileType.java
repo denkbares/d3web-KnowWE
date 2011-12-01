@@ -13,7 +13,7 @@ import de.knowwe.core.kdom.objects.StringDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.utils.KnowWEUtils;
 
 public abstract class PackageCompileType extends StringDefinition implements PackageReference {
@@ -55,7 +55,7 @@ public abstract class PackageCompileType extends StringDefinition implements Pac
 		}
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<PackageCompileType> s) {
+		public Collection<Message> create(KnowWEArticle article, Section<PackageCompileType> s) {
 
 			KnowWEPackageManager packageMng = KnowWEEnvironment.getInstance().getPackageManager(
 					article.getWeb());

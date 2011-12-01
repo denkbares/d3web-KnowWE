@@ -20,7 +20,6 @@
 package de.d3web.we.object;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,15 +36,13 @@ import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.QuestionZC;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
-import de.d3web.we.utils.MessageUtils;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SimpleMessageError;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.report.message.ObjectCreationError;
 
 /**
  * 
@@ -78,7 +75,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public Collection<KDOMReportMessage> create(KnowWEArticle article,
+		public Collection<Message> create(KnowWEArticle article,
 				Section<QuestionDefinition> s) {
 
 			Section<QuestionDefinition> qidSection = (s);
@@ -106,7 +103,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			else {
 				if (alreadyRegistered) {
 					parent.addChild(s.get().getTermObject(article, s));
-					return new ArrayList<KDOMReportMessage>(0);
+					return new ArrayList<Message>(0);
 				}
 			}
 
@@ -114,7 +111,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 					qidSection);
 
 			if (questionType == null) {
-				return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+				return Messages.asList(Messages.objectCreationError(
 						"no question type found: " + name,
 						this.getClass()));
 			}
@@ -145,7 +142,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 				q = new QuestionText(parent, name);
 			}
 			else {
-				return MessageUtils.asList(new SimpleMessageError(
+				return Messages.asList(Messages.error(
 						"No valid question type found for question '" + name + "'"));
 
 			}
@@ -160,7 +157,8 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			qidSection.get().storeTermObject(article, qidSection, q);
 
 			// return success message
-			return MessageUtils.objectCreatedAsList(q);
+			return Messages.asList(Messages.objectCreatedNotice(
+					q.getClass().getSimpleName() + " " + q.getName()));
 
 		}
 

@@ -21,7 +21,6 @@
 package de.d3web.we.kdom.rules;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
@@ -61,14 +60,13 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.AllTextFinderDivCorrectTrimmed;
-import de.knowwe.report.message.CreateRelationFailed;
-import de.knowwe.report.message.ObjectCreatedMessage;
 
 /**
  * @author Jochen
@@ -160,7 +158,7 @@ public class RuleContentType extends AbstractType {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article,
+		public Collection<Message> create(KnowWEArticle article,
 				Section<RuleAction> actionS) {
 
 			Section<ConditionActionRuleContent> rule = Sections
@@ -170,9 +168,9 @@ public class RuleContentType extends AbstractType {
 			if (!article.isFullParse()) destroy(article, actionS);
 
 			if (rule.hasErrorInSubtree(article)) {
-				return Arrays
-						.asList((KDOMReportMessage) new CreateRelationFailed(
-								"Rule"));
+				return Messages
+						.asList(Messages.creationFailedWarning(
+								Rule.class.getSimpleName()));
 			}
 
 			// create condition
@@ -185,8 +183,8 @@ public class RuleContentType extends AbstractType {
 			Section<D3webRuleAction> action = Sections.findSuccessor(actionS,
 					D3webRuleAction.class);
 			if (action == null) {
-				return Arrays
-						.asList((KDOMReportMessage) new CreateRelationFailed(
+				return Messages
+						.asList(Messages.creationFailedWarning(
 								D3webModule.getKwikiBundle_d3web().getString(
 										"KnowWE.rulesNew.notcreated")
 										+ " : no valid action found"));
@@ -213,15 +211,14 @@ public class RuleContentType extends AbstractType {
 						exceptionCond, action.get().getActionPSContext());
 				if (r != null) {
 					KnowWEUtils.storeObject(article, actionS, ruleStoreKey, r);
-					return Arrays
-							.asList((KDOMReportMessage) new ObjectCreatedMessage(
+					return Messages.asList(Messages.objectCreatedNotice(
 									"Rule"));
 				}
 
 			}
 
 			// should not happen
-			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+			return Messages.asList(Messages.creationFailedWarning(
 					D3webModule.getKwikiBundle_d3web().getString(
 							"KnowWE.rulesNew.notcreated")));
 		}

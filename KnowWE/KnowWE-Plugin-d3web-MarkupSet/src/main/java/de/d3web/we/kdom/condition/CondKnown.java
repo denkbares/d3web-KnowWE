@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -32,20 +32,19 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.report.KDOMError;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.report.message.NoSuchObjectError;
 
 /**
  * Implements the CondKnown Condition to be used as child type in
  * {@link TerminalCondition}
- *
+ * 
  * syntax: KNOWN[<questionID>] / BEKANNT[<questionID>]
- *
+ * 
  * @author Jochen
- *
+ * 
  */
 public class CondKnown extends D3webCondition<CondKnown> {
 
@@ -88,13 +87,13 @@ public class CondKnown extends D3webCondition<CondKnown> {
 				return createCond(q);
 			}
 			else {
-				KDOMError msg = new NoSuchObjectError(qRef.getOriginalText());
-				KDOMReportMessage.storeSingleError(article, section, getClass(), msg);
+				Message msg = Messages.noSuchObjectError(qRef.getOriginalText());
+				Messages.storeMessage(article, section, getClass(), msg);
 				return null;
 			}
 		}
-		KDOMError msg = new NoSuchObjectError("");
-		KDOMReportMessage.storeSingleError(article, section, getClass(), msg);
+		Message msg = Messages.noSuchObjectError("");
+		Messages.storeMessage(article, section, getClass(), msg);
 		return null;
 	}
 

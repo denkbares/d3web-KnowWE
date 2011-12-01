@@ -20,7 +20,6 @@
 
 package de.d3web.we.kdom.questionTree.setValue;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -45,14 +44,13 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.SplitUtility;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
-import de.knowwe.report.message.CreateRelationFailed;
-import de.knowwe.report.message.ObjectCreatedMessage;
 
 public class QuestionSetValueLine extends AbstractType {
 
@@ -102,7 +100,7 @@ public class QuestionSetValueLine extends AbstractType {
 		}
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionReference> s) {
+		public Collection<Message> create(KnowWEArticle article, Section<QuestionReference> s) {
 
 			Question q = s.get().getTermObject(article, s);
 
@@ -127,7 +125,7 @@ public class QuestionSetValueLine extends AbstractType {
 						Condition cond = QuestionDashTreeUtils.createCondition(article,
 								DashTreeUtils.getAncestorDashTreeElements(s));
 						if (cond == null) {
-							return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+							return Messages.asList(Messages.creationFailedWarning(
 									Rule.class.getSimpleName() + ": check condition"));
 						}
 
@@ -146,7 +144,7 @@ public class QuestionSetValueLine extends AbstractType {
 
 						if (r != null) {
 							KnowWEUtils.storeObject(article, s, SETVALUE_ARGUMENT, r);
-							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+							return Messages.asList(Messages.objectCreatedNotice(
 									r.getClass().toString()));
 						}
 
@@ -154,7 +152,7 @@ public class QuestionSetValueLine extends AbstractType {
 				}
 			}
 
-			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+			return Messages.asList(Messages.creationFailedWarning(
 					Rule.class.getSimpleName()));
 
 		}

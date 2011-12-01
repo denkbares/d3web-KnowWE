@@ -31,7 +31,7 @@ import de.knowwe.core.compile.ConstraintModule.Purpose;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
 
 /**
  * Abstract class for a SubtreeHandler. This handler has to be registered to a
@@ -144,7 +144,7 @@ public abstract class SubtreeHandler<T extends Type> {
 	 *        can also be included!
 	 * @param section is the Section from which you want to create something
 	 */
-	public abstract Collection<KDOMReportMessage> create(KnowWEArticle article, Section<T> section);
+	public abstract Collection<Message> create(KnowWEArticle article, Section<T> section);
 
 	/**
 	 * If this method returns false, the method<tt>destroy(KnowWEArticle,

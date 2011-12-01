@@ -34,7 +34,7 @@ import de.d3web.we.core.semantic.UpperOntology;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
 import de.knowwe.kdom.xml.XMLContent;
 
 public class TagsContent extends XMLContent {
@@ -53,7 +53,7 @@ public class TagsContent extends XMLContent {
 		}
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
+		public Collection<Message> create(KnowWEArticle article, Section s) {
 			String text = s.getOriginalText();
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			for (String cur : text.split(" |,")) {

@@ -18,7 +18,6 @@
  */
 package de.d3web.we.kdom.xcl.settings;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -40,11 +39,10 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.KnowWEPackageManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SimpleMessageError;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.report.message.InvalidNumberError;
 
 /**
  * This MarkUp offers some annotations to configure the XCL problem solver.
@@ -65,7 +63,7 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 		m.addAnnotation(ESTABLISHED_THRESHOLD, false);
 		m.addAnnotation(SUGGESTED_THRESHOLD, false);
 		m.addAnnotation(MIN_SUPPORT, false);
-		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME, false);
+		m.addAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 	}
 
 	public CoveringListSettingsMarkup() {
@@ -76,13 +74,13 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 	public class CoveringListSettingsHandler extends D3webSubtreeHandler<CoveringListSettingsMarkup> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<CoveringListSettingsMarkup> s) {
+		public Collection<Message> create(KnowWEArticle article, Section<CoveringListSettingsMarkup> s) {
 
 			// Get KnowledgeBase
 			KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(
 					article.getWeb()).getKB(article.getTitle());
 			if (kb == null) {
-				return Arrays.asList((KDOMReportMessage) new SimpleMessageError(
+				return Messages.asList(Messages.error(
 						"No knowledgebase available."));
 			}
 
@@ -93,18 +91,18 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 				psMethod = (PSMethodXCL) config.getPsMethod();
 			}
 			else {
-				return Arrays.asList((KDOMReportMessage) new SimpleMessageError(
+				return Messages.asList(Messages.error(
 						"Internal error. Wrong PSMethod in PSConfig."));
 			}
 
 			// Get ScoreAlgorithms
 			ScoreAlgorithm algorithm = psMethod.getScoreAlgorithm();
 			if (algorithm == null) {
-				return Arrays.asList((KDOMReportMessage) new SimpleMessageError(
+				return Messages.asList(Messages.error(
 						"Internal error. No Score-Algorithm present."));
 			}
 
-			Collection<KDOMReportMessage> m = new LinkedList<KDOMReportMessage>();
+			Collection<Message> m = new LinkedList<Message>();
 
 			// Default established threshold
 			Double establishedTreshold = getValueFromAnnotation(s,
@@ -117,7 +115,7 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 					((DefaultScoreAlgorithm) algorithm).setDefaultEstablishedThreshold(establishedTreshold);
 				}
 				else {
-					return Arrays.asList((KDOMReportMessage) new SimpleMessageError(
+					return Messages.asList(Messages.error(
 							"Settings can't be applied to " + algorithm.getClass().getSimpleName()));
 				}
 			}
@@ -133,7 +131,7 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 					((DefaultScoreAlgorithm) algorithm).setDefaultSuggestedThreshold(suggestedTreshold);
 				}
 				else {
-					return Arrays.asList((KDOMReportMessage) new SimpleMessageError(
+					return Messages.asList(Messages.error(
 							"Settings can't be applied to " + algorithm.getClass().getSimpleName()));
 				}
 			}
@@ -148,7 +146,7 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 					((DefaultScoreAlgorithm) algorithm).setDefaultMinSupport(minSupport);
 				}
 				else {
-					return Arrays.asList((KDOMReportMessage) new SimpleMessageError(
+					return Messages.asList(Messages.error(
 							"Settings can't be applied to " + algorithm.getClass().getSimpleName()));
 				}
 			}
@@ -189,7 +187,7 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 			return config;
 		}
 
-		private double getValueFromAnnotation(Section<CoveringListSettingsMarkup> markup, String annotation, Collection<KDOMReportMessage> messages) {
+		private double getValueFromAnnotation(Section<CoveringListSettingsMarkup> markup, String annotation, Collection<Message> messages) {
 			double value = Double.NaN;
 			String stringValue = DefaultMarkupType.getAnnotation(markup, annotation);
 			if (stringValue != null) {
@@ -197,7 +195,7 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 					value = Double.parseDouble(stringValue);
 				}
 				catch (NumberFormatException e) {
-					messages.add(new InvalidNumberError(annotation));
+					messages.add(Messages.invalidNumberError(annotation));
 				}
 			}
 			return value;

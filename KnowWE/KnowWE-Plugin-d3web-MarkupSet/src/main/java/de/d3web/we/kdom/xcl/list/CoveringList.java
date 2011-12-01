@@ -21,7 +21,6 @@
 package de.d3web.we.kdom.xcl.list;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -56,7 +55,8 @@ import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.AnonymousType;
@@ -67,9 +67,6 @@ import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
 import de.knowwe.kdom.sectionFinder.EmbracedContentFinder;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.knowwe.kdom.sectionFinder.UnquotedExpressionFinder;
-import de.knowwe.report.message.CreateRelationFailed;
-import de.knowwe.report.message.InvalidNumberWarning;
-import de.knowwe.report.message.RelationCreatedMessage;
 
 /**
  * @author Jochen
@@ -201,9 +198,9 @@ public class CoveringList extends AbstractType {
 			 * .we.kdom.KnowWEArticle, de.d3web.we.kdom.Section)
 			 */
 			@Override
-			public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<CoveringRelation> s) {
+			public Collection<Message> create(KnowWEArticle article, Section<CoveringRelation> s) {
 
-				List<KDOMReportMessage> result = new ArrayList<KDOMReportMessage>();
+				List<Message> result = new ArrayList<Message>();
 
 				Section<CompositeCondition> cond = Sections.findSuccessor(s,
 						CompositeCondition.class);
@@ -213,7 +210,7 @@ public class CoveringList extends AbstractType {
 				}
 
 				if (s.hasErrorInSubtree(article)) {
-					return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+					return Messages.asList(Messages.creationFailedWarning(
 							D3webModule.getKwikiBundle_d3web()
 									.getString("KnowWE.xcllist.relationfail")));
 				}
@@ -227,7 +224,7 @@ public class CoveringList extends AbstractType {
 						XCLModel xclModel = solution.getKnowledgeStore().getKnowledge(
 								XCLModel.KNOWLEDGE_KIND);
 
- 						if (xclModel != null) {
+						if (xclModel != null) {
 
 							if (cond != null) {
 
@@ -235,7 +232,7 @@ public class CoveringList extends AbstractType {
 										cond);
 
 								if (condition == null) {
-									return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+									return Messages.asList(Messages.creationFailedWarning(
 											D3webModule.getKwikiBundle_d3web()
 													.getString("KnowWE.xcllist.conditionerror")));
 								}
@@ -255,13 +252,13 @@ public class CoveringList extends AbstractType {
 										try {
 											w = Double.valueOf(weightString.trim());
 											if (w <= 0) {
-												result.add(new InvalidNumberWarning(
+												result.add(Messages.invalidNumberWarning(
 														weightString));
 											}
 										}
 										catch (NumberFormatException e) {
 											// not a valid weight
-											result.add(new InvalidNumberWarning(weightString));
+											result.add(Messages.invalidNumberWarning(weightString));
 										}
 									}
 								}
@@ -281,7 +278,7 @@ public class CoveringList extends AbstractType {
 								if (w > 0 && w != 1) {
 									wString = Double.toString(w);
 								}
-								result.add(new RelationCreatedMessage("XCL: "
+								result.add(Messages.relationCreatedNotice("XCL: "
 										+ type.toString() + " " + wString));
 								return result;
 
@@ -289,7 +286,7 @@ public class CoveringList extends AbstractType {
 						}
 					}
 				}
-				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+				return Messages.asList(Messages.creationFailedWarning(
 						D3webModule.getKwikiBundle_d3web()
 								.getString("KnowWE.xcllist.relationfail")));
 			}

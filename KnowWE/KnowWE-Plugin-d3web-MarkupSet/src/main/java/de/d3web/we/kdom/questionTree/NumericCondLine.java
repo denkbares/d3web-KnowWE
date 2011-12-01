@@ -21,7 +21,6 @@
 package de.d3web.we.kdom.questionTree;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 import de.d3web.core.inference.condition.Condition;
@@ -35,12 +34,12 @@ import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.dashtree.DashTreeElement;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
-import de.knowwe.report.message.InvalidNumberError;
 
 public class NumericCondLine extends AbstractType implements IncrementalMarker, IncrementalConstraint<NumericCondLine> {
 
@@ -73,7 +72,7 @@ public class NumericCondLine extends AbstractType implements IncrementalMarker, 
 	static class CheckConditionHandler extends D3webSubtreeHandler<NumericCondLine> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<NumericCondLine> s) {
+		public Collection<Message> create(KnowWEArticle article, Section<NumericCondLine> s) {
 
 			Section<DashTreeElement> dte = Sections.findAncestorOfType(s, DashTreeElement.class);
 			Section<? extends DashTreeElement> fatherDashTreeElement = DashTreeUtils.getFatherDashTreeElement(dte);
@@ -81,16 +80,16 @@ public class NumericCondLine extends AbstractType implements IncrementalMarker, 
 			Condition simpleCondition = QuestionDashTreeUtils.createSimpleCondition(article, dte,
 					fatherDashTreeElement);
 			if (simpleCondition == null) {
-				return Arrays.asList((KDOMReportMessage) new InvalidNumberError(
+				return Messages.asList(Messages.invalidNumberError(
 						"invalid numeric condition"));
 			}
 
-			return new ArrayList<KDOMReportMessage>(0);
+			return new ArrayList<Message>(0);
 		}
 
 		@Override
 		public void destroy(KnowWEArticle article, Section<NumericCondLine> s) {
-			KDOMReportMessage.clearMessages(article, s, CheckConditionHandler.class);
+			Messages.clearMessages(article, s, CheckConditionHandler.class);
 		}
 
 	}

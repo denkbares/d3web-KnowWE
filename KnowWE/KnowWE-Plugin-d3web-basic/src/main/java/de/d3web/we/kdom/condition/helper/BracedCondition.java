@@ -8,8 +8,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SyntaxError;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.SplitUtility;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 
@@ -62,12 +61,12 @@ class EmbracedExpressionFinder implements SectionFinder {
 
 		// throw error if no corresponding closing bracket can be found
 		if (closingBracket == -1) {
-			KDOMReportMessage.storeSingleError(father.getArticle(), father,
-						this.getClass(), new SyntaxError("missing \")\""));
+			Messages.storeMessage(father.getArticle(), father,
+						this.getClass(), Messages.syntaxError("missing \")\""));
 			return null;
 		}
 		else {
-			KDOMReportMessage.clearMessages(father.getArticle(), father,
+			Messages.clearMessages(father.getArticle(), father,
 						this.getClass());
 		}
 

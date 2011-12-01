@@ -61,7 +61,7 @@ public class ResourceType extends DefaultMarkupType implements IncrementalMarker
 		MARKUP = new DefaultMarkup(MARKUP_NAME);
 		MARKUP.addAnnotation(ANNOTATION_PATH, false);
 		MARKUP.addAnnotation(ANNOTATION_SRC, false);
-		MARKUP.addAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME, false);
+		MARKUP.addAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 	}
 
 	public ResourceType() {

@@ -40,9 +40,8 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.InjectType;
 import de.knowwe.core.kdom.objects.KnowWETerm;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.KDOMError;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SimpleMessageError;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserSettingsManager;
 import de.knowwe.kdom.filter.SectionFilter;
 import de.knowwe.kdom.visitor.Visitable;
@@ -236,21 +235,21 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 		if (!this.get().getAllowedChildrenTypes().isEmpty()
 				|| this.getChildren().size() > 1
 				|| (this.getChildren().size() == 1 && !(this.getChildren().get(0).get() instanceof InjectType))) {
-			KDOMReportMessage.storeSingleError(null, this, this.getClass(),
-					new SimpleMessageError(
+			Messages.storeMessage(null, this, this.getClass(),
+					Messages.error(
 							"Internal error: Tried to inject sections in non-leaf section."));
 			return null;
 		}
 
 		if (this.getChildren().size() == 1 && !this.getChildren().get(0).equalsAsKDOMSubtree(
 						injectSection)) {
-			KDOMReportMessage.storeSingleError(null, this, this.getClass(),
-					new SimpleMessageError(
+			Messages.storeMessage(null, this, this.getClass(),
+					Messages.error(
 							"Internal error: Multiple diverging section injections."));
 			return (Section<InjectType>) this.getChildren().get(0);
 		}
 
-		KDOMReportMessage.clearMessages(null, this, this.getClass());
+		Messages.clearMessages(null, this, this.getClass());
 		this.addChild(injectSection);
 
 		return injectSection;
@@ -686,7 +685,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	 * @return
 	 */
 	public boolean hasErrorInSubtree(KnowWEArticle article) {
-		Collection<KDOMError> s = KDOMReportMessage.getErrors(article, this);
+		Collection<Message> s = Messages.getErrors(article, this);
 		if (s != null && s.size() > 0) {
 			return true;
 		}
@@ -1052,17 +1051,16 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 				&& isMatchingPackageName(article, handler)) {
 			try {
 				// long time = System.currentTimeMillis();
-				Collection<KDOMReportMessage> msgs = handler.create(
-						article, this);
+				Collection<Message> msgs = handler.create(article, this);
 				// a message should know its origin:
 				if (msgs != null) {
-					for (KDOMReportMessage m : msgs) {
+					for (Message m : msgs) {
 						if (m != null) {
 							m.setSection(this);
 						}
 					}
 				}
-				KDOMReportMessage.storeMessages(article, this, handler.getClass(), msgs);
+				Messages.storeMessages(article, this, handler.getClass(), msgs);
 				setCompiledBy(article.getTitle(), handler, true);
 			}
 			catch (Exception e) {
@@ -1070,10 +1068,10 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 				String text = "Unexpected internal error in subtree handler '" + handler
 						+ "' while creating for section '" + getID() + "' in article '"
 						+ getTitle() + "': " + e.toString();
-				SimpleMessageError msg = new SimpleMessageError(text);
+				Message msg = Messages.error(text);
 
 				Logging.getInstance().severe(text);
-				KDOMReportMessage.storeSingleError(getArticle(), this, getClass(), msg);
+				Messages.storeMessage(getArticle(), this, getClass(), msg);
 
 			}
 		}
@@ -1175,7 +1173,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 		for (Priority p : subtreeHandlers.keySet()) {
 			List<SubtreeHandler<? extends Type>> list = subtreeHandlers.get(p);
 			for (SubtreeHandler<? extends Type> subtreeHandler : list) {
-				KDOMReportMessage.clearMessages(article, this,
+				Messages.clearMessages(article, this,
 						subtreeHandler.getClass());
 			}
 		}

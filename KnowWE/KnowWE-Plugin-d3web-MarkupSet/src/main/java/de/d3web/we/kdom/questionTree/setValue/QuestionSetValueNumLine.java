@@ -21,7 +21,6 @@
 package de.d3web.we.kdom.questionTree.setValue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -45,7 +44,8 @@ import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.SplitUtility;
@@ -53,8 +53,6 @@ import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
-import de.knowwe.report.message.CreateRelationFailed;
-import de.knowwe.report.message.ObjectCreatedMessage;
 
 public class QuestionSetValueNumLine extends AbstractType {
 
@@ -154,7 +152,7 @@ public class QuestionSetValueNumLine extends AbstractType {
 		}
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionReference> s) {
+		public Collection<Message> create(KnowWEArticle article, Section<QuestionReference> s) {
 
 			Question q = s.get().getTermObject(article, s);
 
@@ -173,13 +171,13 @@ public class QuestionSetValueNumLine extends AbstractType {
 					Rule r = RuleFactory.createRule(action, cond, null, PSMethodAbstraction.class);
 					if (r != null) {
 						KnowWEUtils.storeObject(article, s, SETVALUE_ARGUMENT, r);
-						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+						return Messages.asList(Messages.objectCreatedNotice(
 										r.getClass().toString()));
 					}
 				}
 			}
 
-			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+			return Messages.asList(Messages.creationFailedWarning(
 					Rule.class.getSimpleName()));
 
 		}

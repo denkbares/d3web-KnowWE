@@ -40,17 +40,15 @@ import de.knowwe.core.event.EventListener;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.objects.KnowWETerm;
-import de.knowwe.core.kdom.objects.TermDefinition;
-import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.objects.KnowWETerm.Scope;
+import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.objects.TermDefinition.MultiDefMode;
+import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.event.ArticleCreatedEvent;
 import de.knowwe.event.FullParseEvent;
-import de.knowwe.report.message.MultipleTermDefinitionsError;
-import de.knowwe.report.message.OccupiedTermError;
-import de.knowwe.report.message.TermNameCaseWarning;
 
 /**
  * @author Jochen, Albrecht
@@ -102,7 +100,7 @@ public class TerminologyHandler implements EventListener {
 		return tmap;
 	}
 
-	@SuppressWarnings( {
+	@SuppressWarnings({
 			"unchecked", "rawtypes" })
 	private <TermObject> TermReferenceLog<TermObject> getTermReferenceLog(KnowWEArticle article,
 			Section<? extends KnowWETerm<TermObject>> r) {
@@ -124,7 +122,7 @@ public class TerminologyHandler implements EventListener {
 				termScope).get(new TermIdentifier(termIdentifier));
 	}
 
-	@SuppressWarnings( {
+	@SuppressWarnings({
 			"unchecked", "rawtypes" })
 	private void removeTermReferenceLogsForArticle(KnowWEArticle article) {
 		Map<TermIdentifier, TermReferenceLog> logs = getTermReferenceLogsMap(
@@ -168,8 +166,7 @@ public class TerminologyHandler implements EventListener {
 	 * 
 	 * TODO: This methods gets huge... find a way to simplify or shorten it.
 	 * 
-	 * @param s
-	 *            is the term defining section.
+	 * @param s is the term defining section.
 	 * @param <TermObject>
 	 * @returns true if the sections was registered as the defining section for
 	 *          this term. false else.
@@ -177,7 +174,7 @@ public class TerminologyHandler implements EventListener {
 	public <TermObject> boolean registerTermDefinition(KnowWEArticle article,
 			Section<? extends TermDefinition<TermObject>> s) {
 
-		Collection<KDOMReportMessage> msgs = new LinkedList<KDOMReportMessage>();
+		Collection<Message> msgs = new LinkedList<Message>();
 		Priority p = article.getReviseIterator().getCurrentPriority();
 		TermIdentifier termIdentifier = new TermIdentifier(article, s);
 		TermReferenceLog<TermObject> termRefLog = getTermReferenceLog(article, s);
@@ -188,7 +185,7 @@ public class TerminologyHandler implements EventListener {
 					new TermIdentifier(article, s).toString(), s.get().getTermScope());
 			if (termRefLogWrongClass != null) {
 				// don't override a termRefLog of another term object class
-				msgs.add(new OccupiedTermError(termIdentifier.toString(),
+				msgs.add(Messages.occupiedTermError(termIdentifier.toString(),
 						termRefLogWrongClass.getTermObjectClass()));
 
 				// If there is no term defining section or a definition with
@@ -204,7 +201,7 @@ public class TerminologyHandler implements EventListener {
 
 					globalRecompilationOfTerm(article, s, termRefLogWrongClass);
 				}
-				KDOMReportMessage.storeMessages(article, s, this.getClass(), msgs);
+				Messages.storeMessages(article, s, this.getClass(), msgs);
 				return false;
 			}
 		}
@@ -220,7 +217,7 @@ public class TerminologyHandler implements EventListener {
 									"Tried to register same TermDefinition twice: '" +
 											termIdentifier + "'!");
 					// now registration will be ignored
-					KDOMReportMessage.storeMessages(article, s, this.getClass(), msgs);
+					Messages.storeMessages(article, s, this.getClass(), msgs);
 					return false;
 				}
 				// If there is already a definition with higher priority or
@@ -235,24 +232,26 @@ public class TerminologyHandler implements EventListener {
 							termRefLog.getDefiningSection());
 					String redTermName = s.get().getTermIdentifier(s);
 					if (!termName.equals(redTermName)) {
-						msgs.add(new TermNameCaseWarning(termName));
+						msgs.add(Messages.warning("Term name matches with wrong case. Expected: "
+								+ termName));
 					}
 					if (termRefLog.getDefiningSection().get().getMultiDefMode() == MultiDefMode.INACTIVE) {
 						globalRecompilationOfTerm(article, s, termRefLog);
-						MultipleTermDefinitionsError mtde = new MultipleTermDefinitionsError(
+						Message mtde = Messages.error("There is more than one definition of the term "
+								+
 								termName);
 						msgs.add(mtde);
-						KDOMReportMessage.storeSingleError(article,
+						Messages.storeMessage(article,
 								termRefLog.getDefiningSection(),
 								this.getClass(), mtde);
 					}
 
-					KDOMReportMessage.storeMessages(article, s, this.getClass(), msgs);
+					Messages.storeMessages(article, s, this.getClass(), msgs);
 					return false;
 				}
 				else {
 					if (globalRecompilationOfTerm(article, s, termRefLog)) {
-						KDOMReportMessage.storeMessages(article, s, this.getClass(), msgs);
+						Messages.storeMessages(article, s, this.getClass(), msgs);
 						return false;
 					}
 				}
@@ -280,7 +279,7 @@ public class TerminologyHandler implements EventListener {
 		if (s.get().getTermScope() == Scope.LOCAL) {
 			modifiedTermDefinitions.add(article.getTitle());
 		}
-		KDOMReportMessage.storeMessages(article, s, this.getClass(), msgs);
+		Messages.storeMessages(article, s, this.getClass(), msgs);
 		return true;
 	}
 
@@ -326,7 +325,7 @@ public class TerminologyHandler implements EventListener {
 
 	public <TermObject> void registerTermReference(KnowWEArticle article, Section<? extends TermReference<TermObject>> s) {
 
-		Collection<KDOMReportMessage> msgs = new LinkedList<KDOMReportMessage>();
+		Collection<Message> msgs = new LinkedList<Message>();
 		TermReferenceLog<TermObject> terRefLog = getTermReferenceLog(article, s);
 		if (terRefLog == null) {
 			TermReferenceLog<?> termRefLogWrongClass = getTermReferenceLog(article,
@@ -334,9 +333,9 @@ public class TerminologyHandler implements EventListener {
 					s.get().getTermScope());
 			if (termRefLogWrongClass != null) {
 				// don't override a termRefLog of another term object class
-				msgs.add(new OccupiedTermError(new TermIdentifier(article, s).toString(),
+				msgs.add(Messages.occupiedTermError(new TermIdentifier(article, s).toString(),
 						termRefLogWrongClass.getTermObjectClass()));
-				KDOMReportMessage.storeMessages(article, s, this.getClass(), msgs);
+				Messages.storeMessages(article, s, this.getClass(), msgs);
 				return;
 			}
 			terRefLog = new TermReferenceLog<TermObject>(s.get().getTermObjectClass(),
@@ -349,11 +348,12 @@ public class TerminologyHandler implements EventListener {
 			String termName = terRefLog.getDefiningSection().get().getTermIdentifier(
 					terRefLog.getDefiningSection());
 			if (!termName.equals(refTermName)) {
-				msgs.add(new TermNameCaseWarning(termName));
+				msgs.add(Messages.warning("Term name matches with wrong case. Expected: "
+						+ termName));
 			}
 		}
 		terRefLog.addTermReference(s);
-		KDOMReportMessage.storeMessages(article, s, this.getClass(), msgs);
+		Messages.storeMessages(article, s, this.getClass(), msgs);
 	}
 
 	/**
@@ -394,7 +394,7 @@ public class TerminologyHandler implements EventListener {
 	 * @param s
 	 * @return
 	 */
-	@SuppressWarnings( {
+	@SuppressWarnings({
 			"unchecked", "rawtypes" })
 	public Section<? extends TermDefinition<?>> getTermDefiningSection(
 			KnowWEArticle article, String termIdentifier, Scope termScope) {
@@ -415,7 +415,7 @@ public class TerminologyHandler implements EventListener {
 	 * @param s
 	 * @return
 	 */
-	@SuppressWarnings( {
+	@SuppressWarnings({
 			"unchecked", "rawtypes" })
 	public Collection<Section<? extends TermDefinition>> getRedundantTermDefiningSections(
 			KnowWEArticle article, String termIdentifier, Scope termScope) {
@@ -430,7 +430,7 @@ public class TerminologyHandler implements EventListener {
 				0));
 	}
 
-	@SuppressWarnings( {
+	@SuppressWarnings({
 			"unchecked", "rawtypes" })
 	public Set<Section<? extends TermReference<?>>> getTermReferenceSections(KnowWEArticle article,
 			String termIdentifier, Scope termScope) {
@@ -570,7 +570,7 @@ public class TerminologyHandler implements EventListener {
 
 					globalRecompilationOfTerm(article, s, termRefLog);
 
-					KDOMReportMessage.clearMessages(article,
+					Messages.clearMessages(article,
 							definingSection,
 							this.getClass());
 				}
@@ -579,7 +579,7 @@ public class TerminologyHandler implements EventListener {
 				modifiedTermDefinitions.add(article.getTitle());
 			}
 		}
-		KDOMReportMessage.clearMessages(article, s, this.getClass());
+		Messages.clearMessages(article, s, this.getClass());
 	}
 
 	public <TermObject> void unregisterTermReference(KnowWEArticle article, Section<? extends TermReference<TermObject>> s) {
@@ -631,7 +631,7 @@ public class TerminologyHandler implements EventListener {
 		return getAllTerms(title, Scope.LOCAL, null);
 	}
 
-	@SuppressWarnings( {
+	@SuppressWarnings({
 			"unchecked", "rawtypes" })
 	public Collection<String> getAllTerms(String title, Scope scope, Class<?> termClass) {
 		Collection<Section<? extends TermDefinition>> allTermDefs = getAllTermDefs(title,
@@ -649,7 +649,7 @@ public class TerminologyHandler implements EventListener {
 	 * 
 	 * @created 03.11.2010
 	 */
-	@SuppressWarnings( {
+	@SuppressWarnings({
 			"unchecked", "rawtypes" })
 	public Collection<Section<? extends TermDefinition>> getAllGlobalTermDefsOfType(Class<?> termClass) {
 		return getAllTermDefs(null, Scope.GLOBAL, termClass);
@@ -660,7 +660,7 @@ public class TerminologyHandler implements EventListener {
 	 * 
 	 * @created 03.11.2010
 	 */
-	@SuppressWarnings( {
+	@SuppressWarnings({
 			"unchecked", "rawtypes" })
 	public Collection<Section<? extends TermDefinition>> getAllGlobalTermDefs() {
 		return getAllTermDefs(null, Scope.GLOBAL, null);
@@ -672,7 +672,7 @@ public class TerminologyHandler implements EventListener {
 	 * 
 	 * @created 03.11.2010
 	 */
-	@SuppressWarnings( {
+	@SuppressWarnings({
 			"unchecked", "rawtypes" })
 	public Collection<Section<? extends TermDefinition>> getAllLocalTermsDefsOfType(String title, Class<?> termClass) {
 		return getAllTermDefs(title, Scope.LOCAL, termClass);
@@ -684,13 +684,13 @@ public class TerminologyHandler implements EventListener {
 	 * 
 	 * @created 03.11.2010
 	 */
-	@SuppressWarnings( {
+	@SuppressWarnings({
 			"unchecked", "rawtypes" })
 	public Collection<Section<? extends TermDefinition>> getAllLocalTermDefs(String title) {
 		return getAllTermDefs(title, Scope.LOCAL, null);
 	}
 
-	@SuppressWarnings( {
+	@SuppressWarnings({
 			"unchecked", "rawtypes" })
 	public Collection<Section<? extends TermDefinition>> getAllTermDefs(String title, Scope scope, Class<?> termClass) {
 		Collection<TermReferenceLog> logs = getTermReferenceLogsMap(title, scope).values();
@@ -712,8 +712,8 @@ public class TerminologyHandler implements EventListener {
 	 * 
 	 * @author Jochen, Albrecht
 	 * 
-	 * @param <TermObject>
-	 *            is the Class of the term object associated with the term.
+	 * @param <TermObject> is the Class of the term object associated with the
+	 *        term.
 	 */
 	class TermReferenceLog<TermObject> {
 
@@ -819,7 +819,7 @@ public class TerminologyHandler implements EventListener {
 
 		private final String termIdentifierLowerCase;
 
-		@SuppressWarnings( {
+		@SuppressWarnings({
 				"unchecked", "rawtypes" })
 		public TermIdentifier(KnowWEArticle article, Section<? extends KnowWETerm> s) {
 

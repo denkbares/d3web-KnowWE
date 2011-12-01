@@ -29,8 +29,8 @@ import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SyntaxError;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 
 /**
  * This type represents an instant in time. Different units of time (and their
@@ -116,13 +116,13 @@ public class TimeStampType extends AbstractType {
 	class TimeStampSubtreeHandler extends SubtreeHandler<TimeStampType> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<TimeStampType> s) {
+		public Collection<Message> create(KnowWEArticle article, Section<TimeStampType> s) {
 			if (TimeStampType.isValid(s.getText())) {
 				return Collections.emptyList();
 			}
 			else {
-				LinkedList<KDOMReportMessage> list = new LinkedList<KDOMReportMessage>();
-				list.add(new SyntaxError("Invalid time stamp: '" + s.getText() + "'"));
+				LinkedList<Message> list = new LinkedList<Message>();
+				list.add(Messages.syntaxError("Invalid time stamp: '" + s.getText() + "'"));
 
 				return list;
 

@@ -31,7 +31,8 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 
 public abstract class D3webRuleAction<T extends Type>
@@ -73,11 +74,11 @@ public abstract class D3webRuleAction<T extends Type>
 		@Override
 		public void destroy(KnowWEArticle article, Section<T> s) {
 			storeAction(article, null, s);
-			KDOMReportMessage.clearMessages(article, s, getClass());
+			Messages.clearMessages(article, s, getClass());
 		}
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<T> section) {
+		public Collection<Message> create(KnowWEArticle article, Section<T> section) {
 			PSAction action = createAction(article, section);
 			storeAction(article, action, section);
 			// do not overwrite existing messages

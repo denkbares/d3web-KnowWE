@@ -24,12 +24,11 @@ import java.util.Collection;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.d3web.we.utils.MessageUtils;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.KDOMWarning;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.wikiConnector.ConnectorAttachment;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -42,7 +41,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 
 	@Override
-	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ResourceType> section) {
+	public Collection<Message> create(KnowWEArticle article, Section<ResourceType> section) {
 		KnowledgeBase kb = getKB(article);
 		if (kb == null) return null;
 
@@ -67,7 +66,7 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 	 * @param destinationPath the resource path to store the content in
 	 * @return the errors occurred or null if successful
 	 */
-	private static Collection<KDOMReportMessage> addResource(KnowWEArticle article, KnowledgeBase kb, String content, String sourcePath, String destinationPath) {
+	private static Collection<Message> addResource(KnowWEArticle article, KnowledgeBase kb, String content, String sourcePath, String destinationPath) {
 		boolean hasContent = content != null && !content.trim().isEmpty();
 		boolean hasDestinationPath = destinationPath != null && !destinationPath.trim().isEmpty();
 		boolean hasSourcePath = sourcePath != null && !sourcePath.trim().isEmpty();
@@ -78,16 +77,16 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 			// if we have no src annotation specified
 			// the target path must be specified
 			if (!hasDestinationPath) {
-				return MessageUtils.syntaxErrorAsList(
-						"missing pathname to store the content into");
+				return Messages.asList(Messages.syntaxError(
+						"missing pathname to store the content into"));
 			}
 			// we use the content for a text file
 			// the content must not be empty
 			// (this might be a unwanted restriction for the user
 			// but it is for its own security to get notice of missing content)
 			if (!hasContent) {
-				return MessageUtils.syntaxErrorAsList(
-						"missing attachment or content block to be stored");
+				return Messages.asList(Messages.syntaxError(
+						"missing attachment or content block to be stored"));
 			}
 			resource = new ByteArrayResource(destinationPath, content.getBytes());
 		}
@@ -110,12 +109,13 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 				destinationPath = sourceArticle + "/" + sourceFile;
 			}
 			else if (destinationPath.trim().isEmpty()) {
-				return MessageUtils.syntaxErrorAsList("empty destination path");
+				return Messages.asList(Messages.syntaxError("empty destination path"));
 			}
 			// do the search
 			resource = getAttachmentResource(destinationPath, sourceFile, sourceArticle);
 			if (resource == null) {
-				return MessageUtils.syntaxErrorAsList("no attachment " + sourcePath + " found");
+				return Messages.asList(Messages.syntaxError("no attachment " + sourcePath
+						+ " found"));
 			}
 		}
 
@@ -125,13 +125,7 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 		// if we have both content and source, warn this
 		// (but adding was still successful!)
 		if (hasContent && hasSourcePath) {
-			return MessageUtils.asList(new KDOMWarning() {
-
-				@Override
-				public String getVerbalization() {
-					return "both src and content is specified, the content has been ignored";
-				}
-			});
+			return Messages.asList(Messages.warning("both src and content is specified, the content has been ignored"));
 		}
 		else {
 			return null;

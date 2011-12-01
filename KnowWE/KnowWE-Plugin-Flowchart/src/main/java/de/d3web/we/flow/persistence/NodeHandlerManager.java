@@ -30,7 +30,7 @@ import de.d3web.we.flow.type.NodeType;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
 
 /**
  * 
@@ -86,7 +86,7 @@ public class NodeHandlerManager implements NodeHandler {
 
 	@Override
 	public Node createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
-			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
+			Section<FlowchartType> flowSection, String id, List<Message> errors) {
 		NodeHandler nodeHandler = findNodeHandler(article, kb, nodeSection);
 
 		if (nodeHandler == null) return null;

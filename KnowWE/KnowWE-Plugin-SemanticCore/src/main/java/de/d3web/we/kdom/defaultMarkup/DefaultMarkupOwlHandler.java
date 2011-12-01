@@ -40,12 +40,12 @@ import de.d3web.we.core.semantic.OwlSubtreeHandler;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SimpleMessageError;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup.Annotation;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * This class implements a default behavior for generating owl concept and
@@ -72,14 +72,14 @@ public class DefaultMarkupOwlHandler extends OwlSubtreeHandler<DefaultMarkupType
 	private URI conceptURI = null;
 
 	@Override
-	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<DefaultMarkupType> section) {
+	public Collection<Message> create(KnowWEArticle article, Section<DefaultMarkupType> section) {
 		DefaultMarkup defaultMarkupType = section.get().getMarkup();
 		String markupName = defaultMarkupType.getName();
 		if (SemanticCoreDelegator.getInstance() == null) return null;
 
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		OwlHelper helper = SemanticCoreDelegator.getInstance().getUpper().getHelper();
-		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
+		List<Message> msgs = new ArrayList<Message>();
 
 		try {
 			// Access (or lazy build) parent concept
@@ -124,7 +124,7 @@ public class DefaultMarkupOwlHandler extends OwlSubtreeHandler<DefaultMarkupType
 			Logger.getLogger("DefaultMarkup").log(Level.SEVERE,
 					"cannot create concept for default markup '" +
 							markupName + "'", e);
-			msgs.add(new SimpleMessageError(e.getMessage()));
+			msgs.add(Messages.error(e.getMessage()));
 			return msgs;
 		}
 

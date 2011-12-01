@@ -25,13 +25,11 @@ import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.d3web.we.utils.MessageUtils;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SimpleMessageNotice;
-import de.knowwe.report.message.NoSuchObjectError;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 
 /**
  * Parses a line defining a property
@@ -44,27 +42,27 @@ import de.knowwe.report.message.NoSuchObjectError;
 public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDeclarationType> {
 
 	@Override
-	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<PropertyDeclarationType> s) {
+	public Collection<Message> create(KnowWEArticle article, Section<PropertyDeclarationType> s) {
 		// get NamedObject
 		Section<NamedObjectReference> namendObjectSection = Sections.findSuccessor(s,
 				NamedObjectReference.class);
 		Section<PropertyType> propertySection = Sections.findSuccessor(s,
 				PropertyType.class);
 		if (namendObjectSection == null) {
-			return MessageUtils.syntaxErrorAsList("No NamedObject found.");
+			return Messages.asList(Messages.syntaxError("No NamedObject found."));
 		}
 		NamedObject object = namendObjectSection.get().getTermObject(article, namendObjectSection);
 		if (object == null) {
-			return MessageUtils.asList(new NoSuchObjectError(namendObjectSection.getText().trim()));
+			return Messages.asList(Messages.noSuchObjectError(namendObjectSection.getText().trim()));
 		}
 
 		// get Property
 		if (propertySection == null) {
-			return MessageUtils.syntaxErrorAsList("No Property found.");
+			return Messages.asList(Messages.syntaxError("No Property found."));
 		}
 		Property<?> property = propertySection.get().getProperty(propertySection);
 		if (property == null) {
-			return MessageUtils.asList(new NoSuchObjectError(Property.class.getSimpleName(),
+			return Messages.asList(Messages.noSuchObjectError(Property.class.getSimpleName(),
 					propertySection.getText().trim()));
 		}
 
@@ -79,13 +77,13 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 		Section<PropertyContentType> contentSection = Sections.findSuccessor(s,
 				PropertyContentType.class);
 		if (contentSection == null) {
-			return MessageUtils.syntaxErrorAsList("No property value found for property '"
-					+ property + "'.");
+			return Messages.asList(Messages.syntaxError("No property value found for property '"
+					+ property + "'."));
 		}
 		String content = contentSection.get().getPropertyContent(contentSection);
 		if (content == null || content.trim().isEmpty()) {
-			return MessageUtils.syntaxErrorAsList("No property value found for property '"
-					+ property.getName() + "'.");
+			return Messages.asList(Messages.syntaxError("No property value found for property '"
+					+ property.getName() + "'."));
 		}
 
 		Object value;
@@ -93,21 +91,21 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 			value = property.parseValue(content);
 		}
 		catch (NoSuchMethodException e) {
-			return MessageUtils.syntaxErrorAsList("The property '" + property.getName()
-						+ "' is not supported by the %%Propery markup.");
+			return Messages.asList(Messages.syntaxError("The property '" + property.getName()
+						+ "' is not supported by the %%Propery markup."));
 		}
 		catch (IllegalArgumentException e) {
-			return MessageUtils.syntaxErrorAsList("The property value '" + content
-						+ "' is not compatible with the property '" + property + "'.");
+			return Messages.asList(Messages.syntaxError("The property value '" + content
+						+ "' is not compatible with the property '" + property + "'."));
 		}
 		try {
 			object.getInfoStore().addValue(property, locale, value);
 		}
 		catch (IllegalArgumentException e) {
-			return MessageUtils.syntaxErrorAsList("The property '" + property.getName() +
-						"' cannot be localized.");
+			return Messages.asList(Messages.syntaxError("The property '" + property.getName() +
+						"' cannot be localized."));
 		}
-		return MessageUtils.asList(new SimpleMessageNotice("Property declaration successful."));
+		return Messages.asList(Messages.notice("Property declaration successful."));
 	}
 
 	@Override

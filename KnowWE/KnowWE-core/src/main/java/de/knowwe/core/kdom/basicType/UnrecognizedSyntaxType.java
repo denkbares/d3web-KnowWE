@@ -26,8 +26,8 @@ import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SimpleMessageError;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 
 /**
  * Type to be used for left over text in markups. Left over means that no other
@@ -46,9 +46,9 @@ public class UnrecognizedSyntaxType extends AbstractType {
 		this.addSubtreeHandler(new SubtreeHandler<UnrecognizedSyntaxType>() {
 
 			@Override
-			public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<UnrecognizedSyntaxType> section) {
-				Collection<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>(1);
-				msgs.add(new SimpleMessageError("Unrecognizable syntax"));
+			public Collection<Message> create(KnowWEArticle article, Section<UnrecognizedSyntaxType> section) {
+				Collection<Message> msgs = new ArrayList<Message>(1);
+				msgs.add(Messages.error("Unrecognizable syntax"));
 				return msgs;
 			}
 		});

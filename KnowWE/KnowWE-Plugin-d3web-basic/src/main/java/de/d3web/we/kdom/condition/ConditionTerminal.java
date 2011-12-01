@@ -20,7 +20,6 @@
 
 package de.d3web.we.kdom.condition;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,9 +28,9 @@ import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.AnonymousType;
-import de.knowwe.report.message.UnexpectedSequence;
 
 /**
  * The TerminalCondition type of the CompositeCondition
@@ -59,8 +58,8 @@ public class ConditionTerminal extends AbstractType {
 		unrecognizedCond.addSubtreeHandler(new SubtreeHandler<ConditionTerminal>() {
 
 			@Override
-			public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
-				return Arrays.asList((KDOMReportMessage) new UnexpectedSequence(
+			public Collection<Message> create(KnowWEArticle article, Section s) {
+				return Messages.asList(Messages.syntaxError(
 						"no valid TerminalCondition: "
 								+ s.getOriginalText()));
 			}

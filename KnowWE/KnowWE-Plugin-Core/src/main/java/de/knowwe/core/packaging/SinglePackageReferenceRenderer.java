@@ -9,8 +9,8 @@ import de.knowwe.core.compile.packaging.KnowWEPackageManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
-import de.knowwe.core.report.KDOMError;
-import de.knowwe.core.report.KDOMWarning;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -29,14 +29,14 @@ public class SinglePackageReferenceRenderer extends KnowWEDomRenderer {
 
 		List<Section<?>> packageDefinitions = packageManager.getSectionsOfPackage(packageName);
 
-		Collection<KDOMError> kdomErrors = new LinkedList<KDOMError>();
-		Collection<KDOMWarning> kdomWarnings = new LinkedList<KDOMWarning>();
+		Collection<Message> kdomErrors = new LinkedList<Message>();
+		Collection<Message> kdomWarnings = new LinkedList<Message>();
 
 		for (Section<?> packageDef : packageDefinitions) {
-			kdomErrors.addAll(KnowWEUtils.getMessagesFromSubtree(article,
-					packageDef, KDOMError.class));
-			kdomWarnings.addAll(KnowWEUtils.getMessagesFromSubtree(article,
-					packageDef, KDOMWarning.class));
+			Collection<Message> allmsgs = Messages.getMessagesFromSubtree(article, packageDef);
+
+			kdomErrors.addAll(Messages.getErrors(Messages.getErrors(allmsgs)));
+			kdomWarnings.addAll(Messages.getWarnings(Messages.getErrors(allmsgs)));
 		}
 
 		int errorsCount = kdomErrors.size();
@@ -66,14 +66,14 @@ public class SinglePackageReferenceRenderer extends KnowWEDomRenderer {
 
 		if (errorsCount > 0) {
 			string.append(KnowWEUtils.maskHTML("<strong>Errors:</strong><p/>\n"));
-			for (KDOMError error : kdomErrors) {
+			for (Message error : kdomErrors) {
 				string.append(KnowWEUtils.maskHTML(error.getVerbalization() + "<br/>\n"));
 			}
 			string.append(KnowWEUtils.maskHTML("<p/>"));
 		}
 		if (warningsCount > 0) {
 			string.append(KnowWEUtils.maskHTML("<strong>Warnings:</strong><p/>\n"));
-			for (KDOMWarning warning : kdomWarnings) {
+			for (Message warning : kdomWarnings) {
 				string.append(KnowWEUtils.maskHTML(warning.getVerbalization() + "<br/>\n"));
 			}
 			string.append(KnowWEUtils.maskHTML("<p/>"));

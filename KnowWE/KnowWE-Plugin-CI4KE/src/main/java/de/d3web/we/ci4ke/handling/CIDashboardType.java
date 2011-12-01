@@ -35,8 +35,8 @@ import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SimpleMessageError;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -95,9 +95,9 @@ public class CIDashboardType extends DefaultMarkupType {
 		}
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<CIDashboardType> s) {
+		public Collection<Message> create(KnowWEArticle article, Section<CIDashboardType> s) {
 
-			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
+			List<Message> msgs = new ArrayList<Message>();
 
 			String dashboardName = DefaultMarkupType.getAnnotation(s, NAME_KEY);
 
@@ -129,13 +129,13 @@ public class CIDashboardType extends DefaultMarkupType {
 					}
 				}
 				catch (IllegalArgumentException e) {
-					msgs.add(new SimpleMessageError("Invalid trigger specified: " + triggerString));
+					msgs.add(Messages.error("Invalid trigger specified: " + triggerString));
 					return msgs;
 				}
 			}
 
 			if (trigger.equals(CIBuildTriggers.onSave) && monitoredArticles.isEmpty()) {
-				msgs.add(new SimpleMessageError("Invalid trigger: " + CIBuildTriggers.onSave
+				msgs.add(Messages.error("Invalid trigger: " + CIBuildTriggers.onSave
 						+ " requires attached articles to monitor."));
 				return msgs;
 			}
@@ -186,7 +186,7 @@ public class CIDashboardType extends DefaultMarkupType {
 
 			KnowWEUtils.storeObject(article, s, CIConfig.CICONFIG_STORE_KEY, config);
 
-			return new ArrayList<KDOMReportMessage>(0);
+			return new ArrayList<Message>(0);
 		}
 
 		@Override

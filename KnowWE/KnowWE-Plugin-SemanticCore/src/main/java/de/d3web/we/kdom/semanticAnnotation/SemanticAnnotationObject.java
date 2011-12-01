@@ -45,8 +45,8 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SimpleMessageError;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 
@@ -77,8 +77,8 @@ public class SemanticAnnotationObject extends AbstractType {
 			OwlSubtreeHandler<SemanticAnnotationObject> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
-			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
+		public Collection<Message> create(KnowWEArticle article, Section s) {
+			List<Message> msgs = new ArrayList<Message>();
 			UpperOntology uo = UpperOntology.getInstance();
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			List<Section> childs = s.getChildren();
@@ -177,7 +177,7 @@ public class SemanticAnnotationObject extends AbstractType {
 
 				}
 				catch (RepositoryException e) {
-					msgs.add(new SimpleMessageError(e.getMessage()));
+					msgs.add(Messages.error(e.getMessage()));
 				}
 			}
 			SemanticCoreDelegator.getInstance().addStatements(io, s);

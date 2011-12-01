@@ -28,11 +28,9 @@ import java.util.logging.Logger;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.KDOMError;
-import de.knowwe.core.report.KDOMNotice;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.KDOMWarning;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.report.MessageRenderer;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -117,10 +115,9 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 
 	private void renderMessagesPost(KnowWEArticle article, Section<?> subSection, UserContext user, StringBuilder builder) {
 		// Render errors post
-		Collection<KDOMError> errors = KDOMReportMessage
-				.getErrors(article, subSection);
+		Collection<Message> errors = Messages.getErrors(article, subSection);
 		if (errors != null && errors.size() > 0) {
-			for (KDOMError kdomNotice : errors) {
+			for (Message kdomNotice : errors) {
 				MessageRenderer errorRenderer = subSection.get()
 						.getErrorRenderer();
 				if (errorRenderer != null) {
@@ -130,10 +127,10 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		}
 
 		// Render notices post
-		Collection<KDOMNotice> notices = KDOMReportMessage
+		Collection<Message> notices = Messages
 				.getNotices(article, subSection);
 		if (notices != null && notices.size() > 0) {
-			for (KDOMNotice kdomNotice : notices) {
+			for (Message kdomNotice : notices) {
 				MessageRenderer noticeRenderer = subSection.get()
 						.getNoticeRenderer();
 				if (noticeRenderer != null) {
@@ -143,9 +140,10 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		}
 
 		// Render warnings post
-		Collection<KDOMWarning> warnings = KDOMReportMessage.getWarnings(article, subSection);
+		Collection<Message> warnings = Messages.getWarnings(article,
+				subSection);
 		if (warnings != null && warnings.size() > 0) {
-			for (KDOMWarning kdomWarning : warnings) {
+			for (Message kdomWarning : warnings) {
 				MessageRenderer warningRenderer = subSection.get()
 						.getWarningRenderer();
 				if (warningRenderer != null) {
@@ -164,9 +162,10 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 
 	private void renderMessagesPre(Section<?> subSection, UserContext user, StringBuilder builder, KnowWEArticle article) {
 		// Render warnings pre
-		Collection<KDOMWarning> warnings = KDOMReportMessage.getWarnings(article, subSection);
+		Collection<Message> warnings = Messages.getWarnings(article,
+				subSection);
 		if (warnings != null && warnings.size() > 0) {
-			for (KDOMWarning kdomWarning : warnings) {
+			for (Message kdomWarning : warnings) {
 				MessageRenderer warningRenderer = subSection.get()
 						.getWarningRenderer();
 				if (warningRenderer != null) {
@@ -177,10 +176,10 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		}
 
 		// Render notices pre
-		Collection<KDOMNotice> notices = KDOMReportMessage
+		Collection<Message> notices = Messages
 				.getNotices(article, subSection);
 		if (notices != null && notices.size() > 0) {
-			for (KDOMNotice kdomNotice : notices) {
+			for (Message kdomNotice : notices) {
 				MessageRenderer noticeRenderer = subSection.get()
 						.getNoticeRenderer();
 				if (noticeRenderer != null) {
@@ -190,10 +189,9 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		}
 
 		// Render errors pre
-		Collection<KDOMError> errors = KDOMReportMessage
-				.getErrors(article, subSection);
+		Collection<Message> errors = Messages.getErrors(article, subSection);
 		if (errors != null && errors.size() > 0) {
-			for (KDOMError kdomNotice : errors) {
+			for (Message kdomNotice : errors) {
 				MessageRenderer errorRenderer = subSection.get()
 						.getErrorRenderer();
 				if (errorRenderer != null) {

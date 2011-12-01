@@ -30,8 +30,8 @@ import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SimpleMessageError;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup.Annotation;
 
 public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupType> {
@@ -44,9 +44,9 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 	}
 
 	@Override
-	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<DefaultMarkupType> markupSection) {
+	public Collection<Message> create(KnowWEArticle article, Section<DefaultMarkupType> markupSection) {
 
-		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
+		List<Message> msgs = new ArrayList<Message>();
 
 		// check defined annotations
 		for (Annotation annotation : this.markup.getAnnotations()) {
@@ -56,20 +56,20 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 
 			// check existence of mandatory annotation
 			if (annotationSection == null && annotation.isMandatory()) {
-				KDOMReportMessage message = new SimpleMessageError("The annotation @" + name
+				Message message = Messages.error("The annotation @" + name
 						+ " is mandatory, but missing. Please specify that annotation.");
 				msgs.add(message);
 			}
 		}
 
 		// register section in the package manager
-		// TODO: refactor this to somewhere else
 		if (!markupSection.get().isIgnoringPackageCompile()) {
 			String value = null;
-			Annotation packageAnno = this.markup.getAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME);
+			Annotation packageAnno = this.markup.getAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME);
 			if (packageAnno != null) {
 				Section<? extends AnnotationContentType> annotationSection =
-						DefaultMarkupType.getAnnotationContentSection(markupSection, packageAnno.getName());
+						DefaultMarkupType.getAnnotationContentSection(markupSection,
+								packageAnno.getName());
 				if (annotationSection != null) {
 					value = annotationSection.getOriginalText();
 				}
@@ -84,13 +84,14 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 				markupSection, UnknownAnnotationType.class);
 		for (Section<UnknownAnnotationType> annotationSection : unknownSections) {
 			String name = UnknownAnnotationType.getName(annotationSection);
-			KDOMReportMessage message = new SimpleMessageError("The annotation @" + name
+			Message message = Messages.error("The annotation @" + name
 					+ " is not known to KnowWE. It will be ignored.");
 			msgs.add(message);
 		}
 
 		// check annotated sections
-		List<Section<AnnotationContentType>> subSections = Sections.findChildrenOfType(markupSection,
+		List<Section<AnnotationContentType>> subSections = Sections.findChildrenOfType(
+				markupSection,
 				AnnotationContentType.class);
 		for (Section<AnnotationContentType> annotationSection : subSections) {
 			// check annotations pattern
@@ -98,7 +99,7 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 			String text = annotationSection.getOriginalText();
 			if (!annotation.matches(text)) {
 				String name = annotation.getName();
-				KDOMReportMessage message = new SimpleMessageError("The value of annotation @"
+				Message message = Messages.error("The value of annotation @"
 						+ name
 						+ " is invalid: " + text);
 				msgs.add(message);

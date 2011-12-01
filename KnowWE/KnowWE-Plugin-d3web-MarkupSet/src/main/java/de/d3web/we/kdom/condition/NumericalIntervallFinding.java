@@ -34,8 +34,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SimpleMessageError;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.SplitUtility;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
@@ -61,11 +60,11 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 		Question q = qRef.get().getTermObject(article, qRef);
 
 		if (!(q instanceof QuestionNum)) {
-			KDOMReportMessage.storeSingleError(article, s, this.getClass(), new SimpleMessageError(
+			Messages.storeMessage(article, s, this.getClass(), Messages.error(
 					"The question '" + qRef.get().getTermIdentifier(qRef) + "' must be numerical."));
 		}
 		else if (number1 != null && number2 != null && q != null && q instanceof QuestionNum) {
-			KDOMReportMessage.clearMessages(article, s, this.getClass());
+			Messages.clearMessages(article, s, this.getClass());
 			return new CondNumIn((QuestionNum) q, number1, number2);
 		}
 		return null;

@@ -257,30 +257,31 @@ public class KnowWEArticleManager {
 	public void registerArticle(KnowWEArticle article, boolean updateDependencies) {
 
 		// store new article
-		articleMap.put(article.getTitle(), article);
+		String title = article.getTitle();
+		articleMap.put(title, article);
 
 		long startTime = System.currentTimeMillis();
 
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.FINE,
-				"-> Starting to update dependencies to article '" + article.getTitle()
+				"-> Starting to update dependencies to article '" + title
 						+ "' ->");
-		updatingArticles.add(article.getTitle());
+		updatingArticles.add(title);
 
 		EventManager.getInstance().fireEvent(new UpdatingDependenciesEvent(article));
 
 		if (updateDependencies) updateQueuedArticles();
 
-		updatingArticles.remove(article.getTitle());
+		updatingArticles.remove(title);
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.FINE,
-				"<- Finished updating dependencies to article '" + article.getTitle()
+				"<- Finished updating dependencies to article '" + title
 						+ "' in " + (System.currentTimeMillis() - startTime)
 						+ "ms <-");
 
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.INFO,
-				"<<==== Finished building article '" + article.getTitle() + "' in "
+				"<<==== Finished building article '" + title + "' in "
 						+ web + " in "
 						+ (System.currentTimeMillis() - article.getStartTime())
 						+ "ms <<====");

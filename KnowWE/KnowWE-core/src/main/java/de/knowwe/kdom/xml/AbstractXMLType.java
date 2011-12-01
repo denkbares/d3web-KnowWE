@@ -35,7 +35,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.utils.KnowWEUtils;
 
 public class AbstractXMLType extends AbstractType {
@@ -199,8 +199,8 @@ public class AbstractXMLType extends AbstractType {
 		}
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AbstractXMLType> s) {
-			String value = getAttributeMapFor(s).get(KnowWEPackageManager.ATTRIBUTE_NAME);
+		public Collection<Message> create(KnowWEArticle article, Section<AbstractXMLType> s) {
+			String value = getAttributeMapFor(s).get(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME);
 			KnowWEEnvironment.getInstance().getPackageManager(
 					article.getWeb()).addSectionToPackage(s, value);
 			return null;

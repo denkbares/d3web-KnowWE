@@ -20,7 +20,6 @@
 
 package de.d3web.we.kdom.questionTree;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,6 +31,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
 import de.d3web.we.basic.D3webModule;
+import de.d3web.we.kdom.questionTree.QuestionLine.QuestionTypeDeclaration;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
@@ -50,8 +50,8 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SimpleMessageError;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.SplitUtility;
@@ -67,8 +67,6 @@ import de.knowwe.kdom.sectionFinder.OneOfStringEnumFinder;
 import de.knowwe.kdom.sectionFinder.StringEnumChecker;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.knowwe.plugin.Plugins;
-import de.knowwe.report.message.ObjectCreatedMessage;
-import de.knowwe.report.message.ObjectCreationError;
 
 /**
  * QuestionLine of the QuestionTree, here Questions can be defined
@@ -207,13 +205,13 @@ public class QuestionLine extends AbstractType {
 				 * @return
 				 */
 				@Override
-				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<NumBounds> s) {
+				public Collection<Message> create(KnowWEArticle article, Section<NumBounds> s) {
 
 					Double lower = s.get().getLowerBound(s);
 					Double upper = s.get().getUpperBound(s);
 					if (lower == null || upper == null) {
 						// if the numbers cannot be found throw error
-						return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+						return Messages.asList(Messages.objectCreationError(
 								D3webModule.getKwikiBundle_d3web()
 										.getString("KnowWE.questiontree.incorrectinterval"),
 								this.getClass()));
@@ -227,7 +225,7 @@ public class QuestionLine extends AbstractType {
 						Question question = qDef.get().getTermObject(article, qDef);
 						if (!(question instanceof QuestionNum)) {
 							// if not numerical question throw error
-							return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+							return Messages.asList(Messages.objectCreationError(
 									D3webModule.getKwikiBundle_d3web()
 											.getString("KnowWE.questiontree.onlyfornumerical"),
 									this.getClass()));
@@ -240,19 +238,19 @@ public class QuestionLine extends AbstractType {
 									upper);
 							question.getInfoStore().addValue(BasicProperties.QUESTION_NUM_RANGE,
 									interval);
-							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+							return Messages.asList(Messages.objectCreatedNotice(
 									D3webModule.getKwikiBundle_d3web()
 											.getString("KnowWE.questiontree.setnumerical")));
 						}
 						catch (IntervalException e) {
-							return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+							return Messages.asList(Messages.objectCreationError(
 									D3webModule.getKwikiBundle_d3web()
 											.getString("KnowWE.questiontree.invalidinterval"),
 									this.getClass()));
 						}
 
 					}
-					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+					return Messages.asList(Messages.objectCreationError(
 							D3webModule.getKwikiBundle_d3web()
 									.getString("KnowWE.questiontree.numerical"),
 							this.getClass()));
@@ -362,7 +360,7 @@ public class QuestionLine extends AbstractType {
 				 * @return
 				 */
 				@Override
-				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<NumUnit> s) {
+				public Collection<Message> create(KnowWEArticle article, Section<NumUnit> s) {
 					Section<QuestionDefinition> qDef = Sections.findSuccessor(
 							s.getFather(), QuestionDefinition.class);
 
@@ -370,18 +368,18 @@ public class QuestionLine extends AbstractType {
 
 						Question question = qDef.get().getTermObject(article, qDef);
 						if (!(question instanceof QuestionNum)) {
-							return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+							return Messages.asList(Messages.objectCreationError(
 									D3webModule.getKwikiBundle_d3web()
 											.getString("KnowWE.questiontree.onlyfornumerical"),
 									this.getClass()));
 						}
 						question.getInfoStore().addValue(MMInfo.UNIT, s.get().getUnit(s));
-						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+						return Messages.asList(Messages.objectCreatedNotice(
 								D3webModule.getKwikiBundle_d3web()
 										.getString("KnowWE.questiontree.setunit")));
 
 					}
-					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+					return Messages.asList(Messages.objectCreationError(
 							D3webModule.getKwikiBundle_d3web()
 									.getString("KnowWE.questiontree.unit"),
 							this.getClass()));
@@ -422,7 +420,7 @@ public class QuestionLine extends AbstractType {
 			this.addSubtreeHandler(Priority.HIGH, new D3webSubtreeHandler<AbstractFlag>() {
 
 				@Override
-				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AbstractFlag> s) {
+				public Collection<Message> create(KnowWEArticle article, Section<AbstractFlag> s) {
 
 					Section<QuestionDefinition> qDef = Sections.findSuccessor(
 							s.getFather(), QuestionDefinition.class);
@@ -432,12 +430,12 @@ public class QuestionLine extends AbstractType {
 						Question question = qDef.get().getTermObject(article, qDef);
 						question.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION,
 								Boolean.TRUE);
-						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+						return Messages.asList(Messages.objectCreatedNotice(
 								D3webModule.getKwikiBundle_d3web()
 										.getString("KnowWE.questiontree.abstractquestion")));
 
 					}
-					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+					return Messages.asList(Messages.objectCreationError(
 							D3webModule.getKwikiBundle_d3web()
 									.getString("KnowWE.questiontree.abstractflag"),
 							this.getClass()));
@@ -479,7 +477,7 @@ public class QuestionLine extends AbstractType {
 			this.addSubtreeHandler(Priority.HIGH, new D3webSubtreeHandler<QuestionText>() {
 
 				@Override
-				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionText> sec) {
+				public Collection<Message> create(KnowWEArticle article, Section<QuestionText> sec) {
 
 					Section<QuestionDefinition> qDef = Sections.findSuccessor(
 							sec.getFather(), QuestionDefinition.class);
@@ -491,12 +489,12 @@ public class QuestionLine extends AbstractType {
 						if (question != null) {
 							question.getInfoStore().addValue(MMInfo.PROMPT,
 									QuestionText.getQuestionText(sec));
-							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+							return Messages.asList(Messages.objectCreatedNotice(
 									D3webModule.getKwikiBundle_d3web()
 											.getString("KnowWE.questiontree.questiontextcreated")));
 						}
 					}
-					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+					return Messages.asList(Messages.objectCreationError(
 							D3webModule.getKwikiBundle_d3web()
 									.getString("KnowWE.questiontree.questiontext"),
 							this.getClass()));
@@ -598,7 +596,7 @@ public class QuestionLine extends AbstractType {
 				}
 			});
 			this.addSubtreeHandler(new StringEnumChecker<QuestionTypeDeclaration>(
-					QUESTION_DECLARATIONS, new SimpleMessageError(
+					QUESTION_DECLARATIONS, Messages.error(
 							D3webModule.getKwikiBundle_d3web()
 									.getString("KnowWE.questiontree.allowingonly")
 									+ concatStrings(QUESTION_DECLARATIONS)), 1, 1));

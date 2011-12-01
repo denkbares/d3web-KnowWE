@@ -30,10 +30,8 @@ import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
-import de.knowwe.core.report.KDOMError;
-import de.knowwe.core.report.KDOMNotice;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.KDOMWarning;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.tools.Tool;
@@ -125,30 +123,31 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 	}
 
 	public static void renderMessages(KnowWEArticle article, Section<? extends DefaultMarkupType> section, StringBuilder string) {
-		renderKDOMReportMessageBlock(KnowWEUtils.getMessagesFromSubtree(article, section,
-				KDOMError.class), string);
-		renderKDOMReportMessageBlock(KnowWEUtils.getMessagesFromSubtree(article, section,
-				KDOMWarning.class), string);
+		Collection<Message> allmsgs = Messages.getMessagesFromSubtree(article, section);
+		Collection<Message> errors = Messages.getErrors(allmsgs);
+		Collection<Message> warnings = Messages.getWarnings(allmsgs);
+		renderKDOMReportMessageBlock(errors, string);
+		renderKDOMReportMessageBlock(warnings, string);
 	}
 
-	public static void renderKDOMReportMessageBlock(Collection<? extends KDOMReportMessage> messages, StringBuilder string) {
+	public static void renderKDOMReportMessageBlock(Collection<Message> messages, StringBuilder string) {
 		if (messages == null) return;
 		if (messages.size() == 0) return;
 
-		Class<? extends KDOMReportMessage> type = messages.iterator().next().getClass();
+		Message msg = messages.iterator().next();
 		String className = "";
-		if (KDOMNotice.class.isAssignableFrom(type)) {
+		if (msg.getType() == Message.Type.NOTICE) {
 			className = "information";
 		}
-		else if (KDOMWarning.class.isAssignableFrom(type)) {
+		else if (msg.getType() == Message.Type.WARNING) {
 			className = "warning";
 		}
-		else if (KDOMError.class.isAssignableFrom(type)) {
+		else if (msg.getType() == Message.Type.ERROR) {
 			className = "error";
 		}
 
 		string.append(KnowWEUtils.maskHTML("<span class='" + className + "'>"));
-		for (KDOMReportMessage error : messages) {
+		for (Message error : messages) {
 			string.append(error.getVerbalization());
 			string.append("\n");
 		}

@@ -38,16 +38,15 @@ import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SimpleMessageError;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.event.FullParseEvent;
 import de.knowwe.event.PreCompileFinishedEvent;
 import de.knowwe.event.UpdatingDependenciesEvent;
 
 public class KnowWEPackageManager implements EventListener {
 
-	public static final String ATTRIBUTE_NAME = "package";
+	public static final String PACKAGE_ATTRIBUTE_NAME = "package";
 
 	public static final String DEFAULT_PACKAGE = "default";
 
@@ -153,13 +152,12 @@ public class KnowWEPackageManager implements EventListener {
 			}
 		}
 		if (isDisallowedPackageName(packageName)) {
-			KDOMReportMessage.storeSingleError(null, s, this.getClass(), new SimpleMessageError("'"
+			Messages.storeMessage(null, s, this.getClass(), Messages.error("'"
 					+ packageName
 					+ "' is not allowed as a package name."));
-			return;
 		}
 		if (s.getPackageNames().contains(packageName)) {
-			KDOMReportMessage.storeSingleError(null, s, this.getClass(), new SimpleMessageError(
+			Messages.storeMessage(null, s, this.getClass(), Messages.error(
 					"This Section is added to " +
 							"the package '" + packageName + "' multiple times."));
 			addDeactivatedSection(packageName, s);
@@ -170,8 +168,8 @@ public class KnowWEPackageManager implements EventListener {
 		List<Section<?>> sectionsOfPackage = getSectionsOfPackage(packageName);
 		for (Section<?> sectionOfPackage : sectionsOfPackage) {
 			if (sectionOfPackage.equalsOrIsSuccessorOf(s)) {
-				KDOMReportMessage.storeSingleError(null, sectionOfPackage, this.getClass(),
-						new SimpleMessageError("This Section is added to " +
+				Messages.storeMessage(null, sectionOfPackage, this.getClass(),
+						Messages.error("This Section is added to " +
 								"the package '" + packageName + "' multiple times."));
 				addDeactivatedSection(packageName, sectionOfPackage);
 				sectionOfPackage.removePackageName(packageName);
@@ -214,8 +212,8 @@ public class KnowWEPackageManager implements EventListener {
 						for (Section<?> dSec : deactivatedSections) {
 							if (!dSec.getPackageNames().contains(packageName)) {
 								notLongerDeactivated.add(dSec);
-								KDOMReportMessage.storeMessages(null, dSec, this.getClass(),
-										new ArrayList<KDOMReportMessage>());
+								Messages.storeMessages(null, dSec, this.getClass(),
+										new ArrayList<Message>());
 								dSec.addPackageName(packageName);
 							}
 						}
@@ -373,7 +371,7 @@ public class KnowWEPackageManager implements EventListener {
 						}
 						for (Section<?> oackSection : sectionsOfPackage) {
 							oackSection.setReusedByRecursively(article.getTitle(), false);
-							KnowWEUtils.clearMessagesRecursively(article, oackSection);
+							Messages.clearMessagesRecursively(article, oackSection);
 						}
 					}
 				}
@@ -477,7 +475,7 @@ public class KnowWEPackageManager implements EventListener {
 						for (String title : new LinkedList<String>(node.getReusedBySet())) {
 							if (!articlesReferringTo.contains(title)) {
 								node.setReusedBy(title, false);
-								KnowWEUtils.clearMessages(article, node);
+								Messages.clearMessages(article, node);
 							}
 						}
 					}

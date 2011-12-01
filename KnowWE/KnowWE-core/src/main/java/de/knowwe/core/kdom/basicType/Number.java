@@ -31,9 +31,9 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.report.message.InvalidNumberError;
 
 /**
  * This class describes a plain floating point number to be parsed out of some
@@ -98,14 +98,14 @@ class NumberFinder implements SectionFinder {
 class NumberChecker extends SubtreeHandler<Number> {
 
 	@Override
-	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<Number> s) {
-		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
+	public Collection<Message> create(KnowWEArticle article, Section<Number> s) {
+		List<Message> msgs = new ArrayList<Message>();
 		String trim = s.getOriginalText().trim();
 		try {
 			Double.parseDouble(trim);
 		}
 		catch (Exception e) {
-			msgs.add(new InvalidNumberError(trim));
+			msgs.add(Messages.invalidNumberError(trim));
 		}
 		return msgs;
 	}

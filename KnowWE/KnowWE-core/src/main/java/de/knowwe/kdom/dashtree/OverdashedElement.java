@@ -20,7 +20,6 @@
 
 package de.knowwe.kdom.dashtree;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -33,8 +32,8 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SyntaxError;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 
 /**
  * Type to detect Too-much-dashes-Erros in DashTree-Markup This error is first
@@ -81,8 +80,8 @@ public class OverdashedElement extends AbstractType {
 	class OverDashedErrorHandler extends SubtreeHandler<OverdashedElement> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<OverdashedElement> s) {
-			return Arrays.asList((KDOMReportMessage) new SyntaxError("to many dashes; remove \"-\""));
+		public Collection<Message> create(KnowWEArticle article, Section<OverdashedElement> s) {
+			return Messages.asList(Messages.syntaxError("to many dashes; remove \"-\""));
 		}
 	}
 

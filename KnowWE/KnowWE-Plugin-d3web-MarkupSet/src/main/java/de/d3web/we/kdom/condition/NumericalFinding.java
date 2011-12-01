@@ -40,12 +40,12 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.SplitUtility;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
 import de.knowwe.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
-import de.knowwe.report.message.InvalidNumberError;
 
 /**
  * A type implementing a cond-num TerminalCondition {@link TerminalCondition} It
@@ -110,21 +110,20 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 		Section<Number> numberSec = Sections.findSuccessor(s, Number.class);
 
 		if (numberSec == null) {
-			InvalidNumberError error = new InvalidNumberError(
+			Message error = Messages.invalidNumberError(
 					"No number on right side of comparator.");
-			KnowWEUtils.storeSingleMessage(article, s, getClass(), InvalidNumberError.class, error);
+			Messages.storeMessage(article, s, getClass(), error);
 			return null;
 		}
 
-		String comparator =  Sections.findSuccessor(s, Comparator.class).getOriginalText();
+		String comparator = Sections.findSuccessor(s, Comparator.class).getOriginalText();
 
 		Double number = Number.getNumber(numberSec);
 
 		if (number == null) {
-			InvalidNumberError error = new InvalidNumberError(
+			Message error = Messages.invalidNumberError(
 					numberSec.getOriginalText());
-			KnowWEUtils.storeSingleMessage(article, numberSec, getClass(),
-					InvalidNumberError.class, error);
+			Messages.storeMessage(article, numberSec, getClass(), error);
 			return null;
 		}
 

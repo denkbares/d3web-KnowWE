@@ -29,8 +29,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SimpleMessageError;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 
 public class KnowledgeRepresentationManager {
 
@@ -77,11 +77,11 @@ public class KnowledgeRepresentationManager {
 				handler.finishArticle(art);
 			}
 			catch (Exception e) {
-				List<KDOMReportMessage> messages = new ArrayList<KDOMReportMessage>();
-				messages.add(new SimpleMessageError(
+				List<Message> messages = new ArrayList<Message>();
+				messages.add(Messages.error(
 						"This page's content caused a serious initialitation error:\n" +
 								e.getLocalizedMessage()));
-				KDOMReportMessage.storeMessages(art, art.getSection(), getClass(), messages);
+				Messages.storeMessages(art, art.getSection(), getClass(), messages);
 				Logger.getLogger("KnowWE-core").log(Level.SEVERE,
 						"Page content of page '" +
 								art.getTitle() +

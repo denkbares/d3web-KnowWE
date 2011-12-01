@@ -39,7 +39,7 @@ public class DiaFluxType extends DefaultMarkupType {
 
 		MARKUP = new DefaultMarkup("DiaFlux");
 		MARKUP.addContentType(new FlowchartType());
-		MARKUP.addAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME, false);
+		MARKUP.addAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 
 	}
 

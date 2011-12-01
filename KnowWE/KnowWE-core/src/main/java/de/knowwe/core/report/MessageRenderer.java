@@ -24,8 +24,8 @@ import de.knowwe.core.user.UserContext;
 
 public interface MessageRenderer {
 
-	public String postRenderMessage(KDOMReportMessage m, UserContext user);
+	public String postRenderMessage(Message m, UserContext user);
 
-	public String preRenderMessage(KDOMReportMessage m, UserContext user);
+	public String preRenderMessage(Message m, UserContext user);
 
 }

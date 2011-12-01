@@ -43,7 +43,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -81,7 +81,7 @@ public class SemanticAnnotationProperty extends AbstractType {
 			OwlSubtreeHandler<SemanticAnnotationProperty> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<SemanticAnnotationProperty> s) {
+		public Collection<Message> create(KnowWEArticle article, Section<SemanticAnnotationProperty> s) {
 
 			Section<SemanticAnnotationPropertyName> name = Sections.findChildOfType(s,
 					SemanticAnnotationPropertyName.class);

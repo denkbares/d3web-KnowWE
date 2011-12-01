@@ -29,7 +29,7 @@ import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.flow.type.NodeType;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
 
 /**
  * 
@@ -51,7 +51,7 @@ public class DecisionNodeHandler extends AbstractNodeHandler {
 
 	@Override
 	public Node createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
-			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
+			Section<FlowchartType> flowSection, String id, List<Message> errors) {
 
 		return new ActionNode(id, NOOPAction.INSTANCE);
 

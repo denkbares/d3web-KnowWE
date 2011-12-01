@@ -29,7 +29,7 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.IncrementalMarker;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -92,7 +92,7 @@ public class KnowledgeBaseType extends DefaultMarkupType implements IncrementalM
 		this.addSubtreeHandler(new D3webSubtreeHandler<KnowledgeBaseType>() {
 
 			@Override
-			public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<KnowledgeBaseType> section) {
+			public Collection<Message> create(KnowWEArticle article, Section<KnowledgeBaseType> section) {
 				// get required information
 				KnowledgeBase kb = getKB(article);
 

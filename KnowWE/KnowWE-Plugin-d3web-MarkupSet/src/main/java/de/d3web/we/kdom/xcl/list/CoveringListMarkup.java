@@ -39,7 +39,7 @@ public class CoveringListMarkup extends DefaultMarkupType {
 		m.addAnnotation(ESTABLISHED_THRESHOLD, false);
 		m.addAnnotation(SUGGESTED_THRESHOLD, false);
 		m.addAnnotation(MIN_SUPPORT, false);
-		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME, false);
+		m.addAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 		m.addAnnotation(DESCRIPTION, false);
 	}
 

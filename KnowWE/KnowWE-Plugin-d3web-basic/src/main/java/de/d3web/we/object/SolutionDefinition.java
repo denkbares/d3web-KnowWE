@@ -20,7 +20,6 @@
 package de.d3web.we.object;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -36,13 +35,12 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.ObjectInfoLinkRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.report.message.NewObjectCreated;
-import de.knowwe.report.message.ObjectAlreadyDefinedWarning;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
 /**
@@ -122,14 +120,14 @@ public abstract class SolutionDefinition
 	static class CreateSolutionHandler extends D3webSubtreeHandler<SolutionDefinition> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article,
+		public Collection<Message> create(KnowWEArticle article,
 				Section<SolutionDefinition> s) {
 
 			String name = s.get().getTermIdentifier(s);
 
 			if (!KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
 					article, s)) {
-				return new ArrayList<KDOMReportMessage>(0);
+				return new ArrayList<Message>(0);
 			}
 
 			KnowledgeBase kb = getKB(article);
@@ -137,16 +135,15 @@ public abstract class SolutionDefinition
 			TerminologyObject o = kb.getManager().search(name);
 
 			if (o != null) {
-				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedWarning(
-						o.getClass()
-								.getSimpleName()));
+				return Messages.asList(Messages.objectAlreadyDefinedWarning(
+						o.getClass().getSimpleName()));
 			}
 			else {
 
 				Solution solution = new Solution(kb.getRootSolution(), name);
 
 				s.get().storeTermObject(article, s, solution);
-				return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
+				return Messages.asList(Messages.objectCreatedNotice(
 						solution.getClass().getSimpleName()
 								+ " " + solution.getName()));
 

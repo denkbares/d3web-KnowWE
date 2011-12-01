@@ -30,7 +30,7 @@ public class QuestionnaireTreeMarkup extends DefaultMarkupType {
 	static {
 		m = new DefaultMarkup("Questionnaire");
 		m.addContentType(new QuestionnaireDashTree());
-		m.addAnnotation(KnowWEPackageManager.ATTRIBUTE_NAME, false);
+		m.addAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 	}
 
 	public QuestionnaireTreeMarkup() {

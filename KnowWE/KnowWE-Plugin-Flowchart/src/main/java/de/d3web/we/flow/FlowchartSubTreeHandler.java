@@ -53,14 +53,11 @@ import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SimpleMessageError;
-import de.knowwe.core.report.SyntaxError;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.xml.AbstractXMLType;
 import de.knowwe.kdom.xml.XMLContent;
-import de.knowwe.report.message.NoSuchObjectError;
-import de.knowwe.report.message.ObjectCreationError;
 
 /**
  * 
@@ -84,7 +81,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 	}
 
 	@Override
-	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<FlowchartType> s) {
+	public Collection<Message> create(KnowWEArticle article, Section<FlowchartType> s) {
 
 		if (!article.isFullParse()) destroy(article, s);
 
@@ -103,7 +100,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 			name = "unnamed";
 		}
 
-		List<KDOMReportMessage> errors = new ArrayList<KDOMReportMessage>();
+		List<Message> errors = new ArrayList<Message>();
 
 		List<Node> nodes = createNodes(article, name, s, errors);
 
@@ -155,7 +152,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Edge> createEdges(KnowWEArticle article, Section<FlowchartType> flowSection, List<Node> nodes, List<KDOMReportMessage> errors) {
+	private List<Edge> createEdges(KnowWEArticle article, Section<FlowchartType> flowSection, List<Node> nodes, List<Message> errors) {
 		List<Edge> result = new ArrayList<Edge>();
 
 		List<Section<EdgeType>> edgeSections = new ArrayList<Section<EdgeType>>();
@@ -174,7 +171,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 			if (originSection == null) {
 				String messageText = "No origin node specified in edge with id '" + id + "'.";
 
-				errors.add(new SyntaxError(messageText));
+				errors.add(Messages.syntaxError(messageText));
 				continue;
 			}
 			String sourceID = getXMLContentText(originSection);
@@ -185,7 +182,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 				String messageText = "No origin node found with id " + sourceID + " in edge " + id
 						+ ".";
 
-				errors.add(new NoSuchObjectError(messageText));
+				errors.add(Messages.noSuchObjectError(messageText));
 				continue;
 			}
 
@@ -194,7 +191,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 			if (targetSection == null) {
 				String messageText = "No target node specified in edge with id '" + id + "'.";
 
-				errors.add(new SyntaxError(messageText));
+				errors.add(Messages.syntaxError(messageText));
 				continue;
 			}
 
@@ -205,7 +202,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 			if (target == null) {
 				String messageText = "No target node found with id " + targetID + " in edge " + id
 						+ ".";
-				errors.add(new NoSuchObjectError(messageText));
+				errors.add(Messages.noSuchObjectError(messageText));
 				continue;
 			}
 
@@ -220,7 +217,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 				if (condition == null) {
 					condition = ConditionTrue.INSTANCE;
 
-					errors.add(new ObjectCreationError("Could not parse condition: "
+					errors.add(Messages.objectCreationError("Could not parse condition: "
 							+ getXMLContentText(guardSection), getClass()));
 
 				}
@@ -239,7 +236,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		return result;
 	}
 
-	private Condition buildCondition(KnowWEArticle article, Section<CompositeCondition> s, List<KDOMReportMessage> errors) {
+	private Condition buildCondition(KnowWEArticle article, Section<CompositeCondition> s, List<Message> errors) {
 
 		return KDOMConditionFactory.createCondition(article, s);
 	}
@@ -252,7 +249,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Node> createNodes(KnowWEArticle article, String flowName, Section<FlowchartType> flowSection, List<KDOMReportMessage> errors) {
+	private List<Node> createNodes(KnowWEArticle article, String flowName, Section<FlowchartType> flowSection, List<Message> errors) {
 
 		List<Node> result = new ArrayList<Node>();
 		ArrayList<Section<NodeType>> nodeSections = new ArrayList<Section<NodeType>>();
@@ -267,7 +264,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 					nodeSection);
 
 			if (handler == null) {
-				errors.add(new SimpleMessageError("No NodeHandler found for: "
+				errors.add(Messages.error("No NodeHandler found for: "
 						+ nodeSection.getOriginalText()));
 				continue;
 			}
@@ -286,7 +283,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 							nodeSection, handler.get().getClass());
 					String text = getXMLContentText(nodeInfo);
 
-					errors.add(new ObjectCreationError("NodeHandler "
+					errors.add(Messages.objectCreationError("NodeHandler "
 							+ handler.getClass().getSimpleName() + " could not create node for: "
 							+ text, getClass()));
 

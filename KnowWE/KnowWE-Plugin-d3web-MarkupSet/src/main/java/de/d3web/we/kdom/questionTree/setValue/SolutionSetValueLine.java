@@ -42,7 +42,8 @@ import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.SplitUtility;
@@ -50,8 +51,6 @@ import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
-import de.knowwe.report.message.CreateRelationFailed;
-import de.knowwe.report.message.ObjectCreatedMessage;
 
 /**
  * 
@@ -161,7 +160,7 @@ public class SolutionSetValueLine extends AbstractType {
 		}
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<SolutionReference> s) {
+		public Collection<Message> create(KnowWEArticle article, Section<SolutionReference> s) {
 
 			Solution sol = s.get().getTermObject(article, s);
 
@@ -178,14 +177,14 @@ public class SolutionSetValueLine extends AbstractType {
 						Rule r = RuleFactory.createHeuristicPSRule(sol, score, cond);
 						if (r != null) {
 							KnowWEUtils.storeObject(article, s, SETVALUE_ARGUMENT, r);
-							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+							return Messages.asList(Messages.objectCreatedNotice(
 									r.getClass().toString()));
 						}
 					}
 				}
 			}
 
-			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+			return Arrays.asList(Messages.creationFailedWarning(
 					Rule.class.getSimpleName()));
 
 		}

@@ -20,7 +20,6 @@
 package de.d3web.we.kdom.questionTree.indication;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,12 +42,11 @@ import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.objects.KnowWETerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.dashtree.DashTreeElement;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
-import de.knowwe.report.message.CreateRelationFailed;
-import de.knowwe.report.message.ObjectCreatedMessage;
 
 public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 
@@ -76,7 +74,7 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<KnowWETerm<?>> s) {
+	public Collection<Message> create(KnowWEArticle article, Section<KnowWETerm<?>> s) {
 
 		Section<DashTreeElement> element = Sections.findAncestorOfType(s, DashTreeElement.class);
 
@@ -88,7 +86,7 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 							+ " only works inside "
 							+ QuestionDashTree.class.getSimpleName()
 							+ "s. It seems the handler is used with the wrong Type.");
-			return new ArrayList<KDOMReportMessage>(0);
+			return new ArrayList<Message>(0);
 		}
 
 		Section<? extends DashTreeElement> dashTreeFather = DashTreeUtils
@@ -97,7 +95,7 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 		if (dashTreeFather == null) {
 			// In case, that the element is already root element, no indication
 			// rule has to be defined, this a warning is not reasonable
-			return new ArrayList<KDOMReportMessage>(0);
+			return new ArrayList<Message>(0);
 			// return Arrays.asList((KDOMReportMessage) new
 			// CreateRelationFailed(
 			// D3webModule.getKwikiBundle_d3web().
@@ -113,7 +111,7 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 		if (answerSec != null || numCondSec != null) {
 
 			if (s.hasErrorInSubtree(article)) {
-				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+				return Messages.asList(Messages.creationFailedWarning(
 						D3webModule.getKwikiBundle_d3web().
 								getString("KnowWE.rulesNew.indicationnotcreated")));
 			}
@@ -148,16 +146,16 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 
 					if (r != null) {
 						KnowWEUtils.storeObject(article, s, indicationStoreKey, r);
-						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+						return Messages.asList(Messages.objectCreatedNotice(
 								r.getClass().toString()));
 					}
 				}
 			}
-			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+			return Messages.asList(Messages.creationFailedWarning(
 					Rule.class.getSimpleName()));
 		}
 
-		return new ArrayList<KDOMReportMessage>(0);
+		return new ArrayList<Message>(0);
 	}
 
 }

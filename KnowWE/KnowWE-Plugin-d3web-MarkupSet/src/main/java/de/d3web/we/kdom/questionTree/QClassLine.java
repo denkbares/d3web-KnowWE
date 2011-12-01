@@ -19,7 +19,6 @@
  */
 package de.d3web.we.kdom.questionTree;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -39,7 +38,8 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
 import de.knowwe.kdom.constraint.UnquotedConstraint;
@@ -48,10 +48,6 @@ import de.knowwe.kdom.dashtree.DashTreeElementContent;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
 import de.knowwe.plugin.Plugins;
-import de.knowwe.report.message.ObjectAlreadyDefinedError;
-import de.knowwe.report.message.ObjectCreatedMessage;
-import de.knowwe.report.message.ObjectCreationError;
-import de.knowwe.report.message.RelationCreatedMessage;
 
 public class QClassLine extends AbstractType implements IncrementalMarker {
 
@@ -112,7 +108,7 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 		}
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QClassLine> s) {
+		public Collection<Message> create(KnowWEArticle article, Section<QClassLine> s) {
 			Section<? extends DashTreeElementContent> fatherContent = DashTreeUtils.getFatherDashTreeElementContent(
 					s);
 
@@ -151,7 +147,7 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 					// here the actual taxonomic relation is established
 					superQuasetionniare.addChild(localQuestionnaire);
 
-					return Arrays.asList((KDOMReportMessage) new RelationCreatedMessage(
+					return Messages.asList(Messages.relationCreatedNotice(
 							s.getClass().getSimpleName()
 									+ " " + localQuestionnaire.getName()
 									+ "sub-questionnaire of "
@@ -210,13 +206,13 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 				 * @return
 				 */
 				@Override
-				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<InitNumber> s) {
+				public Collection<Message> create(KnowWEArticle article, Section<InitNumber> s) {
 
 					Double originalnumber = s.get().getNumber(
 							s);
 					if (originalnumber == null) {
 						// if the numbers cannot be found throw error
-						return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+						return Messages.asList(Messages.objectCreationError(
 								"invalid number",
 								this.getClass()));
 					}
@@ -235,7 +231,7 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 						// registered for this QASet
 						if (alreadyInitDefined) {
 							// do nothing and throw error iff
-							return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
+							return Messages.asList(Messages.objectAlreadyDefinedError(
 									"Init priority for object already defined"));
 						}
 						else {
@@ -244,12 +240,12 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 									questionnaire,
 									number);
 
-							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+							return Messages.asList(Messages.objectCreatedNotice(
 									"Init property set"));
 						}
 
 					}
-					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+					return Messages.asList(Messages.objectCreationError(
 							"KnowWE.questiontree.numerical",
 							this.getClass()));
 				}

@@ -20,7 +20,6 @@
 
 package de.d3web.we.testcase.kdom;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
@@ -47,12 +46,10 @@ import de.knowwe.core.kdom.objects.StringReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SimpleMessageError;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.report.message.NoSuchObjectError;
-import de.knowwe.report.message.ObjectCreatedMessage;
 
 /**
  * TestsuiteContent
@@ -89,9 +86,9 @@ public class TestCaseContent extends StringReference {
 		}
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<TestCaseType> s) {
+		public Collection<Message> create(KnowWEArticle article, Section<TestCaseType> s) {
 
-			List<KDOMReportMessage> messages = new LinkedList<KDOMReportMessage>();
+			List<Message> messages = new LinkedList<Message>();
 			KnowledgeBase kb = loadKB(article, s);
 
 			if (kb != null) {
@@ -128,7 +125,7 @@ public class TestCaseContent extends StringReference {
 					// Store the test suite
 					KnowWEUtils.storeObject(article, s,
 							TestCaseType.TESTCASEKEY, testSuite);
-					messages.add(new ObjectCreatedMessage(
+					messages.add(Messages.objectCreatedNotice(
 							"Test Suite successfully created with "
 									+ testSuite.getRepository().size() + " cases."));
 				}
@@ -136,7 +133,7 @@ public class TestCaseContent extends StringReference {
 			}
 			else {
 				Section<TestCaseType> father = Sections.findAncestorOfType(s, TestCaseType.class);
-				return Arrays.asList((KDOMReportMessage) new SimpleMessageError(
+				return Messages.asList(Messages.error(
 						"Unable to get knowledge base from article: "
 								+ DefaultMarkupType.getAnnotation(father,
 										TestCaseType.ANNOTATION_MASTER)));
@@ -145,18 +142,18 @@ public class TestCaseContent extends StringReference {
 			return messages;
 		}
 
-		private void createSTCName(Section<SequentialTestCase> stcSection, int index, de.d3web.empiricaltesting.SequentialTestCase stc, List<KDOMReportMessage> messages) {
+		private void createSTCName(Section<SequentialTestCase> stcSection, int index, de.d3web.empiricaltesting.SequentialTestCase stc, List<Message> messages) {
 			Section<SequentialTestCaseName> stcName = Sections.findSuccessor(stcSection,
 					SequentialTestCaseName.class);
 			if (stcName == null) {
-				messages.add(new SimpleMessageError("There is no name for STC" + index));
+				messages.add(Messages.error("There is no name for STC" + index));
 			}
 			else {
 				stc.setName(clean(stcName.getOriginalText().trim()));
 			}
 		}
 
-		private void createRTCs(Section<SequentialTestCase> stcSection, int stcIndex, de.d3web.empiricaltesting.SequentialTestCase stc, KnowledgeBase kb, List<KDOMReportMessage> messages) {
+		private void createRTCs(Section<SequentialTestCase> stcSection, int stcIndex, de.d3web.empiricaltesting.SequentialTestCase stc, KnowledgeBase kb, List<Message> messages) {
 
 			// Get all RatedTestCase sections
 			List<Section<RatedTestCase>> rtcSections = new LinkedList<Section<RatedTestCase>>();
@@ -186,7 +183,7 @@ public class TestCaseContent extends StringReference {
 		 * @param kb
 		 * @param messages
 		 */
-		private void createRatedFindings(Section<RatedTestCase> rtcSection, int stcIndex, int rtcIndex, de.d3web.empiricaltesting.RatedTestCase rtc, KnowledgeBase kb, List<KDOMReportMessage> messages) {
+		private void createRatedFindings(Section<RatedTestCase> rtcSection, int stcIndex, int rtcIndex, de.d3web.empiricaltesting.RatedTestCase rtc, KnowledgeBase kb, List<Message> messages) {
 
 			// Get all Finding sections
 			List<Section<RatedFinding>> findingSections = new LinkedList<Section<RatedFinding>>();
@@ -208,11 +205,10 @@ public class TestCaseContent extends StringReference {
 					// Create error message if there is no question with this
 					// name in the KB
 					if (question == null) {
-						messages.add(new NoSuchObjectError(
+						messages.add(Messages.noSuchObjectError(
 								clean(questionSection.getOriginalText().trim())));
 					}
 					else {
-
 
 						// Check if the question is a QuestionNum
 						if (question instanceof QuestionNum) {
@@ -221,7 +217,7 @@ public class TestCaseContent extends StringReference {
 									findingSection, Number.class);
 
 							if (valueSection == null) {
-								messages.add(new SimpleMessageError(
+								messages.add(Messages.error(
 										"The value has to be a number for Question: "
 												+ clean(questionSection.getOriginalText().trim())));
 								continue;
@@ -235,7 +231,7 @@ public class TestCaseContent extends StringReference {
 										new NumValue(value)));
 							}
 							catch (NumberFormatException e) {
-								messages.add(new SimpleMessageError(
+								messages.add(Messages.error(
 										"The value has to be a number for Question: "
 												+ clean(questionSection.getOriginalText().trim())));
 							}
@@ -249,7 +245,7 @@ public class TestCaseContent extends StringReference {
 
 							// Create error message if there is no value defined
 							if (valueSection == null) {
-								messages.add(new SimpleMessageError(
+								messages.add(Messages.error(
 										"There is no Value defined for Question: "
 												+ clean(questionSection.getOriginalText().trim())));
 								return;
@@ -258,7 +254,7 @@ public class TestCaseContent extends StringReference {
 							Value value = KnowledgeBaseUtils.findValue(question,
 									clean(valueSection.getOriginalText().trim()));
 							if (value == null) {
-								messages.add(new NoSuchObjectError(
+								messages.add(Messages.noSuchObjectError(
 										clean(valueSection.getOriginalText().trim())));
 							}
 							else {
@@ -269,7 +265,7 @@ public class TestCaseContent extends StringReference {
 					}
 				}
 				else {
-					messages.add(new SimpleMessageError(
+					messages.add(Messages.error(
 							"There is no Question defined in expected Finding "
 									+ findingSections.indexOf(findingSection) +
 									" in RTC " + rtcIndex + " in STC " + stcIndex));
@@ -298,7 +294,7 @@ public class TestCaseContent extends StringReference {
 
 		}
 
-		private void createFindings(Section<RatedTestCase> rtcSection, int stcIndex, int rtcIndex, de.d3web.empiricaltesting.RatedTestCase rtc, KnowledgeBase kb, List<KDOMReportMessage> messages) {
+		private void createFindings(Section<RatedTestCase> rtcSection, int stcIndex, int rtcIndex, de.d3web.empiricaltesting.RatedTestCase rtc, KnowledgeBase kb, List<Message> messages) {
 
 			// Get all Finding sections
 			List<Section<Finding>> findingSections = new LinkedList<Section<Finding>>();
@@ -320,7 +316,7 @@ public class TestCaseContent extends StringReference {
 					// Create error message if there is no question with this
 					// name in the KB
 					if (question == null) {
-						messages.add(new NoSuchObjectError(
+						messages.add(Messages.noSuchObjectError(
 								clean(questionSection.getOriginalText().trim())));
 					}
 					else {
@@ -331,7 +327,7 @@ public class TestCaseContent extends StringReference {
 
 						// Create error message if there is no value defined
 						if (valueSection == null) {
-							messages.add(new SimpleMessageError(
+							messages.add(Messages.error(
 									"There is no Value defined for Question: "
 											+ clean(questionSection.getOriginalText().trim())));
 							return;
@@ -346,7 +342,7 @@ public class TestCaseContent extends StringReference {
 										new NumValue(value)));
 							}
 							catch (NumberFormatException e) {
-								messages.add(new SimpleMessageError(
+								messages.add(Messages.error(
 										"The value has to be a number for Question: "
 												+ clean(questionSection.getOriginalText().trim())));
 							}
@@ -356,7 +352,7 @@ public class TestCaseContent extends StringReference {
 							Value value = KnowledgeBaseUtils.findValue(question,
 									clean(valueSection.getOriginalText().trim()));
 							if (value == null) {
-								messages.add(new NoSuchObjectError(
+								messages.add(Messages.noSuchObjectError(
 										clean(valueSection.getOriginalText().trim())));
 							}
 							else {
@@ -366,7 +362,7 @@ public class TestCaseContent extends StringReference {
 					}
 				}
 				else {
-					messages.add(new SimpleMessageError(
+					messages.add(Messages.error(
 							"There is no Question defined in Finding "
 									+ findingSections.indexOf(findingSection) +
 									" in RTC " + rtcIndex + " in STC " + stcIndex));
@@ -374,7 +370,7 @@ public class TestCaseContent extends StringReference {
 			}
 		}
 
-		private void createRatedSolutions(Section<RatedTestCase> rtcSection, int stcIndex, int rtcIndex, de.d3web.empiricaltesting.RatedTestCase rtc, KnowledgeBase kb, List<KDOMReportMessage> messages) {
+		private void createRatedSolutions(Section<RatedTestCase> rtcSection, int stcIndex, int rtcIndex, de.d3web.empiricaltesting.RatedTestCase rtc, KnowledgeBase kb, List<Message> messages) {
 
 			// Get all RatedSolution sections
 			List<Section<RatedSolution>> ratedSolutionSections = new LinkedList<Section<RatedSolution>>();
@@ -397,13 +393,13 @@ public class TestCaseContent extends StringReference {
 					// Create error message if there is no question with this
 					// name in the KB
 					if (solution == null) {
-						messages.add(new NoSuchObjectError(
+						messages.add(Messages.noSuchObjectError(
 								clean(solutionSection.getOriginalText().trim())));
 						return;
 					}
 				}
 				else {
-					messages.add(new SimpleMessageError(
+					messages.add(Messages.error(
 							"There is no Solution defined in RatedSolution "
 									+ ratedSolutionSections.indexOf(ratedSolutionSection) +
 									" in RTC " + rtcIndex + " in STC " + stcIndex));
@@ -427,7 +423,7 @@ public class TestCaseContent extends StringReference {
 
 				}
 				else {
-					messages.add(new SimpleMessageError(
+					messages.add(Messages.error(
 							"There is no Rating defined for Solution: "
 									+ solution + " in RTC: " + rtcIndex + " in STC: " + stcIndex));
 				}

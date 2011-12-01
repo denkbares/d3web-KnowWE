@@ -35,7 +35,7 @@ import de.d3web.we.flow.type.NodeType;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
 import de.knowwe.kdom.xml.AbstractXMLType;
 
 /**
@@ -62,7 +62,7 @@ public class ComposedNodeHandler extends AbstractNodeHandler {
 
 	@Override
 	public Node createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
-			Section<FlowchartType> flowSection, String id, List<KDOMReportMessage> errors) {
+			Section<FlowchartType> flowSection, String id, List<Message> errors) {
 
 		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
 		Section<CallFlowActionType> section = Sections.findSuccessor(nodeInfo,

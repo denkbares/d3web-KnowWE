@@ -32,7 +32,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.ContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -67,7 +67,7 @@ public class ArticleToPackageFlag extends DefaultMarkupType implements Increment
 	static class ArticleToPackageHandler extends SubtreeHandler<ArticleToPackageFlag> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ArticleToPackageFlag> s) {
+		public Collection<Message> create(KnowWEArticle article, Section<ArticleToPackageFlag> s) {
 			String value = Sections.findChildOfType(s, ContentType.class).getOriginalText();
 			if (!value.trim().isEmpty()) {
 				KnowWEEnvironment.getInstance().getPackageManager(

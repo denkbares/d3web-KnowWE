@@ -28,7 +28,7 @@ import de.d3web.we.ci4ke.util.CIUtilities;
 import de.knowwe.core.KnowWERessourceLoader;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -53,7 +53,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer<CIDashboardType> 
 		KnowWERessourceLoader.getInstance().add("CIPlugin.js",
 				KnowWERessourceLoader.RESOURCE_SCRIPT);
 
-		boolean sectionHasError = KDOMReportMessage.getErrors(article, section).size() > 0;
+		boolean sectionHasError = Messages.getErrors(article, section).size() > 0;
 
 		if (!sectionHasError) {
 			String dashboardName = DefaultMarkupType.getAnnotation(section,

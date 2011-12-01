@@ -50,8 +50,7 @@ import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SimpleMessageError;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.dashtree.DashSubtree;
 import de.knowwe.kdom.dashtree.DashTreeElement;
@@ -68,8 +67,7 @@ public class QuestionDashTreeUtils {
 	 * <tt>DashTreeElement.getDashTreeAncestors(Section s)</tt>, if <tt>s</tt>
 	 * is the child Section of an answer in a valid DashTree.
 	 * 
-	 * @param article
-	 *            TODO
+	 * @param article TODO
 	 */
 	public static Condition createCondition(
 			KnowWEArticle article, List<Section<? extends DashTreeElement>> ancestors) {
@@ -157,7 +155,7 @@ public class QuestionDashTreeUtils {
 	private static Condition createCondNum(KnowWEArticle article,
 			Section<NumericCondLine> comp, String comparator, Double valueOf,
 			QuestionNum questionNum) {
-		KDOMReportMessage.clearMessages(article, comp, QuestionDashTreeUtils.class);
+		Messages.clearMessages(article, comp, QuestionDashTreeUtils.class);
 
 		if (comparator.equals("=")) return new CondNumEqual(questionNum, valueOf);
 		else if (comparator.equals(">")) return new CondNumGreater(questionNum, valueOf);
@@ -167,9 +165,9 @@ public class QuestionDashTreeUtils {
 		else if (comparator.equals("<=")) return new CondNumLessEqual(questionNum,
 				valueOf);
 		else {
-			KDOMReportMessage.storeSingleError(article, comp,
+			Messages.storeMessage(article, comp,
 					QuestionDashTreeUtils.class,
-					new SimpleMessageError("Unkown comparator '" + comparator + "'."));
+					Messages.error("Unkown comparator '" + comparator + "'."));
 			return null;
 		}
 	}

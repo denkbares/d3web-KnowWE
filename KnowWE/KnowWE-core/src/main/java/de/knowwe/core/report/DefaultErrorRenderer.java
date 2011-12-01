@@ -52,12 +52,12 @@ public class DefaultErrorRenderer implements MessageRenderer {
 	}
 
 	@Override
-	public String postRenderMessage(KDOMReportMessage m, UserContext user) {
+	public String postRenderMessage(Message m, UserContext user) {
 		return KnowWEUtils.maskHTML("</span>");
 	}
 
 	@Override
-	public String preRenderMessage(KDOMReportMessage m, UserContext user) {
+	public String preRenderMessage(Message m, UserContext user) {
 		StringBuilder string = new StringBuilder();
 
 		string.append(KnowWEUtils.maskHTML("<span"));

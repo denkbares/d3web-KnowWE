@@ -20,7 +20,6 @@
 
 package de.knowwe.core.kdom.objects;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 import de.knowwe.core.compile.TerminologyHandler;
@@ -29,10 +28,9 @@ import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.objects.TermDefinition.MultiDefMode;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.report.message.NoSuchObjectError;
-import de.knowwe.report.message.ObjectFound;
 
 /**
  * A type representing a text slice, which _references_ an (existing) Object. It
@@ -123,7 +121,7 @@ public abstract class TermReference<TermObject>
 	class TermRegistrationHandler extends SubtreeHandler<TermReference<TermObject>> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<TermReference<TermObject>> s) {
+		public Collection<Message> create(KnowWEArticle article, Section<TermReference<TermObject>> s) {
 
 			KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermReference(
 					article, s);
@@ -131,7 +129,7 @@ public abstract class TermReference<TermObject>
 			String termName = s.get().getTermIdentifier(s);
 
 			if (s.get().getTermObject(article, s) == null) {
-				return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(
+				return Messages.asList(Messages.noSuchObjectError(
 						s.get().getTermObjectDisplayName(),
 						termName));
 			}
@@ -140,7 +138,7 @@ public abstract class TermReference<TermObject>
 			// e.g. type, range, where it has been defined, ...
 			// this functionality should be included automatically in
 			// "ObjectFound"
-			return Arrays.asList((KDOMReportMessage) new ObjectFound(s.get().getName()));
+			return Messages.asList(Messages.notice("Object found: " + s.get().getName()));
 		}
 
 		@Override

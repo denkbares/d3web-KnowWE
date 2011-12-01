@@ -33,8 +33,8 @@ import de.knowwe.core.compile.packaging.KnowWEPackageManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.KDOMError;
-import de.knowwe.core.report.KDOMWarning;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
@@ -119,21 +119,20 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 				KnowWEEnvironment.getInstance().getPackageManager(article.getWeb());
 		List<Section<?>> sectionsOfPackage = packageManager.getSectionsOfPackage(packageName);
 
-		Collection<KDOMError> kdomErrors = new LinkedList<KDOMError>();
-		Collection<KDOMWarning> kdomWarnings = new LinkedList<KDOMWarning>();
+		Collection<Message> kdomErrors = new LinkedList<Message>();
+		Collection<Message> kdomWarnings = new LinkedList<Message>();
 
 		Set<KnowWEArticle> errorArticles = new HashSet<KnowWEArticle>();
 		Set<KnowWEArticle> warningArticles = new HashSet<KnowWEArticle>();
 
 		for (Section<?> sectionOfPackage : sectionsOfPackage) {
-			Collection<KDOMError> errors = KnowWEUtils.getMessagesFromSubtree(
-					article, sectionOfPackage, KDOMError.class);
+			Collection<Message> allmsgs = Messages.getMessagesFromSubtree(article, sectionOfPackage);
+			Collection<Message> errors = Messages.getErrors(allmsgs);
+			Collection<Message> warnings = Messages.getWarnings(allmsgs);
 			if (errors != null && errors.size() > 0) {
 				kdomErrors.addAll(errors);
 				errorArticles.add(sectionOfPackage.getArticle());
 			}
-			Collection<KDOMWarning> warnings = KnowWEUtils.getMessagesFromSubtree(
-					article, sectionOfPackage, KDOMWarning.class);
 			if (warnings != null && warnings.size() > 0) {
 				kdomWarnings.addAll(warnings);
 				warningArticles.add(sectionOfPackage.getArticle());

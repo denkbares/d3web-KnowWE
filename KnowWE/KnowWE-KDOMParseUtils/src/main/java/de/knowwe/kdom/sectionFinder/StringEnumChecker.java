@@ -29,29 +29,28 @@ import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.KDOMError;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
 
 public class StringEnumChecker<T extends Type> extends SubtreeHandler<T> {
 
 	private final String[] values;
-	private final KDOMError error;
+	private final Message error;
 	private final int startOffset;
 	private final int endOffset;
 
-	public StringEnumChecker(String[] values, KDOMError error, int startOffset, int endoffset) {
+	public StringEnumChecker(String[] values, Message error, int startOffset, int endoffset) {
 		this.values = Arrays.copyOf(values, values.length);
 		this.error = error;
 		this.startOffset = startOffset;
 		this.endOffset = endoffset;
 	}
 
-	public StringEnumChecker(String[] values, KDOMError error) {
+	public StringEnumChecker(String[] values, Message error) {
 		this(values, error, 0, 0);
 	}
 
 	@Override
-	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
+	public Collection<Message> create(KnowWEArticle article, Section s) {
 
 		// cut offsets and trim
 		String sectionContent = s.getOriginalText();
@@ -67,7 +66,7 @@ public class StringEnumChecker<T extends Type> extends SubtreeHandler<T> {
 				found = true;
 			}
 		}
-		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
+		List<Message> msgs = new ArrayList<Message>();
 		if (!found) {
 			msgs.add(error);
 		}

@@ -35,12 +35,10 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.objects.KnowWETerm;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.report.message.NewObjectCreated;
-import de.knowwe.report.message.ObjectCreationError;
-import de.knowwe.report.message.UnexpectedSequence;
 
 /**
  * 
@@ -117,7 +115,7 @@ public abstract class AnswerDefinition
 	static class CreateAnswerHandler extends D3webSubtreeHandler<AnswerDefinition> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article,
+		public Collection<Message> create(KnowWEArticle article,
 				Section<AnswerDefinition> s) {
 
 			String name = s.get().getTermName(s);
@@ -130,7 +128,7 @@ public abstract class AnswerDefinition
 
 			if (!KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
 					article, s)) {
-				return new ArrayList<KDOMReportMessage>(0);
+				return new ArrayList<Message>(0);
 			}
 
 			if (qDef == null) {
@@ -150,7 +148,7 @@ public abstract class AnswerDefinition
 
 			// if having error somewhere, do nothing and report error
 			if (qDef.hasErrorInSubtree(article)) {
-				return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+				return Arrays.asList(Messages.objectCreationError(
 						"no valid question - " + name,
 						this.getClass()));
 			}
@@ -173,7 +171,7 @@ public abstract class AnswerDefinition
 						a = qyn.getAnswerChoiceNo();
 					}
 					else {
-						return Arrays.asList((KDOMReportMessage) new UnexpectedSequence(
+						return Messages.asList(Messages.syntaxError(
 								"only '" + qyn.getAnswerChoiceYes().getName() + "' and '"
 										+ qyn.getAnswerChoiceNo().getName()
 										+ "' is allowed for this question type"));
@@ -188,12 +186,12 @@ public abstract class AnswerDefinition
 
 				s.get().storeTermObject(article, s, a);
 
-				return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
+				return Messages.asList(Messages.objectCreatedNotice(
 						a.getClass().getSimpleName() + "  "
 								+ a.getName()));
 
 			}
-			return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+			return Messages.asList(Messages.objectCreationError(
 					"no choice question - " + name,
 					this.getClass()));
 		}

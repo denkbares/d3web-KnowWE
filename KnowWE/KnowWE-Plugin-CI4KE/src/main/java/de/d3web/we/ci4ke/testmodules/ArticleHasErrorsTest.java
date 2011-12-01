@@ -27,8 +27,8 @@ import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.KDOMError;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 
 /**
  * This tests checks, if
@@ -56,15 +56,15 @@ public class ArticleHasErrorsTest extends AbstractCITest {
 			return new CITestResult(Type.FAILED, "MonitoredArticle not found or invalid!", config);
 		}
 
-		Collection<KDOMError> messages = new LinkedList<KDOMError>();
+		Collection<Message> messages = new LinkedList<Message>();
 		for (Section<?> sec : moni.getReviseIterator().getAllSections()) {
-			messages.addAll(KnowWEUtils.getMessages(moni, sec, KDOMError.class));
+			messages.addAll(Messages.getErrors(Messages.getMessages(moni, sec, Error.class)));
 		}
 
 		buffy.append(": <a href=\"Wiki.jsp?page=" + monitoredArticleTitle + "\"> "
 				+ monitoredArticleTitle + "</a><br />\n");
 		buffy.append("<ul>");
-		for (KDOMError message : messages) {
+		for (Message message : messages) {
 			// This finds only messages, that are explicitly stored
 			// as Message.ERROR, because the Type Message.UNKNOWN_ERROR
 			// is not public!

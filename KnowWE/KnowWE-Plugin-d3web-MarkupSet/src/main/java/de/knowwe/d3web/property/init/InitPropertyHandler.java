@@ -27,12 +27,11 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.d3web.we.utils.MessageUtils;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.SimpleMessageError;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.d3web.property.NamedObjectReference;
 import de.knowwe.d3web.property.PropertyContentType;
 import de.knowwe.d3web.property.PropertyDeclarationType;
@@ -48,47 +47,47 @@ import de.knowwe.d3web.property.PropertyType;
 public class InitPropertyHandler extends D3webSubtreeHandler<PropertyDeclarationType> {
 
 	@Override
-	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<PropertyDeclarationType> s) {
+	public Collection<Message> create(KnowWEArticle article, Section<PropertyDeclarationType> s) {
 		// get Property
 		Section<PropertyType> propertySection = Sections.findSuccessor(s,
 				PropertyType.class);
 		if (propertySection == null) {
-			return MessageUtils.asList();
+			return Messages.asList();
 		}
 		Property<?> property = propertySection.get().getProperty(propertySection);
 		if (property == null || !property.equals(BasicProperties.INIT)) {
-			return MessageUtils.asList();
+			return Messages.asList();
 		}
 
 		// get NamedObject
 		Section<NamedObjectReference> namendObjectSection = Sections.findSuccessor(s,
 				NamedObjectReference.class);
 		if (namendObjectSection == null) {
-			return MessageUtils.asList();
+			return Messages.asList();
 		}
 		NamedObject object = namendObjectSection.get().getTermObject(article, namendObjectSection);
 		if (object == null || !(object instanceof Question)) {
-			return MessageUtils.asList();
+			return Messages.asList();
 		}
 
 		// get content
 		Section<PropertyContentType> contentSection = Sections.findSuccessor(s,
 				PropertyContentType.class);
 		if (contentSection == null) {
-			return MessageUtils.asList();
+			return Messages.asList();
 		}
 		String content = contentSection.get().getPropertyContent(contentSection);
 		if (content == null || content.trim().isEmpty()) {
-			return MessageUtils.asList();
+			return Messages.asList();
 		}
 
 		try {
 			PSMethodInit.getValue((Question) object, content);
 		}
 		catch (Exception e) {
-			return MessageUtils.asList(new SimpleMessageError(e.getMessage()));
+			return Messages.asList(Messages.error(e.getMessage()));
 		}
-		return MessageUtils.asList();
+		return Messages.asList();
 	}
 
 }

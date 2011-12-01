@@ -25,9 +25,8 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
-import de.knowwe.core.report.KDOMError;
-import de.knowwe.core.report.KDOMReportMessage;
-import de.knowwe.core.report.KDOMWarning;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -57,12 +56,14 @@ public class RootType extends AbstractType {
 
 			@Override
 			public void render(KnowWEArticle article, Section<RootType> section, UserContext user, StringBuilder string) {
-				Collection<KDOMReportMessage> messages = KDOMReportMessage.getMessages(section,
-						article);
-				for (KDOMReportMessage message : messages) {
-					String tag = (message instanceof KDOMError)
+				Collection<Message> messages = Messages.getMessages(article,
+						section);
+				for (Message message : messages) {
+					String tag = (message.getType() == Message.Type.ERROR)
 							? "error"
-							: (message instanceof KDOMWarning) ? "warning" : "information";
+							: (message.getType() == Message.Type.WARNING)
+									? "warning"
+									: "information";
 					string.append("\n%%").append(tag).append("\n");
 					string.append(message.getVerbalization());
 					string.append("\n/%\n\n");

@@ -19,7 +19,6 @@
  */
 package de.d3web.we.kdom.solutionTree;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -28,9 +27,9 @@ import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.kdom.questionTree.ObjectDescription;
 import de.d3web.we.object.SolutionDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.compile.IncrementalMarker;
 import de.knowwe.core.compile.ConstraintModule.Operator;
 import de.knowwe.core.compile.ConstraintModule.Purpose;
+import de.knowwe.core.compile.IncrementalMarker;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -38,7 +37,8 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.report.KDOMReportMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
@@ -47,7 +47,6 @@ import de.knowwe.kdom.dashtree.AncestorSubtreeChangeConstraint;
 import de.knowwe.kdom.dashtree.DashTreeElementContent;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
-import de.knowwe.report.message.RelationCreatedMessage;
 
 /**
  * @author Jochen
@@ -116,7 +115,7 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 		}
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
+		public Collection<Message> create(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
 			Section<? extends DashTreeElementContent> fatherSolutionContent = DashTreeUtils.getFatherDashTreeElementContent(
 					s);
 			Section<SolutionDefinition> localSolutionDef = Sections.findSuccessor(s,
@@ -137,7 +136,7 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 					kb.getRootSolution().removeChild(localSolution);
 					superSolution.addChild(localSolution);
 
-					return Arrays.asList((KDOMReportMessage) new RelationCreatedMessage(
+					return Messages.asList(Messages.relationCreatedNotice(
 							s.getClass().getSimpleName()
 									+ " " + localSolution.getName() + "sub-solution of "
 									+ superSolution.getName()));
