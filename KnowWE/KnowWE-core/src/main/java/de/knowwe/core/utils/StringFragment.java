@@ -49,4 +49,9 @@ public class StringFragment {
 		return fatherString;
 	}
 
+	@Override
+	public String toString() {
+		return getContent();
+	}
+
 }

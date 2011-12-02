@@ -75,7 +75,14 @@ public abstract class PackageCompileType extends StringDefinition implements Pac
 			}
 
 			for (Section<?> sectionOfPackage : sectionsOfPackage) {
-				article.getReviseIterator().addRootSectionToRevise(sectionOfPackage);
+				if (KnowWEEnvironment.getInstance().getWikiConnector().doesPageExist(
+						sectionOfPackage.getTitle())) {
+					article.getReviseIterator().addRootSectionToRevise(sectionOfPackage);
+				}
+				else {
+					KnowWEEnvironment.getInstance().getArticleManager(sectionOfPackage.getWeb()).addArticleToUpdate(
+							sectionOfPackage.getTitle());
+				}
 			}
 
 			s.get().storeTermObject(article, s, s.get().getTermIdentifier(s));

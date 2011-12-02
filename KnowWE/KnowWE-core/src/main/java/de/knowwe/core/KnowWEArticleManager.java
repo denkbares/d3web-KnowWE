@@ -305,10 +305,16 @@ public class KnowWEArticleManager {
 
 		for (String title : localQueue) {
 			if (!updatingArticles.contains(title)) {
-				KnowWEArticle newArt = KnowWEArticle.createArticle(
-						articleMap.get(title).getSection().getOriginalText(), title,
-						KnowWEEnvironment.getInstance().getRootType(), web, false);
-				registerArticle(newArt, true);
+				if (KnowWEEnvironment.getInstance().getWikiConnector().doesPageExist(title)) {
+					KnowWEArticle newArt = KnowWEArticle.createArticle(
+							articleMap.get(title).getSection().getOriginalText(), title,
+							KnowWEEnvironment.getInstance().getRootType(), web, false);
+					registerArticle(newArt, true);
+				}
+				else {
+					deleteArticle(getArticle(title));
+				}
+
 			}
 			globalRefreshQueue.remove(title);
 		}
