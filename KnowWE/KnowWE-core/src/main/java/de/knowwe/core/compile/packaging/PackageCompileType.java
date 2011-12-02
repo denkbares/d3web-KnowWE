@@ -66,7 +66,6 @@ public abstract class PackageCompileType extends StringDefinition implements Pac
 
 			List<Section<?>> sectionsOfPackage = new LinkedList<Section<?>>();
 			for (String referedPackages : s.get().getPackagesToCompile(s)) {
-				if (referedPackages.equals(article.getTitle())) continue;
 				List<Section<?>> tempSectionsOfPackage = packageMng.getSectionsOfPackage(referedPackages);
 				for (Section<?> sectionOfPackage : tempSectionsOfPackage) {
 					if (!sectionOfPackage.getTitle().equals(article.getTitle())) {

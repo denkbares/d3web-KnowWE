@@ -93,9 +93,7 @@ public class KnowWEPackageManager implements EventListener {
 	}
 
 	private boolean isDisallowedPackageName(String packageName) {
-		return packageName.equals(THIS)
-				|| KnowWEEnvironment.getInstance().getArticleManager(
-						web).getTitles().contains(packageName);
+		return packageName.equals(THIS);
 	}
 
 	private void addDeactivatedSection(String packageName, Section<?> s) {
@@ -155,6 +153,7 @@ public class KnowWEPackageManager implements EventListener {
 			Messages.storeMessage(null, s, this.getClass(), Messages.error("'"
 					+ packageName
 					+ "' is not allowed as a package name."));
+			return;
 		}
 		if (s.getPackageNames().contains(packageName)) {
 			Messages.storeMessage(null, s, this.getClass(), Messages.error(
@@ -422,7 +421,6 @@ public class KnowWEPackageManager implements EventListener {
 		}
 		HashSet<String> referencedPackages = referencedPackagesMap.get(section.getTitle());
 		if (autocompileArticleEnabled
-				|| (referencedPackages != null && referencedPackages.contains(section.getTitle()))
 				|| (referencedPackages != null && referencedPackages.contains(THIS))) {
 			matchingArticles.add(section.getTitle());
 		}

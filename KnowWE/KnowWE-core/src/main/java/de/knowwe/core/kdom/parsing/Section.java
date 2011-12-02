@@ -1013,8 +1013,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 			Set<String> referencedPackages = KnowWEEnvironment.getInstance().getPackageManager(
 					article.getWeb()).getReferencedPackages(article.getTitle());
 
-			if (referencedPackages.contains(article.getTitle())
-					|| referencedPackages.contains(KnowWEPackageManager.THIS)) return true;
+			if (referencedPackages.contains(KnowWEPackageManager.THIS)) return true;
 
 			for (String name : getPackageNames()) {
 				if (referencedPackages.contains(name)) return true;
