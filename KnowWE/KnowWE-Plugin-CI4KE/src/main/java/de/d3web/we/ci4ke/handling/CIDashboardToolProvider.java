@@ -37,8 +37,14 @@ public class CIDashboardToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
-		String dashboardName = DefaultMarkupType.getAnnotation(section, CIDashboardType.NAME_KEY);
-		return new Tool[] { getStartNewBuildTool(dashboardName) };
+		 String dashboardName = DefaultMarkupType.getAnnotation(section,
+				CIDashboardType.NAME_KEY);
+		if (dashboardName == null) {
+			return new Tool[0];
+		}
+		else {
+			return new Tool[] { getStartNewBuildTool(dashboardName) };
+		}
 	}
 
 	protected Tool getStartNewBuildTool(String dashboardName) {

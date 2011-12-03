@@ -145,7 +145,8 @@ public class CIUtilities {
 		Sections.findSuccessorsOfType(article.getSection(), CIDashboardType.class, list);
 		// iterate all sections and look for the given dashboard ID
 		for (Section<CIDashboardType> sec : list) {
-			if (CIDashboardType.getAnnotation(sec, CIDashboardType.NAME_KEY).equals(dashboardName)) {
+			String otherDashName = CIDashboardType.getAnnotation(sec, CIDashboardType.NAME_KEY);
+			if (otherDashName != null && otherDashName.equals(dashboardName)) {
 				return sec;
 			}
 		}
