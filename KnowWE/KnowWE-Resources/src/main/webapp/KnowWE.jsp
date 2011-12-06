@@ -50,4 +50,4 @@ String findParam( PageContext ctx, String key )
 	// Perform action
 	KnowWEEnvironment.getInstance().getDispatcher().performAction(context);
 	
-%><wiki:Include page="<%=\"\"%>"/>
+%>
