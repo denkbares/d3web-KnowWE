@@ -53,7 +53,7 @@ public class CorrectionToolProvider implements ToolProvider {
 
 		int threshold = Integer.valueOf(wikiConfig.getString("knowweplugin.correction.threshold"));
 
-		if (!section.hasErrorInSubtree(article)) {
+		if (!hasError(article, section)) {
 			return new Tool[0];
 		}
 
@@ -98,6 +98,10 @@ public class CorrectionToolProvider implements ToolProvider {
 		}
 
 		return tools;
+	}
+
+	protected boolean hasError(KnowWEArticle article, Section<?> section) {
+		return section.hasErrorInSubtree(article);
 	}
 
 	private static CorrectionProvider[] getProviders(Section<?> section) {
