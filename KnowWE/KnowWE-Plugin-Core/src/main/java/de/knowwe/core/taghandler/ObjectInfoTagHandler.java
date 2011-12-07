@@ -113,6 +113,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		defaultMarkupRenderer.renderDefaultMarkupStyled(
 				getTagName(), content, sectionID, cssClassName, tools, userContext,
 				buffer);
+		KnowWEUtils.maskJSPWikiMarkup(buffer);
 		return buffer.toString();
 	}
 
@@ -227,10 +228,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 	private String renderObjectInfo(Set<Section<? extends TermDefinition<?>>> definitions, Set<Section<? extends TermReference<?>>> references, Map<String, String> parameters) {
 		StringBuilder html = new StringBuilder();
-		if (!checkParameter(HIDEDEF, parameters))
-			html.append(renderTermDefinitions(definitions));
-		if (!checkParameter(HIDEREFS, parameters))
-			html.append(renderTermReferences(references,
+		if (!checkParameter(HIDEDEF, parameters)) html.append(renderTermDefinitions(definitions));
+		if (!checkParameter(HIDEREFS, parameters)) html.append(renderTermReferences(references,
 					definitions));
 		return html.toString();
 	}
@@ -390,8 +389,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 					innerHTML.append("<pre style=\"margin:1em -1em;\">");
 					String textBefore = r.getAdditionalContext(-35).replaceAll(
 							"(\\{|\\})", "");
-					if (!article.getSection().getOriginalText().startsWith(textBefore))
-						innerHTML.append("...");
+					if (!article.getSection().getOriginalText().startsWith(textBefore)) innerHTML.append("...");
 					innerHTML.append(textBefore);
 					innerHTML.append("<a href=\"Wiki.jsp?page=");
 					innerHTML.append(article.getTitle());
@@ -404,8 +402,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 					String textAfter = r.getAdditionalContext(40).replaceAll("(\\{|\\})",
 							"");
 					innerHTML.append(textAfter);
-					if (!article.getSection().getOriginalText().endsWith(textAfter))
-						innerHTML.append("...");
+					if (!article.getSection().getOriginalText().endsWith(textAfter)) innerHTML.append("...");
 					innerHTML.append("</pre>");
 					innerHTML.append("</li>");
 				}
