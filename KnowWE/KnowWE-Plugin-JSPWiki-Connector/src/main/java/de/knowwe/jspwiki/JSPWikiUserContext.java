@@ -72,6 +72,7 @@ public class JSPWikiUserContext extends AbstractUserContext {
 
 	@Override
 	public HttpSession getSession() {
+		if (this.context.getHttpRequest() == null) return null;
 		return this.context.getHttpRequest().getSession();
 	}
 
