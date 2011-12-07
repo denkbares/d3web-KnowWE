@@ -40,15 +40,7 @@ public class QuickInterviewAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String namespace = context.getParameter(KnowWEAttributes.SEMANO_NAMESPACE);
-
-		String parts[] = namespace.split("\\.\\.");
-		String topic = parts[0];
-		String user = context.getUserName();
-		HttpServletRequest request = context.getRequest();
-		String web = context.getWeb();
-
-		String result = callQuickInterviewRenderer(topic, user, request, web, context);
+		String result = callQuickInterviewRenderer(context);
 		if (result != null && context.getWriter() != null) {
 			context.setContentType("text/html; charset=UTF-8");
 			context.getWriter().write(result);
@@ -67,8 +59,15 @@ public class QuickInterviewAction extends AbstractAction {
 	 * @param web
 	 * @return
 	 */
-	public static String callQuickInterviewRenderer(String topic, String user, HttpServletRequest request, String web,
-			UserContext usercontext) {
+	public static String callQuickInterviewRenderer(UserContext usercontext) {
+
+		if (usercontext == null || usercontext.getSession() == null) {
+			return "";
+		}
+
+		String topic = usercontext.getTitle();
+		String web = usercontext.getParameter(KnowWEAttributes.WEB);
+		HttpServletRequest request = usercontext.getRequest();
 
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(request);
 
@@ -77,7 +76,8 @@ public class QuickInterviewAction extends AbstractAction {
 		if (knowledgeServiceInTopic == null) return rb.getString("KnowWE.quicki.error");
 		String kbid = knowledgeServiceInTopic.getId();
 
-		SessionBroker broker = D3webModule.getBroker(user, web);
+		String id = usercontext.getUserName();
+		SessionBroker broker = D3webModule.getBroker(id, web);
 
 		Session session = broker.getSession(kbid);
 

@@ -95,7 +95,7 @@ public class QuickInterviewRenderer {
 		return new QuickInterviewRenderer(c, webb, user).render();
 	}
 
-	public QuickInterviewRenderer(Session c, String webb, UserContext user) {
+	private QuickInterviewRenderer(Session c, String webb, UserContext user) {
 		// insert specific CSS
 		// buffi.append("<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/quicki.css' />");
 		this.kb = c.getKnowledgeBase();
