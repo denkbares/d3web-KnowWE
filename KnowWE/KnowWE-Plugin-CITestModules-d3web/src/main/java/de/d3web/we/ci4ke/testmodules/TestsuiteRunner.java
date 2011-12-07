@@ -43,6 +43,11 @@ public class TestsuiteRunner extends AbstractCITest {
 		TestCase suite = TestCaseUtils.loadTestSuite(
 				monitoredArticleTitle, KnowWEEnvironment.DEFAULT_WEB);
 
+		if (suite == null) {
+			return new CITestResult(Type.ERROR, "No Testsuite found in article '"
+					+ monitoredArticleTitle + "'", config);
+		}
+
 		TestCaseAnalysis analysis = new TestCaseAnalysis();
 		TestCaseAnalysisReport result = analysis.runAndAnalyze(suite);
 
