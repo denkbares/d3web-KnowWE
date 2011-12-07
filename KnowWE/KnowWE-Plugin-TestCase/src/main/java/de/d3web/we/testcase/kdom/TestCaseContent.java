@@ -33,6 +33,7 @@ import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.empiricaltesting.TestCase;
+import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.SolutionReference;
@@ -43,6 +44,7 @@ import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.basicType.Number;
 import de.knowwe.core.kdom.objects.KnowWETerm;
 import de.knowwe.core.kdom.objects.StringReference;
+import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
@@ -69,8 +71,11 @@ public class TestCaseContent extends StringReference {
 
 	@Override
 	public String getTermIdentifier(Section<? extends KnowWETerm<String>> s) {
-		return DefaultMarkupType.getAnnotation(Sections.findAncestorOfType(s, TestCaseType.class),
+		String master = DefaultMarkupType.getAnnotation(
+				Sections.findAncestorOfType(s, TestCaseType.class),
 				TestCaseType.ANNOTATION_MASTER);
+		if (master == null) master = s.getTitle();
+		return master;
 	}
 
 	@Override
@@ -78,7 +83,7 @@ public class TestCaseContent extends StringReference {
 		return "Master";
 	}
 
-	public class TestSuiteSubTreeHandler extends D3webSubtreeHandler<TestCaseType> {
+	public class TestSuiteSubTreeHandler extends D3webSubtreeHandler<TestCaseContent> {
 
 		@Override
 		public boolean isIgnoringPackageCompile() {
@@ -86,14 +91,20 @@ public class TestCaseContent extends StringReference {
 		}
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<TestCaseType> s) {
+		public Collection<Message> create(KnowWEArticle article, Section<TestCaseContent> s) {
+
+			if (s.hasErrorInSubtree(article)) {
+				// the message is confusing, so we remove it.
+				Messages.clearMessages(article, s, TermReference.TermRegistrationHandler.class);
+				return Messages.asList();
+			}
 
 			List<Message> messages = new LinkedList<Message>();
 			KnowledgeBase kb = loadKB(article, s);
-
 			if (kb != null) {
 
-				List<de.d3web.empiricaltesting.SequentialTestCase> repository = new LinkedList<de.d3web.empiricaltesting.SequentialTestCase>();
+				List<de.d3web.empiricaltesting.SequentialTestCase> repository =
+						new LinkedList<de.d3web.empiricaltesting.SequentialTestCase>();
 
 				// Get all SequentialTestCase sections
 				List<Section<SequentialTestCase>> stcSections = new LinkedList<Section<SequentialTestCase>>();
@@ -105,7 +116,8 @@ public class TestCaseContent extends StringReference {
 					int index = stcSections.indexOf(stcSection) + 1;
 
 					// Create new STC
-					de.d3web.empiricaltesting.SequentialTestCase stc = new de.d3web.empiricaltesting.SequentialTestCase();
+					de.d3web.empiricaltesting.SequentialTestCase stc =
+							new de.d3web.empiricaltesting.SequentialTestCase();
 					createSTCName(stcSection, index, stc, messages);
 					if (messages.size() > 0) return messages;
 					createRTCs(stcSection, index, stc, kb, messages);
@@ -132,11 +144,9 @@ public class TestCaseContent extends StringReference {
 
 			}
 			else {
-				Section<TestCaseType> father = Sections.findAncestorOfType(s, TestCaseType.class);
 				return Messages.asList(Messages.error(
 						"Unable to get knowledge base from article: "
-								+ DefaultMarkupType.getAnnotation(father,
-										TestCaseType.ANNOTATION_MASTER)));
+								+ s.get().getTermIdentifier(s)));
 			}
 
 			return messages;
@@ -434,18 +444,12 @@ public class TestCaseContent extends StringReference {
 		/**
 		 * Due to the knowledge base is in another article we need this method.
 		 */
-		private KnowledgeBase loadKB(KnowWEArticle a, Section<TestCaseType> s) {
+		private KnowledgeBase loadKB(KnowWEArticle a, Section<TestCaseContent> s) {
 
 			KnowledgeBase kb = getKB(a);
 
-			// KBM contains only the ROOT-QASET and the ROOT-Solution
-			// TODO: Remove this check. ATM necessary for the Test (@see
-			// MyTestArticleManager)
-			if (kb != null
-					&& kb.getManager().getAllTerminologyObjects().size() == 2) {
-				Section<TestCaseType> father = Sections.findAncestorOfType(s, TestCaseType.class);
-				String source = DefaultMarkupType.getAnnotation(father,
-						TestCaseType.ANNOTATION_MASTER);
+			if (D3webKnowledgeHandler.isEmpty(kb)) {
+				String source = getTermIdentifier(s);
 				KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(a.getWeb(),
 						source);
 				kb = getKB(article);

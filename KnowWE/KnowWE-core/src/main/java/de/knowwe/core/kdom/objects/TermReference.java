@@ -66,7 +66,10 @@ public abstract class TermReference<TermObject>
 		return this.termObjectClass;
 	}
 
-	public abstract String getTermObjectDisplayName();
+	@Override
+	public String getTermObjectDisplayName() {
+		return getTermObjectClass().getSimpleName();
+	}
 
 	@Override
 	public String getTermName(Section<? extends KnowWETerm<TermObject>> s) {
@@ -118,7 +121,7 @@ public abstract class TermReference<TermObject>
 		}
 	}
 
-	class TermRegistrationHandler extends SubtreeHandler<TermReference<TermObject>> {
+	public class TermRegistrationHandler extends SubtreeHandler<TermReference<TermObject>> {
 
 		@Override
 		public Collection<Message> create(KnowWEArticle article, Section<TermReference<TermObject>> s) {
@@ -126,19 +129,14 @@ public abstract class TermReference<TermObject>
 			KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermReference(
 					article, s);
 
-			String termName = s.get().getTermIdentifier(s);
-
 			if (s.get().getTermObject(article, s) == null) {
+				String termName = s.get().getTermIdentifier(s);
 				return Messages.asList(Messages.noSuchObjectError(
 						s.get().getTermObjectDisplayName(),
 						termName));
 			}
-
-			// TODO: give meaningful information about the object
-			// e.g. type, range, where it has been defined, ...
-			// this functionality should be included automatically in
-			// "ObjectFound"
-			return Messages.asList(Messages.notice("Object found: " + s.get().getName()));
+			return Messages.asList(Messages.notice(s.get().getTermObjectDisplayName() + " found: "
+					+ s.get().getName()));
 		}
 
 		@Override

@@ -51,14 +51,15 @@ public interface KnowWETerm<TermObject> extends IncrementalMarker {
 
 	/**
 	 * 
-	 * Needs to return a global/package-wide unique name/identifier for this term 
+	 * Needs to return a global/package-wide unique name/identifier for this
+	 * term
 	 * 
 	 * @created 06.06.2011
 	 * @param s
-	 * @return 
+	 * @return
 	 */
 	public String getTermIdentifier(Section<? extends KnowWETerm<TermObject>> s);
-	
+
 	/**
 	 * Returns the (potentially short or abbreviated) name of this Term.
 	 * WARNING: This name is not necessarily globally/package-wide unique
@@ -66,9 +67,11 @@ public interface KnowWETerm<TermObject> extends IncrementalMarker {
 	 * 
 	 * @created 06.06.2011
 	 * @param s
-	 * @return 
+	 * @return
 	 */
 	public String getTermName(Section<? extends KnowWETerm<TermObject>> s);
+
+	public abstract String getTermObjectDisplayName();
 
 	public Class<TermObject> getTermObjectClass();
 

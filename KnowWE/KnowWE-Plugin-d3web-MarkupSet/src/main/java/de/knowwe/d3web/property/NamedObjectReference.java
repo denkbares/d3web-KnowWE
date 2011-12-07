@@ -132,9 +132,4 @@ public class NamedObjectReference extends D3webTermReference<NamedObject> {
 		return knowledgeBase.getManager().search(name);
 	}
 
-	@Override
-	public String getTermObjectDisplayName() {
-		return NamedObject.class.getSimpleName();
-	}
-
 }

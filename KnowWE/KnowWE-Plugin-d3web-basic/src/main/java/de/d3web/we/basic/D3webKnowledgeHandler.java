@@ -143,7 +143,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 		}
 	}
 
-	private boolean isEmpty(KnowledgeBase kb) {
+	public static boolean isEmpty(KnowledgeBase kb) {
 		if (kb.getAllKnowledgeSlices().size() == 0
 				&& kb.getManager().getQuestions().size() < 1
 				&& kb.getManager().getSolutions().size() <= 1) {

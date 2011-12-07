@@ -325,7 +325,6 @@ public class TerminologyHandler implements EventListener {
 
 	public <TermObject> void registerTermReference(KnowWEArticle article, Section<? extends TermReference<TermObject>> s) {
 
-		Collection<Message> msgs = new LinkedList<Message>();
 		TermReferenceLog<TermObject> terRefLog = getTermReferenceLog(article, s);
 		if (terRefLog == null) {
 			TermReferenceLog<?> termRefLogWrongClass = getTermReferenceLog(article,
@@ -333,9 +332,9 @@ public class TerminologyHandler implements EventListener {
 					s.get().getTermScope());
 			if (termRefLogWrongClass != null) {
 				// don't override a termRefLog of another term object class
-				msgs.add(Messages.occupiedTermError(new TermIdentifier(article, s).toString(),
-						termRefLogWrongClass.getTermObjectClass()));
-				Messages.storeMessages(article, s, this.getClass(), msgs);
+				Messages.storeMessage(article, s, this.getClass(),
+						Messages.occupiedTermError(new TermIdentifier(article, s).toString(),
+								termRefLogWrongClass.getTermObjectClass()));
 				return;
 			}
 			terRefLog = new TermReferenceLog<TermObject>(s.get().getTermObjectClass(),
@@ -348,12 +347,12 @@ public class TerminologyHandler implements EventListener {
 			String termName = terRefLog.getDefiningSection().get().getTermIdentifier(
 					terRefLog.getDefiningSection());
 			if (!termName.equals(refTermName)) {
-				msgs.add(Messages.warning("Term name matches with wrong case. Expected: "
-						+ termName));
+				Messages.storeMessage(article, s, this.getClass(),
+						Messages.warning("Term name matches with wrong case. Expected: "
+								+ termName));
 			}
 		}
 		terRefLog.addTermReference(s);
-		Messages.storeMessages(article, s, this.getClass(), msgs);
 	}
 
 	/**

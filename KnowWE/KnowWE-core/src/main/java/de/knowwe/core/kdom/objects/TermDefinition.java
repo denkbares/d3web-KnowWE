@@ -77,6 +77,11 @@ public abstract class TermDefinition<TermObject>
 		return this.termObjectClass;
 	}
 
+	@Override
+	public String getTermObjectDisplayName() {
+		return getTermObjectClass().getSimpleName();
+	}
+
 	/**
 	 * Allows quick and simple access to the object defined by this section, if
 	 * it was stored using storeObject()

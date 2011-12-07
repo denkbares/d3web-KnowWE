@@ -48,7 +48,7 @@ public class TestCaseRunnerType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("TestCaseRunner");
-		MARKUP.addAnnotation(ANNOTATION_TESTCASE, true);
+		MARKUP.addAnnotation(ANNOTATION_TESTCASE, false);
 		MARKUP.addAnnotation(ANNOTATION_MODE, false);
 		MARKUP.addAnnotation(ANNOTATION_WAIT, false);
 	}

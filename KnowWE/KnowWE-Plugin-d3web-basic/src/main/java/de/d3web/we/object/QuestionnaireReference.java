@@ -62,9 +62,4 @@ public class QuestionnaireReference extends D3webTermReference<QContainer> {
 		return null;
 	}
 
-	@Override
-	public String getTermObjectDisplayName() {
-		return "Questionnaire";
-	}
-
 }

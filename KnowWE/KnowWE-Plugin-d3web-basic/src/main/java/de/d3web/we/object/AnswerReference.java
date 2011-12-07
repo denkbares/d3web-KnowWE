@@ -117,9 +117,4 @@ public abstract class AnswerReference
 	 */
 	public abstract Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s);
 
-	@Override
-	public String getTermObjectDisplayName() {
-		return "Choice";
-	}
-
 }
