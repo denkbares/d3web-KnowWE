@@ -41,8 +41,8 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	private static final String ANNOTATION_SUGGESTED = "show_suggested";
 	private static final String ANNOTATION_ESTABLISHED = "show_established";
 	private static final String ANNOTATION_EXCLUDED = "show_excluded";
-	private static final String ALLOWED_DERIVATIONS = "only_derivations";
-	private static final String ALLOWED_SOLUTIONS = "only_solutions";
+	private static final String ONLY_DERIVATIONS = "only_derivations";
+	private static final String EXCEPT_DERIVATIONS = "except_derivations";
 	private static final String SHOW_DIGITS = "show_digits";
 
 	public enum BoolValue {
@@ -58,13 +58,13 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_SUGGESTED, false, BoolValue.values());
 		MARKUP.addAnnotation(ANNOTATION_EXCLUDED, false, BoolValue.values());
 		MARKUP.addAnnotation(ANNOTATION_ABSTRACTIONS, false, BoolValue.values());
-		MARKUP.addAnnotation(ALLOWED_DERIVATIONS, false);
-		MARKUP.addAnnotation(ALLOWED_SOLUTIONS, false);
+		MARKUP.addAnnotation(ONLY_DERIVATIONS, false);
+		MARKUP.addAnnotation(EXCEPT_DERIVATIONS, false);
 		MARKUP.addAnnotation(SHOW_DIGITS, false);
 
 		QuestionnaireReference qc = new QuestionnaireReference();
 		qc.setSectionFinder(new AllTextFinderTrimmed());
-		MARKUP.addAnnotationContentType(ALLOWED_DERIVATIONS, qc);
+		MARKUP.addAnnotationContentType(ONLY_DERIVATIONS, qc);
 	}
 
 	public ShowSolutionsType() {
@@ -89,14 +89,14 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		return DefaultMarkupType.getAnnotation(section, ANNOTATION_MASTER);
 	}
 
-	public static String[] getShownAbstraction(Section<ShowSolutionsType> section) {
+	public static String[] getAllowedParents(Section<ShowSolutionsType> section) {
 		assert section.get() instanceof ShowSolutionsType;
-		return DefaultMarkupType.getAnnotations(section, ALLOWED_DERIVATIONS);
+		return DefaultMarkupType.getAnnotations(section, ONLY_DERIVATIONS);
 	}
 
-	public static String[] getShownSolutions(Section<ShowSolutionsType> section) {
+	public static String[] getExcludedParents(Section<ShowSolutionsType> section) {
 		assert section.get() instanceof ShowSolutionsType;
-		return DefaultMarkupType.getAnnotations(section, ALLOWED_SOLUTIONS);
+		return DefaultMarkupType.getAnnotations(section, EXCEPT_DERIVATIONS);
 	}
 
 	public static boolean shouldShowEstablished(Section<ShowSolutionsType> section) {

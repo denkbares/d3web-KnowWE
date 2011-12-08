@@ -99,7 +99,8 @@ public class ShowSolutionsContentRenderer extends KnowWEDomRenderer<ContentType>
 		// Check, if the shown abstractions are limited to a number of
 		// questionnaires
 		Section<ShowSolutionsType> parentSection = getShowSolutionsSection(section);
-		String[] allowedQuestionnaires = ShowSolutionsType.getShownAbstraction(parentSection);
+		String[] allowedParents = ShowSolutionsType.getAllowedParents(parentSection);
+		String[] excludedParents = ShowSolutionsType.getExcludedParents(parentSection);
 
 		StringBuffer buffer = new StringBuffer();
 		if (ShowSolutionsType.shouldShowAbstractions(parentSection)) {
@@ -108,9 +109,7 @@ public class ShowSolutionsContentRenderer extends KnowWEDomRenderer<ContentType>
 				Boolean isAbstract = question.getInfoStore().getValue(
 						BasicProperties.ABSTRACTION_QUESTION);
 				if (isAbstract != null && isAbstract) {
-					if (allowedQuestionnaires.length == 0 ||
-							// no restriction, so always insert
-							contains(allowedQuestionnaires, question)) {
+					if (isShownObject(allowedParents, excludedParents, question)) {
 						abstractions.add(question);
 					}
 				}
@@ -129,19 +128,19 @@ public class ShowSolutionsContentRenderer extends KnowWEDomRenderer<ContentType>
 		return buffer;
 	}
 
+	private boolean isShownObject(String[] allowedParents, String[] excludedParents, TerminologyObject to) {
+		return (allowedParents.length == 0 || contains(allowedParents, to))
+				&& (excludedParents.length == 0 || !contains(excludedParents, to));
+	}
+
 	private boolean contains(String[] allowedParents, TerminologyObject object) {
-		if (object.getParents() == null) {
-			return false;
-		}
-		else {
-			for (TerminologyObject parent : object.getParents()) {
-				if (arrayIgnoreCaseContains(allowedParents, parent.getName())) {
-					return true;
-				}
-				else {
-					if (contains(allowedParents, parent)) return true;
-				}
-			}
+
+		if (object.getParents() == null) return false;
+		if (arrayIgnoreCaseContains(allowedParents, object.getName())) return true;
+
+		for (TerminologyObject parent : object.getParents()) {
+			if (arrayIgnoreCaseContains(allowedParents, parent.getName())) return true;
+			if (contains(allowedParents, parent)) return true;
 		}
 		return false;
 	}
@@ -187,10 +186,11 @@ public class ShowSolutionsContentRenderer extends KnowWEDomRenderer<ContentType>
 		}
 
 		// filter unwanted solutions
-		String[] shownSolutions = ShowSolutionsType.getShownSolutions(parentSection);
-		if (shownSolutions.length > 0) {
-			for (Solution solution : new ArrayList<Solution>(allSolutions)) {
-				if (!contains(shownSolutions, solution)) allSolutions.remove(solution);
+		String[] allowedParents = ShowSolutionsType.getAllowedParents(parentSection);
+		String[] excludedParents = ShowSolutionsType.getExcludedParents(parentSection);
+		for (Solution solution : new ArrayList<Solution>(allSolutions)) {
+			if (!isShownObject(allowedParents, excludedParents, solution)) {
+				allSolutions.remove(solution);
 			}
 		}
 

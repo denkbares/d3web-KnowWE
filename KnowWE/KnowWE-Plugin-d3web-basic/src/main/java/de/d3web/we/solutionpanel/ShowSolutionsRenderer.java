@@ -34,8 +34,8 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * <li>@show_suggested: true/false
  * <li>@show_excluded: true/false
  * <li>@show_abstractions: true/false
- * <li>@only_derivations: questionnaire name
- * <li>@only_solutions: solution parent name
+ * <li>@only_derivations: parent name
+ * <li>@except_derivations: parent name
  * <li>@show_digits: 0..NUMBER of fractional digits to be shown
  * <li>@master: Name of the article with the knowledge base
  * </ul>
