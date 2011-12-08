@@ -630,8 +630,7 @@ public class TerminologyHandler implements EventListener {
 		return getAllTerms(title, Scope.LOCAL, null);
 	}
 
-	@SuppressWarnings({
-			"unchecked", "rawtypes" })
+	@SuppressWarnings("rawtypes")
 	public Collection<String> getAllTerms(String title, Scope scope, Class<?> termClass) {
 		Collection<Section<? extends TermDefinition>> allTermDefs = getAllTermDefs(title,
 				scope, termClass);
@@ -648,8 +647,7 @@ public class TerminologyHandler implements EventListener {
 	 * 
 	 * @created 03.11.2010
 	 */
-	@SuppressWarnings({
-			"unchecked", "rawtypes" })
+	@SuppressWarnings("rawtypes")
 	public Collection<Section<? extends TermDefinition>> getAllGlobalTermDefsOfType(Class<?> termClass) {
 		return getAllTermDefs(null, Scope.GLOBAL, termClass);
 	}
@@ -659,8 +657,7 @@ public class TerminologyHandler implements EventListener {
 	 * 
 	 * @created 03.11.2010
 	 */
-	@SuppressWarnings({
-			"unchecked", "rawtypes" })
+	@SuppressWarnings("rawtypes")
 	public Collection<Section<? extends TermDefinition>> getAllGlobalTermDefs() {
 		return getAllTermDefs(null, Scope.GLOBAL, null);
 	}
@@ -671,8 +668,7 @@ public class TerminologyHandler implements EventListener {
 	 * 
 	 * @created 03.11.2010
 	 */
-	@SuppressWarnings({
-			"unchecked", "rawtypes" })
+	@SuppressWarnings("rawtypes")
 	public Collection<Section<? extends TermDefinition>> getAllLocalTermsDefsOfType(String title, Class<?> termClass) {
 		return getAllTermDefs(title, Scope.LOCAL, termClass);
 	}
@@ -683,14 +679,13 @@ public class TerminologyHandler implements EventListener {
 	 * 
 	 * @created 03.11.2010
 	 */
-	@SuppressWarnings({
-			"unchecked", "rawtypes" })
+	@SuppressWarnings("rawtypes")
 	public Collection<Section<? extends TermDefinition>> getAllLocalTermDefs(String title) {
 		return getAllTermDefs(title, Scope.LOCAL, null);
 	}
 
 	@SuppressWarnings({
-			"unchecked", "rawtypes" })
+			"rawtypes", "unchecked" })
 	public Collection<Section<? extends TermDefinition>> getAllTermDefs(String title, Scope scope, Class<?> termClass) {
 		Collection<TermReferenceLog> logs = getTermReferenceLogsMap(title, scope).values();
 		Collection<Section<? extends TermDefinition>> terms = new HashSet<Section<? extends TermDefinition>>();

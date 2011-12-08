@@ -23,8 +23,6 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -32,13 +30,11 @@ import java.util.Set;
 import de.knowwe.core.KnowWEArticleManager;
 import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.action.AbstractAction;
-import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.TerminologyHandler;
 import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.objects.KnowWETerm.Scope;
 import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.objects.TermReference;
-import de.knowwe.core.kdom.objects.KnowWETerm.Scope;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -67,10 +63,8 @@ public class TermRenamingAction extends AbstractAction {
 		String replacement = context.getParameter(REPLACEMENT);
 
 		TerminologyHandler th = KnowWEUtils.getTerminologyHandler(web);
-		Section<? extends TermDefinition<?>> definition;
-		Set<Section<? extends TermDefinition<?>>> definitions = new HashSet<Section<? extends TermDefinition<?>>>();
-		Set<Section<? extends TermReference<?>>> references = new HashSet<Section<? extends TermReference<?>>>();
-		Set<Section<? extends TermReference<?>>> temp = new HashSet<Section<? extends TermReference<?>>>();
+		HashMap<String, Set<Section<?>>> allTerms =
+				new HashMap<String, Set<Section<?>>>();
 
 		Iterator<KnowWEArticle> iter = KnowWEEnvironment.getInstance().getArticleManager(web).getArticleIterator();
 		KnowWEArticle currentArticle;
@@ -79,27 +73,39 @@ public class TermRenamingAction extends AbstractAction {
 			currentArticle = iter.next();
 
 			// Check if there is a TermDefinition
-			definition = th.getTermDefiningSection(currentArticle, term, Scope.LOCAL);
+			Section<? extends TermDefinition<?>> definition = th.getTermDefiningSection(
+					currentArticle, term, Scope.LOCAL);
 			if (definition != null) {
-				definitions.add(definition);
+				getTermSet(definition.getTitle(), allTerms).add(definition);
 			}
 
 			// Check if there are References
-			temp = th.getTermReferenceSections(currentArticle, term, Scope.LOCAL);
-			if (temp != null && temp.size() > 0) {
-				references.addAll(temp);
+			Set<Section<? extends TermReference<?>>> references = th.getTermReferenceSections(
+					currentArticle, term, Scope.LOCAL);
+			if (references != null && references.size() > 0) {
+				for (Section<?> reference : references) {
+					getTermSet(reference.getTitle(), allTerms).add(reference);
+				}
 			}
 		}
 
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
-		Set<KnowWEArticle> failures = new HashSet<KnowWEArticle>();
-		Set<KnowWEArticle> success = new HashSet<KnowWEArticle>();
-		renameTermDefinitions(definitions, replacement, mgr, context, failures, success);
-		renameTermReferences(references, replacement, mgr, context, failures, success);
+		Set<String> failures = new HashSet<String>();
+		Set<String> success = new HashSet<String>();
+		renameTerms(allTerms, replacement, mgr, context, failures, success);
 		generateMessage(failures, success, context);
 	}
 
-	private void generateMessage(Set<KnowWEArticle> failures, Set<KnowWEArticle> success, UserActionContext context) throws IOException {
+	private Set<Section<?>> getTermSet(String title, Map<String, Set<Section<?>>> allTerms) {
+		Set<Section<?>> terms = allTerms.get(title);
+		if (terms == null) {
+			terms = new HashSet<Section<?>>();
+			allTerms.put(title, terms);
+		}
+		return terms;
+	}
+
+	private void generateMessage(Set<String> failures, Set<String> success, UserActionContext context) throws IOException {
 		ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle();
 		Writer w = context.getWriter();
 		if (failures.size() == 0) {
@@ -107,9 +113,9 @@ public class TermRenamingAction extends AbstractAction {
 			w.write(rb.getString("KnowWE.ObjectInfoTagHandler.renamingSuccessful"));
 			w.write("</p>");
 			w.write("<ul>");
-			for (KnowWEArticle article : success) {
+			for (String article : success) {
 				w.write("<li>");
-				w.write(article.getTitle());
+				w.write(article);
 				w.write("</li>");
 			}
 			w.write("</ul>");
@@ -119,77 +125,37 @@ public class TermRenamingAction extends AbstractAction {
 			w.write(rb.getString("KnowWE.ObjectInfoTagHandler.renamingFailed"));
 			w.write("</p>");
 			w.write("<ul>");
-			for (KnowWEArticle article : failures) {
+			for (String article : failures) {
 				w.write("<li>");
-				w.write(article.getTitle());
+				w.write(article);
 				w.write("</li>");
 			}
 			w.write("</ul>");
 		}
 	}
 
-	private void renameTermDefinitions(Set<Section<? extends TermDefinition<?>>> definitions,
+	private void renameTerms(HashMap<String, Set<Section<?>>> allTerms,
 			String replacement,
 			KnowWEArticleManager mgr,
 			UserActionContext context,
-			Set<KnowWEArticle> failures,
-			Set<KnowWEArticle> success) throws IOException {
+			Set<String> failures,
+			Set<String> success) throws IOException {
 
-		for (Section<? extends TermDefinition<?>> definition : definitions) {
+		for (String title : allTerms.keySet()) {
 			if (KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(
-					definition.getTitle(), context.getRequest())) {
+					title, context.getRequest())) {
 				Map<String, String> nodesMap = new HashMap<String, String>();
-				nodesMap.put(definition.getID(), replacement);
-				mgr.replaceKDOMNodesSaveAndBuild(context,
-						definition.getArticle().getTitle(), nodesMap);
-				success.add(definition.getArticle());
-			}
-			else {
-				failures.add(definition.getArticle());
-			}
-		}
-	}
-
-	private void renameTermReferences(Set<Section<? extends TermReference<?>>> references,
-			String replacement, KnowWEArticleManager mgr,
-			UserActionContext context,
-			Set<KnowWEArticle> failures,
-			Set<KnowWEArticle> success) throws IOException {
-
-		Map<KnowWEArticle, List<Section<? extends TermReference<?>>>> groupedReferences = groupByArticle(references);
-		for (KnowWEArticle article : groupedReferences.keySet()) {
-			if (KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(
-					article.getTitle(), context.getRequest())) {
-				Map<String, String> nodesMap = new HashMap<String, String>();
-				for (Section<? extends TermReference<?>> reference : groupedReferences.get(article)) {
-					nodesMap.put(reference.getID(), replacement);
+				for (Section<?> term : allTerms.get(title)) {
+					nodesMap.put(term.getID(), replacement);
 				}
 				mgr.replaceKDOMNodesSaveAndBuild(context,
-							article.getTitle(), nodesMap);
-				success.add(article);
+							title, nodesMap);
+				success.add(title);
 			}
 			else {
-				failures.add(article);
+				failures.add(title);
 			}
 		}
-	}
-
-	private Map<KnowWEArticle, List<Section<? extends TermReference<?>>>> groupByArticle(Set<Section<? extends TermReference<?>>> references) {
-
-		Map<KnowWEArticle, List<Section<? extends TermReference<?>>>> result = new HashMap<KnowWEArticle, List<Section<? extends TermReference<?>>>>();
-		KnowWEArticle article;
-
-		for (Section<? extends TermReference<?>> reference : references) {
-			article = reference.getArticle();
-			List<Section<? extends TermReference<?>>> existingReferences = result.get(article);
-			if (existingReferences == null) {
-				existingReferences = new LinkedList<Section<? extends TermReference<?>>>();
-			}
-			existingReferences.add(reference);
-			result.put(article, existingReferences);
-		}
-
-		return result;
 	}
 
 }
