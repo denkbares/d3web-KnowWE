@@ -42,6 +42,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	private static final String ANNOTATION_ESTABLISHED = "show_established";
 	private static final String ANNOTATION_EXCLUDED = "show_excluded";
 	private static final String ALLOWED_DERIVATIONS = "only_derivations";
+	private static final String ALLOWED_SOLUTIONS = "only_solutions";
 	private static final String SHOW_DIGITS = "show_digits";
 
 	public enum BoolValue {
@@ -58,6 +59,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_EXCLUDED, false, BoolValue.values());
 		MARKUP.addAnnotation(ANNOTATION_ABSTRACTIONS, false, BoolValue.values());
 		MARKUP.addAnnotation(ALLOWED_DERIVATIONS, false);
+		MARKUP.addAnnotation(ALLOWED_SOLUTIONS, false);
 		MARKUP.addAnnotation(SHOW_DIGITS, false);
 
 		QuestionnaireReference qc = new QuestionnaireReference();
@@ -90,6 +92,11 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	public static String[] getShownAbstraction(Section<ShowSolutionsType> section) {
 		assert section.get() instanceof ShowSolutionsType;
 		return DefaultMarkupType.getAnnotations(section, ALLOWED_DERIVATIONS);
+	}
+
+	public static String[] getShownSolutions(Section<ShowSolutionsType> section) {
+		assert section.get() instanceof ShowSolutionsType;
+		return DefaultMarkupType.getAnnotations(section, ALLOWED_SOLUTIONS);
 	}
 
 	public static boolean shouldShowEstablished(Section<ShowSolutionsType> section) {

@@ -34,6 +34,7 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
+@SuppressWarnings("rawtypes")
 public class DelegateRenderer extends KnowWEDomRenderer {
 
 	private static DelegateRenderer instance;
@@ -62,6 +63,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		if (renderTypes) renderType(section, true, builder);
 
 		try {
+			@SuppressWarnings("unchecked")
 			List<Section<?>> subSections = section.getChildren();
 			if (subSections.size() == 0) {
 				// KnowWEDomRenderer renderer = getRenderer(section, user);
@@ -98,6 +100,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		if (renderTypes) renderType(section, false, builder);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void renderSubSection(KnowWEArticle article, Section<?> subSection, UserContext user, StringBuilder builder) {
 		renderAnchor(subSection, builder);
 

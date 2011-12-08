@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Question;
@@ -106,9 +108,8 @@ public class ShowSolutionsContentRenderer extends KnowWEDomRenderer<ContentType>
 				Boolean isAbstract = question.getInfoStore().getValue(
 						BasicProperties.ABSTRACTION_QUESTION);
 				if (isAbstract != null && isAbstract) {
-					if (allowedQuestionnaires.length == 0 || // no restriction,
-																// so
-																// always insert
+					if (allowedQuestionnaires.length == 0 ||
+							// no restriction, so always insert
 							contains(allowedQuestionnaires, question)) {
 						abstractions.add(question);
 					}
@@ -138,8 +139,7 @@ public class ShowSolutionsContentRenderer extends KnowWEDomRenderer<ContentType>
 					return true;
 				}
 				else {
-					boolean tester = contains(allowedParents, parent);
-					if (tester == true) return true;
+					if (contains(allowedParents, parent)) return true;
 				}
 			}
 		}
@@ -160,7 +160,17 @@ public class ShowSolutionsContentRenderer extends KnowWEDomRenderer<ContentType>
 	 */
 	private StringBuffer renderSolutions(Section<ContentType> section, final Session session) {
 		StringBuffer content = new StringBuffer();
-		List<Solution> allSolutions = new ArrayList<Solution>();
+		Set<Solution> allSolutions = new TreeSet<Solution>(new Comparator<Solution>() {
+
+			@Override
+			public int compare(Solution o1, Solution o2) {
+				Rating rating1 = session.getBlackboard().getRating(o1);
+				Rating rating2 = session.getBlackboard().getRating(o2);
+				int comparison = rating2.compareTo(rating1);
+				if (comparison == 0) return o1.getName().compareTo(o2.getName());
+				return comparison;
+			}
+		});
 		Section<ShowSolutionsType> parentSection = getShowSolutionsSection(section);
 
 		// collect the solutions to be presented
@@ -176,18 +186,13 @@ public class ShowSolutionsContentRenderer extends KnowWEDomRenderer<ContentType>
 			allSolutions.addAll(session.getBlackboard().getSolutions(State.EXCLUDED));
 		}
 
-		// sort the solutions to be presented
-		Collections.sort(allSolutions, new Comparator<Solution>() {
-
-			@Override
-			public int compare(Solution o1, Solution o2) {
-				Rating rating1 = session.getBlackboard().getRating(o1);
-				Rating rating2 = session.getBlackboard().getRating(o2);
-				int comparison = rating2.compareTo(rating1);
-				if (comparison == 0) return o1.getName().compareTo(o2.getName());
-				return comparison;
+		// filter unwanted solutions
+		String[] shownSolutions = ShowSolutionsType.getShownSolutions(parentSection);
+		if (shownSolutions.length > 0) {
+			for (Solution solution : new ArrayList<Solution>(allSolutions)) {
+				if (!contains(shownSolutions, solution)) allSolutions.remove(solution);
 			}
-		});
+		}
 
 		// format the solutions
 		for (Solution solution : allSolutions) {
