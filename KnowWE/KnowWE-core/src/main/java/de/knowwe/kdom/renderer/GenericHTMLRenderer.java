@@ -19,7 +19,8 @@
  */
 package de.knowwe.kdom.renderer;
 
-import de.knowwe.core.KnowWEEnvironment;
+import java.util.Arrays;
+
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -29,63 +30,64 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
- * A renderer that encapsulates the content in arbitrary HTML content.
- * Useful for testing.
+ * A renderer that encapsulates the content in arbitrary HTML content. Useful
+ * for testing.
  * 
  * @author Alex Legler
  */
 public class GenericHTMLRenderer<T extends Type> extends KnowWEDomRenderer<T> {
+
 	/**
 	 * The HTML tag to wrap the content in
 	 */
 	protected String tagName;
-	
+
 	/**
 	 * The Attributes to set
 	 */
 	protected String[] attributes;
-	
+
 	/**
 	 * Creates a new GenericHTMLRenderer Object
 	 * 
-	 * The attributes are expected in an array with key-value pairs
-	 * Example: {"title", "The Title tag", "href", "http://the.link.com/"}
+	 * The attributes are expected in an array with key-value pairs Example:
+	 * {"title", "The Title tag", "href", "http://the.link.com/"}
 	 * 
 	 * @param tagName The HTML tag name
 	 * @param attributes The Attributes, as described above
 	 */
 	public GenericHTMLRenderer(String tagName, String[] attributes) {
 		this.tagName = tagName;
-		this.attributes = attributes;
+		this.attributes = Arrays.copyOf(attributes, attributes.length);
 	}
 
 	@Override
 	public void render(KnowWEArticle article, Section<T> sec, UserContext user,
 			StringBuilder string) {
 		string.append(KnowWEUtils.maskHTML("<")).append(tagName);
-		
+
 		if (attributes != null && attributes.length > 0) {
 			string.append(" ");
 			for (int i = 0; i < attributes.length; i += 2) {
 				string.append(attributes[i]).append(KnowWEUtils.maskHTML("=\""));
-				
-				if (i < attributes.length && attributes[i+1] != null) {
-					string.append(attributes[i+1].replace("\"", "&quot;"));
+
+				if (i < attributes.length && attributes[i + 1] != null) {
+					string.append(attributes[i + 1].replace("\"", "&quot;"));
 				}
-				
+
 				string.append(KnowWEUtils.maskHTML("\""));
-				
+
 				if ((i + 2) < attributes.length) {
 					string.append(" ");
 				}
 			}
 		}
-		
+
 		string.append(KnowWEUtils.maskHTML(">"));
 		renderContent(article, sec, user, string);
 		string.append(KnowWEUtils.maskHTML("</span>"));
 	}
-	
+
 	protected void renderContent(KnowWEArticle article, Section<T> section, UserContext user, StringBuilder string) {
 		StringBuilder builder = new StringBuilder();
 		DelegateRenderer.getInstance().render(article, section, user, builder);

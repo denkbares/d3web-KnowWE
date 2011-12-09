@@ -126,29 +126,27 @@ public class SaveFlowchartAction extends AbstractAction {
 
 			save(context, topic, nodeID, builder.toString());
 		}
-		
-		
+
 		// if new sectionID was found, transfer it to the editor
 		if (id != null) {
 			context.getWriter().write(id);
 		}
-		else {
-			// TODO
-			// This happens, if now flowchart section was found, i.e. if it was
-			// created with this saving OR if it is not compiled in any article.
-			// Then, the editor can not be reused and must be closed and opened
-			// again.
-			// ATM, the workaround was, to remove the "save-only" button in the
-			// editor
-			// it can be activated again, if the new section id can be found in
-			// any case.
-		}
+		// else {
+		// TODO
+		// This happens, if now flowchart section was found, i.e. if it was
+		// created with this saving OR if it is not compiled in any article.
+		// Then, the editor can not be reused and must be closed and opened
+		// again.
+		// ATM, the workaround was, to remove the "save-only" button in the
+		// editor
+		// it can be activated again, if the new section id can be found in
+		// any case.
+		// }
 	}
 
 	/*
 	 * TODO returns the new ID of the section to deliver it to the editor. There
 	 * should be a cleaner way.
-	 * 
 	 */
 	private String getSectionID(String web, String newText, Set<String> articles) {
 		if (articles.isEmpty()) {
@@ -159,19 +157,19 @@ public class SaveFlowchartAction extends AbstractAction {
 		Matcher matcher = Pattern.compile("name=\"([^\"]*)\"", Pattern.CASE_INSENSITIVE).matcher(
 				newText);
 		if (!matcher.find()) {
-			//TODO what now??
+			// TODO what now??
 			return null;
 		}
-		
+
 		String flowname = matcher.group(1);
 
 		String title = articles.iterator().next();
 		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(web, title);
-		
+
 		TerminologyHandler handler = KnowWEUtils.getTerminologyHandler(web);
 		Section<? extends TermDefinition<?>> section = handler.getTermDefiningSection(article,
 				flowname, Scope.LOCAL);
-		
+
 		Section<DiaFluxType> diafluxSec = Sections.findAncestorOfExactType(section,
 				DiaFluxType.class);
 
@@ -202,7 +200,7 @@ public class SaveFlowchartAction extends AbstractAction {
 		String nodeID = rootSection.getID();
 
 		save(context, topic, nodeID, newArticle);
-		
+
 	}
 
 	private void save(UserActionContext context, String topic, String nodeID, String newText) throws IOException {

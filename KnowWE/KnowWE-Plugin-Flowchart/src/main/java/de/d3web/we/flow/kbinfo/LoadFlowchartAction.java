@@ -42,11 +42,9 @@ public class LoadFlowchartAction extends AbstractAction {
 
 		String nodeID = context.getParameter(KnowWEAttributes.TARGET);
 
+		@SuppressWarnings("unchecked")
 		Section<FlowchartType> section = (Section<FlowchartType>) Sections.getSection(nodeID);
-		if (section == null) {
-			// TODO error handling
-		}
-		else {
+		if (section != null) {
 
 			String source = FlowchartUtils.getFlowSourceWithoutPreview(section);
 
@@ -56,6 +54,10 @@ public class LoadFlowchartAction extends AbstractAction {
 			context.getWriter().write(escapeXml);
 
 		}
+		// else {
+		// TODO error handling
+		// return;
+		// }
 
 	}
 
