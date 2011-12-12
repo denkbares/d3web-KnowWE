@@ -523,9 +523,11 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	public int getOffSetFromFatherText() {
 		if (offSetFromFatherText == -1) {
 			int temp = 0;
-			for (Section<?> child : father.getChildren()) {
-				if (child == this) break;
-				temp += child.getText().length();
+			if (father != null) {
+				for (Section<?> child : father.getChildren()) {
+					if (child == this) break;
+					temp += child.getText().length();
+				}
 			}
 			offSetFromFatherText = temp;
 		}

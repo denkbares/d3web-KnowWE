@@ -679,8 +679,11 @@ public class Sections {
 		int diff = 0;
 		for (SectionInfo sectionInfo : sectionInfos) {
 			if (sectionInfo.sectionExists) {
+
 				Section<?> section = getSection(sectionInfo.web, sectionInfo.title,
 						sectionInfo.positionInKDOM);
+				if (section == null) continue;
+
 				boolean sameText = section.getText().equals(sectionInfo.newText);
 				boolean sameOffset = section.getOffSetFromFatherText() + diff == sectionInfo.offSet;
 

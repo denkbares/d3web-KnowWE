@@ -345,8 +345,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 		text += "%%tags\n" + output.trim() + "\n%";
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(asection.getID(), text);
-		Sections.replaceSections(
-				context, nodesMap);
+		Sections.replaceSections(context, nodesMap);
 	}
 
 	public List<GenericSearchResult> searchPages(String querytags) {
