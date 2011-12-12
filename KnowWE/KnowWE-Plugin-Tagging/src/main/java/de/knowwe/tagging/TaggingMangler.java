@@ -113,8 +113,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 			}
 			Map<String, String> nodesMap = new HashMap<String, String>();
 			nodesMap.put(keep.getID(), output);
-			ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB)
-					.replaceKDOMNodesSaveAndBuild(context, pagename, nodesMap);
+			Sections.replaceSections(context, nodesMap);
 		}
 		else {
 			addNewTagSection(pagename, tag, context);
@@ -155,8 +154,8 @@ public class TaggingMangler implements KnowWESearchProvider {
 		}
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(keep.getID(), output);
-		ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB).replaceKDOMNodesSaveAndBuild(
-				context, pagename, nodesMap);
+		Sections.replaceSections(
+				context, nodesMap);
 	}
 
 	/**
@@ -316,8 +315,8 @@ public class TaggingMangler implements KnowWESearchProvider {
 			}
 			Map<String, String> nodesMap = new HashMap<String, String>();
 			nodesMap.put(keep.getID(), output);
-			ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB)
-					.replaceKDOMNodesSaveAndBuild(context, topic, nodesMap);
+			Sections
+					.replaceSections(context, nodesMap);
 		}
 		else {
 			addNewTagSection(topic, output, context);
@@ -346,8 +345,8 @@ public class TaggingMangler implements KnowWESearchProvider {
 		text += "%%tags\n" + output.trim() + "\n%";
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(asection.getID(), text);
-		ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB).replaceKDOMNodesSaveAndBuild(
-				context, topic, nodesMap);
+		Sections.replaceSections(
+				context, nodesMap);
 	}
 
 	public List<GenericSearchResult> searchPages(String querytags) {

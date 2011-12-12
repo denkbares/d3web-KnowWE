@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -524,7 +525,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 			int temp = 0;
 			for (Section<?> child : father.getChildren()) {
 				if (child == this) break;
-				temp += child.getOriginalText().length();
+				temp += child.getText().length();
 			}
 			offSetFromFatherText = temp;
 		}
@@ -809,7 +810,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 				}
 			}
 		}
-		if (!isReusedBy(title) || (type.isOrderSensitive() && isPositionChangedFor(title))) {
+		if (!isReusedBy(title) || (type.isOrderSensitive() && hasPositionChanged())) {
 			return true;
 		}
 		return false;
@@ -959,7 +960,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 		}
 	}
 
-	public boolean isPositionChangedFor(String title) {
+	public boolean hasPositionChanged() {
 		if (lastPositions == null) return false;
 		return !lastPositions.equals(getPositionInKDOM());
 	}
@@ -983,20 +984,20 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 		return lastPositions == null ? null : Collections.unmodifiableList(lastPositions);
 	}
 
+	public List<Integer> calcPositionInKDOM() {
+		return calcPositionTil(getArticle().getSection());
+	}
+
 	public List<Integer> calcPositionTil(Section<?> end) {
-		List<Integer> positions = new ArrayList<Integer>();
+		LinkedList<Integer> positions = new LinkedList<Integer>();
 		Section<?> temp = this;
 		Section<?> tempFather = temp.getFather();
 		while (temp != end && tempFather != null) {
-			positions.add(tempFather.getChildren().indexOf(temp));
+			positions.addFirst(tempFather.getChildren().indexOf(temp));
 			temp = tempFather;
 			tempFather = temp.getFather();
 		}
 		return positions;
-	}
-
-	public List<Integer> calcPositionInKDOM() {
-		return calcPositionTil(getArticle().getSection());
 	}
 
 	private boolean isMatchingPackageName(KnowWEArticle article, SubtreeHandler<?> h) {

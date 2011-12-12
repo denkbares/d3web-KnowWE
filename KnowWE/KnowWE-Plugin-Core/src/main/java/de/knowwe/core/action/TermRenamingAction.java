@@ -36,6 +36,7 @@ import de.knowwe.core.kdom.objects.KnowWETerm.Scope;
 import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -148,8 +149,8 @@ public class TermRenamingAction extends AbstractAction {
 				for (Section<?> term : allTerms.get(title)) {
 					nodesMap.put(term.getID(), replacement);
 				}
-				mgr.replaceKDOMNodesSaveAndBuild(context,
-							title, nodesMap);
+				Sections.replaceSections(context,
+							nodesMap);
 				success.add(title);
 			}
 			else {

@@ -36,39 +36,20 @@ public class InstantEditDisableAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String result = handle(context);
-		if (result != null && context.getWriter() != null) {
-			context.setContentType("text/html; charset=UTF-8");
-			context.getWriter().write(result);
-		}
-	}
-
-	/**
-	 * Disables the InstantEdit mode for the given section. Returns the success
-	 * as JSON string for further processing on the client-side within the
-	 * JavaScript.
-	 * 
-	 * @created 15.06.2011
-	 * @param context
-	 * @return success JSON string
-	 * @throws IOException
-	 */
-	private String handle(UserActionContext context) throws IOException {
-
 		String topic = context.getTitle();
 
 		if (KnowWEEnvironment.getInstance().getArticle(context.getWeb(), topic) == null) {
 			context.sendError(404, "Page '" + topic + "' could not be found.");
-			return "{\"success\":false}";
+			return;
 		}
 
 		if (!KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(topic,
 				context.getRequest())) {
 			context.sendError(403, "You do not have the permission to edit this page.");
-			return "{\"success\":false, \"locked\":false}";
+			return;
 		}
 
 		KnowWEEnvironment.getInstance().getWikiConnector().undoPageLocked(topic);
-		return "{\"success\":true}";
 	}
+
 }

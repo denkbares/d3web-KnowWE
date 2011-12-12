@@ -8,9 +8,9 @@ KNOWWE.plugin.defaultEditTool = function() {
     	
 	    generateHTML : function(id) {
 	    	return "<textarea id = " + createTextAreaID(id) + " class='defaultEditTool' style='height: " + $(id).clientHeight + "px;'>"
-		    	+ KNOWWE.plugin.instantEdit.getWikiText(id)
+		    	+ _IE.getWikiText(id)
 		    	+ "</textarea>"
-		    	+ KNOWWE.plugin.instantEdit.getSaveCancelDeleteButtons(id);
+		    	+ _IE.getSaveCancelDeleteButtons(id);iu
 	    },
 	    
 	    postProcessHTML : function(id) {

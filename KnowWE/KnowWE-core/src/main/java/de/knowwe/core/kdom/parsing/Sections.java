@@ -1,8 +1,10 @@
 package de.knowwe.core.kdom.parsing;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -10,10 +12,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.EmbracedType;
 import de.knowwe.core.kdom.basicType.PlainText;
+import de.knowwe.core.wikiConnector.KnowWEWikiConnector;
+import dummies.KnowWETestWikiConnector;
 
 public class Sections {
 
@@ -426,9 +432,9 @@ public class Sections {
 	/**
 	 * Generates an ID for the given Section and also registers the Section in a
 	 * HashMap to allow searches for this Section later. The ID is the hash code
-	 * of the following String: Title of the Article containing the Section,
-	 * type path from the Section to the root and the content of the Section.
-	 * Hash collisions are resolved.
+	 * of the following String: Title of the Article containing the Section, the
+	 * position in the KDOM and the content of the Section. Hash collisions are
+	 * resolved.
 	 * 
 	 * @created 05.09.2011
 	 * @param section is the Section for which the ID is generated and which is
@@ -438,9 +444,9 @@ public class Sections {
 	public static String generateAndRegisterSectionID(Section<?> section) {
 		String title = section.getTitle();
 		if (title == null) title = "";
-		List<Class<? extends Type>> typePath = getTypePathFromRootToSection(section);
-		String typePathString = typePath == null ? "" : typePath.toString();
-		String hashString = title + typePathString + section.getText();
+		List<Integer> positionInKDOM = section.getPositionInKDOM();
+		String positionInKDOMString = positionInKDOM == null ? "" : positionInKDOM.toString();
+		String hashString = title + positionInKDOMString + section.getText();
 
 		int hashCode = hashString.hashCode();
 		String id = Integer.toHexString(hashCode);
@@ -469,6 +475,225 @@ public class Sections {
 		synchronized (sectionMap) {
 			return sectionMap.get(id);
 		}
+	}
+
+	/**
+	 * @created 11.12.2011
+	 * @param web is the web in which the Section should be searched
+	 * @param title is the title of the article in which the Section should be
+	 *        searched
+	 * @param positionInKDOM is the position of the Section in the Lists of
+	 *        children in the ancestors of the given wanted Section
+	 * @return the Section on the given position in the KDOM, if it exists
+	 */
+	public static Section<?> getSection(String web, String title, List<Integer> positionInKDOM) {
+		return getSection(KnowWEEnvironment.getInstance().getArticle(web, title), positionInKDOM);
+	}
+
+	/**
+	 * @created 11.12.2011
+	 * @param article is the article in which the Section should be searched
+	 * @param positionInKDOM is the position of the Section in the Lists of
+	 *        children in the ancestors of the given wanted Section
+	 * @return the Section on the given position in the KDOM, if it exists
+	 */
+	public static Section<?> getSection(KnowWEArticle article, List<Integer> positionInKDOM) {
+		Section<?> temp = article.getSection();
+		for (Integer pos : positionInKDOM) {
+			if (temp.getChildren().size() <= pos) return null;
+			temp = temp.getChildren().get(pos);
+		}
+		return temp;
+	}
+
+	/**
+	 * Replaces Sections with the given texts, but not in the KDOMs themselves.
+	 * It collects the texts deep through the KDOM and appends the new text
+	 * (instead of the original text) for the Sections with an ID in the
+	 * sectionsMap. Finally the article is saved with this new content.
+	 * 
+	 * @param context is the standard user context
+	 * @param sectionsMap containing pairs of the nodeID and the new text for
+	 *        this node
+	 * @returns a Map that provides for each changed Section a mapping from the
+	 *          old to the new id.
+	 * @throws IOException
+	 */
+	public static Map<String, String> replaceSections(UserActionContext context, Map<String, String> sectionsMap) throws IOException {
+
+		List<SectionInfo> sectionInfos = getSectionInfos(sectionsMap);
+		Map<String, Collection<String>> idsByTitle = getIdsByTitle(sectionsMap.keySet());
+
+		Collection<String> missingIDs = new LinkedList<String>();
+		Collection<String> forbiddenArticles = new LinkedList<String>();
+
+		for (String title : idsByTitle.keySet()) {
+			Collection<String> ids = idsByTitle.get(title);
+			handleErrors(title, ids, context, missingIDs, forbiddenArticles);
+			replaceSectionsForTitle(title, getSectionsMapForCurrentTitle(ids,
+					sectionsMap), context);
+		}
+
+		sendErrorMessages(context, missingIDs, forbiddenArticles);
+
+		return getOldToNewIdsMap(sectionInfos);
+	}
+
+	private static List<SectionInfo> getSectionInfos(Map<String, String> sectionsMap) {
+		List<SectionInfo> sectionInfos = new ArrayList<SectionInfo>(sectionsMap.size());
+		for (String id : sectionsMap.keySet()) {
+			Section<?> section = Sections.getSection(id);
+			SectionInfo sectionInfo = new SectionInfo();
+			sectionInfos.add(sectionInfo);
+			if (section != null) {
+				sectionInfo.oldText = section.getText();
+				sectionInfo.positionInKDOM = section.getPositionInKDOM();
+				sectionInfo.offSet = section.getAbsolutePositionStartInArticle();
+				sectionInfo.sectionExists = true;
+				sectionInfo.title = section.getTitle();
+				sectionInfo.web = section.getWeb();
+				sectionInfo.newText =
+						KnowWEEnvironment.getInstance().getWikiConnector().normalizeStringTo(
+								sectionsMap.get(id));
+			}
+			sectionInfo.oldId = id;
+		}
+		return sectionInfos;
+	}
+
+	private static Map<String, Collection<String>> getIdsByTitle(Collection<String> allIds) {
+		Map<String, Collection<String>> idsByTitle = new HashMap<String, Collection<String>>();
+		for (String id : allIds) {
+			Section<?> section = Sections.getSection(id);
+			String title = section == null ? null : section.getTitle();
+			Collection<String> ids = idsByTitle.get(title);
+			if (ids == null) {
+				ids = new ArrayList<String>();
+				idsByTitle.put(title, ids);
+			}
+			ids.add(id);
+		}
+		return idsByTitle;
+	}
+
+	private static boolean handleErrors(
+			String title,
+			Collection<String> ids,
+			UserActionContext context,
+			Collection<String> missingIDs,
+			Collection<String> forbiddenArticles) {
+
+		if (title == null) {
+			missingIDs.addAll(ids);
+			return false;
+		}
+		if (!KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(title,
+				context.getRequest())) {
+			forbiddenArticles.add(title);
+			return false;
+		}
+		return true;
+	}
+
+	private static Map<String, String> getSectionsMapForCurrentTitle(
+			Collection<String> ids,
+			Map<String, String> sectionsMap) {
+
+		Map<String, String> sectionsMapForCurrentTitle = new HashMap<String, String>();
+		for (String id : ids) {
+			sectionsMapForCurrentTitle.put(id, sectionsMap.get(id));
+		}
+		return sectionsMapForCurrentTitle;
+	}
+
+	private static void replaceSectionsForTitle(String title,
+			Map<String, String> sectionsMapForCurrentTitle,
+			UserActionContext context) {
+
+		KnowWEWikiConnector wikiConnector = KnowWEEnvironment.getInstance().getWikiConnector();
+
+		String newArticleText = getNewArticleText(title, sectionsMapForCurrentTitle, context);
+		wikiConnector.writeArticleToWikiEnginePersistence(title, newArticleText, context);
+
+		if (wikiConnector instanceof KnowWETestWikiConnector) {
+			// This is only needed for the test environment. In the running
+			// wiki, this is automatically called after the change to the
+			// persistence.
+			KnowWEEnvironment.getInstance().buildAndRegisterArticle(newArticleText,
+					title, context.getWeb());
+		}
+	}
+
+	private static String getNewArticleText(
+			String title,
+			Map<String, String> sectionsMapForCurrentTitle,
+			UserActionContext context) {
+
+		StringBuffer newText = new StringBuffer();
+		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(context.getWeb(),
+				title);
+		collectTextAndReplaceNode(article.getSection(), sectionsMapForCurrentTitle, newText);
+		return newText.toString();
+	}
+
+	private static void collectTextAndReplaceNode(Section<?> sec,
+			Map<String, String> nodesMap, StringBuffer newText) {
+
+		String text = nodesMap.get(sec.getID());
+		if (text != null) {
+			newText.append(text);
+			return;
+		}
+
+		List<Section<?>> children = sec.getChildren();
+		if (children == null || children.isEmpty()
+				|| sec.hasSharedChildren()) {
+			newText.append(sec.getOriginalText());
+			return;
+		}
+		for (Section<?> section : children) {
+			collectTextAndReplaceNode(section, nodesMap, newText);
+		}
+	}
+
+	private static void sendErrorMessages(UserActionContext context,
+			Collection<String> missingIDs,
+			Collection<String> forbiddenArticles)
+			throws IOException {
+
+		if (!missingIDs.isEmpty()) {
+			context.sendError(409, "The Sections '" + missingIDs.toString()
+					+ "' could not be found, possibly because somebody else"
+					+ " has edited them.");
+		}
+		if (!forbiddenArticles.isEmpty()) {
+			context.sendError(403,
+					"You do not have the permission to edit the following pages: "
+							+ forbiddenArticles.toString() + ".");
+		}
+	}
+
+	private static Map<String, String> getOldToNewIdsMap(List<SectionInfo> sectionInfos) {
+		Collections.sort(sectionInfos);
+		Map<String, String> oldToNewIdsMap = new HashMap<String, String>();
+		int diff = 0;
+		for (SectionInfo sectionInfo : sectionInfos) {
+			if (sectionInfo.sectionExists) {
+				Section<?> section = getSection(sectionInfo.web, sectionInfo.title,
+						sectionInfo.positionInKDOM);
+				boolean sameText = section.getText().equals(sectionInfo.newText);
+				boolean sameOffset = section.getOffSetFromFatherText() + diff == sectionInfo.offSet;
+
+				if (sameText && sameOffset) {
+					int tempDiff = section.getText().length() - sectionInfo.oldText.length();
+					diff += tempDiff;
+					oldToNewIdsMap.put(sectionInfo.oldId, section.getID());
+					continue;
+				}
+			}
+			oldToNewIdsMap.put(sectionInfo.oldId, null);
+		}
+		return oldToNewIdsMap;
 	}
 
 }

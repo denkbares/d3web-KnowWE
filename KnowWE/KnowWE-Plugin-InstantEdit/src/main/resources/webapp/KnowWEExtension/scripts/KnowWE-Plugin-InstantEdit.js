@@ -16,6 +16,8 @@ if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
     KNOWWE.plugin = {};
 }
 
+
+
 /**
  * Namespace: KNOWWE.core.plugin.instantedit The KNOWWE instant edit namespace.
  */
@@ -23,14 +25,14 @@ KNOWWE.plugin.instantEdit = function() {
     
 	 function bindUnloadFunctions(id) {
         window.onbeforeunload = (function() {
-        	var toolsUnloadCondition = KNOWWE.plugin.instantEdit.toolNameSpace[id].unloadCondition;
+        	var toolsUnloadCondition = _IE.toolNameSpace[id].unloadCondition;
 			if (toolsUnloadCondition != null && !toolsUnloadCondition(id)) {
 				return "edit.areyousure".localize();
 			}
 		}).bind(this);
         
         window.onunload = (function() {
-            KNOWWE.plugin.instantEdit.disable(id, false);
+            _IE.disable(id, false);
 		}).bind(this);
 	}
 
@@ -53,27 +55,37 @@ KNOWWE.plugin.instantEdit = function() {
 	
 	function showAjaxLoader(id) {
 		var ajaxLoaderGif = new Element("img", {
-			'id' : 'loader_' + id,
+			'id' : 'instantedit_loader',
 			'src' : 'KnowWEExtension/images/ajax-100.gif',
 			'class' : 'ajaxloader',
 		});
 		$(id).appendChild(ajaxLoaderGif);
 	}
 	
-	function hideAjaxLoader(id) {
-		var ajaxLoaderGif = $('loader_' + id);
-		ajaxLoaderGif.parentNode.removeChild(ajaxLoaderGif);
+	function hideAjaxLoader() {
+		var ajaxLoaderGif = $('instantedit_loader');
+		if (ajaxLoaderGif) {
+			ajaxLoaderGif.parentNode.removeChild(ajaxLoaderGif);
+		}
 	}
 	
     return {
     	
     	toolNameSpace : new Object(),
     	
+    	enabled : false,
+    	
         enable : function(id, toolNameSpace) {
+        	
+        	if (_IE.enabled) {
+        		alert("You can only edit the page once at a time.")
+        		return;
+        	}
+        	_IE.enabled = true;
         	
         	showAjaxLoader(id);
         	
-        	KNOWWE.plugin.instantEdit.toolNameSpace[id] = toolNameSpace;
+        	_IE.toolNameSpace[id] = toolNameSpace;
         	
             var params = {
                 action : 'InstantEditEnableAction',
@@ -85,26 +97,22 @@ KNOWWE.plugin.instantEdit = function() {
                 response : {
                     action : 'none',
                     fn : function() {
-                    	
-                    	enableResponse = JSON.parse(this.responseText);
-                    	if (enableResponse.success) {
-
-                        	var html = toolNameSpace.generateHTML(id);
-                            html = wrapHTML(id, enableResponse.locked, html);
-                            
-                            KNOWWE.core.util.replace(html);
-                            
-                            toolNameSpace.postProcessHTML(id);
-                            bindUnloadFunctions(id);
-                            hideTools();
-                    	}
+                    	var locked = JSON.parse(this.responseText).locked;
+                    	var html = toolNameSpace.generateHTML(id);
+                        html = wrapHTML(id, locked, html);
+                        
+                        KNOWWE.core.util.replace(html);
+                        
+                        toolNameSpace.postProcessHTML(id);
+                        bindUnloadFunctions(id);
+                        hideTools();
                     },
-                    onError : KNOWWE.plugin.instantEdit.onErrorBehavior,
+                    onError : _IE.onErrorBehavior,
                 }
             };
             new _KA(options).send();
             
-        	hideAjaxLoader(id);
+        	hideAjaxLoader();
         },
         
         
@@ -121,14 +129,11 @@ KNOWWE.plugin.instantEdit = function() {
                 response : {
                     action : 'none',
                     fn : function() {
-                        var enabled = JSON.parse(this.responseText);
-                        enabled = enabled.success;
-                        
-                        if(enabled && reload) {
+                        if(reload) {
                         	window.location.reload();
                         }
                     },
-	                onError : KNOWWE.plugin.instantEdit.onErrorBehavior,
+	                onError : _IE.onErrorBehavior,
                 }
             }
             new _KA(options).send();            
@@ -144,7 +149,7 @@ KNOWWE.plugin.instantEdit = function() {
         	showAjaxLoader(id);
             
         	if (newWikiText == null) {
-        		newWikiText =  KNOWWE.plugin.instantEdit.toolNameSpace[id].generateWikiText(id);        		
+        		newWikiText =  _IE.toolNameSpace[id].generateWikiText(id);        		
         	}
         	
             var params = {
@@ -152,7 +157,7 @@ KNOWWE.plugin.instantEdit = function() {
                 KdomNodeId : id,
             }
 
-            KNOWWE.plugin.instantEdit.sendChanges(id, params, newWikiText); 
+            _IE.sendChanges(id, params, newWikiText); 
         },
         
         /**
@@ -166,10 +171,10 @@ KNOWWE.plugin.instantEdit = function() {
         	showAjaxLoader(id);
             
         	if (newWikiText == null) {
-        		newWikiText =  KNOWWE.plugin.instantEdit.toolNameSpace[id].generateWikiText(id);        		
+        		newWikiText =  _IE.toolNameSpace[id].generateWikiText(id);        		
         	}
         	if (title == null) {        		
-        		var title = KNOWWE.plugin.instantEdit.toolNameSpace[id].getNewArticleTitle(id); 	
+        		var title = _IE.toolNameSpace[id].getNewArticleTitle(id); 	
         	}
         	
             var params = {
@@ -178,7 +183,7 @@ KNOWWE.plugin.instantEdit = function() {
 				KWiki_Topic : title,
             }
             
-            KNOWWE.plugin.instantEdit.sendChanges(id, params, newWikiText);
+            _IE.sendChanges(id, params, newWikiText);
             
         },
         
@@ -190,16 +195,11 @@ KNOWWE.plugin.instantEdit = function() {
                 response : {
                     action : 'none',
                     fn : function() {
-                        var enabled = JSON.parse(this.responseText);
-                        enabled = enabled.success;
-
-                        if( enabled ) {
-                        	window.onbeforeunload = null;
-                            window.onunload = null;
-                            KNOWWE.plugin.instantEdit.disable(id, true);
-                        }
+                    	window.onbeforeunload = null;
+                        window.onunload = null;
+                        _IE.disable(id, true);
                     },
-                    onError : KNOWWE.plugin.instantEdit.onErrorBehavior,
+                    onError : _IE.onErrorBehavior,
                 }
             }
             new _KA(options).send();  
@@ -212,21 +212,21 @@ KNOWWE.plugin.instantEdit = function() {
 		 *            id The id of the DOM element
 		 */        
         cancel : function(id) {
-    		KNOWWE.plugin.instantEdit.disable(id, true);
+    		_IE.disable(id, true);
         },
         
         deleteSection : function(id) {
         	var del = confirm("Do you really want to delete this content?");
         	if (del) {  
-        		KNOWWE.plugin.instantEdit.save(id, "");
+        		_IE.save(id, "");
         	}
         }, 
         
         deleteArticle : function(id) {
         	var del = confirm("Do you really want to delete this content?");
         	if (del) {
-        		var title = KNOWWE.plugin.instantEdit.toolNameSpace[id].getCurrentArticleTitle(id); 	
-        		KNOWWE.plugin.instantEdit.add(id, title, "");
+        		var title = _IE.toolNameSpace[id].getCurrentArticleTitle(id); 	
+        		_IE.add(id, title, "");
         	}
         }, 
         
@@ -234,7 +234,7 @@ KNOWWE.plugin.instantEdit = function() {
     	
         getWikiText : function(id, actionName) {
         	
-        	var tempWikiText = KNOWWE.plugin.instantEdit.wikiText[id];
+        	var tempWikiText = _IE.wikiText[id];
         	
         	if (tempWikiText != null) return tempWikiText;
         	
@@ -251,19 +251,19 @@ KNOWWE.plugin.instantEdit = function() {
                 response : {
                    action : 'none',
                    fn : function() {
-
-                	   KNOWWE.plugin.instantEdit.wikiText[id] = this.responseText;
+                	   _IE.wikiText[id] = this.responseText;
                    },
-                   onError : KNOWWE.plugin.instantEdit.onErrorBehavior,
+                   onError : _IE.onErrorBehavior,
                }
             };
             new _KA(options).send();
             
-            return KNOWWE.plugin.instantEdit.wikiText[id];
+            return _IE.wikiText[id];
         },
         
         // Maybe return given messages instead
         onErrorBehavior : function() {
+        	hideAjaxLoader();
         	if (this.status == null) return;
         	switch (this.status) {
         	  case 0:
@@ -280,42 +280,42 @@ KNOWWE.plugin.instantEdit = function() {
           	    		+ "loaded this page. Please reload the page.");
         	    break;
         	  default:
-        	    alert("Unknown error. Please reload the page.");
+        	    alert("Error " + this.status + ". Please reload the page.");
         	    break;
         	}
         },
         
     	getSaveButton : function(id) {
     		return "<a class=\"action save\" " 
-    			+ "href=\"javascript:KNOWWE.plugin.instantEdit.save('"
+    			+ "href=\"javascript:_IE.save('"
     			+ id
     			+ "')\">Save</a>";
     	},
     	
     	getAddArticleButton : function(id) {
     		return "<a class=\"action add\" " 
-    			+ "href=\"javascript:KNOWWE.plugin.instantEdit.add('"
+    			+ "href=\"javascript:_IE.add('"
     			+ id
     			+ "')\">Save</a>";
     	},
     	
     	getCancelButton : function(id) {
     		return "<a class=\"action cancel\" "
-    			+ "href=\"javascript:KNOWWE.plugin.instantEdit.cancel('"
+    			+ "href=\"javascript:_IE.cancel('"
     			+ id
     			+ "')\">Cancel</a>";
     	},
     	
     	getDeleteSectionButton : function(id) {
     		return "<a class=\"action delete\"" 
-    			+ "href=\"javascript:KNOWWE.plugin.instantEdit.deleteSection('"
+    			+ "href=\"javascript:_IE.deleteSection('"
     			+ id
     			+ "')\">Delete</a>";
     	},
     	
     	getDeleteArticleButton : function(id) {
     		return "<a class=\"action delete\"" 
-    			+ "href=\"javascript:KNOWWE.plugin.instantEdit.deleteArticle('"
+    			+ "href=\"javascript:_IE.deleteArticle('"
     			+ id
     			+ "')\">Delete</a>";
     	},
@@ -330,11 +330,11 @@ KNOWWE.plugin.instantEdit = function() {
     	},
     	
     	getSaveCancelDeleteButtons : function(id) {
-    		return KNOWWE.plugin.instantEdit.getButtonsTable(new Array(
-    				KNOWWE.plugin.instantEdit.getSaveButton(id), 
-    				KNOWWE.plugin.instantEdit.getCancelButton(id), 
+    		return _IE.getButtonsTable(new Array(
+    				_IE.getSaveButton(id), 
+    				_IE.getCancelButton(id), 
     				"       ",  
-    				KNOWWE.plugin.instantEdit.getDeleteSectionButton(id)));
+    				_IE.getDeleteSectionButton(id)));
     	},
         
         handleEditToolButtonVisibility : function() {
@@ -349,16 +349,15 @@ KNOWWE.plugin.instantEdit = function() {
     				response : {
     					action : 'none',
     					fn : function() {
-    						var show = JSON.parse(this.responseText);
-    						show = show.success;
+    						var canedit = JSON.parse(this.responseText).canedit;
     						
-    						if(!show) {
-    							KNOWWE.plugin.instantEdit.disableDefaultEditTool();
+    						if(canedit) {
+    							_IE.enableDefaultEditTool();
     						} else {
-    							KNOWWE.plugin.instantEdit.enableDefaultEditTool();
+    							_IE.disableDefaultEditTool();
     						}
     					},
-    					onError : KNOWWE.plugin.instantEdit.onErrorBehavior,
+    					onError : _IE.onErrorBehavior,
     				}
     		}
     		new _KA(options).send();  
@@ -374,4 +373,9 @@ KNOWWE.plugin.instantEdit = function() {
     }
 }();
 
-KNOWWE.plugin.instantEdit.handleEditToolButtonVisibility();
+/**
+ * Alias for some to reduce typing.
+ */
+var _IE = KNOWWE.plugin.instantEdit; 
+
+_IE.handleEditToolButtonVisibility();

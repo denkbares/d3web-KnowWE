@@ -25,9 +25,9 @@ import java.util.Collection;
 import java.util.List;
 
 import de.knowwe.core.compile.ConstraintModule;
-import de.knowwe.core.compile.IncrementalConstraint;
 import de.knowwe.core.compile.ConstraintModule.Operator;
 import de.knowwe.core.compile.ConstraintModule.Purpose;
+import de.knowwe.core.compile.IncrementalConstraint;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -348,7 +348,7 @@ public abstract class SubtreeHandler<T extends Type> {
 			// if it wasn't reused, the section has changed since the last
 			// version of the article, so this is a constraint for create
 			boolean changedPosition = section.get().isOrderSensitive()
-					&& section.isPositionChangedFor(article.getTitle());
+					&& section.hasPositionChanged();
 			// if the section is order sensitive, we need to check, if the
 			// position of the section has changed
 			boolean typeConstraint = section.get() instanceof IncrementalConstraint
@@ -401,7 +401,7 @@ public abstract class SubtreeHandler<T extends Type> {
 			// need to destroy its content... it was either removed from the
 			// article or replaced by something else
 			boolean changedPosition = s.get().isOrderSensitive()
-					&& s.isPositionChangedFor(article.getTitle());
+					&& s.hasPositionChanged();
 			// if the position of a order sensitive section has changed, we need
 			// to destroy, because it will be created later in the new context
 			boolean typeConstraint = (s.get() instanceof IncrementalConstraint<?>

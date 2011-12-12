@@ -60,6 +60,16 @@ public interface KnowWEWikiConnector {
 	public boolean userIsMemberOfGroup(String username, String groupname, HttpServletRequest r);
 
 	/**
+	 * Normalizes a string the same way as the wiki engine normalizes wiki text
+	 * before saving it to a file.
+	 * 
+	 * @created 12.12.2011
+	 * @param string
+	 * @return
+	 */
+	public String normalizeStringTo(String string);
+
+	/**
 	 * Return the absolute path of the web-application
 	 * 
 	 * @return path of the web-application

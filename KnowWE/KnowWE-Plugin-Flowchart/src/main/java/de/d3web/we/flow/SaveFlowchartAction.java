@@ -208,7 +208,7 @@ public class SaveFlowchartAction extends AbstractAction {
 		nodesMap.put(nodeID, newText);
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(
 				context.getWeb());
-		mgr.replaceKDOMNodesSaveAndBuild(context, topic, nodesMap);
+		Sections.replaceSections(context, nodesMap);
 
 	}
 

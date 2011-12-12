@@ -29,6 +29,7 @@ import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -67,7 +68,7 @@ public class ReplaceKDOMNodeAction extends AbstractAction {
 
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(nodeID, newText);
-		mgr.replaceKDOMNodesSaveAndBuild(context, name, nodesMap);
+		Sections.replaceSections(context, nodesMap);
 
 		return "done";
 	}

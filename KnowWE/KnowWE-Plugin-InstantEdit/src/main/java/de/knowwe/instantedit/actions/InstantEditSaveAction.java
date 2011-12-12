@@ -22,11 +22,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.knowwe.core.KnowWEAttributes;
-import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
 /**
@@ -41,53 +38,17 @@ public class InstantEditSaveAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String result = handle(context);
-		if (result != null && context.getWriter() != null) {
-			context.setContentType("text/html; charset=UTF-8");
-			context.getWriter().write(result);
-		}
-	}
-
-	/**
-	 * Handles actions within the InstantEdit mode.
-	 * 
-	 * Returns a JSON string for further processing on the client-side within
-	 * the JavaScript.
-	 * 
-	 * @created 15.06.2011
-	 * @param context
-	 * @return success JSON string
-	 * @throws IOException
-	 */
-	private String handle(UserActionContext context) throws IOException {
-
-		String topic = context.getTitle();
 		String id = context.getParameter("KdomNodeId");
-		String web = context.getParameter(KnowWEAttributes.WEB);
 		String value = context.getParameter("data");
-
-		Section<?> section = Sections.getSection(id);
-		if (section != null) {
-			// if the user is editing a section from another article
-			topic = section.getTitle();
-		}
 
 		if (value.equals("POST\n")) {
 			value = "";
 		}
 
-		// for some reason it seems that a new line is added while sending the
-		// data.
-		// if (value.endsWith("\n")) value = value.substring(0, value.length() -
-		// 1);
-
 		// errors and security are handled inside replaceKDOMNodesSaveAndBuild
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(id, value);
-		if (KnowWEEnvironment.getInstance().getArticleManager(web).replaceKDOMNodesSaveAndBuild(
-				context, topic, nodesMap)) {
-			return "{\"success\":true}";
-		}
-		return "{\"success\":false}";
+		Sections.replaceSections(context, nodesMap);
 	}
+
 }

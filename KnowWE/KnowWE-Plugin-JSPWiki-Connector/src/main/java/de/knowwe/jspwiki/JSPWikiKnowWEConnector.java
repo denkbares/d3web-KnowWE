@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ecyrd.jspwiki.NoRequiredPropertyException;
 import com.ecyrd.jspwiki.PageLock;
 import com.ecyrd.jspwiki.PageManager;
+import com.ecyrd.jspwiki.TextUtil;
 import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.WikiException;
@@ -800,6 +801,11 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		}
 
 		return activeUsers;
+	}
+
+	@Override
+	public String normalizeStringTo(String string) {
+		return TextUtil.normalizePostData(string);
 	}
 
 }

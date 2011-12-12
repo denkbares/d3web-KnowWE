@@ -317,4 +317,10 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public String normalizeStringTo(String string) {
+		// TODO Auto-generated method stub
+		return string;
+	}
 }

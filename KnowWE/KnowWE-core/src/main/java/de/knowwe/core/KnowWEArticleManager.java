@@ -21,7 +21,6 @@
 package de.knowwe.core;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,20 +28,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.wikiConnector.KnowWEWikiConnector;
 import de.knowwe.event.ArticleRegisteredEvent;
 import de.knowwe.event.ArticleUpdatesFinishedEvent;
 import de.knowwe.event.UpdatingDependenciesEvent;
@@ -131,107 +125,6 @@ public class KnowWEArticleManager {
 
 	public Set<String> getTitles() {
 		return Collections.unmodifiableSet(articleMap.keySet());
-	}
-
-	/**
-	 * Replaces KDOM-nodes with the given texts, but not in the KDOM itself. It
-	 * collects the originalTexts deep through the KDOM and appends the new text
-	 * (instead of the original text) for the nodes with an ID in the nodesMap.
-	 * Finally the article is saved with this new content.
-	 * 
-	 * @param context
-	 * @param title
-	 * @param nodesMap containing pairs of the nodeID and the new text for this
-	 *        node
-	 * @return true if the nodes were successfully replaced, false else
-	 * @throws IOException
-	 */
-	public boolean replaceKDOMNodesSaveAndBuild(UserActionContext context, String title,
-			Map<String, String> nodesMap) throws IOException {
-
-		// check if article exists
-		KnowWEArticle art = getArticle(title);
-		if (art == null) {
-			context.sendError(404, "Page '" + title + "' could not be found.");
-			return false;
-		}
-
-		// check if all the ids exist
-		for (String id : nodesMap.keySet()) {
-			if (Sections.getSection(id) == null) {
-				context.sendError(409, "Section '" + id
-						+ "' could not be found, possibly because somebody else"
-						+ " has edited the page.");
-				return false;
-			}
-		}
-
-		// check for user access
-		if (!KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(title,
-				context.getRequest())) {
-			context.sendError(403, "You do not have the permission to edit this page.");
-			return false;
-		}
-
-		StringBuffer newText = new StringBuffer();
-		appendTextReplaceNode(art.getSection(), nodesMap, newText);
-
-		String newArticleText = newText.toString();
-		KnowWEWikiConnector wikiConnector = KnowWEEnvironment.getInstance().getWikiConnector();
-		wikiConnector.writeArticleToWikiEnginePersistence(
-				title, newArticleText, context);
-
-		if (wikiConnector instanceof KnowWETestWikiConnector) {
-			// This is only needed for the test environment. In the running
-			// wiki, this is automatically called after the change to the
-			// persistence.
-			KnowWEEnvironment.getInstance().buildAndRegisterArticle(newArticleText, title,
-					context.getWeb());
-		}
-		return true;
-	}
-
-	/**
-	 * Replaces KDOM-nodes with the given texts, but not in the KDOM itself. It
-	 * collects the originalTexts deep through the KDOM and appends the new text
-	 * (instead of the originalText) for the nodes with an ID in the nodesMap.
-	 * 
-	 * @param context
-	 * @param title
-	 * @param nodesMap containing pairs of the nodeID and the new text for this
-	 *        node
-	 * @return The content of the article with the text changes or an error
-	 *         String if the article wasn't found.
-	 */
-	public String replaceKDOMNodesWithoutSave(UserActionContext context,
-			String title, Map<String, String> nodesMap) {
-		KnowWEArticle art = this.getArticle(title);
-		if (art == null) return "article not found: " + title;
-
-		StringBuffer newText = new StringBuffer();
-		appendTextReplaceNode(art.getSection(), nodesMap, newText);
-
-		return newText.toString();
-	}
-
-	private void appendTextReplaceNode(Section<?> sec,
-			Map<String, String> nodesMap, StringBuffer newText) {
-
-		String text = nodesMap.get(sec.getID());
-		if (text != null) {
-			newText.append(text);
-			return;
-		}
-
-		List<Section<?>> children = sec.getChildren();
-		if (children == null || children.isEmpty()
-				|| sec.hasSharedChildren()) {
-			newText.append(sec.getOriginalText());
-			return;
-		}
-		for (Section<?> section : children) {
-			appendTextReplaceNode(section, nodesMap, newText);
-		}
 	}
 
 	/**

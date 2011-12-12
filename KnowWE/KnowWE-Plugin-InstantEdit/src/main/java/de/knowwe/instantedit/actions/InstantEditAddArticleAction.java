@@ -34,14 +34,6 @@ public class InstantEditAddArticleAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String result = handle(context);
-		if (result != null && context.getWriter() != null) {
-			context.setContentType("text/html; charset=UTF-8");
-			context.getWriter().write(result);
-		}
-	}
-
-	private String handle(UserActionContext context) throws IOException {
 		String title = context.getTitle();
 		String value = context.getParameter("data");
 
@@ -55,10 +47,10 @@ public class InstantEditAddArticleAction extends AbstractAction {
 		boolean written = KnowWEEnvironment.getInstance().getWikiConnector()
 				.writeArticleToWikiEnginePersistence(title, value, context);
 
-		if (written) {
-			return "{\"success\":true}";
+		if (!written) {
+			context.sendError(500, "Unable to perform request.");
 		}
-		return "{\"success\":false}";
 
 	}
+
 }
