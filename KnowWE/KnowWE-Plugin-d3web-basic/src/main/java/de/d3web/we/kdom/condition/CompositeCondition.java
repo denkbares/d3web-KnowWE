@@ -46,10 +46,10 @@ import de.knowwe.kdom.sectionFinder.OneOfStringEnumFinder;
  * This class defines a KDOM-Schema to parse composite conditions as known from
  * proposition logics, using 'AND', 'OR', 'NOT' as keywords and brackets '(' and
  * ')' for to express association boundaries
- * 
- * 
+ *
+ *
  * @author Jochen
- * 
+ *
  */
 public class CompositeCondition extends AbstractType {
 
@@ -59,6 +59,12 @@ public class CompositeCondition extends AbstractType {
 	public static char BRACE_CLOSED = ')';
 
 	public CompositeCondition() {
+		this(new String[]{"AND", "UND", "&" },
+				new String[]{"OR", "ODER", "|" },
+				new String[]{"NOT", "NICHT", "!" });
+	}
+
+	public CompositeCondition(String[] keys_and, String[] keys_or, String[] keys_not) {
 
 		// this composite takes everything it gets => needs suitable wrapper
 		// type as father
@@ -82,19 +88,19 @@ public class CompositeCondition extends AbstractType {
 		bracedContent.addChildType(this);
 
 		// ... a disjuctive expression,...
-		Disjunct disj = new Disjunct();
+		Disjunct disj = new Disjunct(keys_or);
 		this.addChildType(disj);
 		disj.addChildType(this); // Disjuncts again allow for a
 		// CompositeCondition
 
 		// ...a conjuctive expression,...
-		Conjunct conj = new Conjunct();
+		Conjunct conj = new Conjunct(keys_and);
 		this.addChildType(conj);
 		conj.addChildType(this); // Conjuncts again allow for a
 		// CompositeCondition
 
 		// ... a negated expression,...
-		NegatedExpression negatedExpression = new NegatedExpression();
+		NegatedExpression negatedExpression = new NegatedExpression(keys_not);
 		this.childrenTypes.add(negatedExpression);
 		negatedExpression.addChildType(this); // a NegatedExpression again
 		// allows for a
@@ -106,10 +112,10 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * Sets the set of terminalConditions for this CompositeCondition
-	 * 
+	 *
 	 * Any terminal that is not accepted by one of these will be marked by an
 	 * UnrecognizedTerminalCondition causing an error
-	 * 
+	 *
 	 * @param types
 	 */
 	public void setAllowedTerminalConditions(List<Type> types) {
@@ -118,7 +124,7 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * tells whether a CompositeCondition is a disjunction
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -128,7 +134,7 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * returns the disjuncts of a disjunction
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -143,7 +149,7 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * tells whether a CompositeCondition is a Conjunction
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -153,7 +159,7 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * returns the conjunts of a conjunction
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -168,7 +174,7 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * tells whether a CompositeCondition is a bracedexpression
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -178,7 +184,7 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * returns the BracedCondition
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -191,7 +197,7 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * tells whether a CompositeCondition is a NegatedExpression
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -201,7 +207,7 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * returns the NegatedExpression of a Negation
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -213,7 +219,7 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * tells whether this CompositeCondition is a TerminalCondition
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -223,7 +229,7 @@ public class CompositeCondition extends AbstractType {
 
 	/**
 	 * returns the TerminalCondition of a (terminal-)CompositeCondition
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -234,7 +240,7 @@ public class CompositeCondition extends AbstractType {
 	}
 
 	/**
-	 * 
+	 *
 	 * @created 03.08.2010
 	 * @param trimmed
 	 * @return
@@ -260,57 +266,49 @@ public class CompositeCondition extends AbstractType {
 
 /**
  * @author Jochen
- * 
+ *
  *         Type for a disjunct element in the CompositeCondition
- * 
+ *
  *         example: 'a OR b' here 'a' and 'b' are nodes of type disjunct
- * 
+ *
  */
 class Disjunct extends NonTerminalCondition implements de.knowwe.core.kdom.ExclusiveType {
 
-	@Override
-	protected void init() {
-
-		this.sectionFinder = ConjunctSectionFinder.createConjunctFinder(new String[] {
-				"OR", "ODER", "|" });
+	public Disjunct(String[] keys) {
+		this.setSectionFinder(ConjunctSectionFinder.createConjunctFinder(keys));
 	}
 }
 
 /**
  * @author Jochen
- * 
+ *
  *         Type for a conjunct element in the CompositeCondition
- * 
+ *
  *         example: 'a AND b' here 'a' and 'b' are nodes of type conjunct
- * 
+ *
  */
 class Conjunct extends NonTerminalCondition implements de.knowwe.core.kdom.ExclusiveType {
 
-	static String[] CONJ_SIGNS = {
-			"AND", "UND", "&" };
-
-	@Override
-	protected void init() {
-		this.setSectionFinder(ConjunctSectionFinder.createConjunctFinder(CONJ_SIGNS));
+	public Conjunct(String[] keys) {
+		this.setSectionFinder(ConjunctSectionFinder.createConjunctFinder(keys));
 	}
-
 }
 
 /**
  * @author Jochen
- * 
+ *
  *         Type for a negated element in the CompositeCondition
- * 
+ *
  *         example: 'NOT b' here 'b' is not nodes of type NegatedExpression
- * 
+ *
  */
 class NegatedExpression extends NonTerminalCondition {
 
-	static String[] NEG_SIGNS = {
-			"NOT", "NICHT", "!" };
+	static String[] NEG_SIGNS = null;
 
-	@Override
-	protected void init() {
+	public NegatedExpression(String[] keys) {
+		NEG_SIGNS = keys;
+
 		AnonymousType negationSign = new AnonymousType("NegationSign");
 		ConstraintSectionFinder finder = new ConstraintSectionFinder(
 				new OneOfStringEnumFinder(NEG_SIGNS),
@@ -333,5 +331,4 @@ class NegatedExpression extends NonTerminalCondition {
 			}
 		};
 	}
-
 }
