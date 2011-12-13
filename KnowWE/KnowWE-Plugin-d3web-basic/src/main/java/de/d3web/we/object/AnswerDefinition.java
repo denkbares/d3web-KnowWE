@@ -29,9 +29,11 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.compile.IncrementalConstraint;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.TerminologyHandler;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.objects.KnowWETerm;
 import de.knowwe.core.kdom.parsing.Section;
@@ -126,8 +128,15 @@ public abstract class AnswerDefinition
 			// storing the current question needs to happen first, so the method
 			// getUniqueTermIdentifier() can use the right question.
 
-			if (!KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
-					article, s)) {
+			TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
+			terminologyHandler.registerTermDefinition(article, s);
+			if (terminologyHandler.getTermDefiningSection(article, s) != s) {
+				Choice existingChoice = s.get().getTermObject(article, s);
+				if (existingChoice == null) {
+					return Messages.asList(D3webUtils.alreadyDefinedButErrors("choice",
+							name));
+				}
+				// answer was already defined somewhere else, abort.
 				return new ArrayList<Message>(0);
 			}
 
@@ -149,7 +158,7 @@ public abstract class AnswerDefinition
 			// if having error somewhere, do nothing and report error
 			if (qDef.hasErrorInSubtree(article)) {
 				return Arrays.asList(Messages.objectCreationError(
-						"no valid question - " + name,
+						"No valid question - " + name,
 						this.getClass()));
 			}
 

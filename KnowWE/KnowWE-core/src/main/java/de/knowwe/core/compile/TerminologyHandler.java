@@ -461,11 +461,8 @@ public class TerminologyHandler implements EventListener {
 	}
 
 	/**
-	 * For a TermReference the TermDefinition is returned.
-	 * 
-	 * @param <TermObject>
-	 * @param s
-	 * @return
+	 * For a {@link KnowWETerm} (provided by the Section) the
+	 * {@link TermDefinition} is returned.
 	 */
 	public <TermObject> Section<? extends TermDefinition<TermObject>> getTermDefiningSection(
 			KnowWEArticle article, Section<? extends KnowWETerm<TermObject>> s) {
@@ -480,11 +477,8 @@ public class TerminologyHandler implements EventListener {
 	}
 
 	/**
-	 * For a TermName the redundant TermDefinition are returned.
-	 * 
-	 * @param <TermObject>
-	 * @param s
-	 * @return
+	 * For a {@link KnowWETerm} (provided by the Section) the redundant
+	 * {@link TermDefinition}s are returned.
 	 */
 	public <TermObject> Collection<Section<? extends TermDefinition<TermObject>>> getRedundantTermDefiningSections(
 			KnowWEArticle article, Section<? extends KnowWETerm<TermObject>> s) {
@@ -499,6 +493,10 @@ public class TerminologyHandler implements EventListener {
 				0));
 	}
 
+	/**
+	 * For a {@link KnowWETerm} (provided by the Section) the
+	 * {@link TermReference}s are returned.
+	 */
 	public <TermObject> Set<Section<? extends TermReference<TermObject>>> getTermReferenceSections(
 			KnowWEArticle article, Section<? extends KnowWETerm<TermObject>> s) {
 
@@ -511,19 +509,6 @@ public class TerminologyHandler implements EventListener {
 		return Collections.unmodifiableSet(new HashSet<Section<? extends TermReference<TermObject>>>(
 				0));
 	}
-
-	// public <TermObject> void setTermReferencesToNotReused(KnowWEArticle
-	// article,
-	// Section<? extends TermDefinition<TermObject>> r) {
-	//
-	// Set<Section<? extends TermReference<TermObject>>> refs =
-	// getTermReferenceSections(
-	// article, r);
-	//
-	// for (Section<?> ref : refs) {
-	// ref.setReusedBy(article.getTitle(), false);
-	// }
-	// }
 
 	public <TermObject> void unregisterTermDefinition(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> s) {
 		TermReferenceLog<TermObject> termRefLog = getTermReferenceLog(article, s);

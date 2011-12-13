@@ -32,6 +32,7 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.IncrementalConstraint;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.TerminologyHandler;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
@@ -125,8 +126,15 @@ public abstract class SolutionDefinition
 
 			String name = s.get().getTermIdentifier(s);
 
-			if (!KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
-					article, s)) {
+			TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
+			terminologyHandler.registerTermDefinition(article, s);
+			if (terminologyHandler.getTermDefiningSection(article, s) != s) {
+				Solution existingSolution = s.get().getTermObject(article, s);
+				if (existingSolution == null) {
+					return Messages.asList(D3webUtils.alreadyDefinedButErrors("solution",
+							name));
+				}
+				// Solution is already defined somewhere else, abort
 				return new ArrayList<Message>(0);
 			}
 

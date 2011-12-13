@@ -20,6 +20,7 @@
 
 package de.d3web.we.kdom.questionTree;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -31,7 +32,6 @@ import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.kdom.questionTree.QuestionLine.QuestionTypeDeclaration;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
@@ -41,9 +41,11 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.IncrementalConstraint;
 import de.knowwe.core.compile.IncrementalMarker;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.TerminologyHandler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -589,25 +591,64 @@ public class QuestionLine extends AbstractType {
 			this.setCustomRenderer(new StyleRenderer(StyleRenderer.OPERATOR.getCssStyle()) {
 
 				@Override
-				public void render(KnowWEArticle article, Section section, UserContext user, StringBuilder string) {
+				public void render(KnowWEArticle article, @SuppressWarnings("rawtypes") Section section,
+						UserContext user, StringBuilder string) {
 					StringBuilder temp = new StringBuilder();
 					super.render(article, section, user, temp);
 					string.append(temp.toString());
 				}
 			});
+			String allowedTypes = Arrays.asList(QUESTION_DECLARATIONS).toString();
+			allowedTypes = allowedTypes.substring(1, allowedTypes.length() - 1);
+			Message errorMsg = Messages.error(D3webModule.getKwikiBundle_d3web()
+							.getString("KnowWE.questiontree.allowingonly")
+							+ allowedTypes);
 			this.addSubtreeHandler(new StringEnumChecker<QuestionTypeDeclaration>(
-					QUESTION_DECLARATIONS, Messages.error(
-							D3webModule.getKwikiBundle_d3web()
-									.getString("KnowWE.questiontree.allowingonly")
-									+ concatStrings(QUESTION_DECLARATIONS)), 1, 1));
+					QUESTION_DECLARATIONS, errorMsg, 1, 1));
+			this.addSubtreeHandler(new QuestionTypeChecker());
 		}
+
+		public Section<QuestionDefinition> getQuestionDefinition(Section<QuestionTypeDeclaration> typeDeclaration) {
+			return Sections.findSuccessor(typeDeclaration.getFather(), QuestionDefinition.class);
+		}
+
 	}
 
-	private static String concatStrings(String[] str) {
-		String result = " ";
-		for (String string : str) {
-			result += string + " ;";
+	static class QuestionTypeChecker extends D3webSubtreeHandler<QuestionTypeDeclaration> {
+
+		@Override
+		public Collection<Message> create(KnowWEArticle article, Section<QuestionTypeDeclaration> section) {
+			QuestionType thisQuestionType = QuestionTypeDeclaration.getQuestionType(section);
+			if (thisQuestionType == null) return Messages.asList();
+			TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
+			Section<QuestionDefinition> thisQuestionDef = section.get().getQuestionDefinition(
+					section);
+			Section<? extends TermDefinition<Question>> termDefiningSection =
+					terminologyHandler.getTermDefiningSection(article, thisQuestionDef);
+			if (termDefiningSection.get() instanceof QuestionDefinition) {
+				@SuppressWarnings("unchecked")
+				Section<QuestionDefinition> actualQuestionDef = (Section<QuestionDefinition>) termDefiningSection;
+				QuestionType actualQuestionType = actualQuestionDef.get().getQuestionType(
+						actualQuestionDef);
+				String actualTypeString = actualQuestionType == null
+						? "undefined"
+						: actualQuestionType.toString().toLowerCase();
+				String thisTypeString = thisQuestionType == null
+						? "undefined"
+						: thisQuestionType.toString().toLowerCase();
+				if (actualQuestionType != thisQuestionType) {
+					String warningText = "The question '"
+							+ actualQuestionDef.get().getTermName(actualQuestionDef)
+							+ "' is already defined with the type '"
+							+ actualTypeString
+							+ "'. The type definition '"
+							+ thisTypeString
+							+ "' will be ignored.";
+					return Messages.asList(Messages.warning(warningText));
+				}
+			}
+			return Messages.asList();
 		}
-		return result;
+
 	}
 }

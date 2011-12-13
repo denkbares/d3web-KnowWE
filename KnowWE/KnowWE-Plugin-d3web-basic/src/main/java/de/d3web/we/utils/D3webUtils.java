@@ -39,6 +39,8 @@ import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.we.basic.SessionBroker;
 import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 
 public class D3webUtils {
@@ -205,5 +207,12 @@ public class D3webUtils {
 		Session session = broker.getSession(kb.getId());
 
 		return session;
+	}
+
+	public static Message alreadyDefinedButErrors(String type, String name) {
+		return Messages.error("The " + type + " '"
+				+ name
+				+ "' is already defined somewhere else, "
+				+ "but could no be created due to an error.");
 	}
 }

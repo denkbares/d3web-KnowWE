@@ -19,7 +19,6 @@
  */
 package de.d3web.we.object;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,6 +36,7 @@ import de.d3web.core.knowledge.terminology.QuestionZC;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.TerminologyHandler;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -81,11 +81,8 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			Section<QuestionDefinition> qidSection = (s);
 			String name = qidSection.get().getTermIdentifier(qidSection);
 
-			boolean alreadyRegistered = false;
-			if (!KnowWEUtils.getTerminologyHandler(article.getWeb())
-					.registerTermDefinition(article, s)) {
-				alreadyRegistered = true;
-			}
+			TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
+			terminologyHandler.registerTermDefinition(article, s);
 
 			KnowledgeBase kb = getKB(article);
 
@@ -101,18 +98,26 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 				parent = kb.getRootQASet();
 			}
 			else {
-				if (alreadyRegistered) {
-					parent.addChild(s.get().getTermObject(article, s));
-					return new ArrayList<Message>(0);
+				if (terminologyHandler.getTermDefiningSection(article, s) != s) {
+					// if the question is actually defined somewhere else, just
+					// add parent-child connection
+					Question existingQuestion = s.get().getTermObject(article, s);
+					if (existingQuestion == null) {
+						return Messages.asList(D3webUtils.alreadyDefinedButErrors("question",
+								name));
+					}
+					else {
+						parent.addChild(existingQuestion);
+						return Messages.asList();
+					}
 				}
 			}
 
 			QuestionType questionType = qidSection.get().getQuestionType(
 					qidSection);
-
 			if (questionType == null) {
 				return Messages.asList(Messages.objectCreationError(
-						"no question type found: " + name,
+						"No question type found: " + name,
 						this.getClass()));
 			}
 
@@ -144,10 +149,9 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			else {
 				return Messages.asList(Messages.error(
 						"No valid question type found for question '" + name + "'"));
-
 			}
 
-			// ok everything went well
+			// ok, everything went well
 			// set position right in case this is an incremental update
 			if (!article.isFullParse()) {
 				parent.addChild(q, s.get().getPosition(s));

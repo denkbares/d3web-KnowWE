@@ -29,6 +29,7 @@ import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.TerminologyHandler;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -66,8 +67,15 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 
 			String name = s.get().getTermIdentifier(s);
 
-			if (!KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
-					article, s)) {
+			TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
+			terminologyHandler.registerTermDefinition(article, s);
+			if (terminologyHandler.getTermDefiningSection(article, s) != s) {
+				QContainer existingChoice = s.get().getTermObject(article, s);
+				if (existingChoice == null) {
+					return Messages.asList(D3webUtils.alreadyDefinedButErrors("questionnaire",
+							name));
+				}
+				// Questionnaire is already defined, abort
 				return new ArrayList<Message>(0);
 			}
 
