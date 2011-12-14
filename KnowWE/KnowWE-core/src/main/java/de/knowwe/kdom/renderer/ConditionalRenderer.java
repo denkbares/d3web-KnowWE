@@ -47,9 +47,9 @@ public abstract class ConditionalRenderer extends KnowWEDomRenderer {
 				return;
 			}
 		}
-		renderDefault(sec, user, string);
+		renderDefault(article, sec, user, string);
 	}
 
-	protected abstract void renderDefault(Section sec, UserContext user, StringBuilder string);
+	protected abstract void renderDefault(KnowWEArticle article, Section sec, UserContext user, StringBuilder string);
 
 }

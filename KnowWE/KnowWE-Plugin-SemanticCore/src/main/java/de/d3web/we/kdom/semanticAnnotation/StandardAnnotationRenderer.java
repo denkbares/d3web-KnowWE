@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -35,6 +35,7 @@ import de.d3web.we.core.semantic.UpperOntology;
 import de.knowwe.core.contexts.Context;
 import de.knowwe.core.contexts.ContextManager;
 import de.knowwe.core.contexts.DefaultSubjectContext;
+import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
@@ -46,26 +47,26 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 	private static String TITLE_QUERY = "SELECT  ?title WHERE {  <URI> ns:hasTitle ?title }";
 
 	@Override
-	public void renderDefault(Section s, UserContext user,
+	public void renderDefault(KnowWEArticle article, Section s, UserContext user,
 			StringBuilder string) {
 
 		Section<?> sec = s;
 		String object = "no object found";
 		Section<SimpleAnnotation> objectSection =
-				 Sections.findSuccessor(sec, SimpleAnnotation.class);
+					Sections.findSuccessor(sec, SimpleAnnotation.class);
 		if (objectSection != null) {
 			object = objectSection.getOriginalText();
 		}
 
 		Section<AnnotatedString> astring =
-				 Sections.findSuccessor(sec, AnnotatedString.class);
+					Sections.findSuccessor(sec, AnnotatedString.class);
 		String text = "";
 		if (astring != null) text = "''" + astring.getOriginalText() + "''";
 		else text = "<b>" + object + "</b>";
 		Section<SemanticAnnotationContent> content =
-				 Sections.findSuccessor(sec, SemanticAnnotationContent.class);
+					Sections.findSuccessor(sec, SemanticAnnotationContent.class);
 		Section<SemanticAnnotationPropertyName> propSection =
-				 Sections.findSuccessor(sec, SemanticAnnotationPropertyName.class);
+					Sections.findSuccessor(sec, SemanticAnnotationPropertyName.class);
 
 		String property = "no property found";
 		if (propSection != null) {
@@ -75,7 +76,7 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 		String subject = "no subject found";
 
 		Section<SemanticAnnotationSubject> subjectSection =
-				 Sections.findSuccessor(sec, SemanticAnnotationSubject.class);
+					Sections.findSuccessor(sec, SemanticAnnotationSubject.class);
 		if (subjectSection != null
 				&& subjectSection.getOriginalText().trim().length() > 0) {
 			subject = subjectSection.getOriginalText();
@@ -132,7 +133,7 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 		}
 
 		IntermediateOwlObject tempio = (IntermediateOwlObject) KnowWEUtils
-				.getStoredObject(objectSection, OwlHelper.IOO);
+				.getStoredObject(article, objectSection, OwlHelper.IOO);
 
 		if (tempio == null) {
 			text = KnowWEUtils
