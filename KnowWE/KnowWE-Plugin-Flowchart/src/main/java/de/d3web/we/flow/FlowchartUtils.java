@@ -19,6 +19,8 @@
  */
 package de.d3web.we.flow;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -176,7 +178,6 @@ public class FlowchartUtils {
 		return createFlowchartRenderer(section, user, parent, scope, isInsertRessources(section));
 	}
 
-
 	// experimental hack
 	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String parent, String scope, boolean insertRessources) {
 
@@ -187,6 +188,13 @@ public class FlowchartUtils {
 		if (insertRessources) {
 			insertDiafluxRessources(result, user);
 			addDisplayPlugins(result, user, scope);
+		}
+
+		try {
+			parent = URLEncoder.encode(parent, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e) {
+			// seems as like we use the not encoded version anyway
 		}
 
 		result.append("\n");
@@ -280,7 +288,7 @@ public class FlowchartUtils {
 	 */
 	public static Section<FlowchartType> findFlowchartSection(String web, String calledFlowName) {
 		KnowWEArticleManager manager = KnowWEEnvironment.getInstance().getArticleManager(web);
-	
+
 		for (Iterator<KnowWEArticle> iterator = manager.getArticleIterator(); iterator.hasNext();) {
 			KnowWEArticle article = iterator.next();
 			List<Section<FlowchartType>> matches = new LinkedList<Section<FlowchartType>>();
