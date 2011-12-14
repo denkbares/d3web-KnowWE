@@ -58,7 +58,7 @@ public class ArticleHasErrorsTest extends AbstractCITest {
 
 		Collection<Message> messages = new LinkedList<Message>();
 		for (Section<?> sec : moni.getReviseIterator().getAllSections()) {
-			messages.addAll(Messages.getErrors(Messages.getMessages(moni, sec, Error.class)));
+			messages.addAll(Messages.getErrors(Messages.getMessages(moni, sec)));
 		}
 
 		buffy.append(": <a href=\"Wiki.jsp?page=" + monitoredArticleTitle + "\"> "
