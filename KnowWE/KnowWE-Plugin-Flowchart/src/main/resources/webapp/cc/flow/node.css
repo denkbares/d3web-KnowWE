@@ -143,6 +143,8 @@
 .Node .ActionPane .icon {
 	position: relative;
 	top: 2px;
+	width: 16px;
+	height: 16px;
 }
 
 .defaultMarkup .Node a:link, .defaultMarkup .Node a:visited, .defaultMarkup .Node a:active {
