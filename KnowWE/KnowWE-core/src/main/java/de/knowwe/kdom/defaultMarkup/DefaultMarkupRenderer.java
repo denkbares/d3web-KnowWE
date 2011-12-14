@@ -122,7 +122,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		return result;
 	}
 
-	public static void renderMessages(KnowWEArticle article, Section<? extends DefaultMarkupType> section, StringBuilder string) {
+	public void renderMessages(KnowWEArticle article, Section<? extends DefaultMarkupType> section, StringBuilder string) {
 		Collection<Message> allmsgs = Messages.getMessagesFromSubtree(article, section);
 		Collection<Message> errors = Messages.getErrors(allmsgs);
 		Collection<Message> warnings = Messages.getWarnings(allmsgs);
@@ -146,7 +146,8 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 			className = "error";
 		}
 
-		string.append(KnowWEUtils.maskHTML("<span class='" + className + "'>"));
+		string.append(KnowWEUtils.maskHTML("<span class='" + className
+				+ "' style='white-space: pre-wrap;'>"));
 		for (Message error : messages) {
 			string.append(error.getVerbalization());
 			string.append("\n");
@@ -341,10 +342,6 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 				"};" +
 				"makeMenuFx();" +
 				"</script>\n";
-	}
-
-	public void renderMessages(KnowWEArticle article, Section<? extends DefaultMarkupType> section, UserContext user, StringBuilder string) {
-		renderMessages(article, section, string);
 	}
 
 	public ToolsRenderMode getRenderMode() {
