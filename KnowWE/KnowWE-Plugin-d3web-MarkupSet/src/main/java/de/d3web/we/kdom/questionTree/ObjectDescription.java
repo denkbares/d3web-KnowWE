@@ -80,8 +80,7 @@ public class ObjectDescription extends AbstractType {
 				}
 				return Messages.asList(Messages.objectCreationError(
 							D3webModule.getKwikiBundle_d3web()
-									.getString("KnowWE.questiontree.questiontext"),
-							this.getClass()));
+									.getString("KnowWE.questiontree.questiontext")));
 			}
 		});
 	}

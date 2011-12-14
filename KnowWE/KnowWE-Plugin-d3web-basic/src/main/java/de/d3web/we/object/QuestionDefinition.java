@@ -99,17 +99,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			}
 			else {
 				if (terminologyHandler.getTermDefiningSection(article, s) != s) {
-					// if the question is actually defined somewhere else, just
-					// add parent-child connection
-					Question existingQuestion = s.get().getTermObject(article, s);
-					if (existingQuestion == null) {
-						return Messages.asList(D3webUtils.alreadyDefinedButErrors("question",
-								name));
-					}
-					else {
-						parent.addChild(existingQuestion);
-						return Messages.asList();
-					}
+					return s.get().handleRedundantDefinition(article, s);
 				}
 			}
 
@@ -117,8 +107,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 					qidSection);
 			if (questionType == null) {
 				return Messages.asList(Messages.objectCreationError(
-						"No question type found: " + name,
-						this.getClass()));
+						"No question type found: " + name));
 			}
 
 			Question q = null;

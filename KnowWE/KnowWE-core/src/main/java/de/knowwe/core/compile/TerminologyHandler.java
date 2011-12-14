@@ -21,6 +21,7 @@
 package de.knowwe.core.compile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,6 +34,8 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.d3web.plugin.Extension;
+import de.d3web.plugin.PluginManager;
 import de.knowwe.core.KnowWEArticleManager;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.event.Event;
@@ -49,6 +52,7 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.event.ArticleCreatedEvent;
 import de.knowwe.event.FullParseEvent;
+import de.knowwe.plugin.Plugins;
 
 /**
  * @author Jochen, Albrecht
@@ -70,6 +74,8 @@ public class TerminologyHandler implements EventListener {
 
 	private final Set<String> modifiedTermDefinitions = new HashSet<String>();
 
+	private final Set<String> occupiedTerms = new HashSet<String>();
+
 	@SuppressWarnings("rawtypes")
 	private final Map<String, Map<TermIdentifier, TermReferenceLog>> termReferenceLogsMaps =
 			new HashMap<String, Map<TermIdentifier, TermReferenceLog>>();
@@ -81,6 +87,20 @@ public class TerminologyHandler implements EventListener {
 	public TerminologyHandler(String web) {
 		this.web = web;
 		EventManager.getInstance().registerListener(this);
+		// extension point for plugins defining predefined terminology
+		Extension[] exts = PluginManager.getInstance().getExtensions(
+				Plugins.EXTENDED_PLUGIN_ID,
+				Plugins.EXTENDED_POINT_TERMINOLOGY);
+		for (Extension extension : exts) {
+			Object o = extension.getSingleton();
+			if (o instanceof TerminologyExtension) {
+				registerTerminology(((TerminologyExtension) o));
+			}
+		}
+	}
+
+	private void registerTerminology(TerminologyExtension terminologyExtension) {
+		occupiedTerms.addAll(Arrays.asList(terminologyExtension.getTermNames()));
 	}
 
 	public String getWeb() {
@@ -175,8 +195,17 @@ public class TerminologyHandler implements EventListener {
 			Section<? extends TermDefinition<TermObject>> s) {
 
 		Collection<Message> msgs = new LinkedList<Message>();
-		Priority p = article.getReviseIterator().getCurrentPriority();
 		TermIdentifier termIdentifier = new TermIdentifier(article, s);
+
+		if (occupiedTerms.contains(termIdentifier.toString())) {
+			msgs.add(Messages.objectCreationError("The term '"
+					+ termIdentifier.toString()
+					+ "' is reserved by the system."));
+			Messages.storeMessages(article, s, this.getClass(), msgs);
+			return false;
+		}
+
+		Priority p = article.getReviseIterator().getCurrentPriority();
 		TermReferenceLog<TermObject> termRefLog = getTermReferenceLog(article, s);
 		// if the termRefLog is null, it could still be, that there is a log
 		// for the same term, but a different termObjectClass
@@ -192,8 +221,7 @@ public class TerminologyHandler implements EventListener {
 				// lower priority or with the same priority, but further down in
 				// the article, then that old termRefLog is no longer valid
 				if (termRefLogWrongClass.getDefiningSection() == null
-						||
-						termRefLogWrongClass.getPriorityOfDefiningSection().compareTo(p) < 0
+						|| termRefLogWrongClass.getPriorityOfDefiningSection().compareTo(p) < 0
 							|| (termRefLogWrongClass.getPriorityOfDefiningSection().compareTo(
 									p) == 0
 									&& termRefLogWrongClass.getDefiningSection().compareTo(
@@ -474,6 +502,10 @@ public class TerminologyHandler implements EventListener {
 		}
 
 		return null;
+	}
+
+	public Set<String> getOccupiedTerms() {
+		return Collections.unmodifiableSet(occupiedTerms);
 	}
 
 	/**

@@ -19,7 +19,6 @@
  */
 package de.d3web.we.object;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -70,13 +69,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 			TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
 			terminologyHandler.registerTermDefinition(article, s);
 			if (terminologyHandler.getTermDefiningSection(article, s) != s) {
-				QContainer existingChoice = s.get().getTermObject(article, s);
-				if (existingChoice == null) {
-					return Messages.asList(D3webUtils.alreadyDefinedButErrors("questionnaire",
-							name));
-				}
-				// Questionnaire is already defined, abort
-				return new ArrayList<Message>(0);
+				return s.get().handleRedundantDefinition(article, s);
 			}
 
 			KnowledgeBase kb = getKB(article);

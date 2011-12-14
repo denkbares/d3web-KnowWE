@@ -32,6 +32,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
 import de.d3web.we.basic.D3webModule;
+import de.d3web.we.kdom.questionTree.QuestionLine.QuestionTypeDeclaration;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
@@ -215,8 +216,7 @@ public class QuestionLine extends AbstractType {
 						// if the numbers cannot be found throw error
 						return Messages.asList(Messages.objectCreationError(
 								D3webModule.getKwikiBundle_d3web()
-										.getString("KnowWE.questiontree.incorrectinterval"),
-								this.getClass()));
+										.getString("KnowWE.questiontree.incorrectinterval")));
 					}
 
 					Section<QuestionDefinition> qDef = Sections.findSuccessor(
@@ -229,8 +229,7 @@ public class QuestionLine extends AbstractType {
 							// if not numerical question throw error
 							return Messages.asList(Messages.objectCreationError(
 									D3webModule.getKwikiBundle_d3web()
-											.getString("KnowWE.questiontree.onlyfornumerical"),
-									this.getClass()));
+											.getString("KnowWE.questiontree.onlyfornumerical")));
 						}
 						try {
 							// trying to create interval
@@ -247,15 +246,13 @@ public class QuestionLine extends AbstractType {
 						catch (IntervalException e) {
 							return Messages.asList(Messages.objectCreationError(
 									D3webModule.getKwikiBundle_d3web()
-											.getString("KnowWE.questiontree.invalidinterval"),
-									this.getClass()));
+											.getString("KnowWE.questiontree.invalidinterval")));
 						}
 
 					}
 					return Messages.asList(Messages.objectCreationError(
 							D3webModule.getKwikiBundle_d3web()
-									.getString("KnowWE.questiontree.numerical"),
-							this.getClass()));
+									.getString("KnowWE.questiontree.numerical")));
 				}
 
 				@Override
@@ -372,8 +369,7 @@ public class QuestionLine extends AbstractType {
 						if (!(question instanceof QuestionNum)) {
 							return Messages.asList(Messages.objectCreationError(
 									D3webModule.getKwikiBundle_d3web()
-											.getString("KnowWE.questiontree.onlyfornumerical"),
-									this.getClass()));
+											.getString("KnowWE.questiontree.onlyfornumerical")));
 						}
 						question.getInfoStore().addValue(MMInfo.UNIT, s.get().getUnit(s));
 						return Messages.asList(Messages.objectCreatedNotice(
@@ -383,8 +379,7 @@ public class QuestionLine extends AbstractType {
 					}
 					return Messages.asList(Messages.objectCreationError(
 							D3webModule.getKwikiBundle_d3web()
-									.getString("KnowWE.questiontree.unit"),
-							this.getClass()));
+									.getString("KnowWE.questiontree.unit")));
 				}
 
 				@Override
@@ -439,8 +434,7 @@ public class QuestionLine extends AbstractType {
 					}
 					return Messages.asList(Messages.objectCreationError(
 							D3webModule.getKwikiBundle_d3web()
-									.getString("KnowWE.questiontree.abstractflag"),
-							this.getClass()));
+									.getString("KnowWE.questiontree.abstractflag")));
 				}
 
 				@Override
@@ -498,8 +492,7 @@ public class QuestionLine extends AbstractType {
 					}
 					return Messages.asList(Messages.objectCreationError(
 							D3webModule.getKwikiBundle_d3web()
-									.getString("KnowWE.questiontree.questiontext"),
-							this.getClass()));
+									.getString("KnowWE.questiontree.questiontext")));
 				}
 
 				@Override
@@ -625,7 +618,8 @@ public class QuestionLine extends AbstractType {
 					section);
 			Section<? extends TermDefinition<Question>> termDefiningSection =
 					terminologyHandler.getTermDefiningSection(article, thisQuestionDef);
-			if (termDefiningSection.get() instanceof QuestionDefinition) {
+			if (termDefiningSection != null
+					&& termDefiningSection.get() instanceof QuestionDefinition) {
 				@SuppressWarnings("unchecked")
 				Section<QuestionDefinition> actualQuestionDef = (Section<QuestionDefinition>) termDefiningSection;
 				QuestionType actualQuestionType = actualQuestionDef.get().getQuestionType(
@@ -649,6 +643,5 @@ public class QuestionLine extends AbstractType {
 			}
 			return Messages.asList();
 		}
-
 	}
 }

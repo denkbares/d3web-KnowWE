@@ -218,7 +218,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 					condition = ConditionTrue.INSTANCE;
 
 					errors.add(Messages.objectCreationError("Could not parse condition: "
-							+ getXMLContentText(guardSection), getClass()));
+							+ getXMLContentText(guardSection)));
 
 				}
 
@@ -285,7 +285,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 					errors.add(Messages.objectCreationError("NodeHandler "
 							+ handler.getClass().getSimpleName() + " could not create node for: "
-							+ text, getClass()));
+							+ text));
 
 					result.add(new CommentNode(id,
 							"Surrogate for node of type " + text));

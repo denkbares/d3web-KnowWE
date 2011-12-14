@@ -213,8 +213,7 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 					if (originalnumber == null) {
 						// if the numbers cannot be found throw error
 						return Messages.asList(Messages.objectCreationError(
-								"invalid number",
-								this.getClass()));
+								"invalid number"));
 					}
 					Integer number = new Integer((originalnumber.intValue()));
 
@@ -246,8 +245,7 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 
 					}
 					return Messages.asList(Messages.objectCreationError(
-							"KnowWE.questiontree.numerical",
-							this.getClass()));
+							"KnowWE.questiontree.numerical"));
 				}
 
 				@Override

@@ -19,7 +19,6 @@
  */
 package de.d3web.we.object;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -29,7 +28,6 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.compile.IncrementalConstraint;
 import de.knowwe.core.compile.Priority;
@@ -131,13 +129,7 @@ public abstract class AnswerDefinition
 			TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
 			terminologyHandler.registerTermDefinition(article, s);
 			if (terminologyHandler.getTermDefiningSection(article, s) != s) {
-				Choice existingChoice = s.get().getTermObject(article, s);
-				if (existingChoice == null) {
-					return Messages.asList(D3webUtils.alreadyDefinedButErrors("choice",
-							name));
-				}
-				// answer was already defined somewhere else, abort.
-				return new ArrayList<Message>(0);
+				return s.get().handleRedundantDefinition(article, s);
 			}
 
 			if (qDef == null) {
@@ -158,8 +150,7 @@ public abstract class AnswerDefinition
 			// if having error somewhere, do nothing and report error
 			if (qDef.hasErrorInSubtree(article)) {
 				return Arrays.asList(Messages.objectCreationError(
-						"No valid question - " + name,
-						this.getClass()));
+						"No valid question - " + name));
 			}
 
 			Question q = qDef.get().getTermObject(article, qDef);
@@ -201,8 +192,7 @@ public abstract class AnswerDefinition
 
 			}
 			return Messages.asList(Messages.objectCreationError(
-					"no choice question - " + name,
-					this.getClass()));
+					"no choice question - " + name));
 		}
 
 		@Override

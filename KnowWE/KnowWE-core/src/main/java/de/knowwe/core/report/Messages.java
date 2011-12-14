@@ -313,13 +313,12 @@ public final class Messages {
 		return Messages.warning("Object already defined: " + text);
 	}
 
-	public static Message objectCreatedNotice(String name) {
-		return Messages.notice("Object created: " + name);
+	public static Message objectCreatedNotice(String text) {
+		return Messages.notice("Object created: " + text);
 	}
 
-	public static Message objectCreationError(String name, Class<? extends SubtreeHandler<?>> handler) {
-		return Messages.error("Could not create Object: " + name + " - Unknown Error in: "
-				+ handler.getSimpleName());
+	public static Message objectCreationError(String text) {
+		return Messages.error("Could not create Object: " + text);
 	}
 
 	public static Message occupiedTermError(String origTerm, Class<?> termClass) {

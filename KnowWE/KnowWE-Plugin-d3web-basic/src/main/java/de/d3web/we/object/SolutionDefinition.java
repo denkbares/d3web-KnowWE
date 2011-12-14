@@ -19,7 +19,6 @@
  */
 package de.d3web.we.object;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -129,13 +128,7 @@ public abstract class SolutionDefinition
 			TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
 			terminologyHandler.registerTermDefinition(article, s);
 			if (terminologyHandler.getTermDefiningSection(article, s) != s) {
-				Solution existingSolution = s.get().getTermObject(article, s);
-				if (existingSolution == null) {
-					return Messages.asList(D3webUtils.alreadyDefinedButErrors("solution",
-							name));
-				}
-				// Solution is already defined somewhere else, abort
-				return new ArrayList<Message>(0);
+				return s.get().handleRedundantDefinition(article, s);
 			}
 
 			KnowledgeBase kb = getKB(article);
