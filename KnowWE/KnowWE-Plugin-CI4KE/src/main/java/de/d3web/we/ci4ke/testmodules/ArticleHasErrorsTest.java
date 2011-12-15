@@ -61,8 +61,8 @@ public class ArticleHasErrorsTest extends AbstractCITest {
 			messages.addAll(Messages.getErrors(Messages.getMessages(moni, sec)));
 		}
 
-		buffy.append(": <a href=\"Wiki.jsp?page=" + monitoredArticleTitle + "\"> "
-				+ monitoredArticleTitle + "</a><br />\n");
+		buffy.append("<a href=\"Wiki.jsp?page=" + monitoredArticleTitle + "\"> "
+				+ monitoredArticleTitle + "</a>:\n");
 		buffy.append("<ul>");
 		for (Message message : messages) {
 			// This finds only messages, that are explicitly stored
@@ -73,7 +73,6 @@ public class ArticleHasErrorsTest extends AbstractCITest {
 			buffy.append("<li> " + message.getVerbalization() + "</li>");
 		}
 		buffy.append("</ul>");
-		buffy.append("<br/> <br/>");
 		if (hasError) {
 			return new CITestResult(Type.FAILED, buffy.toString(), config);
 		}

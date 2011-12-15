@@ -183,14 +183,14 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer<CIDashboardType> 
 						buffy.append("</div>");
 					}
 
-					buffy.append("</div>");
+					buffy.append("</div>\n");
 				}
 			}
 		}
 		else {
 			buffy.append("<div class='ci-no-details'>No build selected.</div>");
 		}
-		buffy.append("</div>");
+		buffy.append("</div>\n");
 		return buffy.toString();
 	}
 }

@@ -64,7 +64,7 @@ public class TestArticlesContain extends AbstractCITest {
 		int count = namesOfArticlesWhichContainKeyword.size();
 		if (count > 0) {
 			String message = "<b>Forbidden text found in " + count + " articles:</b>\n" +
-					"<ul><li>" + de.knowwe.core.utils.Strings.concat("</li>\n<li>",
+					"<ul><li>" + de.knowwe.core.utils.Strings.concat("</li><li>",
 							namesOfArticlesWhichContainKeyword) + "</li></ul>";
 			return new CITestResult(Type.FAILED, message, configuration);
 		}
