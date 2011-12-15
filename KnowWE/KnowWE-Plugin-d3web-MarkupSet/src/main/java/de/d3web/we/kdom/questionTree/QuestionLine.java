@@ -423,13 +423,14 @@ public class QuestionLine extends AbstractType {
 							s.getFather(), QuestionDefinition.class);
 
 					if (qDef != null) {
-
 						Question question = qDef.get().getTermObject(article, qDef);
-						question.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION,
-								Boolean.TRUE);
-						return Messages.asList(Messages.objectCreatedNotice(
-								D3webModule.getKwikiBundle_d3web()
-										.getString("KnowWE.questiontree.abstractquestion")));
+						if (question != null) {
+							question.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION,
+									Boolean.TRUE);
+							return Messages.asList(Messages.objectCreatedNotice(
+									D3webModule.getKwikiBundle_d3web()
+											.getString("KnowWE.questiontree.abstractquestion")));
+						}
 
 					}
 					return Messages.asList(Messages.objectCreationError(
