@@ -124,7 +124,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer<CIDashboardType> 
 		StringBuffer buffy = new StringBuffer();
 
 		// ------------------------------------------------------------------------
-		// Render the build details in the middle colum
+		// Render the build details in the middle column
 		// (ci-column-middle)
 		// ------------------------------------------------------------------------
 
