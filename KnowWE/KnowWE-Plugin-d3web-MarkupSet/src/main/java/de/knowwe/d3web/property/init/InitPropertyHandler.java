@@ -66,7 +66,7 @@ public class InitPropertyHandler extends D3webSubtreeHandler<PropertyDeclaration
 			return Messages.asList();
 		}
 		NamedObject object = namendObjectSection.get().getTermObject(article, namendObjectSection);
-		if (object == null || !(object instanceof Question)) {
+		if (object == null) {
 			return Messages.asList();
 		}
 
@@ -82,6 +82,10 @@ public class InitPropertyHandler extends D3webSubtreeHandler<PropertyDeclaration
 		}
 
 		try {
+			if (!(object instanceof Question)) {
+				throw new ClassCastException("Init properties can only be set for Questions, '"
+						+ object.getName() + "' is a " + object.getClass().getSimpleName() + ".");
+			}
 			PSMethodInit.getValue((Question) object, content);
 		}
 		catch (Exception e) {
@@ -89,5 +93,4 @@ public class InitPropertyHandler extends D3webSubtreeHandler<PropertyDeclaration
 		}
 		return Messages.asList();
 	}
-
 }

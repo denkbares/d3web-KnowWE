@@ -77,7 +77,7 @@ public class QuestionnaireTest extends TestCase {
 				// here)
 				// So I let it in. Johannes
 				assertEquals("QContainer " + expected.getName() + " has wrong ID.",
-						expected.getId(), actual.getId());
+						expected.getName(), actual.getName());
 				assertEquals("QContainer " + expected.getName() + " has wrong name.",
 						expected.getName(), actual.getName());
 

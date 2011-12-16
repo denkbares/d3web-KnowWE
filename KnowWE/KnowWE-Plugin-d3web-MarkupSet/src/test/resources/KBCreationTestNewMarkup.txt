@@ -63,6 +63,48 @@ Technical Examinations
 -- No
 %
 
+%%Property
+KBCreationTestNewMarkup.author = test author
+KNOWLEDGEBASE.version = test version
+
+Mechanical problem.init = wrong init for solution
+ Observations.init = wrong init for questionnaire
+"Idle speed system o.k.?"#Yes.init = makes no sense
+Fuel.init = water
+  "Average mileage /100km".init = five
+  
+"Idle speed system o.k.?".init = Yes
+Mileage evaluation.init = UNKNOWN
+Other.init = text init
+Exhaust fumes.init = black
+"Real mileage  /100km".init = 6
+"Num. Mileage evaluation".init = 5.1232
+Damaged idle speed system.apriori = 121.12422135151512667623523523423
+
+  Damaged idle speed system.prompt.de = test prompt de
+Other.prompt.en = test prompt en
+Fuel#unleaded gasoline.prompt.de = benzin
+Other.prompt = test prompt no locale
+
+ Other.prompt.fr = "test prompt single quotest {[]}€!§$%&/()?`´'+;,:"
+Other.prompt.it = """test tripple quotes "{[]}€!§$%&/()?`´'+;,:#.'""same line"""
+	Other.prompt.de.DE = """
+	test tripple quotes start same line, end next line "{[]}€!§$%&/()?`´'+;,:#.'"" """
+Other.prompt.ko = 
+"""test tripple quotes start next line, end next line"""
+Driving#"unsteady idle speed".prompt.zh = 
+
+"""test tripple "{[]}€!§$%&/()?`´'+;,:#.'"" quotes after empty line, end line
+after"""
+
+Driving#insufficient power on partial load.prompt.en.US = 
+
+"""
+test tripple "{[]}€!§$%&/()?`´'+;,:#.'"" quotes start same line, end next 
+line
+"""
+%
+
 %%Rule
 // Rule R8
 IF "Average mileage /100km" > 0 AND KNOWN["Real mileage  /100km"]
@@ -116,4 +158,7 @@ Damaged idle speed system  {
 }
 %
 
-%%compile this
+%%knowledgebase
+KBCreationTestNewMarkup
+@uses: this
+%
