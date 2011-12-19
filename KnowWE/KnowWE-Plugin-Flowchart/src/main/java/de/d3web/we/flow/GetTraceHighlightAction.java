@@ -72,7 +72,7 @@ public class GetTraceHighlightAction extends AbstractAction {
 		Session session = D3webUtils.getSession(article.getTitle(), context, article.getWeb());
 
 		StringBuilder builder = new StringBuilder();
-		appendHeader(builder, flowName, PREFIX);
+		appendHeader(builder, FlowchartUtils.escapeHtmlId(flowName), PREFIX);
 
 		DiaFluxCaseObject diaFluxCaseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
 		Flow flow = DiaFluxUtils.getFlowSet(session).get(flowName);

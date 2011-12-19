@@ -190,12 +190,7 @@ public class FlowchartUtils {
 			addDisplayPlugins(result, user, scope);
 		}
 
-		try {
-			parent = URLEncoder.encode(parent, "UTF-8");
-		}
-		catch (UnsupportedEncodingException e) {
-			// seems as like we use the not encoded version anyway
-		}
+		parent = escapeHtmlId(parent);
 
 		result.append("\n");
 		result.append("<div id='" + parent + "'>");
@@ -205,6 +200,17 @@ public class FlowchartUtils {
 
 		return result.toString();
 
+	}
+
+	public static String escapeHtmlId(String text) {
+		try {
+			text = URLEncoder.encode(text, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e) {
+			// seems as like we use the not encoded version anyway
+		}
+		text = text.replaceAll("%", "");
+		return text;
 	}
 
 	public static void insertDiafluxRessources(StringBuilder result, UserContext user) {
