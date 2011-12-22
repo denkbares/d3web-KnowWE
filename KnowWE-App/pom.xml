@@ -242,7 +242,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
 		<!-- DiaFlux Dialog -->
 		<profile>
 			<id>diafluxdialog</id>
@@ -489,7 +489,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
 		<!-- CaseViz plugin -->
 		<profile>
 			<id>caseviz</id>
@@ -545,7 +545,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
 		<!-- Onte Plugin -->
 		<profile>
 			<id>onte-plugin</id>
@@ -563,7 +563,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
 		<profile>
 			<id>incremental-test-plugin</id>
 			<activation>
@@ -580,7 +580,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
 		<!-- DiaFlux Refactoring -->
 		<profile>
 			<id>diafluxrefactoring-plugin</id>
@@ -598,7 +598,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
 		<!-- DiaFlux Coverage -->
 		<profile>
 			<id>diafluxcoverage</id>
@@ -616,7 +616,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
 		<!-- KBDebug -->
 		<profile>
 			<id>kbdebug</id>
@@ -634,7 +634,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
 		<!-- DiaFlux Anomalies -->
 		<profile>
 			<id>diaflux-anomalies</id>
@@ -652,7 +652,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
-				
+
 		<!-- JournalImport -->
 		<profile>
 			<id>journalimport</id>
@@ -670,7 +670,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
 		<!-- Shared Plugin -->
 		<profile>
 			<id>KnowWE-Plugin-Shared</id>
@@ -722,7 +722,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
 		<profile>
 			<id>simplescoretable-plugin</id>
 			<activation>
@@ -739,7 +739,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
 		<profile>
 			<id>inlineindication-plugin</id>
 			<activation>
@@ -756,7 +756,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
 		<profile>
 			<id>proket-plugin</id>
 			<activation>
@@ -773,7 +773,42 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
+		<profile>
+			<id>rdfs-plugins</id>
+			<activation>
+				<property>
+					<name>rdfs-plugins</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-RDFS-TestCase</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-RDFS-Basic</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-RDFS-SubclassingTree</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-RDFS-TurtleN3</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
 		<profile>
 			<id>knowsec</id>
 			<activation>
@@ -945,7 +980,7 @@
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
-					<dependency>
+				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-basic</artifactId>
 					<version>${project.version}</version>
