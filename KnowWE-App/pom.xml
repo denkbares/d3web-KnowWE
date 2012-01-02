@@ -758,12 +758,7 @@
 		</profile>
 
 		<profile>
-			<id>proket-plugin</id>
-			<activation>
-				<property>
-					<name>proket-plugin</name>
-				</property>
-			</activation>
+			<id>proket</id>
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
@@ -771,7 +766,20 @@
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-InlineIndication</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-TimeDB</artifactId>
+					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
 			</dependencies>
+			
 		</profile>
 
 		<profile>
@@ -811,11 +819,6 @@
 
 		<profile>
 			<id>knowsec</id>
-			<activation>
-				<property>
-					<name>knowsec-plugin</name>
-				</property>
-			</activation>
 			<dependencies>
 				<dependency>
 					<groupId>com.denkbares</groupId>
