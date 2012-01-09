@@ -107,7 +107,7 @@ public class UpdateSolutions extends AbstractAction {
 		for (Solution diagnosis : diagnoses) {
 			if (diagnosis.getName().equals(
 					UpdateQuestions.revertSpecialCharacterEscape(solutionText))) {
-				diagnosisID = diagnosis.getId();
+				diagnosisID = diagnosis.getName();
 				break;
 			}
 

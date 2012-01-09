@@ -83,7 +83,7 @@ public class UpdateQuestions extends AbstractAction {
 
 		for (Question question : questions) {
 			if (question.getName().equals(revertSpecialCharacterEscape(questionText))) {
-				questionID = question.getId();
+				questionID = question.getName();
 				break;
 			}
 		}

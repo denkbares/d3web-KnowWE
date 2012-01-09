@@ -57,6 +57,7 @@ public class GetTraceHighlightAction extends AbstractAction {
 
 		String kdomid = context.getParameter("kdomid");
 
+		@SuppressWarnings("unchecked")
 		Section<DiaFluxType> diaFluxSec = (Section<DiaFluxType>) Sections.getSection(kdomid);
 
 		Section<FlowchartType> flowchart = Sections.findSuccessor(diaFluxSec, FlowchartType.class);
