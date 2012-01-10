@@ -27,6 +27,12 @@ public class DownloadKnowledgeBase extends AbstractAction {
 		String topic = context.getParameter(KnowWEAttributes.TOPIC);
 		String web = context.getParameter(KnowWEAttributes.WEB);
 
+		if (!KnowWEEnvironment.getInstance().getWikiConnector().userCanViewPage(topic,
+				context.getRequest())) {
+			context.sendError(HttpServletResponse.SC_FORBIDDEN,
+					"You are not allowed to download this knowledgebase");
+		}
+
 		KnowledgeRepresentationHandler handler = KnowWEEnvironment.getInstance()
 				.getKnowledgeRepresentationManager(web).getHandler("d3web");
 		// before writing, check if the user defined a desired filename
