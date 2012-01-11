@@ -25,5 +25,10 @@
 			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>d3web-Plugin-DiaFlux</artifactId>
+			<version>0.2-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>

@@ -53,6 +53,7 @@ import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.knowledge.terminology.info.Property.Autosave;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.utilities.Triple;
+import de.d3web.diaFlux.flow.Flow;
 import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.basic.D3webModule;
 import de.d3web.xcl.XCLModel;
@@ -168,6 +169,27 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			}
 			text.append("<p/>\n");
 			renderedRulesCache = new HashMap<Rule, String>();
+
+			/*
+			 * Render DiaFlux Models
+			 */
+
+			List<Flow> flows = kb.getManager().getObjects(Flow.class);
+			if (!flows.isEmpty()) {
+				StringBuilder bob = new StringBuilder();
+				int totalEdgeCount = 0, totalNodeCount = 0;
+				for (Flow flow : flows) {
+					int nodeCount = flow.getNodes().size();
+					int edgeCount = flow.getEdges().size();
+					totalNodeCount += nodeCount;
+					totalEdgeCount += edgeCount;
+					bob.append("Flow: '" + flow.getName() + "' (" + nodeCount + " Nodes, "
+							+ edgeCount + " Edges)<br>");
+				}
+				text.append("<p><strong>DiaFlux (" + flows.size() + " Flows, " + totalNodeCount
+						+ " Nodes, " + totalEdgeCount + " Edges):</strong><p/>\n\n");
+				text.append(bob);
+			}
 
 			/*
 			 * Questions
