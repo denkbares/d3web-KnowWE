@@ -21,7 +21,6 @@
 package de.knowwe.core.compile;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -100,7 +99,9 @@ public class TerminologyHandler implements EventListener {
 	}
 
 	private void registerTerminology(TerminologyExtension terminologyExtension) {
-		occupiedTerms.addAll(Arrays.asList(terminologyExtension.getTermNames()));
+		for (String occupiedTerm : terminologyExtension.getTermNames()) {
+			occupiedTerms.add(occupiedTerm.toLowerCase());
+		}
 	}
 
 	public String getWeb() {
@@ -197,7 +198,7 @@ public class TerminologyHandler implements EventListener {
 		Collection<Message> msgs = new LinkedList<Message>();
 		TermIdentifier termIdentifier = new TermIdentifier(article, s);
 
-		if (occupiedTerms.contains(termIdentifier.toString())) {
+		if (occupiedTerms.contains(termIdentifier.termIdentifierLowerCase)) {
 			msgs.add(Messages.objectCreationError("The term '"
 					+ termIdentifier.toString()
 					+ "' is reserved by the system."));

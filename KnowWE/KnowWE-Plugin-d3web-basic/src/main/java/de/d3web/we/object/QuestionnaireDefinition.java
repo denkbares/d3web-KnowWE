@@ -31,12 +31,9 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.TerminologyHandler;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.kdom.dashtree.DashTreeElement;
-import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -77,38 +74,18 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 			NamedObject o = kb.getManager().searchQContainer(name);
 
 			if (o != null) {
-				return Messages.asList(Messages.objectAlreadyDefinedWarning(
-						o.getClass().getSimpleName()));
-			}
-			else {
-				Section<? extends DashTreeElement> dashTreeFather = DashTreeUtils
-						.getFatherDashTreeElement(s);
-				QASet parent = kb.getRootQASet();
-				if (dashTreeFather != null) {
-					// is child of a QClass declaration => also declaration
-					Section<QuestionnaireDefinition> parentQclass =
-								Sections.findSuccessor(dashTreeFather,
-										QuestionnaireDefinition.class);
-					if (parentQclass != null) {
-						QASet localParent = kb.getManager().searchQContainer(
-								parentQclass.get().getTermIdentifier(
-										parentQclass));
-						if (localParent != null) {
-							parent = localParent;
-						}
-					}
+				if (!(o instanceof QContainer)) {
+					return Messages.asList(Messages.occupiedTermError(name, o.getClass()));
 				}
+				return Messages.asList();
+			}
+			QASet parent = kb.getRootQASet();
+			QContainer qc = new QContainer(parent, name);
 
-				QContainer qc = new QContainer(parent, name);
-				if (!article.isFullParse()) {
-					parent.addChild(qc,
-								s.get().getPosition(s));
-				}
-				s.get().storeTermObject(article, s, qc);
-				return Messages.asList(Messages.objectCreatedNotice(
-							qc.getClass().getSimpleName()
-									+ " " + qc.getName()));
-			}
+			s.get().storeTermObject(article, s, qc);
+			return Messages.asList(Messages.objectCreatedNotice(
+						qc.getClass().getSimpleName()
+								+ " " + qc.getName()));
 		}
 
 		@Override

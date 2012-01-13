@@ -22,6 +22,7 @@ package de.d3web.we.kdom.questionTree;
 import java.util.Collection;
 import java.util.List;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
@@ -138,24 +139,43 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 
 			if (fatherContent != null && localQuestionnaire != null) {
 
-				Section<QuestionnaireDefinition> questionniareDef = Sections.findSuccessor(
+				Section<QuestionnaireDefinition> superQuestionnaireDef = Sections.findSuccessor(
 						fatherContent, QuestionnaireDefinition.class);
-				if (questionniareDef != null) {
-					QContainer superQuasetionniare = questionniareDef.get().getTermObject(
+				if (superQuestionnaireDef != null) {
+					QContainer superQuestionnaire = superQuestionnaireDef.get().getTermObject(
 							article,
-							questionniareDef);
-					// here the actual taxonomic relation is established
-					superQuasetionniare.addChild(localQuestionnaire);
+							superQuestionnaireDef);
 
-					return Messages.asList(Messages.relationCreatedNotice(
-							s.getClass().getSimpleName()
-									+ " " + localQuestionnaire.getName()
-									+ "sub-questionnaire of "
-									+ superQuasetionniare.getName()));
+					KnowledgeBase kb = getKB(article);
+					if (superQuestionnaire == null) {
+						superQuestionnaire = kb.getManager().searchQContainer(
+								superQuestionnaireDef.get().getTermIdentifier(superQuestionnaireDef));
+					}
+
+					if (superQuestionnaire != null) {
+						// in case it was connected to the root, remove this
+						// connection
+						kb.getRootQASet().removeChild(localQuestionnaire);
+
+						// here the actual taxonomic relation is established
+						if (!article.isFullParse()) {
+							superQuestionnaire.addChild(localQuestionnaire,
+									localQuestionniareDef.get().getPosition(localQuestionniareDef));
+						}
+						else {
+							superQuestionnaire.addChild(localQuestionnaire);
+						}
+
+						return Messages.asList(Messages.relationCreatedNotice(
+								s.getClass().getSimpleName()
+										+ " " + localQuestionnaire.getName()
+										+ "sub-questionnaire of "
+										+ superQuestionnaire.getName()));
+					}
 				}
 			}
 
-			return null;
+			return Messages.asList();
 		}
 
 	}
