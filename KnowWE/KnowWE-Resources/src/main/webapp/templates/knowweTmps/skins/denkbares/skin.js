@@ -128,6 +128,18 @@ DenkbaresSkin.checkDocSizeScroll = function () {
 };
 
 /**
+ * Get the height of the document independent of the used browser.
+ */
+DenkbaresSkin.getDocHeight = function() {
+    var D = document;
+    return Math.max(
+        Math.max(D.body.scrollHeight, D.documentElement.scrollHeight),
+        Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),
+        Math.max(D.body.clientHeight, D.documentElement.clientHeight)
+    );
+}
+
+/**
  * Adapt the left menu favorites to the screen
  * so that the display size is optimally used.
  */
@@ -136,12 +148,13 @@ DenkbaresSkin.checkFavScroll = function () {
 	var element = $("favorites");
 	if (!element) return;
 	var originY = DenkbaresSkin.originY;
-	var docHeight = window.getScrollHeight();
+	var wHeight = window.getHeight();
+	var docHeight = DenkbaresSkin.getDocHeight();
 	var favHeight = element.clientHeight;
 	var favBottom = originY + favHeight; 
 	var scrollY = window.getScrollTop();
-	var scrollMax = window.getScrollHeight() - window.getHeight();
-	var favToScroll = favHeight - window.getHeight();
+	var scrollMax = docHeight - wHeight;
+	var favToScroll = favHeight - wHeight;
 	if (scrollY <= originY) {
 		// when reaching top of page
 		// align fav originally to page
