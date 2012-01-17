@@ -78,6 +78,7 @@
 /* abstraction questions */
 #quickinterview .qablockHidden {
 	color: #999;
+	margin-bottom: 3px;
 }
 
 #quickinterview .qablock:hover,.qablockHidden:hover {

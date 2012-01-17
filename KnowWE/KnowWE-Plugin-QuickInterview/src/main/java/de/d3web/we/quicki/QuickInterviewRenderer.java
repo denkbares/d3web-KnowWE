@@ -181,8 +181,8 @@ public class QuickInterviewRenderer {
 
 		// group all following questionnaires/questions for easily hiding them
 		// blockwise later
-		buffer.append("<div id='group_" + id + "' " + (visible ? "class='group indicated'" : "")
-				+ " style='display: " + (visible ? "block" : "none") + "' >");
+		buffer.append("<div id='group_" + id + "' style='display: " + (visible ? "block" : "none")
+				+ "' >");
 
 		depth++;
 
@@ -278,8 +278,7 @@ public class QuickInterviewRenderer {
 
 		boolean visible = isVisible(container);
 		buffi.append("<div id='" + id + "' "
-				+ "class='questionnaire point" + (visible ? "Down" : "Right")
-						+ (visible ? " indicated" : "") + "' "
+				+ "class='questionnaire point" + (visible ? "Down" : "Right") + "' "
 				+ "style='margin-left: " + margin + "px;' >");
 
 		buffi.append(getText(container));
@@ -787,22 +786,24 @@ public class QuickInterviewRenderer {
 	private boolean isVisible(TerminologyObject to) {
 
 		if (to == to.getKnowledgeBase().getRootQASet()) return true;
-
-		// check whether object itself is currently indicated
-		if (session.getBlackboard().getIndication((InterviewObject) to).isRelevant()) {
-			return true;
-		}
-		else {
-			if (to.getChildren().length > 0) {
-				for (TerminologyObject tochild : to.getChildren()) {
-					if (isVisible(tochild)) return true;
+		if (isThisOrFollowUpIndicated(to)) return true;
+		if (to instanceof Question) {
+			for (TerminologyObject parent : to.getParents()) {
+				if (parent instanceof QContainer) {
+					return true;
 				}
 			}
 		}
-		for (TerminologyObject parent : to.getParents()) {
-			if (parent instanceof QContainer
-					&& session.getBlackboard().getIndication((InterviewObject) parent).isRelevant()) {
-				return true;
+		return false;
+	}
+
+	private boolean isThisOrFollowUpIndicated(TerminologyObject to) {
+		if (session.getBlackboard().getIndication((InterviewObject) to).isRelevant()) {
+			return true;
+		}
+		if (to.getChildren().length > 0) {
+			for (TerminologyObject child : to.getChildren()) {
+				if (isThisOrFollowUpIndicated(child)) return true;
 			}
 		}
 		return false;

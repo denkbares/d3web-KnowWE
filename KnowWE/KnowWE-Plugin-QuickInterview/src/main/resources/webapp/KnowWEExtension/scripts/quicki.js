@@ -176,23 +176,6 @@ KNOWWE.plugin.quicki = function(){
         		});
             });
         	
-        	/* removing indicated elements from the storages; this ensures that indicated
-        	 * questions are always displayed expanded, even after e.g. the user previously
-        	 * collapsed a (part of) such a questionnaire tree. */
-            // select all elements with class="indicated"
-        	$$('.indicated').each(function( element ){
-	        	KNOWWE.core.util.updateProcessingState(1);
-	        	try {
-	        		var ids = questionnaireVis.indexOf(element.id);
-	        		var torep = questionnaireVis.substring(ids, ids + element.id.length + 1 + 5);
-	        		if (questionnaireVis.indexOf(torep)!=-1){
-	        			questionnaireVis = questionnaireVis.replace(torep, "");
-	        		}
-	          	}
-	        	catch (e) { /*ignore*/ }
-	        	KNOWWE.core.util.updateProcessingState(-1);
-            }); 
-        	
         	// select the element with id="quickireset"
         	if ($('quickireset')) {
 	            _KE.add('click', _KS('#quickireset'),  
