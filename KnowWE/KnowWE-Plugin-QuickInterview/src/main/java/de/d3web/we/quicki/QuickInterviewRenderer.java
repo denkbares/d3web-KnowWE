@@ -22,14 +22,11 @@ package de.d3web.we.quicki;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import de.d3web.core.knowledge.Indication.State;
 import de.d3web.core.knowledge.InterviewObject;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
@@ -74,8 +71,6 @@ public class QuickInterviewRenderer {
 
 	private final KnowledgeBase kb;
 
-	private final List<? extends QASet> inits;
-
 	private final ResourceBundle rb;
 
 	private int counter = 0;
@@ -103,8 +98,6 @@ public class QuickInterviewRenderer {
 		this.web = webb;
 		this.namespace = kb.getId();
 		this.rb = D3webModule.getKwikiBundle_d3web(user);
-		// get all elements of InitQuestionnaire
-		this.inits = kb.getInitQuestions();
 	}
 
 	public String render() {
@@ -120,7 +113,7 @@ public class QuickInterviewRenderer {
 
 		// call method for getting interview elements recursively
 		// start with root QASet and go DFS strategy
-		getInterviewElementsRenderingRecursively(kb.getRootQASet(), buffi, processedTOs, -2, true);
+		getInterviewElementsRenderingRecursively(kb.getRootQASet(), buffi, processedTOs, -2);
 
 		// add pseudo element for correctly closing the plugin
 		buffi.append("<div class='invisible'>  </div>");
@@ -160,102 +153,55 @@ public class QuickInterviewRenderer {
 	 * given StringBuffer
 	 * 
 	 * @created 14.07.2010
-	 * @param topContainer the root container
+	 * @param questionnaire the root container
 	 * @param buffer the StringBuffer
 	 * @param processedTOs already processed TerminologyObjects
 	 * @param depth recursion depth; used to calculate identation
-	 * @param init flag for signalling whether the processed element was in the
-	 *        init questionnaire
+	 * @param indicated flag for signaling whether the processed element was is
+	 *        indicated or not
 	 */
-	private void getInterviewElementsRenderingRecursively(TerminologyObject topContainer,
-			StringBuffer buffer, Set<TerminologyObject> processedTOs, int depth, boolean init) {
+	private void getInterviewElementsRenderingRecursively(TerminologyObject questionnaire,
+			StringBuffer buffer, Set<TerminologyObject> processedTOs, int depth) {
+
+		boolean visible = isVisible(questionnaire);
 
 		String id = getID();
 		// just do not display the rooty root
-		if (!topContainer.getName().endsWith("Q000")) {
+		if (questionnaire != questionnaire.getKnowledgeBase().getRootQASet()) {
 
 			// if already contained, get the already-defined rendering
-			if (processedTOs.contains(topContainer)) {
-				getAlreadyDefinedRendering(topContainer, buffer, depth++);
+			if (processedTOs.contains(questionnaire)) {
+				getAlreadyDefinedRendering(questionnaire, buffer, depth++);
 			}
 			else {
-				processedTOs.add(topContainer);
-
-				// if not empty
-				if (topContainer.getChildren() != null && topContainer.getChildren().length > 0) {
-					getQuestionnaireRendering((QContainer) topContainer, depth, init, buffer, id);
-				}
-				// if empty, specific rendering
-				else {
-					getEmptyQuestionnaireRendering((QContainer) topContainer, depth, buffer, init,
-							id);
-				}
+				processedTOs.add(questionnaire);
+				getQuestionnaireRendering((QContainer) questionnaire, depth, buffer, id);
 			}
-		}
-
-		// if init questionnaire: all contained elements are to be displayed
-		String display = init ? "display: block;" : "display: none;";
-		String clazz = "";
-		if (!init && isIndicated(topContainer)) {
-			display = "display: block;";
-			clazz = "class='group indicated'";
-			init = true;
 		}
 
 		// group all following questionnaires/questions for easily hiding them
 		// blockwise later
-		buffer.append("\n<div id='group_" + id + "' " + clazz + " style='"
-				+ display + "' >");
+		buffer.append("<div id='group_" + id + "' " + (visible ? "class='group indicated'" : "")
+				+ " style='display: " + (visible ? "block" : "none") + "' >");
 
 		depth++;
 
 		// process all children, depending on element type branch into
 		// corresponding recursion
-		for (TerminologyObject qcontainerchild : topContainer.getChildren()) {
+		for (TerminologyObject child : questionnaire.getChildren()) {
 
-			init = inits.contains(qcontainerchild) || isIndicated(qcontainerchild);
-			if (!init && qcontainerchild instanceof QASet) {
-				init = !Collections.disjoint(Arrays.asList(qcontainerchild.getChildren()), inits);
-			}
-
-			if (qcontainerchild instanceof QContainer) {
-				if (!processedTOs.contains(qcontainerchild)) {
+			if (child instanceof QContainer) {
+				if (!processedTOs.contains(child)) {
 					getInterviewElementsRenderingRecursively(
-							qcontainerchild, buffer, processedTOs, depth, init);
+							child, buffer, processedTOs, depth);
 				}
 			}
-			else if (qcontainerchild instanceof Question) {
-				getQuestionsRecursively((Question) qcontainerchild, buffer,
-							processedTOs, depth, topContainer, init);
+			else if (child instanceof Question) {
+				getQuestionsRecursively((Question) child, buffer,
+							processedTOs, depth, questionnaire);
 			}
 		}
 		buffer.append("</div>"); // close the grouping div
-	}
-
-	private void getEmptyQuestionnaireRendering(QContainer container, int depth, StringBuffer buffi,
-			boolean show, String id) {
-		int margin = 10 + depth * 20; // calculate identation
-
-		String clazz = show // decide class for rendering expand-icon
-				? "class='questionnaire pointDown'"
-				: "class='questionnaire pointRight'";
-
-		// if init questionnaire: all contained elements are to be displayed
-		String display = show ? "display: block;" : "display: none;";
-
-		buffi.append("<div id='" + id + "' " + clazz + " style='display: block;" +
-				" margin-left: " + margin + "px;' >");
-		buffi.append(getText(container));
-		buffi.append("</div>");
-
-		margin = margin + 30;
-		buffi.append("\n<div id='group_" + container.getName() + "' class='group' style='"
-				+ display + "' >");
-		buffi.append("\n<div class='emptyQuestionnaire' " +
-				"style='margin-left: " + margin + "px; display: block;' "
-				+ ">No elements defined!</div>");
-		buffi.append("</div>");
-
 	}
 
 	/**
@@ -272,7 +218,7 @@ public class QuickInterviewRenderer {
 	 *        an init questionnaire
 	 */
 	private void getQuestionsRecursively(Question topQuestion, StringBuffer sb,
-			Set<TerminologyObject> processedTOs, int depth, TerminologyObject parent, boolean init) {
+			Set<TerminologyObject> processedTOs, int depth, TerminologyObject parent) {
 
 		// if already contained in interview, get already-defined rendering and
 		// return for
@@ -292,7 +238,7 @@ public class QuickInterviewRenderer {
 			// we got follow-up questions, thus call recursively for children
 			for (TerminologyObject qchild : topQuestion.getChildren()) {
 				getQuestionsRecursively((Question) qchild, sb, processedTOs,
-						depth, parent, init);
+						depth, parent);
 			}
 		}
 	}
@@ -326,24 +272,29 @@ public class QuickInterviewRenderer {
 	 * @param buffi
 	 * @return the HTML of a questionnaire div
 	 */
-	private void getQuestionnaireRendering(QASet container, int depth, boolean show, StringBuffer buffi, String id) {
+	private void getQuestionnaireRendering(QASet container, int depth, StringBuffer buffi, String id) {
 
 		int margin = 10 + depth * 20; // calculate identation
 
-		String clazz = show // decide class for rendering expand-icon
-				? "class='questionnaire pointDown'"
-				: "class='questionnaire pointRight'";
-
-		String style = "style='margin-left: " + margin + "px; display: block;'";
-
-		if (!show && isIndicated(container)) {
-			clazz = "class='questionnaire pointDown indicated' ";
-		}
-
-		buffi.append("<div id='" + id + "' " + clazz + style + " >");
+		boolean visible = isVisible(container);
+		buffi.append("<div id='" + id + "' "
+				+ "class='questionnaire point" + (visible ? "Down" : "Right")
+						+ (visible ? " indicated" : "") + "' "
+				+ "style='margin-left: " + margin + "px;' >");
 
 		buffi.append(getText(container));
-		buffi.append("</div>");
+		buffi.append("</div>\n");
+
+		if (container.getChildren().length == 0) {
+			margin = margin + 30;
+			buffi.append("<div id='group_" + container.getName()
+					+ "' class='group' style='display: "
+					+ (visible ? "block" : "none") + ";' >");
+			buffi.append("\n<div class='emptyQuestionnaire' "
+					+ "style='margin-left: " + margin
+					+ "px'>No elements defined!</div>");
+			buffi.append("</div>");
+		}
 	}
 
 	/**
@@ -364,11 +315,8 @@ public class QuickInterviewRenderer {
 		int d = 30 + depth * 20;
 
 		String qablockCSS = "qablock";
-
-		if (question.getInfoStore().getValue(BasicProperties.ABSTRACTION_QUESTION) != null
-				&& question.getInfoStore().getValue(BasicProperties.ABSTRACTION_QUESTION).equals(
-						true)) {
-			qablockCSS = "qablockAbstract";
+		if (isAbstract(question) || !isVisible(question)) {
+			qablockCSS = "qablockHidden";
 		}
 
 		sb.append("\n<div class='" + qablockCSS
@@ -379,27 +327,7 @@ public class QuickInterviewRenderer {
 		// width of the question front section, i.e. total width - identation
 		int w = 320 - d;
 		String divText = getText(question);
-		// if (divText.length() > 35) {
-		// divText = question.getName().substring(0, 34) + "...";
-		//
-		// // Question Text > 35 chars --> display shortened,
-		// // render the first cell displaying the Question in a separate div,
-		// // then call method for rendering a question's answers in another
-		// // div
-		// sb.append("\n<div id='" + question.getName() + "' " +
-		// "parent='" + parent.getName() + "' " +
-		// "class='questionTT' " +
-		// "style='width: " + w + "px; display: inline-block;' title='"
-		// + getText(question)
-		// + "' >"
-		// + divText + "</div>");
-		//
-		// }
-		// else {
-		// Question Text < 35 chars --> display the whole no tooltip
-		// render the first cell displaying the Question in a separate div,
-		// then call method for rendering a question's answers in another
-		// div
+
 		sb.append("\n<div id='" + question.getName() + "' " +
 					"parent='" + parent.getName() + "' " +
 					"class='question' " +
@@ -430,6 +358,11 @@ public class QuickInterviewRenderer {
 		}
 		sb.append("</td></tr></table>");
 		sb.append("</div>");
+	}
+
+	private boolean isAbstract(Question question) {
+		return question.getInfoStore().getValue(BasicProperties.ABSTRACTION_QUESTION) != null
+				&& question.getInfoStore().getValue(BasicProperties.ABSTRACTION_QUESTION);
 	}
 
 	private void renderTextAnswers(Question q, StringBuffer sb) {
@@ -844,28 +777,34 @@ public class QuickInterviewRenderer {
 	}
 
 	/**
-	 * Checks, whether the given TerminologyObject is currently indicated or
-	 * not.
+	 * Checks, whether the given TerminologyObject is currently visible or not.
 	 * 
 	 * @created 30.10.2010
 	 * @param to the TerminologyObject to be checked.
 	 * @param bb
 	 * @return true, if the given TerminologyObject is indicated.
 	 */
-	private boolean isIndicated(TerminologyObject to) {
+	private boolean isVisible(TerminologyObject to) {
+
+		if (to == to.getKnowledgeBase().getRootQASet()) return true;
 
 		// check whether object itself is currently indicated
-		if (session.getBlackboard().getIndication((InterviewObject) to).getState() == State.INDICATED) {
+		if (session.getBlackboard().getIndication((InterviewObject) to).isRelevant()) {
 			return true;
 		}
 		else {
-			if (to.getChildren().length != 0) {
+			if (to.getChildren().length > 0) {
 				for (TerminologyObject tochild : to.getChildren()) {
-					return isIndicated(tochild);
+					if (isVisible(tochild)) return true;
 				}
 			}
 		}
-
+		for (TerminologyObject parent : to.getParents()) {
+			if (parent instanceof QContainer
+					&& session.getBlackboard().getIndication((InterviewObject) parent).isRelevant()) {
+				return true;
+			}
+		}
 		return false;
 	}
 

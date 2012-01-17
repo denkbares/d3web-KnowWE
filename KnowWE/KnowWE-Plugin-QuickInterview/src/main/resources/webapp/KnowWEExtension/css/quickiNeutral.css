@@ -76,11 +76,11 @@
 }
 
 /* abstraction questions */
-#quickinterview .qablockAbstract {
+#quickinterview .qablockHidden {
 	color: #999;
 }
 
-#quickinterview .qablock:hover,.qablockAbstract:hover {
+#quickinterview .qablock:hover,.qablockHidden:hover {
 	background: #f5f5f5;
 }
 
