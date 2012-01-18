@@ -111,5 +111,10 @@
 			<version>0.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.semweb4j</groupId>
+			<artifactId>rdf2go.impl.sesame25</artifactId>
+			<version>4.7.4</version>
+		</dependency>
 	</dependencies>
 </project>
