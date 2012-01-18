@@ -30,7 +30,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseUtils;
-import de.d3web.core.session.Value;
+import de.d3web.core.session.QuestionValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.empiricaltesting.TestCase;
 import de.d3web.we.basic.D3webKnowledgeHandler;
@@ -261,7 +261,7 @@ public class TestCaseContent extends StringReference {
 								return;
 							}
 
-							Value value = KnowledgeBaseUtils.findValue(question,
+							QuestionValue value = KnowledgeBaseUtils.findValue(question,
 									clean(valueSection.getOriginalText().trim()));
 							if (value == null) {
 								messages.add(Messages.noSuchObjectError(
@@ -359,7 +359,7 @@ public class TestCaseContent extends StringReference {
 						}
 						// If not, it is a QuestionChoice
 						else {
-							Value value = KnowledgeBaseUtils.findValue(question,
+							QuestionValue value = KnowledgeBaseUtils.findValue(question,
 									clean(valueSection.getOriginalText().trim()));
 							if (value == null) {
 								messages.add(Messages.noSuchObjectError(
