@@ -69,9 +69,9 @@ public class RetractSingleFindingAction extends AbstractAction {
 
 		String objectid = context.getParameter(KnowWEAttributes.SEMANO_OBJECT_ID);
 		String valuenum =
-			context.getParameter(KnowWEAttributes.SEMANO_VALUE_NUM);
+				context.getParameter(KnowWEAttributes.SEMANO_VALUE_NUM);
 		String valuedate =
-			context.getParameter(KnowWEAttributes.SEMANO_VALUE_DATE);
+				context.getParameter(KnowWEAttributes.SEMANO_VALUE_DATE);
 		String topic = context.getTopic();
 		String user = context.getUserName();
 		String web = context.getWeb();
@@ -84,9 +84,9 @@ public class RetractSingleFindingAction extends AbstractAction {
 			namespace = java.net.URLDecoder.decode(
 					context.getParameter(KnowWEAttributes.SEMANO_NAMESPACE), "UTF-8");
 			valueid = URLDecoder.decode(context.getParameter(KnowWEAttributes.SEMANO_VALUE_ID),
-			"UTF-8");
+					"UTF-8");
 			term = URLDecoder.decode(context.getParameter(KnowWEAttributes.SEMANO_TERM_NAME),
-			"UTF-8");
+					"UTF-8");
 			if (objectid != null) objectid = URLDecoder.decode(objectid, "UTF-8");
 		}
 		catch (UnsupportedEncodingException e1) {
@@ -126,25 +126,26 @@ public class RetractSingleFindingAction extends AbstractAction {
 				}
 			}
 
-			//			if (value != null) {
+			// if (value != null) {
 
 			// TODO Use this Code?
 			// 6.2011 Johannes
 			Unknown unknown = Unknown.getInstance();
-			synchronized(session) {
+			synchronized (session) {
 				Fact fact = FactFactory.createUserEnteredFact(question,
 						unknown);
 				blackboard.addValueFact(fact);
+				session.touch();
 			}
 			EventManager.getInstance().fireEvent(
 					new FindingSetEvent(question, unknown, namespace, web,
 							user));
 
-			//				Fact fact = blackboard.getValueFact(question);
-			//				if (fact.getValue().equals(value)) {
-			//					blackboard.removeValueFact(fact);
-			//				}
-			//			}
+			// Fact fact = blackboard.getValueFact(question);
+			// if (fact.getValue().equals(value)) {
+			// blackboard.removeValueFact(fact);
+			// }
+			// }
 			// need a FindingRetractedEvent?!
 			// EventManager.getInstance().fireEvent(
 			// new FindingSetEvent(question, value, namespace, web, user));

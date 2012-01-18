@@ -91,15 +91,13 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	}
 
 	/**
-	 * Returns an array of all topics of this web that owns a compiled d3web
-	 * knowledge base.
+	 * Returns all topics of this web that own a compiled d3web knowledge base.
 	 * 
 	 * @created 14.10.2010
 	 * @return all topics with a compiled d3web knowledge base
 	 */
-	public String[] getKnowledgeTopics() {
-		Set<String> keySet = kbs.keySet();
-		return keySet.toArray(new String[keySet.size()]);
+	public Set<String> getKnowledgeArticles() {
+		return kbs.keySet();
 	}
 
 	public KnowledgeBase getLastKB(String title) {

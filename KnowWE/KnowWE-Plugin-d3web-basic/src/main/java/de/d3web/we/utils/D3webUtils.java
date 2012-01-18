@@ -191,9 +191,8 @@ public class D3webUtils {
 		D3webKnowledgeHandler knowledgeHandler =
 				D3webModule.getKnowledgeRepresentationHandler(web);
 		D3webKnowledgeHandler repHandler = D3webModule.getKnowledgeRepresentationHandler(web);
-		String[] topics = knowledgeHandler.getKnowledgeTopics();
 		KnowledgeBase base = null;
-		for (String t : topics) {
+		for (String t : knowledgeHandler.getKnowledgeArticles()) {
 			base = repHandler.getKB(t);
 			if (base.getName() != null) return base;
 		}
