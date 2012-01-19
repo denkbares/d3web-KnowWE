@@ -124,19 +124,16 @@ KNOWWE.plugin.instantEdit = function() {
             
             var options = {
                 url : KNOWWE.core.util.getURL(params),
-                async : false, // hotfix for chrome (onunload does not wait for
-								// async call)
                 response : {
                     action : 'none',
-                    fn : function() {
-                        if(reload) {
-                        	window.location.reload();
-                        }
-                    },
 	                onError : _IE.onErrorBehavior,
                 }
             }
-            new _KA(options).send();            
+            new _KA(options).send(); 
+            
+            if(reload) {
+            	window.location.reload();
+            }
         },
         
         /**
@@ -250,14 +247,14 @@ KNOWWE.plugin.instantEdit = function() {
                 async : false,
                 response : {
                    action : 'none',
-                   fn : function() {
-                	   _IE.wikiText[id] = this.responseText;
-                   },
+                   // for FF 3.6 compatibility, we can't use the function fn
+                   // in synchronous call (no onreadystatechange event fired)
                    onError : _IE.onErrorBehavior,
                }
             };
-            new _KA(options).send();
-            
+            var ajaxCall = new _KA(options);
+            ajaxCall.send();
+            _IE.wikiText[id] = ajaxCall.getResponse();
             return _IE.wikiText[id];
         },
         
