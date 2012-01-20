@@ -294,6 +294,30 @@ public class DefaultMarkupType extends AbstractType {
 		return results;
 	}
 
+	/**
+	 * Returns the content section of all annotations sections in this section.
+	 * If the section is not of type "DefaultMarkup" an IllegalArgumentException
+	 * is thrown. If there is no annotation with the specified name, an empty
+	 * list is returned.
+	 * 
+	 * @param section the section to be searched
+	 * @return the list of annotation sections
+	 * @throws IllegalArgumentException if the specified section is not of
+	 *         {@link DefaultMarkupType}
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<Section<? extends AnnotationContentType>> getAllAnnotationContentSections(Section<?> section) {
+		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
+			throw new IllegalArgumentException("section not of type DefaultMarkupType");
+		}
+		List<Section<? extends AnnotationContentType>> results = new ArrayList<Section<? extends AnnotationContentType>>();
+		for (Section<? extends Type> child : findAnnotationContentTypes(section)) {
+			results.add((Section<? extends AnnotationContentType>) child);
+
+		}
+		return results;
+	}
+
 	private static List<Section<? extends Type>> findAnnotationContentTypes(Section<? extends Type> section) {
 		List<Section<? extends Type>> children = new LinkedList<Section<? extends Type>>();
 		List<Class<? extends Type>> path = new ArrayList<Class<? extends Type>>(3);
