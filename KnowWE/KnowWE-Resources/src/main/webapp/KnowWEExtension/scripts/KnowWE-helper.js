@@ -302,7 +302,7 @@ KNOWWE.helper = function(){
         	} else {
         		dark.style.display = 'none';
         	}
-        },
+        }
     }
 }();
 
