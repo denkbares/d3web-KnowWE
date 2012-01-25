@@ -244,23 +244,25 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 
 						QContainer questionnaire = qDef.get().getTermObject(article, qDef);
 
-						boolean alreadyInitDefined = getKB(article).removeInitQuestion(
-								questionnaire);
-						// check whether there is already some init-number
-						// registered for this QASet
-						if (alreadyInitDefined) {
-							// do nothing and throw error iff
-							return Messages.asList(Messages.objectAlreadyDefinedError(
-									"Init priority for object already defined"));
-						}
-						else {
-							// else register init value
-							getKB(article).addInitQuestion(
-									questionnaire,
-									number);
+						if (questionnaire != null) {
+							boolean alreadyInitDefined = getKB(article).removeInitQuestion(
+									questionnaire);
+							// check whether there is already some init-number
+							// registered for this QASet
+							if (alreadyInitDefined) {
+								// do nothing and throw error iff
+								return Messages.asList(Messages.objectAlreadyDefinedError(
+										"Init priority for object already defined"));
+							}
+							else {
+								// else register init value
+								getKB(article).addInitQuestion(
+										questionnaire,
+										number);
 
-							return Messages.asList(Messages.objectCreatedNotice(
-									"Init property set"));
+								return Messages.asList(Messages.objectCreatedNotice(
+										"Init property set"));
+							}
 						}
 
 					}
