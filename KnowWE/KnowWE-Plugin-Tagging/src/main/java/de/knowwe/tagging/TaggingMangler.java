@@ -105,6 +105,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 				output += temptag + " ";
 			}
 			output = output.trim();
+			output += "\n";
 			Section<TagsContent> keep = tagslist.get(0);
 			if (multiple) {
 				for (int i = 1; i < tagslist.size(); i++) {
