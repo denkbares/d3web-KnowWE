@@ -622,7 +622,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 		buffi.append(simpleName);
 		buffi.append(", ID: " + getID());
 		buffi.append(", length: " + this.getOriginalText().length() + " ("
-				+ offSetFromFatherText + ")" + ", children: " + getChildren().size());
+				+ getOffSetFromFatherText() + ")" + ", children: " + getChildren().size());
 		String ot = this.getOriginalText().length() < 50 ? text : text.substring(0,
 				50) + "...";
 		ot = ot.replaceAll("\\n", "\\\\n");

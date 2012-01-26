@@ -34,19 +34,10 @@ public class ContentType extends AbstractType {
 
 	private final static String REGEX =
 			// prefix (declare the markup section)
-			"^\\p{Blank}*%%$NAME$\\p{Blank}*[:=\\p{Space}]" +
-					// skip empty lines before content
-					"(?:\\p{Space}*[\\r\\n]+)*" +
-					// 100921 by ochlast: New content matching! This means:
-					// "From now on match everything, that begins NOT with a
-					// sequence of spaces, followed by an @ at the beginning
-					// of
-					// the line."
+			"^\\p{Blank}*%%$NAME$\\p{Blank}*[:=]?\\p{Space}*?(?:\\r?\\n)?+" +
+					// the content
 					"((?:(?!$LINESTART$\\p{Space}*@\\w+).)*?)" +
-					// skip emtpy lines after content
-					"(?:\\p{Space}*[\\r\\n]+)*" +
-					// suffix: terminate-tag or end-of-input or declare next
-					// parameter
+					// end tag, end of input or annotations
 					"(^\\p{Blank}*/?%\\p{Blank}*$" +
 					"|\\z|" +
 					"\\p{Space}+@\\w+)";
