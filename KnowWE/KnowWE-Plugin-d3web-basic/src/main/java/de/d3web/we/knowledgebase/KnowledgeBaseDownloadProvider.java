@@ -19,7 +19,11 @@
 
 package de.d3web.we.knowledgebase;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import de.knowwe.core.KnowWEAttributes;
+import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
@@ -35,9 +39,10 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
 		// and provide both download and refresh as tools
 		Tool download = getDownloadTool(article, section, userContext);
+		Tool qrCode = getQRCodeTool(article, section, userContext);
 		Tool refresh = getRefreshTool(article, section, userContext);
 		return new Tool[] {
-				refresh, download };
+				refresh, download, qrCode };
 	}
 
 	protected Tool getRefreshTool(KnowWEArticle article, Section<?> section, UserContext userContext) {
@@ -69,6 +74,37 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 				"KnowWEExtension/d3web/icon/download16.gif",
 				"Download",
 				"Download the entire knowledge base into a single file for deployment.",
+				jsAction);
+	}
+
+	protected Tool getQRCodeTool(KnowWEArticle article, Section<?> section, UserContext userContext) {
+		// tool to provide download capability
+		String kbName = DefaultMarkupType.getContent(section).trim();
+		if (kbName.isEmpty()) {
+			kbName = "knowledgebase";
+		}
+		String baseUrl = KnowWEEnvironment.getInstance().getWikiConnector().getBaseUrl();
+		String kbURL = baseUrl + "action/DownloadKnowledgeBase" +
+				"?" + KnowWEAttributes.TOPIC + "=" + article.getTitle() +
+				"&" + KnowWEAttributes.WEB + "=" + article.getWeb() +
+				"&" + DownloadKnowledgeBase.PARAM_FILENAME + "=" + kbName + ".d3web";
+		try {
+			kbURL = URLEncoder.encode(kbURL, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e) {
+		}
+		String imageURL = "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=" + kbURL;
+		String id = section.getID();
+		String jsAction = "var node=$E('.markupText', '" + id + "'); " +
+				"var visible = (node.firstChild.nodeName == 'IMG'); " +
+				"if (visible) node.firstChild.remove();" +
+				"else " +
+				"node.innerHTML='<img style=\\'float:left\\' " +
+				"src=\\'" + imageURL + "\\'></img>'+node.innerHTML;";
+		return new DefaultTool(
+				"KnowWEExtension/d3web/icon/qrcode16.gif",
+				"QR-Code",
+				"Shows the QR-Code to download the knowledge base into mobile devices.",
 				jsAction);
 	}
 
