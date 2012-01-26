@@ -68,7 +68,7 @@ KNOWWE.plugin.quicki = function(){
 
 	var mcanswervals = '';      // for collecting the values of MC answers
 	var quickiruns = false;     // flag whether QuickI runs a session
-	var questionnaireVis = ''; // for storing questionnaire visibility states
+	var questionnaireVis = new Object(); // for storing questionnaire visibility states
 	var questionVis = '';		// for storing question visibility states
 	
 	return {
@@ -209,30 +209,36 @@ KNOWWE.plugin.quicki = function(){
         	
         	KNOWWE.core.util.updateProcessingState(1);
         	try {
-	        	// split questionnaireVis storage into questionnaire;vis
-	        	// elments
-	        	var qs = questionnaireVis.split('###');
 	        	
-	        	for (var i = 0; i < qs.length; i++) {
-	        	
-	        		// split into questionnaire id and visibility
-	        		var qsplit = qs[i].split(';');
-	        		var qid = qsplit[0];
-	        		qid = qid.replace(/ /g, ''); // remove spaces
-	        		var qvis = qsplit[1];
+	        	for (var qid in questionnaireVis) {
+
+	        		var qvis = questionnaireVis[qid];
 	        		        		
 	        		var groupEl = _KS('#group_' + qid);
-	        		var questionnaire = _KS('#'+qid);
+	        		var questionnaire = _KS('#' + qid);
+	        		var indicated = $(questionnaire).hasClass('indicated');
 	        		
-	        		// 0 means set style and image to invisible
-	        		if(qvis==0){
-	        			groupEl.style.display = 'none'; 
-	        			KNOWWE.plugin.quicki.toggleImage(1, questionnaire);       
+	        		// 0 means set style and image to invisible if questionnaire
+	        		// is not indicated
+	        		if(qvis == 0){
+	        			if (!indicated) {
+		        			groupEl.style.display = 'none'; 
+		        			KNOWWE.plugin.quicki.toggleImage(1, questionnaire);       
+	        			}
 	        		} 
 	        		// 1 means set style and image to be visible = unfolded
-	        		else if (qvis ==1 ){
+	        		else if (qvis == 1) {
 	        			groupEl.style.display = 'block'; 
 	        			KNOWWE.plugin.quicki.toggleImage(0, questionnaire);       
+	        		}
+	        		// 2 means set style and image to be invisible although 
+	        		// the questionnaire is indicated
+	        		else if (qvis == 2) {
+	        			if (!indicated) {
+	        				questionnaireVis[qid] = 0;
+	        			}
+	        			groupEl.style.display = 'none'; 
+	        			KNOWWE.plugin.quicki.toggleImage(1, questionnaire);   
 	        		}
 	        	}
         	}
@@ -683,20 +689,14 @@ KNOWWE.plugin.quicki = function(){
         	var questionnaire = _KE.target(event); 	
         	var group = _KS('#group_' + questionnaire.id);
         	
-        	if(group.style.display=='block'){ 
-        		
+        	if (group.style.display=='block') { 
+    			var indicated = $(questionnaire).hasClass('indicated');
+    			if (indicated) {
+        			questionnaireVis[questionnaire.id] = 2;
+        		} else {        			
+        			questionnaireVis[questionnaire.id] = 0;
+        		}
             	group.style.display = 'none';    
-            	var replacer = questionnaire.id + ';0###';
-            	var containsIndex = questionnaireVis.indexOf(questionnaire.id);
-            		
-            	if(containsIndex!=-1){
-            		var toreplace = questionnaireVis.substring(containsIndex, 
-                		containsIndex + questionnaire.id.length + 5);
-                	questionnaireVis = questionnaireVis.replace(toreplace, replacer);
-                }            		
-            	else {
-            		questionnaireVis = questionnaireVis + replacer;
-            	}
             
             	KNOWWE.plugin.quicki.toggleImage(1, questionnaire);       
             	
@@ -704,17 +704,7 @@ KNOWWE.plugin.quicki = function(){
           		
             	group.style.display = 'block';	
           		
-            	var replacer = questionnaire.id + ';1###';
-            	var containsIndex = questionnaireVis.indexOf(questionnaire.id);
-            		
-            	if(containsIndex!=-1){
-            		var toreplace = questionnaireVis.substring(containsIndex, 
-                		containsIndex + questionnaire.id.length + 5);
-                	questionnaireVis = questionnaireVis.replace(toreplace, replacer);
-                }            		
-            	else {
-            		questionnaireVis = questionnaireVis + replacer;
-            	}
+            	questionnaireVis[questionnaire.id] = 1;
             	
             	KNOWWE.plugin.quicki.toggleImage(0, questionnaire);   
             } 

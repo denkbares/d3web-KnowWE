@@ -277,8 +277,10 @@ public class QuickInterviewRenderer {
 		int margin = 10 + depth * 20; // calculate identation
 
 		boolean visible = isVisible(container);
+		boolean indicated = isThisOrFollowUpIndicated(container);
 		buffi.append("<div id='" + id + "' "
-				+ "class='questionnaire point" + (visible ? "Down" : "Right") + "' "
+				+ "class='questionnaire point" + (visible ? "Down" : "Right")
+				+ (indicated ? " indicated" : "") + "' "
 				+ "style='margin-left: " + margin + "px;' >");
 
 		buffi.append(getText(container));
