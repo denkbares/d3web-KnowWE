@@ -18,18 +18,26 @@
  */
 package de.knowwe.d3web.property;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 import de.d3web.core.knowledge.InfoStore;
+import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.info.Property;
+import de.d3web.core.manage.KnowledgeBaseUtils;
+import de.d3web.we.object.QuestionReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.d3web.property.NamedObjectReference.PropertyAnswerReference;
 
 /**
  * Parses a line defining a property
@@ -51,9 +59,28 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 		if (namendObjectSection == null) {
 			return Messages.asList(Messages.syntaxError("No NamedObject found."));
 		}
+		List<NamedObject> objects = new ArrayList<NamedObject>(1);
 		NamedObject object = namendObjectSection.get().getTermObject(article, namendObjectSection);
 		if (object == null) {
-			return Messages.asList(Messages.noSuchObjectError(namendObjectSection.getText().trim()));
+			Section<QuestionReference> questionReferenceSection = Sections.findChildOfType(
+					namendObjectSection, QuestionReference.class);
+			if (questionReferenceSection == null || !questionReferenceSection.getText().isEmpty()) {
+				return Messages.asList(Messages.noSuchObjectError(namendObjectSection.getText().trim()));
+			}
+			else {
+				// question is a wild card, get all questions with the given
+				// answer.
+				Section<PropertyAnswerReference> answerReferenceSection =
+						Sections.findChildOfType(namendObjectSection, PropertyAnswerReference.class);
+				objects = getAllChoices(article, answerReferenceSection);
+				if (objects.isEmpty()) {
+					return Messages.asList(Messages.error("No choices with the text '"
+							+ answerReferenceSection.getText() + "' found."));
+				}
+			}
+		}
+		else {
+			objects.add(object);
 		}
 
 		// get Property
@@ -98,14 +125,31 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 			return Messages.asList(Messages.syntaxError("The property value '" + content
 						+ "' is not compatible with the property '" + property + "'."));
 		}
-		try {
-			object.getInfoStore().addValue(property, locale, value);
-		}
-		catch (IllegalArgumentException e) {
-			return Messages.asList(Messages.syntaxError("The property '" + property.getName() +
-						"' cannot be localized."));
+		for (NamedObject namedObject : objects) {
+			try {
+				namedObject.getInfoStore().addValue(property, locale, value);
+			}
+			catch (IllegalArgumentException e) {
+				return Messages.asList(Messages.syntaxError("The property '" + property.getName() +
+							"' cannot be localized."));
+			}
 		}
 		return Messages.asList(Messages.notice("Property declaration successful."));
+	}
+
+	private List<NamedObject> getAllChoices(KnowWEArticle article, Section<PropertyAnswerReference> answerReference) {
+		List<Question> questions = getKB(article).getManager().getQuestions();
+		List<NamedObject> choices = new ArrayList<NamedObject>(questions.size());
+		for (Question question : questions) {
+			if (!(question instanceof QuestionChoice)) continue;
+
+			QuestionChoice questionChoice = (QuestionChoice) question;
+			Choice choice = KnowledgeBaseUtils.findChoice(questionChoice,
+						answerReference.getText());
+			if (choice != null) choices.add(choice);
+
+		}
+		return choices;
 	}
 
 	@Override

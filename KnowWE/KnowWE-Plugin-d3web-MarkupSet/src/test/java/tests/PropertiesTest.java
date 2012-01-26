@@ -252,4 +252,21 @@ public class PropertiesTest extends TestCase {
 				"start same line, end next \r\nline\r\n";
 		assertEquals("quoted property content not set correctly", expected, actual);
 	}
+
+	public void testWildCardProperties() {
+		String actual = getChoice("Idle speed system o.k.?", "Yes").getInfoStore().getValue(
+				MMInfo.PROMPT,
+				Locale.GERMAN);
+		String expected = "Ja";
+		assertEquals("Property for wild card question not set properly", expected, actual);
+
+		actual = getChoice("SomeQuestion", "Yes").getInfoStore().getValue(MMInfo.PROMPT,
+				Locale.GERMAN);
+		expected = "Ja";
+		assertEquals("Property for wild card question not set properly", expected, actual);
+
+		actual = getChoice("SomeQuestion", "No").getInfoStore().getValue(MMInfo.PROMPT,
+				Locale.GERMAN);
+		assertNull("Unwanted property set with wild card", actual);
+	}
 }

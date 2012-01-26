@@ -72,7 +72,7 @@ public class NamedObjectReference extends D3webTermReference<NamedObject> {
 		this.addChildType(answerReference);
 	}
 
-	private static class PropertyAnswerReference extends AnswerReference {
+	protected class PropertyAnswerReference extends AnswerReference {
 
 		@Override
 		public Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s) {

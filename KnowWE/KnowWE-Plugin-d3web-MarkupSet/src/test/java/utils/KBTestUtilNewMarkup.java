@@ -47,6 +47,7 @@ import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
+import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
@@ -276,6 +277,8 @@ public class KBTestUtilNewMarkup {
 
 		// new QuestionYN(qc2, "Idle speed system o.k.?");
 		new QuestionOC(qc2, "Idle speed system o.k.?", "Yes", "No");
+
+		new QuestionYN(qc2, "SomeQuestion");
 	}
 
 	/**
