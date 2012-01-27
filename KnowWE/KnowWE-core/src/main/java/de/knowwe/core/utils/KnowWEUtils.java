@@ -26,6 +26,7 @@ import java.io.FileWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,6 +40,7 @@ import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.SectionStore;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.wikiConnector.ConnectorAttachment;
 
 public class KnowWEUtils {
 
@@ -444,6 +446,29 @@ public class KnowWEUtils {
 			Logger.getLogger(KnowWEUtils.class.getName()).log(
 					Level.WARNING, "Unable to write File: " + e.getMessage());
 		}
+	}
+
+	/**
+	 * Returns the ConnectorAttachment for a specified filename on a specified
+	 * wikipage
+	 * 
+	 * @created 27.01.2012
+	 * @param title Title of the wikipage
+	 * @param fileName filename of the attachment
+	 * @return {@link ConnectorAttachment} fullfilling the specified parameters
+	 *         or null, if no such attachment exists
+	 */
+	public static ConnectorAttachment getAttachment(String title, String fileName) {
+		Collection<ConnectorAttachment> attachments = KnowWEEnvironment.getInstance().getWikiConnector().getAttachments();
+		ConnectorAttachment actualAttachment = null;
+		for (ConnectorAttachment attachment : attachments) {
+			if (attachment.getFileName().equals(fileName)
+					&& attachment.getParentName().equals(title)) {
+				actualAttachment = attachment;
+				break;
+			}
+		}
+		return actualAttachment;
 	}
 
 }
