@@ -221,7 +221,7 @@ public class DefaultMarkupType extends AbstractType {
 	 * Returns the content of the annotation sections using the specified name.
 	 * If the sections are not of type "DefaultMarkup" an
 	 * IllegalArgumentException is thrown. If there is no annotation section
-	 * with the specified name, null is returned.
+	 * with the specified name, an empty array is returned.
 	 * 
 	 * @created 26.01.2011
 	 * @param section the section to be searched
