@@ -89,6 +89,7 @@ public class CIBuilder {
 	 * resultset - write the resultset to file (by PersistenceHandler)
 	 */
 	public void executeBuild() {
+		long buildStartTime = System.currentTimeMillis();
 
 		// Map<String, Class<? extends CITest>> testClasses =
 		// CIUtilities.parseTestClasses(this.config.getTests().keySet());
@@ -173,6 +174,7 @@ public class CIBuilder {
 			}
 			resultset.addTestResult(testname, testResult);
 		}
+		resultset.setTimeSpentForBuild(System.currentTimeMillis() - buildStartTime);
 
 		// write the resultset to XML
 		CIBuildPersistenceHandler persi = CIBuildPersistenceHandler.getHandler(

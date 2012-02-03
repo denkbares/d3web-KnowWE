@@ -167,6 +167,21 @@ public class CIBuildPersistenceHandler {
 		return intBuildNum;
 	}
 
+	public long getBuiltTime() {
+
+		long buildTime = 0;
+		// try to parse the most current build NR
+		Object o = selectSingleNode("/builds/build[last()]/@time");
+		if (o instanceof Attribute) {
+			Attribute attr = (Attribute) o;
+			String attrValue = attr.getValue();
+			if (attrValue != null && !attrValue.isEmpty()) {
+				buildTime = Long.parseLong(attrValue);
+			}
+		}
+		return buildTime;
+	}
+
 	public Date getCurrentBuildExecutionDate() {
 
 		Date buildExecuted = null;
@@ -205,6 +220,7 @@ public class CIBuildPersistenceHandler {
 			build.setAttribute("executed", DATE_FORMAT.format(
 					resultset.getBuildExecutionDate()));
 			build.setAttribute("nr", String.valueOf(nextBuildNumber));
+			build.setAttribute("duration", "" + resultset.getTimeSpentForBuild());
 			// build.setAttribute("articleVersion", String.
 			// valueOf(resultset.getArticleVersion()));
 			nextBuildNumber++;

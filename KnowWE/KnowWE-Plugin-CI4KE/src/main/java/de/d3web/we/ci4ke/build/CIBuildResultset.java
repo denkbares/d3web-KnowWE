@@ -48,10 +48,33 @@ public final class CIBuildResultset {
 
 	private final List<Pair<String, CITestResult>> results;
 
+	private long timeSpentForBuild;
+
+	/**
+	 * The duration is given in milliseconds.
+	 * 
+	 * @created 03.02.2012
+	 * @return in milliseconds
+	 */
+	public long getTimeSpentForBuild() {
+		return timeSpentForBuild;
+	}
+
+	/**
+	 * The duration is given in milliseconds.
+	 * 
+	 * @created 03.02.2012
+	 * @param timeSpentForBuild in milliseconds
+	 */
+	public void setTimeSpentForBuild(long timeSpentForBuild) {
+		this.timeSpentForBuild = timeSpentForBuild;
+	}
+
 	public CIBuildResultset() {
 		super();
 		this.buildExecutionDate = new Date();
 		this.results = new ArrayList<Pair<String, CITestResult>>();
+		this.timeSpentForBuild = 0;
 	}
 
 	public Date getBuildExecutionDate() {

@@ -140,8 +140,20 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer<CIDashboardType> 
 			String buildDate = buildNr.getAttributeValue("executed");
 			if (buildDate == null) buildDate = "";
 			buffy.append("<H4>Build #" + selectedBuildNumber +
-					" (" + buildDate + ")" +
-					"</H4>");
+					" (" + buildDate + ") ");
+
+			// get the build duration time
+			String buildDuration = buildNr.getAttributeValue("duration");
+			if (buildDuration != null) {
+				buffy.append(" in ");
+				long buildD = Long.parseLong(buildDuration);
+				if (buildD < 1000) buffy.append(buildD + " msec.");
+				else if (buildD >= 1000 && buildD < 60000) buffy.append((buildD / 1000)
+						+ " sec.");
+				else buffy.append((buildD / 60000) + "min.");
+			}
+
+			buffy.append("</H4>");
 
 			for (Object o : tests) {
 				if (o instanceof Element) {

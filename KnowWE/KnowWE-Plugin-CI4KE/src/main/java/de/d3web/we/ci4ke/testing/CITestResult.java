@@ -94,4 +94,33 @@ public final class CITestResult implements Comparable<CITestResult> {
 	public boolean hasConfiguration() {
 		return this.configuration != null && !this.configuration.isEmpty();
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((configuration == null) ? 0 : configuration.hashCode());
+		result = prime * result + ((message == null) ? 0 : message.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		CITestResult other = (CITestResult) obj;
+		if (configuration == null) {
+			if (other.configuration != null) return false;
+		}
+		else if (!configuration.equals(other.configuration)) return false;
+		if (message == null) {
+			if (other.message != null) return false;
+		}
+		else if (!message.equals(other.message)) return false;
+		if (type != other.type) return false;
+		return true;
+	}
+
 }
