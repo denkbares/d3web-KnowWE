@@ -281,7 +281,7 @@ public class FlowchartUtils {
 		int previewIndex = source.lastIndexOf("<preview");
 		// remove preview
 		if (previewIndex != -1) {
-			source = source.substring(0, previewIndex) + "</flowchart>";
+			source = source.substring(0, previewIndex) + "</flowchart>\r\n";
 		}
 		return source;
 	}
