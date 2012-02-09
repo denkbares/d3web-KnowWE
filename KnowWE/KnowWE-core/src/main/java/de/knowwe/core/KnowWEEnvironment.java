@@ -53,7 +53,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sectionizer;
 import de.knowwe.core.kdom.parsing.SectionizerModule;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.core.taghandler.TagHandler;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserSettingsManager;
@@ -62,7 +61,6 @@ import de.knowwe.core.utils.KnowWETypeUtils;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.KnowWEWikiConnector;
 import de.knowwe.event.InitEvent;
-import de.knowwe.kdom.renderer.ConditionalRenderer;
 import de.knowwe.knowRep.KnowledgeRepresentationHandler;
 import de.knowwe.knowRep.KnowledgeRepresentationManager;
 import de.knowwe.plugin.Instantiation;
@@ -260,22 +258,6 @@ public class KnowWEEnvironment {
 		// firing the init event
 		EventManager.getInstance().fireEvent(InitEvent.getInstance());
 
-	}
-
-	public boolean registerConditionalRendererToType(Class<? extends Type> clazz,
-			KnowWEDomRenderer renderer) {
-		List<Type> instances = KnowWEEnvironment.getInstance()
-				.searchTypeInstances(clazz);
-
-		for (Type annoType : instances) {
-			if (annoType.getRenderer() instanceof ConditionalRenderer) {
-				((ConditionalRenderer) annoType.getRenderer())
-						.addConditionalRenderer(renderer);
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	/**
@@ -634,8 +616,7 @@ public class KnowWEEnvironment {
 	 * @param clazz
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public Type searchType(Class clazz) {
+	public Type searchType(Class<? extends Type> clazz) {
 		for (Type t : this.allKnowWETypes) {
 			if (t.isType(clazz)) {
 				return t;
