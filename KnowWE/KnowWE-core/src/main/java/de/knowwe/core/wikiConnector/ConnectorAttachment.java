@@ -28,6 +28,8 @@ public interface ConnectorAttachment {
 
 	public String getParentName();
 
+	public String getFullName();
+
 	public Date getDate();
 
 	public long getSize();

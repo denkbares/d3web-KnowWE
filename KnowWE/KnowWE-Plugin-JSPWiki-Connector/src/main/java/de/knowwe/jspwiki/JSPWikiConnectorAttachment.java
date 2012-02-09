@@ -87,4 +87,9 @@ public class JSPWikiConnectorAttachment implements ConnectorAttachment {
 		}
 	}
 
+	@Override
+	public String getFullName() {
+		return getParentName() + "/" + getFileName();
+	}
+
 }

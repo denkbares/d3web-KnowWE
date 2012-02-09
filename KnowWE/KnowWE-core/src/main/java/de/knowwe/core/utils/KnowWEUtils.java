@@ -27,9 +27,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 
@@ -469,6 +471,30 @@ public class KnowWEUtils {
 			}
 		}
 		return actualAttachment;
+	}
+
+	/**
+	 * Returns all {@link ConnectorAttachment}s which fullname fits to the regex
+	 * or which filename machtes to the regexp and which parent has the
+	 * specified topic
+	 * 
+	 * @created 09.02.2012
+	 * @param regex regular expression the attachments should match to
+	 * @param topic Topic of the article
+	 * @return Collection of {@link ConnectorAttachment}s
+	 */
+	public static Collection<ConnectorAttachment> getAttachments(String regex, String topic) {
+		Collection<ConnectorAttachment> result = new LinkedList<ConnectorAttachment>();
+		Collection<ConnectorAttachment> attachments = KnowWEEnvironment.getInstance().getWikiConnector().getAttachments();
+		Pattern pattern = Pattern.compile(regex);
+		for (ConnectorAttachment attachment : attachments) {
+			if (pattern.matcher(attachment.getFullName()).matches()
+						|| (pattern.matcher(attachment.getFileName()).matches() && attachment.getParentName().equals(
+								topic))) {
+				result.add(attachment);
+			}
+		}
+		return result;
 	}
 
 }
