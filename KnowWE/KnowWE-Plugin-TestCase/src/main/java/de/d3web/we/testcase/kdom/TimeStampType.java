@@ -76,7 +76,7 @@ public class TimeStampType extends AbstractType {
 			long factor = TIME_FACTORS[i];
 			long amount = (time / factor);
 			if (amount >= 1) {
-
+				if (!t.isEmpty()) t += " ";
 				t += amount + TIME_UNITS[i];
 				time -= amount * factor;
 			}

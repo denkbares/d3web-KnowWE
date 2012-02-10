@@ -270,7 +270,7 @@ public class RuleContentType extends AbstractType {
 		 * Stores the Renderer used in <b>highlightRule<b>
 		 */
 		StyleRenderer firedRenderer = StyleRenderer.getRenderer(
-				highlightMarker, "", "#CFFFCF");
+				highlightMarker, "", StyleRenderer.CONDITION_FULLFILLED);
 
 		StyleRenderer exceptionRenderer = StyleRenderer.getRenderer(
 				highlightMarker, "", null);

@@ -50,8 +50,8 @@ public class StyleRenderer extends KnowWEDomRenderer {
 	public static final KnowWEDomRenderer<Type> Questionaire = new ToolMenuDecoratingRenderer<Type>(
 			new StyleRenderer("color:rgb(128, 128, 0)"));
 
-	public static final String CONDITION_FULLFILLED = "#33FF33";
-	public static final String CONDITION_FALSE = "#FF9900";
+	public static final String CONDITION_FULLFILLED = "#CFFFCF";
+	public static final String CONDITION_FALSE = "#FFCFCF";
 
 	/**
 	 * When normal functionality as in FontColorRenderer: Set background null;

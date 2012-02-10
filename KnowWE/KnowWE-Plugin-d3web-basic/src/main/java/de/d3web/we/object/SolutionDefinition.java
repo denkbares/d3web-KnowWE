@@ -90,7 +90,7 @@ public abstract class SolutionDefinition
 					article.getWeb());
 
 			String spanStart = KnowWEUtils
-					.maskHTML("<span style=\"background-color: rgb(");
+					.maskHTML("<span style=\"background-color:");
 			String spanStartEnd = KnowWEUtils.maskHTML(";\">");
 			String spanEnd = KnowWEUtils.maskHTML("</span>");
 
@@ -100,13 +100,13 @@ public abstract class SolutionDefinition
 					Rating state = session.getBlackboard().getRating(solution);
 
 					if (state.hasState(State.ESTABLISHED)) {
-						string.append(spanStart + "207, 255, 207)" + spanStartEnd);
+						string.append(spanStart + StyleRenderer.CONDITION_FULLFILLED + spanStartEnd);
 					}
 					else if (state.hasState(State.EXCLUDED)) {
-						string.append(spanStart + "255, 207, 207)" + spanStartEnd);
+						string.append(spanStart + StyleRenderer.CONDITION_FALSE + spanStartEnd);
 					}
 					else {
-						string.append(spanStart + ")" + spanStartEnd);
+						string.append(spanStart + " rgb()" + spanStartEnd);
 					}
 				}
 			}
