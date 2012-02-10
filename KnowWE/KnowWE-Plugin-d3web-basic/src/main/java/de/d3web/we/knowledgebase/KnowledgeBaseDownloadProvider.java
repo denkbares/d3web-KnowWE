@@ -20,7 +20,11 @@
 package de.d3web.we.knowledgebase;
 
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 
 import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.KnowWEEnvironment;
@@ -84,15 +88,33 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 			kbName = "knowledgebase";
 		}
 		String baseUrl = KnowWEEnvironment.getInstance().getWikiConnector().getBaseUrl();
+		// try to replace hostname by ip address to allow access in local
+		// networks
+		try {
+			String ip = InetAddress.getLocalHost().getHostAddress();
+			System.out.println(ip);
+			URL url = new URL(baseUrl);
+			baseUrl = new URL(url.getProtocol(), ip, url.getPort(), url.getPath()).toExternalForm();
+		}
+		catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		String kbURL = baseUrl + "action/DownloadKnowledgeBase" +
-				"?" + KnowWEAttributes.TOPIC + "=" + article.getTitle() +
-				"&" + KnowWEAttributes.WEB + "=" + article.getWeb() +
-				"&" + DownloadKnowledgeBase.PARAM_FILENAME + "=" + kbName + ".d3web";
+				"%3F" + KnowWEAttributes.TOPIC + "=" + article.getTitle() +
+				"%26" + KnowWEAttributes.WEB + "=" + article.getWeb() +
+				"%26" + DownloadKnowledgeBase.PARAM_FILENAME + "=" + kbName + ".d3web";
+
 		try {
 			kbURL = URLEncoder.encode(kbURL, "UTF-8");
 		}
 		catch (UnsupportedEncodingException e) {
 		}
+
 		String imageURL = "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=" + kbURL;
 		String id = section.getID();
 		String jsAction = "var node=$E('.markupText', '" + id + "'); " +
