@@ -20,9 +20,7 @@
 
 package de.d3web.we.kdom.questionTree;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
@@ -32,7 +30,6 @@ import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
 import de.d3web.we.basic.D3webModule;
-import de.d3web.we.kdom.questionTree.QuestionLine.QuestionTypeDeclaration;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
@@ -51,11 +48,8 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
-import de.knowwe.core.kdom.sectionFinder.SectionFinder;
-import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.SplitUtility;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
@@ -67,7 +61,6 @@ import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
 import de.knowwe.kdom.sectionFinder.EmbracedContentFinder;
 import de.knowwe.kdom.sectionFinder.MatchUntilEndFinder;
 import de.knowwe.kdom.sectionFinder.OneOfStringEnumFinder;
-import de.knowwe.kdom.sectionFinder.StringEnumChecker;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.knowwe.plugin.Plugins;
 
@@ -511,101 +504,6 @@ public class QuestionLine extends AbstractType {
 
 			return SplitUtility.unquote(text);
 		}
-	}
-
-	/**
-	 * @author Jochen
-	 * 
-	 *         A KnowWEType for the question-type declaration keys
-	 *         "[oc],[mc],[num],..."
-	 * 
-	 */
-	static class QuestionTypeDeclaration extends
-			AbstractType {
-
-		public static QuestionType getQuestionType(Section<QuestionTypeDeclaration> typeSection) {
-
-			if (typeSection == null) return null;
-			String embracedContent = typeSection.getOriginalText();
-			if (embracedContent.startsWith("[")) {
-				embracedContent = embracedContent.substring(1);
-			}
-			if (embracedContent.endsWith("]")) {
-				embracedContent = embracedContent.substring(0,
-						embracedContent.length() - 1);
-			}
-			String questionTypeDeclaration = embracedContent.trim();
-
-			if (questionTypeDeclaration.equalsIgnoreCase("oc")) {
-				return QuestionType.OC;
-			}
-			else if (questionTypeDeclaration.equalsIgnoreCase("mc")) {
-				return QuestionType.MC;
-			}
-			else if (questionTypeDeclaration.equalsIgnoreCase("num")) {
-				return QuestionType.NUM;
-			}
-			else if (questionTypeDeclaration.equalsIgnoreCase("jn")
-					|| questionTypeDeclaration.equalsIgnoreCase("yn")) {
-				return QuestionType.YN;
-			}
-			else if (questionTypeDeclaration.equalsIgnoreCase("date")) {
-				return QuestionType.DATE;
-			}
-			else if (questionTypeDeclaration.equalsIgnoreCase("info")) {
-				return QuestionType.INFO;
-			}
-			else if (questionTypeDeclaration.equalsIgnoreCase("text")) {
-				return QuestionType.TEXT;
-			}
-			else {
-				return null;
-			}
-
-		}
-
-		public static final String[] QUESTION_DECLARATIONS = {
-				"oc", "mc",
-				"yn", "jn", "num", "date", "text", "info" };
-
-		public QuestionTypeDeclaration() {
-			SectionFinder typeFinder = new SectionFinder() {
-
-				@Override
-				public List<SectionFinderResult> lookForSections(String text,
-						Section<?> father, Type type) {
-
-					return SectionFinderResult
-							.createSingleItemList(new SectionFinderResult(
-									SplitUtility.indexOfUnquoted(text, "["),
-									SplitUtility.indexOfUnquoted(text, "]") + 1));
-				}
-			};
-			this.setSectionFinder(typeFinder);
-			this.setCustomRenderer(new StyleRenderer(StyleRenderer.OPERATOR.getCssStyle()) {
-
-				@Override
-				public void render(KnowWEArticle article, @SuppressWarnings("rawtypes") Section section,
-						UserContext user, StringBuilder string) {
-					StringBuilder temp = new StringBuilder();
-					super.render(article, section, user, temp);
-					string.append(temp.toString());
-				}
-			});
-			String allowedTypes = Arrays.asList(QUESTION_DECLARATIONS).toString();
-			allowedTypes = allowedTypes.substring(1, allowedTypes.length() - 1);
-			Message errorMsg = Messages.error(D3webModule.getKwikiBundle_d3web()
-							.getString("KnowWE.questiontree.allowingonly")
-							+ allowedTypes);
-			this.addSubtreeHandler(new StringEnumChecker<QuestionTypeDeclaration>(
-					QUESTION_DECLARATIONS, errorMsg, 1, 1));
-			this.addSubtreeHandler(new QuestionTypeChecker());
-		}
-
-		public Section<QuestionDefinition> getQuestionDefinition(Section<QuestionTypeDeclaration> typeDeclaration) {
-			return Sections.findSuccessor(typeDeclaration.getFather(), QuestionDefinition.class);
-		}
-
 	}
 
 	static class QuestionTypeChecker extends D3webSubtreeHandler<QuestionTypeDeclaration> {
