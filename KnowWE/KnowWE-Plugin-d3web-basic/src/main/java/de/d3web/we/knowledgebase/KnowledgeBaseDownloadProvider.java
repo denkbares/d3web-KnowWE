@@ -92,7 +92,6 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 		// networks
 		try {
 			String ip = InetAddress.getLocalHost().getHostAddress();
-			System.out.println(ip);
 			URL url = new URL(baseUrl);
 			baseUrl = new URL(url.getProtocol(), ip, url.getPort(), url.getPath()).toExternalForm();
 		}
