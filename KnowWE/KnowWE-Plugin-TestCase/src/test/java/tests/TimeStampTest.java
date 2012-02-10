@@ -34,7 +34,8 @@ public class TimeStampTest {
 
 	/**
 	 * Test method for
-	 * {@link de.d3web.we.testcase.kdom.TimeStampType#isValid(java.lang.String)}.
+	 * {@link de.d3web.we.testcase.kdom.TimeStampType#isValid(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public final void testIsValid() {
@@ -51,8 +52,8 @@ public class TimeStampTest {
 		Assert.assertTrue(TimeStampType.isValid("0h"));
 		Assert.assertTrue(TimeStampType.isValid("0d"));
 
-		Assert.assertTrue(TimeStampType.isValid("1ms1s1min1h1d"));
-		Assert.assertTrue(TimeStampType.isValid("10ms10s10min10h10d"));
+		Assert.assertTrue(TimeStampType.isValid("1ms 1s 1min 1h 1d"));
+		Assert.assertTrue(TimeStampType.isValid("10ms 10s 10min 10h 10d"));
 
 		Assert.assertFalse(TimeStampType.isValid("0.1ms"));
 		Assert.assertFalse(TimeStampType.isValid("1a"));
@@ -79,10 +80,10 @@ public class TimeStampTest {
 
 		Assert.assertEquals(1 + 1000 + 1000 * 60
 				+ 1000 * 60 * 60 + 1000 * 60 * 60 * 24,
-				TimeStampType.getTimeInMillis("1ms1s1min1h1d"));
+				TimeStampType.getTimeInMillis("1ms 1s 1min 1h 1d"));
 
 		Assert.assertEquals((1 + 1000 + 1000 * 60 + 1000 * 60 * 60 + 1000 * 60 * 60 * 24) * 10,
-				TimeStampType.getTimeInMillis("10ms10s10min10h10d"));
+				TimeStampType.getTimeInMillis("10ms 10s 10min 10h 10d"));
 
 	}
 
@@ -94,12 +95,12 @@ public class TimeStampTest {
 		Assert.assertEquals("1h", TimeStampType.createTimeAsTimeStamp(1000 * 60 * 60));
 		Assert.assertEquals("1d", TimeStampType.createTimeAsTimeStamp(1000 * 60 * 60 * 24));
 
-		Assert.assertEquals("1d1h1min1s1ms",
+		Assert.assertEquals("1d 1h 1min 1s 1ms",
 				TimeStampType.createTimeAsTimeStamp(1 + 1000 + 1000 * 60
-				+ 1000 * 60 * 60 + 1000 * 60 * 60 * 24));
+						+ 1000 * 60 * 60 + 1000 * 60 * 60 * 24));
 
 		Assert.assertEquals((1 + 1000 + 1000 * 60 + 1000 * 60 * 60 + 1000 * 60 * 60 * 24) * 10,
-				TimeStampType.getTimeInMillis("10d10h10min10s10ms"));
+				TimeStampType.getTimeInMillis("10d 10h 10min 10s 10ms"));
 
 		Random random = new Random();
 		for (int i = 0; i < 10; i++) {
