@@ -64,6 +64,7 @@ public class StringEnumChecker<T extends Type> extends SubtreeHandler<T> {
 		for (String string : values) {
 			if (checkContent.equalsIgnoreCase(string)) {
 				found = true;
+				break;
 			}
 		}
 		List<Message> msgs = new ArrayList<Message>();
