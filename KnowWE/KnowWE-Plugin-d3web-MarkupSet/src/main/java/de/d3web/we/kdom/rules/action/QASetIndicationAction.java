@@ -32,10 +32,9 @@ import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.QuestionnaireReference;
 import de.knowwe.core.compile.ModifiedTermsConstraint;
-import de.knowwe.core.compile.TerminologyHandler;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.objects.KnowWETerm.Scope;
-import de.knowwe.core.kdom.objects.TermDefinition;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -109,27 +108,30 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 
 		@Override
 		public Collection<Message> create(KnowWEArticle article, Section<AnonymousType> s) {
-			TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
-			String termName = KnowWEUtils.trimQuotes(s.getOriginalText());
-			if (terminologyHandler.isDefinedTerm(article, termName, Scope.LOCAL)) {
-				Section<? extends TermDefinition> termDefinitionSection = terminologyHandler.getTermDefiningSection(
-						article, termName, Scope.LOCAL);
-				Class<?> objectClazz = termDefinitionSection.get().getTermObjectClass();
-				if (Question.class.isAssignableFrom(objectClazz)) {
-					s.clearReusedBySet();
-					s.setType(new QuestionReference());
-					return new ArrayList<Message>(0);
-				}
-				if (QContainer.class.isAssignableFrom(objectClazz)) {
-					s.clearReusedBySet();
-					s.setType(new QuestionnaireReference());
-					return new ArrayList<Message>(0);
-				}
+			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
+			String termName = KnowWEUtils.trimQuotes(s.getText());
+			if (terminologyHandler.isDefinedTerm(termName)) {
+				Section<?> termDefinitionSection = terminologyHandler.getTermDefiningSection(termName);
+				if (termDefinitionSection.get() instanceof SimpleTerm) {
+					@SuppressWarnings("unchecked")
+					Section<? extends SimpleTerm> simpleDef = (Section<? extends SimpleTerm>) termDefinitionSection;
+					Class<?> objectClazz = simpleDef.get().getTermObjectClass();
+					if (Question.class.isAssignableFrom(objectClazz)) {
+						s.clearReusedBySet();
+						s.setType(new QuestionReference());
+						return new ArrayList<Message>(0);
+					}
+					if (QContainer.class.isAssignableFrom(objectClazz)) {
+						s.clearReusedBySet();
+						s.setType(new QuestionnaireReference());
+						return new ArrayList<Message>(0);
+					}
 
-				return Messages.asList(Messages.noSuchObjectError(
-						termName + "is defined as: "
-								+ objectClazz.getName()
-								+ " - expected was Question or Questionnaire"));
+					return Messages.asList(Messages.noSuchObjectError(
+							termName + "is defined as: "
+									+ objectClazz.getName()
+									+ " - expected was Question or Questionnaire"));
+				}
 			}
 
 			return Messages.asList(Messages.noSuchObjectError(

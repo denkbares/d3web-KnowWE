@@ -25,7 +25,6 @@ import java.util.Collection;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.compile.IncrementalMarker;
 import de.knowwe.core.compile.SuccessorNotReusedConstraint;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
@@ -36,8 +35,7 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 
 public abstract class D3webRuleAction<T extends Type>
-		extends AbstractType
-		implements IncrementalMarker {
+		extends AbstractType {
 
 	private static final String ACTION_STORE_KEY = "action-store-key";
 

@@ -48,7 +48,7 @@ public class TagRenderer extends KnowWEDomRenderer<TagHandlerType> {
 					.getInstance().getKwikiBundle(user).getString(
 							"KnowWE.Taghandler.notFoundError"));
 			string.append(" '"
-					+ ((Section<?>) sec.getChildren().get(1)).getOriginalText()
+					+ ((Section<?>) sec.getChildren().get(1)).getText()
 					+ "'");
 			string.append(KnowWEUtils.maskHTML("</p></div>"));
 			return;

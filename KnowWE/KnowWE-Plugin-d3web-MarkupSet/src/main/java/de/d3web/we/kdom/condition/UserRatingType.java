@@ -29,7 +29,7 @@ public class UserRatingType extends AbstractType {
 
 	public static UserEvaluation getUserEvaluationType(Section<UserRatingType> s) {
 
-		String trim = s.getOriginalText().trim();
+		String trim = s.getText().trim();
 
 		if (trim.equalsIgnoreCase(SOL_STATE_CONFIRMED)
 				|| trim.equalsIgnoreCase(SOL_STATE_CONFIRMED_GER)) {

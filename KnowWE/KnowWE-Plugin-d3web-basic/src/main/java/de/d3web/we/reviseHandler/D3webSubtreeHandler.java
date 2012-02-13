@@ -23,21 +23,13 @@ package de.d3web.we.reviseHandler;
 import java.util.logging.Logger;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.we.basic.D3webModule;
-import de.knowwe.core.compile.ConstraintModule;
-import de.knowwe.core.compile.IncrementalMarker;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.utils.KnowWEUtils;
 
 public abstract class D3webSubtreeHandler<T extends Type> extends SubtreeHandler<T> {
-
-	public D3webSubtreeHandler() {
-		registerConstraintModule(0, new D3webCreateConstraints<T>());
-		registerConstraintModule(new D3webDestroyConstraints<T>());
-	}
 
 	/**
 	 * You can get the KnowledgeBaseUtils for the given article.
@@ -48,10 +40,10 @@ public abstract class D3webSubtreeHandler<T extends Type> extends SubtreeHandler
 	protected KnowledgeBase getKB(KnowWEArticle article) {
 		if (article == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
-					"Article was null. KBM wasn't loaded.");
+					"Article was null. KB wasn't loaded.");
 			return null;
 		}
-		return D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKB(
+		return D3webUtils.getKnowledgeRepresentationHandler(article.getWeb()).getKB(
 				article.getTitle());
 	}
 
@@ -68,69 +60,4 @@ public abstract class D3webSubtreeHandler<T extends Type> extends SubtreeHandler
 		return;
 	}
 
-	// ++++++++++++++++++++++ Constraint classes ++++++++++++++++++++++ //
-
-	private class D3webCreateConstraints<T2 extends Type> extends ConstraintModule<T2> {
-
-		public D3webCreateConstraints() {
-			super(Operator.DONT_COMPILE_IF_VIOLATED, Purpose.CREATE);
-		}
-
-		@Override
-		public boolean violatedConstraints(KnowWEArticle article, Section<T2> section) {
-			// For compatibility reasons with non incremental SubtreeHandlers,
-			// we check for the interface IncrementalMarker. By default, all
-			// TermDefinitions and TermReferences implement this interface,
-			// because they are already handled correctly in the incremental
-			// context.
-			// For Types that don't implement this interface, we
-			// assume, that they are not designed for incremental compilation.
-			// We then trigger a full parse, in case they are not reused or in
-			// case that the terms for this article were modified by another
-			// section and handler.
-			// Reason: If a Section is compiled (because it is not reused) that
-			// adds terminology to the KnowledgeBase, but does not use the
-			// TerminologyHandler like TermDefinitions and TermReferences, other
-			// TermDefinitions and TermReferences are not notified about this
-			// addition and therefore may not be recompiled correctly without a
-			// full parse.
-			// If on the other hand terms were modified in the
-			// TerminologyHandler by other TermDefinitions, but the current
-			// Section is neither a TermDefinition nor a TermReference and
-			// therefore isn't notified of this modification, we also need a
-			// full parse.
-			if (!(section.get() instanceof IncrementalMarker)) {
-				if (!section.isReusedBy(article.getTitle()) || KnowWEUtils.getTerminologyHandler(
-							article.getWeb()).areTermDefinitionsModifiedFor(article)) {
-					article.setFullParse(this.getClass());
-				}
-			}
-			return false;
-		}
-
-	}
-
-	private class D3webDestroyConstraints<T2 extends Type> extends ConstraintModule<T2> {
-
-		public D3webDestroyConstraints() {
-			super(Operator.COMPILE_IF_VIOLATED, Purpose.DESTROY);
-		}
-
-		@Override
-		public boolean violatedConstraints(KnowWEArticle article, Section<T2> section) {
-			// Here we have the same issue as inside the D3webCreateConstraints.
-			// If the Type does not implement the Interface
-			// IncrementalMarker, we have to assume, that the type is not
-			// designed for incremental compilation.
-			// If the terminology is modified but this type isn't notified,
-			// because it is not made for incremental compilation, we need to
-			// destroy (and create again later), because it is possible that it
-			// is affected by that modification.
-			return !(section.get() instanceof IncrementalMarker)
-					&& KnowWEUtils.getTerminologyHandler(
-							article.getWeb()).areTermDefinitionsModifiedFor(
-							article);
-		}
-
-	}
 }

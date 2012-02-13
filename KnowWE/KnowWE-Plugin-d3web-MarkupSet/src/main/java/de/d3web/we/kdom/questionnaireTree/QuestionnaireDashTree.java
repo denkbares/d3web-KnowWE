@@ -20,7 +20,6 @@
 package de.d3web.we.kdom.questionnaireTree;
 
 import de.d3web.we.kdom.questionTree.QClassLine;
-import de.knowwe.core.compile.IncrementalMarker;
 import de.knowwe.kdom.dashtree.DashTree;
 import de.knowwe.kdom.dashtree.DashTreeElementContent;
 
@@ -43,7 +42,8 @@ public class QuestionnaireDashTree extends DashTree {
 	 * 
 	 * 
 	 */
-	class QuestionnaireDashTreeElementContent extends DashTreeElementContent implements IncrementalMarker {
+	class QuestionnaireDashTreeElementContent extends DashTreeElementContent {
+
 		public QuestionnaireDashTreeElementContent() {
 			this.addChildType(new QClassLine());
 		}

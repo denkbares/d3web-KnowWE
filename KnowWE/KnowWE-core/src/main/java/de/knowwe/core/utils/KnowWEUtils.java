@@ -37,8 +37,10 @@ import javax.servlet.ServletContext;
 
 import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.compile.TerminologyHandler;
+import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.SectionStore;
 import de.knowwe.core.user.UserContext;
@@ -185,8 +187,32 @@ public class KnowWEUtils {
 	// return(s);
 	// }
 
-	public static TerminologyHandler getTerminologyHandler(String web) {
-		return KnowWEEnvironment.getInstance().getTerminologyHandler(web);
+	public static TerminologyManager getTerminologyManager(KnowWEArticle article, TermRegistrationScope scope) {
+		TerminologyManager tHandler;
+		if (scope == TermRegistrationScope.GLOBAL) {
+			tHandler = getGlobalTerminologyManager(article.getWeb());
+		}
+		else {
+			tHandler = getTerminologyManager(article);
+		}
+		return tHandler;
+	}
+
+	/**
+	 * @return the {@link TerminologyManager} for the given (master) article.
+	 */
+	public static TerminologyManager getTerminologyManager(KnowWEArticle article) {
+		String web = article == null ? KnowWEEnvironment.DEFAULT_WEB : article.getWeb();
+		String title = article == null ? null : article.getTitle();
+		return KnowWEEnvironment.getInstance().getTerminologyHandler(web, title);
+	}
+
+	/**
+	 * @return the {@link TerminologyManager} that handles global terms for this
+	 *         web (similar to the former {@link TermRegistrationScope#GLOBAL}).
+	 */
+	public static TerminologyManager getGlobalTerminologyManager(String web) {
+		return KnowWEEnvironment.getInstance().getTerminologyHandler(web, null);
 	}
 
 	/**
@@ -409,6 +435,7 @@ public class KnowWEUtils {
 	 * @param text URLencoded string
 	 * @return URLdecoded string
 	 */
+	@SuppressWarnings("deprecation")
 	public static String urldecode(String text) {
 		try {
 			return URLDecoder.decode(text, "UTF-8");
@@ -427,6 +454,7 @@ public class KnowWEUtils {
 	 * @param text
 	 * @return URLencoded string
 	 */
+	@SuppressWarnings("deprecation")
 	public static String urlencode(String text) {
 		try {
 			return URLEncoder.encode(text, "UTF-8");
@@ -471,6 +499,23 @@ public class KnowWEUtils {
 			}
 		}
 		return actualAttachment;
+	}
+
+	/**
+	 * @created 08.02.2012
+	 * @param termSection the Section which should implement the interface
+	 *        SimpleTerm
+	 * @returns the term identifier if the given Section has the type
+	 *          SimpleTerm, the text of the Section else
+	 */
+	public static String getTermIdentifier(Section<?> termSection) {
+		String termIdentifier = termSection.getText();
+		if (termSection.get() instanceof SimpleTerm) {
+			@SuppressWarnings("unchecked")
+			Section<? extends SimpleTerm> simpleSection = (Section<? extends SimpleTerm>) termSection;
+			termIdentifier = simpleSection.get().getTermIdentifier(simpleSection);
+		}
+		return termIdentifier;
 	}
 
 	/**

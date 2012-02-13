@@ -39,7 +39,7 @@ import de.knowwe.core.compile.packaging.KnowWEPackageManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.InjectType;
-import de.knowwe.core.kdom.objects.KnowWETerm;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -63,7 +63,7 @@ import de.knowwe.logging.Logging;
  *         OWL, User-feedback-DBs etc.
  * 
  */
-public class Section<T extends Type> implements Visitable, Comparable<Section<? extends Type>> {
+public final class Section<T extends Type> implements Visitable, Comparable<Section<? extends Type>> {
 
 	public void setArticle(KnowWEArticle article) {
 		this.article = article;
@@ -177,13 +177,13 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	 * verbalizes this node
 	 */
 	@Override
-	@SuppressWarnings({
-			"unchecked", "rawtypes" })
+	@SuppressWarnings("unchecked")
 	public String toString() {
-		return (type != null ? this.get().getClass().getSimpleName() + ": " : "")
-				+ "'" + (type != null && type instanceof KnowWETerm<?>
-						? ((KnowWETerm) type).getTermIdentifier(this)
-						: this.getText()) + "'";
+		String typeString = type != null ? this.get().getClass().getSimpleName() + ": " : "";
+		String content = type != null && type instanceof SimpleTerm
+				? ((SimpleTerm) type).getTermIdentifier((Section<? extends SimpleTerm>) this)
+				: this.getText();
+		return typeString + "'" + content + "'";
 	}
 
 	/**
@@ -199,6 +199,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	@Override
 	public int compareTo(Section<? extends Type> o) {
 		if (this == o) return 0;
+		if (o == null) return -1;
 		int comp = getTitle().compareTo(o.getTitle());
 		if (comp == 0) {
 			List<Integer> thisPos = getPositionInKDOM();
@@ -329,24 +330,11 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	}
 
 	/**
-	 * Please used getText() instead.
-	 * 
-	 * @return the text of this Section/Node
-	 */
-	public String getOriginalText() {
-		return text;
-	}
-
-	/**
 	 * @return the text of this Section/Node
 	 */
 	public String getText() {
 		return text;
 	}
-
-	// public IncludeAddress getIncludeAddress() {
-	// return this.address;
-	// }
 
 	/**
 	 * Sets the text of this node. This IS an article source edit operation!
@@ -621,9 +609,9 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 		}
 		buffi.append(simpleName);
 		buffi.append(", ID: " + getID());
-		buffi.append(", length: " + this.getOriginalText().length() + " ("
+		buffi.append(", length: " + this.getText().length() + " ("
 				+ getOffSetFromFatherText() + ")" + ", children: " + getChildren().size());
-		String ot = this.getOriginalText().length() < 50 ? text : text.substring(0,
+		String ot = this.getText().length() < 50 ? text : text.substring(0,
 				50) + "...";
 		ot = ot.replaceAll("\\n", "\\\\n");
 		buffi.append(", \"" + ot);
@@ -729,7 +717,7 @@ public class Section<T extends Type> implements Visitable, Comparable<Section<? 
 	}
 
 	public boolean isEmpty() {
-		String text = getOriginalText();
+		String text = getText();
 		text = text.replaceAll("\\s", "");
 		return text.length() == 0;
 	}

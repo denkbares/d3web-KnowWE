@@ -19,12 +19,12 @@
  */
 package de.d3web.we.object;
 
-import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.we.basic.D3webModule;
-import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.objects.TermReference;
+import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.knowwe.core.kdom.objects.SimpleTerm;
+import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -37,27 +37,19 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class QuestionReference extends D3webTermReference<Question> {
 
 	public QuestionReference() {
-		super(Question.class);
 		this.setCustomRenderer(StyleRenderer.Question);
+		this.addSubtreeHandler(new SimpleTermReferenceRegistrationHandler(
+				TermRegistrationScope.LOCAL));
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Question getTermObjectFallback(KnowWEArticle article, Section<?
-			extends TermReference<Question>> s) {
+	public Class<?> getTermObjectClass() {
+		return Question.class;
+	}
 
-		if (s.get() instanceof QuestionReference) {
-			Section<QuestionReference> sec = (Section<QuestionReference>) s;
-			String questionName = sec.get().getTermIdentifier(sec);
-
-			KnowledgeBase kb =
-					D3webModule.getKnowledgeRepresentationHandler(
-							article.getWeb()).getKB(article.getTitle());
-
-			Question question = kb.getManager().searchQuestion(questionName);
-			return question;
-		}
-		return null;
+	@Override
+	public String getTermIdentifier(Section<? extends SimpleTerm> section) {
+		return KnowWEUtils.trimQuotes(section.getText());
 	}
 
 }

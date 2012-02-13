@@ -28,7 +28,6 @@ import de.d3web.we.object.SolutionDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.xcl.XCLModel;
 import de.knowwe.core.compile.ConstraintModule;
-import de.knowwe.core.compile.IncrementalMarker;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
@@ -53,7 +52,7 @@ import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
  * 
  * 
  */
-public class ListSolutionType extends AbstractType implements IncrementalMarker {
+public class ListSolutionType extends AbstractType {
 
 	public ListSolutionType() {
 		ConstraintSectionFinder solutionFinder = new ConstraintSectionFinder(
@@ -110,7 +109,8 @@ public class ListSolutionType extends AbstractType implements IncrementalMarker 
 					DefaultMarkupType.class);
 
 			if (solution != null) {
-				XCLModel xclModel = solution.getKnowledgeStore().getKnowledge(XCLModel.KNOWLEDGE_KIND);
+				XCLModel xclModel = solution.getKnowledgeStore().getKnowledge(
+						XCLModel.KNOWLEDGE_KIND);
 				if (xclModel == null) {
 					XCLModel m = new XCLModel(solution);
 
@@ -152,7 +152,7 @@ public class ListSolutionType extends AbstractType implements IncrementalMarker 
 					CoveringListMarkup.ESTABLISHED_THRESHOLD);
 
 			if (estaAnnoSection != null) {
-				String estaText = estaAnnoSection.getOriginalText();
+				String estaText = estaAnnoSection.getText();
 				// set estaThreashold if defined
 				if (estaText != null) {
 					try {
@@ -172,7 +172,7 @@ public class ListSolutionType extends AbstractType implements IncrementalMarker 
 					CoveringListMarkup.SUGGESTED_THRESHOLD);
 
 			if (suggAnnoSection != null) {
-				String suggText = suggAnnoSection.getOriginalText();
+				String suggText = suggAnnoSection.getText();
 				// set suggThreashold if defined
 				if (suggText != null) {
 					try {
@@ -190,7 +190,7 @@ public class ListSolutionType extends AbstractType implements IncrementalMarker 
 					defaultMarkupType,
 					CoveringListMarkup.MIN_SUPPORT);
 			if (minAnnoSection != null) {
-				String minText = minAnnoSection.getOriginalText();
+				String minText = minAnnoSection.getText();
 				// set minSupport if defined
 				if (minText != null) {
 					try {

@@ -21,8 +21,10 @@
 package tests;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -66,11 +68,11 @@ public class RulesTest extends TestCase {
 	 * TODO: Expand this to check if brackets are parsed right.
 	 */
 	public void testHeuristicRules() {
+		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
 		// load KnowledgeBases
 		KnowWEArticle art = MyTestArticleManager
 				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
-		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
 
 		Collection<Rule> loadedRules =
 				getRulesInHashMap(loadedKB, PSMethodHeuristic.FORWARD);
@@ -83,18 +85,28 @@ public class RulesTest extends TestCase {
 	}
 
 	private void checkRules(Collection<Rule> loadedRules, Collection<Rule> createdRules) {
+
+		List<String> loadedRulesStrings = new ArrayList<String>();
+		List<String> createdRulesStrings = new ArrayList<String>();
+		for (Rule rule : createdRules) {
+			createdRulesStrings.add(rule.toString());
+		}
+		for (Rule rule : loadedRules) {
+			loadedRulesStrings.add(rule.toString());
+		}
+
+		for (String ruleString : createdRulesStrings) {
+			assertTrue("Rule " + ruleString + " does not exist!",
+					loadedRulesStrings.contains(ruleString));
+		}
+
+		for (String ruleString : loadedRulesStrings) {
+			assertTrue("Rule " + ruleString + " does not exist!",
+					createdRulesStrings.contains(ruleString));
+		}
+
 		assertEquals("Wrong number of rules for PSMethodHeuristic.",
 				createdRules.size(), loadedRules.size());
-
-		for (Rule key : createdRules) {
-			assertNotNull("Rule " + key + " does not exist!",
-						loadedRules.contains(key));
-		}
-
-		for (Rule key : loadedRules) {
-			assertNotNull("Rule " + key + " does not exist!",
-						createdRules.contains(key));
-		}
 	}
 
 	public void testNextQASetRules() {

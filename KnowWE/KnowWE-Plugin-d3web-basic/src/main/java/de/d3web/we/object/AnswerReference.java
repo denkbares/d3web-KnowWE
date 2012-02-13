@@ -20,15 +20,12 @@
 
 package de.d3web.we.object;
 
-import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.KnowledgeBaseUtils;
-import de.d3web.we.basic.D3webModule;
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.objects.KnowWETerm;
-import de.knowwe.core.kdom.objects.TermReference;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
@@ -47,64 +44,56 @@ public abstract class AnswerReference
 		extends D3webTermReference<Choice> {
 
 	public AnswerReference() {
-		super(Choice.class);
 		this.setCustomRenderer(StyleRenderer.CHOICE);
 	}
 
 	@Override
 	@SuppressWarnings(value = { "unchecked" })
-	public String getTermIdentifier(Section<? extends KnowWETerm<Choice>> s) {
+	public String getTermIdentifier(Section<? extends SimpleTerm> s) {
 		// here we should return a unique identifier including the question name
 		// as namespace
 
-		KnowWETerm<Choice> knowWETerm = s.get();
-		if (knowWETerm instanceof AnswerReference) {
+		if (s.get() instanceof AnswerReference) {
 			Section<AnswerReference> sec = ((Section<AnswerReference>) s);
 			Section<QuestionReference> questionSection = sec.get().getQuestionSection(sec);
 			String question = questionSection.get().getTermIdentifier(questionSection);
 
-			return AnswerDefinition.createAnswerIdentifierForQuestion(super.getTermIdentifier(sec),
+			return AnswerDefinition.createAnswerIdentifierForQuestion(getAnswerName(sec),
 					question);
 		}
 
 		// should not happen
-		return super.getTermIdentifier(s);
+		return getAnswerName((Section<? extends AnswerReference>) s);
 	}
 
 	@Override
-	public String getTermName(Section<? extends KnowWETerm<Choice>> s) {
-		return KnowWEUtils.trimQuotes(s.getOriginalText());
+	public Class<?> getTermObjectClass() {
+		return Choice.class;
+	}
+
+	public String getAnswerName(Section<? extends AnswerReference> answerReference) {
+		return KnowWEUtils.trimQuotes(answerReference.getText());
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Choice getTermObjectFallback(KnowWEArticle article, Section<? extends
-			TermReference<Choice>> s) {
+	public Choice getTermObject(KnowWEArticle article, Section<? extends D3webTerm<Choice>> s) {
 
 		if (s.get() instanceof AnswerReference) {
+			@SuppressWarnings("unchecked")
 			Section<AnswerReference> sec = (Section<AnswerReference>) s;
 
 			Section<QuestionReference> ref = sec.get().getQuestionSection(sec);
-			String questionName = ref.get().getTermIdentifier(ref);
+			Question question = ref.get().getTermObject(article, ref);
 
-			String answerName = sec.get().getTermName(sec);
+			String answerName = sec.get().getAnswerName(sec);
 
-			KnowledgeBase kb =
-					D3webModule.getKnowledgeRepresentationHandler(
-							s.getArticle().getWeb())
-							.getKB(article.getTitle());
-
-			Question question = kb.getManager().searchQuestion(questionName);
 			if (question != null && question instanceof QuestionChoice) {
 				return KnowledgeBaseUtils.findChoice((QuestionChoice) question,
 						answerName, false);
 
 			}
-
 		}
-
 		return null;
-
 	}
 
 	/**

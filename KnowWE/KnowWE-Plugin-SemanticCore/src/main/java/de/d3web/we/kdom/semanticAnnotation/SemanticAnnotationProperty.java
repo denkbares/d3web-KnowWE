@@ -88,7 +88,7 @@ public class SemanticAnnotationProperty extends AbstractType {
 
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			UpperOntology uo = UpperOntology.getInstance();
-			String prop = name.getOriginalText();
+			String prop = name.getText();
 			URI property = null;
 			if (prop.equals("subClassOf") || prop.equals("subPropertyOf")) {
 				property = uo.getRDFS(prop);

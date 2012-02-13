@@ -27,7 +27,7 @@ import javax.activation.MimetypesFileTypeMap;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
-import de.d3web.we.basic.D3webModule;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 
@@ -54,7 +54,7 @@ public class GetKnowledgeBaseResourceAction extends AbstractAction {
 		String topic = context.getParameter("topic");
 		String path = context.getPath();
 		KnowledgeBase kb =
-				D3webModule.getKnowledgeRepresentationHandler(
+				D3webUtils.getKnowledgeRepresentationHandler(
 						web).getKB(topic);
 		if (kb == null) {
 			context.sendError(404, "The specified knowledge base does not exist.");

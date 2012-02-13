@@ -45,7 +45,7 @@ public class TagHandlerAttributeSubTreeHandler extends SubtreeHandler {
 	@Override
 	public Collection<Message> create(KnowWEArticle art, Section sec) {
 
-		String text = sec.getOriginalText();
+		String text = sec.getText();
 
 		Map<String, String> values = new HashMap<String, String>();
 		values.put("_cmdline", text);

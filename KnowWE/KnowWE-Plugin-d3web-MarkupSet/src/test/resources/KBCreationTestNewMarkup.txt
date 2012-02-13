@@ -109,7 +109,7 @@ line
 
 %%Rule
 // Rule R8
-IF "Average mileage /100km" > 0 AND KNOWN["Real mileage  /100km"]
+IF KNOWN["Real mileage  /100km"] AND "Average mileage /100km" > 0
 THEN "Num. Mileage evaluation" = (("Real mileage  /100km" / "Average mileage /100km") * 100.0)
 
 // Rule R9

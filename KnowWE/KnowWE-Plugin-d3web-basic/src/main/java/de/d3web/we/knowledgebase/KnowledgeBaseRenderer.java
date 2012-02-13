@@ -106,7 +106,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 			Section<?> annotationSection = sectionIter.next();
 			Section<KnowledgeBaseCompileType> compileSection = Sections.findChildOfType(
 					annotationSection, KnowledgeBaseCompileType.class);
-			String packageName = compileSection.getOriginalText().trim();
+			String packageName = compileSection.getText().trim();
 			renderCompile(article, packageName, string);
 			if (sectionIter.hasNext()) string.append(KnowWEUtils.maskHTML("<br/>"));
 		}

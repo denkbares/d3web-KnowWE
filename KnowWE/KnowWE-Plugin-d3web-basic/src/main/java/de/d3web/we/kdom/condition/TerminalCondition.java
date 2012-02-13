@@ -67,7 +67,7 @@ public class TerminalCondition extends AbstractType {
 			@Override
 			public Collection<Message> create(KnowWEArticle article, Section<TerminalCondition> s) {
 				return Messages.asList(Messages.syntaxError(
-						messageText + s.getOriginalText()));
+						messageText + s.getText()));
 			}
 		});
 

@@ -22,9 +22,9 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 import de.d3web.empiricaltesting.TestCase;
-import de.d3web.we.basic.D3webModule;
 import de.d3web.we.testcase.TestCaseUtils;
 import de.d3web.we.testcase.kdom.TestCaseRunnerType;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
@@ -50,7 +50,7 @@ public class TestCaseRunnerRenderer extends DefaultMarkupRenderer<TestCaseRunner
 	@Override
 	protected void renderContents(KnowWEArticle article, Section<TestCaseRunnerType> section, UserContext user, StringBuilder string) {
 
-		this.rb = D3webModule.getKwikiBundle_d3web(user);
+		this.rb = D3webUtils.getD3webBundle(user);
 		this.formatter = new MessageFormat("");
 
 		string.append(mask("<strong>" + TestCaseRunnerType.getText(section)

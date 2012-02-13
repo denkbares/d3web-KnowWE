@@ -27,9 +27,7 @@ import java.util.Map;
 import de.knowwe.core.KnowWEArticleManager;
 import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.action.AbstractAction;
-import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.kdom.objects.TermReference;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -62,7 +60,7 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 
 		String web = context.getWeb();
 		String nodeID = context.getParameter(KnowWEAttributes.TARGET);
-		String name = context.getTopic();
+		String name = context.getTitle();
 		String newText = context.getParameter(KnowWEAttributes.TEXT);
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 
@@ -82,14 +80,13 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 
 		Section<?> section = Sections.getSection(nodeID);
 
-		if (!(section.get() instanceof TermReference<?>)) {
+		if (!(section.get() instanceof SimpleTerm)) {
 			context.sendError(500, "Invalid section type");
 			return;
 		}
-
-		TermReference t = (TermReference) section.get();
-		String originalText = section.getOriginalText();
-		String oldTermName = t.getTermName(section);
+		Section<? extends SimpleTerm> simpleSection = (Section<? extends SimpleTerm>) section;
+		String originalText = simpleSection.getText();
+		String oldTermName = simpleSection.get().getTermIdentifier(simpleSection);
 		String newNodeText = originalText.replace(oldTermName, newText);
 
 		nodesMap.put(nodeID, newNodeText);

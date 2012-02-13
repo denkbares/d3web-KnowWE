@@ -21,15 +21,7 @@
 package de.d3web.we.kdom.solutionTree;
 
 import de.d3web.we.object.SolutionDefinition;
-import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.kdom.dashtree.DashTreeUtils;
 
 public class SolutionTreeSolutionDefinition extends SolutionDefinition {
-
-	@Override
-	public boolean violatedConstraints(KnowWEArticle article, Section<SolutionDefinition> s) {
-		return DashTreeUtils.isChangeInAncestorSubtree(article, s, 0);
-	}
 
 }

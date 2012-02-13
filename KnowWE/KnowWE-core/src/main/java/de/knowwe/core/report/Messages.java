@@ -30,7 +30,6 @@ import java.util.Map;
 
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -298,10 +297,10 @@ public final class Messages {
 	}
 
 	public static Message objectAlreadyDefinedError(String text) {
-		return Messages.noSuchObjectError(text, null);
+		return Messages.objectAlreadyDefinedError(text, null);
 	}
 
-	public static Message objectAlreadyDefinedError(String text, Section<? extends TermDefinition<?>> definition) {
+	public static Message objectAlreadyDefinedError(String text, Section<?> definition) {
 		String result = "Object already defined: " + text;
 		if (definition != null) {
 			result += " in: " + definition.getTitle();
@@ -321,9 +320,24 @@ public final class Messages {
 		return Messages.error("Could not create Object: " + text);
 	}
 
-	public static Message occupiedTermError(String origTerm, Class<?> termClass) {
-		return Messages.error("The term '" + origTerm + "' is already occupied by another type: "
-				+ termClass.getSimpleName());
+	public static Message ambiguousTermClassesError(String origTerm, Collection<Class<?>> termClasses) {
+		List<String> termClassesString = new ArrayList<String>(termClasses.size());
+		for (Class<?> termClass : termClasses) {
+			termClassesString.add(termClass.getSimpleName());
+		}
+		return Messages.error("The term '" + origTerm
+				+ "' is defined with ambiguous term classes: "
+				+ termClassesString.toString());
+	}
+
+	public static Message ambiguousTermCaseWarning(Collection<String> termIdentifiers) {
+		return Messages.warning("There are different cases for the same term: "
+				+ termIdentifiers.toString());
+	}
+
+	public static Message multipleTermDefintionsError(String termIdentifier) {
+		return Messages.error("There is more than one definition for the term '"
+				+ termIdentifier + "' which is restricted to only one definition.");
 	}
 
 	public static Message relationCreatedNotice(String name) {

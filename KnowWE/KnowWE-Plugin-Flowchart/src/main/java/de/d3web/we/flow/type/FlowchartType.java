@@ -24,7 +24,6 @@ import de.d3web.diaFlux.flow.DiaFluxCaseObject;
 import de.d3web.we.flow.FlowchartRenderer;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
 import de.d3web.we.flow.type.FlowchartXMLHeadType.FlowchartTermDef;
-import de.knowwe.core.compile.IncrementalMarker;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.InvalidKDOMSchemaModificationOperation;
 import de.knowwe.core.kdom.parsing.Section;
@@ -37,7 +36,7 @@ import de.knowwe.kdom.xml.XMLHead;
  * @author Reinhard Hatko
  * @created on: 09.10.2009
  */
-public class FlowchartType extends AbstractXMLType implements IncrementalMarker {
+public class FlowchartType extends AbstractXMLType {
 
 	protected KnowWEDomRenderer<FlowchartType> renderer = new FlowchartRenderer();
 
@@ -75,7 +74,7 @@ public class FlowchartType extends AbstractXMLType implements IncrementalMarker 
 	}
 
 	public static String getFlowchartName(Section<FlowchartType> sec) {
-		return Sections.findSuccessor(sec, FlowchartTermDef.class).getOriginalText();
+		return Sections.findSuccessor(sec, FlowchartTermDef.class).getText();
 	}
 
 }

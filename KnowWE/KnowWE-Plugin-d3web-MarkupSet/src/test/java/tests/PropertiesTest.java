@@ -43,7 +43,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.d3web.property.NamedObjectReference;
+import de.knowwe.d3web.property.PropertyObjectReference;
 import de.knowwe.d3web.property.PropertyDeclarationType;
 import de.knowwe.d3web.property.init.InitPropertyHandler;
 
@@ -88,9 +88,9 @@ public class PropertiesTest extends TestCase {
 	}
 
 	public Section<PropertyDeclarationType> getPropertyDeclarationSection(String name) {
-		List<Section<NamedObjectReference>> namendObjectRefs = Sections.findSuccessorsOfType(
-				getArticle().getSection(), NamedObjectReference.class);
-		for (Section<NamedObjectReference> namedObjectRef : namendObjectRefs) {
+		List<Section<PropertyObjectReference>> namendObjectRefs = Sections.findSuccessorsOfType(
+				getArticle().getSection(), PropertyObjectReference.class);
+		for (Section<PropertyObjectReference> namedObjectRef : namendObjectRefs) {
 			NamedObject termObject = namedObjectRef.get().getTermObject(
 					namedObjectRef.getArticle(), namedObjectRef);
 			if (termObject.getName().equals(name)) {

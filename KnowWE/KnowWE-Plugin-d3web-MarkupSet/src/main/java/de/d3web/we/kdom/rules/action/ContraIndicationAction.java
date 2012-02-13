@@ -30,7 +30,7 @@ import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.objects.KnowWETerm;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
@@ -75,7 +75,7 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 
 				@Override
 				public List<SectionFinderResult> lookForSections(String text,
-						Section father, Type type) {
+						Section<?> father, Type type) {
 
 					return SectionFinderResult
 							.createSingleItemList(new SectionFinderResult(
@@ -86,8 +86,8 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 		}
 
 		@Override
-		public String getTermIdentifier(Section<? extends KnowWETerm<Question>> s) {
-			String text = s.getOriginalText().trim();
+		public String getTermIdentifier(Section<? extends SimpleTerm> s) {
+			String text = s.getText().trim();
 			String questionName = "";
 			if (text.indexOf(OPEN) == 0 && text.lastIndexOf(CLOSE) == text.length() - 1) {
 				questionName = text.substring(1, text.length() - 1).trim();

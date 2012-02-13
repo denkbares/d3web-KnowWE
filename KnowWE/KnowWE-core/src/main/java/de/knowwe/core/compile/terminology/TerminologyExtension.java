@@ -1,4 +1,4 @@
-package de.knowwe.core.compile;
+package de.knowwe.core.compile.terminology;
 
 public interface TerminologyExtension {
 

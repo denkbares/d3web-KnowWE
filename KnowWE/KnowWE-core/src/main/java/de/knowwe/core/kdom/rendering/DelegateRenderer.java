@@ -76,7 +76,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 				// renderer.render(article, section, user, builder);
 				// }
 				renderAnchor(section, builder);
-				builder.append(section.getOriginalText());
+				builder.append(section.getText());
 			}
 			else {
 				for (Section<?> subSection : subSections) {

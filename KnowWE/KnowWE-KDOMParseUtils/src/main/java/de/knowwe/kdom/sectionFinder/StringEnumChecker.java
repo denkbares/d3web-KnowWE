@@ -53,7 +53,7 @@ public class StringEnumChecker<T extends Type> extends SubtreeHandler<T> {
 	public Collection<Message> create(KnowWEArticle article, Section s) {
 
 		// cut offsets and trim
-		String sectionContent = s.getOriginalText();
+		String sectionContent = s.getText();
 		sectionContent = sectionContent.substring(startOffset);
 		sectionContent = sectionContent.substring(0,
 					sectionContent.length() - endOffset);

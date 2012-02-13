@@ -85,7 +85,7 @@ public class TimeStampType extends AbstractType {
 	}
 
 	public static long getTimeInMillis(Section<TimeStampType> sec) {
-		return getTimeInMillis(sec.getOriginalText());
+		return getTimeInMillis(sec.getText());
 	}
 
 	public static long getTimeInMillis(String time) throws NumberFormatException {

@@ -21,17 +21,10 @@
 package de.knowwe.kdom.dashtree;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 
-import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.utils.KnowWEUtils;
 
 public class DashTreeUtils {
 
@@ -46,18 +39,18 @@ public class DashTreeUtils {
 
 	protected DashTreeUtils() {
 	}
-	
+
 	public static List<Section<DashTreeElement>> findSuccessorDashtreeElements(Section<? extends DashTreeElement> element) {
 		List<Section<DashTreeElement>> found = new ArrayList<Section<DashTreeElement>>();
-		Sections.findSuccessorsOfType(element.getFather(),DashTreeElement.class,found);
-		found.remove(element); //remove self
+		Sections.findSuccessorsOfType(element.getFather(), DashTreeElement.class, found);
+		found.remove(element); // remove self
 		return found;
 	}
-	
+
 	public static List<Section<DashTreeElement>> findChildrenDashtreeElements(Section<? extends DashTreeElement> element) {
 		List<Section<DashTreeElement>> found = new ArrayList<Section<DashTreeElement>>();
-		Sections.findSuccessorsOfType(element.getFather(),DashTreeElement.class,2,found);
-		found.remove(element); //remove self
+		Sections.findSuccessorsOfType(element.getFather(), DashTreeElement.class, 2, found);
+		found.remove(element); // remove self
 		return found;
 	}
 
@@ -138,15 +131,14 @@ public class DashTreeUtils {
 	/**
 	 * Delivers the (dash-)level of the element by counting leading '-'
 	 * 
-	 * @param s
-	 *            Only works for DashSubtree oder DashTreeElement sections
+	 * @param s Only works for DashSubtree oder DashTreeElement sections
 	 * @return
 	 */
 	public static int getDashLevel(Section<?> s) {
 
 		if (s == null) return -1;
 
-		String text = s.getOriginalText().trim();
+		String text = s.getText().trim();
 
 		int index = 0;
 		while (index < text.length() && text.charAt(index) == '-') {
@@ -177,75 +169,6 @@ public class DashTreeUtils {
 			}
 		}
 		return 0;
-	}
-
-	/**
-	 * Checks in the Subtree with the given dash level, if there are changed
-	 * Sections. Ignores TermReferences!
-	 */
-	public static boolean isChangeInAncestorSubtree(KnowWEArticle article,
-			Section<?> s, int dashLevel) {
-
-		Section<DashSubtree> subtreeAncestor =
-				DashTreeUtils.getAncestorDashSubtree(s, dashLevel);
-
-		if (subtreeAncestor != null) {
-			return isChangeInSubtree(article, subtreeAncestor, null);
-
-		}
-		return false;
-	}
-
-	public static boolean isChangeInAncestorSubtree(KnowWEArticle article, Section<?> s, int dashLevel, List<Class<? extends Type>> filteredTypes) {
-
-		Section<DashSubtree> subtreeAncestor = DashTreeUtils.getAncestorDashSubtree(s,
-				dashLevel);
-
-		if (subtreeAncestor != null) {
-			return isChangeInSubtree(article, subtreeAncestor, filteredTypes);
-
-		}
-		return false;
-	}
-
-	public static boolean isChangeInSubtree(KnowWEArticle article, Section<? extends DashSubtree> s, List<Class<? extends Type>> filteredTypes) {
-		HashSet<Section<? extends DashSubtree>> visited = new HashSet<Section<? extends DashSubtree>>();
-		visited.add(s);
-		boolean change = isChangeInSubtree(article, s, filteredTypes, visited);
-		return change;
-	}
-
-	@SuppressWarnings("unchecked")
-	private static boolean isChangeInSubtree(KnowWEArticle article, Section<? extends DashSubtree> s, List<Class<? extends Type>> filteredTypes, HashSet<Section<? extends DashSubtree>> visited) {
-		List<Section<?>> nodes = new LinkedList<Section<?>>();
-		Sections.getAllNodesPostOrder(s, nodes);
-		for (Section<?> node : nodes) {
-			if (node.get() instanceof TermDefinition) {
-				Section<TermDefinition> tdef = (Section<TermDefinition>) node;
-				Collection<Section<? extends TermDefinition>> termDefs = new ArrayList<Section<? extends TermDefinition>>();
-				termDefs.addAll(KnowWEUtils.getTerminologyHandler(article.getWeb()).getRedundantTermDefiningSections(
-								article, tdef.get().getTermIdentifier(tdef),
-						tdef.get().getTermScope()));
-				termDefs.add(KnowWEUtils.getTerminologyHandler(
-						article.getWeb()).getTermDefiningSection(article,
-						tdef.get().getTermIdentifier(tdef), tdef.get().getTermScope()));
-				for (Section<?> tDef : termDefs) {
-					if (tDef != null && tDef != node) {
-						Section<DashSubtree> dashSubtree = getAncestorDashSubtree(tDef,
-								getDashLevel(s));
-						if (dashSubtree != null && !visited.contains(dashSubtree)) {
-							visited.add(dashSubtree);
-							if (isChangeInSubtree(article, dashSubtree, filteredTypes,
-									visited)) {
-								return true;
-							}
-						}
-					}
-				}
-			}
-			if (node.isChanged(article.getTitle(), filteredTypes)) return true;
-		}
-		return false;
 	}
 
 }

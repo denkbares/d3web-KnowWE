@@ -54,7 +54,7 @@ public class TagsContent extends XMLContent {
 
 		@Override
 		public Collection<Message> create(KnowWEArticle article, Section s) {
-			String text = s.getOriginalText();
+			String text = s.getText();
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			for (String cur : text.split(" |,")) {
 				if (cur.trim().length() > 0) {

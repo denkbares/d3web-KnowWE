@@ -61,7 +61,7 @@ public class DefaultErrorRenderer implements MessageRenderer {
 		StringBuilder string = new StringBuilder();
 
 		string.append(KnowWEUtils.maskHTML("<span"));
-		String tooltip = m.getVerbalization();
+		String tooltip = KnowWEUtils.maskJSPWikiMarkup(m.getVerbalization());
 		if (tooltip != null) {
 			string.append(" title='").append(
 					tooltip.replace('\'', '"')).append("'");

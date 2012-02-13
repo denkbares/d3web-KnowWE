@@ -22,8 +22,8 @@ package de.knowwe.core.event;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
@@ -46,8 +46,12 @@ public class EventManager {
 		return instance;
 	}
 
-	private final Map<Class<? extends Event>, List<EventListener>> listenerMap =
-			new HashMap<Class<? extends Event>, List<EventListener>>();
+	/*
+	 * We use WeakHashMaps as Set because this way we don't have to unregister
+	 * no longer used EventListener.
+	 */
+	private final Map<Class<? extends Event>, WeakHashMap<EventListener, Object>> listenerMap =
+			new HashMap<Class<? extends Event>, WeakHashMap<EventListener, Object>>();
 
 	/**
 	 * Creates the listener map by fetching all EventListener extensions from
@@ -72,12 +76,12 @@ public class EventManager {
 
 		for (Class<? extends Event> eventClass : eventClasses) {
 			// Register the listener for the event's class
-			List<EventListener> list = listenerMap.get(eventClass);
+			WeakHashMap<EventListener, Object> list = listenerMap.get(eventClass);
 			if (list == null) {
-				list = new ArrayList<EventListener>();
+				list = new WeakHashMap<EventListener, Object>();
 				listenerMap.put(eventClass, list);
 			}
-			list.add(listener);
+			list.put(listener, null);
 		}
 	}
 
@@ -91,9 +95,9 @@ public class EventManager {
 	 */
 	public void fireEvent(Event e) {
 
-		List<EventListener> listeners = this.listenerMap.get(e.getClass());
+		WeakHashMap<EventListener, Object> listeners = this.listenerMap.get(e.getClass());
 		if (listeners != null) {
-			for (EventListener eventListener : listeners) {
+			for (EventListener eventListener : new ArrayList<EventListener>(listeners.keySet())) {
 				eventListener.notify(e);
 			}
 		}

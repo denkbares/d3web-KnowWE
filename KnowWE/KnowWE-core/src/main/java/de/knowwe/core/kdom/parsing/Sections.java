@@ -150,7 +150,7 @@ public class Sections {
 
 	public static Section<?> findSmallestNodeContaining(Section<?> section, String text) {
 		Section<?> s = null;
-		if (section.getOriginalText().contains(text)
+		if (section.getText().contains(text)
 				&& (!(section.get() instanceof PlainText))) {
 			s = section;
 			for (Section<?> sec : section.getChildren()) {
@@ -316,13 +316,13 @@ public class Sections {
 	public static <OT extends Type> void findSuccessorsOfTypeAsMap(Section<?> section, Class<OT> class1, Map<String, Section<OT>> found) {
 
 		if (class1.isAssignableFrom(section.get().getClass())) {
-			Section<OT> tmp = found.get(section.getOriginalText());
+			Section<OT> tmp = found.get(section.getText());
 			// only replace the finding by this Section, if this Section is not
 			// reused
 			// but the Section already in the map is reused
 			if (tmp == null
 					|| (tmp.isOrHasReusedSuccessor && !section.isOrHasReusedSuccessor)) {
-				found.put((section).getOriginalText(), (Section<OT>) section);
+				found.put((section).getText(), (Section<OT>) section);
 			}
 		}
 		for (Section<?> sec : section.getChildren()) {
@@ -371,10 +371,10 @@ public class Sections {
 		}
 		else if (index == path.size() - 1
 				&& path.get(index).isAssignableFrom(section.get().getClass())) {
-			List<Section<?>> equalSections = found.get(section.getOriginalText());
+			List<Section<?>> equalSections = found.get(section.getText());
 			if (equalSections == null) {
 				equalSections = new ArrayList<Section<?>>();
-				found.put(section.getOriginalText(), equalSections);
+				found.put(section.getText(), equalSections);
 			}
 			equalSections.add(section);
 		}
@@ -648,7 +648,7 @@ public class Sections {
 		List<Section<?>> children = sec.getChildren();
 		if (children == null || children.isEmpty()
 				|| sec.hasSharedChildren()) {
-			newText.append(sec.getOriginalText());
+			newText.append(sec.getText());
 			return;
 		}
 		for (Section<?> section : children) {

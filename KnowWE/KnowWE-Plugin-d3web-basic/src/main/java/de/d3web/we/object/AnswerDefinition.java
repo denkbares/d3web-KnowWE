@@ -28,12 +28,10 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.compile.IncrementalConstraint;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.TerminologyHandler;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.objects.KnowWETerm;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -41,27 +39,19 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
+ * This is the type to be used for markup defining new (d3web-) Choice-Answers.
+ * It checks whether the corresponding question is existing and is compatible.
+ * In case it creates the Answer object in the knowledge base.
  * 
  * @author Jochen/Albrecht
  * @created 26.07.2010
- * 
- * 
- *          This is the type to be used for markup defining new (d3web-)
- *          Choice-Answers. It checks whether the corresponding question is
- *          existing and is compatible. In case it creates the Answer object in
- *          the knowledge base.
- * 
- * 
- * 
  */
 public abstract class AnswerDefinition
-		extends D3webTermDefinition<Choice>
-		implements IncrementalConstraint<AnswerDefinition> {
+		extends D3webTermDefinition<Choice> {
 
 	private static final String QUESTION_FOR_ANSWER_KEY = "QUESTION_FOR_ANSWER_KEY";
 
 	public AnswerDefinition() {
-		super(Choice.class);
 		this.addSubtreeHandler(Priority.HIGH, new CreateAnswerHandler());
 		this.setCustomRenderer(
 				StyleRenderer.CHOICE);
@@ -81,27 +71,50 @@ public abstract class AnswerDefinition
 	public abstract Section<? extends QuestionDefinition> getQuestionSection(Section<? extends AnswerDefinition> s);
 
 	@Override
-	public boolean violatedConstraints(KnowWEArticle article, Section<AnswerDefinition> s) {
-		return false;
+	public Choice getTermObject(KnowWEArticle article, Section<? extends D3webTerm<Choice>> s) {
+
+		if (s.get() instanceof AnswerDefinition) {
+			@SuppressWarnings("unchecked")
+			Section<AnswerDefinition> sec = (Section<AnswerDefinition>) s;
+
+			Section<? extends QuestionDefinition> ref = sec.get().getQuestionSection(sec);
+			Question question = ref.get().getTermObject(article, ref);
+
+			String answerName = sec.get().getAnswerName(sec);
+
+			if (question != null && question instanceof QuestionChoice) {
+				return KnowledgeBaseUtils.findChoice((QuestionChoice) question,
+						answerName, false);
+
+			}
+		}
+		return null;
 	}
 
 	@Override
 	@SuppressWarnings(value = { "unchecked" })
-	public String getTermIdentifier(Section<? extends KnowWETerm<Choice>> s) {
-		// here we should return a unique identifier including the question name
-		// as namespace
-		KnowWETerm<Choice> knowWETerm = s.get();
-		if (knowWETerm instanceof AnswerDefinition) {
+	public String getTermIdentifier(Section<? extends SimpleTerm> s) {
+		if (s.get() instanceof AnswerDefinition) {
 			Section<AnswerDefinition> sec = ((Section<AnswerDefinition>) s);
 			Section<? extends QuestionDefinition> questionSection = sec.get().getQuestionSection(
 					sec);
 			String question = questionSection.get().getTermIdentifier(questionSection);
 
-			return createAnswerIdentifierForQuestion(super.getTermIdentifier(sec), question);
+			return createAnswerIdentifierForQuestion(getAnswerName(sec),
+					question);
 		}
 
 		// should not happen
-		return super.getTermIdentifier(s);
+		return KnowWEUtils.trimQuotes(s.getText());
+	}
+
+	public String getAnswerName(Section<? extends AnswerDefinition> answerDefinition) {
+		return KnowWEUtils.trimQuotes(answerDefinition.getText());
+	}
+
+	@Override
+	public Class<?> getTermObjectClass() {
+		return Choice.class;
 	}
 
 	/**
@@ -116,42 +129,29 @@ public abstract class AnswerDefinition
 
 		@Override
 		public Collection<Message> create(KnowWEArticle article,
-				Section<AnswerDefinition> s) {
+				Section<AnswerDefinition> section) {
 
-			String name = s.get().getTermName(s);
+			String name = section.get().getAnswerName(section);
 
-			Section<? extends QuestionDefinition> qDef = s.get().getQuestionSection(s);
-			KnowWEUtils.storeObject(article, s, AnswerDefinition.QUESTION_FOR_ANSWER_KEY,
+			Section<? extends QuestionDefinition> qDef = section.get().getQuestionSection(section);
+			KnowWEUtils.storeObject(article, section, AnswerDefinition.QUESTION_FOR_ANSWER_KEY,
 					qDef);
+			// if having error somewhere, do nothing and report error
+			if (qDef == null || qDef.hasErrorInSubtree(article)) {
+				return Arrays.asList(Messages.objectCreationError(
+						"No valid question for choice '" + name + "'"));
+			}
+
 			// storing the current question needs to happen first, so the method
 			// getUniqueTermIdentifier() can use the right question.
+			String termIdentifier = section.get().getTermIdentifier(section);
+			Class<?> termObjectClass = section.get().getTermObjectClass();
 
-			TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
-			terminologyHandler.registerTermDefinition(article, s);
-			if (terminologyHandler.getTermDefiningSection(article, s) != s) {
-				return s.get().handleRedundantDefinition(article, s);
-			}
+			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
+			terminologyHandler.registerTermDefinition(section, termObjectClass, termIdentifier);
 
-			if (qDef == null) {
-				// this situation can only occur with incremental update
-				// -> fullparse
-				if (article != s.getArticle()) {
-					KnowWEEnvironment.getInstance().getArticleManager(s.getWeb()).registerArticle(
-							KnowWEArticle.createArticle(
-									s.getArticle().getSection().getOriginalText(),
-									s.getTitle(),
-									KnowWEEnvironment.getInstance().getRootType(),
-									s.getWeb(), true), false);
-				}
-				article.setFullParse(CreateAnswerHandler.class);
-				return null;
-			}
-
-			// if having error somewhere, do nothing and report error
-			if (qDef.hasErrorInSubtree(article)) {
-				return Arrays.asList(Messages.objectCreationError(
-						"No valid question - " + name));
-			}
+			Collection<Message> msgs = section.get().canAbortTermObjectCreation(article, section);
+			if (msgs != null) return msgs;
 
 			Question q = qDef.get().getTermObject(article, qDef);
 
@@ -172,19 +172,17 @@ public abstract class AnswerDefinition
 					}
 					else {
 						return Messages.asList(Messages.syntaxError(
-								"only '" + qyn.getAnswerChoiceYes().getName() + "' and '"
+								"Only '" + qyn.getAnswerChoiceYes().getName() + "' and '"
 										+ qyn.getAnswerChoiceNo().getName()
 										+ "' is allowed for this question type"));
 					}
 				}
 				else {
 					a = KnowledgeBaseUtils.addChoiceAnswer((QuestionChoice) q,
-							s.get().getTermName(s),
-							s.get().getPosition(s));
+							section.get().getAnswerName(section),
+							section.get().getPosition(section));
 
 				}
-
-				s.get().storeTermObject(article, s, a);
 
 				return Messages.asList(Messages.objectCreatedNotice(
 						a.getClass().getSimpleName() + "  "
@@ -192,39 +190,9 @@ public abstract class AnswerDefinition
 
 			}
 			return Messages.asList(Messages.objectCreationError(
-					"no choice question - " + name));
+					"'" + name + "' is not a choice question"));
 		}
 
-		@Override
-		public void destroy(KnowWEArticle article, Section<AnswerDefinition>
-				s) {
-
-			KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
-					article, s);
-			// why does this work?
-			// explanation:
-			// the answer is (un)registered using the uniqueTermIdentifier,
-			// which uses either the stored father question or, if there
-			// is no stored father question, retrieves the father question
-			// again... both variants work correctly:
-			//
-			// 1) the answer is not reused in the new KDOM... in this case
-			// the uniqueTermIdentifier will not find a stores question
-			// section, but since the answer wasn't reused it is still
-			// hooked in the same father question -> new retrieval of the
-			// father Question still returns the correct one
-			//
-			// 2) the answer section is reused but needs to be destroyed
-			// anyway, because for example the position has changed -> since
-			// the answer section is reused, uniqueTermIdentifier will find
-			// the stored question which is still the one the answer was
-			// hooked in in the last KDOM.
-		}
-	}
-
-	@Override
-	public String getTermName(Section<? extends KnowWETerm<Choice>> s) {
-		return KnowWEUtils.trimQuotes(s.getOriginalText());
 	}
 
 	/**

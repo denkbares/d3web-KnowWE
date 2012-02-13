@@ -22,13 +22,12 @@ package de.d3web.we.object;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.TerminologyHandler;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -46,7 +45,6 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer> {
 
 	public QuestionnaireDefinition() {
-		super(QContainer.class);
 		addSubtreeHandler(Priority.HIGHEST, new CreateQuestionnaireHandler());
 		setCustomRenderer(StyleRenderer.Questionaire);
 		setOrderSensitive(true);
@@ -54,52 +52,44 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 
 	public abstract int getPosition(Section<QuestionnaireDefinition> s);
 
+	@Override
+	public Class<?> getTermObjectClass() {
+		return QContainer.class;
+	}
+
 	static class CreateQuestionnaireHandler
 			extends D3webSubtreeHandler<QuestionnaireDefinition> {
 
 		@Override
 		public Collection<Message> create(KnowWEArticle article,
-				Section<QuestionnaireDefinition> s) {
+				Section<QuestionnaireDefinition> section) {
 
-			String name = s.get().getTermIdentifier(s);
+			String name = section.get().getTermIdentifier(section);
+			Class<?> termObjectClass = section.get().getTermObjectClass();
+			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
+			terminologyHandler.registerTermDefinition(section, termObjectClass, name);
 
-			TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
-			terminologyHandler.registerTermDefinition(article, s);
-			if (terminologyHandler.getTermDefiningSection(article, s) != s) {
-				return s.get().handleRedundantDefinition(article, s);
-			}
+			Collection<Message> msgs = section.get().canAbortTermObjectCreation(article, section);
+			if (msgs != null) return msgs;
 
 			KnowledgeBase kb = getKB(article);
 
-			NamedObject o = kb.getManager().searchQContainer(name);
-
-			if (o != null) {
-				if (!(o instanceof QContainer)) {
-					return Messages.asList(Messages.occupiedTermError(name, o.getClass()));
+			TerminologyObject termObject = kb.getManager().search(name);
+			if (termObject != null) {
+				if (!(termObject instanceof QContainer)) {
+					return Messages.asList(Messages.error("The term '"
+							+ name + "' is reserved by the system."));
 				}
 				return Messages.asList();
 			}
+
 			QASet parent = kb.getRootQASet();
-			QContainer qc = new QContainer(parent, name);
+			new QContainer(parent, name);
 
-			s.get().storeTermObject(article, s, qc);
 			return Messages.asList(Messages.objectCreatedNotice(
-						qc.getClass().getSimpleName()
-								+ " " + qc.getName()));
+						termObjectClass.getSimpleName()
+								+ " '" + name + "'"));
 		}
-
-		@Override
-		public void destroy(KnowWEArticle article,
-				Section<QuestionnaireDefinition> s) {
-
-			QContainer q = s.get().getTermObject(article, s);
-			if (q != null) {
-				D3webUtils.removeRecursively(q);
-				KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
-						article, s);
-			}
-		}
-
 	}
 
 }

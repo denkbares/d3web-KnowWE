@@ -7,28 +7,21 @@ import java.util.List;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.compile.ConstraintModule;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.objects.KnowWETerm;
-import de.knowwe.core.kdom.objects.StringDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 
-public abstract class PackageCompileType extends StringDefinition implements PackageReference {
+public abstract class PackageCompileType extends AbstractType implements PackageReference {
 
 	public PackageCompileType() {
-		this.clearSubtreeHandlers();
-		this.setTermScope(Scope.GLOBAL);
 		this.sectionFinder = new AllTextSectionFinder();
 		this.setIgnorePackageCompile(true);
 		this.addSubtreeHandler(Priority.PRECOMPILE_LOW, new PackageCompileHandler());
-	}
-
-	@Override
-	public String getTermIdentifier(Section<? extends KnowWETerm<String>> s) {
-		return s.getTitle();
 	}
 
 	@Override
@@ -85,20 +78,16 @@ public abstract class PackageCompileType extends StringDefinition implements Pac
 				}
 			}
 
-			s.get().storeTermObject(article, s, s.get().getTermIdentifier(s));
-			KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
-					article, s);
+			KnowWEUtils.getGlobalTerminologyManager(article.getWeb()).registerTermDefinition(s,
+					String.class, s.getTitle());
 
-			return null;
+			return Messages.asList();
 		}
 
 		@Override
 		public void destroy(KnowWEArticle article, Section<PackageCompileType> s) {
-			if (!s.isReusedBy(article.getTitle())) {
-				article.setFullParse(this.getClass());
-			}
-			KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
-					article, s);
+			KnowWEUtils.getTerminologyManager(article).unregisterTermDefinition(
+					s, String.class, s.getTitle());
 		}
 
 		private class CompileHandlerConstraint extends ConstraintModule<PackageCompileType> {

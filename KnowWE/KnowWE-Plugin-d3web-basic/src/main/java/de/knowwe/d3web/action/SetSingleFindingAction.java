@@ -39,7 +39,6 @@ import de.d3web.core.session.blackboard.FactFactory;
 import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.TextValue;
-import de.d3web.we.basic.D3webModule;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.action.AbstractAction;
@@ -89,7 +88,7 @@ public class SetSingleFindingAction extends AbstractAction {
 			return "null";
 		}
 
-		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(web).getKB(
+		KnowledgeBase kb = D3webUtils.getKnowledgeRepresentationHandler(web).getKB(
 				topic);
 		Session session = D3webUtils.getSession(topic, user, web);
 		Blackboard blackboard = session.getBlackboard();

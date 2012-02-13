@@ -43,8 +43,8 @@ import de.d3web.plugin.PluginManager;
 import de.d3web.plugin.Resource;
 import de.knowwe.core.action.KnowWEActionDispatcher;
 import de.knowwe.core.append.PageAppendHandler;
-import de.knowwe.core.compile.TerminologyHandler;
 import de.knowwe.core.compile.packaging.KnowWEPackageManager;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.RootType;
@@ -128,10 +128,10 @@ public class KnowWEEnvironment {
 	private final Map<String, KnowWEPackageManager> packageManagers = new HashMap<String, KnowWEPackageManager>();
 
 	/**
-	 * A terminology handler for each web. In case of JSPWiki there is only on
-	 * web ('default_web')
+	 * A terminology handler for each web and article. In case of JSPWiki there
+	 * is only on web ('default_web')
 	 */
-	private final Map<String, TerminologyHandler> terminologyHandlers = new HashMap<String, TerminologyHandler>();
+	private final Map<String, Map<String, TerminologyManager>> terminologyHandlers = new HashMap<String, Map<String, TerminologyManager>>();
 
 	/**
 	 * This is the link to the connected Wiki-engine. Allows saving pages etc.
@@ -316,11 +316,16 @@ public class KnowWEEnvironment {
 	 * @param web
 	 * @return
 	 */
-	public TerminologyHandler getTerminologyHandler(String web) {
-		TerminologyHandler mgr = this.terminologyHandlers.get(web);
+	public TerminologyManager getTerminologyHandler(String web, String title) {
+		Map<String, TerminologyManager> handlersOfWeb = this.terminologyHandlers.get(web);
+		if (handlersOfWeb == null) {
+			handlersOfWeb = new HashMap<String, TerminologyManager>();
+			this.terminologyHandlers.put(web, handlersOfWeb);
+		}
+		TerminologyManager mgr = handlersOfWeb.get(title);
 		if (mgr == null) {
-			mgr = new TerminologyHandler(web);
-			terminologyHandlers.put(web, mgr);
+			mgr = new TerminologyManager(web, title);
+			handlersOfWeb.put(title, mgr);
 		}
 		return mgr;
 	}
@@ -532,7 +537,7 @@ public class KnowWEEnvironment {
 	public KnowWEArticle buildAndRegisterArticle(String content,
 			String title, String web, boolean fullParse) {
 
-		if (KnowWEArticle.isArticleCurrentlyBuilding(title)) {
+		if (KnowWEArticle.isArticleCurrentlyBuilding(web, title)) {
 			return getArticle(DEFAULT_WEB, title);
 		}
 

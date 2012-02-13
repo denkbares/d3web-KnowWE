@@ -20,8 +20,9 @@
 
 package de.d3web.we.flow.type;
 
-import de.knowwe.core.kdom.objects.KnowWETerm;
-import de.knowwe.core.kdom.objects.StringDefinition;
+import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.knowwe.core.kdom.objects.SimpleDefinition;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
@@ -52,15 +53,16 @@ public class StartType extends AbstractXMLType {
 		addChildType(new StartNodeDef());
 	}
 
-	static class StartNodeDef extends StringDefinition {
+	static class StartNodeDef extends SimpleDefinition {
 
 		public StartNodeDef() {
+			super(TermRegistrationScope.LOCAL, String.class);
 			setSectionFinder(new AllTextSectionFinder());
 		}
 
 		@Override
-		public String getTermIdentifier(Section<? extends KnowWETerm<String>> s) {
-			String nodeName = s.getOriginalText();
+		public String getTermIdentifier(Section<? extends SimpleTerm> s) {
+			String nodeName = s.getText();
 			Section<FlowchartType> flowchart = Sections.findAncestorOfType(s, FlowchartType.class);
 			String flowchartName = FlowchartType.getFlowchartName(flowchart);
 

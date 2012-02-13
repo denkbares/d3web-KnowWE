@@ -22,7 +22,7 @@ public class SinglePackageReferenceRenderer extends KnowWEDomRenderer {
 			UserContext user,
 			StringBuilder string) {
 
-		String packageName = sec.getOriginalText();
+		String packageName = sec.getText();
 
 		KnowWEPackageManager packageManager = KnowWEEnvironment.getInstance().getPackageManager(
 				article.getWeb());

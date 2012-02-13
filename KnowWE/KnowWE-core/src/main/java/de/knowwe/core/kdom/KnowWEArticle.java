@@ -92,10 +92,18 @@ public class KnowWEArticle extends AbstractType {
 
 	private final Set<String> classesCausingFullParse = new HashSet<String>();
 
-	private static Set<String> currentlyBuildingArticles = Collections.synchronizedSet(new HashSet<String>());
+	private static Map<String, KnowWEArticle> currentlyBuildingArticles = Collections.synchronizedMap(new HashMap<String, KnowWEArticle>());
 
-	public static boolean isArticleCurrentlyBuilding(String title) {
-		return currentlyBuildingArticles.contains(title);
+	private static String getArticleKey(String web, String title) {
+		return web + title;
+	}
+
+	public static boolean isArticleCurrentlyBuilding(String web, String title) {
+		return currentlyBuildingArticles.containsKey(getArticleKey(web, title));
+	}
+
+	public static KnowWEArticle getCurrentlyBuildingArticle(String web, String title) {
+		return currentlyBuildingArticles.get(getArticleKey(web, title));
 	}
 
 	public static KnowWEArticle createArticle(String text, String title, RootType rootType,
@@ -106,7 +114,7 @@ public class KnowWEArticle extends AbstractType {
 	public static KnowWEArticle createArticle(String text, String title, RootType rootType,
 			String web, boolean fullParse) {
 
-		if (isArticleCurrentlyBuilding(title)) {
+		if (isArticleCurrentlyBuilding(web, title)) {
 			Logger.getLogger(KnowWEArticle.class.getName()).severe(
 					"The article '"
 							+ title
@@ -115,14 +123,14 @@ public class KnowWEArticle extends AbstractType {
 							+ "KnowWEArticle#isArticleCurrentlyBuilding(String) first!");
 		}
 
-		currentlyBuildingArticles.add(title);
+		currentlyBuildingArticles.put(getArticleKey(web, title), null);
 
 		KnowWEArticle article = new KnowWEArticle(text, title, rootType,
 				web, fullParse);
 
 		EventManager.getInstance().fireEvent(new ArticleCreatedEvent(article));
 
-		currentlyBuildingArticles.remove(title);
+		currentlyBuildingArticles.remove(getArticleKey(web, title));
 
 		return article;
 	}
@@ -140,6 +148,7 @@ public class KnowWEArticle extends AbstractType {
 		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
 				"====>> Starting to build article '" + title + "' ====>>");
 
+		currentlyBuildingArticles.put(getArticleKey(web, title), this);
 		this.startTimeOverall = System.currentTimeMillis();
 		this.currentStartTime = this.startTimeOverall;
 		this.title = title;
@@ -148,7 +157,7 @@ public class KnowWEArticle extends AbstractType {
 		this.lastVersion = KnowWEEnvironment.getInstance().getArticle(web, title);
 
 		boolean unchangedContent = lastVersion != null
-				&& lastVersion.getSection().getOriginalText().equals(text);
+				&& lastVersion.getSection().getText().equals(text);
 
 		this.reParse = unchangedContent && fullParse;
 
@@ -399,7 +408,7 @@ public class KnowWEArticle extends AbstractType {
 
 	@Override
 	public String toString() {
-		return sec.getOriginalText();
+		return sec.getText();
 	}
 
 	// public Set<Section<Include>> getActiveIncludes() {

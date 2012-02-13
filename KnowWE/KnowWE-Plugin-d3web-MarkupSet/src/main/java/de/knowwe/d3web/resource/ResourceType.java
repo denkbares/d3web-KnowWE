@@ -20,7 +20,6 @@
 package de.knowwe.d3web.resource;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.knowwe.core.compile.IncrementalMarker;
 import de.knowwe.core.compile.packaging.KnowWEPackageManager;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -49,7 +48,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @author volker_belli
  * @created 07.10.2010
  */
-public class ResourceType extends DefaultMarkupType implements IncrementalMarker {
+public class ResourceType extends DefaultMarkupType {
 
 	private static final DefaultMarkup MARKUP;
 

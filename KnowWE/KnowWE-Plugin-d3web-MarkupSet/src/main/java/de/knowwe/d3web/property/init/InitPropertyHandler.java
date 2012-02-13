@@ -32,9 +32,9 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.d3web.property.NamedObjectReference;
 import de.knowwe.d3web.property.PropertyContentType;
 import de.knowwe.d3web.property.PropertyDeclarationType;
+import de.knowwe.d3web.property.PropertyObjectReference;
 import de.knowwe.d3web.property.PropertyType;
 
 /**
@@ -60,8 +60,8 @@ public class InitPropertyHandler extends D3webSubtreeHandler<PropertyDeclaration
 		}
 
 		// get NamedObject
-		Section<NamedObjectReference> namendObjectSection = Sections.findSuccessor(s,
-				NamedObjectReference.class);
+		Section<PropertyObjectReference> namendObjectSection = Sections.findSuccessor(s,
+				PropertyObjectReference.class);
 		if (namendObjectSection == null) {
 			return Messages.asList();
 		}

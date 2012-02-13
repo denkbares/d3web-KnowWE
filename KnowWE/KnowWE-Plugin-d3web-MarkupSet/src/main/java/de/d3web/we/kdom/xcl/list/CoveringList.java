@@ -27,7 +27,6 @@ import java.util.List;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
-import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.Finding;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
@@ -41,7 +40,6 @@ import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
 import de.knowwe.core.compile.ConstraintModule;
-import de.knowwe.core.compile.IncrementalMarker;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.SuccessorNotReusedConstraint;
 import de.knowwe.core.kdom.AbstractType;
@@ -125,7 +123,7 @@ public class CoveringList extends AbstractType {
 		}
 	}
 
-	class CoveringRelation extends AbstractType implements IncrementalMarker {
+	class CoveringRelation extends AbstractType {
 
 		public CoveringRelation() {
 
@@ -211,7 +209,7 @@ public class CoveringList extends AbstractType {
 
 				if (s.hasErrorInSubtree(article)) {
 					return Messages.asList(Messages.creationFailedWarning(
-							D3webModule.getKwikiBundle_d3web()
+							D3webUtils.getD3webBundle()
 									.getString("KnowWE.xcllist.relationfail")));
 				}
 
@@ -233,7 +231,7 @@ public class CoveringList extends AbstractType {
 
 								if (condition == null) {
 									return Messages.asList(Messages.creationFailedWarning(
-											D3webModule.getKwikiBundle_d3web()
+											D3webUtils.getD3webBundle()
 													.getString("KnowWE.xcllist.conditionerror")));
 								}
 
@@ -244,7 +242,7 @@ public class CoveringList extends AbstractType {
 								XCLRelationType type = XCLRelationType.explains;
 								Double w = 1.0;
 								if (weight != null) {
-									String weightString = weight.getOriginalText();
+									String weightString = weight.getText();
 									type = getXCLRealtionTypeForString(weightString);
 									if (type == XCLRelationType.explains) {
 										weightString = weightString.replaceAll("\\[", "");
@@ -287,7 +285,7 @@ public class CoveringList extends AbstractType {
 					}
 				}
 				return Messages.asList(Messages.creationFailedWarning(
-						D3webModule.getKwikiBundle_d3web()
+						D3webUtils.getD3webBundle()
 								.getString("KnowWE.xcllist.relationfail")));
 			}
 
@@ -466,7 +464,7 @@ public class CoveringList extends AbstractType {
 			if (type instanceof XCLRelationWeight) { // renders contradiction in
 				// red if fulfilled
 
-				if (fulfilled && sec.getOriginalText().trim().equals("[--]")) {
+				if (fulfilled && sec.getText().trim().equals("[--]")) {
 					StyleRenderer.OPERATOR.render(article,
 							sec, user, buffi);
 				}

@@ -80,13 +80,13 @@ public class CallFlowActionType extends D3webRuleAction<CallFlowActionType> {
 	public static String getStartNodeName(Section<CallFlowActionType> action) {
 		Section<StartNodeReference> nodeSection = Sections.findChildOfType(action,
 				StartNodeReference.class);
-		return nodeSection.getOriginalText();
+		return nodeSection.getText();
 	}
 
 	public static String getFlowName(Section<CallFlowActionType> action) {
 		Section<FlowchartReference> nodeSection = Sections.findChildOfType(action,
 				FlowchartReference.class);
-		return nodeSection.getOriginalText();
+		return nodeSection.getText();
 	}
 
 	@Override

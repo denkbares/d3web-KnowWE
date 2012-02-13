@@ -27,9 +27,6 @@ import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.kdom.questionTree.ObjectDescription;
 import de.d3web.we.object.SolutionDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.compile.ConstraintModule.Operator;
-import de.knowwe.core.compile.ConstraintModule.Purpose;
-import de.knowwe.core.compile.IncrementalMarker;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -43,7 +40,6 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
-import de.knowwe.kdom.dashtree.AncestorSubtreeChangeConstraint;
 import de.knowwe.kdom.dashtree.DashTreeElementContent;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
@@ -59,7 +55,7 @@ import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
  * 
  * 
  */
-public class SolutionDashTreeElementContent extends DashTreeElementContent implements IncrementalMarker {
+public class SolutionDashTreeElementContent extends DashTreeElementContent {
 
 	public SolutionDashTreeElementContent() {
 		this.addSubtreeHandler(new CreateSubSolutionRelationHandler());
@@ -102,17 +98,6 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 	 * 
 	 */
 	class CreateSubSolutionRelationHandler extends D3webSubtreeHandler<SolutionDashTreeElementContent> {
-
-		public CreateSubSolutionRelationHandler() {
-			this.registerConstraintModule(new AncestorSubtreeChangeConstraint<SolutionDashTreeElementContent>(
-					0, Operator.COMPILE_IF_VIOLATED, Purpose.CREATE));
-		}
-
-		@Override
-		public void destroy(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
-			// will be destroyed by SolutionDefinition#destroy()
-
-		}
 
 		@Override
 		public Collection<Message> create(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {

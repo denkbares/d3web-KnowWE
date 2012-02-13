@@ -19,12 +19,9 @@
  */
 package de.d3web.we.object;
 
-import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.we.basic.D3webModule;
-import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.objects.TermReference;
-import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -37,25 +34,14 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class SolutionReference extends D3webTermReference<Solution> {
 
 	public SolutionReference() {
-		super(Solution.class);
 		this.setCustomRenderer(StyleRenderer.SOLUTION);
+		this.addSubtreeHandler(new SimpleTermReferenceRegistrationHandler(
+				TermRegistrationScope.LOCAL));
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Solution getTermObjectFallback(KnowWEArticle article, Section<? extends TermReference<Solution>> s) {
-		if (s.get() instanceof SolutionReference) {
-
-			Section<SolutionReference> sec = (Section<SolutionReference>) s;
-			String solutionName = sec.get().getTermIdentifier(sec);
-
-			KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(
-					article.getWeb()).getKB(article.getTitle());
-
-			Solution solution = kb.getManager().searchSolution(solutionName);
-			return solution;
-		}
-		return null;
+	public Class<?> getTermObjectClass() {
+		return Solution.class;
 	}
 
 }

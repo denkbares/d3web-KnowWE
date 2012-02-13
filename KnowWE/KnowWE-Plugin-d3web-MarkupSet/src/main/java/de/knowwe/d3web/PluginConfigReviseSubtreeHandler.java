@@ -25,7 +25,7 @@ import java.util.Collection;
 import de.d3web.core.io.progress.DummyProgressListener;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.plugin.io.PluginConfigPersistenceHandler;
-import de.d3web.we.basic.D3webModule;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -36,9 +36,9 @@ public class PluginConfigReviseSubtreeHandler extends SubtreeHandler<PluginConfi
 
 	@Override
 	public Collection<Message> create(KnowWEArticle article, Section<PluginConfigType> s) {
-		String xmlText = "<settings><plugins /><psmethods>" + s.getOriginalText()
+		String xmlText = "<settings><plugins /><psmethods>" + s.getText()
 				+ "</psmethods></settings>";
-		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(
+		KnowledgeBase kb = D3webUtils.getKnowledgeRepresentationHandler(
 				article.getWeb()).getKB(article.getTitle());
 		if (kb == null) {
 			return Messages.asList(Messages.error(

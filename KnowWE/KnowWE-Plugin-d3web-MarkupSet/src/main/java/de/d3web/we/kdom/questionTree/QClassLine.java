@@ -20,17 +20,12 @@
 package de.d3web.we.kdom.questionTree;
 
 import java.util.Collection;
-import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
-import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.compile.IncrementalMarker;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
@@ -50,7 +45,7 @@ import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
 import de.knowwe.plugin.Plugins;
 
-public class QClassLine extends AbstractType implements IncrementalMarker {
+public class QClassLine extends AbstractType {
 
 	public QClassLine() {
 
@@ -84,11 +79,6 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 			return DashTreeUtils.getPositionInFatherDashSubtree(s);
 		}
 
-		@Override
-		public boolean violatedConstraints(KnowWEArticle article, Section<QASetDefinition<? extends QASet>> s) {
-			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
-		}
-
 	}
 
 	/**
@@ -112,24 +102,6 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 		public Collection<Message> create(KnowWEArticle article, Section<QClassLine> s) {
 			Section<? extends DashTreeElementContent> fatherContent = DashTreeUtils.getFatherDashTreeElementContent(
 					s);
-
-			if (fatherContent != null) {
-				List<Section<QuestionLine>> questionLine = Sections.findChildrenOfType(
-						fatherContent, QuestionLine.class);
-				if (questionLine != null && !questionLine.isEmpty()) {
-					// this situation can only occur with incremental update
-					// -> fullparse
-					if (article != s.getArticle()) {
-						KnowWEEnvironment.getInstance().getArticleManager(s.getWeb()).registerArticle(
-								KnowWEArticle.createArticle(
-										s.getArticle().getSection().getOriginalText(),
-										s.getTitle(),
-										KnowWEEnvironment.getInstance().getRootType(),
-										s.getWeb(), true), false);
-					}
-					article.setFullParse(this.getClass());
-				}
-			}
 
 			Section<QuestionnaireDefinition> localQuestionniareDef = Sections.findSuccessor(s,
 					QuestionnaireDefinition.class);
@@ -168,9 +140,9 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 
 						return Messages.asList(Messages.relationCreatedNotice(
 								s.getClass().getSimpleName()
-										+ " " + localQuestionnaire.getName()
-										+ "sub-questionnaire of "
-										+ superQuestionnaire.getName()));
+										+ " '" + localQuestionnaire.getName() + "' is now "
+										+ "sub-questionnaire of '"
+										+ superQuestionnaire.getName() + "'"));
 					}
 				}
 			}
@@ -206,7 +178,7 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 		};
 	}
 
-	static class InitNumber extends AbstractType implements IncrementalMarker {
+	static class InitNumber extends AbstractType {
 
 		public InitNumber() {
 
@@ -228,12 +200,11 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 				@Override
 				public Collection<Message> create(KnowWEArticle article, Section<InitNumber> s) {
 
-					Double originalnumber = s.get().getNumber(
-							s);
+					Double originalnumber = s.get().getNumber(s);
 					if (originalnumber == null) {
 						// if the numbers cannot be found throw error
 						return Messages.asList(Messages.objectCreationError(
-								"invalid number"));
+								"Invalid number"));
 					}
 					Integer number = new Integer((originalnumber.intValue()));
 
@@ -252,7 +223,7 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 							if (alreadyInitDefined) {
 								// do nothing and throw error iff
 								return Messages.asList(Messages.objectAlreadyDefinedError(
-										"Init priority for object already defined"));
+										"Init priority"));
 							}
 							else {
 								// else register init value
@@ -261,13 +232,13 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 										number);
 
 								return Messages.asList(Messages.objectCreatedNotice(
-										"Init property set"));
+										"Init property"));
 							}
 						}
 
 					}
 					return Messages.asList(Messages.objectCreationError(
-							"KnowWE.questiontree.numerical"));
+							"Init priority"));
 				}
 
 				@Override
@@ -288,7 +259,7 @@ public class QClassLine extends AbstractType implements IncrementalMarker {
 		}
 
 		public Double getNumber(Section<InitNumber> s) {
-			String originalText = s.getOriginalText();
+			String originalText = s.getText();
 			String content = originalText.replace("#", "").trim();
 
 			Double d = null;

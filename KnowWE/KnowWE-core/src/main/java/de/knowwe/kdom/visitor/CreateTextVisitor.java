@@ -63,7 +63,7 @@ public class CreateTextVisitor implements Visitor {
 
 	private void renderSubtree(Section<? extends Type> s, StringBuffer buffi) {
 		if (s.get() instanceof PlainText) {
-			buffi.append(s.getOriginalText());
+			buffi.append(s.getText());
 		}
 		List<Section<? extends Type>> children = s.getChildren();
 

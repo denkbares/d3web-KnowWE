@@ -150,7 +150,7 @@ public class CIDashboardType extends DefaultMarkupType {
 
 			// iterate over all @test-Annotations
 			for (Section<?> annoSection : annotationSections) {
-				String annotationText = annoSection.getOriginalText();
+				String annotationText = annoSection.getText();
 				matcher = pattern.matcher(annotationText);
 				if (matcher.find()) {
 					// get the name of the test

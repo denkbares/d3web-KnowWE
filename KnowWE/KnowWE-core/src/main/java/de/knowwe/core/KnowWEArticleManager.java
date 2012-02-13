@@ -200,7 +200,7 @@ public class KnowWEArticleManager {
 			if (!updatingArticles.contains(title)) {
 				if (KnowWEEnvironment.getInstance().getWikiConnector().doesPageExist(title)) {
 					KnowWEArticle newArt = KnowWEArticle.createArticle(
-							articleMap.get(title).getSection().getOriginalText(), title,
+							articleMap.get(title).getSection().getText(), title,
 							KnowWEEnvironment.getInstance().getRootType(), web, false);
 					registerArticle(newArt, true);
 				}

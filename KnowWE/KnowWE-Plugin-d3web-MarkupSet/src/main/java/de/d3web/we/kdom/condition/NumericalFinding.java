@@ -116,13 +116,13 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 			return null;
 		}
 
-		String comparator = Sections.findSuccessor(s, Comparator.class).getOriginalText();
+		String comparator = Sections.findSuccessor(s, Comparator.class).getText();
 
 		Double number = Number.getNumber(numberSec);
 
 		if (number == null) {
 			Message error = Messages.invalidNumberError(
-					numberSec.getOriginalText());
+					numberSec.getText());
 			Messages.storeMessage(article, numberSec, getClass(), error);
 			return null;
 		}

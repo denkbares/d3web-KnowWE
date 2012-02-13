@@ -71,7 +71,7 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 						DefaultMarkupType.getAnnotationContentSection(markupSection,
 								packageAnno.getName());
 				if (annotationSection != null) {
-					value = annotationSection.getOriginalText();
+					value = annotationSection.getText();
 				}
 			}
 			KnowWEEnvironment.getInstance().getPackageManager(
@@ -96,7 +96,7 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 		for (Section<AnnotationContentType> annotationSection : subSections) {
 			// check annotations pattern
 			Annotation annotation = annotationSection.get().getAnnotation();
-			String text = annotationSection.getOriginalText();
+			String text = annotationSection.getText();
 			if (!annotation.matches(text)) {
 				String name = annotation.getName();
 				Message message = Messages.error("The value of annotation @"

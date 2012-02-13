@@ -21,9 +21,6 @@
 package de.d3web.we.kdom.questionTree;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 
 import de.d3web.core.inference.condition.CondAnd;
@@ -44,14 +41,10 @@ import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.objects.KnowWETerm;
-import de.knowwe.core.kdom.objects.TermDefinition;
-import de.knowwe.core.kdom.objects.TermReference;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.dashtree.DashSubtree;
 import de.knowwe.kdom.dashtree.DashTreeElement;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
@@ -176,8 +169,7 @@ public class QuestionDashTreeUtils {
 	 * Checks if the Subtree of the root Question has changed. Ignores
 	 * TermReferences!
 	 */
-	@SuppressWarnings({
-			"unchecked", "rawtypes" })
+	@SuppressWarnings("unchecked")
 	public static Section<DashSubtree> getRootQuestionSubtree(KnowWEArticle article, Section<?> s) {
 
 		Section<DashSubtree> rootQuestionSubtree = null;
@@ -196,9 +188,9 @@ public class QuestionDashTreeUtils {
 			if (lvl1SubtreeAncestor != null) {
 				Section<DashTreeElement> lvl1Element = Sections.findChildOfType(
 						lvl1SubtreeAncestor, DashTreeElement.class);
-				Section<? extends KnowWETerm> termRefSection = Sections.findSuccessor(
+				Section<? extends SimpleTerm> termRefSection = Sections.findSuccessor(
 						lvl1Element,
-						KnowWETerm.class);
+						SimpleTerm.class);
 
 				if (termRefSection.get() instanceof QASetDefinition) {
 					rootQuestionSubtree = lvl1SubtreeAncestor;
@@ -210,69 +202,6 @@ public class QuestionDashTreeUtils {
 		}
 
 		return rootQuestionSubtree;
-	}
-
-	/**
-	 * Checks if the Subtree of the root Question has changed. Ignores
-	 * TermReferences!
-	 */
-	public static boolean isChangeInRootQuestionSubtree(KnowWEArticle article, Section<?> s) {
-
-		Section<DashSubtree> rootQuestionSubtree = getRootQuestionSubtree(article, s);
-
-		if (rootQuestionSubtree != null) {
-			return isChangeInQuestionSubtree(article, rootQuestionSubtree);
-		}
-		return false;
-	}
-
-	public static boolean isChangeInQuestionSubtree(KnowWEArticle article, Section<DashSubtree> s) {
-
-		List<Class<? extends Type>> filteredTypes =
-				new ArrayList<Class<? extends Type>>(1);
-		filteredTypes.add(TermReference.class);
-
-		HashSet<Section<DashSubtree>> visited = new HashSet<Section<DashSubtree>>();
-		visited.add(s);
-		boolean change = isChangeInQuestionSubtree(article, s, filteredTypes, visited);
-		return change;
-	}
-
-	@SuppressWarnings({
-			"unchecked", "rawtypes" })
-	private static boolean isChangeInQuestionSubtree(KnowWEArticle article, Section<DashSubtree> s, List<Class<? extends Type>> filteredTypes, HashSet<Section<DashSubtree>> visited) {
-		List<Section<?>> nodes = new LinkedList<Section<?>>();
-		Sections.getAllNodesPostOrder(s, nodes);
-		for (Section<?> node : nodes) {
-			if (node.get() instanceof TermDefinition) {
-				Section<TermDefinition> tdef = (Section<TermDefinition>) node;
-				Collection<Section<? extends TermDefinition>> termDefs = new ArrayList<Section<? extends TermDefinition>>();
-				termDefs.addAll(KnowWEUtils.getTerminologyHandler(article.getWeb()).getRedundantTermDefiningSections(
-								article, tdef.get().getTermIdentifier(tdef),
-						tdef.get().getTermScope()));
-				termDefs.add(KnowWEUtils.getTerminologyHandler(
-						article.getWeb()).getTermDefiningSection(article,
-						tdef.get().getTermIdentifier(tdef), tdef.get().getTermScope()));
-				for (Section<?> tDef : termDefs) {
-					if (tDef != null && tDef != node) {
-						Section<DashSubtree> dashSubtree = getRootQuestionSubtree(
-								article, tDef);
-						if (dashSubtree != null && !visited.contains(dashSubtree)) {
-							visited.add(dashSubtree);
-							if (isChangeInQuestionSubtree(article, dashSubtree,
-									filteredTypes,
-									visited)) {
-								return true;
-							}
-						}
-					}
-				}
-			}
-			if (node.isChanged(article.getTitle(), filteredTypes)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 }

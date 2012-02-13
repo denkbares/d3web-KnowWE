@@ -66,7 +66,7 @@ public class UnknownAnnotationType extends AbstractType {
 	}
 
 	private static String getGroup(Section<?> section, int group) {
-		Matcher matcher = PATTERN.matcher(section.getOriginalText());
+		Matcher matcher = PATTERN.matcher(section.getText());
 		if (matcher.find()) {
 			return matcher.group(group);
 		}

@@ -40,11 +40,11 @@ import de.d3web.we.object.SolutionReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.basicType.Number;
-import de.knowwe.core.kdom.objects.KnowWETerm;
-import de.knowwe.core.kdom.objects.StringReference;
-import de.knowwe.core.kdom.objects.TermReference;
+import de.knowwe.core.kdom.objects.SimpleReference;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
@@ -59,10 +59,10 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @author Sebastian Furth
  * 
  */
-public class TestCaseContent extends StringReference {
+public class TestCaseContent extends SimpleReference {
 
 	protected TestCaseContent() {
-		this.setTermScope(Scope.GLOBAL);
+		super(TermRegistrationScope.GLOBAL, String.class);
 		this.setIgnorePackageCompile(true);
 		this.sectionFinder = new AllTextSectionFinder();
 		this.childrenTypes.add(new SequentialTestCase());
@@ -70,17 +70,12 @@ public class TestCaseContent extends StringReference {
 	}
 
 	@Override
-	public String getTermIdentifier(Section<? extends KnowWETerm<String>> s) {
+	public String getTermIdentifier(Section<? extends SimpleTerm> s) {
 		String master = DefaultMarkupType.getAnnotation(
 				Sections.findAncestorOfType(s, TestCaseType.class),
 				TestCaseType.ANNOTATION_MASTER);
 		if (master == null) master = s.getTitle();
 		return master;
-	}
-
-	@Override
-	public String getTermObjectDisplayName() {
-		return "Master";
 	}
 
 	public class TestSuiteSubTreeHandler extends D3webSubtreeHandler<TestCaseContent> {
@@ -92,12 +87,6 @@ public class TestCaseContent extends StringReference {
 
 		@Override
 		public Collection<Message> create(KnowWEArticle article, Section<TestCaseContent> s) {
-
-			if (s.hasErrorInSubtree(article)) {
-				// the message is confusing, so we remove it.
-				Messages.clearMessages(article, s, TermReference.TermRegistrationHandler.class);
-				return Messages.asList();
-			}
 
 			List<Message> messages = new LinkedList<Message>();
 			KnowledgeBase kb = loadKB(article, s);
@@ -159,7 +148,7 @@ public class TestCaseContent extends StringReference {
 				messages.add(Messages.error("There is no name for STC" + index));
 			}
 			else {
-				stc.setName(clean(stcName.getOriginalText().trim()));
+				stc.setName(clean(stcName.getText().trim()));
 			}
 		}
 
@@ -208,7 +197,7 @@ public class TestCaseContent extends StringReference {
 
 				// Get the real Question
 				if (questionSection != null) {
-					String questionText = clean(questionSection.getOriginalText());
+					String questionText = clean(questionSection.getText());
 					Question question = kb.getManager().searchQuestion(
 							questionText);
 
@@ -216,7 +205,7 @@ public class TestCaseContent extends StringReference {
 					// name in the KB
 					if (question == null) {
 						messages.add(Messages.noSuchObjectError(
-								clean(questionSection.getOriginalText().trim())));
+								clean(questionSection.getText().trim())));
 					}
 					else {
 
@@ -229,13 +218,13 @@ public class TestCaseContent extends StringReference {
 							if (valueSection == null) {
 								messages.add(Messages.error(
 										"The value has to be a number for Question: "
-												+ clean(questionSection.getOriginalText().trim())));
+												+ clean(questionSection.getText().trim())));
 								continue;
 							}
 
 							try {
 
-								double value = Double.parseDouble(clean(valueSection.getOriginalText().trim()));
+								double value = Double.parseDouble(clean(valueSection.getText().trim()));
 								rtc.addExpectedFinding(new de.d3web.empiricaltesting.Finding(
 										question,
 										new NumValue(value)));
@@ -243,7 +232,7 @@ public class TestCaseContent extends StringReference {
 							catch (NumberFormatException e) {
 								messages.add(Messages.error(
 										"The value has to be a number for Question: "
-												+ clean(questionSection.getOriginalText().trim())));
+												+ clean(questionSection.getText().trim())));
 							}
 						}
 						// If not, it is a QuestionChoice
@@ -257,15 +246,15 @@ public class TestCaseContent extends StringReference {
 							if (valueSection == null) {
 								messages.add(Messages.error(
 										"There is no Value defined for Question: "
-												+ clean(questionSection.getOriginalText().trim())));
+												+ clean(questionSection.getText().trim())));
 								return;
 							}
 
 							QuestionValue value = KnowledgeBaseUtils.findValue(question,
-									clean(valueSection.getOriginalText().trim()));
+									clean(valueSection.getText().trim()));
 							if (value == null) {
 								messages.add(Messages.noSuchObjectError(
-										clean(valueSection.getOriginalText().trim())));
+										clean(valueSection.getText().trim())));
 							}
 							else {
 								rtc.addExpectedFinding(new de.d3web.empiricaltesting.Finding(
@@ -319,7 +308,7 @@ public class TestCaseContent extends StringReference {
 
 				// Get the real Question
 				if (questionSection != null) {
-					String questionText = clean(questionSection.getOriginalText());
+					String questionText = clean(questionSection.getText());
 					Question question = kb.getManager().searchQuestion(
 							questionText);
 
@@ -327,7 +316,7 @@ public class TestCaseContent extends StringReference {
 					// name in the KB
 					if (question == null) {
 						messages.add(Messages.noSuchObjectError(
-								clean(questionSection.getOriginalText().trim())));
+								clean(questionSection.getText().trim())));
 					}
 					else {
 
@@ -339,7 +328,7 @@ public class TestCaseContent extends StringReference {
 						if (valueSection == null) {
 							messages.add(Messages.error(
 									"There is no Value defined for Question: "
-											+ clean(questionSection.getOriginalText().trim())));
+											+ clean(questionSection.getText().trim())));
 							return;
 						}
 
@@ -347,23 +336,23 @@ public class TestCaseContent extends StringReference {
 						if (question instanceof QuestionNum) {
 
 							try {
-								double value = Double.parseDouble(clean(valueSection.getOriginalText().trim()));
+								double value = Double.parseDouble(clean(valueSection.getText().trim()));
 								rtc.add(new de.d3web.empiricaltesting.Finding(question,
 										new NumValue(value)));
 							}
 							catch (NumberFormatException e) {
 								messages.add(Messages.error(
 										"The value has to be a number for Question: "
-												+ clean(questionSection.getOriginalText().trim())));
+												+ clean(questionSection.getText().trim())));
 							}
 						}
 						// If not, it is a QuestionChoice
 						else {
 							QuestionValue value = KnowledgeBaseUtils.findValue(question,
-									clean(valueSection.getOriginalText().trim()));
+									clean(valueSection.getText().trim()));
 							if (value == null) {
 								messages.add(Messages.noSuchObjectError(
-										clean(valueSection.getOriginalText().trim())));
+										clean(valueSection.getText().trim())));
 							}
 							else {
 								rtc.add(new de.d3web.empiricaltesting.Finding(question, value));
@@ -398,13 +387,13 @@ public class TestCaseContent extends StringReference {
 				// Get the real Solution
 				if (solutionSection != null) {
 					solution = kb.getManager().searchSolution(
-							clean(solutionSection.getOriginalText().trim()));
+							clean(solutionSection.getText().trim()));
 
 					// Create error message if there is no question with this
 					// name in the KB
 					if (solution == null) {
 						messages.add(Messages.noSuchObjectError(
-								clean(solutionSection.getOriginalText().trim())));
+								clean(solutionSection.getText().trim())));
 						return;
 					}
 				}
@@ -424,7 +413,7 @@ public class TestCaseContent extends StringReference {
 				if (stateSection != null) {
 					if (solution != null) {
 						de.d3web.empiricaltesting.StateRating rating = new de.d3web.empiricaltesting.StateRating(
-								clean(stateSection.getOriginalText().trim()));
+								clean(stateSection.getText().trim()));
 
 						// And finally create the RatedSolution
 						rtc.addExpected(new de.d3web.empiricaltesting.RatedSolution(solution,

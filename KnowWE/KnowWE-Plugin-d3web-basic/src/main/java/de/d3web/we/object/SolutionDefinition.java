@@ -29,9 +29,8 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.compile.IncrementalConstraint;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.TerminologyHandler;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
@@ -51,25 +50,23 @@ import de.knowwe.tools.ToolMenuDecoratingRenderer;
  * @created 26.07.2010
  */
 public abstract class SolutionDefinition
-		extends D3webTermDefinition<Solution>
-		implements IncrementalConstraint<SolutionDefinition> {
+		extends D3webTermDefinition<Solution> {
 
 	public SolutionDefinition() {
 		this(Priority.HIGHEST);
 	}
 
+	@Override
+	public Class<?> getTermObjectClass() {
+		return Solution.class;
+	}
+
 	public SolutionDefinition(Priority p) {
-		super(Solution.class);
 		this.setCustomRenderer(
 				new ToolMenuDecoratingRenderer<SolutionDefinition>(
 						new SolutionIDHighlightingRenderer()));
 		// this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR4));
 		this.addSubtreeHandler(p, new CreateSolutionHandler());
-	}
-
-	@Override
-	public boolean violatedConstraints(KnowWEArticle article, Section<SolutionDefinition> s) {
-		return false;
 	}
 
 	/**
@@ -121,45 +118,33 @@ public abstract class SolutionDefinition
 
 		@Override
 		public Collection<Message> create(KnowWEArticle article,
-				Section<SolutionDefinition> s) {
+				Section<SolutionDefinition> section) {
 
-			String name = s.get().getTermIdentifier(s);
+			String name = section.get().getTermIdentifier(section);
+			Class<?> termObjectClass = section.get().getTermObjectClass();
+			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
+			terminologyHandler.registerTermDefinition(section, termObjectClass, name);
 
-			TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
-			terminologyHandler.registerTermDefinition(article, s);
-			if (terminologyHandler.getTermDefiningSection(article, s) != s) {
-				return s.get().handleRedundantDefinition(article, s);
-			}
+			Collection<Message> msgs = section.get().canAbortTermObjectCreation(article, section);
+			if (msgs != null) return msgs;
 
 			KnowledgeBase kb = getKB(article);
 
 			TerminologyObject o = kb.getManager().search(name);
 
 			if (o != null) {
-				return Messages.asList(Messages.objectAlreadyDefinedWarning(
-						o.getClass().getSimpleName()));
-			}
-			else {
-
-				Solution solution = new Solution(kb.getRootSolution(), name);
-
-				s.get().storeTermObject(article, s, solution);
-				return Messages.asList(Messages.objectCreatedNotice(
-						solution.getClass().getSimpleName()
-								+ " " + solution.getName()));
-
+				if (!(o instanceof Solution)) {
+					return Messages.asList(Messages.error("The term '"
+							+ name + "' is reserved by the system."));
+				}
+				return Messages.asList();
 			}
 
-		}
+			new Solution(kb.getRootSolution(), name);
 
-		@Override
-		public void destroy(KnowWEArticle article, Section<SolutionDefinition> solution) {
-			Solution kbsol = solution.get().getTermObject(article, solution);
-			if (kbsol != null) {
-				D3webUtils.removeRecursively(kbsol);
-				KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
-						article, solution);
-			}
+			return Messages.asList(Messages.objectCreatedNotice(
+					termObjectClass.getSimpleName() + " '" + name + "'"));
+
 		}
 
 	}

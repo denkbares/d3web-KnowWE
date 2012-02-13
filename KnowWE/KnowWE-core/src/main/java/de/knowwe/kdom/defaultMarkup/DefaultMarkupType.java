@@ -178,7 +178,7 @@ public class DefaultMarkupType extends AbstractType {
 	 */
 	public static String getContent(Section<?> section) {
 		Section<? extends ContentType> contentSection = getContentSection(section);
-		if (contentSection != null) return contentSection.getOriginalText();
+		if (contentSection != null) return contentSection.getText();
 		else return "";
 	}
 
@@ -214,7 +214,7 @@ public class DefaultMarkupType extends AbstractType {
 	public static String getAnnotation(Section<?> section, String name) {
 		Section<?> annotationSection = getAnnotationContentSection(section, name);
 		if (annotationSection == null) return null;
-		return annotationSection.getOriginalText();
+		return annotationSection.getText();
 	}
 
 	/**
@@ -235,7 +235,7 @@ public class DefaultMarkupType extends AbstractType {
 		String[] result = new String[annotationSections.size()];
 		int position = 0;
 		for (Section<?> aSection : annotationSections) {
-			result[position++] = aSection.getOriginalText();
+			result[position++] = aSection.getText();
 		}
 		return result;
 	}

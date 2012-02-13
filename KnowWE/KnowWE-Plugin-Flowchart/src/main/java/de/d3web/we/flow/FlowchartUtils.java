@@ -117,7 +117,7 @@ public class FlowchartUtils {
 			return null;
 		}
 
-		String flowchart = previewsection.getOriginalText();
+		String flowchart = previewsection.getText();
 
 		Matcher matcher = PREVIEW_PATTERN.matcher(flowchart);
 		if (!matcher.matches()) {
@@ -274,7 +274,7 @@ public class FlowchartUtils {
 	}
 
 	public static String getFlowSourceWithoutPreview(Section<FlowchartType> section) {
-		return removePreview(section.getOriginalText());
+		return removePreview(section.getText());
 	}
 
 	public static String removePreview(String source) {

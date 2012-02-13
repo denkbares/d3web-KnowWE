@@ -22,28 +22,24 @@ package de.d3web.we.kdom.questionTree;
 
 import java.util.Collection;
 
-import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
-import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.object.QuestionDefinition.QuestionType;
 import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.compile.IncrementalConstraint;
-import de.knowwe.core.compile.IncrementalMarker;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.TerminologyHandler;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -117,8 +113,7 @@ public class QuestionLine extends AbstractType {
 	 */
 	static class QuestionTreeQuestionDefinition extends QuestionDefinition {
 
-		@Override
-		protected void init() {
+		public QuestionTreeQuestionDefinition() {
 			ConstraintSectionFinder f = new ConstraintSectionFinder(new AllTextFinderTrimmed());
 			f.addConstraint(SingleChildConstraint.getInstance());
 			this.setSectionFinder(f);
@@ -159,11 +154,6 @@ public class QuestionLine extends AbstractType {
 			return null;
 		}
 
-		@Override
-		public boolean violatedConstraints(KnowWEArticle article, Section<QASetDefinition<? extends QASet>> s) {
-			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
-		}
-
 	}
 
 	/**
@@ -177,15 +167,10 @@ public class QuestionLine extends AbstractType {
 	 * @author Jochen
 	 * 
 	 */
-	static class NumBounds extends AbstractType implements IncrementalMarker, IncrementalConstraint<NumBounds> {
+	static class NumBounds extends AbstractType {
 
 		public static final char BOUNDS_OPEN = '(';
 		public static final char BOUNDS_CLOSE = ')';
-
-		@Override
-		public boolean violatedConstraints(KnowWEArticle article, Section<NumBounds> s) {
-			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
-		}
 
 		public NumBounds() {
 			this.setCustomRenderer(StyleRenderer.NUMBER);
@@ -208,7 +193,7 @@ public class QuestionLine extends AbstractType {
 					if (lower == null || upper == null) {
 						// if the numbers cannot be found throw error
 						return Messages.asList(Messages.objectCreationError(
-								D3webModule.getKwikiBundle_d3web()
+								D3webUtils.getD3webBundle()
 										.getString("KnowWE.questiontree.incorrectinterval")));
 					}
 
@@ -221,7 +206,7 @@ public class QuestionLine extends AbstractType {
 						if (!(question instanceof QuestionNum)) {
 							// if not numerical question throw error
 							return Messages.asList(Messages.objectCreationError(
-									D3webModule.getKwikiBundle_d3web()
+									D3webUtils.getD3webBundle()
 											.getString("KnowWE.questiontree.onlyfornumerical")));
 						}
 						try {
@@ -233,18 +218,18 @@ public class QuestionLine extends AbstractType {
 							question.getInfoStore().addValue(BasicProperties.QUESTION_NUM_RANGE,
 									interval);
 							return Messages.asList(Messages.objectCreatedNotice(
-									D3webModule.getKwikiBundle_d3web()
+									D3webUtils.getD3webBundle()
 											.getString("KnowWE.questiontree.setnumerical")));
 						}
 						catch (IntervalException e) {
 							return Messages.asList(Messages.objectCreationError(
-									D3webModule.getKwikiBundle_d3web()
+									D3webUtils.getD3webBundle()
 											.getString("KnowWE.questiontree.invalidinterval")));
 						}
 
 					}
 					return Messages.asList(Messages.objectCreationError(
-							D3webModule.getKwikiBundle_d3web()
+							D3webUtils.getD3webBundle()
 									.getString("KnowWE.questiontree.numerical")));
 				}
 
@@ -263,7 +248,7 @@ public class QuestionLine extends AbstractType {
 		 * @return
 		 */
 		public Double getLowerBound(Section<NumBounds> s) {
-			String originalText = s.getOriginalText();
+			String originalText = s.getText();
 			String content = originalText.substring(1, originalText.length() - 1).trim();
 
 			String[] numbers = content.split(" ");
@@ -290,7 +275,7 @@ public class QuestionLine extends AbstractType {
 		 * @return
 		 */
 		public Double getUpperBound(Section<NumBounds> s) {
-			String originalText = s.getOriginalText();
+			String originalText = s.getText();
 			String content = originalText.substring(1, originalText.length() - 1).trim();
 
 			String[] numbers = content.split(" ");
@@ -320,21 +305,16 @@ public class QuestionLine extends AbstractType {
 	 * @author Jochen
 	 * 
 	 */
-	static class NumUnit extends AbstractType implements IncrementalMarker, IncrementalConstraint<NumUnit> {
+	static class NumUnit extends AbstractType {
 
 		public static final char UNIT_OPEN = '{';
 		public static final char UNIT_CLOSE = '}';
 
 		public String getUnit(Section<NumUnit> s) {
-			String originalText = s.getOriginalText();
+			String originalText = s.getText();
 			originalText = originalText.substring(1, originalText.length() - 1);
 			originalText = KnowWEUtils.trimQuotes(originalText);
 			return originalText;
-		}
-
-		@Override
-		public boolean violatedConstraints(KnowWEArticle article, Section<NumUnit> s) {
-			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
 
 		public NumUnit() {
@@ -361,17 +341,17 @@ public class QuestionLine extends AbstractType {
 						Question question = qDef.get().getTermObject(article, qDef);
 						if (!(question instanceof QuestionNum)) {
 							return Messages.asList(Messages.objectCreationError(
-									D3webModule.getKwikiBundle_d3web()
+									D3webUtils.getD3webBundle()
 											.getString("KnowWE.questiontree.onlyfornumerical")));
 						}
 						question.getInfoStore().addValue(MMInfo.UNIT, s.get().getUnit(s));
 						return Messages.asList(Messages.objectCreatedNotice(
-								D3webModule.getKwikiBundle_d3web()
+								D3webUtils.getD3webBundle()
 										.getString("KnowWE.questiontree.setunit")));
 
 					}
 					return Messages.asList(Messages.objectCreationError(
-							D3webModule.getKwikiBundle_d3web()
+							D3webUtils.getD3webBundle()
 									.getString("KnowWE.questiontree.unit")));
 				}
 
@@ -395,12 +375,7 @@ public class QuestionLine extends AbstractType {
 	 * @author Jochen
 	 * 
 	 */
-	static class AbstractFlag extends AbstractType implements IncrementalMarker, IncrementalConstraint<AbstractFlag> {
-
-		@Override
-		public boolean violatedConstraints(KnowWEArticle article, Section<AbstractFlag> s) {
-			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
-		}
+	static class AbstractFlag extends AbstractType {
 
 		public AbstractFlag() {
 			this.sectionFinder = new OneOfStringEnumFinder(new String[] {
@@ -421,13 +396,13 @@ public class QuestionLine extends AbstractType {
 							question.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION,
 									Boolean.TRUE);
 							return Messages.asList(Messages.objectCreatedNotice(
-									D3webModule.getKwikiBundle_d3web()
+									D3webUtils.getD3webBundle()
 											.getString("KnowWE.questiontree.abstractquestion")));
 						}
 
 					}
 					return Messages.asList(Messages.objectCreationError(
-							D3webModule.getKwikiBundle_d3web()
+							D3webUtils.getD3webBundle()
 									.getString("KnowWE.questiontree.abstractflag")));
 				}
 
@@ -449,14 +424,9 @@ public class QuestionLine extends AbstractType {
 	 * @author Jochen
 	 * 
 	 */
-	static class QuestionText extends AbstractType implements IncrementalMarker, IncrementalConstraint<QuestionText> {
+	static class QuestionText extends AbstractType {
 
 		private static final String QTEXT_START_SYMBOL = "~";
-
-		@Override
-		public boolean violatedConstraints(KnowWEArticle article, Section<QuestionText> s) {
-			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
-		}
 
 		@Override
 		protected void init() {
@@ -480,12 +450,12 @@ public class QuestionLine extends AbstractType {
 							question.getInfoStore().addValue(MMInfo.PROMPT,
 									QuestionText.getQuestionText(sec));
 							return Messages.asList(Messages.objectCreatedNotice(
-									D3webModule.getKwikiBundle_d3web()
+									D3webUtils.getD3webBundle()
 											.getString("KnowWE.questiontree.questiontextcreated")));
 						}
 					}
 					return Messages.asList(Messages.objectCreationError(
-							D3webModule.getKwikiBundle_d3web()
+							D3webUtils.getD3webBundle()
 									.getString("KnowWE.questiontree.questiontext")));
 				}
 
@@ -497,7 +467,7 @@ public class QuestionLine extends AbstractType {
 		}
 
 		public static String getQuestionText(Section<QuestionText> s) {
-			String text = s.getOriginalText();
+			String text = s.getText();
 			if (text.startsWith(QTEXT_START_SYMBOL)) {
 				text = text.substring(1).trim();
 			}
@@ -512,11 +482,12 @@ public class QuestionLine extends AbstractType {
 		public Collection<Message> create(KnowWEArticle article, Section<QuestionTypeDeclaration> section) {
 			QuestionType thisQuestionType = QuestionTypeDeclaration.getQuestionType(section);
 			if (thisQuestionType == null) return Messages.asList();
-			TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
+			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
 			Section<QuestionDefinition> thisQuestionDef = section.get().getQuestionDefinition(
 					section);
-			Section<? extends TermDefinition<Question>> termDefiningSection =
-					terminologyHandler.getTermDefiningSection(article, thisQuestionDef);
+			String termIdentifier = thisQuestionDef.get().getTermIdentifier(thisQuestionDef);
+			Section<?> termDefiningSection =
+					terminologyHandler.getTermDefiningSection(termIdentifier);
 			if (termDefiningSection != null
 					&& termDefiningSection.get() instanceof QuestionDefinition) {
 				@SuppressWarnings("unchecked")
@@ -531,13 +502,13 @@ public class QuestionLine extends AbstractType {
 						: thisQuestionType.toString().toLowerCase();
 				if (actualQuestionType != thisQuestionType) {
 					String warningText = "The question '"
-							+ actualQuestionDef.get().getTermName(actualQuestionDef)
+							+ actualQuestionDef.get().getTermIdentifier(actualQuestionDef)
 							+ "' is already defined with the type '"
 							+ actualTypeString
-							+ "'. The type definition '"
+							+ "'. This type definition '"
 							+ thisTypeString
 							+ "' will be ignored.";
-					return Messages.asList(Messages.warning(warningText));
+					return Messages.asList(Messages.error(warningText));
 				}
 			}
 			return Messages.asList();

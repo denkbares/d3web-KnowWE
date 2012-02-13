@@ -32,7 +32,6 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
-import de.d3web.we.kdom.questionTree.RootQuestionChangeConstraint;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.kdom.AbstractType;
@@ -126,8 +125,8 @@ public class QuestionSetValueNumLine extends AbstractType {
 		@Override
 		public void render(KnowWEArticle article, Section<QuestionReference> sec,
 				UserContext user, StringBuilder string) {
-			String embracedContent = sec.getOriginalText().substring(1,
-					sec.getOriginalText().length() - 1);
+			String embracedContent = sec.getText().substring(1,
+					sec.getText().length() - 1);
 			string
 					.append(KnowWEUtils
 							.maskHTML(" <img height='10' src='KnowWEExtension/images/arrow_right_s.png'>"));
@@ -139,10 +138,6 @@ public class QuestionSetValueNumLine extends AbstractType {
 	}
 
 	static class CreateSetValueNumRuleHandler extends D3webSubtreeHandler<QuestionReference> {
-
-		public CreateSetValueNumRuleHandler() {
-			this.registerConstraintModule(new RootQuestionChangeConstraint<QuestionReference>());
-		}
 
 		@Override
 		public void destroy(KnowWEArticle article, Section<QuestionReference> s) {
@@ -188,8 +183,8 @@ public class QuestionSetValueNumLine extends AbstractType {
 			Sections.findSuccessorsOfType(s.getFather(), AnonymousType.class, children);
 			for (Section<AnonymousType> section : children) {
 				if (section.get().getName().equals(SETVALUE_ARGUMENT)) {
-					argument = section.getOriginalText().substring(1,
-							section.getOriginalText().length() - 1).trim();
+					argument = section.getText().substring(1,
+							section.getText().length() - 1).trim();
 					break;
 				}
 			}

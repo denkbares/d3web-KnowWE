@@ -40,7 +40,7 @@ public class ReferenceRenderer extends KnowWEDomRenderer<D3webTermReference> {
 	@Override
 	public void render(KnowWEArticle article, Section<D3webTermReference> sec, UserContext user, StringBuilder string) {
 		String refText = sec.get().getTermIdentifier(sec);
-		String originalText = sec.getOriginalText();
+		String originalText = sec.getText();
 		int index = originalText.indexOf(refText);
 
 		if (index < 0) {

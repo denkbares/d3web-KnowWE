@@ -22,7 +22,7 @@ package de.d3web.we.quicki;
 
 import java.util.Map;
 
-import de.d3web.we.basic.D3webModule;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.KnowWERessourceLoader;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
@@ -45,7 +45,7 @@ public class QuickInterviewTagHandler extends AbstractHTMLTagHandler {
 
 	@Override
 	public String getDescription(UserContext user) {
-		return D3webModule.getKwikiBundle_d3web(user).getString("KnowWE.quicki.description");
+		return D3webUtils.getD3webBundle(user).getString("KnowWE.quicki.description");
 	}
 
 	/*

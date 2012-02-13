@@ -93,7 +93,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 		if (tagslist.size() > 0) {
 			boolean multiple = tagslist.size() > 1;
 			for (Section<?> cur : tagslist) {
-				for (String temptag : cur.getOriginalText().split(" |,")) {
+				for (String temptag : cur.getText().split(" |,")) {
 					tags.add(temptag.trim());
 				}
 			}
@@ -138,7 +138,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 		HashSet<String> tags = new HashSet<String>();
 		boolean multiple = tagslist.size() > 1;
 		for (Section<TagsContent> cur : tagslist) {
-			for (String temptag : cur.getOriginalText().split(" |,")) {
+			for (String temptag : cur.getText().split(" |,")) {
 				tags.add(temptag.trim());
 			}
 		}
@@ -336,7 +336,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				topic);
 		Section<?> asection = article.getSection();
-		String text = asection.getOriginalText();
+		String text = asection.getText();
 		String output = "";
 		for (String temptag : content.split(" |,")) {
 			if (temptag.trim().length() > 0) {

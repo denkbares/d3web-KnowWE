@@ -20,6 +20,7 @@ package de.knowwe.core.action;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -30,11 +31,9 @@ import java.util.Set;
 import de.knowwe.core.KnowWEArticleManager;
 import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.compile.TerminologyHandler;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.objects.KnowWETerm.Scope;
-import de.knowwe.core.kdom.objects.TermDefinition;
-import de.knowwe.core.kdom.objects.TermReference;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -56,6 +55,7 @@ public class TermRenamingAction extends AbstractAction {
 	public static final String TERMNAME = "termname";
 	public static final String REPLACEMENT = "termreplacement";
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
@@ -63,29 +63,31 @@ public class TermRenamingAction extends AbstractAction {
 		String term = context.getParameter(TERMNAME);
 		String replacement = context.getParameter(REPLACEMENT);
 
-		TerminologyHandler th = KnowWEUtils.getTerminologyHandler(web);
-		HashMap<String, Set<Section<?>>> allTerms =
-				new HashMap<String, Set<Section<?>>>();
+		HashMap<String, Set<Section<? extends SimpleTerm>>> allTerms =
+				new HashMap<String, Set<Section<? extends SimpleTerm>>>();
 
 		Iterator<KnowWEArticle> iter = KnowWEEnvironment.getInstance().getArticleManager(web).getArticleIterator();
 		KnowWEArticle currentArticle;
 
+		TerminologyManager th;
 		while (iter.hasNext()) {
 			currentArticle = iter.next();
-
+			th = KnowWEUtils.getTerminologyManager(currentArticle);
 			// Check if there is a TermDefinition
-			Section<? extends TermDefinition<?>> definition = th.getTermDefiningSection(
-					currentArticle, term, Scope.LOCAL);
-			if (definition != null) {
-				getTermSet(definition.getTitle(), allTerms).add(definition);
+			Collection<Section<?>> definingSections = th.getTermDefiningSections(term);
+			for (Section<?> definition : definingSections) {
+				if (definition.get() instanceof SimpleTerm) {
+					getTermSet(definition.getTitle(), allTerms).add(
+							(Section<? extends SimpleTerm>) definition);
+				}
 			}
 
 			// Check if there are References
-			Set<Section<? extends TermReference<?>>> references = th.getTermReferenceSections(
-					currentArticle, term, Scope.LOCAL);
-			if (references != null && references.size() > 0) {
-				for (Section<?> reference : references) {
-					getTermSet(reference.getTitle(), allTerms).add(reference);
+			Collection<Section<?>> references = th.getTermReferenceSections(term);
+			for (Section<?> reference : references) {
+				if (reference.get() instanceof SimpleTerm) {
+					getTermSet(reference.getTitle(), allTerms).add(
+							(Section<? extends SimpleTerm>) reference);
 				}
 			}
 		}
@@ -97,10 +99,10 @@ public class TermRenamingAction extends AbstractAction {
 		generateMessage(failures, success, context);
 	}
 
-	private Set<Section<?>> getTermSet(String title, Map<String, Set<Section<?>>> allTerms) {
-		Set<Section<?>> terms = allTerms.get(title);
+	private Set<Section<? extends SimpleTerm>> getTermSet(String title, Map<String, Set<Section<? extends SimpleTerm>>> allTerms) {
+		Set<Section<? extends SimpleTerm>> terms = allTerms.get(title);
 		if (terms == null) {
-			terms = new HashSet<Section<?>>();
+			terms = new HashSet<Section<? extends SimpleTerm>>();
 			allTerms.put(title, terms);
 		}
 		return terms;
@@ -135,7 +137,7 @@ public class TermRenamingAction extends AbstractAction {
 		}
 	}
 
-	private void renameTerms(HashMap<String, Set<Section<?>>> allTerms,
+	private void renameTerms(HashMap<String, Set<Section<? extends SimpleTerm>>> allTerms,
 			String replacement,
 			KnowWEArticleManager mgr,
 			UserActionContext context,

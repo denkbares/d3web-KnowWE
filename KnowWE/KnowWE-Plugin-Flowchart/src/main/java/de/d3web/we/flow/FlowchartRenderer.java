@@ -36,7 +36,6 @@ import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.inference.FluxSolver;
-import de.d3web.we.basic.D3webModule;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.KnowWEArticle;
@@ -140,7 +139,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 		// make sub-flowcharts links to be able to go to their definition
 		String secID = section.getFather().getFather().getID();
 		String thisFlowchartName = FlowchartType.getFlowchartName(section);
-		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(
+		KnowledgeBase kb = D3webUtils.getKnowledgeRepresentationHandler(
 				article.getWeb()).getKB(article.getTitle());
 		if (kb == null) return;
 		FlowSet flowSet = DiaFluxUtils.getFlowSet(kb);

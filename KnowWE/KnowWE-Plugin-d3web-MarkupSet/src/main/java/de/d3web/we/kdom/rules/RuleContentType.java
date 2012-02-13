@@ -31,7 +31,6 @@ import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.Session;
-import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.CondKnown;
 import de.d3web.we.kdom.condition.CondKnownUnknown;
@@ -165,8 +164,6 @@ public class RuleContentType extends AbstractType {
 					.findAncestorOfType(actionS,
 							ConditionActionRuleContent.class);
 
-			if (!article.isFullParse()) destroy(article, actionS);
-
 			if (rule.hasErrorInSubtree(article)) {
 				return Messages
 						.asList(Messages.creationFailedWarning(
@@ -185,7 +182,7 @@ public class RuleContentType extends AbstractType {
 			if (action == null) {
 				return Messages
 						.asList(Messages.creationFailedWarning(
-								D3webModule.getKwikiBundle_d3web().getString(
+								D3webUtils.getD3webBundle().getString(
 										"KnowWE.rulesNew.notcreated")
 										+ " : no valid action found"));
 			}
@@ -219,7 +216,7 @@ public class RuleContentType extends AbstractType {
 
 			// should not happen
 			return Messages.asList(Messages.creationFailedWarning(
-					D3webModule.getKwikiBundle_d3web().getString(
+					D3webUtils.getD3webBundle().getString(
 							"KnowWE.rulesNew.notcreated")));
 		}
 

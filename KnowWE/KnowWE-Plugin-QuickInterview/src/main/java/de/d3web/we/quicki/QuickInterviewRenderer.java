@@ -52,7 +52,7 @@ import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
-import de.d3web.we.basic.D3webModule;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -97,7 +97,7 @@ public class QuickInterviewRenderer {
 		this.session = c;
 		this.web = webb;
 		this.namespace = kb.getId();
-		this.rb = D3webModule.getKwikiBundle_d3web(user);
+		this.rb = D3webUtils.getD3webBundle(user);
 	}
 
 	public String render() {

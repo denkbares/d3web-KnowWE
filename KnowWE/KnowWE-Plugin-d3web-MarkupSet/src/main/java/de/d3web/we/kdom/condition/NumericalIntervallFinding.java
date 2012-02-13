@@ -101,7 +101,7 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 	class Intervall extends AbstractType {
 
 		public Double getFirstNumber(Section<Intervall> s) {
-			String text = s.getOriginalText();
+			String text = s.getText();
 			String content = text.substring(1, text.length() - 1);
 			String[] parts = SplitUtility.getCharacterChains(content);
 			if (parts.length == 2) {
@@ -119,7 +119,7 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 		}
 
 		public Double getSecondNumber(Section<Intervall> s) {
-			String text = s.getOriginalText();
+			String text = s.getText();
 			String content = text.substring(1, text.length() - 1);
 			String[] parts = SplitUtility.getCharacterChains(content);
 			if (parts.length == 2) {

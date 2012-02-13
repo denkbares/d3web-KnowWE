@@ -235,7 +235,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			KnowWEArticle supportArticle = KnowWEEnvironment.getInstance()
 					.getArticle(KnowWEEnvironment.DEFAULT_WEB, title);
 			if (supportArticle != null
-					&& supportArticle.getSection().getOriginalText().equals(
+					&& supportArticle.getSection().getText().equals(
 							content)) {
 
 				return renderKDOM(content, userContext, supportArticle);
@@ -266,7 +266,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 			String originalText = "";
 			if (article != null) {
-				originalText = article.getSection().getOriginalText();
+				originalText = article.getSection().getText();
 			}
 			String parse = userContext.getParameter("parse");
 			boolean fullParse = parse != null && (parse.equals("full") || parse.equals("true"));

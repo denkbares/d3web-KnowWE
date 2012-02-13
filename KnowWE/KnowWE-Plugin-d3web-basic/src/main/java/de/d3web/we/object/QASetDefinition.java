@@ -20,9 +20,6 @@
 package de.d3web.we.object;
 
 import de.d3web.core.knowledge.terminology.QASet;
-import de.knowwe.core.compile.IncrementalConstraint;
-import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.parsing.Section;
 
 /**
  * Abstract type for the Definition of QASets, i.e. questions and
@@ -34,16 +31,6 @@ import de.knowwe.core.kdom.parsing.Section;
  * @param <TermObject>
  */
 public abstract class QASetDefinition<TermObject extends QASet>
-		extends D3webTermDefinition<TermObject>
-		implements IncrementalConstraint<QASetDefinition<? extends QASet>> {
-
-	public QASetDefinition(Class<TermObject> termObjectClass) {
-		super(termObjectClass);
-	}
-
-	@Override
-	public boolean violatedConstraints(KnowWEArticle article, Section<QASetDefinition<? extends QASet>> s) {
-		return false;
-	}
+		extends D3webTermDefinition<TermObject> {
 
 }

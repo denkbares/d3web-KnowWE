@@ -25,7 +25,7 @@ import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.we.basic.D3webModule;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.KnowWEArticleManager;
 import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.KnowWEEnvironment;
@@ -57,7 +57,7 @@ public class UpdateQuestions extends AbstractAction {
 		KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
 		Section<KnowWEArticle> sec = article.getSection();
 		context.getParameters().put(KnowWEAttributes.WEB, sec.getWeb());
-		String oldText = article.getSection().getOriginalText();
+		String oldText = article.getSection().getText();
 
 		// get everything fot the new Questions-section
 		String[] surroundings = getRightInsertPosition(oldText, "Question");
@@ -76,7 +76,7 @@ public class UpdateQuestions extends AbstractAction {
 		questionText = removeLeadingAndClosingQuotes(questionText);
 
 		// get the right id for the nodemodel
-		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKB(
+		KnowledgeBase kb = D3webUtils.getKnowledgeRepresentationHandler(article.getWeb()).getKB(
 				article.getTitle());
 		List<Question> questions = kb.getManager().getQuestions();
 		String questionID = null;

@@ -67,7 +67,7 @@ public class Number extends AbstractType {
 	 */
 	public static Double getNumber(Section<Number> section) {
 		try {
-			return Double.parseDouble(section.getOriginalText().trim());
+			return Double.parseDouble(section.getText().trim());
 		}
 		catch (NumberFormatException e) {
 			return null;
@@ -100,7 +100,7 @@ class NumberChecker extends SubtreeHandler<Number> {
 	@Override
 	public Collection<Message> create(KnowWEArticle article, Section<Number> s) {
 		List<Message> msgs = new ArrayList<Message>();
-		String trim = s.getOriginalText().trim();
+		String trim = s.getText().trim();
 		try {
 			Double.parseDouble(trim);
 		}

@@ -51,7 +51,7 @@ public class FlowchartProcessedConditionType extends D3webCondition<FlowchartPro
 	@Override
 	protected Condition createCondition(KnowWEArticle article, Section<FlowchartProcessedConditionType> section) {
 
-		Matcher matcher = PATTERN.matcher(section.getOriginalText());
+		Matcher matcher = PATTERN.matcher(section.getText());
 
 		if (!matcher.matches()) {
 			return null;

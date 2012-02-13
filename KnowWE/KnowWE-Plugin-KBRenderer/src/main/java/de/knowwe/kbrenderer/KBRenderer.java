@@ -55,7 +55,7 @@ import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.utilities.Triple;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.we.basic.D3webKnowledgeHandler;
-import de.d3web.we.basic.D3webModule;
+import de.d3web.we.utils.D3webUtils;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
@@ -79,7 +79,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 
 	@Override
 	public String getDescription(UserContext user) {
-		return D3webModule.getKwikiBundle_d3web(user).getString(
+		return D3webUtils.getD3webBundle(user).getString(
 				"KnowWE.KBRenderer.description");
 	}
 
@@ -87,7 +87,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	public String renderHTML(String topic, UserContext user,
 			Map<String, String> values, String web) {
 
-		D3webKnowledgeHandler knowledgeRepresentationHandler = D3webModule.getKnowledgeRepresentationHandler(KnowWEEnvironment.DEFAULT_WEB);
+		D3webKnowledgeHandler knowledgeRepresentationHandler = D3webUtils.getKnowledgeRepresentationHandler(KnowWEEnvironment.DEFAULT_WEB);
 		KnowledgeBase kb = knowledgeRepresentationHandler.getKB(topic);
 
 		return renderHTML(web, topic, user, kb);
@@ -95,7 +95,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 
 	public String renderHTML(String web, String topic, UserContext user, KnowledgeBase kb) {
 
-		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
+		ResourceBundle rb = D3webUtils.getD3webBundle(user);
 
 		StringBuilder text = new StringBuilder(
 				"<div id=\"knowledge-panel\" class=\"panel\"><h3>"

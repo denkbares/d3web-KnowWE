@@ -27,12 +27,10 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
-import de.d3web.we.basic.D3webModule;
 import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.compile.IncrementalConstraint;
-import de.knowwe.core.compile.IncrementalMarker;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
@@ -140,12 +138,12 @@ public class AnswerLine extends AbstractType {
 
 						}
 						return Messages.asList(Messages.objectCreatedNotice(
-								D3webModule.getKwikiBundle_d3web()
+								D3webUtils.getD3webBundle()
 										.getString("KnowWE.questiontree.abstractquestion")));
 
 					}
 					return Messages.asList(Messages.objectCreationError(
-							D3webModule.getKwikiBundle_d3web()
+							D3webUtils.getD3webBundle()
 									.getString("KnowWE.questiontree.abstractflag")));
 				}
 			});
@@ -162,14 +160,9 @@ public class AnswerLine extends AbstractType {
 	 * @author Jochen
 	 * 
 	 */
-	static class AnswerText extends AbstractType implements IncrementalMarker, IncrementalConstraint<AnswerText> {
+	static class AnswerText extends AbstractType {
 
 		private static final String QTEXT_START_SYMBOL = "~";
-
-		@Override
-		public boolean violatedConstraints(KnowWEArticle article, Section<AnswerText> s) {
-			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
-		}
 
 		@Override
 		protected void init() {
@@ -200,7 +193,7 @@ public class AnswerLine extends AbstractType {
 						}
 					}
 					return Messages.asList(Messages.objectCreationError(
-							D3webModule.getKwikiBundle_d3web()
+							D3webUtils.getD3webBundle()
 									.getString("KnowWE.questiontree.questiontext")));
 				}
 
@@ -212,7 +205,7 @@ public class AnswerLine extends AbstractType {
 		}
 
 		public static String getAnswerText(Section<AnswerText> s) {
-			String text = s.getOriginalText();
+			String text = s.getText();
 			if (text.startsWith(QTEXT_START_SYMBOL)) {
 				text = text.substring(1).trim();
 			}

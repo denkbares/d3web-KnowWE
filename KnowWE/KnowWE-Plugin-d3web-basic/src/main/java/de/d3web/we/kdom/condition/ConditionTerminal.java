@@ -61,7 +61,7 @@ public class ConditionTerminal extends AbstractType {
 			public Collection<Message> create(KnowWEArticle article, Section s) {
 				return Messages.asList(Messages.syntaxError(
 						"no valid TerminalCondition: "
-								+ s.getOriginalText()));
+								+ s.getText()));
 			}
 		});
 

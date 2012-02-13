@@ -62,7 +62,7 @@ import de.d3web.indication.ActionNextQASet;
 import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.scoring.Score;
 import de.d3web.we.basic.D3webKnowledgeHandler;
-import de.d3web.we.basic.D3webModule;
+import de.d3web.we.utils.D3webUtils;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelationType;
 import de.knowwe.core.kdom.KnowWEArticle;
@@ -98,7 +98,7 @@ public class KBTestUtilNewMarkup {
 	 */
 	public KnowledgeBase getKnowledgeBase(KnowWEArticle article) {
 		// Load KnowledgeBase
-		D3webKnowledgeHandler d3Handler = D3webModule.getKnowledgeRepresentationHandler("default_web");
+		D3webKnowledgeHandler d3Handler = D3webUtils.getKnowledgeRepresentationHandler("default_web");
 		return d3Handler.getKB(article.getTitle());
 	}
 

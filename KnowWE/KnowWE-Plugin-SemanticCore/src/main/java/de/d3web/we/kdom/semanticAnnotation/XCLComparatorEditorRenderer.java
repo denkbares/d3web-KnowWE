@@ -33,7 +33,7 @@ public class XCLComparatorEditorRenderer extends KnowWEDomRenderer {
 
 	@Override
 	public void render(KnowWEArticle article, Section sec, UserContext user, StringBuilder string) {
-		String currentOp = sec.getOriginalText().trim();
+		String currentOp = sec.getText().trim();
 
 		StringBuilder buffi = new StringBuilder();
 

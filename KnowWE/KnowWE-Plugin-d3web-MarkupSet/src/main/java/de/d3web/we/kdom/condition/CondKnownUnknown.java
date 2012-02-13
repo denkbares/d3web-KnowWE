@@ -90,7 +90,7 @@ public class CondKnownUnknown extends D3webCondition<CondKnownUnknown> {
 		Question question = qRef.get().getTermObject(article, qRef);
 		Assignment assignemt = null;
 		try {
-			assignemt = Assignment.valueOf(valueSec.getOriginalText().toUpperCase());
+			assignemt = Assignment.valueOf(valueSec.getText().toUpperCase());
 		}
 		catch (IllegalArgumentException e) {
 		}

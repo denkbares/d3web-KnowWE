@@ -27,8 +27,6 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.compile.IncrementalConstraint;
-import de.knowwe.core.compile.IncrementalMarker;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
@@ -41,7 +39,7 @@ import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
 
-public class NumericCondLine extends AbstractType implements IncrementalMarker, IncrementalConstraint<NumericCondLine> {
+public class NumericCondLine extends AbstractType {
 
 	@Override
 	protected void init() {
@@ -96,7 +94,7 @@ public class NumericCondLine extends AbstractType implements IncrementalMarker, 
 
 	public static Double getValue(Section<NumericCondLine> sec) {
 
-		String content = sec.getOriginalText();
+		String content = sec.getText();
 		if (content.startsWith("\"") && content.endsWith("\"")) {
 			content = content.substring(1, content.length() - 1);
 		}
@@ -113,7 +111,7 @@ public class NumericCondLine extends AbstractType implements IncrementalMarker, 
 	}
 
 	public static String getComparator(Section<NumericCondLine> sec) {
-		String content = sec.getOriginalText();
+		String content = sec.getText();
 		if (content.startsWith("\"") && content.endsWith("\"")) {
 			content = content.substring(1, content.length() - 1).trim();
 		}
@@ -130,8 +128,8 @@ public class NumericCondLine extends AbstractType implements IncrementalMarker, 
 
 	public static NumericalInterval getNumericalInterval(Section<NumericCondLine> sec) {
 		if (isIntervall(sec)) {
-			String[] doubles = sec.getOriginalText().substring(1,
-					sec.getOriginalText().length() - 1).split(" ");
+			String[] doubles = sec.getText().substring(1,
+					sec.getText().length() - 1).split(" ");
 			if (doubles.length == 2) {
 				try {
 					return new NumericalInterval(Double.parseDouble(doubles[0]),
@@ -149,15 +147,10 @@ public class NumericCondLine extends AbstractType implements IncrementalMarker, 
 	}
 
 	public static boolean isIntervall(Section<NumericCondLine> sec) {
-		if (sec.getOriginalText().startsWith("[") && sec.getOriginalText().endsWith("]")) {
+		if (sec.getText().startsWith("[") && sec.getText().endsWith("]")) {
 			return true;
 		}
 		return false;
-	}
-
-	@Override
-	public boolean violatedConstraints(KnowWEArticle article, Section<NumericCondLine> s) {
-		return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 	}
 
 }

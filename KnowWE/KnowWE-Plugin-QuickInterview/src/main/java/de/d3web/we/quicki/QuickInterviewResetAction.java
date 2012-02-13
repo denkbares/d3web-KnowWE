@@ -22,8 +22,8 @@ package de.d3web.we.quicki;
 
 import java.io.IOException;
 
-import de.d3web.we.basic.D3webModule;
 import de.d3web.we.basic.SessionBroker;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 
@@ -47,7 +47,7 @@ public class QuickInterviewResetAction extends AbstractAction {
 
 	public String resetQuickInterview(UserActionContext context) {
 
-		SessionBroker broker = D3webModule.getBroker(context.getParameters());
+		SessionBroker broker = D3webUtils.getBroker(context.getParameters());
 		broker.clear();
 		return QuickInterviewAction.callQuickInterviewRenderer(context);
 	}

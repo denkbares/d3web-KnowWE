@@ -22,26 +22,43 @@ package de.d3web.we.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.logging.Logger;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.records.SessionConversionFactory;
 import de.d3web.core.records.SessionRecord;
 import de.d3web.core.records.io.SessionPersistenceManager;
 import de.d3web.core.session.Session;
 import de.d3web.scoring.Score;
 import de.d3web.we.basic.D3webKnowledgeHandler;
-import de.d3web.we.basic.D3webModule;
 import de.d3web.we.basic.SessionBroker;
+import de.d3web.we.basic.WikiEnvironment;
+import de.d3web.we.basic.WikiEnvironmentManager;
+import de.d3web.we.object.D3webTerm;
+import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
+import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.knowRep.KnowledgeRepresentationHandler;
 
 public class D3webUtils {
 
@@ -89,12 +106,12 @@ public class D3webUtils {
 	public static Session getSession(String topic, String user, String web) {
 
 		String sessionId = KnowWEEnvironment.generateDefaultID(topic);
-		SessionBroker broker = D3webModule.getBroker(user, web);
+		SessionBroker broker = D3webUtils.getBroker(user, web);
 		return broker.getSession(sessionId);
 	}
 
 	public static Collection<Session> getSessions(String user, String web) {
-		SessionBroker broker = D3webModule.getBroker(user, web);
+		SessionBroker broker = D3webUtils.getBroker(user, web);
 		return broker.getSessions();
 	}
 
@@ -167,12 +184,12 @@ public class D3webUtils {
 	 * @param topic
 	 * @return
 	 */
-	public static KnowledgeBase getKB(String web, String topic) {
+	public static KnowledgeBase getKnowledgeBase(String web, String topic) {
 		if (web == null || topic == null) {
 			throw new IllegalArgumentException("Argument 'web' and/or 'topic' was null!");
 		}
 		D3webKnowledgeHandler knowledgeHandler =
-				D3webModule.getKnowledgeRepresentationHandler(web);
+				D3webUtils.getKnowledgeRepresentationHandler(web);
 		if (knowledgeHandler != null) {
 			KnowledgeBase kb = knowledgeHandler.getKB(topic);
 			return kb;
@@ -189,8 +206,8 @@ public class D3webUtils {
 	 */
 	public static KnowledgeBase getFirstKnowledgeBase(String web) {
 		D3webKnowledgeHandler knowledgeHandler =
-				D3webModule.getKnowledgeRepresentationHandler(web);
-		D3webKnowledgeHandler repHandler = D3webModule.getKnowledgeRepresentationHandler(web);
+				D3webUtils.getKnowledgeRepresentationHandler(web);
+		D3webKnowledgeHandler repHandler = D3webUtils.getKnowledgeRepresentationHandler(web);
 		KnowledgeBase base = null;
 		for (String t : knowledgeHandler.getKnowledgeArticles()) {
 			base = repHandler.getKB(t);
@@ -202,16 +219,160 @@ public class D3webUtils {
 	public static Session getFirstSession(String web, String user, String topic) {
 
 		KnowledgeBase kb = D3webUtils.getFirstKnowledgeBase(web);
-		SessionBroker broker = D3webModule.getBroker(user, web);
+		SessionBroker broker = D3webUtils.getBroker(user, web);
 		Session session = broker.getSession(kb.getId());
 
 		return session;
 	}
 
-	public static Message alreadyDefinedButErrors(String type, String name) {
-		return Messages.error("The " + type + " '"
-				+ name
-				+ "' is already defined somewhere else, "
-				+ "but could no be created due to an error.");
+	@SuppressWarnings("unchecked")
+	public static <TermObject extends NamedObject> TermObject getTermObjectDefaultImplementation(KnowWEArticle article, Section<? extends D3webTerm<TermObject>> section) {
+		String termIdentifier = section.get().getTermIdentifier(section);
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
+		TerminologyObject termObject = kb.getManager().search(termIdentifier);
+		if (termObject != null) {
+			if (section.get().getTermObjectClass().isAssignableFrom(termObject.getClass())) {
+				return (TermObject) termObject;
+			}
+			else {
+				return null;
+			}
+		}
+		Collection<TerminologyObject> foundTermObjects = getTermObjectsIgnoreTermObjectClass(
+				article, section);
+		if (foundTermObjects.size() == 1) {
+			termObject = foundTermObjects.iterator().next();
+			if (section.get().getTermObjectClass().isAssignableFrom(termObject.getClass())) {
+				return (TermObject) termObject;
+			}
+		}
+		return null;
+	}
+
+	public static <TermObject extends NamedObject> Collection<TerminologyObject> getTermObjectsIgnoreTermObjectClass(KnowWEArticle article, Section<? extends D3webTerm<TermObject>> section) {
+		String termIdentifier = section.get().getTermIdentifier(section);
+		TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
+		TerminologyObject termObject;
+		Collection<String> allTermsEqualIgnoreCase = terminologyHandler.getAllTermsEqualIgnoreCase(termIdentifier);
+		List<TerminologyObject> foundTermObjects = new ArrayList<TerminologyObject>();
+		for (String termEqualIgnoreCase : allTermsEqualIgnoreCase) {
+			termObject = kb.getManager().search(termEqualIgnoreCase);
+			if (termObject != null) foundTermObjects.add(termObject);
+		}
+		return foundTermObjects;
+	}
+
+	public static D3webKnowledgeHandler getKnowledgeRepresentationHandler(
+			String web) {
+		Collection<KnowledgeRepresentationHandler> handlers = KnowWEEnvironment
+				.getInstance().getKnowledgeRepresentationManager(web)
+				.getHandlers();
+		for (KnowledgeRepresentationHandler handler : handlers) {
+			if (handler instanceof D3webKnowledgeHandler) {
+				return (D3webKnowledgeHandler) handler;
+			}
+		}
+		return null;
+	}
+
+	public static String getRealPath(ServletContext context, String varPath) {
+		if (context != null && varPath.indexOf("$webapp_path$") != -1) {
+			String realPath = context.getRealPath("");
+			realPath = realPath.replace('\\', '/');
+			while (realPath.endsWith("/")) {
+				realPath = realPath.substring(0, realPath.length() - 1);
+			}
+			varPath = varPath.replaceAll("\\$webapp_path\\$", realPath);
+		}
+		return varPath;
+	}
+
+	public static String getSessionPath(UserContext context) {
+		String user = context.getParameter(KnowWEAttributes.USER);
+		String web = context.getParameter(KnowWEAttributes.WEB);
+		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
+		String sessionDir = rb.getString("knowwe.config.path.sessions");
+		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
+		sessionDir = sessionDir.replaceAll("\\$user\\$", user);
+
+		sessionDir = getRealPath(context.getServletContext(), sessionDir);
+		return sessionDir;
+	}
+
+	public static String getWebEnvironmentPath(String web) {
+		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
+		String sessionDir = rb.getString("knowwe.config.path.currentWeb");
+		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
+		sessionDir = getRealPath(KnowWEEnvironment.getInstance()
+				.getWikiConnector().getServletContext(), sessionDir);
+		return sessionDir;
+	}
+
+	public static URL getKnowledgeBaseURL(String web, String id) {
+		String varPath = getWebEnvironmentPath(web);
+		varPath = varPath + id + ".jar";
+		URL url = null;
+		try {
+			url = new File(varPath).toURI().toURL();
+		}
+		catch (MalformedURLException e) {
+			Logger.getLogger(KnowWEUtils.class.getName())
+					.warning(
+							"Cannot identify url for knowledgebase : "
+									+ e.getMessage());
+		}
+		return url;
+	}
+
+	public static WikiEnvironment getWikiEnvironment(String web) {
+
+		WikiEnvironment env = WikiEnvironmentManager.getInstance()
+				.getEnvironments(web);
+		return env;
+	}
+
+	public static WikiEnvironment getWikiEnvironment(
+			java.util.Map<String, String> parameterMap) {
+		// String user = parameterMap.get(KnowWEAttributes.USER);
+		String web = parameterMap.get(KnowWEAttributes.WEB);
+
+		WikiEnvironment env = WikiEnvironmentManager.getInstance()
+				.getEnvironments(web);
+		return env;
+	}
+
+	public static SessionBroker getBroker(String user, String web) {
+		WikiEnvironment env = WikiEnvironmentManager.getInstance()
+				.getEnvironments(web);
+		SessionBroker broker = env.getBroker(user);
+		return broker;
+	}
+
+	public static SessionBroker getBroker(Map<String, String> parameterMap) {
+		String user = parameterMap.get(KnowWEAttributes.USER);
+		String web = parameterMap.get(KnowWEAttributes.WEB);
+
+		return getBroker(user, web);
+	}
+
+	public static ResourceBundle getD3webBundle() {
+
+		return ResourceBundle.getBundle("KnowWE_plugin_d3web_messages");
+	}
+
+	public static ResourceBundle getD3webBundle(HttpServletRequest request) {
+		if (request == null) return D3webUtils.getD3webBundle();
+
+		Locale.setDefault(KnowWEEnvironment.getInstance().getWikiConnector()
+				.getLocale(request));
+		return D3webUtils.getD3webBundle();
+	}
+
+	public static ResourceBundle getD3webBundle(UserContext user) {
+		if (user == null) return getD3webBundle();
+		Locale.setDefault(KnowWEEnvironment.getInstance().getWikiConnector()
+				.getLocale(user.getRequest()));
+		return getD3webBundle();
 	}
 }

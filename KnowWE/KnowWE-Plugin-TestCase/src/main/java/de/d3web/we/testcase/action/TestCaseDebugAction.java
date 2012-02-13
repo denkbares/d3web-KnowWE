@@ -35,9 +35,9 @@ import de.d3web.empiricaltesting.TestCase;
 import de.d3web.empiricaltesting.caseAnalysis.functions.Diff;
 import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysis;
 import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
-import de.d3web.we.basic.D3webModule;
 import de.d3web.we.basic.SessionBroker;
 import de.d3web.we.testcase.TestCaseUtils;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -67,7 +67,7 @@ public class TestCaseDebugAction extends TestCaseRunningAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(context);
+		ResourceBundle rb = D3webUtils.getD3webBundle(context);
 		MessageFormat msgFormatter = new MessageFormat("");
 
 		String testCaseName = context.getParameter("testcase");
@@ -108,7 +108,7 @@ public class TestCaseDebugAction extends TestCaseRunningAction {
 
 	private void pushTestCase2KnowWESession(UserActionContext context, TestCaseBreakpoint breakpoint, KnowledgeBase knowledgeBase) {
 		// clear the current running session
-		SessionBroker broker = D3webModule.getBroker(context.getParameters());
+		SessionBroker broker = D3webUtils.getBroker(context.getParameters());
 		broker.clear();
 
 		// Create a new session

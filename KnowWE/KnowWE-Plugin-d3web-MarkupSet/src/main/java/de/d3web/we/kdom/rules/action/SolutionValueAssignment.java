@@ -132,7 +132,7 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 		Section<ScorePoint> scoreRef = Sections.findSuccessor(s, ScorePoint.class);
 		if (scoreRef == null || solutionRef == null) return null;
 		Solution solution = solutionRef.get().getTermObject(article, solutionRef);
-		Score score = D3webUtils.getScoreForString(scoreRef.getOriginalText());
+		Score score = D3webUtils.getScoreForString(scoreRef.getText());
 		if (solution == null || score == null) return null;
 		ActionHeuristicPS a = new ActionHeuristicPS();
 		a.setSolution(solution);

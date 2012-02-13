@@ -64,7 +64,7 @@ public class SimpleAnnotation extends AbstractType {
 
 			String annos = "";
 			try {
-				annos = URLEncoder.encode(s.getOriginalText().trim(), "UTF-8");
+				annos = URLEncoder.encode(s.getText().trim(), "UTF-8");
 			}
 			catch (UnsupportedEncodingException e1) {
 				// TODO Auto-generated catch block

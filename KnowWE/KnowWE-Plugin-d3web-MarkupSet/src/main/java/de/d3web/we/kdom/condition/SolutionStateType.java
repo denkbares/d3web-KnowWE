@@ -39,7 +39,7 @@ public class SolutionStateType extends AbstractType {
 
 	public static Rating.State getSolutionState(Section<SolutionStateType> s) {
 
-		String text = s.getOriginalText().trim();
+		String text = s.getText().trim();
 
 		if (text.equalsIgnoreCase(SOL_STATE_ESTABLISHED)
 				|| text.equalsIgnoreCase(SOL_STATE_ESTABLISHED_GER)) {

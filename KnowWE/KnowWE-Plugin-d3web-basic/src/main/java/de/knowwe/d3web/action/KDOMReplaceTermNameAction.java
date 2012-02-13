@@ -29,7 +29,7 @@ import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.kdom.objects.TermReference;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -81,13 +81,13 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 
 		Section<?> section = Sections.getSection(nodeID);
 
-		if (!(section.get() instanceof TermReference<?>)) {
+		if (!(section.get() instanceof SimpleTerm)) {
 			context.sendError(500, "Invalid section type");
 			return;
 		}
 
-		TermReference t = (TermReference) section.get();
-		String newNodeText = section.getOriginalText().replace(t.getTermIdentifier(section),
+		String newNodeText = section.getText().replace(
+				((SimpleTerm) section.get()).getTermIdentifier((Section<? extends SimpleTerm>) section),
 				newText);
 
 		nodesMap.put(nodeID, newNodeText);

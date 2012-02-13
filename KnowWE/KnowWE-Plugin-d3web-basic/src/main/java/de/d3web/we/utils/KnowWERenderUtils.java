@@ -22,12 +22,11 @@ package de.d3web.we.utils;
 
 import java.util.ResourceBundle;
 
-import de.d3web.we.basic.D3webModule;
 
 public class KnowWERenderUtils {
 
 	public static StringBuffer getTopicLink(String web, String name, String iconURL, String usagePrefix, boolean withTitle, boolean asButton) {
-		ResourceBundle rb = D3webModule.getKwikiBundle_d3web();
+		ResourceBundle rb = D3webUtils.getD3webBundle();
 		StringBuffer sb = new StringBuffer();
 		// String web = (String) BasicUtils.getModelAttribute(model,
 		// KnowWEAttributes.WEB, String.class, true);

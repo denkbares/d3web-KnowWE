@@ -45,7 +45,7 @@ public class ObjectInfoLinkRenderer extends KnowWEDomRenderer {
 		StringBuilder b = new StringBuilder();
 		renderer.render(article, sec, user, b);
 
-		String objectName = sec.getOriginalText().trim();
+		String objectName = sec.getText().trim();
 		boolean pageExists = KnowWEEnvironment.getInstance().getWikiConnector().doesPageExist(
 				objectName);
 

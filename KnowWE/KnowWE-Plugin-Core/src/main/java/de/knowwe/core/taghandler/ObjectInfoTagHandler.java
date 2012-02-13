@@ -29,12 +29,10 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.compile.TerminologyHandler;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.basicType.PlainText;
-import de.knowwe.core.kdom.objects.KnowWETerm.Scope;
-import de.knowwe.core.kdom.objects.TermDefinition;
-import de.knowwe.core.kdom.objects.TermReference;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
@@ -136,8 +134,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		}
 
 		// Get TermDefinitions and TermReferences
-		Set<Section<? extends TermDefinition<?>>> definitions = new HashSet<Section<? extends TermDefinition<?>>>();
-		Set<Section<? extends TermReference<?>>> references = new HashSet<Section<? extends TermReference<?>>>();
+		Set<Section<?>> definitions = new HashSet<Section<?>>();
+		Set<Section<?>> references = new HashSet<Section<?>>();
 
 		Iterator<KnowWEArticle> iter = KnowWEEnvironment.getInstance().getArticleManager(
 				article.getWeb()).getArticleIterator();
@@ -146,16 +144,12 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		while (iter.hasNext()) {
 			currentArticle = iter.next();
 			// Get global and local term definitions
-			getTermDefinitions(currentArticle, objectName, article, Scope.GLOBAL,
-					definitions);
-			getTermDefinitions(currentArticle, objectName, article, Scope.LOCAL,
-					definitions);
-			// Get global and local term refereces
-			getTermReferences(currentArticle, objectName, article, Scope.GLOBAL,
-					references);
-			getTermReferences(currentArticle, objectName, article, Scope.LOCAL,
-					references);
+			getTermDefinitions(currentArticle, objectName, definitions);
+			getTermDefinitions(currentArticle, objectName, definitions);
 		}
+		// Get global and local term refereces
+		getTermReferences(null, objectName, references);
+		getTermReferences(null, objectName, references);
 
 		// Render
 		StringBuilder html = new StringBuilder();
@@ -167,16 +161,21 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return KnowWEUtils.maskHTML(html.toString());
 	}
 
-	private String renderHeader(String objectName, Set<Section<? extends TermDefinition<?>>> definitions) {
+	private String renderHeader(String objectName, Set<Section<?>> definitions) {
 		StringBuilder html = new StringBuilder();
 		html.append("<h3><span id=\"objectinfo-src\">");
 		html.append(objectName);
 		html.append("</span>");
 		// Render type of (first) TermDefinition
 		if (definitions != null) {
-			for (Section<? extends TermDefinition<?>> definition : definitions) {
+			for (Section<?> definition : definitions) {
 				html.append(" <em>(");
-				html.append(definition.get().getTermObjectClass().getSimpleName());
+				String termClassString = "Object";
+				if (definition.get() instanceof SimpleTerm) {
+					Class<?> termObjectClass = ((SimpleTerm) definition.get()).getTermObjectClass();
+					termClassString = termObjectClass.getSimpleName();
+				}
+				html.append(termClassString);
 				html.append(")</em>");
 				break;
 			}
@@ -226,43 +225,36 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				html.toString());
 	}
 
-	private String renderObjectInfo(Set<Section<? extends TermDefinition<?>>> definitions, Set<Section<? extends TermReference<?>>> references, Map<String, String> parameters) {
+	private String renderObjectInfo(Set<Section<?>> definitions, Set<Section<?>> references, Map<String, String> parameters) {
 		StringBuilder html = new StringBuilder();
 		if (!checkParameter(HIDEDEF, parameters)) html.append(renderTermDefinitions(definitions));
 		if (!checkParameter(HIDEREFS, parameters)) html.append(renderTermReferences(references,
-					definitions));
+				definitions));
 		return html.toString();
 	}
 
-	protected void getTermDefinitions(KnowWEArticle currentArticle, String objectName, KnowWEArticle context, Scope scope, Set<Section<? extends TermDefinition<?>>> definitions) {
-		TerminologyHandler th = KnowWEUtils.getTerminologyHandler(context.getWeb());
+	protected void getTermDefinitions(KnowWEArticle currentArticle, String objectName, Set<Section<?>> definitions) {
+		TerminologyManager th = KnowWEUtils.getTerminologyManager(currentArticle);
 
-		Section<? extends TermDefinition<?>> definition;
-		definition = th.getTermDefiningSection(currentArticle, objectName, scope);
+		Section<?> definition = th.getTermDefiningSection(objectName);
 		if (definition != null) {
 			definitions.add(definition);
 		}
 
 	}
 
-	protected void getTermReferences(KnowWEArticle currentArticle, String objectName, KnowWEArticle context, Scope scope, Set<Section<? extends TermReference<?>>> references) {
-		TerminologyHandler th = KnowWEUtils.getTerminologyHandler(context.getWeb());
-
-		Set<Section<? extends TermReference<?>>> temp = new HashSet<Section<? extends TermReference<?>>>();
-		temp = th.getTermReferenceSections(currentArticle, objectName, scope);
-		if (temp != null && temp.size() > 0) {
-			references.addAll(temp);
-		}
-
+	protected void getTermReferences(KnowWEArticle currentArticle, String objectName, Set<Section<?>> references) {
+		TerminologyManager th = KnowWEUtils.getTerminologyManager(currentArticle);
+		references.addAll(th.getTermReferenceSections(objectName));
 	}
 
-	private String renderTermDefinitions(Set<Section<? extends TermDefinition<?>>> definitions) {
+	private String renderTermDefinitions(Set<Section<?>> definitions) {
 		StringBuilder html = new StringBuilder();
 
 		if (definitions.size() > 0) {
 			html.append("<p>");
 			html.append(definitions.size() > 1 ? "<ul>" : "");
-			for (Section<? extends TermDefinition<?>> definition : definitions) {
+			for (Section<?> definition : definitions) {
 				html.append(definitions.size() > 1 ? "<li>" : "");
 				html.append(definition.get().getName());
 				html.append(" in ");
@@ -283,7 +275,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				html.toString());
 	}
 
-	private String renderTermReferences(Set<Section<? extends TermReference<?>>> references, Set<Section<? extends TermDefinition<?>>> definitions) {
+	private String renderTermReferences(Set<Section<?>> references, Set<Section<?>> definitions) {
 
 		StringBuilder html = new StringBuilder();
 
@@ -296,11 +288,11 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				html.append("</p>");
 			}
 
-			Map<KnowWEArticle, List<Section<? extends TermReference<?>>>> groupedReferences = groupByArticle(references);
+			Map<KnowWEArticle, List<Section<?>>> groupedReferences = groupByArticle(references);
 			for (KnowWEArticle article : groupedReferences.keySet()) {
 				StringBuilder innerHTML = new StringBuilder();
 				innerHTML.append("<ul>");
-				for (Section<? extends TermReference<?>> reference : groupedReferences.get(article)) {
+				for (Section<?> reference : groupedReferences.get(article)) {
 					innerHTML.append("<li>");
 					innerHTML.append(reference.get().getName());
 					innerHTML.append(" in ");
@@ -316,7 +308,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				html.toString());
 	}
 
-	private String renderLinkToSection(Section<? extends TermReference<?>> reference) {
+	private String renderLinkToSection(Section<?> reference) {
 		StringBuilder html = new StringBuilder();
 
 		if (reference != null) {
@@ -340,16 +332,16 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return html.toString();
 	}
 
-	private Map<KnowWEArticle, List<Section<? extends TermReference<?>>>> groupByArticle(Set<Section<? extends TermReference<?>>> references) {
+	private Map<KnowWEArticle, List<Section<?>>> groupByArticle(Set<Section<?>> references) {
 
-		Map<KnowWEArticle, List<Section<? extends TermReference<?>>>> result = new HashMap<KnowWEArticle, List<Section<? extends TermReference<?>>>>();
+		Map<KnowWEArticle, List<Section<?>>> result = new HashMap<KnowWEArticle, List<Section<?>>>();
 		KnowWEArticle article;
 
-		for (Section<? extends TermReference<?>> reference : references) {
+		for (Section<?> reference : references) {
 			article = reference.getArticle();
-			List<Section<? extends TermReference<?>>> existingReferences = result.get(article);
+			List<Section<?>> existingReferences = result.get(article);
 			if (existingReferences == null) {
-				existingReferences = new LinkedList<Section<? extends TermReference<?>>>();
+				existingReferences = new LinkedList<Section<?>>();
 			}
 			existingReferences.add(reference);
 			result.put(article, existingReferences);
@@ -389,20 +381,20 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 					innerHTML.append("<pre style=\"margin:1em -1em;\">");
 					String textBefore = r.getAdditionalContext(-35).replaceAll(
 							"(\\{|\\})", "");
-					if (!article.getSection().getOriginalText().startsWith(textBefore)) innerHTML.append("...");
+					if (!article.getSection().getText().startsWith(textBefore)) innerHTML.append("...");
 					innerHTML.append(textBefore);
 					innerHTML.append("<a href=\"Wiki.jsp?page=");
 					innerHTML.append(article.getTitle());
 					innerHTML.append("#");
 					innerHTML.append(s.getID());
 					innerHTML.append("\" >");
-					innerHTML.append(s.getOriginalText().substring(r.getStart(),
+					innerHTML.append(s.getText().substring(r.getStart(),
 							r.getEnd()));
 					innerHTML.append("</a>");
 					String textAfter = r.getAdditionalContext(40).replaceAll("(\\{|\\})",
 							"");
 					innerHTML.append(textAfter);
-					if (!article.getSection().getOriginalText().endsWith(textAfter)) innerHTML.append("...");
+					if (!article.getSection().getText().endsWith(textAfter)) innerHTML.append("...");
 					innerHTML.append("</pre>");
 					innerHTML.append("</li>");
 				}

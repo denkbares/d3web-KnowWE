@@ -100,20 +100,24 @@ public class Priority implements Comparable<Priority> {
 
 	@Override
 	public int compareTo(Priority p) {
+		if (this == p) return 0;
+		if (p == null) return -1;
 		return Integer.valueOf(value).compareTo(Integer.valueOf(p.value));
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof Priority)) {
-			return false;
-		}
-		return value == ((Priority) o).value;
 	}
 
 	@Override
 	public int hashCode() {
 		return value;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		Priority other = (Priority) obj;
+		if (value != other.value) return false;
+		return true;
 	}
 
 	@Override

@@ -31,6 +31,7 @@ import java.util.Set;
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.knowRep.KnowledgeRepresentationHandler;
@@ -110,7 +111,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	 */
 	@Override
 	public void initArticle(KnowWEArticle art) {
-		WikiEnvironment env = D3webModule.getDPSE(web);
+		WikiEnvironment env = D3webUtils.getWikiEnvironment(web);
 		String id = KnowWEEnvironment.generateDefaultID(art.getTitle());
 		KnowledgeBase service = env.getKnowledgeBase(id);
 		if (service != null) {
@@ -157,7 +158,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	public URL saveKnowledge(String title) throws IOException {
 
 		KnowledgeBase base = getKB(title);
-		URL home = D3webModule.getKbUrl(web, base.getId());
+		URL home = D3webUtils.getKnowledgeBaseURL(web, base.getId());
 		if (!savedToJar.get(title)) {
 			PersistenceManager.getInstance().save(base,
 					new File(URLDecoder.decode(home.getFile(), "UTF-8")));

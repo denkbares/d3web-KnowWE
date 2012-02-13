@@ -71,7 +71,7 @@ public class ShowSolutionsContentRenderer extends KnowWEDomRenderer<ContentType>
 	@Override
 	public void render(KnowWEArticle article, Section<ContentType> section, UserContext user, StringBuilder string) {
 		string.append(KnowWEUtils.maskHTML("<span id='" + section.getID() + "'>"));
-		String text = section.getOriginalText();
+		String text = section.getText();
 		if (!text.isEmpty()) {
 			string.append(text + "\n");
 		}

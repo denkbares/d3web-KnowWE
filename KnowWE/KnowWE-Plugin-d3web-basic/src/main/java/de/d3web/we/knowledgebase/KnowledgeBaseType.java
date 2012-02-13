@@ -26,10 +26,12 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.compile.IncrementalMarker;
+import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -59,7 +61,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @author volker_belli
  * @created 13.10.2010
  */
-public class KnowledgeBaseType extends DefaultMarkupType implements IncrementalMarker {
+public class KnowledgeBaseType extends DefaultMarkupType {
 
 	public static final String ANNOTATION_ID = "id";
 	public static final String ANNOTATION_VERSION = "version";
@@ -89,7 +91,7 @@ public class KnowledgeBaseType extends DefaultMarkupType implements IncrementalM
 		super(MARKUP);
 		this.setIgnorePackageCompile(true);
 		this.setCustomRenderer(new KnowledgeBaseRenderer());
-		this.addSubtreeHandler(new D3webSubtreeHandler<KnowledgeBaseType>() {
+		this.addSubtreeHandler(Priority.HIGHER, new D3webSubtreeHandler<KnowledgeBaseType>() {
 
 			@Override
 			public Collection<Message> create(KnowWEArticle article, Section<KnowledgeBaseType> section) {
@@ -106,11 +108,17 @@ public class KnowledgeBaseType extends DefaultMarkupType implements IncrementalM
 				String status = getAnnotation(section, ANNOTATION_STATUS);
 				String affiliation = getAnnotation(section, ANNOTATION_AFFILIATION);
 
+				TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
+				terminologyManager.registerTermDefinition(section, KnowledgeBase.class,
+						"KNOWLEDGEBASE");
+
 				// and write it to the knowledge base
 				if (id != null) kb.setId(id);
-
 				InfoStore infoStore = kb.getInfoStore();
-				if (title != null && title.length() > 0) infoStore.addValue(MMInfo.PROMPT, title);
+				if (title != null && title.length() > 0) {
+					infoStore.addValue(MMInfo.PROMPT, title);
+					terminologyManager.registerTermDefinition(section, KnowledgeBase.class, title);
+				}
 				if (author != null) infoStore.addValue(BasicProperties.AUTHOR, author);
 				if (comment != null) infoStore.addValue(MMInfo.DESCRIPTION, comment);
 				if (version != null) infoStore.addValue(BasicProperties.VERSION, version);
@@ -122,5 +130,4 @@ public class KnowledgeBaseType extends DefaultMarkupType implements IncrementalM
 			}
 		});
 	}
-
 }

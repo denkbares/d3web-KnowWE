@@ -27,7 +27,6 @@ import java.util.List;
 import de.knowwe.core.compile.ConstraintModule;
 import de.knowwe.core.compile.ConstraintModule.Operator;
 import de.knowwe.core.compile.ConstraintModule.Purpose;
-import de.knowwe.core.compile.IncrementalConstraint;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -351,14 +350,9 @@ public abstract class SubtreeHandler<T extends Type> {
 					&& section.hasPositionChanged();
 			// if the section is order sensitive, we need to check, if the
 			// position of the section has changed
-			boolean typeConstraint = section.get() instanceof IncrementalConstraint
-					&& ((IncrementalConstraint<T2>) section.get()).violatedConstraints(
-							article, section);
-			// it is possible to define additional constraints for the all
-			// handlers of a Type... they need to be checked too
 
 			// if one of these items is true, we need to create
-			return changedPosition || typeConstraint;
+			return changedPosition;
 		}
 
 	}
@@ -404,14 +398,9 @@ public abstract class SubtreeHandler<T extends Type> {
 					&& s.hasPositionChanged();
 			// if the position of a order sensitive section has changed, we need
 			// to destroy, because it will be created later in the new context
-			boolean typeConstraint = (s.get() instanceof IncrementalConstraint<?>
-					&& ((IncrementalConstraint<T2>) s.get()).violatedConstraints(
-							article, s));
-			// also check constraints defined in the Type for all
-			// handlers of the type
 
 			// destroy if one of the items is true
-			return notReused || changedPosition || typeConstraint;
+			return notReused || changedPosition;
 		}
 
 	}

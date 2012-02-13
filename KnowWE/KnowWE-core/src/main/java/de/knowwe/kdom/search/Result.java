@@ -84,7 +84,7 @@ public class Result implements Comparable<Result> {
 	 * @return The context text
 	 */
 	public String getAdditionalContext(int length) {
-		final String originalText = article.getSection().getOriginalText();
+		final String originalText = article.getSection().getText();
 		final int absPosition = section.getAbsolutePositionStartInArticle() + start;
 
 		if (length < 0) {

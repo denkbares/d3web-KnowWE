@@ -32,7 +32,6 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
-import de.d3web.we.kdom.questionTree.RootQuestionChangeConstraint;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
@@ -89,10 +88,6 @@ public class QuestionSetValueLine extends AbstractType {
 
 	static class CreateSetValueRuleHandler extends D3webSubtreeHandler<QuestionReference> {
 
-		public CreateSetValueRuleHandler() {
-			this.registerConstraintModule(new RootQuestionChangeConstraint<QuestionReference>());
-		}
-
 		@Override
 		public void destroy(KnowWEArticle article, Section<QuestionReference> s) {
 			Rule kbr = (Rule) s.getSectionStore().getObject(article, SETVALUE_ARGUMENT);
@@ -107,7 +102,7 @@ public class QuestionSetValueLine extends AbstractType {
 			Section<AnswerReference> answerSec = Sections.findSuccessor(
 					s.getFather(), AnswerReference.class);
 
-			String answerName = answerSec.get().getTermName(answerSec);
+			String answerName = answerSec.get().getAnswerName(answerSec);
 
 			if (q != null) {
 				Choice a = null;

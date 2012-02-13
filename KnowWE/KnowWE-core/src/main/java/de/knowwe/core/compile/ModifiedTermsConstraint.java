@@ -36,7 +36,7 @@ public class ModifiedTermsConstraint<T extends Type> extends ConstraintModule<T>
 
 	@Override
 	public boolean violatedConstraints(KnowWEArticle article, Section<T> s) {
-		return KnowWEUtils.getTerminologyHandler(article.getWeb()).areTermDefinitionsModifiedFor(
+		return KnowWEUtils.getTerminologyManager(article).areTermDefinitionsModifiedFor(
 				article);
 	}
 

@@ -28,9 +28,9 @@ import de.d3web.diaFlux.flow.ComposedNode;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
-import de.d3web.we.basic.D3webModule;
 import de.d3web.we.flow.type.DiaFluxType;
 import de.d3web.we.flow.type.FlowchartType;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -75,7 +75,7 @@ public class GetSubflowLinksAction extends AbstractAction {
 	private String addSubFlowLinks(KnowWEArticle article, Section<FlowchartType> section) {
 		// make sub-flowcharts links to be able to go to their definition
 		String thisFlowchartName = FlowchartType.getFlowchartName(section);
-		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(
+		KnowledgeBase kb = D3webUtils.getKnowledgeRepresentationHandler(
 				article.getWeb()).getKB(article.getTitle());
 		if (kb == null) return "<flow></flow>";
 		FlowSet flowSet = DiaFluxUtils.getFlowSet(kb);

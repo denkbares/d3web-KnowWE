@@ -3,10 +3,10 @@ package de.d3web.we.kdom.questionTree;
 import java.util.Arrays;
 import java.util.List;
 
-import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.questionTree.QuestionLine.QuestionTypeChecker;
 import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.object.QuestionDefinition.QuestionType;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
@@ -22,11 +22,9 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.StringEnumChecker;
 
 /**
+ * A Type for the question-type declaration keys "[oc],[mc],[num],..."
+ * 
  * @author Jochen
- * 
- *         A KnowWEType for the question-type declaration keys
- *         "[oc],[mc],[num],..."
- * 
  */
 class QuestionTypeDeclaration extends
 		AbstractType {
@@ -34,7 +32,7 @@ class QuestionTypeDeclaration extends
 	public static QuestionType getQuestionType(Section<QuestionTypeDeclaration> typeSection) {
 
 		if (typeSection == null) return null;
-		String embracedContent = typeSection.getOriginalText();
+		String embracedContent = typeSection.getText();
 		if (embracedContent.startsWith("[")) {
 			embracedContent = embracedContent.substring(1);
 		}
@@ -102,7 +100,7 @@ class QuestionTypeDeclaration extends
 		});
 		String allowedTypes = Arrays.asList(QUESTION_DECLARATIONS).toString();
 		allowedTypes = allowedTypes.substring(1, allowedTypes.length() - 1);
-		Message errorMsg = Messages.error(D3webModule.getKwikiBundle_d3web()
+		Message errorMsg = Messages.error(D3webUtils.getD3webBundle()
 				.getString("KnowWE.questiontree.allowingonly")
 				+ allowedTypes);
 		this.addSubtreeHandler(new StringEnumChecker<QuestionTypeDeclaration>(

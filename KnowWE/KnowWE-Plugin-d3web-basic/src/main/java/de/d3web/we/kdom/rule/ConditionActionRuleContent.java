@@ -21,7 +21,6 @@ package de.d3web.we.kdom.rule;
 import java.util.List;
 
 import de.d3web.we.kdom.condition.CompositeCondition;
-import de.knowwe.core.compile.IncrementalMarker;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.EndLineComment;
@@ -39,7 +38,7 @@ import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
  * @author Max Diez (mostly copied from old ConditionActionRule)
  * @created 12.08.2010
  */
-public class ConditionActionRuleContent extends AbstractType implements IncrementalMarker {
+public class ConditionActionRuleContent extends AbstractType {
 
 	ConditionArea condArea = new ConditionArea();
 	ExceptionConditionArea exceptionCond = new ExceptionConditionArea();

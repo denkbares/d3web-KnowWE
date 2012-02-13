@@ -87,7 +87,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 				return createCond(q);
 			}
 			else {
-				Message msg = Messages.noSuchObjectError(qRef.getOriginalText());
+				Message msg = Messages.noSuchObjectError(qRef.getText());
 				Messages.storeMessage(article, section, getClass(), msg);
 				return null;
 			}

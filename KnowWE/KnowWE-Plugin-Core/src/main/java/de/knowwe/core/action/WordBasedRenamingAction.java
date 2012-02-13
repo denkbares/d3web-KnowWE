@@ -136,13 +136,13 @@ public class WordBasedRenamingAction extends AbstractAction {
 				Section<?> section = Sections.getSection(sectionID);
 				String context = WordBasedRenameFinding.getAdditionalContext(
 									pos, direction, curWords, query.length(),
-									section.getOriginalText());
+									section.getText());
 
 				// No more Words to display
 				if (context == null) {
 					context = WordBasedRenameFinding.getAdditionalContext(
 							pos, direction, curWords - 1, query.length(),
-							section.getOriginalText());
+							section.getText());
 					curWords = WordBasedRenameFinding.MAX_WORDS + 1;
 				}
 
@@ -322,7 +322,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 		while (iter.hasNext()) {
 			KnowWEArticle article = iter.next();
 			map.put(article, new HashSet<WordBasedRenameFinding>());
-			String text = article.getSection().getOriginalText();
+			String text = article.getSection().getText();
 
 			Matcher m = p.matcher(text);
 			while (m.find()) {

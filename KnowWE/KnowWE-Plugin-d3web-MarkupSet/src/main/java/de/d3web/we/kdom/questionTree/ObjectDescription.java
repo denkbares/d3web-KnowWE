@@ -6,10 +6,10 @@ import java.util.Collection;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.we.basic.D3webModule;
+import de.d3web.we.object.D3webTermDefinition;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -44,12 +44,14 @@ public class ObjectDescription extends AbstractType {
 			@Override
 			public Collection<Message> create(KnowWEArticle article, Section<ObjectDescription> sec) {
 
-				Section<TermDefinition> qDef = Sections.findSuccessor(
-						sec.getFather(), TermDefinition.class);
+				@SuppressWarnings("rawtypes")
+				Section<D3webTermDefinition> qDef = Sections.findSuccessor(
+						sec.getFather(), D3webTermDefinition.class);
 
 				if (qDef != null) {
 
 					// get the object the information should be stored for
+					@SuppressWarnings("unchecked")
 					Object ob = qDef.get().getTermObject(article, qDef);
 					TerminologyObject object = null;
 					if (ob instanceof TerminologyObject) {
@@ -63,7 +65,7 @@ public class ObjectDescription extends AbstractType {
 						if (prop.equals(MMInfo.PROMPT)) {
 							object.getInfoStore().addValue(MMInfo.PROMPT, objectDescriptionText);
 							return Arrays.asList(Messages.objectCreatedNotice(
-									D3webModule.getKwikiBundle_d3web()
+									D3webUtils.getD3webBundle()
 											.getString(
 													"KnowWE.questiontree.questiontextcreated")
 											+ " " + objectDescriptionText));
@@ -79,14 +81,14 @@ public class ObjectDescription extends AbstractType {
 					}
 				}
 				return Messages.asList(Messages.objectCreationError(
-							D3webModule.getKwikiBundle_d3web()
+							D3webUtils.getD3webBundle()
 									.getString("KnowWE.questiontree.questiontext")));
 			}
 		});
 	}
 
 	public static String getObjectDescriptionText(Section<ObjectDescription> s) {
-		String text = s.getOriginalText();
+		String text = s.getText();
 		if (text.startsWith(QTEXT_START_SYMBOL)) {
 			text = text.substring(1).trim();
 		}

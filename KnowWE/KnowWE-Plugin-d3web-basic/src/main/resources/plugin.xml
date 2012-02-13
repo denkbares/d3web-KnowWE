@@ -51,15 +51,6 @@
 		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Instantiation"
-		id="d3webInstantiation">
-		<parameter id="class" value="de.knowwe.d3web.d3webInstantiation" />
-		<parameter id="name" value="d3webInstantiation" />
-		<parameter id="description" value="Instantiation d3webInstantiation" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowledgeRepresentationHandler"
 		id="D3webKnowledgeHandler">
 		<parameter id="class" value="de.d3web.we.basic.D3webKnowledgeHandler" />

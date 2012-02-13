@@ -20,8 +20,6 @@
 package de.d3web.we.object;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.QASet;
@@ -34,9 +32,8 @@ import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.QuestionZC;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.TerminologyHandler;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -58,10 +55,14 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 	}
 
 	public QuestionDefinition() {
-		super(Question.class);
 		this.addSubtreeHandler(Priority.HIGHER, new CreateQuestionHandler());
 		this.setCustomRenderer(StyleRenderer.Question);
 		this.setOrderSensitive(true);
+	}
+
+	@Override
+	public Class<?> getTermObjectClass() {
+		return Question.class;
 	}
 
 	public abstract QuestionType getQuestionType(Section<QuestionDefinition> s);
@@ -76,19 +77,21 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 		@Override
 		@SuppressWarnings("unchecked")
 		public Collection<Message> create(KnowWEArticle article,
-				Section<QuestionDefinition> s) {
+				Section<QuestionDefinition> section) {
 
-			Section<QuestionDefinition> qidSection = (s);
-			String name = qidSection.get().getTermIdentifier(qidSection);
+			String name = section.get().getTermIdentifier(section);
+			Class<?> termObjectClass = section.get().getTermObjectClass();
+			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
+			terminologyHandler.registerTermDefinition(section, termObjectClass, name);
 
-			TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
-			terminologyHandler.registerTermDefinition(article, s);
+			Collection<Message> msgs = section.get().canAbortTermObjectCreation(article, section);
+			if (msgs != null) return msgs;
 
 			KnowledgeBase kb = getKB(article);
 
 			@SuppressWarnings("rawtypes")
 			Section<? extends QASetDefinition> parentQASetSection =
-					s.get().getParentQASetSection(s);
+					section.get().getParentQASetSection(section);
 
 			QASet parent = null;
 			if (parentQASetSection != null) {
@@ -97,96 +100,44 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			if (parent == null) {
 				parent = kb.getRootQASet();
 			}
-			else {
-				if (terminologyHandler.getTermDefiningSection(article, s) != s) {
-					return s.get().handleRedundantDefinition(article, s);
-				}
-			}
 
-			QuestionType questionType = qidSection.get().getQuestionType(
-					qidSection);
+			QuestionType questionType = section.get().getQuestionType(section);
 			if (questionType == null) {
 				return Messages.asList(Messages.objectCreationError(
-						"No question type found: " + name));
+						"No type found for question '" + name + "'"));
 			}
 
-			Question q = null;
 			if (questionType.equals(QuestionType.OC)) {
-				q = new QuestionOC(parent, name);
+				new QuestionOC(parent, name);
 			}
 			else if (questionType.equals(QuestionType.MC)) {
-				q = new QuestionMC(parent, name);
+				new QuestionMC(parent, name);
 			}
 			else if (questionType.equals(QuestionType.NUM)) {
-				q = new QuestionNum(parent, name);
+				new QuestionNum(parent, name);
 			}
 			else if (questionType.equals(QuestionType.YN)) {
-				q = new QuestionYN(parent, name);
-				if (q != null) {
-					handleYNChoices(article, s);
-				}
+				new QuestionYN(parent, name);
 			}
 			else if (questionType.equals(QuestionType.DATE)) {
-				q = new QuestionDate(parent, name);
+				new QuestionDate(parent, name);
 			}
 			else if (questionType.equals(QuestionType.INFO)) {
-				q = new QuestionZC(parent, name);
+				new QuestionZC(parent, name);
 			}
 			else if (questionType.equals(QuestionType.TEXT)) {
-				q = new QuestionText(parent, name);
+				new QuestionText(parent, name);
 			}
 			else {
 				return Messages.asList(Messages.error(
 						"No valid question type found for question '" + name + "'"));
 			}
 
-			// ok, everything went well
-			// set position right in case this is an incremental update
-			if (!article.isFullParse()) {
-				parent.addChild(q, s.get().getPosition(s));
-			}
-
-			// store object in section
-			qidSection.get().storeTermObject(article, qidSection, q);
-
 			// return success message
 			return Messages.asList(Messages.objectCreatedNotice(
-					q.getClass().getSimpleName() + " " + q.getName()));
+					termObjectClass.getSimpleName() + " " + name));
 
 		}
-
-		@Override
-		public void destroy(KnowWEArticle article,
-				Section<QuestionDefinition> s) {
-
-			Question q = s.get().getTermObject(article, s);
-
-			if (q != null) {
-				D3webUtils.removeRecursively(q);
-				KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
-						article, s);
-				if (q instanceof QuestionYN) {
-					handleYNChoices(article, s);
-				}
-			}
-
-		}
-
-		/**
-		 * Special treatment for QuestionYN, since there may be no actual terms
-		 * definitions for the answers.
-		 */
-		private void handleYNChoices(KnowWEArticle article, Section<QuestionDefinition> s) {
-			List<Section<?>> refs = new LinkedList<Section<?>>();
-			refs.addAll(KnowWEUtils.getTerminologyHandler(article.getWeb()).getTermReferenceSections(
-					article, s.get().getTermIdentifier(s) + " Yes", s.get().getTermScope()));
-			refs.addAll(KnowWEUtils.getTerminologyHandler(article.getWeb()).getTermReferenceSections(
-					article, s.get().getTermIdentifier(s) + " No", s.get().getTermScope()));
-			for (Section<?> ref : refs) {
-				ref.clearReusedBySet();
-			}
-		}
-
 	}
 
 }

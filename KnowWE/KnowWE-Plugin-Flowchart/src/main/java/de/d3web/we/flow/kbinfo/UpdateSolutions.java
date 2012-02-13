@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.we.basic.D3webModule;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.KnowWEArticleManager;
 import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.KnowWEEnvironment;
@@ -79,7 +79,7 @@ public class UpdateSolutions extends AbstractAction {
 		KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
 		Section<KnowWEArticle> sec = article.getSection();
 		context.getParameters().put(KnowWEAttributes.WEB, sec.getWeb());
-		String oldText = article.getSection().getOriginalText();
+		String oldText = article.getSection().getText();
 
 		// get everything for the new solution
 		String[] surroundings = UpdateQuestions.getRightInsertPosition(oldText, "Solution");
@@ -98,7 +98,7 @@ public class UpdateSolutions extends AbstractAction {
 		solutionText = UpdateQuestions.removeLeadingAndClosingQuotes(solutionText);
 
 		// get the right id for the nodemodel
-		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKB(
+		KnowledgeBase kb = D3webUtils.getKnowledgeRepresentationHandler(article.getWeb()).getKB(
 				article.getTitle());
 
 		List<Solution> diagnoses = kb.getManager().getSolutions();

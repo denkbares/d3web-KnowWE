@@ -37,7 +37,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.d3web.property.NamedObjectReference.PropertyAnswerReference;
+import de.knowwe.d3web.property.PropertyObjectReference.PropertyAnswerReference;
 
 /**
  * Parses a line defining a property
@@ -52,8 +52,8 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 	@Override
 	public Collection<Message> create(KnowWEArticle article, Section<PropertyDeclarationType> s) {
 		// get NamedObject
-		Section<NamedObjectReference> namendObjectSection = Sections.findSuccessor(s,
-				NamedObjectReference.class);
+		Section<PropertyObjectReference> namendObjectSection = Sections.findSuccessor(s,
+				PropertyObjectReference.class);
 		Section<PropertyType> propertySection = Sections.findSuccessor(s,
 				PropertyType.class);
 		if (namendObjectSection == null) {
@@ -64,28 +64,25 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 		if (object == null) {
 			Section<QuestionReference> questionReferenceSection = Sections.findChildOfType(
 					namendObjectSection, QuestionReference.class);
-			if (questionReferenceSection == null || !questionReferenceSection.getText().isEmpty()) {
-				return Messages.asList(Messages.noSuchObjectError(namendObjectSection.getText().trim()));
-			}
-			else {
+			if (questionReferenceSection != null && questionReferenceSection.getText().isEmpty()) {
 				// question is a wild card, get all questions with the given
 				// answer.
 				Section<PropertyAnswerReference> answerReferenceSection =
 						Sections.findChildOfType(namendObjectSection, PropertyAnswerReference.class);
 				objects = getAllChoices(article, answerReferenceSection);
-				if (objects.isEmpty()) {
-					return Messages.asList(Messages.error("No choices with the text '"
-							+ answerReferenceSection.getText() + "' found."));
-				}
 			}
 		}
 		else {
 			objects.add(object);
 		}
+		if (objects.isEmpty()) {
+			return Messages.asList(Messages.error("No matching object(s) found for reference '"
+					+ namendObjectSection.get().getTermIdentifier(namendObjectSection) + "'"));
+		}
 
 		// get Property
 		if (propertySection == null) {
-			return Messages.asList(Messages.syntaxError("No Property found."));
+			return Messages.asList(Messages.syntaxError("No property found."));
 		}
 		Property<?> property = propertySection.get().getProperty(propertySection);
 		if (property == null) {
@@ -154,8 +151,8 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 
 	@Override
 	public void destroy(KnowWEArticle article, Section<PropertyDeclarationType> s) {
-		Section<NamedObjectReference> idobjectSection = Sections.findSuccessor(s,
-				NamedObjectReference.class);
+		Section<PropertyObjectReference> idobjectSection = Sections.findSuccessor(s,
+				PropertyObjectReference.class);
 		Section<PropertyType> propertySection = Sections.findSuccessor(s,
 				PropertyType.class);
 		if (idobjectSection == null) return;
@@ -168,7 +165,7 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 		Section<PropertyContentType> contentSection = Sections.findSuccessor(s,
 				PropertyContentType.class);
 		if (contentSection == null) return;
-		String content = contentSection.getOriginalText();
+		String content = contentSection.getText();
 		if (content == null || content.trim().isEmpty()) {
 			return;
 		}

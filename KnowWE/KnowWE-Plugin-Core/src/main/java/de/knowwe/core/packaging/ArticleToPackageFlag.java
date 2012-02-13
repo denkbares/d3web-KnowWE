@@ -23,7 +23,6 @@ package de.knowwe.core.packaging;
 import java.util.Collection;
 
 import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.compile.IncrementalConstraint;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
@@ -38,14 +37,14 @@ import de.knowwe.kdom.defaultMarkup.ContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
-public class ArticleToPackageFlag extends DefaultMarkupType implements IncrementalConstraint<ArticleToPackageFlag> {
+public class ArticleToPackageFlag extends DefaultMarkupType {
 
 	private static DefaultMarkup m = null;
 
 	static {
 		m = new DefaultMarkup("AddToPackage");
 		m.addContentType(new AbstractType(new AllTextSectionFinder()) {
-			
+
 			@Override
 			public KnowWEDomRenderer<AbstractType> getRenderer() {
 				return new ArticleToPackageFlagRenderer();
@@ -59,16 +58,11 @@ public class ArticleToPackageFlag extends DefaultMarkupType implements Increment
 		this.addSubtreeHandler(Priority.PRECOMPILE_HIGH, new ArticleToPackageHandler());
 	}
 
-	@Override
-	public boolean violatedConstraints(KnowWEArticle article, Section<ArticleToPackageFlag> s) {
-		return !s.getArticle().getSection().isReusedBy(s.getTitle());
-	}
-
 	static class ArticleToPackageHandler extends SubtreeHandler<ArticleToPackageFlag> {
 
 		@Override
 		public Collection<Message> create(KnowWEArticle article, Section<ArticleToPackageFlag> s) {
-			String value = Sections.findChildOfType(s, ContentType.class).getOriginalText();
+			String value = Sections.findChildOfType(s, ContentType.class).getText();
 			if (!value.trim().isEmpty()) {
 				KnowWEEnvironment.getInstance().getPackageManager(
 						article.getWeb()).addSectionToPackage(
@@ -84,15 +78,15 @@ public class ArticleToPackageFlag extends DefaultMarkupType implements Increment
 		}
 
 	}
-	
+
 	static class ArticleToPackageFlagRenderer extends KnowWEDomRenderer<AbstractType> {
 
 		@Override
 		public void render(KnowWEArticle article, Section<AbstractType> sec, UserContext user, StringBuilder string) {
-			string.append("Added article to package '" + sec.getOriginalText() + "'.");
+			string.append("Added article to package '" + sec.getText() + "'.");
 
 		}
-		
+
 	}
 
 }

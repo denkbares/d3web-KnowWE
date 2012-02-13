@@ -149,7 +149,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		string.append(KnowWEUtils.maskHTML("<span class='" + className
 				+ "' style='white-space: pre-wrap;'>"));
 		for (Message error : messages) {
-			string.append(error.getVerbalization());
+			string.append(KnowWEUtils.maskJSPWikiMarkup(error.getVerbalization()));
 			string.append("\n");
 		}
 		string.append(KnowWEUtils.maskHTML("</span>"));

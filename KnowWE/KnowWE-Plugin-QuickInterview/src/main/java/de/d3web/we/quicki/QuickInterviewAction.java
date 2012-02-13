@@ -27,8 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
-import de.d3web.we.basic.D3webModule;
 import de.d3web.we.basic.SessionBroker;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.action.AbstractAction;
@@ -69,15 +69,15 @@ public class QuickInterviewAction extends AbstractAction {
 		String web = usercontext.getParameter(KnowWEAttributes.WEB);
 		HttpServletRequest request = usercontext.getRequest();
 
-		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(request);
+		ResourceBundle rb = D3webUtils.getD3webBundle(request);
 
-		KnowledgeBase knowledgeServiceInTopic = D3webModule.getKnowledgeBase(
+		KnowledgeBase knowledgeServiceInTopic = D3webUtils.getKnowledgeBase(
 				web, topic);
 		if (knowledgeServiceInTopic == null) return rb.getString("KnowWE.quicki.error");
 		String kbid = knowledgeServiceInTopic.getId();
 
 		String id = usercontext.getUserName();
-		SessionBroker broker = D3webModule.getBroker(id, web);
+		SessionBroker broker = D3webUtils.getBroker(id, web);
 
 		Session session = broker.getSession(kbid);
 

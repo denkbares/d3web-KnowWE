@@ -18,24 +18,42 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.core.compile;
+package de.knowwe.kdom.constraint;
 
-import de.knowwe.core.kdom.KnowWEArticle;
+import java.util.List;
+
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
+public class NoChildrenOfOtherTypesConstraint implements SectionFinderConstraint {
 
-public interface IncrementalConstraint<T extends Type> {
+	private static NoChildrenOfOtherTypesConstraint instance = new NoChildrenOfOtherTypesConstraint();
 
-	/**
-	 * In this method you can check different constraints.
-	 * 
-	 * @created 25.01.2011
-	 * @param article is the article, for which the constraints are checked
-	 * @param s is the Section, for which the constrains are checked
-	 * @return true, if the checked constraints are violated. false if they are
-	 *         kept.
-	 */
-	public abstract boolean violatedConstraints(KnowWEArticle article, Section<T> s);
+	public static NoChildrenOfOtherTypesConstraint getInstance() {
+		return instance;
+	}
+
+	private NoChildrenOfOtherTypesConstraint() {
+	}
+
+	@Override
+	public <T extends Type> void filterCorrectResults(
+			List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
+
+		if (!satisfiesConstraint(found, father, type, text)) {
+			found.clear();
+		}
+	}
+
+	@Override
+	public <T extends Type> boolean satisfiesConstraint(List<SectionFinderResult> found,
+			Section<?> father, Class<T> type, String text) {
+
+		for (Section<?> child : father.getChildren()) {
+			if (!child.get().getClass().equals(type)) return false;
+		}
+		return true;
+	}
 
 }

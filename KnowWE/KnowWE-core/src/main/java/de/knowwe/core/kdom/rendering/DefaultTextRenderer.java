@@ -43,7 +43,7 @@ public class DefaultTextRenderer extends KnowWEDomRenderer {
 
 	@Override
 	public void render(KnowWEArticle article, Section sec, UserContext user, StringBuilder string) {
-		string.append(sec.getOriginalText());
+		string.append(sec.getText());
 	}
 
 }

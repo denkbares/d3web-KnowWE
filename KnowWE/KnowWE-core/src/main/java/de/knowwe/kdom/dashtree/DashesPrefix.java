@@ -41,7 +41,7 @@ public class DashesPrefix extends AbstractType {
 
 			@Override
 			public void render(KnowWEArticle article, Section<Type> sec, UserContext user, StringBuilder string) {
-				if (sec.getOriginalText().trim().startsWith("-")) {
+				if (sec.getText().trim().startsWith("-")) {
 					string.append('~');
 				}
 				DefaultTextRenderer.getInstance().render(article, sec, user, string);

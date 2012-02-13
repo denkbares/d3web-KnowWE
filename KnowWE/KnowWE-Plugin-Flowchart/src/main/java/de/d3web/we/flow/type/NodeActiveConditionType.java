@@ -57,7 +57,7 @@ public class NodeActiveConditionType extends D3webCondition<NodeActiveConditionT
 	@Override
 	protected Condition createCondition(KnowWEArticle article, Section<NodeActiveConditionType> section) {
 
-		Matcher matcher = PATTERN.matcher(section.getOriginalText());
+		Matcher matcher = PATTERN.matcher(section.getText());
 
 		if (!matcher.matches()) {
 			return null;

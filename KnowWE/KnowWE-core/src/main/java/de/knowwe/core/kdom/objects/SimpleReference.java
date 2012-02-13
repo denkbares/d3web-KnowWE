@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
- * Computer Science VI, University of Wuerzburg
+ * Copyright (C) 2010 University Wuerzburg, Computer Science VI
  * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -17,19 +16,34 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
+package de.knowwe.core.kdom.objects;
 
-package de.knowwe.d3web;
+import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.parsing.Section;
 
-import javax.servlet.ServletContext;
+/**
+ * 
+ * @author Albrecht
+ * @created 16.12.2010
+ */
+public abstract class SimpleReference extends AbstractType implements SimpleTerm {
 
-import de.d3web.we.basic.D3webModule;
-import de.knowwe.plugin.Instantiation;
+	private final Class<?> termObjectClass;
 
-public class d3webInstantiation implements Instantiation {
+	public SimpleReference(TermRegistrationScope scope, Class<?> termObjectClass) {
+		this.termObjectClass = termObjectClass;
+		this.addSubtreeHandler(new SimpleTermReferenceRegistrationHandler(scope));
+	}
 
 	@Override
-	public void init(ServletContext context) {
-		D3webModule.initModule(context);
+	public Class<?> getTermObjectClass() {
+		return termObjectClass;
+	}
+
+	@Override
+	public String getTermIdentifier(Section<? extends SimpleTerm> s) {
+		return s.getText();
 	}
 
 }

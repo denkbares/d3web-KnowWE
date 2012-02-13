@@ -22,7 +22,6 @@ package de.d3web.we.kdom.questionTree;
 
 import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.QuestionDefinition;
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
@@ -38,11 +37,6 @@ public class QuestionTreeAnswerDefinition extends AnswerDefinition {
 	public Section<? extends QuestionDefinition> getQuestionSection(Section<? extends AnswerDefinition> s) {
 		return Sections.findSuccessor(
 				DashTreeUtils.getFatherDashTreeElementContent(s), QuestionDefinition.class);
-	}
-
-	@Override
-	public boolean violatedConstraints(KnowWEArticle article, Section<AnswerDefinition> s) {
-		return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 	}
 
 }

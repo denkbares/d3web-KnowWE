@@ -26,20 +26,20 @@ import java.util.logging.Logger;
 
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
+import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.we.basic.D3webModule;
 import de.d3web.we.kdom.questionTree.NumericCondLine;
 import de.d3web.we.kdom.questionTree.QuestionDashTree;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
 import de.d3web.we.kdom.questionTree.QuestionTreeAnswerDefinition;
-import de.d3web.we.kdom.questionTree.RootQuestionChangeConstraint;
+import de.d3web.we.object.D3webTerm;
 import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.QuestionnaireReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.objects.KnowWETerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -48,7 +48,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.dashtree.DashTreeElement;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 
-public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
+public class IndicationHandler extends D3webSubtreeHandler<D3webTerm<NamedObject>> {
 
 	private final String indicationStoreKey = "INDICATION_STORE_KEY";
 
@@ -61,12 +61,8 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 		return instance;
 	}
 
-	private IndicationHandler() {
-		this.registerConstraintModule(new RootQuestionChangeConstraint<KnowWETerm<?>>());
-	}
-
 	@Override
-	public void destroy(KnowWEArticle article, Section<KnowWETerm<?>> s) {
+	public void destroy(KnowWEArticle article, Section<D3webTerm<NamedObject>> s) {
 		Rule kbr = (Rule) s.getSectionStore().getObject(article,
 				indicationStoreKey);
 		if (kbr != null) kbr.remove();
@@ -74,7 +70,7 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Collection<Message> create(KnowWEArticle article, Section<KnowWETerm<?>> s) {
+	public Collection<Message> create(KnowWEArticle article, Section<D3webTerm<NamedObject>> s) {
 
 		Section<DashTreeElement> element = Sections.findAncestorOfType(s, DashTreeElement.class);
 
@@ -112,15 +108,16 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 
 			if (s.hasErrorInSubtree(article)) {
 				return Messages.asList(Messages.creationFailedWarning(
-						D3webModule.getKwikiBundle_d3web().
+						D3webUtils.getD3webBundle().
 								getString("KnowWE.rulesNew.indicationnotcreated")));
 			}
 
 			// retrieve the QASet for the different Types that might
 			// use this handler
 			QASet qaset = null;
-			Section<? extends KnowWETerm> termRef = Sections.findSuccessor(element,
-					KnowWETerm.class);
+			@SuppressWarnings("rawtypes")
+			Section<? extends D3webTerm> termRef = Sections.findSuccessor(element,
+					D3webTerm.class);
 			if (termRef != null) {
 				if (termRef.get() instanceof QuestionnaireReference) {
 					Section<QuestionnaireReference> qnref = (Section<QuestionnaireReference>) termRef;

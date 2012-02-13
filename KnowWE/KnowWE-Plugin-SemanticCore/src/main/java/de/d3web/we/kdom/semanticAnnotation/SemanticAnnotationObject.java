@@ -100,7 +100,7 @@ public class SemanticAnnotationObject extends AbstractType {
 				}
 				else if (cur.get().getClass().equals(
 						SemanticAnnotationSubject.class)) {
-					String subj = cur.getOriginalText().trim();
+					String subj = cur.getText().trim();
 					soluri = uo.getHelper().createlocalURI(subj);
 				}
 				else if (cur.get().getClass().equals(
@@ -130,7 +130,7 @@ public class SemanticAnnotationObject extends AbstractType {
 			io.setValidPropFlag(validprop);
 			if (!validprop) {
 				Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
-						"invalid property: " + s.getOriginalText());
+						"invalid property: " + s.getText());
 			}
 
 			if (prop != null && validprop && stringa != null) {

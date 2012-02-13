@@ -19,12 +19,9 @@
  */
 package de.d3web.we.object;
 
-import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.QContainer;
-import de.d3web.we.basic.D3webModule;
-import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.objects.TermReference;
-import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -37,29 +34,15 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class QuestionnaireReference extends D3webTermReference<QContainer> {
 
 	public QuestionnaireReference() {
-		super(QContainer.class);
 		this.setCustomRenderer(StyleRenderer.Questionaire);
 		this.setOrderSensitive(true);
+		this.addSubtreeHandler(new SimpleTermReferenceRegistrationHandler(
+				TermRegistrationScope.LOCAL));
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public QContainer getTermObjectFallback(KnowWEArticle article, Section<? extends
-			TermReference<QContainer>> s) {
-
-		if (s.get() instanceof QuestionnaireReference) {
-			Section<QuestionnaireReference> sec = (Section<QuestionnaireReference>) s;
-			String qcName = sec.get().getTermIdentifier(sec);
-
-			KnowledgeBase kb =
-					D3webModule.getKnowledgeRepresentationHandler(
-							article.getWeb())
-							.getKB(article.getTitle());
-
-			QContainer q = kb.getManager().searchQContainer(qcName);
-			return q;
-		}
-		return null;
+	public Class<?> getTermObjectClass() {
+		return QContainer.class;
 	}
 
 }

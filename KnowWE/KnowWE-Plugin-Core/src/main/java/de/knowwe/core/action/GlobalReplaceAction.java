@@ -90,13 +90,13 @@ public class GlobalReplaceAction extends AbstractAction {
 			if (findingsPerSection.containsKey(sec)) {
 				findingsPerSection.get(sec).add(
 						new WordBasedRenameFinding(start, 0, WordBasedRenameFinding.getContext(
-								start, sec, art.getSection().getOriginalText(), query.length()),
+								start, sec, art.getSection().getText(), query.length()),
 								sec));
 			}
 			else {
 				List<WordBasedRenameFinding> set = new ArrayList<WordBasedRenameFinding>();
 				set.add(new WordBasedRenameFinding(start, 0, WordBasedRenameFinding.getContext(
-						start, sec, art.getSection().getOriginalText(), query.length()), sec));
+						start, sec, art.getSection().getText(), query.length()), sec));
 				findingsPerSection.put(sec, set);
 			}
 		}
@@ -113,24 +113,24 @@ public class GlobalReplaceAction extends AbstractAction {
 			int lastEnd = 0;
 			for (WordBasedRenameFinding finding : list) {
 				int start = finding.getStart();
-				String potentialMatch = sec.getOriginalText().substring(start,
+				String potentialMatch = sec.getText().substring(start,
 						start + query.length());
 				if (potentialMatch.equals(query)) {
 					// found
-					buff.append(sec.getOriginalText().substring(lastEnd, start));
+					buff.append(sec.getText().substring(lastEnd, start));
 					buff.append(replacement);
 					lastEnd = start + query.length();
 					count++;
 				}
 				else {
 					String errorMsg = rb.getString("KnowWE.renamingtool.msg.error").replace("{0}",
-							sec.getOriginalText());
+							sec.getText());
 					errors.append("<p class=\"error box\">" + errorMsg + "</p>");
 					// TODO report!
 				}
 			}
 			// den Rest nach dem letzten match hintendranhaengen
-			buff.append(sec.getOriginalText().substring(lastEnd, sec.getOriginalText().length()));
+			buff.append(sec.getText().substring(lastEnd, sec.getText().length()));
 			// section text overridden => KDOM dirty
 			sec.setText(buff.toString());
 			sec.removeAllChildren();

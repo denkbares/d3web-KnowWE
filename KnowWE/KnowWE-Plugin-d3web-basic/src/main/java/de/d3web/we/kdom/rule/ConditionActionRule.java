@@ -22,7 +22,6 @@ package de.d3web.we.kdom.rule;
 
 import java.util.regex.Pattern;
 
-import de.knowwe.core.compile.IncrementalMarker;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
@@ -32,7 +31,7 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
  *         Container for ConditionActionRule
  * 
  */
-public class ConditionActionRule extends AbstractType implements IncrementalMarker {
+public class ConditionActionRule extends AbstractType {
 
 	public static final String RULE_START = "^\\s*(?:IF|WENN)";
 

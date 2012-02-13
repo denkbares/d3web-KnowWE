@@ -144,7 +144,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		@Override
 		public boolean violatedConstraints(KnowWEArticle article, Section<FlowchartType> s) {
-			return KnowWEUtils.getTerminologyHandler(article.getWeb()).areTermDefinitionsModifiedFor(
+			return KnowWEUtils.getTerminologyManager(article).areTermDefinitionsModifiedFor(
 					article)
 					|| s.isOrHasChangedSuccessor(article.getTitle(), filteredTypes);
 		}
@@ -243,7 +243,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 	@SuppressWarnings("unchecked")
 	public static String getXMLContentText(Section<? extends AbstractXMLType> s) {
-		String originalText = ((Section<XMLContent>) s.getChildren().get(1)).getOriginalText();
+		String originalText = ((Section<XMLContent>) s.getChildren().get(1)).getText();
 		// return StringEscapeUtils.unescapeXml(originalText);
 		return originalText;
 	}
@@ -265,7 +265,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 			if (handler == null) {
 				errors.add(Messages.error("No NodeHandler found for: "
-						+ nodeSection.getOriginalText()));
+						+ nodeSection.getText()));
 				continue;
 			}
 

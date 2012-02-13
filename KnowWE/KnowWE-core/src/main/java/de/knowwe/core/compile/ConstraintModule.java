@@ -19,7 +19,9 @@
  */
 package de.knowwe.core.compile;
 
+import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
 
 /**
  * Instances of this class can be registered to SubtreeHandlers, to determine
@@ -31,7 +33,7 @@ import de.knowwe.core.kdom.Type;
  * @created 25.01.2011
  * @param <T> is the Type of the Section
  */
-public abstract class ConstraintModule<T extends Type> implements IncrementalConstraint<T> {
+public abstract class ConstraintModule<T extends Type> {
 
 	/**
 	 * Represents the behavior of the SubtreeHandler, depending on whether the
@@ -74,7 +76,7 @@ public abstract class ConstraintModule<T extends Type> implements IncrementalCon
 		/** The constraints are tested for the create and the destroy step. */
 		CREATE_AND_DESTROY
 	}
-	
+
 	/**
 	 * Creates a default ConstraintModule with Operator.COMPILE_IF_VIOLATED and
 	 * Purpose.CREATE_AND_DESTROY.
@@ -82,7 +84,7 @@ public abstract class ConstraintModule<T extends Type> implements IncrementalCon
 	public ConstraintModule() {
 		this(Operator.COMPILE_IF_VIOLATED, Purpose.CREATE_AND_DESTROY);
 	}
-	
+
 	/**
 	 * Creates a ConstraintModules with the given Operator and Purpose.
 	 * 
@@ -93,5 +95,16 @@ public abstract class ConstraintModule<T extends Type> implements IncrementalCon
 		if (o != null) this.OPERATOR = o;
 		if (p != null) this.PURPOSE = p;
 	}
+
+	/**
+	 * In this method you can check different constraints.
+	 * 
+	 * @created 25.01.2011
+	 * @param article is the article, for which the constraints are checked
+	 * @param s is the Section, for which the constrains are checked
+	 * @return true, if the checked constraints are violated. false if they are
+	 *         kept.
+	 */
+	public abstract boolean violatedConstraints(KnowWEArticle article, Section<T> s);
 
 }

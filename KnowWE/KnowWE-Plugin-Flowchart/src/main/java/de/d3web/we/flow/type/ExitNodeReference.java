@@ -18,8 +18,9 @@
  */
 package de.d3web.we.flow.type;
 
-import de.knowwe.core.kdom.objects.KnowWETerm;
-import de.knowwe.core.kdom.objects.StringReference;
+import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.knowwe.core.kdom.objects.SimpleReference;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
@@ -28,20 +29,18 @@ import de.knowwe.core.kdom.parsing.Sections;
  * @author Reinhard Hatko
  * @created 08.12.2010
  */
-public class ExitNodeReference extends StringReference {
+public class ExitNodeReference extends SimpleReference {
 
-
-	@Override
-	public String getTermIdentifier(Section<? extends KnowWETerm<String>> s) {
-		Section<FlowchartReference> ref = Sections.findSuccessor(s.getFather(),
-				FlowchartReference.class);
-
-		return ref.getOriginalText() + "(" + s.getOriginalText() + ")";
+	public ExitNodeReference() {
+		super(TermRegistrationScope.LOCAL, String.class);
 	}
 
 	@Override
-	public String getTermObjectDisplayName() {
-		return "Exit node";
+	public String getTermIdentifier(Section<? extends SimpleTerm> s) {
+		Section<FlowchartReference> ref = Sections.findSuccessor(s.getFather(),
+				FlowchartReference.class);
+
+		return ref.getText() + "(" + s.getText() + ")";
 	}
 
 }

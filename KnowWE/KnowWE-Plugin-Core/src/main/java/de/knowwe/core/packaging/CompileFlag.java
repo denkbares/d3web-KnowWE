@@ -67,7 +67,7 @@ public class CompileFlag extends DefaultMarkupType {
 				return;
 			}
 			string.append(KnowWEUtils.maskHTML("<div id=\"knowledge-panel\" class=\"panel\">"));
-			string.append(KnowWEUtils.maskHTML("<h3>" + "Compile: " + sec.getOriginalText() +
+			string.append(KnowWEUtils.maskHTML("<h3>" + "Compile: " + sec.getText() +
 					"</h3><div>"));
 			for (Section<?> child : packageReferences) {
 				if (child.get() instanceof SinglePackageReference) {
@@ -91,7 +91,7 @@ public class CompileFlag extends DefaultMarkupType {
 			List<String> includes = new LinkedList<String>();
 			for (Section<?> child : s.getChildren()) {
 				if (child.get() instanceof SinglePackageReference) {
-					includes.add(child.getOriginalText());
+					includes.add(child.getText());
 				}
 			}
 			return includes;

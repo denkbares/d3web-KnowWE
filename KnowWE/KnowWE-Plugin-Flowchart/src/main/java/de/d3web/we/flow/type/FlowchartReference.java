@@ -18,25 +18,18 @@
  */
 package de.d3web.we.flow.type;
 
-import de.knowwe.core.kdom.objects.KnowWETerm;
-import de.knowwe.core.kdom.objects.StringReference;
-import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.knowwe.core.kdom.objects.SimpleReference;
 
 /**
  * 
  * @author Reinhard Hatko
  * @created 08.12.2010
  */
-public class FlowchartReference extends StringReference {
+public class FlowchartReference extends SimpleReference {
 
-	@Override
-	public String getTermIdentifier(Section<? extends KnowWETerm<String>> s) {
-		return s.getOriginalText();
-	}
-
-	@Override
-	public String getTermObjectDisplayName() {
-		return "Flowchart";
+	public FlowchartReference() {
+		super(TermRegistrationScope.LOCAL, String.class);
 	}
 
 }

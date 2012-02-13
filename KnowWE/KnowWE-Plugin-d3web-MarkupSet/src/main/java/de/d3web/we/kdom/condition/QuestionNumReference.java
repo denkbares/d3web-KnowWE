@@ -12,13 +12,11 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 
 public class QuestionNumReference extends QuestionReference {
 
 	public QuestionNumReference() {
 		super();
-		this.clearSubtreeHandlers();
 		this.addSubtreeHandler(Priority.HIGH, new QuestionNumRegistrationHandler());
 
 	}
@@ -27,9 +25,6 @@ public class QuestionNumReference extends QuestionReference {
 
 		@Override
 		public Collection<Message> create(KnowWEArticle article, Section<QuestionNumReference> s) {
-
-			KnowWEUtils.getTerminologyHandler(article.getWeb())
-					.registerTermReference(article, s);
 
 			Question question = s.get().getTermObject(article, s);
 
@@ -43,16 +38,10 @@ public class QuestionNumReference extends QuestionReference {
 			if (!(question instanceof QuestionNum)) {
 				return Messages.asList(Messages.noSuchObjectError(
 						s.get().getName()
-								+ " QuestionNum expected:  " + s.get().getTermIdentifier(s)));
+								+ " numeric question expected:  " + s.get().getTermIdentifier(s)));
 			}
 
 			return new ArrayList<Message>(0);
-		}
-
-		@Override
-		public void destroy(KnowWEArticle article, Section<QuestionNumReference> s) {
-			KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermReference(
-					article, s);
 		}
 
 	}

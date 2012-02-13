@@ -119,7 +119,7 @@ public class AddSubFlowchart extends AbstractAction {
 		KnowWEArticle article = artManager.getArticle(pageName);
 		KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
 		Section<KnowWEArticle> sec = article.getSection();
-		String oldText = article.getSection().getOriginalText();
+		String oldText = article.getSection().getText();
 
 		String id = createID(oldText);
 		int numberOfNodes = exits.length;

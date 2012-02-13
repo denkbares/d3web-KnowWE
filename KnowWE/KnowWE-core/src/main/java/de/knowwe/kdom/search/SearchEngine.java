@@ -132,7 +132,7 @@ public class SearchEngine {
 
 		Collection<Result> results = new LinkedList<Result>();
 		for (Section<T> sectionWithType : sectionsWithType) {
-			Matcher m = query.matcher(sectionWithType.getOriginalText());
+			Matcher m = query.matcher(sectionWithType.getText());
 			// We add each occurrence in the current section
 			if (options.contains(SearchOption.FUZZY)) {
 				while (m.find()) {

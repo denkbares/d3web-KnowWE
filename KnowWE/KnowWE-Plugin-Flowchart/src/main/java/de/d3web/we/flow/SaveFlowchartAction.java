@@ -35,10 +35,8 @@ import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.TerminologyHandler;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.objects.KnowWETerm.Scope;
-import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -116,12 +114,12 @@ public class SaveFlowchartAction extends AbstractAction {
 
 			// one line version, breaks because of missing linebreak, see ticket
 			// #172
-			if (diaFluxSection.getOriginalText().matches("%%DiaFlux */?% *")) {
+			if (diaFluxSection.getText().matches("%%DiaFlux */?% *")) {
 				builder.append("\r\n");
 				builder.append("%");
 			}
 			else { // TODO this adds all content, just extract annotations
-				builder.append(diaFluxSection.getOriginalText().substring(9));
+				builder.append(diaFluxSection.getText().substring(9));
 			}
 
 			save(context, topic, nodeID, builder.toString());
@@ -166,9 +164,8 @@ public class SaveFlowchartAction extends AbstractAction {
 		String title = articles.iterator().next();
 		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(web, title);
 
-		TerminologyHandler handler = KnowWEUtils.getTerminologyHandler(web);
-		Section<? extends TermDefinition<?>> section = handler.getTermDefiningSection(article,
-				flowname, Scope.LOCAL);
+		TerminologyManager handler = KnowWEUtils.getTerminologyManager(article);
+		Section<?> section = handler.getTermDefiningSection(flowname);
 
 		Section<DiaFluxType> diafluxSec = Sections.findAncestorOfExactType(section,
 				DiaFluxType.class);
@@ -195,7 +192,7 @@ public class SaveFlowchartAction extends AbstractAction {
 		Section<KnowWEArticle> rootSection = article.getSection();
 
 		// append flowchart to root section and replace it
-		String newArticle = rootSection.getOriginalText() + "\r\n%%DiaFlux\r\n" + newText
+		String newArticle = rootSection.getText() + "\r\n%%DiaFlux\r\n" + newText
 				+ "\r\n%\r\n";
 		String nodeID = rootSection.getID();
 

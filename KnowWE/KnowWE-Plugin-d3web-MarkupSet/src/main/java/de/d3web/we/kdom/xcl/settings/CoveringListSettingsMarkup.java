@@ -29,8 +29,8 @@ import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginConfig;
 import de.d3web.plugin.PluginEntry;
 import de.d3web.plugin.PluginManager;
-import de.d3web.we.basic.D3webModule;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.utils.D3webUtils;
 import de.d3web.xcl.DefaultScoreAlgorithm;
 import de.d3web.xcl.ScoreAlgorithm;
 import de.d3web.xcl.SprintGroupScoreAlgorithm;
@@ -77,7 +77,7 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 		public Collection<Message> create(KnowWEArticle article, Section<CoveringListSettingsMarkup> s) {
 
 			// Get KnowledgeBase
-			KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(
+			KnowledgeBase kb = D3webUtils.getKnowledgeRepresentationHandler(
 					article.getWeb()).getKB(article.getTitle());
 			if (kb == null) {
 				return Messages.asList(Messages.error(

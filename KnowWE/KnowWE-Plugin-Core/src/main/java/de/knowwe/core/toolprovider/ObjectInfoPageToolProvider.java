@@ -19,7 +19,7 @@
 package de.knowwe.core.toolprovider;
 
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.objects.KnowWETerm;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
@@ -35,16 +35,15 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
-		if (section.get() instanceof KnowWETerm<?>) {
+		if (section.get() instanceof SimpleTerm) {
 			@SuppressWarnings("unchecked")
-			Section<? extends KnowWETerm<?>> s = (Section<? extends KnowWETerm<?>>) section;
+			Section<? extends SimpleTerm> s = (Section<? extends SimpleTerm>) section;
 			return new Tool[] { getObjectInfoPageTool(article, s, userContext) };
 		}
 		return new Tool[] {};
 	}
 
-	protected Tool getObjectInfoPageTool(KnowWEArticle article, @SuppressWarnings("rawtypes") Section<? extends KnowWETerm> section, UserContext userContext) {
-		@SuppressWarnings("unchecked")
+	protected Tool getObjectInfoPageTool(KnowWEArticle article, Section<? extends SimpleTerm> section, UserContext userContext) {
 		String objectName = section.get().getTermIdentifier(section).trim();
 		String jsAction = "window.location.href = " +
 				"'Wiki.jsp?page=ObjectInfoPage&objectname=' + encodeURIComponent('" +

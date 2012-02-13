@@ -19,9 +19,11 @@
  */
 package de.d3web.we.object;
 
+import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.objects.KnowWETerm;
-import de.knowwe.core.kdom.objects.TermReference;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -34,18 +36,16 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @created 26.07.2010
  * @param <TermObject>
  */
-public abstract class D3webTermReference<TermObject> extends TermReference<TermObject> {
+public abstract class D3webTermReference<TermObject extends NamedObject> extends AbstractType implements D3webTerm<TermObject> {
 
-	public D3webTermReference(Class<TermObject> termObjectClass) {
-		super(termObjectClass);
+	@Override
+	public String getTermIdentifier(Section<? extends SimpleTerm> s) {
+		return KnowWEUtils.trimQuotes(s.getText());
 	}
 
 	@Override
-	public String getTermIdentifier(Section<? extends KnowWETerm<TermObject>> s) {
-		return KnowWEUtils.trimQuotes(s.getOriginalText());
+	public TermObject getTermObject(KnowWEArticle article, Section<? extends D3webTerm<TermObject>> section) {
+		return D3webUtils.getTermObjectDefaultImplementation(article, section);
 	}
 
-	@Override
-	public abstract TermObject getTermObjectFallback(KnowWEArticle article,
-			Section<? extends TermReference<TermObject>> s);
 }

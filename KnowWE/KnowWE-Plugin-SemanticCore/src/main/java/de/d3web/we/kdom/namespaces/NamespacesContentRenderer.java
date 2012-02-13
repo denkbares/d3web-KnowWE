@@ -41,7 +41,7 @@ public class NamespacesContentRenderer extends KnowWEDomRenderer {
 		StringBuffer buffy = new StringBuffer();
 		ResourceBundle rb = KnowWEEnvironment.getInstance()
 				.getKwikiBundle(user);
-		String content = sec.getOriginalText();
+		String content = sec.getText();
 		HashMap<String, String> namespaces = sc.getNameSpaces();
 		if (content.trim().length() > 0) {
 			for (String line : content.split("\r\n|\r|\n")) {
