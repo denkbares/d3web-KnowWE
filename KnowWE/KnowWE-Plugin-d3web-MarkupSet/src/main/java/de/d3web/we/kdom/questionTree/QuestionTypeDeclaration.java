@@ -26,7 +26,7 @@ import de.knowwe.kdom.sectionFinder.StringEnumChecker;
  * 
  * @author Jochen
  */
-class QuestionTypeDeclaration extends
+public class QuestionTypeDeclaration extends
 		AbstractType {
 
 	public static QuestionType getQuestionType(Section<QuestionTypeDeclaration> typeSection) {
