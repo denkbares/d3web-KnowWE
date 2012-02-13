@@ -61,16 +61,17 @@ public class GetTraceHighlightAction extends AbstractAction {
 		Section<DiaFluxType> diaFluxSec = (Section<DiaFluxType>) Sections.getSection(kdomid);
 
 		Section<FlowchartType> flowchart = Sections.findSuccessor(diaFluxSec, FlowchartType.class);
-		if (flowchart == null) {
-			context.getWriter().write("<flow></flow>");
-			return;
-		}
 		String flowName = FlowchartType.getFlowchartName(flowchart);
 
 		KnowWEArticle article = PackageRenderUtils.checkArticlesCompiling(diaFluxSec.getArticle(),
 				diaFluxSec, new StringBuilder());
 
 		Session session = D3webUtils.getSession(article.getTitle(), context, article.getWeb());
+
+		if (flowchart == null || session == null) {
+			context.getWriter().write("<flow></flow>");
+			return;
+		}
 
 		StringBuilder builder = new StringBuilder();
 		appendHeader(builder, FlowchartUtils.escapeHtmlId(flowName), PREFIX);
