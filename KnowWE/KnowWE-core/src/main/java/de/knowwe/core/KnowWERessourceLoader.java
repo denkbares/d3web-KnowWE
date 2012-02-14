@@ -106,6 +106,8 @@ public class KnowWERessourceLoader {
 	private void loadDefaultResources() {
 		addFirst("KnowWE.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
 		addFirst("KnowWE-helper.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
+		addFirst("jQueryCompatibility.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
+		addFirst("jQuery.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
 		addFirst("general.css", KnowWERessourceLoader.RESOURCE_STYLESHEET);
 	}
 
