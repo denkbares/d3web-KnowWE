@@ -46,9 +46,9 @@ import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.i18n.InternationalizationManager;
 
-import de.d3web.we.flow.diff.FlowchartEdge;
-import de.d3web.we.flow.diff.FlowchartNode;
-import de.d3web.we.flow.diff.FlowchartNodeType;
+import de.knowwe.diaflux.diff.FlowchartEdge;
+import de.knowwe.diaflux.diff.FlowchartNode;
+import de.knowwe.diaflux.diff.FlowchartNodeType;
 
 public class FlowchartDiffProvider implements DiffProvider {
 

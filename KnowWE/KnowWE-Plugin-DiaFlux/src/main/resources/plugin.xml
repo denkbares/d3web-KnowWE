@@ -46,7 +46,7 @@
 	<extension plugin-id="KnowWE-Plugin-DiaFlux" point-id="DiaFluxDisplayEnhancement"
 		id="DiaFluxTraceHighlight">
 		<parameter id="class"
-			value="de.d3web.we.flow.DiaFluxTraceHighlight" />
+			value="de.knowwe.diaflux.DiaFluxTraceHighlight" />
 		<parameter id="name" value="DiaFluxTraceHighlight" />
 		<parameter id="description" value="DiaFluxTraceHighlight" />
 		<parameter id="version" value="1.0" />
@@ -57,7 +57,7 @@
 	<extension plugin-id="KnowWE-Plugin-DiaFlux" point-id="DiaFluxDisplayEnhancement"
 		id="SubflowLinkifier">
 		<parameter id="class"
-			value="de.d3web.we.flow.SubflowLinkifier" />
+			value="de.knowwe.diaflux.SubflowLinkifier" />
 		<parameter id="name" value="SubflowLinkifier" />
 		<parameter id="description" value="SubflowLinkifier" />
 		<parameter id="version" value="1.0" />
@@ -68,7 +68,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="DiaFluxType">
 		<parameter id="class"
-			value="de.d3web.we.flow.type.DiaFluxType" />
+			value="de.knowwe.diaflux.type.DiaFluxType" />
 		<parameter id="name" value="DiaFluxType" />
 		<parameter id="description" value="Type DiaFluxType" />
 		<parameter id="version" value="1.0" />
@@ -79,7 +79,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GetInfoObjects">
 		<parameter id="class"
-			value="de.d3web.we.flow.kbinfo.GetInfoObjects" />
+			value="de.knowwe.diaflux.kbinfo.GetInfoObjects" />
 		<parameter id="name" value="GetInfoObjects" />
 		<parameter id="description" value="Action GetInfoObjects" />
 		<parameter id="version" value="1.0" />
@@ -89,7 +89,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SearchInfoObjects">
 		<parameter id="class"
-			value="de.d3web.we.flow.kbinfo.SearchInfoObjects" />
+			value="de.knowwe.diaflux.kbinfo.SearchInfoObjects" />
 		<parameter id="name" value="SearchInfoObjects" />
 		<parameter id="description" value="Action SearchInfoObjects" />
 		<parameter id="version" value="1.0" />
@@ -99,7 +99,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GetTraceHighlightAction">
 		<parameter id="class"
-			value="de.d3web.we.flow.GetTraceHighlightAction" />
+			value="de.knowwe.diaflux.GetTraceHighlightAction" />
 		<parameter id="name" value="GetTraceHighlightAction" />
 		<parameter id="description" value="Action GetTraceHighlightAction" />
 		<parameter id="version" value="1.0" />
@@ -109,7 +109,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GetSubflowLinksAction">
 		<parameter id="class"
-			value="de.d3web.we.flow.GetSubflowLinksAction" />
+			value="de.knowwe.diaflux.GetSubflowLinksAction" />
 		<parameter id="name" value="GetSubflowLinksAction" />
 		<parameter id="description" value="Action GetSubflowLinksAction" />
 		<parameter id="version" value="1.0" />
@@ -119,7 +119,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SaveFlowchartAction">
 		<parameter id="class"
-			value="de.d3web.we.flow.SaveFlowchartAction" />
+			value="de.knowwe.diaflux.SaveFlowchartAction" />
 		<parameter id="name" value="SaveFlowchartAction" />
 		<parameter id="description" value="Action SaveFlowchartAction" />
 		<parameter id="version" value="1.0" />
@@ -129,7 +129,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="LoadFlowchartAction">
 		<parameter id="class"
-			value="de.d3web.we.flow.kbinfo.LoadFlowchartAction" />
+			value="de.knowwe.diaflux.kbinfo.LoadFlowchartAction" />
 		<parameter id="name" value="LoadFlowchartAction" />
 		<parameter id="description" value="Action LoadFlowchartAction" />
 		<parameter id="version" value="1.0" />
@@ -139,7 +139,7 @@
 	<!--extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="AddSubFlowchart">
 		<parameter id="class"
-			value="de.d3web.we.flow.kbinfo.AddSubFlowchart" />
+			value="de.knowwe.diaflux.kbinfo.AddSubFlowchart" />
 		<parameter id="name" value="AddSubFlowchart" />
 		<parameter id="description" value="Action AddSubFlowchart" />
 		<parameter id="version" value="1.0" />
@@ -149,7 +149,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="UpdateQuestions">
 		<parameter id="class"
-			value="de.d3web.we.flow.kbinfo.UpdateQuestions" />
+			value="de.knowwe.diaflux.kbinfo.UpdateQuestions" />
 		<parameter id="name" value="UpdateQuestions" />
 		<parameter id="description" value="Action UpdateQuestions" />
 		<parameter id="version" value="1.0" />
@@ -159,7 +159,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="UpdateSolutions">
 		<parameter id="class"
-			value="de.d3web.we.flow.kbinfo.UpdateSolutions" />
+			value="de.knowwe.diaflux.kbinfo.UpdateSolutions" />
 		<parameter id="name" value="UpdateSolutions" />
 		<parameter id="description" value="Action UpdateSolutions" />
 		<parameter id="version" value="1.0" />
@@ -168,7 +168,7 @@
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
 		id="FlowchartEditProvider">
-		<parameter id="class" value="de.d3web.we.flow.type.FlowchartEditProvider" />
+		<parameter id="class" value="de.knowwe.diaflux.type.FlowchartEditProvider" />
 		<parameter id="name" value="FlowchartEditProvider" />
 		<parameter id="description"
 			value="Offers a button to grapically edit the flowchart in a new window." />
@@ -180,7 +180,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
 		id="HighlightProvider">
 		<parameter id="class"
-			value="de.d3web.we.flow.HighlightProvider" />
+			value="de.knowwe.diaflux.HighlightProvider" />
 		<parameter id="name" value="HighlightProvider" />
 		<parameter id="description"
 			value="Enables highlighting for active nodes and edges." />

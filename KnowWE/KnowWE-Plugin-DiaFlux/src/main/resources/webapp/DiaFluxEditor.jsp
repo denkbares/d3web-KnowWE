@@ -6,15 +6,15 @@
 <%@ page import="de.knowwe.core.kdom.parsing.Section"%>
 <%@ page import="de.knowwe.core.kdom.parsing.Sections"%>
 <%@ page import="de.knowwe.core.kdom.KnowWEArticle"%>
-<%@ page import="de.d3web.we.flow.type.DiaFluxType"%>
+<%@ page import="de.knowwe.diaflux.type.DiaFluxType"%>
 <%@ page import="com.ecyrd.jspwiki.*" %>
 <%@ page import="de.knowwe.jspwiki.*" %>
 <%@ page import="java.util.*" %>
 <%@ page import="de.knowwe.core.*" %>
 <%@ page import="de.knowwe.core.utils.*" %>
 <%@ page import="de.knowwe.core.action.*" %>
-<%@ page import="de.d3web.we.flow.kbinfo.*" %>
-<%@ page import="de.d3web.we.flow.*" %>
+<%@ page import="de.knowwe.diaflux.kbinfo.*" %>
+<%@ page import="de.knowwe.diaflux.*" %>
 <%@ page import="de.d3web.we.utils.*" %>
 <%@ page import="de.knowwe.core.user.*" %>
 <%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %>
