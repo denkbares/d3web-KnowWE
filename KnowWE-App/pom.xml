@@ -135,7 +135,7 @@
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Flowchart</artifactId>
+					<artifactId>KnowWE-Plugin-DiaFlux</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -350,7 +350,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Flowchart</artifactId>
+					<artifactId>KnowWE-Plugin-DiaFlux</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -1003,7 +1003,7 @@
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Flowchart</artifactId>
+					<artifactId>KnowWE-Plugin-DiaFlux</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
