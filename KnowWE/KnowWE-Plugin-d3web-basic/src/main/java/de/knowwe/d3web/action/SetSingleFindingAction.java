@@ -87,10 +87,20 @@ public class SetSingleFindingAction extends AbstractAction {
 		if (namespace == null || objectid == null) {
 			return "null";
 		}
-
 		KnowledgeBase kb = D3webUtils.getKnowledgeRepresentationHandler(web).getKB(
 				topic);
 		Session session = D3webUtils.getSession(topic, user, web);
+		// Added for KnowWE-Plugin-d3web-Debugger
+		if (context.getParameters().containsKey("KBid")) {
+			String kbID = context.getParameter("KBid");
+			for (String title : D3webUtils.getKnowledgeRepresentationHandler(web).getKnowledgeArticles()) {
+				kb = D3webUtils.getKnowledgeBase(web, title);
+				if (kb.getId() != null && kb.getId().equals(kbID)) {
+					session = D3webUtils.getSession(title, user, web);
+					break;
+				}
+			}
+		}
 		Blackboard blackboard = session.getBlackboard();
 
 		// Necessary for FindingSetEvent
