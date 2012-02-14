@@ -63,7 +63,6 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.d3web.debugger.renderer.DebuggerRuleRenderer;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.AllTextFinderDivCorrectTrimmed;
@@ -260,17 +259,18 @@ public class RuleContentType extends AbstractType {
 					+ "'>"));
 
 			// If KnowWePlugin-d3web-debugger is built, show rule as DebugRule
-			try {
-				DebuggerRuleRenderer drr = new DebuggerRuleRenderer();
-				String topic = user.getTitle();
-				String web = user.getWeb();
-				string.append(KnowWEUtils.maskHTML(drr.renderRule(rule,
-						session, topic, web)));
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				this.highlightRule(article, sec, rule, session, user, string);
-			}
+			// try {
+			// DebuggerRuleRenderer drr = new DebuggerRuleRenderer();
+			// String topic = user.getTitle();
+			// String web = user.getWeb();
+			// string.append(KnowWEUtils.maskHTML(drr.renderRule(rule,
+			// session, topic, web)));
+			// }
+			// catch (Exception e) {
+			// e.printStackTrace();
+			this.highlightRule(article, sec, rule, session, user, string);
+			// }
+
 			string.append(KnowWEUtils.maskHTML("</span>"));
 		}
 
