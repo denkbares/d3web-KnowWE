@@ -194,7 +194,7 @@
 		<module>KnowWE-Resources</module>
 		<module>KnowWE-core</module>
 		<module>KnowWE-Plugin-ExtensionPoints</module>
-		<module>KnowWE-Plugin-Flowchart</module>
+		<module>KnowWE-Plugin-DiaFlux</module>
 		<module>KnowWE-Plugin-QuickInterview</module>
 		<module>KnowWE-Plugin-d3web-basic</module>
 		<module>KnowWE-KDOMParseUtils</module>
