@@ -9,7 +9,7 @@
 	</parent>
 	
 	<groupId>de.uniwue.d3web</groupId>
-	<artifactId>KnowWE-Plugin-Flowchart</artifactId>
+	<artifactId>KnowWE-Plugin-DiaFlux</artifactId>
 	<name>KnowWE Plugin: Flowchart</name>
 	<version>0.2-SNAPSHOT</version>
 	
