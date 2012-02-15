@@ -13,7 +13,6 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
  */
 public class UserRatingType extends AbstractType {
 
-	
 	private static final String SOL_STATE_CONFIRMED = "confirmed";
 	private static final String SOL_STATE_CONFIRMED_GER = "bestätigt";
 	private static final String SOL_STATE_REJECTED = "rejected";
@@ -44,8 +43,7 @@ public class UserRatingType extends AbstractType {
 
 	}
 
-	@Override
-	protected void init() {
+	public UserRatingType() {
 		setSectionFinder(new AllTextFinderTrimmed());
 	}
 }

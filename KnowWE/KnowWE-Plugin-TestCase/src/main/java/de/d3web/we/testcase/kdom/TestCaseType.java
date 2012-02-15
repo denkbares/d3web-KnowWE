@@ -43,7 +43,7 @@ public class TestCaseType extends DefaultMarkupType {
 	public TestCaseType() {
 		super(m);
 		this.setIgnorePackageCompile(true);
-		setCustomRenderer(new TestCaseRenderer());
+		setRenderer(new TestCaseRenderer());
 	}
 
 

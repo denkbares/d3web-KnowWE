@@ -34,7 +34,7 @@ public class SolutionStateType extends AbstractType {
 	}
 
 	public SolutionStateType() {
-		this.setCustomRenderer(new DefaultTextRenderer());
+		this.setRenderer(new DefaultTextRenderer());
 	}
 
 	public static Rating.State getSolutionState(Section<SolutionStateType> s) {

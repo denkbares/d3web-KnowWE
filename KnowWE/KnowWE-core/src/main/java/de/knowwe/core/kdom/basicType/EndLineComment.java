@@ -28,7 +28,7 @@ public class EndLineComment extends AbstractType {
 
 	public EndLineComment() {
 		this.sectionFinder = new RegexSectionFinder("[\\s^]//.*$");
-		setCustomRenderer(StyleRenderer.COMMENT);
+		setRenderer(StyleRenderer.COMMENT);
 	}
 
 }

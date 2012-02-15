@@ -53,7 +53,7 @@ public abstract class AnswerDefinition
 
 	public AnswerDefinition() {
 		this.addSubtreeHandler(Priority.HIGH, new CreateAnswerHandler());
-		this.setCustomRenderer(
+		this.setRenderer(
 				StyleRenderer.CHOICE);
 		this.setOrderSensitive(true);
 	}
@@ -207,7 +207,7 @@ public abstract class AnswerDefinition
 	 * @return
 	 */
 	public static String createAnswerIdentifierForQuestion(String answer, String question) {
-		return question + " " + answer;
+		return question + "." + answer;
 	}
 
 }

@@ -54,7 +54,7 @@ public class ConditionActionRuleContent extends AbstractType {
 		this.addChildType(condArea);
 
 		EndLineComment endLineComment = new EndLineComment();
-		endLineComment.setCustomRenderer(StyleRenderer.COMMENT);
+		endLineComment.setRenderer(StyleRenderer.COMMENT);
 		this.addChildType(endLineComment);
 
 		ActionArea ae = new ActionArea(action);

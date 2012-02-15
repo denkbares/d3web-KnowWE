@@ -38,7 +38,7 @@ public class ObjectDescription extends AbstractType {
 		this.sectionFinder = new MatchUntilEndFinder(new StringSectionFinderUnquoted(
 					QTEXT_START_SYMBOL));
 
-		this.setCustomRenderer(StyleRenderer.PROMPT);
+		this.setRenderer(StyleRenderer.PROMPT);
 		this.addSubtreeHandler(new SubtreeHandler<ObjectDescription>() {
 
 			@Override

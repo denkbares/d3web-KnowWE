@@ -26,7 +26,6 @@ import java.util.List;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
@@ -36,15 +35,10 @@ public class XMLTail extends AbstractType {
 	public static final String SEPARATOR = "/";
 	public static final String TAIL_SUFFIX = "_tail";
 
-	@Override
-	protected void init() {
+	public XMLTail() {
+		this.setRenderer(NothingRenderer.getInstance());
 		sectionFinder = new XMLTailSectionFinder();
 		this.allowesGlobalTypes = false;
-	}
-
-	@Override
-	public KnowWEDomRenderer getRenderer() {
-		return NothingRenderer.getInstance();
 	}
 
 	public class XMLTailSectionFinder implements SectionFinder {

@@ -7,7 +7,7 @@ public class SinglePackageReference extends AbstractType {
 
 	public SinglePackageReference() {
 		this.sectionFinder = new RegexSectionFinder("[\\w-_]+");
-		this.setCustomRenderer(new SinglePackageReferenceRenderer());
+		this.setRenderer(new SinglePackageReferenceRenderer());
 	}
 }
 

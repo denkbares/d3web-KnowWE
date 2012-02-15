@@ -40,17 +40,13 @@ public class StartType extends AbstractXMLType {
 
 	private StartType() {
 		super("start");
+		addChildType(new StartNodeDef());
 	}
 
 	public static StartType getInstance() {
 		if (instance == null) instance = new StartType();
 
 		return instance;
-	}
-
-	@Override
-	protected void init() {
-		addChildType(new StartNodeDef());
 	}
 
 	static class StartNodeDef extends SimpleDefinition {

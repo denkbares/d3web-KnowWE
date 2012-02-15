@@ -19,8 +19,7 @@ import de.knowwe.core.utils.SplitUtility;
  */
 public class BracedConditionContent extends NonTerminalCondition {
 
-	@Override
-	protected void init() {
+	public BracedConditionContent() {
 		this.sectionFinder = new BracedConditionContentFinder();
 	}
 

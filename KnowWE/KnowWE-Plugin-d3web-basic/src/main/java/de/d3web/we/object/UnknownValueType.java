@@ -38,7 +38,7 @@ public class UnknownValueType extends AbstractType {
 
 	public UnknownValueType() {
 		setSectionFinder(new RegexSectionFinder(PATTERN));
-		setCustomRenderer(StyleRenderer.OPERATOR);
+		setRenderer(StyleRenderer.OPERATOR);
 	}
 
 }

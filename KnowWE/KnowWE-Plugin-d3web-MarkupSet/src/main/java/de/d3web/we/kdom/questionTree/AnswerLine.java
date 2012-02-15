@@ -59,8 +59,7 @@ import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
  */
 public class AnswerLine extends AbstractType {
 
-	@Override
-	protected void init() {
+	public AnswerLine() {
 		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
 
 			@Override
@@ -105,7 +104,7 @@ public class AnswerLine extends AbstractType {
 		public InitFlag() {
 			this.sectionFinder = new OneOfStringEnumFinder(new String[] {
 					"<init>" });
-			this.setCustomRenderer(StyleRenderer.KEYWORDS);
+			this.setRenderer(StyleRenderer.KEYWORDS);
 
 			this.addSubtreeHandler(new SubtreeHandler<InitFlag>() {
 
@@ -164,12 +163,11 @@ public class AnswerLine extends AbstractType {
 
 		private static final String QTEXT_START_SYMBOL = "~";
 
-		@Override
-		protected void init() {
+		public AnswerText() {
 			this.sectionFinder = new MatchUntilEndFinder(new StringSectionFinderUnquoted(
 					QTEXT_START_SYMBOL));
 
-			this.setCustomRenderer(StyleRenderer.PROMPT);
+			this.setRenderer(StyleRenderer.PROMPT);
 			this.addSubtreeHandler(new D3webSubtreeHandler<AnswerText>() {
 
 				@Override

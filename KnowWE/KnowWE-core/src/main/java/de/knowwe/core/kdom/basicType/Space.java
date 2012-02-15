@@ -31,8 +31,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 public class Space extends AbstractType {
 
-	@Override
-	protected void init() {
+	public Space() {
 		this.sectionFinder = new EmbracingSpaceSectionFinder();
 	}
 

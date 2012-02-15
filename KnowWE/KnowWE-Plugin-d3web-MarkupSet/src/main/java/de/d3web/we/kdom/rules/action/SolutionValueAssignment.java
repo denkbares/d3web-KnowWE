@@ -82,11 +82,6 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 				possibleScorePoints.toArray(new String[possibleScorePoints.size()])));
 	}
 
-	@Override
-	public void init() {
-
-	}
-
 	/**
 	 * Searches the pattern diagnosis = Score.
 	 */

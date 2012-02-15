@@ -30,7 +30,7 @@ public class Then extends AbstractType {
 
 	public Then() {
 		sectionFinder = new RegexSectionFinder("(DANN|THEN)", Pattern.MULTILINE);
-		this.setCustomRenderer(StyleRenderer.KEYWORDS);
+		this.setRenderer(StyleRenderer.KEYWORDS);
 	}
 
 }

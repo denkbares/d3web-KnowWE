@@ -62,7 +62,7 @@ public abstract class SolutionDefinition
 	}
 
 	public SolutionDefinition(Priority p) {
-		this.setCustomRenderer(
+		this.setRenderer(
 				new ToolMenuDecoratingRenderer<SolutionDefinition>(
 						new SolutionIDHighlightingRenderer()));
 		// this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR4));

@@ -32,7 +32,6 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.MessageRenderer;
@@ -133,6 +132,7 @@ public class DefaultMarkupType extends AbstractType {
 	@SuppressWarnings("unchecked")
 	public DefaultMarkupType(DefaultMarkup markup) {
 		this.markup = markup;
+		this.setRenderer(new DefaultMarkupRenderer<DefaultMarkupType>());
 		Pattern pattern = getPattern(markup.getName());
 		this.setSectionFinder(new RegexSectionFinder(pattern, 0));
 		// add children
@@ -148,11 +148,6 @@ public class DefaultMarkupType extends AbstractType {
 		for (Extension e : extensions) {
 			this.addSubtreeHandler((SubtreeHandler<? extends Type>) e.getNewInstance());
 		}
-	}
-
-	@Override
-	protected KnowWEDomRenderer<?> getDefaultRenderer() {
-		return new DefaultMarkupRenderer<DefaultMarkupType>();
 	}
 
 	// TODO: already exists in parent class! Is this a problem?

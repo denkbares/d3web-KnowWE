@@ -32,8 +32,7 @@ import de.knowwe.kdom.sectionFinder.StringSectionFinder;
  */
 public class SemanticAnnotationPropertyDelimiter extends AbstractType {
 
-	@Override
-	public void init() {
+	public SemanticAnnotationPropertyDelimiter() {
 		this.sectionFinder = new StringSectionFinder("::");
 	}
 

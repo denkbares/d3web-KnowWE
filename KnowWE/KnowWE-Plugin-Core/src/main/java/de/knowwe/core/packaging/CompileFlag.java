@@ -49,7 +49,7 @@ public class CompileFlag extends DefaultMarkupType {
 
 	public CompileFlag() {
 		super(m);
-		this.setCustomRenderer(new CompileFlagRenderer());
+		this.setRenderer(new CompileFlagRenderer());
 	}
 
 	static class CompileFlagRenderer extends KnowWEDomRenderer<CompileFlag> {

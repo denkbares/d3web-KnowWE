@@ -19,20 +19,12 @@
 package de.d3web.we.object;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.core.knowledge.terminology.QContainer;
-import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
-import de.knowwe.core.user.UserContext;
-import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
  * 
@@ -42,7 +34,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class NamedObjectReference extends D3webTermReference<NamedObject> {
 
 	public NamedObjectReference() {
-		this.setCustomRenderer(new NamedObjectRenderer());
+		this.setRenderer(new NamedObjectRenderer());
 		this.addSubtreeHandler(new SimpleTermReferenceRegistrationHandler(
 				TermRegistrationScope.LOCAL));
 	}
@@ -62,41 +54,6 @@ public class NamedObjectReference extends D3webTermReference<NamedObject> {
 			return knowledgeBase;
 		}
 		return super.getTermObject(article, section);
-	}
-
-	/**
-	 * 
-	 * @author volker_belli
-	 * @created 15.12.2010
-	 */
-	private static final class NamedObjectRenderer extends KnowWEDomRenderer<NamedObjectReference> {
-
-		@SuppressWarnings({
-				"rawtypes", "unchecked" })
-		@Override
-		public void render(KnowWEArticle article, Section<NamedObjectReference> sec, UserContext user, StringBuilder string) {
-			NamedObject object = sec.get().getTermObject(article, sec);
-			KnowWEDomRenderer renderer;
-			if (object instanceof Question) {
-				renderer = StyleRenderer.Question;
-			}
-			else if (object instanceof QContainer) {
-				renderer = StyleRenderer.Questionaire;
-			}
-			else if (object instanceof Solution) {
-				renderer = StyleRenderer.SOLUTION;
-			}
-			else if (object instanceof Choice) {
-				renderer = StyleRenderer.CHOICE;
-			}
-			else if (object instanceof KnowledgeBase) {
-				renderer = StyleRenderer.Questionaire;
-			}
-			else {
-				renderer = PlainText.getInstance().getRenderer();
-			}
-			renderer.render(article, sec, user, string);
-		}
 	}
 
 }

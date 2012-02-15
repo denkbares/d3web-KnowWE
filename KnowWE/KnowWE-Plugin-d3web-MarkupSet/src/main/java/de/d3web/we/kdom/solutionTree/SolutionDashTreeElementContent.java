@@ -69,7 +69,7 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent {
 		f.addConstraint(SingleChildConstraint.getInstance());
 		solutionDef.setSectionFinder(f);
 		this.addChildType(solutionDef);
-		this.setCustomRenderer(new ReRenderSectionMarkerRenderer<Type>(
+		this.setRenderer(new ReRenderSectionMarkerRenderer<Type>(
 				new SolutionDashTreeElementContentRenderer()));
 	}
 

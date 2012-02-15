@@ -24,9 +24,8 @@ import de.knowwe.kdom.xml.XMLContent;
 
 public class NamespacesContent extends XMLContent {
 
-	@Override
-	protected void init() {
-		this.setCustomRenderer(new NamespacesContentRenderer());
+	public NamespacesContent() {
+		this.setRenderer(new NamespacesContentRenderer());
 	}
 
 }

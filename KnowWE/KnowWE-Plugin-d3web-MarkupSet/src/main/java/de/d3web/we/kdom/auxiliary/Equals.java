@@ -28,11 +28,10 @@ import de.knowwe.kdom.sectionFinder.UnquotedExpressionFinder;
  *         Used in DiagnosisRuleAction.
  */
 public class Equals extends AbstractType {
-	
+
 	public static final String SIGN = "=";
 
-	@Override
-	public void init() {
+	public Equals() {
 		this.sectionFinder = new UnquotedExpressionFinder(SIGN);
 	}
 

@@ -21,7 +21,6 @@ package de.d3web.we.solutionpanel;
 import de.d3web.we.object.QuestionnaireReference;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.defaultMarkup.ContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -69,10 +68,10 @@ public class ShowSolutionsType extends DefaultMarkupType {
 
 	public ShowSolutionsType() {
 		super(MARKUP);
-		this.setCustomRenderer(this.getRenderer());
+		this.setRenderer(new ShowSolutionsRenderer());
 		for (Type type : this.getAllowedChildrenTypes()) {
 			if (type instanceof ContentType) {
-				((ContentType) type).setCustomRenderer(
+				((ContentType) type).setRenderer(
 						new ReRenderSectionMarkerRenderer<ContentType>(
 								new ShowSolutionsContentRenderer()));
 			}
@@ -156,11 +155,6 @@ public class ShowSolutionsType extends DefaultMarkupType {
 			return false;
 		}
 
-	}
-
-	@Override
-	public KnowWEDomRenderer<ShowSolutionsType> getRenderer() {
-		return new ShowSolutionsRenderer();
 	}
 
 }

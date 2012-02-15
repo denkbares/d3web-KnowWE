@@ -1,4 +1,5 @@
 package de.knowwe.core.taghandler;
+
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
@@ -19,18 +20,13 @@ package de.knowwe.core.taghandler;
  * site: http://www.fsf.org.
  */
 
-
-
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.taghandler.TagHandler;
 import de.knowwe.plugin.Plugins;
 
 public class TagHandlerType extends AbstractType {
 
-	@Override
-	protected void init() {
+	public TagHandlerType() {
 		// searches for Strings like [{KnowWEPlugin ...}]
 		this.sectionFinder = new RegexSectionFinder("\\[\\{KnowWEPlugin [^}]*}]");
 
@@ -39,16 +35,12 @@ public class TagHandlerType extends AbstractType {
 		for (TagHandler tagHandler : Plugins.getTagHandlers()) {
 			childrenTypes.add(new TagHandlerTypeContent(tagHandler.getTagName()));
 		}
+		this.setRenderer(new TagRenderer());
 	}
 
 	@Override
 	public String getName() {
 		return "KnowWEPlugin";
-	}
-
-	@Override
-	public KnowWEDomRenderer<TagHandlerType> getRenderer() {
-		return new TagRenderer();
 	}
 
 }

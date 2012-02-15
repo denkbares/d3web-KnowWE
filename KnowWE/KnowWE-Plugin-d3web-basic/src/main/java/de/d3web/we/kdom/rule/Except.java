@@ -26,7 +26,7 @@ public class Except extends AbstractType {
 
 	public Except() {
 		sectionFinder = new RegexSectionFinder("( *AUSSER\\s+| *EXCEPT\\s+)");
-		this.setCustomRenderer(StyleRenderer.KEYWORDS);
+		this.setRenderer(StyleRenderer.KEYWORDS);
 	}
 
 }

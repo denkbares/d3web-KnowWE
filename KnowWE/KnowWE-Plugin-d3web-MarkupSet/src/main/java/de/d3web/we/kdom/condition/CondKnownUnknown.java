@@ -55,8 +55,7 @@ public class CondKnownUnknown extends D3webCondition<CondKnownUnknown> {
 			"^\\s*" + Patterns.D3IDENTIFIER + "\\s*=\\s*(KNOWN|UNKNOWN)\\s*$",
 			Pattern.CASE_INSENSITIVE);
 
-	@Override
-	protected void init() {
+	public CondKnownUnknown() {
 		setSectionFinder(new RegexSectionFinder(PATTERN, 0));
 
 		// comparator
@@ -119,10 +118,9 @@ public class CondKnownUnknown extends D3webCondition<CondKnownUnknown> {
 
 	private static class AssignmentType extends AbstractType {
 
-		@Override
-		protected void init() {
+		public AssignmentType() {
 			this.setSectionFinder(new AllTextFinderTrimmed());
-			this.setCustomRenderer(StyleRenderer.OPERATOR);
+			this.setRenderer(StyleRenderer.OPERATOR);
 		}
 	}
 

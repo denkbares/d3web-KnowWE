@@ -34,10 +34,9 @@ import de.knowwe.core.user.UserContext;
 
 public class DashesPrefix extends AbstractType {
 
-	@Override
-	protected void init() {
+	public DashesPrefix() {
 		this.sectionFinder = new DashesPrefixFinder();
-		this.setCustomRenderer(new KnowWEDomRenderer<Type>() {
+		this.setRenderer(new KnowWEDomRenderer<Type>() {
 
 			@Override
 			public void render(KnowWEArticle article, Section<Type> sec, UserContext user, StringBuilder string) {

@@ -43,13 +43,11 @@ public class ArticleToPackageFlag extends DefaultMarkupType {
 
 	static {
 		m = new DefaultMarkup("AddToPackage");
-		m.addContentType(new AbstractType(new AllTextSectionFinder()) {
+		AbstractType contentType = new AbstractType(new AllTextSectionFinder()) {
+		};
+		contentType.setRenderer(new ArticleToPackageFlagRenderer());
 
-			@Override
-			public KnowWEDomRenderer<AbstractType> getRenderer() {
-				return new ArticleToPackageFlagRenderer();
-			}
-		});
+		m.addContentType(contentType);
 	}
 
 	public ArticleToPackageFlag() {

@@ -21,7 +21,6 @@
 package de.knowwe.core.kdom;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -31,7 +30,6 @@ import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.parsing.Parser;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sectionizable;
 import de.knowwe.core.kdom.parsing.Sectionizer;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -140,17 +138,13 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * custom renderer is set, it is used to present the type content in the
 	 * wiki view
 	 */
-	protected KnowWEDomRenderer customRenderer = null;
+	private KnowWEDomRenderer<?> renderer = DelegateRenderer.getInstance();
 
 	/**
 	 * constructor calling init() which is abstract
 	 * 
 	 */
 	public AbstractType() {
-		// TODO: vb: this is dangerous behavior. Should be replaced. The objects
-		// "init" method is called, before it is completely initialized by its
-		// own constructor.
-		init();
 		ResourceBundle resourceBundle = ResourceBundle.getBundle("KnowWE_config");
 		String ignoreFlag = "packaging.ignorePackages";
 		if (resourceBundle.containsKey(ignoreFlag)) {
@@ -307,20 +301,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 		return isActivated;
 	}
 
-	@Override
-	public void findTypeInstances(Class clazz, List<Type> instances) {
-		boolean foundNew = false;
-		if (this.getClass().equals(clazz)) {
-			instances.add(this);
-			foundNew = true;
-		}
-		if (foundNew) {
-			for (Type Type : childrenTypes) {
-				Type.findTypeInstances(clazz, instances);
-			}
-		}
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -331,13 +311,13 @@ public abstract class AbstractType implements Type, Sectionizable {
 		return this.getClass().getSimpleName();
 	}
 
-	/**
-	 * use normal constructor!
-	 */
-	@Deprecated
-	protected void init() {
-
-	}
+	// /**
+	// * use normal constructor!
+	// */
+	// @Deprecated
+	// protected void init() {
+	//
+	// }
 
 	/*
 	 * (non-Javadoc)
@@ -387,30 +367,15 @@ public abstract class AbstractType implements Type, Sectionizable {
 		return this.childrenTypes.remove(i);
 	}
 
-	@Override
-	@Deprecated
-	public Collection<Section> getAllSectionsOfType() {
-		return null;
-	}
-
-	// public static String spanColorTitle(String text, String color, String
-	// title) {
-	// return KnowWEEnvironment.HTML_ST + "span title='" + title
-	// + "' style='background-color:" + color + ";'"
-	// + KnowWEEnvironment.HTML_GT + text + KnowWEEnvironment.HTML_ST
-	// + "/span" + KnowWEEnvironment.HTML_GT;
-	// }
-
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see de.d3web.we.kdom.KnowWEType#getRenderer()
 	 */
+	@SuppressWarnings("rawtypes")
 	@Override
-	public KnowWEDomRenderer getRenderer() {
-		if (customRenderer != null) return customRenderer;
-
-		return getDefaultRenderer();
+	public final KnowWEDomRenderer getRenderer() {
+		return renderer;
 	}
 
 	@Override
@@ -428,17 +393,13 @@ public abstract class AbstractType implements Type, Sectionizable {
 		return DefaultErrorRenderer.INSTANCE_WARNING;
 	}
 
-	protected KnowWEDomRenderer getDefaultRenderer() {
-		return DelegateRenderer.getInstance();
-	}
-
 	/**
 	 * Allows to set a custom renderer for this type
 	 * 
 	 * @param renderer
 	 */
-	public void setCustomRenderer(KnowWEDomRenderer renderer) {
-		this.customRenderer = renderer;
+	public void setRenderer(@SuppressWarnings("rawtypes") KnowWEDomRenderer renderer) {
+		this.renderer = renderer;
 	}
 
 	// /**

@@ -31,8 +31,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 
 public class RuleAction extends AbstractType {
 
-	@Override
-	protected void init() {
+	public RuleAction() {
 		sectionFinder = new AllTextSectionFinder();
 		boolean notAttached = false;
 		try {
@@ -56,7 +55,7 @@ public class RuleAction extends AbstractType {
 		}
 
 		EndLineComment comment = new EndLineComment();
-		comment.setCustomRenderer(StyleRenderer.COMMENT);
+		comment.setRenderer(StyleRenderer.COMMENT);
 		this.childrenTypes.add(comment);
 		this.childrenTypes.add(new SolutionValueAssignment());
 		this.childrenTypes.add(new SetQuestionNumValueAction());

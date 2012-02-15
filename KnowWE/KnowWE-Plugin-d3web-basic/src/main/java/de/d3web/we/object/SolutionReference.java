@@ -34,7 +34,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class SolutionReference extends D3webTermReference<Solution> {
 
 	public SolutionReference() {
-		this.setCustomRenderer(StyleRenderer.SOLUTION);
+		this.setRenderer(StyleRenderer.SOLUTION);
 		this.addSubtreeHandler(new SimpleTermReferenceRegistrationHandler(
 				TermRegistrationScope.LOCAL));
 	}

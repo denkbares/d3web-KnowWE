@@ -35,8 +35,7 @@ public class DashTreeElementContent extends AbstractType {
 		return defaultInstance;
 	}
 
-	@Override
-	protected void init() {
+	public DashTreeElementContent() {
 		this.sectionFinder = new AllTextFinderTrimmed();
 	}
 

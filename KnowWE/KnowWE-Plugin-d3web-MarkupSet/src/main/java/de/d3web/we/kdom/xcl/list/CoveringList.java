@@ -98,13 +98,13 @@ public class CoveringList extends AbstractType {
 		// the rest is CoveringRelations
 		this.addChildType(new CoveringRelation());
 
-		this.setCustomRenderer(new ReRenderSectionMarkerRenderer<Type>(
+		this.setRenderer(new ReRenderSectionMarkerRenderer<Type>(
 				new CoveringListRenderer()));
 
 		// anything left is comment
 		AnonymousType residue = new AnonymousType("derRest");
 		residue.setSectionFinder(new AllTextFinderTrimmed());
-		residue.setCustomRenderer(StyleRenderer.COMMENT);
+		residue.setRenderer(StyleRenderer.COMMENT);
 		this.addChildType(residue);
 	}
 
@@ -143,13 +143,13 @@ public class CoveringList extends AbstractType {
 			});
 
 			this.addSubtreeHandler(Priority.LOW, new CreateXCLRelationHandler());
-			this.setCustomRenderer(new CoveringRelationRenderer());
+			this.setRenderer(new CoveringRelationRenderer());
 
 			// here also a comment might occur:
 			AnonymousType relationComment = new AnonymousType("comment");
 			relationComment.setSectionFinder(new RegexSectionFinder("[\\t ]*"
 					+ "//[^\r\n]*+" + "\\r?\\n"));
-			relationComment.setCustomRenderer(StyleRenderer.COMMENT);
+			relationComment.setRenderer(StyleRenderer.COMMENT);
 			this.addChildType(relationComment);
 
 			// take weights

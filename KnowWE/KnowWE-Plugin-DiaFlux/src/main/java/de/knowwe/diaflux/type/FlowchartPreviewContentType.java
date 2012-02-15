@@ -38,9 +38,4 @@ public class FlowchartPreviewContentType extends XMLContent {
 		return instance;
 	}
 
-	@Override
-	protected void init() {
-
-	}
-
 }

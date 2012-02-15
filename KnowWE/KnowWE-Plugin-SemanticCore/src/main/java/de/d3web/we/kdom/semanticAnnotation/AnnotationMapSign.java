@@ -38,14 +38,13 @@ public class AnnotationMapSign extends AbstractType {
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			int index = text.lastIndexOf("<=>");
 			if (index >= 0) {
-			result.add(new SectionFinderResult(index, index + 3));
+				result.add(new SectionFinderResult(index, index + 3));
 			}
 			return result;
 		}
 	}
 
-	@Override
-	protected void init() {
+	public AnnotationMapSign() {
 		this.sectionFinder = new AnnotationMapSignSectionFinder();
 
 	}

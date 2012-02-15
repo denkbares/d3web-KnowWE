@@ -25,17 +25,12 @@ import de.knowwe.kdom.sectionFinder.StringSectionFinder;
 
 public class SemanticAnnotationStartSymbol extends AbstractType {
 
-	private String begin;
+	private final String begin;
 
 	public SemanticAnnotationStartSymbol(String symbol) {
 		super();
 		begin = symbol;
 		this.sectionFinder = new StringSectionFinder(begin, true);
-	}
-
-	@Override
-	protected void init() {
-
 	}
 
 }

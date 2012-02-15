@@ -25,8 +25,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 
 public class SemanticAnnotationContent extends AbstractType {
 
-	@Override
-	public void init() {
+	public SemanticAnnotationContent() {
 		AnnotationMapSign annotationMapSign = new AnnotationMapSign();
 		this.childrenTypes.add(annotationMapSign);
 		this.childrenTypes.add(new AnnotatedString(annotationMapSign));

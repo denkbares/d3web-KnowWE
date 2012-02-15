@@ -27,8 +27,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 
 public class TagHandlerTypeStartSymbol extends AbstractType {
 
-	@Override
-	protected void init() {
+	public TagHandlerTypeStartSymbol() {
 		// sectionFinder = new RegexSectionFinder("\\[\\{KnowWEPlugin ");
 
 		MultiSectionFinder multi = new MultiSectionFinder();

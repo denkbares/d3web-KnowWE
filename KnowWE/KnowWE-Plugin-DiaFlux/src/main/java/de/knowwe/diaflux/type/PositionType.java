@@ -40,8 +40,4 @@ public class PositionType extends AbstractXMLType {
 		return instance;
 	}
 
-	@Override
-	protected void init() {
-	}
-
 }

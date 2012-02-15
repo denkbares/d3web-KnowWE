@@ -35,7 +35,7 @@ public class SequentialTestCaseName extends AbstractType {
 	public SequentialTestCaseName() {
 		this.sectionFinder = new SequentialTestCaseNameSectionFinder();
 		// Do not remove this, otherwise rendering brokes with quoted names
-		this.setCustomRenderer(StyleRenderer.KEYWORDS);
+		this.setRenderer(StyleRenderer.KEYWORDS);
 	}
 
 	public class SequentialTestCaseNameSectionFinder implements SectionFinder {

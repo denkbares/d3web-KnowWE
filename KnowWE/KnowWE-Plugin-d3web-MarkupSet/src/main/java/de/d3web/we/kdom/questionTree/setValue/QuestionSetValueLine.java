@@ -57,11 +57,7 @@ public class QuestionSetValueLine extends AbstractType {
 	private static final String OPEN = "(";
 	private static final String CLOSE = ")";
 
-	/**
-	 *
-	 */
-	@Override
-	protected void init() {
+	public QuestionSetValueLine() {
 		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
 
 			@Override

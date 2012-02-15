@@ -56,8 +56,7 @@ import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
  */
 public class SemanticAnnotationObject extends AbstractType {
 
-	@Override
-	public void init() {
+	public SemanticAnnotationObject() {
 		SemanticAnnotationProperty propType = new SemanticAnnotationProperty();
 		SemanticAnnotationSubject subject = new SemanticAnnotationSubject();
 		subject.setSectionFinder(new AllBeforeTypeSectionFinder(propType));

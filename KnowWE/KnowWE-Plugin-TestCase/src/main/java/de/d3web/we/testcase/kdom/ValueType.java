@@ -37,17 +37,17 @@ import de.knowwe.kdom.constraint.SingleChildConstraint;
  */
 public class ValueType extends AbstractType {
 
-	@Override
-	protected void init() {
+	public ValueType() {
 		setSectionFinder(new AllTextSectionFinder());
 
 		Number number = new Number();
-		number.setCustomRenderer(DefaultTextRenderer.getInstance());
+		number.setRenderer(DefaultTextRenderer.getInstance());
 		number.setSectionFinder(new ConstraintSectionFinder(number.getSectionFinder(),
 				SingleChildConstraint.getInstance()));
 		addChildType(number);
 
 		AnswerReference aRef = new AnswerReference() {
+
 			@Override
 			public Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s) {
 				Section<RatedFinding> finding = Sections.findAncestorOfType(s, RatedFinding.class);

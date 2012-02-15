@@ -33,8 +33,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 public class SemanticAnnotationPropertyName extends
 		AbstractType {
 
-	@Override
-	public void init() {
+	public SemanticAnnotationPropertyName() {
 		this.sectionFinder = new AllTextSectionFinder();
 	}
 

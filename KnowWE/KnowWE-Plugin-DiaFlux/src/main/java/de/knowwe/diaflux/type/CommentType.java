@@ -41,8 +41,4 @@ public class CommentType extends AbstractXMLType {
 		return instance;
 	}
 
-	@Override
-	protected void init() {
-	}
-
 }

@@ -40,17 +40,13 @@ public class ExitType extends AbstractXMLType {
 
 	private ExitType() {
 		super("exit");
+		addChildType(new ExitNodeDef());
 	}
 
 	public static ExitType getInstance() {
 		if (instance == null) instance = new ExitType();
 
 		return instance;
-	}
-
-	@Override
-	protected void init() {
-		addChildType(new ExitNodeDef());
 	}
 
 	static class ExitNodeDef extends SimpleDefinition {

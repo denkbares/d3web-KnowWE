@@ -36,6 +36,9 @@ public class DecisionType extends AbstractXMLType {
 
 	private DecisionType() {
 		super("decision");
+		QuestionReference questionReference = new QuestionReference();
+		questionReference.setSectionFinder(new AllTextFinderTrimmed());
+		addChildType(questionReference);
 	}
 
 	public static DecisionType getInstance() {
@@ -44,10 +47,4 @@ public class DecisionType extends AbstractXMLType {
 		return instance;
 	}
 
-	@Override
-	protected void init() {
-		QuestionReference questionReference = new QuestionReference();
-		questionReference.setSectionFinder(new AllTextFinderTrimmed());
-		addChildType(questionReference);
-	}
 }

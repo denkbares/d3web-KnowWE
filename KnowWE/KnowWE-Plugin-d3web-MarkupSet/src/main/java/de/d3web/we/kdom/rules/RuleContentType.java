@@ -97,7 +97,7 @@ public class RuleContentType extends AbstractType {
 		// add handler to create the rules in the d3web knowledge base
 		ruleAction.addSubtreeHandler(Priority.LOW, new RuleCompiler());
 
-		ruleContent.setCustomRenderer(new ReRenderSectionMarkerRenderer(
+		ruleContent.setRenderer(new ReRenderSectionMarkerRenderer(
 				new RuleHighlightingRenderer()));
 		List<Type> termConds = new ArrayList<Type>();
 

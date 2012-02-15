@@ -54,7 +54,7 @@ public class Number extends AbstractType {
 		this.setSectionFinder(f);
 		// NumberChecker only makes sense if NumberFinder is not Numberfinder
 		this.addSubtreeHandler(new NumberChecker());
-		this.setCustomRenderer(StyleRenderer.NUMBER);
+		this.setRenderer(StyleRenderer.NUMBER);
 	}
 
 	/**

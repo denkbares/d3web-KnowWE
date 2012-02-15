@@ -48,8 +48,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class SimpleAnnotation extends AbstractType {
 
-	@Override
-	public void init() {
+	public SimpleAnnotation() {
 		this.sectionFinder = new AllTextFinderTrimmed();
 		this.addSubtreeHandler(new SimpleAnnotationSubTreeHandler());
 	}

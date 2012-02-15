@@ -25,7 +25,6 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.InvalidKDOMSchemaModificationOperation;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.diaflux.FlowchartRenderer;
 import de.knowwe.diaflux.FlowchartSubTreeHandler;
 import de.knowwe.diaflux.type.FlowchartXMLHeadType.FlowchartTermDef;
@@ -38,21 +37,14 @@ import de.knowwe.kdom.xml.XMLHead;
  */
 public class FlowchartType extends AbstractXMLType {
 
-	protected KnowWEDomRenderer<FlowchartType> renderer = new FlowchartRenderer();
-
 	public FlowchartType() {
 		super("flowchart");
-		replaceHead(); // can not be done in init, because object
-		// construction
-		// is not yet finished
-	}
-
-	@Override
-	protected void init() {
 		this.childrenTypes.add(FlowchartContentType.getInstance());
 		addSubtreeHandler(Priority.DEFAULT, new FlowchartSubTreeHandler());
 		// in Wiki mode we always want to have the trace be enabled
 		DiaFluxCaseObject.setTraceMode(true);
+		replaceHead();
+		setRenderer(new FlowchartRenderer());
 	}
 
 	/**
@@ -66,11 +58,6 @@ public class FlowchartType extends AbstractXMLType {
 		catch (InvalidKDOMSchemaModificationOperation e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public KnowWEDomRenderer<FlowchartType> getRenderer() {
-		return renderer;
 	}
 
 	public static String getFlowchartName(Section<FlowchartType> sec) {

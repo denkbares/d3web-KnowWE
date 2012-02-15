@@ -88,7 +88,7 @@ public class QuestionTypeDeclaration extends
 			}
 		};
 		this.setSectionFinder(typeFinder);
-		this.setCustomRenderer(new StyleRenderer(StyleRenderer.OPERATOR.getCssStyle()) {
+		this.setRenderer(new StyleRenderer(StyleRenderer.OPERATOR.getCssStyle()) {
 
 			@Override
 			public void render(KnowWEArticle article, @SuppressWarnings("rawtypes") Section section,

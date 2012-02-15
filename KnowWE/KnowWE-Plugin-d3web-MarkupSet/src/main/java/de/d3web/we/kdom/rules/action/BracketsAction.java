@@ -42,7 +42,7 @@ public abstract class BracketsAction<T extends Type> extends D3webRuleAction<T> 
 	protected static final String CLOSE = "]";
 
 	public BracketsAction(final String[] alternativeKeys) {
-		this.setCustomRenderer(new KnowWEDomRenderer<Type>() {
+		this.setRenderer(new KnowWEDomRenderer<Type>() {
 
 			@Override
 			public void render(KnowWEArticle article, Section<Type> sec, UserContext user, StringBuilder string) {

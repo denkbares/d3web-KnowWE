@@ -41,8 +41,7 @@ import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
 
 public class NumericCondLine extends AbstractType {
 
-	@Override
-	protected void init() {
+	public NumericCondLine() {
 		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
 
 			@Override
@@ -54,7 +53,7 @@ public class NumericCondLine extends AbstractType {
 
 		this.addSubtreeHandler(new CheckConditionHandler());
 
-		this.setCustomRenderer(StyleRenderer.NUMBER);
+		this.setRenderer(StyleRenderer.NUMBER);
 
 	}
 

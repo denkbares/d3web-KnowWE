@@ -31,6 +31,7 @@ public class FlowchartPreviewType extends AbstractXMLType {
 
 	private FlowchartPreviewType() {
 		super("preview");
+		childrenTypes.add(FlowchartPreviewContentType.getInstance());
 	}
 
 	public static FlowchartPreviewType getInstance() {
@@ -39,8 +40,4 @@ public class FlowchartPreviewType extends AbstractXMLType {
 		return instance;
 	}
 
-	@Override
-	protected void init() {
-		childrenTypes.add(FlowchartPreviewContentType.getInstance());
-	}
 }

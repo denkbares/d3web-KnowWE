@@ -26,29 +26,16 @@ import java.util.List;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 public class XMLHead extends AbstractType {
 
-	public static final String SEPARATOR = "/";
-	public static final String HEAD_SUFFIX = "_head";
-
-	private String getEndOfId(String id) {
-		return id.substring(id.lastIndexOf(SEPARATOR) + 1);
-	}
-
-	@Override
-	protected void init() {
+	public XMLHead() {
+		this.setRenderer(NothingRenderer.getInstance());
 		sectionFinder = new XMLHeadSectionFinder();
 		this.allowesGlobalTypes = false;
-	}
-
-	@Override
-	public KnowWEDomRenderer getRenderer() {
-		return NothingRenderer.getInstance();
 	}
 
 	public class XMLHeadSectionFinder implements SectionFinder {

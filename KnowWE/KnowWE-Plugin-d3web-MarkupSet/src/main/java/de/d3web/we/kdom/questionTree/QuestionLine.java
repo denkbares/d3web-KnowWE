@@ -173,7 +173,7 @@ public class QuestionLine extends AbstractType {
 		public static final char BOUNDS_CLOSE = ')';
 
 		public NumBounds() {
-			this.setCustomRenderer(StyleRenderer.NUMBER);
+			this.setRenderer(StyleRenderer.NUMBER);
 			this.setSectionFinder(new EmbracedContentFinder(BOUNDS_OPEN, BOUNDS_CLOSE));
 
 			this.addSubtreeHandler(Priority.HIGH, new D3webSubtreeHandler<NumBounds>() {
@@ -318,7 +318,7 @@ public class QuestionLine extends AbstractType {
 		}
 
 		public NumUnit() {
-			this.setCustomRenderer(StyleRenderer.NUMBER);
+			this.setRenderer(StyleRenderer.NUMBER);
 
 			this.setSectionFinder(new EmbracedContentFinder(UNIT_OPEN, UNIT_CLOSE));
 
@@ -380,7 +380,7 @@ public class QuestionLine extends AbstractType {
 		public AbstractFlag() {
 			this.sectionFinder = new OneOfStringEnumFinder(new String[] {
 					"<abstract>", "<abstrakt>" });
-			this.setCustomRenderer(StyleRenderer.KEYWORDS);
+			this.setRenderer(StyleRenderer.KEYWORDS);
 
 			this.addSubtreeHandler(Priority.HIGH, new D3webSubtreeHandler<AbstractFlag>() {
 
@@ -428,12 +428,11 @@ public class QuestionLine extends AbstractType {
 
 		private static final String QTEXT_START_SYMBOL = "~";
 
-		@Override
-		protected void init() {
+		public QuestionText() {
 			this.sectionFinder = new MatchUntilEndFinder(new StringSectionFinderUnquoted(
 					QTEXT_START_SYMBOL));
 
-			this.setCustomRenderer(StyleRenderer.PROMPT);
+			this.setRenderer(StyleRenderer.PROMPT);
 			this.addSubtreeHandler(Priority.HIGH, new D3webSubtreeHandler<QuestionText>() {
 
 				@Override

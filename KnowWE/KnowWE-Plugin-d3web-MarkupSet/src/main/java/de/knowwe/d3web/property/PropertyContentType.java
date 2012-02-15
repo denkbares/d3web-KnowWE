@@ -36,7 +36,7 @@ public class PropertyContentType extends AbstractType {
 
 	public PropertyContentType() {
 		this.setSectionFinder(new RegexSectionFinder("^\\s*=\\s*(.+)\\s*", Pattern.DOTALL, 1));
-		this.setCustomRenderer(StyleRenderer.CONTENT);
+		this.setRenderer(StyleRenderer.CONTENT);
 	}
 
 	public String getPropertyContent(Section<PropertyContentType> s) {

@@ -27,8 +27,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 
 public class TagHandlerTypeEndSymbol extends AbstractType {
 
-	@Override
-	protected void init() {
+	public TagHandlerTypeEndSymbol() {
 		MultiSectionFinder multi = new MultiSectionFinder();
 		SectionFinder f1 = new RegexSectionFinder("}]");
 		SectionFinder f2 = new RegexSectionFinder("\\r?\\n");

@@ -48,8 +48,7 @@ import de.knowwe.core.report.Messages;
  */
 public class OverdashedElement extends AbstractType {
 
-	@Override
-	protected void init() {
+	public OverdashedElement() {
 
 		this.addSubtreeHandler(new OverDashedErrorHandler());
 

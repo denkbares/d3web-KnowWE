@@ -25,8 +25,7 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
 public class LineBreak extends AbstractType {
 
-	@Override
-	protected void init() {
+	public LineBreak() {
 		this.sectionFinder = new RegexSectionFinder(" *[\\r\\n]+");
 	}
 

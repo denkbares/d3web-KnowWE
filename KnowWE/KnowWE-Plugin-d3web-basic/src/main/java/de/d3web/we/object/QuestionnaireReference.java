@@ -34,7 +34,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class QuestionnaireReference extends D3webTermReference<QContainer> {
 
 	public QuestionnaireReference() {
-		this.setCustomRenderer(StyleRenderer.Questionaire);
+		this.setRenderer(StyleRenderer.Questionaire);
 		this.setOrderSensitive(true);
 		this.addSubtreeHandler(new SimpleTermReferenceRegistrationHandler(
 				TermRegistrationScope.LOCAL));

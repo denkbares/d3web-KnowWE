@@ -32,10 +32,9 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 
 public class LineEndComment extends AbstractType {
 
-	@Override
-	protected void init() {
+	public LineEndComment() {
 		this.setSectionFinder(new LineEndCommentFinder());
-		setCustomRenderer(StyleRenderer.COMMENT);
+		setRenderer(StyleRenderer.COMMENT);
 	}
 
 	/**

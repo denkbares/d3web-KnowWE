@@ -108,7 +108,7 @@ public class QuestionSetValueNumLine extends AbstractType {
 			}
 		};
 		typeDef.setSectionFinder(typeFinder);
-		typeDef.setCustomRenderer(new ArgumentRenderer());
+		typeDef.setRenderer(new ArgumentRenderer());
 		return typeDef;
 	}
 

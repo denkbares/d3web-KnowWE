@@ -43,7 +43,7 @@ public class CIDaemonType extends DefaultMarkupType {
 	public CIDaemonType() {
 		super(MARKUP);
 		this.setIgnorePackageCompile(true);
-		this.setCustomRenderer(new CIDaemonRenderer());
+		this.setRenderer(new CIDaemonRenderer());
 		// TODO Auto-generated constructor stub
 	}
 

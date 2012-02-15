@@ -47,8 +47,7 @@ import de.knowwe.kdom.AnonymousType;
  */
 public class ConditionTerminal extends AbstractType {
 
-	@Override
-	protected void init() {
+	public ConditionTerminal() {
 		this.sectionFinder = new AllTextFinderTrimmed();
 
 		// last: Anything left is an UnrecognizedTC throwing an error

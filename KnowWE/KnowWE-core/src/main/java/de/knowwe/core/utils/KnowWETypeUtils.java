@@ -71,7 +71,7 @@ public class KnowWETypeUtils {
 		getAllChildrenTypesRecursive(root, set);
 		for (Type t : set.toList()) {
 			if (t.isAssignableFromType(clazz)) {
-				((AbstractType) t).setCustomRenderer(renderer);
+				((AbstractType) t).setRenderer(renderer);
 			}
 		}
 	}

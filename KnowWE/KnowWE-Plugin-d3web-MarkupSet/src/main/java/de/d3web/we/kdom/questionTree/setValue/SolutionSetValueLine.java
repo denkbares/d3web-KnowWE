@@ -62,8 +62,7 @@ public class SolutionSetValueLine extends AbstractType {
 	private static final String OPEN = "(";
 	private static final String CLOSE = ")";
 
-	@Override
-	protected void init() {
+	public SolutionSetValueLine() {
 		this.sectionFinder = new SolutionSetValueFinder();
 		AnonymousType argumentType = createArgumentType();
 		this.childrenTypes.add(argumentType);
@@ -124,7 +123,7 @@ public class SolutionSetValueLine extends AbstractType {
 			}
 		};
 		typeDef.setSectionFinder(typeFinder);
-		typeDef.setCustomRenderer(new ArgumentRenderer());
+		typeDef.setRenderer(new ArgumentRenderer());
 		return typeDef;
 	}
 

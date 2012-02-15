@@ -40,9 +40,8 @@ import de.knowwe.kdom.sectionFinder.LineSectionFinder;
 public class DashTreeElement extends AbstractType {
 
 	private Type elementContent;
-	
-	@Override
-	protected void init() {
+
+	public DashTreeElement() {
 		this.sectionFinder = new RootFinder();
 		this.childrenTypes.add(new DashesPrefix());
 		this.childrenTypes.add(new LineEndComment());

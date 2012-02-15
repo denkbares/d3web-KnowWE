@@ -32,12 +32,10 @@ import de.knowwe.kdom.renderer.StyleRenderer;
  */
 public class CommentLineType extends AbstractType {
 
-	@Override
-	protected void init() {
-		super.init();
+	public CommentLineType() {
 
 		setSectionFinder(new RegexSectionFinder(Patterns.COMMENTLINE, Pattern.MULTILINE));
-		setCustomRenderer(StyleRenderer.COMMENT);
+		setRenderer(StyleRenderer.COMMENT);
 
 	}
 

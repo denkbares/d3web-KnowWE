@@ -51,11 +51,10 @@ public class CondKnown extends D3webCondition<CondKnown> {
 	protected String[] KEYWORDS = {
 			"KNOWN", "BEKANNT" };
 
-	@Override
-	protected void init() {
+	public CondKnown() {
 
 		this.sectionFinder = new CondKnownFinder();
-		this.setCustomRenderer(new StyleRenderer(StyleRenderer.KEYWORDS.getCssStyle()) {
+		this.setRenderer(new StyleRenderer(StyleRenderer.KEYWORDS.getCssStyle()) {
 
 			@Override
 			protected void renderContent(KnowWEArticle article, Section section, UserContext user, StringBuilder string) {

@@ -38,6 +38,10 @@ public class SemanticAnnotation extends AbstractType {
 
 	public SemanticAnnotation() {
 		super(new AnnotationSectionFinder());
+		this.setRenderer(new StandardAnnotationRenderer());
+		this.childrenTypes.add(new SemanticAnnotationStartSymbol("["));
+		this.childrenTypes.add(new SemanticAnnotationEndSymbol("]"));
+		this.childrenTypes.add(new SemanticAnnotationContent());
 	}
 
 	public static class AnnotationSectionFinder implements SectionFinder {
@@ -56,19 +60,6 @@ public class SemanticAnnotation extends AbstractType {
 			}
 			return result;
 		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.d3web.we.dom.AbstractType#init()
-	 */
-	@Override
-	protected void init() {
-		this.setCustomRenderer(new StandardAnnotationRenderer());
-		this.childrenTypes.add(new SemanticAnnotationStartSymbol("["));
-		this.childrenTypes.add(new SemanticAnnotationEndSymbol("]"));
-		this.childrenTypes.add(new SemanticAnnotationContent());
 	}
 
 }

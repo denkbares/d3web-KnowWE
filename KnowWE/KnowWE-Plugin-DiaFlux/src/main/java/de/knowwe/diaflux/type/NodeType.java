@@ -33,17 +33,13 @@ public class NodeType extends AbstractXMLType {
 
 	private NodeType() {
 		super("node");
+		this.childrenTypes.add(NodeContentType.getInstance());
 	}
 
 	public static NodeType getInstance() {
 		if (instance == null) instance = new NodeType();
 
 		return instance;
-	}
-
-	@Override
-	protected void init() {
-		this.childrenTypes.add(NodeContentType.getInstance());
 	}
 
 }

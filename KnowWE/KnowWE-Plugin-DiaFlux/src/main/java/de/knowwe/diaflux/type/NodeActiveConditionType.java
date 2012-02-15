@@ -40,8 +40,7 @@ public class NodeActiveConditionType extends D3webCondition<NodeActiveConditionT
 	public static final String REGEX = "IS_ACTIVE\\[([^\\]]*)\\(([^)]*)\\)\\]";
 	public static final Pattern PATTERN = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
 
-	@Override
-	protected void init() {
+	public NodeActiveConditionType() {
 		setSectionFinder(new RegexSectionFinder(PATTERN));
 
 		FlowchartReference flowchartReference = new FlowchartReference();

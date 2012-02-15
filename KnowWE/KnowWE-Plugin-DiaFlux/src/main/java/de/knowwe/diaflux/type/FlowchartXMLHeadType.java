@@ -34,10 +34,7 @@ import de.knowwe.kdom.xml.XMLHead;
  */
 public class FlowchartXMLHeadType extends XMLHead {
 
-	@Override
-	protected void init() {
-		super.init();
-
+	public FlowchartXMLHeadType() {
 		addChildType(new FlowchartTermDef());
 	}
 

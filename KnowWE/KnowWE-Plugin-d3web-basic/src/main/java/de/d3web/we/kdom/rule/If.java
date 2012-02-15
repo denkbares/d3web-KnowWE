@@ -28,7 +28,7 @@ public class If extends AbstractType {
 
 	public If() {
 		sectionFinder = new RegexSectionFinder(ConditionActionRule.RULE_START);
-		this.setCustomRenderer(StyleRenderer.KEYWORDS);
+		this.setRenderer(StyleRenderer.KEYWORDS);
 	}
 
 }

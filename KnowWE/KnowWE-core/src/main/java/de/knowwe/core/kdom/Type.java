@@ -20,13 +20,11 @@
 
 package de.knowwe.core.kdom;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.TreeMap;
 
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.parsing.Parser;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.MessageRenderer;
@@ -61,6 +59,7 @@ public interface Type {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("rawtypes")
 	public KnowWEDomRenderer getRenderer();
 
 	/**
@@ -85,24 +84,6 @@ public interface Type {
 	 * @return
 	 */
 	public abstract List<Type> getAllowedChildrenTypes();
-
-	/**
-	 * This method offers the possibility for a type to revise its subtree when
-	 * its completed. Not necessary in most cases.
-	 * 
-	 * @param section
-	 * @param kbm
-	 */
-	// public void reviseSubtree(KnowWEArticle article, Section<? extends
-	// Type> section, Priority p);
-
-	// public <T extends Type> void reviseSubtree(KnowWEArticle
-	// article, Section<T> section, SubtreeHandler<T> h);
-
-	public Collection<Section> getAllSectionsOfType();
-
-	public abstract void findTypeInstances(Class clazz,
-			List<Type> instances);
 
 	public void deactivateType();
 

@@ -6,6 +6,6 @@ public class AnonymousTypeInvisible extends AnonymousType {
 
 	public AnonymousTypeInvisible(String name) {
 		super(name);
-		this.setCustomRenderer(NothingRenderer.getInstance());
+		this.setRenderer(NothingRenderer.getInstance());
 	}
 }

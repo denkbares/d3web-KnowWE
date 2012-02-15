@@ -23,10 +23,9 @@ import de.knowwe.kdom.renderer.StyleRenderer;
  */
 public class CompCondLineEndComment extends AbstractType {
 
-	@Override
-	protected void init() {
+	public CompCondLineEndComment() {
 		this.setSectionFinder(new LineEndCommentFinder());
-		setCustomRenderer(StyleRenderer.COMMENT);
+		setRenderer(StyleRenderer.COMMENT);
 	}
 
 	/**

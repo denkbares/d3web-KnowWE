@@ -630,15 +630,6 @@ public class KnowWEEnvironment {
 		return null;
 	}
 
-	public List<Type> searchTypeInstances(Class<?> clazz) {
-		List<Type> instances = new ArrayList<Type>();
-		getRootType().findTypeInstances(clazz, instances);
-		// for (KnowWEModule mod : this.modules) {
-		// mod.findTypeInstances(clazz, instances);
-		// }
-		return instances;
-	}
-
 	private static void stream(InputStream in, OutputStream out) throws IOException {
 		byte[] buf = new byte[1024];
 		int len;

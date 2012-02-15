@@ -32,16 +32,6 @@ public class NodeContentType extends XMLContent {
 	private static NodeContentType instance;
 
 	private NodeContentType() {
-	}
-
-	public static NodeContentType getInstance() {
-		if (instance == null) instance = new NodeContentType();
-
-		return instance;
-	}
-
-	@Override
-	protected void init() {
 		this.childrenTypes.add(StartType.getInstance());
 		this.childrenTypes.add(ExitType.getInstance());
 		this.childrenTypes.add(PositionType.getInstance());
@@ -49,7 +39,12 @@ public class NodeContentType extends XMLContent {
 		this.childrenTypes.add(CommentType.getInstance());
 		this.childrenTypes.add(SnapshotType.getInstance());
 		this.childrenTypes.add(DecisionType.getInstance());
+	}
 
+	public static NodeContentType getInstance() {
+		if (instance == null) instance = new NodeContentType();
+
+		return instance;
 	}
 
 }

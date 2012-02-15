@@ -46,8 +46,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class DashSubtree extends AbstractType {
 
-	@Override
-	protected void init() {
+	public DashSubtree() {
 		this.sectionFinder = new SubtreeFinder();
 
 		this.childrenTypes.add(new DashTreeElement());

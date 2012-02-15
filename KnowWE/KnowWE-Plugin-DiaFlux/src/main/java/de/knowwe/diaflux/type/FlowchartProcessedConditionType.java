@@ -40,8 +40,7 @@ public class FlowchartProcessedConditionType extends D3webCondition<FlowchartPro
 
 	public static final Pattern PATTERN = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
 
-	@Override
-	protected void init() {
+	public FlowchartProcessedConditionType() {
 		setSectionFinder(new RegexSectionFinder(PATTERN));
 		FlowchartReference reference = new FlowchartReference();
 		reference.setSectionFinder(new RegexSectionFinder(PATTERN, FLOWCHART_GROUP));

@@ -37,10 +37,9 @@ public class LineContent extends AbstractType {
 		return instance;
 	}
 
-	@Override
-	protected void init() {
+	protected LineContent() {
 		this.sectionFinder = new AllTextSectionFinder();
-		this.setCustomRenderer(new DefaultTextLineRenderer());
+		this.setRenderer(new DefaultTextLineRenderer());
 
 	}
 }

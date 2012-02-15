@@ -328,7 +328,6 @@ public abstract class SubtreeHandler<T extends Type> {
 			this.handler = handler;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public boolean violatedConstraints(KnowWEArticle article, Section<T2> section) {
 
@@ -387,7 +386,6 @@ public abstract class SubtreeHandler<T extends Type> {
 			super(Operator.COMPILE_IF_VIOLATED, Purpose.DESTROY);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public boolean violatedConstraints(KnowWEArticle article, Section<T2> s) {
 			boolean notReused = !s.isReusedBy(article.getTitle());

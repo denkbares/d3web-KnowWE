@@ -44,7 +44,7 @@ public abstract class AnswerReference
 		extends D3webTermReference<Choice> {
 
 	public AnswerReference() {
-		this.setCustomRenderer(StyleRenderer.CHOICE);
+		this.setRenderer(StyleRenderer.CHOICE);
 	}
 
 	@Override

@@ -61,8 +61,7 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 	private static String[] comparators = {
 			"<=", ">=", "==", "=", "<", ">", };
 
-	@Override
-	protected void init() {
+	public NumericalFinding() {
 		this.setSectionFinder(new NumericalFindingFinder());
 
 		// comparator

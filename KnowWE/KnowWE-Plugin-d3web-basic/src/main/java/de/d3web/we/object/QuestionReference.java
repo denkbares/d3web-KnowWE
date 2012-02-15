@@ -37,7 +37,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class QuestionReference extends D3webTermReference<Question> {
 
 	public QuestionReference() {
-		this.setCustomRenderer(StyleRenderer.Question);
+		this.setRenderer(StyleRenderer.Question);
 		this.addSubtreeHandler(new SimpleTermReferenceRegistrationHandler(
 				TermRegistrationScope.LOCAL));
 	}

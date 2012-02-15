@@ -39,7 +39,7 @@ public class RatedTestCase extends AbstractType {
 		// for timestamps like [5h31m5s]
 		SquareBracedType bracedType = new SquareBracedType(new TimeStampType());
 		bracedType.setSteal(true);
-		bracedType.setCustomRenderer(StyleRenderer.NUMBER);
+		bracedType.setRenderer(StyleRenderer.NUMBER);
 
 		childrenTypes.add(bracedType);
 		childrenTypes.add(new Findings());

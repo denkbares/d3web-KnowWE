@@ -27,8 +27,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
 public class IndicationLine extends AbstractType {
 
-	@Override
-	protected void init() {
+	public IndicationLine() {
 		this.sectionFinder = new AllTextFinderTrimmed();
 
 		QuestionnaireReference qc = new QuestionnaireReference();

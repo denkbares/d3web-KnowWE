@@ -137,7 +137,7 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 		}
 
 		public Intervall() {
-			this.setCustomRenderer(StyleRenderer.NUMBER);
+			this.setRenderer(StyleRenderer.NUMBER);
 			this.setSectionFinder(new SectionFinder() {
 
 				@Override

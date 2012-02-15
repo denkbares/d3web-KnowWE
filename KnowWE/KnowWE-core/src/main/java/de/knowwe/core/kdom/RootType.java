@@ -43,16 +43,7 @@ public class RootType extends AbstractType {
 
 	private RootType() {
 		this.setSectionFinder(new AllTextSectionFinder());
-
-	}
-
-	public static RootType getInstance() {
-		return instance;
-	}
-
-	@Override
-	protected KnowWEDomRenderer<RootType> getDefaultRenderer() {
-		return new KnowWEDomRenderer<RootType>() {
+		this.setRenderer(new KnowWEDomRenderer<RootType>() {
 
 			@Override
 			public void render(KnowWEArticle article, Section<RootType> section, UserContext user, StringBuilder string) {
@@ -70,7 +61,12 @@ public class RootType extends AbstractType {
 				}
 				DelegateRenderer.getInstance().render(article, section, user, string);
 			}
-		};
+		});
+
+	}
+
+	public static RootType getInstance() {
+		return instance;
 	}
 
 }

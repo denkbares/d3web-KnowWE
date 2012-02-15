@@ -25,7 +25,6 @@ import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
@@ -40,11 +39,7 @@ public class UnknownAnnotationType extends AbstractType {
 
 	public UnknownAnnotationType() {
 		this.setSectionFinder(new RegexSectionFinder(PATTERN));
-	}
-
-	@Override
-	protected KnowWEDomRenderer getDefaultRenderer() {
-		return new StyleRenderer("error_highlight", null);
+		setRenderer(new StyleRenderer("error_highlight", null));
 	}
 
 	/**

@@ -65,7 +65,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		super(MARKUP);
 		this.addSubtreeHandler(new DashboardSubtreeHandler(readIgnoreFlag()));
 		// this.setCustomRenderer(new DashboardRenderer());
-		this.setCustomRenderer(new CIDashboardRenderer());
+		this.setRenderer(new CIDashboardRenderer());
 	}
 
 	private boolean readIgnoreFlag() {

@@ -21,7 +21,6 @@ package de.d3web.we.testcase.kdom;
 import de.d3web.we.testcase.renderer.TestCaseRunnerRenderer;
 import de.knowwe.core.KnowWERessourceLoader;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -56,7 +55,7 @@ public class TestCaseRunnerType extends DefaultMarkupType {
 	public TestCaseRunnerType() {
 		super(MARKUP);
 		this.setIgnorePackageCompile(true);
-		this.setCustomRenderer(this.getRenderer());
+		this.setRenderer(new TestCaseRunnerRenderer());
 		KnowWERessourceLoader.getInstance().add("testcase.js",
 				KnowWERessourceLoader.RESOURCE_SCRIPT);
 		KnowWERessourceLoader.getInstance().add("testcase.css",
@@ -82,11 +81,6 @@ public class TestCaseRunnerType extends DefaultMarkupType {
 		assert section.get() instanceof TestCaseRunnerType;
 		String waitStr = DefaultMarkupType.getAnnotation(section, ANNOTATION_MODE);
 		return Long.getLong(waitStr).longValue();
-	}
-
-	@Override
-	public KnowWEDomRenderer<TestCaseRunnerType> getRenderer() {
-		return new TestCaseRunnerRenderer();
 	}
 
 }

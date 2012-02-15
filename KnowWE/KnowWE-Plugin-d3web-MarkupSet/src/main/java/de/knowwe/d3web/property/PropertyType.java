@@ -32,7 +32,7 @@ public class PropertyType extends AbstractType {
 	public PropertyType() {
 		this.setSectionFinder(new RegexSectionFinder(
 				Pattern.compile("^\\s*\\.\\s*(" + PropertyDeclarationType.NAME + ")\\s*"), 1));
-		this.setCustomRenderer(StyleRenderer.PROPERTY);
+		this.setRenderer(StyleRenderer.PROPERTY);
 	}
 
 	@SuppressWarnings("rawtypes")

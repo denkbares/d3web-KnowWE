@@ -52,8 +52,7 @@ public class CallFlowActionType extends D3webRuleAction<CallFlowActionType> {
 		System.out.println(m.group(3));
 	}
 
-	@Override
-	protected void init() {
+	public CallFlowActionType() {
 		setSectionFinder(new RegexSectionFinder(PATTERN));
 
 		FlowchartReference flowchartReference = new FlowchartReference();

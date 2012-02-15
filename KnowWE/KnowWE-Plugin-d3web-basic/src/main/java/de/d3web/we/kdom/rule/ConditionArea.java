@@ -38,7 +38,7 @@ public class ConditionArea extends AbstractType {
 	public ConditionArea() {
 		compCond = new CompositeCondition();
 		EndLineComment comment = new EndLineComment();
-		comment.setCustomRenderer(StyleRenderer.COMMENT);
+		comment.setRenderer(StyleRenderer.COMMENT);
 		this.addChildType(comment);
 		this.addChildType(compCond);
 	}

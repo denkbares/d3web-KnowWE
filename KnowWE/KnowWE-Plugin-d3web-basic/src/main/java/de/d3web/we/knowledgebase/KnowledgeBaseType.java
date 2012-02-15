@@ -90,7 +90,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 	public KnowledgeBaseType() {
 		super(MARKUP);
 		this.setIgnorePackageCompile(true);
-		this.setCustomRenderer(new KnowledgeBaseRenderer());
+		this.setRenderer(new KnowledgeBaseRenderer());
 		this.addSubtreeHandler(Priority.HIGHER, new D3webSubtreeHandler<KnowledgeBaseType>() {
 
 			@Override

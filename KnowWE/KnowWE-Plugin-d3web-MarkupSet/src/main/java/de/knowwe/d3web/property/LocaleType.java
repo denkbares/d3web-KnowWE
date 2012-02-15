@@ -38,7 +38,7 @@ public class LocaleType extends AbstractType {
 	public LocaleType() {
 		this.setSectionFinder(new RegexSectionFinder(
 				Pattern.compile("^\\s*\\.\\s*(\\w{2}(?:\\.\\w{2})?)\\s*"), 1));
-		this.setCustomRenderer(StyleRenderer.LOCALE);
+		this.setRenderer(StyleRenderer.LOCALE);
 	}
 
 	public Locale getLocale(Section<LocaleType> s) {

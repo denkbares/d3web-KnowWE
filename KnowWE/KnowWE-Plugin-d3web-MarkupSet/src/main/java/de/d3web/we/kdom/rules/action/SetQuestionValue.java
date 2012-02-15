@@ -49,8 +49,7 @@ import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
  */
 public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 
-	@Override
-	public void init() {
+	public SetQuestionValue() {
 		this.sectionFinder = new SetQuestionValueSectionFinder();
 		Equals equals = new Equals();
 		QuestionReference qr = new QuestionReference();
@@ -91,11 +90,11 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 
 		if (Sections.findSuccessor(s, UnknownValueType.class) != null) {
 			value = Unknown.getInstance();
-		} else {
+		}
+		else {
 			Section<AnswerReference> aref = Sections.findSuccessor(s,
 					AnswerReference.class);
-			if (aref == null)
-				return null;
+			if (aref == null) return null;
 			value = aref.get().getTermObject(article, aref);
 		}
 
@@ -107,7 +106,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 			a.setValue(value);
 			return a;
 		}
- else {
+		else {
 			return null;
 		}
 	}
