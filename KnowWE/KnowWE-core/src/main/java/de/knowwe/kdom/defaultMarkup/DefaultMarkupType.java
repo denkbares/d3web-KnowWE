@@ -25,15 +25,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import de.d3web.plugin.Extension;
-import de.d3web.plugin.PluginManager;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.MessageRenderer;
 
 /**
@@ -100,8 +97,6 @@ import de.knowwe.core.report.MessageRenderer;
  */
 public class DefaultMarkupType extends AbstractType {
 
-	private final static String DEFAULTMARKUPSUBTREEHANDLER_EXTENSIONPOINT = "DefaultMarkupSubtreeHandler";
-
 	private final static int FLAGS =
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL;
 
@@ -129,7 +124,6 @@ public class DefaultMarkupType extends AbstractType {
 
 	private final DefaultMarkup markup;
 
-	@SuppressWarnings("unchecked")
 	public DefaultMarkupType(DefaultMarkup markup) {
 		this.markup = markup;
 		this.setRenderer(new DefaultMarkupRenderer());
@@ -143,11 +137,6 @@ public class DefaultMarkupType extends AbstractType {
 		}
 		this.childrenTypes.add(new UnknownAnnotationType());
 		this.addSubtreeHandler(Priority.PRECOMPILE_HIGH, new DefaultMarkupSubtreeHandler(markup));
-		Extension[] extensions = PluginManager.getInstance().getExtensions("KnowWEExtensionPoints",
-				DEFAULTMARKUPSUBTREEHANDLER_EXTENSIONPOINT);
-		for (Extension e : extensions) {
-			this.addSubtreeHandler((SubtreeHandler<? extends Type>) e.getNewInstance());
-		}
 	}
 
 	// TODO: already exists in parent class! Is this a problem?

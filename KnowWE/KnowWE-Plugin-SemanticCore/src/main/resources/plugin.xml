@@ -65,7 +65,7 @@
                 <parameter id="priority" value="5" />
         </extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="DefaultMarkupSubtreeHandler"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="SubtreeHandler"
 		id="DefaultMarkupOwlHandler">
 		<parameter id="class"
 			value="de.d3web.we.kdom.defaultMarkup.DefaultMarkupOwlHandler" />
@@ -73,6 +73,8 @@
 		<parameter id="description" value="Subtreehandler for Defaultmarkup to add owl knowledge" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
+		<parameter id="handlerpriority" value="0" />
+		<parameter id="scope" value="de.knowwe.kdom.defaultMarkup.DefaultMarkupType" />
 	</extension>
         
 </plugin>
