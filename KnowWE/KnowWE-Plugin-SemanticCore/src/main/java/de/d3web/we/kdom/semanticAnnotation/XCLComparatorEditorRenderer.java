@@ -20,19 +20,18 @@
 
 package de.d3web.we.kdom.semanticAnnotation;
 
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
-public class XCLComparatorEditorRenderer extends KnowWEDomRenderer {
+public class XCLComparatorEditorRenderer implements KnowWERenderer {
 
 	private static String[] comps = {
 			"=", "<=", ">=", ">", "<" };
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, UserContext user, StringBuilder string) {
+	public void render(Section sec, UserContext user, StringBuilder string) {
 		String currentOp = sec.getText().trim();
 
 		StringBuilder buffi = new StringBuilder();

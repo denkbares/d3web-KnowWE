@@ -52,17 +52,20 @@ public class DefaultErrorRenderer implements MessageRenderer {
 	}
 
 	@Override
-	public String postRenderMessage(Message m, UserContext user) {
+	public String postRenderMessage(Message m, UserContext user, String source) {
 		return KnowWEUtils.maskHTML("</span>");
 	}
 
 	@Override
-	public String preRenderMessage(Message m, UserContext user) {
+	public String preRenderMessage(Message m, UserContext user, String source) {
 		StringBuilder string = new StringBuilder();
 
 		string.append(KnowWEUtils.maskHTML("<span"));
 		String tooltip = KnowWEUtils.maskJSPWikiMarkup(m.getVerbalization());
 		if (tooltip != null) {
+			if (source != null && !source.isEmpty()) {
+				tooltip = source + ": " + tooltip;
+			}
 			string.append(" title='").append(
 					tooltip.replace('\'', '"')).append("'");
 		}

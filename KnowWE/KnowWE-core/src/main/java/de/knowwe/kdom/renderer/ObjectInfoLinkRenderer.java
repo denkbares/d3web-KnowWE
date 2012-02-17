@@ -23,27 +23,26 @@ package de.knowwe.kdom.renderer;
 import java.net.URLEncoder;
 
 import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
-public class ObjectInfoLinkRenderer extends KnowWEDomRenderer {
+public class ObjectInfoLinkRenderer implements KnowWERenderer {
 
-	KnowWEDomRenderer renderer = new DefaultTextRenderer();
+	KnowWERenderer renderer = new DefaultTextRenderer();
 
-	public ObjectInfoLinkRenderer(KnowWEDomRenderer renderer) {
+	public ObjectInfoLinkRenderer(KnowWERenderer renderer) {
 		super();
 		this.renderer = renderer;
 	}
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, UserContext user, StringBuilder string) {
+	public void render(Section sec, UserContext user, StringBuilder string) {
 
 		StringBuilder b = new StringBuilder();
-		renderer.render(article, sec, user, b);
+		renderer.render(sec, user, b);
 
 		String objectName = sec.getText().trim();
 		boolean pageExists = KnowWEEnvironment.getInstance().getWikiConnector().doesPageExist(

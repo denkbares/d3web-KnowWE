@@ -18,10 +18,9 @@
  */
 package de.d3web.we.solutionpanel;
 
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -45,21 +44,16 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  */
 public class ShowSolutionsRenderer extends DefaultMarkupRenderer<ShowSolutionsType> {
 
-	public ShowSolutionsRenderer() {
-		// TODO: here we can also add an icon for the renderer
-		super(false);
-	}
-
 	@SuppressWarnings({
 			"unchecked", "rawtypes" })
 	@Override
-	protected void renderContents(KnowWEArticle article, Section<ShowSolutionsType> section, UserContext user, StringBuilder string) {
+	protected void renderContents(Section<ShowSolutionsType> section, UserContext user, StringBuilder string) {
 		// only render the content section
 		Section<?> child = DefaultMarkupType.getContentSection(section);
 		if (child == null) return; // noting to render
 
-		KnowWEDomRenderer renderer = DelegateRenderer.getRenderer(child, user);
-		renderer.render(article, child, user, string);
+		KnowWERenderer renderer = DelegateRenderer.getRenderer(child, user);
+		renderer.render(child, user, string);
 	}
 
 }

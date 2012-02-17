@@ -21,22 +21,21 @@
 package de.d3web.we.kdom.namespaces;
 
 import java.util.HashMap;
-import java.util.ResourceBundle;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 
 import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
-public class NamespacesContentRenderer extends KnowWEDomRenderer {
+public class NamespacesContentRenderer implements KnowWERenderer {
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, UserContext user, StringBuilder string) {
+	public void render(Section sec, UserContext user, StringBuilder string) {
 		ISemanticCore sc = SemanticCoreDelegator.getInstance();
 		StringBuffer buffy = new StringBuffer();
 		ResourceBundle rb = KnowWEEnvironment.getInstance()

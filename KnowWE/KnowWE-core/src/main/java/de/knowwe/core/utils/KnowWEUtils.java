@@ -26,15 +26,18 @@ import java.io.FileWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 
+import de.knowwe.core.KnowWEArticleManager;
 import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
@@ -540,6 +543,29 @@ public class KnowWEUtils {
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * Returns all master articles that compile the given Section. If no master
+	 * article compiles the Section, at least the article of the Section itself
+	 * is returned, so the Collection always at least contains one article.
+	 * 
+	 * @created 16.02.2012
+	 * @param section is the Section for which you want to know the compiling
+	 *        articles
+	 * @return a non empty Collection of articles that compile the given Section
+	 */
+	public static Collection<KnowWEArticle> getCompilingArticles(Section<?> section) {
+		Collection<KnowWEArticle> articles = new ArrayList<KnowWEArticle>();
+		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
+		Set<String> referingArticleTitles = env.getPackageManager(section.getWeb()).getArticlesReferringTo(
+				section);
+		KnowWEArticleManager articleManager = env.getArticleManager(section.getWeb());
+		for (String title : referingArticleTitles) {
+			articles.add(articleManager.getArticle(title));
+		}
+		if (articles.isEmpty()) articles.add(section.getArticle());
+		return articles;
 	}
 
 }

@@ -27,8 +27,9 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -36,14 +37,15 @@ import de.knowwe.kdom.renderer.StyleRenderer;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 15.02.2012
  */
-public class NamedObjectRenderer extends KnowWEDomRenderer<D3webTermReference<NamedObject>> {
+public class NamedObjectRenderer implements KnowWERenderer<D3webTermReference<NamedObject>> {
 
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
 	@Override
-	public void render(KnowWEArticle article, Section<D3webTermReference<NamedObject>> sec, UserContext user, StringBuilder string) {
+	public void render(Section<D3webTermReference<NamedObject>> sec, UserContext user, StringBuilder string) {
+		KnowWEArticle article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
 		NamedObject object = sec.get().getTermObject(article, sec);
-		KnowWEDomRenderer renderer;
+		KnowWERenderer renderer;
 		if (object instanceof Question) {
 			renderer = StyleRenderer.Question;
 		}
@@ -62,6 +64,6 @@ public class NamedObjectRenderer extends KnowWEDomRenderer<D3webTermReference<Na
 		else {
 			renderer = PlainText.getInstance().getRenderer();
 		}
-		renderer.render(article, sec, user, string);
+		renderer.render(sec, user, string);
 	}
 }

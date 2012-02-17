@@ -25,7 +25,7 @@ import java.util.TreeMap;
 
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.parsing.Parser;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.MessageRenderer;
 
@@ -60,7 +60,7 @@ public interface Type {
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
-	public KnowWEDomRenderer getRenderer();
+	public KnowWERenderer getRenderer();
 
 	/**
 	 * Returns the parser that can be used to parse the textual markup of this

@@ -18,11 +18,10 @@
  */
 package de.d3web.we.kdom.rules.action;
 
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.SplitUtility;
@@ -42,12 +41,12 @@ public abstract class BracketsAction<T extends Type> extends D3webRuleAction<T> 
 	protected static final String CLOSE = "]";
 
 	public BracketsAction(final String[] alternativeKeys) {
-		this.setRenderer(new KnowWEDomRenderer<Type>() {
+		this.setRenderer(new KnowWERenderer<Type>() {
 
 			@Override
-			public void render(KnowWEArticle article, Section<Type> sec, UserContext user, StringBuilder string) {
+			public void render(Section<Type> sec, UserContext user, StringBuilder string) {
 				StringBuilder b = new StringBuilder();
-				DelegateRenderer.getInstance().render(article, sec, user, b);
+				DelegateRenderer.getInstance().render(sec, user, b);
 				string.append(b.toString().replaceAll("\\[", "~["));
 				
 			}

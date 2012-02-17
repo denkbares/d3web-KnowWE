@@ -8,30 +8,29 @@ import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.compile.packaging.KnowWEPackageManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
-public class SinglePackageReferenceRenderer extends KnowWEDomRenderer {
+public class SinglePackageReferenceRenderer implements KnowWERenderer {
 
 	@Override
-	public void render(KnowWEArticle article,
-			Section sec,
+	public void render(Section sec,
 			UserContext user,
 			StringBuilder string) {
 
 		String packageName = sec.getText();
 
 		KnowWEPackageManager packageManager = KnowWEEnvironment.getInstance().getPackageManager(
-				article.getWeb());
+				sec.getWeb());
 
 		List<Section<?>> packageDefinitions = packageManager.getSectionsOfPackage(packageName);
 
 		Collection<Message> kdomErrors = new LinkedList<Message>();
 		Collection<Message> kdomWarnings = new LinkedList<Message>();
-
+		KnowWEArticle article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
 		for (Section<?> packageDef : packageDefinitions) {
 			Collection<Message> allmsgs = Messages.getMessagesFromSubtree(article, packageDef);
 

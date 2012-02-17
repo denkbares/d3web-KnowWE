@@ -28,7 +28,6 @@ import java.net.UnknownHostException;
 
 import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.d3web.action.DownloadKnowledgeBase;
@@ -40,16 +39,16 @@ import de.knowwe.tools.ToolProvider;
 public class KnowledgeBaseDownloadProvider implements ToolProvider {
 
 	@Override
-	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
+	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		// and provide both download and refresh as tools
-		Tool download = getDownloadTool(article, section, userContext);
-		Tool qrCode = getQRCodeTool(article, section, userContext);
-		Tool refresh = getRefreshTool(article, section, userContext);
+		Tool download = getDownloadTool(section, userContext);
+		Tool qrCode = getQRCodeTool(section, userContext);
+		Tool refresh = getRefreshTool(section, userContext);
 		return new Tool[] {
 				refresh, download, qrCode };
 	}
 
-	protected Tool getRefreshTool(KnowWEArticle article, Section<?> section, UserContext userContext) {
+	protected Tool getRefreshTool(Section<?> section, UserContext userContext) {
 		// tool to execute a full-parse onto the knowledge base
 		// may be removed in later releases (after moneypenny)
 		String jsAction = "var url = window.location.href;" +
@@ -64,15 +63,15 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 				jsAction);
 	}
 
-	protected Tool getDownloadTool(KnowWEArticle article, Section<?> section, UserContext userContext) {
+	protected Tool getDownloadTool(Section<?> section, UserContext userContext) {
 		// tool to provide download capability
 		String kbName = DefaultMarkupType.getContent(section).trim();
 		if (kbName.isEmpty()) {
 			kbName = "knowledgebase";
 		}
 		String jsAction = "window.location='action/DownloadKnowledgeBase" +
-				"?" + KnowWEAttributes.TOPIC + "=" + article.getTitle() +
-				"&" + KnowWEAttributes.WEB + "=" + article.getWeb() +
+				"?" + KnowWEAttributes.TOPIC + "=" + section.getTitle() +
+				"&" + KnowWEAttributes.WEB + "=" + section.getWeb() +
 				"&" + DownloadKnowledgeBase.PARAM_FILENAME + "=" + kbName + ".d3web'";
 		return new DefaultTool(
 				"KnowWEExtension/d3web/icon/download16.gif",
@@ -81,7 +80,7 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 				jsAction);
 	}
 
-	protected Tool getQRCodeTool(KnowWEArticle article, Section<?> section, UserContext userContext) {
+	protected Tool getQRCodeTool(Section<?> section, UserContext userContext) {
 		// tool to provide download capability
 		String kbName = DefaultMarkupType.getContent(section).trim();
 		if (kbName.isEmpty()) {
@@ -104,8 +103,8 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 			e.printStackTrace();
 		}
 		String kbURL = baseUrl + "action/DownloadKnowledgeBase" +
-				"%3F" + KnowWEAttributes.TOPIC + "=" + article.getTitle() +
-				"%26" + KnowWEAttributes.WEB + "=" + article.getWeb() +
+				"%3F" + KnowWEAttributes.TOPIC + "=" + section.getTitle() +
+				"%26" + KnowWEAttributes.WEB + "=" + section.getWeb() +
 				"%26" + DownloadKnowledgeBase.PARAM_FILENAME + "=" + kbName + ".d3web";
 
 		try {

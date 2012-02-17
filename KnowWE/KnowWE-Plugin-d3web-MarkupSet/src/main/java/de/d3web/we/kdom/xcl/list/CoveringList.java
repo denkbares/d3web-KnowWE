@@ -49,7 +49,7 @@ import de.knowwe.core.kdom.basicType.CommentLineType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
@@ -77,6 +77,8 @@ import de.knowwe.kdom.sectionFinder.UnquotedExpressionFinder;
  * 
  */
 public class CoveringList extends AbstractType {
+
+	private static final String RELATION_STORE_KEY = "XCLRELATION_STORE_KEY";
 
 	public CoveringList() {
 		this.sectionFinder = new AllTextSectionFinder();
@@ -113,12 +115,12 @@ public class CoveringList extends AbstractType {
 	 * @author volker_belli
 	 * @created 08.12.2010
 	 */
-	private static final class CoveringListRenderer extends KnowWEDomRenderer<Type> {
+	private static final class CoveringListRenderer implements KnowWERenderer<Type> {
 
 		@Override
-		public void render(KnowWEArticle article, Section<Type> sec, UserContext user, StringBuilder string) {
+		public void render(Section<Type> sec, UserContext user, StringBuilder string) {
 			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID() + "'>"));
-			DelegateRenderer.getInstance().render(article, sec, user, string);
+			DelegateRenderer.getInstance().render(sec, user, string);
 			string.append(KnowWEUtils.maskHTML("</span>"));
 		}
 	}
@@ -176,8 +178,6 @@ public class CoveringList extends AbstractType {
 		 * 
 		 */
 		class CreateXCLRelationHandler extends D3webSubtreeHandler<CoveringRelation> {
-
-			private final String relationStoreKey = "XCLRELATION_STORE_KEY";
 
 			public CreateXCLRelationHandler() {
 				this.registerConstraintModule(new SuccessorNotReusedConstraint<CoveringRelation>());
@@ -270,7 +270,7 @@ public class CoveringList extends AbstractType {
 								// set KDOMID here used in {@link KBRenderer}
 								relation.setKdmomID(s.getID());
 
-								KnowWEUtils.storeObject(article, s, relationStoreKey, relation);
+								KnowWEUtils.storeObject(article, s, RELATION_STORE_KEY, relation);
 
 								String wString = "";
 								if (w > 0 && w != 1) {
@@ -303,7 +303,7 @@ public class CoveringList extends AbstractType {
 
 				if (xclModel == null) return;
 				XCLRelation rel = (XCLRelation) s.getSectionStore().getObject(article,
-						relationStoreKey);
+						RELATION_STORE_KEY);
 
 				if (rel == null) return;
 				xclModel.removeRelation(rel);
@@ -350,22 +350,21 @@ public class CoveringList extends AbstractType {
 	 *         Answer unknown: No Highlighting
 	 * 
 	 */
-	class CoveringRelationRenderer extends KnowWEDomRenderer<CoveringRelation> {
-
-		public static final String KBID_KEY = "XCLRELATION_STORE_KEY";
+	class CoveringRelationRenderer implements KnowWERenderer<CoveringRelation> {
 
 		@Override
-		public void render(KnowWEArticle article, Section<CoveringRelation> sec, UserContext user, StringBuilder string) {
+		public void render(Section<CoveringRelation> sec, UserContext user, StringBuilder string) {
 
 			// wrapper for highlighting
 			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID()
 					+ "' class = 'XCLRelationInList'>"));
 
+			KnowWEArticle article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
 			XCLRelation relation = (XCLRelation) KnowWEUtils.getStoredObject(article, sec,
-					KBID_KEY);
+					RELATION_STORE_KEY);
 
 			if (relation == null) {
-				DelegateRenderer.getInstance().render(article, sec, user, string);
+				DelegateRenderer.getInstance().render(sec, user, string);
 				return;
 			}
 
@@ -376,7 +375,7 @@ public class CoveringList extends AbstractType {
 				try {
 					boolean fulfilled = relation.eval(session);
 					// Highlight Relation
-					this.renderRelation(article, sec, user, fulfilled, string, true);
+					this.renderRelation(sec, user, fulfilled, string, true);
 					// close the wrapper
 					string.append(KnowWEUtils.maskHTML("</span>"));
 					return;
@@ -389,7 +388,7 @@ public class CoveringList extends AbstractType {
 				}
 			}
 			// Something went wrong: Delegate to children
-			this.renderRelation(article, sec, user, false, string, false);
+			this.renderRelation(sec, user, false, string, false);
 			// close the wrapper
 			string.append(KnowWEUtils.maskHTML("</span>"));
 		}
@@ -406,7 +405,7 @@ public class CoveringList extends AbstractType {
 		 * @param string
 		 * @return
 		 */
-		private void renderRelation(KnowWEArticle article, Section<CoveringRelation> sec,
+		private void renderRelation(Section<CoveringRelation> sec,
 				UserContext user, boolean fulfilled, StringBuilder string, boolean highlight) {
 
 			StringBuilder buffi = new StringBuilder();
@@ -415,7 +414,7 @@ public class CoveringList extends AbstractType {
 			if (!highlight) {
 				List<Section<?>> children = sec.getChildren();
 				for (Section<?> s : children) {
-					buffi.append(this.renderRelationChild(article, s,
+					buffi.append(this.renderRelationChild(s,
 							fulfilled, user, ""));
 				}
 				string.append(KnowWEUtils.maskHTML(buffi.toString()));
@@ -427,7 +426,7 @@ public class CoveringList extends AbstractType {
 				// Iterate over children of the relation.
 				List<Section<?>> children = sec.getChildren();
 				for (Section<?> s : children) {
-					buffi.append(this.renderRelationChild(article, s,
+					buffi.append(this.renderRelationChild(s,
 							fulfilled, user, StyleRenderer.CONDITION_FULLFILLED));
 				}
 
@@ -436,7 +435,7 @@ public class CoveringList extends AbstractType {
 				// b false: Color red
 				List<Section<?>> children = sec.getChildren();
 				for (Section<?> s : children) {
-					buffi.append(this.renderRelationChild(article, s,
+					buffi.append(this.renderRelationChild(s,
 							fulfilled, user, StyleRenderer.CONDITION_FALSE));
 				}
 
@@ -447,7 +446,6 @@ public class CoveringList extends AbstractType {
 		/**
 		 * Renders the children of a CoveringRelation.
 		 * 
-		 * @param article
 		 * @param sec
 		 * @param fulfilled
 		 * @param user
@@ -455,7 +453,7 @@ public class CoveringList extends AbstractType {
 		 * @return
 		 */
 		@SuppressWarnings("unchecked")
-		private String renderRelationChild(KnowWEArticle article,
+		private String renderRelationChild(
 				Section<?> sec, boolean fulfilled, UserContext user,
 				String color) {
 			StringBuilder buffi = new StringBuilder();
@@ -465,20 +463,20 @@ public class CoveringList extends AbstractType {
 				// red if fulfilled
 
 				if (fulfilled && sec.getText().trim().equals("[--]")) {
-					StyleRenderer.OPERATOR.render(article,
-							sec, user, buffi);
+					StyleRenderer.OPERATOR.render(sec,
+							user, buffi);
 				}
 				else {
-					type.getRenderer().render(article, sec, user, buffi);
+					type.getRenderer().render(sec, user, buffi);
 				}
 
 			}
 			else if (type instanceof CompositeCondition) {
 				StyleRenderer.getRenderer(null, color).render(
-						article, sec, user, buffi);
+						sec, user, buffi);
 			}
 			else {
-				type.getRenderer().render(article, sec, user, buffi);
+				type.getRenderer().render(sec, user, buffi);
 			}
 
 			return buffi.toString();

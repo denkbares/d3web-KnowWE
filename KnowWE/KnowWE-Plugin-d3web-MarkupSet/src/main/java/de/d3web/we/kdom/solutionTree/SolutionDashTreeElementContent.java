@@ -32,7 +32,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -78,12 +78,12 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent {
 	 * @author volker_belli
 	 * @created 08.12.2010
 	 */
-	private static final class SolutionDashTreeElementContentRenderer extends KnowWEDomRenderer<Type> {
+	private static final class SolutionDashTreeElementContentRenderer implements KnowWERenderer<Type> {
 
 		@Override
-		public void render(KnowWEArticle article, Section<Type> sec, UserContext user, StringBuilder string) {
+		public void render(Section<Type> sec, UserContext user, StringBuilder string) {
 			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID() + "'>"));
-			DelegateRenderer.getInstance().render(article, sec, user, string);
+			DelegateRenderer.getInstance().render(sec, user, string);
 			string.append(KnowWEUtils.maskHTML("</span>"));
 		}
 	}

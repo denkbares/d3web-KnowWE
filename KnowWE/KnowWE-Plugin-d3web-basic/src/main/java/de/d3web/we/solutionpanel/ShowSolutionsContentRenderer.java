@@ -39,10 +39,9 @@ import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.ContentType;
@@ -63,13 +62,13 @@ import de.knowwe.kdom.defaultMarkup.ContentType;
  * @author Joachim Baumeister (denkbares GmbH)
  * @created 15.10.2010
  */
-public class ShowSolutionsContentRenderer extends KnowWEDomRenderer<ContentType> {
+public class ShowSolutionsContentRenderer implements KnowWERenderer<ContentType> {
 
 	public ShowSolutionsContentRenderer() {
 	}
 
 	@Override
-	public void render(KnowWEArticle article, Section<ContentType> section, UserContext user, StringBuilder string) {
+	public void render(Section<ContentType> section, UserContext user, StringBuilder string) {
 		string.append(KnowWEUtils.maskHTML("<span id='" + section.getID() + "'>"));
 		String text = section.getText();
 		if (!text.isEmpty()) {
@@ -77,7 +76,7 @@ public class ShowSolutionsContentRenderer extends KnowWEDomRenderer<ContentType>
 		}
 
 		String masterArticleName = ShowSolutionsType.getMaster(getShowSolutionsSection(section));
-		Session session = getSessionFor(masterArticleName, article.getWeb(), user);
+		Session session = getSessionFor(masterArticleName, section.getWeb(), user);
 		if (session == null) {
 			string.append("No knowledge base for: " + masterArticleName + "\n");
 		}

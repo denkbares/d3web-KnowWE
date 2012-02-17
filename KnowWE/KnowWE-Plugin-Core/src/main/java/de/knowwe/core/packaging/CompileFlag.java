@@ -25,11 +25,10 @@ import java.util.List;
 
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageReference;
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -52,18 +51,17 @@ public class CompileFlag extends DefaultMarkupType {
 		this.setRenderer(new CompileFlagRenderer());
 	}
 
-	static class CompileFlagRenderer extends KnowWEDomRenderer<CompileFlag> {
+	static class CompileFlagRenderer implements KnowWERenderer<CompileFlag> {
 
 		@Override
-		public void render(KnowWEArticle article,
-				Section<CompileFlag> sec,
+		public void render(Section<CompileFlag> sec,
 				UserContext user,
 				StringBuilder string) {
 
 			List<Section<SinglePackageReference>> packageReferences = new LinkedList<Section<SinglePackageReference>>();
 			Sections.findSuccessorsOfType(sec, SinglePackageReference.class, packageReferences);
 			if (packageReferences.isEmpty()) {
-				DelegateRenderer.getInstance().render(article, sec, user, string);
+				DelegateRenderer.getInstance().render(sec, user, string);
 				return;
 			}
 			string.append(KnowWEUtils.maskHTML("<div id=\"knowledge-panel\" class=\"panel\">"));
@@ -71,8 +69,8 @@ public class CompileFlag extends DefaultMarkupType {
 					"</h3><div>"));
 			for (Section<?> child : packageReferences) {
 				if (child.get() instanceof SinglePackageReference) {
-					((SinglePackageReferenceRenderer) child.get().getRenderer()).render(article,
-							child, user, string);
+					((SinglePackageReferenceRenderer) child.get().getRenderer()).render(child,
+							user, string);
 				}
 			}
 			string.append(KnowWEUtils.maskHTML("</div></div>"));
@@ -97,6 +95,5 @@ public class CompileFlag extends DefaultMarkupType {
 			return includes;
 		}
 	}
-
 
 }

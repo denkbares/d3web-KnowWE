@@ -18,10 +18,9 @@
  */
 package de.knowwe.tools;
 
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -32,21 +31,21 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @author volker_belli
  * @created 30.11.2010
  */
-public class ToolMenuDecoratingRenderer<T extends Type> extends KnowWEDomRenderer<T> {
+public class ToolMenuDecoratingRenderer<T extends Type> implements KnowWERenderer<T> {
 
-	private final KnowWEDomRenderer<?> decoratedRenderer;
+	private final KnowWERenderer<?> decoratedRenderer;
 
 	private static DefaultMarkupRenderer<DefaultMarkupType> defaultMarkupRenderer =
 			new DefaultMarkupRenderer<DefaultMarkupType>();
 
-	public ToolMenuDecoratingRenderer(KnowWEDomRenderer<T> decoratedRenderer) {
+	public ToolMenuDecoratingRenderer(KnowWERenderer<T> decoratedRenderer) {
 		this.decoratedRenderer = decoratedRenderer;
 	}
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, UserContext user, StringBuilder string) {
+	public void render(Section sec, UserContext user, StringBuilder string) {
 		// prepare tools
-		Tool[] tools = ToolUtils.getTools(article, sec, user);
+		Tool[] tools = ToolUtils.getTools(sec, user);
 		boolean hasTools = tools != null && tools.length > 0;
 
 		String headerID = "header_" + sec.getID();
@@ -62,7 +61,7 @@ public class ToolMenuDecoratingRenderer<T extends Type> extends KnowWEDomRendere
 					">" +
 					"</div>"));
 		}
-		decoratedRenderer.render(article, sec, user, string);
+		decoratedRenderer.render(sec, user, string);
 		if (hasTools) {
 			string.append(KnowWEUtils.maskHTML("</span>"));
 			String menuHTML = defaultMarkupRenderer.renderMenu(tools, sec.getID(), user);

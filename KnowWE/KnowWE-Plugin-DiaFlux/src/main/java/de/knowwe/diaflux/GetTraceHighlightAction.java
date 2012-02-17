@@ -34,10 +34,10 @@ import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.packaging.PackageRenderUtils;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.type.DiaFluxType;
 import de.knowwe.diaflux.type.FlowchartType;
 
@@ -63,8 +63,7 @@ public class GetTraceHighlightAction extends AbstractAction {
 		Section<FlowchartType> flowchart = Sections.findSuccessor(diaFluxSec, FlowchartType.class);
 		String flowName = FlowchartType.getFlowchartName(flowchart);
 
-		KnowWEArticle article = PackageRenderUtils.checkArticlesCompiling(diaFluxSec.getArticle(),
-				diaFluxSec, new StringBuilder());
+		KnowWEArticle article = KnowWEUtils.getCompilingArticles(diaFluxSec).iterator().next();
 
 		Session session = D3webUtils.getSession(article.getTitle(), context, article.getWeb());
 

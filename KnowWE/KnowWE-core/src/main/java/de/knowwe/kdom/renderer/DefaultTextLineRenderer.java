@@ -20,17 +20,16 @@
 
 package de.knowwe.kdom.renderer;
 
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.user.UserContext;
 
-public class DefaultTextLineRenderer extends KnowWEDomRenderer {
+public class DefaultTextLineRenderer implements KnowWERenderer {
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, UserContext user, StringBuilder string) {
-		DelegateRenderer.getInstance().render(article, sec, user, string);
+	public void render(Section sec, UserContext user, StringBuilder string) {
+		DelegateRenderer.getInstance().render(sec, user, string);
 		string.append(generateTextField(sec));
 	}
 

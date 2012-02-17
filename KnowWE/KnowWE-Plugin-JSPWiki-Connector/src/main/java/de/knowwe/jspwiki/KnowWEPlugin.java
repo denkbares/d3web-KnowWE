@@ -292,8 +292,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				}
 
 				// RENDER PAGE
-				article.getRenderer().render(article, article.getSection(),
-						userContext, articleHTML);
+				article.getRenderer().render(article.getSection(), userContext,
+						articleHTML);
 
 				// Render Post-PageAppendHandlers
 				for (PageAppendHandler pageAppendHandler : appendhandlers) {
@@ -365,8 +365,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			KnowWEArticle article) {
 		if (article != null) {
 			StringBuilder articleString = new StringBuilder();
-			article.getRenderer().render(article, article.getSection(),
-					userContext, articleString);
+			article.getRenderer().render(article.getSection(), userContext,
+					articleString);
 			return articleString.toString();
 		}
 		return content + "\n(no KDOM)";

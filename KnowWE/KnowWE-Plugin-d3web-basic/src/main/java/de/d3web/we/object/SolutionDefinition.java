@@ -33,7 +33,7 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
@@ -77,12 +77,13 @@ public abstract class SolutionDefinition
 	 *         Includes the ObjectInfoLinkRenderer.
 	 * 
 	 */
-	class SolutionIDHighlightingRenderer extends KnowWEDomRenderer<SolutionDefinition> {
+	class SolutionIDHighlightingRenderer implements KnowWERenderer<SolutionDefinition> {
 
 		@Override
-		public void render(KnowWEArticle article, Section<SolutionDefinition> sec,
-				UserContext user, StringBuilder string) {
+		public void render(Section<SolutionDefinition> sec, UserContext user,
+				StringBuilder string) {
 
+			KnowWEArticle article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
 			Session session = D3webUtils.getSession(article.getTitle(), user,
 					article.getWeb());
 
@@ -108,8 +109,8 @@ public abstract class SolutionDefinition
 				}
 			}
 
-			new ObjectInfoLinkRenderer(StyleRenderer.SOLUTION).render(article, sec,
-					user, string);
+			new ObjectInfoLinkRenderer(StyleRenderer.SOLUTION).render(sec, user,
+					string);
 			string.append(spanEnd);
 		}
 	}

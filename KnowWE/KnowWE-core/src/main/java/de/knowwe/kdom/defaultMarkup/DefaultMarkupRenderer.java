@@ -24,12 +24,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import de.knowwe.core.compile.packaging.PackageRenderUtils;
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
@@ -37,11 +36,9 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolUtils;
 
-public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDomRenderer<T> {
+public class DefaultMarkupRenderer<T extends DefaultMarkupType> implements KnowWERenderer<T> {
 
 	private final String iconPath;
-
-	private final boolean renderCompileWarnings;
 
 	private ToolsRenderMode renderMode = ToolsRenderMode.MENU;
 
@@ -50,44 +47,32 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 	}
 
 	public DefaultMarkupRenderer() {
-		this(null, true);
-	}
-
-	public DefaultMarkupRenderer(boolean renderCompileWarnings) {
-		this(null, renderCompileWarnings);
+		this(null);
 	}
 
 	public DefaultMarkupRenderer(String iconPath) {
-		this(iconPath, true);
-	}
-
-	public DefaultMarkupRenderer(String iconPath, boolean renderCompileWarnings) {
 		this.iconPath = iconPath;
-		this.renderCompileWarnings = renderCompileWarnings;
 	}
 
 	@Override
-	public void render(KnowWEArticle article, Section<T> section, UserContext user, StringBuilder buffer) {
+	public void render(Section<T> section, UserContext user, StringBuilder buffer) {
 		String id = section.getID();
-		Tool[] tools = ToolUtils.getTools(article, section, user);
+		Tool[] tools = ToolUtils.getTools(section, user);
 
 		// render markup title
 		StringBuilder markupTitle = new StringBuilder();
-		renderTitle(article, section, user, markupTitle);
+		renderTitle(section, user, markupTitle);
 
 		// create content
 		StringBuilder content = new StringBuilder();
-		if (this.renderCompileWarnings) {
-			article = PackageRenderUtils.checkArticlesCompiling(article, section, content);
-		}
 
 		// add an anchor to enable direct link to the section
 		String anchorName = KnowWEUtils.getAnchor(section);
 		content.append(KnowWEUtils.maskHTML("<a name='" + anchorName + "'></a>"));
 
 		// render messages and content
-		renderMessages(article, section, content);
-		renderContents(article, section, user, content);
+		renderMessages(section, content);
+		renderContents(section, user, content);
 
 		String cssClassName = "type_" + section.get().getName();
 
@@ -96,17 +81,17 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 				id, cssClassName, tools, user, buffer);
 	}
 
-	protected void renderTitle(KnowWEArticle article, Section<T> section, UserContext user, StringBuilder string) {
-		String icon = getTitleIcon(article, section, user);
-		String title = getTitleName(article, section, user);
+	protected void renderTitle(Section<T> section, UserContext user, StringBuilder string) {
+		String icon = getTitleIcon(section, user);
+		String title = getTitleName(section, user);
 		string.append(renderTitle(icon, title));
 	}
 
-	protected String getTitleIcon(KnowWEArticle article, Section<T> section, UserContext user) {
+	protected String getTitleIcon(Section<T> section, UserContext user) {
 		return this.iconPath;
 	}
 
-	protected String getTitleName(KnowWEArticle article, Section<T> section, UserContext user) {
+	protected String getTitleName(Section<T> section, UserContext user) {
 		return section.get().getName();
 	}
 
@@ -122,41 +107,74 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 		return result;
 	}
 
-	public void renderMessages(KnowWEArticle article, Section<? extends DefaultMarkupType> section, StringBuilder string) {
-		Collection<Message> allmsgs = Messages.getMessagesFromSubtree(article, section);
-		Collection<Message> errors = Messages.getErrors(allmsgs);
-		Collection<Message> warnings = Messages.getWarnings(allmsgs);
-		renderKDOMReportMessageBlock(errors, string);
-		renderKDOMReportMessageBlock(warnings, string);
+	public void renderMessages(Section<? extends DefaultMarkupType> section, StringBuilder string) {
+		Map<String, Collection<Message>> messagesFromSubtree = Messages.getMessagesFromSubtree(
+				section,
+				Message.Type.ERROR, Message.Type.WARNING);
+		renderMessageBlock(messagesFromSubtree, string, Message.Type.ERROR, Message.Type.WARNING);
 	}
 
-	public static void renderKDOMReportMessageBlock(Collection<Message> messages, StringBuilder string) {
-		if (messages == null) return;
-		if (messages.size() == 0) return;
+	public static void renderMessageBlock(Map<String, Collection<Message>> messagesByTitle,
+			StringBuilder string,
+			Message.Type... types) {
 
-		Message msg = messages.iterator().next();
-		String className = "";
-		if (msg.getType() == Message.Type.NOTICE) {
-			className = "information";
-		}
-		else if (msg.getType() == Message.Type.WARNING) {
-			className = "warning";
-		}
-		else if (msg.getType() == Message.Type.ERROR) {
-			className = "error";
-		}
+		if (messagesByTitle == null) return;
+		if (messagesByTitle.size() == 0) return;
 
-		string.append(KnowWEUtils.maskHTML("<span class='" + className
-				+ "' style='white-space: pre-wrap;'>"));
-		for (Message error : messages) {
-			string.append(KnowWEUtils.maskJSPWikiMarkup(error.getVerbalization()));
-			string.append("\n");
+		int masterArticleCount = messagesByTitle.size();
+
+		Collection<Message> globalMessages = messagesByTitle.get(null);
+		if (globalMessages != null) {
+			masterArticleCount--;
+			if (masterArticleCount > 1) {
+				string.append(KnowWEUtils.maskHTML("<span>Global Messages:</span></br>"));
+			}
+			renderMessagesOfTitle(globalMessages, string, types);
 		}
-		string.append(KnowWEUtils.maskHTML("</span>"));
+		for (Entry<String, Collection<Message>> entry : messagesByTitle.entrySet()) {
+			if (masterArticleCount > 1) {
+				string.append(KnowWEUtils.maskHTML("<span>Messages from '" + entry.getKey()
+						+ "':</span></br>"));
+			}
+			renderMessagesOfTitle(entry.getValue(), string, types);
+		}
+	}
+
+	private static void renderMessagesOfTitle(Collection<Message> allMsgs,
+			StringBuilder string,
+			Message.Type... types) {
+
+		for (Message.Type type : types) {
+			Collection<Message> messages = null;
+			String className = "";
+			if (type == Message.Type.NOTICE) {
+				className = "information";
+				messages = Messages.getNotices(allMsgs);
+			}
+			else if (type == Message.Type.WARNING) {
+				className = "warning";
+				messages = Messages.getWarnings(allMsgs);
+			}
+			else if (type == Message.Type.ERROR) {
+				className = "error";
+				messages = Messages.getErrors(allMsgs);
+			}
+
+			if (messages == null) continue;
+			if (messages.size() == 0) continue;
+
+			string.append(KnowWEUtils.maskHTML("<span class='" + className
+					+ "' style='white-space: pre-wrap;'>"));
+			for (Message error : messages) {
+				string.append(KnowWEUtils.maskJSPWikiMarkup(error.getVerbalization()));
+				string.append("\n");
+			}
+			string.append(KnowWEUtils.maskHTML("</span>"));
+		}
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void renderContents(KnowWEArticle article, Section<T> section, UserContext user, StringBuilder string) {
+	protected void renderContents(Section<T> section, UserContext user, StringBuilder string) {
 		List<Section<?>> subsecs = section.getChildren();
 		Section<?> first = subsecs.get(0);
 		Section<?> last = subsecs.get(subsecs.size() - 1);
@@ -167,7 +185,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> extends KnowWEDo
 			if (subsec == last && subsec.get() instanceof PlainText) {
 				continue;
 			}
-			subsec.get().getRenderer().render(article, subsec, user, string);
+			subsec.get().getRenderer().render(subsec, user, string);
 		}
 	}
 

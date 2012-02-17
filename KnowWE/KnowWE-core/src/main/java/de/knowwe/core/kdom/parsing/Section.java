@@ -671,15 +671,28 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 
 	/**
 	 * Method that looks (recursively down) for this section whether some errors
+	 * has been stored in that subtree.
+	 */
+	public boolean hasErrorInSubtree() {
+		Map<String, Collection<Message>> errors = Messages.getMessages(this, Message.Type.ERROR);
+		if (!errors.isEmpty()) return true;
+		for (Section<?> child : children) {
+			boolean err = child.hasErrorInSubtree();
+			if (err) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Method that looks (recursively down) for this section whether some errors
 	 * has been stored in that subtree for the given article.
-	 * 
-	 * @return
 	 */
 	public boolean hasErrorInSubtree(KnowWEArticle article) {
-		Collection<Message> s = Messages.getErrors(article, this);
-		if (s != null && s.size() > 0) {
-			return true;
-		}
+		Collection<Message> errors = Messages.getMessages(article, this, Message.Type.ERROR);
+		if (!errors.isEmpty()) return true;
 		for (Section<?> child : children) {
 			boolean err = child.hasErrorInSubtree(article);
 			if (err) {
@@ -1042,14 +1055,6 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 			try {
 				// long time = System.currentTimeMillis();
 				Collection<Message> msgs = handler.create(article, this);
-				// a message should know its origin:
-				if (msgs != null) {
-					for (Message m : msgs) {
-						if (m != null) {
-							m.setSection(this);
-						}
-					}
-				}
 				Messages.storeMessages(article, this, handler.getClass(), msgs);
 				setCompiledBy(article.getTitle(), handler, true);
 			}

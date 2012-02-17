@@ -23,33 +23,32 @@ package de.knowwe.kdom.renderer;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.user.UserContext;
 
 @Deprecated
 @SuppressWarnings("rawtypes")
-public abstract class ConditionalRenderer extends KnowWEDomRenderer {
+public abstract class ConditionalRenderer implements KnowWERenderer {
 
-	protected List<KnowWEDomRenderer> conditionalRenderers = new ArrayList<KnowWEDomRenderer>();
+	protected List<KnowWERenderer> conditionalRenderers = new ArrayList<KnowWERenderer>();
 
-	public void addConditionalRenderer(KnowWEDomRenderer r) {
+	public void addConditionalRenderer(KnowWERenderer r) {
 		conditionalRenderers.add(r);
 	}
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, UserContext user, StringBuilder string) {
+	public void render(Section sec, UserContext user, StringBuilder string) {
 		StringBuilder b = new StringBuilder();
-		for (KnowWEDomRenderer r : conditionalRenderers) {
-			r.render(article, sec, user, b);
+		for (KnowWERenderer r : conditionalRenderers) {
+			r.render(sec, user, b);
 			if (b.length() == 0) {
 				return;
 			}
 		}
-		renderDefault(article, sec, user, string);
+		renderDefault(sec, user, string);
 	}
 
-	protected abstract void renderDefault(KnowWEArticle article, Section sec, UserContext user, StringBuilder string);
+	protected abstract void renderDefault(Section sec, UserContext user, StringBuilder string);
 
 }

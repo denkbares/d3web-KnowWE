@@ -8,7 +8,6 @@ import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.object.QuestionDefinition.QuestionType;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -91,10 +90,10 @@ public class QuestionTypeDeclaration extends
 		this.setRenderer(new StyleRenderer(StyleRenderer.OPERATOR.getCssStyle()) {
 
 			@Override
-			public void render(KnowWEArticle article, @SuppressWarnings("rawtypes") Section section,
-					UserContext user, StringBuilder string) {
+			public void render(@SuppressWarnings("rawtypes") Section section, UserContext user,
+					StringBuilder string) {
 				StringBuilder temp = new StringBuilder();
-				super.render(article, section, user, temp);
+				super.render(section, user, temp);
 				string.append(temp.toString());
 			}
 		});

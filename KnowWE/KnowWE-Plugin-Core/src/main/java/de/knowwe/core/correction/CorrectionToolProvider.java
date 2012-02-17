@@ -30,6 +30,7 @@ import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.ScopeUtils;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
@@ -47,12 +48,12 @@ import de.knowwe.tools.ToolProvider;
 public class CorrectionToolProvider implements ToolProvider {
 
 	@Override
-	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
+	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		List<CorrectionProvider.Suggestion> suggestions = new LinkedList<CorrectionProvider.Suggestion>();
 		ResourceBundle wikiConfig = ResourceBundle.getBundle("KnowWE_config");
 
 		int threshold = Integer.valueOf(wikiConfig.getString("knowweplugin.correction.threshold"));
-
+		KnowWEArticle article = KnowWEUtils.getCompilingArticles(section).iterator().next();
 		if (!hasError(article, section)) {
 			return new Tool[0];
 		}

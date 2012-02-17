@@ -18,7 +18,10 @@
  */
 package de.knowwe.core.kdom.parsing;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import de.knowwe.core.kdom.KnowWEArticle;
 
@@ -47,6 +50,27 @@ public class SectionStore {
 	 */
 	public Object getObject(String key) {
 		return getObject(null, key);
+	}
+
+	/**
+	 * All objects stored in this {@link Section} with the given <tt>key</tt>
+	 * are collected and returned. The {@link Map} stores them by the title of
+	 * the {@link KnowWEArticle} they where stored for. If an object was stored
+	 * without an argument {@link KnowWEArticle} (article independent), the
+	 * returned {@link Map} contains this object with <tt>null</tt> as the key.
+	 * 
+	 * @created 16.02.2012
+	 * @param key is the key for which the objects were stored
+	 */
+	public Map<String, Object> getObjects(String key) {
+		Map<String, Object> objects = new HashMap<String, Object>(store == null ? 2 : store.size());
+		if (store != null) {
+			for (Entry<String, HashMap<String, Object>> entry : store.entrySet()) {
+				Object object = entry.getValue().get(key);
+				if (object != null) objects.put(entry.getKey(), object);
+			}
+		}
+		return Collections.unmodifiableMap(objects);
 	}
 
 	/**

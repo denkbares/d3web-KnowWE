@@ -19,7 +19,6 @@
  */
 package de.knowwe.core.kdom.rendering;
 
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 
@@ -32,10 +31,10 @@ import de.knowwe.core.user.UserContext;
  * @author Jochen, smark
  * @since 2009/10/19
  */
-public abstract class AnchorKDOMRender extends KnowWEDomRenderer {
+public abstract class AnchorKDOMRender implements KnowWERenderer {
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, UserContext user, StringBuilder string) {
+	public void render(Section sec, UserContext user, StringBuilder string) {
 		String head = "<a name=\"" + sec.getID() + "\" id=\"" + sec.getID() + "\"></a>";
 		string.append(head);
 

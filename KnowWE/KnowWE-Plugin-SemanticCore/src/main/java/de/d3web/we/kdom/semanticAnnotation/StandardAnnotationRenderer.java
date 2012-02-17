@@ -35,7 +35,6 @@ import de.d3web.we.core.semantic.UpperOntology;
 import de.knowwe.core.contexts.Context;
 import de.knowwe.core.contexts.ContextManager;
 import de.knowwe.core.contexts.DefaultSubjectContext;
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
@@ -47,7 +46,7 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 	private static String TITLE_QUERY = "SELECT  ?title WHERE {  <URI> ns:hasTitle ?title }";
 
 	@Override
-	public void renderDefault(KnowWEArticle article, Section s, UserContext user,
+	public void renderDefault(Section s, UserContext user,
 			StringBuilder string) {
 
 		Section<?> sec = s;
@@ -133,7 +132,7 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 		}
 
 		IntermediateOwlObject tempio = (IntermediateOwlObject) KnowWEUtils
-				.getStoredObject(article, objectSection, OwlHelper.IOO);
+				.getStoredObject(s.getArticle(), objectSection, OwlHelper.IOO);
 
 		if (tempio == null) {
 			text = KnowWEUtils

@@ -23,11 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.user.UserContext;
@@ -36,14 +35,14 @@ public class DashesPrefix extends AbstractType {
 
 	public DashesPrefix() {
 		this.sectionFinder = new DashesPrefixFinder();
-		this.setRenderer(new KnowWEDomRenderer<Type>() {
+		this.setRenderer(new KnowWERenderer<Type>() {
 
 			@Override
-			public void render(KnowWEArticle article, Section<Type> sec, UserContext user, StringBuilder string) {
+			public void render(Section<Type> sec, UserContext user, StringBuilder string) {
 				if (sec.getText().trim().startsWith("-")) {
 					string.append('~');
 				}
-				DefaultTextRenderer.getInstance().render(article, sec, user, string);
+				DefaultTextRenderer.getInstance().render(sec, user, string);
 			}
 		});
 	}

@@ -3,23 +3,22 @@ package de.d3web.we.ci4ke.daemon;
 import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
-public class CIDaemonRenderer extends KnowWEDomRenderer<CIDaemonType> {
+public class CIDaemonRenderer implements KnowWERenderer<CIDaemonType> {
 
 	@Override
-	public void render(KnowWEArticle article, Section<CIDaemonType> section, UserContext user, StringBuilder string) {
+	public void render(Section<CIDaemonType> section, UserContext user, StringBuilder string) {
 
 		String dashboardName = DefaultMarkupType.getAnnotation(section,
 				CIDashboardType.NAME_KEY);
 		String dashboardArticle = DefaultMarkupType.getAnnotation(section,
 				CIDaemonType.DASHBOARD_ARTICLE);
-		string.append(KnowWEUtils.maskHTML(renderDaemonContents(article.getWeb(), dashboardName,
+		string.append(KnowWEUtils.maskHTML(renderDaemonContents(section.getWeb(), dashboardName,
 				dashboardArticle)));
 
 	}

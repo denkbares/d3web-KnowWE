@@ -24,13 +24,12 @@ import java.io.IOException;
 
 import de.knowwe.core.KnowWEArticleManager;
 import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.compile.packaging.PackageRenderUtils;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.kdom.rendering.RendererManager;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -56,25 +55,23 @@ public class ReRenderContentPartAction extends AbstractAction {
 
 		KnowWEArticle article = mgr.getArticle(title);
 
-		article = PackageRenderUtils.checkArticlesCompiling(article, secWithNodeID);
-
 		if (secWithNodeID != null) {
 			StringBuilder b = new StringBuilder();
 
 			Type type = secWithNodeID.get();
-			KnowWEDomRenderer renderer = RendererManager.getInstance().getRenderer(type,
+			KnowWERenderer renderer = RendererManager.getInstance().getRenderer(type,
 					context.getUserName(), title);
 
 			if (renderer != null) {
-				renderer.render(article, secWithNodeID, context, b);
+				renderer.render(secWithNodeID, context, b);
 			}
 			else {
 				renderer = type.getRenderer();
 				if (renderer != null) {
-					renderer.render(article, secWithNodeID, context, b);
+					renderer.render(secWithNodeID, context, b);
 				}
 				else {
-					DelegateRenderer.getInstance().render(article, secWithNodeID, context, b);
+					DelegateRenderer.getInstance().render(secWithNodeID, context, b);
 				}
 			}
 

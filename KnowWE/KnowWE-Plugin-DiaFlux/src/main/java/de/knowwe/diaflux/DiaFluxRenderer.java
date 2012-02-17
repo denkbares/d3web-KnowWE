@@ -1,6 +1,5 @@
 package de.knowwe.diaflux;
 
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
@@ -18,11 +17,11 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 public class DiaFluxRenderer extends DefaultMarkupRenderer<DefaultMarkupType> {
 
 	public DiaFluxRenderer() {
-		super("KnowWEExtension/flowchart/icon/flowchart24.png", true);
+		super("KnowWEExtension/flowchart/icon/flowchart24.png");
 	}
 
 	@Override
-	protected String getTitleName(KnowWEArticle article, Section<DefaultMarkupType> section, UserContext user) {
+	protected String getTitleName(Section<DefaultMarkupType> section, UserContext user) {
 		Section<FlowchartType> flowchart = Sections.findSuccessor(section, FlowchartType.class);
 
 		if (flowchart == null) {
@@ -34,7 +33,7 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer<DefaultMarkupType> {
 	}
 
 	@Override
-	protected void renderContents(KnowWEArticle article, Section<DefaultMarkupType> section, UserContext user, StringBuilder string) {
+	protected void renderContents(Section<DefaultMarkupType> section, UserContext user, StringBuilder string) {
 
 		Section<FlowchartType> flowchart = Sections.findSuccessor(section, FlowchartType.class);
 
@@ -47,6 +46,6 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer<DefaultMarkupType> {
 			string.append(KnowWEUtils.maskHTML(link));
 		}
 
-		super.renderContents(article, section, user, string);
+		super.renderContents(section, user, string);
 	}
 }

@@ -23,9 +23,9 @@ package de.knowwe.core.kdom.rendering;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -35,7 +35,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
 @SuppressWarnings("rawtypes")
-public class DelegateRenderer extends KnowWEDomRenderer {
+public class DelegateRenderer implements KnowWERenderer {
 
 	private static DelegateRenderer instance;
 
@@ -56,8 +56,8 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 	}
 
 	@Override
-	public void render(KnowWEArticle article, Section section,
-			UserContext user, StringBuilder builder) {
+	public void render(Section section, UserContext user,
+			StringBuilder builder) {
 
 		boolean renderTypes = isRenderTypes(user.getParameters());
 		if (renderTypes) renderType(section, true, builder);
@@ -80,7 +80,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 			}
 			else {
 				for (Section<?> subSection : subSections) {
-					renderSubSection(article, subSection, user, builder);
+					renderSubSection(subSection, user, builder);
 				}
 			}
 		}
@@ -101,104 +101,107 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void renderSubSection(KnowWEArticle article, Section<?> subSection, UserContext user, StringBuilder builder) {
+	protected void renderSubSection(Section<?> subSection, UserContext user, StringBuilder builder) {
 		renderAnchor(subSection, builder);
 
 		// any messageRenderer has pre- and post rendering hook
 		// first call pre-rendering for all messages of this subsection
-		renderMessagesPre(subSection, user, builder, article);
+		renderMessagesPre(subSection, user, builder);
 
 		// use subSection's renderer
-		KnowWEDomRenderer renderer = getRenderer(subSection, user);
-		renderer.render(article, subSection, user, builder);
+		KnowWERenderer renderer = getRenderer(subSection, user);
+		renderer.render(subSection, user, builder);
 
 		// then call post rendering for all messages of this subsection
-		renderMessagesPost(article, subSection, user, builder);
+		renderMessagesPost(subSection, user, builder);
 	}
 
-	private void renderMessagesPost(KnowWEArticle article, Section<?> subSection, UserContext user, StringBuilder builder) {
+	private void renderMessagesPost(Section<?> subSection, UserContext user, StringBuilder builder) {
 		// Render errors post
-		Collection<Message> errors = Messages.getErrors(article, subSection);
-		if (errors != null && errors.size() > 0) {
-			for (Message kdomNotice : errors) {
+		Map<String, Collection<Message>> errors = Messages.getMessages(subSection,
+				Message.Type.ERROR);
+		for (Entry<String, Collection<Message>> entry : errors.entrySet()) {
+			for (Message kdomNotice : entry.getValue()) {
 				MessageRenderer errorRenderer = subSection.get()
-						.getErrorRenderer();
+							.getErrorRenderer();
 				if (errorRenderer != null) {
-					builder.append(errorRenderer.postRenderMessage(kdomNotice, user));
+					builder.append(errorRenderer.postRenderMessage(kdomNotice, user,
+								entry.getKey()));
 				}
 			}
 		}
 
 		// Render notices post
-		Collection<Message> notices = Messages
-				.getNotices(article, subSection);
-		if (notices != null && notices.size() > 0) {
-			for (Message kdomNotice : notices) {
+		Map<String, Collection<Message>> notices = Messages
+				.getMessages(subSection, Message.Type.NOTICE);
+		for (Entry<String, Collection<Message>> entry : notices.entrySet()) {
+			for (Message kdomNotice : entry.getValue()) {
 				MessageRenderer noticeRenderer = subSection.get()
-						.getNoticeRenderer();
+							.getNoticeRenderer();
 				if (noticeRenderer != null) {
-					builder.append(noticeRenderer.postRenderMessage(kdomNotice, user));
+					builder.append(noticeRenderer.postRenderMessage(kdomNotice, user,
+								entry.getKey()));
 				}
 			}
 		}
 
 		// Render warnings post
-		Collection<Message> warnings = Messages.getWarnings(article,
-				subSection);
-		if (warnings != null && warnings.size() > 0) {
-			for (Message kdomWarning : warnings) {
+		Map<String, Collection<Message>> warnings = Messages.getMessages(subSection,
+				Message.Type.WARNING);
+		for (Entry<String, Collection<Message>> entry : warnings.entrySet()) {
+			for (Message kdomWarning : entry.getValue()) {
 				MessageRenderer warningRenderer = subSection.get()
-						.getWarningRenderer();
+							.getWarningRenderer();
 				if (warningRenderer != null) {
 					builder.append(warningRenderer
-							.postRenderMessage(kdomWarning, user));
+								.postRenderMessage(kdomWarning, user, entry.getKey()));
 				}
 			}
 		}
 
-		if ((warnings != null && warnings.size() > 0) || (notices != null && notices.size() > 0)
-				|| (errors != null && errors.size() > 0)) {
+		if (warnings.size() > 0 || notices.size() > 0 || errors.size() > 0) {
 			builder.append(KnowWEUtils.maskHTML("<a name=\"" + subSection.getID()
 					+ "\"></a>"));
 		}
 	}
 
-	private void renderMessagesPre(Section<?> subSection, UserContext user, StringBuilder builder, KnowWEArticle article) {
+	private void renderMessagesPre(Section<?> subSection, UserContext user, StringBuilder builder) {
 		// Render warnings pre
-		Collection<Message> warnings = Messages.getWarnings(article,
-				subSection);
-		if (warnings != null && warnings.size() > 0) {
-			for (Message kdomWarning : warnings) {
+		Map<String, Collection<Message>> warnings = Messages.getMessages(
+				subSection, Message.Type.WARNING);
+		for (Entry<String, Collection<Message>> entry : warnings.entrySet()) {
+			for (Message kdomWarning : entry.getValue()) {
 				MessageRenderer warningRenderer = subSection.get()
 						.getWarningRenderer();
 				if (warningRenderer != null) {
 					builder.append(warningRenderer
-							.preRenderMessage(kdomWarning, user));
+							.preRenderMessage(kdomWarning, user, entry.getKey()));
 				}
 			}
 		}
 
 		// Render notices pre
-		Collection<Message> notices = Messages
-				.getNotices(article, subSection);
-		if (notices != null && notices.size() > 0) {
-			for (Message kdomNotice : notices) {
+		Map<String, Collection<Message>> notices = Messages
+				.getMessages(subSection, Message.Type.NOTICE);
+		for (Entry<String, Collection<Message>> entry : notices.entrySet()) {
+			for (Message kdomNotice : entry.getValue()) {
 				MessageRenderer noticeRenderer = subSection.get()
 						.getNoticeRenderer();
 				if (noticeRenderer != null) {
-					builder.append(noticeRenderer.preRenderMessage(kdomNotice, user));
+					builder.append(noticeRenderer.preRenderMessage(kdomNotice, user, entry.getKey()));
 				}
 			}
 		}
 
 		// Render errors pre
-		Collection<Message> errors = Messages.getErrors(article, subSection);
-		if (errors != null && errors.size() > 0) {
-			for (Message kdomNotice : errors) {
+		Map<String, Collection<Message>> errors = Messages.getMessages(subSection,
+				Message.Type.ERROR);
+		for (Entry<String, Collection<Message>> entry : errors.entrySet()) {
+			for (Message kdomNotice : entry.getValue()) {
 				MessageRenderer errorRenderer = subSection.get()
 						.getErrorRenderer();
 				if (errorRenderer != null) {
-					builder.append(errorRenderer.preRenderMessage(kdomNotice, user));
+					builder.append(errorRenderer.preRenderMessage(kdomNotice, user, entry.getKey()));
 				}
 			}
 		}
@@ -217,8 +220,8 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		builder.append(KnowWEUtils.maskHTML("&gt;</sub>"));
 	}
 
-	public static KnowWEDomRenderer<?> getRenderer(Section<?> section, UserContext user) {
-		KnowWEDomRenderer<?> renderer = null;
+	public static KnowWERenderer<?> getRenderer(Section<?> section, UserContext user) {
+		KnowWERenderer<?> renderer = null;
 
 		Type objectType = section.get();
 		if (renderer == null) {

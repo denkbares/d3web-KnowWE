@@ -57,9 +57,9 @@ public class CondKnown extends D3webCondition<CondKnown> {
 		this.setRenderer(new StyleRenderer(StyleRenderer.KEYWORDS.getCssStyle()) {
 
 			@Override
-			protected void renderContent(KnowWEArticle article, Section section, UserContext user, StringBuilder string) {
+			protected void renderContent(Section section, UserContext user, StringBuilder string) {
 				StringBuilder buffer = new StringBuilder();
-				super.renderContent(article, section, user, buffer);
+				super.renderContent(section, user, buffer);
 				string.append(buffer.toString());
 			}
 		});

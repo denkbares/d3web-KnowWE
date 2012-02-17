@@ -39,7 +39,7 @@ import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.type.FlowchartType;
@@ -48,11 +48,10 @@ import de.knowwe.diaflux.type.FlowchartType;
  * 
  * @author Reinhard Hatko
  */
-public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
-
+public class FlowchartRenderer implements KnowWERenderer<FlowchartType> {
 
 	@Override
-	public void render(KnowWEArticle article, Section<FlowchartType> sec, UserContext user, StringBuilder string) {
+	public void render(Section<FlowchartType> sec, UserContext user, StringBuilder string) {
 
 		// render anchor to be able to link to that flowchart
 		String anchorName = KnowWEUtils.getAnchor(sec);
@@ -61,7 +60,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 		// render preview
 		String topic = sec.getArticle().getTitle();
 		String web = sec.getArticle().getWeb();
-		string.append(createPreview(article, sec, user, web, topic, string));
+		string.append(createPreview(sec, user, web, topic, string));
 
 		ResourceBundle wikiConfig = ResourceBundle.getBundle("KnowWE_config");
 		boolean render = Boolean.valueOf(wikiConfig.getString("knowweplugin.diaflux.render"));
@@ -101,6 +100,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 						DiaFluxTraceHighlight.NO_HIGHLIGHT);
 			}
 		}
+		KnowWEArticle article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
 		if (dohighlighting) {
 			// prepare some basic information
 			Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
@@ -177,7 +177,7 @@ public class FlowchartRenderer extends KnowWEDomRenderer<FlowchartType> {
 				+ "child = child.nextSibling;}</script>"));
 	}
 
-	private String createPreview(KnowWEArticle article, Section<FlowchartType> sec, UserContext user, String web, String topic, StringBuilder builder) {
+	private String createPreview(Section<FlowchartType> sec, UserContext user, String web, String topic, StringBuilder builder) {
 
 		String preview = FlowchartUtils.createRenderablePreview(sec, user);
 

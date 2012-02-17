@@ -33,7 +33,6 @@ import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.packaging.KnowWEPackageManager;
-import de.knowwe.core.compile.packaging.PackageRenderUtils;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -60,9 +59,7 @@ public class GetSubflowLinksAction extends AbstractAction {
 			return;
 		}
 
-		KnowWEArticle article =
-				PackageRenderUtils.checkArticlesCompiling(diaFluxSec.getArticle(),
-						diaFluxSec, new StringBuilder());
+		KnowWEArticle article = KnowWEUtils.getCompilingArticles(flowchart).iterator().next();
 
 		String string = addSubFlowLinks(article, flowchart);
 

@@ -20,10 +20,12 @@
 package de.knowwe.core.kdom;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -43,23 +45,24 @@ public class RootType extends AbstractType {
 
 	private RootType() {
 		this.setSectionFinder(new AllTextSectionFinder());
-		this.setRenderer(new KnowWEDomRenderer<RootType>() {
+		this.setRenderer(new KnowWERenderer<RootType>() {
 
 			@Override
-			public void render(KnowWEArticle article, Section<RootType> section, UserContext user, StringBuilder string) {
-				Collection<Message> messages = Messages.getMessages(article,
-						section);
-				for (Message message : messages) {
-					String tag = (message.getType() == Message.Type.ERROR)
-							? "error"
-							: (message.getType() == Message.Type.WARNING)
-									? "warning"
-									: "information";
-					string.append("\n%%").append(tag).append("\n");
-					string.append(message.getVerbalization());
-					string.append("\n/%\n\n");
+			public void render(Section<RootType> section, UserContext user, StringBuilder string) {
+				Map<String, Collection<Message>> messages = Messages.getMessages(section);
+				for (Entry<String, Collection<Message>> entry : messages.entrySet()) {
+					for (Message message : entry.getValue()) {
+						String tag = (message.getType() == Message.Type.ERROR)
+								? "error"
+								: (message.getType() == Message.Type.WARNING)
+										? "warning"
+										: "information";
+						string.append("\n%%").append(tag).append("\n");
+						string.append(message.getVerbalization());
+						string.append("\n/%\n\n");
+					}
 				}
-				DelegateRenderer.getInstance().render(article, section, user, string);
+				DelegateRenderer.getInstance().render(section, user, string);
 			}
 		});
 

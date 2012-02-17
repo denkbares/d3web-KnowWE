@@ -58,7 +58,7 @@ import de.knowwe.core.kdom.basicType.UnrecognizedSyntaxType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
@@ -237,14 +237,13 @@ public class RuleContentType extends AbstractType {
 	 *         Highlights Rules according to state.
 	 * 
 	 */
-	class RuleHighlightingRenderer extends
-			KnowWEDomRenderer<ConditionActionRuleContent> {
+	class RuleHighlightingRenderer implements
+			KnowWERenderer<ConditionActionRuleContent> {
 
 		@Override
-		public void render(KnowWEArticle article,
-				Section<ConditionActionRuleContent> sec, UserContext user,
-				StringBuilder string) {
-
+		public void render(Section<ConditionActionRuleContent> sec,
+				UserContext user, StringBuilder string) {
+			KnowWEArticle article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
 			Session session = D3webUtils.getSession(article.getTitle(), user,
 					article.getWeb());
 			Section<RuleAction> ruleAction = Sections.findSuccessor(sec,
@@ -299,23 +298,20 @@ public class RuleContentType extends AbstractType {
 
 			StringBuilder newContent = new StringBuilder();
 			if (r == null || session == null) {
-				DelegateRenderer.getInstance().render(article, sec, user,
-						newContent);
+				DelegateRenderer.getInstance().render(sec, user, newContent);
 			}
 			else {
 				try {
 					if (r.hasFired(session)) {
-						this.firedRenderer.render(article, sec, user,
-								newContent);
+						this.firedRenderer.render(sec, user, newContent);
 					}
 					else {
-						DelegateRenderer.getInstance().render(article, sec,
-								user, newContent);
+						DelegateRenderer.getInstance().render(sec, user,
+								newContent);
 					}
 				}
 				catch (Exception e) {
-					this.exceptionRenderer.render(article, sec, user,
-							newContent);
+					this.exceptionRenderer.render(sec, user, newContent);
 				}
 			}
 			string.append(newContent.toString());

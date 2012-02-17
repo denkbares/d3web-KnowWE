@@ -18,7 +18,6 @@
  */
 package de.knowwe.diaflux.type;
 
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
@@ -33,12 +32,12 @@ import de.knowwe.tools.ToolProvider;
 public class FlowchartEditProvider implements ToolProvider {
 
 	@Override
-	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
-		Tool edit = getEditTool(article, section, userContext);
+	public Tool[] getTools(Section<?> section, UserContext userContext) {
+		Tool edit = getEditTool(section, userContext);
 		return edit != null ? new Tool[] { edit } : new Tool[] {};
 	}
 
-	private Tool getEditTool(KnowWEArticle article, Section<?> section, UserContext userContext) {
+	private Tool getEditTool(Section<?> section, UserContext userContext) {
 
 		String jsAction = createEditAction(section, userContext);
 

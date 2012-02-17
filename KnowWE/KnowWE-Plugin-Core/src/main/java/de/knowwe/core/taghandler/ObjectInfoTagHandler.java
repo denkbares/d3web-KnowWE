@@ -96,15 +96,15 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public final String render(KnowWEArticle article, Section<?> section, UserContext userContext, Map<String, String> parameters) {
+	public final String render(Section<?> section, UserContext userContext, Map<String, String> parameters) {
 		panelCounter = 0;
 		sectionCounter = 0;
 		rb = KnowWEEnvironment.getInstance().getKwikiBundle(userContext);
-		String content = renderContent(article, section, userContext, parameters);
+		String content = renderContent(section, userContext, parameters);
 		Section<TagHandlerTypeContent> tagNameSection = Sections.findSuccessor(section,
 				TagHandlerTypeContent.class);
 		String sectionID = section.getID();
-		Tool[] tools = ToolUtils.getTools(article, tagNameSection, userContext);
+		Tool[] tools = ToolUtils.getTools(tagNameSection, userContext);
 
 		StringBuilder buffer = new StringBuilder();
 		String cssClassName = "type_" + section.get().getName();
@@ -115,7 +115,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return buffer.toString();
 	}
 
-	private String renderContent(KnowWEArticle article, Section<?> section, UserContext user, Map<String, String> parameters) {
+	private String renderContent(Section<?> section, UserContext user, Map<String, String> parameters) {
 
 		Map<String, String> urlParameters = user.getParameters();
 
@@ -130,7 +130,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 		// If name is not defined -> render search form!
 		if (objectName == null || objectName.isEmpty()) {
-			return KnowWEUtils.maskHTML(renderLookUpForm(article));
+			return KnowWEUtils.maskHTML(renderLookUpForm(section));
 		}
 
 		// Get TermDefinitions and TermReferences
@@ -138,7 +138,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		Set<Section<?>> references = new HashSet<Section<?>>();
 
 		Iterator<KnowWEArticle> iter = KnowWEEnvironment.getInstance().getArticleManager(
-				article.getWeb()).getArticleIterator();
+				section.getWeb()).getArticleIterator();
 		KnowWEArticle currentArticle;
 
 		while (iter.hasNext()) {
@@ -154,9 +154,9 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		// Render
 		StringBuilder html = new StringBuilder();
 		html.append(renderHeader(objectName, definitions));
-		html.append(renderRenamingForm(objectName, article.getWeb(), parameters));
+		html.append(renderRenamingForm(objectName, section.getWeb(), parameters));
 		html.append(renderObjectInfo(definitions, references, parameters));
-		html.append(renderPlainTextOccurrences(objectName, article.getWeb(), parameters));
+		html.append(renderPlainTextOccurrences(objectName, section.getWeb(), parameters));
 
 		return KnowWEUtils.maskHTML(html.toString());
 	}
@@ -186,12 +186,12 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return html.toString();
 	}
 
-	private String renderLookUpForm(KnowWEArticle article) {
+	private String renderLookUpForm(Section<?> section) {
 		StringBuilder html = new StringBuilder();
 
 		html.append("<form action=\"\" method=\"get\">");
 		html.append("<input type=\"hidden\" name=\"page\" value=\""
-				+ KnowWEUtils.urlencode(article.getTitle())
+				+ KnowWEUtils.urlencode(section.getTitle())
 				+ "\" />");
 		html.append("<input type=\"text\" name=\"" + OBJECTNAME + "\" /> ");
 		html.append("<input type=\"submit\" value=\"&rarr;\" />");

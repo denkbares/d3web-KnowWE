@@ -47,14 +47,14 @@ public class RendererManager {
 
 	private Map<Type, RendererSet> rendererToTypeMap = new HashMap<Type, RendererSet>();
 
-	public KnowWEDomRenderer<? extends Type> getRenderer(Type type, String user, String topic) {
+	public KnowWERenderer<? extends Type> getRenderer(Type type, String user, String topic) {
 
 		RenderingMode renderingType = UserSettingsManager.getInstance().getRenderingType(user,
 				topic);
 
 		RendererSet set = rendererToTypeMap.get(type);
 		if (set != null) {
-			KnowWEDomRenderer<? extends Type> renderer = set.getRenderer(user, topic,
+			KnowWERenderer<? extends Type> renderer = set.getRenderer(user, topic,
 					renderingType);
 			if (renderer != null) {
 				return renderer;

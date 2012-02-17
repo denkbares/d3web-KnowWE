@@ -37,7 +37,7 @@ public final class Message {
 		NOTICE, WARNING, ERROR
 	}
 
-	private Section<?> section = null;
+	private final Section<?> section = null;
 
 	private final String text;
 
@@ -46,24 +46,6 @@ public final class Message {
 	public Message(Type type, String text) {
 		this.type = type;
 		this.text = text;
-	}
-
-	/**
-	 * Allows to set the originating section.
-	 * 
-	 * @created 14.10.2010
-	 */
-	public void setSection(Section<?> s) {
-		section = s;
-	}
-
-	/**
-	 * Returns the section where this message has been created from.
-	 * 
-	 * @created 14.10.2010
-	 */
-	public Section<?> getSection() {
-		return section;
 	}
 
 	/**

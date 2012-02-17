@@ -50,11 +50,11 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<KnowledgeBaseType> {
 
 	public KnowledgeBaseRenderer() {
-		super("KnowWEExtension/d3web/icon/knowledgebase24.png", false);
+		super("KnowWEExtension/d3web/icon/knowledgebase24.png");
 	}
 
 	@Override
-	protected void renderContents(KnowWEArticle article, Section<KnowledgeBaseType> section, UserContext user, StringBuilder string) {
+	protected void renderContents(Section<KnowledgeBaseType> section, UserContext user, StringBuilder string) {
 		String title = KnowledgeBaseType.getContent(section).trim();
 		String id = KnowledgeBaseType.getAnnotation(section, KnowledgeBaseType.ANNOTATION_ID);
 		String author = KnowledgeBaseType.getAnnotation(section,
@@ -107,7 +107,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 			Section<KnowledgeBaseCompileType> compileSection = Sections.findChildOfType(
 					annotationSection, KnowledgeBaseCompileType.class);
 			String packageName = compileSection.getText().trim();
-			renderCompile(article, packageName, string);
+			renderCompile(section.getArticle(), packageName, string);
 			if (sectionIter.hasNext()) string.append(KnowWEUtils.maskHTML("<br/>"));
 		}
 		string.append(KnowWEUtils.maskHTML("</div>"));
@@ -126,7 +126,8 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<Knowledge
 		Set<KnowWEArticle> warningArticles = new HashSet<KnowWEArticle>();
 
 		for (Section<?> sectionOfPackage : sectionsOfPackage) {
-			Collection<Message> allmsgs = Messages.getMessagesFromSubtree(article, sectionOfPackage);
+			Collection<Message> allmsgs = Messages.getMessagesFromSubtree(article,
+					sectionOfPackage, Message.Type.ERROR, Message.Type.WARNING);
 			Collection<Message> errors = Messages.getErrors(allmsgs);
 			Collection<Message> warnings = Messages.getWarnings(allmsgs);
 			if (errors != null && errors.size() > 0) {

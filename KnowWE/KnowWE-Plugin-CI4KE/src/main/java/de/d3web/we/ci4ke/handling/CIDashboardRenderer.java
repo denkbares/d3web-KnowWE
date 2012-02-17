@@ -26,8 +26,8 @@ import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
 import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.knowwe.core.KnowWERessourceLoader;
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -42,18 +42,18 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 public class CIDashboardRenderer extends DefaultMarkupRenderer<CIDashboardType> {
 
 	public CIDashboardRenderer() {
-		super("KnowWEExtension/ci4ke/images/22x22/ci.png", false);
+		super("KnowWEExtension/ci4ke/images/22x22/ci.png");
 	}
 
 	@Override
-	protected void renderContents(KnowWEArticle article, Section<CIDashboardType> section, UserContext user, StringBuilder string) {
+	protected void renderContents(Section<CIDashboardType> section, UserContext user, StringBuilder string) {
 
 		KnowWERessourceLoader.getInstance().add("CI4KE.css",
 				KnowWERessourceLoader.RESOURCE_STYLESHEET);
 		KnowWERessourceLoader.getInstance().add("CIPlugin.js",
 				KnowWERessourceLoader.RESOURCE_SCRIPT);
 
-		boolean sectionHasError = Messages.getErrors(article, section).size() > 0;
+		boolean sectionHasError = Messages.getMessages(section, Message.Type.ERROR).size() > 0;
 
 		if (!sectionHasError) {
 			String dashboardName = DefaultMarkupType.getAnnotation(section,
@@ -62,7 +62,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer<CIDashboardType> 
 			string.append(KnowWEUtils.maskHTML("<div id='" + dashboardNameEscaped
 					+ "' class='ci-title'>"));
 			string.append(KnowWEUtils.maskHTML(renderDashboardContents(dashboardName,
-					article.getTitle())));
+					section.getTitle())));
 			string.append(KnowWEUtils.maskHTML("</div>"));
 		}
 	}

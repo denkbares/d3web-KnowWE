@@ -18,7 +18,6 @@
  */
 package de.d3web.we.testcase.toolprovider;
 
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
@@ -34,7 +33,7 @@ import de.knowwe.tools.ToolProvider;
 public class TestCaseRunnerToolProvider implements ToolProvider {
 
 	@Override
-	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
+	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		Tool refresh = getRefreshTool();
 		return new Tool[] { refresh };
 	}

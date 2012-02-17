@@ -20,25 +20,20 @@
 
 package de.knowwe.core.kdom.rendering;
 
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 
-public abstract class KnowWEDomRenderer<T extends Type> {
+public interface KnowWERenderer<T extends Type> {
 
 	/**
 	 * All rendered Sections will be appended to string.
-	 * 
-	 * @param article is the article this Section is displayed in... not
-	 *        necessarily the article the Section is hooked into directly, since
-	 *        Sections can also be included!
 	 * @param section
 	 * @param user
 	 * @param string
 	 * 
 	 * @return
 	 */
-	public abstract void render(KnowWEArticle article, Section<T> section, UserContext user, StringBuilder string);
+	public void render(Section<T> section, UserContext user, StringBuilder string);
 
 }

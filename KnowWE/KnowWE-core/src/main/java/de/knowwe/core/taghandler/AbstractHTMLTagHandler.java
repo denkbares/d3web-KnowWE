@@ -22,7 +22,6 @@ package de.knowwe.core.taghandler;
 
 import java.util.Map;
 
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -47,10 +46,10 @@ public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public final String render(KnowWEArticle article, Section<?> section, UserContext userContext, Map<String, String> parameters) {
+	public final String render(Section<?> section, UserContext userContext, Map<String, String> parameters) {
 
-		String renderedHTML = renderHTML(article.getTitle(), userContext, parameters,
-				article.getWeb());
+		String renderedHTML = renderHTML(section.getTitle(), userContext, parameters,
+				section.getWeb());
 		String masked = KnowWEUtils.maskHTML(renderedHTML);
 		if (maskJSPWikiSyntax) {
 			masked = KnowWEUtils.maskJSPWikiMarkup(masked);

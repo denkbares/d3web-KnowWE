@@ -24,21 +24,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.KnowWEDomRenderer;
-import de.knowwe.core.taghandler.TagHandler;
-import de.knowwe.core.taghandler.TagHandlerAttributeSubTreeHandler;
+import de.knowwe.core.kdom.rendering.KnowWERenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
-public class TagRenderer extends KnowWEDomRenderer<TagHandlerType> {
+public class TagRenderer implements KnowWERenderer<TagHandlerType> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void render(KnowWEArticle article, Section<TagHandlerType> sec, UserContext user, StringBuilder string) {
+	public void render(Section<TagHandlerType> sec, UserContext user, StringBuilder string) {
 		Section<TagHandlerTypeContent> attrContent = Sections.findChildOfType(sec,
 				TagHandlerTypeContent.class);
 		if (attrContent == null) {
@@ -100,7 +97,7 @@ public class TagRenderer extends KnowWEDomRenderer<TagHandlerType> {
 									+ key + "_" + sec.getID() + "\">"));
 						}
 						String resultText =
-								handler.render(article, sec, user, attValues);
+								handler.render(sec, user, attValues);
 						buffi.append(resultText).append(" \n");
 						buffi.append(KnowWEUtils.maskHTML("</" + wrappingTag + ">"));
 						// if (autoUpdate) {

@@ -27,7 +27,7 @@ package de.knowwe.core.kdom.rendering;
  *         user, the topic and the rendering-mode
  * 
  */
-public abstract class CustomRenderer extends KnowWEDomRenderer {
+public abstract class CustomRenderer implements KnowWERenderer {
 
 	/**
 	 * Decides whether this renderer should be used is this situation

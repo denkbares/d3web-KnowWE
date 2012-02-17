@@ -18,7 +18,6 @@
  */
 package de.knowwe.instantedit.tools;
 
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.Tool;
@@ -34,11 +33,11 @@ import de.knowwe.tools.ToolProvider;
 public class InstantEditToolProvider implements ToolProvider {
 
 	@Override
-	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
-		return new Tool[] { getQuickEditPageTool(article, section, userContext) };
+	public Tool[] getTools(Section<?> section, UserContext userContext) {
+		return new Tool[] { getQuickEditPageTool(section, userContext) };
 	}
 
-	protected Tool getQuickEditPageTool(KnowWEArticle article, Section<?> section, UserContext userContext) {
+	protected Tool getQuickEditPageTool(Section<?> section, UserContext userContext) {
 
 		String jsAction = "KNOWWE.plugin.instantEdit.enable("
 				+ "'"

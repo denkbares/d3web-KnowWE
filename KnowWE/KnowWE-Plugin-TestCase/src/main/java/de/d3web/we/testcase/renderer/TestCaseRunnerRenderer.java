@@ -25,7 +25,6 @@ import de.d3web.empiricaltesting.TestCase;
 import de.d3web.we.testcase.TestCaseUtils;
 import de.d3web.we.testcase.kdom.TestCaseRunnerType;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -44,11 +43,11 @@ public class TestCaseRunnerRenderer extends DefaultMarkupRenderer<TestCaseRunner
 	private MessageFormat formatter;
 
 	public TestCaseRunnerRenderer() {
-		super("KnowWEExtension/d3web/icon/testsuite24.png", false);
+		super("KnowWEExtension/d3web/icon/testsuite24.png");
 	}
 
 	@Override
-	protected void renderContents(KnowWEArticle article, Section<TestCaseRunnerType> section, UserContext user, StringBuilder string) {
+	protected void renderContents(Section<TestCaseRunnerType> section, UserContext user, StringBuilder string) {
 
 		this.rb = D3webUtils.getD3webBundle(user);
 		this.formatter = new MessageFormat("");
@@ -62,7 +61,7 @@ public class TestCaseRunnerRenderer extends DefaultMarkupRenderer<TestCaseRunner
 			testCaseArticleName = section.getArticle().getTitle();
 		}
 
-		TestCase testSuite = getTestSuiteFor(testCaseArticleName, article.getWeb());
+		TestCase testSuite = getTestSuiteFor(testCaseArticleName, section.getWeb());
 		if (testSuite == null) {
 			string.append(mask("<img src='KnowWEExtension/d3web/icon/uses_error16.gif' align='top' /> "));
 			string.append(loadMessage("KnowWE.TestCase.notestcasefound",

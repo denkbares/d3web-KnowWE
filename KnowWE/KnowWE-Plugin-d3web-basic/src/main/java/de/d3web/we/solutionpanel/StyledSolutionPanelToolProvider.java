@@ -21,7 +21,6 @@ package de.d3web.we.solutionpanel;
 import java.util.ResourceBundle;
 
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
@@ -38,12 +37,12 @@ import de.knowwe.tools.ToolProvider;
 public class StyledSolutionPanelToolProvider implements ToolProvider {
 
 	@Override
-	public Tool[] getTools(KnowWEArticle article, Section<?> section, UserContext userContext) {
-		Tool clearSession = getSessionTool(article, section, userContext);
+	public Tool[] getTools(Section<?> section, UserContext userContext) {
+		Tool clearSession = getSessionTool(section, userContext);
 		return new Tool[] { clearSession };
 	}
 
-	protected Tool getSessionTool(KnowWEArticle article, Section<?> section, UserContext userContext) {
+	protected Tool getSessionTool(Section<?> section, UserContext userContext) {
 		ResourceBundle rb = D3webUtils.getD3webBundle(userContext);
 
 		// +

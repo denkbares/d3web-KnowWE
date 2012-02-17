@@ -20,11 +20,10 @@
 
 package de.knowwe.core.kdom.rendering;
 
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 
-public class NothingRenderer extends KnowWEDomRenderer {
+public class NothingRenderer implements KnowWERenderer {
 
 	private NothingRenderer() {
 
@@ -46,7 +45,7 @@ public class NothingRenderer extends KnowWEDomRenderer {
 	}
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, UserContext user, StringBuilder string) {
+	public void render(Section sec, UserContext user, StringBuilder string) {
 		// nothing
 	}
 

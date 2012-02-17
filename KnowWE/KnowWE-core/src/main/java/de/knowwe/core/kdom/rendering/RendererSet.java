@@ -54,7 +54,7 @@ public class RendererSet {
 	 * @param type
 	 * @return
 	 */
-	public KnowWEDomRenderer getRenderer(String user, String topic, RenderingMode type) {
+	public KnowWERenderer getRenderer(String user, String topic, RenderingMode type) {
 		for (CustomRenderer r : this.renderers) {
 			if (r.doesApply(user, topic, type)) {
 				return r;
