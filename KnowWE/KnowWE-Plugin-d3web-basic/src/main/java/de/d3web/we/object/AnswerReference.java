@@ -24,8 +24,10 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.KnowledgeBaseUtils;
+import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.objects.SimpleTerm;
+import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
@@ -45,6 +47,8 @@ public abstract class AnswerReference
 
 	public AnswerReference() {
 		this.setRenderer(StyleRenderer.CHOICE);
+		this.addSubtreeHandler(new SimpleTermReferenceRegistrationHandler(
+				TermRegistrationScope.LOCAL));
 	}
 
 	@Override
