@@ -37,7 +37,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
  * @author Sebastian Furth (denkbares GmbH)
  * @created 25/10/2010
  */
-public class TestCaseRunnerRenderer extends DefaultMarkupRenderer<TestCaseRunnerType> {
+public class TestCaseRunnerRenderer extends DefaultMarkupRenderer {
 
 	private ResourceBundle rb;
 	private MessageFormat formatter;
@@ -47,7 +47,7 @@ public class TestCaseRunnerRenderer extends DefaultMarkupRenderer<TestCaseRunner
 	}
 
 	@Override
-	protected void renderContents(Section<TestCaseRunnerType> section, UserContext user, StringBuilder string) {
+	protected void renderContents(Section<?> section, UserContext user, StringBuilder string) {
 
 		this.rb = D3webUtils.getD3webBundle(user);
 		this.formatter = new MessageFormat("");
@@ -76,8 +76,8 @@ public class TestCaseRunnerRenderer extends DefaultMarkupRenderer<TestCaseRunner
 
 	}
 
-	private boolean inDebugMode(Section<TestCaseRunnerType> section) {
-		String mode = TestCaseRunnerType.getMode(section);
+	private boolean inDebugMode(Section<?> runneSection) {
+		String mode = TestCaseRunnerType.getMode(runneSection);
 		return mode != null && mode.equals(TestCaseRunnerType.MODE_DEBUG);
 	}
 

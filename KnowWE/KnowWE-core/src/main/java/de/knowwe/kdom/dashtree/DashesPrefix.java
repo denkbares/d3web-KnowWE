@@ -26,7 +26,7 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.user.UserContext;
@@ -35,10 +35,10 @@ public class DashesPrefix extends AbstractType {
 
 	public DashesPrefix() {
 		this.sectionFinder = new DashesPrefixFinder();
-		this.setRenderer(new KnowWERenderer<Type>() {
+		this.setRenderer(new Renderer() {
 
 			@Override
-			public void render(Section<Type> sec, UserContext user, StringBuilder string) {
+			public void render(Section<?> sec, UserContext user, StringBuilder string) {
 				if (sec.getText().trim().startsWith("-")) {
 					string.append('~');
 				}

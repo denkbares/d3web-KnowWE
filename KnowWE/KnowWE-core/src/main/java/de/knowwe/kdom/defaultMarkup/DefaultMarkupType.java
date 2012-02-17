@@ -132,7 +132,7 @@ public class DefaultMarkupType extends AbstractType {
 	@SuppressWarnings("unchecked")
 	public DefaultMarkupType(DefaultMarkup markup) {
 		this.markup = markup;
-		this.setRenderer(new DefaultMarkupRenderer<DefaultMarkupType>());
+		this.setRenderer(new DefaultMarkupRenderer());
 		Pattern pattern = getPattern(markup.getName());
 		this.setSectionFinder(new RegexSectionFinder(pattern, 0));
 		// add children

@@ -22,13 +22,13 @@ package de.knowwe.kdom.renderer;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 
-public class DefaultTextLineRenderer implements KnowWERenderer {
+public class DefaultTextLineRenderer implements Renderer {
 
 	@Override
-	public void render(Section sec, UserContext user, StringBuilder string) {
+	public void render(Section<?> sec, UserContext user, StringBuilder string) {
 		DelegateRenderer.getInstance().render(sec, user, string);
 		string.append(generateTextField(sec));
 	}

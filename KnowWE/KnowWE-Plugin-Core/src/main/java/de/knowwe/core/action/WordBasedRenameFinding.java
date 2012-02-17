@@ -32,12 +32,11 @@ import de.knowwe.core.kdom.parsing.Section;
  * @author Johannes Dienst
  * 
  */
-public class WordBasedRenameFinding implements Comparable {
+public class WordBasedRenameFinding implements Comparable<WordBasedRenameFinding> {
 
-	private Section sec;
-	private int start;
-	private int end;
-	private String context;
+	private final Section<?> sec;
+	private final int start;
+	private final String context;
 	public static final int MAX_WORDS = 5;
 
 	/**
@@ -46,10 +45,9 @@ public class WordBasedRenameFinding implements Comparable {
 	 * @param start
 	 * @param sec
 	 */
-	public WordBasedRenameFinding(int start, int end, String context, Section sec) {
+	public WordBasedRenameFinding(int start, int end, String context, Section<?> sec) {
 		this.sec = sec;
 		this.start = start;
-		this.end = end;
 		this.context = context;
 	}
 
@@ -63,7 +61,7 @@ public class WordBasedRenameFinding implements Comparable {
 	 * @param articletext
 	 * @return
 	 */
-	public static String getContext(int start, Section sec, String articletext, int findingLength) {
+	public static String getContext(int start, Section<?> sec, String articletext, int findingLength) {
 		int startIndex = start + sec.getAbsolutePositionStartInArticle();
 		int endIndex = findingLength + start + sec.getAbsolutePositionStartInArticle();
 		String result = articletext.substring(startIndex, endIndex);
@@ -121,7 +119,7 @@ public class WordBasedRenameFinding implements Comparable {
 		return "";
 	}
 
-	public Section getSec() {
+	public Section<?> getSec() {
 		return sec;
 	}
 
@@ -130,8 +128,8 @@ public class WordBasedRenameFinding implements Comparable {
 	}
 
 	@Override
-	public int compareTo(Object o) {
-		if (this.start > ((WordBasedRenameFinding) o).start) return 1;
+	public int compareTo(WordBasedRenameFinding o) {
+		if (this.start > (o).start) return 1;
 		return 0;
 	}
 

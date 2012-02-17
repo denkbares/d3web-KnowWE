@@ -21,17 +21,17 @@
 package de.d3web.we.kdom.semanticAnnotation;
 
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
-public class XCLComparatorEditorRenderer implements KnowWERenderer {
+public class XCLComparatorEditorRenderer implements Renderer {
 
 	private static String[] comps = {
 			"=", "<=", ">=", ">", "<" };
 
 	@Override
-	public void render(Section sec, UserContext user, StringBuilder string) {
+	public void render(Section<?> sec, UserContext user, StringBuilder string) {
 		String currentOp = sec.getText().trim();
 
 		StringBuilder buffi = new StringBuilder();

@@ -28,11 +28,10 @@ import de.d3web.we.kdom.questionTree.ObjectDescription;
 import de.d3web.we.object.SolutionDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -69,7 +68,7 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent {
 		f.addConstraint(SingleChildConstraint.getInstance());
 		solutionDef.setSectionFinder(f);
 		this.addChildType(solutionDef);
-		this.setRenderer(new ReRenderSectionMarkerRenderer<Type>(
+		this.setRenderer(new ReRenderSectionMarkerRenderer(
 				new SolutionDashTreeElementContentRenderer()));
 	}
 
@@ -78,10 +77,10 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent {
 	 * @author volker_belli
 	 * @created 08.12.2010
 	 */
-	private static final class SolutionDashTreeElementContentRenderer implements KnowWERenderer<Type> {
+	private static final class SolutionDashTreeElementContentRenderer implements Renderer {
 
 		@Override
-		public void render(Section<Type> sec, UserContext user, StringBuilder string) {
+		public void render(Section<?> sec, UserContext user, StringBuilder string) {
 			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID() + "'>"));
 			DelegateRenderer.getInstance().render(sec, user, string);
 			string.append(KnowWEUtils.maskHTML("</span>"));

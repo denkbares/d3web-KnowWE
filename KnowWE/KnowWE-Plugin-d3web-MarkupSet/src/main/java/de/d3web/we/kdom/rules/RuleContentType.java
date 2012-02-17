@@ -58,7 +58,7 @@ import de.knowwe.core.kdom.basicType.UnrecognizedSyntaxType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
@@ -177,6 +177,7 @@ public class RuleContentType extends AbstractType {
 					cond);
 
 			// create action
+			@SuppressWarnings("rawtypes")
 			Section<D3webRuleAction> action = Sections.findSuccessor(actionS,
 					D3webRuleAction.class);
 			if (action == null) {
@@ -238,10 +239,10 @@ public class RuleContentType extends AbstractType {
 	 * 
 	 */
 	class RuleHighlightingRenderer implements
-			KnowWERenderer<ConditionActionRuleContent> {
+			Renderer {
 
 		@Override
-		public void render(Section<ConditionActionRuleContent> sec,
+		public void render(Section<?> sec,
 				UserContext user, StringBuilder string) {
 			KnowWEArticle article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
 			Session session = D3webUtils.getSession(article.getTitle(), user,
@@ -293,7 +294,7 @@ public class RuleContentType extends AbstractType {
 		 * @return
 		 */
 		private void highlightRule(KnowWEArticle article,
-				Section<ConditionActionRuleContent> sec, Rule r,
+				Section<?> sec, Rule r,
 				Session session, UserContext user, StringBuilder string) {
 
 			StringBuilder newContent = new StringBuilder();

@@ -33,7 +33,7 @@ import de.knowwe.core.kdom.parsing.Parser;
 import de.knowwe.core.kdom.parsing.Sectionizable;
 import de.knowwe.core.kdom.parsing.Sectionizer;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.DefaultErrorRenderer;
@@ -138,7 +138,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * custom renderer is set, it is used to present the type content in the
 	 * wiki view
 	 */
-	private KnowWERenderer<?> renderer = DelegateRenderer.getInstance();
+	private Renderer renderer = DelegateRenderer.getInstance();
 
 	/**
 	 * constructor calling init() which is abstract
@@ -374,7 +374,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public final KnowWERenderer getRenderer() {
+	public final Renderer getRenderer() {
 		return renderer;
 	}
 
@@ -398,7 +398,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * 
 	 * @param renderer
 	 */
-	public void setRenderer(@SuppressWarnings("rawtypes") KnowWERenderer renderer) {
+	public void setRenderer(Renderer renderer) {
 		this.renderer = renderer;
 	}
 

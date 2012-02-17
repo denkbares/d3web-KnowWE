@@ -19,9 +19,8 @@
  */
 package de.knowwe.kdom.renderer;
 
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -32,19 +31,19 @@ import de.knowwe.core.utils.KnowWEUtils;
  *         content is automatically updated when answers are set.
  * 
  */
-public class ReRenderSectionMarkerRenderer<T extends Type> implements KnowWERenderer<T> {
+public class ReRenderSectionMarkerRenderer implements Renderer {
 
 	/**
 	 * Holds the renderer of the inner text.
 	 */
-	private final KnowWERenderer<T> renderer;
+	private final Renderer renderer;
 
-	public ReRenderSectionMarkerRenderer(KnowWERenderer<T> renderer) {
+	public ReRenderSectionMarkerRenderer(Renderer renderer) {
 		this.renderer = renderer;
 	}
 
 	@Override
-	public void render(Section<T> sec, UserContext user,
+	public void render(Section<?> sec, UserContext user,
 			StringBuilder string) {
 		Boolean ajaxAction = user.getParameters().containsKey("action");
 		if (!ajaxAction) {

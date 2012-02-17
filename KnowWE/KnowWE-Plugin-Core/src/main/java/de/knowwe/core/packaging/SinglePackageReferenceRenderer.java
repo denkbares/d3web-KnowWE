@@ -8,16 +8,16 @@ import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.compile.packaging.KnowWEPackageManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
-public class SinglePackageReferenceRenderer implements KnowWERenderer {
+public class SinglePackageReferenceRenderer implements Renderer {
 
 	@Override
-	public void render(Section sec,
+	public void render(Section<?> sec,
 			UserContext user,
 			StringBuilder string) {
 

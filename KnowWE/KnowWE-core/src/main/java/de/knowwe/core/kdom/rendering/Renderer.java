@@ -20,20 +20,20 @@
 
 package de.knowwe.core.kdom.rendering;
 
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 
-public interface KnowWERenderer<T extends Type> {
+public interface Renderer {
 
 	/**
 	 * All rendered Sections will be appended to string.
+	 * 
 	 * @param section
 	 * @param user
 	 * @param string
 	 * 
 	 * @return
 	 */
-	public void render(Section<T> section, UserContext user, StringBuilder string);
+	public void render(Section<?> section, UserContext user, StringBuilder string);
 
 }

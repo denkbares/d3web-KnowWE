@@ -28,7 +28,7 @@ import de.knowwe.core.compile.packaging.PackageReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -51,10 +51,10 @@ public class CompileFlag extends DefaultMarkupType {
 		this.setRenderer(new CompileFlagRenderer());
 	}
 
-	static class CompileFlagRenderer implements KnowWERenderer<CompileFlag> {
+	static class CompileFlagRenderer implements Renderer {
 
 		@Override
-		public void render(Section<CompileFlag> sec,
+		public void render(Section<?> sec,
 				UserContext user,
 				StringBuilder string) {
 

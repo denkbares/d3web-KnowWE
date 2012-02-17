@@ -47,14 +47,14 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @author volker_belli
  * @created 13.10.2010
  */
-public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer<KnowledgeBaseType> {
+public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 
 	public KnowledgeBaseRenderer() {
 		super("KnowWEExtension/d3web/icon/knowledgebase24.png");
 	}
 
 	@Override
-	protected void renderContents(Section<KnowledgeBaseType> section, UserContext user, StringBuilder string) {
+	protected void renderContents(Section<?> section, UserContext user, StringBuilder string) {
 		String title = KnowledgeBaseType.getContent(section).trim();
 		String id = KnowledgeBaseType.getAnnotation(section, KnowledgeBaseType.ANNOTATION_ID);
 		String author = KnowledgeBaseType.getAnnotation(section,

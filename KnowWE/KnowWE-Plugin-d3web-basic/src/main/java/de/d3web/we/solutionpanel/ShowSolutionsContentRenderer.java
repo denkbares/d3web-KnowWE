@@ -41,10 +41,9 @@ import de.d3web.core.session.values.Unknown;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.kdom.defaultMarkup.ContentType;
 
 /**
  * Displays a configurable pane presenting derived solutions and abstractions.
@@ -62,13 +61,13 @@ import de.knowwe.kdom.defaultMarkup.ContentType;
  * @author Joachim Baumeister (denkbares GmbH)
  * @created 15.10.2010
  */
-public class ShowSolutionsContentRenderer implements KnowWERenderer<ContentType> {
+public class ShowSolutionsContentRenderer implements Renderer {
 
 	public ShowSolutionsContentRenderer() {
 	}
 
 	@Override
-	public void render(Section<ContentType> section, UserContext user, StringBuilder string) {
+	public void render(Section<?> section, UserContext user, StringBuilder string) {
 		string.append(KnowWEUtils.maskHTML("<span id='" + section.getID() + "'>"));
 		String text = section.getText();
 		if (!text.isEmpty()) {
@@ -87,14 +86,14 @@ public class ShowSolutionsContentRenderer implements KnowWERenderer<ContentType>
 		string.append(KnowWEUtils.maskHTML("</span>"));
 	}
 
-	private Section<ShowSolutionsType> getShowSolutionsSection(Section<ContentType> section) {
+	private Section<ShowSolutionsType> getShowSolutionsSection(Section<?> section) {
 		return Sections.findAncestorOfType(section, ShowSolutionsType.class);
 	}
 
 	/**
 	 * Renders the derived abstractions when panel opted for it.
 	 */
-	private StringBuffer renderAbstractions(Section<ContentType> section, Session session) {
+	private StringBuffer renderAbstractions(Section<?> section, Session session) {
 		// Check, if the shown abstractions are limited to a number of
 		// questionnaires
 		Section<ShowSolutionsType> parentSection = getShowSolutionsSection(section);
@@ -156,7 +155,7 @@ public class ShowSolutionsContentRenderer implements KnowWERenderer<ContentType>
 	/**
 	 * Renders the derived solutions when panel opted for it.
 	 */
-	private StringBuffer renderSolutions(Section<ContentType> section, final Session session) {
+	private StringBuffer renderSolutions(Section<?> section, final Session session) {
 		StringBuffer content = new StringBuffer();
 		Set<Solution> allSolutions = new TreeSet<Solution>(new Comparator<Solution>() {
 
@@ -238,7 +237,7 @@ public class ShowSolutionsContentRenderer implements KnowWERenderer<ContentType>
 		return KnowWEUtils.maskHTML(string);
 	}
 
-	private void addListItem(StringBuffer buffer, Question question, Session session, Section<ContentType> section) {
+	private void addListItem(StringBuffer buffer, Question question, Session session, Section<?> section) {
 		// TODO: look for internationalization and only print getName,
 		// when no intlz is available
 		// buffer.append("* ");
@@ -270,7 +269,7 @@ public class ShowSolutionsContentRenderer implements KnowWERenderer<ContentType>
 	 * @param value the specified value
 	 * @return A string representation of the specified value.
 	 */
-	private String formatValue(Value value, Section<ContentType> section) {
+	private String formatValue(Value value, Section<?> section) {
 
 		if (value instanceof NumValue) {
 			Double numValue = (Double) value.getValue();

@@ -98,13 +98,13 @@ public class AbstractXMLType extends AbstractType {
 		return xmlFather;
 	}
 
-	public static int getXMLDepth(Section<AbstractXMLType> s) {
+	public static int getXMLDepth(Section<?> xmlSection) {
 
-		return getXMLDepth(s, 0);
+		return getXMLDepth(xmlSection, 0);
 	}
 
-	private static int getXMLDepth(Section<AbstractXMLType> s, int depth) {
-		Section<AbstractXMLType> xmlFather = Sections.findAncestorOfType(s, AbstractXMLType.class);
+	private static int getXMLDepth(Section<?> xmlSection, int depth) {
+		Section<AbstractXMLType> xmlFather = Sections.findAncestorOfType(xmlSection, AbstractXMLType.class);
 		if (xmlFather != null && xmlFather.get() instanceof AbstractXMLType) {
 			return getXMLDepth(xmlFather, ++depth);
 		}

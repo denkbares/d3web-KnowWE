@@ -71,8 +71,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	private int panelCounter = 0;
 	private int sectionCounter = 0;
 
-	private static DefaultMarkupRenderer<DefaultMarkupType> defaultMarkupRenderer =
-			new DefaultMarkupRenderer<DefaultMarkupType>();
+	private static DefaultMarkupRenderer defaultMarkupRenderer =
+			new DefaultMarkupRenderer();
 
 	// KnowWE-ResourceBundle
 	private ResourceBundle rb;

@@ -39,14 +39,14 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @author Marc-Oliver Ochlast (denkbares GmbH)
  * @created 01.12.2010
  */
-public class CIDashboardRenderer extends DefaultMarkupRenderer<CIDashboardType> {
+public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 	public CIDashboardRenderer() {
 		super("KnowWEExtension/ci4ke/images/22x22/ci.png");
 	}
 
 	@Override
-	protected void renderContents(Section<CIDashboardType> section, UserContext user, StringBuilder string) {
+	protected void renderContents(Section<?> section, UserContext user, StringBuilder string) {
 
 		KnowWERessourceLoader.getInstance().add("CI4KE.css",
 				KnowWERessourceLoader.RESOURCE_STYLESHEET);

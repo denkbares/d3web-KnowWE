@@ -18,32 +18,30 @@
  */
 package de.knowwe.tools;
 
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * 
  * @author volker_belli
  * @created 30.11.2010
  */
-public class ToolMenuDecoratingRenderer<T extends Type> implements KnowWERenderer<T> {
+public class ToolMenuDecoratingRenderer implements Renderer {
 
-	private final KnowWERenderer<?> decoratedRenderer;
+	private final Renderer decoratedRenderer;
 
-	private static DefaultMarkupRenderer<DefaultMarkupType> defaultMarkupRenderer =
-			new DefaultMarkupRenderer<DefaultMarkupType>();
+	private static DefaultMarkupRenderer defaultMarkupRenderer =
+			new DefaultMarkupRenderer();
 
-	public ToolMenuDecoratingRenderer(KnowWERenderer<T> decoratedRenderer) {
+	public ToolMenuDecoratingRenderer(Renderer decoratedRenderer) {
 		this.decoratedRenderer = decoratedRenderer;
 	}
 
 	@Override
-	public void render(Section sec, UserContext user, StringBuilder string) {
+	public void render(Section<?> sec, UserContext user, StringBuilder string) {
 		// prepare tools
 		Tool[] tools = ToolUtils.getTools(sec, user);
 		boolean hasTools = tools != null && tools.length > 0;

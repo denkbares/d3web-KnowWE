@@ -65,7 +65,7 @@ public class ResourceType extends DefaultMarkupType {
 
 	public ResourceType() {
 		super(MARKUP);
-		this.setRenderer(new DefaultMarkupRenderer<ResourceType>(
+		this.setRenderer(new DefaultMarkupRenderer(
 				"KnowWEExtension/d3web/icon/resource24.png"));
 		this.addSubtreeHandler(new ResourceHandler());
 	}

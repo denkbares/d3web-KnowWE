@@ -29,7 +29,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.rendering.RendererManager;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -59,7 +59,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 			StringBuilder b = new StringBuilder();
 
 			Type type = secWithNodeID.get();
-			KnowWERenderer renderer = RendererManager.getInstance().getRenderer(type,
+			Renderer renderer = RendererManager.getInstance().getRenderer(type,
 					context.getUserName(), title);
 
 			if (renderer != null) {

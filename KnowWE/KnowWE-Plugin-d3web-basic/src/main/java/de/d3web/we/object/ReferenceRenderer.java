@@ -19,7 +19,7 @@
 package de.d3web.we.object;
 
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -28,7 +28,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @author Jochen
  * @created 26.07.2010
  */
-public class ReferenceRenderer implements KnowWERenderer<D3webTermReference> {
+public class ReferenceRenderer implements Renderer {
 
 	private String fontColor = null;
 
@@ -37,8 +37,8 @@ public class ReferenceRenderer implements KnowWERenderer<D3webTermReference> {
 	}
 
 	@Override
-	public void render(Section<D3webTermReference> sec, UserContext user, StringBuilder string) {
-		String refText = sec.get().getTermIdentifier(sec);
+	public void render(Section<?> sec, UserContext user, StringBuilder string) {
+		String refText = KnowWEUtils.getTermIdentifier(sec);
 		String originalText = sec.getText();
 		int index = originalText.indexOf(refText);
 

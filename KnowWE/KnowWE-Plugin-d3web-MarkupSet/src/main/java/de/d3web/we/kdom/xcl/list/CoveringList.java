@@ -49,7 +49,7 @@ import de.knowwe.core.kdom.basicType.CommentLineType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
@@ -100,7 +100,7 @@ public class CoveringList extends AbstractType {
 		// the rest is CoveringRelations
 		this.addChildType(new CoveringRelation());
 
-		this.setRenderer(new ReRenderSectionMarkerRenderer<Type>(
+		this.setRenderer(new ReRenderSectionMarkerRenderer(
 				new CoveringListRenderer()));
 
 		// anything left is comment
@@ -115,10 +115,10 @@ public class CoveringList extends AbstractType {
 	 * @author volker_belli
 	 * @created 08.12.2010
 	 */
-	private static final class CoveringListRenderer implements KnowWERenderer<Type> {
+	private static final class CoveringListRenderer implements Renderer {
 
 		@Override
-		public void render(Section<Type> sec, UserContext user, StringBuilder string) {
+		public void render(Section<?> sec, UserContext user, StringBuilder string) {
 			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID() + "'>"));
 			DelegateRenderer.getInstance().render(sec, user, string);
 			string.append(KnowWEUtils.maskHTML("</span>"));
@@ -350,10 +350,10 @@ public class CoveringList extends AbstractType {
 	 *         Answer unknown: No Highlighting
 	 * 
 	 */
-	class CoveringRelationRenderer implements KnowWERenderer<CoveringRelation> {
+	class CoveringRelationRenderer implements Renderer {
 
 		@Override
-		public void render(Section<CoveringRelation> sec, UserContext user, StringBuilder string) {
+		public void render(Section<?> sec, UserContext user, StringBuilder string) {
 
 			// wrapper for highlighting
 			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID()
@@ -397,7 +397,7 @@ public class CoveringList extends AbstractType {
 		 * Replaces the SpecialDelegateRenderer functionality to enable
 		 * highlighting of Relations without their RelationWeights.
 		 * 
-		 * @param sec
+		 * @param relationSection
 		 * @param user
 		 * @param web
 		 * @param topic
@@ -405,14 +405,14 @@ public class CoveringList extends AbstractType {
 		 * @param string
 		 * @return
 		 */
-		private void renderRelation(Section<CoveringRelation> sec,
+		private void renderRelation(Section<?> relationSection,
 				UserContext user, boolean fulfilled, StringBuilder string, boolean highlight) {
 
 			StringBuilder buffi = new StringBuilder();
 
 			// need a span below XCLRelationInList
 			if (!highlight) {
-				List<Section<?>> children = sec.getChildren();
+				List<Section<?>> children = relationSection.getChildren();
 				for (Section<?> s : children) {
 					buffi.append(this.renderRelationChild(s,
 							fulfilled, user, ""));
@@ -424,7 +424,7 @@ public class CoveringList extends AbstractType {
 			// b true: Color green
 			if (fulfilled) {
 				// Iterate over children of the relation.
-				List<Section<?>> children = sec.getChildren();
+				List<Section<?>> children = relationSection.getChildren();
 				for (Section<?> s : children) {
 					buffi.append(this.renderRelationChild(s,
 							fulfilled, user, StyleRenderer.CONDITION_FULLFILLED));
@@ -433,7 +433,7 @@ public class CoveringList extends AbstractType {
 			}
 			else {
 				// b false: Color red
-				List<Section<?>> children = sec.getChildren();
+				List<Section<?>> children = relationSection.getChildren();
 				for (Section<?> s : children) {
 					buffi.append(this.renderRelationChild(s,
 							fulfilled, user, StyleRenderer.CONDITION_FALSE));

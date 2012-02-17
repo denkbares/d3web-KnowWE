@@ -33,7 +33,7 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
@@ -63,7 +63,7 @@ public abstract class SolutionDefinition
 
 	public SolutionDefinition(Priority p) {
 		this.setRenderer(
-				new ToolMenuDecoratingRenderer<SolutionDefinition>(
+				new ToolMenuDecoratingRenderer(
 						new SolutionIDHighlightingRenderer()));
 		// this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR4));
 		this.addSubtreeHandler(p, new CreateSolutionHandler());
@@ -77,10 +77,10 @@ public abstract class SolutionDefinition
 	 *         Includes the ObjectInfoLinkRenderer.
 	 * 
 	 */
-	class SolutionIDHighlightingRenderer implements KnowWERenderer<SolutionDefinition> {
+	class SolutionIDHighlightingRenderer implements Renderer {
 
 		@Override
-		public void render(Section<SolutionDefinition> sec, UserContext user,
+		public void render(Section<?> sec, UserContext user,
 				StringBuilder string) {
 
 			KnowWEArticle article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
@@ -93,7 +93,9 @@ public abstract class SolutionDefinition
 			String spanEnd = KnowWEUtils.maskHTML("</span>");
 
 			if (session != null) {
-				Solution solution = getTermObject(article, sec);
+				@SuppressWarnings("unchecked")
+				Solution solution = getTermObject(article,
+						(Section<? extends D3webTerm<Solution>>) sec);
 				if (solution != null) {
 					Rating state = session.getBlackboard().getRating(solution);
 

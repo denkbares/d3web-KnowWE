@@ -7,21 +7,20 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.type.FlowchartEditProvider;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * 
  * @author Reinhard Hatko
  * @created 24.11.2010
  */
-public class DiaFluxRenderer extends DefaultMarkupRenderer<DefaultMarkupType> {
+public class DiaFluxRenderer extends DefaultMarkupRenderer {
 
 	public DiaFluxRenderer() {
 		super("KnowWEExtension/flowchart/icon/flowchart24.png");
 	}
 
 	@Override
-	protected String getTitleName(Section<DefaultMarkupType> section, UserContext user) {
+	protected String getTitleName(Section<?> section, UserContext user) {
 		Section<FlowchartType> flowchart = Sections.findSuccessor(section, FlowchartType.class);
 
 		if (flowchart == null) {
@@ -33,7 +32,7 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer<DefaultMarkupType> {
 	}
 
 	@Override
-	protected void renderContents(Section<DefaultMarkupType> section, UserContext user, StringBuilder string) {
+	protected void renderContents(Section<?> section, UserContext user, StringBuilder string) {
 
 		Section<FlowchartType> flowchart = Sections.findSuccessor(section, FlowchartType.class);
 

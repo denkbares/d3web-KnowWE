@@ -20,15 +20,14 @@
 
 package de.knowwe.kdom.renderer;
 
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
-public class StyleRenderer implements KnowWERenderer {
+public class StyleRenderer implements Renderer {
 
 	public static final StyleRenderer KEYWORDS = new StyleRenderer("color:rgb(0, 0, 0)");
 	public static final StyleRenderer OPERATOR = new StyleRenderer("color:rgb(40, 40, 160)");
@@ -40,13 +39,13 @@ public class StyleRenderer implements KnowWERenderer {
 	public static final StyleRenderer CONTENT = new StyleRenderer("color:rgb(80, 80, 80)");
 	public static final StyleRenderer LOCALE = new StyleRenderer("color:rgb(0, 128, 128)");
 
-	public static final KnowWERenderer<Type> CHOICE = new ToolMenuDecoratingRenderer<Type>(
+	public static final Renderer CHOICE = new ToolMenuDecoratingRenderer(
 			new StyleRenderer("color:rgb(40, 40, 160)"));
-	public static final KnowWERenderer<Type> SOLUTION = new ToolMenuDecoratingRenderer<Type>(
+	public static final Renderer SOLUTION = new ToolMenuDecoratingRenderer(
 			new StyleRenderer("color:rgb(150, 110, 120)"));
-	public static final KnowWERenderer<Type> Question = new ToolMenuDecoratingRenderer<Type>(
+	public static final Renderer Question = new ToolMenuDecoratingRenderer(
 			new StyleRenderer("color:rgb(0, 128, 0)"));
-	public static final KnowWERenderer<Type> Questionaire = new ToolMenuDecoratingRenderer<Type>(
+	public static final Renderer Questionaire = new ToolMenuDecoratingRenderer(
 			new StyleRenderer("color:rgb(128, 128, 0)"));
 
 	public static final String CONDITION_FULLFILLED = "#CFFFCF";
@@ -93,7 +92,7 @@ public class StyleRenderer implements KnowWERenderer {
 	}
 
 	@Override
-	public void render(Section section, UserContext user, StringBuilder string) {
+	public void render(Section<?> section, UserContext user, StringBuilder string) {
 		string.append(KnowWEUtils.maskHTML("<span"));
 		if (cssClass != null) {
 			string.append(" class='").append(cssClass).append("'");
@@ -116,7 +115,7 @@ public class StyleRenderer implements KnowWERenderer {
 	 * @param user the user to render for
 	 * @param string the buffer to render into
 	 */
-	protected void renderContent(Section section, UserContext user, StringBuilder string) {
+	protected void renderContent(Section<?> section, UserContext user, StringBuilder string) {
 		StringBuilder builder = new StringBuilder();
 		DelegateRenderer.getInstance().render(section, user, builder);
 		KnowWEUtils.maskJSPWikiMarkup(builder);

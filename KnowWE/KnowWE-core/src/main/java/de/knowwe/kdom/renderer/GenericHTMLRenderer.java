@@ -21,10 +21,9 @@ package de.knowwe.kdom.renderer;
 
 import java.util.Arrays;
 
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -34,7 +33,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * 
  * @author Alex Legler
  */
-public class GenericHTMLRenderer<T extends Type> implements KnowWERenderer<T> {
+public class GenericHTMLRenderer implements Renderer {
 
 	/**
 	 * The HTML tag to wrap the content in
@@ -61,7 +60,7 @@ public class GenericHTMLRenderer<T extends Type> implements KnowWERenderer<T> {
 	}
 
 	@Override
-	public void render(Section<T> sec, UserContext user, StringBuilder string) {
+	public void render(Section<?> sec, UserContext user, StringBuilder string) {
 		string.append(KnowWEUtils.maskHTML("<")).append(tagName);
 
 		if (attributes != null && attributes.length > 0) {
@@ -86,7 +85,7 @@ public class GenericHTMLRenderer<T extends Type> implements KnowWERenderer<T> {
 		string.append(KnowWEUtils.maskHTML("</span>"));
 	}
 
-	protected void renderContent(Section<T> section, UserContext user, StringBuilder string) {
+	protected void renderContent(Section<?> section, UserContext user, StringBuilder string) {
 		StringBuilder builder = new StringBuilder();
 		DelegateRenderer.getInstance().render(section, user, builder);
 		KnowWEUtils.maskJSPWikiMarkup(builder);

@@ -28,7 +28,7 @@ import java.util.Map.Entry;
 
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
@@ -36,7 +36,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolUtils;
 
-public class DefaultMarkupRenderer<T extends DefaultMarkupType> implements KnowWERenderer<T> {
+public class DefaultMarkupRenderer implements Renderer {
 
 	private final String iconPath;
 
@@ -55,7 +55,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> implements KnowW
 	}
 
 	@Override
-	public void render(Section<T> section, UserContext user, StringBuilder buffer) {
+	public void render(Section<?> section, UserContext user, StringBuilder buffer) {
 		String id = section.getID();
 		Tool[] tools = ToolUtils.getTools(section, user);
 
@@ -81,17 +81,17 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> implements KnowW
 				id, cssClassName, tools, user, buffer);
 	}
 
-	protected void renderTitle(Section<T> section, UserContext user, StringBuilder string) {
+	protected void renderTitle(Section<?> section, UserContext user, StringBuilder string) {
 		String icon = getTitleIcon(section, user);
 		String title = getTitleName(section, user);
 		string.append(renderTitle(icon, title));
 	}
 
-	protected String getTitleIcon(Section<T> section, UserContext user) {
+	protected String getTitleIcon(Section<?> section, UserContext user) {
 		return this.iconPath;
 	}
 
-	protected String getTitleName(Section<T> section, UserContext user) {
+	protected String getTitleName(Section<?> section, UserContext user) {
 		return section.get().getName();
 	}
 
@@ -107,7 +107,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> implements KnowW
 		return result;
 	}
 
-	public void renderMessages(Section<? extends DefaultMarkupType> section, StringBuilder string) {
+	public void renderMessages(Section<?> section, StringBuilder string) {
 		Map<String, Collection<Message>> messagesFromSubtree = Messages.getMessagesFromSubtree(
 				section,
 				Message.Type.ERROR, Message.Type.WARNING);
@@ -173,8 +173,7 @@ public class DefaultMarkupRenderer<T extends DefaultMarkupType> implements KnowW
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	protected void renderContents(Section<T> section, UserContext user, StringBuilder string) {
+	protected void renderContents(Section<?> section, UserContext user, StringBuilder string) {
 		List<Section<?>> subsecs = section.getChildren();
 		Section<?> first = subsecs.get(0);
 		Section<?> last = subsecs.get(subsecs.size() - 1);

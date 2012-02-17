@@ -45,16 +45,16 @@ public class RendererManager {
 		return instance;
 	}
 
-	private Map<Type, RendererSet> rendererToTypeMap = new HashMap<Type, RendererSet>();
+	private final Map<Type, RendererSet> rendererToTypeMap = new HashMap<Type, RendererSet>();
 
-	public KnowWERenderer<? extends Type> getRenderer(Type type, String user, String topic) {
+	public Renderer getRenderer(Type type, String user, String topic) {
 
 		RenderingMode renderingType = UserSettingsManager.getInstance().getRenderingType(user,
 				topic);
 
 		RendererSet set = rendererToTypeMap.get(type);
 		if (set != null) {
-			KnowWERenderer<? extends Type> renderer = set.getRenderer(user, topic,
+			Renderer renderer = set.getRenderer(user, topic,
 					renderingType);
 			if (renderer != null) {
 				return renderer;
@@ -65,12 +65,11 @@ public class RendererManager {
 	}
 
 	/**
-	 * Sets a {@link CustomRenderer} for the {@link Type} type to
-	 * the {@link RendererManager}.
+	 * Sets a {@link CustomRenderer} for the {@link Type} type to the
+	 * {@link RendererManager}.
 	 * 
 	 * @param type The {@link Type} the renderer applies to
-	 * @param customRenderer The custom renderer for the
-	 *        {@link Type};
+	 * @param customRenderer The custom renderer for the {@link Type};
 	 */
 	public void setRenderer(Type type, CustomRenderer customRenderer) {
 
@@ -86,8 +85,8 @@ public class RendererManager {
 	}
 
 	/**
-	 * Removes a {@link CustomRenderer} for the {@link Type} type
-	 * from the {@link RendererManager}.
+	 * Removes a {@link CustomRenderer} for the {@link Type} type from the
+	 * {@link RendererManager}.
 	 * 
 	 * @param type The {@link Type} the renderer applies to
 	 */

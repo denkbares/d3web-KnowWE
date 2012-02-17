@@ -34,8 +34,7 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
-@SuppressWarnings("rawtypes")
-public class DelegateRenderer implements KnowWERenderer {
+public class DelegateRenderer implements Renderer {
 
 	private static DelegateRenderer instance;
 
@@ -56,14 +55,13 @@ public class DelegateRenderer implements KnowWERenderer {
 	}
 
 	@Override
-	public void render(Section section, UserContext user,
+	public void render(Section<?> section, UserContext user,
 			StringBuilder builder) {
 
 		boolean renderTypes = isRenderTypes(user.getParameters());
 		if (renderTypes) renderType(section, true, builder);
 
 		try {
-			@SuppressWarnings("unchecked")
 			List<Section<?>> subSections = section.getChildren();
 			if (subSections.size() == 0) {
 				// KnowWEDomRenderer renderer = getRenderer(section, user);
@@ -100,7 +98,6 @@ public class DelegateRenderer implements KnowWERenderer {
 		if (renderTypes) renderType(section, false, builder);
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void renderSubSection(Section<?> subSection, UserContext user, StringBuilder builder) {
 		renderAnchor(subSection, builder);
 
@@ -109,7 +106,7 @@ public class DelegateRenderer implements KnowWERenderer {
 		renderMessagesPre(subSection, user, builder);
 
 		// use subSection's renderer
-		KnowWERenderer renderer = getRenderer(subSection, user);
+		Renderer renderer = getRenderer(subSection, user);
 		renderer.render(subSection, user, builder);
 
 		// then call post rendering for all messages of this subsection
@@ -220,8 +217,8 @@ public class DelegateRenderer implements KnowWERenderer {
 		builder.append(KnowWEUtils.maskHTML("&gt;</sub>"));
 	}
 
-	public static KnowWERenderer<?> getRenderer(Section<?> section, UserContext user) {
-		KnowWERenderer<?> renderer = null;
+	public static Renderer getRenderer(Section<?> section, UserContext user) {
+		Renderer renderer = null;
 
 		Type objectType = section.get();
 		if (renderer == null) {

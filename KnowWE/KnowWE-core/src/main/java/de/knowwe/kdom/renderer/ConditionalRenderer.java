@@ -24,23 +24,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 
 @Deprecated
 @SuppressWarnings("rawtypes")
-public abstract class ConditionalRenderer implements KnowWERenderer {
+public abstract class ConditionalRenderer implements Renderer {
 
-	protected List<KnowWERenderer> conditionalRenderers = new ArrayList<KnowWERenderer>();
+	protected List<Renderer> conditionalRenderers = new ArrayList<Renderer>();
 
-	public void addConditionalRenderer(KnowWERenderer r) {
+	public void addConditionalRenderer(Renderer r) {
 		conditionalRenderers.add(r);
 	}
 
 	@Override
-	public void render(Section sec, UserContext user, StringBuilder string) {
+	public void render(Section<?> sec, UserContext user, StringBuilder string) {
 		StringBuilder b = new StringBuilder();
-		for (KnowWERenderer r : conditionalRenderers) {
+		for (Renderer r : conditionalRenderers) {
 			r.render(sec, user, b);
 			if (b.length() == 0) {
 				return;

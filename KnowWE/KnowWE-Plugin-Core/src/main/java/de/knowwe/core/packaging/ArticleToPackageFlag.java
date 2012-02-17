@@ -28,7 +28,7 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
@@ -77,10 +77,10 @@ public class ArticleToPackageFlag extends DefaultMarkupType {
 
 	}
 
-	static class ArticleToPackageFlagRenderer implements KnowWERenderer<AbstractType> {
+	static class ArticleToPackageFlagRenderer implements Renderer {
 
 		@Override
-		public void render(Section<AbstractType> sec, UserContext user, StringBuilder string) {
+		public void render(Section<?> sec, UserContext user, StringBuilder string) {
 			string.append("Added article to package '" + sec.getText() + "'.");
 
 		}

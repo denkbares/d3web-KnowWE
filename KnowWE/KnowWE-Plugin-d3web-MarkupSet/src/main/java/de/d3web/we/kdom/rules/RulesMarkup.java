@@ -49,7 +49,7 @@ public class RulesMarkup extends DefaultMarkupType {
 
 	public RulesMarkup() {
 		super(m);
-		this.setRenderer(new DefaultMarkupRenderer<RulesMarkup>(
+		this.setRenderer(new DefaultMarkupRenderer(
 				"KnowWEExtension/d3web/icon/rule24.png"));
 	}
 }

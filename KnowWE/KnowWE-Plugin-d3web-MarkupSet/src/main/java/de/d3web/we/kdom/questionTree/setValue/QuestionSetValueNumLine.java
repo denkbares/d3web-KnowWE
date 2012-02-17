@@ -39,7 +39,7 @@ import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
@@ -120,10 +120,10 @@ public class QuestionSetValueNumLine extends AbstractType {
 		return qid;
 	}
 
-	static class ArgumentRenderer implements KnowWERenderer<QuestionReference> {
+	static class ArgumentRenderer implements Renderer {
 
 		@Override
-		public void render(Section<QuestionReference> sec, UserContext user,
+		public void render(Section<?> sec, UserContext user,
 				StringBuilder string) {
 			String embracedContent = sec.getText().substring(1,
 					sec.getText().length() - 1);

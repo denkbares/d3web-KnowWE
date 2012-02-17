@@ -23,7 +23,7 @@ package de.knowwe.core.kdom.rendering;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 
-public class DefaultTextRenderer implements KnowWERenderer {
+public class DefaultTextRenderer implements Renderer {
 
 	private static DefaultTextRenderer instance;
 
@@ -41,7 +41,7 @@ public class DefaultTextRenderer implements KnowWERenderer {
 	}
 
 	@Override
-	public void render(Section sec, UserContext user, StringBuilder string) {
+	public void render(Section<?> sec, UserContext user, StringBuilder string) {
 		string.append(sec.getText());
 	}
 

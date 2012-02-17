@@ -26,7 +26,7 @@ import java.util.List;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 
 /**
  * This class offers some methods for the KnowWETypeBrowser and the
@@ -66,7 +66,7 @@ public class KnowWETypeUtils {
 	 * @param clazz
 	 * @param renderer
 	 */
-	public static void injectRendererToSuccessorType(Type root, Class<? extends Type> clazz, KnowWERenderer<?> renderer) {
+	public static void injectRendererToSuccessorType(Type root, Class<? extends Type> clazz, Renderer renderer) {
 		KnowWETypeSet set = new KnowWETypeSet();
 		getAllChildrenTypesRecursive(root, set);
 		for (Type t : set.toList()) {
@@ -75,6 +75,7 @@ public class KnowWETypeUtils {
 			}
 		}
 	}
+
 	/**
 	 * Getting of all ChildrenTypes of a Type.
 	 * 
@@ -176,7 +177,7 @@ public class KnowWETypeUtils {
 
 		return null;
 	}
-	
+
 	/**
 	 * Get the father element of the given section specified by class.
 	 * 

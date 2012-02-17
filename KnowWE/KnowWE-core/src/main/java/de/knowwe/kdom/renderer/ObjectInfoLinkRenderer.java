@@ -25,21 +25,21 @@ import java.net.URLEncoder;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
-public class ObjectInfoLinkRenderer implements KnowWERenderer {
+public class ObjectInfoLinkRenderer implements Renderer {
 
-	KnowWERenderer renderer = new DefaultTextRenderer();
+	Renderer renderer = new DefaultTextRenderer();
 
-	public ObjectInfoLinkRenderer(KnowWERenderer renderer) {
+	public ObjectInfoLinkRenderer(Renderer renderer) {
 		super();
 		this.renderer = renderer;
 	}
 
 	@Override
-	public void render(Section sec, UserContext user, StringBuilder string) {
+	public void render(Section<?> sec, UserContext user, StringBuilder string) {
 
 		StringBuilder b = new StringBuilder();
 		renderer.render(sec, user, b);

@@ -39,7 +39,7 @@ import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.type.FlowchartType;
@@ -48,10 +48,14 @@ import de.knowwe.diaflux.type.FlowchartType;
  * 
  * @author Reinhard Hatko
  */
-public class FlowchartRenderer implements KnowWERenderer<FlowchartType> {
+public class FlowchartRenderer implements Renderer {
 
 	@Override
-	public void render(Section<FlowchartType> sec, UserContext user, StringBuilder string) {
+	public void render(Section<?> section, UserContext user, StringBuilder string) {
+
+		if (!(section.get() instanceof FlowchartType)) return;
+		@SuppressWarnings("unchecked")
+		Section<FlowchartType> sec = (Section<FlowchartType>) section;
 
 		// render anchor to be able to link to that flowchart
 		String anchorName = KnowWEUtils.getAnchor(sec);

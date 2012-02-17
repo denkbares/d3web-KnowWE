@@ -20,7 +20,7 @@ package de.d3web.we.solutionpanel;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.KnowWERenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -42,17 +42,15 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @author Joachim Baumeister (denkbares GmbH)
  * @created 15.10.2010
  */
-public class ShowSolutionsRenderer extends DefaultMarkupRenderer<ShowSolutionsType> {
+public class ShowSolutionsRenderer extends DefaultMarkupRenderer {
 
-	@SuppressWarnings({
-			"unchecked", "rawtypes" })
 	@Override
-	protected void renderContents(Section<ShowSolutionsType> section, UserContext user, StringBuilder string) {
+	protected void renderContents(Section<?> section, UserContext user, StringBuilder string) {
 		// only render the content section
 		Section<?> child = DefaultMarkupType.getContentSection(section);
 		if (child == null) return; // noting to render
 
-		KnowWERenderer renderer = DelegateRenderer.getRenderer(child, user);
+		Renderer renderer = DelegateRenderer.getRenderer(child, user);
 		renderer.render(child, user, string);
 	}
 

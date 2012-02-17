@@ -28,7 +28,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
  * @author Sebastian Furth (denkbares GmbH)
  * @created 18/10/2010
  */
-public class TestCaseRenderer extends DefaultMarkupRenderer<TestCaseType> {
+public class TestCaseRenderer extends DefaultMarkupRenderer {
 
 	public TestCaseRenderer() {
 		super("KnowWEExtension/d3web/icon/testsuite24.png");
