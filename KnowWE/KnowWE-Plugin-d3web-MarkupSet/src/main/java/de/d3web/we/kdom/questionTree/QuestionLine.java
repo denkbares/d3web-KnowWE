@@ -39,7 +39,6 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -58,7 +57,6 @@ import de.knowwe.kdom.sectionFinder.EmbracedContentFinder;
 import de.knowwe.kdom.sectionFinder.MatchUntilEndFinder;
 import de.knowwe.kdom.sectionFinder.OneOfStringEnumFinder;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
-import de.knowwe.plugin.Plugins;
 
 /**
  * QuestionLine of the QuestionTree, here Questions can be defined
@@ -82,10 +80,6 @@ public class QuestionLine extends AbstractType {
 						&& !text.startsWith("[");
 			}
 		};
-
-		for (Type childType : Plugins.getTypes(this.getClass().getName())) {
-			addChildType(childType);
-		}
 
 		// type of the question '[oc]'
 		this.childrenTypes.add(new QuestionTypeDeclaration());

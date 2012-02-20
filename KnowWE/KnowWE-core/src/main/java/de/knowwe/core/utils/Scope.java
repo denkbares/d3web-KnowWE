@@ -109,6 +109,11 @@ public class Scope {
 	 * @param section is the {@link Section} to be checked
 	 */
 	public boolean matches(Section<?> section) {
+		Type[] typePath = getTypePath(section);
+		return matches(typePath, typePath.length - 1, this.scopeElements.length - 1);
+	}
+
+	public static Type[] getTypePath(Section<?> section) {
 		int kdomDepth = section.getDepth();
 		Type[] typePath = new Type[kdomDepth];
 		typePath[--kdomDepth] = section.get();
@@ -117,7 +122,7 @@ public class Scope {
 			typePath[--kdomDepth] = father.get();
 			father = father.getFather();
 		}
-		return matches(typePath, typePath.length - 1, this.scopeElements.length - 1);
+		return typePath;
 	}
 
 	/**

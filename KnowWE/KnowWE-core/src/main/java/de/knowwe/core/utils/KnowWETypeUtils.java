@@ -93,11 +93,11 @@ public class KnowWETypeUtils {
 		allTypes.add(type);
 
 		// check all allowed children types from this type
-		if (type.getAllowedChildrenTypes() != null) {
+		if (type.getChildrenTypes() != null) {
 
 			// NOTE: .getAllowedChildrenTypes() now returns an unmodifiable list
 			// => copy
-			List<Type> unModList = type.getAllowedChildrenTypes();
+			List<Type> unModList = type.getChildrenTypes();
 			List<Type> moreChildren = new ArrayList<Type>();
 			moreChildren.addAll(unModList);
 
@@ -109,7 +109,7 @@ public class KnowWETypeUtils {
 				// if children does not contain this type
 				if (!allTypes.contains(childrentype)) {
 					allTypes.add(childrentype);
-					for (Type c : childrentype.getAllowedChildrenTypes()) {
+					for (Type c : childrentype.getChildrenTypes()) {
 						KnowWETypeSet t = getAllChildrenTypesRecursive(c, allTypes);
 						allTypes.addAll(t.toList());
 					}
@@ -166,7 +166,7 @@ public class KnowWETypeUtils {
 	 * @return
 	 */
 	public static <OT extends Type> Type findSuccessorType(Type root, Class<OT> clazz) {
-		List<Type> childrenTypes = root.getAllowedChildrenTypes();
+		List<Type> childrenTypes = root.getChildrenTypes();
 		for (Type type : childrenTypes) {
 			if (type.isAssignableFromType(clazz)) {
 				return type;

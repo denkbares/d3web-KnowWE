@@ -74,7 +74,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="handlerpriority" value="0" />
-		<parameter id="scope" value="de.knowwe.kdom.defaultMarkup.DefaultMarkupType" />
+		<parameter id="scope" value="DefaultMarkupType" />
 	</extension>
         
 </plugin>

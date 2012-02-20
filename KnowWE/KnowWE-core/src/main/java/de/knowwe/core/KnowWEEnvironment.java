@@ -83,15 +83,10 @@ public class KnowWEEnvironment {
 	// private KnowWETopicLoader topicLoader;
 
 	private RootType rootTypes;
-	private List<Type> globalTypes = new ArrayList<Type>();
 	private List<PageAppendHandler> appendHandlers = new ArrayList<PageAppendHandler>();
 
 	public List<PageAppendHandler> getAppendHandlers() {
 		return appendHandlers;
-	}
-
-	public List<Type> getGlobalTypes() {
-		return globalTypes;
 	}
 
 	private List<Type> allKnowWETypes;
@@ -387,8 +382,8 @@ public class KnowWEEnvironment {
 		// modules.add(new de.d3web.we.dom.kopic.KopicModule());
 
 		File libDir = new File(knowweExtensionPath + "/../WEB-INF/lib");
-		// when testing, libDir doesn't exist, but the pluginframework is
-		// initialised
+		// when testing, libDir doesn't exist, but the plugin framework is
+		// initialized
 		// in junittest, so there is no problem
 		// if libDir is doesn't exist in runtime, nothing will work, so this
 		// code won't be reached ;-)
@@ -440,20 +435,6 @@ public class KnowWEEnvironment {
 			}
 		}
 
-		// List<ISemanticCore> sclist = Plugins.getSemanticCoreImpl();
-		// if (sclist.size() == 1) {
-		// SemanticCoreDelegator.setImpl(sclist.get(0));
-		// }
-		// else {
-		// for (ISemanticCore cur : sclist) {
-		// if (!cur.getClass().toString().contains("Dummy")) {
-		// SemanticCoreDelegator.setImpl(cur);
-		// }
-		// }
-		// }
-		//
-		// SemanticCoreDelegator.initImpl(this);
-
 		for (Instantiation inst : Plugins.getInstantiations()) {
 			inst.init(context);
 		}
@@ -468,10 +449,8 @@ public class KnowWEEnvironment {
 
 		appendHandlers = Plugins.getPageAppendHandlers();
 
-		for (Type type : Plugins.getRootTypes()) {
-			addRootType(type);
-		}
-		this.globalTypes = Plugins.getGlobalTypes();
+		decorateTypeTree(getRootType());
+
 		KnowledgeRepresentationManager manager = this.getKnowledgeRepresentationManager(web);
 		for (KnowledgeRepresentationHandler handler : Plugins.getKnowledgeRepresentationHandlers()) {
 			handler.setWeb(web);
@@ -480,6 +459,26 @@ public class KnowWEEnvironment {
 
 		Plugins.initJS();
 		Plugins.initCSS();
+	}
+
+	private void decorateTypeTree(Type type) {
+
+		Plugins.addChildrenTypesToType(type);
+		Plugins.addSubtreeHandlersToType(type);
+		Plugins.addRendererToType(type);
+
+		if (type.getChildrenTypes() == null) return;
+
+		for (Type childType : type.getChildrenTypes()) {
+			if (childType.getPathToRoot() != null) continue;
+			Type[] pathToRoot = type.getPathToRoot();
+			Type[] childPath = new Type[pathToRoot.length + 1];
+			System.arraycopy(pathToRoot, 0, childPath, 0, pathToRoot.length);
+			childPath[childPath.length - 1] = childType;
+			childType.setPathToRoot(childPath);
+			decorateTypeTree(childType);
+		}
+
 	}
 
 	private void initTagHandler(TagHandler tagHandler) {
@@ -494,10 +493,6 @@ public class KnowWEEnvironment {
 		else {
 			this.tagHandlers.put(key, tagHandler);
 		}
-	}
-
-	private boolean addRootType(Type type) {
-		return RootType.getInstance().addChildType(type);
 	}
 
 	/**

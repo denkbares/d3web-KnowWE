@@ -46,15 +46,6 @@ public class AbstractXMLType extends AbstractType {
 
 	private final String xmlTagName;
 
-	private static AbstractXMLType defaultInstance;
-
-	public static AbstractXMLType getDefaultInstance() {
-		if (defaultInstance == null) {
-			defaultInstance = new AbstractXMLType();
-		}
-		return defaultInstance;
-	}
-
 	public Section<XMLContent> getContentChild(Section<?> s) {
 		if (s.get() instanceof AbstractXMLType) {
 			Section<XMLContent> content = Sections.findSuccessor(s, XMLContent.class);
@@ -104,7 +95,8 @@ public class AbstractXMLType extends AbstractType {
 	}
 
 	private static int getXMLDepth(Section<?> xmlSection, int depth) {
-		Section<AbstractXMLType> xmlFather = Sections.findAncestorOfType(xmlSection, AbstractXMLType.class);
+		Section<AbstractXMLType> xmlFather = Sections.findAncestorOfType(xmlSection,
+				AbstractXMLType.class);
 		if (xmlFather != null && xmlFather.get() instanceof AbstractXMLType) {
 			return getXMLDepth(xmlFather, ++depth);
 		}

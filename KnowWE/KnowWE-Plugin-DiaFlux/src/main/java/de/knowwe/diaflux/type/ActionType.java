@@ -39,7 +39,7 @@ public class ActionType extends AbstractXMLType {
 		super("action");
 		// get the CFAction higher up in the list
 		RuleAction ruleAction = new RuleAction();
-		ArrayList<Type> list = new ArrayList<Type>(ruleAction.getAllowedChildrenTypes());
+		ArrayList<Type> list = new ArrayList<Type>(ruleAction.getChildrenTypes());
 
 		for (int i = list.size() - 1; i >= 0; i--) {
 			ruleAction.removeChild(i);

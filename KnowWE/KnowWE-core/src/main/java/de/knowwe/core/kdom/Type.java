@@ -53,14 +53,23 @@ public interface Type {
 
 	public boolean isAssignableFromType(Class<? extends Type> clazz);
 
+	public void setPathToRoot(Type[] path);
+
+	public Type[] getPathToRoot();
+
+	public void addSubtreeHandler(Priority p, SubtreeHandler<? extends Type> handler);
+
+	public void addChildType(int i, Type t);
+
+	public void addChildType(Type t);
+
 	/**
 	 * When KnowWE renders the article this renderer is used to render this
 	 * node. In most cases rendering should be delegated to children types.
-	 * 
-	 * @return
 	 */
-	@SuppressWarnings("rawtypes")
 	public Renderer getRenderer();
+
+	public void setRenderer(Renderer renderer);
 
 	/**
 	 * Returns the parser that can be used to parse the textual markup of this
@@ -83,7 +92,7 @@ public interface Type {
 	 * 
 	 * @return
 	 */
-	public abstract List<Type> getAllowedChildrenTypes();
+	public List<Type> getChildrenTypes();
 
 	public void deactivateType();
 
@@ -100,8 +109,6 @@ public interface Type {
 	public boolean isLeafType();
 
 	public boolean isNotRecyclable();
-
-	public boolean allowesGlobalTypes();
 
 	public void setNotRecyclable(boolean notRecyclable);
 

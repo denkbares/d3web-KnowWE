@@ -28,7 +28,6 @@ import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -43,17 +42,12 @@ import de.knowwe.kdom.dashtree.DashTreeElement;
 import de.knowwe.kdom.dashtree.DashTreeElementContent;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
-import de.knowwe.plugin.Plugins;
 
 public class QClassLine extends AbstractType {
 
 	public QClassLine() {
 
 		initSectionFinder();
-
-		for (Type childType : Plugins.getTypes(this.getClass().getName())) {
-			addChildType(childType);
-		}
 		// at first the init-number
 		this.childrenTypes.add(new InitNumber());
 		// add description-type via '~'

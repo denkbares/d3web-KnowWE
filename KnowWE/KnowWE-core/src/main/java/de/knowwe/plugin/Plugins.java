@@ -20,7 +20,6 @@
 package de.knowwe.plugin;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -29,10 +28,14 @@ import de.d3web.plugin.PluginManager;
 import de.knowwe.core.KnowWERessourceLoader;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.append.PageAppendHandler;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.IncrementalSectionizerModule;
 import de.knowwe.core.kdom.parsing.SectionizerModule;
+import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.taghandler.TagHandler;
+import de.knowwe.core.utils.ScopeUtils;
 import de.knowwe.knowRep.KnowledgeRepresentationHandler;
 
 /**
@@ -43,7 +46,6 @@ import de.knowwe.knowRep.KnowledgeRepresentationHandler;
 public class Plugins {
 
 	public static final String SCOPE_ROOT = "root";
-	public static final String SCOPE_GLOBAL = "global";
 	public static final String EXTENDED_PLUGIN_ID = "KnowWEExtensionPoints";
 	public static final String EXTENDED_POINT_KnowWEAction = "Action";
 	public static final String EXTENDED_POINT_KnowledgeRepresentationHandler = "KnowledgeRepresentationHandler";
@@ -59,6 +61,7 @@ public class Plugins {
 	public static final String EXTENDED_POINT_SearchProvider = "SearchProvider";
 	public static final String EXTENDED_POINT_TERMINOLOGY = "Terminology";
 	public static final String EXTENDED_POINT_COMPILESCRIPT = "CompileScript";
+	private static final String EXTENDED_POINT_Renderer = "Renderer";
 
 	/**
 	 * Returns all plugged Instantiations These are used to initialize plugins.
@@ -104,52 +107,72 @@ public class Plugins {
 		return ret;
 	}
 
-	/**
-	 * Returns a List of all Types
-	 * 
-	 * @return List of Types
-	 */
-	public static List<Type> getRootTypes() {
-		return getTypes(SCOPE_ROOT);
-	}
+	// /**
+	// * Returns a List of all Types
+	// *
+	// * @return List of Types
+	// */
+	// public static List<Type> getRootTypes() {
+	// return getTypes(SCOPE_ROOT);
+	// }
+	//
+	// /**
+	// * Returns all plugged KnowWE Object Types for the specified scope. The
+	// * framework uses the scopes global and root, other scopes can be defined
+	// in
+	// * plugins.
+	// *
+	// * @param scope Scope of the Types
+	// * @return a List of Types
+	// */
+	// public static List<Type> getTypes(String scope) {
+	// Extension[] extensions =
+	// PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+	// EXTENDED_POINT_Type);
+	// List<Type> ret = new ArrayList<Type>();
+	// for (Extension e : extensions) {
+	// if (e.getParameter("scope").equals(scope)) {
+	// ret.add((Type) e.getSingleton());
+	// }
+	// }
+	// return ret;
+	// }
 
-	/**
-	 * Global types are always active at any level of the KDOM parsing process.
-	 * Global types need to be TerminalTypes, thus cannot have children in the
-	 * parse-tree.
-	 * 
-	 * DANGER: This can invade the markups/parsing of other modules!
-	 * 
-	 * @return List of Types
-	 */
-	public static List<Type> getGlobalTypes() {
-		return getTypes(SCOPE_GLOBAL);
-	}
-
-	/**
-	 * Returns all plugged KnowWE Object Types for the specified scope. The
-	 * framework uses the scopes global and root, other scopes can be defined in
-	 * plugins.
-	 * 
-	 * @param scope Scope of the Types
-	 * @return a List of Types
-	 */
-	public static List<Type> getTypes(String scope) {
+	public static void addChildrenTypesToType(Type type) {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_Type);
-		List<Type> ret = new ArrayList<Type>();
-		for (Extension e : extensions) {
-			if (e.getParameter("scope").equals(scope)) {
-				ret.add((Type) e.getSingleton());
-			}
+		extensions = ScopeUtils.getMatchingExtensions(extensions, type.getPathToRoot());
+		for (int i = extensions.length - 1; i >= 0; i--) {
+			Extension extension = extensions[i];
+			type.addChildType(0, (Type) extension.getSingleton());
 		}
-		return ret;
 	}
 
-	public static Collection<SectionizerModule> getSectionizerModules() {
+	public static void addSubtreeHandlersToType(Type type) {
+		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_SubtreeHandler);
+		extensions = ScopeUtils.getMatchingExtensions(extensions, type.getPathToRoot());
+		for (int i = 0; i < extensions.length; i++) {
+			Extension extension = extensions[i];
+			int priorityValue = Integer.parseInt(extension.getParameter("handlerpriority"));
+			Priority priority = Priority.getPriority(priorityValue);
+			type.addSubtreeHandler(priority, (SubtreeHandler<?>) extension.getSingleton());
+		}
+	}
+
+	public static void addRendererToType(Type type) {
+		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_Renderer);
+		extensions = ScopeUtils.getMatchingExtensions(extensions, type.getPathToRoot());
+		if (extensions.length >= 1) {
+			type.setRenderer((Renderer) extensions[0].getSingleton());
+		}
+	}
+
+	public static List<SectionizerModule> getSectionizerModules() {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_SectionizerModule);
-		Collection<SectionizerModule> sm = new ArrayList<SectionizerModule>();
+		List<SectionizerModule> sm = new ArrayList<SectionizerModule>();
 		for (Extension e : extensions) {
 			sm.add((SectionizerModule) e.getSingleton());
 		}
@@ -175,22 +198,6 @@ public class Plugins {
 		}
 		return ret;
 	}
-
-	/**
-	 * Returns a List of all plugged SemanticCores
-	 * 
-	 * @return List of SemanticCores
-	 */
-	// public static List<ISemanticCore> getSemanticCoreImpl() {
-	// Extension[] extensions =
-	// PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-	// EXTENDED_POINT_SemanticCore);
-	// List<ISemanticCore> ret = new ArrayList<ISemanticCore>();
-	// for (Extension e : extensions) {
-	// ret.add((ISemanticCore) e.getSingleton());
-	// }
-	// return ret;
-	// }
 
 	/**
 	 * Returns a list of all plugged PageAppendHandlers.
@@ -224,6 +231,8 @@ public class Plugins {
 				EXTENDED_POINT_TagHandler));
 		addScripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_ToolProvider));
+		addScripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_Renderer));
 		for (String s : files) {
 			KnowWERessourceLoader.getInstance().add(s, KnowWERessourceLoader.RESOURCE_SCRIPT);
 		}
@@ -239,6 +248,8 @@ public class Plugins {
 				EXTENDED_POINT_TagHandler));
 		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_ToolProvider));
+		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_Renderer));
 		for (String s : files) {
 			KnowWERessourceLoader.getInstance().add(s, KnowWERessourceLoader.RESOURCE_STYLESHEET);
 		}

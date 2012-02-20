@@ -54,11 +54,11 @@ public class DashTree extends AbstractType {
 	 * @param newContentType
 	 */
 	protected void replaceDashTreeElementContentType(DashTreeElementContent newContentType) {
-		List<Type> types = getAllowedChildrenTypes();
+		List<Type> types = getChildrenTypes();
 		for (Type Type : types) {
 			if (Type instanceof DashSubtree) {
 				List<Type> content = Type
-						.getAllowedChildrenTypes();
+						.getChildrenTypes();
 				for (Type Type2 : content) {
 					if (Type2 instanceof DashTreeElement) {
 						try {

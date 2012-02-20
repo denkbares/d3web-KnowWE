@@ -38,6 +38,17 @@
 		<parameter-def id="css" multiplicity="any" />
 	</extension-point>
 	
+	<extension-point id="Renderer">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+		<parameter-def id="scope" />
+		<parameter-def id="script" multiplicity="any" />
+		<parameter-def id="css" multiplicity="any" />
+	</extension-point>
+	
 	<extension-point id="SubtreeHandler">
 		<parameter-def id="class" />
 		<parameter-def id="name" />

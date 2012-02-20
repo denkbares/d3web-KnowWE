@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
-import de.d3web.plugin.Extension;
-import de.d3web.plugin.PluginManager;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.parsing.Parser;
 import de.knowwe.core.kdom.parsing.Sectionizable;
@@ -38,7 +36,6 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.DefaultErrorRenderer;
 import de.knowwe.core.report.MessageRenderer;
-import de.knowwe.plugin.Plugins;
 
 public abstract class AbstractType implements Type, Sectionizable {
 
@@ -46,7 +43,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * the children types of the type. Used to serve the getAllowedChildrenTypes
 	 * of the Type interface
 	 * 
-	 * @see Type#getAllowedChildrenTypes()
+	 * @see Type#getChildrenTypes()
 	 * 
 	 */
 	protected List<Type> childrenTypes = new ArrayList<Type>();
@@ -57,12 +54,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * @see SubtreeHandler
 	 */
 	private final TreeMap<Priority, List<SubtreeHandler<? extends Type>>> subtreeHandler = new TreeMap<Priority, List<SubtreeHandler<? extends Type>>>();
-
-	/**
-	 * SubtreeHandlers are plugged lazy, because the PluginManager is not
-	 * initialized on startup.
-	 */
-	private boolean subtreeHandlersPlugged = false;
 
 	/**
 	 * types can be activated and deactivated in KnowWE this field is holding
@@ -103,9 +94,9 @@ public abstract class AbstractType implements Type, Sectionizable {
 	protected boolean isNumberedType = false;
 
 	/**
-	 * a flag to allow or disallow global types for this type.
+	 * contains all types from this type to the {@link RootType}
 	 */
-	protected boolean allowesGlobalTypes = true;
+	private Type[] pathToRoot = null;
 
 	public boolean isNumberedType() {
 		return isNumberedType;
@@ -157,23 +148,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private void addPluggedSubtreeHandlers() {
-		if (!PluginManager.isInitialized()) return;
-		Extension[] extensions = PluginManager.getInstance().getExtensions(
-				Plugins.EXTENDED_PLUGIN_ID,
-				Plugins.EXTENDED_POINT_SubtreeHandler);
-		for (Extension e : extensions) {
-			if (e.getParameter("scope").equals(this.getClass().getName())) {
-				@SuppressWarnings("rawtypes")
-				SubtreeHandler handler = (SubtreeHandler) e.getSingleton();
-				int priorityValue = Integer.parseInt(e.getParameter("handlerpriority"));
-				Priority priority = Priority.getPriority(priorityValue);
-				addSubtreeHandler(priority, handler);
-			}
-		}
-	}
-
 	public AbstractType(SectionFinder sectionFinder) {
 		this();
 		this.sectionFinder = sectionFinder;
@@ -186,10 +160,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 */
 	@Override
 	public final TreeMap<Priority, List<SubtreeHandler<? extends Type>>> getSubtreeHandlers() {
-		if (!subtreeHandlersPlugged) {
-			subtreeHandlersPlugged = true;
-			addPluggedSubtreeHandlers();
-		}
 		return subtreeHandler;
 	}
 
@@ -206,7 +176,8 @@ public abstract class AbstractType implements Type, Sectionizable {
 	/**
 	 * Registers the given SubtreeHandlers with the given Priority.
 	 */
-	public final void addSubtreeHandler(Priority p, SubtreeHandler<? extends Type> handler) {
+	@Override
+	public void addSubtreeHandler(Priority p, SubtreeHandler<? extends Type> handler) {
 		if (p == null) p = Priority.DEFAULT;
 		addSubtreeHandler(-1, p, handler);
 	}
@@ -343,11 +314,11 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * @see de.d3web.we.kdom.Type#getAllowedChildrenTypes()
 	 */
 	@Override
-	public List<Type> getAllowedChildrenTypes() {
+	public List<Type> getChildrenTypes() {
 		return Collections.unmodifiableList(childrenTypes);
 	}
 
-	public void clearAllowedChildren() {
+	public void clearChildrenTypes() {
 		this.childrenTypes = new ArrayList<Type>();
 	}
 
@@ -355,8 +326,14 @@ public abstract class AbstractType implements Type, Sectionizable {
 		this.subtreeHandler.clear();
 	}
 
-	public boolean addChildType(Type t) {
-		return this.childrenTypes.add(t);
+	@Override
+	public void addChildType(int i, Type t) {
+		this.childrenTypes.add(i, t);
+	}
+
+	@Override
+	public void addChildType(Type t) {
+		this.childrenTypes.add(t);
 	}
 
 	public boolean removeChildType(Type t) {
@@ -367,12 +344,16 @@ public abstract class AbstractType implements Type, Sectionizable {
 		return this.childrenTypes.remove(i);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.d3web.we.kdom.KnowWEType#getRenderer()
-	 */
-	@SuppressWarnings("rawtypes")
+	@Override
+	public void setPathToRoot(Type[] path) {
+		this.pathToRoot = path;
+	}
+
+	@Override
+	public Type[] getPathToRoot() {
+		return this.pathToRoot;
+	}
+
 	@Override
 	public final Renderer getRenderer() {
 		return renderer;
@@ -394,29 +375,12 @@ public abstract class AbstractType implements Type, Sectionizable {
 	}
 
 	/**
-	 * Allows to set a custom renderer for this type
-	 * 
-	 * @param renderer
+	 * Allows to set a renderer for this type
 	 */
+	@Override
 	public void setRenderer(Renderer renderer) {
 		this.renderer = renderer;
 	}
-
-	// /**
-	// * This enables a second sectionizing stage. Normally all Sections get
-	// * sectionized at the start of building an article and after that, the
-	// * knowledge gets created by the SubtreeHandlers.
-	// * <p />
-	// * If this returns true, the Sections of this ObjectType don't get
-	// * sectionized further until after creating the knowledge (from other
-	// * Sections). Therefore it is possible to use all the stuff created by the
-	// * SubtreeHandlers to sectionze this Section.
-	// *
-	// * @created 14.06.2010
-	// */
-	// public boolean isPostBuildSectionizing() {
-	// return this.postBuildSectionizing;
-	// }
 
 	/*
 	 * (non-Javadoc)
@@ -426,11 +390,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 	@Override
 	public boolean isAssignableFromType(Class<? extends Type> clazz) {
 		return clazz.isAssignableFrom(this.getClass());
-	}
-
-	@Override
-	public boolean allowesGlobalTypes() {
-		return this.allowesGlobalTypes;
 	}
 
 	/*
@@ -450,7 +409,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 */
 	@Override
 	public boolean isLeafType() {
-		List<Type> types = getAllowedChildrenTypes();
+		List<Type> types = getChildrenTypes();
 		return types == null || types.size() == 0;
 	}
 

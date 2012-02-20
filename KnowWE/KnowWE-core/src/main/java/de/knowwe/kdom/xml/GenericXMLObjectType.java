@@ -26,17 +26,17 @@ import de.knowwe.core.kdom.Type;
 
 public class GenericXMLObjectType extends AbstractXMLType {
 
-	/**
-	 * <p>
-	 * Constructor.
-	 * </p>
-	 */
-	public GenericXMLObjectType() {
-		super();
+	private static GenericXMLObjectType instance = null;
+
+	public static GenericXMLObjectType getInstance() {
+		if (instance == null) {
+			instance = new GenericXMLObjectType();
+		}
+		return instance;
 	}
 
 	@Override
-	public List<Type> getAllowedChildrenTypes() {
+	public List<Type> getChildrenTypes() {
 		childrenTypes.add(new GenericXMLContent());
 		return childrenTypes;
 	}

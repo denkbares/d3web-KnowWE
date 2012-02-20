@@ -26,9 +26,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.kdom.ExclusiveType;
-import de.knowwe.core.kdom.TerminalType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
@@ -84,15 +82,8 @@ public class Sectionizer implements Parser {
 
 		// fetches the allowed children types of the local type
 		ArrayList<Type> types = new ArrayList<Type>();
-		if (type.getAllowedChildrenTypes() != null) {
-			types.addAll(type.getAllowedChildrenTypes());
-		}
-
-		// adding the registered global types to the children-list
-		if (KnowWEEnvironment.GLOBAL_TYPES_ENABLED
-				&& !(type instanceof TerminalType)
-				&& type.allowesGlobalTypes()) {
-			types.addAll(KnowWEEnvironment.getInstance().getGlobalTypes());
+		if (type.getChildrenTypes() != null) {
+			types.addAll(type.getChildrenTypes());
 		}
 
 		if (!types.isEmpty()) {

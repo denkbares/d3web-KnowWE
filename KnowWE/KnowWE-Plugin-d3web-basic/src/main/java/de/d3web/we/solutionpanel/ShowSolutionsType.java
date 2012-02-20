@@ -69,7 +69,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	public ShowSolutionsType() {
 		super(MARKUP);
 		this.setRenderer(new ShowSolutionsRenderer());
-		for (Type type : this.getAllowedChildrenTypes()) {
+		for (Type type : this.getChildrenTypes()) {
 			if (type instanceof ContentType) {
 				((ContentType) type).setRenderer(
 						new ReRenderSectionMarkerRenderer(

@@ -478,7 +478,7 @@ public class KnowWEArticle extends AbstractType {
 	}
 
 	public Type getRootType() {
-		return getAllowedChildrenTypes().get(0);
+		return getChildrenTypes().get(0);
 	}
 
 	public ReviseIterator getReviseIterator() {

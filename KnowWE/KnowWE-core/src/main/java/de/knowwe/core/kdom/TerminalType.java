@@ -32,7 +32,7 @@ import java.util.List;
 public abstract class TerminalType extends AbstractType {
 
 	@Override
-	public List<Type> getAllowedChildrenTypes() {
+	public List<Type> getChildrenTypes() {
 		return null;
 	}
 

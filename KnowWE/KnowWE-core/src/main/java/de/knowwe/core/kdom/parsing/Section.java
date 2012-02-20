@@ -234,7 +234,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		Section<InjectType> injectSection = Section.createSection(
 				text, injectType, this);
 
-		if (!this.get().getAllowedChildrenTypes().isEmpty()
+		if (!this.get().getChildrenTypes().isEmpty()
 				|| this.getChildren().size() > 1
 				|| (this.getChildren().size() == 1 && !(this.getChildren().get(0).get() instanceof InjectType))) {
 			Messages.storeMessage(null, this, this.getClass(),
