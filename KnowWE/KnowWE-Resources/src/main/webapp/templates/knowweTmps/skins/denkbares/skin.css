@@ -1155,6 +1155,9 @@ a.toc {
 a.toc:hover {
 	background:#eee;
 }
+#favorites {
+	z-index:-10;
+}
 #favorites .toc {
 	width:100%;
 }
