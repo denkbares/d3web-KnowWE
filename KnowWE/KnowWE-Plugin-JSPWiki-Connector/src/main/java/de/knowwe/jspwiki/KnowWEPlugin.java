@@ -112,10 +112,10 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 					}
 
 					if (pagedir.exists()) {
-						File[] files = pagedir.listFiles();
+						// File[] files = pagedir.listFiles();
 						File coreDir = new File(s.getPath()
 								+ "/resources/core-pages");
-						File[] cores = coreDir.listFiles();
+						// File[] cores = coreDir.listFiles();
 						for (File cP : coreDir.listFiles()) {
 							if (!cP.getName().endsWith(".txt")) continue;
 							File newFile = new File(pagedir.getPath() + "/"
@@ -146,7 +146,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	}
 
 	@Override
-	public String execute(WikiContext context, Map params) throws PluginException {
+	public String execute(WikiContext context, @SuppressWarnings("rawtypes") Map params) throws PluginException {
 		try {
 			if (context.getCommand().getRequestContext().equals(
 					WikiContext.VIEW)) {

@@ -34,9 +34,8 @@ import dummies.KnowWETestWikiConnector;
  * <li>The elements within the path are separated by "/".
  * <li>If the scope starts with "/" it must match its path from the KDOM root.
  * <li>Each of the path entries name a KDOM node, either by naming the "name" of
- * the Type (see {@link Type#getName()} or its simple
- * class name or the simple class name of any of it's super-classes or
- * interfaces.
+ * the Type (see {@link Type#getName()} or its simple class name or the simple
+ * class name of any of it's super-classes or interfaces.
  * <li>For default markups the name of the markup section can be used. For it's
  * annotations the annotation name can be used. For a default markup content
  * section "content" can be used. (e.g. "solution/package" matches the package
@@ -54,7 +53,7 @@ import dummies.KnowWETestWikiConnector;
  */
 public class Scope {
 
-	private final String[] path;
+	private final String[] scopeElements;
 	private static final String WILDCARD_ELEMENT = "*";
 	private static final String WILDCARD_PATH = "**";
 	private static final String ROOT = "root";
@@ -100,61 +99,82 @@ public class Scope {
 			items.add(item.toLowerCase().trim());
 		}
 
-		this.path = items.toArray(new String[items.size()]);
+		this.scopeElements = items.toArray(new String[items.size()]);
 	}
 
 	/**
-	 * Returns whether the given section matches this scope.
+	 * Returns whether the given {@link Section} matches this {@link Scope}.
 	 * 
 	 * @created 23.09.2010
-	 * @param section the section to be checked
-	 * @return if the section matches the scope
-	 * @throws NullPointerException if the section is null
+	 * @param section is the {@link Section} to be checked
 	 */
 	public boolean matches(Section<?> section) {
-		return matches(section, this.path.length - 1);
+		int kdomDepth = section.getDepth();
+		Type[] typePath = new Type[kdomDepth];
+		typePath[--kdomDepth] = section.get();
+		Section<?> father = section.getFather();
+		while (!father.get().getClass().equals(KnowWEArticle.class)) {
+			typePath[--kdomDepth] = father.get();
+			father = father.getFather();
+		}
+		return matches(typePath, typePath.length - 1, this.scopeElements.length - 1);
 	}
 
-	private boolean matches(Section<?> section, int pathPosition) {
+	/**
+	 * Returns whether the given path of types matches this scope. The order of
+	 * the path should always be parents {@link Type} before children
+	 * {@link Type}.
+	 * 
+	 * @created 23.09.2010
+	 * @param typePath is the typePath to be checked
+	 */
+	public boolean matches(Type[] typePath) {
+		return matches(typePath, typePath.length - 1, this.scopeElements.length - 1);
+	}
+
+	private boolean matches(Type[] typePath, int typePathPosition, int scopeElementPosition) {
 		// we cannot match non-existing section (e.g. we run into the roots
 		// parent)
-		if (section == null) return false;
+		if (typePath == null || typePathPosition < 0 || typePathPosition > typePath.length - 1) {
+			return false;
+		}
 
 		// if we successfully checked the last path entry, we have found it
-		if (pathPosition < 0) return true;
-		String item = this.path[pathPosition];
+		if (scopeElementPosition < 0) return true;
+		String scopeElement = this.scopeElements[scopeElementPosition];
 
 		// a wildcard is simply accepted,
 		// and we proceed with the parent path-item and section
-		if (item.equals(WILDCARD_ELEMENT)) {
-			return matches(section.getFather(), pathPosition - 1);
+		if (scopeElement.equals(WILDCARD_ELEMENT)) {
+			return matches(typePath, typePathPosition - 1, scopeElementPosition - 1);
 		}
 
 		// for a sub-path wildcard we must recursively branch to
 		// check all possible sub-paths
 		// (so we check as empty path and recursively with the parent section)
-		if (item.equals(WILDCARD_PATH)) {
+		if (scopeElement.equals(WILDCARD_PATH)) {
 			return
 			// empty wildcard, so check this section with next position
-			matches(section, pathPosition - 1) ||
+			matches(typePath, typePathPosition, scopeElementPosition - 1) ||
 					// consume the father and check again with the same path
-					matches(section.getFather(), pathPosition);
+					matches(typePath, typePathPosition - 1, scopeElementPosition);
 		}
 
+		Type typeElement = typePath[typePathPosition];
 		// the root is simply checked hard-coded against the root type class
-		if (item.equals(ROOT)) {
-			return section.get() instanceof RootType;
+		if (scopeElement.equals(ROOT)) {
+			return typeElement instanceof RootType;
 		}
 
 		// finally we try to match the name of the path item
 		// against the object type of the section
-		Type nodeType = section.get();
+		Type nodeType = typeElement;
 		Set<String> names = getCachedNamesOfType(nodeType);
-		boolean itemMatches = names.contains(item);
+		boolean itemMatches = names.contains(scopeElement);
 		if (itemMatches) {
 			// if this item has matched, we continue with the path and the
 			// father
-			return matches(section.getFather(), pathPosition - 1);
+			return matches(typePath, typePathPosition - 1, scopeElementPosition - 1);
 		}
 		else {
 			// if this item does not match, the whole matching will fail
@@ -162,9 +182,9 @@ public class Scope {
 		}
 	}
 
-	private Set<String> getCachedNamesOfType(Type nodeType) {
-		Class<? extends Type> nodeTypeClass = nodeType.getClass();
-		Set<String> simpleNames = CACHED_NAMES_OF_KDOM_TYPE.get(nodeType);
+	private Set<String> getCachedNamesOfType(Type typeElement) {
+		Class<? extends Type> nodeTypeClass = typeElement.getClass();
+		Set<String> simpleNames = CACHED_NAMES_OF_KDOM_TYPE.get(typeElement);
 		if (simpleNames == null) {
 			simpleNames = new HashSet<String>();
 			// and all simple class names of the derivation hierarchy
@@ -172,22 +192,22 @@ public class Scope {
 			// we accept the name of the object type (in lower case)
 			// (do this after collection to avoid breaking algorithm when
 			// classname and name is identical)
-			simpleNames.add(nodeType.getName().toLowerCase());
-			CACHED_NAMES_OF_KDOM_TYPE.put(nodeType, simpleNames);
+			simpleNames.add(typeElement.getName().toLowerCase());
+			CACHED_NAMES_OF_KDOM_TYPE.put(typeElement, simpleNames);
 		}
 		return simpleNames;
 	}
 
-	private void collectAllSimpleClassNames(Class<?> nodeType, Set<String> simpleNames) {
-		if (nodeType == null) return;
+	private void collectAllSimpleClassNames(Class<?> typeElement, Set<String> simpleNames) {
+		if (typeElement == null) return;
 		// adds the simple name in lower case
 		// and stop if it is already in
-		boolean hasAdded = simpleNames.add(nodeType.getSimpleName().toLowerCase());
+		boolean hasAdded = simpleNames.add(typeElement.getSimpleName().toLowerCase());
 		if (!hasAdded) return;
 		// recursive for super-class
-		collectAllSimpleClassNames(nodeType.getSuperclass(), simpleNames);
+		collectAllSimpleClassNames(typeElement.getSuperclass(), simpleNames);
 		// recursive for super-interfaces
-		for (Class<?> clazz : nodeType.getInterfaces()) {
+		for (Class<?> clazz : typeElement.getInterfaces()) {
 			collectAllSimpleClassNames(clazz, simpleNames);
 		}
 	}
