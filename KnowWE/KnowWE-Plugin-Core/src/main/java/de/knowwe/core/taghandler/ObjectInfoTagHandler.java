@@ -77,8 +77,12 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	// KnowWE-ResourceBundle
 	private ResourceBundle rb;
 
+	public ObjectInfoTagHandler(String tag) {
+		super(tag, true);
+	}
+
 	public ObjectInfoTagHandler() {
-		super("ObjectInfo", true);
+		this("ObjectInfo");
 	}
 
 	@Override
