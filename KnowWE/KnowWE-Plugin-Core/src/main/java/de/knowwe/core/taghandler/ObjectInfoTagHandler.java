@@ -145,10 +145,10 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			currentArticle = iter.next();
 			// Get global and local term definitions
 			getTermDefinitions(currentArticle, objectName, definitions);
-			getTermDefinitions(currentArticle, objectName, definitions);
+			getTermReferences(currentArticle, objectName, references);
 		}
 		// Get global and local term refereces
-		getTermReferences(null, objectName, references);
+		getTermDefinitions(null, objectName, definitions);
 		getTermReferences(null, objectName, references);
 
 		// Render
