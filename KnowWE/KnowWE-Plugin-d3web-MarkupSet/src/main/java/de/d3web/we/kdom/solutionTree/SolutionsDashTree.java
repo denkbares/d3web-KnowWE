@@ -24,7 +24,6 @@ import de.knowwe.kdom.dashtree.DashTree;
 public class SolutionsDashTree extends DashTree {
 
 	public SolutionsDashTree() {
-		this.setRenderer(null);
 		replaceDashTreeElementContentType(new SolutionDashTreeElementContent());
 	}
 
