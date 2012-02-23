@@ -83,11 +83,11 @@ public class QuickInterviewRenderer {
 	 * @param web the web context
 	 * @return the String representation of the interview
 	 */
-	public static String renderInterview(Session c, String webb, UserContext user) {
+	public static String renderInterview(Session c, String web, UserContext user) {
 		// removed all static items and creating an instance instead
 		// otherwise parallel access from different users will make
 		// the rendering process fail
-		return new QuickInterviewRenderer(c, webb, user).render();
+		return new QuickInterviewRenderer(c, web, user).render();
 	}
 
 	private QuickInterviewRenderer(Session c, String webb, UserContext user) {

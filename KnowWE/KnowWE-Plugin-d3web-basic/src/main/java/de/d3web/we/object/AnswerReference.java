@@ -20,15 +20,21 @@
 
 package de.d3web.we.object;
 
+import java.util.Collection;
+
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.manage.KnowledgeBaseUtils;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
@@ -49,6 +55,7 @@ public abstract class AnswerReference
 		this.setRenderer(StyleRenderer.CHOICE);
 		this.addSubtreeHandler(new SimpleTermReferenceRegistrationHandler(
 				TermRegistrationScope.LOCAL));
+		this.addSubtreeHandler(new YesNoAnswerReferenceHandler());
 	}
 
 	@Override
@@ -109,5 +116,24 @@ public abstract class AnswerReference
 	 * @return the section of the question
 	 */
 	public abstract Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s);
+
+	private static class YesNoAnswerReferenceHandler extends D3webSubtreeHandler<AnswerReference> {
+
+		@Override
+		public Collection<Message> create(KnowWEArticle article, Section<AnswerReference> section) {
+			Section<QuestionReference> ref = section.get().getQuestionSection(section);
+			Question question = ref.get().getTermObject(article, ref);
+			if (question != null && question instanceof QuestionYN) {
+				Choice choice = KnowledgeBaseUtils.findChoice((QuestionYN) question,
+						section.get().getAnswerName(section), false);
+				if (choice != null) {
+					Messages.clearMessages(article, section,
+							SimpleTermReferenceRegistrationHandler.class);
+				}
+
+			}
+			return null;
+		}
+	}
 
 }
