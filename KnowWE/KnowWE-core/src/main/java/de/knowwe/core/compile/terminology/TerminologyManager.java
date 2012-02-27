@@ -278,16 +278,6 @@ public class TerminologyManager implements EventListener {
 		return Collections.unmodifiableCollection(new ArrayList<Section<?>>(0));
 	}
 
-	private void unregisterTermDefinitionSection(Section<?> termDefinition, String termIdentifier) {
-
-		TermLog termRefLog = termLogManager.getLog(new TermIdentifier(termIdentifier));
-		if (termRefLog != null) {
-
-			termRefLog.removeTermDefinition(termDefinition);
-			modifiedTermDefinitions = true;
-		}
-	}
-
 	public void unregisterTermDefinition(
 			Section<?> termDefinition,
 			Class<?> termClass,
@@ -341,7 +331,6 @@ public class TerminologyManager implements EventListener {
 		return getAllDefinedTerms(null);
 	}
 
-	@SuppressWarnings("rawtypes")
 	public Collection<String> getAllDefinedTerms(Class<?> termClass) {
 		Collection<TermLog> termLogEntries = getAllDefinedTermLogEntries(termClass);
 		Collection<String> terms = new HashSet<String>();

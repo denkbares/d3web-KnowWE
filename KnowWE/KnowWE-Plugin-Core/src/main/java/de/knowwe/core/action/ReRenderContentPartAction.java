@@ -24,7 +24,6 @@ import java.io.IOException;
 
 import de.knowwe.core.KnowWEArticleManager;
 import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -52,8 +51,6 @@ public class ReRenderContentPartAction extends AbstractAction {
 		Section<? extends Type> secWithNodeID = Sections.getSection(nodeID);
 
 		String title = secWithNodeID.getTitle();
-
-		KnowWEArticle article = mgr.getArticle(title);
 
 		if (secWithNodeID != null) {
 			StringBuilder b = new StringBuilder();
