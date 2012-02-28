@@ -27,12 +27,12 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.manage.KnowledgeBaseUtils;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -53,9 +53,7 @@ public abstract class AnswerReference
 
 	public AnswerReference() {
 		this.setRenderer(StyleRenderer.CHOICE);
-		this.addSubtreeHandler(new SimpleTermReferenceRegistrationHandler(
-				TermRegistrationScope.LOCAL));
-		this.addSubtreeHandler(new YesNoAnswerReferenceHandler());
+		this.addSubtreeHandler(new AnswerReferenceRegistrationHandler());
 	}
 
 	@Override
@@ -117,22 +115,25 @@ public abstract class AnswerReference
 	 */
 	public abstract Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s);
 
-	private static class YesNoAnswerReferenceHandler extends D3webSubtreeHandler<AnswerReference> {
+	private static class AnswerReferenceRegistrationHandler extends SimpleTermReferenceRegistrationHandler {
+
+		public AnswerReferenceRegistrationHandler() {
+			super(TermRegistrationScope.LOCAL);
+		}
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<AnswerReference> section) {
+		public Collection<Message> validateReference(KnowWEArticle article, Section<SimpleTerm> simpleTermSection) {
+			Section<AnswerReference> section = Sections.cast(simpleTermSection,
+					AnswerReference.class);
 			Section<QuestionReference> ref = section.get().getQuestionSection(section);
 			Question question = ref.get().getTermObject(article, ref);
 			if (question != null && question instanceof QuestionYN) {
 				Choice choice = KnowledgeBaseUtils.findChoice((QuestionYN) question,
 						section.get().getAnswerName(section), false);
-				if (choice != null) {
-					Messages.clearMessages(article, section,
-							SimpleTermReferenceRegistrationHandler.class);
-				}
+				if (choice != null) return Messages.noMessage();
 
 			}
-			return null;
+			return super.validateReference(article, simpleTermSection);
 		}
 	}
 
