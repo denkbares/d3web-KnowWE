@@ -108,11 +108,9 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 				String status = getAnnotation(section, ANNOTATION_STATUS);
 				String affiliation = getAnnotation(section, ANNOTATION_AFFILIATION);
 
-				TerminologyManager terminologyManager = KnowWEUtils.getGlobalTerminologyManager(article.getWeb());
+				TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
 				terminologyManager.registerTermDefinition(section, KnowledgeBase.class,
 						"KNOWLEDGEBASE");
-				terminologyManager.registerTermDefinition(section, KnowledgeBase.class,
-						article.getTitle());
 
 				// and write it to the knowledge base
 				if (id != null) kb.setId(id);
