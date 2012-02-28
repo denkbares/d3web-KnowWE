@@ -727,7 +727,7 @@ public class Sections {
 		if (section == null) return null;
 
 		// check the type of the section
-		if (typeClass.isInstance(section.get())) {
+		if (!typeClass.isInstance(section.get())) {
 			throw new ClassCastException();
 		}
 		// and securely cast
