@@ -364,12 +364,14 @@ public class TerminologyManager implements EventListener {
 		for (Entry<String, TermLog> entry : new ArrayList<Entry<String, TermLog>>(entrySet)) {
 			Set<Section<?>> definitions = entry.getValue().getDefinitions();
 			for (Section<?> termDefinition : definitions) {
+				if (!termDefinition.getTitle().equals(article.getTitle())) continue;
 				TermLog termLog = globalTerminologyHandler.termLogManager.getLog(new TermIdentifier(
 						entry.getKey()));
 				termLog.removeTermDefinition(termDefinition);
 			}
 			Set<Section<?>> references = entry.getValue().getReferences();
 			for (Section<?> termReference : references) {
+				if (!termReference.getTitle().equals(article.getTitle())) continue;
 				TermLog termLog = globalTerminologyHandler.termLogManager.getLog(new TermIdentifier(
 						entry.getKey()));
 				termLog.removeTermReference(termReference);
