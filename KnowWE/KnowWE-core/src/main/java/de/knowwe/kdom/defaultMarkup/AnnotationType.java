@@ -23,6 +23,7 @@ package de.knowwe.kdom.defaultMarkup;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.rendering.Renderer;
 
 public class AnnotationType extends AbstractType {
 
@@ -38,6 +39,10 @@ public class AnnotationType extends AbstractType {
 		this.setSectionFinder(new AdaptiveMarkupFinder(annotation.getName(), REGEX, FLAGS, 1));
 		this.addChildType(new AnnotationNameType(annotation));
 		this.addChildType(new AnnotationContentType(annotation));
+		Renderer renderer = annotation.getRenderer();
+		if (renderer != null) {
+			this.setRenderer(renderer);
+		}
 	}
 
 	/**

@@ -43,6 +43,7 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
  * This MarkUp offers some annotations to configure the XCL problem solver.
@@ -64,6 +65,8 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 		m.addAnnotation(SUGGESTED_THRESHOLD, false);
 		m.addAnnotation(MIN_SUPPORT, false);
 		m.addAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME, false);
+		m.addAnnotationRenderer(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME,
+				StyleRenderer.ANNOTATION);
 	}
 
 	public CoveringListSettingsMarkup() {

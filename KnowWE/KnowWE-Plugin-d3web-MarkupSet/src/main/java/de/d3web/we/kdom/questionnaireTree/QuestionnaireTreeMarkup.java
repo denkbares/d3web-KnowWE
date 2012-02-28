@@ -22,6 +22,7 @@ package de.d3web.we.kdom.questionnaireTree;
 import de.knowwe.core.compile.packaging.KnowWEPackageManager;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.StyleRenderer;
 
 public class QuestionnaireTreeMarkup extends DefaultMarkupType {
 
@@ -31,6 +32,8 @@ public class QuestionnaireTreeMarkup extends DefaultMarkupType {
 		m = new DefaultMarkup("Questionnaire");
 		m.addContentType(new QuestionnaireDashTree());
 		m.addAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME, false);
+		m.addAnnotationRenderer(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME,
+				StyleRenderer.ANNOTATION);
 	}
 
 	public QuestionnaireTreeMarkup() {

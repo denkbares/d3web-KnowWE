@@ -23,6 +23,7 @@ package de.d3web.we.kdom.xcl.list;
 import de.knowwe.core.compile.packaging.KnowWEPackageManager;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.StyleRenderer;
 
 public class CoveringListMarkup extends DefaultMarkupType {
 
@@ -40,6 +41,8 @@ public class CoveringListMarkup extends DefaultMarkupType {
 		m.addAnnotation(SUGGESTED_THRESHOLD, false);
 		m.addAnnotation(MIN_SUPPORT, false);
 		m.addAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME, false);
+		m.addAnnotationRenderer(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME,
+				StyleRenderer.ANNOTATION);
 		m.addAnnotation(DESCRIPTION, false);
 	}
 

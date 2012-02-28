@@ -21,11 +21,12 @@ package de.knowwe.d3web.property;
 import de.knowwe.core.compile.packaging.KnowWEPackageManager;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
  * Markup the add properties to an NamedObject
  * 
- * @author Markus Friedrich (denkbares GmbH)
+ * @author Albrecht Striffler, Markus Friedrich, (denkbares GmbH)
  * @created 10.11.2010
  */
 public class PropertyMarkup extends DefaultMarkupType {
@@ -36,6 +37,8 @@ public class PropertyMarkup extends DefaultMarkupType {
 		m = new DefaultMarkup("Property");
 		m.addContentType(new PropertyDeclarationType());
 		m.addAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME, false);
+		m.addAnnotationRenderer(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME,
+				StyleRenderer.ANNOTATION);
 	}
 
 	public PropertyMarkup() {

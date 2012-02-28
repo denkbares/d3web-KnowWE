@@ -42,6 +42,8 @@ public class DefaultMarkup {
 		private final Collection<Type> nameTypes = new LinkedList<Type>();
 		private final Collection<Type> types = new LinkedList<Type>();
 
+		private Renderer renderer = null;
+
 		private Annotation(String name, boolean mandatory, Pattern pattern) {
 			super();
 			this.name = name;
@@ -100,6 +102,10 @@ public class DefaultMarkup {
 
 		public Type[] getNameTypes() {
 			return this.nameTypes.toArray(new Type[this.nameTypes.size()]);
+		}
+
+		public Renderer getRenderer() {
+			return renderer;
 		}
 
 		public Pattern getPattern() {
@@ -199,21 +205,27 @@ public class DefaultMarkup {
 	}
 
 	public void addAnnotationContentType(String name, Type type) {
-		Annotation annotation = getAnnotation(name);
-		if (annotation == null) {
-			throw new IllegalArgumentException("no such annotation defined: "
-					+ name);
-		}
+		Annotation annotation = getAnnotationHandleIAE(name);
 		annotation.types.add(type);
 	}
 
 	public void addAnnotationNameType(String name, Type type) {
+		Annotation annotation = getAnnotationHandleIAE(name);
+		annotation.nameTypes.add(type);
+	}
+
+	public void addAnnotationRenderer(String name, Renderer renderer) {
+		Annotation annotation = getAnnotationHandleIAE(name);
+		annotation.renderer = renderer;
+	}
+
+	private Annotation getAnnotationHandleIAE(String name) {
 		Annotation annotation = getAnnotation(name);
 		if (annotation == null) {
 			throw new IllegalArgumentException("no such annotation defined: "
 					+ name);
 		}
-		annotation.nameTypes.add(type);
+		return annotation;
 	}
 
 	public void addContentType(Type type) {

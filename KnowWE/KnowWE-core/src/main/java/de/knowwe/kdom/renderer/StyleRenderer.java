@@ -38,6 +38,7 @@ public class StyleRenderer implements Renderer {
 	public static final StyleRenderer COMMENT = new StyleRenderer("color:rgb(160, 160, 160)");
 	public static final StyleRenderer CONTENT = new StyleRenderer("color:rgb(80, 80, 80)");
 	public static final StyleRenderer LOCALE = new StyleRenderer("color:rgb(0, 128, 128)");
+	public static final StyleRenderer ANNOTATION = COMMENT;
 
 	public static final Renderer CHOICE = new ToolMenuDecoratingRenderer(
 			new StyleRenderer("color:rgb(40, 40, 160)"));

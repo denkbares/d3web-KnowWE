@@ -24,6 +24,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.diaflux.DiaFluxRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
  * 
@@ -39,6 +40,8 @@ public class DiaFluxType extends DefaultMarkupType {
 		MARKUP = new DefaultMarkup("DiaFlux");
 		MARKUP.addContentType(new FlowchartType());
 		MARKUP.addAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME, false);
+		MARKUP.addAnnotationRenderer(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME,
+				StyleRenderer.ANNOTATION);
 
 	}
 

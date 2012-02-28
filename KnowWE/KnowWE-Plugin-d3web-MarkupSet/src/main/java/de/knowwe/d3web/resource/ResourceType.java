@@ -24,6 +24,7 @@ import de.knowwe.core.compile.packaging.KnowWEPackageManager;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
  * Defines a resource that should be added to the knowledge base as a binary
@@ -61,6 +62,8 @@ public class ResourceType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_PATH, false);
 		MARKUP.addAnnotation(ANNOTATION_SRC, false);
 		MARKUP.addAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME, false);
+		MARKUP.addAnnotationRenderer(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME,
+				StyleRenderer.ANNOTATION);
 	}
 
 	public ResourceType() {
