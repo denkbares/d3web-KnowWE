@@ -29,7 +29,6 @@ import de.d3web.we.object.D3webTermReference;
 import de.d3web.we.object.NamedObjectReference;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
 import de.knowwe.core.kdom.parsing.Section;
@@ -104,8 +103,6 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 	static class PropertyAnswerReference extends AnswerReference {
 
 		public PropertyAnswerReference() {
-			this.addSubtreeHandler(new SimpleTermReferenceRegistrationHandler(
-					TermRegistrationScope.LOCAL));
 			this.addSubtreeHandler(new WildcardAnswerErrorRemover());
 		}
 
