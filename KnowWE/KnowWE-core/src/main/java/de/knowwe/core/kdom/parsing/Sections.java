@@ -699,4 +699,38 @@ public class Sections {
 		return oldToNewIdsMap;
 	}
 
+	/**
+	 * Casts the specified section to a generic section of the specified object
+	 * type's class. Before the cast is done, it is checked if the section has
+	 * the specified object type as its type. If not, a
+	 * {@link ClassCastException} is thrown (as usual).
+	 * <P>
+	 * This method is required because it:
+	 * <ol>
+	 * <li>avoids a "uncecked cast" warning when compiling the code
+	 * <li>does a runtime type check whether the cast is valid (java itself is
+	 * not capable to do)
+	 * </ol>
+	 * 
+	 * @created 28.02.2012
+	 * @param <T> the class to cast the generic section to
+	 * @param section the section to be casted
+	 * @param typeClass the class to cast the generic section to
+	 * @return the casted section
+	 * @throws ClassCastException if the type of the section is neither of the
+	 *         specified class, nor a subclass of the specified class.
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T extends Type> Section<T> cast(Section<?> section, Class<T> typeClass) throws ClassCastException {
+		// first check null, because Class.isInstance differs from
+		// "instanceof"-operator for null objects
+		if (section == null) return null;
+
+		// check the type of the section
+		if (typeClass.isInstance(section.get())) {
+			throw new ClassCastException();
+		}
+		// and securely cast
+		return (Section<T>) section;
+	}
 }

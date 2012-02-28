@@ -475,4 +475,14 @@ public final class Messages {
 	private Messages() {
 	}
 
+	/**
+	 * Creates an empty collection of messages.
+	 * 
+	 * @created 28.02.2012
+	 * @return collection of no message at all
+	 */
+	public static Collection<Message> noMessage() {
+		return Collections.emptyList();
+	}
+
 }

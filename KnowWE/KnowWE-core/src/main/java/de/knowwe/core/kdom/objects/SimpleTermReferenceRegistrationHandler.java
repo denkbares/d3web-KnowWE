@@ -18,7 +18,6 @@
  */
 package de.knowwe.core.kdom.objects;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
@@ -44,21 +43,33 @@ public class SimpleTermReferenceRegistrationHandler extends SubtreeHandler<Simpl
 	}
 
 	@Override
-	public Collection<Message> create(KnowWEArticle article, Section<SimpleTerm> s) {
+	public Collection<Message> create(KnowWEArticle article, Section<SimpleTerm> section) {
 
 		TerminologyManager tHandler = KnowWEUtils.getTerminologyManager(article, scope);
+		String termIdentifier = section.get().getTermIdentifier(section);
 
-		String termIdentifier = s.get().getTermIdentifier(s);
+		tHandler.registerTermReference(section,
+					section.get().getTermObjectClass(), termIdentifier);
 
-		if (s.get() instanceof SimpleTerm) {
-			tHandler.registerTermReference(s,
-					s.get().getTermObjectClass(), termIdentifier);
-		}
+		return validateReference(article, section);
+	}
+
+	/**
+	 * Validates the reference and returns a collection of error or warning
+	 * messages if the reference is not correctly specified. Otherwise it
+	 * returns an empty collection or a collection of info messages.
+	 * 
+	 * @created 28.02.2012
+	 * @param article the compiling article
+	 * @param section the section identifying the reference
+	 * @return result messages of validation
+	 */
+	public Collection<Message> validateReference(KnowWEArticle article, Section<SimpleTerm> section) {
+		TerminologyManager tHandler = KnowWEUtils.getTerminologyManager(article, scope);
+		String termIdentifier = section.get().getTermIdentifier(section);
 		if (!tHandler.isDefinedTerm(termIdentifier)) {
 			return Messages.asList(Messages.noSuchObjectError(termIdentifier));
 		}
-
-		return new ArrayList<Message>(0);
+		return Messages.noMessage();
 	}
-
 }
