@@ -23,6 +23,7 @@ import de.knowwe.kdom.defaultMarkup.ContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
+import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
  * DefaultMarkupType for SessionDebugger
@@ -37,6 +38,7 @@ public class TestCasePlayerType extends DefaultMarkupType {
 	static {
 		MARKUP = new DefaultMarkup("TestCasePlayer");
 		MARKUP.addAnnotation("uses", true);
+		MARKUP.addAnnotationRenderer("uses", StyleRenderer.ANNOTATION);
 	}
 
 	public TestCasePlayerType() {
