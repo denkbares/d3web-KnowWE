@@ -918,7 +918,7 @@
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-SessionDebugger</artifactId>
+					<artifactId>KnowWE-Plugin-TestCases</artifactId>
 					<version>0.2-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
