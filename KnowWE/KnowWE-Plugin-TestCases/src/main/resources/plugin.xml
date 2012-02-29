@@ -1,0 +1,104 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-SessionDebugger" version="0.0.1">
+	
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+		<import plugin-id="KnowWE-Plugin-d3web-basic" />
+	</requires>
+	
+	<runtime>
+		<library id="de.knowwe" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="TestCasePlayerType">
+		<parameter id="class"
+			value="de.knowwe.sessiondebugger.TestCasePlayerType" />
+		<parameter id="name" value="TestCasePlayerType" />
+		<parameter id="description" value="Type TestCasePlayerType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+		<parameter id="script" value="sessiondebugger.js" />
+		<parameter id="css" value="sessiondebugger.css" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="TestCaseSTCType">
+		<parameter id="class"
+			value="de.knowwe.sessiondebugger.stc.TestCaseSTCType" />
+		<parameter id="name" value="TestCaseSTCType" />
+		<parameter id="description" value="Type TestCaseSTCType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="TestCaseSessionRecordType">
+		<parameter id="class"
+			value="de.knowwe.sessiondebugger.record.TestCaseSessionRecordType" />
+		<parameter id="name" value="TestCaseSessionRecordType" />
+		<parameter id="description" value="Type TestCaseSessionRecordType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="ExecuteCasesAction">
+		<parameter id="class"
+			value="de.knowwe.sessiondebugger.ExecuteCasesAction" />
+		<parameter id="name" value="ExecuteCasesAction" />
+		<parameter id="description" value="Action ExecuteCasesAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="SelectorAction">
+		<parameter id="class"
+			value="de.knowwe.sessiondebugger.SelectorAction" />
+		<parameter id="name" value="SelectorAction" />
+		<parameter id="description" value="Action SelectorAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="SessionDebuggerResetAction">
+		<parameter id="class"
+			value="de.knowwe.sessiondebugger.SessionDebuggerResetAction" />
+		<parameter id="name" value="SessionDebuggerResetAction" />
+		<parameter id="description" value="Action SessionDebuggerResetAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+        id="InstantEditToolProvider">
+        <parameter id="class"
+            value="de.knowwe.instantedit.tools.InstantEditToolProvider" />
+        <parameter id="name" value="InstantEditToolProvider" />
+        <parameter id="description"
+            value="Offers a button for quick editing a test case sections." />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="5" />
+        <parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
+        <parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
+        <parameter id="script" value="DefaultEditTool.js" />
+        <parameter id="script" value="TextArea.js" />
+        <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
+        <parameter id="css" value="DefaultEditTool.css" />
+	    <parameter id="scope" value="TestCasePlayerType" />
+	    <parameter id="scope" value="TestCaseSTCType" />
+	    <parameter id="scope" value="TestCaseSessionRecordType" />
+    </extension>
+    
+</plugin>
