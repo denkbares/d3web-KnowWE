@@ -16,30 +16,32 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.sessiondebugger.record;
+package de.knowwe.testcases.stc;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.records.SessionRecord;
-import de.d3web.core.records.io.SessionPersistenceManager;
-import de.d3web.testcase.record.SessionRecordWrapper;
+import de.d3web.empiricaltesting.SequentialTestCase;
+import de.d3web.empiricaltesting.TestPersistence;
+import de.d3web.testcase.stc.STCWrapper;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.wikiConnector.ConnectorAttachment;
-import de.knowwe.sessiondebugger.AttachmentTestCaseProvider;
+import de.knowwe.testcases.AttachmentTestCaseProvider;
 
 /**
- * Wraps an Attachment containing a {@link SessionRecord}
+ * Wraps an Attachment containing an {@link SequentialTestCase}
  * 
  * @author Markus Friedrich (denkbares GmbH)
- * @created 27.01.2012
+ * @created 25.01.2012
  */
-public class SessionRecordCaseProvider extends AttachmentTestCaseProvider {
+public class STCTestCaseProvider extends AttachmentTestCaseProvider {
 
-	public SessionRecordCaseProvider(KnowWEArticle article, ConnectorAttachment attachment) {
+	public STCTestCaseProvider(KnowWEArticle article, ConnectorAttachment attachment) {
 		super(article, attachment);
 	}
 
@@ -51,33 +53,26 @@ public class SessionRecordCaseProvider extends AttachmentTestCaseProvider {
 			return;
 		}
 		try {
-			Collection<SessionRecord> sessionRecords = SessionPersistenceManager.getInstance().loadSessions(
-					attachment.getInputStream());
-			if (sessionRecords.size() != 1) {
-				messages.add(Messages.error("The attached SessionRecord file "
+			List<SequentialTestCase> cases = TestPersistence.getInstance().loadCases(
+					attachment.getInputStream(), kb);
+			if (cases.size() != 1) {
+				messages.add(Messages.error("The attached SequentialTestCase file "
 						+ attachment.getFileName()
-							+ " has " + sessionRecords.size()
+							+ " has " + cases.size()
 							+ " cases. Only files with exactly one case are allowed."));
 				return;
 			}
 			else {
-				SessionRecordWrapper sessionRecordWrapper = new SessionRecordWrapper(
-						sessionRecords.iterator().next(), kb);
-				Collection<String> checkResults = sessionRecordWrapper.check();
-				for (String s : checkResults) {
-					messages.add(Messages.error(s));
-				}
-				if (checkResults.isEmpty()) {
-					testCase = sessionRecordWrapper;
-				}
+				testCase = new STCWrapper(cases.get(0));
 			}
 		}
-		catch (IOException e) {
-			messages.add(Messages.error("The following errror occured while parsing the file "
-					+ attachment.getFileName() + ":" + e));
-			return;
+		catch (XMLStreamException e) {
+			messages.add(Messages.error("File " + attachment.getFileName()
+					+ " does not contain correct xml markup."));
 		}
-
+		catch (IOException e) {
+			messages.add(Messages.error("File " + attachment.getFileName() + " is not accessible."));
+		}
 	}
 
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
-<plugin id="KnowWE-Plugin-SessionDebugger" version="0.0.1">
+<plugin id="KnowWE-Plugin-TestCases" version="0.0.1">
 	
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
@@ -19,20 +19,20 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="TestCasePlayerType">
 		<parameter id="class"
-			value="de.knowwe.sessiondebugger.TestCasePlayerType" />
+			value="de.knowwe.testcases.TestCasePlayerType" />
 		<parameter id="name" value="TestCasePlayerType" />
 		<parameter id="description" value="Type TestCasePlayerType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
-		<parameter id="script" value="sessiondebugger.js" />
-		<parameter id="css" value="sessiondebugger.css" />
+		<parameter id="script" value="testcaseplayer.js" />
+		<parameter id="css" value="testcaseplayer.css" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="TestCaseSTCType">
 		<parameter id="class"
-			value="de.knowwe.sessiondebugger.stc.TestCaseSTCType" />
+			value="de.knowwe.testcases.stc.TestCaseSTCType" />
 		<parameter id="name" value="TestCaseSTCType" />
 		<parameter id="description" value="Type TestCaseSTCType" />
 		<parameter id="version" value="1.0" />
@@ -43,7 +43,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="TestCaseSessionRecordType">
 		<parameter id="class"
-			value="de.knowwe.sessiondebugger.record.TestCaseSessionRecordType" />
+			value="de.knowwe.testcases.record.TestCaseSessionRecordType" />
 		<parameter id="name" value="TestCaseSessionRecordType" />
 		<parameter id="description" value="Type TestCaseSessionRecordType" />
 		<parameter id="version" value="1.0" />
@@ -54,7 +54,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ExecuteCasesAction">
 		<parameter id="class"
-			value="de.knowwe.sessiondebugger.ExecuteCasesAction" />
+			value="de.knowwe.testcases.ExecuteCasesAction" />
 		<parameter id="name" value="ExecuteCasesAction" />
 		<parameter id="description" value="Action ExecuteCasesAction" />
 		<parameter id="version" value="1.0" />
@@ -64,7 +64,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SelectorAction">
 		<parameter id="class"
-			value="de.knowwe.sessiondebugger.SelectorAction" />
+			value="de.knowwe.testcases.SelectorAction" />
 		<parameter id="name" value="SelectorAction" />
 		<parameter id="description" value="Action SelectorAction" />
 		<parameter id="version" value="1.0" />
@@ -72,11 +72,11 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="SessionDebuggerResetAction">
+		id="PlayerResetAction">
 		<parameter id="class"
-			value="de.knowwe.sessiondebugger.SessionDebuggerResetAction" />
-		<parameter id="name" value="SessionDebuggerResetAction" />
-		<parameter id="description" value="Action SessionDebuggerResetAction" />
+			value="de.knowwe.testcases.PlayerResetAction" />
+		<parameter id="name" value="PlayerResetAction" />
+		<parameter id="description" value="Action that resets all sessions in the wiki." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

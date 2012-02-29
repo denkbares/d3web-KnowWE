@@ -16,51 +16,29 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.sessiondebugger;
+package de.knowwe.testcases.record;
 
-import java.util.Arrays;
-import java.util.Collection;
-
-import de.knowwe.core.report.Message;
+import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.wikiConnector.ConnectorAttachment;
+import de.knowwe.testcases.AttachmentTestCaseProvider;
+import de.knowwe.testcases.FileTestCaseProviderStorage;
+import de.knowwe.testcases.TestCaseProviderStorage;
 
 /**
- * Capsules one TestCaseProvider
+ * {@link TestCaseProviderStorage} for {@link SessionRecordCaseProvider}
  * 
  * @author Markus Friedrich (denkbares GmbH)
- * @created 27.02.2012
+ * @created 08.02.2012
  */
-public class SingleTestCaseStorage implements TestCaseProviderStorage {
+public class SessionRecordTestCaseProviderStorage extends FileTestCaseProviderStorage {
 
-	private TestCaseProvider provider;
-
-	public SingleTestCaseStorage(TestCaseProvider provider) {
-		super();
-		this.provider = provider;
+	public SessionRecordTestCaseProviderStorage(KnowWEArticle article, String[] regexes, KnowWEArticle sectionArticle) {
+		super(article, regexes, sectionArticle);
 	}
 
 	@Override
-	public Collection<TestCaseProvider> getTestCaseProviders() {
-		return Arrays.asList(provider);
-	}
-
-	@Override
-	public TestCaseProvider getTestCaseProvider(String name) {
-		if (provider.getName().equals(name)) {
-			return provider;
-		}
-		else {
-			return null;
-		}
-	}
-
-	@Override
-	public void refresh() {
-		// nothing to do
-	}
-
-	@Override
-	public Collection<Message> getMessages() {
-		return provider.getMessages();
+	protected AttachmentTestCaseProvider createTestCaseProvider(KnowWEArticle article, ConnectorAttachment attachment) {
+		return new SessionRecordCaseProvider(article, attachment);
 	}
 
 }

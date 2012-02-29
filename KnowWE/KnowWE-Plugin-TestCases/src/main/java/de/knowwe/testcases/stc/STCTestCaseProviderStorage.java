@@ -16,12 +16,12 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.sessiondebugger.stc;
+package de.knowwe.testcases.stc;
 
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.wikiConnector.ConnectorAttachment;
-import de.knowwe.sessiondebugger.AttachmentTestCaseProvider;
-import de.knowwe.sessiondebugger.FileTestCaseProviderStorage;
+import de.knowwe.testcases.AttachmentTestCaseProvider;
+import de.knowwe.testcases.FileTestCaseProviderStorage;
 
 /**
  * 

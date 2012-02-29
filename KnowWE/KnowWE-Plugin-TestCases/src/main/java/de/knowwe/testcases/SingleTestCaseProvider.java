@@ -16,11 +16,10 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.sessiondebugger;
+package de.knowwe.testcases;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,70 +29,35 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.wikiConnector.ConnectorAttachment;
 
 /**
- * Abstract class providing all methods to create a {@link TestCaseProvider}
- * based on an Attachment
+ * Capsules a {@link TestCase}
  * 
  * @author Markus Friedrich (denkbares GmbH)
- * @created 27.01.2012
+ * @created 27.02.2012
  */
-public abstract class AttachmentTestCaseProvider implements TestCaseProvider {
+public class SingleTestCaseProvider implements TestCaseProvider {
 
-	protected TestCase testCase;
-	protected ConnectorAttachment attachment;
-	protected List<Message> messages = new LinkedList<Message>();
-	protected final KnowWEArticle article;
+	private TestCase testCase;
+	private final KnowWEArticle article;
+	private final String name;
 	private final Map<String, SessionDebugStatus> statusPerUser = new HashMap<String, SessionDebugStatus>();
 
-	public AttachmentTestCaseProvider(KnowWEArticle article, ConnectorAttachment attachment) {
+	public SingleTestCaseProvider(TestCase testCase, KnowWEArticle article, String name) {
 		super();
+		this.testCase = testCase;
 		this.article = article;
-		this.attachment = attachment;
-		parse();
+		this.name = name;
 	}
 
 	@Override
 	public TestCase getTestCase() {
-		ConnectorAttachment actualAttachment = KnowWEUtils.getAttachment(
-				attachment.getParentName(),
-				attachment.getFileName());
-		if (actualAttachment == null) {
-			messages.clear();
-			statusPerUser.clear();
-			messages.add(Messages.error("File " + attachment.getFileName()
-					+ " cannot be found attached to this article.\n"));
-			return null;
-		}
-		if (attachment == null || attachment.getDate() != actualAttachment.getDate()) {
-			attachment = actualAttachment;
-			messages.clear();
-			statusPerUser.clear();
-			parse();
-		}
 		return testCase;
-	}
-
-	protected abstract void parse();
-
-	@Override
-	public List<Message> getMessages() {
-		return Collections.unmodifiableList(messages);
 	}
 
 	@Override
 	public Session getActualSession(String user) {
 		return D3webUtils.getSession(article.getTitle(), user, article.getWeb());
-	}
-
-	@Override
-	public void storeSession(Session session, String user) {
-		String sessionId = KnowWEEnvironment.generateDefaultID(article.getTitle());
-		D3webUtils.getBroker(user, article.getWeb()).addSession(sessionId, session);
-		getDebugStatus(user).setSession(session);
 	}
 
 	@Override
@@ -107,8 +71,20 @@ public abstract class AttachmentTestCaseProvider implements TestCaseProvider {
 	}
 
 	@Override
+	public void storeSession(Session session, String user) {
+		String sessionId = KnowWEEnvironment.generateDefaultID(article.getTitle());
+		D3webUtils.getBroker(user, article.getWeb()).addSession(sessionId, session);
+		getDebugStatus(user).setSession(session);
+	}
+
+	@Override
 	public String getName() {
-		return attachment.getFullName();
+		return name;
+	}
+
+	@Override
+	public List<Message> getMessages() {
+		return Collections.emptyList();
 	}
 
 }

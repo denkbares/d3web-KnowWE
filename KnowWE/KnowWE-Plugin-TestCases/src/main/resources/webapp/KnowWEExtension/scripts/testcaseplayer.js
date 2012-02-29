@@ -1,6 +1,6 @@
-var SessionDebugger = {};
+var TestCasePlayer = {};
 
-SessionDebugger.send = function(sessionid, casedate, name, topic) {
+TestCasePlayer.send = function(sessionid, casedate, name, topic) {
 			
             var params = {
         		action : 'ExecuteCasesAction',
@@ -30,7 +30,7 @@ SessionDebugger.send = function(sessionid, casedate, name, topic) {
             new _KA( options ).send();         
         }
         
-SessionDebugger.change = function(key_sessionid, selectedvalue) {
+TestCasePlayer.change = function(key_sessionid, selectedvalue) {
 			var topic = KNOWWE.helper.gup('page')
 			
             var params = {
@@ -61,15 +61,15 @@ SessionDebugger.change = function(key_sessionid, selectedvalue) {
 
 }
 
-SessionDebugger.addCookie = function(cookievalue) {
+TestCasePlayer.addCookie = function(cookievalue) {
 			var topic = KNOWWE.helper.gup('page');
 			document.cookie = "additionalQuestions"+ encodeURI(topic) +"=" + encodeURI(cookievalue);
            	KNOWWE.helper.observer.notify('update');
 }
 
-SessionDebugger.reset = function() {
+TestCasePlayer.reset = function() {
 			var params = {
-        		action : 'SessionDebuggerResetAction',
+        		action : 'PlayerResetAction',
     		}
             
             var options = {

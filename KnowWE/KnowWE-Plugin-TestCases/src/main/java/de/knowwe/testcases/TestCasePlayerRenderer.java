@@ -16,7 +16,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.sessiondebugger;
+package de.knowwe.testcases;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -167,7 +167,7 @@ public class TestCasePlayerRenderer implements Renderer {
 	private TerminologyObject renderHeader(Section<?> section, UserContext user, SessionDebugStatus status, String additionalQuestions, String[] questionStrings, Collection<Question> usedQuestions, TerminologyManager manager, TableModel tableModel) {
 		tableModel.addCell(0, 0,
 				KnowWEUtils.maskHTML(renderToolbarButton("stop12.png",
-						"SessionDebugger.reset()")), 1);
+						"TestCasePlayer.reset()")), 1);
 		tableModel.addCell(0, 1, "Time", "Time".length());
 		int column = 2;
 		for (Question q : usedQuestions) {
@@ -332,7 +332,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				newQuestionsString = newQuestionsString.substring(0,
 						newQuestionsString.length() - QUESTIONS_SEPARATOR.length());
 			}
-			sb.append(KnowWEUtils.maskHTML(" <input type=\"button\" value=\"-\" onclick=\"SessionDebugger.addCookie(&quot;"
+			sb.append(KnowWEUtils.maskHTML(" <input type=\"button\" value=\"-\" onclick=\"TestCasePlayer.addCookie(&quot;"
 					+ newQuestionsString
 					+ "&quot;);\">"));
 			tableModel.addCell(0, column++, sb.toString(), s.length() + 2);
@@ -343,7 +343,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		if (status.getLastExecuted() == null
 					|| status.getLastExecuted().before(date)) {
 			StringBuffer sb = new StringBuffer();
-			String js = "SessionDebugger.send("
+			String js = "TestCasePlayer.send("
 						+ "'"
 						+ selectedTriple.getB().getID()
 						+ "', '" + dateString
@@ -423,7 +423,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		StringBuffer selectsb2 = new StringBuffer();
 		selectsb2.append("<form><select name=\"toAdd\" id=adder"
 				+ section.getID()
-				+ " onchange=\"SessionDebugger.change('"
+				+ " onchange=\"TestCasePlayer.change('"
 				+ key
 							+ "', this.options[this.selectedIndex].value);\">");
 		HashSet<String> alreadyAddedQuestions = new HashSet<String>(Arrays.asList(questionStrings));
@@ -460,7 +460,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		if (questionString != null && !questionString.isEmpty()) {
 			selectsb2.append("<input " +
 					(object == null ? "disabled='disabled'" : "")
-					+ " type=\"button\" value=\"+\" onclick=\"SessionDebugger.addCookie(&quot;"
+					+ " type=\"button\" value=\"+\" onclick=\"TestCasePlayer.addCookie(&quot;"
 					+ questionString
 					+ QUESTIONS_SEPARATOR
 					+ "&quot;+this.form.toAdd.options[toAdd.selectedIndex].value);\"></form>");
@@ -469,7 +469,7 @@ public class TestCasePlayerRenderer implements Renderer {
 			selectsb2.append("<input "
 					+
 					(object == null ? "disabled='disabled'" : "")
-					+ "type=\"button\" value=\"+\" onclick=\"SessionDebugger.addCookie(this.form.toAdd.options[toAdd.selectedIndex].value);\"></form>");
+					+ "type=\"button\" value=\"+\" onclick=\"TestCasePlayer.addCookie(this.form.toAdd.options[toAdd.selectedIndex].value);\"></form>");
 		}
 		if (foundone) {
 			tableModel.addCell(0, column, KnowWEUtils.maskHTML(selectsb2.toString()), max + 3);
@@ -486,7 +486,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		Triple<TestCaseProvider, Section<?>, KnowWEArticle> selectedPair = providers.get(0);
 		selectsb.append("<span class=fillText>Case </span>"
 				+ "<select id=selector" + section.getID()
-				+ " onchange=\"SessionDebugger.change('" + key
+				+ " onchange=\"TestCasePlayer.change('" + key
 				+ "', this.options[this.selectedIndex].value);\">");
 		Set<String> ids = new HashSet<String>();
 		boolean unique = true;
@@ -520,7 +520,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		builder.append("<span class=fillText>Show </span>"
 				+ "<select id=sizeSelector"
 				+ section.getID()
-				+ " onchange=\"SessionDebugger.change('"
+				+ " onchange=\"TestCasePlayer.change('"
 				+ key
 							+ "', this.options[this.selectedIndex].value);\">");
 		for (int size : sizeArray) {
@@ -546,21 +546,21 @@ public class TestCasePlayerRenderer implements Renderer {
 
 		builder.append("<div class='toolBar avoidMenu'>");
 		renderToolbarButton(
-				"begin.png", "SessionDebugger.change('" + key + "', " + 1 + ")",
+				"begin.png", "TestCasePlayer.change('" + key + "', " + 1 + ")",
 				(from > 1), builder);
 		renderToolbarButton(
-				"back.png", "SessionDebugger.change('" + key + "', " + previous + ")",
+				"back.png", "TestCasePlayer.change('" + key + "', " + previous + ")",
 				(from > 1), builder);
 		builder.append("<span class=fillText> Lines </span>");
-		builder.append("<input size=3 type=\"field\" onchange=\"SessionDebugger.change('"
+		builder.append("<input size=3 type=\"field\" onchange=\"TestCasePlayer.change('"
 				+ key
 				+ "', " + "this.value);\" value='" + from + "'>");
 		builder.append("<span class=fillText> to </span>" + (from + selectedSize - 1));
 		renderToolbarButton(
-				"forward.png", "SessionDebugger.change('" + key + "', " + next + ")",
+				"forward.png", "TestCasePlayer.change('" + key + "', " + next + ")",
 				(from + selectedSize <= maxsize), builder);
 		renderToolbarButton(
-				"end.png", "SessionDebugger.change('" + key + "', " + maxsize + ")",
+				"end.png", "TestCasePlayer.change('" + key + "', " + maxsize + ")",
 				(from + selectedSize <= maxsize), builder);
 		builder.append("</div>");
 		return KnowWEUtils.maskHTML(builder.toString());

@@ -16,28 +16,33 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.sessiondebugger;
+package de.knowwe.testcases;
 
-import java.io.IOException;
+import java.util.List;
 
-import javax.servlet.http.HttpSession;
-
-import de.knowwe.core.action.AbstractAction;
-import de.knowwe.core.action.UserActionContext;
+import de.d3web.core.session.Session;
+import de.d3web.testcase.model.TestCase;
+import de.knowwe.core.report.Message;
 
 /**
- * Stores a value witch is actually selected in the {@link HttpSession}
+ * Provides access to a TestCase
  * 
  * @author Markus Friedrich (denkbares GmbH)
- * @created 27.01.2012
+ * @created 25.01.2012
  */
-public class SelectorAction extends AbstractAction {
+public interface TestCaseProvider {
 
-	@Override
-	public void execute(UserActionContext context) throws IOException {
-		String key = context.getParameter("key");
-		context.getSession().setAttribute(key,
-				context.getParameter("value"));
-	}
+	public static final String KEY = "TestCaseProvider";
 
+	TestCase getTestCase();
+
+	Session getActualSession(String user);
+
+	SessionDebugStatus getDebugStatus(String user);
+
+	void storeSession(Session session, String user);
+
+	String getName();
+
+	List<Message> getMessages();
 }

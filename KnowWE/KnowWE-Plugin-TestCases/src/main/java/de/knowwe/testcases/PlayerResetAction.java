@@ -16,7 +16,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.sessiondebugger;
+package de.knowwe.testcases;
 
 import java.io.IOException;
 
@@ -30,7 +30,7 @@ import de.knowwe.core.action.UserActionContext;
  * @author Markus Friedrich (denkbares GmbH)
  * @created 10.02.2012
  */
-public class SessionDebuggerResetAction extends AbstractAction {
+public class PlayerResetAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

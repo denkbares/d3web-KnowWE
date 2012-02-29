@@ -16,14 +16,14 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.sessiondebugger.stc;
+package de.knowwe.testcases.stc;
 
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.KnowWEPackageManager;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.sessiondebugger.ProviderRefreshRenderer;
+import de.knowwe.testcases.ProviderRefreshRenderer;
 
 /**
  * Type for TestCaseSTC Markup
