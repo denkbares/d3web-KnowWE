@@ -55,7 +55,6 @@ import de.knowwe.core.kdom.parsing.SectionizerModule;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.taghandler.TagHandler;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.user.UserSettingsManager;
 import de.knowwe.core.utils.KnowWETypeSet;
 import de.knowwe.core.utils.KnowWETypeUtils;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -240,10 +239,6 @@ public class KnowWEEnvironment {
 
 	public static boolean isInitialized() {
 		return !(instance == null);
-	}
-
-	public UserSettingsManager getUserSettingsManager() {
-		return UserSettingsManager.getInstance();
 	}
 
 	public static void initKnowWE(KnowWEWikiConnector wiki) {

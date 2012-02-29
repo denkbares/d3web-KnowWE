@@ -22,14 +22,12 @@ package de.knowwe.core.action;
 
 import java.io.IOException;
 
-import de.knowwe.core.KnowWEArticleManager;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.Renderer;
-import de.knowwe.core.kdom.rendering.RendererManager;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -43,33 +41,20 @@ public class ReRenderContentPartAction extends AbstractAction {
 
 	private String perform(UserActionContext context) {
 
-		String web = context.getWeb();
 		String nodeID = context.getParameter("KdomNodeId");
 
-		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
-
 		Section<? extends Type> secWithNodeID = Sections.getSection(nodeID);
-
-		String title = secWithNodeID.getTitle();
 
 		if (secWithNodeID != null) {
 			StringBuilder b = new StringBuilder();
 
 			Type type = secWithNodeID.get();
-			Renderer renderer = RendererManager.getInstance().getRenderer(type,
-					context.getUserName(), title);
-
+			Renderer renderer = type.getRenderer();
 			if (renderer != null) {
 				renderer.render(secWithNodeID, context, b);
 			}
 			else {
-				renderer = type.getRenderer();
-				if (renderer != null) {
-					renderer.render(secWithNodeID, context, b);
-				}
-				else {
-					DelegateRenderer.getInstance().render(secWithNodeID, context, b);
-				}
+				DelegateRenderer.getInstance().render(secWithNodeID, context, b);
 			}
 
 			// If the node is in <pre> than do not

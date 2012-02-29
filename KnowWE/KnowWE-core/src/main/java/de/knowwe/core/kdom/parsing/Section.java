@@ -43,7 +43,6 @@ import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.user.UserSettingsManager;
 import de.knowwe.kdom.filter.SectionFilter;
 import de.knowwe.kdom.visitor.Visitable;
 import de.knowwe.kdom.visitor.Visitor;
@@ -719,15 +718,6 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		this.sharedChildren = shared;
 	}
 
-	public boolean hasQuickEditModeSet(String user) {
-		if (UserSettingsManager.getInstance().hasQuickEditFlagSet(getID(),
-				user, this.getTitle())) {
-			return true;
-		}
-		if (father == null) return false;
-
-		return father.hasQuickEditModeSet(user);
-	}
 
 	public boolean isEmpty() {
 		String text = getText();

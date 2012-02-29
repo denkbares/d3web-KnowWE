@@ -218,16 +218,10 @@ public class DelegateRenderer implements Renderer {
 	}
 
 	public static Renderer getRenderer(Section<?> section, UserContext user) {
-		Renderer renderer = null;
 
 		Type objectType = section.get();
-		if (renderer == null) {
-			renderer = RendererManager.getInstance().getRenderer(objectType,
-					user.getUserName(), section.getTitle());
-		}
-		if (renderer == null) {
-			renderer = objectType.getRenderer();
-		}
+		Renderer renderer = objectType.getRenderer();
+		
 		if (renderer == null) {
 			renderer = DefaultTextRenderer.getInstance();
 		}
