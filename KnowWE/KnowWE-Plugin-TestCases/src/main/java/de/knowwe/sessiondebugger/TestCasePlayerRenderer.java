@@ -69,7 +69,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class TestCasePlayerRenderer implements Renderer {
 
 	private static final String QUESTIONS_SEPARATOR = "#####";
-	public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	private static String SELECTOR_KEY = "selector";
 	private static String QUESTION_SELECTOR_KEY = "question_selector";
 	private static String SIZE_SELECTOR_KEY = "size_selector";
@@ -250,7 +250,7 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	private void renderTableLine(Triple<TestCaseProvider, Section<?>, KnowWEArticle> selectedTriple, TestCase testCase, SessionDebugStatus status, String[] questionStrings, Collection<Question> usedQuestions, TerminologyManager manager, TerminologyObject selectedObject, Date date, int row, TableModel tableModel) {
-		String dateString = dateFormat.format(date);
+		String dateString = String.valueOf(date.getTime());
 		renderRunTo(selectedTriple, status, date, dateString, tableModel, row);
 		int column = 1;
 		// render date cell

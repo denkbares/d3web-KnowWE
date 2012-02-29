@@ -19,7 +19,6 @@
 package de.knowwe.sessiondebugger;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.Date;
 
 import de.d3web.core.session.Session;
@@ -49,9 +48,9 @@ public class ExecuteCasesAction extends AbstractAction {
 		String testCaseName = context.getParameter("testCaseName");
 		Date endDate;
 		try {
-			endDate = TestCasePlayerRenderer.dateFormat.parse(context.getParameter("date"));
+			endDate = new Date(Long.parseLong((context.getParameter("date"))));
 		}
-		catch (ParseException e) {
+		catch (NumberFormatException e) {
 			throw new IOException(e);
 		}
 		@SuppressWarnings("unchecked")
