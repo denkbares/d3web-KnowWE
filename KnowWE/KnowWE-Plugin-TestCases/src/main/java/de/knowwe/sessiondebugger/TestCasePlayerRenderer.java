@@ -110,106 +110,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				}
 
 				if (testCase != null) {
-					string.append(KnowWEUtils.maskHTML("<span class='fillText'> from </span>"));
-					string.append(dateFormat.format(testCase.getStartDate()));
-					// string.append(KnowWEUtils.maskHTML(renderToolbarButton("stop.gif",
-					// "SessionDebugger.reset()")));
-					string.append(KnowWEUtils.maskHTML("<div class='toolSeparator'></div>"));
-
-					// get Question from cookie
-					String additionalQuestions = null;
-					String cookiename = "additionalQuestions" + section.getTitle();
-					Cookie[] cookies = user.getRequest().getCookies();
-					if (cookies != null) for (Cookie cookie : cookies) {
-						try {
-							if (URLDecoder.decode(cookie.getName(), "UTF-8").equals(cookiename)) {
-								additionalQuestions = URLDecoder.decode(cookie.getValue(), "UTF-8");
-								break;
-							}
-						}
-						catch (UnsupportedEncodingException e) {
-							additionalQuestions = cookie.getValue();
-							Logger.getLogger(getClass()).error(
-										"Could not decode the value of the cookie " + cookiename
-												+ ":" + cookie.getValue());
-						}
-					}
-					String[] questionStrings = new String[0];
-					if (additionalQuestions != null && !additionalQuestions.isEmpty()) {
-						questionStrings = additionalQuestions.split(QUESTIONS_SEPARATOR);
-					}
-					Collection<Question> usedQuestions = TestCaseUtils.getUsedQuestions(testCase);
-					Collection<Date> chronology = testCase.chronology();
-					String sizeKey = SIZE_SELECTOR_KEY + "_" + section.getID();
-					String selectedSizeString = (String) user.getSession().getAttribute(
-							sizeKey);
-					if (selectedSizeString == null) {
-						selectedSizeString = "10";
-					}
-					int selectedSize = Integer.parseInt(selectedSizeString);
-					String fromKey = FROM_KEY + "_" + section.getID();
-					String fromString = (String) user.getSession().getAttribute(
-							fromKey);
-					int from = 1;
-					if (fromString != null) {
-						try {
-							from = Integer.parseInt(fromString);
-							if (from < 1) {
-								from = 1;
-							}
-						}
-						catch (NumberFormatException e) {
-							from = 1;
-						}
-					}
-					int to = from + selectedSize - 1;
-					int maxSize = chronology.size();
-					if (to > maxSize) {
-						int tempfrom = from - (to - maxSize);
-						if (tempfrom > 0) {
-							from = tempfrom;
-						}
-						else {
-							from = 1;
-						}
-						user.getSession().setAttribute(fromKey, String.valueOf(from));
-						to = maxSize;
-					}
-
-					TableModel tableModel = new TableModel();
-					tableModel.addCell(0, 0,
-							KnowWEUtils.maskHTML(renderToolbarButton("stop12.png",
-									"SessionDebugger.reset()")), 1);
-					tableModel.addCell(0, 1, "Time", "Time".length());
-					int column = 2;
-					for (Question q : usedQuestions) {
-						tableModel.addCell(0, column++, q.getName(), q.getName().length());
-					}
-					tableModel.addCell(0, column++, "Checks", "Checks".length());
-					TerminologyManager manager = session.getKnowledgeBase().getManager();
-					renderObservationQuestionsHeader(status, additionalQuestions, questionStrings,
-							manager, tableModel, column);
-					column += questionStrings.length;
-					TerminologyObject selectedObject = renderObservationQuestionAdder(section,
-							user,
-							questionStrings, manager, additionalQuestions,
-							tableModel, column++);
-					int row = 1;
-					for (Date date : chronology) {
-						if (row < from) {
-							row++;
-							continue;
-						}
-						if (row > to) break;
-						renderTableLine(selectedTriple, testCase, status, questionStrings,
-								usedQuestions,
-								manager, selectedObject, date, row - from + 1, tableModel);
-						row++;
-					}
-					string.append(
-							renderTableSizeSelector(section, user, sizeKey, selectedSize, maxSize));
-					string.append(renderNavigation(section, from, selectedSize, fromKey, maxSize));
-					string.append(tableModel.toHtml(section, user));
+					renderTestCase(section, user, string, selectedTriple, session, testCase, status);
 				}
 				else {
 					string.append("\nNo TestCase contained!\n");
@@ -218,6 +119,127 @@ public class TestCasePlayerRenderer implements Renderer {
 		}
 		string.append(KnowWEUtils.maskHTML("</div>"));
 		result.append(string.toString());
+	}
+
+	private void renderTestCase(Section<?> section, UserContext user, StringBuilder string, Triple<TestCaseProvider, Section<?>, KnowWEArticle> selectedTriple, Session session, TestCase testCase, SessionDebugStatus status) {
+		string.append(KnowWEUtils.maskHTML("<span class='fillText'> from </span>"));
+		string.append(dateFormat.format(testCase.getStartDate()));
+		string.append(KnowWEUtils.maskHTML("<div class='toolSeparator'></div>"));
+
+		String additionalQuestions = getAdditionalQuestionsCookie(section, user);
+		String[] questionStrings = new String[0];
+		if (additionalQuestions != null && !additionalQuestions.isEmpty()) {
+			questionStrings = additionalQuestions.split(QUESTIONS_SEPARATOR);
+		}
+		Collection<Question> usedQuestions = TestCaseUtils.getUsedQuestions(testCase);
+		Collection<Date> chronology = testCase.chronology();
+		String sizeKey = SIZE_SELECTOR_KEY + "_" + section.getID();
+		String fromKey = FROM_KEY + "_" + section.getID();
+		TableParameters tableParameters = getTableParameters(user, chronology, sizeKey,
+				fromKey);
+
+		TerminologyManager manager = session.getKnowledgeBase().getManager();
+		TableModel tableModel = new TableModel();
+		TerminologyObject selectedObject = renderHeader(section, user, status,
+				additionalQuestions, questionStrings, usedQuestions, manager,
+				tableModel);
+		int row = 1;
+		for (Date date : chronology) {
+			if (row < tableParameters.from) {
+				row++;
+				continue;
+			}
+			if (row > tableParameters.to) break;
+			renderTableLine(selectedTriple, testCase, status, questionStrings,
+					usedQuestions,
+					manager, selectedObject, date, row - tableParameters.from + 1,
+					tableModel);
+			row++;
+		}
+		string.append(
+				renderTableSizeSelector(section, user, sizeKey, tableParameters.size,
+						chronology.size()));
+		string.append(renderNavigation(section, tableParameters.from,
+				tableParameters.size, fromKey, chronology.size()));
+		string.append(tableModel.toHtml(section, user));
+	}
+
+	private TerminologyObject renderHeader(Section<?> section, UserContext user, SessionDebugStatus status, String additionalQuestions, String[] questionStrings, Collection<Question> usedQuestions, TerminologyManager manager, TableModel tableModel) {
+		tableModel.addCell(0, 0,
+				KnowWEUtils.maskHTML(renderToolbarButton("stop12.png",
+						"SessionDebugger.reset()")), 1);
+		tableModel.addCell(0, 1, "Time", "Time".length());
+		int column = 2;
+		for (Question q : usedQuestions) {
+			tableModel.addCell(0, column++, q.getName(), q.getName().length());
+		}
+		tableModel.addCell(0, column++, "Checks", "Checks".length());
+		renderObservationQuestionsHeader(status, additionalQuestions, questionStrings,
+				manager, tableModel, column);
+		column += questionStrings.length;
+		TerminologyObject selectedObject = renderObservationQuestionAdder(section,
+				user,
+				questionStrings, manager, additionalQuestions,
+				tableModel, column++);
+		return selectedObject;
+	}
+
+	private TableParameters getTableParameters(UserContext user, Collection<Date> chronology, String sizeKey, String fromKey) {
+		TableParameters tableParameters = new TableParameters();
+		String selectedSizeString = (String) user.getSession().getAttribute(
+				sizeKey);
+		if (selectedSizeString == null) {
+			selectedSizeString = "10";
+		}
+		tableParameters.size = Integer.parseInt(selectedSizeString);
+		String fromString = (String) user.getSession().getAttribute(
+				fromKey);
+		tableParameters.from = 1;
+		if (fromString != null) {
+			try {
+				tableParameters.from = Integer.parseInt(fromString);
+				if (tableParameters.from < 1) {
+					tableParameters.from = 1;
+				}
+			}
+			catch (NumberFormatException e) {
+				tableParameters.from = 1;
+			}
+		}
+		tableParameters.to = tableParameters.from + tableParameters.size - 1;
+		if (tableParameters.to > chronology.size()) {
+			int tempfrom = tableParameters.from - (tableParameters.to - chronology.size());
+			if (tempfrom > 0) {
+				tableParameters.from = tempfrom;
+			}
+			else {
+				tableParameters.from = 1;
+			}
+			user.getSession().setAttribute(fromKey, String.valueOf(tableParameters.from));
+			tableParameters.to = chronology.size();
+		}
+		return tableParameters;
+	}
+
+	private String getAdditionalQuestionsCookie(Section<?> section, UserContext user) {
+		String additionalQuestions = null;
+		String cookiename = "additionalQuestions" + section.getTitle();
+		Cookie[] cookies = user.getRequest().getCookies();
+		if (cookies != null) for (Cookie cookie : cookies) {
+			try {
+				if (URLDecoder.decode(cookie.getName(), "UTF-8").equals(cookiename)) {
+					additionalQuestions = URLDecoder.decode(cookie.getValue(), "UTF-8");
+					break;
+				}
+			}
+			catch (UnsupportedEncodingException e) {
+				additionalQuestions = cookie.getValue();
+				Logger.getLogger(getClass()).error(
+							"Could not decode the value of the cookie " + cookiename
+									+ ":" + cookie.getValue());
+			}
+		}
+		return additionalQuestions;
 	}
 
 	private List<Triple<TestCaseProvider, Section<?>, KnowWEArticle>> getTestCaseProviders(Section<TestCasePlayerType> section, UserContext user) {
@@ -552,13 +574,6 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	private void renderToolbarButton(String icon, String action, boolean enabled, StringBuilder builder) {
-		// builder.append("<input src='KnowWEExtension/testcaseplayer/icon/");
-		// builder.append(icon);
-		// if (!enabled) builder.append("_deactivated");
-		// builder.append(".png'");
-		// builder.append("type=\"image\" onclick=\"");
-		// if (enabled) builder.append(action);
-		// builder.append(";\" style='margin-top:px;'>");
 		int index = icon.lastIndexOf('.');
 		String suffix = icon.substring(index);
 		icon = icon.substring(0, index);
@@ -577,5 +592,18 @@ public class TestCasePlayerRenderer implements Renderer {
 		if (enabled) {
 			builder.append("</a>");
 		}
+	}
+
+	/**
+	 * Encapsules parameters for the table
+	 * 
+	 * @author Markus Friedrich (denkbares GmbH)
+	 * @created 29.02.2012
+	 */
+	private static class TableParameters {
+
+		private int from;
+		private int to;
+		private int size;
 	}
 }
