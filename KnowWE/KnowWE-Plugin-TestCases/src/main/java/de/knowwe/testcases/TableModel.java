@@ -61,7 +61,7 @@ public class TableModel {
 		if (cell == null) {
 			return "";
 		}
-		return cell;
+		return KnowWEUtils.maskJSPWikiMarkup(cell);
 	}
 
 	/**
