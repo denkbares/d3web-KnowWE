@@ -68,7 +68,7 @@ public abstract class AttachmentTestCaseProvider implements TestCaseProvider {
 					+ " cannot be found attached to this article.\n"));
 			return null;
 		}
-		if (attachment == null || attachment.getDate() != actualAttachment.getDate()) {
+		if (attachment == null || !attachment.getDate().equals(actualAttachment.getDate())) {
 			attachment = actualAttachment;
 			messages.clear();
 			statusPerUser.clear();
