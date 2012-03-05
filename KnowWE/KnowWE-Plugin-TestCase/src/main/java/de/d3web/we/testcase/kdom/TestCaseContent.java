@@ -111,7 +111,7 @@ public class TestCaseContent extends AbstractType {
 					List<TestCaseProvider> providers = new LinkedList<TestCaseProvider>();
 					for (de.d3web.empiricaltesting.SequentialTestCase stc : testSuite.getRepository()) {
 						providers.add(new SingleTestCaseProvider(new STCWrapper(stc), article,
-								stc.getName()));
+								s.getArticle().getTitle() + "/" + stc.getName()));
 					}
 					Section<DefaultMarkupType> defaultMarkupSection = Sections.findAncestorOfType(
 							s, DefaultMarkupType.class);
@@ -119,7 +119,7 @@ public class TestCaseContent extends AbstractType {
 							TestCaseProviderStorage.KEY,
 							new DefaultTestCaseStorage(providers));
 					// Store the test suite
-					KnowWEUtils.storeObject(article, s,
+					KnowWEUtils.storeObject(s.getArticle(), s,
 							TestCaseType.TESTCASEKEY, testSuite);
 					messages.add(Messages.objectCreatedNotice(
 							"Test Suite successfully created with "
