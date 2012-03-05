@@ -18,39 +18,40 @@
  */
 package de.knowwe.testcases;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 import de.knowwe.core.report.Message;
 
 /**
- * Capsules one TestCaseProvider
+ * Capsules a collection of TestCaseProviders
  * 
  * @author Markus Friedrich (denkbares GmbH)
  * @created 27.02.2012
  */
-public class SingleTestCaseStorage implements TestCaseProviderStorage {
+public class DefaultTestCaseStorage implements TestCaseProviderStorage {
 
-	private TestCaseProvider provider;
+	private final Collection<TestCaseProvider> providers;
 
-	public SingleTestCaseStorage(TestCaseProvider provider) {
+	public DefaultTestCaseStorage(Collection<TestCaseProvider> providers) {
 		super();
-		this.provider = provider;
+		this.providers = providers;
 	}
 
 	@Override
 	public Collection<TestCaseProvider> getTestCaseProviders() {
-		return Arrays.asList(provider);
+		return Collections.unmodifiableCollection(providers);
 	}
 
 	@Override
 	public TestCaseProvider getTestCaseProvider(String name) {
-		if (provider.getName().equals(name)) {
-			return provider;
+		for (TestCaseProvider provider : providers) {
+			if (provider.getName().equals(name)) {
+				return provider;
+			}
 		}
-		else {
-			return null;
-		}
+		return null;
 	}
 
 	@Override
@@ -60,7 +61,11 @@ public class SingleTestCaseStorage implements TestCaseProviderStorage {
 
 	@Override
 	public Collection<Message> getMessages() {
-		return provider.getMessages();
+		Collection<Message> messages = new LinkedList<Message>();
+		for (TestCaseProvider provider : providers) {
+			messages.addAll(provider.getMessages());
+		}
+		return messages;
 	}
 
 }

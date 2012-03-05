@@ -33,18 +33,15 @@ import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.QuestionValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.empiricaltesting.TestCase;
-import de.d3web.we.basic.D3webKnowledgeHandler;
+import de.d3web.testcase.stc.STCWrapper;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.SolutionReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.basicType.Number;
-import de.knowwe.core.kdom.objects.SimpleReference;
-import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
@@ -52,6 +49,11 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.testcases.DefaultTestCaseStorage;
+import de.knowwe.testcases.SingleTestCaseProvider;
+import de.knowwe.testcases.TestCaseProvider;
+import de.knowwe.testcases.TestCaseProviderStorage;
+import de.knowwe.testcases.TimeStampType;
 
 /**
  * TestsuiteContent
@@ -59,37 +61,21 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @author Sebastian Furth
  * 
  */
-public class TestCaseContent extends SimpleReference {
+public class TestCaseContent extends AbstractType {
 
 	protected TestCaseContent() {
-		super(TermRegistrationScope.GLOBAL, String.class);
-		this.setIgnorePackageCompile(true);
 		this.sectionFinder = new AllTextSectionFinder();
 		this.childrenTypes.add(new SequentialTestCase());
 		this.addSubtreeHandler(Priority.LOWEST, new TestSuiteSubTreeHandler());
 	}
 
-	@Override
-	public String getTermIdentifier(Section<? extends SimpleTerm> s) {
-		String master = DefaultMarkupType.getAnnotation(
-				Sections.findAncestorOfType(s, TestCaseType.class),
-				TestCaseType.ANNOTATION_MASTER);
-		if (master == null) master = s.getTitle();
-		return master;
-	}
-
 	public class TestSuiteSubTreeHandler extends D3webSubtreeHandler<TestCaseContent> {
-
-		@Override
-		public boolean isIgnoringPackageCompile() {
-			return true;
-		}
 
 		@Override
 		public Collection<Message> create(KnowWEArticle article, Section<TestCaseContent> s) {
 
 			List<Message> messages = new LinkedList<Message>();
-			KnowledgeBase kb = loadKB(article, s);
+			KnowledgeBase kb = getKB(article);
 			if (kb != null) {
 
 				List<de.d3web.empiricaltesting.SequentialTestCase> repository =
@@ -122,7 +108,16 @@ public class TestCaseContent extends SimpleReference {
 					TestCase testSuite = new TestCase();
 					testSuite.setKb(kb);
 					testSuite.setRepository(repository);
-
+					List<TestCaseProvider> providers = new LinkedList<TestCaseProvider>();
+					for (de.d3web.empiricaltesting.SequentialTestCase stc : testSuite.getRepository()) {
+						providers.add(new SingleTestCaseProvider(new STCWrapper(stc), article,
+								stc.getName()));
+					}
+					Section<DefaultMarkupType> defaultMarkupSection = Sections.findAncestorOfType(
+							s, DefaultMarkupType.class);
+					defaultMarkupSection.getSectionStore().storeObject(article,
+							TestCaseProviderStorage.KEY,
+							new DefaultTestCaseStorage(providers));
 					// Store the test suite
 					KnowWEUtils.storeObject(article, s,
 							TestCaseType.TESTCASEKEY, testSuite);
@@ -134,8 +129,7 @@ public class TestCaseContent extends SimpleReference {
 			}
 			else {
 				return Messages.asList(Messages.error(
-						"Unable to get knowledge base from article: "
-								+ s.get().getTermIdentifier(s)));
+						"Unable to get knowledge base"));
 			}
 
 			return messages;
@@ -428,23 +422,6 @@ public class TestCaseContent extends SimpleReference {
 				}
 			}
 
-		}
-
-		/**
-		 * Due to the knowledge base is in another article we need this method.
-		 */
-		private KnowledgeBase loadKB(KnowWEArticle a, Section<TestCaseContent> s) {
-
-			KnowledgeBase kb = getKB(a);
-
-			if (D3webKnowledgeHandler.isEmpty(kb)) {
-				String source = getTermIdentifier(s);
-				KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(a.getWeb(),
-						source);
-				kb = getKB(article);
-			}
-
-			return kb;
 		}
 
 		private String clean(String quotedString) {

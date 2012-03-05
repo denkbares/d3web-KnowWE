@@ -20,12 +20,16 @@
 
 package de.d3web.we.object;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionYN;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
+import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.KnowWEArticle;
@@ -127,11 +131,31 @@ public abstract class AnswerReference
 					AnswerReference.class);
 			Section<QuestionReference> ref = section.get().getQuestionSection(section);
 			Question question = ref.get().getTermObject(article, ref);
-			if (question != null && question instanceof QuestionYN) {
-				Choice choice = KnowledgeBaseUtils.findChoice((QuestionYN) question,
-						section.get().getAnswerName(section), false);
-				if (choice != null) return Messages.noMessage();
+			if (question != null) {
+				if (question instanceof QuestionYN) {
+					Choice choice = KnowledgeBaseUtils.findChoice((QuestionYN) question,
+							section.get().getAnswerName(section), false);
+					if (choice != null) return Messages.noMessage();
 
+				}
+				else if (question instanceof QuestionNum) {
+					NumericalInterval range = question.getInfoStore().getValue(
+							BasicProperties.QUESTION_NUM_RANGE);
+					try {
+						Double value = Double.parseDouble(section.get().getAnswerName(section));
+						if (range == null || range.contains(value)) {
+							return Messages.noMessage();
+						}
+						else {
+							return Arrays.asList(Messages.error("The value " + value
+									+ " is not in the range of the question " + question.getName()));
+						}
+					}
+					catch (NumberFormatException e) {
+						return Arrays.asList(Messages.error("The value "
+								+ section.get().getAnswerName(section) + " is not a numeric answer"));
+					}
+				}
 			}
 			return super.validateReference(article, simpleTermSection);
 		}

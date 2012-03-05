@@ -1,3 +1,4 @@
+package de.knowwe.testcases;
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
  * 
@@ -16,7 +17,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.testcase.kdom;
+
 
 import java.util.Collection;
 import java.util.Collections;

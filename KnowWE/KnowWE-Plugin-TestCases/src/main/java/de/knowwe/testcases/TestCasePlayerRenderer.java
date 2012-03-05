@@ -47,7 +47,6 @@ import de.d3web.testcase.TestCaseUtils;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.Finding;
 import de.d3web.testcase.model.TestCase;
-import de.d3web.we.testcase.kdom.TimeStampType;
 import de.knowwe.core.KnowWEArticleManager;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.compile.packaging.KnowWEPackageManager;
