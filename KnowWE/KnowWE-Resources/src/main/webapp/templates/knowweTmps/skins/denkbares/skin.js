@@ -158,7 +158,7 @@ DenkbaresSkin.checkFavScroll = function () {
 	if (scrollY <= originY) {
 		// when reaching top of page
 		// align fav originally to page
-		element.style.position = "absolute";
+		element.style.position = "static";
 		element.style.top = originY+"px";
 	}
 	else if (scrollMax - scrollY <= favToScroll) {

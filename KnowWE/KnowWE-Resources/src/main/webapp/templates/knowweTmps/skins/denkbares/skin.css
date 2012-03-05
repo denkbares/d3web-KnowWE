@@ -1155,9 +1155,6 @@ a.toc {
 a.toc:hover {
 	background:#eee;
 }
-#favorites {
-	z-index:-10;
-}
 #favorites .toc {
 	width:100%;
 }
@@ -1808,11 +1805,12 @@ div.coverflow .knob {
 .type_DiaFlux.defaultMarkupFrame {
 	display: inline-block;
 	margin-left: -1px;
+	border-top: 1px solid transparent;
 }
 
 .type_DiaFlux.defaultMarkupFrame:hover {
 	border-right: 0px;
-	border-left: 0px;
+	border-left: 1px solid transparent;
 	border-bottom: 0px;
 	margin-bottom: 0px;	
 }
@@ -1862,4 +1860,3 @@ div.coverflow .knob {
 	border-left: 0px;
 	border-bottom: 0px;
 }
-
