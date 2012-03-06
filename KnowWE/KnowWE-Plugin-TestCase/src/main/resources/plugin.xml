@@ -87,5 +87,23 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+        id="InstantEditToolProvider">
+        <parameter id="class"
+            value="de.knowwe.instantedit.tools.InstantEditToolProvider" />
+        <parameter id="name" value="InstantEditToolProvider" />
+        <parameter id="description"
+            value="Offers a button for quick editing a test case sections." />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="5" />
+        <parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
+        <parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
+        <parameter id="script" value="DefaultEditTool.js" />
+        <parameter id="script" value="TextArea.js" />
+        <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
+        <parameter id="css" value="DefaultEditTool.css" />
+	    <parameter id="scope" value="TestCaseType" />
+    </extension>
 
 </plugin>
