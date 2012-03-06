@@ -76,15 +76,5 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
-		id="StatsHandler">
-		<parameter id="class"
-			value="de.knowwe.tagging.stats.StatsHandler" />
-		<parameter id="name" value="StatsHandler" />
-		<parameter id="description" value="TagHandler StatsHandler" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-	    
+    
 </plugin>

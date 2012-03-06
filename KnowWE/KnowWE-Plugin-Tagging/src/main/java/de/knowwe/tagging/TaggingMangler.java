@@ -21,20 +21,20 @@
 package de.knowwe.tagging;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.KnowWEArticle;
@@ -54,66 +54,101 @@ import de.knowwe.search.SearchTerm;
  */
 public class TaggingMangler implements KnowWESearchProvider {
 
+	/**
+	 * Singleton instance
+	 */
 	private static TaggingMangler me;
-
-	private TaggingMangler() {
-
-	}
+	
+	/**
+	 * Tag storage map
+	 */
+	private Map<String, Set<String>> tagMap = new HashMap<String, Set<String>>();
+	
+	/**
+	 * The separator regex used to split tag strings
+	 */
+	public final static String TAG_SEPARATOR = " |,";
+	
+	private TaggingMangler() {}
 
 	public static synchronized TaggingMangler getInstance() {
 		if (me == null) {
 			me = new TaggingMangler();
 		}
+		
 		return me;
 	}
 
-	/**
-	 * prevent cloning
-	 */
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
 	}
+	
+	/**
+	 * Adds a tag to the tag map
+	 * @param page The article containing the tag
+	 * @param tag The tag
+	 */
+	public void registerTag(String page, String tag) {
+		if (page == null || tag == null) {
+			return;
+		}
+		
+		if (!tagMap.containsKey(page)) {
+			tagMap.put(page, new HashSet<String>());
+		}
+		
+		tagMap.get(page).add(tag.trim());
+	}
 
 	/**
-	 * adds a tag to a page. The new tag is added into the <tags></tags> part.
+	 * Adds a tag to a page. The new tag is added into the <tags></tags> part.
 	 * If there is none, it's created at the end of the page
+	 * Multiple <tags> sections are combined into a single one 
 	 * 
 	 * @param pagename
 	 * @param tag
 	 * @throws IOException
 	 */
 	public void addTag(String pagename, String tag, UserActionContext context) throws IOException {
-		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();
-		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
-				pagename);
-		ArrayList<Section<TagsContent>> tagslist = new ArrayList<Section<TagsContent>>();
-		Sections.findSuccessorsOfType(article.getSection(), TagsContent.class, tagslist);
-		HashSet<String> tags = new HashSet<String>();
-		if (tagslist.size() > 0) {
-			boolean multiple = tagslist.size() > 1;
-			for (Section<?> cur : tagslist) {
-				for (String temptag : cur.getText().split(" |,")) {
+		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(
+				KnowWEEnvironment.DEFAULT_WEB, pagename);
+		
+		// Look for <tags> sections
+		List<Section<TagsContent>> tagsSections = new ArrayList<Section<TagsContent>>();
+		Sections.findSuccessorsOfType(article.getSection(), TagsContent.class, tagsSections);
+		Set<String> tags = new HashSet<String>();
+		
+		if (tagsSections.size() > 0) {
+			boolean multiple = tagsSections.size() > 1;
+			
+			for (Section<?> cur : tagsSections) {
+				for (String temptag : cur.getText().split(TAG_SEPARATOR)) {
 					tags.add(temptag.trim());
 				}
 			}
-			if (!tags.contains(tag)) {
-				tags.add(tag.trim());
-			}
-			String output = "";
+
+			// tags is a set, dupe checking isn't needed
+			tags.add(tag.trim());
+
+			StringBuilder sb = new StringBuilder();
+			
 			for (String temptag : tags) {
-				output += temptag + " ";
+				sb.append(temptag).append(" ");
 			}
-			output = output.trim();
-			output += "\n";
-			Section<TagsContent> keep = tagslist.get(0);
+			
+			String output = sb.toString().trim() + "\n";
+			Section<TagsContent> firstTagsSection = tagsSections.get(0);
+			
+			// remove all further <tags> sections
 			if (multiple) {
-				for (int i = 1; i < tagslist.size(); i++) {
-					article.getSection().removeChild(tagslist.get(i));
+				for (int i = 1; i < tagsSections.size(); i++) {
+					article.getSection().removeChild(tagsSections.get(i));
 				}
 			}
+			
 			Map<String, String> nodesMap = new HashMap<String, String>();
-			nodesMap.put(keep.getID(), output);
+			nodesMap.put(firstTagsSection.getID(), output);
 			Sections.replaceSections(context, nodesMap);
 		}
 		else {
@@ -130,33 +165,43 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * @throws IOException
 	 */
 	public void removeTag(String pagename, String tag, UserActionContext context) throws IOException {
-		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();
-		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
-				pagename);
-		ArrayList<Section<TagsContent>> tagslist = new ArrayList<Section<TagsContent>>();
-		Sections.findSuccessorsOfType(article.getSection(), TagsContent.class, tagslist);
-		HashSet<String> tags = new HashSet<String>();
-		boolean multiple = tagslist.size() > 1;
-		for (Section<TagsContent> cur : tagslist) {
-			for (String temptag : cur.getText().split(" |,")) {
+		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(
+				KnowWEEnvironment.DEFAULT_WEB, pagename);
+		
+		// Look for <tags> sections
+		List<Section<TagsContent>> tagsSections = new ArrayList<Section<TagsContent>>();
+		Sections.findSuccessorsOfType(article.getSection(), TagsContent.class, tagsSections);
+		Set<String> tags = new HashSet<String>();
+		
+		boolean multiple = tagsSections.size() > 1;
+		
+		for (Section<TagsContent> cur : tagsSections) {
+			for (String temptag : cur.getText().split(TAG_SEPARATOR)) {
 				tags.add(temptag.trim());
 			}
 		}
-		String output = "";
+		
+		StringBuilder sb = new StringBuilder();
+		
 		for (String temptag : tags) {
-			if (!temptag.equals(tag)) output += temptag.trim() + " ";
-		}
-		output = output.trim();
-		Section<?> keep = tagslist.get(0);
-		if (multiple) {
-			for (int i = 1; i < tagslist.size(); i++) {
-				article.getSection().removeChild(tagslist.get(i));
+			if (!temptag.equals(tag)) {
+				sb.append(temptag.trim()).append(' ');
 			}
 		}
+		
+		String output = sb.toString().trim();
+		
+		Section<?> keep = tagsSections.get(0);
+		
+		if (multiple) {
+			for (int i = 1; i < tagsSections.size(); i++) {
+				article.getSection().removeChild(tagsSections.get(i));
+			}
+		}
+		
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(keep.getID(), output);
-		Sections.replaceSections(
-				context, nodesMap);
+		Sections.replaceSections(context, nodesMap);
 	}
 
 	/**
@@ -166,59 +211,50 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * @return
 	 */
 	public List<String> getPages(String tag) {
-		String lns = SemanticCoreDelegator.getInstance().getUpper().getLocaleNS();
-		String querystring = "";
-		try {
-			querystring = "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object <"
-					+ lns + URLEncoder.encode(tag, "UTF-8") + "> .\n"
-					+ "?t rdf:predicate ns:hasTag .\n"
-					+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n"
-					+ "}";
+		List<String> result = new LinkedList<String>();
+		
+		Iterator<String> it = tagMap.keySet().iterator();
+		while (it.hasNext()) {
+			String pageName = it.next();
+			if (tagMap.get(pageName).contains(tag)) {
+				result.add(pageName);
+			}
 		}
-		catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return SemanticCoreDelegator.getInstance().simpleQueryToList(querystring, "q");
+		
+		return result;
 	}
 
 	/**
-	 * Creates a list of tags this page is associated with. Always returns a
-	 * list. Any errors result in an empty list.
+	 * Creates a list of tags the given page is tagged with.
+	 * Always returns a list unless the page parameter is null.
+	 * (No tags -> empty list)
 	 * 
-	 * @param pagename the topic in question
-	 * @return a list a tags for this topic
+	 * @param page The query page
+	 * @return List The list of tags, or null if page was null
 	 */
-	public ArrayList<String> getPageTags(String pagename) {
-		if (pagename == null) return null;
-		String topicenc = pagename;
-		try {
-			topicenc = URLEncoder.encode(pagename, "UTF-8");
+	public List<String> getPageTags(String page) {
+		if (page == null) {
+			return null;
 		}
-		catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+		
+		List<String> result = new LinkedList<String>();
+		Set<String> tagsForPage = tagMap.get(page);
+		
+		if (tagsForPage != null) {
+			result.addAll(tagsForPage);
 		}
-
-		String querystring = "SELECT ?q \n" + "WHERE {\n"
-				+ "?t rdf:object ?q .\n" + "?t rdf:predicate ns:hasTag .\n"
-				+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic <%lns%"
-				+ topicenc + "> .\n" + "}";
-		String lns = SemanticCoreDelegator.getInstance().getUpper().getLocaleNS();
-		querystring = querystring.replace("%lns%", lns);
-
-		return SemanticCoreDelegator.getInstance().simpleQueryToList(querystring, "q");
+		
+		return result;
 	}
 
 	/**
-	 * returns a list of all existing tags
+	 * Returns a list of all existing tags
 	 * 
-	 * @return
+	 * @return List of Strings with all existing, unique tags
 	 */
 	public List<String> getAllTags() {
-		ArrayList<String> erg = new ArrayList<String>();
-		for (String cur : getAllTagsWithDuplicates())
-			if (!erg.contains(cur)) erg.add(cur);
-		return erg;
+		Set<String> set = new HashSet<String>(getAllTagsWithDuplicates());
+		return new ArrayList<String>(set);
 	}
 
 	/**
@@ -235,13 +271,16 @@ public class TaggingMangler implements KnowWESearchProvider {
 			minSize = maxSize;
 			maxSize = t;
 		}
+		
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		Map<String, Float> weighted = getAllTagsWithWeight();
 		float factor = maxSize - minSize;
+		
 		for (Entry<String, Float> cur : weighted.entrySet()) {
 			result.put(cur.getKey(), Math.round(minSize
 					+ (cur.getValue() * factor)));
 		}
+		
 		return result;
 	}
 
@@ -254,16 +293,18 @@ public class TaggingMangler implements KnowWESearchProvider {
 		List<String> tags = getAllTagsWithDuplicates();
 		HashMap<String, Float> countlist = new HashMap<String, Float>();
 		float max = 0;
+		
 		for (String cur : tags) {
 			float c = 0;
+			
 			if (countlist.get(cur) == null) {
 				countlist.put(cur, new Float(1));
 				c = 1;
-			}
-			else {
+			} else {
 				c = countlist.get(cur) + 1;
 				countlist.put(cur, c);
 			}
+			
 			max = c > max ? c : max;
 		}
 
@@ -278,12 +319,20 @@ public class TaggingMangler implements KnowWESearchProvider {
 		return weighted;
 	}
 
+	/**
+	 * Compiles a list containing all concatenated tag lists
+	 * 
+	 * @return
+	 */
 	private List<String> getAllTagsWithDuplicates() {
-		String querystring = "SELECT ?q \n" + "WHERE {\n"
-				+ "?t rdf:object ?q .\n" + "?t rdf:predicate ns:hasTag .\n"
-				+ "}";
-		return SemanticCoreDelegator.getInstance().simpleQueryToList(querystring, "q");
-
+		List<String> result = new LinkedList<String>();
+		
+		Iterator<String> it = tagMap.keySet().iterator();
+		while (it.hasNext()) {
+			result.addAll(tagMap.get(it.next()));
+		}
+		
+		return result;
 	}
 
 	/**
@@ -294,18 +343,12 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * @throws IOException
 	 */
 	public void setTags(String topic, String tag, UserActionContext context) throws IOException {
-		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();
-		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
+		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				topic);
 		ArrayList<Section<TagsContent>> tagslist = new ArrayList<Section<TagsContent>>();
 		Sections.findSuccessorsOfType(article.getSection(), TagsContent.class, tagslist);
 		boolean multiple = tagslist.size() > 1;
-		String output = "";
-		for (String temptag : tag.split(" |,")) {
-			if (temptag.trim().length() > 0) {
-				output += temptag.trim() + " ";
-			}
-		}
+		String output = processTagString(tag);
 
 		if (tagslist.size() > 0) {
 			Section<?> keep = tagslist.get(0);
@@ -316,8 +359,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 			}
 			Map<String, String> nodesMap = new HashMap<String, String>();
 			nodesMap.put(keep.getID(), output);
-			Sections
-					.replaceSections(context, nodesMap);
+			Sections.replaceSections(context, nodesMap);
 		}
 		else {
 			addNewTagSection(topic, output, context);
@@ -325,78 +367,81 @@ public class TaggingMangler implements KnowWESearchProvider {
 	}
 
 	/**
-	 * adds a new tags-section - the hardcore way
+	 * Forcibly adds a new tags-section - the hardcore way
 	 * 
 	 * @throws IOException
-	 * 
 	 */
 	public void addNewTagSection(String topic, String content,
 			UserActionContext context) throws IOException {
-		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();
-		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
-				topic);
-		Section<?> asection = article.getSection();
-		String text = asection.getText();
-		String output = "";
-		for (String temptag : content.split(" |,")) {
-			if (temptag.trim().length() > 0) {
-				output += temptag.trim() + " ";
-			}
-		}
-		text += "%%tags\n" + output.trim() + "\n%";
+		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(
+				KnowWEEnvironment.DEFAULT_WEB, topic);
+		
+		Section<?> articleSection = article.getSection();
+		String text = articleSection.getText();
+		
+		text += "%%tags\n" + processTagString(content) + "\n%";
+		
 		Map<String, String> nodesMap = new HashMap<String, String>();
-		nodesMap.put(asection.getID(), text);
+		nodesMap.put(articleSection.getID(), text);
 		Sections.replaceSections(context, nodesMap);
 	}
+	
+	/**
+	 * Processes a user-provided tag string into the the proper format
+	 * 
+	 * @param tagString A string of tags separated by TAG_SEPARATOR
+	 * @return A trimmed tag list separated by spaces
+	 */
+	private String processTagString(String tagString) {
+		StringBuilder sb = new StringBuilder();
+		
+		for (String rawTag : tagString.split(TAG_SEPARATOR)) {
+			if (rawTag.trim().length() > 0) {
+				sb.append(rawTag.trim()).append(' ');
+			}
+		}
+		
+		return sb.toString().trim();
+	}
 
+	/**
+	 * Searches for pages containing all of the requested tags
+	 * 
+	 * @param querytags Space-separated string of tags the pages must contain
+	 * @return List of {@link GenericSearchResult} instances for the found pages
+	 */
 	public List<GenericSearchResult> searchPages(String querytags) {
-
 		String[] tags = querytags.split(" ");
-		ArrayList<GenericSearchResult> result = new ArrayList<GenericSearchResult>();
-		String querystring = "";
-		String lns = SemanticCoreDelegator.getInstance().getUpper().getLocaleNS();
-		int i = 0;
-		if (tags.length == 1) {
-			try {
-				querystring = "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object <"
-						+ lns + URLEncoder.encode(tags[0], "UTF-8") + "> .\n"
-						+ "?t rdf:predicate ns:hasTag .\n"
-						+ "?t rdfs:isDefinedBy ?o .\n"
-						+ "?o ns:hasTopic ?q .\n" + "}";
-			}
-			catch (UnsupportedEncodingException e) {
-				// should not happen as the encoding is hardcoded
-			}
-		}
-		else {
-			querystring = "SELECT ?q \n" + "WHERE {\n";
-			for (String cur : tags) {
-				try {
-
-					querystring += "?t" + i + " rdf:object <" + lns
-							+ URLEncoder.encode(cur, "UTF-8") + "> .\n";
+		List<GenericSearchResult> result = new LinkedList<GenericSearchResult>();
+		
+		Iterator<String> it = tagMap.keySet().iterator();
+		
+		article_loop:
+		while (it.hasNext()) {
+			String article = it.next();
+			Set<String> articleTags = tagMap.get(article);
+			
+			for (String tag : tags) {
+				if (!articleTags.contains(tag)) {
+					continue article_loop;
 				}
-				catch (UnsupportedEncodingException e) {
-					// should not happen as the encoding is hardcoded
-				}
-				querystring += "?t" + i + " rdf:predicate ns:hasTag .\n";
-				querystring += "?t" + i + " rdfs:isDefinedBy ?o" + i
-						+ " .\n ?o" + i + " ns:hasTopic ?q . \n";
-				i++;
 			}
-			querystring += "}";
+			
+			// The page is tagged with all query tags, add to result set
+			result.add(new GenericSearchResult(article, new String[] {}, 1));
 		}
-		ArrayList<String> pages = SemanticCoreDelegator.getInstance().simpleQueryToList(
-				querystring, "q");
-		for (String cur : pages) {
-			// TODO better search? better contexts..
-			result.add(new GenericSearchResult(cur, new String[] {}, 1));
-		}
+		
 		return result;
 	}
 
+	/**
+	 * Performs a search for articles tagged with all of the tags and
+	 * renders a result UI
+	 * 
+	 * @param queryString Space-separated list of tags to search for
+	 * @return Wiki markup displaying the results
+	 */
 	public String getResultPanel(String queryString) {
-
 		if (queryString != null) {
 			List<GenericSearchResult> pages = searchPages(queryString);
 			Collections.sort(pages, new Comparator<GenericSearchResult>() {
@@ -407,10 +452,11 @@ public class TaggingMangler implements KnowWESearchProvider {
 							o1.getPagename(), o2.getPagename());
 				}
 			});
+			
 			return renderResults(pages, queryString);
 		}
 		else {
-			return ("No query.");
+			return "No query.";
 		}
 	}
 
@@ -424,10 +470,12 @@ public class TaggingMangler implements KnowWESearchProvider {
 		StringBuffer html = new StringBuffer();
 		// html.append("<ul>\n");
 		html.append("\n|| Page || Tags \n");
+		
 		for (GenericSearchResult cur : pages) {
 			String pagename = cur.getPagename();
 			html.append("| [").append(pagename);
 			html.append("]\t| ");
+			
 			for (String tag : tm.getPageTags(pagename)) {
 				boolean matched = tag.equalsIgnoreCase(queryString);
 				if (matched) html.append("__");
@@ -435,6 +483,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 				if (matched) html.append("__");
 				html.append(" ");
 			}
+			
 			html.append("\n");
 			// String link = "<a target='_blank' href=\"Wiki.jsp?page="
 			// + pagename + "\">" + pagename + "</a>";
@@ -447,6 +496,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 			// html.append("</div><br>\n");
 
 		}
+		
 		// html.append("</ul>\n");
 		html.append("\n");
 		return html.toString();
@@ -467,9 +517,11 @@ public class TaggingMangler implements KnowWESearchProvider {
 	public Collection<GenericSearchResult> search(Collection<SearchTerm> words,
 			UserContext user) {
 		Collection<GenericSearchResult> collection = new ArrayList<GenericSearchResult>();
+		
 		for (SearchTerm searchTerm : words) {
 			collection.addAll(searchPages(searchTerm.getTerm()));
 		}
+		
 		return collection;
 	}
 
@@ -477,9 +529,11 @@ public class TaggingMangler implements KnowWESearchProvider {
 	public Collection<SearchTerm> getAllTerms() {
 		Collection<SearchTerm> result = new HashSet<SearchTerm>();
 		List<String> string = this.getAllTags();
+		
 		for (String string2 : string) {
 			result.add(new SearchTerm(string2));
 		}
+		
 		return result;
 	}
 

@@ -46,8 +46,6 @@ public class TagSearchHandler extends AbstractTagHandler {
 			}
 		}
 		StringBuffer html = new StringBuffer();
-		html.append(KnowWEUtils.maskHTML(
-				"<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/tagsearch.js\"></script>"));
 		html.append(TaggingMangler.getInstance().getResultPanel(querystring));
 
 		return html.toString();

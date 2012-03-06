@@ -20,7 +20,7 @@
 
 package de.knowwe.tagging;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import de.knowwe.core.KnowWEAttributes;
@@ -42,7 +42,7 @@ public class TagEditPanel extends AbstractHTMLTagHandler {
 
 	public static String render(UserContext user) {
 		TaggingMangler tm = TaggingMangler.getInstance();
-		ArrayList<String> tags = tm.getPageTags(user.getTopic());
+		List<String> tags = tm.getPageTags(user.getTopic());
 		String output = "<p>";
 		output += "Tags (<span id=\"tagpanedit\" style='text-decoration:underline;'>edit</span>):";
 		output += "<span id=\"tagspan\">";

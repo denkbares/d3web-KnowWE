@@ -20,20 +20,12 @@
 
 package de.knowwe.tagging;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Collection;
 
-import org.openrdf.model.URI;
-
-import de.d3web.we.core.semantic.IntermediateOwlObject;
-import de.d3web.we.core.semantic.OwlHelper;
-import de.d3web.we.core.semantic.OwlSubtreeHandler;
-import de.d3web.we.core.semantic.SemanticCoreDelegator;
-import de.d3web.we.core.semantic.UpperOntology;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
+import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.kdom.xml.XMLContent;
 
@@ -41,41 +33,28 @@ public class TagsContent extends XMLContent {
 
 	public TagsContent() {
 		this.setRenderer(NothingRenderer.getInstance());
-		this.addSubtreeHandler(new TagsContentOWLSubTreeHandler());
+		this.addSubtreeHandler(new TagsContentSubtreeHandler());
 	}
+	
+	/**
+	 * A simple subtree handler registering tags for pages in the {@link TaggingMangler} tag map
+	 * 
+	 * @author Alex Legler
+	 */
+	private class TagsContentSubtreeHandler extends SubtreeHandler<TagsContent> {
 
-	private class TagsContentOWLSubTreeHandler extends OwlSubtreeHandler {
-
+		@Override
+		public Collection<Message> create(KnowWEArticle article, Section<TagsContent> section) {
+			for (String tag : section.getText().split(TaggingMangler.TAG_SEPARATOR)) {
+				TaggingMangler.getInstance().registerTag(article.getTitle(), tag);
+			}
+					
+			return null;
+		}
+		
 		@Override
 		public boolean isIgnoringPackageCompile() {
 			return true;
 		}
-
-		@Override
-		public Collection<Message> create(KnowWEArticle article, Section s) {
-			String text = s.getText();
-			IntermediateOwlObject io = new IntermediateOwlObject();
-			for (String cur : text.split(" |,")) {
-				if (cur.trim().length() > 0) {
-					UpperOntology uo = UpperOntology.getInstance();
-					try {
-						URI suri = uo.getHelper().createlocalURI(
-								URLEncoder.encode(s.getTitle(), "UTF-8"));
-						URI puri = OwlHelper.HASTAG;
-						URI ouri = uo.getHelper().createlocalURI(cur.trim());
-						io.merge(uo.getHelper().createProperty(suri, puri,
-								ouri, s));
-					}
-					catch (UnsupportedEncodingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-			SemanticCoreDelegator.getInstance().addStatements(io, s);
-
-			return null;
-		}
 	}
-
 }
