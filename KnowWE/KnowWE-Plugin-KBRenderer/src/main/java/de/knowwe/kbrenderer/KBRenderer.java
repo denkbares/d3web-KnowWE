@@ -54,12 +54,10 @@ import de.d3web.core.knowledge.terminology.info.Property.Autosave;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.utilities.Triple;
 import de.d3web.diaFlux.flow.Flow;
-import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
-import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kbrenderer.verbalizer.VerbalizationManager;
@@ -86,10 +84,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	@Override
 	public String renderHTML(String topic, UserContext user,
 			Map<String, String> values, String web) {
-
-		D3webKnowledgeHandler knowledgeRepresentationHandler = D3webUtils.getKnowledgeRepresentationHandler(KnowWEEnvironment.DEFAULT_WEB);
-		KnowledgeBase kb = knowledgeRepresentationHandler.getKB(topic);
-
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
 		return renderHTML(web, topic, user, kb);
 	}
 
@@ -226,23 +221,23 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			for (XCLModel model : xclRels) {
 				if (!appendedXCLHeadline) {
 					if (appendedSolutionsHeadline || appendedRulesHeadline
-								|| appendedQuestionHeadline) {
+							|| appendedQuestionHeadline) {
 						text.append("<br/>\n");
 					}
 					text.append("<strong>"
-								+ rb.getString("KnowWE.KBRenderer.xclModels")
-								+ ":</strong>");
+							+ rb.getString("KnowWE.KBRenderer.xclModels")
+							+ ":</strong>");
 					appendedXCLHeadline = true;
 				}
 
 				text.append("<p/>\n\n" + model.getSolution().getName()
-							+ ":<br/>\n");
+						+ ":<br/>\n");
 
 				Map<XCLRelationType, Collection<XCLRelation>> relationMap = model
-							.getTypedRelations();
+						.getTypedRelations();
 
 				for (Entry<XCLRelationType, Collection<XCLRelation>> entry : relationMap
-							.entrySet()) {
+						.entrySet()) {
 					XCLRelationType type = entry.getKey();
 					Collection<XCLRelation> relations = entry.getValue();
 					for (XCLRelation rel : relations) {
@@ -254,11 +249,11 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 
 						text.append(type.getName() + weight + ": ");
 						text.append("&nbsp;&nbsp;&nbsp;"
-									+ VerbalizationManager.getInstance()
-											.verbalize(
-													cond,
-													VerbalizationManager.RenderingFormat.PLAIN_TEXT,
-													parameterMap));
+								+ VerbalizationManager.getInstance()
+										.verbalize(
+												cond,
+												VerbalizationManager.RenderingFormat.PLAIN_TEXT,
+												parameterMap));
 
 						boolean id = false;
 						if (id) {
@@ -343,21 +338,21 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			if (t1 instanceof QuestionChoice) {
 				if (t1 instanceof QuestionMC) {
 					result.append("<span style=\"color: rgb(0, 128, 0);\">"
-									+ t1.toString()
-									+ " "
-									+ prompt
-									+ "</span>"
-									+ "<span style=\"color: rgb(125, 80, 102);\"> [mc] "
-									+ property + " </span><br/>\n");
+							+ t1.toString()
+							+ " "
+							+ prompt
+							+ "</span>"
+							+ "<span style=\"color: rgb(125, 80, 102);\"> [mc] "
+							+ property + " </span><br/>\n");
 				}
 				else {
 					result.append("<span style=\"color: rgb(0, 128, 0);\">"
-									+ t1.toString()
-									+ " "
-									+ prompt
-									+ "</span>"
-									+ "<span style=\"color: rgb(125, 80, 102);\"> [oc] "
-									+ property + " </span><br/>\n");
+							+ t1.toString()
+							+ " "
+							+ prompt
+							+ "</span>"
+							+ "<span style=\"color: rgb(125, 80, 102);\"> [oc] "
+							+ property + " </span><br/>\n");
 				}
 				for (Choice c1 : ((QuestionChoice) t1).getAllAlternatives()) {
 					for (int i = 0; i < depth + 1; i++) {

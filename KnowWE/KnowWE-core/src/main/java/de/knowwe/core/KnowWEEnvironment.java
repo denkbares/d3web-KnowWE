@@ -560,17 +560,6 @@ public class KnowWEEnvironment {
 		return wikiConnector.getServletContext();
 	}
 
-	/**
-	 * Knowledge Services (Kopic) needs to have an id. This is how a default id
-	 * is generated when users dont enter one.
-	 * 
-	 * @param title
-	 * @return
-	 */
-	public static String generateDefaultID(String title) {
-		return title;
-	}
-
 	public String getSectionText(String id) {
 		Section<?> sec = Sections.getSection(id);
 		String data = "Section not found: " + id;

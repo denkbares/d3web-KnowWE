@@ -53,9 +53,7 @@ public class GetKnowledgeBaseResourceAction extends AbstractAction {
 		String web = context.getParameter("web");
 		String topic = context.getParameter("topic");
 		String path = context.getPath();
-		KnowledgeBase kb =
-				D3webUtils.getKnowledgeRepresentationHandler(
-						web).getKB(topic);
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
 		if (kb == null) {
 			context.sendError(404, "The specified knowledge base does not exist.");
 			return;

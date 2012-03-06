@@ -27,6 +27,7 @@ import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
+import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
@@ -85,8 +86,12 @@ public abstract class SolutionDefinition
 				StringBuilder string) {
 
 			KnowWEArticle article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
-			Session session = D3webUtils.getSession(article.getTitle(), user,
-					article.getWeb());
+			SessionProvider provider = SessionProvider.getSessionProvider(user);
+			Session session = null;
+			if (provider != null) {
+				KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
+				session = provider.getSession(kb);
+			}
 
 			String spanStart = KnowWEUtils
 					.maskHTML("<span style=\"background-color:");

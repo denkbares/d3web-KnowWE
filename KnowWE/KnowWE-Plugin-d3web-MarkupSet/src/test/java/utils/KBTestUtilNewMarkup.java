@@ -61,7 +61,6 @@ import de.d3web.indication.ActionIndication;
 import de.d3web.indication.ActionNextQASet;
 import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.scoring.Score;
-import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelationType;
@@ -97,18 +96,14 @@ public class KBTestUtilNewMarkup {
 	 * @param article
 	 */
 	public KnowledgeBase getKnowledgeBase(KnowWEArticle article) {
-		// Load KnowledgeBase
-		D3webKnowledgeHandler d3Handler = D3webUtils.getKnowledgeRepresentationHandler("default_web");
-		return d3Handler.getKB(article.getTitle());
+		return D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
 	}
 
 	/**
 	 * Private Constructor insures noninstantiabilty.
 	 */
 	private KBTestUtilNewMarkup() {
-
 		createGoldenKnowledge();
-
 	}
 
 	/**
@@ -246,7 +241,7 @@ public class KBTestUtilNewMarkup {
 		// ---- normal
 		// ---- increased
 		Question q3 = new QuestionOC(q2, "Mileage evaluation",
-						"normal", "increased");
+				"normal", "increased");
 		q3.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION, Boolean.TRUE);
 
 		// Add question:
@@ -260,10 +255,10 @@ public class KBTestUtilNewMarkup {
 		// -- unsteady idle speed
 		// -- everything is fine
 		new QuestionMC(qc1, "Driving",
-						"insufficient power on partial load",
-						"insufficient power on full load",
-						"unsteady idle speed",
-						"everything is fine");
+				"insufficient power on partial load",
+				"insufficient power on full load",
+				"unsteady idle speed",
+				"everything is fine");
 
 		// Add question:
 		// - Other [text]

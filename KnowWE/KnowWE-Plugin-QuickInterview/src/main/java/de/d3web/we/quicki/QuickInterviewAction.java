@@ -27,10 +27,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
-import de.d3web.we.basic.SessionBroker;
+import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.KnowWEAttributes;
-import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.user.UserContext;
@@ -39,13 +38,11 @@ public class QuickInterviewAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-
 		String result = callQuickInterviewRenderer(context);
 		if (result != null && context.getWriter() != null) {
 			context.setContentType("text/html; charset=UTF-8");
 			context.getWriter().write(result);
 		}
-
 	}
 
 	/**
@@ -60,7 +57,6 @@ public class QuickInterviewAction extends AbstractAction {
 	 * @return
 	 */
 	public static String callQuickInterviewRenderer(UserContext usercontext) {
-
 		if (usercontext == null || usercontext.getSession() == null) {
 			return "";
 		}
@@ -71,19 +67,13 @@ public class QuickInterviewAction extends AbstractAction {
 
 		ResourceBundle rb = D3webUtils.getD3webBundle(request);
 
-		KnowledgeBase knowledgeServiceInTopic = D3webUtils.getKnowledgeBase(
-				web, topic);
-		if (knowledgeServiceInTopic == null) return rb.getString("KnowWE.quicki.error");
-		String kbid = knowledgeServiceInTopic.getId();
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
+		if (kb == null) return rb.getString("KnowWE.quicki.error");
 
-		String id = usercontext.getUserName();
-		SessionBroker broker = D3webUtils.getBroker(id, web);
-
-		Session session = broker.getSession(kbid);
-
+		SessionProvider provider = SessionProvider.getSessionProvider(usercontext);
+		Session session = provider.getSession(kb);
 		if (session == null) {
-			kbid = KnowWEEnvironment.generateDefaultID(KnowWEEnvironment.WIKI_FINDINGS);
-			session = broker.getSession(kbid);
+			session = provider.createSession(kb);
 		}
 		return QuickInterviewRenderer.renderInterview(session, web, usercontext);
 	}

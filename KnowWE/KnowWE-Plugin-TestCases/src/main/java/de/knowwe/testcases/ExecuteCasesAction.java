@@ -61,14 +61,14 @@ public class ExecuteCasesAction extends AbstractAction {
 				article,
 				TestCaseProviderStorage.KEY);
 		TestCaseProvider provider = providerStorage.getTestCaseProvider(testCaseName);
-		Session session = provider.getActualSession(context.getUserName());
-		SessionDebugStatus status = provider.getDebugStatus(context.getUserName());
+		Session session = provider.getActualSession(context);
+		SessionDebugStatus status = provider.getDebugStatus(context);
 		TestCase testCase = provider.getTestCase();
 		// reset session
 		if (session != status.getSession() || status.getLastExecuted() == null) {
 			session = SessionFactory.createSession(session.getKnowledgeBase(),
 					testCase.getStartDate());
-			provider.storeSession(session, context.getUserName());
+			provider.storeSession(session, context);
 			runTo(session, testCase, endDate, status);
 			status.setLastExecuted(endDate);
 		}

@@ -23,6 +23,7 @@ import java.util.List;
 import de.d3web.core.session.Session;
 import de.d3web.testcase.model.TestCase;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.user.UserContext;
 
 /**
  * Provides access to a TestCase
@@ -36,11 +37,11 @@ public interface TestCaseProvider {
 
 	TestCase getTestCase();
 
-	Session getActualSession(String user);
+	Session getActualSession(UserContext context);
 
-	SessionDebugStatus getDebugStatus(String user);
+	SessionDebugStatus getDebugStatus(UserContext context);
 
-	void storeSession(Session session, String user);
+	void storeSession(Session session, UserContext context);
 
 	String getName();
 

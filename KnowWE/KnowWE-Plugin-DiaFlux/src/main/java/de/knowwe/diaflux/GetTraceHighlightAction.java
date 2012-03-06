@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
 import de.d3web.diaFlux.flow.DiaFluxCaseObject;
 import de.d3web.diaFlux.flow.Edge;
@@ -31,6 +32,7 @@ import de.d3web.diaFlux.flow.FlowRun;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.inference.FluxSolver;
+import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -65,7 +67,9 @@ public class GetTraceHighlightAction extends AbstractAction {
 
 		KnowWEArticle article = KnowWEUtils.getCompilingArticles(diaFluxSec).iterator().next();
 
-		Session session = D3webUtils.getSession(article.getTitle(), context, article.getWeb());
+		SessionProvider provider = SessionProvider.getSessionProvider(context);
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(context.getWeb(), article.getTitle());
+		Session session = provider.getSession(kb);
 
 		if (flowchart == null || session == null) {
 			context.getWriter().write("<flow></flow>");

@@ -95,14 +95,14 @@ public class TestCasePlayerRenderer implements Renderer {
 					section,
 					user, string, providers);
 			TestCaseProvider provider = selectedTriple.getA();
-			Session session = provider.getActualSession(user.getUserName());
+			Session session = provider.getActualSession(user);
 
 			if (session == null) {
 				string.append("No knowledge base found.\n");
 			}
 			else {
 				TestCase testCase = provider.getTestCase();
-				SessionDebugStatus status = provider.getDebugStatus(user.getUserName());
+				SessionDebugStatus status = provider.getDebugStatus(user);
 
 				if (status.getSession() != session) {
 					status.setSession(session);
@@ -139,7 +139,8 @@ public class TestCasePlayerRenderer implements Renderer {
 
 		TerminologyManager manager = session.getKnowledgeBase().getManager();
 		TableModel tableModel = new TableModel();
-		TerminologyObject selectedObject = renderHeader(section, user, status,
+		String kbArticle = selectedTriple.getC().getTitle();
+		TerminologyObject selectedObject = renderHeader(section, user, kbArticle, status,
 				additionalQuestions, questionStrings, usedQuestions, manager,
 				tableModel);
 		int row = 1;
@@ -163,10 +164,10 @@ public class TestCasePlayerRenderer implements Renderer {
 		string.append(tableModel.toHtml(section, user));
 	}
 
-	private TerminologyObject renderHeader(Section<?> section, UserContext user, SessionDebugStatus status, String additionalQuestions, String[] questionStrings, Collection<Question> usedQuestions, TerminologyManager manager, TableModel tableModel) {
+	private TerminologyObject renderHeader(Section<?> section, UserContext user, String kbArticle, SessionDebugStatus status, String additionalQuestions, String[] questionStrings, Collection<Question> usedQuestions, TerminologyManager manager, TableModel tableModel) {
 		tableModel.addCell(0, 0,
 				KnowWEUtils.maskHTML(renderToolbarButton("stop12.png",
-						"TestCasePlayer.reset()")), 1);
+						"TestCasePlayer.reset('" + kbArticle + "')")), 1);
 		tableModel.addCell(0, 1, "Time", "Time".length());
 		int column = 2;
 		for (Question q : usedQuestions) {
@@ -234,8 +235,8 @@ public class TestCasePlayerRenderer implements Renderer {
 			catch (UnsupportedEncodingException e) {
 				additionalQuestions = cookie.getValue();
 				Logger.getLogger(getClass()).error(
-							"Could not decode the value of the cookie " + cookiename
-									+ ":" + cookie.getValue());
+						"Could not decode the value of the cookie " + cookiename
+								+ ":" + cookie.getValue());
 			}
 		}
 		return additionalQuestions;
@@ -276,7 +277,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		int column = 1;
 		// render date cell
 		String timeAsTimeStamp = TimeStampType.createTimeAsTimeStamp(date.getTime()
-						- testCase.getStartDate().getTime());
+				- testCase.getStartDate().getTime());
 		tableModel.addCell(row, column++, timeAsTimeStamp, timeAsTimeStamp.length());
 		// render values of questions
 		for (Question q : usedQuestions) {
@@ -340,14 +341,14 @@ public class TestCasePlayerRenderer implements Renderer {
 
 	private void renderRunTo(Triple<TestCaseProvider, Section<?>, KnowWEArticle> selectedTriple, SessionDebugStatus status, Date date, String dateString, TableModel tableModel, int row) {
 		if (status.getLastExecuted() == null
-					|| status.getLastExecuted().before(date)) {
+				|| status.getLastExecuted().before(date)) {
 			StringBuffer sb = new StringBuffer();
 			String js = "TestCasePlayer.send("
-						+ "'"
-						+ selectedTriple.getB().getID()
-						+ "', '" + dateString
-						+ "', '" + selectedTriple.getA().getName()
-						+ "', '" + selectedTriple.getC().getTitle() + "');";
+					+ "'"
+					+ selectedTriple.getB().getID()
+					+ "', '" + dateString
+					+ "', '" + selectedTriple.getA().getName()
+					+ "', '" + selectedTriple.getC().getTitle() + "');";
 			sb.append("<a href=\"javascript:" + js + ";undefined;\">");
 			sb.append("<img src='KnowWEExtension/testcaseplayer/icon/runto.png'>");
 			sb.append("</a>");
@@ -424,7 +425,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				+ section.getID()
 				+ " onchange=\"TestCasePlayer.change('"
 				+ key
-							+ "', this.options[this.selectedIndex].value);\">");
+				+ "', this.options[this.selectedIndex].value);\">");
 		HashSet<String> alreadyAddedQuestions = new HashSet<String>(Arrays.asList(questionStrings));
 		selectsb2.append("<option value='--'>--</option>");
 		boolean foundone = false;
@@ -521,7 +522,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				+ section.getID()
 				+ " onchange=\"TestCasePlayer.change('"
 				+ key
-							+ "', this.options[this.selectedIndex].value);\">");
+				+ "', this.options[this.selectedIndex].value);\">");
 		for (int size : sizeArray) {
 			if (size == selectedSize) {
 				builder.append("<option selected='selected' value='" + size + "'>"

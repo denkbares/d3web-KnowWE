@@ -34,8 +34,6 @@ public interface KnowledgeRepresentationHandler {
 
 	void initArticle(KnowWEArticle art);
 
-	void finishArticle(KnowWEArticle art);
-
 	URL saveKnowledge(String title) throws IOException;
 
 	String getKey();

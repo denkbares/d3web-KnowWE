@@ -27,7 +27,7 @@ public class KnowWEAttributes {
 	public static final String ENCODING = "KWiki_Encoding";
 	public static final String WEB = "KWikiWeb";
 	public static final String TERM = "KWikiTerm";
-	private static final String BROKER = "KWikiBroker";
+	public static final String SESSIONPROVIDER = "KWikiSessionProvider";
 	public static final String NAMESPACE = "KWikiNamespace";
 	public static final String TARGET = "TargetNamespace";
 	public static final String TEXT = "KWikitext";
@@ -100,7 +100,7 @@ public class KnowWEAttributes {
 
 	public static String getBrokerConstant(String web) {
 		if (web != null) {
-			return BROKER + web;
+			return SESSIONPROVIDER + web;
 		}
 		else {
 			// [TODO]

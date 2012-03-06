@@ -72,8 +72,7 @@ public class GetSubflowLinksAction extends AbstractAction {
 	private String addSubFlowLinks(KnowWEArticle article, Section<FlowchartType> section) {
 		// make sub-flowcharts links to be able to go to their definition
 		String thisFlowchartName = FlowchartType.getFlowchartName(section);
-		KnowledgeBase kb = D3webUtils.getKnowledgeRepresentationHandler(
-				article.getWeb()).getKB(article.getTitle());
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
 		if (kb == null) return "<flow></flow>";
 		FlowSet flowSet = DiaFluxUtils.getFlowSet(kb);
 		if (flowSet == null) return "<flow></flow>";

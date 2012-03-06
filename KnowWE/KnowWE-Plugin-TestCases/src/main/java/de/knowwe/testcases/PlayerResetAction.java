@@ -20,7 +20,8 @@ package de.knowwe.testcases;
 
 import java.io.IOException;
 
-import de.d3web.we.basic.SessionBroker;
+import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -32,11 +33,19 @@ import de.knowwe.core.action.UserActionContext;
  */
 public class PlayerResetAction extends AbstractAction {
 
+	private static final String KBARTICLE = "kbid";
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		SessionBroker broker = D3webUtils.getBroker(context.getParameters());
-		broker.clear();
+		SessionProvider provider = SessionProvider.getSessionProvider(context);
+		String kbid = context.getParameter(KBARTICLE);
+		KnowledgeBase base = D3webUtils.getKnowledgeBase(context.getWeb(), kbid);
+
+		// remove session
+		provider.removeSession(base);
+
+		// add new session
+		provider.createSession(base);
 
 	}
-
 }

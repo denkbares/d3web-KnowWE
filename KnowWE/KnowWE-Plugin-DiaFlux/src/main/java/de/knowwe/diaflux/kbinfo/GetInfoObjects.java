@@ -49,8 +49,7 @@ import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.flow.StartNode;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
-import de.d3web.we.basic.WikiEnvironment;
-import de.d3web.we.basic.WikiEnvironmentManager;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.diaflux.FlowchartSubTreeHandler;
@@ -153,9 +152,7 @@ public class GetInfoObjects extends AbstractAction {
 		String serviceID = (pos == -1) ? id : id.substring(0, pos);
 		String objectID = (pos == -1) ? null : id.substring(pos + 1);
 
-		// String web = parameterMap.getWeb();
-		WikiEnvironment env = WikiEnvironmentManager.getInstance().getEnvironments(web);
-		KnowledgeBase service = env.getKnowledgeBase(serviceID);
+		KnowledgeBase service = D3webUtils.getKnowledgeBase(web, serviceID);
 
 		if (objectID == null) {
 			// we want to have the article itself

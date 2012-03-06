@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -46,7 +47,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	private String web;
 
 	/**
-	 * Map for all articles an their KBMs.
+	 * Map for all articles and their KBMs.
 	 */
 	private static Map<String, KnowledgeBase> kbs = new HashMap<String, KnowledgeBase>();
 
@@ -75,19 +76,20 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	}
 
 	/**
-	 * @returns the KBM for the given article
+	 * @returns the KB for the given article
 	 * @param title TODO
 	 */
-	public KnowledgeBase getKB(String title) {
+	public KnowledgeBase getKnowledgeBase(String title) {
 		KnowledgeBase kb = kbs.get(title);
 		if (kb == null) {
 			kb = KnowledgeBaseUtils.createKnowledgeBase();
+			kb.setId(title);
 			kbs.put(title, kb);
 		}
 		return kb;
 	}
 
-	public void clearKB(String title) {
+	public void clearKnowledgeBase(String title) {
 		kbs.remove(title);
 	}
 
@@ -101,8 +103,12 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 		return kbs.keySet();
 	}
 
-	public KnowledgeBase getLastKB(String title) {
+	public KnowledgeBase getLastKnowledgeBase(String title) {
 		return lastKB.get(title);
+	}
+
+	public Collection<KnowledgeBase> getKnowledgeBases() {
+		return kbs.values();
 	}
 
 	/**
@@ -111,35 +117,13 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	 */
 	@Override
 	public void initArticle(KnowWEArticle art) {
-		WikiEnvironment env = D3webUtils.getWikiEnvironment(web);
-		String id = KnowWEEnvironment.generateDefaultID(art.getTitle());
-		KnowledgeBase service = env.getKnowledgeBase(id);
-		if (service != null) {
-			env.removeKnowledgeBase(service);
-			for (SessionBroker broker : env.getBrokers()) {
-				broker.removeSession(service.getId());
-			}
-		}
 		if (!art.isSecondBuild()) {
-			lastKB.put(art.getTitle(), getKB(art.getTitle()));
+			lastKB.put(art.getTitle(), getKnowledgeBase(art.getTitle()));
 		}
 		if (art.isFullParse()) {
-			clearKB(art.getTitle());
+			clearKnowledgeBase(art.getTitle());
 		}
 		savedToJar.put(art.getTitle(), false);
-	}
-
-	/**
-	 * Registers complete KnowledgeBase... This gets called after revising all
-	 * Sections of the Article through their SubtreeHandler.
-	 */
-	@Override
-	public void finishArticle(KnowWEArticle art) {
-		KnowledgeBase kb = this.getKB(art.getTitle());
-		if (!isEmpty(kb)) {
-			WikiEnvironmentManager.registerKnowledgeBase(kb,
-					art.getTitle(), art.getWeb());
-		}
 	}
 
 	public static boolean isEmpty(KnowledgeBase kb) {
@@ -156,8 +140,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 
 	@Override
 	public URL saveKnowledge(String title) throws IOException {
-
-		KnowledgeBase base = getKB(title);
+		KnowledgeBase base = getKnowledgeBase(title);
 		URL home = D3webUtils.getKnowledgeBaseURL(web, base.getId());
 		if (!savedToJar.get(title)) {
 			PersistenceManager.getInstance().save(base,

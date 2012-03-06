@@ -39,6 +39,7 @@ import de.d3web.core.session.blackboard.FactFactory;
 import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.TextValue;
+import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.action.AbstractAction;
@@ -63,7 +64,7 @@ public class SetSingleFindingAction extends AbstractAction {
 		String valuenum = context.getParameter(KnowWEAttributes.SEMANO_VALUE_NUM);
 		String valuedate = context.getParameter(KnowWEAttributes.SEMANO_VALUE_DATE);
 		String valueText = context.getParameter(KnowWEAttributes.SEMANO_VALUE_TEXT);
-		String topic = context.getTopic();
+		String topic = context.getTitle();
 		String user = context.getUserName();
 		String web = context.getWeb();
 		String namespace = null;
@@ -87,16 +88,16 @@ public class SetSingleFindingAction extends AbstractAction {
 		if (namespace == null || objectid == null) {
 			return "null";
 		}
-		KnowledgeBase kb = D3webUtils.getKnowledgeRepresentationHandler(web).getKB(
-				topic);
-		Session session = D3webUtils.getSession(topic, user, web);
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
+		SessionProvider provider = SessionProvider.getSessionProvider(context);
+		Session session = provider.getSession(kb);
 		// Added for KnowWE-Plugin-d3web-Debugger
 		if (context.getParameters().containsKey("KBid")) {
 			String kbID = context.getParameter("KBid");
 			for (String title : D3webUtils.getKnowledgeRepresentationHandler(web).getKnowledgeArticles()) {
 				kb = D3webUtils.getKnowledgeBase(web, title);
 				if (kb.getId() != null && kb.getId().equals(kbID)) {
-					session = D3webUtils.getSession(title, user, web);
+					session = provider.getSession(kb);
 					break;
 				}
 			}

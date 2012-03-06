@@ -80,8 +80,7 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 		public Collection<Message> create(KnowWEArticle article, Section<CoveringListSettingsMarkup> s) {
 
 			// Get KnowledgeBase
-			KnowledgeBase kb = D3webUtils.getKnowledgeRepresentationHandler(
-					article.getWeb()).getKB(article.getTitle());
+			KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
 			if (kb == null) {
 				return Messages.asList(Messages.error(
 						"No knowledgebase available."));

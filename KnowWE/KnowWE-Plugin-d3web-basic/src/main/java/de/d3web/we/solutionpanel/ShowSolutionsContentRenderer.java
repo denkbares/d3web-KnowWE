@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Rating;
@@ -38,6 +39,7 @@ import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
+import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -75,7 +77,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		}
 
 		String masterArticleName = ShowSolutionsType.getMaster(getShowSolutionsSection(section));
-		Session session = getSessionFor(masterArticleName, section.getWeb(), user);
+		Session session = getSessionFor(masterArticleName, user);
 		if (session == null) {
 			string.append("No knowledge base for: " + masterArticleName + "\n");
 		}
@@ -227,10 +229,10 @@ public class ShowSolutionsContentRenderer implements Renderer {
 
 	private String renderImage(String filename, String altText) {
 		return mask(" <img src='" + filename
-						+ "' id='sstate-update' class='pointer'"
-							+ " align='top' alt='" + altText + "'"
-							+ " title='" + altText + "' "
-						+ "/> ");
+				+ "' id='sstate-update' class='pointer'"
+				+ " align='top' alt='" + altText + "'"
+				+ " title='" + altText + "' "
+				+ "/> ");
 	}
 
 	private String mask(String string) {
@@ -296,8 +298,20 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		else return value.toString();
 	}
 
-	private Session getSessionFor(String articleName, String webName, UserContext user) {
-		return D3webUtils.getSession(articleName, user, webName);
+	private Session getSessionFor(String topic, UserContext user) {
+		SessionProvider provider = SessionProvider.getSessionProvider(user);
+		if (provider == null) {
+			return null;
+		}
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), topic);
+		Session session = provider.getSession(kb);
+		if (session == null) {
+			KnowledgeBase base = D3webUtils.getKnowledgeBase(user.getWeb(), topic);
+			if (base != null) {
+				session = provider.createSession(base);
+			}
+		}
+		return session;
 	}
 
 }

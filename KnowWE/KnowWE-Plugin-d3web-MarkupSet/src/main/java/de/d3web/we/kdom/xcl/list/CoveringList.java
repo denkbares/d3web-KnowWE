@@ -25,8 +25,10 @@ import java.util.Collection;
 import java.util.List;
 
 import de.d3web.core.inference.condition.Condition;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
+import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.Finding;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
@@ -263,9 +265,9 @@ public class CoveringList extends AbstractType {
 
 								// Insert the Relation into the currentModel
 								XCLRelation relation = XCLModel.insertAndReturnXCLRelation(
-												getKB(article),
-												condition,
-												solution, type, w, null);
+										getKB(article),
+										condition,
+										solution, type, w, null);
 
 								// set KDOMID here used in {@link KBRenderer}
 								relation.setKdmomID(s.getID());
@@ -368,7 +370,12 @@ public class CoveringList extends AbstractType {
 				return;
 			}
 
-			Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
+			SessionProvider provider = SessionProvider.getSessionProvider(user);
+			Session session = null;
+			if (provider != null) {
+				KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
+				session = provider.getSession(kb);
+			}
 
 			if (session != null) {
 				// eval the Relation to find the right Rendering

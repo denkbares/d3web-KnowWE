@@ -67,9 +67,10 @@ TestCasePlayer.addCookie = function(cookievalue) {
            	KNOWWE.helper.observer.notify('update');
 }
 
-TestCasePlayer.reset = function() {
+TestCasePlayer.reset = function(kbidvalue) {
 			var params = {
         		action : 'PlayerResetAction',
+        		kbid : kbidvalue
     		}
             
             var options = {

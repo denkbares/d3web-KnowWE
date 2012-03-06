@@ -20,28 +20,13 @@
 
 package de.knowwe.knowRep;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.knowwe.core.kdom.KnowWEArticle;
-import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
 
 public class KnowledgeRepresentationManager {
-
-	// private static KnowledgeRepresentationManager instance;
-	//
-	//
-	// public static KnowledgeRepresentationManager getInstance() {
-	// if (instance == null)
-	// instance = new KnowledgeRepresentationManager();
-	// return instance;
-	// }
 
 	private final Map<String, KnowledgeRepresentationHandler> handlers = new HashMap<String, KnowledgeRepresentationHandler>();
 
@@ -68,25 +53,6 @@ public class KnowledgeRepresentationManager {
 	public void initArticle(KnowWEArticle art) {
 		for (KnowledgeRepresentationHandler handler : handlers.values()) {
 			handler.initArticle(art);
-		}
-	}
-
-	public void finishArticle(KnowWEArticle art) {
-		for (KnowledgeRepresentationHandler handler : handlers.values()) {
-			try {
-				handler.finishArticle(art);
-			}
-			catch (Exception e) {
-				List<Message> messages = new ArrayList<Message>();
-				messages.add(Messages.error(
-						"This page's content caused a serious initialitation error:\n" +
-								e.getLocalizedMessage()));
-				Messages.storeMessages(art, art.getSection(), getClass(), messages);
-				Logger.getLogger("KnowWE-core").log(Level.SEVERE,
-						"Page content of page '" +
-								art.getTitle() +
-								"' caused a serious initialitation error", e);
-			}
 		}
 	}
 

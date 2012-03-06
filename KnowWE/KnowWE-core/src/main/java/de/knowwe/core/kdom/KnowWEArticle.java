@@ -268,13 +268,9 @@ public class KnowWEArticle extends AbstractType {
 	}
 
 	private void postCompile() {
-
 		for (Section<?> node : reviseIterator.getAllSections()) {
 			node.setReusedBy(title, true);
 		}
-
-		KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(web)
-				.finishArticle(this);
 	}
 
 	private void destroy(Priority p) {

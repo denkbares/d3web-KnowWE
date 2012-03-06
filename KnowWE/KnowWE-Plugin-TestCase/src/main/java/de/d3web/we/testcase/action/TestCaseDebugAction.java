@@ -35,7 +35,7 @@ import de.d3web.empiricaltesting.TestCase;
 import de.d3web.empiricaltesting.caseAnalysis.functions.Diff;
 import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysis;
 import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
-import de.d3web.we.basic.SessionBroker;
+import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.testcase.TestCaseUtils;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.KnowWEAttributes;
@@ -108,12 +108,11 @@ public class TestCaseDebugAction extends TestCaseRunningAction {
 
 	private void pushTestCase2KnowWESession(UserActionContext context, TestCaseBreakpoint breakpoint, KnowledgeBase knowledgeBase) {
 		// clear the current running session
-		SessionBroker broker = D3webUtils.getBroker(context.getParameters());
-		broker.clear();
+		SessionProvider broker = SessionProvider.getSessionProvider(context);
+		broker.removeSession(knowledgeBase);
 
 		// Create a new session
-		String kbid = knowledgeBase.getId();
-		Session session = broker.getSession(kbid);
+		Session session = broker.createSession(knowledgeBase);
 
 		// Run to the breakpoint
 		int currentPosition = 0;

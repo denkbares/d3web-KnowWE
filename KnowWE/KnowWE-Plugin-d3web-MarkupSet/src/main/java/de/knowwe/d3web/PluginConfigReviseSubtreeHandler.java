@@ -38,8 +38,7 @@ public class PluginConfigReviseSubtreeHandler extends SubtreeHandler<PluginConfi
 	public Collection<Message> create(KnowWEArticle article, Section<PluginConfigType> s) {
 		String xmlText = "<settings><plugins /><psmethods>" + s.getText()
 				+ "</psmethods></settings>";
-		KnowledgeBase kb = D3webUtils.getKnowledgeRepresentationHandler(
-				article.getWeb()).getKB(article.getTitle());
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
 		if (kb == null) {
 			return Messages.asList(Messages.error(
 					"No knowledgebase available."));

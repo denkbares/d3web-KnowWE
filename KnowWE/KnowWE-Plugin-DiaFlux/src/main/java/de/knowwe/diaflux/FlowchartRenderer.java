@@ -36,6 +36,7 @@ import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.inference.FluxSolver;
+import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
@@ -107,7 +108,11 @@ public class FlowchartRenderer implements Renderer {
 		KnowWEArticle article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
 		if (dohighlighting) {
 			// prepare some basic information
-			Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
+			SessionProvider provider = SessionProvider.getSessionProvider(user);
+			// TODO (furth): this can cause problems, because the KB-ID is not
+			// guaranteed to be the title (see ID of KnowledgeBaseType)
+			KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
+			Session session = provider.getSession(kb);
 			DiaFluxCaseObject diaFluxCaseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
 
 			// first highlight traced nodes/edges to yellow
@@ -143,8 +148,7 @@ public class FlowchartRenderer implements Renderer {
 		// make sub-flowcharts links to be able to go to their definition
 		String secID = section.getFather().getFather().getID();
 		String thisFlowchartName = FlowchartType.getFlowchartName(section);
-		KnowledgeBase kb = D3webUtils.getKnowledgeRepresentationHandler(
-				article.getWeb()).getKB(article.getTitle());
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
 		if (kb == null) return;
 		FlowSet flowSet = DiaFluxUtils.getFlowSet(kb);
 		if (flowSet == null) return;

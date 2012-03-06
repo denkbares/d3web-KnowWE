@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -33,8 +33,8 @@ import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
-import de.d3web.we.basic.WikiEnvironment;
-import de.d3web.we.basic.WikiEnvironmentManager;
+import de.d3web.we.basic.D3webKnowledgeHandler;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -89,12 +89,12 @@ public class SearchInfoObjects extends AbstractAction {
 		classes = new HashSet<String>();
 		classes.addAll(Arrays.asList(classesString.toLowerCase().split(",")));
 
-		WikiEnvironment env = WikiEnvironmentManager.getInstance().getEnvironments(web);
+		D3webKnowledgeHandler handler = D3webUtils.getKnowledgeRepresentationHandler(web);
 		Set<String> foundNames = new HashSet<String>();
 		List<String> result = new LinkedList<String>();
 
 		// the examine objects inside the articles
-		for (KnowledgeBase base : env.getKnowledgeBases()) {
+		for (KnowledgeBase base : handler.getKnowledgeBases()) {
 			// for each found knowledgebase, iterate through their objects
 			// and search for the given names
 			// and ignore all names we have already found

@@ -37,7 +37,7 @@ public class DownloadKnowledgeBase extends AbstractAction {
 				.getKnowledgeRepresentationManager(web).getHandler("d3web");
 		// before writing, check if the user defined a desired filename
 		if (handler instanceof D3webKnowledgeHandler) {
-			KnowledgeBase base = ((D3webKnowledgeHandler) handler).getKB(topic);
+			KnowledgeBase base = ((D3webKnowledgeHandler) handler).getKnowledgeBase(topic);
 			String desired_filename = base.getInfoStore().getValue(BasicProperties.FILENAME);
 			if (desired_filename != null) {
 				filename = desired_filename;

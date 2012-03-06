@@ -43,8 +43,7 @@ public abstract class D3webSubtreeHandler<T extends Type> extends SubtreeHandler
 					"Article was null. KB wasn't loaded.");
 			return null;
 		}
-		return D3webUtils.getKnowledgeRepresentationHandler(article.getWeb()).getKB(
-				article.getTitle());
+		return D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
 	}
 
 	/**

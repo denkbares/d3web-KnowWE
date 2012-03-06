@@ -29,8 +29,10 @@ import java.util.logging.Logger;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.Session;
+import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.CondKnown;
 import de.d3web.we.kdom.condition.CondKnownUnknown;
@@ -210,7 +212,7 @@ public class RuleContentType extends AbstractType {
 				if (r != null) {
 					KnowWEUtils.storeObject(article, actionS, ruleStoreKey, r);
 					return Messages.asList(Messages.objectCreatedNotice(
-									"Rule"));
+							"Rule"));
 				}
 
 			}
@@ -245,8 +247,6 @@ public class RuleContentType extends AbstractType {
 		public void render(Section<?> sec,
 				UserContext user, StringBuilder string) {
 			KnowWEArticle article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
-			Session session = D3webUtils.getSession(article.getTitle(), user,
-					article.getWeb());
 			Section<RuleAction> ruleAction = Sections.findSuccessor(sec,
 					RuleAction.class);
 			Rule rule = null;
@@ -258,19 +258,13 @@ public class RuleContentType extends AbstractType {
 			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID()
 					+ "'>"));
 
-			// If KnowWePlugin-d3web-debugger is built, show rule as DebugRule
-			// try {
-			// DebuggerRuleRenderer drr = new DebuggerRuleRenderer();
-			// String topic = user.getTitle();
-			// String web = user.getWeb();
-			// string.append(KnowWEUtils.maskHTML(drr.renderRule(rule,
-			// session, topic, web)));
-			// }
-			// catch (Exception e) {
-			// e.printStackTrace();
-			this.highlightRule(article, sec, rule, session, user, string);
-			// }
-
+			SessionProvider provider = SessionProvider.getSessionProvider(user);
+			Session session = null;
+			if (provider != null) {
+				KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
+				session = provider.getSession(kb);
+			}
+			highlightRule(article, sec, rule, session, user, string);
 			string.append(KnowWEUtils.maskHTML("</span>"));
 		}
 

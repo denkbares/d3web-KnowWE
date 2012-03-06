@@ -23,12 +23,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
 import de.d3web.testcase.model.TestCase;
+import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.user.UserContext;
 
 /**
  * Capsules a {@link TestCase}
@@ -56,24 +58,30 @@ public class SingleTestCaseProvider implements TestCaseProvider {
 	}
 
 	@Override
-	public Session getActualSession(String user) {
-		return D3webUtils.getSession(article.getTitle(), user, article.getWeb());
+	public Session getActualSession(UserContext user) {
+		SessionProvider provider = SessionProvider.getSessionProvider(user);
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
+		Session session = provider.getSession(kb);
+		if (session == null) {
+			session = provider.createSession(kb);
+		}
+		return session;
 	}
 
 	@Override
-	public SessionDebugStatus getDebugStatus(String user) {
-		SessionDebugStatus status = statusPerUser.get(user);
+	public SessionDebugStatus getDebugStatus(UserContext user) {
+		SessionDebugStatus status = statusPerUser.get(user.getSession().getId());
 		if (status == null) {
 			status = new SessionDebugStatus(getActualSession(user));
-			statusPerUser.put(user, status);
+			statusPerUser.put(user.getSession().getId(), status);
 		}
 		return status;
 	}
 
 	@Override
-	public void storeSession(Session session, String user) {
-		String sessionId = KnowWEEnvironment.generateDefaultID(article.getTitle());
-		D3webUtils.getBroker(user, article.getWeb()).addSession(sessionId, session);
+	public void storeSession(Session session, UserContext user) {
+		SessionProvider provider = SessionProvider.getSessionProvider(user);
+		provider.setSession(session);
 		getDebugStatus(user).setSession(session);
 	}
 

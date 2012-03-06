@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
@@ -47,9 +46,6 @@ import de.d3web.core.records.io.SessionPersistenceManager;
 import de.d3web.core.session.Session;
 import de.d3web.scoring.Score;
 import de.d3web.we.basic.D3webKnowledgeHandler;
-import de.d3web.we.basic.SessionBroker;
-import de.d3web.we.basic.WikiEnvironment;
-import de.d3web.we.basic.WikiEnvironmentManager;
 import de.d3web.we.object.D3webTerm;
 import de.knowwe.core.KnowWEAttributes;
 import de.knowwe.core.KnowWEEnvironment;
@@ -86,34 +82,26 @@ public class D3webUtils {
 		return possibleScorePoints;
 	}
 
-	/**
-	 * Gets the Session Object.
-	 */
-	public static Session getSession(UserContext user) {
-		return getSession(user.getTitle(), user.getUserName(), user.getWeb());
-	}
+	// /**
+	// * Gets the Session Object.
+	// */
+	// public static Session getSession(UserContext user) {
+	// return getSession(user.getTitle(), user.getUserName(), user.getWeb());
+	// }
+	//
+	// /**
+	// * Gets the Session Object.
+	// */
+	// public static Session getSession(String topic, UserContext user, String
+	// web) {
+	// return getSession(topic, user.getUserName(), web);
+	// }
 
-	/**
-	 * Gets the Session Object.
-	 */
-	public static Session getSession(String topic, UserContext user, String web) {
-		return getSession(topic, user.getUserName(), web);
-	}
-
-	/**
-	 * Gets the Session Object.
-	 */
-	public static Session getSession(String topic, String user, String web) {
-
-		String sessionId = KnowWEEnvironment.generateDefaultID(topic);
-		SessionBroker broker = D3webUtils.getBroker(user, web);
-		return broker.getSession(sessionId);
-	}
-
-	public static Collection<Session> getSessions(String user, String web) {
-		SessionBroker broker = D3webUtils.getBroker(user, web);
-		return broker.getSessions();
-	}
+	//
+	// public static Collection<Session> getSessions(String user, String web) {
+	// SessionBroker broker = D3webUtils.getBroker(user, web);
+	// return broker.getSessions();
+	// }
 
 	public static boolean storeSessionRecordsAsAttachment(String user, Collection<Session> sessions, String attachmentArticle, String attachmentName) throws IOException {
 
@@ -191,7 +179,7 @@ public class D3webUtils {
 		D3webKnowledgeHandler knowledgeHandler =
 				D3webUtils.getKnowledgeRepresentationHandler(web);
 		if (knowledgeHandler != null) {
-			KnowledgeBase kb = knowledgeHandler.getKB(topic);
+			KnowledgeBase kb = knowledgeHandler.getKnowledgeBase(topic);
 			return kb;
 		}
 		return null;
@@ -210,20 +198,21 @@ public class D3webUtils {
 		D3webKnowledgeHandler repHandler = D3webUtils.getKnowledgeRepresentationHandler(web);
 		KnowledgeBase base = null;
 		for (String t : knowledgeHandler.getKnowledgeArticles()) {
-			base = repHandler.getKB(t);
+			base = repHandler.getKnowledgeBase(t);
 			if (base.getName() != null) return base;
 		}
 		return null;
 	}
 
-	public static Session getFirstSession(String web, String user, String topic) {
-
-		KnowledgeBase kb = D3webUtils.getFirstKnowledgeBase(web);
-		SessionBroker broker = D3webUtils.getBroker(user, web);
-		Session session = broker.getSession(kb.getId());
-
-		return session;
-	}
+	// public static Session getFirstSession(String web, String user, String
+	// topic) {
+	//
+	// KnowledgeBase kb = D3webUtils.getFirstKnowledgeBase(web);
+	// SessionBroker broker = D3webUtils.getBroker(user, web);
+	// Session session = broker.getSession(kb.getId());
+	//
+	// return session;
+	// }
 
 	@SuppressWarnings("unchecked")
 	public static <TermObject extends NamedObject> TermObject getTermObjectDefaultImplementation(KnowWEArticle article, Section<? extends D3webTerm<TermObject>> section) {
@@ -295,7 +284,6 @@ public class D3webUtils {
 		String sessionDir = rb.getString("knowwe.config.path.sessions");
 		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
 		sessionDir = sessionDir.replaceAll("\\$user\\$", user);
-
 		sessionDir = getRealPath(context.getServletContext(), sessionDir);
 		return sessionDir;
 	}
@@ -325,45 +313,12 @@ public class D3webUtils {
 		return url;
 	}
 
-	public static WikiEnvironment getWikiEnvironment(String web) {
-
-		WikiEnvironment env = WikiEnvironmentManager.getInstance()
-				.getEnvironments(web);
-		return env;
-	}
-
-	public static WikiEnvironment getWikiEnvironment(
-			java.util.Map<String, String> parameterMap) {
-		// String user = parameterMap.get(KnowWEAttributes.USER);
-		String web = parameterMap.get(KnowWEAttributes.WEB);
-
-		WikiEnvironment env = WikiEnvironmentManager.getInstance()
-				.getEnvironments(web);
-		return env;
-	}
-
-	public static SessionBroker getBroker(String user, String web) {
-		WikiEnvironment env = WikiEnvironmentManager.getInstance()
-				.getEnvironments(web);
-		SessionBroker broker = env.getBroker(user);
-		return broker;
-	}
-
-	public static SessionBroker getBroker(Map<String, String> parameterMap) {
-		String user = parameterMap.get(KnowWEAttributes.USER);
-		String web = parameterMap.get(KnowWEAttributes.WEB);
-
-		return getBroker(user, web);
-	}
-
 	public static ResourceBundle getD3webBundle() {
-
 		return ResourceBundle.getBundle("KnowWE_plugin_d3web_messages");
 	}
 
 	public static ResourceBundle getD3webBundle(HttpServletRequest request) {
 		if (request == null) return D3webUtils.getD3webBundle();
-
 		Locale.setDefault(KnowWEEnvironment.getInstance().getWikiConnector()
 				.getLocale(request));
 		return D3webUtils.getD3webBundle();
@@ -375,4 +330,5 @@ public class D3webUtils {
 				.getLocale(user.getRequest()));
 		return getD3webBundle();
 	}
+
 }
