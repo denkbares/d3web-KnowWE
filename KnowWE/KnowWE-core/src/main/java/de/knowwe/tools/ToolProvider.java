@@ -7,7 +7,8 @@ public interface ToolProvider {
 
 	/**
 	 * Returns the tools that this provider can offer for the specified article,
-	 * section and user context.
+	 * section and user context. This method may return null if no tools are
+	 * provided.
 	 * 
 	 * @created 23.09.2010
 	 * @param section the section the tools are requested for

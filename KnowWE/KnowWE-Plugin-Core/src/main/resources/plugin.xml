@@ -225,4 +225,16 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="TermReference" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="HelpToolProvider">
+		<parameter id="class"
+			value="de.knowwe.core.toolprovider.HelpToolProvider" />
+		<parameter id="name" value="HelpToolProvider" />
+		<parameter id="description"
+			value="Offers quick access to help pages for markups." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="DefaultMarkupType" />
+	</extension>
 </plugin>

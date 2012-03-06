@@ -226,9 +226,23 @@ public class KnowWEUtils {
 	 * 
 	 * @param section the section to create the link for
 	 * @return the created link
+	 * @see #getURLLink(KnowWEArticle)
+	 * @see #getWikiLink(Section)
 	 */
 	public static String getURLLink(Section<?> section) {
 		return "Wiki.jsp?page=" + section.getTitle() + "#" + getAnchor(section);
+	}
+
+	/**
+	 * Creates a &lt;a href="..."&gt; styled link to the specified article.
+	 * 
+	 * @param article the article to create the link for
+	 * @return the created link
+	 * @see #getURLLink(Section)
+	 * @see #getWikiLink(Section)
+	 */
+	public static String getURLLink(KnowWEArticle article) {
+		return "Wiki.jsp?page=" + article.getTitle();
 	}
 
 	public static String getVersionsSavePath() {
@@ -249,6 +263,8 @@ public class KnowWEUtils {
 	 * 
 	 * @param section the section to create the link for
 	 * @return the created link
+	 * @see #getURLLink(Section)
+	 * @see #getURLLink(KnowWEArticle)
 	 */
 	public static String getWikiLink(Section<?> section) {
 		return section.getTitle() + "#" + Math.abs(section.getID().hashCode());

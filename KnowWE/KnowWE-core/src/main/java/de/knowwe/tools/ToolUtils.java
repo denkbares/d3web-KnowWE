@@ -33,11 +33,14 @@ public class ToolUtils {
 	}
 
 	public static Tool[] getTools(Section<?> section, UserContext userContext) {
-		List<Tool> tools = new LinkedList<Tool>();
+		List<Tool> result = new LinkedList<Tool>();
 		for (ToolProvider provider : getProviders(section)) {
-			Collections.addAll(tools, provider.getTools(section, userContext));
+			Tool[] tools = provider.getTools(section, userContext);
+			if (tools != null) {
+				Collections.addAll(result, tools);
+			}
 		}
-		return tools.toArray(new Tool[tools.size()]);
+		return result.toArray(new Tool[result.size()]);
 	}
 
 	/**
