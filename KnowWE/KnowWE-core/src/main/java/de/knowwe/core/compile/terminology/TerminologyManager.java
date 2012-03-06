@@ -398,4 +398,26 @@ public class TerminologyManager implements EventListener {
 		}
 	}
 
+	/**
+	 * Returns if a term has been registered with the specified name and if its
+	 * class is of the specified class. Otherwise (if no such term exists or it
+	 * does not have a compatible class) false is returned.
+	 * 
+	 * @created 05.03.2012
+	 * @param termIdentifier the term to be searched for
+	 * @param clazz the class the term must be a subclass of (or of the same
+	 *        class)
+	 * @return if the term has been registered as required
+	 */
+	public boolean hasTermOfClass(String termIdentifier, Class<?> clazz) {
+		TermLog refLog = termLogManager.getLog(new TermIdentifier(termIdentifier));
+		if (refLog == null) return false;
+		for (Class<?> termClass : refLog.getTermClasses()) {
+			if (clazz.isAssignableFrom(termClass)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

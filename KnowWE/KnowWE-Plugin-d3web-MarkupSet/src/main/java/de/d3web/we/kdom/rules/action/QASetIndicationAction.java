@@ -115,7 +115,7 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 				if (termDefinitionSection.get() instanceof SimpleTerm) {
 					@SuppressWarnings("unchecked")
 					Section<? extends SimpleTerm> simpleDef = (Section<? extends SimpleTerm>) termDefinitionSection;
-					Class<?> objectClazz = simpleDef.get().getTermObjectClass();
+					Class<?> objectClazz = simpleDef.get().getTermObjectClass(simpleDef);
 					if (Question.class.isAssignableFrom(objectClazz)) {
 						s.clearReusedBySet();
 						s.setType(new QuestionReference());

@@ -30,6 +30,7 @@ import de.d3web.we.object.NamedObjectReference;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -127,7 +128,7 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 	}
 
 	@Override
-	public Class<?> getTermObjectClass() {
+	public Class<?> getTermObjectClass(Section<? extends SimpleTerm> section) {
 		return NamedObject.class;
 	}
 

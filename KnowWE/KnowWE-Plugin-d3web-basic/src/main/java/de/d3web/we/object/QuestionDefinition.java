@@ -35,7 +35,9 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -61,7 +63,25 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 	}
 
 	@Override
-	public Class<?> getTermObjectClass() {
+	public final Class<?> getTermObjectClass(Section<? extends SimpleTerm> section) {
+		QuestionType questionType = getQuestionType(Sections.cast(section, QuestionDefinition.class));
+		if (questionType == null) return Question.class;
+		switch (questionType) {
+		case DATE:
+			return QuestionDate.class;
+		case INFO:
+			return QuestionZC.class;
+		case MC:
+			return QuestionMC.class;
+		case NUM:
+			return QuestionNum.class;
+		case OC:
+			return QuestionOC.class;
+		case TEXT:
+			return QuestionText.class;
+		case YN:
+			return QuestionYN.class;
+		}
 		return Question.class;
 	}
 
@@ -80,7 +100,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 				Section<QuestionDefinition> section) {
 
 			String name = section.get().getTermIdentifier(section);
-			Class<?> termObjectClass = section.get().getTermObjectClass();
+			Class<?> termObjectClass = section.get().getTermObjectClass(section);
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
 			terminologyHandler.registerTermDefinition(section, termObjectClass, name);
 

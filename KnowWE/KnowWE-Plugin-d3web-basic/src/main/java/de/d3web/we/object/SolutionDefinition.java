@@ -32,6 +32,7 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
@@ -57,7 +58,7 @@ public abstract class SolutionDefinition
 	}
 
 	@Override
-	public Class<?> getTermObjectClass() {
+	public Class<?> getTermObjectClass(Section<? extends SimpleTerm> section) {
 		return Solution.class;
 	}
 
@@ -124,7 +125,7 @@ public abstract class SolutionDefinition
 				Section<SolutionDefinition> section) {
 
 			String name = section.get().getTermIdentifier(section);
-			Class<?> termObjectClass = section.get().getTermObjectClass();
+			Class<?> termObjectClass = section.get().getTermObjectClass(section);
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
 			terminologyHandler.registerTermDefinition(section, termObjectClass, name);
 

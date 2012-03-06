@@ -43,7 +43,7 @@ public class QuestionReference extends D3webTermReference<Question> {
 	}
 
 	@Override
-	public Class<?> getTermObjectClass() {
+	public Class<?> getTermObjectClass(Section<? extends SimpleTerm> section) {
 		return Question.class;
 	}
 

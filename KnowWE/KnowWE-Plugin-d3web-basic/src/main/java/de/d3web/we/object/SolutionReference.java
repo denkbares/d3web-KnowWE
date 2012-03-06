@@ -21,7 +21,9 @@ package de.d3web.we.object;
 
 import de.d3web.core.knowledge.terminology.Solution;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -40,7 +42,7 @@ public class SolutionReference extends D3webTermReference<Solution> {
 	}
 
 	@Override
-	public Class<?> getTermObjectClass() {
+	public Class<?> getTermObjectClass(Section<? extends SimpleTerm> section) {
 		return Solution.class;
 	}
 

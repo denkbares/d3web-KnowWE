@@ -113,7 +113,7 @@ public abstract class AnswerDefinition
 	}
 
 	@Override
-	public Class<?> getTermObjectClass() {
+	public Class<?> getTermObjectClass(Section<? extends SimpleTerm> section) {
 		return Choice.class;
 	}
 
@@ -145,7 +145,7 @@ public abstract class AnswerDefinition
 			// storing the current question needs to happen first, so the method
 			// getUniqueTermIdentifier() can use the right question.
 			String termIdentifier = section.get().getTermIdentifier(section);
-			Class<?> termObjectClass = section.get().getTermObjectClass();
+			Class<?> termObjectClass = section.get().getTermObjectClass(section);
 
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
 			terminologyHandler.registerTermDefinition(section, termObjectClass, termIdentifier);
@@ -207,7 +207,7 @@ public abstract class AnswerDefinition
 	 * @return
 	 */
 	public static String createAnswerIdentifierForQuestion(String answer, String question) {
-		return question + "." + answer;
+		return question + "#" + answer;
 	}
 
 }

@@ -28,7 +28,7 @@ import de.knowwe.core.kdom.parsing.Section;
  */
 public interface SimpleTerm extends Type {
 
-	public Class<?> getTermObjectClass();
+	public Class<?> getTermObjectClass(Section<? extends SimpleTerm> section);
 
 	public String getTermIdentifier(Section<? extends SimpleTerm> section);
 

@@ -176,7 +176,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				html.append(" <em>(");
 				String termClassString = "Object";
 				if (definition.get() instanceof SimpleTerm) {
-					Class<?> termObjectClass = ((SimpleTerm) definition.get()).getTermObjectClass();
+					Class<?> termObjectClass = ((SimpleTerm) definition.get()).getTermObjectClass(Sections.cast(
+							definition, SimpleTerm.class));
 					termClassString = termObjectClass.getSimpleName();
 				}
 				html.append(termClassString);

@@ -47,7 +47,7 @@ public abstract class SimpleDefinition extends AbstractType implements SimpleTer
 	}
 
 	@Override
-	public Class<?> getTermObjectClass() {
+	public Class<?> getTermObjectClass(Section<? extends SimpleTerm> section) {
 		return termObjectClass;
 	}
 
@@ -67,7 +67,7 @@ public abstract class SimpleDefinition extends AbstractType implements SimpleTer
 		@Override
 		public Collection<Message> create(KnowWEArticle article, Section<SimpleDefinition> s) {
 
-			getTerminologyHandler(article).registerTermDefinition(s, s.get().getTermObjectClass(),
+			getTerminologyHandler(article).registerTermDefinition(s, s.get().getTermObjectClass(s),
 					s.get().getTermIdentifier(s));
 
 			return new ArrayList<Message>(0);
@@ -85,7 +85,7 @@ public abstract class SimpleDefinition extends AbstractType implements SimpleTer
 		@Override
 		public void destroy(KnowWEArticle article, Section<SimpleDefinition> s) {
 			getTerminologyHandler(article).unregisterTermDefinition(s,
-					s.get().getTermObjectClass(), s.get().getTermIdentifier(s));
+					s.get().getTermObjectClass(s), s.get().getTermIdentifier(s));
 		}
 
 	}

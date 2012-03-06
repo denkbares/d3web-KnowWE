@@ -49,7 +49,7 @@ public class SimpleTermReferenceRegistrationHandler extends SubtreeHandler<Simpl
 		String termIdentifier = section.get().getTermIdentifier(section);
 
 		tHandler.registerTermReference(section,
-					section.get().getTermObjectClass(), termIdentifier);
+					section.get().getTermObjectClass(section), termIdentifier);
 
 		return validateReference(article, section);
 	}

@@ -37,7 +37,7 @@ public abstract class SimpleReference extends AbstractType implements SimpleTerm
 	}
 
 	@Override
-	public Class<?> getTermObjectClass() {
+	public Class<?> getTermObjectClass(Section<? extends SimpleTerm> section) {
 		return termObjectClass;
 	}
 

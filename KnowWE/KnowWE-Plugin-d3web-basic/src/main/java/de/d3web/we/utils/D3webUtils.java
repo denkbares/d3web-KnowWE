@@ -231,7 +231,7 @@ public class D3webUtils {
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
 		TerminologyObject termObject = kb.getManager().search(termIdentifier);
 		if (termObject != null) {
-			if (section.get().getTermObjectClass().isAssignableFrom(termObject.getClass())) {
+			if (section.get().getTermObjectClass(section).isAssignableFrom(termObject.getClass())) {
 				return (TermObject) termObject;
 			}
 			else {
@@ -242,7 +242,7 @@ public class D3webUtils {
 				article, section);
 		if (foundTermObjects.size() == 1) {
 			termObject = foundTermObjects.iterator().next();
-			if (section.get().getTermObjectClass().isAssignableFrom(termObject.getClass())) {
+			if (section.get().getTermObjectClass(section).isAssignableFrom(termObject.getClass())) {
 				return (TermObject) termObject;
 			}
 		}

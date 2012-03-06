@@ -68,7 +68,8 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 		}
 		else {
 			for (TerminologyObject termObject : termObjectsIgnoreTermObjectClass) {
-				if (!section.get().getTermObjectClass().isAssignableFrom(termObject.getClass())) {
+				if (!section.get().getTermObjectClass(section).isAssignableFrom(
+						termObject.getClass())) {
 					// other object already exist... return addition error if
 					// one of them has another type
 					msgs.add(Messages.error("The term '" + section.get().getTermIdentifier(section)

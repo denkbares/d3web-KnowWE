@@ -23,6 +23,7 @@ import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
 import de.knowwe.core.kdom.parsing.Section;
 
@@ -40,7 +41,7 @@ public class NamedObjectReference extends D3webTermReference<NamedObject> {
 	}
 
 	@Override
-	public Class<?> getTermObjectClass() {
+	public Class<?> getTermObjectClass(Section<? extends SimpleTerm> section) {
 		return NamedObject.class;
 	}
 

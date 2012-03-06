@@ -57,7 +57,7 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 		Section<AnswerReference> refSec = ((Section<AnswerReference>) section);
 
 		Collection<String> allDefinedLocalTermsOfType = terminologyHandler.getAllDefinedTermsOfType(
-				termReference.getTermObjectClass());
+				termReference.getTermObjectClass(refSec));
 
 		String originalText = section.getText();
 		List<CorrectionProvider.Suggestion> suggestions = new LinkedList<CorrectionProvider.Suggestion>();

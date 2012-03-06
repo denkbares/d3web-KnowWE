@@ -80,7 +80,7 @@ public abstract class AnswerReference
 	}
 
 	@Override
-	public Class<?> getTermObjectClass() {
+	public Class<?> getTermObjectClass(Section<? extends SimpleTerm> section) {
 		return Choice.class;
 	}
 
