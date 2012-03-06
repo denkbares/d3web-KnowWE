@@ -511,8 +511,9 @@ public class KnowWEUtils {
 		Collection<ConnectorAttachment> attachments = KnowWEEnvironment.getInstance().getWikiConnector().getAttachments();
 		ConnectorAttachment actualAttachment = null;
 		for (ConnectorAttachment attachment : attachments) {
-			if (attachment.getFileName().equals(fileName)
-					&& attachment.getParentName().equals(title)) {
+			if ((attachment.getFileName().equals(fileName)
+					&& attachment.getParentName().equals(title))
+					|| attachment.getFullName().equals(fileName)) {
 				actualAttachment = attachment;
 				break;
 			}
@@ -539,7 +540,7 @@ public class KnowWEUtils {
 
 	/**
 	 * Returns all {@link ConnectorAttachment}s which fullname fits to the regex
-	 * or which filename machtes to the regexp and which parent has the
+	 * or which filename matches to the regexp and which parent has the
 	 * specified topic
 	 * 
 	 * @created 09.02.2012
