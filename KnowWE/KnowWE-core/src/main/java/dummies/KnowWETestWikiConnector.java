@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -124,18 +123,6 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	}
 
 	@Override
-	public String getAttachmentPath(String JarName) {
-		// TODO Auto-generated method stub
-		return "some-path";
-	}
-
-	@Override
-	public LinkedList<String> getJarAttachments() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public String getBaseUrl() {
 		return "http://valid_base_url/";
 	}
@@ -215,12 +202,6 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	@Override
 	public List<String> getAttachmentFilenamesForPage(String pageName) {
 		return new ArrayList<String>();
-	}
-
-	@Override
-	public String createWikiLink(String articleName, String linkText) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

@@ -122,13 +122,6 @@ public interface KnowWEWikiConnector {
 	// text, KnowWEParameterMap map, boolean fullParse);
 
 	/**
-	 * Returns a list of all jar attachment files of the wiki
-	 * 
-	 * @return
-	 */
-	public List<String> getJarAttachments();
-
-	/**
 	 * @return a List of all ConnectorAttachments
 	 */
 	public Collection<ConnectorAttachment> getAttachments();
@@ -140,14 +133,6 @@ public interface KnowWEWikiConnector {
 	 * @return
 	 */
 	public List<String> getAttachmentFilenamesForPage(String pageName);
-
-	/**
-	 * Returns the path of the folder where the attachments are stored
-	 * 
-	 * @param JarName
-	 * @return
-	 */
-	public String getAttachmentPath(String JarName);
 
 	/**
 	 * Returns the URL of the running wiki
@@ -326,20 +311,6 @@ public interface KnowWEWikiConnector {
 	 * @return
 	 */
 	public Locale getLocale(HttpServletRequest request);
-
-	/**
-	 * Creates a link to an article with the given text to display as link text
-	 * in the syntax of the specific wiki. If the link text is null or empty it
-	 * is omitted.
-	 * 
-	 * 
-	 * @param articleName name of the article to link to
-	 * @param linkText the text to show for the link. can be empty String or
-	 *        null
-	 * @return s a string representing a link to the given article in wiki
-	 *         syntax
-	 */
-	String createWikiLink(String articleName, String linkText);
 
 	/**
 	 * Return a Map from pageNames to the number of (edited) versions of this

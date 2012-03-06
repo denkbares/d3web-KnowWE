@@ -38,7 +38,6 @@ import java.util.TreeMap;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ecyrd.jspwiki.NoRequiredPropertyException;
 import com.ecyrd.jspwiki.PageLock;
 import com.ecyrd.jspwiki.PageManager;
 import com.ecyrd.jspwiki.TextUtil;
@@ -106,29 +105,6 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		catch (WikiException e) {
 			e.printStackTrace();
 			return false;
-		}
-	}
-
-	@Override
-	public LinkedList<String> getJarAttachments() {
-		try {
-			LinkedList<String> sortedAttList = new LinkedList<String>();
-			AttachmentManager attachmentManager = this.engine
-					.getAttachmentManager();
-			Collection<Attachment> attList = attachmentManager
-					.getAllAttachments();
-
-			for (Attachment p : attList) {
-
-				if (p.getFileName().endsWith("jar")) {
-					sortedAttList.add(p.getFileName());
-				}
-
-			}
-			return sortedAttList;
-		}
-		catch (ProviderException e) {
-			return null;
 		}
 	}
 
@@ -210,79 +186,6 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 			return false;
 		}
 
-	}
-
-	@Override
-	public String getAttachmentPath(String jarName) {
-
-		if (this.getMeAttachment(jarName) != null) {
-
-			String jarPath = "";
-
-			// Get Path where all Attachments are stored
-			String storageDir;
-			try {
-				storageDir = WikiEngine.getRequiredProperty(this.engine
-						.getWikiProperties(),
-						"jspwiki.basicAttachmentProvider.storageDir");
-				jarPath += storageDir;
-			}
-			catch (NoRequiredPropertyException e) {
-				// TODO Auto-generated catch block
-				return null;
-			}
-
-			// Get Attachments ParentPage
-			String parentPage = this.getMeAttachment(jarName).getParentName();
-			if (!jarPath.endsWith("/")) {
-				jarPath += "/";
-			}
-			jarPath += parentPage + "-att/";
-
-			// Get the Attachments directory
-			// TEST: WHAT VERSION IS THE NEWEST
-			jarPath += jarName + "-dir/";
-
-			// Fixes a bug in which the getVersion returns -1 instead of 1;
-			int version = this.getMeAttachment(jarName)
-					.getVersion();
-			String fileSuffix = jarName.substring(jarName.lastIndexOf("."));
-			if (version == -1) {
-				int i = 1;
-				File file = new File(jarPath + i + fileSuffix);
-				while (file.exists()) {
-					i++;
-					file = new File(jarPath + i + fileSuffix);
-				}
-				version = i - 1;
-			}
-			jarPath += String.valueOf(version);
-
-			jarPath += fileSuffix;
-
-			return jarPath;
-		}
-		return null;
-	}
-
-	private Attachment getMeAttachment(String name) {
-
-		Collection<Attachment> attList;
-
-		try {
-			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
-			attList = attachmentManager.getAllAttachments();
-		}
-		catch (ProviderException e) {
-			// TODO Auto-generated catch block
-			return null;
-		}
-
-		for (Attachment p : attList) {
-			if (p.getFileName().equals(name)) return p;
-		}
-
-		return null;
 	}
 
 	@Override
@@ -706,21 +609,13 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	}
 
 	@Override
-	public String createWikiLink(String articleName, String linkText) {
-		String string = (linkText != null && !linkText.equals("")) ? "["
-				+ linkText + "|" : "[";
-
-		return string + articleName + "]";
-	}
-
-	@Override
 	public Map<String, Integer> getVersionCounts() {
 		HashMap<String, Integer> result = new HashMap<String, Integer>();
 		PageManager pm = engine.getPageManager();
 		try {
 			for (Object pageObj : pm.getAllPages()) {
 				String pageName = ((WikiPage) pageObj).getName();
-				List versionHistory = pm.getVersionHistory(pageName);
+				List<?> versionHistory = pm.getVersionHistory(pageName);
 				int versionNumber = versionHistory.size();
 				result.put(pageName, versionNumber);
 			}
@@ -747,11 +642,9 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 	@Override
 	public boolean userIsMemberOfGroup(String username, String groupname, HttpServletRequest r) {
-		AuthorizationManager authmgr = engine.getAuthorizationManager();
 
 		// which article is not relevant
 		String articleName = "Main";
-		WikiPage page = new WikiPage(engine, articleName);
 		WikiContext context = new WikiContext(this.engine, r, this.engine
 				.getPage(articleName));
 
