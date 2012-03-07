@@ -88,12 +88,8 @@ public abstract class AttachmentTestCaseProvider implements TestCaseProvider {
 
 	@Override
 	public Session getActualSession(UserContext user) {
-		SessionProvider provider = SessionProvider.getSessionProvider(user);
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
-		Session session = provider.getSession(kb);
-		if (session == null) {
-			session = provider.createSession(kb);
-		}
+		Session session = SessionProvider.getSession(user, kb);
 		return session;
 	}
 

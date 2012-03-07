@@ -67,9 +67,8 @@ public class GetTraceHighlightAction extends AbstractAction {
 
 		KnowWEArticle article = KnowWEUtils.getCompilingArticles(diaFluxSec).iterator().next();
 
-		SessionProvider provider = SessionProvider.getSessionProvider(context);
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(context.getWeb(), article.getTitle());
-		Session session = provider.getSession(kb);
+		Session session = SessionProvider.getSession(context, kb);
 
 		if (flowchart == null || session == null) {
 			context.getWriter().write("<flow></flow>");

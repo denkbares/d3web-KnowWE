@@ -108,11 +108,8 @@ public class FlowchartRenderer implements Renderer {
 		KnowWEArticle article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
 		if (dohighlighting) {
 			// prepare some basic information
-			SessionProvider provider = SessionProvider.getSessionProvider(user);
-			// TODO (furth): this can cause problems, because the KB-ID is not
-			// guaranteed to be the title (see ID of KnowledgeBaseType)
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
-			Session session = provider.getSession(kb);
+			Session session = SessionProvider.getSession(user, kb);
 			DiaFluxCaseObject diaFluxCaseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
 
 			// first highlight traced nodes/edges to yellow

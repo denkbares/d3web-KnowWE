@@ -70,11 +70,8 @@ public class QuickInterviewAction extends AbstractAction {
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
 		if (kb == null) return rb.getString("KnowWE.quicki.error");
 
-		SessionProvider provider = SessionProvider.getSessionProvider(usercontext);
-		Session session = provider.getSession(kb);
-		if (session == null) {
-			session = provider.createSession(kb);
-		}
+		Session session = SessionProvider.getSession(usercontext, kb);
+
 		return QuickInterviewRenderer.renderInterview(session, web, usercontext);
 	}
 }

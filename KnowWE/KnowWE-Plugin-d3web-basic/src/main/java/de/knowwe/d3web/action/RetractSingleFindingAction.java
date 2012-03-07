@@ -86,15 +86,14 @@ public class RetractSingleFindingAction extends AbstractAction {
 		}
 
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
-		SessionProvider provider = SessionProvider.getSessionProvider(context);
-		Session session = provider.getSession(kb);
+		Session session = SessionProvider.getSession(context, kb);
 		// Added for KnowWE-Plugin-d3web-Debugger
 		if (context.getParameters().containsKey("KBid")) {
 			String kbID = context.getParameter("KBid");
 			for (String title : D3webUtils.getKnowledgeRepresentationHandler(web).getKnowledgeArticles()) {
 				kb = D3webUtils.getKnowledgeBase(web, title);
 				if (kb.getId() != null && kb.getId().equals(kbID)) {
-					session = provider.getSession(kb);
+					session = SessionProvider.getSession(context, kb);
 					break;
 				}
 			}

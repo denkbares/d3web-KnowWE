@@ -258,12 +258,9 @@ public class RuleContentType extends AbstractType {
 			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID()
 					+ "'>"));
 
-			SessionProvider provider = SessionProvider.getSessionProvider(user);
-			Session session = null;
-			if (provider != null) {
-				KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
-				session = provider.getSession(kb);
-			}
+			KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
+			Session session = SessionProvider.getSession(user, kb);
+
 			highlightRule(article, sec, rule, session, user, string);
 			string.append(KnowWEUtils.maskHTML("</span>"));
 		}

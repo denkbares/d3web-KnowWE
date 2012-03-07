@@ -86,12 +86,9 @@ public abstract class SolutionDefinition
 				StringBuilder string) {
 
 			KnowWEArticle article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
-			SessionProvider provider = SessionProvider.getSessionProvider(user);
-			Session session = null;
-			if (provider != null) {
-				KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
-				session = provider.getSession(kb);
-			}
+
+			KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
+			Session session = SessionProvider.getSession(user, kb);
 
 			String spanStart = KnowWEUtils
 					.maskHTML("<span style=\"background-color:");

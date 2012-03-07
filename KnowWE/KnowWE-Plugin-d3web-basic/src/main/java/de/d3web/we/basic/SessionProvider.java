@@ -41,11 +41,17 @@ import de.knowwe.core.user.UserContext;
  * httpSession.getAttribute(KnowWEAttributes.SESSIONPROVIDER)
  * </pre>
  * 
- * on a {@link HTTPSession} object. For convenience there exists a static
- * utility method:
+ * on a {@link HTTPSession} object. For convenience there exist two static
+ * utility methods:
  * 
  * <pre>
  * SessionProvider.getSessionProvider(UserContext context)
+ * </pre>
+ * 
+ * and
+ * 
+ * <pre>
+ * SessionProvider.getSession(UserContext context, KnowledgeBase base)
  * </pre>
  * 
  * which does all the dirty work for you by using KnowWE's {@link UserContext}.
@@ -62,21 +68,49 @@ public class SessionProvider {
 	 * If there is no SessionProvider object, a new one will be created and
 	 * stored in the provided UserContext, i. e. HTTPSession.
 	 * 
+	 * Please be aware that this method only works with an UserContext backed by
+	 * a real HTTPSession. Otherwise there is no place to store and retrieve the
+	 * SessionProvider object.
+	 * 
 	 * @created 06.03.2012
 	 * @param context UserContext of the current user.
 	 * @return SessionProvider object associated to the user
 	 */
 	public static SessionProvider getSessionProvider(UserContext context) {
 		HttpSession httpSession = context.getSession();
-		SessionProvider broker = null;
+		SessionProvider provider = null;
 		if (httpSession != null) {
-			broker = (SessionProvider) httpSession.getAttribute(KnowWEAttributes.SESSIONPROVIDER);
-			if (broker == null) {
-				broker = new SessionProvider();
-				context.getSession().setAttribute(KnowWEAttributes.SESSIONPROVIDER, broker);
+			provider = (SessionProvider) httpSession.getAttribute(KnowWEAttributes.SESSIONPROVIDER);
+			if (provider == null) {
+				provider = new SessionProvider();
+				context.getSession().setAttribute(KnowWEAttributes.SESSIONPROVIDER, provider);
 			}
 		}
-		return broker;
+		return provider;
+	}
+
+	/**
+	 * Returns the {@link Session} for a specified {@link UserContext} and a
+	 * {@link KnowledgeBase}. This methods tries to load an existing
+	 * SessionProvider object from the user's HTTPSession. If there is no
+	 * SessionProvider object, a new one will be created and stored in the
+	 * provided UserContext, i. e. HTTPSession.
+	 * 
+	 * Please be aware that this method only works with an UserContext backed by
+	 * a real HTTPSession. Otherwise there is no place to store and retrieve the
+	 * SessionProvider object.
+	 * 
+	 * @created 07.03.2012
+	 * @param context UserContext of the current user.
+	 * @param base the underlying knowledge base
+	 * @return Session for the specified knowledge base
+	 */
+	public static Session getSession(UserContext context, KnowledgeBase base) {
+		SessionProvider provider = getSessionProvider(context);
+		if (provider == null) {
+			return null;
+		}
+		return provider.getSession(base);
 	}
 
 	public SessionProvider() {
@@ -95,15 +129,19 @@ public class SessionProvider {
 
 	/**
 	 * Returns an existing {@link Session} for the provided knowledge base. If
-	 * there exists no session for this knowledge base this method will return
-	 * null.
+	 * there exists no session for this knowledge base this method will create
+	 * one.
 	 * 
 	 * @created 06.03.2012
 	 * @param kb the underlying knowledge base
-	 * @return Session or null (if no session exists for the provided kb)
+	 * @return session for the specified knowledge base
 	 */
 	public Session getSession(KnowledgeBase kb) {
-		return sessions.get(kb.getId());
+		Session session = sessions.get(kb.getId());
+		if (session == null) {
+			session = createSession(kb);
+		}
+		return session;
 	}
 
 	/**

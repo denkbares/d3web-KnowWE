@@ -299,19 +299,8 @@ public class ShowSolutionsContentRenderer implements Renderer {
 	}
 
 	private Session getSessionFor(String topic, UserContext user) {
-		SessionProvider provider = SessionProvider.getSessionProvider(user);
-		if (provider == null) {
-			return null;
-		}
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), topic);
-		Session session = provider.getSession(kb);
-		if (session == null) {
-			KnowledgeBase base = D3webUtils.getKnowledgeBase(user.getWeb(), topic);
-			if (base != null) {
-				session = provider.createSession(base);
-			}
-		}
-		return session;
+		return SessionProvider.getSession(user, kb);
 	}
 
 }
