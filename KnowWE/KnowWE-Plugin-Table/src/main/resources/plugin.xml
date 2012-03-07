@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-Table" version="0.0.1">
+	
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+	</requires>
+	
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>	
+	
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="Table">
+		<parameter id="class"
+			value="de.knowwe.kdom.table.TableType" />
+		<parameter id="name" value="TableType" />
+		<parameter id="description" value="Type TableType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />	
+	</extension>
+	
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="TableEditProvider">
+        <parameter id="class"
+            value="de.knowwe.kdom.table.TableEditProvider" />
+        <parameter id="name" value="TableEditProvider" />
+        <parameter id="description"
+            value="Offers a button for quick editing a certain section." />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="5" />
+        <parameter id="script" value="TableEditTool.js" />
+        <parameter id="css" value="TableEdit.css" />
+        <parameter id="scope" value="/TableType" />
+	</extension>
+	
+	
+</plugin>

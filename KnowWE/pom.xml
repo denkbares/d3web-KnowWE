@@ -209,6 +209,7 @@
 		<module>KnowWE-Plugin-CITestModules-d3web</module>
 		<module>KnowWE-Plugin-InstantEdit</module>
 		<module>KnowWE-Plugin-TestCases</module>
+		<module>KnowWE-Plugin-Table</module>
 	</modules>
 	<repositories>
 		<repository>
