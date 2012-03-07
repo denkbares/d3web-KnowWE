@@ -207,7 +207,7 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
 	 */
 	function parseLine(wikiLine, row) {
 		
-		var regex = /(?:\|(?!\|)([^|]*))|(?:\|\|([^|]*))/g;
+		var regex = /(?:\|(?!\|)([^|\r\n]*))|(?:\|\|([^|\r\n]*))/g;
 		var result = document.createElement('tr');
 		var col = 0;
 		var cellType, cellValue;
@@ -235,16 +235,6 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
 		
 	}
 	
-	
-	/**
-	 * Sets the size of the surrounding div element according to the number of rows.
-	 * This methods is called at the beginning and after adding / deleting rows.
-	 */
-	function resizeEditArea(editArea) {
-//		var size = (editArea.getElementsByTagName("tr").length * editProvider.getRowHeight());
-//		size += 16;
-//		editArea.style.height = size + "px";
-	}
 	
 
 	/**
@@ -316,6 +306,8 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
     		}
 
     		resetMenuHandlers(table);
+			
+			editProvider.columnAdded(colNo);
     	},
     	
     	/**
@@ -365,8 +357,9 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
     		}
 
     		resetMenuHandlers(table);
+    		
+    		editProvider.rowAdded(rowNo);
 
-    		resizeEditArea($(areaId));
     		
     	},
     	
@@ -392,7 +385,9 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
     	/**
     	 * Parses the wikimarkup and creates the editable table
     	 */
-	    generateHTML : function(id) {	
+	    generateHTML : function(id) {
+			editProvider.prepare(id);
+			
 			wikicode = KNOWWE.plugin.instantEdit.getWikiText(id);
 			areaId = id;
 			
@@ -435,7 +430,8 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
 			removeDMFrame(editarea);
 			
 			addMenuHandlers(editarea.getElementsByTagName("table")[0]);
-			resizeEditArea(editarea);
+			
+			editProvider.postProcess(id);
 	    },
 	    
 		/**
@@ -485,6 +481,13 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
  * 
  */
 KNOWWE.table.edit.defaultProvider = {
+
+	/**
+	 * Called once at start of edit session. The table is not yet appended to the dom
+	 * id: id of the DOM Element that will contain the table
+	 */
+	prepare : function(id){
+	},
 	
 	/**
 	 * this method must return an HTML-String, that renders a component at the specified location
@@ -525,19 +528,34 @@ KNOWWE.table.edit.defaultProvider = {
 	},
 
 	/**
-	 * Height of a row to calculate the size of the table.
-	 * 
-	 */
-	getRowHeight : function() {
-		return 33;
-	},
-	
-	/**
 	 * Returns an array of actions, that are available for the cell at the specified coordinates.
 	 * 
 	 */
 	getActions : function(el, ro, col, editor) {
 		return KNOWWE.table.edit.getDefaultActions(el, ro, col, editor);
+	},
+	
+	/**
+	 * Called once after the table has been inserted into the DOM
+	 */
+	postProcess : function (id) {
+		
+	},
+	
+	/**
+	 * Called after inserting a new column into the table
+	 * colNr : index of new column
+	 */
+	columnAdded : function(colNr){
+		
+	},
+	
+	/**
+	 * Called after inserting a new row into the table
+	 * rowNr : index of new row
+	 */
+	rowAdded : function(rowNr){
+		
 	}
 	
 }
