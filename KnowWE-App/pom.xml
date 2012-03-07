@@ -509,6 +509,25 @@
 			</dependencies>
 		</profile>
 
+		<!-- TestcaseTable plugin -->
+		<profile>
+			<id>testcasetable-plugin</id>
+			<activation>
+				<property>
+					<name>testcasetable-plugin</name>
+				</property>
+			</activation>
+
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-TestcaseTable-Extensions</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
 		<!-- Semantic Core Plugin -->
 		<profile>
 			<id>KnowWE-Plugin-SemanticCore</id>
@@ -597,6 +616,24 @@
 				</dependency>
 			</dependencies>
 		</profile>
+
+		<!-- DiaFlux Coverage City -->
+		<!--profile>
+			<id>coveragecity</id>
+			<activation>
+				<property>
+					<name>coveragecity</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-DiaFlux-CoverageCity</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile-->
 
 		<!-- KBDebug -->
 		<profile>
