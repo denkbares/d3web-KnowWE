@@ -147,8 +147,9 @@ public abstract class AnswerReference
 							return Messages.noMessage();
 						}
 						else {
-							return Arrays.asList(Messages.error("The value " + value
-									+ " is not in the range of the question " + question.getName()));
+							return Arrays.asList(Messages.error("The value '" + value
+									+ "' is not in the defined range " + range.toString()
+									+ " of question '" + question.getName() + "'."));
 						}
 					}
 					catch (NumberFormatException e) {
