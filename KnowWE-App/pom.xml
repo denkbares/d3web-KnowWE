@@ -509,31 +509,6 @@
 			</dependencies>
 		</profile>
 
-		<!-- TestcaseTable plugin -->
-		<profile>
-			<id>testcasetable-plugin</id>
-			<activation>
-				<property>
-					<name>testcasetable-plugin</name>
-				</property>
-			</activation>
-
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-TestcaseTable</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-TestcaseTable-Extensions</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
 		<!-- Semantic Core Plugin -->
 		<profile>
 			<id>KnowWE-Plugin-SemanticCore</id>
@@ -980,12 +955,6 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-DiaFlux-Refactoring</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-TestcaseTable</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>

@@ -5,6 +5,7 @@
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
 		<import plugin-id="KnowWE-Plugin-d3web-basic" />
+		<import plugin-id="KnowWE-Plugin-d3web-MarkupSet" />
 	</requires>
 	
 	<runtime>
@@ -100,5 +101,17 @@
 	    <parameter id="scope" value="TestCaseSTCType" />
 	    <parameter id="scope" value="TestCaseSessionRecordType" />
     </extension>
+    
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="TestcaseTableType">
+		<parameter id="class"
+			value="de.knowwe.testcases.table.TestcaseTableType" />
+		<parameter id="name" value="TestcaseTableType" />
+		<parameter id="description" value=" TestcaseTableXMLType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+		<parameter id="script" value="testcasetable.js" />
+	</extension>
     
 </plugin>
