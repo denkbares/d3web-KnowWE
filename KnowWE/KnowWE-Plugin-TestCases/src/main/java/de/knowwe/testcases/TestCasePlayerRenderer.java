@@ -88,7 +88,15 @@ public class TestCasePlayerRenderer implements Renderer {
 		string.append(KnowWEUtils.maskHTML("<div id='" + section.getID() + "'>"));
 
 		if (providers.size() == 0) {
-			string.append("No test cases found in the packages: " + section.getPackageNames());
+			string.append("No test cases found in the packages: ");
+			boolean first = true;
+			for (String s : getPackages(playerSection)) {
+				if (!first) {
+					string.append(", ");
+				}
+				string.append(s);
+				first = false;
+			}
 		}
 		else {
 			Triple<TestCaseProvider, Section<?>, KnowWEArticle> selectedTriple = renderTestCaseSelection(
@@ -244,7 +252,7 @@ public class TestCasePlayerRenderer implements Renderer {
 
 	private List<Triple<TestCaseProvider, Section<?>, KnowWEArticle>> getTestCaseProviders(Section<TestCasePlayerType> section, UserContext user) {
 		List<Triple<TestCaseProvider, Section<?>, KnowWEArticle>> providers = new LinkedList<Triple<TestCaseProvider, Section<?>, KnowWEArticle>>();
-		String[] kbpackages = DefaultMarkupType.getAnnotations(section, "uses");
+		String[] kbpackages = getPackages(section);
 		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
 		KnowWEPackageManager packageManager = env.getPackageManager(section.getWeb());
 		KnowWEArticleManager articleManager = env.getArticleManager(user.getWeb());
@@ -269,6 +277,14 @@ public class TestCasePlayerRenderer implements Renderer {
 			}
 		}
 		return providers;
+	}
+
+	private String[] getPackages(Section<TestCasePlayerType> section) {
+		String[] kbpackages = DefaultMarkupType.getAnnotations(section, "uses");
+		if (kbpackages.length == 0) {
+			kbpackages = new String[] { KnowWEPackageManager.DEFAULT_PACKAGE };
+		}
+		return kbpackages;
 	}
 
 	private void renderTableLine(Triple<TestCaseProvider, Section<?>, KnowWEArticle> selectedTriple, TestCase testCase, SessionDebugStatus status, String[] questionStrings, Collection<Question> usedQuestions, TerminologyManager manager, TerminologyObject selectedObject, Date date, int row, TableModel tableModel) {

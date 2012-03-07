@@ -39,18 +39,11 @@ public class TestCaseSTCSubtreeHandler extends SubtreeHandler<TestCaseSTCType> {
 	@Override
 	public Collection<Message> create(KnowWEArticle article, Section<TestCaseSTCType> section) {
 		String[] fileNames = DefaultMarkupType.getAnnotations(section, "file");
-		FileTestCaseProviderStorage testCaseProviderStorage = (FileTestCaseProviderStorage) section.getSectionStore().getObject(
-				article, TestCaseProviderStorage.KEY);
-		if (testCaseProviderStorage == null) {
-			testCaseProviderStorage = new STCTestCaseProviderStorage(article, fileNames,
+		FileTestCaseProviderStorage testCaseProviderStorage = new STCTestCaseProviderStorage(
+				article, fileNames,
 					section.getArticle());
-			section.getSectionStore().storeObject(article, TestCaseProviderStorage.KEY,
+		section.getSectionStore().storeObject(article, TestCaseProviderStorage.KEY,
 					testCaseProviderStorage);
-		}
-		else {
-			testCaseProviderStorage.update(fileNames);
-		}
 		return testCaseProviderStorage.getMessages();
 	}
-
 }

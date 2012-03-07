@@ -37,7 +37,7 @@ public class TestCasePlayerType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("TestCasePlayer");
-		MARKUP.addAnnotation("uses", true);
+		MARKUP.addAnnotation("uses", false);
 		MARKUP.addAnnotationRenderer("uses", StyleRenderer.ANNOTATION);
 	}
 

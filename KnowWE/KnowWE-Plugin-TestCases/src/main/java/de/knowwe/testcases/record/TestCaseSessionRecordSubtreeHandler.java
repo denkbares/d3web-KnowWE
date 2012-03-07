@@ -39,17 +39,11 @@ public class TestCaseSessionRecordSubtreeHandler extends SubtreeHandler<TestCase
 	@Override
 	public Collection<Message> create(KnowWEArticle article, Section<TestCaseSessionRecordType> section) {
 		String[] fileNames = DefaultMarkupType.getAnnotations(section, "file");
-		FileTestCaseProviderStorage testCaseProviderStorage = (FileTestCaseProviderStorage) section.getSectionStore().getObject(
-				article, TestCaseProviderStorage.KEY);
-		if (testCaseProviderStorage == null) {
-			testCaseProviderStorage = new SessionRecordTestCaseProviderStorage(article, fileNames,
+		FileTestCaseProviderStorage testCaseProviderStorage = new SessionRecordTestCaseProviderStorage(
+				article, fileNames,
 					section.getArticle());
-			section.getSectionStore().storeObject(article, TestCaseProviderStorage.KEY,
+		section.getSectionStore().storeObject(article, TestCaseProviderStorage.KEY,
 					testCaseProviderStorage);
-		}
-		else {
-			testCaseProviderStorage.update(fileNames);
-		}
 		return testCaseProviderStorage.getMessages();
 	}
 
