@@ -25,20 +25,19 @@ import java.util.Collection;
 import de.d3web.core.io.progress.DummyProgressListener;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.plugin.io.PluginConfigPersistenceHandler;
-import de.d3web.we.utils.D3webUtils;
+import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
-public class PluginConfigReviseSubtreeHandler extends SubtreeHandler<PluginConfigType> {
+public class PluginConfigReviseSubtreeHandler extends D3webSubtreeHandler<PluginConfigType> {
 
 	@Override
 	public Collection<Message> create(KnowWEArticle article, Section<PluginConfigType> s) {
 		String xmlText = "<settings><plugins /><psmethods>" + s.getText()
 				+ "</psmethods></settings>";
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
+		KnowledgeBase kb = getKB(article);
 		if (kb == null) {
 			return Messages.asList(Messages.error(
 					"No knowledgebase available."));

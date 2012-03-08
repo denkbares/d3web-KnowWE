@@ -18,6 +18,7 @@
  */
 package de.knowwe.d3web;
 
+import de.knowwe.core.compile.packaging.KnowWEPackageManager;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -27,6 +28,7 @@ public class PluginConfigType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("plugin-config");
+		MARKUP.addAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 	}
 
 	public PluginConfigType() {
