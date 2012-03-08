@@ -104,11 +104,11 @@ public class GetSubflowLinksAction extends AbstractAction {
 		// link
 		KnowWEPackageManager pkgManager =
 				KnowWEEnvironment.getInstance().getPackageManager(section.getWeb());
-		Set<String> compilingArticles = pkgManager.getArticlesReferringTo(section);
+		Set<String> compilingArticles = pkgManager.getCompilingArticles(section);
 		// get all packages that are compiled by these articles
 		Collection<String> allPossiblePackageNames = new ArrayList<String>();
 		for (String compilingArticle : compilingArticles) {
-			allPossiblePackageNames.addAll(pkgManager.getReferencedPackages(compilingArticle));
+			allPossiblePackageNames.addAll(pkgManager.getCompiledPackages(compilingArticle));
 		}
 		// get all sections compiled by these articles
 		Collection<Section<?>> allPossibleSections = new ArrayList<Section<?>>();

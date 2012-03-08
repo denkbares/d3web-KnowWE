@@ -68,6 +68,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 
 	public ShowSolutionsType() {
 		super(MARKUP);
+		this.setIgnorePackageCompile(true);
 		this.setRenderer(new ShowSolutionsRenderer());
 		for (Type type : this.getChildrenTypes()) {
 			if (type instanceof ContentType) {

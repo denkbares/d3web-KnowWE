@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.knowwe.core.compile.packaging.PackageCompileType;
-import de.knowwe.core.compile.packaging.PackageReference;
+import de.knowwe.core.compile.packaging.PackageCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
@@ -36,7 +36,7 @@ import de.knowwe.core.kdom.parsing.Section;
 public class KnowledgeBaseCompileType extends PackageCompileType {
 
 	@Override
-	public List<String> getPackagesToCompile(Section<? extends PackageReference> section) {
+	public List<String> getPackagesToCompile(Section<? extends PackageCompiler> section) {
 		return Arrays.asList(section.getText().trim());
 	}
 

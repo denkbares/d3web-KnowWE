@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Set;
 
 import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.compile.packaging.KnowWEPackageManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -63,25 +62,29 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 			}
 		}
 
-		// register section in the package manager
+		// add warning if section is not compiled
 		if (!markupSection.get().isIgnoringPackageCompile()) {
-			String value = null;
-			Annotation packageAnno = this.markup.getAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME);
-			Section<? extends AnnotationContentType> annotationContent = null;
-			if (packageAnno != null) {
-				annotationContent = DefaultMarkupType.getAnnotationContentSection(markupSection,
-								packageAnno.getName());
-				if (annotationContent != null) {
-					value = annotationContent.getText();
+
+			Set<String> compilingArticles = KnowWEEnvironment.getInstance().getPackageManager(
+					article.getWeb()).getCompilingArticles(markupSection);
+			if (compilingArticles.isEmpty()) {
+				Set<String> packageNames = markupSection.getPackageNames();
+				String warningString;
+				if (packageNames.size() == 1) {
+					warningString = "This section is registered to the package '"
+							+ packageNames.iterator().next()
+							+ "' which is not compiled in any article.";
 				}
+				else if (packageNames.size() > 1) {
+					warningString = "This section is registered to the packages "
+							+ packageNames.toString() + " which are not compiled in any article.";
+				}
+				else {
+					warningString = "This section is no registered to any package and therefore "
+							+ "not compiled in any article.";
+				}
+				msgs.add(Messages.warning(warningString));
 			}
-			KnowWEEnvironment.getInstance().getPackageManager(
-					article.getWeb()).addSectionToPackage(
-					markupSection, value);
-//			Set<String> packageNames = markupSection.getPackageNames();
-//			boolean multi = packageNames.size() > 1;
-//			Messages.warning("This section is registered to the package" + (multi ? "s" : "") + " "
-//					+ (multi ? packageNames.toString() : "'" + packageNames.iterator().next()));
 		}
 
 		// check unrecognized annotations

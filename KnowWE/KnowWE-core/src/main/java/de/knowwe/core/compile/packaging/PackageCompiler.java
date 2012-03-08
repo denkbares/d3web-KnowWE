@@ -24,8 +24,16 @@ import java.util.List;
 
 import de.knowwe.core.kdom.parsing.Section;
 
-public interface PackageReference {
+public interface PackageCompiler {
 
-	public List<String> getPackagesToReferTo(Section<? extends PackageReference> s);
+	/**
+	 * Needs to return a List of package names. These are the packages to be
+	 * compiled compiled later...
+	 * 
+	 * @created 02.10.2010
+	 * @param s should always be the Section calling this method.
+	 * @return a List of package names.
+	 */
+	public List<String> getPackagesToCompile(Section<? extends PackageCompiler> s);
 
 }

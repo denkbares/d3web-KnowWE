@@ -1005,7 +1005,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		}
 		else {
 			Set<String> referencedPackages = KnowWEEnvironment.getInstance().getPackageManager(
-					article.getWeb()).getReferencedPackages(article.getTitle());
+					article.getWeb()).getCompiledPackages(article.getTitle());
 
 			if (referencedPackages.contains(KnowWEPackageManager.THIS)) return true;
 

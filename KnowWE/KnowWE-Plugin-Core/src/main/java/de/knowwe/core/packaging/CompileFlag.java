@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.knowwe.core.compile.packaging.PackageCompileType;
-import de.knowwe.core.compile.packaging.PackageReference;
+import de.knowwe.core.compile.packaging.PackageCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -85,14 +85,14 @@ public class CompileFlag extends DefaultMarkupType {
 		}
 
 		@Override
-		public List<String> getPackagesToCompile(Section<? extends PackageReference> s) {
-			List<String> includes = new LinkedList<String>();
-			for (Section<?> child : s.getChildren()) {
+		public List<String> getPackagesToCompile(Section<? extends PackageCompiler> section) {
+			List<String> packagesToCompile = new LinkedList<String>();
+			for (Section<?> child : section.getChildren()) {
 				if (child.get() instanceof SinglePackageReference) {
-					includes.add(child.getText());
+					packagesToCompile.add(child.getText());
 				}
 			}
-			return includes;
+			return packagesToCompile;
 		}
 	}
 

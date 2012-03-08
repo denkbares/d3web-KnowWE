@@ -136,7 +136,8 @@ public class DefaultMarkupType extends AbstractType {
 			this.childrenTypes.add(new AnnotationType(parameter));
 		}
 		this.childrenTypes.add(new UnknownAnnotationType());
-		this.addSubtreeHandler(Priority.PRECOMPILE_HIGH, new DefaultMarkupSubtreeHandler(markup));
+		this.addSubtreeHandler(Priority.PRECOMPILE_HIGH, new AddMarkupSectionToPackageHandler());
+		this.addSubtreeHandler(new DefaultMarkupSubtreeHandler(markup));
 	}
 
 	// TODO: already exists in parent class! Is this a problem?

@@ -65,23 +65,23 @@ public class KnowWEPackageManager implements EventListener {
 			new HashMap<String, Map<String, Set<Section<?>>>>();
 
 	/**
-	 * For each article, you get all Sections of type PackageReference defined
-	 * in this article.
+	 * For each article title, you get all Sections of type
+	 * {@link KnowWEPackageManager} defined in this article.
 	 */
-	private final Map<String, HashSet<Section<? extends PackageReference>>> articleToPackageReference =
-			new HashMap<String, HashSet<Section<? extends PackageReference>>>();
+	private final Map<String, HashSet<Section<? extends PackageCompiler>>> articleToPackageCompileSections =
+			new HashMap<String, HashSet<Section<? extends PackageCompiler>>>();
 
 	/**
-	 * For each article, you get all packageNames referenced in this article by
-	 * Sections of the type PackageReference.
+	 * For each article title, you get all packages compiled in this article by
+	 * Sections of the type {@link PackageCompiler}.
 	 */
-	private final Map<String, HashSet<String>> articleToReferencedPackages =
+	private final Map<String, HashSet<String>> articleToCompiledPackages =
 			new HashMap<String, HashSet<String>>();
 
 	/**
-	 * For each package, you get all articles referencing to this package.
+	 * For each package, you get all articles compiling this package.
 	 */
-	private final Map<String, HashSet<String>> packageToReferencingArticles =
+	private final Map<String, HashSet<String>> packageToCompilingArticles =
 			new HashMap<String, HashSet<String>>();
 
 	private final Set<String> changedPackages = new HashSet<String>();
@@ -261,17 +261,17 @@ public class KnowWEPackageManager implements EventListener {
 				removeSectionFromAllPackages(sec);
 			}
 		}
-		for (HashSet<Section<? extends PackageReference>> set : new ArrayList<HashSet<Section<? extends PackageReference>>>(
-				articleToPackageReference.values())) {
-			List<Section<? extends PackageReference>> sectionsToRemove =
-					new ArrayList<Section<? extends PackageReference>>();
-			for (Section<? extends PackageReference> sec : set) {
+		for (HashSet<Section<? extends PackageCompiler>> set : new ArrayList<HashSet<Section<? extends PackageCompiler>>>(
+				articleToPackageCompileSections.values())) {
+			List<Section<? extends PackageCompiler>> sectionsToRemove =
+					new ArrayList<Section<? extends PackageCompiler>>();
+			for (Section<? extends PackageCompiler> sec : set) {
 				if (sec.getTitle().equals(article.getTitle())) {
 					sectionsToRemove.add(sec);
 				}
 			}
-			for (Section<? extends PackageReference> sec : sectionsToRemove) {
-				unregisterPackageReference(article, sec);
+			for (Section<? extends PackageCompiler> sec : sectionsToRemove) {
+				unregisterPackageCompileSection(article, sec);
 			}
 		}
 
@@ -316,81 +316,81 @@ public class KnowWEPackageManager implements EventListener {
 		return autocompileArticleEnabled;
 	}
 
-	public void registerPackageReference(KnowWEArticle article, Section<? extends PackageReference> s) {
+	public void registerPackageCompileSection(KnowWEArticle article, Section<? extends PackageCompiler> s) {
 
-		List<String> packagesToReferTo = s.get().getPackagesToReferTo(s);
+		List<String> packagesToCompile = s.get().getPackagesToCompile(s);
 
-		HashSet<Section<? extends PackageReference>> packageReferences =
-				articleToPackageReference.get(article.getTitle());
-		if (packageReferences == null) {
-			packageReferences = new HashSet<Section<? extends PackageReference>>(4);
-			articleToPackageReference.put(article.getTitle(), packageReferences);
+		HashSet<Section<? extends PackageCompiler>> packageCompileSections =
+				articleToPackageCompileSections.get(article.getTitle());
+		if (packageCompileSections == null) {
+			packageCompileSections = new HashSet<Section<? extends PackageCompiler>>(4);
+			articleToPackageCompileSections.put(article.getTitle(), packageCompileSections);
 		}
-		packageReferences.add(s);
+		packageCompileSections.add(s);
 
-		HashSet<String> referencedPackages =
-				articleToReferencedPackages.get(article.getTitle());
-		if (referencedPackages == null) {
-			referencedPackages = new HashSet<String>();
-			articleToReferencedPackages.put(article.getTitle(), referencedPackages);
+		HashSet<String> compiledPackages =
+				articleToCompiledPackages.get(article.getTitle());
+		if (compiledPackages == null) {
+			compiledPackages = new HashSet<String>();
+			articleToCompiledPackages.put(article.getTitle(), compiledPackages);
 		}
-		for (String packageToReferTo : packagesToReferTo) {
-			referencedPackages.add(packageToReferTo);
+		for (String packageToCompile : packagesToCompile) {
+			compiledPackages.add(packageToCompile);
 
-			HashSet<String> referencingArticles = packageToReferencingArticles.get(packageToReferTo);
-			if (referencingArticles == null) {
-				referencingArticles = new HashSet<String>();
-				packageToReferencingArticles.put(packageToReferTo, referencingArticles);
+			HashSet<String> compilingArticles = packageToCompilingArticles.get(packageToCompile);
+			if (compilingArticles == null) {
+				compilingArticles = new HashSet<String>();
+				packageToCompilingArticles.put(packageToCompile, compilingArticles);
 			}
-			referencingArticles.add(article.getTitle());
+			compilingArticles.add(article.getTitle());
 		}
 
 	}
 
-	public boolean unregisterPackageReference(KnowWEArticle article, Section<? extends PackageReference> s) {
+	public boolean unregisterPackageCompileSection(KnowWEArticle article, Section<? extends PackageCompiler> s) {
 
-		Set<Section<? extends PackageReference>> packageReferences = articleToPackageReference.get(article.getTitle());
+		Set<Section<? extends PackageCompiler>> packageCompileSections = articleToPackageCompileSections.get(article.getTitle());
 
-		if (packageReferences != null) {
+		if (packageCompileSections != null) {
 
-			HashSet<String> referencesPackages = articleToReferencedPackages.get(article.getTitle());
+			HashSet<String> compiledPackages = articleToCompiledPackages.get(article.getTitle());
 
-			boolean removed = packageReferences.remove(s);
+			boolean removed = packageCompileSections.remove(s);
 			if (removed) {
 				// set all Sections that were referenced by this
-				// PackageReference to reused = false for the given article
-				Collection<String> packagesToReferTo = s.get().getPackagesToReferTo(s);
-				for (String packageToReferTo : packagesToReferTo) {
-					boolean stillReferenced = false;
-					for (Section<? extends PackageReference> packReference : packageReferences) {
-						if (packReference.get().getPackagesToReferTo(packReference).contains(
-								packageToReferTo)) {
-							stillReferenced = true;
+				// PackageCompiler to reused = false for the given article
+				Collection<String> packagesToCompile = s.get().getPackagesToCompile(s);
+				for (String packageToCompile : packagesToCompile) {
+					boolean stillCompiled = false;
+					for (Section<? extends PackageCompiler> packageCompileSection : packageCompileSections) {
+						if (packageCompileSection.get().getPackagesToCompile(packageCompileSection).contains(
+								packageToCompile)) {
+							stillCompiled = true;
 							break;
 						}
 					}
 					// but don't set to false, if the package is still
-					// referenced in another PackageReference in this
-					// article
-					if (!stillReferenced) {
+					// compiled via another Section of type PackageCompiler in
+					// this article
+					if (!stillCompiled) {
 						// remove map entries
-						referencesPackages.remove(packageToReferTo);
-						HashSet<String> referencingArticles = packageToReferencingArticles.get(packageToReferTo);
-						referencingArticles.remove(article.getTitle());
+						compiledPackages.remove(packageToCompile);
+						HashSet<String> compilingArticles = packageToCompilingArticles.get(packageToCompile);
+						compilingArticles.remove(article.getTitle());
 
 						// cleanup empty set
-						if (referencingArticles.isEmpty()) {
-							packageToReferencingArticles.remove(packageToReferTo);
+						if (compilingArticles.isEmpty()) {
+							packageToCompilingArticles.remove(packageToCompile);
 						}
 
 						List<Section<?>> sectionsOfPackage;
-						if (packageToReferTo.equals(article.getTitle())
-								|| (packageToReferTo.equals(THIS))) {
+						if (packageToCompile.equals(article.getTitle())
+								|| (packageToCompile.equals(THIS))) {
 							sectionsOfPackage = new ArrayList<Section<?>>(1);
 							sectionsOfPackage.add(article.getSection());
 						}
 						else {
-							sectionsOfPackage = getSectionsOfPackage(packageToReferTo);
+							sectionsOfPackage = getSectionsOfPackage(packageToCompile);
 						}
 						for (Section<?> oackSection : sectionsOfPackage) {
 							oackSection.setReusedByRecursively(article.getTitle(), false);
@@ -400,11 +400,11 @@ public class KnowWEPackageManager implements EventListener {
 				}
 			}
 			// cleanup empty sets
-			if (packageReferences.isEmpty()) {
-				articleToPackageReference.remove(article.getTitle());
+			if (packageCompileSections.isEmpty()) {
+				articleToPackageCompileSections.remove(article.getTitle());
 			}
-			if (referencesPackages.isEmpty()) {
-				articleToReferencedPackages.remove(article.getTitle());
+			if (compiledPackages.isEmpty()) {
+				articleToCompiledPackages.remove(article.getTitle());
 			}
 			return removed;
 		}
@@ -416,49 +416,51 @@ public class KnowWEPackageManager implements EventListener {
 	}
 
 	/**
-	 * Returns all articles that refer to the package with the given name.
+	 * Returns the a Set of all titles of articles that compile the package with
+	 * the given name.
 	 * 
 	 * @created 28.08.2010
 	 * @param packageName is the name of the package
-	 * @return a Set of articles referring to the package with the given name.
+	 * @return a Set of titles of articles compiling the package with the given
+	 *         name.
 	 */
-	public Set<String> getArticlesReferringTo(String packageName) {
-		HashSet<String> referingArticles = packageToReferencingArticles.get(packageName);
-		return Collections.unmodifiableSet(referingArticles == null
+	public Set<String> getCompilingArticles(String packageName) {
+		HashSet<String> compilingArticles = packageToCompilingArticles.get(packageName);
+		return Collections.unmodifiableSet(compilingArticles == null
 				? new HashSet<String>()
-				: referingArticles);
+				: compilingArticles);
 	}
 
 	/**
-	 * Returns all articles, that refer to the given Section via packages.
+	 * Returns all titles of articles, that compile the given Section via
+	 * packages.
 	 * 
 	 * @created 28.12.2010
 	 * @param section
-	 * @return
+	 * @return a Set of titles of articles compiling the given Section
 	 */
-	public Set<String> getArticlesReferringTo(Section<?> section) {
+	public Set<String> getCompilingArticles(Section<?> section) {
 		Set<String> matchingArticles = new HashSet<String>();
 		for (String packageName : section.getPackageNames()) {
-			matchingArticles.addAll(getArticlesReferringTo(packageName));
+			matchingArticles.addAll(getCompilingArticles(packageName));
 		}
-		HashSet<String> referencedPackages = articleToReferencedPackages.get(section.getTitle());
+		HashSet<String> compilingPackages = articleToCompiledPackages.get(section.getTitle());
 		if (autocompileArticleEnabled
-				|| (referencedPackages != null && referencedPackages.contains(THIS))) {
+				|| (compilingPackages != null && compilingPackages.contains(THIS))) {
 			matchingArticles.add(section.getTitle());
 		}
 		return Collections.unmodifiableSet(matchingArticles);
 	}
 
 	/**
-	 * Returns all Packages the given article refers to in his Sections of the
-	 * type PackageReference.
+	 * Returns all packages the given article compiles via his Sections of the
+	 * type {@link PackageCompiler}.
 	 * 
 	 * @created 29.08.2010
-	 * @param article
-	 * @return
+	 * @param title the title of the article to check
 	 */
-	public Set<String> getReferencedPackages(String title) {
-		Set<String> referencedPackages = articleToReferencedPackages.get(title);
+	public Set<String> getCompiledPackages(String title) {
+		Set<String> referencedPackages = articleToCompiledPackages.get(title);
 		return referencedPackages == null
 				? Collections.unmodifiableSet(new HashSet<String>(0))
 				: Collections.unmodifiableSet(new HashSet<String>(
@@ -466,19 +468,19 @@ public class KnowWEPackageManager implements EventListener {
 	}
 
 	/**
-	 * Returns all Sections of the type PackageReference of the given article.
+	 * Returns all Sections of the type {@link PackageCompiler} of the given
+	 * article.
 	 * 
 	 * @created 29.08.2010
-	 * @param article
-	 * @return
+	 * @param title the title of the article to check
 	 */
-	public Set<Section<? extends PackageReference>> getPackageReferences(KnowWEArticle article) {
-		Set<Section<? extends PackageReference>> packageReferences =
-				articleToPackageReference.get(article.getTitle());
-		return packageReferences == null
-				? Collections.unmodifiableSet(new HashSet<Section<? extends PackageReference>>(0))
-				: Collections.unmodifiableSet(new HashSet<Section<? extends PackageReference>>(
-						packageReferences));
+	public Set<Section<? extends PackageCompiler>> getPackageCompileSections(String title) {
+		Set<Section<? extends PackageCompiler>> packageCompileSections =
+				articleToPackageCompileSections.get(title);
+		return packageCompileSections == null
+				? Collections.unmodifiableSet(new HashSet<Section<? extends PackageCompiler>>(0))
+				: Collections.unmodifiableSet(new HashSet<Section<? extends PackageCompiler>>(
+						packageCompileSections));
 	}
 
 	public void updateReusedStates(KnowWEArticle article) {
@@ -488,13 +490,13 @@ public class KnowWEPackageManager implements EventListener {
 		for (LinkedList<Section<?>> sectionsOfPackageList : packageToSectionsOfPackage.values()) {
 			for (Section<?> sectionOfPackage : sectionsOfPackageList) {
 				if (sectionOfPackage.getTitle().equals(article.getTitle())) {
-					Set<String> articlesReferringTo = getArticlesReferringTo(sectionOfPackage);
+					Set<String> compilingArticles = getCompilingArticles(sectionOfPackage);
 					LinkedList<Section<?>> nodes = new LinkedList<Section<?>>();
 					Sections.getAllNodesPostOrder(sectionOfPackage, nodes);
 					for (Section<?> node : nodes) {
 						if (node.get().isIgnoringPackageCompile()) continue;
 						for (String title : new LinkedList<String>(node.getReusedBySet())) {
-							if (!articlesReferringTo.contains(title)) {
+							if (!compilingArticles.contains(title)) {
 								node.setReusedBy(title, false);
 								Messages.clearMessages(article, node);
 							}
@@ -507,14 +509,14 @@ public class KnowWEPackageManager implements EventListener {
 
 	public void updateReferringArticles(KnowWEArticle article) {
 
-		for (HashSet<Section<? extends PackageReference>> referencesSet : articleToPackageReference.values()) {
-			for (Section<? extends PackageReference> packReference : referencesSet) {
-				List<String> packagesToReferTo = packReference.get().getPackagesToReferTo(
-						packReference);
-				for (String packagName : packagesToReferTo) {
-					if (changedPackages.contains(packagName)) {
+		for (HashSet<Section<? extends PackageCompiler>> packageCompileSections : articleToPackageCompileSections.values()) {
+			for (Section<? extends PackageCompiler> packageCompileSection : packageCompileSections) {
+				List<String> packagesToCompile = packageCompileSection.get().getPackagesToCompile(
+						packageCompileSection);
+				for (String packageName : packagesToCompile) {
+					if (changedPackages.contains(packageName)) {
 						KnowWEEnvironment.getInstance().getArticleManager(article.getWeb()).addArticleToUpdate(
-								packReference.getTitle());
+								packageCompileSection.getTitle());
 					}
 				}
 			}

@@ -102,7 +102,7 @@ public class SaveFlowchartAction extends AbstractAction {
 
 		// if flowchart is existing, replace flowchart
 		if (flowchartSection != null) {
-			Set<String> articles = KnowWEEnvironment.getInstance().getPackageManager(web).getArticlesReferringTo(
+			Set<String> articles = KnowWEEnvironment.getInstance().getPackageManager(web).getCompilingArticles(
 					flowchartSection);
 			save(context, topic, flowchartSection.getID(), newText);
 			id = getSectionID(web, newText, articles);

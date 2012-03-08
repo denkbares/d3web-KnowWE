@@ -575,7 +575,7 @@ public class KnowWEUtils {
 	public static Collection<KnowWEArticle> getCompilingArticles(Section<?> section) {
 		Collection<KnowWEArticle> articles = new ArrayList<KnowWEArticle>();
 		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
-		Set<String> referingArticleTitles = env.getPackageManager(section.getWeb()).getArticlesReferringTo(
+		Set<String> referingArticleTitles = env.getPackageManager(section.getWeb()).getCompilingArticles(
 				section);
 		KnowWEArticleManager articleManager = env.getArticleManager(section.getWeb());
 		for (String title : referingArticleTitles) {

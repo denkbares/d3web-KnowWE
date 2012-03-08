@@ -40,7 +40,7 @@ public class ProviderRefreshRenderer extends DefaultMarkupRenderer {
 	@Override
 	public void render(Section<?> section, UserContext user, StringBuilder buffer) {
 		Set<String> articlesReferringTo = KnowWEEnvironment.getInstance().getPackageManager(
-				user.getWeb()).getArticlesReferringTo(section);
+				user.getWeb()).getCompilingArticles(section);
 		KnowWEArticleManager articleManager = KnowWEEnvironment.getInstance().getArticleManager(
 				user.getWeb());
 		for (String referingArticleTitle : articlesReferringTo) {

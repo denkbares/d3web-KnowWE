@@ -258,7 +258,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		KnowWEArticleManager articleManager = env.getArticleManager(user.getWeb());
 		for (String kbpackage : kbpackages) {
 			List<Section<?>> sectionsInPackage = packageManager.getSectionsOfPackage(kbpackage);
-			Set<String> articlesReferringTo = packageManager.getArticlesReferringTo(kbpackage);
+			Set<String> articlesReferringTo = packageManager.getCompilingArticles(kbpackage);
 			for (String masterTitle : articlesReferringTo) {
 				KnowWEArticle masterArticle = articleManager.getArticle(masterTitle);
 				for (Section<?> packageSections : sectionsInPackage) {

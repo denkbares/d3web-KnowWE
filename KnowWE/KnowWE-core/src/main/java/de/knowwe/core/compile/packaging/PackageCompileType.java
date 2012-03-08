@@ -16,7 +16,7 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 
-public abstract class PackageCompileType extends AbstractType implements PackageReference {
+public abstract class PackageCompileType extends AbstractType implements PackageCompiler {
 
 	public PackageCompileType() {
 		this.sectionFinder = new AllTextSectionFinder();
@@ -25,19 +25,7 @@ public abstract class PackageCompileType extends AbstractType implements Package
 	}
 
 	@Override
-	public final List<String> getPackagesToReferTo(Section<? extends PackageReference> s) {
-		return getPackagesToCompile(s);
-	}
-
-	/**
-	 * Needs to return a List of package names. These are the packages compiled
-	 * later...
-	 * 
-	 * @created 02.10.2010
-	 * @param s should always be the Section calling this method.
-	 * @return a List of package names.
-	 */
-	public abstract List<String> getPackagesToCompile(Section<? extends PackageReference> s);
+	public abstract List<String> getPackagesToCompile(Section<? extends PackageCompiler> s);
 
 	private static class PackageCompileHandler extends SubtreeHandler<PackageCompileType> {
 
@@ -54,12 +42,12 @@ public abstract class PackageCompileType extends AbstractType implements Package
 					article.getWeb());
 
 			if (article.isFullParse() || !s.isReusedBy(article.getTitle())) {
-				packageMng.registerPackageReference(article, s);
+				packageMng.registerPackageCompileSection(article, s);
 			}
 
 			List<Section<?>> sectionsOfPackage = new LinkedList<Section<?>>();
-			for (String referedPackages : s.get().getPackagesToCompile(s)) {
-				List<Section<?>> tempSectionsOfPackage = packageMng.getSectionsOfPackage(referedPackages);
+			for (String packagesToCompile : s.get().getPackagesToCompile(s)) {
+				List<Section<?>> tempSectionsOfPackage = packageMng.getSectionsOfPackage(packagesToCompile);
 				for (Section<?> sectionOfPackage : tempSectionsOfPackage) {
 					if (!sectionOfPackage.getTitle().equals(article.getTitle())) {
 						sectionsOfPackage.add(sectionOfPackage);
