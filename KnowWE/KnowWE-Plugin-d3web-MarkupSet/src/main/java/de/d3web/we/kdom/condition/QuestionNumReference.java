@@ -8,6 +8,7 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
@@ -19,6 +20,11 @@ public class QuestionNumReference extends QuestionReference {
 		super();
 		this.addSubtreeHandler(Priority.HIGH, new QuestionNumRegistrationHandler());
 
+	}
+
+	@Override
+	public Class<?> getTermObjectClass(Section<? extends SimpleTerm> section) {
+		return QuestionNum.class;
 	}
 
 	class QuestionNumRegistrationHandler extends SubtreeHandler<QuestionNumReference> {

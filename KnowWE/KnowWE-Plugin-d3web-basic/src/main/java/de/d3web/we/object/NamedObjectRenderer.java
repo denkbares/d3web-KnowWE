@@ -20,10 +20,10 @@ package de.d3web.we.object;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Choice;
-import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
@@ -40,30 +40,29 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class NamedObjectRenderer implements Renderer {
 
 	@Override
-	public void render(Section<?> sec, UserContext user, StringBuilder string) {
-		KnowWEArticle article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
-		@SuppressWarnings({
-				"unchecked", "rawtypes" })
-		NamedObject object = ((D3webTerm) sec.get()).getTermObject(article, sec);
+	public void render(Section<?> section, UserContext user, StringBuilder string) {
+		KnowWEArticle article = KnowWEUtils.getCompilingArticles(section).iterator().next();
+		String termIdentifier = KnowWEUtils.getTermIdentifier(section);
+		TerminologyManager tManager = KnowWEUtils.getTerminologyManager(article);
 		Renderer renderer;
-		if (object instanceof Question) {
+		if (tManager.hasTermOfClass(termIdentifier, Question.class)) {
 			renderer = StyleRenderer.Question;
 		}
-		else if (object instanceof QContainer) {
+		else if (tManager.hasTermOfClass(termIdentifier, QContainer.class)) {
 			renderer = StyleRenderer.Questionaire;
 		}
-		else if (object instanceof Solution) {
+		else if (tManager.hasTermOfClass(termIdentifier, Solution.class)) {
 			renderer = StyleRenderer.SOLUTION;
 		}
-		else if (object instanceof Choice) {
+		else if (tManager.hasTermOfClass(termIdentifier, Choice.class)) {
 			renderer = StyleRenderer.CHOICE;
 		}
-		else if (object instanceof KnowledgeBase) {
+		else if (tManager.hasTermOfClass(termIdentifier, KnowledgeBase.class)) {
 			renderer = StyleRenderer.Questionaire;
 		}
 		else {
 			renderer = PlainText.getInstance().getRenderer();
 		}
-		renderer.render(sec, user, string);
+		renderer.render(section, user, string);
 	}
 }

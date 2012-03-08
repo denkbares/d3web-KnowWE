@@ -579,7 +579,11 @@ public class KnowWEUtils {
 				section);
 		KnowWEArticleManager articleManager = env.getArticleManager(section.getWeb());
 		for (String title : referingArticleTitles) {
-			articles.add(articleManager.getArticle(title));
+			KnowWEArticle article =
+					KnowWEArticle.getCurrentlyBuildingArticle(section.getWeb(), title);
+			if (article == null) article = articleManager.getArticle(title);
+			if (article == null) continue;
+			articles.add(article);
 		}
 		if (articles.isEmpty()) articles.add(section.getArticle());
 		return articles;

@@ -23,6 +23,7 @@ package de.knowwe.kdom.defaultMarkup;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.compile.packaging.KnowWEPackageManager;
@@ -66,17 +67,21 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 		if (!markupSection.get().isIgnoringPackageCompile()) {
 			String value = null;
 			Annotation packageAnno = this.markup.getAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME);
+			Section<? extends AnnotationContentType> annotationContent = null;
 			if (packageAnno != null) {
-				Section<? extends AnnotationContentType> annotationSection =
-						DefaultMarkupType.getAnnotationContentSection(markupSection,
+				annotationContent = DefaultMarkupType.getAnnotationContentSection(markupSection,
 								packageAnno.getName());
-				if (annotationSection != null) {
-					value = annotationSection.getText();
+				if (annotationContent != null) {
+					value = annotationContent.getText();
 				}
 			}
 			KnowWEEnvironment.getInstance().getPackageManager(
 					article.getWeb()).addSectionToPackage(
 					markupSection, value);
+//			Set<String> packageNames = markupSection.getPackageNames();
+//			boolean multi = packageNames.size() > 1;
+//			Messages.warning("This section is registered to the package" + (multi ? "s" : "") + " "
+//					+ (multi ? packageNames.toString() : "'" + packageNames.iterator().next()));
 		}
 
 		// check unrecognized annotations

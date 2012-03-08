@@ -39,8 +39,8 @@ import de.knowwe.core.utils.KnowWEUtils;
 public abstract class D3webTermReference<TermObject extends NamedObject> extends AbstractType implements D3webTerm<TermObject> {
 
 	@Override
-	public String getTermIdentifier(Section<? extends SimpleTerm> s) {
-		return KnowWEUtils.trimQuotes(s.getText());
+	public String getTermIdentifier(Section<? extends SimpleTerm> section) {
+		return KnowWEUtils.trimQuotes(section.getText());
 	}
 
 	@Override

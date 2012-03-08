@@ -109,8 +109,7 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	public void renderMessages(Section<?> section, StringBuilder string) {
 		Map<String, Collection<Message>> messagesFromSubtree = Messages.getMessagesFromSubtree(
-				section,
-				Message.Type.ERROR, Message.Type.WARNING);
+				section, Message.Type.ERROR, Message.Type.WARNING);
 		renderMessageBlock(messagesFromSubtree, string, Message.Type.ERROR, Message.Type.WARNING);
 	}
 
@@ -163,14 +162,18 @@ public class DefaultMarkupRenderer implements Renderer {
 			if (messages == null) continue;
 			if (messages.size() == 0) continue;
 
-			string.append(KnowWEUtils.maskHTML("<span class='" + className
-					+ "' style='white-space: pre-wrap;'>"));
-			for (Message error : messages) {
-				string.append(KnowWEUtils.maskJSPWikiMarkup(error.getVerbalization()));
-				string.append("\n");
-			}
-			string.append(KnowWEUtils.maskHTML("</span>"));
+			renderMessagesOfType(className, messages, string);
 		}
+	}
+
+	private static void renderMessagesOfType(String type, Collection<Message> messages, StringBuilder string) {
+		string.append(KnowWEUtils.maskHTML("<span class='" + type
+				+ "' style='white-space: pre-wrap;'>"));
+		for (Message msg : messages) {
+			string.append(KnowWEUtils.maskJSPWikiMarkup(msg.getVerbalization()));
+			string.append("\n");
+		}
+		string.append(KnowWEUtils.maskHTML("</span>"));
 	}
 
 	protected void renderContents(Section<?> section, UserContext user, StringBuilder string) {
