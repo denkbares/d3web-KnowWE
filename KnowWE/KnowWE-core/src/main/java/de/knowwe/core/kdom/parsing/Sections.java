@@ -529,9 +529,12 @@ public class Sections {
 
 		for (String title : idsByTitle.keySet()) {
 			Collection<String> ids = idsByTitle.get(title);
-			handleErrors(title, ids, context, missingIDs, forbiddenArticles);
-			replaceSectionsForTitle(title, getSectionsMapForCurrentTitle(ids,
-					sectionsMap), context);
+			boolean errorsForThisTitle = handleErrors(title, ids, context, missingIDs,
+					forbiddenArticles);
+			if (!errorsForThisTitle) {
+				replaceSectionsForTitle(title, getSectionsMapForCurrentTitle(ids,
+						sectionsMap), context);
+			}
 		}
 
 		sendErrorMessages(context, missingIDs, forbiddenArticles);
@@ -585,14 +588,14 @@ public class Sections {
 
 		if (title == null) {
 			missingIDs.addAll(ids);
-			return false;
+			return true;
 		}
 		if (!KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(title,
 				context.getRequest())) {
 			forbiddenArticles.add(title);
-			return false;
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	private static Map<String, String> getSectionsMapForCurrentTitle(
