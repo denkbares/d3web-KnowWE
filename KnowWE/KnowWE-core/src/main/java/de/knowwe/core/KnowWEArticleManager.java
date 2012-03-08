@@ -34,11 +34,14 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.knowwe.core.event.Event;
+import de.knowwe.core.event.EventListener;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.event.ArticleRegisteredEvent;
 import de.knowwe.event.ArticleUpdatesFinishedEvent;
+import de.knowwe.event.InitializedAllArticlesEvent;
 import de.knowwe.event.UpdatingDependenciesEvent;
 import dummies.KnowWETestWikiConnector;
 
@@ -48,7 +51,7 @@ import dummies.KnowWETestWikiConnector;
  *         Manages all the articles of one web in a HashMap
  * 
  */
-public class KnowWEArticleManager {
+public class KnowWEArticleManager implements EventListener {
 
 	/**
 	 * Stores KnowWEArticles for article-names
@@ -99,6 +102,7 @@ public class KnowWEArticleManager {
 					+ File.separatorChar + "reports";
 
 		}
+		EventManager.getInstance().registerListener(this);
 	}
 
 	public String getWebname() {
@@ -135,19 +139,6 @@ public class KnowWEArticleManager {
 	 * @param article is the changed article to register
 	 */
 	public void registerArticle(KnowWEArticle article) {
-		registerArticle(article, true);
-	}
-
-	/**
-	 * Registers an changed article in the manager and also updates depending
-	 * articles.
-	 * 
-	 * @created 14.12.2010
-	 * @param article is the changed article to register
-	 * @param updateDependencies determines whether to update dependencies with
-	 *        this registration
-	 */
-	public void registerArticle(KnowWEArticle article, boolean updateDependencies) {
 
 		// store new article
 		String title = article.getTitle();
@@ -163,7 +154,7 @@ public class KnowWEArticleManager {
 
 		EventManager.getInstance().fireEvent(new UpdatingDependenciesEvent(article));
 
-		if (updateDependencies) updateQueuedArticles();
+		if (areArticlesInitialized()) updateQueuedArticles();
 
 		updatingArticles.remove(title);
 		Logger.getLogger(this.getClass().getName()).log(
@@ -202,7 +193,7 @@ public class KnowWEArticleManager {
 					KnowWEArticle newArt = KnowWEArticle.createArticle(
 							articleMap.get(title).getSection().getText(), title,
 							KnowWEEnvironment.getInstance().getRootType(), web, false);
-					registerArticle(newArt, true);
+					registerArticle(newArt);
 				}
 				else {
 					deleteArticle(getArticle(title));
@@ -255,6 +246,20 @@ public class KnowWEArticleManager {
 
 	public void setArticlesInitialized(boolean b) {
 		initializedArticles = true;
+	}
+
+	@Override
+	public Collection<Class<? extends Event>> getEvents() {
+		List<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(1);
+		events.add(InitializedAllArticlesEvent.class);
+		return events;
+	}
+
+	@Override
+	public void notify(Event event) {
+		if (event instanceof InitializedAllArticlesEvent) {
+			updateQueuedArticles();
+		}
 	}
 
 }

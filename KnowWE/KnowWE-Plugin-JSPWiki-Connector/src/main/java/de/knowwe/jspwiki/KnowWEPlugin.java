@@ -55,10 +55,12 @@ import de.knowwe.core.KnowWEArticleManager;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.KnowWERessourceLoader;
 import de.knowwe.core.append.PageAppendHandler;
+import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.KnowWEArticle;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserContextUtil;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.event.InitializedAllArticlesEvent;
 
 public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		WikiEventListener {
@@ -357,7 +359,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 		KnowWEEnvironment.getInstance().getArticleManager(KnowWEEnvironment.DEFAULT_WEB).setArticlesInitialized(
 				true);
-		KnowWEEnvironment.getInstance().getArticleManager(KnowWEEnvironment.DEFAULT_WEB).updateQueuedArticles();
+		EventManager.getInstance().fireEvent(InitializedAllArticlesEvent.getInstance());
 
 	}
 

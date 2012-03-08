@@ -528,11 +528,11 @@ public class Sections {
 		Collection<String> forbiddenArticles = new LinkedList<String>();
 
 		for (String title : idsByTitle.keySet()) {
-			Collection<String> ids = idsByTitle.get(title);
-			boolean errorsForThisTitle = handleErrors(title, ids, context, missingIDs,
+			Collection<String> idsForCurrentTitle = idsByTitle.get(title);
+			boolean errorsForThisTitle = handleErrors(title, idsForCurrentTitle, context, missingIDs,
 					forbiddenArticles);
 			if (!errorsForThisTitle) {
-				replaceSectionsForTitle(title, getSectionsMapForCurrentTitle(ids,
+				replaceSectionsForTitle(title, getSectionsMapForCurrentTitle(idsForCurrentTitle,
 						sectionsMap), context);
 			}
 		}

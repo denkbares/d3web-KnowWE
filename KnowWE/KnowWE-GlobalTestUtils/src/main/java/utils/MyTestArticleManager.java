@@ -21,6 +21,7 @@ package utils;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.knowwe.core.KnowWEArticleManager;
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.kdom.KnowWEArticle;
 import dummies.KnowWETestWikiConnector;
@@ -79,12 +80,14 @@ public class MyTestArticleManager {
 		int start = filename.lastIndexOf("/") + 1;
 		int end = filename.lastIndexOf(".");
 		String topic = filename.substring(start, end);
+		KnowWEArticleManager articleManager = KnowWEEnvironment.getInstance().getArticleManager(
+				"default_web");
+		articleManager.setArticlesInitialized(true);
 
 		// Create Article
 		KnowWEArticle article = KnowWEArticle.createArticle(content, topic,
 				KnowWEEnvironment.getInstance().getRootType(), "default_web");
-		KnowWEEnvironment.getInstance().getArticleManager("default_web").registerArticle(
-				article);
+		articleManager.registerArticle(article);
 		return article;
 	}
 

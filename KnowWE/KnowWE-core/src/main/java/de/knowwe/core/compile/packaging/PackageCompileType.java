@@ -69,7 +69,7 @@ public abstract class PackageCompileType extends AbstractType implements Package
 			KnowWEUtils.getGlobalTerminologyManager(article.getWeb()).registerTermDefinition(s,
 					String.class, s.getTitle());
 
-			return Messages.asList();
+			return Messages.noMessage();
 		}
 
 		@Override

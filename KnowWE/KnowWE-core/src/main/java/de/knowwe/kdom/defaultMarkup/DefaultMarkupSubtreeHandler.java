@@ -23,7 +23,6 @@ package de.knowwe.kdom.defaultMarkup;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.kdom.KnowWEArticle;
@@ -59,31 +58,6 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 				Message message = Messages.error("The annotation @" + name
 						+ " is mandatory, but missing. Please specify that annotation.");
 				msgs.add(message);
-			}
-		}
-
-		// add warning if section is not compiled
-		if (!markupSection.get().isIgnoringPackageCompile()) {
-
-			Set<String> compilingArticles = KnowWEEnvironment.getInstance().getPackageManager(
-					article.getWeb()).getCompilingArticles(markupSection);
-			if (compilingArticles.isEmpty()) {
-				Set<String> packageNames = markupSection.getPackageNames();
-				String warningString;
-				if (packageNames.size() == 1) {
-					warningString = "This section is registered to the package '"
-							+ packageNames.iterator().next()
-							+ "' which is not compiled in any article.";
-				}
-				else if (packageNames.size() > 1) {
-					warningString = "This section is registered to the packages "
-							+ packageNames.toString() + " which are not compiled in any article.";
-				}
-				else {
-					warningString = "This section is no registered to any package and therefore "
-							+ "not compiled in any article.";
-				}
-				msgs.add(Messages.warning(warningString));
 			}
 		}
 

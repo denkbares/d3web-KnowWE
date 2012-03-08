@@ -25,7 +25,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -108,9 +110,38 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	public void renderMessages(Section<?> section, StringBuilder string) {
+		renderCompileWarning(section, string);
 		Map<String, Collection<Message>> messagesFromSubtree = Messages.getMessagesFromSubtree(
 				section, Message.Type.ERROR, Message.Type.WARNING);
 		renderMessageBlock(messagesFromSubtree, string, Message.Type.ERROR, Message.Type.WARNING);
+	}
+
+	private void renderCompileWarning(Section<?> section, StringBuilder string) {
+		// add warning if section is not compiled
+		if (!section.get().isIgnoringPackageCompile()) {
+
+			Set<String> compilingArticles = KnowWEEnvironment.getInstance().getPackageManager(
+					section.getWeb()).getCompilingArticles(section);
+			if (compilingArticles.isEmpty()) {
+				Set<String> packageNames = section.getPackageNames();
+				String warningString;
+				if (packageNames.size() == 1) {
+					warningString = "This section is registered to the package '"
+							+ packageNames.iterator().next()
+							+ "' which is not compiled in any article.";
+				}
+				else if (packageNames.size() > 1) {
+					warningString = "This section is registered to the packages "
+							+ packageNames.toString() + " which are not compiled in any article.";
+				}
+				else {
+					warningString = "This section is no registered to any package and therefore "
+							+ "not compiled in any article.";
+				}
+				renderMessagesOfType("warning", Messages.asList(Messages.warning(warningString)),
+						string);
+			}
+		}
 	}
 
 	public static void renderMessageBlock(Map<String, Collection<Message>> messagesByTitle,
