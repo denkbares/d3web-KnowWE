@@ -44,9 +44,14 @@ public class AddMarkupSectionToPackageHandler extends SubtreeHandler<DefaultMark
 					section, KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME);
 			KnowWEPackageManager packageManager = KnowWEEnvironment.getInstance().getPackageManager(
 					article.getWeb());
-			for (Section<?> annotationContent : annotationContents) {
-				value = annotationContent.getText();
+			if (annotationContents.isEmpty()) {
 				packageManager.addSectionToPackage(section, value);
+			}
+			else {
+				for (Section<?> annotationContent : annotationContents) {
+					value = annotationContent.getText();
+					packageManager.addSectionToPackage(section, value);
+				}
 			}
 		}
 		return Messages.noMessage();
