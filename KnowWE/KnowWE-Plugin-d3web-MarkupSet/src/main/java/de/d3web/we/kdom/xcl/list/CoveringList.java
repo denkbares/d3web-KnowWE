@@ -267,10 +267,7 @@ public class CoveringList extends AbstractType {
 								XCLRelation relation = XCLModel.insertAndReturnXCLRelation(
 										getKB(article),
 										condition,
-										solution, type, w, null);
-
-								// set KDOMID here used in {@link KBRenderer}
-								relation.setKdmomID(s.getID());
+										solution, type, w);
 
 								KnowWEUtils.storeObject(article, s, RELATION_STORE_KEY, relation);
 
@@ -455,7 +452,6 @@ public class CoveringList extends AbstractType {
 		 * @param color
 		 * @return
 		 */
-		@SuppressWarnings("unchecked")
 		private String renderRelationChild(
 				Section<?> sec, boolean fulfilled, UserContext user,
 				String color) {
