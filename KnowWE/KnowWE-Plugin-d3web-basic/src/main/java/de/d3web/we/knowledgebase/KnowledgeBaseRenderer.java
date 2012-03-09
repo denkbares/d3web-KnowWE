@@ -37,9 +37,7 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * Renders a knowledge base markup into the wiki page.
@@ -100,15 +98,14 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 		// render used packages and their erroneous pages
 		string.append(KnowWEUtils.maskHTML("<div style='padding-top:1em;'>"));
 		// string.append(KnowWEUtils.maskHTML("<hr>\n"));
-		List<Section<? extends AnnotationContentType>> compileSections = DefaultMarkupType.getAnnotationContentSections(
-				section, KnowledgeBaseType.ANNOTATION_COMPILE);
-		for (Iterator<Section<? extends AnnotationContentType>> sectionIter = compileSections.iterator(); sectionIter.hasNext();) {
-			Section<?> annotationSection = sectionIter.next();
-			Section<KnowledgeBaseCompileType> compileSection = Sections.findChildOfType(
-					annotationSection, KnowledgeBaseCompileType.class);
-			String packageName = compileSection.getText().trim();
+		Section<KnowledgeBaseCompileType> compileSection = Sections.findSuccessor(section,
+				KnowledgeBaseCompileType.class);
+		List<String> packagesToCompile = compileSection.get().getPackagesToCompile(compileSection);
+
+		for (Iterator<String> packageIter = packagesToCompile.iterator(); packageIter.hasNext();) {
+			String packageName = packageIter.next();
 			renderCompile(section.getArticle(), packageName, string);
-			if (sectionIter.hasNext()) string.append(KnowWEUtils.maskHTML("<br/>"));
+			if (packageIter.hasNext()) string.append(KnowWEUtils.maskHTML("<br/>"));
 		}
 		string.append(KnowWEUtils.maskHTML("</div>"));
 	}

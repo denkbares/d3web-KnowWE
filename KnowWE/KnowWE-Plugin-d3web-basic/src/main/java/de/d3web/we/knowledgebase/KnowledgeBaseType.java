@@ -76,8 +76,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("KnowledgeBase");
-		MARKUP.addAnnotation(ANNOTATION_COMPILE, true);
-		MARKUP.addAnnotationContentType(ANNOTATION_COMPILE, new KnowledgeBaseCompileType());
+		MARKUP.addAnnotation(ANNOTATION_COMPILE, false);
 		MARKUP.addAnnotation(ANNOTATION_AUTHOR, false);
 		MARKUP.addAnnotation(ANNOTATION_COMMENT, false);
 		MARKUP.addAnnotation(ANNOTATION_ID, false);
@@ -85,6 +84,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_FILENAME, false);
 		MARKUP.addAnnotation(ANNOTATION_STATUS, false);
 		MARKUP.addAnnotation(ANNOTATION_AFFILIATION, false);
+		MARKUP.addContentType(new KnowledgeBaseCompileType());
 	}
 
 	public KnowledgeBaseType() {

@@ -21,10 +21,15 @@ package de.d3web.we.knowledgebase;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import de.knowwe.core.KnowWEEnvironment;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageCompiler;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * Implementation of a compile type to handle the uses-annotations of a
@@ -35,9 +40,20 @@ import de.knowwe.core.kdom.parsing.Section;
  */
 public class KnowledgeBaseCompileType extends PackageCompileType {
 
-	@Override
-	public List<String> getPackagesToCompile(Section<? extends PackageCompiler> section) {
-		return Arrays.asList(section.getText().trim());
+	public KnowledgeBaseCompileType() {
+		this.setSectionFinder(new RegexSectionFinder(".*", Pattern.DOTALL));
 	}
 
+	@Override
+	public List<String> getPackagesToCompile(Section<? extends PackageCompiler> section) {
+		Section<KnowledgeBaseType> kbSection = Sections.findAncestorOfType(section,
+				KnowledgeBaseType.class);
+		String[] uses = DefaultMarkupType.getAnnotations(kbSection,
+				KnowledgeBaseType.ANNOTATION_COMPILE);
+		if (uses.length == 0) {
+			return Arrays.asList(KnowWEEnvironment.getInstance().getPackageManager(section.getWeb()).getDefaultPackageName(
+					section.getArticle()));
+		}
+		return Arrays.asList(uses);
+	}
 }

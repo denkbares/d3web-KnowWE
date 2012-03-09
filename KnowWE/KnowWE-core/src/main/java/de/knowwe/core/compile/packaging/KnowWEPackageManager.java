@@ -547,4 +547,8 @@ public class KnowWEPackageManager implements EventListener {
 		}
 	}
 
+	public String getDefaultPackageName(KnowWEArticle article) {
+		return DEFAULT_PACKAGE;
+	}
+
 }
