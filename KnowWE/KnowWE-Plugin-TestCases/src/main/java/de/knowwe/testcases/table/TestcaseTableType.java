@@ -30,7 +30,6 @@ import de.knowwe.kdom.renderer.StyleRenderer;
  */
 public class TestcaseTableType extends DefaultMarkupType {
 
-	public static final String ANNOTATION_SHOW_SKIP_BUTTON = "showskip";
 	private static DefaultMarkup m = null;
 
 	static {
@@ -39,14 +38,9 @@ public class TestcaseTableType extends DefaultMarkupType {
 		m.addAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 		m.addAnnotationRenderer(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME,
 				StyleRenderer.ANNOTATION);
-		m.addAnnotation(ANNOTATION_SHOW_SKIP_BUTTON, false, "true", "false");
-		m.addAnnotationRenderer(ANNOTATION_SHOW_SKIP_BUTTON, StyleRenderer.ANNOTATION);
 
 	}
 
-	/**
-	 * 
-	 */
 	public TestcaseTableType() {
 		super(m);
 	}
