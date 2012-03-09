@@ -1,5 +1,6 @@
 .defaultEditTool {
 	font-size: 13px;
+	font-family: monospace;
 	min-height: 100px;
 	display: block;
 	border: 1px dashed black;
