@@ -40,8 +40,8 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
  */
 public class TableLine extends AbstractType {
 
-	public static final String LINEREGEX = "\\s*(\\|{1,2}.*)+\\r?\\n?";
-	public static final Pattern LINEPATTERN = Pattern.compile(LINEREGEX);
+	public static final String LINEREGEX = "^(\\|{1,2}.*)+\\r?\\n?";
+	public static final Pattern LINEPATTERN = Pattern.compile(LINEREGEX, Pattern.MULTILINE);
 
 	public TableLine() {
 		childrenTypes.add(new TableCell());
