@@ -618,7 +618,7 @@
 		</profile>
 
 		<!-- DiaFlux Coverage City -->
-		<!--profile>
+		<profile>
 			<id>coveragecity</id>
 			<activation>
 				<property>
@@ -633,7 +633,7 @@
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
-		</profile-->
+		</profile>
 
 		<!-- KBDebug -->
 		<profile>
