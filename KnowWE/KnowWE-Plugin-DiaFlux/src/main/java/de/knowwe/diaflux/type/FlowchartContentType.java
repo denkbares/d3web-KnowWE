@@ -23,9 +23,8 @@ package de.knowwe.diaflux.type;
 import de.knowwe.kdom.xml.XMLContent;
 
 /**
- * 
- * 
- * @author hatko Created on: 09.10.2009
+ * @author Reinhard Hatko
+ * @created 09.10.2009
  */
 public class FlowchartContentType extends XMLContent {
 
@@ -34,7 +33,6 @@ public class FlowchartContentType extends XMLContent {
 	private FlowchartContentType() {
 		this.childrenTypes.add(NodeType.getInstance());
 		this.childrenTypes.add(EdgeType.getInstance());
-		this.childrenTypes.add(FlowchartPreviewType.getInstance());
 	}
 
 	public static FlowchartContentType getInstance() {

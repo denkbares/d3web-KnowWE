@@ -25,10 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.WeakHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.plugin.Extension;
@@ -42,7 +39,6 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.kbinfo.JSPHelper;
 import de.knowwe.diaflux.type.DiaFluxType;
-import de.knowwe.diaflux.type.FlowchartPreviewContentType;
 import de.knowwe.diaflux.type.FlowchartType;
 
 /**
@@ -53,8 +49,6 @@ import de.knowwe.diaflux.type.FlowchartType;
 public class FlowchartUtils {
 
 	public static final String DIAFLUX_SCOPE = "diaflux";
-	public static final String PREVIEW_REGEX = "\\s*<!\\[CDATA\\[\\s*(.*)\\s*\\]\\]>\\s*";
-	public static final Pattern PREVIEW_PATTERN = Pattern.compile(PREVIEW_REGEX, Pattern.DOTALL);
 	public static final String[] JS = new String[] {
 			"cc/flow/builder.js", "cc/kbinfo/kbinfo.js", "cc/flow/renderExtensions.js",
 			"cc/kbinfo/extensions.js", "cc/flow/flowchart.js",
@@ -105,80 +99,16 @@ public class FlowchartUtils {
 		return webMap;
 	}
 
-	/**
-	 * extracts the preview of a section of Type FlowchartType
-	 */
-	public static String extractPreview(Section<FlowchartType> flowchartSection) {
 
-		Section<FlowchartPreviewContentType> previewsection = Sections.findSuccessor(
-				flowchartSection, FlowchartPreviewContentType.class);
-
-		if (previewsection == null) {
-			return null;
-		}
-
-		String flowchart = previewsection.getText();
-
-		Matcher matcher = PREVIEW_PATTERN.matcher(flowchart);
-		if (!matcher.matches()) {
-			return null;
-		}
-		else {
-			return matcher.group(1);
-		}
+	public static String createFlowchartRenderer(Section<FlowchartType> flowSection, UserContext user) {
+		return KnowWEUtils.maskHTML(createFlowchartRenderer(flowSection, user, DIAFLUX_SCOPE));
 	}
 
-	/**
-	 * Creates a preview from the HTML code saved in the article by including
-	 * necessary css-styles
-	 * 
-	 * @param preview
-	 * @return
-	 */
-	public static String createRenderablePreview(String preview) {
-		return "<div style='white-space: normal;'>" +
-				"<link rel='stylesheet' type='text/css' href='cc/flow/flowchart.css'></link>" +
-				"<link rel='stylesheet' type='text/css' href='cc/flow/guard.css'></link>" +
-				"<link rel='stylesheet' type='text/css' href='cc/flow/node.css'></link>" +
-				"<link rel='stylesheet' type='text/css' href='cc/flow/rule.css'></link>" +
-				preview +
-				"</div>";
-	}
-
-	/**
-	 * Creates a HTML representation of the preview.
-	 * 
-	 * @created 25.11.2010
-	 * @param flowSection
-	 * @param user
-	 * @return s the preview including styles, or null if no preview is present
-	 */
-	public static String createRenderablePreview(Section<FlowchartType> flowSection, UserContext user) {
-		ResourceBundle wikiConfig = ResourceBundle.getBundle("KnowWE_config");
-		boolean render = Boolean.valueOf(wikiConfig.getString("knowweplugin.diaflux.render"));
-
-		if (render) {
-			return KnowWEUtils.maskHTML(createFlowchartRenderer(flowSection, user, DIAFLUX_SCOPE));
-		}
-		else {
-			String preview = extractPreview(flowSection);
-
-			if (preview == null) {
-				return null;
-			}
-
-			return createRenderablePreview(preview);
-		}
-
-	}
-
-	// extended experimental hack
 	private static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String scope) {
 		String parent = FlowchartType.getFlowchartName(section);
 		return createFlowchartRenderer(section, user, parent, scope, isInsertRessources(section));
 	}
 
-	// experimental hack
 	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String parent, String scope, boolean insertRessources) {
 
 		if (user.getWeb() == null) return "";
@@ -273,11 +203,9 @@ public class FlowchartUtils {
 		}
 	}
 
+	//Just to load from old articles still containing preview. Should be removed in the future
 	public static String getFlowSourceWithoutPreview(Section<FlowchartType> section) {
-		return removePreview(section.getText());
-	}
-
-	public static String removePreview(String source) {
+		String source = section.getText();
 		int previewIndex = source.lastIndexOf("<preview");
 		// remove preview
 		if (previewIndex != -1) {

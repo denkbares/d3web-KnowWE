@@ -129,7 +129,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="LoadFlowchartAction">
 		<parameter id="class"
-			value="de.knowwe.diaflux.kbinfo.LoadFlowchartAction" />
+			value="de.knowwe.diaflux.LoadFlowchartAction" />
 		<parameter id="name" value="LoadFlowchartAction" />
 		<parameter id="description" value="Action LoadFlowchartAction" />
 		<parameter id="version" value="1.0" />

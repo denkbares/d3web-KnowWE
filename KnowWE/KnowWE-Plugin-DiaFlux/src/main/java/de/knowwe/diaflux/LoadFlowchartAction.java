@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.diaflux.kbinfo;
+package de.knowwe.diaflux;
 
 import java.io.IOException;
 
@@ -27,7 +27,6 @@ import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.diaflux.FlowchartUtils;
 import de.knowwe.diaflux.type.FlowchartType;
 
 /**
@@ -49,16 +48,11 @@ public class LoadFlowchartAction extends AbstractAction {
 			String source = FlowchartUtils.getFlowSourceWithoutPreview(section);
 
 			// TODO fix xml-soup of source and set content type to xml
+			// Problem: '<' and '>' in e.g. conditions that would have to be escaped properly
 			context.setContentType("text/html; charset=UTF-8");
-			String escapeXml = source;
-			context.getWriter().write(escapeXml);
+			context.getWriter().write(source);
 
 		}
-		// else {
-		// TODO error handling
-		// return;
-		// }
-
 	}
 
 }

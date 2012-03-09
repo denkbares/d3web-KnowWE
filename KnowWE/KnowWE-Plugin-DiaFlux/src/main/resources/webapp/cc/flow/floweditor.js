@@ -242,7 +242,7 @@ FlowEditor.prototype.deleteFlowchart = function() {
 
 FlowEditor.prototype.saveFlowchart = function(closeOnSuccess) {
 	theFlowchart.setSelection(null, false, false);
-	var xml = theFlowchart.toXML(true); // include preview for us
+	var xml = theFlowchart.toXML(); 
 	this._saveFlowchartText(xml, closeOnSuccess);
 }
 
@@ -516,7 +516,7 @@ Flowchart.prototype.selectAt = function(x, y, addToSelection) {
 	}
 }
 
-Flowchart.prototype.toXML = function(includePreview) {
+Flowchart.prototype.toXML = function() {
 	var xml = '<flowchart' +
 			' fcid="'+this.id+'"' +
 			(this.name ? ' name="'+this.name.escapeXML()+'"' : '') +
@@ -538,75 +538,9 @@ Flowchart.prototype.toXML = function(includePreview) {
 		xml += this.rules[i].toXML() + '\n';
 	}
 
-	if (this.dom && includePreview) {
-		xml += '\t<preview mimetype="text/html">\n' +
-				'\t\t<![CDATA[\n' +
-				this.toPreviewHTML(this.dom.select('.Flowchart')[0]) + '\n' +
-				'\t\t]]>\n' +
-				'\t</preview>\n';
-	}
-
 	xml += '</flowchart>\r\n'
 	return xml;
 }
-
-Flowchart.prototype.toPreviewHTML = function(node) { 
-	//return node.innerHTML;
-	if (node.nodeName == '#text') return node.data;
-	if (node.style.display == 'none') return '';
-	if (node.style.visibility == 'hidden') return '';
-	if (node.className == 'ContainerLvl1') return '';
-	if (node.id.startsWith('resizeHandle')) return '';
-	var size = Element.getDimensions(node);
-	var html = '<' + node.nodeName; 
-	if (node.className)	html += ' class="' + node.className + '"';
-	if (node.id) html += ' id="' + node.id + '"';
-	if (node.src){
-		var srcVal = node.src;
-
-		if (node.src.startsWith('http://')){
-		
-			
-			var path = self.location.href;
-			var pos = path.indexOf('.jsp');
-			path = path.substring(0,pos);
-			
-			pos = path.lastIndexOf('/') + 1;
-			path = path.substring(0,pos);
-		
-			srcVal = node.src.substring(path.length, srcVal.length);
-		}
-		
-		html += ' src="' + srcVal + '"';
-	}
-	// for nodes we have a problem: padding is not taken nto consideration
-	// therefore allow width+padding not to be more than parent's width - 2
-
-	if (node.parentNode.hasClassName('Node') && (node.hasClassName('flowchart') || node.hasClassName('action') || node.hasClassName('question') ||  node.hasClassName('decision'))) {
-		size.width = Element.getWidth(node.parentNode)-13;
-		size.height += 2; 
-	}
-	if (node.parentNode.hasClassName('Node') && (node.hasClassName('start') || node.hasClassName('exit') || node.hasClassName('comment') || node.hasClassName('snapshot'))) {
-		size.width = Element.getWidth(node.parentNode)-13;
-		size.height += 2; 
-			
-	}
-	// for nodes we want to have the fixed size in addition to the style
-	var attributes = ['position', 'display', 'visibility', 'left', 'right', 'top', 'bottom', 'overflow'];
-	var style = ''
-	for (var i=0; i<attributes.length; i++) {
-		var value = node.style[attributes[i]];
-		if (value) style += attributes[i] + ': ' + value + ';';
-	}
-	html += ' style="' + style + ' width: ' + size.width + 'px; height: ' + size.height + 'px;"' + '>';
-	var childs = node.childNodes;
-	for (var i=0; i<childs.length; i++) {
-		html += this.toPreviewHTML(childs[i]);
-	}
-	html += '</' + node.nodeName + '>';
-	return html;
-}
-
 var SelectTool = {}
 
 SelectTool.createSelectionBox = function(x1, y1, x2, y2, pixelSize, pixelColor, spacing, maxDots) {

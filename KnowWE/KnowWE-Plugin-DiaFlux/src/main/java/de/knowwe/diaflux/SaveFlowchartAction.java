@@ -23,7 +23,6 @@ package de.knowwe.diaflux;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,22 +57,11 @@ public class SaveFlowchartAction extends AbstractAction {
 		String topic = context.getTitle();
 		String newText = context.getParameter(KnowWEAttributes.TEXT);
 
-		ResourceBundle wikiConfig = ResourceBundle.getBundle("KnowWE_config");
-		boolean render = Boolean.valueOf(wikiConfig.getString("knowweplugin.diaflux.render"));
-
-		String source;
-		if (render) {
-			source = FlowchartUtils.removePreview(newText);
-		}
-		else {
-			source = newText;
-		}
-
 		if (nodeID == null) {
-			saveNewFlowchart(context, web, topic, source);
+			saveNewFlowchart(context, web, topic, newText);
 		}
 		else {
-			replaceExistingFlowchart(context, web, nodeID, topic, source);
+			replaceExistingFlowchart(context, web, nodeID, topic, newText);
 		}
 
 	}
