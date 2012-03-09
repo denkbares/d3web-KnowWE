@@ -142,6 +142,15 @@ code.box {
   padding: 0.2em;
   display: block;
 }
+
+.ajaxloader {
+	position : fixed;
+	top : 50%;
+	left : 50%;
+	margin-left: -50px;
+	margin-top: -50px;
+	z-index: 2000;
+}
 /* ################################################## */
 /* ------------->>> info boxes       <<<------------- */
 .box{
@@ -910,3 +919,5 @@ div.collapsible-questiontree ul .pointer{
 .answerSet {
 	border: 1px solid #777;
 }
+
+

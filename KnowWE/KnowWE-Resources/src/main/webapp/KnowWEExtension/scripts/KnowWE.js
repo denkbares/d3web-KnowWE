@@ -158,10 +158,9 @@ KNOWWE.core.util = function(){
        		var node = $('KnowWEProcessingIndicator');
     		if (!node && indicatorShouldBeVisible) {
     			// not visible but should be --> show it
-        		node = new Element('div', {'id': 'KnowWEProcessingIndicator', 'styles': { 
-        			'display': 'block', 'position': 'fixed', 'top': '0px', 'left': '0px' }});
+        		node = new Element('div', {'id': 'KnowWEProcessingIndicator', 'class' : 'ajaxloader'});
         		document.body.appendChild(node);
-        		node.innerHTML = '<img src="KnowWEExtension/images/ajax-loader16.gif"></img>';
+        		node.innerHTML = '<img src="KnowWEExtension/images/ajax-100.gif"></img>';
         	}
         	else if (node && !indicatorShouldBeVisible) {
     			// visible but should not be --> delete it
