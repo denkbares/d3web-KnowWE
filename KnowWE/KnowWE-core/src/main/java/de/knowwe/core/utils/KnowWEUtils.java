@@ -89,6 +89,7 @@ public class KnowWEUtils {
 
 		return text.replaceAll("&", "&amp;").
 				replaceAll("\"", "&quot;").
+				replaceAll("'", "&#x27;").
 				replaceAll("<", "&lt;").
 				replaceAll(">", "&gt;");
 	}
