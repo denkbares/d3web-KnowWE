@@ -504,7 +504,7 @@ public class KnowWEUtils {
 	 * @created 27.01.2012
 	 * @param title Title of the wikipage
 	 * @param fileName filename of the attachment
-	 * @return {@link ConnectorAttachment} fullfilling the specified parameters
+	 * @return {@link ConnectorAttachment} fulfilling the specified parameters
 	 *         or null, if no such attachment exists
 	 */
 	public static ConnectorAttachment getAttachment(String title, String fileName) {
@@ -539,8 +539,8 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns all {@link ConnectorAttachment}s which fullname fits to the regex
-	 * or which filename matches to the regexp and which parent has the
+	 * Returns all {@link ConnectorAttachment}s which full name fits to the
+	 * regex or which filename matches to the regexp and which parent has the
 	 * specified topic
 	 * 
 	 * @created 09.02.2012

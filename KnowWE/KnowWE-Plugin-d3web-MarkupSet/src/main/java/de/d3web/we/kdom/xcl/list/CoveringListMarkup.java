@@ -27,26 +27,31 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 
 public class CoveringListMarkup extends DefaultMarkupType {
 
+	public static final String OTHER_QUESTIONS = "otherQuestions";
+	public static final String OTHER_QUESTIONS_IGNORE = "ignore";
+	public static final String OTHER_QUESTIONS_NORMAL_VALUE_COVERED = "normalValueCovered";
 	public static final String ESTABLISHED_THRESHOLD = "establishedThreshold";
 	public static final String SUGGESTED_THRESHOLD = "suggestedThreshold";
 	public static final String MIN_SUPPORT = "minSupport";
 	public static final String DESCRIPTION = "description";
 
-	private static DefaultMarkup m = null;
+	private static DefaultMarkup MARKUP = null;
 
 	static {
-		m = new DefaultMarkup("CoveringList");
-		m.addContentType(new CoveringList());
-		m.addAnnotation(ESTABLISHED_THRESHOLD, false);
-		m.addAnnotation(SUGGESTED_THRESHOLD, false);
-		m.addAnnotation(MIN_SUPPORT, false);
-		m.addAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		m.addAnnotationRenderer(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME,
+		MARKUP = new DefaultMarkup("CoveringList");
+		MARKUP.addContentType(new CoveringList());
+		MARKUP.addAnnotation(ESTABLISHED_THRESHOLD, false);
+		MARKUP.addAnnotation(SUGGESTED_THRESHOLD, false);
+		MARKUP.addAnnotation(MIN_SUPPORT, false);
+		MARKUP.addAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME, false);
+		MARKUP.addAnnotationRenderer(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME,
 				StyleRenderer.ANNOTATION);
-		m.addAnnotation(DESCRIPTION, false);
+		MARKUP.addAnnotation(DESCRIPTION, false);
+		MARKUP.addAnnotation(OTHER_QUESTIONS, false,
+				OTHER_QUESTIONS_IGNORE, OTHER_QUESTIONS_NORMAL_VALUE_COVERED);
 	}
 
 	public CoveringListMarkup() {
-		super(m);
+		super(MARKUP);
 	}
 }

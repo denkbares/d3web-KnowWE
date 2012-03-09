@@ -105,25 +105,31 @@ public class ListSolutionType extends AbstractType {
 
 			Solution solution = solutionDef.get().getTermObject(article, solutionDef);
 
-			Section<DefaultMarkupType> defaultMarkupType = Sections.findAncestorOfType(s,
-					DefaultMarkupType.class);
+			Section<CoveringListMarkup> defaultMarkupType = Sections.findAncestorOfType(s,
+					CoveringListMarkup.class);
 
 			if (solution != null) {
 				XCLModel xclModel = solution.getKnowledgeStore().getKnowledge(
 						XCLModel.KNOWLEDGE_KIND);
+
+				// create it lazy if not already exists
 				if (xclModel == null) {
-					XCLModel m = new XCLModel(solution);
+					xclModel = new XCLModel(solution);
+					solution.getKnowledgeStore().addKnowledge(XCLModel.KNOWLEDGE_KIND, xclModel);
+				}
 
-					setThresholdsAndMinSupport(defaultMarkupType, m);
-
-					solution.getKnowledgeStore().addKnowledge(XCLModel.KNOWLEDGE_KIND,
-							m);
-
-					String description = DefaultMarkupType.getAnnotation(defaultMarkupType,
-							CoveringListMarkup.DESCRIPTION);
-					if (description != null) {
-						m.getSolution().getInfoStore().addValue(MMInfo.DESCRIPTION, description);
-					}
+				// initialize xcl model parameters
+				String otherQuestions = DefaultMarkupType.getAnnotation(defaultMarkupType,
+						CoveringListMarkup.OTHER_QUESTIONS);
+				if (otherQuestions != null) {
+					boolean considerOnlyRelevantRelations = CoveringListMarkup.OTHER_QUESTIONS_IGNORE.equalsIgnoreCase(otherQuestions);
+					xclModel.setConsiderOnlyRelevantRelations(considerOnlyRelevantRelations);
+				}
+				setThresholdsAndMinSupport(defaultMarkupType, xclModel);
+				String description = DefaultMarkupType.getAnnotation(defaultMarkupType,
+						CoveringListMarkup.DESCRIPTION);
+				if (description != null) {
+					xclModel.getSolution().getInfoStore().addValue(MMInfo.DESCRIPTION, description);
 				}
 			}
 			return null;
@@ -144,7 +150,7 @@ public class ListSolutionType extends AbstractType {
 		 * @param defaultMarkupType
 		 * @param m
 		 */
-		private void setThresholdsAndMinSupport(Section<DefaultMarkupType> defaultMarkupType, XCLModel m) {
+		private void setThresholdsAndMinSupport(Section<CoveringListMarkup> defaultMarkupType, XCLModel m) {
 
 			// handle ESTABLISHED_THRESHOLD
 			Section<? extends AnnotationContentType> estaAnnoSection = DefaultMarkupType.getAnnotationContentSection(
