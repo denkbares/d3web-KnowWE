@@ -124,6 +124,7 @@ KNOWWE.plugin.instantEdit = function() {
             
             var options = {
                 url : KNOWWE.core.util.getURL(params),
+                async : false,
                 response : {
                     action : 'none',
 	                onError : _IE.onErrorBehavior,
