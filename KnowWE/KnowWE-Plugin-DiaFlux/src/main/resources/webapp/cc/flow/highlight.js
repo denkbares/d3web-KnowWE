@@ -23,10 +23,8 @@ DiaFlux.Highlight.getHighlights = function(actionName, infos){
         }
     };
     new _KA(options).send();
-	
 		
 } 
-
 
 DiaFlux.Highlight.highlight = function(response) {
 	
@@ -37,36 +35,55 @@ DiaFlux.Highlight.highlight = function(response) {
 		return
 	}
 	var prefix = doc.getElementsByTagName('flow')[0].getAttribute('prefix');
-	var nodes = doc.getElementsByTagName('node');
-	var edges = doc.getElementsByTagName('edge');
 	
 	var flowDOM = $(flowid).getElementsBySelector('.FlowchartGroup')[0];
-	
 	var flowchart = flowDOM.__flowchart;
 	
+	var nodes = doc.getElementsByTagName('node');
+	DiaFlux.Highlight.highlightNodes(flowchart, prefix, nodes);
+	
+	var edges = doc.getElementsByTagName('edge');
+	DiaFlux.Highlight.highlightEdges(flowchart, prefix, edges);
+	
+	
+}
+
+DiaFlux.Highlight.highlightNodes = function(flowchart, prefix, nodes){
+
 	for (var i = 0; i< nodes.length; i++) {
-		var colorNode = nodes[i];
-		var className = KBInfo._nodeText(colorNode); //TODO
+		var node = flowchart.findNode(nodes[i].getAttribute('id'));
+
+		DiaFlux.Highlight.addAttributesToDOM([node.getDOM()], nodes[i].attributes, prefix);
 		
-		var colorNodeID = colorNode.getAttribute('id');
-		var node = flowchart.findNode(colorNodeID);
-		DiaFlux.Highlight.setHighlightClass(node.getDOM(), className, prefix);
 	}
 	
+}
+
+DiaFlux.Highlight.highlightEdges = function(flowchart, prefix, edges){
 	
-	for (var j = 0; j< edges.length; j++) {
-		var colorEdge = edges[j];
-		var className = KBInfo._nodeText(colorEdge); //TODO
-		var colorEdgeID = colorEdge.getAttribute('id');
-		var edge = flowchart.findRule(colorEdgeID);
+	for (var i = 0; i < edges.length; i++) {
+		var edge = flowchart.findRule(edges[i].getAttribute('id'));
 		var lines = edge.getDOM().getElementsBySelector('.h_line, .v_line');
 		
-		for ( var k = 0; k < lines.length; k++) {
-			DiaFlux.Highlight.setHighlightClass(lines[k], className, prefix);
-			
-		}
+		DiaFlux.Highlight.addAttributesToDOM(lines, edges[i].attributes, prefix);
+		
 	}
 	
+}
+
+DiaFlux.Highlight.addAttributesToDOM = function(doms, attributes, prefix){
+	for ( var j = 0; j < doms.length; j++) {
+		
+		for (var k = 0; k < attributes.length; k++){
+			if (attributes[k].name == "id") {
+				continue; //ignore, is id of object in flowchart
+			} else if (attributes[k].name == "class") {
+				DiaFlux.Highlight.setHighlightClass(doms[j], attributes[k].value, prefix);
+			} else {
+				DiaFlux.Highlight.setAttribute(doms[j], attributes[k]);
+			}
+		}
+	}
 }
 
 //removes all classes starting with the prefix from elem and adds the class clazz
@@ -77,6 +94,6 @@ DiaFlux.Highlight.setHighlightClass = function(elem, clazz, prefix) {
 	
 }
 
-
-
-
+DiaFlux.Highlight.setAttribute = function(elem, attribute) {
+	elem[attribute.name] = attribute.value;
+}

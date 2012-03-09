@@ -55,7 +55,7 @@ public class GetSubflowLinksAction extends AbstractAction {
 		Section<FlowchartType> flowchart =
 				Sections.findSuccessor(diaFluxSec, FlowchartType.class);
 		if (flowchart == null) {
-			context.getWriter().write("<flow></flow>");
+			context.getWriter().write(GetTraceHighlightAction.EMPTY_HIGHLIGHT);
 			return;
 		}
 
@@ -73,11 +73,11 @@ public class GetSubflowLinksAction extends AbstractAction {
 		// make sub-flowcharts links to be able to go to their definition
 		String thisFlowchartName = FlowchartType.getFlowchartName(section);
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
-		if (kb == null) return "<flow></flow>";
+		if (kb == null) return GetTraceHighlightAction.EMPTY_HIGHLIGHT;
 		FlowSet flowSet = DiaFluxUtils.getFlowSet(kb);
-		if (flowSet == null) return "<flow></flow>";
+		if (flowSet == null) return GetTraceHighlightAction.EMPTY_HIGHLIGHT;
 		Flow flow = flowSet.get(thisFlowchartName);
-		if (flow == null) return "<flow></flow>";
+		if (flow == null) return GetTraceHighlightAction.EMPTY_HIGHLIGHT;
 
 		String flowName = FlowchartType.getFlowchartName(section);
 

@@ -20,12 +20,19 @@ package de.knowwe.diaflux;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import de.d3web.core.inference.PSAction;
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.ValueObject;
 import de.d3web.core.session.Session;
+import de.d3web.core.session.Value;
+import de.d3web.diaFlux.flow.ActionNode;
 import de.d3web.diaFlux.flow.DiaFluxCaseObject;
+import de.d3web.diaFlux.flow.DiaFluxElement;
 import de.d3web.diaFlux.flow.Edge;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowRun;
@@ -54,6 +61,10 @@ public class GetTraceHighlightAction extends AbstractAction {
 	private static final String TRACE_ACTIVE_CLASS = PREFIX + "Active";
 	private static final String TRACE_SNAP_CLASS = PREFIX + "Snap";
 
+	public static final String CSS_CLASS = "class";
+	public static final String TOOL_TIP = "title";
+	public static final String EMPTY_HIGHLIGHT = "<flow></flow>";
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
@@ -71,7 +82,7 @@ public class GetTraceHighlightAction extends AbstractAction {
 		Session session = SessionProvider.getSession(context, kb);
 
 		if (flowchart == null || session == null) {
-			context.getWriter().write("<flow></flow>");
+			context.getWriter().write(EMPTY_HIGHLIGHT);
 			return;
 		}
 
@@ -81,57 +92,56 @@ public class GetTraceHighlightAction extends AbstractAction {
 		DiaFluxCaseObject diaFluxCaseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
 		Flow flow = DiaFluxUtils.getFlowSet(session).get(flowName);
 
-		List<Edge> snappedEdges = new LinkedList<Edge>();
-		List<Node> snappedNodes = new LinkedList<Node>();
-
-		List<Edge> activeEdges = new LinkedList<Edge>();
-		List<Node> activeNodes = new LinkedList<Node>();
+		Map<Edge, Map<String, String>> edges = new HashMap<Edge, Map<String, String>>();
+		Map<Node, Map<String, String>> nodes = new HashMap<Node, Map<String, String>>();
 
 		// first highlight traced nodes/edges to yellow
 		for (Node node : diaFluxCaseObject.getTracedNodes()) {
 			if (node.getFlow().getName().equals(flowName)) {
-				snappedNodes.add(node);
+				putValue(nodes, node, CSS_CLASS, TRACE_SNAP_CLASS);
 			}
 		}
 		for (Edge edge : diaFluxCaseObject.getTracedEdges()) {
 			if (edge.getStartNode().getFlow().getName().equals(flowName)) {
-				snappedEdges.add(edge);
+				putValue(edges, edge, CSS_CLASS, TRACE_SNAP_CLASS);
 			}
 		}
+
 		// then highlight all currently active nodes/edges to green
 		for (FlowRun run : diaFluxCaseObject.getRuns()) {
 			for (Node node : run.getActiveNodes()) {
 				if (node.getFlow().getName().equals(flowName)) {
-					activeNodes.add(node);
+					putValue(nodes, node, CSS_CLASS, TRACE_ACTIVE_CLASS);
+
 					for (Edge edge : node.getOutgoingEdges()) {
 						if (FluxSolver.evalEdge(session, edge)) {
-							activeEdges.add(edge);
+							putValue(edges, edge, CSS_CLASS, TRACE_ACTIVE_CLASS);
 						}
 					}
 				}
 			}
 		}
 
-		snappedNodes.removeAll(activeNodes);
-		snappedEdges.removeAll(activeEdges);
-
-		addNodeHighlight(builder, snappedNodes, TRACE_SNAP_CLASS);
-		addEdgeHighlight(builder, snappedEdges, TRACE_SNAP_CLASS);
-
-		addNodeHighlight(builder, activeNodes, TRACE_ACTIVE_CLASS);
-		addEdgeHighlight(builder, activeEdges, TRACE_ACTIVE_CLASS);
-
 		List<Edge> remainingEdges = new ArrayList<Edge>(flow.getEdges());
 		List<Node> remainingNodes = new ArrayList<Node>(flow.getNodes());
-		remainingEdges.removeAll(activeEdges);
-		remainingEdges.removeAll(snappedEdges);
-
-		remainingNodes.removeAll(activeNodes);
-		remainingNodes.removeAll(snappedNodes);
+		remainingEdges.removeAll(edges.keySet());
+		remainingNodes.removeAll(nodes.keySet());
 
 		// clear classes on all remaining nodes and edges
-		addNodeHighlight(builder, remainingNodes, "");
-		addEdgeHighlight(builder, remainingEdges, "");
+		for (Node node : remainingNodes) {
+			putValue(nodes, node, CSS_CLASS, "");
+		}
+
+		for (Edge edge : remainingEdges) {
+			putValue(edges, edge, CSS_CLASS, "");
+		}
+		
+		for (Node node : flow.getNodes()) {
+			addValueTooltip(session, nodes, node);
+		}
+
+		addNodeHighlight(builder, nodes);
+		addEdgeHighlight(builder, edges);
 
 		appendFooter(builder);
 
@@ -140,13 +150,38 @@ public class GetTraceHighlightAction extends AbstractAction {
 
 	}
 
+
+	private void addValueTooltip(Session session, Map<Node, Map<String, String>> nodes, Node node) {
+		if (node instanceof ActionNode) {
+			PSAction action = ((ActionNode) node).getAction();
+			List<? extends TerminologyObject> objects = action.getBackwardObjects();
+			if (!objects.isEmpty()) {
+				// There should be only 1 backward object
+				TerminologyObject object = objects.get(0);
+				Value value = session.getBlackboard().getValue((ValueObject) object);
+				String tooltip = object.getName() + " = '" + value.toString() + "'";
+				putValue(nodes, node, TOOL_TIP, tooltip);
+
+			}
+		}
+	}
+
+	public static <T> void putValue(Map<T, Map<String, String>> map, T object, String key, String value) {
+		Map<String, String> values = map.get(object);
+		if (values == null) {
+			values = new HashMap<String, String>();
+			map.put(object, values);
+		}
+		values.put(key, KnowWEUtils.escapeHTML(value));
+	}
+
 	/**
 	 * 
 	 * @created 08.06.2011
 	 * @param builder
 	 */
 	public static void appendFooter(StringBuilder builder) {
-		builder.append("</flow>");
+		builder.append("</flow>\r");
 		builder.append("\r");
 
 	}
@@ -155,31 +190,36 @@ public class GetTraceHighlightAction extends AbstractAction {
 
 		builder.append("<flow id='");
 		builder.append(flowName);
-		builder.append("' prefix ='" + PREFIX + "'>\r");
+		builder.append("' prefix ='" + prefix + "'>\r");
 
 	}
 
-	public static void addEdgeHighlight(StringBuilder builder, List<Edge> edges, String cssclass) {
+	public static void addEdgeHighlight(StringBuilder builder, Map<Edge, Map<String, String>> edges) {
 
-		for (Edge edge : edges) {
-			builder.append("<edge id='");
-			builder.append(edge.getID());
-			builder.append("'>");
-			builder.append(cssclass);
-			builder.append("</edge>\r");
+		addHighlight(builder, edges, "edge");
+	}
+
+	public static void addNodeHighlight(StringBuilder builder, Map<Node, Map<String, String>> nodes) {
+
+		addHighlight(builder, nodes, "node");
+	}
+
+	public static <T extends DiaFluxElement> void addHighlight(StringBuilder builder, Map<T, Map<String, String>> objects, String objectType) {
+		for (T element : objects.keySet()) {
+			builder.append("<" + objectType + " id='");
+			builder.append(element.getID());
+			builder.append("' ");
+
+			Map<String, String> values = objects.get(element);
+			for (String key : values.keySet()) {
+				builder.append(key);
+				builder.append("='");
+				builder.append(values.get(key));
+				builder.append("' ");
+			}
+			builder.append(">");
+			builder.append("</" + objectType + ">\r");
 		}
 
 	}
-
-	public static void addNodeHighlight(StringBuilder builder, List<Node> nodes, String cssclass) {
-
-		for (Node node : nodes) {
-			builder.append("<node id='");
-			builder.append(node.getID());
-			builder.append("'>");
-			builder.append(cssclass);
-			builder.append("</node>\r");
-		}
-	}
-
 }

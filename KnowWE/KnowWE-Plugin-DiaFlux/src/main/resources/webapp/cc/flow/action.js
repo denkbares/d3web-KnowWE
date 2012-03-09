@@ -674,7 +674,7 @@ ActionPane.prototype.render = function() {
 		}, (valueText == null) ? [] : [valueText])
 	]);
 	dom.__ActionEditor = this;
-	if (infoObject) object.title = infoObject.getToolTip();
+	//if (infoObject) object.title = infoObject.getToolTip();
 	return dom;
 }
  	
