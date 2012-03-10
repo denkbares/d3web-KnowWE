@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
 
@@ -105,7 +105,7 @@ public class VersionTagHandler extends AbstractHTMLTagHandler {
 
 	@Override
 	public String getDescription(UserContext user) {
-		return KnowWEEnvironment.getInstance().getKwikiBundle(user).getString(
+		return Environment.getInstance().getMessageBundle(user).getString(
 				"KnowWE.Version.description");
 	}
 

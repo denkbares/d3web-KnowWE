@@ -35,7 +35,7 @@ import de.knowwe.core.kdom.rendering.Renderer;
  * @author Johannes Dienst
  * 
  */
-public class KnowWETypeUtils {
+public class TypeUtils {
 
 	/**
 	 * Removes duplicates. Needed because the java.util.Set-approach wont work
@@ -67,7 +67,7 @@ public class KnowWETypeUtils {
 	 * @param renderer
 	 */
 	public static void injectRendererToSuccessorType(Type root, Class<? extends Type> clazz, Renderer renderer) {
-		KnowWETypeSet set = new KnowWETypeSet();
+		TypeSet set = new TypeSet();
 		getAllChildrenTypesRecursive(root, set);
 		for (Type t : set.toList()) {
 			if (t.isAssignableFromType(clazz)) {
@@ -83,7 +83,7 @@ public class KnowWETypeUtils {
 	 * @param allTypes
 	 * @return
 	 */
-	public static KnowWETypeSet getAllChildrenTypesRecursive(Type type, KnowWETypeSet allTypes) {
+	public static TypeSet getAllChildrenTypesRecursive(Type type, TypeSet allTypes) {
 
 		// Recursionstop
 		if (allTypes.contains(type)) {
@@ -110,7 +110,7 @@ public class KnowWETypeUtils {
 				if (!allTypes.contains(childrentype)) {
 					allTypes.add(childrentype);
 					for (Type c : childrentype.getChildrenTypes()) {
-						KnowWETypeSet t = getAllChildrenTypesRecursive(c, allTypes);
+						TypeSet t = getAllChildrenTypesRecursive(c, allTypes);
 						allTypes.addAll(t.toList());
 					}
 				}

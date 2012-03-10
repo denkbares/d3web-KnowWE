@@ -30,9 +30,9 @@ import java.util.WeakHashMap;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.JPFPluginManager;
-import de.knowwe.core.KnowWEArticleManager;
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
@@ -66,11 +66,11 @@ public class FlowchartUtils {
 	}
 
 	public static Object storeFlowProperty(Flow flow, String key, Object property) {
-		return storeFlowProperty(KnowWEEnvironment.DEFAULT_WEB, flow, key, property);
+		return storeFlowProperty(Environment.DEFAULT_WEB, flow, key, property);
 	}
 
 	public static Object getFlowProperty(Flow flow, String key) {
-		return getFlowProperty(KnowWEEnvironment.DEFAULT_WEB, flow, key);
+		return getFlowProperty(Environment.DEFAULT_WEB, flow, key);
 	}
 
 	public static Object storeFlowProperty(String web, Flow flow, String key, Object property) {
@@ -221,10 +221,10 @@ public class FlowchartUtils {
 	 * @return
 	 */
 	public static Section<FlowchartType> findFlowchartSection(String web, String calledFlowName) {
-		KnowWEArticleManager manager = KnowWEEnvironment.getInstance().getArticleManager(web);
+		ArticleManager manager = Environment.getInstance().getArticleManager(web);
 
-		for (Iterator<KnowWEArticle> iterator = manager.getArticleIterator(); iterator.hasNext();) {
-			KnowWEArticle article = iterator.next();
+		for (Iterator<Article> iterator = manager.getArticleIterator(); iterator.hasNext();) {
+			Article article = iterator.next();
 			List<Section<FlowchartType>> matches = new LinkedList<Section<FlowchartType>>();
 			Sections.findSuccessorsOfType(article.getSection(), FlowchartType.class, matches);
 			for (Section<FlowchartType> match : matches) {

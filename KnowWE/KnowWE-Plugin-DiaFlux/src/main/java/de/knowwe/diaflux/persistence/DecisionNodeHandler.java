@@ -24,7 +24,7 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.ActionNode;
 import de.d3web.diaFlux.flow.NOOPAction;
 import de.d3web.diaFlux.flow.Node;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.diaflux.type.DecisionType;
@@ -44,13 +44,13 @@ public class DecisionNodeHandler extends AbstractNodeHandler {
 	}
 
 	@Override
-	public boolean canCreateNode(KnowWEArticle article, KnowledgeBase kb,
+	public boolean canCreateNode(Article article, KnowledgeBase kb,
 			Section<NodeType> nodeSection) {
 		return getNodeInfo(nodeSection) != null;
 	}
 
 	@Override
-	public Node createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
+	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<Message> errors) {
 
 		return new ActionNode(id, NOOPAction.INSTANCE);

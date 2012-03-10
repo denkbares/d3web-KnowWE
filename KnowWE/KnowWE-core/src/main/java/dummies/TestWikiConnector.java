@@ -33,20 +33,20 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import de.knowwe.core.action.KnowWEActionDispatcher;
+import de.knowwe.core.action.ActionDispatcher;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.ConnectorAttachment;
-import de.knowwe.core.wikiConnector.KnowWEWikiConnector;
+import de.knowwe.core.wikiConnector.WikiConnector;
 
 /**
- * Used in the tests. A WikiConnector is needed to initialize the
- * KnowWEEnvironment. The methods are empty.
+ * Used in the tests. A WikiConnector is needed to initialize the Environment.
+ * The methods are empty.
  * 
  * @author Johannes Dienst
  * 
  */
-public class KnowWETestWikiConnector implements KnowWEWikiConnector {
+public class TestWikiConnector implements WikiConnector {
 
 	/**
 	 * This returns a path, that enables the use of this connector in tests of
@@ -93,7 +93,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	}
 
 	@Override
-	public KnowWEActionDispatcher getActionDispatcher() {
+	public ActionDispatcher getActionDispatcher() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -149,16 +149,6 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	public boolean writeArticleToWikiEnginePersistence(String name, String text, UserContext context) {
 		return true;
 	}
-
-	// @Override
-	// public boolean writeArticleToWikiEnginePersistence(String name, String
-	// text, KnowWEParameterMap map, boolean fullParse) {
-	// KnowWEEnvironment.getInstance().getArticleManager(
-	// KnowWEEnvironment.DEFAULT_WEB).registerArticle(
-	// KnowWEArticle.createArticle(text, name, KnowWEEnvironment.getInstance()
-	// .getRootType(), KnowWEEnvironment.DEFAULT_WEB, fullParse));
-	// return true;
-	// }
 
 	@Override
 	public boolean setPageLocked(String articlename, String user) {

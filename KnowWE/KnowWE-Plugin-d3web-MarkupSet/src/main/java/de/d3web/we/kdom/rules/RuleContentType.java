@@ -53,7 +53,7 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.SuccessorNotReusedConstraint;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.CommentLineType;
 import de.knowwe.core.kdom.basicType.UnrecognizedSyntaxType;
@@ -159,7 +159,7 @@ public class RuleContentType extends AbstractType {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public Collection<Message> create(KnowWEArticle article,
+		public Collection<Message> create(Article article,
 				Section<RuleAction> actionS) {
 
 			Section<ConditionActionRuleContent> rule = Sections
@@ -224,7 +224,7 @@ public class RuleContentType extends AbstractType {
 		}
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<RuleAction> rule) {
+		public void destroy(Article article, Section<RuleAction> rule) {
 			Rule kbr = (Rule) rule.getSectionStore().getObject(article,
 					ruleStoreKey);
 			if (kbr != null) {
@@ -246,7 +246,7 @@ public class RuleContentType extends AbstractType {
 		@Override
 		public void render(Section<?> sec,
 				UserContext user, StringBuilder string) {
-			KnowWEArticle article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
+			Article article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
 			Section<RuleAction> ruleAction = Sections.findSuccessor(sec,
 					RuleAction.class);
 			Rule rule = null;
@@ -284,7 +284,7 @@ public class RuleContentType extends AbstractType {
 		 * @param session
 		 * @return
 		 */
-		private void highlightRule(KnowWEArticle article,
+		private void highlightRule(Article article,
 				Section<?> sec, Rule r,
 				Session session, UserContext user, StringBuilder string) {
 

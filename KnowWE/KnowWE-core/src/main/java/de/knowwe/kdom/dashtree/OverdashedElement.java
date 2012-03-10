@@ -26,7 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
@@ -79,7 +79,7 @@ public class OverdashedElement extends AbstractType {
 	class OverDashedErrorHandler extends SubtreeHandler<OverdashedElement> {
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<OverdashedElement> s) {
+		public Collection<Message> create(Article article, Section<OverdashedElement> s) {
 			return Messages.asList(Messages.syntaxError("to many dashes; remove \"-\""));
 		}
 	}

@@ -20,7 +20,7 @@ package de.knowwe.core.action;
 
 import java.io.IOException;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.taghandler.ObjectInfoTagHandler;
@@ -48,15 +48,15 @@ public class CreateObjectHomePageAction extends AbstractAction {
 
 		// We assume that the user is privileged to create a new article if
 		// he is allowed to edit the current article
-		if (KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(currentArticle)) {
+		if (Environment.getInstance().getWikiConnector().userCanEditPage(currentArticle)) {
 
 			// Article doesn't exist -> create it!
 			if (objectName != null
-					&& KnowWEEnvironment.getInstance().getWikiConnector().getArticleSource(
+					&& Environment.getInstance().getWikiConnector().getArticleSource(
 							objectName) == null) {
 				String content = "[{KnowWEPlugin objectInfo , objectname=" + objectName
 							+ "}]";
-				KnowWEEnvironment.getInstance().getWikiConnector().createWikiPage(objectName,
+				Environment.getInstance().getWikiConnector().createWikiPage(objectName,
 							content, context.getUserName());
 			}
 

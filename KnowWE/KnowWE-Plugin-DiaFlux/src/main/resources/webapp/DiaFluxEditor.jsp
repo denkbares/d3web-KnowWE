@@ -1,11 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<%@page import="de.knowwe.core.wikiConnector.KnowWEWikiConnector"%>
+<%@page import="de.knowwe.core.wikiConnector.WikiConnector"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="de.d3web.plugin.Extension"%>
 <%@ page import="de.d3web.plugin.JPFPluginManager"%>
 <%@ page import="de.knowwe.core.kdom.parsing.Section"%>
 <%@ page import="de.knowwe.core.kdom.parsing.Sections"%>
-<%@ page import="de.knowwe.core.kdom.KnowWEArticle"%>
+<%@ page import="de.knowwe.core.kdom.Article"%>
 <%@ page import="de.knowwe.diaflux.type.DiaFluxType"%>
 <%@ page import="com.ecyrd.jspwiki.*" %>
 <%@ page import="de.knowwe.jspwiki.*" %>
@@ -24,16 +24,16 @@
 	WikiContext wikiContext = wiki.createContext( request, WikiContext.VIEW );
 	
 	// Check if KnowWE is initialized
-	if (!KnowWEEnvironment.isInitialized()) {
-		KnowWEEnvironment.initKnowWE(new JSPWikiKnowWEConnector(wiki));
+	if (!Environment.isInitialized()) {
+		Environment.initKnowWE(new JSPWikiConnector(wiki));
 	}
 	
 	// We need to do this, because the paramterMap is locked!
 	Map<String, String> parameters = UserContextUtil.getParameters(request);
 	
 	// Add user
-	if (!parameters.containsKey(KnowWEAttributes.USER)) {
-		parameters.put(KnowWEAttributes.USER, wikiContext.getWikiSession().getUserPrincipal().getName());
+	if (!parameters.containsKey(Attributes.USER)) {
+		parameters.put(Attributes.USER, wikiContext.getWikiSession().getUserPrincipal().getName());
 	}
 	
 	String kdomID = parameters.get("kdomID");
@@ -47,11 +47,11 @@
 	}
 	
 	// Add topic as containing section of flowchart
-	parameters.put(KnowWEAttributes.TOPIC, diafluxSection.getTitle());
+	parameters.put(Attributes.TOPIC, diafluxSection.getTitle());
 	
 	// Add web
-	if(!parameters.containsKey(KnowWEAttributes.WEB)) {
-		parameters.put(KnowWEAttributes.WEB, "default_web");
+	if(!parameters.containsKey(Attributes.WEB)) {
+		parameters.put(Attributes.WEB, "default_web");
 	}
 	
 	// Create AuthenticationManager instance
@@ -62,14 +62,14 @@
 	
 	String topic = context.getTitle();
 	String web = context.getWeb();
-	KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(web, topic);
+	Article article = Environment.getInstance().getArticle(web, topic);
 	if (article == null){
 		// happens if article is no longer available
 		out.println("<h3>Article not found: '" + topic + "'.</h3>");
 		return;
 	}
 	
-	KnowWEWikiConnector connector = KnowWEEnvironment.getInstance().getWikiConnector();
+	WikiConnector connector = Environment.getInstance().getWikiConnector();
 	boolean canEditPage = connector.userCanEditPage(
 	topic, context.getRequest());
 	

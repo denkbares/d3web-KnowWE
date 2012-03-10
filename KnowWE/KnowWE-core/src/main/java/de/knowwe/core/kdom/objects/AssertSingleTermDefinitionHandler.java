@@ -23,7 +23,7 @@ import java.util.Collection;
 
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -45,7 +45,7 @@ public class AssertSingleTermDefinitionHandler extends SubtreeHandler<Type> {
 	}
 
 	@Override
-	public Collection<Message> create(KnowWEArticle article, Section<Type> section) {
+	public Collection<Message> create(Article article, Section<Type> section) {
 		TerminologyManager tHandler = KnowWEUtils.getTerminologyManager(article, scope);
 		String termIdentifier = KnowWEUtils.getTermIdentifier(section);
 		Collection<Section<?>> termDefinitions = tHandler.getTermDefiningSections(termIdentifier);

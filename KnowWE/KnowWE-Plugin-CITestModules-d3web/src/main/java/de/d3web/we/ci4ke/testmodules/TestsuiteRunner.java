@@ -27,7 +27,7 @@ import de.d3web.we.ci4ke.testing.AbstractCITest;
 import de.d3web.we.ci4ke.testing.CITestResult;
 import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.testcase.TestCaseUtils;
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 
 public class TestsuiteRunner extends AbstractCITest {
 
@@ -41,7 +41,7 @@ public class TestsuiteRunner extends AbstractCITest {
 		String config = "article: " + monitoredArticleTitle;
 
 		TestCase suite = TestCaseUtils.loadTestSuite(
-				monitoredArticleTitle, KnowWEEnvironment.DEFAULT_WEB);
+				monitoredArticleTitle, Environment.DEFAULT_WEB);
 
 		if (suite == null) {
 			return new CITestResult(Type.ERROR, "No Testsuite found in article '"

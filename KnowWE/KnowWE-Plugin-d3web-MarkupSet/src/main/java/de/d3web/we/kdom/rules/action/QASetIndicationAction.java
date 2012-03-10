@@ -33,7 +33,7 @@ import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.QuestionnaireReference;
 import de.knowwe.core.compile.ModifiedTermsConstraint;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -63,7 +63,7 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 	}
 
 	@Override
-	public PSAction createAction(KnowWEArticle article, Section<QASetIndicationAction> s) {
+	public PSAction createAction(Article article, Section<QASetIndicationAction> s) {
 		ActionIndication a = new ActionIndication();
 		List<QASet> qasets = new ArrayList<QASet>();
 		a.setQASets(qasets);
@@ -107,7 +107,7 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 		}
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<AnonymousType> s) {
+		public Collection<Message> create(Article article, Section<AnonymousType> s) {
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
 			String termName = KnowWEUtils.trimQuotes(s.getText());
 			if (terminologyHandler.isDefinedTerm(termName)) {

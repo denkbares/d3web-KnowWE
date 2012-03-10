@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Set;
 
 import de.d3web.plugin.test.InitPluginManager;
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
@@ -18,7 +18,7 @@ import de.knowwe.core.kdom.basicType.QuotedType;
 import de.knowwe.core.kdom.basicType.RoundBracedType;
 import de.knowwe.core.kdom.basicType.SquareBracedType;
 import de.knowwe.core.kdom.parsing.Section;
-import dummies.KnowWETestWikiConnector;
+import dummies.TestWikiConnector;
 
 /**
  * A scope is an selector of a specific subset of KDOM nodes. It's selection is
@@ -118,7 +118,7 @@ public class Scope {
 		Type[] typePath = new Type[kdomDepth];
 		typePath[--kdomDepth] = section.get();
 		Section<?> father = section.getFather();
-		while (!father.get().getClass().equals(KnowWEArticle.class)) {
+		while (!father.get().getClass().equals(Article.class)) {
 			typePath[--kdomDepth] = father.get();
 			father = father.getFather();
 		}
@@ -219,7 +219,7 @@ public class Scope {
 
 	public static void main(String... args) throws IOException {
 		InitPluginManager.init();
-		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());
+		Environment.initKnowWE(new TestWikiConnector());
 		String t4 = "hello world";
 		String t3 = "[" + t4 + "]";
 		String t2 = "\"" + t3 + "\"";
@@ -232,7 +232,7 @@ public class Scope {
 		Type o1 = new RoundBracedType(o2);
 		RootType o0 = RootType.getInstance();
 
-		KnowWEArticle.createArticle(t0, "test", o0, "myWeb");
+		Article.createArticle(t0, "test", o0, "myWeb");
 		Section<?> s0 = Section.createSection(t0, o0, null);
 		Section<?> s1 = Section.createSection(t1, o1, s0);
 		Section<?> s2 = Section.createSection(t2, o2, s1);

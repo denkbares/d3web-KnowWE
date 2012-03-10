@@ -27,7 +27,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.kdom.questionTree.ObjectDescription;
 import de.d3web.we.object.SolutionDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -99,7 +99,7 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent {
 	class CreateSubSolutionRelationHandler extends D3webSubtreeHandler<SolutionDashTreeElementContent> {
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
+		public Collection<Message> create(Article article, Section<SolutionDashTreeElementContent> s) {
 			Section<? extends DashTreeElementContent> fatherSolutionContent = DashTreeUtils.getFatherDashTreeElementContent(
 					s);
 			Section<SolutionDefinition> localSolutionDef = Sections.findSuccessor(s,

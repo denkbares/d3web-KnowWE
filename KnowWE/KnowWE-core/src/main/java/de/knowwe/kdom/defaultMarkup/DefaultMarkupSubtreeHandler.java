@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -43,7 +43,7 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 	}
 
 	@Override
-	public Collection<Message> create(KnowWEArticle article, Section<DefaultMarkupType> markupSection) {
+	public Collection<Message> create(Article article, Section<DefaultMarkupType> markupSection) {
 
 		List<Message> msgs = new ArrayList<Message>();
 
@@ -91,11 +91,11 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 	}
 
 	@Override
-	public void destroy(KnowWEArticle article, Section<DefaultMarkupType> markupSection) {
+	public void destroy(Article article, Section<DefaultMarkupType> markupSection) {
 		// unregister section in the package manager
 		// TODO: refactor this to somewhere else
 		if (!markupSection.get().isIgnoringPackageCompile()) {
-			KnowWEEnvironment.getInstance().getPackageManager(article.getWeb()).removeSectionFromAllPackages(
+			Environment.getInstance().getPackageManager(article.getWeb()).removeSectionFromAllPackages(
 						markupSection);
 		}
 	}

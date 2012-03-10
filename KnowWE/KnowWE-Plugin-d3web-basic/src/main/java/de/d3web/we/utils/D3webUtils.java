@@ -47,10 +47,10 @@ import de.d3web.core.session.Session;
 import de.d3web.scoring.Score;
 import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.object.D3webTerm;
-import de.knowwe.core.KnowWEAttributes;
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -118,7 +118,7 @@ public class D3webUtils {
 
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
 
-		return KnowWEEnvironment.getInstance().getWikiConnector()
+		return Environment.getInstance().getWikiConnector()
 				.storeAttachment(attachmentArticle, attachmentName, user, inputStream);
 	}
 
@@ -215,7 +215,7 @@ public class D3webUtils {
 	// }
 
 	@SuppressWarnings("unchecked")
-	public static <TermObject extends NamedObject> TermObject getTermObjectDefaultImplementation(KnowWEArticle article, Section<? extends D3webTerm<TermObject>> section) {
+	public static <TermObject extends NamedObject> TermObject getTermObjectDefaultImplementation(Article article, Section<? extends D3webTerm<TermObject>> section) {
 		String termIdentifier = section.get().getTermIdentifier(section);
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
 		TerminologyObject termObject = kb.getManager().search(termIdentifier);
@@ -238,7 +238,7 @@ public class D3webUtils {
 		return null;
 	}
 
-	public static <TermObject extends NamedObject> Collection<TerminologyObject> getTermObjectsIgnoreTermObjectClass(KnowWEArticle article, Section<? extends D3webTerm<TermObject>> section) {
+	public static <TermObject extends NamedObject> Collection<TerminologyObject> getTermObjectsIgnoreTermObjectClass(Article article, Section<? extends D3webTerm<TermObject>> section) {
 		String termIdentifier = section.get().getTermIdentifier(section);
 		TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
@@ -254,7 +254,7 @@ public class D3webUtils {
 
 	public static D3webKnowledgeHandler getKnowledgeRepresentationHandler(
 			String web) {
-		Collection<KnowledgeRepresentationHandler> handlers = KnowWEEnvironment
+		Collection<KnowledgeRepresentationHandler> handlers = Environment
 				.getInstance().getKnowledgeRepresentationManager(web)
 				.getHandlers();
 		for (KnowledgeRepresentationHandler handler : handlers) {
@@ -278,8 +278,8 @@ public class D3webUtils {
 	}
 
 	public static String getSessionPath(UserContext context) {
-		String user = context.getParameter(KnowWEAttributes.USER);
-		String web = context.getParameter(KnowWEAttributes.WEB);
+		String user = context.getParameter(Attributes.USER);
+		String web = context.getParameter(Attributes.WEB);
 		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
 		String sessionDir = rb.getString("knowwe.config.path.sessions");
 		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
@@ -292,7 +292,7 @@ public class D3webUtils {
 		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
 		String sessionDir = rb.getString("knowwe.config.path.currentWeb");
 		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
-		sessionDir = getRealPath(KnowWEEnvironment.getInstance()
+		sessionDir = getRealPath(Environment.getInstance()
 				.getWikiConnector().getServletContext(), sessionDir);
 		return sessionDir;
 	}
@@ -319,14 +319,14 @@ public class D3webUtils {
 
 	public static ResourceBundle getD3webBundle(HttpServletRequest request) {
 		if (request == null) return D3webUtils.getD3webBundle();
-		Locale.setDefault(KnowWEEnvironment.getInstance().getWikiConnector()
+		Locale.setDefault(Environment.getInstance().getWikiConnector()
 				.getLocale(request));
 		return D3webUtils.getD3webBundle();
 	}
 
 	public static ResourceBundle getD3webBundle(UserContext user) {
 		if (user == null) return getD3webBundle();
-		Locale.setDefault(KnowWEEnvironment.getInstance().getWikiConnector()
+		Locale.setDefault(Environment.getInstance().getWikiConnector()
 				.getLocale(user.getRequest()));
 		return getD3webBundle();
 	}

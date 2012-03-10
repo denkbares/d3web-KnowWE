@@ -39,7 +39,7 @@ import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.ConstraintModule;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -81,7 +81,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 	}
 
 	@Override
-	public Collection<Message> create(KnowWEArticle article, Section<FlowchartType> s) {
+	public Collection<Message> create(Article article, Section<FlowchartType> s) {
 
 		if (!article.isFullParse()) destroy(article, s);
 
@@ -124,7 +124,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 	}
 
 	@Override
-	public void destroy(KnowWEArticle article, Section<FlowchartType> s) {
+	public void destroy(Article article, Section<FlowchartType> s) {
 		KnowledgeBase kb = getKB(article);
 
 		Map<String, String> attributeMap =
@@ -143,7 +143,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 	private class FlowchartConstraintModule extends ConstraintModule<FlowchartType> {
 
 		@Override
-		public boolean violatedConstraints(KnowWEArticle article, Section<FlowchartType> s) {
+		public boolean violatedConstraints(Article article, Section<FlowchartType> s) {
 			return KnowWEUtils.getTerminologyManager(article).areTermDefinitionsModifiedFor(
 					article)
 					|| s.isOrHasChangedSuccessor(article.getTitle(), filteredTypes);
@@ -152,7 +152,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Edge> createEdges(KnowWEArticle article, Section<FlowchartType> flowSection, List<Node> nodes, List<Message> errors) {
+	private List<Edge> createEdges(Article article, Section<FlowchartType> flowSection, List<Node> nodes, List<Message> errors) {
 		List<Edge> result = new ArrayList<Edge>();
 
 		List<Section<EdgeType>> edgeSections = new ArrayList<Section<EdgeType>>();
@@ -236,7 +236,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		return result;
 	}
 
-	private Condition buildCondition(KnowWEArticle article, Section<CompositeCondition> s, List<Message> errors) {
+	private Condition buildCondition(Article article, Section<CompositeCondition> s, List<Message> errors) {
 
 		return KDOMConditionFactory.createCondition(article, s);
 	}
@@ -249,7 +249,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Node> createNodes(KnowWEArticle article, String flowName, Section<FlowchartType> flowSection, List<Message> errors) {
+	private List<Node> createNodes(Article article, String flowName, Section<FlowchartType> flowSection, List<Message> errors) {
 
 		List<Node> result = new ArrayList<Node>();
 		ArrayList<Section<NodeType>> nodeSections = new ArrayList<Section<NodeType>>();

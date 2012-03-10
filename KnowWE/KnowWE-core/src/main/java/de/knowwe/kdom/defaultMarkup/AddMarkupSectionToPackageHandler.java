@@ -21,9 +21,9 @@ package de.knowwe.kdom.defaultMarkup;
 import java.util.Collection;
 import java.util.List;
 
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.compile.packaging.KnowWEPackageManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
@@ -36,13 +36,13 @@ public class AddMarkupSectionToPackageHandler extends SubtreeHandler<DefaultMark
 	}
 
 	@Override
-	public Collection<Message> create(KnowWEArticle article, Section<DefaultMarkupType> section) {
+	public Collection<Message> create(Article article, Section<DefaultMarkupType> section) {
 		if (!section.get().isIgnoringPackageCompile()) {
 			String value = null;
 
 			List<Section<? extends AnnotationContentType>> annotationContents = DefaultMarkupType.getAnnotationContentSections(
-					section, KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME);
-			KnowWEPackageManager packageManager = KnowWEEnvironment.getInstance().getPackageManager(
+					section, PackageManager.PACKAGE_ATTRIBUTE_NAME);
+			PackageManager packageManager = Environment.getInstance().getPackageManager(
 					article.getWeb());
 			if (annotationContents.isEmpty()) {
 				packageManager.addSectionToPackage(section, value);

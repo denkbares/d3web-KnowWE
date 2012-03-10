@@ -42,13 +42,13 @@ import com.ecyrd.jspwiki.WikiPage;
 import com.ecyrd.jspwiki.auth.AuthorizationManager;
 import com.ecyrd.jspwiki.auth.permissions.PagePermission;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.search.GenericSearchResult;
-import de.knowwe.search.KnowWESearchProvider;
+import de.knowwe.search.SearchProvider;
 import de.knowwe.search.SearchTerm;
 
-public class JSPWikiSearchConnector implements KnowWESearchProvider {
+public class JSPWikiSearchConnector implements SearchProvider {
 
 	private List<GenericSearchResult> getJSPWikiSearchResults(
 			Collection<SearchTerm> searchTerms, HttpServletRequest request,
@@ -165,7 +165,7 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 	@Override
 	public Collection<GenericSearchResult> search(Collection<SearchTerm> words,
 			UserContext user) {
-		ServletContext context = KnowWEEnvironment.getInstance()
+		ServletContext context = Environment.getInstance()
 				.getWikiConnector().getServletContext();
 		WikiEngine engine = WikiEngine.getInstance(context, null);
 

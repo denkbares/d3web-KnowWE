@@ -40,7 +40,7 @@ import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -63,7 +63,7 @@ public class QuestionDashTreeUtils {
 	 * @param article TODO
 	 */
 	public static Condition createCondition(
-			KnowWEArticle article, List<Section<? extends DashTreeElement>> ancestors) {
+			Article article, List<Section<? extends DashTreeElement>> ancestors) {
 
 		List<Condition> simpleConds = new ArrayList<Condition>();
 
@@ -93,7 +93,7 @@ public class QuestionDashTreeUtils {
 	 * QuestionID. If thats not the case, <tt>null</tt> will be returned.
 	 */
 	public static Condition createSimpleCondition(
-			KnowWEArticle article,
+			Article article,
 			Section<? extends DashTreeElement> father,
 			Section<? extends DashTreeElement> grandFather) {
 
@@ -145,7 +145,7 @@ public class QuestionDashTreeUtils {
 
 	}
 
-	private static Condition createCondNum(KnowWEArticle article,
+	private static Condition createCondNum(Article article,
 			Section<NumericCondLine> comp, String comparator, Double valueOf,
 			QuestionNum questionNum) {
 		Messages.clearMessages(article, comp, QuestionDashTreeUtils.class);
@@ -170,7 +170,7 @@ public class QuestionDashTreeUtils {
 	 * TermReferences!
 	 */
 	@SuppressWarnings("unchecked")
-	public static Section<DashSubtree> getRootQuestionSubtree(KnowWEArticle article, Section<?> s) {
+	public static Section<DashSubtree> getRootQuestionSubtree(Article article, Section<?> s) {
 
 		Section<DashSubtree> rootQuestionSubtree = null;
 

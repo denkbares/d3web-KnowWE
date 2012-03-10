@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -98,7 +98,7 @@ class NumberFinder implements SectionFinder {
 class NumberChecker extends SubtreeHandler<Number> {
 
 	@Override
-	public Collection<Message> create(KnowWEArticle article, Section<Number> s) {
+	public Collection<Message> create(Article article, Section<Number> s) {
 		List<Message> msgs = new ArrayList<Message>();
 		String trim = s.getText().trim();
 		try {

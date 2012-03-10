@@ -25,7 +25,7 @@ import java.util.List;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
-import de.knowwe.core.KnowWERessourceLoader;
+import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.compile.Priority;
@@ -234,7 +234,7 @@ public class Plugins {
 		addScripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_Renderer));
 		for (String s : files) {
-			KnowWERessourceLoader.getInstance().add(s, KnowWERessourceLoader.RESOURCE_SCRIPT);
+			RessourceLoader.getInstance().add(s, RessourceLoader.RESOURCE_SCRIPT);
 		}
 	}
 
@@ -251,7 +251,7 @@ public class Plugins {
 		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_Renderer));
 		for (String s : files) {
-			KnowWERessourceLoader.getInstance().add(s, KnowWERessourceLoader.RESOURCE_STYLESHEET);
+			RessourceLoader.getInstance().add(s, RessourceLoader.RESOURCE_STYLESHEET);
 		}
 	}
 

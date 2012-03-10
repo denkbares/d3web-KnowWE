@@ -39,11 +39,11 @@ import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.d3web.we.ci4ke.testing.CITest;
 import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.ci4ke.testing.DynamicCITestManager;
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.wikiConnector.KnowWEWikiConnector;
+import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class CIUtilities {
 
@@ -69,7 +69,7 @@ public class CIUtilities {
 	 * @return
 	 */
 	private static String getWikiContentDirectory() {
-		KnowWEWikiConnector con = KnowWEEnvironment.getInstance().getWikiConnector();
+		WikiConnector con = Environment.getInstance().getWikiConnector();
 		String wikiDir = con.getSavePath();
 		if (wikiDir == null || wikiDir.isEmpty()) {
 			Logger.getLogger(CIUtilities.class.getName()).log(
@@ -109,8 +109,8 @@ public class CIUtilities {
 	 *         null if no section with this ID can be found
 	 */
 	public static Section<CIDashboardType> findCIDashboardSection(String dashboardName) {
-		for (KnowWEArticle article : KnowWEEnvironment.getInstance().
-				getArticleManager(KnowWEEnvironment.DEFAULT_WEB).getArticles()) {
+		for (Article article : Environment.getInstance().
+				getArticleManager(Environment.DEFAULT_WEB).getArticles()) {
 
 			List<Section<CIDashboardType>> list = new ArrayList<Section<CIDashboardType>>();
 
@@ -137,8 +137,8 @@ public class CIUtilities {
 	public static Section<CIDashboardType> findCIDashboardSection(
 			String dashboardArticleTitle, String dashboardName) {
 		// get the article
-		KnowWEArticle article = KnowWEEnvironment.getInstance().
-				getArticleManager(KnowWEEnvironment.DEFAULT_WEB).
+		Article article = Environment.getInstance().
+				getArticleManager(Environment.DEFAULT_WEB).
 				getArticle(dashboardArticleTitle);
 		// get all CIDashboardType-sections on this article
 		List<Section<CIDashboardType>> list = new ArrayList<Section<CIDashboardType>>();

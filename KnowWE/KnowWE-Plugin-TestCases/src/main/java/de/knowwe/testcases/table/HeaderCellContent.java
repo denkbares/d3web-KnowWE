@@ -26,7 +26,7 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -82,7 +82,7 @@ public class HeaderCellContent extends TableCellContent {
 		qref.addSubtreeHandler(new SubtreeHandler<QuestionReference>() {
 
 			@Override
-			public Collection<Message> create(KnowWEArticle article, Section<QuestionReference> s) {
+			public Collection<Message> create(Article article, Section<QuestionReference> s) {
 
 				KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
 

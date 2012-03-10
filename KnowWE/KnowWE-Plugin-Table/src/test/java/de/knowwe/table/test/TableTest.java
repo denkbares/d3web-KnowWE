@@ -24,10 +24,10 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 import de.d3web.plugin.test.InitPluginManager;
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import dummies.KnowWETestWikiConnector;
+import dummies.TestWikiConnector;
 
 /**
  * Class for testing some functionality of class Section.
@@ -49,11 +49,11 @@ public class TableTest extends TestCase {
 	 */
 	public void testSetLeafAndCollect() {
 		/**
-		 * Initialize KnowWEEnvironment
+		 * Initialize Environment
 		 */
-		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());
-		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
-		final String web = KnowWEEnvironment.DEFAULT_WEB;
+		Environment.initKnowWE(new TestWikiConnector());
+		Environment env = Environment.getInstance();
+		final String web = Environment.DEFAULT_WEB;
 
 		/**
 		 * Build an Article and register it at env.
@@ -61,7 +61,7 @@ public class TableTest extends TestCase {
 		String content = "!!Table\n\n%%Table\n| |Apple|Lemon|Coconut\n|sweetness|+|-|hm\n|grows in central europe|+|+|-\n|size|-|+|+\n%";
 		String title = "Test_Article";
 		env.buildAndRegisterArticle(content, title, web, false);
-		KnowWEArticle article = env.getArticle(web, title);
+		Article article = env.getArticle(web, title);
 
 		/**
 		 * Beginning the test
@@ -84,7 +84,7 @@ public class TableTest extends TestCase {
 		assertEquals("New text wasn't saved to orgingialtext from" + headerSec.getID(),
 				newHeader, newHeaderSec.getText());
 
-		article = KnowWEEnvironment.getInstance().getArticle(web, title);
+		article = Environment.getInstance().getArticle(web, title);
 		assertEquals(content, article.getSection().getText());
 		assertNotSame(content, article.collectTextsFromLeaves());
 		checkChildsTillLine(article, 0, true); // isDirty = true?!
@@ -131,7 +131,7 @@ public class TableTest extends TestCase {
 	 * @param dirtyCheck TODO
 	 * @return Section of the 'line'th table-row
 	 */
-	private Section<?> checkChildsTillLine(KnowWEArticle article, int line, boolean dirtyCheck) {
+	private Section<?> checkChildsTillLine(Article article, int line, boolean dirtyCheck) {
 		Section<?> actSec = article.getSection();
 		assertEquals(actSec + ": ", 1, actSec.getChildren().size());
 		// RootType

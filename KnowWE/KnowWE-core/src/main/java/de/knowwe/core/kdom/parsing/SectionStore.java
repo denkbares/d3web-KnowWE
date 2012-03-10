@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 
 /**
  * Container class to store and retrieve arbitrary objects for this Section.
@@ -38,9 +38,9 @@ public class SectionStore {
 
 	/**
 	 * Has the same behavior as
-	 * {@link SectionStore#getObject(KnowWEArticle, String)} with <tt>null</tt>
-	 * as the {@link KnowWEArticle} argument. Use this if the Object was stored
-	 * the same way (<tt>null</tt> as the {@link KnowWEArticle} argument or the
+	 * {@link SectionStore#getObject(Article, String)} with <tt>null</tt>
+	 * as the {@link Article} argument. Use this if the Object was stored
+	 * the same way (<tt>null</tt> as the {@link Article} argument or the
 	 * method {@link SectionStore#storeObject(String, Object)}.
 	 * 
 	 * @created 08.07.2011
@@ -55,8 +55,8 @@ public class SectionStore {
 	/**
 	 * All objects stored in this {@link Section} with the given <tt>key</tt>
 	 * are collected and returned. The {@link Map} stores them by the title of
-	 * the {@link KnowWEArticle} they where stored for. If an object was stored
-	 * without an argument {@link KnowWEArticle} (article independent), the
+	 * the {@link Article} they where stored for. If an object was stored
+	 * without an argument {@link Article} (article independent), the
 	 * returned {@link Map} contains this object with <tt>null</tt> as the key.
 	 * 
 	 * @created 16.02.2012
@@ -75,13 +75,13 @@ public class SectionStore {
 
 	/**
 	 * @created 08.07.2011
-	 * @param article is the {@link KnowWEArticle} for which the Object was
+	 * @param article is the {@link Article} for which the Object was
 	 *        stored
 	 * @param key is the key, for which the Object was stored
 	 * @return the previously stored Object for the given key and article, or
 	 *         <tt>null</tt>, if no Object was stored
 	 */
-	public Object getObject(KnowWEArticle article, String key) {
+	public Object getObject(Article article, String key) {
 		HashMap<String, Object> storeForArticle = getStoreForArticle(article);
 		if (storeForArticle == null) return null;
 		return storeForArticle.get(key);
@@ -90,14 +90,14 @@ public class SectionStore {
 	/**
 	 * Stores the given Object for the given key.<br/>
 	 * <b>Attention:</b> Be aware, that some times an Object should only be
-	 * stored in the context of a certain {@link KnowWEArticle}. Example: An
+	 * stored in the context of a certain {@link Article}. Example: An
 	 * Object was created, because the Section was compiled for a certain
-	 * {@link KnowWEArticle}. If the Section however gets compiled again for
-	 * another {@link KnowWEArticle}, the Object would not be created or a
+	 * {@link Article}. If the Section however gets compiled again for
+	 * another {@link Article}, the Object would not be created or a
 	 * different {@link Object} would be created. In this case you have to use
 	 * the method
-	 * {@link SectionStore#storeObject(KnowWEArticle, String, Object)} to be
-	 * able to differentiate between the {@link KnowWEArticle}s.
+	 * {@link SectionStore#storeObject(Article, String, Object)} to be
+	 * able to differentiate between the {@link Article}s.
 	 * 
 	 * @created 08.07.2011
 	 * @param key is the key for which the Object should be stored
@@ -108,10 +108,10 @@ public class SectionStore {
 	}
 
 	/**
-	 * Stores the given Object for the given key and {@link KnowWEArticle}.
+	 * Stores the given Object for the given key and {@link Article}.
 	 * <b>Attention:</b> If the Object you want to store is independent from the
-	 * {@link KnowWEArticle} that will or has compiled this {@link SectionStore}
-	 * 's {@link Section}, you can either set the {@link KnowWEArticle} argument
+	 * {@link Article} that will or has compiled this {@link SectionStore}
+	 * 's {@link Section}, you can either set the {@link Article} argument
 	 * to <tt>null</tt> or use the method
 	 * {@link SectionStore#storeObject(String, Object)} instead (same for
 	 * applies for retrieving the Object later via the getObject - methods).
@@ -121,7 +121,7 @@ public class SectionStore {
 	 * @param key
 	 * @param object
 	 */
-	public void storeObject(KnowWEArticle article, String key, Object object) {
+	public void storeObject(Article article, String key, Object object) {
 		HashMap<String, Object> storeForArticle = getStoreForArticle(article);
 		if (storeForArticle == null) {
 			storeForArticle = new HashMap<String, Object>();
@@ -130,17 +130,17 @@ public class SectionStore {
 		storeForArticle.put(key, object);
 	}
 
-	private HashMap<String, Object> getStoreForArticle(KnowWEArticle article) {
+	private HashMap<String, Object> getStoreForArticle(Article article) {
 		if (store == null) return null;
 		return store.get(getKeyForArticle(article));
 	}
 
-	private void putStoreForArticle(KnowWEArticle article, HashMap<String, Object> storeForArticle) {
+	private void putStoreForArticle(Article article, HashMap<String, Object> storeForArticle) {
 		if (store == null) store = new HashMap<String, HashMap<String, Object>>();
 		store.put(getKeyForArticle(article), storeForArticle);
 	}
 
-	private String getKeyForArticle(KnowWEArticle article) {
+	private String getKeyForArticle(Article article) {
 		return article == null ? null : article.getTitle();
 	}
 }

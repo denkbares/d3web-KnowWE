@@ -33,7 +33,7 @@ import de.d3web.we.object.SolutionReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -147,14 +147,14 @@ public class SolutionSetValueLine extends AbstractType {
 	static class CreateScoringRuleHandler extends D3webSubtreeHandler<SolutionReference> {
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<SolutionReference> s) {
+		public void destroy(Article article, Section<SolutionReference> s) {
 			Rule kbr = (Rule) s.getSectionStore().getObject(article,
 					SETVALUE_ARGUMENT);
 			if (kbr != null) kbr.remove();
 		}
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<SolutionReference> s) {
+		public Collection<Message> create(Article article, Section<SolutionReference> s) {
 
 			Solution sol = s.get().getTermObject(article, s);
 

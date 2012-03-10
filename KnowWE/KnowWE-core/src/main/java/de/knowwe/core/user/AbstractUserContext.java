@@ -18,7 +18,7 @@
  */
 package de.knowwe.core.user;
 
-import de.knowwe.core.KnowWEAttributes;
+import de.knowwe.core.Attributes;
 
 /**
  * Abstract UserContext implementation with standard implementations of some
@@ -53,7 +53,7 @@ public abstract class AbstractUserContext implements UserContext {
 	 */
 	@Override
 	public String getUserName() {
-		return this.getParameter(KnowWEAttributes.USER);
+		return this.getParameter(Attributes.USER);
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public abstract class AbstractUserContext implements UserContext {
 
 	@Override
 	public String getTitle() {
-		String page = this.getParameter(KnowWEAttributes.TOPIC);
+		String page = this.getParameter(Attributes.TOPIC);
 		if (page == null) {
 			page = this.getParameter("page");
 		}
@@ -79,7 +79,7 @@ public abstract class AbstractUserContext implements UserContext {
 	 */
 	@Override
 	public String getWeb() {
-		return this.getParameter(KnowWEAttributes.WEB);
+		return this.getParameter(Attributes.WEB);
 	}
 
 	@Override

@@ -28,7 +28,7 @@ import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.TestPersistence;
 import de.d3web.testcase.stc.STCWrapper;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.wikiConnector.ConnectorAttachment;
 import de.knowwe.testcases.AttachmentTestCaseProvider;
@@ -41,7 +41,7 @@ import de.knowwe.testcases.AttachmentTestCaseProvider;
  */
 public class STCTestCaseProvider extends AttachmentTestCaseProvider {
 
-	public STCTestCaseProvider(KnowWEArticle article, ConnectorAttachment attachment) {
+	public STCTestCaseProvider(Article article, ConnectorAttachment attachment) {
 		super(article, attachment);
 	}
 

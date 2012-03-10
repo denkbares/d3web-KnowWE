@@ -28,7 +28,7 @@ import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.correction.CorrectionProvider;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -43,7 +43,7 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<CorrectionProvider.Suggestion> getSuggestions(KnowWEArticle article, Section<?> section, int threshold) {
+	public List<CorrectionProvider.Suggestion> getSuggestions(Article article, Section<?> section, int threshold) {
 		if (!(section.get() instanceof SimpleTerm)) {
 			return null;
 		}

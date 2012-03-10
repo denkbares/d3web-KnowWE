@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.diaFlux.inference.FlowchartProcessedCondition;
 import de.d3web.we.kdom.condition.D3webCondition;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
@@ -48,7 +48,7 @@ public class FlowchartProcessedConditionType extends D3webCondition<FlowchartPro
 	}
 
 	@Override
-	protected Condition createCondition(KnowWEArticle article, Section<FlowchartProcessedConditionType> section) {
+	protected Condition createCondition(Article article, Section<FlowchartProcessedConditionType> section) {
 
 		Matcher matcher = PATTERN.matcher(section.getText());
 

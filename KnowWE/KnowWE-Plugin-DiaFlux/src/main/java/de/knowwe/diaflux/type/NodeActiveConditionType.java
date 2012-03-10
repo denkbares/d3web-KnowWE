@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.diaFlux.inference.NodeActiveCondition;
 import de.d3web.we.kdom.condition.D3webCondition;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
@@ -54,7 +54,7 @@ public class NodeActiveConditionType extends D3webCondition<NodeActiveConditionT
 	}
 
 	@Override
-	protected Condition createCondition(KnowWEArticle article, Section<NodeActiveConditionType> section) {
+	protected Condition createCondition(Article article, Section<NodeActiveConditionType> section) {
 
 		Matcher matcher = PATTERN.matcher(section.getText());
 

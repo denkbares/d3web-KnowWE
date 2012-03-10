@@ -36,11 +36,11 @@ import java.util.regex.Pattern;
 
 import com.google.gson.Gson;
 
-import de.knowwe.core.KnowWEAttributes;
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
@@ -64,7 +64,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 		context.setContentType("text/html; charset=UTF-8");
 		Map<String, String> parameterMap = context.getParameters();
 
-		rb = KnowWEEnvironment.getInstance().getKwikiBundle(context.getRequest());
+		rb = Environment.getInstance().getMessageBundle(context.getRequest());
 		// get the selected sections from the section selection tree
 		String[] sections = null;
 		if (parameterMap.containsKey("SelectedSections")) {
@@ -73,12 +73,12 @@ public class WordBasedRenamingAction extends AbstractAction {
 			sections = gson.fromJson(s, String[].class);
 		}
 
-		String queryString = parameterMap.get(KnowWEAttributes.TARGET);
-		String queryContextPrevious = parameterMap.get(KnowWEAttributes.CONTEXT_PREVIOUS);
-		String queryContextAfter = parameterMap.get(KnowWEAttributes.CONTEXT_AFTER);
-		String atmUrl = parameterMap.get(KnowWEAttributes.ATM_URL);
+		String queryString = parameterMap.get(Attributes.TARGET);
+		String queryContextPrevious = parameterMap.get(Attributes.CONTEXT_PREVIOUS);
+		String queryContextAfter = parameterMap.get(Attributes.CONTEXT_AFTER);
+		String atmUrl = parameterMap.get(Attributes.ATM_URL);
 
-		setCaseSensitive(Boolean.parseBoolean(parameterMap.get(KnowWEAttributes.CASE_SENSITIVE)));
+		setCaseSensitive(Boolean.parseBoolean(parameterMap.get(Attributes.CASE_SENSITIVE)));
 
 		String queryContext = "";
 		queryContextAfter = (!queryContextAfter.equals("")) ? " " + queryContextAfter : "";
@@ -86,11 +86,11 @@ public class WordBasedRenamingAction extends AbstractAction {
 
 		queryContext = queryContextPrevious + queryString + queryContextAfter;
 
-		String replacement = parameterMap.get(KnowWEAttributes.FOCUSED_TERM);
+		String replacement = parameterMap.get(Attributes.FOCUSED_TERM);
 		String web = context.getWeb();
 
 		if (web == null) {
-			web = KnowWEEnvironment.DEFAULT_WEB;
+			web = Environment.DEFAULT_WEB;
 		}
 
 		// handle show additional text
@@ -99,7 +99,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 			return;
 		}
 
-		Map<KnowWEArticle, Collection<WordBasedRenameFinding>> findings =
+		Map<Article, Collection<WordBasedRenameFinding>> findings =
 							scanForFindings(web, queryContext, queryContextPrevious.length(),
 									sections);
 
@@ -127,10 +127,10 @@ public class WordBasedRenamingAction extends AbstractAction {
 
 		String additionalText = "";
 
-		Iterator<KnowWEArticle> iter =
-				KnowWEEnvironment.getInstance().getArticleManager(web).getArticleIterator();
+		Iterator<Article> iter =
+				Environment.getInstance().getArticleManager(web).getArticleIterator();
 		while (iter.hasNext()) {
-			KnowWEArticle article = iter.next();
+			Article article = iter.next();
 
 			if (article.getTitle().equals(articleTitle)) {
 				Section<?> section = Sections.getSection(sectionID);
@@ -169,7 +169,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 	 * @return a HTML formatted table witch list all the findings in it
 	 */
 	private String renderFindingsSelectionMask(
-			Map<KnowWEArticle, Collection<WordBasedRenameFinding>> findings,
+			Map<Article, Collection<WordBasedRenameFinding>> findings,
 			String query, String replacement) {
 
 		StringBuffer mask = new StringBuffer();
@@ -198,9 +198,9 @@ public class WordBasedRenamingAction extends AbstractAction {
 				+ "</thead>"
 				);
 
-		for (Entry<KnowWEArticle, Collection<WordBasedRenameFinding>> entry : findings.entrySet()) {
+		for (Entry<Article, Collection<WordBasedRenameFinding>> entry : findings.entrySet()) {
 
-			KnowWEArticle article = entry.getKey();
+			Article article = entry.getKey();
 			Collection<WordBasedRenameFinding> findingsInArticle = entry.getValue();
 			if (findingsInArticle.size() > 0) {
 				mask.append("<thead>");
@@ -299,17 +299,17 @@ public class WordBasedRenamingAction extends AbstractAction {
 	 *        section type - if null, all findings are added
 	 * @return a map containing all findings of the string <code>query<code>
 	 */
-	public Map<KnowWEArticle, Collection<WordBasedRenameFinding>> scanForFindings(
+	public Map<Article, Collection<WordBasedRenameFinding>> scanForFindings(
 			String web, String query, int previousMatchLength, String[] sections) {
 		Set<String> sectionSet = null;
 		if (sections != null) {
 			sectionSet = new HashSet<String>(Arrays.asList(sections));
 		}
 
-		Map<KnowWEArticle, Collection<WordBasedRenameFinding>> map =
-						new HashMap<KnowWEArticle, Collection<WordBasedRenameFinding>>();
-		Iterator<KnowWEArticle> iter =
-						KnowWEEnvironment.getInstance().getArticleManager(web).getArticleIterator();
+		Map<Article, Collection<WordBasedRenameFinding>> map =
+						new HashMap<Article, Collection<WordBasedRenameFinding>>();
+		Iterator<Article> iter =
+						Environment.getInstance().getArticleManager(web).getArticleIterator();
 
 		Pattern p;
 		if (getCaseSensitive()) {
@@ -320,7 +320,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 		}
 
 		while (iter.hasNext()) {
-			KnowWEArticle article = iter.next();
+			Article article = iter.next();
 			map.put(article, new HashSet<WordBasedRenameFinding>());
 			String text = article.getSection().getText();
 
@@ -355,7 +355,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 	 * @param span
 	 * @return
 	 */
-	private String createAdditionalMatchingTextSpan(KnowWEArticle article,
+	private String createAdditionalMatchingTextSpan(Article article,
 			int sectionIndex, String sectionId, int curWords, char direction, boolean span) {
 
 		StringBuilder html = new StringBuilder();

@@ -20,7 +20,7 @@
 
 package de.knowwe.kdom.search;
 
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
@@ -32,7 +32,7 @@ public class Result implements Comparable<Result> {
 
 	private final String query;
 
-	private final KnowWEArticle article;
+	private final Article article;
 
 	private final Section<?> section;
 
@@ -48,7 +48,7 @@ public class Result implements Comparable<Result> {
 	 * @param section The section containing the match
 	 * @param start The index of the start position of the query in the section
 	 */
-	public Result(String query, KnowWEArticle article, Section<?> section, int start, int end) {
+	public Result(String query, Article article, Section<?> section, int start, int end) {
 		this.query = query;
 		this.article = article;
 		this.section = section;
@@ -60,7 +60,7 @@ public class Result implements Comparable<Result> {
 		return query;
 	}
 
-	public KnowWEArticle getArticle() {
+	public Article getArticle() {
 		return article;
 	}
 

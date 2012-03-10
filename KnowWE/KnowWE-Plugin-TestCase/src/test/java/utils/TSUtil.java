@@ -42,7 +42,7 @@ import de.d3web.empiricaltesting.StateRating;
 import de.d3web.empiricaltesting.TestCase;
 import de.d3web.we.testcase.kdom.TestCaseContent;
 import de.d3web.we.testcase.kdom.TestCaseType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
@@ -66,7 +66,7 @@ public class TSUtil {
 		return instance;
 	}
 
-	public TestCase findTestSuite(KnowWEArticle article) {
+	public TestCase findTestSuite(Article article) {
 		Section<TestCaseContent> s = Sections.findSuccessor(article.getSection(),
 				TestCaseContent.class);
 		return (TestCase) s.getSectionStore().getObject(article, TestCaseType.TESTCASEKEY);
@@ -120,7 +120,7 @@ public class TSUtil {
 
 	/**
 	 * Creats a TestSuite similar to the one which is created in the
-	 * KnowWEArticle
+	 * Article
 	 */
 	private void createTestSuite() {
 

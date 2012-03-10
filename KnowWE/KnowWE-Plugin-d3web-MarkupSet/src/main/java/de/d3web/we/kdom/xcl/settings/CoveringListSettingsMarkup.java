@@ -36,8 +36,8 @@ import de.d3web.xcl.ScoreAlgorithm;
 import de.d3web.xcl.SprintGroupScoreAlgorithm;
 import de.d3web.xcl.inference.PSMethodXCL;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.packaging.KnowWEPackageManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -64,8 +64,8 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 		m.addAnnotation(ESTABLISHED_THRESHOLD, false);
 		m.addAnnotation(SUGGESTED_THRESHOLD, false);
 		m.addAnnotation(MIN_SUPPORT, false);
-		m.addAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		m.addAnnotationRenderer(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME,
+		m.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
+		m.addAnnotationRenderer(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				StyleRenderer.ANNOTATION);
 	}
 
@@ -77,7 +77,7 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 	public class CoveringListSettingsHandler extends D3webSubtreeHandler<CoveringListSettingsMarkup> {
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<CoveringListSettingsMarkup> s) {
+		public Collection<Message> create(Article article, Section<CoveringListSettingsMarkup> s) {
 
 			// Get KnowledgeBase
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());

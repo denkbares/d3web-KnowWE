@@ -235,7 +235,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	// * @param s
 	// * @param messages
 	// */
-	// public static void storeMessages(KnowWEArticle article, Section<? extends
+	// public static void storeMessages(Article article, Section<? extends
 	// Type> s,
 	// List<Message> messages) {
 	// KnowWEUtils.storeSectionInfo(article.getWeb(), article

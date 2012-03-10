@@ -26,10 +26,10 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
 
 import de.knowwe.core.action.Action;
-import de.knowwe.core.action.KnowWEActionDispatcher;
+import de.knowwe.core.action.ActionDispatcher;
 import de.knowwe.core.action.UserActionContext;
 
-public class JSPActionDispatcher extends KnowWEActionDispatcher {
+public class JSPActionDispatcher extends ActionDispatcher {
 
 	private static final JSPActionDispatcher instance = new JSPActionDispatcher();
 

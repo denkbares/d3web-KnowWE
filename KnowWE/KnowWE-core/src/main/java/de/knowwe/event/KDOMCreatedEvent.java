@@ -1,18 +1,18 @@
 package de.knowwe.event;
 
 import de.knowwe.core.event.Event;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 
 
 public class KDOMCreatedEvent extends Event {
 
-	private final KnowWEArticle article;
+	private final Article article;
 
-	public KDOMCreatedEvent(KnowWEArticle article) {
+	public KDOMCreatedEvent(Article article) {
 		this.article = article;
 	}
 
-	public KnowWEArticle getArticle() {
+	public Article getArticle() {
 		return this.article;
 	}
 

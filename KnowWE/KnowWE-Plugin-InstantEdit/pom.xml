@@ -9,7 +9,7 @@
   <artifactId>KnowWE-Plugin-InstantEdit</artifactId>
   <version>0.2-SNAPSHOT</version>
   <name>KnowWE-Plugin-InstantEdit</name>
-  <description>Successor of QuickEdit. KnowWEArticles can be edited directly inside the rendere wiki page.</description>
+  <description>Successor of QuickEdit. Articles can be edited directly inside the rendere wiki page.</description>
   <dependencies>
   	<dependency>
   		<groupId>de.uniwue.d3web</groupId>

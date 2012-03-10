@@ -31,12 +31,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
-import de.knowwe.core.KnowWEArticleManager;
-import de.knowwe.core.KnowWEAttributes;
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
@@ -44,12 +44,12 @@ public class GlobalReplaceAction extends AbstractAction {
 
 	private String perform(UserActionContext context) {
 
-		ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle(
+		ResourceBundle rb = Environment.getInstance().getMessageBundle(
 				context.getRequest());
 
-		String query = context.getParameter(KnowWEAttributes.TARGET);
-		String replacement = context.getParameter(KnowWEAttributes.FOCUSED_TERM);
-		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(
+		String query = context.getParameter(Attributes.TARGET);
+		String replacement = context.getParameter(Attributes.FOCUSED_TERM);
+		ArticleManager mgr = Environment.getInstance().getArticleManager(
 				context.getWeb());
 		String web = context.getWeb();
 
@@ -63,7 +63,7 @@ public class GlobalReplaceAction extends AbstractAction {
 		String[] replacementArray = replacements.split("__");
 
 		Map<Section, List<WordBasedRenameFinding>> findingsPerSection = new HashMap<Section, List<WordBasedRenameFinding>>();
-		Collection<KnowWEArticle> modifiedArticles = new HashSet<KnowWEArticle>();
+		Collection<Article> modifiedArticles = new HashSet<Article>();
 
 		// replaceFindings decodieren
 		for (String string : replacementArray) {
@@ -77,7 +77,7 @@ public class GlobalReplaceAction extends AbstractAction {
 			int start = Integer.parseInt(startIndex);
 
 			// search Replacements
-			KnowWEArticle art = mgr.getArticle(article);
+			Article art = mgr.getArticle(article);
 			if (art == null) {
 				// TODO report ERROR
 				return "<p class=\"error box\">"
@@ -137,14 +137,14 @@ public class GlobalReplaceAction extends AbstractAction {
 		}
 
 		// Artikel im JSPWiki speichern
-		for (KnowWEArticle art : modifiedArticles) {
+		for (Article art : modifiedArticles) {
 			// Gesamttext zusammenbauen
 			String text = art.collectTextsFromLeaves();
 
-			KnowWEEnvironment.getInstance().getWikiConnector().writeArticleToWikiEnginePersistence(
+			Environment.getInstance().getWikiConnector().writeArticleToWikiEnginePersistence(
 					art.getTitle(), text, context);
-			mgr.registerArticle(KnowWEArticle.createArticle(text, art.getTitle(),
-					KnowWEEnvironment.getInstance().getRootType(), web));
+			mgr.registerArticle(Article.createArticle(text, art.getTitle(),
+					Environment.getInstance().getRootType(), web));
 		}
 
 		// Meldung gernerieren und zurueckgeben.

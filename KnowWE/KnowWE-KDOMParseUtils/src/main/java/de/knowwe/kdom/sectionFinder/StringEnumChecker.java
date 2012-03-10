@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -50,7 +50,7 @@ public class StringEnumChecker<T extends Type> extends SubtreeHandler<T> {
 	}
 
 	@Override
-	public Collection<Message> create(KnowWEArticle article, Section s) {
+	public Collection<Message> create(Article article, Section s) {
 
 		// cut offsets and trim
 		String sectionContent = s.getText();

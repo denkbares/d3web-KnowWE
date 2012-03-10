@@ -18,9 +18,9 @@
  */
 package de.knowwe.core.toolprovider;
 
-import de.knowwe.core.KnowWEArticleManager;
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -38,12 +38,12 @@ public class HelpToolProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 
-		KnowWEArticleManager articleManager =
-				KnowWEEnvironment.getInstance().getArticleManager(userContext.getWeb());
+		ArticleManager articleManager =
+				Environment.getInstance().getArticleManager(userContext.getWeb());
 		String markupName = section.get().getName();
 
 		// looking for possible help articles
-		KnowWEArticle article = articleManager.getArticle("Doc " + markupName);
+		Article article = articleManager.getArticle("Doc " + markupName);
 		if (article == null) {
 			article = articleManager.getArticle("Doc " + markupName + "s");
 		}

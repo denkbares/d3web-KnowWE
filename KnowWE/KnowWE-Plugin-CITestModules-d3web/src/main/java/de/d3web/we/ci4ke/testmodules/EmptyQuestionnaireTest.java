@@ -27,7 +27,7 @@ import de.d3web.we.ci4ke.testing.AbstractCITest;
 import de.d3web.we.ci4ke.testing.CITestResult;
 import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 
 /**
  * This CITest searches for empty questionnaires on an article. It needs one
@@ -54,7 +54,7 @@ public class EmptyQuestionnaireTest extends AbstractCITest {
 
 		// get the KB of this article
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(
-				KnowWEEnvironment.DEFAULT_WEB, articleName);
+				Environment.DEFAULT_WEB, articleName);
 		if (kb != null) {
 			List<String> emptyQASets = new ArrayList<String>();
 			// iterate over QAsets and check if they are empty

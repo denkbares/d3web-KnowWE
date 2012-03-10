@@ -24,12 +24,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.ConstraintModule;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.packaging.KnowWEPackageManager;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -191,16 +191,16 @@ public class AbstractXMLType extends AbstractType {
 		}
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<AbstractXMLType> s) {
-			String value = getAttributeMapFor(s).get(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME);
-			KnowWEEnvironment.getInstance().getPackageManager(
+		public Collection<Message> create(Article article, Section<AbstractXMLType> s) {
+			String value = getAttributeMapFor(s).get(PackageManager.PACKAGE_ATTRIBUTE_NAME);
+			Environment.getInstance().getPackageManager(
 					article.getWeb()).addSectionToPackage(s, value);
 			return null;
 		}
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<AbstractXMLType> s) {
-			KnowWEEnvironment.getInstance().getPackageManager(
+		public void destroy(Article article, Section<AbstractXMLType> s) {
+			Environment.getInstance().getPackageManager(
 					article.getWeb()).removeSectionFromAllPackages(s);
 		}
 
@@ -211,7 +211,7 @@ public class AbstractXMLType extends AbstractType {
 			}
 
 			@Override
-			public boolean violatedConstraints(KnowWEArticle article, Section<AbstractXMLType> s) {
+			public boolean violatedConstraints(Article article, Section<AbstractXMLType> s) {
 				return s.get().isIgnoringPackageCompile();
 			}
 

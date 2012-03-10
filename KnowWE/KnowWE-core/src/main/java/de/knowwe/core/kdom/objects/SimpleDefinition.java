@@ -25,7 +25,7 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
@@ -65,7 +65,7 @@ public abstract class SimpleDefinition extends AbstractType implements SimpleTer
 		}
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<SimpleDefinition> s) {
+		public Collection<Message> create(Article article, Section<SimpleDefinition> s) {
 
 			getTerminologyHandler(article).registerTermDefinition(s, s.get().getTermObjectClass(s),
 					s.get().getTermIdentifier(s));
@@ -73,7 +73,7 @@ public abstract class SimpleDefinition extends AbstractType implements SimpleTer
 			return new ArrayList<Message>(0);
 		}
 
-		private TerminologyManager getTerminologyHandler(KnowWEArticle article) {
+		private TerminologyManager getTerminologyHandler(Article article) {
 			if (scope == TermRegistrationScope.GLOBAL) {
 				return KnowWEUtils.getGlobalTerminologyManager(article.getWeb());
 			}
@@ -83,7 +83,7 @@ public abstract class SimpleDefinition extends AbstractType implements SimpleTer
 		}
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<SimpleDefinition> s) {
+		public void destroy(Article article, Section<SimpleDefinition> s) {
 			getTerminologyHandler(article).unregisterTermDefinition(s,
 					s.get().getTermObjectClass(s), s.get().getTermIdentifier(s));
 		}

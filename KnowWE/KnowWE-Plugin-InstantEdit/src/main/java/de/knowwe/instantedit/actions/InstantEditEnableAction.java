@@ -20,10 +20,10 @@ package de.knowwe.instantedit.actions;
 
 import java.io.IOException;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Sections;
 
 /**
@@ -43,7 +43,7 @@ public class InstantEditEnableAction extends AbstractAction {
 		String web = context.getWeb();
 		String id = context.getParameter("KdomNodeId");
 
-		KnowWEArticle art = KnowWEEnvironment.getInstance().getArticle(web, topic);
+		Article art = Environment.getInstance().getArticle(web, topic);
 		if (art == null) {
 			context.sendError(404, "Page '" + topic + "' could not be found.");
 			return;
@@ -56,20 +56,20 @@ public class InstantEditEnableAction extends AbstractAction {
 			return;
 		}
 
-		if (!KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(topic,
+		if (!Environment.getInstance().getWikiConnector().userCanEditPage(topic,
 				context.getRequest())) {
 			context.sendError(403, "You do not have the permission to edit this page.");
 			return;
 		}
 
-		boolean isLocked = KnowWEEnvironment.getInstance().getWikiConnector().isPageLocked(topic);
-		boolean isLockedCurrentUser = KnowWEEnvironment.getInstance().getWikiConnector().isPageLockedCurrentUser(
+		boolean isLocked = Environment.getInstance().getWikiConnector().isPageLocked(topic);
+		boolean isLockedCurrentUser = Environment.getInstance().getWikiConnector().isPageLockedCurrentUser(
 				topic, context.getUserName());
 
 		String result = "{\"locked\":true}";
 
 		if (!isLocked || isLockedCurrentUser) {
-			KnowWEEnvironment.getInstance().getWikiConnector().setPageLocked(topic,
+			Environment.getInstance().getWikiConnector().setPageLocked(topic,
 					context.getUserName());
 			result = "{\"locked\":false}";
 		}

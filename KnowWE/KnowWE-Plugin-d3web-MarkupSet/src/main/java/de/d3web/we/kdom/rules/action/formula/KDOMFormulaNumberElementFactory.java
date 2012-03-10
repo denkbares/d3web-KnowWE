@@ -12,7 +12,7 @@ import de.d3web.we.kdom.condition.NonTerminalCondition;
 import de.d3web.we.kdom.condition.QuestionNumReference;
 import de.d3web.we.kdom.condition.TerminalCondition;
 import de.d3web.we.kdom.rules.action.formula.CompositeFormula.CalcMethodType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
@@ -37,7 +37,7 @@ public class KDOMFormulaNumberElementFactory {
 	 * @return
 	 * @throws Exception
 	 */
-	public static FormulaNumberElement createExpression(KnowWEArticle article, Section<CompositeFormula> c) throws Exception {
+	public static FormulaNumberElement createExpression(Article article, Section<CompositeFormula> c) throws Exception {
 		if (c == null) return null;
 
 		// if braced - delegate to next composite

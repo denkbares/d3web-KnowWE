@@ -23,7 +23,7 @@ package de.d3web.we.quicki;
 import java.util.Map;
 
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.KnowWERessourceLoader;
+import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
 
@@ -36,10 +36,10 @@ public class QuickInterviewTagHandler extends AbstractHTMLTagHandler {
 	 */
 	public QuickInterviewTagHandler() {
 		super("quickInterview");
-		KnowWERessourceLoader.getInstance().add("quickiNeutral.css",
-				KnowWERessourceLoader.RESOURCE_STYLESHEET);
-		KnowWERessourceLoader.getInstance().add("quicki.js",
-				KnowWERessourceLoader.RESOURCE_SCRIPT);
+		RessourceLoader.getInstance().add("quickiNeutral.css",
+				RessourceLoader.RESOURCE_STYLESHEET);
+		RessourceLoader.getInstance().add("quicki.js",
+				RessourceLoader.RESOURCE_SCRIPT);
 
 	}
 

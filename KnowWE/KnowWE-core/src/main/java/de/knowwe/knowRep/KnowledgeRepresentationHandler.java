@@ -23,7 +23,7 @@ package de.knowwe.knowRep;
 import java.io.IOException;
 import java.net.URL;
 
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 
 /**
  * 
@@ -32,7 +32,7 @@ import de.knowwe.core.kdom.KnowWEArticle;
  */
 public interface KnowledgeRepresentationHandler {
 
-	void initArticle(KnowWEArticle art);
+	void initArticle(Article art);
 
 	URL saveKnowledge(String title) throws IOException;
 

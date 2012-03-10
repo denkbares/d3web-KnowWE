@@ -27,7 +27,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -47,7 +47,7 @@ import de.knowwe.d3web.property.PropertyType;
 public class InitPropertyHandler extends D3webSubtreeHandler<PropertyDeclarationType> {
 
 	@Override
-	public Collection<Message> create(KnowWEArticle article, Section<PropertyDeclarationType> s) {
+	public Collection<Message> create(Article article, Section<PropertyDeclarationType> s) {
 		// get Property
 		Section<PropertyType> propertySection = Sections.findSuccessor(s,
 				PropertyType.class);

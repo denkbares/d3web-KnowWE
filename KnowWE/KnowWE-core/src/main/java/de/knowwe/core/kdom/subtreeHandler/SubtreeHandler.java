@@ -27,7 +27,7 @@ import java.util.List;
 import de.knowwe.core.compile.ConstraintModule;
 import de.knowwe.core.compile.ConstraintModule.Operator;
 import de.knowwe.core.compile.ConstraintModule.Purpose;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -95,7 +95,7 @@ public abstract class SubtreeHandler<T extends Type> {
 
 	/**
 	 * If this method returns false, the method
-	 * <tt>create(KnowWEArticle, Section)</tt> in this handler will not be
+	 * <tt>create(Article, Section)</tt> in this handler will not be
 	 * called in the revising of the article.
 	 * <p/>
 	 * You can influence the outcome of this method by registering
@@ -107,7 +107,7 @@ public abstract class SubtreeHandler<T extends Type> {
 	 * @param section is the Section from which you want to create something
 	 * @return true if this handler needs to create, false if not.
 	 */
-	public final boolean needsToCreate(KnowWEArticle article, Section<T> section) {
+	public final boolean needsToCreate(Article article, Section<T> section) {
 		for (ConstraintModule<T> cm : constraintModulesDONT) {
 			if (cm.PURPOSE.equals(Purpose.DESTROY)) continue;
 			// skip modules with wrong purpose
@@ -135,7 +135,7 @@ public abstract class SubtreeHandler<T extends Type> {
 
 	/**
 	 * Revises this section or subtree and creates whatever needs to be created,
-	 * if the method <tt>needsToCreate(KnowWEArticle, Section)</tt> of this
+	 * if the method <tt>needsToCreate(Article, Section)</tt> of this
 	 * handler returns true.
 	 * 
 	 * @param article is the article that calls this method... not necessarily
@@ -143,10 +143,10 @@ public abstract class SubtreeHandler<T extends Type> {
 	 *        can also be included!
 	 * @param section is the Section from which you want to create something
 	 */
-	public abstract Collection<Message> create(KnowWEArticle article, Section<T> section);
+	public abstract Collection<Message> create(Article article, Section<T> section);
 
 	/**
-	 * If this method returns false, the method<tt>destroy(KnowWEArticle,
+	 * If this method returns false, the method<tt>destroy(Article,
 	 * Section)</tt> in this handler will not be called for that Section of the
 	 * last version of the KDOM.
 	 * <p/>
@@ -160,7 +160,7 @@ public abstract class SubtreeHandler<T extends Type> {
 	 *        destroy
 	 * @return true if this handler needs to destroy, false if not.
 	 */
-	public final boolean needsToDestroy(KnowWEArticle article, Section<T> section) {
+	public final boolean needsToDestroy(Article article, Section<T> section) {
 		for (ConstraintModule<T> cm : constraintModulesDONT) {
 			if (cm.PURPOSE.equals(Purpose.CREATE)) continue;
 			// skip modules with wrong purpose
@@ -189,7 +189,7 @@ public abstract class SubtreeHandler<T extends Type> {
 	/**
 	 * This method is called after the creation of the new KDOM (but prior to
 	 * the revising of the new KDOM) on the Sections of the last KDOM, if the
-	 * method <tt>needsToDestroy(KnowWEArticle, Section)</tt> of this handler
+	 * method <tt>needsToDestroy(Article, Section)</tt> of this handler
 	 * returns true. If you are implementing an incremental SubtreeHandler, you
 	 * can overwrite this method to implement one, that removes everything the
 	 * Section created in the last version of the article. This way you can,
@@ -210,7 +210,7 @@ public abstract class SubtreeHandler<T extends Type> {
 	 * handler to restore the clean state by destroying everything old by
 	 * iterating over all Section and remove their stuff piece by piece. This
 	 * restoring of the clean state has to be done somewhere else, e.g. in the
-	 * constructor of the KnowWEArticle by checking <tt>isFullParse()</tt> or by
+	 * constructor of the Article by checking <tt>isFullParse()</tt> or by
 	 * listening to the FullparseEvent.
 	 * 
 	 * @param article is the last version of the article that calls this
@@ -219,7 +219,7 @@ public abstract class SubtreeHandler<T extends Type> {
 	 * @param section is the old, not reused Section whose stuff you want to
 	 *        destroy
 	 */
-	public void destroy(KnowWEArticle article, Section<T> section) {
+	public void destroy(Article article, Section<T> section) {
 
 	}
 
@@ -306,7 +306,7 @@ public abstract class SubtreeHandler<T extends Type> {
 		}
 
 		@Override
-		public boolean violatedConstraints(KnowWEArticle article, Section<T2> s) {
+		public boolean violatedConstraints(Article article, Section<T2> s) {
 
 			boolean firstBuild = !article.isSecondBuild();
 			boolean postDestroyFullParse = article.isPostDestroyFullParse();
@@ -329,7 +329,7 @@ public abstract class SubtreeHandler<T extends Type> {
 		}
 
 		@Override
-		public boolean violatedConstraints(KnowWEArticle article, Section<T2> section) {
+		public boolean violatedConstraints(Article article, Section<T2> section) {
 
 			boolean fullparse = article.isFullParse();
 			// fullparse means, that the article is compiled non incremental,
@@ -366,7 +366,7 @@ public abstract class SubtreeHandler<T extends Type> {
 		}
 
 		@Override
-		public boolean violatedConstraints(KnowWEArticle article, Section<T2> section) {
+		public boolean violatedConstraints(Article article, Section<T2> section) {
 
 			boolean fullparse = article.isFullParse();
 			boolean notCompiled = !section.isCompiledBy(article.getTitle(), handler);
@@ -387,7 +387,7 @@ public abstract class SubtreeHandler<T extends Type> {
 		}
 
 		@Override
-		public boolean violatedConstraints(KnowWEArticle article, Section<T2> s) {
+		public boolean violatedConstraints(Article article, Section<T2> s) {
 			boolean notReused = !s.isReusedBy(article.getTitle());
 			// if the section was not reused during the update of the KDOM, we
 			// need to destroy its content... it was either removed from the

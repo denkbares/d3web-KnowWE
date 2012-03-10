@@ -20,7 +20,7 @@
 
 package de.d3web.we.kdom.questionTree;
 
-import de.knowwe.core.compile.packaging.KnowWEPackageManager;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
@@ -31,8 +31,8 @@ public class QuestionTreeRootType extends QuestionTree {
 	static {
 		m = new DefaultMarkup("Question");
 		m.addContentType(new QuestionDashTree());
-		m.addAnnotation(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		m.addAnnotationRenderer(KnowWEPackageManager.PACKAGE_ATTRIBUTE_NAME,
+		m.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
+		m.addAnnotationRenderer(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				StyleRenderer.ANNOTATION);
 	}
 

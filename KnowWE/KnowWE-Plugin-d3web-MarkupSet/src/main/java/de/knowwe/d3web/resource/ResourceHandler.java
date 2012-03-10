@@ -24,8 +24,8 @@ import java.util.Collection;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -41,7 +41,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 
 	@Override
-	public Collection<Message> create(KnowWEArticle article, Section<ResourceType> section) {
+	public Collection<Message> create(Article article, Section<ResourceType> section) {
 		KnowledgeBase kb = getKB(article);
 		if (kb == null) return null;
 
@@ -66,7 +66,7 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 	 * @param destinationPath the resource path to store the content in
 	 * @return the errors occurred or null if successful
 	 */
-	private static Collection<Message> addResource(KnowWEArticle article, KnowledgeBase kb, String content, String sourcePath, String destinationPath) {
+	private static Collection<Message> addResource(Article article, KnowledgeBase kb, String content, String sourcePath, String destinationPath) {
 		boolean hasContent = content != null && !content.trim().isEmpty();
 		boolean hasDestinationPath = destinationPath != null && !destinationPath.trim().isEmpty();
 		boolean hasSourcePath = sourcePath != null && !sourcePath.trim().isEmpty();
@@ -147,7 +147,7 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 	 */
 	private static Resource getAttachmentResource(String path, String attachmentName, String articleName) {
 		Collection<ConnectorAttachment> attachments =
-				KnowWEEnvironment.getInstance().getWikiConnector().getAttachments();
+				Environment.getInstance().getWikiConnector().getAttachments();
 		for (ConnectorAttachment attachment : attachments) {
 			if (!attachment.getFileName().equalsIgnoreCase(attachmentName)) continue;
 			if (!attachment.getParentName().equalsIgnoreCase(articleName)) continue;

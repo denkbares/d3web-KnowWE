@@ -32,7 +32,7 @@ import de.d3web.we.kdom.auxiliary.Equals;
 import de.d3web.we.object.SolutionReference;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -122,7 +122,7 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 	}
 
 	@Override
-	public PSAction createAction(KnowWEArticle article, Section<SolutionValueAssignment> s) {
+	public PSAction createAction(Article article, Section<SolutionValueAssignment> s) {
 		Section<SolutionReference> solutionRef = Sections.findSuccessor(s, SolutionReference.class);
 		Section<ScorePoint> scoreRef = Sections.findSuccessor(s, ScorePoint.class);
 		if (scoreRef == null || solutionRef == null) return null;

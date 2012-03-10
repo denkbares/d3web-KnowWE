@@ -29,11 +29,11 @@ import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.packaging.KnowWEPackageManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -59,7 +59,7 @@ public class GetSubflowLinksAction extends AbstractAction {
 			return;
 		}
 
-		KnowWEArticle article = KnowWEUtils.getCompilingArticles(flowchart).iterator().next();
+		Article article = KnowWEUtils.getCompilingArticles(flowchart).iterator().next();
 
 		String string = addSubFlowLinks(article, flowchart);
 
@@ -69,7 +69,7 @@ public class GetSubflowLinksAction extends AbstractAction {
 	}
 
 	// copied from FlowchartRenderers
-	private String addSubFlowLinks(KnowWEArticle article, Section<FlowchartType> section) {
+	private String addSubFlowLinks(Article article, Section<FlowchartType> section) {
 		// make sub-flowcharts links to be able to go to their definition
 		String thisFlowchartName = FlowchartType.getFlowchartName(section);
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
@@ -102,8 +102,8 @@ public class GetSubflowLinksAction extends AbstractAction {
 			Section<FlowchartType> section, String calledFlowName) {
 		// get all articles compiling this flowchart that will be containing the
 		// link
-		KnowWEPackageManager pkgManager =
-				KnowWEEnvironment.getInstance().getPackageManager(section.getWeb());
+		PackageManager pkgManager =
+				Environment.getInstance().getPackageManager(section.getWeb());
 		Set<String> compilingArticles = pkgManager.getCompilingArticles(section);
 		// get all packages that are compiled by these articles
 		Collection<String> allPossiblePackageNames = new ArrayList<String>();

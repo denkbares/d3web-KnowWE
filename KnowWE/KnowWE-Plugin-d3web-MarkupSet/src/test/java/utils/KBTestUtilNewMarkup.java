@@ -64,7 +64,7 @@ import de.d3web.scoring.Score;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelationType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 
 /**
  * This Class loads the KnowledgeBase which will be tested.
@@ -95,7 +95,7 @@ public class KBTestUtilNewMarkup {
 	 * @created 01.09.2010
 	 * @param article
 	 */
-	public KnowledgeBase getKnowledgeBase(KnowWEArticle article) {
+	public KnowledgeBase getKnowledgeBase(Article article) {
 		return D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
 	}
 
@@ -567,7 +567,7 @@ public class KBTestUtilNewMarkup {
 
 	/**
 	 * Creats a XCLModel similar to the one which is created in the
-	 * KnowWEArticle
+	 * Article
 	 */
 	private void createXCLModels() {
 

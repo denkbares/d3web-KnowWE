@@ -38,7 +38,7 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -180,7 +180,7 @@ public class QuestionLine extends AbstractType {
 				 * @return
 				 */
 				@Override
-				public Collection<Message> create(KnowWEArticle article, Section<NumBounds> s) {
+				public Collection<Message> create(Article article, Section<NumBounds> s) {
 
 					Double lower = s.get().getLowerBound(s);
 					Double upper = s.get().getUpperBound(s);
@@ -228,7 +228,7 @@ public class QuestionLine extends AbstractType {
 				}
 
 				@Override
-				public void destroy(KnowWEArticle article, Section<NumBounds> sec) {
+				public void destroy(Article article, Section<NumBounds> sec) {
 					// bounds are destroyed together with question
 				}
 			});
@@ -326,7 +326,7 @@ public class QuestionLine extends AbstractType {
 				 * @return
 				 */
 				@Override
-				public Collection<Message> create(KnowWEArticle article, Section<NumUnit> s) {
+				public Collection<Message> create(Article article, Section<NumUnit> s) {
 					Section<QuestionDefinition> qDef = Sections.findSuccessor(
 							s.getFather(), QuestionDefinition.class);
 
@@ -350,7 +350,7 @@ public class QuestionLine extends AbstractType {
 				}
 
 				@Override
-				public void destroy(KnowWEArticle article, Section<NumUnit> sec) {
+				public void destroy(Article article, Section<NumUnit> sec) {
 					// unit is destroyed together with question
 				}
 			});
@@ -379,7 +379,7 @@ public class QuestionLine extends AbstractType {
 			this.addSubtreeHandler(Priority.HIGH, new D3webSubtreeHandler<AbstractFlag>() {
 
 				@Override
-				public Collection<Message> create(KnowWEArticle article, Section<AbstractFlag> s) {
+				public Collection<Message> create(Article article, Section<AbstractFlag> s) {
 
 					Section<QuestionDefinition> qDef = Sections.findSuccessor(
 							s.getFather(), QuestionDefinition.class);
@@ -401,7 +401,7 @@ public class QuestionLine extends AbstractType {
 				}
 
 				@Override
-				public void destroy(KnowWEArticle article, Section<AbstractFlag> sec) {
+				public void destroy(Article article, Section<AbstractFlag> sec) {
 					// flag is destroyed together with question
 				}
 			});
@@ -430,7 +430,7 @@ public class QuestionLine extends AbstractType {
 			this.addSubtreeHandler(Priority.HIGH, new D3webSubtreeHandler<QuestionText>() {
 
 				@Override
-				public Collection<Message> create(KnowWEArticle article, Section<QuestionText> sec) {
+				public Collection<Message> create(Article article, Section<QuestionText> sec) {
 
 					Section<QuestionDefinition> qDef = Sections.findSuccessor(
 							sec.getFather(), QuestionDefinition.class);
@@ -453,7 +453,7 @@ public class QuestionLine extends AbstractType {
 				}
 
 				@Override
-				public void destroy(KnowWEArticle article, Section<QuestionText> sec) {
+				public void destroy(Article article, Section<QuestionText> sec) {
 					// text is destroyed together with question
 				}
 			});
@@ -472,7 +472,7 @@ public class QuestionLine extends AbstractType {
 	static class QuestionTypeChecker extends D3webSubtreeHandler<QuestionTypeDeclaration> {
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<QuestionTypeDeclaration> section) {
+		public Collection<Message> create(Article article, Section<QuestionTypeDeclaration> section) {
 			QuestionType thisQuestionType = QuestionTypeDeclaration.getQuestionType(section);
 			if (thisQuestionType == null) return Messages.asList();
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);

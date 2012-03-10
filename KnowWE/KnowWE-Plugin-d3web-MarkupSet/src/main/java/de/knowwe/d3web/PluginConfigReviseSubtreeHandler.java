@@ -26,7 +26,7 @@ import de.d3web.core.io.progress.DummyProgressListener;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.plugin.io.PluginConfigPersistenceHandler;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -34,7 +34,7 @@ import de.knowwe.core.report.Messages;
 public class PluginConfigReviseSubtreeHandler extends D3webSubtreeHandler<PluginConfigType> {
 
 	@Override
-	public Collection<Message> create(KnowWEArticle article, Section<PluginConfigType> s) {
+	public Collection<Message> create(Article article, Section<PluginConfigType> s) {
 		String xmlText = "<settings><plugins /><psmethods>" + s.getText()
 				+ "</psmethods></settings>";
 		KnowledgeBase kb = getKB(article);

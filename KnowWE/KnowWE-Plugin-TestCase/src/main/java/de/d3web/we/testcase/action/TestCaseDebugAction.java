@@ -38,7 +38,7 @@ import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.testcase.TestCaseUtils;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.KnowWEAttributes;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -71,7 +71,7 @@ public class TestCaseDebugAction extends TestCaseRunningAction {
 		MessageFormat msgFormatter = new MessageFormat("");
 
 		String testCaseName = context.getParameter("testcase");
-		String web = context.getParameter(KnowWEAttributes.WEB);
+		String web = context.getParameter(Attributes.WEB);
 
 		TestCase t = TestCaseUtils.loadTestSuite(testCaseName, web);
 		Writer writer = context.getWriter();

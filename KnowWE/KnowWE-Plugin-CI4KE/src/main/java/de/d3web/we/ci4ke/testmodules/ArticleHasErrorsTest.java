@@ -24,8 +24,8 @@ import java.util.LinkedList;
 import de.d3web.we.ci4ke.testing.AbstractCITest;
 import de.d3web.we.ci4ke.testing.CITestResult;
 import de.d3web.we.ci4ke.testing.CITestResult.Type;
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -50,8 +50,8 @@ public class ArticleHasErrorsTest extends AbstractCITest {
 			return new CITestResult(Type.FAILED, "Parameter 0 was invalid!", config);
 		}
 
-		KnowWEArticle moni = KnowWEEnvironment.getInstance().getArticle(
-				KnowWEEnvironment.DEFAULT_WEB, monitoredArticleTitle);
+		Article moni = Environment.getInstance().getArticle(
+				Environment.DEFAULT_WEB, monitoredArticleTitle);
 		if (moni == null) {
 			return new CITestResult(Type.FAILED, "MonitoredArticle not found or invalid!", config);
 		}

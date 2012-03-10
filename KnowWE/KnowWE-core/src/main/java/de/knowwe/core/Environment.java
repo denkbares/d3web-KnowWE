@@ -41,12 +41,12 @@ import de.d3web.plugin.JPFPluginManager;
 import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginManager;
 import de.d3web.plugin.Resource;
-import de.knowwe.core.action.KnowWEActionDispatcher;
+import de.knowwe.core.action.ActionDispatcher;
 import de.knowwe.core.append.PageAppendHandler;
-import de.knowwe.core.compile.packaging.KnowWEPackageManager;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.EventManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -55,31 +55,28 @@ import de.knowwe.core.kdom.parsing.SectionizerModule;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.taghandler.TagHandler;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWETypeSet;
-import de.knowwe.core.utils.KnowWETypeUtils;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.wikiConnector.KnowWEWikiConnector;
+import de.knowwe.core.utils.TypeSet;
+import de.knowwe.core.utils.TypeUtils;
+import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.event.InitEvent;
 import de.knowwe.knowRep.KnowledgeRepresentationHandler;
 import de.knowwe.knowRep.KnowledgeRepresentationManager;
 import de.knowwe.plugin.Instantiation;
 import de.knowwe.plugin.Plugins;
-import dummies.KnowWETestWikiConnector;
+import dummies.TestWikiConnector;
 
 /**
+ * 
+ * This is the core class of KnowWE2. It manages the ArticleManager(s) and
+ * provides methods to access KnowWE-Articles, KnowWE-Modules and Parse-reports.
+ * Further it is connected to the used Wiki-engine, holding an instance of
+ * WikiConnector and allows page saves.
+ * 
  * @author Jochen
- * 
- *         This is the core class of KnowWE2. It manages the ArticleManager(s)
- *         and provides methods to access KnowWE-Articles, KnowWE-Modules and
- *         Parse-reports. Further it is connected to the used Wiki-engine,
- *         holding an instance of KnowWEWikiConnector and allows page saves.
- * 
- * 
  */
 
-public class KnowWEEnvironment {
-
-	// private KnowWETopicLoader topicLoader;
+public class Environment {
 
 	private RootType rootTypes;
 	private List<PageAppendHandler> appendHandlers = new ArrayList<PageAppendHandler>();
@@ -107,7 +104,7 @@ public class KnowWEEnvironment {
 	 * An article manager for each web. In case of JSPWiki there is only on web
 	 * ('default_web')
 	 */
-	private final Map<String, KnowWEArticleManager> articleManagers = new HashMap<String, KnowWEArticleManager>();
+	private final Map<String, ArticleManager> articleManagers = new HashMap<String, ArticleManager>();
 
 	/**
 	 * A knowledge manager for each web. In case of JSPWiki there is only on web
@@ -119,7 +116,7 @@ public class KnowWEEnvironment {
 	 * A package manager for each web. In case of JSPWiki there is only on web
 	 * ('default_web')
 	 */
-	private final Map<String, KnowWEPackageManager> packageManagers = new HashMap<String, KnowWEPackageManager>();
+	private final Map<String, PackageManager> packageManagers = new HashMap<String, PackageManager>();
 
 	/**
 	 * A terminology handler for each web and article. In case of JSPWiki there
@@ -130,39 +127,39 @@ public class KnowWEEnvironment {
 	/**
 	 * This is the link to the connected Wiki-engine. Allows saving pages etc.
 	 */
-	private KnowWEWikiConnector wikiConnector = null;
+	private WikiConnector wikiConnector = null;
 
 	/**
-	 * holding the default tag handlers of KnowWE2
+	 * holding the default tag handlers of KnowWE
 	 * 
 	 * @see renderTags
 	 */
 	private final HashMap<String, TagHandler> tagHandlers = new HashMap<String, TagHandler>();
 
 	/**
-	 * grants access on the default tag handlers of KnowWE2
+	 * grants access on the default tag handlers of KnowWE
 	 * 
-	 * @return HashMap holding the default tag handlers of KnowWE2
+	 * @return HashMap holding the default tag handlers of KnowWE
 	 */
 	public HashMap<String, TagHandler> getDefaultTagHandlers() {
 		return tagHandlers;
 	}
 
-	public ResourceBundle getKwikiBundle() {
+	public ResourceBundle getMessageBundle() {
 
 		return ResourceBundle.getBundle("KnowWE_messages");
 	}
 
-	public ResourceBundle getKwikiBundle(UserContext user) {
+	public ResourceBundle getMessageBundle(UserContext user) {
 
 		Locale.setDefault(wikiConnector.getLocale(user.getRequest()));
-		return this.getKwikiBundle();
+		return this.getMessageBundle();
 	}
 
-	public ResourceBundle getKwikiBundle(HttpServletRequest request) {
+	public ResourceBundle getMessageBundle(HttpServletRequest request) {
 
 		Locale.setDefault(wikiConnector.getLocale(request));
-		return this.getKwikiBundle();
+		return this.getMessageBundle();
 	}
 
 	/**
@@ -214,15 +211,15 @@ public class KnowWEEnvironment {
 	/**
 	 * Singleton instance
 	 */
-	private static KnowWEEnvironment instance;
+	private static Environment instance;
 
 	/**
 	 * Singleton lazy factory
 	 */
-	public static synchronized KnowWEEnvironment getInstance() {
+	public static synchronized Environment getInstance() {
 		if (instance == null) {
 			Logger.getLogger("KnowWE2").severe(
-					"KnowWEEnvironment was not instantiated!");
+					"Environment was not instantiated!");
 			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
 			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
 		}
@@ -241,8 +238,8 @@ public class KnowWEEnvironment {
 		return !(instance == null);
 	}
 
-	public static void initKnowWE(KnowWEWikiConnector wiki) {
-		instance = new KnowWEEnvironment(wiki);
+	public static void initKnowWE(WikiConnector wiki) {
+		instance = new Environment(wiki);
 		instance.initModules(wiki.getServletContext(), DEFAULT_WEB, wiki);
 
 		// firing the init event
@@ -251,13 +248,13 @@ public class KnowWEEnvironment {
 	}
 
 	/**
-	 * Returns the KnowWEArticle object for a given web and pagename
+	 * Returns the Article object for a given web and pagename
 	 * 
 	 * @param web
 	 * @param topic
 	 * @return
 	 */
-	public KnowWEArticle getArticle(String web, String title) {
+	public Article getArticle(String web, String title) {
 		return getArticleManager(web).getArticle(title);
 	}
 
@@ -267,10 +264,10 @@ public class KnowWEEnvironment {
 	 * @param web
 	 * @return
 	 */
-	public KnowWEArticleManager getArticleManager(String web) {
-		KnowWEArticleManager mgr = this.articleManagers.get(web);
+	public ArticleManager getArticleManager(String web) {
+		ArticleManager mgr = this.articleManagers.get(web);
 		if (mgr == null) {
-			mgr = new KnowWEArticleManager(this, web);
+			mgr = new ArticleManager(this, web);
 			articleManagers.put(web, mgr);
 		}
 		return mgr;
@@ -291,10 +288,10 @@ public class KnowWEEnvironment {
 	 * @param web
 	 * @return
 	 */
-	public KnowWEPackageManager getPackageManager(String web) {
-		KnowWEPackageManager mgr = this.packageManagers.get(web);
+	public PackageManager getPackageManager(String web) {
+		PackageManager mgr = this.packageManagers.get(web);
 		if (mgr == null) {
-			mgr = new KnowWEPackageManager(web);
+			mgr = new PackageManager(web);
 			packageManagers.put(web, mgr);
 		}
 		return mgr;
@@ -306,7 +303,7 @@ public class KnowWEEnvironment {
 	 * @param web
 	 * @return
 	 */
-	public TerminologyManager getTerminologyHandler(String web, String title) {
+	public TerminologyManager getTerminologyManager(String web, String title) {
 		Map<String, TerminologyManager> handlersOfWeb = this.terminologyHandlers.get(web);
 		if (handlersOfWeb == null) {
 			handlersOfWeb = new HashMap<String, TerminologyManager>();
@@ -330,14 +327,14 @@ public class KnowWEEnvironment {
 	/**
 	 * @param wiki
 	 */
-	private KnowWEEnvironment(KnowWEWikiConnector wiki) {
+	private Environment(WikiConnector wiki) {
 		try {
 			this.wikiConnector = wiki;
 
 			System.out.println("INITIALISING KNOWWE ENVIRONMENT...");
 			ResourceBundle bundle = ResourceBundle.getBundle("KnowWE_config");
 			if (bundle != null) {
-				if (!(wiki instanceof KnowWETestWikiConnector)) {
+				if (!(wiki instanceof TestWikiConnector)) {
 					// convert the $web_app$-variable from the resourcebundle
 					// defaultJarsPath = KnowWEUtils.getRealPath(context, bundle
 					// .getString("path_to_jars"));
@@ -350,8 +347,8 @@ public class KnowWEEnvironment {
 					this.setCompilationMode(CompilationMode.INCREMENTAL);
 				}
 			}
-			if (wiki instanceof KnowWETestWikiConnector) {
-				KnowWETestWikiConnector connector = (KnowWETestWikiConnector) wiki;
+			if (wiki instanceof TestWikiConnector) {
+				TestWikiConnector connector = (TestWikiConnector) wiki;
 				knowweExtensionPath = connector.getHackedPath();
 			}
 
@@ -372,7 +369,7 @@ public class KnowWEEnvironment {
 	/**
 	 * Initializes the KnowWE modules
 	 */
-	private void initModules(ServletContext context, String web, KnowWEWikiConnector wiki) {
+	private void initModules(ServletContext context, String web, WikiConnector wiki) {
 		// add the default modules
 		// modules.add(new de.d3web.we.dom.kopic.KopicModule());
 
@@ -491,11 +488,11 @@ public class KnowWEEnvironment {
 	}
 
 	/**
-	 * Getter for KnowWEWikiConnector
+	 * Getter for WikiConnector
 	 * 
 	 * @return this.wikiConnector
 	 */
-	public KnowWEWikiConnector getWikiConnector() {
+	public WikiConnector getWikiConnector() {
 		return this.wikiConnector;
 	}
 
@@ -507,32 +504,30 @@ public class KnowWEEnvironment {
 	 * 
 	 * @return
 	 */
-	public KnowWEActionDispatcher getDispatcher() {
+	public ActionDispatcher getDispatcher() {
 		return wikiConnector.getActionDispatcher();
 	}
 
 	/**
-	 * Builds an {@link KnowWEArticle} and registers it in the
-	 * {@link KnowWEArticleManager}.
+	 * Builds an {@link Article} and registers it in the {@link ArticleManager}.
 	 */
-	public KnowWEArticle buildAndRegisterArticle(String content,
+	public Article buildAndRegisterArticle(String content,
 			String title, String web) {
 		return buildAndRegisterArticle(content, title, web, false);
 	}
 
 	/**
-	 * Builds an {@link KnowWEArticle} and registers it in the
-	 * {@link KnowWEArticleManager}.
+	 * Builds an {@link Article} and registers it in the {@link ArticleManager}.
 	 */
-	public KnowWEArticle buildAndRegisterArticle(String content,
+	public Article buildAndRegisterArticle(String content,
 			String title, String web, boolean fullParse) {
 
-		if (KnowWEArticle.isArticleCurrentlyBuilding(web, title)) {
+		if (Article.isArticleCurrentlyBuilding(web, title)) {
 			return getArticle(DEFAULT_WEB, title);
 		}
 
 		// create article with the new content
-		KnowWEArticle article = KnowWEArticle.createArticle(content, title, KnowWEEnvironment
+		Article article = Article.createArticle(content, title, Environment
 				.getInstance().getRootType(), web);
 
 		this.getArticleManager(web).registerArticle(article);
@@ -553,7 +548,7 @@ public class KnowWEEnvironment {
 			String topic, String web, RootType rootType) {
 		this.rootTypes = rootType;
 		this.articleManagers.get(web).registerArticle(
-				KnowWEArticle.createArticle(content, topic, rootType, web));
+				Article.createArticle(content, topic, rootType, web));
 	}
 
 	public ServletContext getContext() {
@@ -581,11 +576,11 @@ public class KnowWEEnvironment {
 	public List<Type> getAllTypes() {
 
 		if (this.allKnowWETypes == null) {
-			KnowWETypeSet allTypes = new KnowWETypeSet();
+			TypeSet allTypes = new TypeSet();
 
-			KnowWETypeSet s = KnowWETypeUtils
+			TypeSet s = TypeUtils
 					.getAllChildrenTypesRecursive(getRootType(),
-							new KnowWETypeSet());
+							new TypeSet());
 			allTypes.addAll(s.toList());
 
 			this.allKnowWETypes = allTypes.toLexicographicalList();

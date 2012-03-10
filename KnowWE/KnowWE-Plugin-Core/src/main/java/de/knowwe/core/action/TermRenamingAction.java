@@ -28,11 +28,11 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import de.knowwe.core.KnowWEArticleManager;
-import de.knowwe.core.KnowWEAttributes;
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -59,15 +59,15 @@ public class TermRenamingAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String web = context.getParameter(KnowWEAttributes.WEB);
+		String web = context.getParameter(Attributes.WEB);
 		String term = context.getParameter(TERMNAME);
 		String replacement = context.getParameter(REPLACEMENT);
 
 		HashMap<String, Set<Section<? extends SimpleTerm>>> allTerms =
 				new HashMap<String, Set<Section<? extends SimpleTerm>>>();
 
-		Iterator<KnowWEArticle> iter = KnowWEEnvironment.getInstance().getArticleManager(web).getArticleIterator();
-		KnowWEArticle currentArticle;
+		Iterator<Article> iter = Environment.getInstance().getArticleManager(web).getArticleIterator();
+		Article currentArticle;
 
 		TerminologyManager th;
 		while (iter.hasNext()) {
@@ -92,7 +92,7 @@ public class TermRenamingAction extends AbstractAction {
 			}
 		}
 
-		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
+		ArticleManager mgr = Environment.getInstance().getArticleManager(web);
 		Set<String> failures = new HashSet<String>();
 		Set<String> success = new HashSet<String>();
 		renameTerms(allTerms, replacement, mgr, context, failures, success);
@@ -109,7 +109,7 @@ public class TermRenamingAction extends AbstractAction {
 	}
 
 	private void generateMessage(Set<String> failures, Set<String> success, UserActionContext context) throws IOException {
-		ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle();
+		ResourceBundle rb = Environment.getInstance().getMessageBundle();
 		Writer w = context.getWriter();
 		if (failures.size() == 0) {
 			w.write("<p style=\"color:green;\">");
@@ -139,13 +139,13 @@ public class TermRenamingAction extends AbstractAction {
 
 	private void renameTerms(HashMap<String, Set<Section<? extends SimpleTerm>>> allTerms,
 			String replacement,
-			KnowWEArticleManager mgr,
+			ArticleManager mgr,
 			UserActionContext context,
 			Set<String> failures,
 			Set<String> success) throws IOException {
 
 		for (String title : allTerms.keySet()) {
-			if (KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(
+			if (Environment.getInstance().getWikiConnector().userCanEditPage(
 					title, context.getRequest())) {
 				Map<String, String> nodesMap = new HashMap<String, String>();
 				for (Section<?> term : allTerms.get(title)) {

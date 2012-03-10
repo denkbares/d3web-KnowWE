@@ -25,7 +25,7 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -76,7 +76,7 @@ public class NodeHandlerManager implements NodeHandler {
 	}
 
 	@Override
-	public boolean canCreateNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection) {
+	public boolean canCreateNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection) {
 		for (NodeHandler handler : HANDLERS) {
 			if (handler.canCreateNode(article, kb, nodeSection)) return true;
 		}
@@ -85,7 +85,7 @@ public class NodeHandlerManager implements NodeHandler {
 	}
 
 	@Override
-	public Node createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
+	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<Message> errors) {
 		NodeHandler nodeHandler = findNodeHandler(article, kb, nodeSection);
 
@@ -94,7 +94,7 @@ public class NodeHandlerManager implements NodeHandler {
 		return nodeHandler.createNode(article, kb, nodeSection, flowSection, id, errors);
 	}
 
-	public NodeHandler findNodeHandler(KnowWEArticle article,
+	public NodeHandler findNodeHandler(Article article,
 			KnowledgeBase kb, Section<NodeType> nodeSection) {
 
 		for (NodeHandler handler : HANDLERS) {

@@ -28,9 +28,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.compile.packaging.KnowWEPackageManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -110,17 +110,17 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 		string.append(KnowWEUtils.maskHTML("</div>"));
 	}
 
-	private void renderCompile(KnowWEArticle article, String packageName, StringBuilder string) {
+	private void renderCompile(Article article, String packageName, StringBuilder string) {
 
-		KnowWEPackageManager packageManager =
-				KnowWEEnvironment.getInstance().getPackageManager(article.getWeb());
+		PackageManager packageManager =
+				Environment.getInstance().getPackageManager(article.getWeb());
 		List<Section<?>> sectionsOfPackage = packageManager.getSectionsOfPackage(packageName);
 
 		Collection<Message> kdomErrors = new LinkedList<Message>();
 		Collection<Message> kdomWarnings = new LinkedList<Message>();
 
-		Set<KnowWEArticle> errorArticles = new HashSet<KnowWEArticle>();
-		Set<KnowWEArticle> warningArticles = new HashSet<KnowWEArticle>();
+		Set<Article> errorArticles = new HashSet<Article>();
+		Set<Article> warningArticles = new HashSet<Article>();
 
 		for (Section<?> sectionOfPackage : sectionsOfPackage) {
 			Collection<Message> allmsgs = Messages.getMessagesFromSubtree(article,
@@ -165,11 +165,11 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 		}
 	}
 
-	private void renderDefectArticleNames(Set<KnowWEArticle> articles, StringBuilder string) {
+	private void renderDefectArticleNames(Set<Article> articles, StringBuilder string) {
 		// print all articles out as links (ordered alphabetically, duplicates
 		// removed)
 		List<String> names = new ArrayList<String>(articles.size());
-		for (KnowWEArticle article : articles) {
+		for (Article article : articles) {
 			names.add(article.getTitle());
 		}
 		Collections.sort(names);

@@ -27,13 +27,13 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.knowwe.core.KnowWEArticleManager;
-import de.knowwe.core.KnowWEAttributes;
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -53,9 +53,9 @@ public class SaveFlowchartAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 
 		String web = context.getWeb();
-		String nodeID = context.getParameter(KnowWEAttributes.TARGET);
+		String nodeID = context.getParameter(Attributes.TARGET);
 		String topic = context.getTitle();
-		String newText = context.getParameter(KnowWEAttributes.TEXT);
+		String newText = context.getParameter(Attributes.TEXT);
 
 		if (nodeID == null) {
 			saveNewFlowchart(context, web, topic, newText);
@@ -90,7 +90,7 @@ public class SaveFlowchartAction extends AbstractAction {
 
 		// if flowchart is existing, replace flowchart
 		if (flowchartSection != null) {
-			Set<String> articles = KnowWEEnvironment.getInstance().getPackageManager(web).getCompilingArticles(
+			Set<String> articles = Environment.getInstance().getPackageManager(web).getCompilingArticles(
 					flowchartSection);
 			save(context, topic, flowchartSection.getID(), newText);
 			id = getSectionID(web, newText, articles);
@@ -150,7 +150,7 @@ public class SaveFlowchartAction extends AbstractAction {
 		String flowname = matcher.group(1);
 
 		String title = articles.iterator().next();
-		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(web, title);
+		Article article = Environment.getInstance().getArticle(web, title);
 
 		TerminologyManager handler = KnowWEUtils.getTerminologyManager(article);
 		Section<?> section = handler.getTermDefiningSection(flowname);
@@ -174,10 +174,10 @@ public class SaveFlowchartAction extends AbstractAction {
 	 * @throws IOException
 	 */
 	private void saveNewFlowchart(UserActionContext context, String web, String topic, String newText) throws IOException {
-		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(
+		ArticleManager mgr = Environment.getInstance().getArticleManager(
 				context.getWeb());
-		KnowWEArticle article = mgr.getArticle(topic);
-		Section<KnowWEArticle> rootSection = article.getSection();
+		Article article = mgr.getArticle(topic);
+		Section<Article> rootSection = article.getSection();
 
 		// append flowchart to root section and replace it
 		String newArticle = rootSection.getText() + "\r\n%%DiaFlux\r\n" + newText

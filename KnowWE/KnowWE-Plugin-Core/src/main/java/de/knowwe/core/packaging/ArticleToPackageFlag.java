@@ -22,10 +22,10 @@ package de.knowwe.core.packaging;
 
 import java.util.Collection;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -59,10 +59,10 @@ public class ArticleToPackageFlag extends DefaultMarkupType {
 	static class ArticleToPackageHandler extends SubtreeHandler<ArticleToPackageFlag> {
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<ArticleToPackageFlag> s) {
+		public Collection<Message> create(Article article, Section<ArticleToPackageFlag> s) {
 			String value = Sections.findChildOfType(s, ContentType.class).getText();
 			if (!value.trim().isEmpty()) {
-				KnowWEEnvironment.getInstance().getPackageManager(
+				Environment.getInstance().getPackageManager(
 						article.getWeb()).addSectionToPackage(
 						s.getArticle().getSection(), value);
 			}
@@ -70,8 +70,8 @@ public class ArticleToPackageFlag extends DefaultMarkupType {
 		}
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<ArticleToPackageFlag> s) {
-			KnowWEEnvironment.getInstance().getPackageManager(article.getWeb()).removeSectionFromAllPackages(
+		public void destroy(Article article, Section<ArticleToPackageFlag> s) {
+			Environment.getInstance().getPackageManager(article.getWeb()).removeSectionFromAllPackages(
 					s.getArticle().getSection());
 		}
 

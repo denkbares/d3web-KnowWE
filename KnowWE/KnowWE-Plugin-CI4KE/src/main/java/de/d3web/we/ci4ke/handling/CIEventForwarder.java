@@ -23,7 +23,7 @@ package de.d3web.we.ci4ke.handling;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
 import de.knowwe.event.ArticleRegisteredEvent;
@@ -44,7 +44,7 @@ public class CIEventForwarder implements EventListener {
 	public void notify(Event event) {
 		if (event instanceof ArticleRegisteredEvent) {
 			ArticleRegisteredEvent arEvent = (ArticleRegisteredEvent) event;
-			if (KnowWEEnvironment.getInstance().getArticleManager(
+			if (Environment.getInstance().getArticleManager(
 					arEvent.getArticle().getWeb()).areArticlesInitialized()) {
 				CIHookManager.getInstance().triggerHooks(
 						((ArticleRegisteredEvent) event).getArticle().getTitle());

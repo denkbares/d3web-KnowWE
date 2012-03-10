@@ -19,7 +19,7 @@
 package de.knowwe.event;
 
 import de.knowwe.core.event.Event;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 
 /**
  * 
@@ -28,13 +28,13 @@ import de.knowwe.core.kdom.KnowWEArticle;
  */
 public class FullParseEvent extends Event {
 
-	private final KnowWEArticle article;
+	private final Article article;
 
-	public FullParseEvent(KnowWEArticle article) {
+	public FullParseEvent(Article article) {
 		this.article = article;
 	}
 
-	public KnowWEArticle getArticle() {
+	public Article getArticle() {
 		return this.article;
 	}
 }

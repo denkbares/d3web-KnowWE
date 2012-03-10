@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -62,7 +62,7 @@ public final class Messages {
 	 * @param section is the Section the {@link Message}s are stored for
 	 * @param source is the source the {@link Message}s are stored for
 	 */
-	public static void clearMessages(KnowWEArticle article, Section<? extends Type> section, Class<?> source) {
+	public static void clearMessages(Article article, Section<? extends Type> section, Class<?> source) {
 		storeMessages(article, section, source, new ArrayList<Message>(0));
 	}
 
@@ -74,7 +74,7 @@ public final class Messages {
 	 * @param article is the article the {@link Message}s are stored for
 	 * @param section is the Section the {@link Message}s are stored for
 	 */
-	public static void clearMessages(KnowWEArticle article, Section<?> section) {
+	public static void clearMessages(Article article, Section<?> section) {
 		Map<String, Collection<Message>> msgsMap = getMessagesMapModifiable(article, section);
 		if (msgsMap != null) msgsMap.clear();
 	}
@@ -85,7 +85,7 @@ public final class Messages {
 	 * @param article is the article you want to clear the message for
 	 * @param sec is the root of the subtree you want to clear the message for
 	 */
-	public static void clearMessagesRecursively(KnowWEArticle article, Section<?> sec) {
+	public static void clearMessagesRecursively(Article article, Section<?> sec) {
 		clearMessages(article, sec);
 		for (Section<?> child : sec.getChildren()) {
 			clearMessagesRecursively(article, child);
@@ -126,8 +126,8 @@ public final class Messages {
 	 * Returns an unmodifiable {@link Map} with Collections of all
 	 * {@link Message}s of the given {@link de.knowwe.core.report.Message.Type}s
 	 * stored for the given {@link Section}. The Collections are mapped by the
-	 * title of the {@link KnowWEArticle} the {@link Message}s were stored for.
-	 * If {@link Message}s were stored without an argument {@link KnowWEArticle}
+	 * title of the {@link Article} the {@link Message}s were stored for.
+	 * If {@link Message}s were stored without an argument {@link Article}
 	 * , the {@link Map} will contain this {@link Collection} with <tt>null</tt>
 	 * as the <tt>key</tt>.
 	 * 
@@ -164,7 +164,7 @@ public final class Messages {
 	 * @param type is the {@link de.knowwe.core.report.Message.Type} of
 	 *        {@link Message} you want (set to <tt>null</tt> if you want all)
 	 */
-	public static Collection<Message> getMessages(KnowWEArticle article,
+	public static Collection<Message> getMessages(Article article,
 			Section<? extends Type> section,
 			Message.Type... types) {
 
@@ -191,7 +191,7 @@ public final class Messages {
 	 * @param type is the {@link de.knowwe.core.report.Message.Type} of
 	 *        {@link Message} you want (set to <tt>null</tt> if you want all)
 	 */
-	public static Collection<Message> getMessages(KnowWEArticle article, Section<?> section,
+	public static Collection<Message> getMessages(Article article, Section<?> section,
 			Class<?> source, Message.Type... types) {
 		Map<String, Collection<Message>> msgsMap = getMessagesMapModifiable(article, section);
 		List<Message> allMsgs = new ArrayList<Message>();
@@ -206,9 +206,9 @@ public final class Messages {
 	 * Returns an unmodifiable {@link Map} with Collections of all
 	 * {@link Message}s of the given {@link de.knowwe.core.report.Message.Type}s
 	 * stored in the KDOM subtree with the given {@link Section} as root. The
-	 * Collections are mapped by the title of the {@link KnowWEArticle} the
+	 * Collections are mapped by the title of the {@link Article} the
 	 * {@link Message}s were stored for. If {@link Message}s were stored without
-	 * an argument {@link KnowWEArticle}, the {@link Map} will contain this
+	 * an argument {@link Article}, the {@link Map} will contain this
 	 * {@link Collection} with <tt>null</tt> as the <tt>key</tt>.
 	 * 
 	 * @created 16.02.2012
@@ -245,7 +245,7 @@ public final class Messages {
 	 * @param type is the {@link de.knowwe.core.report.Message.Type} of
 	 *        {@link Message} you want (set to <tt>null</tt> if you want all)
 	 */
-	public static Collection<Message> getMessagesFromSubtree(KnowWEArticle article,
+	public static Collection<Message> getMessagesFromSubtree(Article article,
 			Section<?> section,
 			Message.Type... types) {
 
@@ -266,7 +266,7 @@ public final class Messages {
 	 * @param article is the article the {@link Message}s are stored for
 	 * @param section is the Section you want the messages from
 	 */
-	public static Map<String, Collection<Message>> getMessagesMap(KnowWEArticle article,
+	public static Map<String, Collection<Message>> getMessagesMap(Article article,
 			Section<?> section) {
 		return Collections.unmodifiableMap(getMessagesMapModifiable(article, section));
 	}
@@ -277,7 +277,7 @@ public final class Messages {
 	 * Collections are mapped by the String <tt>source.getName()</tt>.
 	 */
 	@SuppressWarnings("unchecked")
-	private static Map<String, Collection<Message>> getMessagesMapModifiable(KnowWEArticle article,
+	private static Map<String, Collection<Message>> getMessagesMapModifiable(Article article,
 			Section<?> sec) {
 		return (Map<String, Collection<Message>>) sec.getSectionStore().getObject(article,
 				MESSAGE_KEY);
@@ -417,7 +417,7 @@ public final class Messages {
 	 * @param source is the Class the message originate from
 	 * @param msg is the message you want so store
 	 */
-	public static void storeMessage(KnowWEArticle article, Section<?> sec,
+	public static void storeMessage(Article article, Section<?> sec,
 			Class<?> source, Message msg) {
 		if (msg != null) {
 			storeMessages(article, sec, source, Messages.asList(msg));
@@ -426,7 +426,7 @@ public final class Messages {
 
 	/**
 	 * Stores the given Collection of {@link Message}s <tt>m</tt> from the Class
-	 * <tt>source</tt> for the KnowWEArticle <tt>article</tt> and the Section
+	 * <tt>source</tt> for the Article <tt>article</tt> and the Section
 	 * <tt>s</tt>.
 	 * <p/>
 	 * <b>ATTENTION: This method can only be used once for each article,
@@ -438,7 +438,7 @@ public final class Messages {
 	 * @param source is the Class the messages originate from
 	 * @param msgs is the Collection of messages you want so store
 	 */
-	public static void storeMessages(KnowWEArticle article, Section<?> sec,
+	public static void storeMessages(Article article, Section<?> sec,
 			Class<?> source, Collection<Message> msgs) {
 		if (msgs != null) {
 			Map<String, Collection<Message>> msgsMap = getMessagesMapModifiable(article, sec);

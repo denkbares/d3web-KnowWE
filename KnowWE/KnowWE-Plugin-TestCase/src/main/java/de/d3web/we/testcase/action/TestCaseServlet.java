@@ -27,7 +27,7 @@ import de.d3web.empiricaltesting.TestCase;
 import de.d3web.empiricaltesting.writer.TestSuiteKnOfficeWriter;
 import de.d3web.empiricaltesting.writer.TestSuiteXMLWriter;
 import de.d3web.we.testcase.TestCaseUtils;
-import de.knowwe.core.KnowWEAttributes;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 
@@ -36,7 +36,7 @@ public class TestCaseServlet extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String filename = context.getParameter("filename");
-		String topic = context.getParameter(KnowWEAttributes.TOPIC);
+		String topic = context.getParameter(Attributes.TOPIC);
 		String web = context.getParameter("web");
 		String type = context.getParameter("type");
 

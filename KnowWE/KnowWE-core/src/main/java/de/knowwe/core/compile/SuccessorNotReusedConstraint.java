@@ -19,7 +19,7 @@
  */
 package de.knowwe.core.compile;
 
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 
@@ -41,7 +41,7 @@ public class SuccessorNotReusedConstraint<T extends Type> extends ConstraintModu
 	}
 
 	@Override
-	public boolean violatedConstraints(KnowWEArticle article, Section<T> s) {
+	public boolean violatedConstraints(Article article, Section<T> s) {
 		return s.isOrHasSuccessorNotReusedBy(article.getTitle());
 	}
 

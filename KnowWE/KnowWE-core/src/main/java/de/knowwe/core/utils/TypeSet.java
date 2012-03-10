@@ -30,16 +30,16 @@ import de.knowwe.core.kdom.Type;
 
 /**
  * Used as a set for Types. Makes sorting out unnecessary See
- * KnowWEEnvironment.getAllTypes().
+ * Environment.getAllTypes().
  * 
  * @author Johannes Dienst
  * 
  */
-public class KnowWETypeSet {
+public class TypeSet {
 
 	private final HashMap<String, Type> types;
 
-	public KnowWETypeSet() {
+	public TypeSet() {
 		types = new HashMap<String, Type>();
 	}
 
@@ -81,7 +81,7 @@ public class KnowWETypeSet {
 		for (String s : types.keySet()) {
 			r.add(types.get(s));
 		}
-		Collections.sort(r, new KnowWETypeComparator());
+		Collections.sort(r, new TypeComparator());
 		return r;
 	}
 }

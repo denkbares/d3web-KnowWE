@@ -37,12 +37,12 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 
-import de.knowwe.core.KnowWEArticleManager;
-import de.knowwe.core.KnowWEAttributes;
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.SectionStore;
@@ -149,8 +149,8 @@ public class KnowWEUtils {
 	}
 
 	public static String getSessionPath(UserContext context) {
-		String user = context.getParameter(KnowWEAttributes.USER);
-		String web = context.getParameter(KnowWEAttributes.WEB);
+		String user = context.getParameter(Attributes.USER);
+		String web = context.getParameter(Attributes.WEB);
 		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
 		String sessionDir = rb.getString("knowwe.config.path.sessions");
 		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
@@ -160,7 +160,7 @@ public class KnowWEUtils {
 		return sessionDir;
 	}
 
-	public static Object getStoredObject(KnowWEArticle article, Section<?> s, String key) {
+	public static Object getStoredObject(Article article, Section<?> s, String key) {
 		return s.getSectionStore().getObject(article, key);
 	}
 
@@ -191,7 +191,7 @@ public class KnowWEUtils {
 	// return(s);
 	// }
 
-	public static TerminologyManager getTerminologyManager(KnowWEArticle article, TermRegistrationScope scope) {
+	public static TerminologyManager getTerminologyManager(Article article, TermRegistrationScope scope) {
 		TerminologyManager tHandler;
 		if (scope == TermRegistrationScope.GLOBAL) {
 			tHandler = getGlobalTerminologyManager(article.getWeb());
@@ -205,10 +205,10 @@ public class KnowWEUtils {
 	/**
 	 * @return the {@link TerminologyManager} for the given (master) article.
 	 */
-	public static TerminologyManager getTerminologyManager(KnowWEArticle article) {
-		String web = article == null ? KnowWEEnvironment.DEFAULT_WEB : article.getWeb();
+	public static TerminologyManager getTerminologyManager(Article article) {
+		String web = article == null ? Environment.DEFAULT_WEB : article.getWeb();
 		String title = article == null ? null : article.getTitle();
-		return KnowWEEnvironment.getInstance().getTerminologyHandler(web, title);
+		return Environment.getInstance().getTerminologyManager(web, title);
 	}
 
 	/**
@@ -216,7 +216,7 @@ public class KnowWEUtils {
 	 *         web (similar to the former {@link TermRegistrationScope#GLOBAL}).
 	 */
 	public static TerminologyManager getGlobalTerminologyManager(String web) {
-		return KnowWEEnvironment.getInstance().getTerminologyHandler(web, null);
+		return Environment.getInstance().getTerminologyManager(web, null);
 	}
 
 	/**
@@ -227,7 +227,7 @@ public class KnowWEUtils {
 	 * 
 	 * @param section the section to create the link for
 	 * @return the created link
-	 * @see #getURLLink(KnowWEArticle)
+	 * @see #getURLLink(Article)
 	 * @see #getWikiLink(Section)
 	 */
 	public static String getURLLink(Section<?> section) {
@@ -242,12 +242,12 @@ public class KnowWEUtils {
 	 * @see #getURLLink(Section)
 	 * @see #getWikiLink(Section)
 	 */
-	public static String getURLLink(KnowWEArticle article) {
+	public static String getURLLink(Article article) {
 		return "Wiki.jsp?page=" + article.getTitle();
 	}
 
 	public static String getVersionsSavePath() {
-		String path = KnowWEEnvironment.getInstance().getWikiConnector().getSavePath();
+		String path = Environment.getInstance().getWikiConnector().getSavePath();
 		if (path != null && !path.endsWith(File.pathSeparator)) path += File.separator;
 		path += "OLD/";
 		return path;
@@ -265,7 +265,7 @@ public class KnowWEUtils {
 	 * @param section the section to create the link for
 	 * @return the created link
 	 * @see #getURLLink(Section)
-	 * @see #getURLLink(KnowWEArticle)
+	 * @see #getURLLink(Article)
 	 */
 	public static String getWikiLink(Section<?> section) {
 		return section.getTitle() + "#" + Math.abs(section.getID().hashCode());
@@ -311,24 +311,24 @@ public class KnowWEUtils {
 	 */
 	public static String maskHTML(String htmlContent) {
 		htmlContent = htmlContent.replaceAll("\\[\\{",
-				KnowWEEnvironment.HTML_PLUGIN_BRACKETS_OPEN);
+				Environment.HTML_PLUGIN_BRACKETS_OPEN);
 		htmlContent = htmlContent.replaceAll("}]",
-				KnowWEEnvironment.HTML_PLUGIN_BRACKETS_CLOSE);
+				Environment.HTML_PLUGIN_BRACKETS_CLOSE);
 
 		htmlContent = htmlContent.replaceAll("\"",
-				KnowWEEnvironment.HTML_DOUBLEQUOTE);
-		htmlContent = htmlContent.replaceAll("'", KnowWEEnvironment.HTML_QUOTE);
-		htmlContent = htmlContent.replaceAll(">", KnowWEEnvironment.HTML_GT);
-		htmlContent = htmlContent.replaceAll("<", KnowWEEnvironment.HTML_ST);
+				Environment.HTML_DOUBLEQUOTE);
+		htmlContent = htmlContent.replaceAll("'", Environment.HTML_QUOTE);
+		htmlContent = htmlContent.replaceAll(">", Environment.HTML_GT);
+		htmlContent = htmlContent.replaceAll("<", Environment.HTML_ST);
 
 		htmlContent = htmlContent.replace("[",
-				KnowWEEnvironment.HTML_BRACKET_OPEN);
+				Environment.HTML_BRACKET_OPEN);
 		htmlContent = htmlContent.replace("]",
-				KnowWEEnvironment.HTML_BRACKET_CLOSE);
+				Environment.HTML_BRACKET_CLOSE);
 		// htmlContent = htmlContent.replace("{",
-		// KnowWEEnvironment.HTML_CURLY_BRACKET_OPEN);
+		// Environment.HTML_CURLY_BRACKET_OPEN);
 		// htmlContent = htmlContent.replace("}",
-		// KnowWEEnvironment.HTML_CURLY_BRACKET_CLOSE);
+		// Environment.HTML_CURLY_BRACKET_CLOSE);
 		return htmlContent;
 	}
 
@@ -361,7 +361,7 @@ public class KnowWEUtils {
 	}
 
 	public static String maskNewline(String htmlContent) {
-		htmlContent = htmlContent.replace("\n", KnowWEEnvironment.NEWLINE);
+		htmlContent = htmlContent.replace("\n", Environment.NEWLINE);
 		return htmlContent;
 	}
 
@@ -380,9 +380,8 @@ public class KnowWEUtils {
 	/**
 	 * Do not use this method anymore, use
 	 * {@link SectionStore#storeObject(String, Object)} or
-	 * {@link SectionStore#storeObject(KnowWEArticle, String, Object)} instead.
-	 * Use {@link Section#getSectionStore()} to get the right
-	 * {@link SectionStore}.
+	 * {@link SectionStore#storeObject(Article, String, Object)} instead. Use
+	 * {@link Section#getSectionStore()} to get the right {@link SectionStore}.
 	 * 
 	 * @created 08.07.2011
 	 * @param article is the article you want to store the Object for... if the
@@ -392,7 +391,7 @@ public class KnowWEUtils {
 	 * @param key is key used to store and retrieve the Object
 	 * @param o is the Object to store
 	 */
-	public static void storeObject(KnowWEArticle article, Section<?> s, String key, Object o) {
+	public static void storeObject(Article article, Section<?> s, String key, Object o) {
 		s.getSectionStore().storeObject(article, key, o);
 	}
 
@@ -422,30 +421,30 @@ public class KnowWEUtils {
 	 */
 	public static String unmaskHTML(String htmlContent) {
 		htmlContent = htmlContent.replaceAll(
-				KnowWEEnvironment.HTML_PLUGIN_BRACKETS_OPEN, "\\[\\{");
+				Environment.HTML_PLUGIN_BRACKETS_OPEN, "\\[\\{");
 		htmlContent = htmlContent.replaceAll(
-				KnowWEEnvironment.HTML_PLUGIN_BRACKETS_CLOSE, "}]");
+				Environment.HTML_PLUGIN_BRACKETS_CLOSE, "}]");
 		htmlContent = htmlContent.replaceAll(
-				KnowWEEnvironment.HTML_DOUBLEQUOTE, "\"");
+				Environment.HTML_DOUBLEQUOTE, "\"");
 		htmlContent = htmlContent
-				.replaceAll(KnowWEEnvironment.HTML_QUOTE, "\'");
-		htmlContent = htmlContent.replaceAll(KnowWEEnvironment.HTML_GT, ">");
-		htmlContent = htmlContent.replaceAll(KnowWEEnvironment.HTML_ST, "<");
+				.replaceAll(Environment.HTML_QUOTE, "\'");
+		htmlContent = htmlContent.replaceAll(Environment.HTML_GT, ">");
+		htmlContent = htmlContent.replaceAll(Environment.HTML_ST, "<");
 
 		htmlContent = htmlContent.replaceAll(
-				KnowWEEnvironment.HTML_BRACKET_OPEN, "[");
+				Environment.HTML_BRACKET_OPEN, "[");
 		htmlContent = htmlContent.replaceAll(
-				KnowWEEnvironment.HTML_BRACKET_CLOSE, "]");
+				Environment.HTML_BRACKET_CLOSE, "]");
 		// htmlContent = htmlContent.replace(
-		// KnowWEEnvironment.HTML_CURLY_BRACKET_OPEN, "{");
+		// Environment.HTML_CURLY_BRACKET_OPEN, "{");
 		// htmlContent = htmlContent.replace(
-		// KnowWEEnvironment.HTML_CURLY_BRACKET_CLOSE, "}");
+		// Environment.HTML_CURLY_BRACKET_CLOSE, "}");
 
 		return htmlContent;
 	}
 
 	public static String unmaskNewline(String htmlContent) {
-		htmlContent = htmlContent.replace(KnowWEEnvironment.NEWLINE, "\n");
+		htmlContent = htmlContent.replace(Environment.NEWLINE, "\n");
 		return htmlContent;
 	}
 
@@ -509,7 +508,7 @@ public class KnowWEUtils {
 	 *         or null, if no such attachment exists
 	 */
 	public static ConnectorAttachment getAttachment(String title, String fileName) {
-		Collection<ConnectorAttachment> attachments = KnowWEEnvironment.getInstance().getWikiConnector().getAttachments();
+		Collection<ConnectorAttachment> attachments = Environment.getInstance().getWikiConnector().getAttachments();
 		ConnectorAttachment actualAttachment = null;
 		for (ConnectorAttachment attachment : attachments) {
 			if ((attachment.getFileName().equals(fileName)
@@ -551,7 +550,7 @@ public class KnowWEUtils {
 	 */
 	public static Collection<ConnectorAttachment> getAttachments(String regex, String topic) {
 		Collection<ConnectorAttachment> result = new LinkedList<ConnectorAttachment>();
-		Collection<ConnectorAttachment> attachments = KnowWEEnvironment.getInstance().getWikiConnector().getAttachments();
+		Collection<ConnectorAttachment> attachments = Environment.getInstance().getWikiConnector().getAttachments();
 		Pattern pattern = Pattern.compile(regex);
 		for (ConnectorAttachment attachment : attachments) {
 			if (pattern.matcher(attachment.getFullName()).matches()
@@ -573,15 +572,15 @@ public class KnowWEUtils {
 	 *        articles
 	 * @return a non empty Collection of articles that compile the given Section
 	 */
-	public static Collection<KnowWEArticle> getCompilingArticles(Section<?> section) {
-		Collection<KnowWEArticle> articles = new ArrayList<KnowWEArticle>();
-		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
+	public static Collection<Article> getCompilingArticles(Section<?> section) {
+		Collection<Article> articles = new ArrayList<Article>();
+		Environment env = Environment.getInstance();
 		Set<String> referingArticleTitles = env.getPackageManager(section.getWeb()).getCompilingArticles(
 				section);
-		KnowWEArticleManager articleManager = env.getArticleManager(section.getWeb());
+		ArticleManager articleManager = env.getArticleManager(section.getWeb());
 		for (String title : referingArticleTitles) {
-			KnowWEArticle article =
-					KnowWEArticle.getCurrentlyBuildingArticle(section.getWeb(), title);
+			Article article =
+					Article.getCurrentlyBuildingArticle(section.getWeb(), title);
 			if (article == null) article = articleManager.getArticle(title);
 			if (article == null) continue;
 			articles.add(article);

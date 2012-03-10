@@ -25,7 +25,7 @@ import org.jdom.Element;
 import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
 import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.ci4ke.util.CIUtilities;
-import de.knowwe.core.KnowWERessourceLoader;
+import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -48,10 +48,10 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	@Override
 	protected void renderContents(Section<?> section, UserContext user, StringBuilder string) {
 
-		KnowWERessourceLoader.getInstance().add("CI4KE.css",
-				KnowWERessourceLoader.RESOURCE_STYLESHEET);
-		KnowWERessourceLoader.getInstance().add("CIPlugin.js",
-				KnowWERessourceLoader.RESOURCE_SCRIPT);
+		RessourceLoader.getInstance().add("CI4KE.css",
+				RessourceLoader.RESOURCE_STYLESHEET);
+		RessourceLoader.getInstance().add("CIPlugin.js",
+				RessourceLoader.RESOURCE_SCRIPT);
 
 		boolean sectionHasError = Messages.getMessages(section, Message.Type.ERROR).size() > 0;
 

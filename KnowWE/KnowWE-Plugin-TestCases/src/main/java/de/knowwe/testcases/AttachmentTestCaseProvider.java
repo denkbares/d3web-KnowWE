@@ -29,7 +29,7 @@ import de.d3web.core.session.Session;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
@@ -48,10 +48,10 @@ public abstract class AttachmentTestCaseProvider implements TestCaseProvider {
 	protected TestCase testCase;
 	protected ConnectorAttachment attachment;
 	protected List<Message> messages = new LinkedList<Message>();
-	protected final KnowWEArticle article;
+	protected final Article article;
 	private final Map<String, SessionDebugStatus> statusPerUser = new HashMap<String, SessionDebugStatus>();
 
-	public AttachmentTestCaseProvider(KnowWEArticle article, ConnectorAttachment attachment) {
+	public AttachmentTestCaseProvider(Article article, ConnectorAttachment attachment) {
 		super();
 		this.article = article;
 		this.attachment = attachment;

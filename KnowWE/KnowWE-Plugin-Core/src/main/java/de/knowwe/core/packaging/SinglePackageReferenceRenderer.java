@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.compile.packaging.KnowWEPackageManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
@@ -23,14 +23,14 @@ public class SinglePackageReferenceRenderer implements Renderer {
 
 		String packageName = sec.getText();
 
-		KnowWEPackageManager packageManager = KnowWEEnvironment.getInstance().getPackageManager(
+		PackageManager packageManager = Environment.getInstance().getPackageManager(
 				sec.getWeb());
 
 		List<Section<?>> packageDefinitions = packageManager.getSectionsOfPackage(packageName);
 
 		Collection<Message> kdomErrors = new LinkedList<Message>();
 		Collection<Message> kdomWarnings = new LinkedList<Message>();
-		KnowWEArticle article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
+		Article article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
 		for (Section<?> packageDef : packageDefinitions) {
 			Collection<Message> allmsgs = Messages.getMessagesFromSubtree(article, packageDef);
 
@@ -48,11 +48,11 @@ public class SinglePackageReferenceRenderer implements Renderer {
 
 		String sectionsCount = "Sections: " + packageDefinitions.size();
 
-		String headerSuffix = KnowWEEnvironment.getInstance().getArticleManager(
+		String headerSuffix = Environment.getInstance().getArticleManager(
 				article.getWeb()).getTitles().contains(packageName)
-				|| packageName.equals(KnowWEPackageManager.THIS)
+				|| packageName.equals(PackageManager.THIS)
 				? (sec.getTitle().equals(packageName)
-						|| packageName.equals(KnowWEPackageManager.THIS)
+						|| packageName.equals(PackageManager.THIS)
 						? " (Compiling this article)"
 						: " (Names of articles besides the name of this one are disallowed)")
 				: " ("

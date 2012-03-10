@@ -33,7 +33,7 @@ import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.InvalidKDOMSchemaModificationOperation;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -73,7 +73,7 @@ public class TestcaseTableLine extends TableLine {
 	private final class TestcaseTableLineSubtreeHandler extends SubtreeHandler<TestcaseTableLine> {
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<TestcaseTableLine> s) {
+		public Collection<Message> create(Article article, Section<TestcaseTableLine> s) {
 
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
 

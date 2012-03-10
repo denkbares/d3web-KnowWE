@@ -26,10 +26,10 @@ import de.d3web.core.session.SessionFactory;
 import de.d3web.testcase.TestCaseUtils;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.TestCase;
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
@@ -55,7 +55,7 @@ public class ExecuteCasesAction extends AbstractAction {
 		}
 		@SuppressWarnings("unchecked")
 		Section<TestCasePlayerType> section = (Section<TestCasePlayerType>) Sections.getSection(sectionid);
-		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(context.getWeb(),
+		Article article = Environment.getInstance().getArticle(context.getWeb(),
 				context.getTitle());
 		TestCaseProviderStorage providerStorage = (TestCaseProviderStorage) section.getSectionStore().getObject(
 				article,

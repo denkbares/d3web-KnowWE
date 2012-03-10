@@ -29,7 +29,7 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.KnowWEAttributes;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.user.UserContext;
@@ -62,7 +62,7 @@ public class QuickInterviewAction extends AbstractAction {
 		}
 
 		String topic = usercontext.getTitle();
-		String web = usercontext.getParameter(KnowWEAttributes.WEB);
+		String web = usercontext.getParameter(Attributes.WEB);
 		HttpServletRequest request = usercontext.getRequest();
 
 		ResourceBundle rb = D3webUtils.getD3webBundle(request);

@@ -33,7 +33,7 @@ import java.util.List;
  * @author smark
  * @since 2010/02/15
  */
-public class KnowWERessourceLoader {
+public class RessourceLoader {
 
 	/**
 	 * Requests a CSS to be inserted. Value is {@value} .
@@ -70,16 +70,16 @@ public class KnowWERessourceLoader {
 	/**
 	 * Instance of the Loader. The loader is implemented as a Singleton.
 	 */
-	private static KnowWERessourceLoader instance;
+	private static RessourceLoader instance;
 
 	/**
 	 * Returns the instance of the KnowWERessourceLoader.
 	 * 
 	 * @return instance The instance of the KnowWERessourceLoader
 	 */
-	public static synchronized KnowWERessourceLoader getInstance() {
+	public static synchronized RessourceLoader getInstance() {
 		if (instance == null) {
-			instance = new KnowWERessourceLoader();
+			instance = new RessourceLoader();
 		}
 		return instance;
 	}
@@ -88,7 +88,7 @@ public class KnowWERessourceLoader {
 	 * Creates a KnowWERessourceLoader instance by first loading the KnowWE
 	 * default resources.
 	 */
-	private KnowWERessourceLoader() {
+	private RessourceLoader() {
 		loadDefaultResources();
 	}
 
@@ -104,11 +104,11 @@ public class KnowWERessourceLoader {
 	 * @created 05.07.2010
 	 */
 	private void loadDefaultResources() {
-		addFirst("KnowWE.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
-		addFirst("KnowWE-helper.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
-		addFirst("jQueryCompatibility.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
-		addFirst("jQuery.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
-		addFirst("general.css", KnowWERessourceLoader.RESOURCE_STYLESHEET);
+		addFirst("KnowWE.js", RessourceLoader.RESOURCE_SCRIPT);
+		addFirst("KnowWE-helper.js", RessourceLoader.RESOURCE_SCRIPT);
+		addFirst("jQueryCompatibility.js", RessourceLoader.RESOURCE_SCRIPT);
+		addFirst("jQuery.js", RessourceLoader.RESOURCE_SCRIPT);
+		addFirst("general.css", RessourceLoader.RESOURCE_STYLESHEET);
 	}
 
 	/**

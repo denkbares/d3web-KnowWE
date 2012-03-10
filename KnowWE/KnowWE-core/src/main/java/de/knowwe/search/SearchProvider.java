@@ -32,7 +32,7 @@ import de.knowwe.core.user.UserContext;
  * @author Jochen
  *
  */
-public interface KnowWESearchProvider {
+public interface SearchProvider {
 
 	/**
 	 * Core search method: returns a collection of GenericSearchResults for a

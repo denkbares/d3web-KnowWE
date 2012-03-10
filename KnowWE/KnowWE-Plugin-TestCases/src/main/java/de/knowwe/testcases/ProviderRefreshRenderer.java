@@ -20,9 +20,9 @@ package de.knowwe.testcases;
 
 import java.util.Set;
 
-import de.knowwe.core.KnowWEArticleManager;
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
@@ -39,12 +39,12 @@ public class ProviderRefreshRenderer extends DefaultMarkupRenderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, StringBuilder buffer) {
-		Set<String> articlesReferringTo = KnowWEEnvironment.getInstance().getPackageManager(
+		Set<String> articlesReferringTo = Environment.getInstance().getPackageManager(
 				user.getWeb()).getCompilingArticles(section);
-		KnowWEArticleManager articleManager = KnowWEEnvironment.getInstance().getArticleManager(
+		ArticleManager articleManager = Environment.getInstance().getArticleManager(
 				user.getWeb());
 		for (String referingArticleTitle : articlesReferringTo) {
-			KnowWEArticle referningArticle = articleManager.getArticle(referingArticleTitle);
+			Article referningArticle = articleManager.getArticle(referingArticleTitle);
 			TestCaseProviderStorage providerStorage = (TestCaseProviderStorage) section.getSectionStore().getObject(
 					referningArticle,
 					TestCaseProviderStorage.KEY);

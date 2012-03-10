@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -121,7 +121,7 @@ class TermLog {
 	}
 
 	private void storeMessagesForSections(Collection<Message> msgs, Collection<Section<?>> sections) {
-		KnowWEArticle article = KnowWEArticle.getCurrentlyBuildingArticle(web, title);
+		Article article = Article.getCurrentlyBuildingArticle(web, title);
 		for (Section<?> section : sections) {
 			Messages.storeMessages(article, section, this.getClass(), msgs);
 		}
@@ -163,7 +163,7 @@ class TermLog {
 			TermIdentifier termIdentifier,
 			Class<?> termClass) {
 
-		KnowWEArticle article = KnowWEArticle.getCurrentlyBuildingArticle(web, title);
+		Article article = Article.getCurrentlyBuildingArticle(web, title);
 		Collection<Message> msgs = new ArrayList<Message>(2);
 		Set<String> termIdentifiersSet = new HashSet<String>(termIdentifiers.keySet());
 		termIdentifiersSet.add(termIdentifier.getTermIdentifier());

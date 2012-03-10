@@ -30,7 +30,7 @@ import javax.servlet.http.HttpSession;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.SessionFactory;
-import de.knowwe.core.KnowWEAttributes;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -38,7 +38,7 @@ import de.knowwe.core.user.UserContext;
  * user's {@link HTTPSession} and is accessible by calling:
  * 
  * <pre>
- * httpSession.getAttribute(KnowWEAttributes.SESSIONPROVIDER)
+ * httpSession.getAttribute(Attributes.SESSIONPROVIDER)
  * </pre>
  * 
  * on a {@link HTTPSession} object. For convenience there exist two static
@@ -61,7 +61,7 @@ import de.knowwe.core.user.UserContext;
  */
 public class SessionProvider {
 
-	private Map<String, Session> sessions;
+	private final Map<String, Session> sessions;
 
 	/**
 	 * Returns the SessionProvider object for a specified {@link UserContext}.
@@ -80,10 +80,10 @@ public class SessionProvider {
 		HttpSession httpSession = context.getSession();
 		SessionProvider provider = null;
 		if (httpSession != null) {
-			provider = (SessionProvider) httpSession.getAttribute(KnowWEAttributes.SESSIONPROVIDER);
+			provider = (SessionProvider) httpSession.getAttribute(Attributes.SESSIONPROVIDER);
 			if (provider == null) {
 				provider = new SessionProvider();
-				context.getSession().setAttribute(KnowWEAttributes.SESSIONPROVIDER, provider);
+				context.getSession().setAttribute(Attributes.SESSIONPROVIDER, provider);
 			}
 		}
 		return provider;

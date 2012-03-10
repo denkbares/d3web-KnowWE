@@ -22,7 +22,7 @@ package de.knowwe.diaflux;
 
 import java.io.IOException;
 
-import de.knowwe.core.KnowWEAttributes;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
@@ -39,7 +39,7 @@ public class LoadFlowchartAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String nodeID = context.getParameter(KnowWEAttributes.TARGET);
+		String nodeID = context.getParameter(Attributes.TARGET);
 
 		@SuppressWarnings("unchecked")
 		Section<FlowchartType> section = (Section<FlowchartType>) Sections.getSection(nodeID);

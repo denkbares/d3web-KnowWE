@@ -35,7 +35,7 @@ import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 
@@ -51,12 +51,12 @@ public class SearchInfoObjects extends AbstractAction {
 		String max = parameterMap.get("maxcount");
 
 		int maxCount = (max != null) ? Integer.parseInt(max) : 100;
-		String result = search(KnowWEEnvironment.getInstance(), web, phrase, classes, maxCount);
+		String result = search(Environment.getInstance(), web, phrase, classes, maxCount);
 		context.setContentType("text/xml; charset=UTF-8");
 		context.getWriter().write(result);
 	}
 
-	public static String search(KnowWEEnvironment knowWEEnv, String web, String phraseString, String classesString, int maxCount) {
+	public static String search(Environment knowWEEnv, String web, String phraseString, String classesString, int maxCount) {
 		// get the matches
 		List<String> matches = searchObjects(knowWEEnv, web, phraseString, classesString, maxCount);
 
@@ -80,7 +80,7 @@ public class SearchInfoObjects extends AbstractAction {
 		return page.toString();
 	}
 
-	public static List<String> searchObjects(KnowWEEnvironment knowWEEnv, String web, String phraseString, String classesString, int maxCount) {
+	public static List<String> searchObjects(Environment knowWEEnv, String web, String phraseString, String classesString, int maxCount) {
 		String[] phrases = (phraseString != null) ? phraseString.split(" ") : new String[0];
 		Set<String> classes = null;
 		if (classesString == null) {

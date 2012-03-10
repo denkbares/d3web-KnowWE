@@ -36,7 +36,7 @@ import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -85,13 +85,13 @@ public class QuestionSetValueLine extends AbstractType {
 	static class CreateSetValueRuleHandler extends D3webSubtreeHandler<QuestionReference> {
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<QuestionReference> s) {
+		public void destroy(Article article, Section<QuestionReference> s) {
 			Rule kbr = (Rule) s.getSectionStore().getObject(article, SETVALUE_ARGUMENT);
 			if (kbr != null) kbr.remove();
 		}
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<QuestionReference> s) {
+		public Collection<Message> create(Article article, Section<QuestionReference> s) {
 
 			Question q = s.get().getTermObject(article, s);
 

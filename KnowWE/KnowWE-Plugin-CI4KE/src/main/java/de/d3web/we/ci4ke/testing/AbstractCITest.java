@@ -28,8 +28,8 @@ import java.util.regex.Pattern;
 
 import de.d3web.we.ci4ke.handling.CIConfig;
 import de.d3web.we.ci4ke.testing.CITestResult.Type;
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 
 /**
  * An abstract implementation of a CITest, which implements the init(CIConfig)
@@ -106,10 +106,10 @@ public abstract class AbstractCITest implements CITest {
 		return new CITestResult(Type.ERROR, errorMessage);
 	}
 
-	public Collection<KnowWEArticle> getArticlesMatchingPattern(Pattern pattern) {
-		List<KnowWEArticle> matchingArticles = new ArrayList<KnowWEArticle>();
-		for (KnowWEArticle article : KnowWEEnvironment.getInstance().
-				getArticleManager(KnowWEEnvironment.DEFAULT_WEB).getArticles()) {
+	public Collection<Article> getArticlesMatchingPattern(Pattern pattern) {
+		List<Article> matchingArticles = new ArrayList<Article>();
+		for (Article article : Environment.getInstance().
+				getArticleManager(Environment.DEFAULT_WEB).getArticles()) {
 			String articleName = article.getTitle();
 			if (pattern.matcher(articleName).matches()) {
 				matchingArticles.add(article);

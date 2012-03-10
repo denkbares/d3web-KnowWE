@@ -33,7 +33,7 @@ import de.d3web.core.session.blackboard.FactFactory;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.KnowWEAttributes;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.event.EventManager;
@@ -59,7 +59,7 @@ public class RetractSingleFindingAction extends AbstractAction {
 
 	private String retractValue(UserActionContext context) {
 
-		String objectid = context.getParameter(KnowWEAttributes.SEMANO_OBJECT_ID);
+		String objectid = context.getParameter(Attributes.SEMANO_OBJECT_ID);
 		String topic = context.getTitle();
 		String user = context.getUserName();
 		String web = context.getWeb();
@@ -69,8 +69,8 @@ public class RetractSingleFindingAction extends AbstractAction {
 		try {
 			topic = java.net.URLDecoder.decode(topic, "UTF-8");
 			namespace = java.net.URLDecoder.decode(
-					context.getParameter(KnowWEAttributes.SEMANO_NAMESPACE), "UTF-8");
-			term = URLDecoder.decode(context.getParameter(KnowWEAttributes.SEMANO_TERM_NAME),
+					context.getParameter(Attributes.SEMANO_NAMESPACE), "UTF-8");
+			term = URLDecoder.decode(context.getParameter(Attributes.SEMANO_TERM_NAME),
 					"UTF-8");
 			if (objectid != null) objectid = URLDecoder.decode(objectid, "UTF-8");
 		}

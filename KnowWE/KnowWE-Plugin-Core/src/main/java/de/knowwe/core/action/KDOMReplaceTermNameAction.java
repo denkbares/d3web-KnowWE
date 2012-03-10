@@ -24,9 +24,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.knowwe.core.KnowWEArticleManager;
-import de.knowwe.core.KnowWEAttributes;
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -40,7 +40,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * Needed Parameters:
  * </p>
  * <ul>
- * <li><tt>{@link KnowWEAttributes.TARGET}:</tt> The KDOM node of which the
+ * <li><tt>{@link Attributes.TARGET}:</tt> The KDOM node of which the
  * content will be replaced</li>
  * <li><tt>{@link KnowWEAtrributes.TEXT}:</tt> The new term reference inside the
  * node</li>
@@ -59,13 +59,13 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 		}
 
 		String web = context.getWeb();
-		String nodeID = context.getParameter(KnowWEAttributes.TARGET);
+		String nodeID = context.getParameter(Attributes.TARGET);
 		String name = context.getTitle();
-		String newText = context.getParameter(KnowWEAttributes.TEXT);
-		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
+		String newText = context.getParameter(Attributes.TEXT);
+		ArticleManager mgr = Environment.getInstance().getArticleManager(web);
 
 		// Check for user access
-		if (!KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(name,
+		if (!Environment.getInstance().getWikiConnector().userCanEditPage(name,
 				context.getRequest())) {
 			context.sendError(403, "You do not have the permission to edit this page.");
 			return;

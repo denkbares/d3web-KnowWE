@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -57,7 +57,7 @@ public class ConditionTerminal extends AbstractType {
 		unrecognizedCond.addSubtreeHandler(new SubtreeHandler<ConditionTerminal>() {
 
 			@Override
-			public Collection<Message> create(KnowWEArticle article, Section s) {
+			public Collection<Message> create(Article article, Section s) {
 				return Messages.asList(Messages.syntaxError(
 						"no valid TerminalCondition: "
 								+ s.getText()));

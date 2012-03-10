@@ -26,14 +26,14 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import utils.KBTestUtilNewMarkup;
-import utils.MyTestArticleManager;
+import utils.TestArticleManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.plugin.test.InitPluginManager;
-import de.knowwe.core.compile.packaging.KnowWEPackageManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.logging.Logging;
 
 /**
@@ -49,11 +49,11 @@ public class QuestionnaireTest extends TestCase {
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 		// Enforce Autocompile
-		KnowWEPackageManager.overrideAutocompileArticle(true);
+		PackageManager.overrideAutocompileArticle(true);
 	}
 
 	public void testNumberOfQuestionnaires() {
-		KnowWEArticle art = MyTestArticleManager.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
+		Article art = TestArticleManager.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
 		assertEquals("Number of Qestionnaires differ.",
@@ -63,7 +63,7 @@ public class QuestionnaireTest extends TestCase {
 
 	public void testQuestionnaires() {
 
-		KnowWEArticle art = MyTestArticleManager.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
+		Article art = TestArticleManager.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
 

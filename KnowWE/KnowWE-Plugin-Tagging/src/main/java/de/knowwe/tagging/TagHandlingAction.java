@@ -22,8 +22,8 @@ package de.knowwe.tagging;
 
 import java.io.IOException;
 
-import de.knowwe.core.KnowWEAttributes;
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 
@@ -43,18 +43,18 @@ public class TagHandlingAction extends AbstractAction {
 	private String perform(UserActionContext context) throws IOException {
 		// String web = parameterMap.getWeb();
 		String topic = context.getTopic();
-		String tagaction = context.getParameter(KnowWEAttributes.TAGGING_ACTION);
-		String tag = context.getParameter(KnowWEAttributes.TAGGING_TAG);
+		String tagaction = context.getParameter(Attributes.TAGGING_ACTION);
+		String tag = context.getParameter(Attributes.TAGGING_TAG);
 
 		if (tagaction.equals("pagesearch")) {
-			String query = context.getParameter(KnowWEAttributes.TAGGING_QUERY);
+			String query = context.getParameter(Attributes.TAGGING_QUERY);
 			return TaggingMangler.getInstance().getResultPanel(query);
 		}
 
 		if (topic == null) {
 			return "error! null topic";
 		}
-		boolean b = KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(topic,
+		boolean b = Environment.getInstance().getWikiConnector().userCanEditPage(topic,
 				context.getRequest());
 
 		if (b == false) {

@@ -29,7 +29,7 @@ import de.d3web.we.object.D3webTermReference;
 import de.d3web.we.object.NamedObjectReference;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
 import de.knowwe.core.kdom.parsing.Section;
@@ -75,7 +75,7 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 	}
 
 	@Override
-	public NamedObject getTermObject(KnowWEArticle article, Section<? extends D3webTerm<NamedObject>> s) {
+	public NamedObject getTermObject(Article article, Section<? extends D3webTerm<NamedObject>> s) {
 		Section<PropertyAnswerReference> propertyAnswerReference = Sections.findChildOfType(s,
 				PropertyAnswerReference.class);
 		if (propertyAnswerReference != null) {
@@ -92,7 +92,7 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 	static class WildcardQuestionErrorRemover extends D3webSubtreeHandler<QuestionReference> {
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<QuestionReference> section) {
+		public Collection<Message> create(Article article, Section<QuestionReference> section) {
 			if (section.getText().isEmpty()) {
 				Messages.clearMessages(article, section,
 						SimpleTermReferenceRegistrationHandler.class);
@@ -117,7 +117,7 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 	static class WildcardAnswerErrorRemover extends D3webSubtreeHandler<PropertyAnswerReference> {
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<PropertyAnswerReference> section) {
+		public Collection<Message> create(Article article, Section<PropertyAnswerReference> section) {
 			Section<QuestionReference> questionSection = section.get().getQuestionSection(section);
 			if (questionSection != null && questionSection.getText().isEmpty()) {
 				Messages.clearMessages(article, section,

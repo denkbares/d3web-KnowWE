@@ -28,7 +28,7 @@ import java.util.List;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.ComposedNode;
 import de.d3web.diaFlux.flow.Node;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -50,7 +50,7 @@ public class ComposedNodeHandler extends AbstractNodeHandler {
 	}
 
 	@Override
-	public boolean canCreateNode(KnowWEArticle article, KnowledgeBase kb,
+	public boolean canCreateNode(Article article, KnowledgeBase kb,
 			Section<NodeType> nodeSection) {
 
 		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
@@ -61,7 +61,7 @@ public class ComposedNodeHandler extends AbstractNodeHandler {
 	}
 
 	@Override
-	public Node createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection,
+	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id, List<Message> errors) {
 
 		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);

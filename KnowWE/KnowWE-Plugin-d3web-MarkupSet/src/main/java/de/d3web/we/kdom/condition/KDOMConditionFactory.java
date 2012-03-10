@@ -27,7 +27,7 @@ import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondNot;
 import de.d3web.core.inference.condition.CondOr;
 import de.d3web.core.inference.condition.Condition;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
@@ -44,7 +44,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 public class KDOMConditionFactory {
 
 	@SuppressWarnings("unchecked")
-	public static Condition createCondition(KnowWEArticle article, Section<? extends CompositeCondition> c) {
+	public static Condition createCondition(Article article, Section<? extends CompositeCondition> c) {
 		if (c == null) return null;
 
 		// if braced - delegate to next composite

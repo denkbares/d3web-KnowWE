@@ -2,7 +2,7 @@ package de.knowwe.instantedit.actions;
 
 import java.io.IOException;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 
@@ -13,14 +13,14 @@ public class CheckCanEditPageAction extends AbstractAction {
 
 		String topic = context.getTitle();
 
-		if (KnowWEEnvironment.getInstance().getArticle(context.getWeb(), topic) == null) {
+		if (Environment.getInstance().getArticle(context.getWeb(), topic) == null) {
 			context.sendError(404, "Page '" + topic + "' could not be found.");
 			return;
 		}
 
 		String result = "{\"canedit\":false}";
 
-		if (KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(
+		if (Environment.getInstance().getWikiConnector().userCanEditPage(
 				topic, context.getRequest())) {
 			result = "{\"canedit\":true}";
 		}

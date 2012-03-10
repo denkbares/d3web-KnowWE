@@ -23,12 +23,12 @@ package tests;
 import java.io.IOException;
 
 import junit.framework.TestCase;
-import utils.MyTestArticleManager;
+import utils.TestArticleManager;
 import utils.TSUtil;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.plugin.test.InitPluginManager;
-import de.knowwe.core.compile.packaging.KnowWEPackageManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Article;
 
 /**
  * This class tests whether the TestCases are equal
@@ -47,7 +47,7 @@ public class TestCaseTest extends TestCase {
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 		// Enfore Autocompile
-		KnowWEPackageManager.overrideAutocompileArticle(true);
+		PackageManager.overrideAutocompileArticle(true);
 	}
 
 	/**
@@ -56,8 +56,8 @@ public class TestCaseTest extends TestCase {
 	 * TestSuite(-section)
 	 */
 	public void testTestCases() {
-		KnowWEArticle article =
-				MyTestArticleManager.getArticle(TESTSUITEARTICLE);
+		Article article =
+				TestArticleManager.getArticle(TESTSUITEARTICLE);
 		de.d3web.empiricaltesting.TestCase loadedTS =
 				TSUtil.getInstance().findTestSuite(article);
 		de.d3web.empiricaltesting.TestCase createdTS = TSUtil.getInstance().getCreatedTS();

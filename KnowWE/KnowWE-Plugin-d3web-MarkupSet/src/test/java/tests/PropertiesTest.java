@@ -27,7 +27,7 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 import utils.KBTestUtilNewMarkup;
-import utils.MyTestArticleManager;
+import utils.TestArticleManager;
 import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
@@ -37,8 +37,8 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.plugin.test.InitPluginManager;
-import de.knowwe.core.compile.packaging.KnowWEPackageManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -59,11 +59,11 @@ public class PropertiesTest extends TestCase {
 	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
-		KnowWEPackageManager.overrideAutocompileArticle(true);
+		PackageManager.overrideAutocompileArticle(true);
 	}
 
-	private KnowWEArticle getArticle() {
-		return MyTestArticleManager
+	private Article getArticle() {
+		return TestArticleManager
 				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
 	}
 

@@ -19,7 +19,7 @@
  */
 package de.knowwe.core.compile;
 
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 
@@ -105,6 +105,6 @@ public abstract class ConstraintModule<T extends Type> {
 	 * @return true, if the checked constraints are violated. false if they are
 	 *         kept.
 	 */
-	public abstract boolean violatedConstraints(KnowWEArticle article, Section<T> s);
+	public abstract boolean violatedConstraints(Article article, Section<T> s);
 
 }

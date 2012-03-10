@@ -16,7 +16,7 @@ import de.d3web.we.kdom.condition.QuestionNumReference;
 import de.d3web.we.kdom.rules.action.formula.CompositeFormula;
 import de.d3web.we.kdom.rules.action.formula.KDOMFormulaNumberElementFactory;
 import de.d3web.we.object.QuestionReference;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -79,7 +79,7 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 	}
 
 	@Override
-	protected PSAction createAction(KnowWEArticle article, Section<SetQuestionValue> s) {
+	protected PSAction createAction(Article article, Section<SetQuestionValue> s) {
 		Section<QuestionReference> qref = Sections.findSuccessor(s, QuestionReference.class);
 		Question q = qref.get().getTermObject(article, qref);
 		Section<CompositeFormula> formulaSection = Sections.findSuccessor(s, CompositeFormula.class);

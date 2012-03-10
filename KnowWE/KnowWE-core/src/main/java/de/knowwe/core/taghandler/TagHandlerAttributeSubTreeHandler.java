@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
@@ -43,7 +43,7 @@ public class TagHandlerAttributeSubTreeHandler extends SubtreeHandler {
 	}
 
 	@Override
-	public Collection<Message> create(KnowWEArticle art, Section sec) {
+	public Collection<Message> create(Article art, Section sec) {
 
 		String text = sec.getText();
 

@@ -19,7 +19,7 @@ String findParam( PageContext ctx, String key )
 	//String value = 
 	String filename = findParam(pageContext,"filename");;
 	String nodeID = findParam(pageContext,"nodeID");
-	String topic = findParam(pageContext, KnowWEAttributes.TOPIC);
+	String topic = findParam(pageContext, Attributes.TOPIC);
 	String web = findParam(pageContext, "web");
 	
 	//set the header and also the Name by which user will be prompted to save
@@ -37,7 +37,7 @@ String findParam( PageContext ctx, String key )
 	} else if (filename.endsWith(".jar")) {
 		//set the content type
 		response.setContentType ("application/jar");
-		de.knowwe.knowRep.KnowledgeRepresentationHandler handler = KnowWEEnvironment.getInstance()
+		de.knowwe.knowRep.KnowledgeRepresentationHandler handler = Environment.getInstance()
 			.getKnowledgeRepresentationManager(web).getHandler("d3web");
 		if (handler != null) {
 			java.net.URL home = handler.saveKnowledge(topic);

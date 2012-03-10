@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -37,7 +37,7 @@ public abstract class D3webSubtreeHandler<T extends Type> extends SubtreeHandler
 	 * @param article is the article you need the KBM from
 	 * @returns the KBM for the given article
 	 */
-	protected KnowledgeBase getKB(KnowWEArticle article) {
+	protected KnowledgeBase getKB(Article article) {
 		if (article == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"Article was null. KB wasn't loaded.");
@@ -51,10 +51,10 @@ public abstract class D3webSubtreeHandler<T extends Type> extends SubtreeHandler
 	 * Avoid a full parse by overwriting this method and instead destroying
 	 * everything that is created in the create method.
 	 * 
-	 * @see SubtreeHandler#destroy(KnowWEArticle, Section)
+	 * @see SubtreeHandler#destroy(Article, Section)
 	 */
 	@Override
-	public void destroy(KnowWEArticle article, Section<T> section) {
+	public void destroy(Article article, Section<T> section) {
 		article.setFullParse(this.getClass());
 		return;
 	}

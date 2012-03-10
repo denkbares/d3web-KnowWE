@@ -28,7 +28,7 @@ import de.d3web.core.inference.condition.CondSolutionRejected;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.object.SolutionReference;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -105,7 +105,7 @@ public class UserRatingConditionType extends D3webCondition<UserRatingConditionT
 	}
 
 	@Override
-	protected Condition createCondition(KnowWEArticle article, Section s) {
+	protected Condition createCondition(Article article, Section s) {
 		Section<SolutionReference> sRef = Sections.findSuccessor(s, SolutionReference.class);
 		Section<UserRatingType> ratingSec = Sections.findSuccessor(s, UserRatingType.class);
 		if (sRef != null && ratingSec != null) {

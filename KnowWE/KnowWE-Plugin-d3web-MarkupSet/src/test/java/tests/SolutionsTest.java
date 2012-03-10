@@ -26,13 +26,13 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import utils.KBTestUtilNewMarkup;
-import utils.MyTestArticleManager;
+import utils.TestArticleManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.plugin.test.InitPluginManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.logging.Logging;
 
 /**
@@ -53,7 +53,7 @@ public class SolutionsTest extends TestCase {
 
 	public void testNumberOfSolutions() {
 
-		KnowWEArticle art = MyTestArticleManager
+		Article art = TestArticleManager
 				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
@@ -64,7 +64,7 @@ public class SolutionsTest extends TestCase {
 
 	public void testSolutions() {
 
-		KnowWEArticle art = MyTestArticleManager
+		Article art = TestArticleManager
 				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();

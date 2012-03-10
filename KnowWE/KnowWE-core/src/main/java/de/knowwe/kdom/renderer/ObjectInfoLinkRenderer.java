@@ -22,7 +22,7 @@ package de.knowwe.kdom.renderer;
 
 import java.net.URLEncoder;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -45,7 +45,7 @@ public class ObjectInfoLinkRenderer implements Renderer {
 		renderer.render(sec, user, b);
 
 		String objectName = sec.getText().trim();
-		boolean pageExists = KnowWEEnvironment.getInstance().getWikiConnector().doesPageExist(
+		boolean pageExists = Environment.getInstance().getWikiConnector().doesPageExist(
 				objectName);
 
 		if (pageExists) {

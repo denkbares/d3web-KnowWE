@@ -32,7 +32,7 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -85,7 +85,7 @@ public abstract class SolutionDefinition
 		public void render(Section<?> sec, UserContext user,
 				StringBuilder string) {
 
-			KnowWEArticle article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
+			Article article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
 
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
 			Session session = SessionProvider.getSession(user, kb);
@@ -123,7 +123,7 @@ public abstract class SolutionDefinition
 	static class CreateSolutionHandler extends D3webSubtreeHandler<SolutionDefinition> {
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article,
+		public Collection<Message> create(Article article,
 				Section<SolutionDefinition> section) {
 
 			String name = section.get().getTermIdentifier(section);

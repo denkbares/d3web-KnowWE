@@ -7,7 +7,7 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.object.SolutionReference;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -86,7 +86,7 @@ public class SolutionStateCond extends D3webCondition<SolutionStateCond> {
 	}
 
 	@Override
-	protected Condition createCondition(KnowWEArticle article, Section<SolutionStateCond> s) {
+	protected Condition createCondition(Article article, Section<SolutionStateCond> s) {
 		Section<SolutionReference> sRef = Sections.findSuccessor(s,
 				SolutionReference.class);
 		Section<SolutionStateType> state = Sections.findSuccessor(s,

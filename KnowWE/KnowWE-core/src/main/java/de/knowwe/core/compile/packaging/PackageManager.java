@@ -31,11 +31,11 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
 import de.knowwe.core.event.EventManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -44,7 +44,7 @@ import de.knowwe.event.FullParseEvent;
 import de.knowwe.event.PreCompileFinishedEvent;
 import de.knowwe.event.UpdatingDependenciesEvent;
 
-public class KnowWEPackageManager implements EventListener {
+public class PackageManager implements EventListener {
 
 	public static final String PACKAGE_ATTRIBUTE_NAME = "package";
 
@@ -66,7 +66,7 @@ public class KnowWEPackageManager implements EventListener {
 
 	/**
 	 * For each article title, you get all Sections of type
-	 * {@link KnowWEPackageManager} defined in this article.
+	 * {@link PackageManager} defined in this article.
 	 */
 	private final Map<String, HashSet<Section<? extends PackageCompiler>>> articleToPackageCompileSections =
 			new HashMap<String, HashSet<Section<? extends PackageCompiler>>>();
@@ -89,7 +89,7 @@ public class KnowWEPackageManager implements EventListener {
 	private static boolean autocompileArticleEnabled = ResourceBundle.getBundle("KnowWE_config").getString(
 			"packaging.autocompileArticle").contains("true");
 
-	public KnowWEPackageManager(String web) {
+	public PackageManager(String web) {
 		this.web = web;
 		EventManager.getInstance().registerListener(this);
 	}
@@ -248,7 +248,7 @@ public class KnowWEPackageManager implements EventListener {
 		}
 	}
 
-	public void cleanForArticle(KnowWEArticle article) {
+	public void cleanForArticle(Article article) {
 		for (LinkedList<Section<?>> list : new ArrayList<LinkedList<Section<?>>>(
 				packageToSectionsOfPackage.values())) {
 			List<Section<?>> sectionsToRemove = new ArrayList<Section<?>>();
@@ -303,7 +303,7 @@ public class KnowWEPackageManager implements EventListener {
 	 * @created 12.10.2010
 	 */
 	public static void overrideAutocompileArticle(boolean autocompileArticleEnabled) {
-		KnowWEPackageManager.autocompileArticleEnabled = autocompileArticleEnabled;
+		PackageManager.autocompileArticleEnabled = autocompileArticleEnabled;
 	}
 
 	/**
@@ -316,7 +316,7 @@ public class KnowWEPackageManager implements EventListener {
 		return autocompileArticleEnabled;
 	}
 
-	public void registerPackageCompileSection(KnowWEArticle article, Section<? extends PackageCompiler> s) {
+	public void registerPackageCompileSection(Article article, Section<? extends PackageCompiler> s) {
 
 		List<String> packagesToCompile = s.get().getPackagesToCompile(s);
 
@@ -347,7 +347,7 @@ public class KnowWEPackageManager implements EventListener {
 
 	}
 
-	public boolean unregisterPackageCompileSection(KnowWEArticle article, Section<? extends PackageCompiler> s) {
+	public boolean unregisterPackageCompileSection(Article article, Section<? extends PackageCompiler> s) {
 
 		Set<Section<? extends PackageCompiler>> packageCompileSections = articleToPackageCompileSections.get(article.getTitle());
 
@@ -483,7 +483,7 @@ public class KnowWEPackageManager implements EventListener {
 						packageCompileSections));
 	}
 
-	public void updateReusedStates(KnowWEArticle article) {
+	public void updateReusedStates(Article article) {
 		// TODO: not that fast... probably use own map sorted by article
 		// maybe only do this for changed sections of the package... take care
 		// of multiuser-scenarios
@@ -507,7 +507,7 @@ public class KnowWEPackageManager implements EventListener {
 		}
 	}
 
-	public void updateReferringArticles(KnowWEArticle article) {
+	public void updateReferringArticles(Article article) {
 
 		for (HashSet<Section<? extends PackageCompiler>> packageCompileSections : articleToPackageCompileSections.values()) {
 			for (Section<? extends PackageCompiler> packageCompileSection : packageCompileSections) {
@@ -515,7 +515,7 @@ public class KnowWEPackageManager implements EventListener {
 						packageCompileSection);
 				for (String packageName : packagesToCompile) {
 					if (changedPackages.contains(packageName)) {
-						KnowWEEnvironment.getInstance().getArticleManager(article.getWeb()).addArticleToUpdate(
+						Environment.getInstance().getArticleManager(article.getWeb()).addArticleToUpdate(
 								packageCompileSection.getTitle());
 					}
 				}
@@ -547,7 +547,7 @@ public class KnowWEPackageManager implements EventListener {
 		}
 	}
 
-	public String getDefaultPackageName(KnowWEArticle article) {
+	public String getDefaultPackageName(Article article) {
 		return DEFAULT_PACKAGE;
 	}
 

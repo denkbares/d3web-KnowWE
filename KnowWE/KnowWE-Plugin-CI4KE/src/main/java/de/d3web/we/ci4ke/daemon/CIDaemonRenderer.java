@@ -2,7 +2,7 @@ package de.d3web.we.ci4ke.daemon;
 
 import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
@@ -32,7 +32,7 @@ public class CIDaemonRenderer implements Renderer {
 			return "";
 		}
 
-		if (!KnowWEEnvironment.getInstance().getArticleManager(web).getTitles().contains(
+		if (!Environment.getInstance().getArticleManager(web).getTitles().contains(
 				dashboardArticleTitle)) {
 			string.append("<span class='error'>");
 			string.append("The annotation @" + CIDaemonType.DASHBOARD_ARTICLE
@@ -41,7 +41,7 @@ public class CIDaemonRenderer implements Renderer {
 			return string.toString();
 		}
 
-		String baseURL = KnowWEEnvironment.getInstance().getWikiConnector().getBaseUrl();
+		String baseURL = Environment.getInstance().getWikiConnector().getBaseUrl();
 		String srclink = "<a href=\"" + baseURL + (baseURL.endsWith("/") ? "" : "/")
 				+ "Wiki.jsp?page="
 				+ dashboardArticleTitle

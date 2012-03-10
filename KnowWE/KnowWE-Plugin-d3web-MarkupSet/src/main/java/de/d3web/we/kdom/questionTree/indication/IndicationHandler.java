@@ -39,7 +39,7 @@ import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.QuestionnaireReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -62,7 +62,7 @@ public class IndicationHandler extends D3webSubtreeHandler<D3webTerm<NamedObject
 	}
 
 	@Override
-	public void destroy(KnowWEArticle article, Section<D3webTerm<NamedObject>> s) {
+	public void destroy(Article article, Section<D3webTerm<NamedObject>> s) {
 		Rule kbr = (Rule) s.getSectionStore().getObject(article,
 				indicationStoreKey);
 		if (kbr != null) kbr.remove();
@@ -70,7 +70,7 @@ public class IndicationHandler extends D3webSubtreeHandler<D3webTerm<NamedObject
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Collection<Message> create(KnowWEArticle article, Section<D3webTerm<NamedObject>> s) {
+	public Collection<Message> create(Article article, Section<D3webTerm<NamedObject>> s) {
 
 		Section<DashTreeElement> element = Sections.findAncestorOfType(s, DashTreeElement.class);
 

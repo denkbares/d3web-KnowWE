@@ -38,8 +38,8 @@ import de.d3web.we.ci4ke.testing.CITestResult;
 import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.d3web.we.ci4ke.util.Pair;
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.Strings;
@@ -59,8 +59,8 @@ public class CIBuilder {
 	 * @param dashboardName
 	 */
 	public CIBuilder(String dashboardArticleTitle, String dashboardName) {
-		KnowWEArticle dashboardArticle = KnowWEEnvironment.getInstance().getArticleManager(
-				KnowWEEnvironment.DEFAULT_WEB).getArticle(dashboardArticleTitle);
+		Article dashboardArticle = Environment.getInstance().getArticleManager(
+				Environment.DEFAULT_WEB).getArticle(dashboardArticleTitle);
 		Section<CIDashboardType> sec = CIUtilities.
 				findCIDashboardSection(dashboardArticleTitle, dashboardName);
 		if (sec == null) {

@@ -27,7 +27,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -87,13 +87,13 @@ public class QClassLine extends AbstractType {
 	static class CreateSubQuestionnaireRelationHandler extends D3webSubtreeHandler<QClassLine> {
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<QClassLine> s) {
+		public void destroy(Article article, Section<QClassLine> s) {
 			// will be destroyed by QuestionniareDefinition#destroy()
 
 		}
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<QClassLine> s) {
+		public Collection<Message> create(Article article, Section<QClassLine> s) {
 			Section<? extends DashTreeElementContent> fatherContent = DashTreeUtils.getFatherDashTreeElementContent(
 					s);
 
@@ -192,7 +192,7 @@ public class QClassLine extends AbstractType {
 				 * @return
 				 */
 				@Override
-				public Collection<Message> create(KnowWEArticle article, Section<InitNumber> s) {
+				public Collection<Message> create(Article article, Section<InitNumber> s) {
 
 					Double originalnumber = s.get().getNumber(s);
 					if (originalnumber == null) {
@@ -236,7 +236,7 @@ public class QClassLine extends AbstractType {
 				}
 
 				@Override
-				public void destroy(KnowWEArticle article, Section<InitNumber> s) {
+				public void destroy(Article article, Section<InitNumber> s) {
 					Section<QuestionnaireDefinition> qDef = Sections.findSuccessor(
 							s.getFather(), QuestionnaireDefinition.class);
 

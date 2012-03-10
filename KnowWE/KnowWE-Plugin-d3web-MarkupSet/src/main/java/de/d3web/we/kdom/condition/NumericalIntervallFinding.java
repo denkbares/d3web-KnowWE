@@ -27,7 +27,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -49,7 +49,7 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 	}
 
 	@Override
-	protected Condition createCondition(KnowWEArticle article, Section<NumericalFinding> s) {
+	protected Condition createCondition(Article article, Section<NumericalFinding> s) {
 		Section<QuestionReference> qRef = Sections.findSuccessor(s, QuestionReference.class);
 
 		Section<Intervall> intervall = Sections.findSuccessor(s, Intervall.class);

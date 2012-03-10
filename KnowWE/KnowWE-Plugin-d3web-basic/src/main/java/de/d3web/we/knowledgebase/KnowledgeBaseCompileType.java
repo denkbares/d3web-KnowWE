@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageCompiler;
 import de.knowwe.core.kdom.parsing.Section;
@@ -51,7 +51,7 @@ public class KnowledgeBaseCompileType extends PackageCompileType {
 		String[] uses = DefaultMarkupType.getAnnotations(kbSection,
 				KnowledgeBaseType.ANNOTATION_COMPILE);
 		if (uses.length == 0) {
-			return Arrays.asList(KnowWEEnvironment.getInstance().getPackageManager(section.getWeb()).getDefaultPackageName(
+			return Arrays.asList(Environment.getInstance().getPackageManager(section.getWeb()).getDefaultPackageName(
 					section.getArticle()));
 		}
 		return Arrays.asList(uses);

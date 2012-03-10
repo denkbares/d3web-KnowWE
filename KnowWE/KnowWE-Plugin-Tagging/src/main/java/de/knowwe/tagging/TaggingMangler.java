@@ -35,14 +35,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.search.GenericSearchResult;
-import de.knowwe.search.KnowWESearchProvider;
+import de.knowwe.search.SearchProvider;
 import de.knowwe.search.SearchTerm;
 
 /**
@@ -52,7 +52,7 @@ import de.knowwe.search.SearchTerm;
  * @author Fabian Haupt
  * 
  */
-public class TaggingMangler implements KnowWESearchProvider {
+public class TaggingMangler implements SearchProvider {
 
 	/**
 	 * Singleton instance
@@ -111,8 +111,8 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * @throws IOException
 	 */
 	public void addTag(String pagename, String tag, UserActionContext context) throws IOException {
-		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(
-				KnowWEEnvironment.DEFAULT_WEB, pagename);
+		Article article = Environment.getInstance().getArticle(
+				Environment.DEFAULT_WEB, pagename);
 		
 		// Look for <tags> sections
 		List<Section<TagsContent>> tagsSections = new ArrayList<Section<TagsContent>>();
@@ -165,8 +165,8 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * @throws IOException
 	 */
 	public void removeTag(String pagename, String tag, UserActionContext context) throws IOException {
-		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(
-				KnowWEEnvironment.DEFAULT_WEB, pagename);
+		Article article = Environment.getInstance().getArticle(
+				Environment.DEFAULT_WEB, pagename);
 		
 		// Look for <tags> sections
 		List<Section<TagsContent>> tagsSections = new ArrayList<Section<TagsContent>>();
@@ -343,7 +343,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * @throws IOException
 	 */
 	public void setTags(String topic, String tag, UserActionContext context) throws IOException {
-		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(KnowWEEnvironment.DEFAULT_WEB,
+		Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB,
 				topic);
 		ArrayList<Section<TagsContent>> tagslist = new ArrayList<Section<TagsContent>>();
 		Sections.findSuccessorsOfType(article.getSection(), TagsContent.class, tagslist);
@@ -373,8 +373,8 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 */
 	public void addNewTagSection(String topic, String content,
 			UserActionContext context) throws IOException {
-		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(
-				KnowWEEnvironment.DEFAULT_WEB, topic);
+		Article article = Environment.getInstance().getArticle(
+				Environment.DEFAULT_WEB, topic);
 		
 		Section<?> articleSection = article.getSection();
 		String text = articleSection.getText();

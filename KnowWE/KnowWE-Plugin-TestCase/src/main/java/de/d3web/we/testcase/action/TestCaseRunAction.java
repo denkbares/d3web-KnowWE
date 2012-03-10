@@ -39,7 +39,7 @@ import de.d3web.we.testcase.TestCaseUtils;
 import de.d3web.we.testcase.kdom.TestCaseRunnerType;
 import de.d3web.we.testcase.util.Tuple;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.KnowWEAttributes;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -58,7 +58,7 @@ public class TestCaseRunAction extends TestCaseRunningAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String testCaseName = context.getParameter("testcase");
-		String web = context.getParameter(KnowWEAttributes.WEB);
+		String web = context.getParameter(Attributes.WEB);
 
 		TestCase t = TestCaseUtils.loadTestSuite(testCaseName, web);
 

@@ -29,7 +29,7 @@ import de.d3web.indication.ActionInstantIndication;
 import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.we.kdom.rules.action.ContraIndicationAction.QuestionReferenceInBrackets;
 import de.d3web.we.object.QuestionReference;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -53,7 +53,7 @@ public class InstantIndication extends BracketsAction<InstantIndication> {
 	}
 
 	@Override
-	public PSAction createAction(KnowWEArticle article, Section<InstantIndication> s) {
+	public PSAction createAction(Article article, Section<InstantIndication> s) {
 		Section<QuestionReference> qSec = Sections.findSuccessor(s, QuestionReference.class);
 		Question termObject = qSec.get().getTermObject(article, qSec);
 

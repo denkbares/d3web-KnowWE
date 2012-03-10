@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -46,7 +46,7 @@ public class UnrecognizedSyntaxType extends AbstractType {
 		this.addSubtreeHandler(new SubtreeHandler<UnrecognizedSyntaxType>() {
 
 			@Override
-			public Collection<Message> create(KnowWEArticle article, Section<UnrecognizedSyntaxType> section) {
+			public Collection<Message> create(Article article, Section<UnrecognizedSyntaxType> section) {
 				Collection<Message> msgs = new ArrayList<Message>(1);
 				msgs.add(Messages.error("Unrecognizable syntax"));
 				return msgs;

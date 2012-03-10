@@ -22,7 +22,7 @@ package de.knowwe.tagging;
 
 import java.util.Collection;
 
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -44,7 +44,7 @@ public class TagsContent extends XMLContent {
 	private class TagsContentSubtreeHandler extends SubtreeHandler<TagsContent> {
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<TagsContent> section) {
+		public Collection<Message> create(Article article, Section<TagsContent> section) {
 			for (String tag : section.getText().split(TaggingMangler.TAG_SEPARATOR)) {
 				TaggingMangler.getInstance().registerTag(article.getTitle(), tag);
 			}

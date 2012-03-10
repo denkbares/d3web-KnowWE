@@ -22,7 +22,7 @@ package de.knowwe.core.action;
 
 import java.io.IOException;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -62,9 +62,9 @@ public class ReRenderContentPartAction extends AbstractAction {
 			String inPre = context.getParameter("inPre");
 			String pagedata = b.toString();
 
-			if (inPre == null) pagedata = KnowWEEnvironment.getInstance().getWikiConnector()
+			if (inPre == null) pagedata = Environment.getInstance().getWikiConnector()
 						.renderWikiSyntax(pagedata, context);
-			if (inPre != null) if (inPre.equals("false")) pagedata = KnowWEEnvironment.getInstance()
+			if (inPre != null) if (inPre.equals("false")) pagedata = Environment.getInstance()
 							.getWikiConnector().renderWikiSyntax(pagedata, context);
 
 			return KnowWEUtils.unmaskHTML(pagedata);

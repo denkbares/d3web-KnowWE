@@ -28,7 +28,7 @@ import javax.servlet.http.HttpSession;
 
 import com.ecyrd.jspwiki.WikiContext;
 
-import de.knowwe.core.KnowWEAttributes;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.user.AbstractUserContext;
 
 public class JSPWikiUserContext extends AbstractUserContext {
@@ -46,17 +46,17 @@ public class JSPWikiUserContext extends AbstractUserContext {
 
 	private void addDefaultAttributes() {
 		// Add user
-		if (!urlParameter.containsKey(KnowWEAttributes.USER)) {
-			urlParameter.put(KnowWEAttributes.USER,
+		if (!urlParameter.containsKey(Attributes.USER)) {
+			urlParameter.put(Attributes.USER,
 					context.getWikiSession().getUserPrincipal().getName());
 		}
 		// Add topic
-		if (!urlParameter.containsKey(KnowWEAttributes.TOPIC)) {
-			urlParameter.put(KnowWEAttributes.TOPIC, context.getPage().getName());
+		if (!urlParameter.containsKey(Attributes.TOPIC)) {
+			urlParameter.put(Attributes.TOPIC, context.getPage().getName());
 		}
 		// Add web
-		if (!urlParameter.containsKey(KnowWEAttributes.WEB)) {
-			urlParameter.put(KnowWEAttributes.WEB, "default_web");
+		if (!urlParameter.containsKey(Attributes.WEB)) {
+			urlParameter.put(Attributes.WEB, "default_web");
 		}
 	}
 

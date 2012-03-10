@@ -31,7 +31,7 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import de.knowwe.core.action.KnowWEActionDispatcher;
+import de.knowwe.core.action.ActionDispatcher;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.user.UserContext;
 
@@ -47,7 +47,7 @@ import de.knowwe.core.user.UserContext;
  * 
  */
 
-public interface KnowWEWikiConnector {
+public interface WikiConnector {
 
 	/**
 	 * Checks whether the user is member of a given group
@@ -96,7 +96,7 @@ public interface KnowWEWikiConnector {
 	 * 
 	 * @return
 	 */
-	public KnowWEActionDispatcher getActionDispatcher();
+	public ActionDispatcher getActionDispatcher();
 
 	/**
 	 * Saves the article (persistently) into the connected wiki
@@ -115,7 +115,7 @@ public interface KnowWEWikiConnector {
 	 * @param text
 	 * @param map
 	 * @param fullParse possibility to force the full parsing of the page (only
-	 *        for KnowWETestWikiConnector working)
+	 *        for TestWikiConnector working)
 	 * @return
 	 */
 	// public boolean writeArticleToWikiEnginePersistence(String name, String

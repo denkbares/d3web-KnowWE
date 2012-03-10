@@ -27,7 +27,7 @@ import de.d3web.core.inference.PSMethod;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.SuccessorNotReusedConstraint;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -45,11 +45,11 @@ public abstract class D3webRuleAction<T extends Type>
 
 	public abstract Class<? extends PSMethod> getActionPSContext();
 
-	public final PSAction getAction(KnowWEArticle article, Section<T> s) {
+	public final PSAction getAction(Article article, Section<T> s) {
 		return (PSAction) KnowWEUtils.getStoredObject(article, s, ACTION_STORE_KEY);
 	}
 
-	private void storeAction(KnowWEArticle article, PSAction action, Section<T> section) {
+	private void storeAction(Article article, PSAction action, Section<T> section) {
 		KnowWEUtils.storeObject(article, section, ACTION_STORE_KEY, action);
 	}
 
@@ -61,7 +61,7 @@ public abstract class D3webRuleAction<T extends Type>
 	 * @param section the section of this action
 	 * @return the newly created action
 	 */
-	protected abstract PSAction createAction(KnowWEArticle article, Section<T> section);
+	protected abstract PSAction createAction(Article article, Section<T> section);
 
 	private class ActionCreateHandler extends D3webSubtreeHandler<T> {
 
@@ -70,13 +70,13 @@ public abstract class D3webRuleAction<T extends Type>
 		}
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<T> s) {
+		public void destroy(Article article, Section<T> s) {
 			storeAction(article, null, s);
 			Messages.clearMessages(article, s, getClass());
 		}
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<T> section) {
+		public Collection<Message> create(Article article, Section<T> section) {
 			PSAction action = createAction(article, section);
 			storeAction(article, action, section);
 			// do not overwrite existing messages

@@ -23,7 +23,7 @@ package de.knowwe.tagging;
 import java.util.List;
 import java.util.Map;
 
-import de.knowwe.core.KnowWEAttributes;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -63,7 +63,7 @@ public class TagEditPanel extends AbstractHTMLTagHandler {
 		output += "<script type=\"text/javascript\">";
 		output += "var myIPE=new SilverIPE('tagpanedit','tagspan','KnowWE.jsp',{parameterName:'tagtag',highlightColor: '#ffff77',"
 				+ "additionalParameters:{tagaction:\"set\",action:\"TagHandlingAction\","
-				+ KnowWEAttributes.TOPIC + ":\"" + user.getTopic() + "\"} });";
+				+ Attributes.TOPIC + ":\"" + user.getTopic() + "\"} });";
 		output += "</script>";
 		output += "</p>";
 		return KnowWEUtils.maskHTML(output);

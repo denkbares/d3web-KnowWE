@@ -40,7 +40,7 @@ import de.d3web.we.object.SolutionReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.Number;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -72,7 +72,7 @@ public class TestCaseContent extends AbstractType {
 	public class TestSuiteSubTreeHandler extends D3webSubtreeHandler<TestCaseContent> {
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<TestCaseContent> s) {
+		public Collection<Message> create(Article article, Section<TestCaseContent> s) {
 
 			List<Message> messages = new LinkedList<Message>();
 			KnowledgeBase kb = getKB(article);

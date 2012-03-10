@@ -28,7 +28,7 @@ import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -62,7 +62,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 			extends D3webSubtreeHandler<QuestionnaireDefinition> {
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article,
+		public Collection<Message> create(Article article,
 				Section<QuestionnaireDefinition> section) {
 
 			String name = section.get().getTermIdentifier(section);

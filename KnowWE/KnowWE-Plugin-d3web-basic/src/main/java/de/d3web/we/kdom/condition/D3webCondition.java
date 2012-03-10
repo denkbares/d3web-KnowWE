@@ -25,7 +25,7 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.SuccessorNotReusedConstraint;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -47,11 +47,11 @@ public abstract class D3webCondition<T extends Type>
 		this.addSubtreeHandler(new CondCreateHandler());
 	}
 
-	public final Condition getCondition(KnowWEArticle article, Section<T> s) {
+	public final Condition getCondition(Article article, Section<T> s) {
 		return (Condition) KnowWEUtils.getStoredObject(article, s, COND_STORE_KEY);
 	}
 
-	private void storeCondition(KnowWEArticle article, Condition condition, Section<T> section) {
+	private void storeCondition(Article article, Condition condition, Section<T> section) {
 		KnowWEUtils.storeObject(article, section, COND_STORE_KEY, condition);
 	}
 
@@ -63,7 +63,7 @@ public abstract class D3webCondition<T extends Type>
 	 * @param section the section of this condition
 	 * @return the newly created condition
 	 */
-	protected abstract Condition createCondition(KnowWEArticle article, Section<T> section);
+	protected abstract Condition createCondition(Article article, Section<T> section);
 
 	private class CondCreateHandler extends D3webSubtreeHandler<T> {
 
@@ -72,13 +72,13 @@ public abstract class D3webCondition<T extends Type>
 		}
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<T> s) {
+		public void destroy(Article article, Section<T> s) {
 			storeCondition(article, null, s);
 			Messages.clearMessages(article, s, getClass());
 		}
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<T> section) {
+		public Collection<Message> create(Article article, Section<T> section) {
 			Condition condition = createCondition(article, section);
 			storeCondition(article, condition, section);
 			// do not overwrite existing messages

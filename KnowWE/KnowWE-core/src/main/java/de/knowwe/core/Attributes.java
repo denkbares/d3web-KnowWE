@@ -20,7 +20,7 @@
 
 package de.knowwe.core;
 
-public class KnowWEAttributes {
+public class Attributes {
 
 	public static final String TOPIC = "KWiki_Topic";
 	public static final String SECTION_ID = "SectionID";

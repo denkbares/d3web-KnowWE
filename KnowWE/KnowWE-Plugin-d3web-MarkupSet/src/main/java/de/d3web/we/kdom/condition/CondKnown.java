@@ -25,7 +25,7 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.object.QuestionReference;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -77,7 +77,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 	}
 
 	@Override
-	protected Condition createCondition(KnowWEArticle article, de.knowwe.core.kdom.parsing.Section<CondKnown> section) {
+	protected Condition createCondition(Article article, de.knowwe.core.kdom.parsing.Section<CondKnown> section) {
 		Section<QuestionReference> qRef = Sections.findSuccessor(section, QuestionReference.class);
 		if (qRef != null) {
 			Question q = qRef.get().getTermObject(article, qRef);

@@ -12,14 +12,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.EmbracedType;
 import de.knowwe.core.kdom.basicType.PlainText;
-import de.knowwe.core.wikiConnector.KnowWEWikiConnector;
-import dummies.KnowWETestWikiConnector;
+import de.knowwe.core.wikiConnector.WikiConnector;
+import dummies.TestWikiConnector;
 
 public class Sections {
 
@@ -421,7 +421,7 @@ public class Sections {
 			father = father.getFather();
 		}
 
-		if (path.getFirst().isAssignableFrom(KnowWEArticle.class)) {
+		if (path.getFirst().isAssignableFrom(Article.class)) {
 			return path;
 		}
 		else {
@@ -487,7 +487,7 @@ public class Sections {
 	 * @return the Section on the given position in the KDOM, if it exists
 	 */
 	public static Section<?> getSection(String web, String title, List<Integer> positionInKDOM) {
-		return getSection(KnowWEEnvironment.getInstance().getArticle(web, title), positionInKDOM);
+		return getSection(Environment.getInstance().getArticle(web, title), positionInKDOM);
 	}
 
 	/**
@@ -497,7 +497,7 @@ public class Sections {
 	 *        children in the ancestors of the given wanted Section
 	 * @return the Section on the given position in the KDOM, if it exists
 	 */
-	public static Section<?> getSection(KnowWEArticle article, List<Integer> positionInKDOM) {
+	public static Section<?> getSection(Article article, List<Integer> positionInKDOM) {
 		Section<?> temp = article.getSection();
 		for (Integer pos : positionInKDOM) {
 			if (temp.getChildren().size() <= pos) return null;
@@ -556,7 +556,7 @@ public class Sections {
 				sectionInfo.title = section.getTitle();
 				sectionInfo.web = section.getWeb();
 				sectionInfo.newText =
-						KnowWEEnvironment.getInstance().getWikiConnector().normalizeStringTo(
+						Environment.getInstance().getWikiConnector().normalizeStringTo(
 								sectionsMap.get(id));
 			}
 			sectionInfo.oldId = id;
@@ -590,7 +590,7 @@ public class Sections {
 			missingIDs.addAll(ids);
 			return true;
 		}
-		if (!KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(title,
+		if (!Environment.getInstance().getWikiConnector().userCanEditPage(title,
 				context.getRequest())) {
 			forbiddenArticles.add(title);
 			return true;
@@ -613,16 +613,16 @@ public class Sections {
 			Map<String, String> sectionsMapForCurrentTitle,
 			UserActionContext context) {
 
-		KnowWEWikiConnector wikiConnector = KnowWEEnvironment.getInstance().getWikiConnector();
+		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
 
 		String newArticleText = getNewArticleText(title, sectionsMapForCurrentTitle, context);
 		wikiConnector.writeArticleToWikiEnginePersistence(title, newArticleText, context);
 
-		if (wikiConnector instanceof KnowWETestWikiConnector) {
+		if (wikiConnector instanceof TestWikiConnector) {
 			// This is only needed for the test environment. In the running
 			// wiki, this is automatically called after the change to the
 			// persistence.
-			KnowWEEnvironment.getInstance().buildAndRegisterArticle(newArticleText,
+			Environment.getInstance().buildAndRegisterArticle(newArticleText,
 					title, context.getWeb());
 		}
 	}
@@ -633,7 +633,7 @@ public class Sections {
 			UserActionContext context) {
 
 		StringBuffer newText = new StringBuffer();
-		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(context.getWeb(),
+		Article article = Environment.getInstance().getArticle(context.getWeb(),
 				title);
 		collectTextAndReplaceNode(article.getSection(), sectionsMapForCurrentTitle, newText);
 		return newText.toString();

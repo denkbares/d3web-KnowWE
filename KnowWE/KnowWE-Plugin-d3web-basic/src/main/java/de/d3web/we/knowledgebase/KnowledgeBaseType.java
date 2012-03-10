@@ -28,7 +28,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -94,7 +94,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		this.addSubtreeHandler(Priority.HIGHER, new D3webSubtreeHandler<KnowledgeBaseType>() {
 
 			@Override
-			public Collection<Message> create(KnowWEArticle article, Section<KnowledgeBaseType> section) {
+			public Collection<Message> create(Article article, Section<KnowledgeBaseType> section) {
 				// get required information
 				KnowledgeBase kb = getKB(article);
 

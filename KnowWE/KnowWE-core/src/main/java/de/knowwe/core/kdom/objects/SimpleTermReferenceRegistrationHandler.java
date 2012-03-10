@@ -22,7 +22,7 @@ import java.util.Collection;
 
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
@@ -43,7 +43,7 @@ public class SimpleTermReferenceRegistrationHandler extends SubtreeHandler<Simpl
 	}
 
 	@Override
-	public Collection<Message> create(KnowWEArticle article, Section<SimpleTerm> section) {
+	public Collection<Message> create(Article article, Section<SimpleTerm> section) {
 
 		TerminologyManager tHandler = KnowWEUtils.getTerminologyManager(article, scope);
 		String termIdentifier = section.get().getTermIdentifier(section);
@@ -64,7 +64,7 @@ public class SimpleTermReferenceRegistrationHandler extends SubtreeHandler<Simpl
 	 * @param section the section identifying the reference
 	 * @return result messages of validation
 	 */
-	public Collection<Message> validateReference(KnowWEArticle article, Section<SimpleTerm> section) {
+	public Collection<Message> validateReference(Article article, Section<SimpleTerm> section) {
 		TerminologyManager tHandler = KnowWEUtils.getTerminologyManager(article, scope);
 		String termIdentifier = section.get().getTermIdentifier(section);
 		if (!tHandler.isDefinedTerm(termIdentifier)) {

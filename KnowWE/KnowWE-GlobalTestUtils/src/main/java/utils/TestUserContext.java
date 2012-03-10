@@ -26,8 +26,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import de.knowwe.core.KnowWEAttributes;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.Attributes;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -42,20 +42,20 @@ public class TestUserContext implements UserContext {
 	private final boolean isAdmin;
 	private final boolean isAsserted;
 	private final String userName = "Testuser #" + (counter++);
-	private final KnowWEArticle article;
+	private final Article article;
 	private final Map<String, String> parameterMap = new HashMap<String, String>();
 
-	public TestUserContext(KnowWEArticle article) {
+	public TestUserContext(Article article) {
 		this(article, false, false);
 	}
 
-	public TestUserContext(KnowWEArticle article, boolean isAdmin, boolean isAsserted) {
+	public TestUserContext(Article article, boolean isAdmin, boolean isAsserted) {
 		this.article = article;
 		this.isAdmin = isAdmin;
 		this.isAsserted = isAsserted;
-		addParameter(KnowWEAttributes.WEB, getWeb());
-		addParameter(KnowWEAttributes.TOPIC, getTopic());
-		addParameter(KnowWEAttributes.USER, getUserName());
+		addParameter(Attributes.WEB, getWeb());
+		addParameter(Attributes.TOPIC, getTopic());
+		addParameter(Attributes.USER, getUserName());
 	}
 
 	@Override

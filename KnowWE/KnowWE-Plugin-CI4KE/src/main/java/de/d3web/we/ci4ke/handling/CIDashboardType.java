@@ -30,8 +30,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.we.ci4ke.util.Pair;
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -95,7 +95,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		}
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<CIDashboardType> s) {
+		public Collection<Message> create(Article article, Section<CIDashboardType> s) {
 
 			List<Message> msgs = new ArrayList<Message>();
 
@@ -190,7 +190,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		}
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<CIDashboardType> s) {
+		public void destroy(Article article, Section<CIDashboardType> s) {
 			CIHook ciHook = (CIHook) s.getSectionStore().getObject(article,
 					CIHook.CIHOOK_STORE_KEY);
 			if (ciHook != null) {
@@ -213,7 +213,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		String thisDashboardName = CIDashboardType.getAnnotation(section, NAME_KEY);
 
 		List<Section<CIDashboardType>> sectionList = new ArrayList<Section<CIDashboardType>>();
-		for (KnowWEArticle article : KnowWEEnvironment.getInstance().
+		for (Article article : Environment.getInstance().
 				getArticleManager(section.getWeb()).getArticles()) {
 			Sections.findSuccessorsOfType(article.getSection(), CIDashboardType.class, sectionList);
 		}

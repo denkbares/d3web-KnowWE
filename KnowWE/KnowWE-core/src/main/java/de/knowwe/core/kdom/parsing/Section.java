@@ -33,10 +33,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.packaging.KnowWEPackageManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.InjectType;
 import de.knowwe.core.kdom.objects.SimpleTerm;
@@ -64,7 +64,7 @@ import de.knowwe.logging.Logging;
  */
 public final class Section<T extends Type> implements Visitable, Comparable<Section<? extends Type>> {
 
-	public void setArticle(KnowWEArticle article) {
+	public void setArticle(Article article) {
 		this.article = article;
 	}
 
@@ -79,7 +79,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 
 	protected boolean isOrHasReusedSuccessor = false;
 
-	protected KnowWEArticle article;
+	protected Article article;
 
 	private HashSet<String> packageNames = null;
 
@@ -168,7 +168,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		this.type = objectType;
 	}
 
-	protected Section(KnowWEArticle article) {
+	protected Section(Article article) {
 		this.article = article;
 	}
 
@@ -259,7 +259,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	public boolean removeInjectedChildren() {
 		if (this.getChildren().size() == 1 && this.getChildren().get(0).get() instanceof InjectType) {
 			Section<?> injectSection = this.getChildren().remove(0);
-			KnowWEEnvironment.getInstance().getArticleManager(getWeb()).addAllArticlesToUpdate(
+			Environment.getInstance().getArticleManager(getWeb()).addAllArticlesToUpdate(
 					injectSection.getReusedBySet());
 			injectSection.clearReusedBySet();
 			return true;
@@ -470,11 +470,6 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * @return the list of child nodes
 	 */
 	public List<Section<? extends Type>> getChildren() {
-		// if (objectType instanceof Include) {
-		// return KnowWEEnvironment.getInstance().getIncludeManager(getWeb())
-		// .getChildrenForSection((Section<Include>) this);
-		// }
-		// else
 		return Collections.unmodifiableList(children);
 
 	}
@@ -573,13 +568,13 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	public String getWeb() {
-		if (this.type instanceof KnowWEArticle) {
-			return ((KnowWEArticle) type).getWeb();
+		if (this.type instanceof Article) {
+			return ((Article) type).getWeb();
 		}
 		return this.article.getWeb();
 	}
 
-	public KnowWEArticle getArticle() {
+	public Article getArticle() {
 		return this.article;
 	}
 
@@ -587,7 +582,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * @return the depth of this Section inside the KDOM
 	 */
 	public int getDepth() {
-		if (get() instanceof KnowWEArticle) {
+		if (get() instanceof Article) {
 			return 0;
 		}
 		else {
@@ -689,7 +684,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * Method that looks (recursively down) for this section whether some errors
 	 * has been stored in that subtree for the given article.
 	 */
-	public boolean hasErrorInSubtree(KnowWEArticle article) {
+	public boolean hasErrorInSubtree(Article article) {
 		Collection<Message> errors = Messages.getMessages(article, this, Message.Type.ERROR);
 		if (!errors.isEmpty()) return true;
 		for (Section<?> child : children) {
@@ -717,7 +712,6 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	public void setHasSharedChildren(boolean shared) {
 		this.sharedChildren = shared;
 	}
-
 
 	public boolean isEmpty() {
 		String text = getText();
@@ -861,7 +855,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * @created 13.09.2010
 	 * @param article
 	 */
-	public void clearReusedOfOldSectionsRecursively(KnowWEArticle
+	public void clearReusedOfOldSectionsRecursively(Article
 			article) {
 		// skip included Sections
 		if (article.getTitle().equals(getTitle())) {
@@ -993,21 +987,21 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		return positions;
 	}
 
-	private boolean isMatchingPackageName(KnowWEArticle article, SubtreeHandler<?> h) {
+	private boolean isMatchingPackageName(Article article, SubtreeHandler<?> h) {
 
 		// ignore: compile always but only for the article of this section
 		if (h.isIgnoringPackageCompile() || type.isIgnoringPackageCompile()) {
 			return article.getTitle().equals(getTitle());
 		}
 		// auto: compile always
-		else if (KnowWEPackageManager.isAutocompileArticleEnabled()) {
+		else if (PackageManager.isAutocompileArticleEnabled()) {
 			return true;
 		}
 		else {
-			Set<String> referencedPackages = KnowWEEnvironment.getInstance().getPackageManager(
+			Set<String> referencedPackages = Environment.getInstance().getPackageManager(
 					article.getWeb()).getCompiledPackages(article.getTitle());
 
-			if (referencedPackages.contains(KnowWEPackageManager.THIS)) return true;
+			if (referencedPackages.contains(PackageManager.THIS)) return true;
 
 			for (String name : getPackageNames()) {
 				if (referencedPackages.contains(name)) return true;
@@ -1023,9 +1017,9 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * have any knowledge of the template T specified by the Section =>
 	 * SuppressWarning...
 	 * 
-	 * @see SubtreeHandler#create(KnowWEArticle, Section)
+	 * @see SubtreeHandler#create(Article, Section)
 	 */
-	public final void letSubtreeHandlersCreate(KnowWEArticle article, Priority p) {
+	public final void letSubtreeHandlersCreate(Article article, Priority p) {
 		List<SubtreeHandler<? extends Type>> handlerList = type.getSubtreeHandlers().get(
 				p);
 		if (handlerList != null) {
@@ -1039,7 +1033,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 
 	@SuppressWarnings({
 			"unchecked", "rawtypes" })
-	public final void letSubtreeHandlerCreate(KnowWEArticle article, SubtreeHandler handler) {
+	public final void letSubtreeHandlerCreate(Article article, SubtreeHandler handler) {
 		if (handler.needsToCreate(article, this)
 				&& isMatchingPackageName(article, handler)) {
 			try {
@@ -1069,9 +1063,9 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * have any knowledge of the template T specified by the Section =>
 	 * SuppressWarning...
 	 * 
-	 * @see SubtreeHandler#destroy(KnowWEArticle, Section)
+	 * @see SubtreeHandler#destroy(Article, Section)
 	 */
-	public final void letSubtreeHandlersDestroy(KnowWEArticle article, Priority p) {
+	public final void letSubtreeHandlersDestroy(Article article, Priority p) {
 		List<SubtreeHandler<? extends Type>> handlerList =
 				type.getSubtreeHandlers().get(p);
 		if (handlerList != null) {
@@ -1085,7 +1079,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 
 	@SuppressWarnings({
 			"unchecked", "rawtypes" })
-	public final void letSubtreeHandlerDestroy(KnowWEArticle article, SubtreeHandler handler) {
+	public final void letSubtreeHandlerDestroy(Article article, SubtreeHandler handler) {
 		if (handler.needsToDestroy(article, this)) {
 			try {
 				handler.destroy(article, this);
@@ -1103,7 +1097,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
-	 * @see setType(Type newType, boolean create, KnowWEArticle article)
+	 * @see setType(Type newType, boolean create, Article article)
 	 * 
 	 *      create is true as default
 	 * 
@@ -1116,7 +1110,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
-	 * @see setType(Type newType, boolean create, KnowWEArticle article)
+	 * @see setType(Type newType, boolean create, Article article)
 	 * 
 	 * 
 	 *      article is article of this section
@@ -1128,14 +1122,14 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
-	 * @see setType(Type newType, boolean create, KnowWEArticle article)
+	 * @see setType(Type newType, boolean create, Article article)
 	 * 
 	 *      create is true as default
 	 * 
 	 * @param newType
 	 */
 
-	public void setType(Type newType, KnowWEArticle a) {
+	public void setType(Type newType, Article a) {
 		setType(newType, true, a);
 	}
 
@@ -1151,7 +1145,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 *        (error messages)
 	 */
 	@SuppressWarnings("unchecked")
-	public void setType(Type newType, boolean create, KnowWEArticle article) {
+	public void setType(Type newType, boolean create, Article article) {
 
 		// remove error messages from old type
 		TreeMap<Priority, List<SubtreeHandler<? extends Type>>> subtreeHandlers = this.get().getSubtreeHandlers();

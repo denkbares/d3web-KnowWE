@@ -25,13 +25,13 @@ import java.util.Collection;
 
 import junit.framework.TestCase;
 import utils.KBTestUtilNewMarkup;
-import utils.MyTestArticleManager;
+import utils.TestArticleManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
-import de.knowwe.core.compile.packaging.KnowWEPackageManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.logging.Logging;
 
 /**
@@ -48,12 +48,12 @@ public class XCLTest extends TestCase {
 	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
-		KnowWEPackageManager.overrideAutocompileArticle(true);
+		PackageManager.overrideAutocompileArticle(true);
 	}
 
 	public void testNumberOfXCLModels() {
 		// load KnowledgeBases
-		KnowWEArticle art = MyTestArticleManager
+		Article art = TestArticleManager
 				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
@@ -67,7 +67,7 @@ public class XCLTest extends TestCase {
 	public void testXCLModels() {
 
 		// load KnowledgeBases
-		KnowWEArticle art = MyTestArticleManager
+		Article art = TestArticleManager
 				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();

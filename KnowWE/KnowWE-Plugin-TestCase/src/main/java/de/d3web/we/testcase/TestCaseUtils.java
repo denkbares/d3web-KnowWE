@@ -23,8 +23,8 @@ import java.util.logging.Logger;
 import de.d3web.empiricaltesting.TestCase;
 import de.d3web.we.testcase.kdom.TestCaseContent;
 import de.d3web.we.testcase.kdom.TestCaseType;
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -42,12 +42,12 @@ public class TestCaseUtils {
 	 * Loads a test suite from the specified article.
 	 * 
 	 * @created 25/10/2010
-	 * @param article KnowWEArticle containing a TestSuiteType section
+	 * @param article Article containing a TestSuiteType section
 	 * @param web the current web
 	 * @return loaded test suite or null (if no test suite was found)
 	 */
 	public static TestCase loadTestSuite(String article, String web) {
-		KnowWEArticle a = KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(article);
+		Article a = Environment.getInstance().getArticleManager(web).getArticle(article);
 		Section<TestCaseContent> s = null;
 		TestCase testSuite = null;
 

@@ -43,7 +43,7 @@ import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -76,7 +76,7 @@ public class GetTraceHighlightAction extends AbstractAction {
 		Section<FlowchartType> flowchart = Sections.findSuccessor(diaFluxSec, FlowchartType.class);
 		String flowName = FlowchartType.getFlowchartName(flowchart);
 
-		KnowWEArticle article = KnowWEUtils.getCompilingArticles(diaFluxSec).iterator().next();
+		Article article = KnowWEUtils.getCompilingArticles(diaFluxSec).iterator().next();
 
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(context.getWeb(), article.getTitle());
 		Session session = SessionProvider.getSession(context, kb);

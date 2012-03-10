@@ -55,25 +55,25 @@ import com.ecyrd.jspwiki.auth.permissions.PermissionFactory;
 import com.ecyrd.jspwiki.preferences.Preferences;
 import com.ecyrd.jspwiki.providers.ProviderException;
 
-import de.knowwe.core.action.KnowWEActionDispatcher;
+import de.knowwe.core.action.ActionDispatcher;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.ConnectorAttachment;
-import de.knowwe.core.wikiConnector.KnowWEWikiConnector;
+import de.knowwe.core.wikiConnector.WikiConnector;
 
 /**
- * For code documentation look at the KnowWEWikiConnector interface definition
+ * For code documentation look at the WikiConnector interface definition
  * 
  * @author Jochen
  * 
  */
-public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
+public class JSPWikiConnector implements WikiConnector {
 
 	private ServletContext context = null;
 	private WikiEngine engine = null;
 	public static final String LINK_PREFIX = "Wiki.jsp?page=";
 
-	public JSPWikiKnowWEConnector(WikiEngine eng) {
+	public JSPWikiConnector(WikiEngine eng) {
 		this.context = eng.getServletContext();
 		this.engine = eng;
 	}
@@ -84,7 +84,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	}
 
 	@Override
-	public KnowWEActionDispatcher getActionDispatcher() {
+	public ActionDispatcher getActionDispatcher() {
 		return JSPActionDispatcher.getInstance();
 	}
 

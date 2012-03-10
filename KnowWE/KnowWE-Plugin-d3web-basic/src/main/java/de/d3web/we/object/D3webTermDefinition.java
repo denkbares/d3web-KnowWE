@@ -26,7 +26,7 @@ import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -53,7 +53,7 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 	 * @return null if the creation must not be aborted, an Collection
 	 *         containing addition Messages or non (if not needed) else
 	 */
-	public Collection<Message> canAbortTermObjectCreation(KnowWEArticle article, Section<? extends D3webTermDefinition<TermObject>> section) {
+	public Collection<Message> canAbortTermObjectCreation(Article article, Section<? extends D3webTermDefinition<TermObject>> section) {
 		Collection<Message> msgs = new ArrayList<Message>(1);
 		if (section.hasErrorInSubtree(article)) {
 			// obviously there are already errors present, simply abort
@@ -83,7 +83,7 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 	}
 
 	@Override
-	public TermObject getTermObject(KnowWEArticle article, Section<? extends D3webTerm<TermObject>> section) {
+	public TermObject getTermObject(Article article, Section<? extends D3webTerm<TermObject>> section) {
 		return D3webUtils.getTermObjectDefaultImplementation(article, section);
 	}
 

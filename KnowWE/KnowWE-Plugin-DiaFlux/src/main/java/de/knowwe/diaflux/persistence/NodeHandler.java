@@ -24,7 +24,7 @@ import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.Node;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -46,7 +46,7 @@ public interface NodeHandler {
 	 * @param nodeSection the section of the node
 	 * @return true, if this nodehandler can create a node
 	 */
-	boolean canCreateNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection);
+	boolean canCreateNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection);
 
 	/**
 	 * Creates a node from the supplied section.
@@ -59,7 +59,7 @@ public interface NodeHandler {
 	 * @param errors
 	 * @return
 	 */
-	Node createNode(KnowWEArticle article, KnowledgeBase kb, Section<NodeType> nodeSection, Section<FlowchartType> flowSection, String id, List<Message> errors);
+	Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection, Section<FlowchartType> flowSection, String id, List<Message> errors);
 
 	/**
 	 * Returns the ObjectType of the NodeModel this handler handles.

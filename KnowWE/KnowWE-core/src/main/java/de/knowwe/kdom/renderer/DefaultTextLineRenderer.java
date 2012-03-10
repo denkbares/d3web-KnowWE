@@ -37,7 +37,7 @@ public class DefaultTextLineRenderer implements Renderer {
 
 		return "";
 		// OFF by now
-		// return KnowWEEnvironment
+		// return Environment
 		// .maskHTML("<span><textarea cols=\"30\" rows=\"1\">"+sec.getOriginalText()+"</textarea></span>");
 	}
 }

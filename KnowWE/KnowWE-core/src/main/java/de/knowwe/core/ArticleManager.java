@@ -37,26 +37,25 @@ import java.util.logging.Logger;
 import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
 import de.knowwe.core.event.EventManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.event.ArticleRegisteredEvent;
 import de.knowwe.event.ArticleUpdatesFinishedEvent;
 import de.knowwe.event.InitializedAllArticlesEvent;
 import de.knowwe.event.UpdatingDependenciesEvent;
-import dummies.KnowWETestWikiConnector;
+import dummies.TestWikiConnector;
 
 /**
+ * Manages all the articles of one web in a HashMap
+ * 
  * @author Jochen
- * 
- *         Manages all the articles of one web in a HashMap
- * 
  */
-public class KnowWEArticleManager implements EventListener {
+public class ArticleManager implements EventListener {
 
 	/**
-	 * Stores KnowWEArticles for article-names
+	 * Stores Articles for article-names
 	 */
-	private HashMap<String, KnowWEArticle> articleMap = new HashMap<String, KnowWEArticle>();
+	private HashMap<String, Article> articleMap = new HashMap<String, Article>();
 
 	private final TreeSet<String> currentRefreshQueue = new TreeSet<String>();
 
@@ -86,9 +85,9 @@ public class KnowWEArticleManager implements EventListener {
 	private static ResourceBundle rb = ResourceBundle
 			.getBundle("KnowWE_config");
 
-	public KnowWEArticleManager(KnowWEEnvironment env, String webname) {
+	public ArticleManager(Environment env, String webname) {
 		this.web = webname;
-		if (!(env.getWikiConnector() instanceof KnowWETestWikiConnector)) {
+		if (!(env.getWikiConnector() instanceof TestWikiConnector)) {
 			jarsPath = KnowWEUtils.getRealPath(env.getWikiConnector()
 					.getServletContext(), rb.getString("path_to_jars"));
 			reportPath = KnowWEUtils.getRealPath(env.getWikiConnector()
@@ -110,20 +109,20 @@ public class KnowWEArticleManager implements EventListener {
 	}
 
 	/**
-	 * Servs the KnowWEArticle for a given article name
+	 * Servs the Article for a given article name
 	 * 
 	 * @param title
 	 * @return
 	 */
-	public KnowWEArticle getArticle(String title) {
+	public Article getArticle(String title) {
 		return articleMap.get(title);
 	}
 
-	public Iterator<KnowWEArticle> getArticleIterator() {
+	public Iterator<Article> getArticleIterator() {
 		return articleMap.values().iterator();
 	}
 
-	public Collection<KnowWEArticle> getArticles() {
+	public Collection<Article> getArticles() {
 		return Collections.unmodifiableCollection(articleMap.values());
 	}
 
@@ -138,7 +137,7 @@ public class KnowWEArticleManager implements EventListener {
 	 * @created 14.12.2010
 	 * @param article is the changed article to register
 	 */
-	public void registerArticle(KnowWEArticle article) {
+	public void registerArticle(Article article) {
 
 		// store new article
 		String title = article.getTitle();
@@ -189,10 +188,10 @@ public class KnowWEArticleManager implements EventListener {
 
 		for (String title : localQueue) {
 			if (!updatingArticles.contains(title)) {
-				if (KnowWEEnvironment.getInstance().getWikiConnector().doesPageExist(title)) {
-					KnowWEArticle newArt = KnowWEArticle.createArticle(
+				if (Environment.getInstance().getWikiConnector().doesPageExist(title)) {
+					Article newArt = Article.createArticle(
 							articleMap.get(title).getSection().getText(), title,
-							KnowWEEnvironment.getInstance().getRootType(), web, false);
+							Environment.getInstance().getRootType(), web, false);
 					registerArticle(newArt);
 				}
 				else {
@@ -209,7 +208,7 @@ public class KnowWEArticleManager implements EventListener {
 	}
 
 	public void clearArticleMap() {
-		this.articleMap = new java.util.HashMap<String, KnowWEArticle>();
+		this.articleMap = new java.util.HashMap<String, Article>();
 	}
 
 	/**
@@ -218,8 +217,8 @@ public class KnowWEArticleManager implements EventListener {
 	 * 
 	 * @param article The article to delete
 	 */
-	public void deleteArticle(KnowWEArticle article) {
-		KnowWEEnvironment.getInstance().buildAndRegisterArticle("",
+	public void deleteArticle(Article article) {
+		Environment.getInstance().buildAndRegisterArticle("",
 				article.getTitle(), web, true);
 
 		articleMap.remove(article.getTitle());

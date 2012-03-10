@@ -45,7 +45,7 @@ import de.knowwe.core.compile.ConstraintModule;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.SuccessorNotReusedConstraint;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.CommentLineType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -186,7 +186,7 @@ public class CoveringList extends AbstractType {
 				this.registerConstraintModule(new CreateXCLRelationConstraint());
 			}
 
-			private Section<SolutionDefinition> getCorrespondingSolutionDef(KnowWEArticle article, Section<CoveringRelation> s) {
+			private Section<SolutionDefinition> getCorrespondingSolutionDef(Article article, Section<CoveringRelation> s) {
 				return Sections.findSuccessor(s.getFather().getFather(), SolutionDefinition.class);
 			}
 
@@ -195,10 +195,10 @@ public class CoveringList extends AbstractType {
 			 * 
 			 * @see
 			 * de.d3web.we.kdom.subtreeHandler.SubtreeHandler#create(de.d3web
-			 * .we.kdom.KnowWEArticle, de.d3web.we.kdom.Section)
+			 * .we.kdom.Article, de.d3web.we.kdom.Section)
 			 */
 			@Override
-			public Collection<Message> create(KnowWEArticle article, Section<CoveringRelation> s) {
+			public Collection<Message> create(Article article, Section<CoveringRelation> s) {
 
 				List<Message> result = new ArrayList<Message>();
 
@@ -289,7 +289,7 @@ public class CoveringList extends AbstractType {
 			}
 
 			@Override
-			public void destroy(KnowWEArticle article, Section<CoveringRelation> s) {
+			public void destroy(Article article, Section<CoveringRelation> s) {
 				Section<SolutionDefinition> soltuionDef = getCorrespondingSolutionDef(article, s);
 
 				if (soltuionDef == null) return;
@@ -316,7 +316,7 @@ public class CoveringList extends AbstractType {
 				}
 
 				@Override
-				public boolean violatedConstraints(KnowWEArticle article, Section<CoveringRelation> s) {
+				public boolean violatedConstraints(Article article, Section<CoveringRelation> s) {
 					Section<SolutionDefinition> solutionDef = getCorrespondingSolutionDef(article,
 							s);
 					if (solutionDef == null) {
@@ -358,7 +358,7 @@ public class CoveringList extends AbstractType {
 			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID()
 					+ "' class = 'XCLRelationInList'>"));
 
-			KnowWEArticle article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
+			Article article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
 			XCLRelation relation = (XCLRelation) KnowWEUtils.getStoredObject(article, sec,
 					RELATION_STORE_KEY);
 

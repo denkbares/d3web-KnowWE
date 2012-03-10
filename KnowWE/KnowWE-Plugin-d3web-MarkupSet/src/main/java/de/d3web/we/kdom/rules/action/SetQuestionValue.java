@@ -33,7 +33,7 @@ import de.d3web.we.kdom.condition.AnswerReferenceImpl;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.UnknownValueType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -84,7 +84,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 	}
 
 	@Override
-	public PSAction createAction(KnowWEArticle article, Section<SetQuestionValue> s) {
+	public PSAction createAction(Article article, Section<SetQuestionValue> s) {
 
 		Object value;
 

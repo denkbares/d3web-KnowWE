@@ -33,8 +33,8 @@ import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.knowRep.KnowledgeRepresentationHandler;
 
 /**
@@ -72,7 +72,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	}
 
 	public D3webKnowledgeHandler() {
-		this.web = KnowWEEnvironment.DEFAULT_WEB;
+		this.web = Environment.DEFAULT_WEB;
 	}
 
 	/**
@@ -116,7 +116,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	 * build. Prepares it for new d3web knowledge.
 	 */
 	@Override
-	public void initArticle(KnowWEArticle art) {
+	public void initArticle(Article art) {
 		if (!art.isSecondBuild()) {
 			lastKB.put(art.getTitle(), getKnowledgeBase(art.getTitle()));
 		}

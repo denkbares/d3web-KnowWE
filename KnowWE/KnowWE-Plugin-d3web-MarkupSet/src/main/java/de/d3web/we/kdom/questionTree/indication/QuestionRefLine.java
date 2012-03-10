@@ -71,7 +71,7 @@ public class QuestionRefLine extends AbstractType {
 	// D3webSubtreeHandler<QuestionRefLine> {
 	//
 	// @Override
-	// public Collection<KDOMReportMessage> create(KnowWEArticle article,
+	// public Collection<KDOMReportMessage> create(Article article,
 	// Section<QuestionRefLine> qRefLine) {
 	//
 	// if (qRefLine.hasErrorInSubtree()) {

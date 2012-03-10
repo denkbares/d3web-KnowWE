@@ -19,7 +19,7 @@
  */
 package de.knowwe.core.compile;
 
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -35,7 +35,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 public class ModifiedTermsConstraint<T extends Type> extends ConstraintModule<T> {
 
 	@Override
-	public boolean violatedConstraints(KnowWEArticle article, Section<T> s) {
+	public boolean violatedConstraints(Article article, Section<T> s) {
 		return KnowWEUtils.getTerminologyManager(article).areTermDefinitionsModifiedFor(
 				article);
 	}

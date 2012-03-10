@@ -19,14 +19,14 @@
 package de.d3web.we.testcase.kdom;
 
 import de.d3web.we.testcase.renderer.TestCaseRunnerRenderer;
-import de.knowwe.core.KnowWERessourceLoader;
+import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * DefaultMarkup-Type for the test suite result. This type needs the obligatory
- * annotation "TestCase", that is the name of a KnowWEArticle containing a test
+ * annotation "TestCase", that is the name of a Article containing a test
  * case.
  * 
  * @author Sebastian Furth (denkbares GmbH)
@@ -56,10 +56,10 @@ public class TestCaseRunnerType extends DefaultMarkupType {
 		super(MARKUP);
 		this.setIgnorePackageCompile(true);
 		this.setRenderer(new TestCaseRunnerRenderer());
-		KnowWERessourceLoader.getInstance().add("testcase.js",
-				KnowWERessourceLoader.RESOURCE_SCRIPT);
-		KnowWERessourceLoader.getInstance().add("testcase.css",
-				KnowWERessourceLoader.RESOURCE_STYLESHEET);
+		RessourceLoader.getInstance().add("testcase.js",
+				RessourceLoader.RESOURCE_SCRIPT);
+		RessourceLoader.getInstance().add("testcase.css",
+				RessourceLoader.RESOURCE_STYLESHEET);
 	}
 
 	public static String getText(Section<?> sec) {

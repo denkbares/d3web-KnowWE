@@ -28,9 +28,9 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
@@ -103,7 +103,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	public final String render(Section<?> section, UserContext userContext, Map<String, String> parameters) {
 		panelCounter = 0;
 		sectionCounter = 0;
-		rb = KnowWEEnvironment.getInstance().getKwikiBundle(userContext);
+		rb = Environment.getInstance().getMessageBundle(userContext);
 		String content = renderContent(section, userContext, parameters);
 		Section<TagHandlerTypeContent> tagNameSection = Sections.findSuccessor(section,
 				TagHandlerTypeContent.class);
@@ -141,9 +141,9 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		Set<Section<?>> definitions = new HashSet<Section<?>>();
 		Set<Section<?>> references = new HashSet<Section<?>>();
 
-		Iterator<KnowWEArticle> iter = KnowWEEnvironment.getInstance().getArticleManager(
+		Iterator<Article> iter = Environment.getInstance().getArticleManager(
 				section.getWeb()).getArticleIterator();
-		KnowWEArticle currentArticle;
+		Article currentArticle;
 
 		while (iter.hasNext()) {
 			currentArticle = iter.next();
@@ -238,7 +238,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return html.toString();
 	}
 
-	protected void getTermDefinitions(KnowWEArticle currentArticle, String objectName, Set<Section<?>> definitions) {
+	protected void getTermDefinitions(Article currentArticle, String objectName, Set<Section<?>> definitions) {
 		TerminologyManager th = KnowWEUtils.getTerminologyManager(currentArticle);
 
 		Section<?> definition = th.getTermDefiningSection(objectName);
@@ -248,7 +248,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 	}
 
-	protected void getTermReferences(KnowWEArticle currentArticle, String objectName, Set<Section<?>> references) {
+	protected void getTermReferences(Article currentArticle, String objectName, Set<Section<?>> references) {
 		TerminologyManager th = KnowWEUtils.getTerminologyManager(currentArticle);
 		references.addAll(th.getTermReferenceSections(objectName));
 	}
@@ -293,8 +293,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				html.append("</p>");
 			}
 
-			Map<KnowWEArticle, List<Section<?>>> groupedReferences = groupByArticle(references);
-			for (KnowWEArticle article : groupedReferences.keySet()) {
+			Map<Article, List<Section<?>>> groupedReferences = groupByArticle(references);
+			for (Article article : groupedReferences.keySet()) {
 				StringBuilder innerHTML = new StringBuilder();
 				innerHTML.append("<ul>");
 				for (Section<?> reference : groupedReferences.get(article)) {
@@ -337,10 +337,10 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return html.toString();
 	}
 
-	private Map<KnowWEArticle, List<Section<?>>> groupByArticle(Set<Section<?>> references) {
+	private Map<Article, List<Section<?>>> groupByArticle(Set<Section<?>> references) {
 
-		Map<KnowWEArticle, List<Section<?>>> result = new HashMap<KnowWEArticle, List<Section<?>>>();
-		KnowWEArticle article;
+		Map<Article, List<Section<?>>> result = new HashMap<Article, List<Section<?>>>();
+		Article article;
 
 		for (Section<?> reference : references) {
 			article = reference.getArticle();
@@ -364,17 +364,17 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 		// Search for plain text occurrences
 		SearchEngine se = new SearchEngine(
-				KnowWEEnvironment.getInstance().getArticleManager(web));
+				Environment.getInstance().getArticleManager(web));
 		se.setOption(SearchOption.FUZZY);
 		se.setOption(SearchOption.CASE_INSENSITIVE);
 		se.setOption(SearchOption.DOTALL);
-		Map<KnowWEArticle, Collection<Result>> results = se.search(objectName,
+		Map<Article, Collection<Result>> results = se.search(objectName,
 				PlainText.class);
 
 		// Flag which is set to true if there are appropriate Sections
 		boolean appropriateSections = false;
 
-		for (KnowWEArticle article : results.keySet()) {
+		for (Article article : results.keySet()) {
 			StringBuilder innerHTML = new StringBuilder();
 			innerHTML.append("<ul style=\"list-style-type:none;\">");
 			for (Result r : results.get(article)) {

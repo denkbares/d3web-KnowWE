@@ -9,7 +9,7 @@ import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.object.D3webTermDefinition;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -42,7 +42,7 @@ public class ObjectDescription extends AbstractType {
 		this.addSubtreeHandler(new SubtreeHandler<ObjectDescription>() {
 
 			@Override
-			public Collection<Message> create(KnowWEArticle article, Section<ObjectDescription> sec) {
+			public Collection<Message> create(Article article, Section<ObjectDescription> sec) {
 
 				@SuppressWarnings("rawtypes")
 				Section<D3webTermDefinition> qDef = Sections.findSuccessor(

@@ -29,13 +29,13 @@ import java.util.Set;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
-import de.knowwe.core.KnowWEArticleManager;
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
 import de.knowwe.core.event.EventManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -124,9 +124,9 @@ public class TerminologyManager implements EventListener {
 			Class<?> termClass,
 			String termIdentifier) {
 
-		KnowWEArticle article = global
+		Article article = global
 				? termDefinition.getArticle()
-				: KnowWEArticle.getCurrentlyBuildingArticle(web, title);
+				: Article.getCurrentlyBuildingArticle(web, title);
 
 		TermIdentifier termIdentifierObject = new TermIdentifier(termIdentifier);
 
@@ -152,7 +152,7 @@ public class TerminologyManager implements EventListener {
 			// the references
 			if (termRefLog.getDefiningSection() == null) {
 				for (Section<?> termRef : termRefLog.getReferences()) {
-					KnowWEArticleManager artMan = KnowWEEnvironment.getInstance().getArticleManager(
+					ArticleManager artMan = Environment.getInstance().getArticleManager(
 							web);
 					artMan.addArticleToUpdate(termRef.getTitle());
 				}
@@ -286,9 +286,9 @@ public class TerminologyManager implements EventListener {
 		TermIdentifier termIdentifierObject = new TermIdentifier(termIdentifier);
 		TermLog termRefLog = termLogManager.getLog(termIdentifierObject);
 		if (termRefLog != null) {
-			KnowWEArticle article = global
+			Article article = global
 					? termDefinition.getArticle()
-					: KnowWEArticle.getCurrentlyBuildingArticle(web, title);
+					: Article.getCurrentlyBuildingArticle(web, title);
 
 			Priority priority = article.getReviseIterator().getCurrentPriority();
 			termRefLog.removeTermDefinition(priority, termDefinition, termClass,
@@ -307,7 +307,7 @@ public class TerminologyManager implements EventListener {
 		}
 	}
 
-	public boolean areTermDefinitionsModifiedFor(KnowWEArticle article) {
+	public boolean areTermDefinitionsModifiedFor(Article article) {
 		return modifiedTermDefinitions;
 	}
 
@@ -354,7 +354,7 @@ public class TerminologyManager implements EventListener {
 		return filteredLogEntries;
 	}
 
-	private static void removeTermReferenceLogsForArticle(KnowWEArticle article) {
+	private static void removeTermReferenceLogsForArticle(Article article) {
 		TerminologyManager masterArticleHandler = KnowWEUtils.getTerminologyManager(article);
 		masterArticleHandler.termLogManager = new TermLogManager();
 

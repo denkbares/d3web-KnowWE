@@ -18,7 +18,7 @@
  */
 package de.knowwe.testcases.record;
 
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.wikiConnector.ConnectorAttachment;
 import de.knowwe.testcases.AttachmentTestCaseProvider;
 import de.knowwe.testcases.FileTestCaseProviderStorage;
@@ -32,12 +32,12 @@ import de.knowwe.testcases.TestCaseProviderStorage;
  */
 public class SessionRecordTestCaseProviderStorage extends FileTestCaseProviderStorage {
 
-	public SessionRecordTestCaseProviderStorage(KnowWEArticle article, String[] regexes, KnowWEArticle sectionArticle) {
+	public SessionRecordTestCaseProviderStorage(Article article, String[] regexes, Article sectionArticle) {
 		super(article, regexes, sectionArticle);
 	}
 
 	@Override
-	protected AttachmentTestCaseProvider createTestCaseProvider(KnowWEArticle article, ConnectorAttachment attachment) {
+	protected AttachmentTestCaseProvider createTestCaseProvider(Article article, ConnectorAttachment attachment) {
 		return new SessionRecordCaseProvider(article, attachment);
 	}
 

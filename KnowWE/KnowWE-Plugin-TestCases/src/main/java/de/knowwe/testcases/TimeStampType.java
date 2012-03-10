@@ -26,7 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -117,7 +117,7 @@ public class TimeStampType extends AbstractType {
 	class TimeStampSubtreeHandler extends SubtreeHandler<TimeStampType> {
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<TimeStampType> s) {
+		public Collection<Message> create(Article article, Section<TimeStampType> s) {
 			if (TimeStampType.isValid(s.getText())) {
 				return Collections.emptyList();
 			}

@@ -15,30 +15,30 @@ String findParam( PageContext ctx, String key )
     WikiContext wikiContext = wiki.createContext( request, WikiContext.VIEW );
 
     // Check if KnowWE is initialized
-    if (!KnowWEEnvironment.isInitialized()) {
-		KnowWEEnvironment.initKnowWE(new JSPWikiKnowWEConnector(wiki));
+    if (!Environment.isInitialized()) {
+    	Environment.initKnowWE(new JSPWikiConnector(wiki));
 	}
 
 	// We need to do this, because the paramterMap is locked!
 	Map<String, String> parameters = UserContextUtil.getParameters(request);
 	
 	// Add user
-	if (!parameters.containsKey(KnowWEAttributes.USER)) {
-		parameters.put(KnowWEAttributes.USER, wikiContext.getWikiSession().getUserPrincipal().getName());
+	if (!parameters.containsKey(Attributes.USER)) {
+		parameters.put(Attributes.USER, wikiContext.getWikiSession().getUserPrincipal().getName());
 	}
 	
 	// Add topic
-	if (!parameters.containsKey(KnowWEAttributes.TOPIC)) {
+	if (!parameters.containsKey(Attributes.TOPIC)) {
 		String topic = parameters.get("page");
 		if (topic == null) {
 			topic = KnowWEUtils.urldecode(wikiContext.getPage().getName());
 		}
-		parameters.put(KnowWEAttributes.TOPIC, topic);
+		parameters.put(Attributes.TOPIC, topic);
 	}
 	
 	// Add web
-	if(!parameters.containsKey(KnowWEAttributes.WEB)) {
-		parameters.put(KnowWEAttributes.WEB, "default_web");
+	if(!parameters.containsKey(Attributes.WEB)) {
+		parameters.put(Attributes.WEB, "default_web");
 	}
 	
 	// Create AuthenticationManager instance
@@ -48,6 +48,6 @@ String findParam( PageContext ctx, String key )
 	UserActionContext context = new ActionContext(parameters.get("action"), AbstractActionServlet.getActionFollowUpPath(request), parameters, request, response, wiki.getServletContext(), manager);
 	
 	// Perform action
-	KnowWEEnvironment.getInstance().getDispatcher().performAction(context);
+	Environment.getInstance().getDispatcher().performAction(context);
 	
 %>

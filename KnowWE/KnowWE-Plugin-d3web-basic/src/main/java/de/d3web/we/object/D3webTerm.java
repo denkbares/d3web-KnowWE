@@ -19,7 +19,7 @@
 package de.d3web.we.object;
 
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 
@@ -30,6 +30,6 @@ import de.knowwe.core.kdom.parsing.Section;
  */
 public interface D3webTerm<TermObject extends NamedObject> extends SimpleTerm {
 
-	public TermObject getTermObject(KnowWEArticle article, Section<? extends D3webTerm<TermObject>> section);
+	public TermObject getTermObject(Article article, Section<? extends D3webTerm<TermObject>> section);
 
 }

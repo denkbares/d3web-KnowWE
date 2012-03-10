@@ -32,7 +32,7 @@ import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -109,7 +109,7 @@ public class AnswerLine extends AbstractType {
 			this.addSubtreeHandler(new SubtreeHandler<InitFlag>() {
 
 				@Override
-				public Collection<Message> create(KnowWEArticle article, Section<InitFlag> s) {
+				public Collection<Message> create(Article article, Section<InitFlag> s) {
 
 					Section<AnswerDefinition> aDef = Sections.findSuccessor(
 							s.getFather(), AnswerDefinition.class);
@@ -171,7 +171,7 @@ public class AnswerLine extends AbstractType {
 			this.addSubtreeHandler(new D3webSubtreeHandler<AnswerText>() {
 
 				@Override
-				public Collection<Message> create(KnowWEArticle article, Section<AnswerText> sec) {
+				public Collection<Message> create(Article article, Section<AnswerText> sec) {
 
 					Section<AnswerDefinition> aDef = Sections.findSuccessor(
 							sec.getFather(), AnswerDefinition.class);
@@ -196,7 +196,7 @@ public class AnswerLine extends AbstractType {
 				}
 
 				@Override
-				public void destroy(KnowWEArticle article, Section<AnswerText> sec) {
+				public void destroy(Article article, Section<AnswerText> sec) {
 					// text is destroyed together with object
 				}
 			});

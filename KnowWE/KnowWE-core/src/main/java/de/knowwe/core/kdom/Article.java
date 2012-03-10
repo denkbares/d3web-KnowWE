@@ -31,8 +31,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.KnowWEEnvironment.CompilationMode;
+import de.knowwe.core.Environment;
+import de.knowwe.core.Environment.CompilationMode;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.ReviseIterator;
 import de.knowwe.core.compile.ReviseIterator.SectionPriorityTuple;
@@ -45,16 +45,14 @@ import de.knowwe.event.KDOMCreatedEvent;
 import de.knowwe.event.PreCompileFinishedEvent;
 
 /**
+ * 
+ * This class is the representation of one wiki article in KnowWE. It is a Type
+ * that always forms the root node and only the root node of each KDOM
+ * document-parse-tree.
+ * 
  * @author Jochen
- * 
- *         This class is the representation of one wiki article in KnowWE. It is
- *         a Type that always forms the root node and only the root node of each
- *         KDOM document-parse-tree.
- * 
- * 
- * 
  */
-public class KnowWEArticle extends AbstractType {
+public class Article extends AbstractType {
 
 	/**
 	 * Name of this article (topic-name)
@@ -66,9 +64,9 @@ public class KnowWEArticle extends AbstractType {
 	/**
 	 * The section representing the root-node of the KDOM-tree
 	 */
-	private Section<KnowWEArticle> sec;
+	private Section<Article> sec;
 
-	private KnowWEArticle lastVersion;
+	private Article lastVersion;
 
 	private final long startTimeOverall;
 
@@ -92,7 +90,7 @@ public class KnowWEArticle extends AbstractType {
 
 	private final Set<String> classesCausingFullParse = new HashSet<String>();
 
-	private static Map<String, KnowWEArticle> currentlyBuildingArticles = Collections.synchronizedMap(new HashMap<String, KnowWEArticle>());
+	private static Map<String, Article> currentlyBuildingArticles = Collections.synchronizedMap(new HashMap<String, Article>());
 
 	private static String getArticleKey(String web, String title) {
 		return web + title;
@@ -102,30 +100,30 @@ public class KnowWEArticle extends AbstractType {
 		return currentlyBuildingArticles.containsKey(getArticleKey(web, title));
 	}
 
-	public static KnowWEArticle getCurrentlyBuildingArticle(String web, String title) {
+	public static Article getCurrentlyBuildingArticle(String web, String title) {
 		return currentlyBuildingArticles.get(getArticleKey(web, title));
 	}
 
-	public static KnowWEArticle createArticle(String text, String title, RootType rootType,
+	public static Article createArticle(String text, String title, RootType rootType,
 			String web) {
 		return createArticle(text, title, rootType, web, false);
 	}
 
-	public static KnowWEArticle createArticle(String text, String title, RootType rootType,
+	public static Article createArticle(String text, String title, RootType rootType,
 			String web, boolean fullParse) {
 
 		if (isArticleCurrentlyBuilding(web, title)) {
-			Logger.getLogger(KnowWEArticle.class.getName()).severe(
+			Logger.getLogger(Article.class.getName()).severe(
 					"The article '"
 							+ title
 							+ "' is build more than once at the same time, "
 							+ "this should not be done! Developer please check with "
-							+ "KnowWEArticle#isArticleCurrentlyBuilding(String) first!");
+							+ "Article#isArticleCurrentlyBuilding(String) first!");
 		}
 
 		currentlyBuildingArticles.put(getArticleKey(web, title), null);
 
-		KnowWEArticle article = new KnowWEArticle(text, title, rootType,
+		Article article = new Article(text, title, rootType,
 				web, fullParse);
 
 		EventManager.getInstance().fireEvent(new ArticleCreatedEvent(article));
@@ -142,7 +140,7 @@ public class KnowWEArticle extends AbstractType {
 	 * @param title
 	 * @param allowedObjects
 	 */
-	private KnowWEArticle(String text, String title, RootType rootType,
+	private Article(String text, String title, RootType rootType,
 			String web, boolean fullParse) {
 
 		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
@@ -154,7 +152,7 @@ public class KnowWEArticle extends AbstractType {
 		this.title = title;
 		this.web = web;
 		this.childrenTypes.add(rootType);
-		this.lastVersion = KnowWEEnvironment.getInstance().getArticle(web, title);
+		this.lastVersion = Environment.getInstance().getArticle(web, title);
 
 		boolean unchangedContent = lastVersion != null
 				&& lastVersion.getSection().getText().equals(text);
@@ -163,7 +161,7 @@ public class KnowWEArticle extends AbstractType {
 
 		boolean defFullParse = fullParse
 				|| lastVersion == null
-				|| KnowWEEnvironment.getInstance().getCompilationMode() == CompilationMode.DEFAULT;
+				|| Environment.getInstance().getCompilationMode() == CompilationMode.DEFAULT;
 
 		this.fullParse = defFullParse;
 
@@ -175,7 +173,7 @@ public class KnowWEArticle extends AbstractType {
 		}
 
 		// if for example a SubtreeHandlers uses
-		// KnowWEArticle#setFullParse(Class) he prevents incremental updating
+		// Article#setFullParse(Class) he prevents incremental updating
 		if (!defFullParse && !classesCausingFullParse.isEmpty()) {
 			Logger.getLogger(this.getClass().getName()).log(
 					Level.INFO, "The following classes " +
@@ -256,7 +254,7 @@ public class KnowWEArticle extends AbstractType {
 		destroy(Priority.LOWEST);
 		this.postDestroy = true;
 
-		KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(web)
+		Environment.getInstance().getKnowledgeRepresentationManager(web)
 				.initArticle(this);
 
 		// create
@@ -301,7 +299,7 @@ public class KnowWEArticle extends AbstractType {
 	}
 
 	/**
-	 * Returns the title of this KnowWEArticle.
+	 * Returns the title of this Article.
 	 */
 	public String getTitle() {
 		return title;
@@ -315,7 +313,7 @@ public class KnowWEArticle extends AbstractType {
 	 * The last version is only available during the initialization of the
 	 * article
 	 */
-	public KnowWEArticle getLastVersionOfArticle() {
+	public Article getLastVersionOfArticle() {
 		return lastVersion;
 	}
 
@@ -332,7 +330,7 @@ public class KnowWEArticle extends AbstractType {
 		return this.getClass().getSimpleName();
 	}
 
-	public Section<KnowWEArticle> getSection() {
+	public Section<Article> getSection() {
 		return sec;
 	}
 
@@ -345,7 +343,7 @@ public class KnowWEArticle extends AbstractType {
 
 	/**
 	 * Finds all children with the same path of Types in the KDOM. The
-	 * <tt>path</tt> has to start with the type KnowWEArticle and end with the
+	 * <tt>path</tt> has to start with the type Article and end with the
 	 * Type of the Sections you are looking for.
 	 * 
 	 * @return Map of Sections, using their originalText as key.
@@ -363,7 +361,7 @@ public class KnowWEArticle extends AbstractType {
 
 	/**
 	 * Finds all children with the same path of Types in the KDOM. The
-	 * <tt>path</tt> has to start with theKnowWEArticle and end with the
+	 * <tt>path</tt> has to start with the Article and end with the
 	 * ObjectType of the Sections you are looking for.
 	 * 
 	 * @return List of Sections

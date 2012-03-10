@@ -28,7 +28,7 @@ import de.d3web.core.session.Session;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.user.UserContext;
 
@@ -41,11 +41,11 @@ import de.knowwe.core.user.UserContext;
 public class SingleTestCaseProvider implements TestCaseProvider {
 
 	private TestCase testCase;
-	private final KnowWEArticle article;
+	private final Article article;
 	private final String name;
 	private final Map<String, SessionDebugStatus> statusPerUser = new HashMap<String, SessionDebugStatus>();
 
-	public SingleTestCaseProvider(TestCase testCase, KnowWEArticle article, String name) {
+	public SingleTestCaseProvider(TestCase testCase, Article article, String name) {
 		super();
 		this.testCase = testCase;
 		this.article = article;

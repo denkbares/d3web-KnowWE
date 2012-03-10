@@ -26,7 +26,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import utils.KBTestUtilNewMarkup;
-import utils.MyTestArticleManager;
+import utils.TestArticleManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Choice;
@@ -36,8 +36,8 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.plugin.test.InitPluginManager;
-import de.knowwe.core.compile.packaging.KnowWEPackageManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.logging.Logging;
 
 /**
@@ -54,11 +54,11 @@ public class QuestionTreeTest extends TestCase {
 	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
-		KnowWEPackageManager.overrideAutocompileArticle(true);
+		PackageManager.overrideAutocompileArticle(true);
 	}
 
 	public void testNumberOfQuestions() {
-		KnowWEArticle art = MyTestArticleManager
+		Article art = TestArticleManager
 				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
@@ -68,7 +68,7 @@ public class QuestionTreeTest extends TestCase {
 
 	public void testQuestions() {
 
-		KnowWEArticle art = MyTestArticleManager
+		Article art = TestArticleManager
 				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
@@ -188,7 +188,7 @@ public class QuestionTreeTest extends TestCase {
 
 	public void testMMInfo() {
 
-		KnowWEArticle art = MyTestArticleManager
+		Article art = TestArticleManager
 				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();

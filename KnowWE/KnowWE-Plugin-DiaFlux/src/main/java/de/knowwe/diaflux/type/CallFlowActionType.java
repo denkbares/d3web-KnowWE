@@ -25,7 +25,7 @@ import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.diaFlux.inference.CallFlowAction;
 import de.d3web.we.kdom.rules.action.D3webRuleAction;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
@@ -66,7 +66,7 @@ public class CallFlowActionType extends D3webRuleAction<CallFlowActionType> {
 	}
 
 	@Override
-	protected PSAction createAction(KnowWEArticle article,
+	protected PSAction createAction(Article article,
 			Section<CallFlowActionType> section) {
 
 		String flowName = getStartNodeName(section);

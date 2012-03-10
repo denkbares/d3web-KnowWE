@@ -31,8 +31,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.knowwe.core.KnowWEAttributes;
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.ActionContext;
 import de.knowwe.core.action.UserActionContext;
 
@@ -136,8 +136,8 @@ public class TestUtils {
 	 */
 	public static UserActionContext createTestActionContext(String actionName, String path) {
 		Map<String, String> map = new HashMap<String, String>();
-		map.put(KnowWEAttributes.WEB, KnowWEEnvironment.DEFAULT_WEB);
-		map.put(KnowWEAttributes.USER, "Test User");
+		map.put(Attributes.WEB, Environment.DEFAULT_WEB);
+		map.put(Attributes.USER, "Test User");
 		return new ActionContext(actionName != null ? actionName : "", path != null ? path : "",
 				map, null, null, null, null);
 	}

@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 import de.d3web.we.ci4ke.testing.AbstractCITest;
 import de.d3web.we.ci4ke.testing.CITestResult;
 import de.d3web.we.ci4ke.testing.CITestResult.Type;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 
 /**
  * This test can search articles (specified by a regexp pattern) for a keyword.
@@ -53,7 +53,7 @@ public class TestArticlesContain extends AbstractCITest {
 
 		List<String> namesOfArticlesWhichContainKeyword = new LinkedList<String>();
 
-		for (KnowWEArticle article : getArticlesMatchingPattern(pattern)) {
+		for (Article article : getArticlesMatchingPattern(pattern)) {
 			if (!article.getTitle().equals(config.getDashboardArticleTitle()) &&
 					article.toString().contains(searchForKeyword)) {
 				namesOfArticlesWhichContainKeyword.add(article.getTitle());

@@ -7,7 +7,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -30,7 +30,7 @@ public class QuestionNumReference extends QuestionReference {
 	class QuestionNumRegistrationHandler extends SubtreeHandler<QuestionNumReference> {
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<QuestionNumReference> s) {
+		public Collection<Message> create(Article article, Section<QuestionNumReference> s) {
 
 			Question question = s.get().getTermObject(article, s);
 

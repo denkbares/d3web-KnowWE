@@ -29,7 +29,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 import utils.KBTestUtilNewMarkup;
-import utils.MyTestArticleManager;
+import utils.TestArticleManager;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.KnowledgeKind;
 import de.d3web.core.inference.Rule;
@@ -38,8 +38,8 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.scoring.inference.PSMethodHeuristic;
-import de.knowwe.core.compile.packaging.KnowWEPackageManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Article;
 
 /**
  * This class tests whether the Rules are created as expected.
@@ -61,7 +61,7 @@ public class RulesTest extends TestCase {
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 		// Enforce Autocompile
-		KnowWEPackageManager.overrideAutocompileArticle(true);
+		PackageManager.overrideAutocompileArticle(true);
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class RulesTest extends TestCase {
 	public void testHeuristicRules() {
 		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
 		// load KnowledgeBases
-		KnowWEArticle art = MyTestArticleManager
+		Article art = TestArticleManager
 				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
 
@@ -111,7 +111,7 @@ public class RulesTest extends TestCase {
 
 	public void testNextQASetRules() {
 		// load KnowledgeBases
-		KnowWEArticle art = MyTestArticleManager
+		Article art = TestArticleManager
 				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();
@@ -128,7 +128,7 @@ public class RulesTest extends TestCase {
 
 	public void testSetValueRules() {
 		// load KnowledgeBases
-		KnowWEArticle art = MyTestArticleManager
+		Article art = TestArticleManager
 				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
 		KnowledgeBase loadedKB = KBTestUtilNewMarkup.getInstance().getKnowledgeBase(art);
 		KnowledgeBase createdKB = KBTestUtilNewMarkup.getInstance().getCreatedKB();

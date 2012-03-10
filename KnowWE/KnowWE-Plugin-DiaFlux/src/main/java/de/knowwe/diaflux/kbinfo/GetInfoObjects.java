@@ -61,12 +61,12 @@ public class GetInfoObjects extends AbstractAction {
 	}
 
 	/**
-	 * KnowWEEnvironment: Allgemeines Semantic Wiki auf OWL als Repraesentation
+	 * Environment: Allgemeines Semantic Wiki auf OWL als Repraesentation
 	 * KDOM Engine. Verwaltet alle technischen Aspekte der Umgebung (z.B.
 	 * Plugins). Dieser hat noch nichts mit d3web zu tun.
 	 * 
 	 * ArticeManager: Verwaltung der Wiki-Artikel. Fuer jedes Web kann es einen
-	 * Article-Manager geben. Dieser kann vom KnowWEEnvironment angefragt
+	 * Article-Manager geben. Dieser kann vom Environment angefragt
 	 * werden. Dieser hat noch nichts mit d3web zu tun. Ein Article besteht im
 	 * wesentlichen aus dem KDOM-Baum
 	 * 

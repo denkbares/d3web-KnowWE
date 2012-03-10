@@ -22,7 +22,7 @@ import de.knowwe.core.event.Event;
 
 /**
  * This event is fired, when, after an article was changed, this and all
- * depending articles are updated and available via the KnowWEArticleManager.
+ * depending articles are updated and available via the ArticleManager.
  * 
  * @author Albrecht
  * @created 15.03.2011

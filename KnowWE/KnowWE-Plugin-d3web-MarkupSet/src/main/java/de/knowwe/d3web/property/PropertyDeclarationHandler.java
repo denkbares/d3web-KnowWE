@@ -32,7 +32,7 @@ import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -50,7 +50,7 @@ import de.knowwe.d3web.property.PropertyObjectReference.PropertyAnswerReference;
 public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDeclarationType> {
 
 	@Override
-	public Collection<Message> create(KnowWEArticle article, Section<PropertyDeclarationType> s) {
+	public Collection<Message> create(Article article, Section<PropertyDeclarationType> s) {
 		// get NamedObject
 		Section<PropertyObjectReference> namendObjectSection = Sections.findSuccessor(s,
 				PropertyObjectReference.class);
@@ -134,7 +134,7 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 		return Messages.asList(Messages.notice("Property declaration successful."));
 	}
 
-	private List<NamedObject> getAllChoices(KnowWEArticle article, Section<PropertyAnswerReference> answerReference) {
+	private List<NamedObject> getAllChoices(Article article, Section<PropertyAnswerReference> answerReference) {
 		List<Question> questions = getKB(article).getManager().getQuestions();
 		List<NamedObject> choices = new ArrayList<NamedObject>(questions.size());
 		for (Question question : questions) {
@@ -150,7 +150,7 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 	}
 
 	@Override
-	public void destroy(KnowWEArticle article, Section<PropertyDeclarationType> s) {
+	public void destroy(Article article, Section<PropertyDeclarationType> s) {
 		Section<PropertyObjectReference> idobjectSection = Sections.findSuccessor(s,
 				PropertyObjectReference.class);
 		Section<PropertyType> propertySection = Sections.findSuccessor(s,

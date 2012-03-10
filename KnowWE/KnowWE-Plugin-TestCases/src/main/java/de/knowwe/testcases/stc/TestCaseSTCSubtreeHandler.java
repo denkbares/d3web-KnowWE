@@ -20,7 +20,7 @@ package de.knowwe.testcases.stc;
 
 import java.util.Collection;
 
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
@@ -37,7 +37,7 @@ import de.knowwe.testcases.TestCaseProviderStorage;
 public class TestCaseSTCSubtreeHandler extends SubtreeHandler<TestCaseSTCType> {
 
 	@Override
-	public Collection<Message> create(KnowWEArticle article, Section<TestCaseSTCType> section) {
+	public Collection<Message> create(Article article, Section<TestCaseSTCType> section) {
 		String[] fileNames = DefaultMarkupType.getAnnotations(section, "file");
 		FileTestCaseProviderStorage testCaseProviderStorage = new STCTestCaseProviderStorage(
 				article, fileNames,

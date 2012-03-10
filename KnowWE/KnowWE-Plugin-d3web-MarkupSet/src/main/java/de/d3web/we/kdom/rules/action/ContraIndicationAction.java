@@ -28,7 +28,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.indication.ActionContraIndication;
 import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.we.object.QuestionReference;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
@@ -57,7 +57,7 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 	}
 
 	@Override
-	public PSAction createAction(KnowWEArticle article, Section<ContraIndicationAction> s) {
+	public PSAction createAction(Article article, Section<ContraIndicationAction> s) {
 		Section<QuestionReference> qSec = Sections.findSuccessor(s, QuestionReference.class);
 		Question termObject = qSec.get().getTermObject(article, qSec);
 

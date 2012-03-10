@@ -23,7 +23,7 @@ package de.knowwe.core.taghandler;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -41,8 +41,8 @@ public class TagRenderer implements Renderer {
 		if (attrContent == null) {
 			string.append(KnowWEUtils
 					.maskHTML("<div><p class='info box'>"));
-			string.append(KnowWEEnvironment
-					.getInstance().getKwikiBundle(user).getString(
+			string.append(Environment
+					.getInstance().getMessageBundle(user).getString(
 							"KnowWE.Taghandler.notFoundError"));
 			string.append(" '"
 					+ ((Section<?>) sec.getChildren().get(1)).getText()
@@ -69,7 +69,7 @@ public class TagRenderer implements Renderer {
 			if (attValues != null) {
 				attValues.put("kdomid", id);
 				for (String elem : attValues.keySet()) {
-					HashMap<String, TagHandler> defaultTagHandlers = KnowWEEnvironment.getInstance().getDefaultTagHandlers();
+					HashMap<String, TagHandler> defaultTagHandlers = Environment.getInstance().getDefaultTagHandlers();
 					String key = elem.toLowerCase();
 					if (defaultTagHandlers.containsKey(key)) {
 						TagHandler handler = defaultTagHandlers.get(key);

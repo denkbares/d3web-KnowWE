@@ -21,44 +21,44 @@ package utils;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.knowwe.core.KnowWEArticleManager;
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
-import dummies.KnowWETestWikiConnector;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
+import dummies.TestWikiConnector;
 
 /**
  * 
  * @author Jochen
  * @created 01.09.2010
  */
-public class MyTestArticleManager {
+public class TestArticleManager {
 
-	private final Map<String, KnowWEArticle> articles = new HashMap<String, KnowWEArticle>();
+	private final Map<String, Article> articles = new HashMap<String, Article>();
 
-	private static MyTestArticleManager instance = new MyTestArticleManager();
+	private static TestArticleManager instance = new TestArticleManager();
 
 	/**
 	 * Private Constructor insures noninstantiabilty.
 	 */
-	private MyTestArticleManager() {
+	private TestArticleManager() {
 
 	}
 
-	public static MyTestArticleManager getInstance() {
+	public static TestArticleManager getInstance() {
 		return instance;
 	}
 
 	/**
-	 * Creates a KnowWEArticle and loads the created Knowledge.
+	 * Creates a Article and loads the created Knowledge.
 	 * 
 	 * filename == title
 	 */
-	public static KnowWEArticle getArticle(String filename) {
+	public static Article getArticle(String filename) {
 
 		if (!getInstance().articles.containsKey(filename)) {
 			// Read File containing content
 			String content = TestUtils.readTxtFile(filename);
-			KnowWEArticle article = createArcticleFromSourceFile(content, filename);
+			Article article = createArcticleFromSourceFile(content, filename);
 			getInstance().articles.put(filename, article);
 
 			return article;
@@ -73,20 +73,20 @@ public class MyTestArticleManager {
 	 * @param content
 	 * @return
 	 */
-	private static KnowWEArticle createArcticleFromSourceFile(String content, String filename) {
+	private static Article createArcticleFromSourceFile(String content, String filename) {
 		// Initialize KnowWE
-		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());
+		Environment.initKnowWE(new TestWikiConnector());
 
 		int start = filename.lastIndexOf("/") + 1;
 		int end = filename.lastIndexOf(".");
 		String topic = filename.substring(start, end);
-		KnowWEArticleManager articleManager = KnowWEEnvironment.getInstance().getArticleManager(
+		ArticleManager articleManager = Environment.getInstance().getArticleManager(
 				"default_web");
 		articleManager.setArticlesInitialized(true);
 
 		// Create Article
-		KnowWEArticle article = KnowWEArticle.createArticle(content, topic,
-				KnowWEEnvironment.getInstance().getRootType(), "default_web");
+		Article article = Article.createArticle(content, topic,
+				Environment.getInstance().getRootType(), "default_web");
 		articleManager.registerArticle(article);
 		return article;
 	}

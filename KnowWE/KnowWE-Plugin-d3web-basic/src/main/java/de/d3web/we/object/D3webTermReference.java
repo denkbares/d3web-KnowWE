@@ -22,7 +22,7 @@ package de.d3web.we.object;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -44,7 +44,7 @@ public abstract class D3webTermReference<TermObject extends NamedObject> extends
 	}
 
 	@Override
-	public TermObject getTermObject(KnowWEArticle article, Section<? extends D3webTerm<TermObject>> section) {
+	public TermObject getTermObject(Article article, Section<? extends D3webTerm<TermObject>> section) {
 		return D3webUtils.getTermObjectDefaultImplementation(article, section);
 	}
 

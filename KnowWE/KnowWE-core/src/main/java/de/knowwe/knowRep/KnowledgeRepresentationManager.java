@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 
 public class KnowledgeRepresentationManager {
 
@@ -35,8 +35,8 @@ public class KnowledgeRepresentationManager {
 	/**
 	 * <b>This constructor SHOULD NOT BE USED!</b>
 	 * <p/>
-	 * Use KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(
-	 * String web) instead!
+	 * Use Environment.getInstance().getKnowledgeRepresentationManager( String
+	 * web) instead!
 	 */
 	public KnowledgeRepresentationManager(String web) {
 		this.web = web;
@@ -50,7 +50,7 @@ public class KnowledgeRepresentationManager {
 		handlers.put(handler.getKey(), handler);
 	}
 
-	public void initArticle(KnowWEArticle art) {
+	public void initArticle(Article art) {
 		for (KnowledgeRepresentationHandler handler : handlers.values()) {
 			handler.initArticle(art);
 		}

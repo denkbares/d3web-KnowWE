@@ -28,7 +28,7 @@ import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
@@ -69,7 +69,7 @@ public class NumericCondLine extends AbstractType {
 	static class CheckConditionHandler extends D3webSubtreeHandler<NumericCondLine> {
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<NumericCondLine> s) {
+		public Collection<Message> create(Article article, Section<NumericCondLine> s) {
 
 			Section<DashTreeElement> dte = Sections.findAncestorOfType(s, DashTreeElement.class);
 			Section<? extends DashTreeElement> fatherDashTreeElement = DashTreeUtils.getFatherDashTreeElement(dte);
@@ -85,7 +85,7 @@ public class NumericCondLine extends AbstractType {
 		}
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<NumericCondLine> s) {
+		public void destroy(Article article, Section<NumericCondLine> s) {
 			Messages.clearMessages(article, s, CheckConditionHandler.class);
 		}
 

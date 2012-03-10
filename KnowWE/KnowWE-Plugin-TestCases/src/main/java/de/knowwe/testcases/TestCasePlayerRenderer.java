@@ -47,10 +47,10 @@ import de.d3web.testcase.TestCaseUtils;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.Finding;
 import de.d3web.testcase.model.TestCase;
-import de.knowwe.core.KnowWEArticleManager;
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.compile.packaging.KnowWEPackageManager;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -82,7 +82,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		if (user == null || user.getSession() == null) {
 			return;
 		}
-		List<Triple<TestCaseProvider, Section<?>, KnowWEArticle>> providers =
+		List<Triple<TestCaseProvider, Section<?>, Article>> providers =
 				getTestCaseProviders(playerSection, user);
 
 		string.append(KnowWEUtils.maskHTML("<div id='" + section.getID() + "'>"));
@@ -99,7 +99,7 @@ public class TestCasePlayerRenderer implements Renderer {
 			}
 		}
 		else {
-			Triple<TestCaseProvider, Section<?>, KnowWEArticle> selectedTriple = renderTestCaseSelection(
+			Triple<TestCaseProvider, Section<?>, Article> selectedTriple = renderTestCaseSelection(
 					section,
 					user, string, providers);
 			TestCaseProvider provider = selectedTriple.getA();
@@ -128,7 +128,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		result.append(string.toString());
 	}
 
-	private void renderTestCase(Section<?> section, UserContext user, StringBuilder string, Triple<TestCaseProvider, Section<?>, KnowWEArticle> selectedTriple, Session session, TestCase testCase, SessionDebugStatus status) {
+	private void renderTestCase(Section<?> section, UserContext user, StringBuilder string, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, Session session, TestCase testCase, SessionDebugStatus status) {
 		string.append(KnowWEUtils.maskHTML("<span class='fillText'> from </span>"));
 		string.append(dateFormat.format(testCase.getStartDate()));
 		string.append(KnowWEUtils.maskHTML("<div class='toolSeparator'></div>"));
@@ -250,17 +250,17 @@ public class TestCasePlayerRenderer implements Renderer {
 		return additionalQuestions;
 	}
 
-	private List<Triple<TestCaseProvider, Section<?>, KnowWEArticle>> getTestCaseProviders(Section<TestCasePlayerType> section, UserContext user) {
-		List<Triple<TestCaseProvider, Section<?>, KnowWEArticle>> providers = new LinkedList<Triple<TestCaseProvider, Section<?>, KnowWEArticle>>();
+	private List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(Section<TestCasePlayerType> section, UserContext user) {
+		List<Triple<TestCaseProvider, Section<?>, Article>> providers = new LinkedList<Triple<TestCaseProvider, Section<?>, Article>>();
 		String[] kbpackages = getPackages(section);
-		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
-		KnowWEPackageManager packageManager = env.getPackageManager(section.getWeb());
-		KnowWEArticleManager articleManager = env.getArticleManager(user.getWeb());
+		Environment env = Environment.getInstance();
+		PackageManager packageManager = env.getPackageManager(section.getWeb());
+		ArticleManager articleManager = env.getArticleManager(user.getWeb());
 		for (String kbpackage : kbpackages) {
 			List<Section<?>> sectionsInPackage = packageManager.getSectionsOfPackage(kbpackage);
 			Set<String> articlesReferringTo = packageManager.getCompilingArticles(kbpackage);
 			for (String masterTitle : articlesReferringTo) {
-				KnowWEArticle masterArticle = articleManager.getArticle(masterTitle);
+				Article masterArticle = articleManager.getArticle(masterTitle);
 				for (Section<?> packageSections : sectionsInPackage) {
 					TestCaseProviderStorage testCaseProviderStorage =
 							(TestCaseProviderStorage) packageSections.getSectionStore().getObject(
@@ -268,7 +268,7 @@ public class TestCasePlayerRenderer implements Renderer {
 									TestCaseProviderStorage.KEY);
 					if (testCaseProviderStorage != null) {
 						for (TestCaseProvider testCaseProvider : testCaseProviderStorage.getTestCaseProviders()) {
-							providers.add(new Triple<TestCaseProvider, Section<?>, KnowWEArticle>(
+							providers.add(new Triple<TestCaseProvider, Section<?>, Article>(
 									testCaseProvider,
 									packageSections, masterArticle));
 						}
@@ -282,12 +282,12 @@ public class TestCasePlayerRenderer implements Renderer {
 	private String[] getPackages(Section<TestCasePlayerType> section) {
 		String[] kbpackages = DefaultMarkupType.getAnnotations(section, "uses");
 		if (kbpackages.length == 0) {
-			kbpackages = new String[] { KnowWEPackageManager.DEFAULT_PACKAGE };
+			kbpackages = new String[] { PackageManager.DEFAULT_PACKAGE };
 		}
 		return kbpackages;
 	}
 
-	private void renderTableLine(Triple<TestCaseProvider, Section<?>, KnowWEArticle> selectedTriple, TestCase testCase, SessionDebugStatus status, String[] questionStrings, Collection<Question> usedQuestions, TerminologyManager manager, TerminologyObject selectedObject, Date date, int row, TableModel tableModel) {
+	private void renderTableLine(Triple<TestCaseProvider, Section<?>, Article> selectedTriple, TestCase testCase, SessionDebugStatus status, String[] questionStrings, Collection<Question> usedQuestions, TerminologyManager manager, TerminologyObject selectedObject, Date date, int row, TableModel tableModel) {
 		String dateString = String.valueOf(date.getTime());
 		renderRunTo(selectedTriple, status, date, dateString, tableModel, row);
 		int column = 1;
@@ -355,7 +355,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		}
 	}
 
-	private void renderRunTo(Triple<TestCaseProvider, Section<?>, KnowWEArticle> selectedTriple, SessionDebugStatus status, Date date, String dateString, TableModel tableModel, int row) {
+	private void renderRunTo(Triple<TestCaseProvider, Section<?>, Article> selectedTriple, SessionDebugStatus status, Date date, String dateString, TableModel tableModel, int row) {
 		if (status.getLastExecuted() == null
 				|| status.getLastExecuted().before(date)) {
 			StringBuffer sb = new StringBuffer();
@@ -493,23 +493,23 @@ public class TestCasePlayerRenderer implements Renderer {
 		return object;
 	}
 
-	private Triple<TestCaseProvider, Section<?>, KnowWEArticle> renderTestCaseSelection(Section<?> section, UserContext user, StringBuilder string, List<Triple<TestCaseProvider, Section<?>, KnowWEArticle>> providers) {
+	private Triple<TestCaseProvider, Section<?>, Article> renderTestCaseSelection(Section<?> section, UserContext user, StringBuilder string, List<Triple<TestCaseProvider, Section<?>, Article>> providers) {
 		String key = SELECTOR_KEY + "_" + section.getID();
 		String selectedID = (String) user.getSession().getAttribute(
 				key);
 		StringBuffer selectsb = new StringBuffer();
 		// if no pair is selected, use the first
-		Triple<TestCaseProvider, Section<?>, KnowWEArticle> selectedPair = providers.get(0);
+		Triple<TestCaseProvider, Section<?>, Article> selectedPair = providers.get(0);
 		selectsb.append("<span class=fillText>Case </span>"
 				+ "<select id=selector" + section.getID()
 				+ " onchange=\"TestCasePlayer.change('" + key
 				+ "', this.options[this.selectedIndex].value);\">");
 		Set<String> ids = new HashSet<String>();
 		boolean unique = true;
-		for (Triple<TestCaseProvider, Section<?>, KnowWEArticle> triple : providers) {
+		for (Triple<TestCaseProvider, Section<?>, Article> triple : providers) {
 			unique &= ids.add(triple.getA().getName());
 		}
-		for (Triple<TestCaseProvider, Section<?>, KnowWEArticle> triple : providers) {
+		for (Triple<TestCaseProvider, Section<?>, Article> triple : providers) {
 			String id = triple.getC().getTitle() + "/" + triple.getA().getName();
 			String displayedID = (unique) ? triple.getA().getName() : id;
 			if (id.equals(selectedID)) {

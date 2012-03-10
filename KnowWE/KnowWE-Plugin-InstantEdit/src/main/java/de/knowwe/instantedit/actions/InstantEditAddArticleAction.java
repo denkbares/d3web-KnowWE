@@ -20,7 +20,7 @@ package de.knowwe.instantedit.actions;
 
 import java.io.IOException;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 
@@ -41,10 +41,10 @@ public class InstantEditAddArticleAction extends AbstractAction {
 			value = "";
 		}
 
-		KnowWEEnvironment.getInstance().getWikiConnector().createWikiPage(title, "",
+		Environment.getInstance().getWikiConnector().createWikiPage(title, "",
 				context.getUserName());
 		// errors and security are handled inside replaceKDOMNodesSaveAndBuild
-		boolean written = KnowWEEnvironment.getInstance().getWikiConnector()
+		boolean written = Environment.getInstance().getWikiConnector()
 				.writeArticleToWikiEnginePersistence(title, value, context);
 
 		if (!written) {

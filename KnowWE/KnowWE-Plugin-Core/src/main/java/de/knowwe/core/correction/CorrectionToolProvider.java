@@ -26,8 +26,8 @@ import java.util.ResourceBundle;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
-import de.knowwe.core.KnowWEEnvironment;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -53,7 +53,7 @@ public class CorrectionToolProvider implements ToolProvider {
 		ResourceBundle wikiConfig = ResourceBundle.getBundle("KnowWE_config");
 
 		int threshold = Integer.valueOf(wikiConfig.getString("knowweplugin.correction.threshold"));
-		KnowWEArticle article = KnowWEUtils.getCompilingArticles(section).iterator().next();
+		Article article = KnowWEUtils.getCompilingArticles(section).iterator().next();
 		if (!hasError(article, section)) {
 			return new Tool[0];
 		}
@@ -81,8 +81,8 @@ public class CorrectionToolProvider implements ToolProvider {
 
 		tools[0] = new DefaultTool(
 				"KnowWEExtension/images/quickfix.gif",
-				KnowWEEnvironment.getInstance().getKwikiBundle().getString("KnowWE.Correction.do"),
-				KnowWEEnvironment.getInstance().getKwikiBundle().getString("KnowWE.Correction.do"),
+				Environment.getInstance().getMessageBundle().getString("KnowWE.Correction.do"),
+				Environment.getInstance().getMessageBundle().getString("KnowWE.Correction.do"),
 				null,
 				"correct"
 				);
@@ -101,7 +101,7 @@ public class CorrectionToolProvider implements ToolProvider {
 		return tools;
 	}
 
-	protected boolean hasError(KnowWEArticle article, Section<?> section) {
+	protected boolean hasError(Article article, Section<?> section) {
 		return section.hasErrorInSubtree(article);
 	}
 

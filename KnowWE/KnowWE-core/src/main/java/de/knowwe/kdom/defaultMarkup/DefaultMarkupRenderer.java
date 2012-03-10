@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -120,7 +120,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		// add warning if section is not compiled
 		if (!section.get().isIgnoringPackageCompile()) {
 
-			Set<String> compilingArticles = KnowWEEnvironment.getInstance().getPackageManager(
+			Set<String> compilingArticles = Environment.getInstance().getPackageManager(
 					section.getWeb()).getCompilingArticles(section);
 			if (compilingArticles.isEmpty()) {
 				Set<String> packageNames = section.getPackageNames();

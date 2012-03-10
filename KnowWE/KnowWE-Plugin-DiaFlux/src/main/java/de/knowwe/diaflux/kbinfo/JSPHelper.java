@@ -24,8 +24,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import de.knowwe.core.KnowWEAttributes;
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
@@ -40,14 +40,14 @@ public class JSPHelper {
 	public JSPHelper(UserContext userContext) {
 		this.userContext = userContext;
 		if (this.userContext.getWeb() == null) {
-			this.userContext.getParameters().put(KnowWEAttributes.WEB,
-					KnowWEEnvironment.DEFAULT_WEB);
+			this.userContext.getParameters().put(Attributes.WEB,
+					Environment.DEFAULT_WEB);
 		}
 	}
 
 	private static List<String> getAllMatches(String className, String web) {
 		return SearchInfoObjects.searchObjects(
-				KnowWEEnvironment.getInstance(),
+				Environment.getInstance(),
 				web,
 				null, className, 65535);
 	}
@@ -72,7 +72,7 @@ public class JSPHelper {
 	}
 
 	public String getKDOMNodeContent(String kdomID) {
-		return KnowWEEnvironment.getInstance().getSectionText(kdomID);
+		return Environment.getInstance().getSectionText(kdomID);
 	}
 
 	public String getArticleInfoObjectsAsXML() {
@@ -130,7 +130,7 @@ public class JSPHelper {
 			return getEmptyFlowchart();
 		}
 
-		String nodeData = KnowWEEnvironment.getInstance().getSectionText(flowchart.getID());
+		String nodeData = Environment.getInstance().getSectionText(flowchart.getID());
 		return nodeData;
 	}
 

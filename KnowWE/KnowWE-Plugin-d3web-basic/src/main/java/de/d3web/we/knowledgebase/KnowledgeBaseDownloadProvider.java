@@ -26,8 +26,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 
-import de.knowwe.core.KnowWEAttributes;
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.d3web.action.DownloadKnowledgeBase;
@@ -70,8 +70,8 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 			kbName = "knowledgebase";
 		}
 		String jsAction = "window.location='action/DownloadKnowledgeBase" +
-				"?" + KnowWEAttributes.TOPIC + "=" + section.getTitle() +
-				"&" + KnowWEAttributes.WEB + "=" + section.getWeb() +
+				"?" + Attributes.TOPIC + "=" + section.getTitle() +
+				"&" + Attributes.WEB + "=" + section.getWeb() +
 				"&" + DownloadKnowledgeBase.PARAM_FILENAME + "=" + kbName + ".d3web'";
 		return new DefaultTool(
 				"KnowWEExtension/d3web/icon/download16.gif",
@@ -86,7 +86,7 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 		if (kbName.isEmpty()) {
 			kbName = "knowledgebase";
 		}
-		String baseUrl = KnowWEEnvironment.getInstance().getWikiConnector().getBaseUrl();
+		String baseUrl = Environment.getInstance().getWikiConnector().getBaseUrl();
 		// try to replace hostname by ip address to allow access in local
 		// networks
 		try {
@@ -103,8 +103,8 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 			e.printStackTrace();
 		}
 		String kbURL = baseUrl + "action/DownloadKnowledgeBase" +
-				"%3F" + KnowWEAttributes.TOPIC + "=" + section.getTitle() +
-				"%26" + KnowWEAttributes.WEB + "=" + section.getWeb() +
+				"%3F" + Attributes.TOPIC + "=" + section.getTitle() +
+				"%26" + Attributes.WEB + "=" + section.getWeb() +
 				"%26" + DownloadKnowledgeBase.PARAM_FILENAME + "=" + kbName + ".d3web";
 
 		try {

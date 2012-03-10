@@ -32,7 +32,7 @@ import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
 import de.knowwe.core.kdom.parsing.Section;
@@ -89,7 +89,7 @@ public abstract class AnswerReference
 	}
 
 	@Override
-	public Choice getTermObject(KnowWEArticle article, Section<? extends D3webTerm<Choice>> s) {
+	public Choice getTermObject(Article article, Section<? extends D3webTerm<Choice>> s) {
 
 		if (s.get() instanceof AnswerReference) {
 			@SuppressWarnings("unchecked")
@@ -126,7 +126,7 @@ public abstract class AnswerReference
 		}
 
 		@Override
-		public Collection<Message> validateReference(KnowWEArticle article, Section<SimpleTerm> simpleTermSection) {
+		public Collection<Message> validateReference(Article article, Section<SimpleTerm> simpleTermSection) {
 			Section<AnswerReference> section = Sections.cast(simpleTermSection,
 					AnswerReference.class);
 			Section<QuestionReference> ref = section.get().getQuestionSection(section);

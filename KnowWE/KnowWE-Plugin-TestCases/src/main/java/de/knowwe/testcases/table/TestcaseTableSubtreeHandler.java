@@ -27,7 +27,7 @@ import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.TestCase;
 import de.d3web.testcase.stc.STCWrapper;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -46,7 +46,7 @@ import de.knowwe.testcases.TestCaseProviderStorage;
 public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
 
 	@Override
-	public Collection<Message> create(KnowWEArticle article, Section<TestcaseTable> s) {
+	public Collection<Message> create(Article article, Section<TestcaseTable> s) {
 
 		TestCase testcase = new TestCase();
 		SequentialTestCase stc = new SequentialTestCase();

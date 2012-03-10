@@ -30,7 +30,7 @@ import de.d3web.xcl.XCLModel;
 import de.knowwe.core.compile.ConstraintModule;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -90,7 +90,7 @@ public class ListSolutionType extends AbstractType {
 		private class XCLModelCreatorConstraint extends ConstraintModule<ListSolutionType> {
 
 			@Override
-			public boolean violatedConstraints(KnowWEArticle article, Section<ListSolutionType> s) {
+			public boolean violatedConstraints(Article article, Section<ListSolutionType> s) {
 				return !Sections.findSuccessor(s, SolutionDefinition.class).isReusedBy(
 						article.getTitle());
 			}
@@ -98,7 +98,7 @@ public class ListSolutionType extends AbstractType {
 		}
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<ListSolutionType> s) {
+		public Collection<Message> create(Article article, Section<ListSolutionType> s) {
 
 			Section<SolutionDefinition> solutionDef = Sections.findSuccessor(s,
 					SolutionDefinition.class);
@@ -136,7 +136,7 @@ public class ListSolutionType extends AbstractType {
 		}
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<ListSolutionType> s) {
+		public void destroy(Article article, Section<ListSolutionType> s) {
 			// nothing to do, the solution, along with its attached model, will
 			// be destroyed in the SolutionDef
 			return;

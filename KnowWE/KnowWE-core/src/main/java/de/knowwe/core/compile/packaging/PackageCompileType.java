@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.knowwe.core.KnowWEEnvironment;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.ConstraintModule;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -36,9 +36,9 @@ public abstract class PackageCompileType extends AbstractType implements Package
 		}
 
 		@Override
-		public Collection<Message> create(KnowWEArticle article, Section<PackageCompileType> s) {
+		public Collection<Message> create(Article article, Section<PackageCompileType> s) {
 
-			KnowWEPackageManager packageMng = KnowWEEnvironment.getInstance().getPackageManager(
+			PackageManager packageMng = Environment.getInstance().getPackageManager(
 					article.getWeb());
 
 			if (article.isFullParse() || !s.isReusedBy(article.getTitle())) {
@@ -56,12 +56,12 @@ public abstract class PackageCompileType extends AbstractType implements Package
 			}
 
 			for (Section<?> sectionOfPackage : sectionsOfPackage) {
-				if (KnowWEEnvironment.getInstance().getWikiConnector().doesPageExist(
+				if (Environment.getInstance().getWikiConnector().doesPageExist(
 						sectionOfPackage.getTitle())) {
 					article.getReviseIterator().addRootSectionToRevise(sectionOfPackage);
 				}
 				else {
-					KnowWEEnvironment.getInstance().getArticleManager(sectionOfPackage.getWeb()).addArticleToUpdate(
+					Environment.getInstance().getArticleManager(sectionOfPackage.getWeb()).addArticleToUpdate(
 							sectionOfPackage.getTitle());
 				}
 			}
@@ -73,7 +73,7 @@ public abstract class PackageCompileType extends AbstractType implements Package
 		}
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<PackageCompileType> s) {
+		public void destroy(Article article, Section<PackageCompileType> s) {
 			KnowWEUtils.getTerminologyManager(article).unregisterTermDefinition(
 					s, String.class, s.getTitle());
 		}
@@ -81,7 +81,7 @@ public abstract class PackageCompileType extends AbstractType implements Package
 		private class CompileHandlerConstraint extends ConstraintModule<PackageCompileType> {
 
 			@Override
-			public boolean violatedConstraints(KnowWEArticle article, Section<PackageCompileType> s) {
+			public boolean violatedConstraints(Article article, Section<PackageCompileType> s) {
 				return true;
 			}
 

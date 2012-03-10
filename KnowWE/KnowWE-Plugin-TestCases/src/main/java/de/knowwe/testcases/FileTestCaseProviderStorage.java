@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -42,11 +42,11 @@ import de.knowwe.core.wikiConnector.ConnectorAttachment;
 public abstract class FileTestCaseProviderStorage implements TestCaseProviderStorage {
 
 	private final Map<String, List<AttachmentTestCaseProvider>> regexMap = new HashMap<String, List<AttachmentTestCaseProvider>>();
-	private final KnowWEArticle article;
+	private final Article article;
 	protected final List<Message> messages = new LinkedList<Message>();
-	protected final KnowWEArticle sectionArticle;;
+	protected final Article sectionArticle;;
 
-	public FileTestCaseProviderStorage(KnowWEArticle compilingArticle, String[] regexes, KnowWEArticle sectionArticle) {
+	public FileTestCaseProviderStorage(Article compilingArticle, String[] regexes, Article sectionArticle) {
 		this.article = compilingArticle;
 		this.sectionArticle = sectionArticle;
 		update(regexes);
@@ -118,7 +118,7 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 
 	}
 
-	protected abstract AttachmentTestCaseProvider createTestCaseProvider(KnowWEArticle article, ConnectorAttachment attachment);
+	protected abstract AttachmentTestCaseProvider createTestCaseProvider(Article article, ConnectorAttachment attachment);
 
 	@Override
 	public Collection<Message> getMessages() {

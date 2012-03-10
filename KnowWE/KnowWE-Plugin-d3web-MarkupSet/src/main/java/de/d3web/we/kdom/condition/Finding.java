@@ -29,7 +29,7 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
-import de.knowwe.core.kdom.KnowWEArticle;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -80,7 +80,7 @@ public class Finding extends D3webCondition<Finding> {
 	}
 
 	@Override
-	protected Condition createCondition(KnowWEArticle article, Section<Finding> s) {
+	protected Condition createCondition(Article article, Section<Finding> s) {
 
 		Section<QuestionReference> qRef = Sections.findSuccessor(s,
 				QuestionReference.class);
