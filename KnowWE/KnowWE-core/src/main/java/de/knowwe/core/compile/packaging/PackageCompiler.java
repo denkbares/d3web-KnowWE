@@ -20,7 +20,7 @@
 
 package de.knowwe.core.compile.packaging;
 
-import java.util.List;
+import java.util.Set;
 
 import de.knowwe.core.kdom.parsing.Section;
 
@@ -34,6 +34,6 @@ public interface PackageCompiler {
 	 * @param s should always be the Section calling this method.
 	 * @return a List of package names.
 	 */
-	public List<String> getPackagesToCompile(Section<? extends PackageCompiler> s);
+	public Set<String> getPackagesToCompile(Section<? extends PackageCompiler> s);
 
 }

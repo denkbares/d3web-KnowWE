@@ -120,15 +120,19 @@ public class Article extends AbstractType {
 							+ "this should not be done! Developer please check with "
 							+ "Article#isArticleCurrentlyBuilding(String) first!");
 		}
-
+		Article article = null;
 		currentlyBuildingArticles.put(getArticleKey(web, title), null);
-
-		Article article = new Article(text, title, rootType,
-				web, fullParse);
-
-		EventManager.getInstance().fireEvent(new ArticleCreatedEvent(article));
-
-		currentlyBuildingArticles.remove(getArticleKey(web, title));
+		try {
+			article = new Article(text, title, rootType,
+					web, fullParse);
+			EventManager.getInstance().fireEvent(new ArticleCreatedEvent(article));
+		}
+		catch (Throwable e) {
+			e.printStackTrace();
+		}
+		finally {
+			currentlyBuildingArticles.remove(getArticleKey(web, title));
+		}
 
 		return article;
 	}
@@ -343,8 +347,8 @@ public class Article extends AbstractType {
 
 	/**
 	 * Finds all children with the same path of Types in the KDOM. The
-	 * <tt>path</tt> has to start with the type Article and end with the
-	 * Type of the Sections you are looking for.
+	 * <tt>path</tt> has to start with the type Article and end with the Type of
+	 * the Sections you are looking for.
 	 * 
 	 * @return Map of Sections, using their originalText as key.
 	 */
@@ -361,8 +365,8 @@ public class Article extends AbstractType {
 
 	/**
 	 * Finds all children with the same path of Types in the KDOM. The
-	 * <tt>path</tt> has to start with the Article and end with the
-	 * ObjectType of the Sections you are looking for.
+	 * <tt>path</tt> has to start with the Article and end with the ObjectType
+	 * of the Sections you are looking for.
 	 * 
 	 * @return List of Sections
 	 */

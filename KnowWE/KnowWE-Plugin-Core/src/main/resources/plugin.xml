@@ -60,17 +60,17 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="ArticleToPackageFlag">
+		id="PackageType">
 		<parameter id="class"
-			value="de.knowwe.core.packaging.ArticleToPackageFlag" />
-		<parameter id="name" value="ArticleToPackageFlag" />
-		<parameter id="description" value="Type ArticleToPackageFlag" />
+			value="de.knowwe.core.packaging.PackageType" />
+		<parameter id="name" value="CompileFlag" />
+		<parameter id="description" value="Type PackageType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5.0" />
 		<parameter id="scope" value="root" />
 	</extension>
 	
-		<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="VerbatimType">
 		<parameter id="class"
 			value="de.knowwe.kdom.verbatim.VerbatimType" />

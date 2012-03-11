@@ -23,9 +23,12 @@ package de.knowwe.kdom.defaultMarkup;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -136,7 +139,7 @@ public class DefaultMarkupType extends AbstractType {
 			this.childrenTypes.add(new AnnotationType(parameter));
 		}
 		this.childrenTypes.add(new UnknownAnnotationType());
-		this.addSubtreeHandler(Priority.PRECOMPILE_HIGH, new AddMarkupSectionToPackageHandler());
+		this.addSubtreeHandler(Priority.PRECOMPILE_MIDDLE, new AddMarkupSectionToPackagesHandler());
 		this.addSubtreeHandler(new DefaultMarkupSubtreeHandler(markup));
 	}
 
@@ -277,6 +280,29 @@ public class DefaultMarkupType extends AbstractType {
 			}
 		}
 		return results;
+	}
+
+	/**
+	 * Returns the packages the given default markup section belongs to
+	 * according to its @package annotations. If there are no such annotations,
+	 * the default packages for the article are returned.
+	 * 
+	 * @created 11.03.2012
+	 * @param section the section to be check for packages
+	 */
+	public static String[] getPackages(Section<?> section) {
+		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
+			throw new IllegalArgumentException("section not of type DefaultMarkupType");
+		}
+		String[] packageNames = DefaultMarkupType.getAnnotations(section,
+				PackageManager.PACKAGE_ATTRIBUTE_NAME);
+		PackageManager packageManager = Environment.getInstance().getPackageManager(
+				section.getWeb());
+		if (packageNames.length == 0) {
+			Set<String> defaultPackages = packageManager.getDefaultPackages(section.getArticle());
+			packageNames = defaultPackages.toArray(new String[defaultPackages.size()]);
+		}
+		return packageNames;
 	}
 
 	/**

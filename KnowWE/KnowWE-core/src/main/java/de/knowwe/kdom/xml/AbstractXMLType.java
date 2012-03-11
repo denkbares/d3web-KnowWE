@@ -180,7 +180,7 @@ public class AbstractXMLType extends AbstractType {
 	}
 
 	public void registerPackageDefinitionHandler() {
-		this.addSubtreeHandler(Priority.PRECOMPILE_HIGH, new RegisterPackageDefinitionHandler());
+		this.addSubtreeHandler(Priority.PRECOMPILE_MIDDLE, new RegisterPackageDefinitionHandler());
 	}
 
 	static class RegisterPackageDefinitionHandler extends SubtreeHandler<AbstractXMLType> {

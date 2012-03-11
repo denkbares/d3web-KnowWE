@@ -40,7 +40,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.event.ArticleCreatedEvent;
 import de.knowwe.event.FullParseEvent;
 import de.knowwe.plugin.Plugins;
 
@@ -55,7 +54,7 @@ import de.knowwe.plugin.Plugins;
  * @author Albrecht Striffler (denkbares GmbH)
  * 
  */
-public class TerminologyManager implements EventListener {
+public class TerminologyManager {
 
 	private final String web;
 
@@ -64,8 +63,6 @@ public class TerminologyManager implements EventListener {
 	private final boolean global;
 
 	public final static String HANDLER_KEY = TerminologyManager.class.getSimpleName();
-
-	private boolean modifiedTermDefinitions = false;
 
 	private static final Set<String> occupiedTerms = new HashSet<String>();
 
@@ -82,7 +79,7 @@ public class TerminologyManager implements EventListener {
 		else {
 			global = false;
 		}
-		EventManager.getInstance().registerListener(this);
+		EventManager.getInstance().registerListener(TerminologyManagerCleaner.getInstance());
 		if (!initializedOccupiedTerms) {
 			// extension point for plugins defining predefined terminology
 			Extension[] exts = PluginManager.getInstance().getExtensions(
@@ -160,7 +157,6 @@ public class TerminologyManager implements EventListener {
 		}
 		Priority priority = article.getReviseIterator().getCurrentPriority();
 		termRefLog.addTermDefinition(priority, termDefinition, termClass, termIdentifierObject);
-		modifiedTermDefinitions = true;
 		Messages.clearMessages(article, termDefinition, this.getClass());
 	}
 
@@ -293,8 +289,6 @@ public class TerminologyManager implements EventListener {
 			Priority priority = article.getReviseIterator().getCurrentPriority();
 			termRefLog.removeTermDefinition(priority, termDefinition, termClass,
 					termIdentifierObject);
-
-			modifiedTermDefinitions = true;
 		}
 	}
 
@@ -305,10 +299,6 @@ public class TerminologyManager implements EventListener {
 		if (refLog != null) {
 			refLog.removeTermReference(termReference, termIdentifierObject, termClass);
 		}
-	}
-
-	public boolean areTermDefinitionsModifiedFor(Article article) {
-		return modifiedTermDefinitions;
 	}
 
 	/**
@@ -354,50 +344,6 @@ public class TerminologyManager implements EventListener {
 		return filteredLogEntries;
 	}
 
-	private static void removeTermReferenceLogsForArticle(Article article) {
-		TerminologyManager masterArticleHandler = KnowWEUtils.getTerminologyManager(article);
-		masterArticleHandler.termLogManager = new TermLogManager();
-
-		TerminologyManager globalTerminologyHandler = KnowWEUtils.getGlobalTerminologyManager(article.getWeb());
-
-		Set<Entry<String, TermLog>> entrySet = globalTerminologyHandler.termLogManager.entrySet();
-		for (Entry<String, TermLog> entry : new ArrayList<Entry<String, TermLog>>(entrySet)) {
-			Set<Section<?>> definitions = entry.getValue().getDefinitions();
-			for (Section<?> termDefinition : definitions) {
-				if (!termDefinition.getTitle().equals(article.getTitle())) continue;
-				TermLog termLog = globalTerminologyHandler.termLogManager.getLog(new TermIdentifier(
-						entry.getKey()));
-				termLog.removeTermDefinition(termDefinition);
-			}
-			Set<Section<?>> references = entry.getValue().getReferences();
-			for (Section<?> termReference : references) {
-				if (!termReference.getTitle().equals(article.getTitle())) continue;
-				TermLog termLog = globalTerminologyHandler.termLogManager.getLog(new TermIdentifier(
-						entry.getKey()));
-				termLog.removeTermReference(termReference);
-			}
-		}
-	}
-
-	@Override
-	public Collection<Class<? extends Event>> getEvents() {
-		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(
-				2);
-		events.add(FullParseEvent.class);
-		events.add(ArticleCreatedEvent.class);
-		return events;
-	}
-
-	@Override
-	public void notify(Event event) {
-		if (event instanceof FullParseEvent) {
-			removeTermReferenceLogsForArticle(((FullParseEvent) event).getArticle());
-		}
-		else if (event instanceof ArticleCreatedEvent) {
-			modifiedTermDefinitions = false;
-		}
-	}
-
 	/**
 	 * Returns if a term has been registered with the specified name and if its
 	 * class is of the specified class. Otherwise (if no such term exists or it
@@ -418,6 +364,58 @@ public class TerminologyManager implements EventListener {
 			}
 		}
 		return false;
+	}
+
+	private static class TerminologyManagerCleaner implements EventListener {
+
+		private static TerminologyManagerCleaner instance = null;
+
+		private static TerminologyManagerCleaner getInstance() {
+			if (instance == null) instance = new TerminologyManagerCleaner();
+			return instance;
+		}
+
+		private static void removeTermReferenceLogsForArticle(Article article) {
+			TerminologyManager masterArticleHandler = KnowWEUtils.getTerminologyManager(article);
+			masterArticleHandler.termLogManager = new TermLogManager();
+
+			TerminologyManager globalTerminologyHandler = KnowWEUtils.getGlobalTerminologyManager(article.getWeb());
+
+			Set<Entry<String, TermLog>> entrySet = globalTerminologyHandler.termLogManager.entrySet();
+			for (Entry<String, TermLog> entry : new ArrayList<Entry<String, TermLog>>(entrySet)) {
+				Set<Section<?>> definitions = entry.getValue().getDefinitions();
+				for (Section<?> termDefinition : definitions) {
+					if (!termDefinition.getTitle().equals(article.getTitle())) continue;
+					TermLog termLog = globalTerminologyHandler.termLogManager.getLog(new TermIdentifier(
+							entry.getKey()));
+					termLog.removeTermDefinition(termDefinition);
+				}
+				Set<Section<?>> references = entry.getValue().getReferences();
+				for (Section<?> termReference : references) {
+					if (!termReference.getTitle().equals(article.getTitle())) continue;
+					TermLog termLog = globalTerminologyHandler.termLogManager.getLog(new TermIdentifier(
+							entry.getKey()));
+					termLog.removeTermReference(termReference);
+				}
+			}
+		}
+
+		@Override
+		public Collection<Class<? extends Event>> getEvents() {
+			ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(
+					1);
+			events.add(FullParseEvent.class);
+			return events;
+		}
+
+		@Override
+		public void notify(Event event) {
+			if (event instanceof FullParseEvent) {
+				Article article = ((FullParseEvent) event).getArticle();
+				removeTermReferenceLogsForArticle(article);
+			}
+		}
+
 	}
 
 }

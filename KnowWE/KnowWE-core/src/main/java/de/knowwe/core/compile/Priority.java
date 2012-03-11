@@ -32,7 +32,12 @@ public class Priority implements Comparable<Priority> {
 	/**
 	 * DON'T USE THIS PRIORITY FOR HANDLERS CREATING KNOWLEDGE!!!
 	 */
-	public static final Priority PRECOMPILE_HIGH = new Priority(200000);
+	public static final Priority PRECOMPILE_HIGH = new Priority(300000);
+
+	/**
+	 * DON'T USE THIS PRIORITY FOR HANDLERS CREATING KNOWLEDGE!!!
+	 */
+	public static final Priority PRECOMPILE_MIDDLE = new Priority(200000);
 
 	/**
 	 * DON'T USE THIS PRIORITY FOR HANDLERS CREATING KNOWLEDGE!!!

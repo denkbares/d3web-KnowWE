@@ -19,7 +19,6 @@
 package de.knowwe.kdom.defaultMarkup;
 
 import java.util.Collection;
-import java.util.List;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -29,29 +28,19 @@ import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
-public class AddMarkupSectionToPackageHandler extends SubtreeHandler<DefaultMarkupType> {
+public class AddMarkupSectionToPackagesHandler extends SubtreeHandler<DefaultMarkupType> {
 
-	public AddMarkupSectionToPackageHandler() {
+	public AddMarkupSectionToPackagesHandler() {
 		super(true);
 	}
 
 	@Override
 	public Collection<Message> create(Article article, Section<DefaultMarkupType> section) {
 		if (!section.get().isIgnoringPackageCompile()) {
-			String value = null;
-
-			List<Section<? extends AnnotationContentType>> annotationContents = DefaultMarkupType.getAnnotationContentSections(
-					section, PackageManager.PACKAGE_ATTRIBUTE_NAME);
 			PackageManager packageManager = Environment.getInstance().getPackageManager(
 					article.getWeb());
-			if (annotationContents.isEmpty()) {
-				packageManager.addSectionToPackage(section, value);
-			}
-			else {
-				for (Section<?> annotationContent : annotationContents) {
-					value = annotationContent.getText();
-					packageManager.addSectionToPackage(section, value);
-				}
+			for (String packageName : DefaultMarkupType.getPackages(section)) {
+				packageManager.addSectionToPackage(section, packageName);
 			}
 		}
 		return Messages.noMessage();

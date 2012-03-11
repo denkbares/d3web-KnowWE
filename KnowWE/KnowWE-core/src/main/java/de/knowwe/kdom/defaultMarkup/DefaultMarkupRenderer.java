@@ -135,7 +135,7 @@ public class DefaultMarkupRenderer implements Renderer {
 							+ packageNames.toString() + " which are not compiled in any article.";
 				}
 				else {
-					warningString = "This section is no registered to any package and therefore "
+					warningString = "This section is not registered to any package and therefore "
 							+ "not compiled in any article.";
 				}
 				renderMessagesOfType("warning", Messages.asList(Messages.warning(warningString)),

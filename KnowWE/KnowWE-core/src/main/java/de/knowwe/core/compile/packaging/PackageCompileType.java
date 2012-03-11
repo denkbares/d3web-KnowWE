@@ -24,9 +24,6 @@ public abstract class PackageCompileType extends AbstractType implements Package
 		this.addSubtreeHandler(Priority.PRECOMPILE_LOW, new PackageCompileHandler());
 	}
 
-	@Override
-	public abstract List<String> getPackagesToCompile(Section<? extends PackageCompiler> s);
-
 	private static class PackageCompileHandler extends SubtreeHandler<PackageCompileType> {
 
 		public PackageCompileHandler() {

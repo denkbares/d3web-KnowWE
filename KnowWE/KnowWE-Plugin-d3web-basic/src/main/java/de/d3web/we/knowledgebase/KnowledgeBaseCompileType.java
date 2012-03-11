@@ -20,7 +20,8 @@
 package de.d3web.we.knowledgebase;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.Environment;
@@ -45,15 +46,15 @@ public class KnowledgeBaseCompileType extends PackageCompileType {
 	}
 
 	@Override
-	public List<String> getPackagesToCompile(Section<? extends PackageCompiler> section) {
+	public Set<String> getPackagesToCompile(Section<? extends PackageCompiler> section) {
 		Section<KnowledgeBaseType> kbSection = Sections.findAncestorOfType(section,
 				KnowledgeBaseType.class);
 		String[] uses = DefaultMarkupType.getAnnotations(kbSection,
 				KnowledgeBaseType.ANNOTATION_COMPILE);
 		if (uses.length == 0) {
-			return Arrays.asList(Environment.getInstance().getPackageManager(section.getWeb()).getDefaultPackageName(
-					section.getArticle()));
+			return Environment.getInstance().getPackageManager(section.getWeb()).getDefaultPackages(
+					section.getArticle());
 		}
-		return Arrays.asList(uses);
+		return new HashSet<String>(Arrays.asList(uses));
 	}
 }

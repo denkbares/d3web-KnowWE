@@ -31,7 +31,6 @@ import de.d3web.indication.ActionIndication;
 import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.QuestionnaireReference;
-import de.knowwe.core.compile.ModifiedTermsConstraint;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
@@ -101,10 +100,6 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 	 * these cases.
 	 */
 	static class SetTypeHandler extends SubtreeHandler<AnonymousType> {
-
-		public SetTypeHandler() {
-			this.registerConstraintModule(new ModifiedTermsConstraint<AnonymousType>());
-		}
 
 		@Override
 		public Collection<Message> create(Article article, Section<AnonymousType> s) {

@@ -48,11 +48,18 @@ public class PackageManager implements EventListener {
 
 	public static final String PACKAGE_ATTRIBUTE_NAME = "package";
 
-	public static final String DEFAULT_PACKAGE = "default";
-
 	public static final String THIS = "this";
 
+	private static final String DEFAULT_PACKAGE = "default";
+
 	private final String web;
+
+	/**
+	 * For each article title, you get all default packages used in this
+	 * article.
+	 */
+	private final Map<String, HashSet<String>> articleToDefaultPackages =
+			new HashMap<String, HashSet<String>>();
 
 	/**
 	 * For each packageName, you get all Sections in the wiki belonging to this
@@ -99,7 +106,7 @@ public class PackageManager implements EventListener {
 	}
 
 	private boolean isDisallowedPackageName(String packageName) {
-		return packageName.equals(THIS);
+		return packageName == null || packageName.isEmpty() || packageName.equals(THIS);
 	}
 
 	private void addDeactivatedSection(String packageName, Section<?> s) {
@@ -136,43 +143,53 @@ public class PackageManager implements EventListener {
 		return new HashSet<Section<?>>(0);
 	}
 
+	public void addDefaultPackage(Article article, String defaultPackage) {
+		HashSet<String> defaultPackages = articleToDefaultPackages.get(article.getTitle());
+		if (defaultPackages == null) {
+			defaultPackages = new HashSet<String>(4);
+			articleToDefaultPackages.put(article.getTitle(), defaultPackages);
+		}
+		defaultPackages.add(defaultPackage);
+	}
+
+	public Set<String> getDefaultPackages(Article article) {
+		HashSet<String> defaultPackages = articleToDefaultPackages.get(article.getTitle());
+		if (defaultPackages == null) {
+			defaultPackages = new HashSet<String>(4);
+			defaultPackages.add(DEFAULT_PACKAGE);
+		}
+		return Collections.unmodifiableSet(defaultPackages);
+	}
+
 	/**
 	 * Adds the given Section to the package with the given name.
 	 * 
 	 * @created 28.12.2010
-	 * @param s is the Section to add
+	 * @param section is the Section to add
 	 * @param packageName is the name of the package the Section is added to
 	 * @returns KDOMReportMessages, if something went wrong while adding the
 	 *          Section
 	 */
-	public void addSectionToPackage(Section<?> s, String packageName) {
+	public void addSectionToPackage(Section<?> section, String packageName) {
 
-		if (packageName == null || packageName.trim().isEmpty()) {
-			if (s.getPackageNames().isEmpty()) {
-				packageName = DEFAULT_PACKAGE;
-			}
-			else {
-				return;
-			}
-		}
 		if (isDisallowedPackageName(packageName)) {
-			Messages.storeMessage(null, s, this.getClass(), Messages.error("'"
+			Messages.storeMessage(null, section, this.getClass(), Messages.error("'"
 					+ packageName
 					+ "' is not allowed as a package name."));
 			return;
 		}
-		if (s.getPackageNames().contains(packageName)) {
-			Messages.storeMessage(null, s, this.getClass(), Messages.error(
+		if (section.getPackageNames().contains(packageName)) {
+			Messages.storeMessage(null, section, this.getClass(), Messages.error(
 					"This Section is added to " +
 							"the package '" + packageName + "' multiple times."));
-			addDeactivatedSection(packageName, s);
+			addDeactivatedSection(packageName, section);
 		}
 		else {
-			s.addPackageName(packageName);
+			section.addPackageName(packageName);
 		}
 		List<Section<?>> sectionsOfPackage = getSectionsOfPackage(packageName);
 		for (Section<?> sectionOfPackage : sectionsOfPackage) {
-			if (sectionOfPackage.equalsOrIsSuccessorOf(s)) {
+			if (sectionOfPackage.equalsOrIsSuccessorOf(section)) {
 				Messages.storeMessage(null, sectionOfPackage, this.getClass(),
 						Messages.error("This Section is added to " +
 								"the package '" + packageName + "' multiple times."));
@@ -185,7 +202,7 @@ public class PackageManager implements EventListener {
 			packageList = new LinkedList<Section<?>>();
 			packageToSectionsOfPackage.put(packageName, packageList);
 		}
-		packageList.add(s);
+		packageList.add(section);
 		changedPackages.add(packageName);
 	}
 
@@ -274,7 +291,9 @@ public class PackageManager implements EventListener {
 				unregisterPackageCompileSection(article, sec);
 			}
 		}
-
+		// remove this last so getDefaultPackages correctly works while cleanup
+		// and unregister
+		articleToDefaultPackages.remove(article.getTitle());
 	}
 
 	public List<Section<?>> getSectionsOfPackage(String packageName) {
@@ -318,7 +337,7 @@ public class PackageManager implements EventListener {
 
 	public void registerPackageCompileSection(Article article, Section<? extends PackageCompiler> s) {
 
-		List<String> packagesToCompile = s.get().getPackagesToCompile(s);
+		Set<String> packagesToCompile = s.get().getPackagesToCompile(s);
 
 		HashSet<Section<? extends PackageCompiler>> packageCompileSections =
 				articleToPackageCompileSections.get(article.getTitle());
@@ -511,7 +530,7 @@ public class PackageManager implements EventListener {
 
 		for (HashSet<Section<? extends PackageCompiler>> packageCompileSections : articleToPackageCompileSections.values()) {
 			for (Section<? extends PackageCompiler> packageCompileSection : packageCompileSections) {
-				List<String> packagesToCompile = packageCompileSection.get().getPackagesToCompile(
+				Set<String> packagesToCompile = packageCompileSection.get().getPackagesToCompile(
 						packageCompileSection);
 				for (String packageName : packagesToCompile) {
 					if (changedPackages.contains(packageName)) {
@@ -545,10 +564,6 @@ public class PackageManager implements EventListener {
 		else if (event instanceof PreCompileFinishedEvent) {
 			updateReusedStates(((PreCompileFinishedEvent) event).getArticle());
 		}
-	}
-
-	public String getDefaultPackageName(Article article) {
-		return DEFAULT_PACKAGE;
 	}
 
 }

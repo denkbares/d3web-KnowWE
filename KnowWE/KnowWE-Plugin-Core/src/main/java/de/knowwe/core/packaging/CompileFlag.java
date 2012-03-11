@@ -20,8 +20,10 @@
 
 package de.knowwe.core.packaging;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageCompiler;
@@ -85,8 +87,8 @@ public class CompileFlag extends DefaultMarkupType {
 		}
 
 		@Override
-		public List<String> getPackagesToCompile(Section<? extends PackageCompiler> section) {
-			List<String> packagesToCompile = new LinkedList<String>();
+		public Set<String> getPackagesToCompile(Section<? extends PackageCompiler> section) {
+			Set<String> packagesToCompile = new HashSet<String>();
 			for (Section<?> child : section.getChildren()) {
 				if (child.get() instanceof SinglePackageReference) {
 					packagesToCompile.add(child.getText());

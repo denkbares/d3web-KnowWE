@@ -27,7 +27,6 @@ import java.util.Map;
 
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.diaFlux.flow.CommentNode;
 import de.d3web.diaFlux.flow.Edge;
 import de.d3web.diaFlux.flow.Flow;
@@ -38,14 +37,12 @@ import de.d3web.diaFlux.io.DiaFluxPersistenceHandler;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.compile.ConstraintModule;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.persistence.NodeHandler;
 import de.knowwe.diaflux.persistence.NodeHandlerManager;
 import de.knowwe.diaflux.type.EdgeContentType;
@@ -76,7 +73,6 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 			new ArrayList<Class<? extends Type>>(0);
 
 	public FlowchartSubTreeHandler() {
-		this.registerConstraintModule(new FlowchartConstraintModule());
 		filteredTypes.add(PositionType.class);
 	}
 
@@ -121,34 +117,6 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		}
 
 		return errors;
-	}
-
-	@Override
-	public void destroy(Article article, Section<FlowchartType> s) {
-		KnowledgeBase kb = getKB(article);
-
-		Map<String, String> attributeMap =
-				AbstractXMLType.getAttributeMapFor(s);
-		if (attributeMap != null) {
-			String name = attributeMap.get("name");
-			TerminologyObject oldFlow = kb.getManager().search(name);
-			if (oldFlow != null) {
-				oldFlow.destroy();
-			}
-
-		}
-
-	}
-
-	private class FlowchartConstraintModule extends ConstraintModule<FlowchartType> {
-
-		@Override
-		public boolean violatedConstraints(Article article, Section<FlowchartType> s) {
-			return KnowWEUtils.getTerminologyManager(article).areTermDefinitionsModifiedFor(
-					article)
-					|| s.isOrHasChangedSuccessor(article.getTitle(), filteredTypes);
-		}
-
 	}
 
 	@SuppressWarnings("unchecked")

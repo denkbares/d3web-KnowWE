@@ -90,7 +90,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		if (providers.size() == 0) {
 			string.append("No test cases found in the packages: ");
 			boolean first = true;
-			for (String s : getPackages(playerSection)) {
+			for (String s : DefaultMarkupType.getPackages(playerSection)) {
 				if (!first) {
 					string.append(", ");
 				}
@@ -252,7 +252,7 @@ public class TestCasePlayerRenderer implements Renderer {
 
 	private List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(Section<TestCasePlayerType> section, UserContext user) {
 		List<Triple<TestCaseProvider, Section<?>, Article>> providers = new LinkedList<Triple<TestCaseProvider, Section<?>, Article>>();
-		String[] kbpackages = getPackages(section);
+		String[] kbpackages = DefaultMarkupType.getPackages(section);
 		Environment env = Environment.getInstance();
 		PackageManager packageManager = env.getPackageManager(section.getWeb());
 		ArticleManager articleManager = env.getArticleManager(user.getWeb());
@@ -277,14 +277,6 @@ public class TestCasePlayerRenderer implements Renderer {
 			}
 		}
 		return providers;
-	}
-
-	private String[] getPackages(Section<TestCasePlayerType> section) {
-		String[] kbpackages = DefaultMarkupType.getAnnotations(section, "uses");
-		if (kbpackages.length == 0) {
-			kbpackages = new String[] { PackageManager.DEFAULT_PACKAGE };
-		}
-		return kbpackages;
 	}
 
 	private void renderTableLine(Triple<TestCaseProvider, Section<?>, Article> selectedTriple, TestCase testCase, SessionDebugStatus status, String[] questionStrings, Collection<Question> usedQuestions, TerminologyManager manager, TerminologyObject selectedObject, Date date, int row, TableModel tableModel) {

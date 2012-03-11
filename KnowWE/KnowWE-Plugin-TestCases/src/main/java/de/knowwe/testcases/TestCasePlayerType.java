@@ -18,6 +18,7 @@
  */
 package de.knowwe.testcases;
 
+import de.d3web.we.knowledgebase.KnowledgeBaseType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.kdom.defaultMarkup.ContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -37,8 +38,8 @@ public class TestCasePlayerType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("TestCasePlayer");
-		MARKUP.addAnnotation("uses", false);
-		MARKUP.addAnnotationRenderer("uses", StyleRenderer.ANNOTATION);
+		MARKUP.addAnnotation(KnowledgeBaseType.ANNOTATION_COMPILE, false);
+		MARKUP.addAnnotationRenderer(KnowledgeBaseType.ANNOTATION_COMPILE, StyleRenderer.ANNOTATION);
 	}
 
 	public TestCasePlayerType() {

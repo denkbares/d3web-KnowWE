@@ -100,7 +100,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 		// string.append(KnowWEUtils.maskHTML("<hr>\n"));
 		Section<KnowledgeBaseCompileType> compileSection = Sections.findSuccessor(section,
 				KnowledgeBaseCompileType.class);
-		List<String> packagesToCompile = compileSection.get().getPackagesToCompile(compileSection);
+		Set<String> packagesToCompile = compileSection.get().getPackagesToCompile(compileSection);
 
 		for (Iterator<String> packageIter = packagesToCompile.iterator(); packageIter.hasNext();) {
 			String packageName = packageIter.next();
