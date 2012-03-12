@@ -31,33 +31,9 @@ TestCasePlayer.send = function(sessionid, casedate, name, topic) {
         }
         
 TestCasePlayer.change = function(key_sessionid, selectedvalue) {
-			var topic = KNOWWE.helper.gup('page')
-			
-            var params = {
-        		action : 'SelectorAction',
-       			KWiki_Topic : topic,
-       			key : key_sessionid,
-       			value : selectedvalue
-    		}
-            
-            var options = {
-                url : KNOWWE.core.util.getURL(params),
-                response : {
-                	action : 'none',
-                	fn : function(){
-			        	try {
-	                		KNOWWE.helper.observer.notify('update');
-			        	}
-			        	catch (e) { /*ignore*/ }
-			        	KNOWWE.core.util.updateProcessingState(-1);
-                	},
-                    onError : function () {
-			        	KNOWWE.core.util.updateProcessingState(-1);                    	
-                    }
-                }
-            }
-        	KNOWWE.core.util.updateProcessingState(1);
-            new _KA( options ).send();       
+ 			var topic = KNOWWE.helper.gup('page');
+			document.cookie = key_sessionid +"=" + encodeURI(selectedvalue);
+           	KNOWWE.helper.observer.notify('update'); 
 
 }
 

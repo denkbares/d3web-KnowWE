@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.http.Cookie;
 
@@ -70,7 +71,7 @@ public class TestCasePlayerRenderer implements Renderer {
 
 	private static final String QUESTIONS_SEPARATOR = "#####";
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-	private static String SELECTOR_KEY = "selector";
+	private static String SELECTOR_KEY = "selectedValue";
 	private static String QUESTION_SELECTOR_KEY = "question_selector";
 	private static String SIZE_SELECTOR_KEY = "size_selector";
 	private static String FROM_KEY = "from_position";
@@ -489,9 +490,37 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	private Triple<TestCaseProvider, Section<?>, Article> renderTestCaseSelection(Section<?> section, UserContext user, StringBuilder string, List<Triple<TestCaseProvider, Section<?>, Article>> providers) {
-		String key = SELECTOR_KEY + "_" + section.getID();
-		String selectedID = (String) user.getSession().getAttribute(
-				key);
+		List<Section<TestCasePlayerType>> sections = Sections.findSuccessorsOfType(
+				section.getArticle().getSection(), TestCasePlayerType.class);
+		int i = 1;
+		Section<TestCasePlayerType> testCasePlayerTypeSection = Sections.findAncestorOfExactType(
+				section, TestCasePlayerType.class);
+		for (Section<TestCasePlayerType> s : new TreeSet<Section<TestCasePlayerType>>(sections)) {
+			if (testCasePlayerTypeSection.equals(s)) {
+				break;
+			}
+			else {
+				i++;
+			}
+		}
+		String key;
+		try {
+			key = SELECTOR_KEY + "_" + URLDecoder.decode(section.getTitle(), "UTF-8") + i;
+		}
+		catch (UnsupportedEncodingException e) {
+			key = SELECTOR_KEY + "_" + section.getTitle() + i;
+		}
+		String selectedID = "";
+		for (Cookie cookie : user.getRequest().getCookies()) {
+			if (cookie.getName().equals(key)) {
+				try {
+					selectedID = URLDecoder.decode(cookie.getValue(), "UTF-8");
+				}
+				catch (UnsupportedEncodingException e) {
+					selectedID = cookie.getValue();
+				}
+			}
+		}
 		StringBuffer selectsb = new StringBuffer();
 		// if no pair is selected, use the first
 		Triple<TestCaseProvider, Section<?>, Article> selectedPair = providers.get(0);
