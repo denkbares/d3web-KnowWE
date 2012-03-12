@@ -39,7 +39,7 @@ public class CIAction extends AbstractAction {
 		String dashboardName = String.valueOf(context.getParameter("id"));
 		dashboardName = URLDecoder.decode(dashboardName, "UTF-8");
 
-		String topic = context.getTopic();
+		String topic = context.getTitle();
 
 		if (task.equals("null") || dashboardName.equals("null")) {
 			throw new IOException(
