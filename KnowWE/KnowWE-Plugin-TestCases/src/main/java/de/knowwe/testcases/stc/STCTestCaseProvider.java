@@ -55,7 +55,10 @@ public class STCTestCaseProvider extends AttachmentTestCaseProvider {
 		try {
 			List<SequentialTestCase> cases = TestPersistence.getInstance().loadCases(
 					attachment.getInputStream(), kb);
-			if (cases.size() != 1) {
+			if (cases == null) {
+				messages.add(Messages.error("No testcases found in : " + attachment.getFileName()));
+			}
+			else if (cases.size() != 1) {
 				messages.add(Messages.error("The attached SequentialTestCase file "
 						+ attachment.getFileName()
 							+ " has " + cases.size()
@@ -72,6 +75,10 @@ public class STCTestCaseProvider extends AttachmentTestCaseProvider {
 		}
 		catch (IOException e) {
 			messages.add(Messages.error("File " + attachment.getFileName() + " is not accessible."));
+		}
+		catch (Exception e) {
+			messages.add(Messages.error("Error while parsing " + attachment.getFileName() + ": "
+					+ e.getMessage()));
 		}
 	}
 
