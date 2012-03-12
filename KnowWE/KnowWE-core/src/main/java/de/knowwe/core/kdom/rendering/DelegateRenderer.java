@@ -130,7 +130,7 @@ public class DelegateRenderer implements Renderer {
 
 		// Render notices post
 		Map<String, Collection<Message>> notices = Messages
-				.getMessages(subSection, Message.Type.NOTICE);
+				.getMessages(subSection, Message.Type.INFO);
 		for (Entry<String, Collection<Message>> entry : notices.entrySet()) {
 			for (Message kdomNotice : entry.getValue()) {
 				MessageRenderer noticeRenderer = subSection.get()
@@ -179,7 +179,7 @@ public class DelegateRenderer implements Renderer {
 
 		// Render notices pre
 		Map<String, Collection<Message>> notices = Messages
-				.getMessages(subSection, Message.Type.NOTICE);
+				.getMessages(subSection, Message.Type.INFO);
 		for (Entry<String, Collection<Message>> entry : notices.entrySet()) {
 			for (Message kdomNotice : entry.getValue()) {
 				MessageRenderer noticeRenderer = subSection.get()

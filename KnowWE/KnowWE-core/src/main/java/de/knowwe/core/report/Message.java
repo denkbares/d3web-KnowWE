@@ -20,7 +20,6 @@
 
 package de.knowwe.core.report;
 
-import de.knowwe.core.kdom.parsing.Section;
 
 /**
  * 
@@ -34,10 +33,8 @@ import de.knowwe.core.kdom.parsing.Section;
 public final class Message {
 
 	public enum Type {
-		NOTICE, WARNING, ERROR
+		INFO, WARNING, ERROR
 	}
-
-	private final Section<?> section = null;
 
 	private final String text;
 

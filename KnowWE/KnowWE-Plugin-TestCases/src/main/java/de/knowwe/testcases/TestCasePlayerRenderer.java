@@ -56,8 +56,11 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.report.Message.Type;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
@@ -90,16 +93,19 @@ public class TestCasePlayerRenderer implements Renderer {
 		string.append(KnowWEUtils.maskHTML("<div id='" + section.getID() + "'>"));
 
 		if (providers.size() == 0) {
-			string.append("No test cases found in the packages: ");
+			StringBuilder message = new StringBuilder();
+			message.append("No test cases found in the packages: ");
 			boolean first = true;
 			for (String s : DefaultMarkupType.getPackages(playerSection,
 					KnowledgeBaseType.ANNOTATION_COMPILE)) {
 				if (!first) {
-					string.append(", ");
+					message.append(", ");
 				}
-				string.append(s);
+				message.append(s);
 				first = false;
 			}
+			DefaultMarkupRenderer.renderMessagesOfType(Type.WARNING,
+					Arrays.asList(Messages.warning(message.toString())), string);
 		}
 		else {
 			Triple<TestCaseProvider, Section<?>, Article> selectedTriple = renderTestCaseSelection(
@@ -109,7 +115,8 @@ public class TestCasePlayerRenderer implements Renderer {
 			Session session = provider.getActualSession(user);
 
 			if (session == null) {
-				string.append("No knowledge base found.\n");
+				DefaultMarkupRenderer.renderMessagesOfType(Type.WARNING,
+						Arrays.asList(Messages.warning("No knowledge base found.")), string);
 			}
 			else {
 				TestCase testCase = provider.getTestCase();

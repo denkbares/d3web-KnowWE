@@ -301,14 +301,14 @@ public final class Messages {
 	/**
 	 * Filters the given Collection of {@link Message}s and returns a new
 	 * Collection containing only {@link Message}s of the
-	 * {@link de.knowwe.core.report.Message.Type} NOTICE.
+	 * {@link de.knowwe.core.report.Message.Type} INFO.
 	 * 
 	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getNotices(Collection<Message> messages) {
 		Collection<Message> notices = new ArrayList<Message>(messages.size());
 		for (Message msg : messages) {
-			if (msg.getType() == Message.Type.NOTICE) notices.add(msg);
+			if (msg.getType() == Message.Type.INFO) notices.add(msg);
 		}
 		return notices;
 	}
@@ -346,13 +346,13 @@ public final class Messages {
 
 	/**
 	 * Creates and returns a {@link Message} of the
-	 * {@link de.knowwe.core.report.Message.Type} NOTICE with the given text.
+	 * {@link de.knowwe.core.report.Message.Type} INFO with the given text.
 	 * 
 	 * @created 01.12.2011
 	 * @param message is the text content of the created {@link Message}
 	 */
 	public static Message notice(String message) {
-		return new Message(Message.Type.NOTICE, message);
+		return new Message(Message.Type.INFO, message);
 	}
 
 	public static Message objectAlreadyDefinedError(String text) {

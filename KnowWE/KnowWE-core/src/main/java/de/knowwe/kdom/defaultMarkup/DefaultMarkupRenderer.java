@@ -32,6 +32,7 @@ import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -138,7 +139,8 @@ public class DefaultMarkupRenderer implements Renderer {
 					warningString = "This section is not registered to any package and therefore "
 							+ "not compiled in any article.";
 				}
-				renderMessagesOfType("warning", Messages.asList(Messages.warning(warningString)),
+				renderMessagesOfType(Type.WARNING,
+						Messages.asList(Messages.warning(warningString)),
 						string);
 			}
 		}
@@ -176,29 +178,25 @@ public class DefaultMarkupRenderer implements Renderer {
 
 		for (Message.Type type : types) {
 			Collection<Message> messages = null;
-			String className = "";
-			if (type == Message.Type.NOTICE) {
-				className = "information";
+			if (type == Message.Type.INFO) {
 				messages = Messages.getNotices(allMsgs);
 			}
 			else if (type == Message.Type.WARNING) {
-				className = "warning";
 				messages = Messages.getWarnings(allMsgs);
 			}
 			else if (type == Message.Type.ERROR) {
-				className = "error";
 				messages = Messages.getErrors(allMsgs);
 			}
 
 			if (messages == null) continue;
 			if (messages.size() == 0) continue;
 
-			renderMessagesOfType(className, messages, string);
+			renderMessagesOfType(type, messages, string);
 		}
 	}
 
-	private static void renderMessagesOfType(String type, Collection<Message> messages, StringBuilder string) {
-		string.append(KnowWEUtils.maskHTML("<span class='" + type
+	public static void renderMessagesOfType(Message.Type type, Collection<Message> messages, StringBuilder string) {
+		string.append(KnowWEUtils.maskHTML("<span class='" + type.toString().toLowerCase()
 				+ "' style='white-space: pre-wrap;'>"));
 		for (Message msg : messages) {
 			string.append(KnowWEUtils.maskJSPWikiMarkup(msg.getVerbalization()));
