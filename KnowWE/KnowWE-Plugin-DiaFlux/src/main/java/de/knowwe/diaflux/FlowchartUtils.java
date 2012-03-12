@@ -57,7 +57,7 @@ public class FlowchartUtils {
 
 	public static final String[] CSS = new String[] {
 			"cc/flow/flowchart.css", "cc/flow/guard.css", "cc/flow/node.css",
-			"cc/flow/rule.css", "cc/flow/rendering.css" };
+			"cc/flow/rule.css" };
 
 	private static final HashMap<String, WeakHashMap<Flow, HashMap<String, Object>>> flowPropertyStore =
 			new HashMap<String, WeakHashMap<Flow, HashMap<String, Object>>>();

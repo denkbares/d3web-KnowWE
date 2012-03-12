@@ -199,7 +199,7 @@ Node.prototype.render = function() {
 	},
 	[
 		contentNode = Builder.node('div', {}, [
-			Builder.node('div', {className: 'decorator', style: ''})]),
+			Builder.node('div', {className: 'decorator'})]),
 		Builder.node('div', {id: this.nodeModel.fcid+'_highlight', className: 'node_highlight', style: 'visibility: hidden; z-index: 0;'})
 	]);
 
@@ -223,7 +223,7 @@ Node.prototype.render = function() {
 			action.isIndication() ? 'question' : 
 			infoObject && infoObject.getClassInstance() == KBInfo.Flowchart ? 'flowchart' :
 			'action';
-		this.actionPane = new ActionPane(contentNode, action, null, 
+		this.actionPane = new ActionPane(contentNode, action, 
 			function (actionPane) {
 				var rules = this.flowchart.findRulesForNode(this);
 				for (var i=0; i<rules.length; i++) {

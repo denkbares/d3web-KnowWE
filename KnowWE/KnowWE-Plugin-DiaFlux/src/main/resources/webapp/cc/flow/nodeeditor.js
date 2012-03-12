@@ -247,8 +247,7 @@ NodeEditor.prototype.setVisible = function(visible) {
 		this.parent.appendChild(this.dom);
 		this.actionEditor = new ActionEditor(
 			this.tabPanes[0], 
-			(this.nodeModel.action) ? new Action(this.nodeModel.action.markup, this.nodeModel.action.expression) : null,
-			null);
+			(this.nodeModel.action) ? new Action(this.nodeModel.action.markup, this.nodeModel.action.expression) : null);
 		//this.keyFx = this.handleKeyEvent.bindAsEventListener(this);
 		//document.observe('keydown', this.keyFx);
 	}

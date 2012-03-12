@@ -345,9 +345,8 @@ Action.createPossibleActions = function(infoObject) {
  * knowledgebase objects.
  */
 
-function ActionEditor(parent, action, style) {
+function ActionEditor(parent, action) {
 	this.parent = $(parent);
-	this.style = style;
 	this.selectedAction = action;
 
 	this.dom = null;
@@ -460,8 +459,7 @@ ActionEditor.prototype.render = function() {
 	var formula = this.getFormulaString();
 	
 	var dom = Builder.node('div', {
-		className: 'ActionEditor',
-		style: this.style ? this.style : ''
+		className: 'ActionEditor'
 	}, 
 	[
 		Builder.node('div', {className: 'object'}),	// ObjectSelect parent
@@ -579,9 +577,8 @@ ActionEditor.prototype.destroy = function() {
  * Neben dem Rendern der Inhalte ueberwacht ActionPane auch den KBInfo Cache.
  */
  
- function ActionPane(parent, action, style, onChange) {
+ function ActionPane(parent, action, onChange) {
 	this.parent = $(parent);
-	this.style = style;
 	this.action = action;
 	this.onChange = onChange;
 
@@ -641,40 +638,30 @@ ActionPane.prototype.setVisible = function(visible) {
 }
 
 ActionPane.prototype.render = function() {
-	var childs = [];
 	var name = this.action ? this.action.getInfoObjectName() : '---';
 	var infoObject = KBInfo.lookupInfoObject(name);
-	var icon = infoObject ? infoObject.getIconURL() : KBInfo.imagePath+'no-object.gif';
-	if (icon) {
-		childs.push(Builder.node('span', {className: 'icon'}, 
-		[
-			Builder.node('img', {src: icon})
-		]));
-	}
-	childs.push((name && name.length != 0) ? name : '---');
+	var iconURL = infoObject ? infoObject.getIconURL() : KBInfo.imagePath+'no-object.gif';
+	if (name.length == 0) name = '';
 
 	var valueText = null;
 	var valueError = null;
 	valueText = this.action.getDisplayText(); // zeigt ZusatzInfo an (fragen/ immer fragen,...)
-
 	valueError = this.action.getError();
 
-	var object;
 	var dom = Builder.node('div', {
-		className: 'ActionPane',
-		style: this.style ? this.style : ''
+		className: 'ActionPane'
 	}, 
 	[
-		object = Builder.node('div', {
-			className: 'object'
-		}, childs),
+		Builder.node('span', {
+			className: 'object',
+			style: 'background-image: url(' + iconURL + ')'
+		}, [name]), 
 		Builder.node('div', {
 			className: valueError ? 'value error' : 'value',
 			title: valueError ? valueError : ''
 		}, (valueText == null) ? [] : [valueText])
 	]);
 	dom.__ActionEditor = this;
-	//if (infoObject) object.title = infoObject.getToolTip();
 	return dom;
 }
  	

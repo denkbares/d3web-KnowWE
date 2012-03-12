@@ -113,12 +113,6 @@
 	background-image: url(../image/node_decorators/comment.png);
 }
 
-.Node .ActionPane .object {
-	max-height: 36px;
-	overflow: hidden;
-}
-
-
 .Node .text {
 	font-size:	8pt;
 	white-space: normal;
@@ -126,6 +120,11 @@
 
 .Node .ActionPane .object {
 	font-weight: bold;
+	max-height: 36px;
+	overflow: hidden;
+	padding-left: 16px;
+	background-repeat: no-repeat;
+    background-position: 0px center;
 }
 
 .Node .ActionPane .value {
@@ -138,6 +137,7 @@
 	background-image: url(../image/warning.png);
 	background-repeat: no-repeat;
 	background-position: 0px 4px;
+	margin:	0px;
 }
 
 .Node .ActionPane .icon {
