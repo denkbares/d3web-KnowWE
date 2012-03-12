@@ -44,7 +44,7 @@ public class TestCasePlayerType extends DefaultMarkupType {
 
 	public TestCasePlayerType() {
 		super(MARKUP);
-		this.setIgnorePackageCompile(false);
+		this.setIgnorePackageCompile(true);
 		for (Type type : this.getChildrenTypes()) {
 			if (type instanceof ContentType) {
 				((ContentType) type).setRenderer(

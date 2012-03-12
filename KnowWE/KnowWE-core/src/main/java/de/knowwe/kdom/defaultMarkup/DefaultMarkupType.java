@@ -290,12 +290,25 @@ public class DefaultMarkupType extends AbstractType {
 	 * @created 11.03.2012
 	 * @param section the section to be check for packages
 	 */
+
 	public static String[] getPackages(Section<?> section) {
+		return getPackages(section, PackageManager.PACKAGE_ATTRIBUTE_NAME);
+	}
+
+	/**
+	 * Returns the packages the given default markup section belongs to
+	 * according to the defined annotations. If there are no such annotations,
+	 * the default packages for the article are returned.
+	 * 
+	 * @created 12.03.2012
+	 * @param section the section to be check for packages
+	 */
+	public static String[] getPackages(Section<?> section, String annotation) {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
 			throw new IllegalArgumentException("section not of type DefaultMarkupType");
 		}
 		String[] packageNames = DefaultMarkupType.getAnnotations(section,
-				PackageManager.PACKAGE_ATTRIBUTE_NAME);
+				annotation);
 		PackageManager packageManager = Environment.getInstance().getPackageManager(
 				section.getWeb());
 		if (packageNames.length == 0) {

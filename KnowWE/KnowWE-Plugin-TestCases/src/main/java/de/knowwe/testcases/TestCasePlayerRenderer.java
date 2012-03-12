@@ -47,6 +47,7 @@ import de.d3web.testcase.TestCaseUtils;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.Finding;
 import de.d3web.testcase.model.TestCase;
+import de.d3web.we.knowledgebase.KnowledgeBaseType;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -90,7 +91,8 @@ public class TestCasePlayerRenderer implements Renderer {
 		if (providers.size() == 0) {
 			string.append("No test cases found in the packages: ");
 			boolean first = true;
-			for (String s : DefaultMarkupType.getPackages(playerSection)) {
+			for (String s : DefaultMarkupType.getPackages(playerSection,
+					KnowledgeBaseType.ANNOTATION_COMPILE)) {
 				if (!first) {
 					string.append(", ");
 				}
@@ -252,7 +254,8 @@ public class TestCasePlayerRenderer implements Renderer {
 
 	private List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(Section<TestCasePlayerType> section, UserContext user) {
 		List<Triple<TestCaseProvider, Section<?>, Article>> providers = new LinkedList<Triple<TestCaseProvider, Section<?>, Article>>();
-		String[] kbpackages = DefaultMarkupType.getPackages(section);
+		String[] kbpackages = DefaultMarkupType.getPackages(section,
+				KnowledgeBaseType.ANNOTATION_COMPILE);
 		Environment env = Environment.getInstance();
 		PackageManager packageManager = env.getPackageManager(section.getWeb());
 		ArticleManager articleManager = env.getArticleManager(user.getWeb());
