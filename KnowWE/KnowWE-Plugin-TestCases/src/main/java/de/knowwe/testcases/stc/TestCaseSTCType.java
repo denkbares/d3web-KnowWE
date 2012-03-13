@@ -23,6 +23,7 @@ import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.testcases.MatchingAttachmentsRenderer;
 import de.knowwe.testcases.ProviderRefreshRenderer;
 
 /**
@@ -49,6 +50,7 @@ public class TestCaseSTCType extends DefaultMarkupType {
 		super(MARKUP);
 		addSubtreeHandler(Priority.LOW, new TestCaseSTCSubtreeHandler());
 		this.setRenderer(new ProviderRefreshRenderer());
+		DefaultMarkupType.getContentType(this).setRenderer(new MatchingAttachmentsRenderer());
 	}
 
 }

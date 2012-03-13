@@ -188,6 +188,23 @@ public class DefaultMarkupType extends AbstractType {
 	}
 
 	/**
+	 * Returns the ContentType of a DefaultMarkupType
+	 * 
+	 * @created 13.03.2012
+	 * @param defaultMarkupType {@link DefaultMarkupType}
+	 * @return {@link ContentType} or null, if there is no {@link ContentType}
+	 *         as childtype
+	 */
+	public static ContentType getContentType(DefaultMarkupType defaultMarkupType) {
+		for (Type type : defaultMarkupType.getChildrenTypes()) {
+			if (type instanceof ContentType) {
+				return (ContentType) type;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Returns the content of the first annotation section of the specified
 	 * name. If the section is not of type "DefaultMarkup" an
 	 * IllegalArgumentException is thrown. If there is no annotation section

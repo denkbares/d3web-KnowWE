@@ -19,10 +19,8 @@
 package de.d3web.we.solutionpanel;
 
 import de.d3web.we.object.QuestionnaireReference;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.kdom.defaultMarkup.ContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
@@ -70,13 +68,8 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		super(MARKUP);
 		this.setIgnorePackageCompile(true);
 		this.setRenderer(new ShowSolutionsRenderer());
-		for (Type type : this.getChildrenTypes()) {
-			if (type instanceof ContentType) {
-				((ContentType) type).setRenderer(
-						new ReRenderSectionMarkerRenderer(
-								new ShowSolutionsContentRenderer()));
-			}
-		}
+		DefaultMarkupType.getContentType(this).setRenderer(
+				new ReRenderSectionMarkerRenderer(new ShowSolutionsContentRenderer()));
 	}
 
 	public static String getText(Section<ShowSolutionsType> sec) {

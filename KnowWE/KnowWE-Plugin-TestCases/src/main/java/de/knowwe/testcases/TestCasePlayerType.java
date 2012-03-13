@@ -19,8 +19,6 @@
 package de.knowwe.testcases;
 
 import de.d3web.we.knowledgebase.KnowledgeBaseType;
-import de.knowwe.core.kdom.Type;
-import de.knowwe.kdom.defaultMarkup.ContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
@@ -45,13 +43,8 @@ public class TestCasePlayerType extends DefaultMarkupType {
 	public TestCasePlayerType() {
 		super(MARKUP);
 		this.setIgnorePackageCompile(true);
-		for (Type type : this.getChildrenTypes()) {
-			if (type instanceof ContentType) {
-				((ContentType) type).setRenderer(
-						new ReRenderSectionMarkerRenderer(
-								new TestCasePlayerRenderer()));
-			}
-		}
+		DefaultMarkupType.getContentType(this).setRenderer(
+				new ReRenderSectionMarkerRenderer(new TestCasePlayerRenderer()));
 	}
 
 }

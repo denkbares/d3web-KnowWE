@@ -140,7 +140,12 @@ public class TestCasePlayerRenderer implements Renderer {
 
 	private void renderTestCase(Section<?> section, UserContext user, StringBuilder string, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, Session session, TestCase testCase, SessionDebugStatus status) {
 		string.append(KnowWEUtils.maskHTML("<span class='fillText'> from </span>"));
-		string.append(dateFormat.format(testCase.getStartDate()));
+		if (testCase.getStartDate().getTime() != 0) {
+			string.append(dateFormat.format(testCase.getStartDate()));
+		}
+		else {
+			string.append("---");
+		}
 		string.append(KnowWEUtils.maskHTML("<div class='toolSeparator'></div>"));
 
 		String additionalQuestions = getAdditionalQuestionsCookie(section, user);
@@ -204,14 +209,17 @@ public class TestCasePlayerRenderer implements Renderer {
 
 	private TableParameters getTableParameters(UserContext user, Collection<Date> chronology, String sizeKey, String fromKey) {
 		TableParameters tableParameters = new TableParameters();
-		String selectedSizeString = (String) user.getSession().getAttribute(
-				sizeKey);
-		if (selectedSizeString == null) {
-			selectedSizeString = "10";
+		String selectedSizeString = "10";
+		String fromString = "1";
+		for (Cookie cookie : user.getRequest().getCookies()) {
+			if (cookie.getName().equals(sizeKey)) {
+				selectedSizeString = cookie.getValue();
+			}
+			else if (cookie.getName().equals(fromKey)) {
+				fromString = cookie.getValue();
+			}
 		}
 		tableParameters.size = Integer.parseInt(selectedSizeString);
-		String fromString = (String) user.getSession().getAttribute(
-				fromKey);
 		tableParameters.from = 1;
 		if (fromString != null) {
 			try {
@@ -233,7 +241,8 @@ public class TestCasePlayerRenderer implements Renderer {
 			else {
 				tableParameters.from = 1;
 			}
-			user.getSession().setAttribute(fromKey, String.valueOf(tableParameters.from));
+			// user.getSession().setAttribute(fromKey,
+			// String.valueOf(tableParameters.from));
 			tableParameters.to = chronology.size();
 		}
 		return tableParameters;
@@ -436,8 +445,17 @@ public class TestCasePlayerRenderer implements Renderer {
 
 	private TerminologyObject renderObservationQuestionAdder(Section<?> section, UserContext user, String[] questionStrings, TerminologyManager manager, String questionString, TableModel tableModel, int column) {
 		String key = QUESTION_SELECTOR_KEY + "_" + section.getID();
-		String selectedQuestion = (String) user.getSession().getAttribute(
-				key);
+		String selectedQuestion = "";
+		for (Cookie cookie : user.getRequest().getCookies()) {
+			if (cookie.getName().equals(key)) {
+				try {
+					selectedQuestion = URLDecoder.decode(cookie.getValue(), "UTF-8");
+				}
+				catch (UnsupportedEncodingException e) {
+					selectedQuestion = cookie.getValue();
+				}
+			}
+		}
 		TerminologyObject object = null;
 		StringBuffer selectsb2 = new StringBuffer();
 		selectsb2.append("<form><select name=\"toAdd\" id=adder"

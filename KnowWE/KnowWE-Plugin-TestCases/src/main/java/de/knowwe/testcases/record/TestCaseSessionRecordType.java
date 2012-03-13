@@ -22,6 +22,7 @@ import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.testcases.MatchingAttachmentsRenderer;
 import de.knowwe.testcases.ProviderRefreshRenderer;
 
 /**
@@ -48,6 +49,7 @@ public class TestCaseSessionRecordType extends DefaultMarkupType {
 		super(MARKUP);
 		addSubtreeHandler(new TestCaseSessionRecordSubtreeHandler());
 		this.setRenderer(new ProviderRefreshRenderer());
+		DefaultMarkupType.getContentType(this).setRenderer(new MatchingAttachmentsRenderer());
 	}
 
 }

@@ -73,11 +73,9 @@ public class SessionRecordCaseProvider extends AttachmentTestCaseProvider {
 			}
 		}
 		catch (IOException e) {
-			messages.add(Messages.error("The following errror occured while parsing the file "
-					+ attachment.getFileName() + ":" + e));
-			return;
+			messages.add(Messages.error("File " + attachment.getFileName()
+					+ " does not contain correct xml markup."));
 		}
-
 	}
 
 }
