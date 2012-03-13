@@ -71,8 +71,8 @@ public class GoToPlayerToolProvider implements ToolProvider {
 						if (sectionInPackage.get() instanceof TestCasePlayerType) {
 							return new Tool[] { new DefaultTool(
 									null,
-									"Open in player",
-									"Switches to a player section and opens this testcase",
+									"Show in player",
+									"Switches to a test case player section and opens this testcase",
 									"TestCasePlayer.change('"
 											+ TestCasePlayerRenderer.generateSelectedTestCaseCookieKey(DefaultMarkupType.getContentSection(sectionInPackage))
 											+ "', '" + value + "');"
