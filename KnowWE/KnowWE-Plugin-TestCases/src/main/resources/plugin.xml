@@ -104,5 +104,16 @@
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="testcasetable.js" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="GoToPlayerToolProvider">
+		<parameter id="class" value="de.knowwe.testcases.GoToPlayerToolProvider" />
+		<parameter id="name" value="GoToPlayerToolProvider" />
+		<parameter id="description"
+			value="Switches to a player section and opens the testcase of the section." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="/TestCaseTableType" />
+	</extension>
     
 </plugin>

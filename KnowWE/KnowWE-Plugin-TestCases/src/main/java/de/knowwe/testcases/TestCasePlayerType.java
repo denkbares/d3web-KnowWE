@@ -18,7 +18,15 @@
  */
 package de.knowwe.testcases;
 
+import java.util.Collection;
+
 import de.d3web.we.knowledgebase.KnowledgeBaseType;
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
+import de.knowwe.core.report.Message;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
@@ -45,6 +53,19 @@ public class TestCasePlayerType extends DefaultMarkupType {
 		this.setIgnorePackageCompile(true);
 		DefaultMarkupType.getContentType(this).setRenderer(
 				new ReRenderSectionMarkerRenderer(new TestCasePlayerRenderer()));
+		this.addSubtreeHandler(new SubtreeHandler<TestCasePlayerType>() {
+
+			@Override
+			public Collection<Message> create(Article article, Section<TestCasePlayerType> section) {
+				PackageManager packageManager = Environment.getInstance().getPackageManager(
+						article.getWeb());
+				for (String uses : DefaultMarkupType.getPackages(section,
+						KnowledgeBaseType.ANNOTATION_COMPILE)) {
+					packageManager.addSectionToPackage(section, uses);
+				}
+				return null;
+			}
+		});
 	}
 
 }

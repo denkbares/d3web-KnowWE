@@ -111,6 +111,10 @@ public class TestCasePlayerRenderer implements Renderer {
 			Triple<TestCaseProvider, Section<?>, Article> selectedTriple = renderTestCaseSelection(
 					section,
 					user, string, providers);
+			String link = "<a href='"
+					+ KnowWEUtils.maskHTML(KnowWEUtils.getURLLink(selectedTriple.getB()))
+					+ "'><img src='KnowWEExtension/testcaseplayer/icon/testcaselink.png'></a>";
+			string.append(KnowWEUtils.maskHTML(link));
 			TestCaseProvider provider = selectedTriple.getA();
 			Session session = provider.getActualSession(user);
 
@@ -515,26 +519,7 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	private Triple<TestCaseProvider, Section<?>, Article> renderTestCaseSelection(Section<?> section, UserContext user, StringBuilder string, List<Triple<TestCaseProvider, Section<?>, Article>> providers) {
-		List<Section<TestCasePlayerType>> sections = Sections.findSuccessorsOfType(
-				section.getArticle().getSection(), TestCasePlayerType.class);
-		int i = 1;
-		Section<TestCasePlayerType> testCasePlayerTypeSection = Sections.findAncestorOfExactType(
-				section, TestCasePlayerType.class);
-		for (Section<TestCasePlayerType> s : new TreeSet<Section<TestCasePlayerType>>(sections)) {
-			if (testCasePlayerTypeSection.equals(s)) {
-				break;
-			}
-			else {
-				i++;
-			}
-		}
-		String key;
-		try {
-			key = SELECTOR_KEY + "_" + URLDecoder.decode(section.getTitle(), "UTF-8") + i;
-		}
-		catch (UnsupportedEncodingException e) {
-			key = SELECTOR_KEY + "_" + section.getTitle() + i;
-		}
+		String key = generateSelectedTestCaseCookieKey(section);
 		String selectedID = "";
 		for (Cookie cookie : user.getRequest().getCookies()) {
 			if (cookie.getName().equals(key)) {
@@ -574,6 +559,30 @@ public class TestCasePlayerRenderer implements Renderer {
 		selectsb.append("</select>");
 		string.append(KnowWEUtils.maskHTML(selectsb.toString()));
 		return selectedPair;
+	}
+
+	public static String generateSelectedTestCaseCookieKey(Section<?> section) {
+		int i = 1;
+		List<Section<TestCasePlayerType>> sections = Sections.findSuccessorsOfType(
+				section.getArticle().getSection(), TestCasePlayerType.class);
+		Section<TestCasePlayerType> testCasePlayerTypeSection = Sections.findAncestorOfExactType(
+				section, TestCasePlayerType.class);
+		for (Section<TestCasePlayerType> s : new TreeSet<Section<TestCasePlayerType>>(sections)) {
+			if (testCasePlayerTypeSection.equals(s)) {
+				break;
+			}
+			else {
+				i++;
+			}
+		}
+		String key;
+		try {
+			key = SELECTOR_KEY + "_" + URLDecoder.decode(section.getTitle(), "UTF-8") + i;
+		}
+		catch (UnsupportedEncodingException e) {
+			key = SELECTOR_KEY + "_" + section.getTitle() + i;
+		}
+		return key;
 	}
 
 	private String renderTableSizeSelector(Section<?> section, UserContext user, String key, int selectedSize, int maxSize) {
