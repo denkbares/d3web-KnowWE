@@ -43,28 +43,28 @@ TestCasePlayer.addCookie = function(cookievalue) {
            	KNOWWE.helper.observer.notify('update');
 }
 
-TestCasePlayer.reset = function(kbidvalue) {
-			var params = {
-        		action : 'PlayerResetAction',
-        		kbid : kbidvalue
-    		}
-            
-            var options = {
-                url : KNOWWE.core.util.getURL(params),
-                response : {
-                	action : 'none',
-                	fn : function(){
-			        	try {
-	                		KNOWWE.helper.observer.notify('update');
-			        	}
-			        	catch (e) { /*ignore*/ }
-			        	KNOWWE.core.util.updateProcessingState(-1);
-                	},
-                    onError : function () {
-			        	KNOWWE.core.util.updateProcessingState(-1);                    	
-                    }
-                }
-            }
-        	KNOWWE.core.util.updateProcessingState(1);
-            new _KA( options ).send();
-}
+//TestCasePlayer.reset = function(kbarticlevalue) {
+//			var params = {
+//        		action : 'SessionResetAction',
+//        		kbarticle : kbarticlevalue
+//    		}
+//            
+//            var options = {
+//                url : KNOWWE.core.util.getURL(params),
+//                response : {
+//                	action : 'none',
+//                	fn : function(){
+//			        	try {
+//	                		KNOWWE.helper.observer.notify('update');
+//			        	}
+//			        	catch (e) { /*ignore*/ }
+//			        	KNOWWE.core.util.updateProcessingState(-1);
+//                	},
+//                    onError : function () {
+//			        	KNOWWE.core.util.updateProcessingState(-1);                    	
+//                    }
+//                }
+//            }
+//        	KNOWWE.core.util.updateProcessingState(1);
+//            new _KA( options ).send();
+//}

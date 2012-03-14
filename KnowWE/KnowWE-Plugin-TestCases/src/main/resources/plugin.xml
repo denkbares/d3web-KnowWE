@@ -61,16 +61,6 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="PlayerResetAction">
-		<parameter id="class"
-			value="de.knowwe.testcases.PlayerResetAction" />
-		<parameter id="name" value="PlayerResetAction" />
-		<parameter id="description" value="Action that resets all sessions in the wiki." />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
 
     <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
         id="InstantEditToolProvider">

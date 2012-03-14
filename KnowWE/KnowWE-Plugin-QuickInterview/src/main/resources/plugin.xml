@@ -37,13 +37,4 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="QuickInterviewResetAction">
-		<parameter id="class"
-			value="de.d3web.we.quicki.QuickInterviewResetAction" />
-		<parameter id="name" value="QuickInterviewResetAction" />
-		<parameter id="description" value="Action QuickInterviewResetAction" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
 </plugin>

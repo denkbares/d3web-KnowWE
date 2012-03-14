@@ -197,7 +197,7 @@ public class TestCasePlayerRenderer implements Renderer {
 	private TerminologyObject renderHeader(Section<?> section, UserContext user, String kbArticle, SessionDebugStatus status, String additionalQuestions, String[] questionStrings, Collection<Question> usedQuestions, TerminologyManager manager, TableModel tableModel) {
 		tableModel.addCell(0, 0,
 				KnowWEUtils.maskHTML(renderToolbarButton("stop12.png",
-						"TestCasePlayer.reset('" + kbArticle + "')")), 1);
+						"KNOWWE.plugin.d3webbasic.actions.resetSession('" + kbArticle + "')")), 1);
 		tableModel.addCell(0, 1, "Time", "Time".length());
 		int column = 2;
 		for (Question q : usedQuestions) {

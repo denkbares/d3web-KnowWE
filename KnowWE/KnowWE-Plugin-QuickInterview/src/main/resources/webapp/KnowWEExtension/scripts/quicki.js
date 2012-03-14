@@ -180,7 +180,7 @@ KNOWWE.plugin.quicki = function(){
         	if ($('quickireset')) {
 	            _KE.add('click', _KS('#quickireset'),  
 	        		function(event) {
-	        			KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.quickIReset, event);
+	            		KNOWWE.plugin.d3webbasic.actions.resetSession();
 	        		});
         	}
             
@@ -741,43 +741,44 @@ KNOWWE.plugin.quicki = function(){
          *  Parameters:
          *  	event: the triggering event
          */
-        quickIReset : function ( event ) {
-        	
-        	var resetBttn = _KE.target(event); 	// get the clicked element 
-            var rel = eval("(" + resetBttn.getAttribute('rel') + ")");
-            mcanswervals = '';
-        	
-            // call reset action with necessary parameters
-        	var params = {
-                    action : 'QuickInterviewResetAction',
-                    KWikiWeb : rel.web,
-                    namespace : rel.ns,
-            }
-        	
-        	// insert the String/HTML returned by the QuickIntervewResetAction at
-        	// the div with id "auickinterview"
-        	var id = 'quickinterview';
-            var options = {
-        		url : KNOWWE.core.util.getURL( params ),
-        		response : {
-        			action : 'insert',
-                    ids : [ id ],					// to re-insert a freshly created interview
-                    fn : function(){
-			        	try {
-	                    	KNOWWE.plugin.quicki.initialize();
-                    		KNOWWE.core.rerendercontent.update(); //Clear new SolutionPanel
-			        	}
-			        	catch (e) { /*ignore*/ }
-			        	KNOWWE.core.util.updateProcessingState(-1);
-                    },
-                    onError : function () {
-			        	KNOWWE.core.util.updateProcessingState(-1);                    	
-                    }
-        		}
-        	}
-        	KNOWWE.core.util.updateProcessingState(1);
-            new _KA( options ).send();
-        },
+//        quickIReset : function ( event ) {
+//        	
+//        	var resetBttn = _KE.target(event); 	// get the clicked element 
+//            var rel = eval("(" + resetBttn.getAttribute('rel') + ")");
+//            mcanswervals = '';
+//        	
+//            // call reset action with necessary parameters
+//        	var params = {
+//                    action : 'SessionResetAction',
+//                    KWikiWeb : rel.web,
+//                    namespace : rel.ns,
+//            }
+//        	
+//        	// insert the String/HTML returned by the QuickIntervewResetAction at
+//        	// the div with id "auickinterview"
+//        	var id = 'quickinterview';
+//            var options = {
+//        		url : KNOWWE.core.util.getURL( params ),
+//        		response : {
+//        			action : 'insert',
+//                    ids : [ id ],					// to re-insert a freshly created interview
+//                    fn : function(){
+//			        	try {
+//	                    	KNOWWE.plugin.quicki.initialize();
+//                    		KNOWWE.core.rerendercontent.update(); //Clear new SolutionPanel
+//                    		KNOWWE.helper.observer.notify('update');
+//			        	}
+//			        	catch (e) { /*ignore*/ }
+//			        	KNOWWE.core.util.updateProcessingState(-1);
+//                    },
+//                    onError : function () {
+//			        	KNOWWE.core.util.updateProcessingState(-1);                    	
+//                    }
+//        		}
+//        	}
+//        	KNOWWE.core.util.updateProcessingState(1);
+//            new _KA( options ).send();
+//        },
         /**
          * Function: send
          * Stores the user input as single finding through an AJAX request.
