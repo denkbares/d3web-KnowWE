@@ -111,30 +111,33 @@ public class TestCasePlayerRenderer implements Renderer {
 			Triple<TestCaseProvider, Section<?>, Article> selectedTriple = renderTestCaseSelection(
 					section,
 					user, string, providers);
-			String link = "<a href='"
-					+ KnowWEUtils.maskHTML(KnowWEUtils.getURLLink(selectedTriple.getB()))
-					+ "'><img src='KnowWEExtension/testcaseplayer/icon/testcaselink.png'></a>";
-			string.append(KnowWEUtils.maskHTML(link));
-			TestCaseProvider provider = selectedTriple.getA();
-			Session session = provider.getActualSession(user);
+			if (selectedTriple != null) {
+				String link = "<a href='"
+						+ KnowWEUtils.maskHTML(KnowWEUtils.getURLLink(selectedTriple.getB()))
+						+ "'><img src='KnowWEExtension/testcaseplayer/icon/testcaselink.png'></a>";
+				string.append(KnowWEUtils.maskHTML(link));
+				TestCaseProvider provider = selectedTriple.getA();
+				Session session = provider.getActualSession(user);
 
-			if (session == null) {
-				DefaultMarkupRenderer.renderMessagesOfType(Type.WARNING,
-						Arrays.asList(Messages.warning("No knowledge base found.")), string);
-			}
-			else {
-				TestCase testCase = provider.getTestCase();
-				SessionDebugStatus status = provider.getDebugStatus(user);
-
-				if (status.getSession() != session) {
-					status.setSession(session);
-				}
-
-				if (testCase != null) {
-					renderTestCase(section, user, string, selectedTriple, session, testCase, status);
+				if (session == null) {
+					DefaultMarkupRenderer.renderMessagesOfType(Type.WARNING,
+							Arrays.asList(Messages.warning("No knowledge base found.")), string);
 				}
 				else {
-					string.append("\nNo TestCase contained!\n");
+					TestCase testCase = provider.getTestCase();
+					SessionDebugStatus status = provider.getDebugStatus(user);
+
+					if (status.getSession() != session) {
+						status.setSession(session);
+					}
+
+					if (testCase != null) {
+						renderTestCase(section, user, string, selectedTriple, session, testCase,
+								status);
+					}
+					else {
+						string.append("\nNo TestCase contained!\n");
+					}
 				}
 			}
 		}
@@ -533,7 +536,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		}
 		StringBuffer selectsb = new StringBuffer();
 		// if no pair is selected, use the first
-		Triple<TestCaseProvider, Section<?>, Article> selectedPair = providers.get(0);
+		Triple<TestCaseProvider, Section<?>, Article> selectedTriple = null;
 		selectsb.append("<span class=fillText>Case </span>"
 				+ "<select id=selector" + section.getID()
 				+ " onchange=\"TestCasePlayer.change('" + key
@@ -544,21 +547,34 @@ public class TestCasePlayerRenderer implements Renderer {
 			unique &= ids.add(triple.getA().getName());
 		}
 		for (Triple<TestCaseProvider, Section<?>, Article> triple : providers) {
-			String id = triple.getC().getTitle() + "/" + triple.getA().getName();
-			String displayedID = (unique) ? triple.getA().getName() : id;
-			if (id.equals(selectedID)) {
-				selectsb.append("<option value='" + id + "' selected='selected'>"
-						+ displayedID + "</option>");
-				selectedPair = triple;
-			}
-			else {
-				selectsb.append("<option value='" + id + "'>"
-						+ displayedID + "</option>");
+			if (triple.getA().getTestCase() != null) {
+				if (selectedTriple == null) {
+					selectedTriple = triple;
+				}
+				String id = triple.getC().getTitle() + "/" + triple.getA().getName();
+				String displayedID = (unique) ? triple.getA().getName() : id;
+				if (id.equals(selectedID)) {
+					selectsb.append("<option value='" + id + "' selected='selected'>"
+							+ displayedID + "</option>");
+					selectedTriple = triple;
+				}
+				else {
+					selectsb.append("<option value='" + id + "'>"
+							+ displayedID + "</option>");
+				}
 			}
 		}
 		selectsb.append("</select>");
-		string.append(KnowWEUtils.maskHTML(selectsb.toString()));
-		return selectedPair;
+		if (selectedTriple != null) {
+			string.append(KnowWEUtils.maskHTML(selectsb.toString()));
+		}
+		else {
+			DefaultMarkupRenderer.renderMessagesOfType(
+					Type.WARNING,
+					Arrays.asList(Messages.warning("There are testcase sections in the specified packages, but none of them generates a testcase.")),
+					string);
+		}
+		return selectedTriple;
 	}
 
 	public static String generateSelectedTestCaseCookieKey(Section<?> section) {
