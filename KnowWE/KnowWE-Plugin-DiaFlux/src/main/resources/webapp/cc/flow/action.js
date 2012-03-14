@@ -239,7 +239,7 @@ Action.prototype._checkSemantic = function() {
 		this.error = 'No formula has been entered yet.';
 	}
 	else if (clazz == KBInfo.Solution) {
-		if (this.valueString && this.valueString.search(/^[NP][1234567]$/i) >= 0) return;
+		if (this.isDecision() || (this.valueString && this.valueString.search(/^[NP][1234567]$/i) >= 0)) return;
 		this.error = '"'+this.valueString+'" is no valid value of a solution.';
 	}
 	else if (clazz == KBInfo.Question) {
@@ -315,6 +315,9 @@ Action.createPossibleActions = function(infoObject) {
 			result.push(new Action('KnOffice', Action._createExpression(name, 'N' + i, true)));
 			
 		}
+		
+		result.push('Use value');			
+		result.push(new Action('NOP', '"'+name.escapeQuote()+'"'));	
 
 	}
 	else if (infoObject.getClassInstance() == KBInfo.Flowchart) {
