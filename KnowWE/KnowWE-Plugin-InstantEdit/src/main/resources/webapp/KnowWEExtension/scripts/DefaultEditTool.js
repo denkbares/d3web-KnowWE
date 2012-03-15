@@ -10,7 +10,7 @@ KNOWWE.plugin.defaultEditTool = function() {
 	    	return "<textarea id = " + createTextAreaID(id) + " class='defaultEditTool' style='height: " + $(id).clientHeight + "px;'>"
 		    	+ _IE.getWikiText(id)
 		    	+ "</textarea>"
-		    	+ _IE.getSaveCancelDeleteButtons(id);iu
+		    	+ _IE.getSaveCancelDeleteButtons(id);
 	    },
 	    
 	    postProcessHTML : function(id) {
