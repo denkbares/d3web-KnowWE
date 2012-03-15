@@ -123,7 +123,7 @@ public class SplitUtility {
 		for (int i = 0; i < text.length(); i++) {
 
 			// toggle quote state
-			if (text.charAt(i) == '"') {
+			if (isUnEscapedQuote(text, i)) {
 				quoted = !quoted;
 			}
 			// when symbol discovered return quoted
