@@ -135,19 +135,6 @@ public class KnowWEUtils {
 		return varPath;
 	}
 
-	public static String getRenderedInput(String questionid, String question,
-			String namespace, String userName, String title, String text,
-			String type) {
-		question = URLEncoder.encode(question);
-		// text=URLEncoder.encode(text);
-
-		String rendering = "<span class=\"semLink\" "
-				+ "rel=\"{type: '" + type + "', objectID: '" + questionid
-				+ "', termName: '" + text + "', user:'" + userName + "'}\">"
-				+ text + "</span>";
-		return rendering;
-	}
-
 	public static String getSessionPath(UserContext context) {
 		String user = context.getParameter(Attributes.USER);
 		String web = context.getParameter(Attributes.WEB);
@@ -358,6 +345,7 @@ public class KnowWEUtils {
 		mask(builder, "{{{");
 		mask(builder, "}}}");
 		mask(builder, "%%");
+		mask(builder, "\\");
 	}
 
 	public static String maskNewline(String htmlContent) {
@@ -397,12 +385,12 @@ public class KnowWEUtils {
 
 	public static String trimQuotes(String text) {
 
+		if (text == null) return null;
+
 		String trimmed = text.trim();
 
 		if (trimmed.equals("\"")) return "";
 
-		// Heck, '"' starts AND ends with '"', but then this throws
-		// an StringIndexOutOfBoundsException because 1 > 0
 		if (trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
 			trimmed = trimmed.substring(1, trimmed.length() - 1).trim();
 			// unmask "

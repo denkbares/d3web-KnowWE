@@ -43,7 +43,7 @@ public class SplitUtility {
 		int startOfNewPart = 0;
 		for (int i = 0; i < text.length(); i++) {
 			// toggle quote state
-			if (text.charAt(i) == '"') {
+			if (isUnEscapedQuote(text, i)) {
 				quoted = !quoted;
 			}
 			if (quoted) {
@@ -67,22 +67,21 @@ public class SplitUtility {
 		return parts;
 	}
 
+	private static boolean isUnEscapedQuote(String text, int i) {
+		return text.charAt(i) == '"' && (i == 0 || text.charAt(i - 1) != '\\');
+	}
+
 	public static boolean containsUnquoted(String text, String symbol) {
 		return splitUnquoted(text + "1", symbol).size() > 1;
 	}
 
 	public static String unquote(String text) {
-		if (text == null) return null;
-		text = text.trim();
-		if (text.startsWith("\"") && text.endsWith("\"")) {
-			return text.substring(1, text.length() - 1).trim();
-		}
-		return text;
+		return KnowWEUtils.trimQuotes(text);
 	}
 
 	/**
 	 * scans the 'text' for the (first) occurrence of 'symbol' which is not
-	 * emboded in quotes ('"')
+	 * embedded in quotes ('"')
 	 * 
 	 * @param text
 	 * @param symbol
@@ -94,7 +93,7 @@ public class SplitUtility {
 		for (int i = 0; i < text.length(); i++) {
 
 			// toggle quote state
-			if (text.charAt(i) == '"') {
+			if (isUnEscapedQuote(text, i)) {
 				quoted = !quoted;
 			}
 			// ignore quoted symbols
@@ -151,7 +150,7 @@ public class SplitUtility {
 		for (int i = 0; i < text.length(); i++) {
 
 			// toggle quote state
-			if (text.charAt(i) == '"') {
+			if (isUnEscapedQuote(text, i)) {
 				quoted = !quoted;
 			}
 			// ignore quoted content
@@ -187,7 +186,7 @@ public class SplitUtility {
 				char current = text.charAt(i);
 
 				// toggle quote state
-				if (current == '"') {
+				if (isUnEscapedQuote(text, i)) {
 					quoted = !quoted;
 				}
 				// decrement closed brackets when open bracket is found
@@ -231,7 +230,7 @@ public class SplitUtility {
 			char current = text.charAt(i);
 
 			// toggle quote state
-			if (current == '"') {
+			if (isUnEscapedQuote(text, i)) {
 				quoted = !quoted;
 			}
 			// decrement closed brackets when open bracket is found

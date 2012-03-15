@@ -123,8 +123,9 @@ public final class Patterns {
 	/**
 	 * A pattern for all quoted strings " can be masked by \
 	 */
-	public static final String quoted = "(?:\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\")";
-
+	// public static final String quoted =
+	// "(?:\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\")";
+	public static final String quoted = "(?:\"[^\"\\\\]*(?:\\\\.(?:\\\"|[^\"\\\\])*)*\")";
 	/**
 	 * A Pattern for jspwiki links. The link text is captured in group 1, the
 	 * optional page reference in group 2. This pattern can handle masked '['
@@ -136,4 +137,10 @@ public final class Patterns {
 					"(?:\\|([^]]+))?" + // optional reference
 					"\\]"; // closing bracket
 
+	public static void main(String[] args) {
+		String test = "\"\\\"sasd\\\"\\\"df\\\"\"";
+		System.out.println(test);
+		System.out.println(KnowWEUtils.trimQuotes(test));
+		System.out.println(test.matches(quoted));
+	}
 }
