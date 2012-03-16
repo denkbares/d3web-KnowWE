@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -68,11 +70,15 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 			}
 		}
 		refresh();
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
+		for (AttachmentTestCaseProvider provider : getTestCaseProviders()) {
+			provider.updateTestCaseMessages(kb);
+		}
 	}
 
 	@Override
-	public Collection<TestCaseProvider> getTestCaseProviders() {
-		Collection<TestCaseProvider> result = new LinkedList<TestCaseProvider>();
+	public Collection<AttachmentTestCaseProvider> getTestCaseProviders() {
+		Collection<AttachmentTestCaseProvider> result = new LinkedList<AttachmentTestCaseProvider>();
 		for (Entry<String, List<AttachmentTestCaseProvider>> entry : regexMap.entrySet()) {
 			result.addAll(entry.getValue());
 		}
@@ -96,7 +102,7 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 			Collection<ConnectorAttachment> fittingAttachments = KnowWEUtils.getAttachments(
 					fileRegex, sectionArticle.getTitle());
 			if (fittingAttachments.size() == 0) {
-				messages.add(Messages.error("No file found for: " + fileRegex));
+				messages.add(Messages.error("No Attachment found for: " + fileRegex));
 				continue;
 			}
 			for (ConnectorAttachment attachment : fittingAttachments) {

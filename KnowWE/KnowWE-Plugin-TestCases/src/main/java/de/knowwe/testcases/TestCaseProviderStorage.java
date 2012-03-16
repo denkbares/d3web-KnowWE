@@ -32,7 +32,7 @@ public interface TestCaseProviderStorage {
 
 	public static final String KEY = "TestCaseProviderStorage";
 
-	Collection<TestCaseProvider> getTestCaseProviders();
+	Collection<? extends TestCaseProvider> getTestCaseProviders();
 
 	TestCaseProvider getTestCaseProvider(String name);
 

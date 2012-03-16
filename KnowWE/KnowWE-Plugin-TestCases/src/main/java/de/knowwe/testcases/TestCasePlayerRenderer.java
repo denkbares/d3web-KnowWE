@@ -160,7 +160,8 @@ public class TestCasePlayerRenderer implements Renderer {
 		if (additionalQuestions != null && !additionalQuestions.isEmpty()) {
 			questionStrings = additionalQuestions.split(QUESTIONS_SEPARATOR);
 		}
-		Collection<Question> usedQuestions = TestCaseUtils.getUsedQuestions(testCase);
+		Collection<Question> usedQuestions = TestCaseUtils.getUsedQuestions(testCase,
+				session.getKnowledgeBase());
 		Collection<Date> chronology = testCase.chronology();
 		String sizeKey = SIZE_SELECTOR_KEY + "_" + section.getID();
 		String fromKey = FROM_KEY + "_" + section.getID();
@@ -326,9 +327,9 @@ public class TestCasePlayerRenderer implements Renderer {
 		renderCheckResults(testCase, status, date, tableModel, row, column++);
 		// render observations
 		for (String s : questionStrings) {
-			Question question = manager.searchQuestion(s);
-			if (question != null) {
-				appendValueCell(status, question, date, tableModel, row, column);
+			TerminologyObject object = manager.search(s);
+			if (object != null) {
+				appendValueCell(status, object, date, tableModel, row, column);
 			}
 			column++;
 		}
@@ -352,7 +353,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				sb.append(s);
 			}
 			else {
-				sb.append("%%(color:silver;)" + s + "%%");
+				sb.append(KnowWEUtils.maskHTML("<span style='color:silver'>" + s + "</span>"));
 			}
 			String newQuestionsString = additionalQuestions;
 			newQuestionsString = newQuestionsString.replace(s, "");
@@ -420,7 +421,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		StringBuilder sb = new StringBuilder();
 		if (checkResults == null) {
 			boolean first = true;
-			for (Check c : testCase.getChecks(date)) {
+			for (Check c : testCase.getChecks(date, status.getSession().getKnowledgeBase())) {
 				if (!first) sb.append(KnowWEUtils.maskHTML("<br />"));
 				first = false;
 				sb.append(c.getCondition());
@@ -502,12 +503,15 @@ public class TestCasePlayerRenderer implements Renderer {
 			user.getSession().setAttribute(key, object.getName());
 		}
 		if (questionString != null && !questionString.isEmpty()) {
-			selectsb2.append("<input " +
+			selectsb2.append("<input "
+					+
 					(object == null ? "disabled='disabled'" : "")
 					+ " type=\"button\" value=\"+\" onclick=\"TestCasePlayer.addCookie(&quot;"
 					+ questionString
 					+ QUESTIONS_SEPARATOR
-					+ "&quot;+this.form.toAdd.options[toAdd.selectedIndex].value);\"></form>");
+					+ "&quot;+this.form.toAdd.options[toAdd.selectedIndex].value);TestCasePlayer.change('"
+					+ key
+					+ "','');\"></form>");
 		}
 		else {
 			selectsb2.append("<input "

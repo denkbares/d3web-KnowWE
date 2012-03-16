@@ -58,11 +58,13 @@ public class MatchingAttachmentsRenderer implements Renderer {
 				attachments.add(attachment.getFullName());
 			}
 		}
-		string.append("The following files match the specified regular expression(s): \n");
-		for (String s : attachments) {
-			string.append("# " + s + "\n");
+		if (attachments.size() > 0) {
+			string.append("The following attachments match the specified regular expression(s): \n");
+			for (String s : attachments) {
+				string.append("# " + s + "\n");
+			}
+			string.append("\n");
 		}
-		string.append("\n");
 	}
 
 }

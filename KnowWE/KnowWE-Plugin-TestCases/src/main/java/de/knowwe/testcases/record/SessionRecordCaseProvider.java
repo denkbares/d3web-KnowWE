@@ -44,7 +44,8 @@ public class SessionRecordCaseProvider extends AttachmentTestCaseProvider {
 	}
 
 	@Override
-	protected void parse() {
+	public void parse() {
+		testCase = null;
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
 		if (kb == null) {
 			messages.add(Messages.error("Kb not found."));
@@ -61,15 +62,9 @@ public class SessionRecordCaseProvider extends AttachmentTestCaseProvider {
 				return;
 			}
 			else {
-				SessionRecordWrapper sessionRecordWrapper = new SessionRecordWrapper(
-						sessionRecords.iterator().next(), kb);
-				Collection<String> checkResults = sessionRecordWrapper.check();
-				for (String s : checkResults) {
-					messages.add(Messages.error(s));
-				}
-				if (checkResults.isEmpty()) {
-					testCase = sessionRecordWrapper;
-				}
+				testCase = new SessionRecordWrapper(
+						sessionRecords.iterator().next());
+				updateTestCaseMessages(kb);
 			}
 		}
 		catch (IOException e) {

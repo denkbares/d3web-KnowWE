@@ -18,7 +18,6 @@
  */
 package de.knowwe.testcases;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,6 +47,8 @@ public abstract class AttachmentTestCaseProvider implements TestCaseProvider {
 	protected TestCase testCase;
 	protected ConnectorAttachment attachment;
 	protected List<Message> messages = new LinkedList<Message>();
+	private List<Message> testCaseMessages = new LinkedList<Message>();
+
 	protected final Article article;
 	private final Map<String, SessionDebugStatus> statusPerUser = new HashMap<String, SessionDebugStatus>();
 
@@ -79,11 +80,14 @@ public abstract class AttachmentTestCaseProvider implements TestCaseProvider {
 		return testCase;
 	}
 
-	protected abstract void parse();
+	public abstract void parse();
 
 	@Override
 	public List<Message> getMessages() {
-		return Collections.unmodifiableList(messages);
+		List<Message> result = new LinkedList<Message>();
+		result.addAll(messages);
+		result.addAll(testCaseMessages);
+		return result;
 	}
 
 	@Override
@@ -113,6 +117,15 @@ public abstract class AttachmentTestCaseProvider implements TestCaseProvider {
 	@Override
 	public String getName() {
 		return attachment.getFullName();
+	}
+
+	protected void updateTestCaseMessages(KnowledgeBase kb) {
+		testCaseMessages = new LinkedList<Message>();
+		if (testCase != null) {
+			for (String s : testCase.check(kb)) {
+				testCaseMessages.add(Messages.error(attachment.getFullName() + ": " + s));
+			}
+		}
 	}
 
 }

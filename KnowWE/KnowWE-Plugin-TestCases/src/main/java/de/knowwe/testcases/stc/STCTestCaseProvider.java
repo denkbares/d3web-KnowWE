@@ -46,15 +46,18 @@ public class STCTestCaseProvider extends AttachmentTestCaseProvider {
 	}
 
 	@Override
-	protected void parse() {
+	public void parse() {
+		testCase = null;
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
+		KnowledgeBase lazyKb = new LazyKnowledgeBase();
+
 		if (kb == null) {
 			messages.add(Messages.error("Kb not found."));
 			return;
 		}
 		try {
 			List<SequentialTestCase> cases = TestPersistence.getInstance().loadCases(
-					attachment.getInputStream(), kb);
+					attachment.getInputStream(), lazyKb);
 			if (cases == null) {
 				messages.add(Messages.error("No testcases found in : " + attachment.getFileName()));
 			}
@@ -67,6 +70,7 @@ public class STCTestCaseProvider extends AttachmentTestCaseProvider {
 			}
 			else {
 				testCase = new STCWrapper(cases.get(0));
+				updateTestCaseMessages(kb);
 			}
 		}
 		catch (XMLStreamException e) {

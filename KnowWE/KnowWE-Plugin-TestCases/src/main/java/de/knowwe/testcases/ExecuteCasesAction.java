@@ -82,7 +82,7 @@ public class ExecuteCasesAction extends AbstractAction {
 		for (Date date : testCase.chronology()) {
 			if (date.before(endDate) || date.equals(endDate)) {
 				TestCaseUtils.applyFindings(session, testCase, date);
-				for (Check c : testCase.getChecks(date)) {
+				for (Check c : testCase.getChecks(date, session.getKnowledgeBase())) {
 					status.addCheckResult(date, c, c.check(session));
 				}
 				status.finished(date);
@@ -94,7 +94,7 @@ public class ExecuteCasesAction extends AbstractAction {
 		for (Date date : testCase.chronology()) {
 			if (date.after(startDate) && (date.before(endDate) || date.equals(endDate))) {
 				TestCaseUtils.applyFindings(session, testCase, date);
-				for (Check c : testCase.getChecks(date)) {
+				for (Check c : testCase.getChecks(date, session.getKnowledgeBase())) {
 					status.addCheckResult(date, c, c.check(session));
 				}
 				status.finished(date);
