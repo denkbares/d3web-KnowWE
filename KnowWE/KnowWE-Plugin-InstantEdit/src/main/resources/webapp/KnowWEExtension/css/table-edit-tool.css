@@ -90,4 +90,5 @@ table.spreadsheet tr td.copied.selected.multiSelected > div {
 
 div.cellEdit {
 	position: absolute;
+	z-index: 10;
 }

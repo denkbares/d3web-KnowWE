@@ -328,13 +328,13 @@ Spreadsheet.prototype.editCell = function(row, col) {
 	this.uncopyCopiedCells();
 	this.selectCell(row,col);
 	var contentElement = this.getSelectedCell().find("div > a");
-	var pos = contentElement.position();
+	var pos = contentElement.parent().position();
 	var html = "";
 	html += "<div class='cellEdit' style='";
 	html += "left:"+(pos.left-3)+"px;top:"+(pos.top-3)+"px;";
 	html += "'>";
 	html += "<textarea style='";
-	html += "width:"+(contentElement.width()+6+14)+"px;height:"+(contentElement.height()+6)+"px;";
+	html += "width:"+(contentElement.width()+16)+"px;height:"+(contentElement.height()+6)+"px;";
 	html += "'>";
 	html += this.getCellText(row, col);
 	html += "</textarea>";
