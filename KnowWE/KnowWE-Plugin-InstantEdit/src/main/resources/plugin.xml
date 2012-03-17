@@ -129,7 +129,7 @@
 		<parameter id="name" value="Table" />
 		<parameter id="description" value="Type to match a wiki-style table." />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
+		<parameter id="priority" value="6" />
 		<parameter id="scope" value="root" />	
 	</extension>
 	
