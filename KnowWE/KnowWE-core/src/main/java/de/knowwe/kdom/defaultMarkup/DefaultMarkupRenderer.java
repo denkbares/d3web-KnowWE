@@ -348,13 +348,16 @@ public class DefaultMarkupRenderer implements Renderer {
 		String jsAction = tool.getJSAction();
 		boolean hasIcon = icon != null && !icon.trim().isEmpty();
 
-		return "<div class=\"" + tool.getClass().getSimpleName() + "\" >"
+		return "<div class=\""
+				+ tool.getClass().getSimpleName()
+				+ "\" >"
 				+ "<div class=\"markupMenuItem\">"
 				+ "<"
 				+ (jsAction == null ? "span" : "a")
 				+ " class=\"markupMenuItem\""
 				+ (jsAction != null
-						? " href=\"javascript:" + tool.getJSAction() + ";undefined;\""
+						? " href=\"javascript:" + tool.getJSAction()
+								+ ";hideToolsPopupMenu();undefined;\""
 						: "") +
 				" title=\"" + tool.getDescription() + "\">" +
 				(hasIcon ? ("<img src=\"" + icon + "\"></img>") : "") +
