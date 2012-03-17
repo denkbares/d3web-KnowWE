@@ -42,7 +42,7 @@
         <parameter id="scope" value="CoveringListMarkup" />
         <parameter id="scope" value="CoveringListSettingsMarkup" />
     </extension>
-    
+ 
     <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
         id="InstantEditSaveAction">
         <parameter id="class"
@@ -103,4 +103,34 @@
         <parameter id="priority" value="5" />
     </extension>
     
+    
+    <!--  Table Editor -->
+    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+        id="TableEditToolProvider">
+        <parameter id="class"
+            value="de.knowwe.instantedit.table.TableEditToolProvider" />
+        <parameter id="name" value="TableEditToolProvider" />
+        <parameter id="description"
+            value="Offers a tool for a spreadsheet-like table editor." />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="3" />
+        <parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
+        <parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
+        <parameter id="script" value="table-edit-tool.js" />
+        <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
+        <parameter id="css" value="table-edit-tool.css" />       
+        <parameter id="scope" value="Table" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="Table">
+		<parameter id="class"
+			value="de.knowwe.instantedit.table.Table" />
+		<parameter id="name" value="Table" />
+		<parameter id="description" value="Type to match a wiki-style table." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />	
+	</extension>
+	
 </plugin>

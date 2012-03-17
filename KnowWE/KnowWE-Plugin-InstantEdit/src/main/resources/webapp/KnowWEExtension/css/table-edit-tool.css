@@ -1,0 +1,75 @@
+.tablePopupParent {
+	display: inline-block;
+	position: relative;
+	padding-right: 42px;
+}
+
+.tablePopupIcon {
+	position: absolute;
+	top: 5px;
+	right: 11px;
+}
+
+.tablePopupIcon .toolsMenuDecorator {
+	height: 32px;
+	top:-19px;
+}
+
+table.spreadsheet {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: normal;
+	border-collapse: collapse;
+}
+
+table.spreadsheet tr td.header {
+	border: 1px solid #CCC;
+	background: #EEE;
+	text-align: center;
+	font-weight: bold;
+}
+
+table.spreadsheet tr td {
+	border: 1px solid #CCC;
+}
+
+table.spreadsheet tr td > div {
+	min-width: 40px;
+	min-height: 14px;
+	white-space: pre;
+}
+
+table.spreadsheet tr td > div > a, 
+table.spreadsheet tr td > div > a:hover, 
+table.spreadsheet tr td > div > a:active, 
+table.spreadsheet tr td > div > a:visited {
+	display: block;
+	text-decoration: none;
+	color: black;
+}
+
+table.spreadsheet tr td.selected > div, 
+table.spreadsheet tr td.selected.multiSelected > div {
+	margin: -1px;
+	border: 1px solid black;
+	background-color: transparent;
+	box-shadow: 0px 0px 7px #06C;
+}
+
+table.spreadsheet tr td.multiSelected > div {
+	background-color: #DDF;
+	margin: -1px;
+	border: 1px solid #DDF;
+}
+
+table.spreadsheet tr td.copied > div,
+table.spreadsheet tr td.copied.multiSelected > div {
+	margin: -1px;
+	border: 1px dotted black;
+}
+
+div.cellEdit {
+	position: absolute;
+}

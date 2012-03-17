@@ -327,12 +327,18 @@ KNOWWE.plugin.instantEdit = function() {
     		return table;
     	},
     	
-    	getSaveCancelDeleteButtons : function(id) {
-    		return _IE.getButtonsTable(new Array(
-    				_IE.getSaveButton(id), 
-    				_IE.getCancelButton(id), 
-    				"       ",  
-    				_IE.getDeleteSectionButton(id)));
+    	getSaveCancelDeleteButtons : function(id, additionalButtonArray) {
+    		var array = new Array(
+    				_IE.getSaveButton(id),
+    				_IE.getCancelButton(id),
+    				"       ",
+    				_IE.getDeleteSectionButton(id));
+
+    		if (additionalButtonArray) {
+    			array.push("       ");
+    			array = array.concat(additionalButtonArray);
+    		}
+    		return _IE.getButtonsTable(array);
     	},
         
         handleEditToolButtonVisibility : function() {
