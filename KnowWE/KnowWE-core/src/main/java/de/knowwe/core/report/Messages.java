@@ -126,10 +126,10 @@ public final class Messages {
 	 * Returns an unmodifiable {@link Map} with Collections of all
 	 * {@link Message}s of the given {@link de.knowwe.core.report.Message.Type}s
 	 * stored for the given {@link Section}. The Collections are mapped by the
-	 * title of the {@link Article} the {@link Message}s were stored for.
-	 * If {@link Message}s were stored without an argument {@link Article}
-	 * , the {@link Map} will contain this {@link Collection} with <tt>null</tt>
-	 * as the <tt>key</tt>.
+	 * title of the {@link Article} the {@link Message}s were stored for. If
+	 * {@link Message}s were stored without an argument {@link Article} , the
+	 * {@link Map} will contain this {@link Collection} with <tt>null</tt> as
+	 * the <tt>key</tt>.
 	 * 
 	 * @created 16.02.2012
 	 * @param section is the {@link Section} the {@link Message}s are stored for
@@ -137,20 +137,22 @@ public final class Messages {
 	 *        {@link Message} you want (set to <tt>null</tt> if you want all)
 	 */
 	public static Map<String, Collection<Message>> getMessages(Section<? extends Type> section, Message.Type... types) {
-		Map<String, Collection<Message>> allMsgsByTitle = new HashMap<String, Collection<Message>>();
-		Map<String, Object> msgsMapsByTitle = section.getSectionStore().getObjects(MESSAGE_KEY);
-		for (Entry<String, Object> entry : msgsMapsByTitle.entrySet()) {
+		Map<String, Collection<Message>> allMsgsOfTitle = new HashMap<String, Collection<Message>>();
+		Map<String, Object> msgsOfAllTypesBySourceByTitle = section.getSectionStore().getObjects(
+				MESSAGE_KEY);
+		for (Entry<String, Object> entry : msgsOfAllTypesBySourceByTitle.entrySet()) {
 			@SuppressWarnings("unchecked")
-			Map<String, Collection<Message>> msgMap = (Map<String, Collection<Message>>) entry.getValue();
-			Collection<Message> allMsgsOfTitle = new ArrayList<Message>();
-			for (Collection<Message> msgsOfSource : msgMap.values()) {
-				addAllMessagesOfTypes(msgsOfSource, allMsgsOfTitle, types);
+			Map<String, Collection<Message>> msgsOfAllTypesBySource = (Map<String, Collection<Message>>) entry.getValue();
+			Collection<Message> msgsOfGivenTypesOfAllSourcesOfTitle = new ArrayList<Message>();
+			for (Collection<Message> msgsOfAllTypesOfSource : msgsOfAllTypesBySource.values()) {
+				addAllMessagesOfTypes(msgsOfAllTypesOfSource, msgsOfGivenTypesOfAllSourcesOfTitle,
+						types);
 			}
-			if (!allMsgsOfTitle.isEmpty()) {
-				allMsgsByTitle.put(entry.getKey(), allMsgsOfTitle);
+			if (!msgsOfGivenTypesOfAllSourcesOfTitle.isEmpty()) {
+				allMsgsOfTitle.put(entry.getKey(), msgsOfGivenTypesOfAllSourcesOfTitle);
 			}
 		}
-		return Collections.unmodifiableMap(allMsgsByTitle);
+		return Collections.unmodifiableMap(allMsgsOfTitle);
 	}
 
 	/**
