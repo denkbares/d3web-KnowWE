@@ -18,6 +18,7 @@
  */
 package de.knowwe.testcases.table;
 
+import java.util.Arrays;
 import java.util.List;
 
 import de.knowwe.core.kdom.Type;
@@ -37,49 +38,17 @@ import de.knowwe.testcases.TimeStampType;
  */
 public class CellContent extends TableCellContent {
 
-	/**
-	 * 
-	 * @author Reinhard Hatko
-	 * @created 17.03.2011
-	 */
-	private final class TableColumnConstraint implements SectionFinderConstraint {
-
-		private final int column;
-
-		/**
-		 * Constrains the Sectionfinder to a single column.
-		 * 
-		 * @param column the column in which the sectionfinder is active
-		 *        (0-based)
-		 */
-		public TableColumnConstraint(int column) {
-			this.column = column;
-		}
-
-		@Override
-		public <T extends Type> boolean satisfiesConstraint(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
-			int column = TableUtils.getColumn(father);
-			return this.column == column;
-		}
-
-		@Override
-		public <T extends Type> void filterCorrectResults(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
-			// clear all results, if outside the column range
-			found.clear();
-		}
-	}
-
 	public CellContent() {
 		setRenderer(new TestcaseTableCellContentRenderer());
 
 		TimeStampType timeStampType = new TimeStampType();
 		timeStampType.setSectionFinder(new ConstraintSectionFinder(
 				timeStampType.getSectionFinder(),
-				new TableColumnConstraint(1)));
+				new TableNameConstraint("Time", Arrays.asList(0, 1))));
 
 		AnonymousType nameType = new AnonymousType("name");
 		nameType.setSectionFinder(new ConstraintSectionFinder(new AllTextSectionFinder(),
-				new TableColumnConstraint(0)));
+				new TableNameConstraint("Name", Arrays.asList(0))));
 
 		ValueType valueType = new ValueType();
 		valueType.setSectionFinder(new ConstraintSectionFinder(valueType.getSectionFinder()));
@@ -87,6 +56,40 @@ public class CellContent extends TableCellContent {
 		childrenTypes.add(nameType);
 		childrenTypes.add(timeStampType);
 		childrenTypes.add(valueType);
+
+	}
+
+	private static final class TableNameConstraint implements SectionFinderConstraint {
+
+		private final String name;
+		private final List<Integer> columns;
+
+		public TableNameConstraint(String name, List<Integer> columns) {
+			this.name = name;
+			this.columns = columns;
+		}
+
+		@Override
+		public <T extends Type> boolean satisfiesConstraint(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
+			int column = TableUtils.getColumn(father);
+			Section<? extends HeaderCell> headerCell = TestcaseTable.findHeaderCell(father);
+			String headerText = headerCell.getText().trim();
+			if (headerText.startsWith("||")) {
+				headerText = headerText.substring(2);
+			}
+			if (headerText.trim().equalsIgnoreCase(name) && columns.contains(column)) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+
+		@Override
+		public <T extends Type> void filterCorrectResults(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
+			// clear all results, if outside the column range
+			found.clear();
+		}
 
 	}
 

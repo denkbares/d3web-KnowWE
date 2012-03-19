@@ -32,8 +32,8 @@ import de.d3web.empiricaltesting.Finding;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.kdom.InvalidKDOMSchemaModificationOperation;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.InvalidKDOMSchemaModificationOperation;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -79,12 +79,14 @@ public class TestcaseTableLine extends TableLine {
 
 			Section<TimeStampType> timeStamp = Sections.findSuccessor(s, TimeStampType.class);
 
-			// returns 0 for illegal time stamp
-			// we could also return here, but then the Values are not checked
-			long time = TimeStampType.getTimeInMillis(timeStamp);
-
 			RatedTestCase testCase = new RatedTestCase();
-			testCase.setTimeStamp(new Date(time));
+			if (timeStamp != null) {
+				// returns 0 for illegal time stamp
+				// we could also return here, but then the Values are not
+				// checked
+				long time = TimeStampType.getTimeInMillis(timeStamp);
+				testCase.setTimeStamp(new Date(time));
+			}
 
 			List<Section<ValueType>> values = new LinkedList<Section<ValueType>>();
 			Sections.findSuccessorsOfType(s, ValueType.class, values);
@@ -105,14 +107,15 @@ public class TestcaseTableLine extends TableLine {
 
 				Section<QuestionReference> qRef = Sections.findSuccessor(headerCell,
 						QuestionReference.class);
-				String qName = qRef.getText();
+
+				String qName = qRef.getText().trim();
 				Question question = kb.getManager().searchQuestion(qName);
 
 				if (question == null) {
 					continue;
 				}
 
-				String valueString = valueSec.getText();
+				String valueString = valueSec.getText().trim();
 				// TODO unknown value
 				QuestionValue value;
 				try {

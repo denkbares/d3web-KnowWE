@@ -29,16 +29,15 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableCellContentRenderer;
-import de.knowwe.kdom.table.TableLine;
+import de.knowwe.kdom.table.TableUtils;
 
 /**
  * 
@@ -51,58 +50,63 @@ public class HeaderCellContent extends TableCellContent {
 	public HeaderCellContent() {
 		setRenderer(new TableCellContentRenderer(false));
 
-		QuestionReference qref = new QuestionReference();
-		qref.setRenderer(DefaultTextRenderer.getInstance());
-		qref.setSectionFinder(new SectionFinder() {
+		setSectionFinder(new SectionFinder() {
 
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-				Section<TableLine> line = Sections.findAncestorOfType(father, TableLine.class);
 
-				// first two columns are no QRefs, but name and time
-				if (line.getChildren().size() < 3) {
-					return null;
-				}
-				else {
-					String trim = text.trim();
-					int start = text.indexOf(trim);
-					if (trim.length() > 0) {
-						return SectionFinderResult.createSingleItemList(new SectionFinderResult(
+				String trim = text.trim();
+				int start = text.indexOf(trim);
+				if (trim.length() > 0) {
+					return SectionFinderResult.createSingleItemList(new SectionFinderResult(
 								start,
 								start + trim.length()));
-					}
-					else {
-						return null;
-					}
+				}
+				else {
+					return null;
 				}
 
 			}
 		});
 
-		qref.addSubtreeHandler(new SubtreeHandler<QuestionReference>() {
+		this.addSubtreeHandler(new SubtreeHandler<HeaderCellContent>() {
 
 			@Override
-			public Collection<Message> create(Article article, Section<QuestionReference> s) {
+			public Collection<Message> create(Article article, Section<HeaderCellContent> s) {
 
+				int column = TableUtils.getColumn(s);
+				String questionName = s.getText();
+				if ((column == 0 && questionName.equalsIgnoreCase("Name"))
+						|| ((column == 0 || column == 1) && questionName.equalsIgnoreCase("Time"))) {
+					return Messages.noMessage();
+				}
+				// otherwise it is a QuestionReference
+				s.setType(new HeaderQuestionReference());
 				KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
-
-				Question question = kb.getManager().searchQuestion(s.getText());
+				KnowWEUtils.getTerminologyManager(article).registerTermReference(s, Question.class,
+						questionName);
+				Question question = kb.getManager().searchQuestion(questionName);
 
 				if (question == null) {
 					List<Message> messages = new ArrayList<Message>();
 					// TODO message is not shown
-					messages.add(Messages.noSuchObjectError(s.getText()));
+					messages.add(Messages.noSuchObjectError(questionName));
 					return messages;
 				}
 				else
 
-				return null;
+				return Messages.noMessage();
 			}
 
 		});
 
-		childrenTypes.add(qref);
+	}
 
+	private static class HeaderQuestionReference extends QuestionReference {
+
+		private HeaderQuestionReference() {
+			setRenderer(new TableCellContentRenderer(false));
+		}
 	}
 
 }
