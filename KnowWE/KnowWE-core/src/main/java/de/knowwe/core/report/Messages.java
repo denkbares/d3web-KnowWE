@@ -339,10 +339,16 @@ public final class Messages {
 	}
 
 	public static Message noSuchObjectError(String name) {
+		if (name != null && name.isEmpty()) {
+			name = "empty String";
+		}
 		return Messages.noSuchObjectError("Object", name);
 	}
 
 	public static Message noSuchObjectError(String type, String name) {
+		if (name != null && name.isEmpty()) {
+			name = "empty String";
+		}
 		return Messages.error(type + " not found: '" + name + "'");
 	}
 
