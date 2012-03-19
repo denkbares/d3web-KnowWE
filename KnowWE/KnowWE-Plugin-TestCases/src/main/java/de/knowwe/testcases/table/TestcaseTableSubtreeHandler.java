@@ -28,11 +28,13 @@ import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.TestCase;
 import de.d3web.testcase.stc.STCWrapper;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.DefaultTestCaseStorage;
 import de.knowwe.testcases.SingleTestCaseProvider;
 import de.knowwe.testcases.TestCaseProvider;
@@ -79,14 +81,18 @@ public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
 				i++;
 			}
 		}
+		Section<? extends Type> defaultmarkupSection = s.getFather().getFather();
+		String name = DefaultMarkupType.getAnnotation(defaultmarkupSection, TestcaseTableType.NAME);
+		if (name == null) {
+			name = s.getArticle().getTitle() + "/TestCaseTable" + i;
+		}
 		SingleTestCaseProvider provider = new SingleTestCaseProvider(new STCWrapper(stc), article,
-				s.getArticle().getTitle() +
-						"/TestCaseTable" + i);
+				name);
 		// append Storage of the TestCaseProvider to the section of the default
 		// markup
 		List<TestCaseProvider> list = new LinkedList<TestCaseProvider>();
 		list.add(provider);
-		s.getFather().getFather().getSectionStore().storeObject(article,
+		defaultmarkupSection.getSectionStore().storeObject(article,
 				TestCaseProviderStorage.KEY,
 				new DefaultTestCaseStorage(list));
 

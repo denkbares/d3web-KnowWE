@@ -31,6 +31,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class TestcaseTableType extends DefaultMarkupType {
 
 	private static DefaultMarkup m = null;
+	public static String NAME = "NAME";
 
 	static {
 		m = new DefaultMarkup("TestcaseTable");
@@ -38,6 +39,7 @@ public class TestcaseTableType extends DefaultMarkupType {
 		m.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 		m.addAnnotationRenderer(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				StyleRenderer.ANNOTATION);
+		m.addAnnotation(NAME, false);
 
 	}
 
