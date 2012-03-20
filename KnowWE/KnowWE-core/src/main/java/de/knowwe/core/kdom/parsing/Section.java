@@ -398,23 +398,6 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		}
 	}
 
-	// /**
-	// * looks for the child at a specific offset.
-	// *
-	// * @param index
-	// * @return
-	// */
-	// public Section<? extends Type> getChildSectionAtPosition(int index) {
-	// for (Section<?> child : getChildren()) {
-	// if (child.getOffSetFromFatherText() <= index
-	// && index < child.getOffSetFromFatherText()
-	// + child.getOriginalText().length()) {
-	// return child;
-	// }
-	// }
-	// return null;
-	// }
-
 	protected int absolutePositionStartInArticle = -1;
 
 	public int getAbsolutePositionStartInArticle() {
