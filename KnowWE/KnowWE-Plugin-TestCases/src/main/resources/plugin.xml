@@ -80,7 +80,6 @@
 	    <parameter id="scope" value="TestCasePlayerType" />
 	    <parameter id="scope" value="TestCaseSTCType" />
 	    <parameter id="scope" value="TestCaseSessionRecordType" />
-	    <parameter id="scope" value="TestCaseTableType" />
     </extension>
     
     <extension plugin-id="KnowWEExtensionPoints" point-id="Type"
@@ -104,6 +103,24 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="/TestCaseTableType" />
+	</extension>
+	
+	<!--  Table Editor -->
+    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+        id="TableEditToolProvider">
+        <parameter id="class"
+            value="de.knowwe.instantedit.table.TableEditToolProvider" />
+        <parameter id="name" value="TableEditToolProvider" />
+        <parameter id="description"
+            value="Offers a tool for a spreadsheet-like table editor." />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="3" />
+        <parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
+        <parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
+        <parameter id="script" value="table-edit-tool.js" />
+        <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
+        <parameter id="css" value="table-edit-tool.css" />       
+        <parameter id="scope" value="TestCaseTable" />
 	</extension>
     
 </plugin>

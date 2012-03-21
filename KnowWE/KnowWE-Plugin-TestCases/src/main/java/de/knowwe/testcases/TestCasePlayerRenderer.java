@@ -56,6 +56,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
@@ -118,7 +119,11 @@ public class TestCasePlayerRenderer implements Renderer {
 				string.append(KnowWEUtils.maskHTML(link));
 				TestCaseProvider provider = selectedTriple.getA();
 				Session session = provider.getActualSession(user);
-
+				List<Message> messages = provider.getMessages();
+				if (messages.size() > 0) {
+					DefaultMarkupRenderer.renderMessagesOfType(Type.ERROR, messages,
+							string);
+				}
 				if (session == null) {
 					DefaultMarkupRenderer.renderMessagesOfType(Type.WARNING,
 							Arrays.asList(Messages.warning("No knowledge base found.")), string);
@@ -132,8 +137,17 @@ public class TestCasePlayerRenderer implements Renderer {
 					}
 
 					if (testCase != null) {
-						renderTestCase(section, user, string, selectedTriple, session, testCase,
-								status);
+						try {
+							renderTestCase(section, user, string, selectedTriple, session,
+									testCase,
+									status);
+						}
+						catch (IllegalArgumentException e) {
+							DefaultMarkupRenderer.renderMessagesOfType(
+									Type.ERROR,
+									Arrays.asList(Messages.error("Test case not compatible to TestCasePlayer: "
+											+ e.getMessage())), string);
+						}
 					}
 					else {
 						string.append("\nNo TestCase contained!\n");
@@ -319,7 +333,17 @@ public class TestCasePlayerRenderer implements Renderer {
 		for (Question q : usedQuestions) {
 			Finding finding = testCase.getFinding(date, q);
 			if (finding != null) {
-				tableModel.addCell(row, column, finding.getValue().toString(),
+				String findingString = finding.getValue().toString();
+				Collection<String> errors = new LinkedList<String>();
+				TestCaseUtils.checkValues(errors, q, finding.getValue());
+				if (!errors.isEmpty()) {
+					String errorstring = KnowWEUtils.maskHTML("<div style='background-color:"
+							+ StyleRenderer.CONDITION_FALSE + "'>");
+					errorstring += findingString;
+					errorstring += KnowWEUtils.maskHTML("</div>");
+					findingString = errorstring;
+				}
+				tableModel.addCell(row, column, findingString,
 						finding.getValue().toString().length());
 			}
 			column++;

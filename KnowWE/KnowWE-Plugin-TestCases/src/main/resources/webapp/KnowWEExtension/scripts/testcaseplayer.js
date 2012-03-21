@@ -22,7 +22,20 @@ TestCasePlayer.send = function(sessionid, casedate, name, topic) {
 			        	KNOWWE.core.util.updateProcessingState(-1);
                 	},
                     onError : function () {
-			        	KNOWWE.core.util.updateProcessingState(-1);                    	
+			        	KNOWWE.core.util.updateProcessingState(-1);
+			        	if (this.status == null) return;
+        	switch (this.status) {
+        	  case 0:
+        		// server not running, do nothing.
+        		break;
+        	  case 409:
+          	    alert("The section has changed since you " 
+          	    		+ "loaded this page. Please reload the page.");
+        	    break;
+        	  default:
+        	    alert("Error " + this.status + ". Please reload the page.");
+        	    break;
+        	}                	
                     }
                 }
             }

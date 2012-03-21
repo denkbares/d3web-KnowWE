@@ -55,6 +55,12 @@ public class ExecuteCasesAction extends AbstractAction {
 		}
 		@SuppressWarnings("unchecked")
 		Section<TestCasePlayerType> section = (Section<TestCasePlayerType>) Sections.getSection(sectionid);
+		if (section == null) {
+			context.sendError(409, "Section '" + sectionid
+					+ "' could not be found, possibly because somebody else"
+					+ " has edited the page.");
+			return;
+		}
 		Article article = Environment.getInstance().getArticle(context.getWeb(),
 				context.getTitle());
 		TestCaseProviderStorage providerStorage = (TestCaseProviderStorage) section.getSectionStore().getObject(

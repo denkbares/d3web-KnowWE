@@ -43,7 +43,7 @@ public class ValueType extends AbstractType {
 
 	public ValueType() {
 		setSectionFinder(new AllTextSectionFinder());
-
+		addChildType(new EmptyType());
 		addChildType(new UnchangedType());
 		Number number = new Number();
 		number.setRenderer(DefaultTextRenderer.getInstance());
@@ -62,9 +62,8 @@ public class ValueType extends AbstractType {
 						TestcaseTable.class);
 				List<Section<TableLine>> lines = new LinkedList<Section<TableLine>>();
 				Sections.findSuccessorsOfType(table, TableLine.class, lines);
-
 				if (lines.size() > 1) {
-					if (text.length() > 0) {
+					if (text.trim().length() > 0) {
 						return SectionFinderResult.createSingleItemList(new SectionFinderResult(0,
 								text.length()));
 					}// no text to match

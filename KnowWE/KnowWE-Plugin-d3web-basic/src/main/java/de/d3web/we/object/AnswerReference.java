@@ -142,7 +142,7 @@ public abstract class AnswerReference
 					NumericalInterval range = question.getInfoStore().getValue(
 							BasicProperties.QUESTION_NUM_RANGE);
 					try {
-						Double value = Double.parseDouble(section.get().getAnswerName(section));
+						Double value = Double.parseDouble(section.get().getAnswerName(section).trim());
 						if (range == null || range.contains(value)) {
 							return Messages.noMessage();
 						}

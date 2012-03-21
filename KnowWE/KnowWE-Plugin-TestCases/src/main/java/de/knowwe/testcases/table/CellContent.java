@@ -73,6 +73,9 @@ public class CellContent extends TableCellContent {
 		public <T extends Type> boolean satisfiesConstraint(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
 			int column = TableUtils.getColumn(father);
 			Section<? extends HeaderCell> headerCell = TestcaseTable.findHeaderCell(father);
+			if (headerCell == null) {
+				return false;
+			}
 			String headerText = headerCell.getText().trim();
 			if (headerText.startsWith("||")) {
 				headerText = headerText.substring(2);

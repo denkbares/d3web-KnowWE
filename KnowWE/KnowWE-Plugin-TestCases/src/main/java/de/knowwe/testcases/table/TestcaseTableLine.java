@@ -116,6 +116,9 @@ public class TestcaseTableLine extends TableLine {
 				}
 
 				String valueString = valueSec.getText().trim();
+				if (valueString.isEmpty()) {
+					continue;
+				}
 				// TODO unknown value
 				QuestionValue value;
 				try {

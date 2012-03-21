@@ -26,17 +26,6 @@
 		<parameter id="scope" value="/TestCaseType" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
-		id="TestCaseRunnerToolProvider">
-		<parameter id="class" value="de.d3web.we.testcase.toolprovider.TestCaseRunnerToolProvider" />
-		<parameter id="name" value="TestCaseRunnerToolProvider" />
-		<parameter id="description"
-			value="Offers download buttons to download visualizations of test suites as single files." />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="scope" value="/TestCaseRunnerType" />
-	</extension>
-
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="TestCaseType">
 		<parameter id="class" 
@@ -48,37 +37,6 @@
 		<parameter id="scope" value="root" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="TestCaseRunnerType">
-		<parameter id="class" 
-			value="de.d3web.we.testcase.kdom.TestCaseRunnerType" />
-		<parameter id="name" value="TestCaseRunnerType" />
-		<parameter id="description" value="Type TestCaseRunnerType" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="scope" value="root" />
-	</extension>
-
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="TestCaseRunAction">
-		<parameter id="class"
-			value="de.d3web.we.testcase.action.TestCaseRunAction" />
-		<parameter id="name" value="TestCaseRunAction" />
-		<parameter id="description" value="Action TestCaseRunAction" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="TestCaseDebugAction">
-		<parameter id="class"
-			value="de.d3web.we.testcase.action.TestCaseDebugAction" />
-		<parameter id="name" value="TestCaseDebugAction" />
-		<parameter id="description" value="Action TestCaseDebugAction" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="TestCaseServlet">
 		<parameter id="class" value="de.d3web.we.testcase.action.TestCaseServlet" />
