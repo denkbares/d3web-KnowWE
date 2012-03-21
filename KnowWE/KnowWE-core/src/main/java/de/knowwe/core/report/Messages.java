@@ -339,9 +339,6 @@ public final class Messages {
 	}
 
 	public static Message noSuchObjectError(String name) {
-		if (name != null && name.isEmpty()) {
-			name = "empty String";
-		}
 		return Messages.noSuchObjectError("Object", name);
 	}
 

@@ -87,8 +87,27 @@ function SpreadsheetModel(wikiText) {
 	this.cells = new Array();
 
 	if (wikiText) {
-		// normalize text returns
-		wikiText = ("\n"+wikiText+"\n").replace(/[\n\r]+/g, "\n").replace(/\~\|/g, "&#124;");
+		// prepend and append returns for easier expressions
+		wikiText = ("\n"+wikiText+"\n");
+		var firstTableLine = wikiText.search(/\n\r?\|/); // pipe is first char after return
+		if (firstTableLine > 1) {
+			this.textBeforeTable = wikiText.substring(1, firstTableLine);
+			wikiText = "\n" + wikiText.substring(firstTableLine);
+		}
+		var lastTableLineEnd = wikiText.search(/(\n\r?([^\r\|][^\n]*)?)*$/);
+		if (lastTableLineEnd >= 0 && lastTableLineEnd < wikiText.length - 2) {
+			this.textAfterTable = wikiText.substring(lastTableLineEnd + 1, wikiText.length - 1);
+			wikiText = wikiText.substring(0, lastTableLineEnd+1);
+		}
+		
+		// normalize returns, remove multiples
+		wikiText = wikiText.replace(/[\n\r]+/g, "\n"); 
+		// unescape multiple "~", odd, but like jsp-wiki does
+		while (wikiText.search(/\~\~\~/) != -1) {
+			wikiText = wikiText.replace(/\~\~\~/, "&#126;~~");
+		}
+		wikiText = wikiText.replace(/\~\~/g, "&#126;"); // unescape ~
+		wikiText = wikiText.replace(/\~\|/g, "&#124;"); // unescape |
 		var lines = wikiText.match(/\n\|[^\n]*/g);
 		var row = 0;
 		for (var i = 0; i<lines.length; i++) {
@@ -141,15 +160,21 @@ SpreadsheetModel.prototype.isHeader = function(row, col) {
 }
 
 SpreadsheetModel.prototype.toWikiMarkup = function() {
-	var wikiText = "";
+	var wikiText = this.textBeforeTable ? this.textBeforeTable : "";
 	for (var row = 0; row < this.height; row++) {
 		for (var col = 0; col < this.width; col++) {
+			var cellText = this.getCellText(row, col);
+			cellText = cellText.replace(/(\~+)/g, "~$1"); // escape escape character
+			cellText = cellText.replace(/\|/g, "~|"); // escape pipes
+			cellText = cellText.replace(/\r?\n\r?/g, "\\\\"); // escape line breaks
+			cellText = cellText.replace(/\\u00A0/g," "); // replace &nbsp; by normal space
 			wikiText += this.isHeader(row, col) ? "|| " : "|  ";
-			wikiText += this.getCellText(row, col).replace(/\|/g, "~|").replace(/\r?\n\r?/g, "\\\\");
+			wikiText += cellText;
 			wikiText += "\t";
 		}
 		wikiText += "\n";
 	}
+	if (this.textAfterTable) wikiText += this.textAfterTable;
 	return wikiText;
 
 }
@@ -170,6 +195,8 @@ Spreadsheet.prototype.setModel = function(model) {
 	this.element.html("");
 	this.createTable(model);
 	this.selectCell(0,0);
+	this.textBeforeTable = model.textBeforeTable; 
+	this.textAfterTable = model.textAfterTable;
 }
 
 Spreadsheet.prototype.getWikiMarkup = function() {
@@ -185,6 +212,8 @@ Spreadsheet.prototype.getModel = function() {
 			model.setCell(rowIndex, colIndex, text, isHeader);
 		});
 	});
+	model.textBeforeTable = this.textBeforeTable; 
+	model.textAfterTable = this.textAfterTable;
 	return model;
 }
 
@@ -206,7 +235,7 @@ Spreadsheet.prototype.createTable = function(model) {
 			html += "<";
 			html += isHeader ? "td class=header" : "td";
 			html += " id='"+this.getCellID(row, col)+"'><div><a href='#'>";
-			html += text ? text : " ";
+			html += text ? text : "&nbsp;";
 			html += "</a></div>";
 		}
 		html += "</tr>\n";
@@ -288,6 +317,11 @@ Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, comma
 		else if (row < this.size.rows-1) {
 			this.selectCell(row + 1, 0);
 		}
+		else {
+			// if we reached end, we will add an additional row
+			this.addRow(row + 1);
+			this.selectCell(row + 1, 0);
+		}
 	}
 	// backward tab
 	else if (keyCode == 9 && multiSelect) {
@@ -315,9 +349,13 @@ Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, comma
 		this.uncopyCopiedCells();
 	}	
 	// normal typing
-	else if (((keyCode >= 32 && keyCode <= 90) || (keyCode >= 186 && keyCode <= 222))  && !command) {
-		this.editCell(row,col);
-		return false; // return false to start edit
+	else if (!command && 
+			((keyCode >= 32 && keyCode <= 90) 
+			|| (keyCode >= 96 && keyCode <= 106)
+			|| (keyCode >= 186 && keyCode <= 222))) {
+		this.editCell(row, col);
+		// return false to use first key pressed as input
+		return false; 
 	}
 	// ignore all others
 	else { return false; }
@@ -380,7 +418,7 @@ Spreadsheet.prototype.editCell = function(row, col) {
 Spreadsheet.prototype.setCellText = function(row, col, text) {
 	var elem = this.getCell(row, col).find("div > a");
 	if (!text || text.match(/^\s+$/g)) {
-		elem.html(" "); // avoid cell collapsing
+		elem.html("&nbsp;"); // avoid cell collapsing
 	}
 	else {
 		elem.text(text);
@@ -568,6 +606,8 @@ Spreadsheet.prototype.addRow = function(row) {
 	// if we add last row, make sure that size increases
 	destModel.ensureSize(srcModel.height + 1, srcModel.width);
 	// set new Model and restore selection
+	destModel.textBeforeTable = srcModel.textBeforeTable; 
+	destModel.textAfterTable = srcModel.textAfterTable;
 	this.setModel(destModel);
 	this.selectCell(sr, sc);
 }
@@ -593,6 +633,8 @@ Spreadsheet.prototype.removeRow = function(row) {
 		destRow++;
 	}
 	// set new Model and restore selection
+	destModel.textBeforeTable = srcModel.textBeforeTable; 
+	destModel.textAfterTable = srcModel.textAfterTable;
 	this.setModel(destModel);
 	this.selectCell(sr, sc);
 }
@@ -619,6 +661,8 @@ Spreadsheet.prototype.addCol = function(col) {
 	// if we add last column, make sure that size increases
 	destModel.ensureSize(srcModel.height, srcModel.width + 1);
 	// set new Model and restore selection
+	destModel.textBeforeTable = srcModel.textBeforeTable; 
+	destModel.textAfterTable = srcModel.textAfterTable;
 	this.setModel(destModel);
 	this.selectCell(sr, sc);
 }
@@ -644,6 +688,8 @@ Spreadsheet.prototype.removeCol = function(col) {
 		destRow++;
 	}
 	// set new Model and restore selection
+	destModel.textBeforeTable = srcModel.textBeforeTable; 
+	destModel.textAfterTable = srcModel.textAfterTable;
 	this.setModel(destModel);
 	this.selectCell(sr, sc);
 }

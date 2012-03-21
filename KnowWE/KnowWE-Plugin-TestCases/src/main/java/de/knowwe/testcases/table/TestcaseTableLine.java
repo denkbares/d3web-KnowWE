@@ -105,20 +105,17 @@ public class TestcaseTableLine extends TableLine {
 					continue;
 				}
 
-				Section<QuestionReference> qRef = Sections.findSuccessor(headerCell,
-						QuestionReference.class);
+				Section<QuestionReference> qRef =
+						Sections.findSuccessor(headerCell, QuestionReference.class);
+				if (qRef == null) continue;
 
 				String qName = qRef.getText().trim();
 				Question question = kb.getManager().searchQuestion(qName);
-
-				if (question == null) {
-					continue;
-				}
+				if (question == null) continue;
 
 				String valueString = valueSec.getText().trim();
-				if (valueString.isEmpty()) {
-					continue;
-				}
+				if (valueString.isEmpty()) continue;
+
 				// TODO unknown value
 				QuestionValue value;
 				try {

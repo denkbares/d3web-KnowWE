@@ -45,7 +45,7 @@ public class TableEditToolProvider implements ToolProvider {
 				+ "', KNOWWE.plugin.tableEditTool);";
 		return new DefaultEditTool(
 				"KnowWEExtension/images/pencil.png",
-				"Edit",
+				"Edit Table",
 				"Edit this table in a spreadsheet-like editor",
 				jsAction);
 	}

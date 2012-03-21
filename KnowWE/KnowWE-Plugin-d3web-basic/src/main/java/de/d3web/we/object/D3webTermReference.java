@@ -48,4 +48,22 @@ public abstract class D3webTermReference<TermObject extends NamedObject> extends
 		return D3webUtils.getTermObjectDefaultImplementation(article, section);
 	}
 
+	/**
+	 * Null-save implementation of {@link #getTermObject(Article, Section)}.
+	 * Using a specific {@link D3webTermReference} subclass will automatically
+	 * result to the correctly casted {@link NamedObject} (e.g.
+	 * QuestionReference.getObject(...) -> Question).
+	 * 
+	 * @created 21.03.2012
+	 * @param <TermObject>
+	 * @param article the compiling article
+	 * @param section the referencing section
+	 * @return the NamedObject referenced by the section
+	 */
+	public static <TermObject extends NamedObject>
+			TermObject getObject(Article article, Section<? extends D3webTerm<TermObject>> section) {
+		if (section == null) return null;
+		return section.get().getTermObject(article, section);
+	}
+
 }

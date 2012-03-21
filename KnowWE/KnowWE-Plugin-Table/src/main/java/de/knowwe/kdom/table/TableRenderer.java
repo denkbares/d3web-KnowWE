@@ -47,12 +47,12 @@ public class TableRenderer implements Renderer {
 		buffi.append(getOpeningTag(sec));
 
 		if (sortable) {
-			buffi.append("<div class=\"sortable\" style='overflow:auto'>");
+			buffi.append("<div class=\"sortable\" style='overflow:auto;white-space:normal;'>");
 		}
 		else {
-			buffi.append("<div style='overflow:auto'>");
+			buffi.append("<div style='overflow:auto;white-space:normal;'>");
 		}
-		buffi.append("\n<table style='border:1px solid #999999;' id='" + sec.getID()
+		buffi.append("<table style='border:1px solid #999999;' id='" + sec.getID()
 				+ "'class='wikitable knowwetable' border='1'><tbody>");
 		buffi.append(getHeader());
 		buffi.append(b.toString());

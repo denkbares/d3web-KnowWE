@@ -20,10 +20,13 @@
 
 package de.knowwe.testcases.table;
 
+import java.util.List;
+
 import de.knowwe.core.kdom.InvalidKDOMSchemaModificationOperation;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.table.Table;
+import de.knowwe.kdom.table.TableCell;
 import de.knowwe.kdom.table.TableLine;
 
 /**
@@ -52,34 +55,32 @@ public class TestcaseTable extends Table {
 		return false;
 	}
 
-	/**
-	 * 
-	 * @created 22.01.2011
-	 * @param s
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static Section<? extends HeaderCell> findHeaderCell(Section<?> s) {
-		Section<TableLine> line = Sections.findAncestorOfType(s, TableLine.class);
-		int i = 0;
-		for (Section<?> section : line.getChildren()) {
+	public static int getColumnIndex(Section<?> section) {
 
-			if (s.equalsOrIsSuccessorOf(section)) {
-				break;
+		Section<TableLine> line = Sections.findAncestorOfType(section, TableLine.class);
+		List<Section<TableCell>> children = Sections.findChildrenOfType(line, TableCell.class);
+		int index = 0;
+		for (Section<?> child : children) {
+			if (section.equalsOrIsSuccessorOf(child)) {
+				return index;
 			}
-
-			i++;
+			index++;
 		}
+		throw new IllegalArgumentException("Specified section is not part of this table");
+	}
 
-		Section<Table> table = Sections.findAncestorOfType(line, Table.class);
+	public static Section<? extends HeaderCell> findHeaderCell(Section<?> s) {
+
+		Section<Table> table = Sections.findAncestorOfType(s, Table.class);
 		Section<TableLine> hLine = Sections.findSuccessor(table, TableLine.class);
+		List<Section<TableCell>> hCells = Sections.findChildrenOfType(hLine, TableCell.class);
 
-		if (i >= hLine.getChildren().size()) {
+		int index = getColumnIndex(s);
+		if (index >= hCells.size()) {
 			return null;
 		}
 
-		Section<? extends HeaderCell> hCell = (Section<? extends HeaderCell>) hLine.getChildren().get(
-				i);
-		return hCell;
+		Section<?> hCell = hCells.get(index);
+		return Sections.cast(hCell, HeaderCell.class);
 	}
 }

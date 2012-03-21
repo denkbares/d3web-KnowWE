@@ -69,7 +69,9 @@ public abstract class AnswerReference
 		if (s.get() instanceof AnswerReference) {
 			Section<AnswerReference> sec = ((Section<AnswerReference>) s);
 			Section<QuestionReference> questionSection = sec.get().getQuestionSection(sec);
-			String question = questionSection.get().getTermIdentifier(questionSection);
+			String question = questionSection != null
+					? questionSection.get().getTermIdentifier(questionSection)
+					: "";
 
 			return AnswerDefinition.createAnswerIdentifierForQuestion(getAnswerName(sec),
 					question);
@@ -92,12 +94,10 @@ public abstract class AnswerReference
 	public Choice getTermObject(Article article, Section<? extends D3webTerm<Choice>> s) {
 
 		if (s.get() instanceof AnswerReference) {
-			@SuppressWarnings("unchecked")
-			Section<AnswerReference> sec = (Section<AnswerReference>) s;
-
+			Section<AnswerReference> sec = Sections.cast(s, AnswerReference.class);
 			Section<QuestionReference> ref = sec.get().getQuestionSection(sec);
-			Question question = ref.get().getTermObject(article, ref);
 
+			Question question = QuestionReference.getObject(article, ref);
 			String answerName = sec.get().getAnswerName(sec);
 
 			if (question != null && question instanceof QuestionChoice) {
@@ -130,7 +130,7 @@ public abstract class AnswerReference
 			Section<AnswerReference> section = Sections.cast(simpleTermSection,
 					AnswerReference.class);
 			Section<QuestionReference> ref = section.get().getQuestionSection(section);
-			Question question = ref.get().getTermObject(article, ref);
+			Question question = QuestionReference.getObject(article, ref);
 			if (question != null) {
 				if (question instanceof QuestionYN) {
 					Choice choice = KnowledgeBaseUtils.findChoice((QuestionYN) question,

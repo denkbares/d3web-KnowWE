@@ -45,8 +45,8 @@ public class InstantEditToolProvider implements ToolProvider {
 				+ "', KNOWWE.plugin.defaultEditTool);";
 		return new DefaultEditTool(
 				"KnowWEExtension/images/pencil.png",
-				"Edit",
-				"Edit this section",
+				"Edit Markup",
+				"Edit this markup in text mode",
 				jsAction);
 	}
 }

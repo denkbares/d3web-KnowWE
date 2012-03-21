@@ -48,7 +48,7 @@ public class TableEditProvider implements ToolProvider {
 					+ "',new KNOWWE.table.edit.Editor(" + editprovider + "));";
 			return new Tool[] { new DefaultTool(
 					"KnowWEExtension/images/pencil.png",
-					"Edit table",
+					"Edit Table",
 					"Edit this table",
 					jsAction) };
 		}

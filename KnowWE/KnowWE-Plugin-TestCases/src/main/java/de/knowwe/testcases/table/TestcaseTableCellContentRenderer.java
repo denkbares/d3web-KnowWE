@@ -18,12 +18,8 @@
  */
 package de.knowwe.testcases.table;
 
-import java.util.Collection;
-import java.util.Map;
-
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
+import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.table.TableCellContentRenderer;
@@ -38,23 +34,9 @@ public class TestcaseTableCellContentRenderer extends TableCellContentRenderer {
 	@Override
 	public void render(Section<?> sec, UserContext user, StringBuilder string) {
 
-		Map<String, Collection<Message>> errors = Messages.getMessagesFromSubtree(sec,
-				Message.Type.ERROR);
-
-
-		StringBuilder html = new StringBuilder();
-		if (!errors.isEmpty()) {
-			html.append("<td class='error'>");
-		}
-		else {
-			html.append("<td>");
-		}
-
-		html.append(sec.getText());
-
-		html.append("</td>");
-		string.append(KnowWEUtils.maskHTML(html.toString()));
-
+		string.append(KnowWEUtils.maskHTML("<td>"));
+		DelegateRenderer.getInstance().render(sec, user, string);
+		string.append(KnowWEUtils.maskHTML("</td>"));
 	}
 
 }
