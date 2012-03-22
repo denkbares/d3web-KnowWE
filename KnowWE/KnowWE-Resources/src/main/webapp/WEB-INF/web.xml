@@ -32,7 +32,7 @@
     <!-- UploadReceptor Servlet -->
 	<servlet>
 		<servlet-name>UploadReceptorServlet</servlet-name>
-		<servlet-class>de.d3web.we.servlet.UploadReceptorServlet</servlet-class>
+		<servlet-class>de.knowwe.usersupport.servlet.UploadReceptorServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>UploadReceptorServlet</servlet-name>
