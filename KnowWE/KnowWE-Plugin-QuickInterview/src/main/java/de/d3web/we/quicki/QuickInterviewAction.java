@@ -70,6 +70,8 @@ public class QuickInterviewAction extends AbstractAction {
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
 		if (kb == null) return rb.getString("KnowWE.quicki.error");
 
+		// this will actualize the session if no user facts has been entered
+		SessionProvider.hasOutDatedSession(usercontext, kb);
 		Session session = SessionProvider.getSession(usercontext, kb);
 
 		return QuickInterviewRenderer.renderInterview(session, web, usercontext);

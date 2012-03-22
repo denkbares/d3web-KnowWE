@@ -127,17 +127,6 @@ public class QuickInterviewRenderer {
 	 * @return the plugin header HTML String
 	 */
 	private void getInterviewPluginHeader(StringBuffer html) {
-		/*
-		 * // assemble JS string String relAt = " rel=\"{" + "web:'" + web +
-		 * "', " + "ns:'" + namespace + "'" + "}\" ";
-		 * 
-		 * html.append("<h3>"); html.append("Quick Interview");
-		 * html.append("<div id='quickireset' class='reset pointer' title='" +
-		 * rb.getString("KnowWE.quicki.reset") + "'" + relAt + "></div>\n"); //
-		 * html.append("<div class=''></div>"); //
-		 * html.append("<div class='qanswerunknown'></div>");
-		 * html.append("</h3>\n");
-		 */
 		// assemble JS string
 		String relAt = "rel=\"{" + "web:'" + web + "', " + "ns:'" + namespace + "'" + "}\" ";
 		html.append("<div style='position:relative'>");
@@ -198,7 +187,7 @@ public class QuickInterviewRenderer {
 			}
 			else if (child instanceof Question) {
 				getQuestionsRecursively((Question) child, buffer,
-							processedTOs, depth, questionnaire);
+						processedTOs, depth, questionnaire);
 			}
 		}
 		buffer.append("</div>"); // close the grouping div
@@ -330,10 +319,10 @@ public class QuickInterviewRenderer {
 		String divText = getText(question);
 
 		sb.append("\n<div id='" + question.getName() + "' " +
-					"parent='" + parent.getName() + "' " +
-					"class='question' " +
-					"style='width: " + w + "px; display: inline-block;' >"
-					+ divText + "</div>");
+				"parent='" + parent.getName() + "' " +
+				"class='question' " +
+				"style='width: " + w + "px; display: inline-block;' >"
+				+ divText + "</div>");
 		// }
 		sb.append("</td><td>");
 
