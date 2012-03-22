@@ -631,6 +631,11 @@ public class JSPWikiConnector implements WikiConnector {
 		String path = (String) engine.getWikiProperties().get("var.basedir");
 		return path;
 	}
+	
+	public String getWikiProperty(String property) {
+		String path = (String) engine.getWikiProperties().get(property);
+		return path;
+	}
 
 	@Override
 	public String renderWikiSyntax(String pagedata, UserActionContext userContext) {
