@@ -541,7 +541,9 @@ public class TestCasePlayerRenderer implements Renderer {
 			selectsb2.append("<input "
 					+
 					(object == null ? "disabled='disabled'" : "")
-					+ "type=\"button\" value=\"+\" onclick=\"TestCasePlayer.addCookie(this.form.toAdd.options[toAdd.selectedIndex].value);\"></form>");
+					+ "type=\"button\" value=\"+\" onclick=\"TestCasePlayer.addCookie(this.form.toAdd.options[toAdd.selectedIndex].value);TestCasePlayer.change('"
+					+ key
+					+ "','');\"></form>");
 		}
 		if (foundone) {
 			tableModel.addCell(0, column, KnowWEUtils.maskHTML(selectsb2.toString()), max + 3);
