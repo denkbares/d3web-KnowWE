@@ -191,6 +191,7 @@ KNOWWE.plugin.d3webbasic.actions = function() {
 			}
 			new _KA(options).send();
 		},
+		
 		/**
 		 * Resets a d3web-Session using the SessionResetAction.
 		 * 
@@ -221,6 +222,50 @@ KNOWWE.plugin.d3webbasic.actions = function() {
 						KNOWWE.core.util.updateProcessingState(-1);
 					},
 					onError : function() {
+						KNOWWE.core.util.updateProcessingState(-1);
+					}
+				}
+			}
+			KNOWWE.core.util.updateProcessingState(1);
+			new _KA(options).send();
+		},
+		
+		/**
+		 * Checks whether a session is out dated, i. e. is running an old
+		 * knowledge base.
+		 * 
+		 * The parameter kbarticlevalue can be used to specify the article
+		 * compiling the knowledge base. If this parameter is not specified the
+		 * CheckForOutDatedSessionAction will use the title of the current page.
+		 * 
+		 * @author Sebastian Furth (denkbares GmbH)
+		 */
+		checkForOutDatedSession : function(kbarticlevalue) {
+			var params = {
+				action : 'CheckForOutDatedSessionAction'
+			}
+
+			if (kbarticlevalue) {
+				params['kbarticle'] = kbarticlevalue;
+			}
+
+			var options = {
+				url : KNOWWE.core.util.getURL(params),
+				response : {
+					action : 'none',
+					fn : function() {
+						KNOWWE.core.util.updateProcessingState(-1);
+					},
+					onError : function() {
+						// assemble reset link
+						var resetLink = "<a href='#' onclick='javascript:";
+						resetLink += "KNOWWE.plugin.d3webbasic.actions.resetSession(" + (kbarticlevalue ? kbarticlevalue : "null") + ");"
+						resetLink += "eval(KNOWWE.notification.getQuitActions());";
+						resetLink += "'>";
+						resetLink += "reset";
+						resetLink += "</a>";
+						// render notification
+						KNOWWE.notification.warn("", "You are running an out dated knowledge base. You should consider a " + resetLink +".");
 						KNOWWE.core.util.updateProcessingState(-1);
 					}
 				}

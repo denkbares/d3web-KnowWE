@@ -27,9 +27,12 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import de.d3web.core.inference.PSMethod.Type;
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.SessionFactory;
+import de.d3web.core.session.blackboard.Fact;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.user.UserContext;
 
@@ -111,6 +114,38 @@ public class SessionProvider {
 			return null;
 		}
 		return provider.getSession(base);
+	}
+
+	/**
+	 * Checks whether the current {@link Session} uses an out dated
+	 * {@link KnowledgeBase}. If the knowledge base is not up to date and no
+	 * user facts has been set the knowledge base will be replaced automatically
+	 * (the session will be reseted), i. e. the method returns false. If there
+	 * are already user facts in the session the method will return true.
+	 * 
+	 * @created 22.03.2012
+	 * @param context
+	 * @param base
+	 * @return
+	 */
+	public static boolean hasOutDatedSession(UserContext context, KnowledgeBase base) {
+		SessionProvider provider = getSessionProvider(context);
+		Session session = provider.getSession(base);
+		// != is correct (same object)
+		if (session.getKnowledgeBase() != base) {
+			// check if the session is empty
+			for (TerminologyObject t : session.getBlackboard().getValuedObjects()) {
+				Fact fact = session.getBlackboard().getValueFact(t);
+				if (fact.getPSMethod() == null || fact.getPSMethod().hasType(Type.source)) {
+					return true;
+				}
+			}
+			// session is empty -> reset
+			provider.removeSession(base);
+			provider.createSession(base);
+			return false;
+		}
+		return false;
 	}
 
 	public SessionProvider() {
