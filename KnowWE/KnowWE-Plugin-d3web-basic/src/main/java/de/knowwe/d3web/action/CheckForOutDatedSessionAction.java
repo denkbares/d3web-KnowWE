@@ -31,7 +31,8 @@ import de.knowwe.core.action.UserActionContext;
 /**
  * Checks whether the session for a specified knowledge base uses the latest
  * version of the knowledge base or not. In case that the session is out dated,
- * i. e. this action will write "true" to the output stream.
+ * an Expectation-Failed error will be sent to the client (just to use the
+ * onError mechanism...)
  * 
  * @author Sebastian Furth
  * @created 22.03.2012

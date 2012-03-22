@@ -97,7 +97,10 @@ public class SessionProvider {
 	 * {@link KnowledgeBase}. This methods tries to load an existing
 	 * SessionProvider object from the user's HTTPSession. If there is no
 	 * SessionProvider object, a new one will be created and stored in the
-	 * provided UserContext, i. e. HTTPSession.
+	 * provided UserContext, i. e. HTTPSession. If the knowledge base of an
+	 * existing session is not up to date and no user facts has been set, the
+	 * knowledge base will be replaced automatically (the session will be
+	 * reseted).
 	 * 
 	 * Please be aware that this method only works with an UserContext backed by
 	 * a real HTTPSession. Otherwise there is no place to store and retrieve the
@@ -118,10 +121,7 @@ public class SessionProvider {
 
 	/**
 	 * Checks whether the current {@link Session} uses an out dated
-	 * {@link KnowledgeBase}. If the knowledge base is not up to date and no
-	 * user facts has been set the knowledge base will be replaced automatically
-	 * (the session will be reseted), i. e. the method returns false. If there
-	 * are already user facts in the session the method will return true.
+	 * {@link KnowledgeBase}.
 	 * 
 	 * @created 22.03.2012
 	 * @param context
@@ -129,23 +129,8 @@ public class SessionProvider {
 	 * @return
 	 */
 	public static boolean hasOutDatedSession(UserContext context, KnowledgeBase base) {
-		SessionProvider provider = getSessionProvider(context);
-		Session session = provider.getSession(base);
-		// != is correct (same object)
-		if (session.getKnowledgeBase() != base) {
-			// check if the session is empty
-			for (TerminologyObject t : session.getBlackboard().getValuedObjects()) {
-				Fact fact = session.getBlackboard().getValueFact(t);
-				if (fact.getPSMethod() == null || fact.getPSMethod().hasType(Type.source)) {
-					return true;
-				}
-			}
-			// session is empty -> reset
-			provider.removeSession(base);
-			provider.createSession(base);
-			return false;
-		}
-		return false;
+		Session session = getSession(context, base);
+		return session.getKnowledgeBase() != base;
 	}
 
 	public SessionProvider() {
@@ -165,7 +150,9 @@ public class SessionProvider {
 	/**
 	 * Returns an existing {@link Session} for the provided knowledge base. If
 	 * there exists no session for this knowledge base this method will create
-	 * one.
+	 * one. If the knowledge base of an existing session is not up to date and
+	 * no user facts has been set, the knowledge base will be replaced
+	 * automatically (the session will be reseted).
 	 * 
 	 * @created 06.03.2012
 	 * @param kb the underlying knowledge base
@@ -174,6 +161,20 @@ public class SessionProvider {
 	public Session getSession(KnowledgeBase kb) {
 		Session session = sessions.get(kb.getId());
 		if (session == null) {
+			session = createSession(kb);
+		}
+		// check if existing session is out dated
+		if (session.getKnowledgeBase() != kb) {
+			// check if the session is empty
+			for (TerminologyObject t : session.getBlackboard().getValuedObjects()) {
+				Fact fact = session.getBlackboard().getValueFact(t);
+				if (fact.getPSMethod() == null || fact.getPSMethod().hasType(Type.source)) {
+					// session is not empty -> don't touch it!
+					return session;
+				}
+			}
+			// session is empty -> reset
+			removeSession(kb);
 			session = createSession(kb);
 		}
 		return session;
