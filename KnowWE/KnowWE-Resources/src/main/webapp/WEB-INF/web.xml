@@ -29,16 +29,6 @@
 		<url-pattern>/action/*</url-pattern>
 	</servlet-mapping>
 	
-    <!-- UploadReceptor Servlet -->
-	<servlet>
-		<servlet-name>UploadReceptorServlet</servlet-name>
-		<servlet-class>de.knowwe.usersupport.servlet.UploadReceptorServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>UploadReceptorServlet</servlet-name>
-		<url-pattern>/uploadreceptor</url-pattern>
-	</servlet-mapping>
-	
 	<!-- Set JSP pages to UTF-8 by default.  -->
 	<jsp-config>
     <jsp-property-group>
