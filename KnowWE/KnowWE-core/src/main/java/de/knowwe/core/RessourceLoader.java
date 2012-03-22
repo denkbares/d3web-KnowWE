@@ -108,6 +108,7 @@ public class RessourceLoader {
 		addFirst("KnowWE-helper.js", RessourceLoader.RESOURCE_SCRIPT);
 		addFirst("jQueryCompatibility.js", RessourceLoader.RESOURCE_SCRIPT);
 		addFirst("jQuery.js", RessourceLoader.RESOURCE_SCRIPT);
+		addFirst("KnowWE-notification.js", RessourceLoader.RESOURCE_SCRIPT);
 		addFirst("general.css", RessourceLoader.RESOURCE_STYLESHEET);
 	}
 
