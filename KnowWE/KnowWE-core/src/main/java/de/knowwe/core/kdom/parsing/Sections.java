@@ -504,6 +504,20 @@ public class Sections {
 	}
 
 	/**
+	 * Returns the section with the given id and casts it to the supplied class.
+	 * For more information see getSection(id) and cast(section, class);
+	 * 
+	 * @param id is the ID of the Section to be returned
+	 * @param typeClass the class to cast the generic section to
+	 * @return the Section for the given ID or null if no Section exists for
+	 *         this ID.
+	 */
+	public static <T extends Type> Section<T> getSection(String id, Class<T> typeClass) {
+		Section<?> section = getSection(id);
+		return cast(section, typeClass);
+	}
+
+	/**
 	 * @created 11.12.2011
 	 * @param web is the web in which the Section should be searched
 	 * @param title is the title of the article in which the Section should be
