@@ -20,7 +20,6 @@
 
 package de.knowwe.core.report;
 
-
 /**
  * 
  * Message tied to Sections in the KDOM.
@@ -60,6 +59,17 @@ public final class Message {
 	 */
 	public String getVerbalization() {
 		return this.text;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Message) {
+			if (((Message) obj).type.equals(this.type)
+					&& ((Message) obj).getVerbalization().equals(this.getVerbalization()))
+				return true;
+		}
+
+		return false;
 	}
 
 	@Override
