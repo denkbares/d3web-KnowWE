@@ -65,8 +65,9 @@ public final class Message {
 	public boolean equals(Object obj) {
 		if (obj instanceof Message) {
 			if (((Message) obj).type.equals(this.type)
-					&& ((Message) obj).getVerbalization().equals(this.getVerbalization()))
+					&& ((Message) obj).getVerbalization().equals(this.getVerbalization())) {
 				return true;
+			}
 		}
 
 		return false;
