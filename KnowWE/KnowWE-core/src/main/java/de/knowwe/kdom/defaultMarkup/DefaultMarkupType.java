@@ -21,7 +21,6 @@
 package de.knowwe.kdom.defaultMarkup;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -360,13 +359,12 @@ public class DefaultMarkupType extends AbstractType {
 	}
 
 	private static List<Section<? extends Type>> findAnnotationContentTypes(Section<? extends Type> section) {
-		List<Section<? extends Type>> children = new LinkedList<Section<? extends Type>>();
 		List<Class<? extends Type>> path = new ArrayList<Class<? extends Type>>(3);
 		path.add(section.get().getClass());
 		path.add(AnnotationType.class);
 		path.add(AnnotationContentType.class);
-		Sections.findSuccessorsWithTypePath(section,
-				path, 0, children);
+		List<Section<? extends Type>> children = Sections.findSuccessorsWithTypePath(section, path,
+				0);
 		return children;
 	}
 

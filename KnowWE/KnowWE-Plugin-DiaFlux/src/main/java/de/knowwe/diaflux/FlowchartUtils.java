@@ -163,7 +163,7 @@ public class FlowchartUtils {
 		Section<DiaFluxType> diaFluxType = Sections.findAncestorOfType(section, DiaFluxType.class);
 
 		// load JS and CSS only for first DiaFluxSection in page
-		return Sections.findSuccessorsOfType(section.getArticle().getSection(), DiaFluxType.class).indexOf(
+		return Sections.findSuccessorsOfType(section.getArticle().getRootSection(), DiaFluxType.class).indexOf(
 				diaFluxType) == 0;
 	}
 
@@ -226,7 +226,7 @@ public class FlowchartUtils {
 		for (Iterator<Article> iterator = manager.getArticleIterator(); iterator.hasNext();) {
 			Article article = iterator.next();
 			List<Section<FlowchartType>> matches = new LinkedList<Section<FlowchartType>>();
-			Sections.findSuccessorsOfType(article.getSection(), FlowchartType.class, matches);
+			Sections.findSuccessorsOfType(article.getRootSection(), FlowchartType.class, matches);
 			for (Section<FlowchartType> match : matches) {
 				String flowName = FlowchartType.getFlowchartName(match);
 				if (calledFlowName.equalsIgnoreCase(flowName)) {

@@ -20,11 +20,9 @@
 
 package de.knowwe.core.kdom;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,7 +62,7 @@ public class Article extends AbstractType {
 	/**
 	 * The section representing the root-node of the KDOM-tree
 	 */
-	private Section<Article> sec;
+	private Section<Article> rootSection;
 
 	private Article lastVersion;
 
@@ -159,7 +157,7 @@ public class Article extends AbstractType {
 		this.lastVersion = Environment.getInstance().getArticle(web, title);
 
 		boolean unchangedContent = lastVersion != null
-				&& lastVersion.getSection().getText().equals(text);
+				&& lastVersion.getRootSection().getText().equals(text);
 
 		this.reParse = unchangedContent && fullParse;
 
@@ -218,16 +216,16 @@ public class Article extends AbstractType {
 	private void sectionizeArticle(String text) {
 
 		// create Sections recursively
-		sec = Section.createSection(text, this, null);
-		sec.setArticle(this);
-		getRootType().getParser().parse(text, sec);
+		rootSection = Section.createSection(text, this, null);
+		rootSection.setArticle(this);
+		getRootType().getParser().parse(text, rootSection);
 
-		sec.setAbsolutePositionStartInArticle(0);
-		sec.clearReusedSuccessorRecursively();
+		rootSection.setAbsolutePositionStartInArticle(0);
+		rootSection.clearReusedSuccessorRecursively();
 
 		if (lastVersion != null) {
-			lastVersion.getSection().clearReusedOfOldSectionsRecursively(this);
-			unregisterSectionIDRecursively(lastVersion.getSection());
+			lastVersion.getRootSection().clearReusedOfOldSectionsRecursively(this);
+			unregisterSectionIDRecursively(lastVersion.getRootSection());
 		}
 
 		EventManager.getInstance().fireEvent(new KDOMCreatedEvent(this));
@@ -247,7 +245,7 @@ public class Article extends AbstractType {
 
 		// create
 		reviseIterator = new ReviseIterator();
-		reviseIterator.addRootSectionToRevise(sec);
+		reviseIterator.addRootSectionToRevise(rootSection);
 		create(Priority.PRECOMPILE_LOW);
 		EventManager.getInstance().fireEvent(new PreCompileFinishedEvent(this));
 	}
@@ -264,7 +262,7 @@ public class Article extends AbstractType {
 		// create
 		if (this.postPreDestroyFullParse && !this.secondBuild) {
 			reviseIterator = new ReviseIterator();
-			reviseIterator.addRootSectionToRevise(sec);
+			reviseIterator.addRootSectionToRevise(rootSection);
 		}
 		create(Priority.LOWEST);
 	}
@@ -334,12 +332,8 @@ public class Article extends AbstractType {
 		return this.getClass().getSimpleName();
 	}
 
-	public Section<Article> getSection() {
-		return sec;
-	}
-
-	public Section<? extends Type> findSmallestNodeContaining(int start, int end) {
-		return Sections.findSmallestNodeContaining(sec, start, end);
+	public Section<Article> getRootSection() {
+		return rootSection;
 	}
 
 	private final Map<String, Map<String, List<Section<?>>>> knownResults =
@@ -352,112 +346,26 @@ public class Article extends AbstractType {
 	 * 
 	 * @return Map of Sections, using their originalText as key.
 	 */
-	public Map<String, List<Section<?>>> findSectionsWithTypePathAsMap(List<Class<? extends Type>> path) {
+	public Map<String, List<Section<?>>> findSectionsWithTypePathCached(List<Class<? extends Type>> path) {
 		String stringPath = path.toString();
 		Map<String, List<Section<? extends Type>>> foundChildren = knownResults.get(stringPath);
 		if (foundChildren == null) {
-			foundChildren = new HashMap<String, List<Section<? extends Type>>>();
-			Sections.findSuccessorsWithTypePath(sec, path, 0, foundChildren);
+			foundChildren = Sections.findSuccessorsWithTypePathAsMap(rootSection, path, 0);
 			knownResults.put(stringPath, foundChildren);
 		}
 		return foundChildren;
 	}
 
-	/**
-	 * Finds all children with the same path of Types in the KDOM. The
-	 * <tt>path</tt> has to start with the Article and end with the ObjectType
-	 * of the Sections you are looking for.
-	 * 
-	 * @return List of Sections
-	 */
-	public List<Section<? extends Type>> findSectionsWithTypePathAsList(
-			LinkedList<Class<? extends Type>> path) {
-		List<Section<? extends Type>> foundChildren = new ArrayList<Section<? extends Type>>();
-		Sections.findSuccessorsWithTypePath(sec, path, 0, foundChildren);
-		return foundChildren;
-	}
-
 	public String collectTextsFromLeaves() {
 		StringBuilder buffi = new StringBuilder();
-		this.sec.collectTextsFromLeaves(buffi);
+		this.rootSection.collectTextsFromLeaves(buffi);
 		return buffi.toString();
 	}
 
-	public List<Section<? extends Type>> getAllNodesPreOrder() {
-		List<Section<? extends Type>> nodes = new ArrayList<Section<? extends Type>>();
-		Sections.getAllNodesPreOrder(sec, nodes);
-		return nodes;
-	}
-
-	public List<Section<? extends Type>> getAllNodesPostOrder() {
-		List<Section<? extends Type>> nodes = new LinkedList<Section<? extends Type>>();
-		Sections.getAllNodesPostOrder(sec, nodes);
-		return nodes;
-	}
-
-	// public List<Section<? extends Type>>
-	// getAllNodesToDestroyPostOrder() {
-	// List<Section<? extends Type>> nodes = new
-	// LinkedList<Section<? extends Type>>();
-	// if (lastVersion != null)
-	// lastVersion.sec.getAllNodesToDestroyPostOrder(this, nodes);
-	// return nodes;
-	// }
-
 	@Override
 	public String toString() {
-		return sec.getText();
+		return rootSection.getText();
 	}
-
-	// public Set<Section<Include>> getActiveIncludes() {
-	// return this.activeIncludes;
-	// }
-
-	// private void reviseLastArticleToDestroy() {
-	//
-	// List<Section<?>> nodes = getAllNodesToDestroyPostOrder();
-	// // Collections.reverse(nodes);
-	// TreeMap<Priority, List<Section<? extends Type>>> prioMap =
-	// Priority.createPrioritySortedList(nodes);
-	//
-	// for (Priority priority : prioMap.descendingKeySet()) {
-	// List<Section<? extends Type>> prioList =
-	// prioMap.get(priority);
-	// for (Section<? extends Type> section : prioList) {
-	// section.letSubtreeHandlersDestroy(this, priority);
-	// }
-	//
-	// }
-	// }
-	//
-	// private void reviseCurrentArticleToCreate() {
-	// TreeMap<Priority, List<Section<? extends Type>>> prioMap =
-	// Priority.createPrioritySortedList(getAllNodesPostOrder());
-	//
-	// for (Priority priority : prioMap.descendingKeySet()) {
-	// List<Section<? extends Type>> prioList =
-	// prioMap.get(priority);
-	// for (Section<? extends Type> section : prioList) {
-	// section.letSubtreeHandlersCreate(this, priority);
-	// }
-	// }
-	// sec.setReusedStateRecursively(title, true);
-	// }
-
-	// // This method is needed for the case that Sections get reused and are
-	// flagged
-	// // false from previous revising.
-	// private List<Section<? extends Type>>
-	// setAllHandlersToNotYetRevised
-	// (List<Section<? extends Type>> sectionList) {
-	// for (Section<? extends Type> section:sectionList) {
-	// for (SubtreeHandler<? extends Type> handler
-	// :section.get().getSubtreeHandlers()) {
-	// handler.setNotYetRevisedBy(title, true);
-	// }
-	// }
-	// return sectionList;
-	// }
 
 	public boolean isFullParse() {
 		return this.fullParse;
@@ -493,7 +401,7 @@ public class Article extends AbstractType {
 		if (!this.fullParse) {
 			if (this.postPreDestroy) this.postPreDestroyFullParse = true;
 			if (this.postDestroy) this.postDestroyFullParse = true;
-			sec.setNotCompiledByRecursively(title);
+			rootSection.setNotCompiledByRecursively(title);
 			EventManager.getInstance().fireEvent(new FullParseEvent(this));
 		}
 		classesCausingFullParse.add(source.isAnonymousClass()

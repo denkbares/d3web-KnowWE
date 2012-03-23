@@ -118,7 +118,7 @@ public class SearchEngine {
 				? Pattern.compile(queryString, optionsCode)
 				: Pattern.compile(queryString);
 
-		return search(p, article.getSection(), clazz);
+		return search(p, article.getRootSection(), clazz);
 
 	}
 

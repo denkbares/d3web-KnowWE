@@ -9,13 +9,12 @@ import java.util.TreeMap;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
-
 public class ReviseIterator {
 
 	private final List<Section<?>> rootSectionsList = new LinkedList<Section<?>>();
 
 	private TreeMap<Priority, LinkedList<Section<?>>> priorityMap;
-	
+
 	private List<Section<?>> allSectionsList;
 
 	private Priority currentPriority;
@@ -48,16 +47,14 @@ public class ReviseIterator {
 
 	public void addRootSectionToRevise(Section<?> rootSection) {
 		rootSectionsList.add(rootSection);
-		List<Section<?>> sections = new LinkedList<Section<?>>();
-		Sections.getAllNodesPostOrder(rootSection, sections);
+		List<Section<?>> sections = Sections.getSubtreePostOrder(rootSection);
 		addToPriorityMap(sections);
 	}
-	
+
 	public void reset() {
 		init();
 		for (Section<?> rootSection : rootSectionsList) {
-			List<Section<?>> sections = new LinkedList<Section<?>>();
-			Sections.getAllNodesPostOrder(rootSection, sections);
+			List<Section<?>> sections = Sections.getSubtreePostOrder(rootSection);
 			addToPriorityMap(sections);
 		}
 	}
@@ -69,7 +66,7 @@ public class ReviseIterator {
 				priorityMap.get(currentPriority).removeFirst(),
 				Priority.getPriority(currentPriority.intValue()));
 	}
-	
+
 	public boolean hasNext() {
 		if (currentPriority.compareTo(stop) < 0) return false;
 		if (!priorityMap.get(currentPriority).isEmpty()) return true;
@@ -97,7 +94,7 @@ public class ReviseIterator {
 	}
 
 	public class SectionPriorityTuple {
-		
+
 		private final Section<?> section;
 
 		private final Priority priority;
@@ -114,7 +111,7 @@ public class ReviseIterator {
 		public Priority getPriority() {
 			return priority;
 		}
-		
+
 	}
 
 }

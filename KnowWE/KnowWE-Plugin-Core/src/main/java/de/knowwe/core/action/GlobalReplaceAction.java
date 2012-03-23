@@ -90,13 +90,13 @@ public class GlobalReplaceAction extends AbstractAction {
 			if (findingsPerSection.containsKey(sec)) {
 				findingsPerSection.get(sec).add(
 						new WordBasedRenameFinding(start, 0, WordBasedRenameFinding.getContext(
-								start, sec, art.getSection().getText(), query.length()),
+								start, sec, art.getRootSection().getText(), query.length()),
 								sec));
 			}
 			else {
 				List<WordBasedRenameFinding> set = new ArrayList<WordBasedRenameFinding>();
 				set.add(new WordBasedRenameFinding(start, 0, WordBasedRenameFinding.getContext(
-						start, sec, art.getSection().getText(), query.length()), sec));
+						start, sec, art.getRootSection().getText(), query.length()), sec));
 				findingsPerSection.put(sec, set);
 			}
 		}

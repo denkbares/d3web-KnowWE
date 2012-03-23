@@ -610,7 +610,7 @@ public class TestCasePlayerRenderer implements Renderer {
 	public static String generateSelectedTestCaseCookieKey(Section<?> section) {
 		int i = 1;
 		List<Section<TestCasePlayerType>> sections = Sections.findSuccessorsOfType(
-				section.getArticle().getSection(), TestCasePlayerType.class);
+				section.getArticle().getRootSection(), TestCasePlayerType.class);
 		Section<TestCasePlayerType> testCasePlayerTypeSection = Sections.findAncestorOfExactType(
 				section, TestCasePlayerType.class);
 		for (Section<TestCasePlayerType> s : new TreeSet<Section<TestCasePlayerType>>(sections)) {

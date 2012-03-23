@@ -116,7 +116,7 @@ public class TaggingMangler implements SearchProvider {
 		
 		// Look for <tags> sections
 		List<Section<TagsContent>> tagsSections = new ArrayList<Section<TagsContent>>();
-		Sections.findSuccessorsOfType(article.getSection(), TagsContent.class, tagsSections);
+		Sections.findSuccessorsOfType(article.getRootSection(), TagsContent.class, tagsSections);
 		Set<String> tags = new HashSet<String>();
 		
 		if (tagsSections.size() > 0) {
@@ -143,7 +143,7 @@ public class TaggingMangler implements SearchProvider {
 			// remove all further <tags> sections
 			if (multiple) {
 				for (int i = 1; i < tagsSections.size(); i++) {
-					article.getSection().removeChild(tagsSections.get(i));
+					article.getRootSection().removeChild(tagsSections.get(i));
 				}
 			}
 			
@@ -170,7 +170,7 @@ public class TaggingMangler implements SearchProvider {
 		
 		// Look for <tags> sections
 		List<Section<TagsContent>> tagsSections = new ArrayList<Section<TagsContent>>();
-		Sections.findSuccessorsOfType(article.getSection(), TagsContent.class, tagsSections);
+		Sections.findSuccessorsOfType(article.getRootSection(), TagsContent.class, tagsSections);
 		Set<String> tags = new HashSet<String>();
 		
 		boolean multiple = tagsSections.size() > 1;
@@ -195,7 +195,7 @@ public class TaggingMangler implements SearchProvider {
 		
 		if (multiple) {
 			for (int i = 1; i < tagsSections.size(); i++) {
-				article.getSection().removeChild(tagsSections.get(i));
+				article.getRootSection().removeChild(tagsSections.get(i));
 			}
 		}
 		
@@ -346,7 +346,7 @@ public class TaggingMangler implements SearchProvider {
 		Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB,
 				topic);
 		ArrayList<Section<TagsContent>> tagslist = new ArrayList<Section<TagsContent>>();
-		Sections.findSuccessorsOfType(article.getSection(), TagsContent.class, tagslist);
+		Sections.findSuccessorsOfType(article.getRootSection(), TagsContent.class, tagslist);
 		boolean multiple = tagslist.size() > 1;
 		String output = processTagString(tag);
 
@@ -354,7 +354,7 @@ public class TaggingMangler implements SearchProvider {
 			Section<?> keep = tagslist.get(0);
 			if (multiple) {
 				for (int i = 1; i < tagslist.size(); i++) {
-					article.getSection().removeChild(tagslist.get(i));
+					article.getRootSection().removeChild(tagslist.get(i));
 				}
 			}
 			Map<String, String> nodesMap = new HashMap<String, String>();
@@ -376,7 +376,7 @@ public class TaggingMangler implements SearchProvider {
 		Article article = Environment.getInstance().getArticle(
 				Environment.DEFAULT_WEB, topic);
 		
-		Section<?> articleSection = article.getSection();
+		Section<?> articleSection = article.getRootSection();
 		String text = articleSection.getText();
 		
 		text += "%%tags\n" + processTagString(content) + "\n%";

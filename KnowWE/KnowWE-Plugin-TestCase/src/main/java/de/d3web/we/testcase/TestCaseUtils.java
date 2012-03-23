@@ -52,7 +52,7 @@ public class TestCaseUtils {
 		TestCase testSuite = null;
 
 		if (a != null) {
-			s = Sections.findSuccessor(a.getSection(), TestCaseContent.class);
+			s = Sections.findSuccessor(a.getRootSection(), TestCaseContent.class);
 		}
 		else {
 			Logger.getLogger(TestCaseUtils.class.getName()).warning(

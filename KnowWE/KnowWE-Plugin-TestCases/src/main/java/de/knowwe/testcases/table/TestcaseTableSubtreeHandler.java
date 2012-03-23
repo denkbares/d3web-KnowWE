@@ -71,7 +71,7 @@ public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
 		KnowWEUtils.storeObject(s.getArticle(), s, TestcaseTable.TESTCASE_KEY, testcase);
 
 		List<Section<TestcaseTable>> sections = Sections.findSuccessorsOfType(
-				s.getArticle().getSection(), TestcaseTable.class);
+				s.getArticle().getRootSection(), TestcaseTable.class);
 		int i = 1;
 		for (Section<TestcaseTable> section : new TreeSet<Section<TestcaseTable>>(sections)) {
 			if (section.equals(s)) {

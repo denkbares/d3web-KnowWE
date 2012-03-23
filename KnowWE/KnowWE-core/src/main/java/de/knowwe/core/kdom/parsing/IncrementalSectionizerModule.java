@@ -20,7 +20,6 @@
 
 package de.knowwe.core.kdom.parsing;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -70,8 +69,7 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 
 		// perform necessary actions on complete reused
 		// KDOM subtree
-		List<Section<?>> newNodes = new ArrayList<Section<?>>();
-		Sections.getAllNodesPreOrder(match, newNodes);
+		List<Section<?>> newNodes = Sections.getSubtreePreOrder(match);
 		for (Section<?> node : newNodes) {
 
 			List<Integer> lastPositions = node.calcPositionTil(match);
@@ -102,7 +100,7 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 		// find all Sections with same path of Types
 		// in the last version of the article
 		Map<String, List<Section<?>>> sectionsOfSameType = father.getArticle().getLastVersionOfArticle()
-				.findSectionsWithTypePathAsMap(path);
+				.findSectionsWithTypePathCached(path);
 
 		List<Section<?>> matches = sectionsOfSameType.remove(text);
 

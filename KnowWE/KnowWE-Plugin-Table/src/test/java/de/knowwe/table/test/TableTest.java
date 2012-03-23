@@ -78,14 +78,14 @@ public class TableTest extends TestCase {
 
 		// Testing setOriginalTextSetLeaf for a node being not a leaf
 		String newHeader = "| |Football|Soccer|Rugby\n";
-		article.getSection().setOriginalTextSetLeaf(headerSec.getID(), newHeader);
+		article.getRootSection().setOriginalTextSetLeaf(headerSec.getID(), newHeader);
 		Section<?> newHeaderSec = checkChildsTillLine(article, 0, false);
 		assertEquals("Childs of node weren't deleted", 0, newHeaderSec.getChildren().size());
 		assertEquals("New text wasn't saved to orgingialtext from" + headerSec.getID(),
 				newHeader, newHeaderSec.getText());
 
 		article = Environment.getInstance().getArticle(web, title);
-		assertEquals(content, article.getSection().getText());
+		assertEquals(content, article.getRootSection().getText());
 		assertNotSame(content, article.collectTextsFromLeaves());
 		checkChildsTillLine(article, 0, true); // isDirty = true?!
 
@@ -95,7 +95,7 @@ public class TableTest extends TestCase {
 		String[] newLine = new String[] {
 				"speed", "0", "+", "+" };
 		for (int i = 0; i < newLine.length; i++) {
-			article.getSection().setOriginalTextSetLeaf(
+			article.getRootSection().setOriginalTextSetLeaf(
 					lineSec.getChildren().get(i).getChildren().get(1).getID(),
 					newLine[i]);
 		}
@@ -105,14 +105,14 @@ public class TableTest extends TestCase {
 
 		// Saving changes to article
 		StringBuilder buddy = new StringBuilder();
-		article.getSection().collectTextsFromLeaves(buddy);
+		article.getRootSection().collectTextsFromLeaves(buddy);
 		assertEquals("Two methdos collectTextsFromLeaves() with different results",
 				article.collectTextsFromLeaves(), buddy.toString());
 		env.buildAndRegisterArticle(buddy.toString(), title,
 				web);
 		article = env.getArticle(web, title);
-		assertNotSame(content, article.getSection().getText());
-		assertTrue(article.getSection().getText().contains(newHeader));
+		assertNotSame(content, article.getRootSection().getText());
+		assertTrue(article.getRootSection().getText().contains(newHeader));
 
 		// Sectionizing test for new article
 		headerSec = checkChildsTillLine(article, 0, false);
@@ -132,7 +132,7 @@ public class TableTest extends TestCase {
 	 * @return Section of the 'line'th table-row
 	 */
 	private Section<?> checkChildsTillLine(Article article, int line, boolean dirtyCheck) {
-		Section<?> actSec = article.getSection();
+		Section<?> actSec = article.getRootSection();
 		assertEquals(actSec + ": ", 1, actSec.getChildren().size());
 		// RootType
 		actSec = getChild(actSec, 0, 2, dirtyCheck);

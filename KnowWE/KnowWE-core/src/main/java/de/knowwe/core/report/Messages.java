@@ -220,8 +220,7 @@ public final class Messages {
 	 */
 	public static Map<String, Collection<Message>> getMessagesFromSubtree(Section<?> section, Message.Type... types) {
 		Map<String, Collection<Message>> allMsgsByTitle = new HashMap<String, Collection<Message>>();
-		List<Section<?>> sections = new LinkedList<Section<?>>();
-		Sections.getAllNodesPreOrder(section, sections);
+		List<Section<?>> sections = Sections.getSubtreePreOrder(section);
 		for (Section<?> subTreeSection : sections) {
 			Map<String, Collection<Message>> messagesOfSectionByTitle =
 					getMessages(subTreeSection, types);
@@ -252,8 +251,7 @@ public final class Messages {
 			Message.Type... types) {
 
 		Collection<Message> msgsList = new ArrayList<Message>();
-		List<Section<?>> subtreeSections = new LinkedList<Section<?>>();
-		Sections.getAllNodesPreOrder(section, subtreeSections);
+		List<Section<?>> subtreeSections = Sections.getSubtreePreOrder(section);
 		for (Section<?> subtreeSection : subtreeSections) {
 			msgsList.addAll(getMessages(article, subtreeSection, types));
 		}

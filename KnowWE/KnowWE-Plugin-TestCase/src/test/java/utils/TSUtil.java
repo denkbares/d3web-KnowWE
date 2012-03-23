@@ -67,7 +67,7 @@ public class TSUtil {
 	}
 
 	public TestCase findTestSuite(Article article) {
-		Section<TestCaseContent> s = Sections.findSuccessor(article.getSection(),
+		Section<TestCaseContent> s = Sections.findSuccessor(article.getRootSection(),
 				TestCaseContent.class);
 		return (TestCase) s.getSectionStore().getObject(article, TestCaseType.TESTCASEKEY);
 	}

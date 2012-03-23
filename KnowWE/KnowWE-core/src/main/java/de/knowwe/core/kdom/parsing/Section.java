@@ -955,7 +955,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	public List<Integer> calcPositionInKDOM() {
-		return calcPositionTil(getArticle().getSection());
+		return calcPositionTil(getArticle().getRootSection());
 	}
 
 	public List<Integer> calcPositionTil(Section<?> end) {

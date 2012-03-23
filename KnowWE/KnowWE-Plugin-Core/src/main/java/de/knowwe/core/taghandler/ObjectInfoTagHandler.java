@@ -386,7 +386,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 					innerHTML.append("<pre style=\"margin:1em -1em;\">");
 					String textBefore = r.getAdditionalContext(-35).replaceAll(
 							"(\\{|\\})", "");
-					if (!article.getSection().getText().startsWith(textBefore)) innerHTML.append("...");
+					if (!article.getRootSection().getText().startsWith(textBefore)) innerHTML.append("...");
 					innerHTML.append(textBefore);
 					innerHTML.append("<a href=\"Wiki.jsp?page=");
 					innerHTML.append(article.getTitle());
@@ -399,7 +399,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 					String textAfter = r.getAdditionalContext(40).replaceAll("(\\{|\\})",
 							"");
 					innerHTML.append(textAfter);
-					if (!article.getSection().getText().endsWith(textAfter)) innerHTML.append("...");
+					if (!article.getRootSection().getText().endsWith(textAfter)) innerHTML.append("...");
 					innerHTML.append("</pre>");
 					innerHTML.append("</li>");
 				}

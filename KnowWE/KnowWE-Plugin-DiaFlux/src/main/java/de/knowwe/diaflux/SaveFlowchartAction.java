@@ -177,7 +177,7 @@ public class SaveFlowchartAction extends AbstractAction {
 		ArticleManager mgr = Environment.getInstance().getArticleManager(
 				context.getWeb());
 		Article article = mgr.getArticle(topic);
-		Section<Article> rootSection = article.getSection();
+		Section<Article> rootSection = article.getRootSection();
 
 		// append flowchart to root section and replace it
 		String newArticle = rootSection.getText() + "\r\n%%DiaFlux\r\n" + newText

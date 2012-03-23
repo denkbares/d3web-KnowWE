@@ -406,7 +406,7 @@ public class PackageManager implements EventListener {
 						if (packageToCompile.equals(article.getTitle())
 								|| (packageToCompile.equals(THIS))) {
 							sectionsOfPackage = new ArrayList<Section<?>>(1);
-							sectionsOfPackage.add(article.getSection());
+							sectionsOfPackage.add(article.getRootSection());
 						}
 						else {
 							sectionsOfPackage = getSectionsOfPackage(packageToCompile);
@@ -510,8 +510,7 @@ public class PackageManager implements EventListener {
 			for (Section<?> sectionOfPackage : sectionsOfPackageList) {
 				if (sectionOfPackage.getTitle().equals(article.getTitle())) {
 					Set<String> compilingArticles = getCompilingArticles(sectionOfPackage);
-					LinkedList<Section<?>> nodes = new LinkedList<Section<?>>();
-					Sections.getAllNodesPostOrder(sectionOfPackage, nodes);
+					List<Section<?>> nodes = Sections.getSubtreePostOrder(sectionOfPackage);
 					for (Section<?> node : nodes) {
 						if (node.get().isIgnoringPackageCompile()) continue;
 						for (String title : new LinkedList<String>(node.getReusedBySet())) {

@@ -114,7 +114,7 @@ public class CIUtilities {
 
 			List<Section<CIDashboardType>> list = new ArrayList<Section<CIDashboardType>>();
 
-			Sections.findSuccessorsOfType(article.getSection(), CIDashboardType.class, list);
+			Sections.findSuccessorsOfType(article.getRootSection(), CIDashboardType.class, list);
 
 			for (Section<CIDashboardType> sec : list) {
 				if (CIDashboardType.getAnnotation(sec, CIDashboardType.NAME_KEY).equals(
@@ -142,7 +142,7 @@ public class CIUtilities {
 				getArticle(dashboardArticleTitle);
 		// get all CIDashboardType-sections on this article
 		List<Section<CIDashboardType>> list = new ArrayList<Section<CIDashboardType>>();
-		Sections.findSuccessorsOfType(article.getSection(), CIDashboardType.class, list);
+		Sections.findSuccessorsOfType(article.getRootSection(), CIDashboardType.class, list);
 		// iterate all sections and look for the given dashboard ID
 		for (Section<CIDashboardType> sec : list) {
 			String otherDashName = CIDashboardType.getAnnotation(sec, CIDashboardType.NAME_KEY);

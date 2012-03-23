@@ -237,7 +237,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			Article supportArticle = Environment.getInstance()
 					.getArticle(Environment.DEFAULT_WEB, title);
 			if (supportArticle != null
-					&& supportArticle.getSection().getText().equals(
+					&& supportArticle.getRootSection().getText().equals(
 							content)) {
 
 				return renderKDOM(content, userContext, supportArticle);
@@ -268,7 +268,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 			String originalText = "";
 			if (article != null) {
-				originalText = article.getSection().getText();
+				originalText = article.getRootSection().getText();
 			}
 			String parse = userContext.getParameter("parse");
 			boolean fullParse = parse != null && (parse.equals("full") || parse.equals("true"));
@@ -294,7 +294,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				}
 
 				// RENDER PAGE
-				article.getRenderer().render(article.getSection(), userContext,
+				article.getRenderer().render(article.getRootSection(), userContext,
 						articleHTML);
 
 				// Render Post-PageAppendHandlers
@@ -367,7 +367,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			Article article) {
 		if (article != null) {
 			StringBuilder articleString = new StringBuilder();
-			article.getRenderer().render(article.getSection(), userContext,
+			article.getRenderer().render(article.getRootSection(), userContext,
 					articleString);
 			return articleString.toString();
 		}

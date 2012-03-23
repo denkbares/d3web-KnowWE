@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
@@ -29,33 +28,49 @@ public class Sections {
 	private static final Map<String, Section<?>> sectionMap = new HashMap<String, Section<?>>(2048);
 
 	/**
-	 * Returns all Nodes down to the given depth. Includes are not considered as
-	 * adding to depth. Therefore, subtrees below an Include get collected one
-	 * step deeper.
+	 * Returns all Nodes down to the given depth of the KDOM.
 	 */
-	public static void getAllNodesPreOrderToDepth(Section<?> section, List<Section<?>> nodes,
+	public static List<Section<?>> getThisAndSuccessorsPreOrderToDepth(Section<?> section, int depth) {
+		List<Section<?>> sections = new LinkedList<Section<?>>();
+		getSubtreePreOrderToDepth(section, sections, depth);
+		return sections;
+	}
+
+	private static void getSubtreePreOrderToDepth(Section<?> section, List<Section<?>> sections,
 			int depth) {
-		nodes.add(section);
+		sections.add(section);
 		if (depth > 0) {
 			for (Section<? extends Type> child : section.getChildren()) {
-				Sections.getAllNodesPreOrderToDepth(child, nodes,
+				Sections.getSubtreePreOrderToDepth(child, sections,
 						child.getTitle().equals(section.getTitle()) ? --depth : depth);
 			}
 		}
 	}
 
-	public static void getAllNodesPreOrder(Section<?> section, List<Section<?>> allNodes) {
-		allNodes.add(section);
+	public static List<Section<?>> getSubtreePreOrder(Section<?> section) {
+		List<Section<?>> sections = new LinkedList<Section<?>>();
+		getSubtreePreOrder(section, sections);
+		return sections;
+	}
+
+	private static void getSubtreePreOrder(Section<?> section, List<Section<?>> sections) {
+		sections.add(section);
 		for (Section<? extends Type> child : section.getChildren()) {
-			Sections.getAllNodesPreOrder(child, allNodes);
+			Sections.getSubtreePreOrder(child, sections);
 		}
 	}
 
-	public static void getAllNodesPostOrder(Section<?> section, List<Section<?>> allNodes) {
+	public static List<Section<?>> getSubtreePostOrder(Section<?> section) {
+		List<Section<?>> sections = new LinkedList<Section<?>>();
+		getSubtreePostOrder(section, sections);
+		return sections;
+	}
+
+	private static void getSubtreePostOrder(Section<?> section, List<Section<?>> sections) {
 		for (Section<? extends Type> child : section.getChildren()) {
-			Sections.getAllNodesPostOrder(child, allNodes);
+			Sections.getSubtreePostOrder(child, sections);
 		}
-		allNodes.add(section);
+		sections.add(section);
 	}
 
 	public static List<Section<? extends Type>> getChildrenExceptExactType(Section<?> section, Class<?>[] classes) {
@@ -70,13 +85,6 @@ public class Sections {
 			}
 		}
 		return list;
-	}
-
-	public static void getAllNodesPostOrder(Section<?> section, Set<Section<? extends Type>> nodes) {
-		for (Section<? extends Type> child : section.getChildren()) {
-			Sections.getAllNodesPostOrder(child, nodes);
-		}
-		nodes.add(section);
 	}
 
 	/**
@@ -358,7 +366,17 @@ public class Sections {
 	 * <tt>index</tt> to the index of the Type of this Section in the path. </p>
 	 * Stores found successors in a Map of Sections, using their texts as key.
 	 */
-	public static void findSuccessorsWithTypePath(
+	public static Map<String, List<Section<?>>> findSuccessorsWithTypePathAsMap(
+			Section<?> section,
+			List<Class<? extends Type>> path,
+			int index) {
+		Map<String, List<Section<?>>> found = new HashMap<String, List<Section<?>>>();
+		findSuccessorsWithTypePathAsMap(section, path, index, found);
+		return found;
+
+	}
+
+	private static void findSuccessorsWithTypePathAsMap(
 			Section<?> section,
 			List<Class<? extends Type>> path,
 			int index, Map<String, List<Section<?>>> found) {
@@ -366,7 +384,7 @@ public class Sections {
 		if (index < path.size() - 1
 				&& path.get(index).isAssignableFrom(section.get().getClass())) {
 			for (Section<? extends Type> sec : section.getChildren()) {
-				Sections.findSuccessorsWithTypePath(sec, path, index + 1, found);
+				Sections.findSuccessorsWithTypePathAsMap(sec, path, index + 1, found);
 			}
 		}
 		else if (index == path.size() - 1
@@ -388,10 +406,18 @@ public class Sections {
 	 * <tt>index</tt> to the index of the ObjectType of this Section in the
 	 * path. </p> Stores found successors in a List of Sections
 	 */
-	public static void findSuccessorsWithTypePath(Section<?> s,
+	public static List<Section<?>> findSuccessorsWithTypePath(Section<?> s,
+			List<Class<? extends Type>> path,
+			int index) {
+		List<Section<?>> found = new LinkedList<Section<?>>();
+		findSuccessorsWithTypePath(s, path, index, found);
+		return found;
+	}
+
+	private static void findSuccessorsWithTypePath(Section<?> s,
 			List<Class<? extends Type>> path,
 			int index,
-			List<Section<? extends Type>> found) {
+			List<Section<?>> found) {
 
 		if (index < path.size() - 1
 				&& path.get(index).isAssignableFrom(s.get().getClass())) {
@@ -498,7 +524,7 @@ public class Sections {
 	 * @return the Section on the given position in the KDOM, if it exists
 	 */
 	public static Section<?> getSection(Article article, List<Integer> positionInKDOM) {
-		Section<?> temp = article.getSection();
+		Section<?> temp = article.getRootSection();
 		for (Integer pos : positionInKDOM) {
 			if (temp.getChildren().size() <= pos) return null;
 			temp = temp.getChildren().get(pos);
@@ -529,7 +555,8 @@ public class Sections {
 
 		for (String title : idsByTitle.keySet()) {
 			Collection<String> idsForCurrentTitle = idsByTitle.get(title);
-			boolean errorsForThisTitle = handleErrors(title, idsForCurrentTitle, context, missingIDs,
+			boolean errorsForThisTitle = handleErrors(title, idsForCurrentTitle, context,
+					missingIDs,
 					forbiddenArticles);
 			if (!errorsForThisTitle) {
 				replaceSectionsForTitle(title, getSectionsMapForCurrentTitle(idsForCurrentTitle,
@@ -635,7 +662,7 @@ public class Sections {
 		StringBuffer newText = new StringBuffer();
 		Article article = Environment.getInstance().getArticle(context.getWeb(),
 				title);
-		collectTextAndReplaceNode(article.getSection(), sectionsMapForCurrentTitle, newText);
+		collectTextAndReplaceNode(article.getRootSection(), sectionsMapForCurrentTitle, newText);
 		return newText.toString();
 	}
 

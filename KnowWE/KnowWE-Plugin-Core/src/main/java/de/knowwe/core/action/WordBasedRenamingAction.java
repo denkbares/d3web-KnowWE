@@ -38,8 +38,6 @@ import com.google.gson.Gson;
 
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
-import de.knowwe.core.action.AbstractAction;
-import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -322,14 +320,15 @@ public class WordBasedRenamingAction extends AbstractAction {
 		while (iter.hasNext()) {
 			Article article = iter.next();
 			map.put(article, new HashSet<WordBasedRenameFinding>());
-			String text = article.getSection().getText();
+			String text = article.getRootSection().getText();
 
 			Matcher m = p.matcher(text);
 			while (m.find()) {
 				int start = m.start() + previousMatchLength;
 				int end = start + query.length();
 
-				Section sec = article.findSmallestNodeContaining(start, end);
+				Section<?> sec = Sections.findSmallestNodeContaining(article.getRootSection(),
+						start, end);
 				int startInSec = start - sec.getAbsolutePositionStartInArticle();
 
 				WordBasedRenameFinding f =

@@ -89,7 +89,7 @@ public class PropertiesTest extends TestCase {
 
 	public Section<PropertyDeclarationType> getPropertyDeclarationSection(String name) {
 		List<Section<PropertyObjectReference>> namendObjectRefs = Sections.findSuccessorsOfType(
-				getArticle().getSection(), PropertyObjectReference.class);
+				getArticle().getRootSection(), PropertyObjectReference.class);
 		for (Section<PropertyObjectReference> namedObjectRef : namendObjectRefs) {
 			NamedObject termObject = namedObjectRef.get().getTermObject(
 					namedObjectRef.getArticle(), namedObjectRef);
