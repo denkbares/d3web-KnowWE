@@ -47,6 +47,15 @@ public class SolutionPanelUtils {
 		// when no intlz is available
 		// content.append("* ");
 
+		String stateName = renderImage(solution, session, content);
+		// render span for better testability
+		content.append(mask("<span class=\"SOLUTION-" + stateName + "\">"));
+		content.append(solution.getName());
+		content.append(mask("</span>\n"));
+
+	}
+
+	public static String renderImage(Solution solution, Session session, StringBuilder content) {
 		Rating solutionRating = session.getBlackboard().getRating(solution);
 		String stateName = solutionRating.toString();
 
@@ -59,12 +68,7 @@ public class SolutionPanelUtils {
 		else if (solutionRating.hasState(State.EXCLUDED)) {
 			content.append(renderImage("KnowWEExtension/images/fsp_excluded.gif", "Excluded"));
 		}
-		// render span for better testability
-		content.append(mask("<span class=\"SOLUTION-" + stateName + "\">"));
-		content.append(solution.getName());
-		content.append(mask("</span>"));
-
-		content.append("\n");
+		return stateName;
 	}
 
 	private static String renderImage(String filename, String altText) {
