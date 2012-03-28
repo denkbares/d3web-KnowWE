@@ -19,9 +19,7 @@
 package de.knowwe.testcases;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
@@ -43,7 +41,6 @@ public class SingleTestCaseProvider implements TestCaseProvider {
 	private TestCase testCase;
 	private final Article article;
 	private final String name;
-	private final Map<String, SessionDebugStatus> statusPerUser = new HashMap<String, SessionDebugStatus>();
 
 	public SingleTestCaseProvider(TestCase testCase, Article article, String name) {
 		super();
@@ -66,10 +63,11 @@ public class SingleTestCaseProvider implements TestCaseProvider {
 
 	@Override
 	public SessionDebugStatus getDebugStatus(UserContext user) {
-		SessionDebugStatus status = statusPerUser.get(user.getSession().getId());
+		String key = "SessionDebugStatus_" + article.getTitle() + "/" + getName();
+		SessionDebugStatus status = (SessionDebugStatus) user.getSession().getAttribute(key);
 		if (status == null) {
 			status = new SessionDebugStatus(getActualSession(user));
-			statusPerUser.put(user.getSession().getId(), status);
+			user.getSession().setAttribute(key, status);
 		}
 		return status;
 	}

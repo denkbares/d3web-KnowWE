@@ -18,10 +18,8 @@
  */
 package de.knowwe.testcases;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
@@ -50,7 +48,6 @@ public abstract class AttachmentTestCaseProvider implements TestCaseProvider {
 	private List<Message> testCaseMessages = new LinkedList<Message>();
 
 	protected final Article article;
-	private final Map<String, SessionDebugStatus> statusPerUser = new HashMap<String, SessionDebugStatus>();
 
 	public AttachmentTestCaseProvider(Article article, ConnectorAttachment attachment) {
 		super();
@@ -66,7 +63,6 @@ public abstract class AttachmentTestCaseProvider implements TestCaseProvider {
 				attachment.getFileName());
 		if (actualAttachment == null) {
 			messages.clear();
-			statusPerUser.clear();
 			messages.add(Messages.error("File " + attachment.getFileName()
 					+ " cannot be found attached to this article.\n"));
 			return null;
@@ -74,7 +70,6 @@ public abstract class AttachmentTestCaseProvider implements TestCaseProvider {
 		if (attachment == null || !attachment.getDate().equals(actualAttachment.getDate())) {
 			attachment = actualAttachment;
 			messages.clear();
-			statusPerUser.clear();
 			parse();
 		}
 		return testCase;
@@ -106,10 +101,11 @@ public abstract class AttachmentTestCaseProvider implements TestCaseProvider {
 
 	@Override
 	public SessionDebugStatus getDebugStatus(UserContext user) {
-		SessionDebugStatus status = statusPerUser.get(user.getSession().getId());
+		String key = "SessionDebugStatus_" + article.getTitle() + "/" + getName();
+		SessionDebugStatus status = (SessionDebugStatus) user.getSession().getAttribute(key);
 		if (status == null) {
 			status = new SessionDebugStatus(getActualSession(user));
-			statusPerUser.put(user.getSession().getId(), status);
+			user.getSession().setAttribute(key, status);
 		}
 		return status;
 	}
