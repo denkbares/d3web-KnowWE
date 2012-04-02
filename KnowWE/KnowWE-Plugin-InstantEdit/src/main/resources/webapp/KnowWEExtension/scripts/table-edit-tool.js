@@ -367,11 +367,12 @@ Spreadsheet.prototype.editCell = function(row, col) {
 	this.selectCell(row,col);
 	var contentElement = this.getSelectedCell().find("div > a");
 	var pos = contentElement.parent().position();
+	var textAreaID = "cellEditArea_"+this.elementID;
 	var html = "";
 	html += "<div class='cellEdit' style='";
 	html += "left:"+(pos.left-3)+"px;top:"+(pos.top-3)+"px;";
 	html += "'>";
-	html += "<textarea style='";
+	html += "<textarea id='"+textAreaID+"' style='";
 	html += "width:"+(contentElement.width()+16)+"px;height:"+(contentElement.height()+6)+"px;";
 	html += "'>";
 	html += this.getCellText(row, col);
@@ -413,6 +414,32 @@ Spreadsheet.prototype.editCell = function(row, col) {
 		editDiv.detach();
 		spreadsheet.selectCell(row,col);			
 	});
+	// enable auto-completion if available
+	// but we require some special functionality because only editing part of table
+	/*
+	if (typeof AutoComplete != "undefined") {
+		var textarea = $(textAreaID);
+		var completeFun = function(prefix) {
+			var trimPrefix = prefix.trim();
+			var json = "[";
+			for (var r = 0; r < spreadsheet.size.rows; r++) {
+				var text = spreadsheet.getCellText(r, col).trim();
+				if (text.length == 0) continue;
+				if (text.length < trimPrefix.length) continue;
+				if (text.substring(0, trimPrefix.length) != trimPrefix) continue;
+				json += "{ "+
+					"title: '" + text + "', " +
+					"insertText: '" + text + "', " +
+					"replaceLength: '" + prefix.length + "', " +
+					"cursorPosition: 0 }, "
+			}
+			json += "]";
+			alert(json);
+			return json;
+		}
+		AutoComplete.initialize(textarea, completeFun);
+	}
+	*/
 }
 
 Spreadsheet.prototype.setCellText = function(row, col, text) {
