@@ -152,11 +152,11 @@ SpreadsheetModel.prototype.getCellText = function(row, col) {
 }
 
 SpreadsheetModel.prototype.isHeader = function(row, col) {
+	// use header attribute of the cell
 	var key = row + "_"+col;
 	var data = this.cells[key];
-	// if not specified, inherit header state from left cell
-	if (!data && col > 0) return this.isHeader(row, col-1);
-	return data ? data.isHeader : false;
+	if (data) return data.isHeader;
+	return false;
 }
 
 SpreadsheetModel.prototype.toWikiMarkup = function() {
@@ -632,6 +632,11 @@ Spreadsheet.prototype.addRow = function(row) {
 	}
 	// if we add last row, make sure that size increases
 	destModel.ensureSize(srcModel.height + 1, srcModel.width);
+	// copy format from selected row
+	for (var col = 0; col < destModel.width; col++) {
+		var isHeader = destModel.isHeader(sr, col);
+		destModel.setCell(row, col, "", isHeader);
+	}
 	// set new Model and restore selection
 	destModel.textBeforeTable = srcModel.textBeforeTable; 
 	destModel.textAfterTable = srcModel.textAfterTable;
@@ -687,6 +692,11 @@ Spreadsheet.prototype.addCol = function(col) {
 	}
 	// if we add last column, make sure that size increases
 	destModel.ensureSize(srcModel.height, srcModel.width + 1);
+	// copy format from selected col
+	for (var row = 0; row < destModel.height; row++) {
+		var isHeader = destModel.isHeader(row, sc);
+		destModel.setCell(row, col, "", isHeader);
+	}
 	// set new Model and restore selection
 	destModel.textBeforeTable = srcModel.textBeforeTable; 
 	destModel.textAfterTable = srcModel.textAfterTable;
