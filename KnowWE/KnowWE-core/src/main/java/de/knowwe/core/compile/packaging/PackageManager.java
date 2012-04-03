@@ -445,9 +445,23 @@ public class PackageManager implements EventListener {
 	 */
 	public Set<String> getCompilingArticles(String packageName) {
 		HashSet<String> compilingArticles = packageToCompilingArticles.get(packageName);
-		return Collections.unmodifiableSet(compilingArticles == null
-				? new HashSet<String>()
-				: compilingArticles);
+		return compilingArticles == null
+				? Collections.<String> emptySet()
+				: Collections.unmodifiableSet(compilingArticles);
+	}
+
+	/**
+	 * Returns the a Set of all titles of articles that compile any package.
+	 * 
+	 * @created 28.08.2010
+	 * @return a Set of titles of articles compiling
+	 */
+	public Set<String> getCompilingArticles() {
+		HashSet<String> compilingArticles = new HashSet<String>();
+		for (String packageName : getAllPackageNames()) {
+			compilingArticles.addAll(getCompilingArticles(packageName));
+		}
+		return compilingArticles;
 	}
 
 	/**
