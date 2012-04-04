@@ -24,18 +24,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.plugin.JPFPluginManager;
 import de.d3web.plugin.Plugin;
@@ -49,56 +45,27 @@ import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sectionizer;
 import de.knowwe.core.kdom.parsing.SectionizerModule;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.taghandler.TagHandler;
-import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.TypeSet;
-import de.knowwe.core.utils.TypeUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.event.InitEvent;
 import de.knowwe.knowRep.KnowledgeRepresentationHandler;
 import de.knowwe.knowRep.KnowledgeRepresentationManager;
 import de.knowwe.plugin.Instantiation;
 import de.knowwe.plugin.Plugins;
-import dummies.TestWikiConnector;
 
 /**
- * 
- * This is the core class of KnowWE2. It manages the ArticleManager(s) and
- * provides methods to access KnowWE-Articles, KnowWE-Modules and Parse-reports.
- * Further it is connected to the used Wiki-engine, holding an instance of
- * WikiConnector and allows page saves.
+ * This is the core class of KnowWE. It manages the {@link ArticleManager} and
+ * provides methods to access {@link Article}s and other Managers. Further it is
+ * connected to the used Wiki-engine, holding an instance of
+ * {@link WikiConnector} and allows page saves.
  * 
  * @author Jochen
  */
 
 public class Environment {
-
-	private RootType rootTypes;
-	private List<PageAppendHandler> appendHandlers = new ArrayList<PageAppendHandler>();
-
-	public List<PageAppendHandler> getAppendHandlers() {
-		return appendHandlers;
-	}
-
-	private List<Type> allKnowWETypes;
-
-	/**
-	 * default paths, used only, if null is given to the constructor as path
-	 * should NOT BE USED, path a read from the KnowWE_config properties file.
-	 */
-	private String knowweExtensionPath = "/var/lib/tomcat-6/webapps/JSPWiki/KnowWEExtension/";
-
-	/**
-	 * @return the defaultModulesPath
-	 */
-	public String getKnowWEExtensionPath() {
-		return knowweExtensionPath;
-	}
 
 	/**
 	 * An article manager for each web. In case of JSPWiki there is only on web
@@ -130,37 +97,14 @@ public class Environment {
 	private WikiConnector wikiConnector = null;
 
 	/**
-	 * holding the default tag handlers of KnowWE
-	 * 
-	 * @see renderTags
+	 * Holding the default tag handlers of KnowWE
 	 */
 	private final HashMap<String, TagHandler> tagHandlers = new HashMap<String, TagHandler>();
 
 	/**
-	 * grants access on the default tag handlers of KnowWE
-	 * 
-	 * @return HashMap holding the default tag handlers of KnowWE
+	 * The {@link CompilationMode} of KnowWE:
 	 */
-	public HashMap<String, TagHandler> getDefaultTagHandlers() {
-		return tagHandlers;
-	}
-
-	public ResourceBundle getMessageBundle() {
-
-		return ResourceBundle.getBundle("KnowWE_messages");
-	}
-
-	public ResourceBundle getMessageBundle(UserContext user) {
-
-		Locale.setDefault(wikiConnector.getLocale(user.getRequest()));
-		return this.getMessageBundle();
-	}
-
-	public ResourceBundle getMessageBundle(HttpServletRequest request) {
-
-		Locale.setDefault(wikiConnector.getLocale(request));
-		return this.getMessageBundle();
-	}
+	private CompilationMode currentCompilationMode = CompilationMode.DEFAULT;
 
 	/**
 	 * Hard coded name of the default web
@@ -184,28 +128,10 @@ public class Environment {
 	public static final String HTML_PLUGIN_BRACKETS_CLOSE = "KNOWEPLUGIN_BRACKETS_CLOSE";
 	public static final String HTML_CURLY_BRACKET_OPEN = "KNOWWE_CURLY_BRACKET_OPEN";
 	public static final String HTML_CURLY_BRACKET_CLOSE = "KNOWWE_CURLY_BRACKET_CLOSE";
-
 	public static final String NEWLINE = "KNOWWE_NEWLINE";
-
-	/**
-	 * Name of the WikiFindings-page
-	 */
-	public static final String WIKI_FINDINGS = "WikiFindings";
-
-	public static final boolean GLOBAL_TYPES_ENABLED = true;
 
 	public enum CompilationMode {
 		INCREMENTAL, DEFAULT
-	}
-
-	private CompilationMode currentCompilationMode = CompilationMode.DEFAULT;
-
-	public void setCompilationMode(CompilationMode mode) {
-		currentCompilationMode = mode;
-	}
-
-	public CompilationMode getCompilationMode() {
-		return currentCompilationMode;
 	}
 
 	/**
@@ -218,103 +144,26 @@ public class Environment {
 	 */
 	public static synchronized Environment getInstance() {
 		if (instance == null) {
-			Logger.getLogger("KnowWE2").severe(
+			Logger.getLogger(Environment.class.getName()).severe(
 					"Environment was not instantiated!");
-			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
-			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
 		}
 		return instance;
 	}
 
-	/**
-	 * prevent cloning
-	 */
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException();
-	}
-
 	public static boolean isInitialized() {
-		return !(instance == null);
+		return instance != null;
 	}
 
-	public static void initKnowWE(WikiConnector wiki) {
-		instance = new Environment(wiki);
-		instance.initModules(wiki.getServletContext(), DEFAULT_WEB, wiki);
+	public static void initInstance(WikiConnector wiki) {
+		Logger.getLogger(Environment.class.getName()).info(
+				"STARTING TO INITIALIZE KNOWWE ENVIRONMENT");
 
-		// firing the init event
+		instance = new Environment(wiki);
+		instance.init();
 		EventManager.getInstance().fireEvent(InitEvent.getInstance());
 
-	}
-
-	/**
-	 * Returns the Article object for a given web and pagename
-	 * 
-	 * @param web
-	 * @param topic
-	 * @return
-	 */
-	public Article getArticle(String web, String title) {
-		return getArticleManager(web).getArticle(title);
-	}
-
-	/**
-	 * returns the ArtilceManager for a given web
-	 * 
-	 * @param web
-	 * @return
-	 */
-	public ArticleManager getArticleManager(String web) {
-		ArticleManager mgr = this.articleManagers.get(web);
-		if (mgr == null) {
-			mgr = new ArticleManager(this, web);
-			articleManagers.put(web, mgr);
-		}
-		return mgr;
-	}
-
-	public KnowledgeRepresentationManager getKnowledgeRepresentationManager(String web) {
-		KnowledgeRepresentationManager mgr = this.knowledgeManagers.get(web);
-		if (mgr == null) {
-			mgr = new KnowledgeRepresentationManager(web);
-			knowledgeManagers.put(web, mgr);
-		}
-		return mgr;
-	}
-
-	/**
-	 * returns the PackageManager for a given web
-	 * 
-	 * @param web
-	 * @return
-	 */
-	public PackageManager getPackageManager(String web) {
-		PackageManager mgr = this.packageManagers.get(web);
-		if (mgr == null) {
-			mgr = new PackageManager(web);
-			packageManagers.put(web, mgr);
-		}
-		return mgr;
-	}
-
-	/**
-	 * returns the TerminologyHandler for a given web
-	 * 
-	 * @param web
-	 * @return
-	 */
-	public TerminologyManager getTerminologyManager(String web, String title) {
-		Map<String, TerminologyManager> handlersOfWeb = this.terminologyHandlers.get(web);
-		if (handlersOfWeb == null) {
-			handlersOfWeb = new HashMap<String, TerminologyManager>();
-			this.terminologyHandlers.put(web, handlersOfWeb);
-		}
-		TerminologyManager mgr = handlersOfWeb.get(title);
-		if (mgr == null) {
-			mgr = new TerminologyManager(web, title);
-			handlersOfWeb.put(title, mgr);
-		}
-		return mgr;
+		Logger.getLogger(Environment.class.getName()).info(
+				"INITIALIZED KNOWWE ENVIRONMENT");
 	}
 
 	/**
@@ -324,133 +173,123 @@ public class Environment {
 	 * 
 	 * @param wiki Connector to the used core wiki engine
 	 */
-	/**
-	 * @param wiki
-	 */
 	private Environment(WikiConnector wiki) {
-		try {
-			this.wikiConnector = wiki;
-
-			System.out.println("INITIALISING KNOWWE ENVIRONMENT...");
-			ResourceBundle bundle = ResourceBundle.getBundle("KnowWE_config");
-			if (bundle != null) {
-				if (!(wiki instanceof TestWikiConnector)) {
-					// convert the $web_app$-variable from the resourcebundle
-					// defaultJarsPath = KnowWEUtils.getRealPath(context, bundle
-					// .getString("path_to_jars"));
-
-					knowweExtensionPath = KnowWEUtils.getRealPath(wikiConnector
-							.getServletContext(), bundle
-							.getString("path_to_knowweextension"));
-				}
-				if (bundle.getString("compilation.mode").contains("incremental")) {
-					this.setCompilationMode(CompilationMode.INCREMENTAL);
-				}
-			}
-			if (wiki instanceof TestWikiConnector) {
-				TestWikiConnector connector = (TestWikiConnector) wiki;
-				knowweExtensionPath = connector.getHackedPath();
-			}
-
-			rootTypes = RootType.getInstance();
-
-			System.out.println("INITIALISED KNOWWE ENVIRONMENT");
-		}
-		catch (Exception e) {
-			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
-			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
-			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
-			Logger.getLogger("KnowWE").log(Level.SEVERE,
-					"unexpected exception during KnowWE initialization", e);
-		}
-
+		this.wikiConnector = wiki;
 	}
 
-	/**
-	 * Initializes the KnowWE modules
-	 */
-	private void initModules(ServletContext context, String web, WikiConnector wiki) {
-		// add the default modules
-		// modules.add(new de.d3web.we.dom.kopic.KopicModule());
+	private void init() throws InstantiationError {
+		ResourceBundle config = KnowWEUtils.getConfigBundle();
+		if (config != null && config.getString("compilation.mode").contains("incremental")) {
+			this.setCompilationMode(CompilationMode.INCREMENTAL);
+		}
 
-		File libDir = new File(knowweExtensionPath + "/../WEB-INF/lib");
+		initPlugins();
+
+		initInstantiations();
+
+		initTagHandler();
+
+		initSectionizerModules();
+
+		decorateTypeTree(RootType.getInstance());
+
+		initKnowledgeRepresentationHandler();
+
+		Plugins.initJS();
+		Plugins.initCSS();
+	}
+
+	private void initInstantiations() {
+		for (Instantiation inst : Plugins.getInstantiations()) {
+			inst.init(getWikiConnector().getServletContext());
+		}
+	}
+
+	private void initTagHandler() {
+		for (TagHandler tagHandler : Plugins.getTagHandlers()) {
+			initTagHandler(tagHandler);
+		}
+	}
+
+	private void initSectionizerModules() {
+		for (SectionizerModule sm : Plugins.getSectionizerModules()) {
+			Sectionizer.registerSectionizerModule(sm);
+		}
+	}
+
+	private void initKnowledgeRepresentationHandler() {
+		KnowledgeRepresentationManager manager = this.getKnowledgeRepresentationManager(DEFAULT_WEB);
+		for (KnowledgeRepresentationHandler handler : Plugins.getKnowledgeRepresentationHandlers()) {
+			handler.setWeb(DEFAULT_WEB);
+			manager.registerHandler(handler);
+		}
+	}
+
+	private void initPlugins() throws InstantiationError {
+		File libDir = new File(getKnowWEExtensionPath() + "/../WEB-INF/lib");
 		// when testing, libDir doesn't exist, but the plugin framework is
-		// initialized
-		// in junittest, so there is no problem
+		// initialized in junittest, so there is no problem
 		// if libDir is doesn't exist in runtime, nothing will work, so this
 		// code won't be reached ;-)
 		if (libDir.exists()) {
-			List<File> pluginFiles = new ArrayList<File>();
-			for (File file : libDir.listFiles()) {
-				if (file.getName().contains("KnowWE-Plugin-")
-						|| file.getName().contains("d3web-Plugin-")) {
-					pluginFiles.add(file);
-				}
-			}
+			List<File> pluginFiles = getPluginFiles(libDir);
 			JPFPluginManager.init(pluginFiles.toArray(new File[pluginFiles.size()]));
+			extractPluginResources();
+		}
+	}
 
-			Plugin[] plugins = PluginManager.getInstance().getPlugins();
+	private List<File> getPluginFiles(File libDir) {
+		List<File> pluginFiles = new ArrayList<File>();
+		for (File file : libDir.listFiles()) {
+			if (file.getName().contains("KnowWE-Plugin-")
+					|| file.getName().contains("d3web-Plugin-")) {
+				pluginFiles.add(file);
+			}
+		}
+		return pluginFiles;
+	}
 
-			for (Plugin p : plugins) {
-				Resource[] resources = p.getResources();
-				for (Resource r : resources) {
-					String pathName = r.getPathName();
-					if (!pathName.endsWith("/") && pathName.startsWith("webapp/")) {
-						pathName = pathName.substring("webapp/".length());
+	private void extractPluginResources() throws InstantiationError {
+		Plugin[] plugins = PluginManager.getInstance().getPlugins();
+
+		for (Plugin plugin : plugins) {
+			Resource[] resources = plugin.getResources();
+			for (Resource resource : resources) {
+				String pathName = resource.getPathName();
+				if (!pathName.endsWith("/") && pathName.startsWith("webapp/")) {
+					pathName = pathName.substring("webapp/".length());
+					try {
+						File file = new File(
+								new File(getKnowWEExtensionPath()).getParentFile().getCanonicalPath()
+										+ "/" + pathName);
+						File parent = file.getParentFile();
+						if (!parent.isDirectory()) {
+							parent.mkdirs();
+						}
+						FileOutputStream out = new FileOutputStream(file);
+						InputStream in = resource.getInputStream();
 						try {
-							File file = new File(
-									new File(knowweExtensionPath).getParentFile().getCanonicalPath()
-											+ "/" + pathName);
-							File parent = file.getParentFile();
-							if (!parent.isDirectory()) {
-								parent.mkdirs();
-							}
-							FileOutputStream out = new FileOutputStream(file);
-							InputStream in = r.getInputStream();
-							try {
-								stream(in, out);
-							}
-							finally {
-								in.close();
-								out.close();
+							byte[] buf = new byte[1024];
+							int len;
+							while ((len = in.read(buf)) != -1) {
+								out.write(buf, 0, len);
 							}
 						}
-						catch (IOException e) {
-							throw new InstantiationError(
-									"Cannot instantiate plugin "
-											+ p
-											+ ", the following error occured while extracting its resources: "
-											+ e.getMessage());
+						finally {
+							in.close();
+							out.close();
 						}
+					}
+					catch (IOException e) {
+						String msg = "Cannot instantiate plugin "
+								+ plugin
+								+ ", the following error occured while extracting its resources: "
+								+ e.getMessage();
+						throw new InstantiationError(msg);
 					}
 				}
 			}
 		}
-
-		for (Instantiation inst : Plugins.getInstantiations()) {
-			inst.init(context);
-		}
-
-		for (TagHandler tagHandler : Plugins.getTagHandlers()) {
-			initTagHandler(tagHandler);
-		}
-
-		for (SectionizerModule sm : Plugins.getSectionizerModules()) {
-			Sectionizer.registerSectionizerModule(sm);
-		}
-
-		appendHandlers = Plugins.getPageAppendHandlers();
-
-		decorateTypeTree(getRootType());
-
-		KnowledgeRepresentationManager manager = this.getKnowledgeRepresentationManager(web);
-		for (KnowledgeRepresentationHandler handler : Plugins.getKnowledgeRepresentationHandlers()) {
-			handler.setWeb(web);
-			manager.registerHandler(handler);
-		}
-
-		Plugins.initJS();
-		Plugins.initCSS();
 	}
 
 	private void decorateTypeTree(Type type) {
@@ -487,22 +326,13 @@ public class Environment {
 		}
 	}
 
-	/**
-	 * Getter for WikiConnector
-	 * 
-	 * @return this.wikiConnector
-	 */
 	public WikiConnector getWikiConnector() {
 		return this.wikiConnector;
 	}
 
 	/**
-	 * returns the ActionDispatcher from the WikiConnector (JSPWiki: used by
+	 * Returns the ActionDispatcher from the WikiConnector (JSPWiki: used by
 	 * KnowWE.jsp)
-	 * 
-	 * TODO factor out in KnowWE.jsp
-	 * 
-	 * @return
 	 */
 	public ActionDispatcher getDispatcher() {
 		return wikiConnector.getActionDispatcher();
@@ -523,12 +353,11 @@ public class Environment {
 			String title, String web, boolean fullParse) {
 
 		if (Article.isArticleCurrentlyBuilding(web, title)) {
-			return getArticle(DEFAULT_WEB, title);
+			return Article.getCurrentlyBuildingArticle(web, title);
 		}
 
 		// create article with the new content
-		Article article = Article.createArticle(content, title, Environment
-				.getInstance().getRootType(), web);
+		Article article = Article.createArticle(content, title, web);
 
 		this.getArticleManager(web).registerArticle(article);
 
@@ -536,80 +365,107 @@ public class Environment {
 	}
 
 	/**
-	 * Called by the Core-Junit-Tests
+	 * Returns the {@link Article} object for a given web and title
 	 * 
-	 * @param username
-	 * @param content
-	 * @param topic
+	 * @param web the web of the {@link Article}
+	 * @param title the title of the {@link Article}
+	 */
+	public Article getArticle(String web, String title) {
+		return getArticleManager(web).getArticle(title);
+	}
+
+	/**
+	 * Returns the {@link ArticleManager} for a given web.
+	 * 
+	 * @param web the web of the {@link ArticleManager}
+	 */
+	public ArticleManager getArticleManager(String web) {
+		ArticleManager mgr = this.articleManagers.get(web);
+		if (mgr == null) {
+			mgr = new ArticleManager(this, web);
+			articleManagers.put(web, mgr);
+		}
+		return mgr;
+	}
+
+	public KnowledgeRepresentationManager getKnowledgeRepresentationManager(String web) {
+		KnowledgeRepresentationManager mgr = this.knowledgeManagers.get(web);
+		if (mgr == null) {
+			mgr = new KnowledgeRepresentationManager(web);
+			knowledgeManagers.put(web, mgr);
+		}
+		return mgr;
+	}
+
+	/**
+	 * Returns the {@link PackageManager} for a given web.
+	 * 
+	 * @param web the web of the {@link PackageManager}
+	 */
+	public PackageManager getPackageManager(String web) {
+		PackageManager mgr = this.packageManagers.get(web);
+		if (mgr == null) {
+			mgr = new PackageManager(web);
+			packageManagers.put(web, mgr);
+		}
+		return mgr;
+	}
+
+	/**
+	 * returns the TerminologyHandler for a given web
+	 * 
 	 * @param web
 	 * @return
 	 */
-	public void processAndUpdateArticleJunit(String username, String content,
-			String topic, String web, RootType rootType) {
-		this.rootTypes = rootType;
-		this.articleManagers.get(web).registerArticle(
-				Article.createArticle(content, topic, rootType, web));
+	public TerminologyManager getTerminologyManager(String web, String title) {
+		Map<String, TerminologyManager> handlersOfWeb = this.terminologyHandlers.get(web);
+		if (handlersOfWeb == null) {
+			handlersOfWeb = new HashMap<String, TerminologyManager>();
+			this.terminologyHandlers.put(web, handlersOfWeb);
+		}
+		TerminologyManager mgr = handlersOfWeb.get(title);
+		if (mgr == null) {
+			mgr = new TerminologyManager(web, title);
+			handlersOfWeb.put(title, mgr);
+		}
+		return mgr;
 	}
 
 	public ServletContext getContext() {
 		return wikiConnector.getServletContext();
 	}
 
-	public String getSectionText(String id) {
-		Section<?> sec = Sections.getSection(id);
-		String data = "Section not found: " + id;
-		if (sec != null) {
-			data = sec.getText();
-		}
-		return data;
+	/**
+	 * grants access on the default tag handlers of KnowWE
+	 * 
+	 * @return HashMap holding the default tag handlers of KnowWE
+	 */
+	public HashMap<String, TagHandler> getDefaultTagHandlers() {
+		return tagHandlers;
 	}
 
-	public RootType getRootType() {
-		return rootTypes;
+	public List<PageAppendHandler> getAppendHandlers() {
+		return Plugins.getPageAppendHandlers();
+	}
+
+	public void setCompilationMode(CompilationMode mode) {
+		currentCompilationMode = mode;
+	}
+
+	public CompilationMode getCompilationMode() {
+		return currentCompilationMode;
+	}
+
+	public String getKnowWEExtensionPath() {
+		return wikiConnector.getKnowWEExtensionPath();
 	}
 
 	/**
-	 * Collects all Types.
-	 * 
-	 * @return
+	 * Cloning is not allowed for the Environment of KnowWE.
 	 */
-	public List<Type> getAllTypes() {
-
-		if (this.allKnowWETypes == null) {
-			TypeSet allTypes = new TypeSet();
-
-			TypeSet s = TypeUtils
-					.getAllChildrenTypesRecursive(getRootType(),
-							new TypeSet());
-			allTypes.addAll(s.toList());
-
-			this.allKnowWETypes = allTypes.toLexicographicalList();
-		}
-
-		return this.allKnowWETypes;
-	}
-
-	/**
-	 * @See KnowWETypeBrowserAction
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	public Type searchType(Class<? extends Type> clazz) {
-		for (Type t : this.allKnowWETypes) {
-			if (t.isType(clazz)) {
-				return t;
-			}
-		}
-		return null;
-	}
-
-	private static void stream(InputStream in, OutputStream out) throws IOException {
-		byte[] buf = new byte[1024];
-		int len;
-		while ((len = in.read(buf)) != -1) {
-			out.write(buf, 0, len);
-		}
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
 	}
 
 }

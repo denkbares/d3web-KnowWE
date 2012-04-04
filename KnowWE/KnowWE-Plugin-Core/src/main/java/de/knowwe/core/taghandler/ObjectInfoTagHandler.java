@@ -35,6 +35,7 @@ import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -103,7 +104,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	public final String render(Section<?> section, UserContext userContext, Map<String, String> parameters) {
 		panelCounter = 0;
 		sectionCounter = 0;
-		rb = Environment.getInstance().getMessageBundle(userContext);
+		rb = Messages.getMessageBundle(userContext);
 		String content = renderContent(section, userContext, parameters);
 		Section<TagHandlerTypeContent> tagNameSection = Sections.findSuccessor(section,
 				TagHandlerTypeContent.class);

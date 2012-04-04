@@ -33,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import javax.servlet.ServletContext;
@@ -58,6 +59,7 @@ import com.ecyrd.jspwiki.providers.ProviderException;
 import de.knowwe.core.action.ActionDispatcher;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.ConnectorAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
@@ -631,7 +633,7 @@ public class JSPWikiConnector implements WikiConnector {
 		String path = (String) engine.getWikiProperties().get("var.basedir");
 		return path;
 	}
-	
+
 	public String getWikiProperty(String property) {
 		String path = (String) engine.getWikiProperties().get(property);
 		return path;
@@ -704,6 +706,13 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public String normalizeStringTo(String string) {
 		return TextUtil.normalizePostData(string);
+	}
+
+	@Override
+	public String getKnowWEExtensionPath() {
+		return KnowWEUtils.getRealPath(getServletContext(),
+				ResourceBundle.getBundle("KnowWE_config")
+						.getString("path_to_knowweextension"));
 	}
 
 }

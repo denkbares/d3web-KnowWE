@@ -46,33 +46,7 @@ import de.knowwe.core.wikiConnector.WikiConnector;
  * @author Johannes Dienst
  * 
  */
-public class TestWikiConnector implements WikiConnector {
-
-	/**
-	 * This returns a path, that enables the use of this connector in tests of
-	 * projects.
-	 * 
-	 * @author Sebastian Furth
-	 * @return relative Path to KnowWEExtensions
-	 */
-	public String getHackedPath() {
-		String hackedPath = System.getProperty("user.dir");
-		hackedPath = hackedPath.replaceAll("Research", "KnowWE");
-		if (hackedPath.contains("KnowWE-App")) {
-			hackedPath = hackedPath.replaceAll("KnowWE-App", "KnowWE");
-		}
-		else {
-			hackedPath += "/..";
-		}
-		hackedPath += "/KnowWE-Resources/src/main/webapp/KnowWEExtension/";
-		File file = new File(hackedPath);
-		try {
-			return file.getCanonicalPath();
-		}
-		catch (IOException e) {
-			throw new Error(e);
-		}
-	}
+public class DummyConnector implements WikiConnector {
 
 	@Override
 	public String appendContentToPage(String topic, String pageContent) {
@@ -293,5 +267,32 @@ public class TestWikiConnector implements WikiConnector {
 	public String normalizeStringTo(String string) {
 		// TODO Auto-generated method stub
 		return string;
+	}
+
+	/**
+	 * This returns a path, that enables the use of this connector in tests of
+	 * projects.
+	 * 
+	 * @author Sebastian Furth
+	 * @return relative Path to KnowWEExtensions
+	 */
+	@Override
+	public String getKnowWEExtensionPath() {
+		String hackedPath = System.getProperty("user.dir");
+		hackedPath = hackedPath.replaceAll("Research", "KnowWE");
+		if (hackedPath.contains("KnowWE-App")) {
+			hackedPath = hackedPath.replaceAll("KnowWE-App", "KnowWE");
+		}
+		else {
+			hackedPath += "/..";
+		}
+		hackedPath += "/KnowWE-Resources/src/main/webapp/KnowWEExtension/";
+		File file = new File(hackedPath);
+		try {
+			return file.getCanonicalPath();
+		}
+		catch (IOException e) {
+			throw new Error(e);
+		}
 	}
 }

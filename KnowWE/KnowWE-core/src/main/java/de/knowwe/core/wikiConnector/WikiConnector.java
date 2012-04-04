@@ -385,4 +385,6 @@ public interface WikiConnector {
 	 * @return
 	 */
 	boolean storeAttachment(String wikiPage, String filename, String user, InputStream stream);
+
+	public String getKnowWEExtensionPath();
 }

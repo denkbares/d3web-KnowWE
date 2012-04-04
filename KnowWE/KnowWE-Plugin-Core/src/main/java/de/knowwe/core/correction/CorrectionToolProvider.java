@@ -26,9 +26,9 @@ import java.util.ResourceBundle;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.ScopeUtils;
@@ -81,8 +81,8 @@ public class CorrectionToolProvider implements ToolProvider {
 
 		tools[0] = new DefaultTool(
 				"KnowWEExtension/images/quickfix.gif",
-				Environment.getInstance().getMessageBundle().getString("KnowWE.Correction.do"),
-				Environment.getInstance().getMessageBundle().getString("KnowWE.Correction.do"),
+				Messages.getMessageBundle().getString("KnowWE.Correction.do"),
+				Messages.getMessageBundle().getString("KnowWE.Correction.do"),
 				null,
 				"correct"
 				);

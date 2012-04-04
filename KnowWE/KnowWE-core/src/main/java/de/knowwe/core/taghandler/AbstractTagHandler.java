@@ -20,7 +20,7 @@
 
 package de.knowwe.core.taghandler;
 
-import de.knowwe.core.Environment;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -61,7 +61,7 @@ public abstract class AbstractTagHandler implements TagHandler {
 
 	@Override
 	public String getDescription(UserContext user) {
-		return Environment.getInstance().getMessageBundle(user).getString(
+		return Messages.getMessageBundle(user).getString(
 				"KnowWE.Taghandler.standardDescription");
 	}
 

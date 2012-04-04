@@ -35,6 +35,7 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.ActionContext;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.kdom.Article;
 
 public class TestUtils {
 
@@ -150,5 +151,14 @@ public class TestUtils {
 			count++;
 		}
 		return count;
+	}
+
+	/**
+	 * Called by the Core-Junit-Tests
+	 */
+	public static void processAndUpdateArticleJunit(String username, String content,
+			String topic, String web) {
+		Environment.getInstance().getArticleManager(web).registerArticle(
+				Article.createArticle(content, topic, web));
 	}
 }

@@ -71,8 +71,13 @@ public class JSPHelper {
 		return buffer.toString();
 	}
 
-	public String getKDOMNodeContent(String kdomID) {
-		return Environment.getInstance().getSectionText(kdomID);
+	public String getSectionText(String id) {
+		Section<?> sec = Sections.getSection(id);
+		String data = "Section not found: " + id;
+		if (sec != null) {
+			data = sec.getText();
+		}
+		return data;
 	}
 
 	public String getArticleInfoObjectsAsXML() {
@@ -130,8 +135,7 @@ public class JSPHelper {
 			return getEmptyFlowchart();
 		}
 
-		String nodeData = Environment.getInstance().getSectionText(flowchart.getID());
-		return nodeData;
+		return getSectionText(kdomID);
 	}
 
 	/**

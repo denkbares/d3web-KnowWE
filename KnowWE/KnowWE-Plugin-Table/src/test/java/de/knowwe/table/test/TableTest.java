@@ -27,7 +27,7 @@ import de.d3web.plugin.test.InitPluginManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import dummies.TestWikiConnector;
+import dummies.DummyConnector;
 
 /**
  * Class for testing some functionality of class Section.
@@ -51,7 +51,7 @@ public class TableTest extends TestCase {
 		/**
 		 * Initialize Environment
 		 */
-		Environment.initKnowWE(new TestWikiConnector());
+		Environment.initInstance(new DummyConnector());
 		Environment env = Environment.getInstance();
 		final String web = Environment.DEFAULT_WEB;
 

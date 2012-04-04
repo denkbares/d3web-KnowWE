@@ -23,7 +23,7 @@ package de.knowwe.kdom.table;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
-import de.knowwe.core.utils.TypeUtils;
+import de.knowwe.core.utils.Types;
 import de.knowwe.kdom.xml.XMLContent;
 
 /**
@@ -76,7 +76,7 @@ public class Table extends AbstractType {
 	}
 
 	public static void injectCellContentType(Type master, Type injection) {
-		Type cellContentType = TypeUtils.findSuccessorType(master,
+		Type cellContentType = Types.findSuccessorType(master,
 				TableCellContent.class);
 		if (cellContentType instanceof AbstractType) {
 			((AbstractType) cellContentType).addChildType(injection);

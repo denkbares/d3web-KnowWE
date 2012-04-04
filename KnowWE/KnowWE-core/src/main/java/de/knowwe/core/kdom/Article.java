@@ -102,12 +102,11 @@ public class Article extends AbstractType {
 		return currentlyBuildingArticles.get(getArticleKey(web, title));
 	}
 
-	public static Article createArticle(String text, String title, RootType rootType,
-			String web) {
-		return createArticle(text, title, rootType, web, false);
+	public static Article createArticle(String text, String title, String web) {
+		return createArticle(text, title, web, false);
 	}
 
-	public static Article createArticle(String text, String title, RootType rootType,
+	public static Article createArticle(String text, String title,
 			String web, boolean fullParse) {
 
 		if (isArticleCurrentlyBuilding(web, title)) {
@@ -121,8 +120,7 @@ public class Article extends AbstractType {
 		Article article = null;
 		currentlyBuildingArticles.put(getArticleKey(web, title), null);
 		try {
-			article = new Article(text, title, rootType,
-					web, fullParse);
+			article = new Article(text, title, web, fullParse);
 			EventManager.getInstance().fireEvent(new ArticleCreatedEvent(article));
 		}
 		catch (Throwable e) {
@@ -142,8 +140,7 @@ public class Article extends AbstractType {
 	 * @param title
 	 * @param allowedObjects
 	 */
-	private Article(String text, String title, RootType rootType,
-			String web, boolean fullParse) {
+	private Article(String text, String title, String web, boolean fullParse) {
 
 		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
 				"====>> Starting to build article '" + title + "' ====>>");
@@ -153,7 +150,7 @@ public class Article extends AbstractType {
 		this.currentStartTime = this.startTimeOverall;
 		this.title = title;
 		this.web = web;
-		this.childrenTypes.add(rootType);
+		this.childrenTypes.add(RootType.getInstance());
 		this.lastVersion = Environment.getInstance().getArticle(web, title);
 
 		boolean unchangedContent = lastVersion != null

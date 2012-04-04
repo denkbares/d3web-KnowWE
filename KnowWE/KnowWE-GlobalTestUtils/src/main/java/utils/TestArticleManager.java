@@ -24,7 +24,7 @@ import java.util.Map;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
-import dummies.TestWikiConnector;
+import dummies.DummyConnector;
 
 /**
  * 
@@ -75,7 +75,7 @@ public class TestArticleManager {
 	 */
 	private static Article createArcticleFromSourceFile(String content, String filename) {
 		// Initialize KnowWE
-		Environment.initKnowWE(new TestWikiConnector());
+		Environment.initInstance(new DummyConnector());
 
 		int start = filename.lastIndexOf("/") + 1;
 		int end = filename.lastIndexOf(".");
@@ -85,8 +85,7 @@ public class TestArticleManager {
 		articleManager.setArticlesInitialized(true);
 
 		// Create Article
-		Article article = Article.createArticle(content, topic,
-				Environment.getInstance().getRootType(), "default_web");
+		Article article = Article.createArticle(content, topic, "default_web");
 		articleManager.registerArticle(article);
 		return article;
 	}

@@ -9,14 +9,13 @@ String findParam( PageContext ctx, String key )
         }
         return val;
     }
-%><%
-	//Create wiki context; authorization check not needed
+%><%//Create wiki context; authorization check not needed
 	WikiEngine wiki = WikiEngine.getInstance( getServletConfig() );
     WikiContext wikiContext = wiki.createContext( request, WikiContext.VIEW );
 
     // Check if KnowWE is initialized
     if (!Environment.isInitialized()) {
-    	Environment.initKnowWE(new JSPWikiConnector(wiki));
+    	Environment.initInstance(new JSPWikiConnector(wiki));
 	}
 
 	// We need to do this, because the paramterMap is locked!
@@ -48,6 +47,4 @@ String findParam( PageContext ctx, String key )
 	UserActionContext context = new ActionContext(parameters.get("action"), AbstractActionServlet.getActionFollowUpPath(request), parameters, request, response, wiki.getServletContext(), manager);
 	
 	// Perform action
-	Environment.getInstance().getDispatcher().performAction(context);
-	
-%>
+	Environment.getInstance().getDispatcher().performAction(context);%>

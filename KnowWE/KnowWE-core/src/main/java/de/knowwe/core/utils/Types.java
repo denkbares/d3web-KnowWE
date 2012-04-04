@@ -22,10 +22,11 @@ package de.knowwe.core.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
 
 /**
@@ -35,28 +36,7 @@ import de.knowwe.core.kdom.rendering.Renderer;
  * @author Johannes Dienst
  * 
  */
-public class TypeUtils {
-
-	/**
-	 * Removes duplicates. Needed because the java.util.Set-approach wont work
-	 * (Different Objects). TODO: Maybe implement a special Set for this
-	 * 
-	 * @param cleanMe
-	 * @return
-	 */
-	public static List<Type> cleanList(List<Type> cleanMe) {
-		List<Type> cleaned = new ArrayList<Type>();
-		for (int i = 0; i < cleanMe.size(); i++) {
-			String name = cleanMe.get(i).getName();
-			cleaned.add(cleanMe.get(i));
-			for (int j = i + 1; j < cleanMe.size(); j++) {
-				if ((cleanMe.get(j).getName()).equals(name)) {
-					cleanMe.remove(j--);
-				}
-			}
-		}
-		return cleaned;
-	}
+public class Types {
 
 	/**
 	 * Injects a given renderer to a subtype in the hierarchy
@@ -67,9 +47,9 @@ public class TypeUtils {
 	 * @param renderer
 	 */
 	public static void injectRendererToSuccessorType(Type root, Class<? extends Type> clazz, Renderer renderer) {
-		TypeSet set = new TypeSet();
+		TreeSet<Type> set = new TreeSet<Type>();
 		getAllChildrenTypesRecursive(root, set);
-		for (Type t : set.toList()) {
+		for (Type t : set) {
 			if (t.isAssignableFromType(clazz)) {
 				((AbstractType) t).setRenderer(renderer);
 			}
@@ -83,7 +63,7 @@ public class TypeUtils {
 	 * @param allTypes
 	 * @return
 	 */
-	public static TypeSet getAllChildrenTypesRecursive(Type type, TypeSet allTypes) {
+	public static TreeSet<Type> getAllChildrenTypesRecursive(Type type, TreeSet<Type> allTypes) {
 
 		// Recursionstop
 		if (allTypes.contains(type)) {
@@ -110,8 +90,8 @@ public class TypeUtils {
 				if (!allTypes.contains(childrentype)) {
 					allTypes.add(childrentype);
 					for (Type c : childrentype.getChildrenTypes()) {
-						TypeSet t = getAllChildrenTypesRecursive(c, allTypes);
-						allTypes.addAll(t.toList());
+						TreeSet<Type> t = getAllChildrenTypesRecursive(c, allTypes);
+						allTypes.addAll(t);
 					}
 				}
 			}
@@ -179,19 +159,27 @@ public class TypeUtils {
 	}
 
 	/**
-	 * Get the father element of the given section specified by class.
+	 * Collects all Types.
 	 * 
-	 * @param s
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	@Deprecated
-	public static <OT extends Type> Section<OT> getAncestorOfType(Section<?> s, Class<OT> clazz) {
+	public static TreeSet<Type> getAllTypes() {
+		return Types.getAllChildrenTypesRecursive(RootType.getInstance(),
+						new TreeSet<Type>());
+	}
 
-		if (s == null) return null;
-
-		if (clazz.isAssignableFrom(s.get().getClass())) return (Section<OT>) s;
-
-		return getAncestorOfType(s.getFather(), clazz);
+	/**
+	 * @See KnowWETypeBrowserAction
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	public static Type findType(Class<? extends Type> clazz) {
+		for (Type t : getAllTypes()) {
+			if (t.isType(clazz)) {
+				return t;
+			}
+		}
+		return null;
 	}
 }

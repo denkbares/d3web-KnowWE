@@ -577,4 +577,8 @@ public class KnowWEUtils {
 		return articles;
 	}
 
+	public static ResourceBundle getConfigBundle() {
+		return ResourceBundle.getBundle("KnowWE_config");
+	}
+
 }

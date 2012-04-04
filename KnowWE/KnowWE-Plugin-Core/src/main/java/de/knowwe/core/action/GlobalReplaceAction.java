@@ -34,18 +34,17 @@ import java.util.ResourceBundle;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
-import de.knowwe.core.action.AbstractAction;
-import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.Messages;
 
 public class GlobalReplaceAction extends AbstractAction {
 
 	private String perform(UserActionContext context) {
 
-		ResourceBundle rb = Environment.getInstance().getMessageBundle(
-				context.getRequest());
+		ResourceBundle rb = Messages.getMessageBundle(
+				context);
 
 		String query = context.getParameter(Attributes.TARGET);
 		String replacement = context.getParameter(Attributes.FOCUSED_TERM);
@@ -143,8 +142,7 @@ public class GlobalReplaceAction extends AbstractAction {
 
 			Environment.getInstance().getWikiConnector().writeArticleToWikiEnginePersistence(
 					art.getTitle(), text, context);
-			mgr.registerArticle(Article.createArticle(text, art.getTitle(),
-					Environment.getInstance().getRootType(), web));
+			mgr.registerArticle(Article.createArticle(text, art.getTitle(), web));
 		}
 
 		// Meldung gernerieren und zurueckgeben.

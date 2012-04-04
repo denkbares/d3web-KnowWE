@@ -36,6 +36,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -109,7 +110,7 @@ public class TermRenamingAction extends AbstractAction {
 	}
 
 	private void generateMessage(Set<String> failures, Set<String> success, UserActionContext context) throws IOException {
-		ResourceBundle rb = Environment.getInstance().getMessageBundle();
+		ResourceBundle rb = Messages.getMessageBundle();
 		Writer w = context.getWriter();
 		if (failures.size() == 0) {
 			w.write("<p style=\"color:green;\">");

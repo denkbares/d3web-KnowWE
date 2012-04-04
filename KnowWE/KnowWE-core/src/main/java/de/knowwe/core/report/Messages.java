@@ -27,14 +27,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
 public final class Messages {
@@ -486,6 +490,19 @@ public final class Messages {
 	 */
 	public static Collection<Message> noMessage() {
 		return Collections.emptyList();
+	}
+
+	public static ResourceBundle getMessageBundle(Locale locale) {
+		return ResourceBundle.getBundle("KnowWE_messages", locale);
+	}
+
+	public static ResourceBundle getMessageBundle() {
+		return getMessageBundle(Locale.getDefault());
+	}
+
+	public static ResourceBundle getMessageBundle(UserContext user) {
+		return getMessageBundle(Environment.getInstance().getWikiConnector().getLocale(
+				user.getRequest()));
 	}
 
 }

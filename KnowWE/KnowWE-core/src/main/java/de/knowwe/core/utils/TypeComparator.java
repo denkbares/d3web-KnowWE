@@ -34,17 +34,7 @@ public class TypeComparator implements Comparator<Type> {
 
 	@Override
 	public int compare(Type o1, Type o2) {
-		int i = o1.getName().compareTo(o2.getName());
-
-		if (i < 0) {
-			return -1;
-		}
-
-		if (i > 0) {
-			return 1;
-		}
-
-		return 0;
+		return o1.getName().compareTo(o2.getName());
 	}
 
 }

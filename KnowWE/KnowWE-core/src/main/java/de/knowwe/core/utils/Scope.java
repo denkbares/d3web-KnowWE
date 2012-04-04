@@ -18,7 +18,7 @@ import de.knowwe.core.kdom.basicType.QuotedType;
 import de.knowwe.core.kdom.basicType.RoundBracedType;
 import de.knowwe.core.kdom.basicType.SquareBracedType;
 import de.knowwe.core.kdom.parsing.Section;
-import dummies.TestWikiConnector;
+import dummies.DummyConnector;
 
 /**
  * A scope is an selector of a specific subset of KDOM nodes. It's selection is
@@ -219,7 +219,7 @@ public class Scope {
 
 	public static void main(String... args) throws IOException {
 		InitPluginManager.init();
-		Environment.initKnowWE(new TestWikiConnector());
+		Environment.initInstance(new DummyConnector());
 		String t4 = "hello world";
 		String t3 = "[" + t4 + "]";
 		String t2 = "\"" + t3 + "\"";
@@ -232,7 +232,7 @@ public class Scope {
 		Type o1 = new RoundBracedType(o2);
 		RootType o0 = RootType.getInstance();
 
-		Article.createArticle(t0, "test", o0, "myWeb");
+		Article.createArticle(t0, "test", "myWeb");
 		Section<?> s0 = Section.createSection(t0, o0, null);
 		Section<?> s1 = Section.createSection(t1, o1, s0);
 		Section<?> s2 = Section.createSection(t2, o2, s1);

@@ -41,6 +41,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.Messages;
 
 /**
  * Renders all actions for the Renaming Tool.
@@ -62,7 +63,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 		context.setContentType("text/html; charset=UTF-8");
 		Map<String, String> parameterMap = context.getParameters();
 
-		rb = Environment.getInstance().getMessageBundle(context.getRequest());
+		rb = Messages.getMessageBundle(context);
 		// get the selected sections from the section selection tree
 		String[] sections = null;
 		if (parameterMap.containsKey("SelectedSections")) {

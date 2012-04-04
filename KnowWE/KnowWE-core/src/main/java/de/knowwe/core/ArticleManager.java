@@ -20,7 +20,6 @@
 
 package de.knowwe.core;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,7 +27,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -38,12 +36,10 @@ import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.event.ArticleRegisteredEvent;
 import de.knowwe.event.ArticleUpdatesFinishedEvent;
 import de.knowwe.event.InitializedAllArticlesEvent;
 import de.knowwe.event.UpdatingDependenciesEvent;
-import dummies.TestWikiConnector;
 
 /**
  * Manages all the articles of one web in a HashMap
@@ -75,32 +71,8 @@ public class ArticleManager implements EventListener {
 
 	private final String web;
 
-	public String jarsPath;
-	public String reportPath;
-
-	public String getReportPath() {
-		return reportPath;
-	}
-
-	private static ResourceBundle rb = ResourceBundle
-			.getBundle("KnowWE_config");
-
 	public ArticleManager(Environment env, String webname) {
 		this.web = webname;
-		if (!(env.getWikiConnector() instanceof TestWikiConnector)) {
-			jarsPath = KnowWEUtils.getRealPath(env.getWikiConnector()
-					.getServletContext(), rb.getString("path_to_jars"));
-			reportPath = KnowWEUtils.getRealPath(env.getWikiConnector()
-					.getServletContext(), rb.getString("path_to_reports"));
-
-		}
-		else {
-			jarsPath = System.getProperty("java.io.tmpdir")
-					+ File.separatorChar + "jars";
-			reportPath = System.getProperty("java.io.tmpdir")
-					+ File.separatorChar + "reports";
-
-		}
 		EventManager.getInstance().registerListener(this);
 	}
 
@@ -109,10 +81,9 @@ public class ArticleManager implements EventListener {
 	}
 
 	/**
-	 * Servs the Article for a given article name
+	 * Returns the Article for a given article name
 	 * 
-	 * @param title
-	 * @return
+	 * @param title the title of the article to return
 	 */
 	public Article getArticle(String title) {
 		return articleMap.get(title);
@@ -190,8 +161,7 @@ public class ArticleManager implements EventListener {
 			if (!updatingArticles.contains(title)) {
 				if (Environment.getInstance().getWikiConnector().doesPageExist(title)) {
 					Article newArt = Article.createArticle(
-							articleMap.get(title).getRootSection().getText(), title,
-							Environment.getInstance().getRootType(), web, false);
+							articleMap.get(title).getRootSection().getText(), title, web, false);
 					registerArticle(newArt);
 				}
 				else {

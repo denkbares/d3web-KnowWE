@@ -23,6 +23,7 @@ package de.knowwe.core.kdom.taghandler;
 import java.util.Map;
 
 import de.knowwe.core.Environment;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.visitor.RenderKDOMVisitor;
@@ -36,7 +37,7 @@ public class KDOMRenderer extends AbstractHTMLTagHandler {
 
 	@Override
 	public String getDescription(UserContext user) {
-		return Environment.getInstance().getMessageBundle(user).getString(
+		return Messages.getMessageBundle(user).getString(
 				"KnowWE.KDOMRenderer.description");
 	}
 

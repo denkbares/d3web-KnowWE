@@ -141,7 +141,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	private void initEnvironmentIfNeeded(WikiEngine wEngine) {
 		if (!Environment.isInitialized()) {
-			Environment.initKnowWE(new JSPWikiConnector(wEngine));
+			Environment.initInstance(new JSPWikiConnector(wEngine));
 			// MultiSearchEngine.getInstance().addProvider(
 			// new JSPWikiSearchConnector());
 		}

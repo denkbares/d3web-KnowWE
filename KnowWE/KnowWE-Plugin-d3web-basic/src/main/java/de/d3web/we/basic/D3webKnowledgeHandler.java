@@ -77,7 +77,6 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 
 	/**
 	 * @returns the KB for the given article
-	 * @param title TODO
 	 */
 	public KnowledgeBase getKnowledgeBase(String title) {
 		KnowledgeBase kb = kbs.get(title);

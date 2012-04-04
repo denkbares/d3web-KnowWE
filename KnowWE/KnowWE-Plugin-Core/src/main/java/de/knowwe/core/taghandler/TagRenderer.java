@@ -28,6 +28,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -41,8 +42,7 @@ public class TagRenderer implements Renderer {
 		if (attrContent == null) {
 			string.append(KnowWEUtils
 					.maskHTML("<div><p class='info box'>"));
-			string.append(Environment
-					.getInstance().getMessageBundle(user).getString(
+			string.append(Messages.getMessageBundle(user).getString(
 							"KnowWE.Taghandler.notFoundError"));
 			string.append(" '"
 					+ ((Section<?>) sec.getChildren().get(1)).getText()
@@ -73,7 +73,7 @@ public class TagRenderer implements Renderer {
 					String key = elem.toLowerCase();
 					if (defaultTagHandlers.containsKey(key)) {
 						TagHandler handler = defaultTagHandlers.get(key);
-						boolean autoUpdate = handler.requiresAutoUpdate();
+						// boolean autoUpdate = handler.requiresAutoUpdate();
 						// if (autoUpdate) {
 						// buffi.append(KnowWEUtils.maskHTML(
 						// "<span class=\"ReRenderSectionMarker\"" +

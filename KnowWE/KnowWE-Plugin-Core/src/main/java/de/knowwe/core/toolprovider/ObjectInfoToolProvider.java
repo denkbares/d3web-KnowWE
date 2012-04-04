@@ -20,8 +20,8 @@ package de.knowwe.core.toolprovider;
 
 import java.util.ResourceBundle;
 
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.taghandler.ObjectInfoTagHandler;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
@@ -47,7 +47,7 @@ public class ObjectInfoToolProvider implements ToolProvider {
 
 	protected Tool getCreateHomepageTool() {
 		String jsAction = "KNOWWE.core.plugin.objectinfo.createHomePage()";
-		ResourceBundle rb = Environment.getInstance().getMessageBundle();
+		ResourceBundle rb = Messages.getMessageBundle();
 		return new DefaultTool(
 				"KnowWEExtension/images/new_file.gif",
 				rb.getString("KnowWE.ObjectInfoTagHandler.newPage"),

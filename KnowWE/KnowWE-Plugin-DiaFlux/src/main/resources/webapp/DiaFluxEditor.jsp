@@ -25,7 +25,7 @@
 	
 	// Check if KnowWE is initialized
 	if (!Environment.isInitialized()) {
-		Environment.initKnowWE(new JSPWikiConnector(wiki));
+		Environment.initInstance(new JSPWikiConnector(wiki));
 	}
 	
 	// We need to do this, because the paramterMap is locked!
