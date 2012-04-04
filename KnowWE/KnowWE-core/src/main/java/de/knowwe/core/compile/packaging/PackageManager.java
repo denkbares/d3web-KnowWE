@@ -457,9 +457,20 @@ public class PackageManager implements EventListener {
 	 * @return a Set of titles of articles compiling
 	 */
 	public Set<String> getCompilingArticles() {
+		// get articles compiling a package
 		HashSet<String> compilingArticles = new HashSet<String>();
 		for (String packageName : getAllPackageNames()) {
 			compilingArticles.addAll(getCompilingArticles(packageName));
+		}
+		// get articles compiling "this"
+		for (HashSet<Section<? extends PackageCompiler>> compileSections : articleToPackageCompileSections.values()) {
+			for (Section<? extends PackageCompiler> compileSection : compileSections) {
+				Set<String> packagesToCompile = compileSection.get().getPackagesToCompile(
+						compileSection);
+				if (packagesToCompile.contains(THIS)) {
+					compilingArticles.add(compileSection.getTitle());
+				}
+			}
 		}
 		return compilingArticles;
 	}
