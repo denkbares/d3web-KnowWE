@@ -72,10 +72,8 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 		}
 
 		// check annotated sections
-		List<Section<AnnotationContentType>> subSections = Sections.findChildrenOfType(
-				markupSection,
-				AnnotationContentType.class);
-		for (Section<AnnotationContentType> annotationSection : subSections) {
+		List<Section<? extends AnnotationContentType>> subSections = DefaultMarkupType.getAllAnnotationContentSections(markupSection);
+		for (Section<? extends AnnotationContentType> annotationSection : subSections) {
 			// check annotations pattern
 			Annotation annotation = annotationSection.get().getAnnotation();
 			String text = annotationSection.getText();
