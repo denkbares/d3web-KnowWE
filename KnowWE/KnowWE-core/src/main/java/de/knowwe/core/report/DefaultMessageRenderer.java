@@ -32,21 +32,21 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @author Jochen
  * 
  */
-public class DefaultErrorRenderer implements MessageRenderer {
+public class DefaultMessageRenderer implements MessageRenderer {
 
-	public static final DefaultErrorRenderer INSTANCE_ERROR = new DefaultErrorRenderer(
+	public static final DefaultMessageRenderer ERROR_RENDERER = new DefaultMessageRenderer(
 			"KDDOMError", "color:red;text-decoration:underline;");
 
-	public static final DefaultErrorRenderer INSTANCE_WARNING = new DefaultErrorRenderer(
+	public static final DefaultMessageRenderer WARNING_RENDERER = new DefaultMessageRenderer(
 			"KDDOMWarning", "color:#CFCF00;text-decoration:underline;");
 
-	public static final DefaultErrorRenderer INSTANCE_NOTE = new DefaultErrorRenderer(
+	public static final DefaultMessageRenderer NOTE_RENDERER = new DefaultMessageRenderer(
 			"KDDOMNotice", null);
 
 	private final String cssClass;
 	private final String cssStyle;
 
-	private DefaultErrorRenderer(String cssClass, String cssStyle) {
+	private DefaultMessageRenderer(String cssClass, String cssStyle) {
 		this.cssClass = cssClass;
 		this.cssStyle = cssStyle;
 	}

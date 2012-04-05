@@ -5,7 +5,7 @@ import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.DefaultErrorRenderer;
+import de.knowwe.core.report.DefaultMessageRenderer;
 import de.knowwe.core.report.MessageRenderer;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
@@ -35,7 +35,7 @@ final class CellAnswerRef extends AnswerReference {
 
 	@Override
 	public MessageRenderer getErrorRenderer() {
-		return DefaultErrorRenderer.INSTANCE_ERROR;
+		return DefaultMessageRenderer.ERROR_RENDERER;
 	}
 
 	@Override
