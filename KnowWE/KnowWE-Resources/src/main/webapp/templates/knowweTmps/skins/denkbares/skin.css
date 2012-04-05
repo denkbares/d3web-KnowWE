@@ -1809,10 +1809,8 @@ div.coverflow .knob {
 }
 
 .type_DiaFlux.defaultMarkupFrame:hover {
-	border-right: 0px;
-	border-left: 1px solid transparent;
-	border-bottom: 0px;
-	margin-bottom: 0px;	
+	border: 1px solid transparent;
+	background: transparent;
 }
 
 .defaultMarkup .markupText .FlowchartGroup {
@@ -1826,11 +1824,13 @@ div.coverflow .knob {
 }
 
 .type_DiaFlux.defaultMarkupFrame > .defaultMarkup {
-	border-right: 1px solid #D1CFF1;
-	border-bottom: 1px solid #D1CFF1;
-	border-left: 1px solid #D1CFF1;
-	border-top: 1px solid #D1CFF1;
 	overflow-y: hidden;
+}
+
+.Flowchart {
+	border-top: 1px solid #D1CFF1;
+	border-left: 1px solid #D1CFF1;
+	border-right: 1px solid #D1CFF1;
 }
 
 .defaultMarkupFrame {
