@@ -4,6 +4,7 @@
 
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
+		<import plugin-id="KnowWE-Plugin-TestCases" />
 	</requires>
 
 	<runtime>

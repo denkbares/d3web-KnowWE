@@ -7,7 +7,7 @@
 	</requires>
 	
 	<runtime>
-		<library id="de.d3web" path="." type="code">
+		<library id="de.knowwe" path="." type="code">
 			<export prefix="*" />
 		</library>
 		<library id="webapp" path="webapp/" type="resources">
