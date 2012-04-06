@@ -46,7 +46,7 @@ public class AbstractXMLType extends AbstractType {
 
 	private final String xmlTagName;
 
-	public Section<XMLContent> getContentChild(Section<?> s) {
+	public static Section<XMLContent> getContentChild(Section<?> s) {
 		if (s.get() instanceof AbstractXMLType) {
 			Section<XMLContent> content = Sections.findSuccessor(s, XMLContent.class);
 			return content;

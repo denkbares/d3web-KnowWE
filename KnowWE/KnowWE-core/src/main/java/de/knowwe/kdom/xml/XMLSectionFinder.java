@@ -81,7 +81,7 @@ public class XMLSectionFinder implements SectionFinder {
 	public XMLSectionFinder(String tagName) {
 		this.tagNamePattern = getTagNamePatternString(tagName);
 
-		tagPattern = Pattern.compile("<(/)?(" + tagNamePattern + ")(\\s+[^>]*?)?(/)?> *\\r?\\n?");
+		tagPattern = Pattern.compile("<(/)?(" + tagNamePattern + ")(\\s+[^>]*?)?(/)?>");
 
 		attributePattern = Pattern.compile("([^=\"'\\s]+) *= *[\"']([^\"']*)[\"']");
 	}
