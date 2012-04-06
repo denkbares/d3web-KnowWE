@@ -22,11 +22,8 @@ package utils;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,73 +35,6 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 
 public class TestUtils {
-
-	public static String readBytes(Reader r) {
-		int zeichen = 0;
-		LinkedList<Integer> ints = new LinkedList<Integer>();
-		while (true) {
-
-			try {
-				zeichen = r.read();
-			}
-			catch (IOException e) {
-				// TODO Auto-generated catch block
-				break;
-			}
-			catch (OutOfMemoryError e1) {
-				break;
-			}
-
-			// Ende des Stream erreicht
-			if (zeichen == -1) {
-				break;
-			}
-
-			ints.add(zeichen);
-		}
-
-		StringBuilder buffi = new StringBuilder(5000000);
-		for (Integer i : ints) {
-
-			if ((i.intValue() == 128) || (i.intValue() == 228)
-					|| (i.intValue() == 252) || (i.intValue() == 246)
-					|| (i.intValue() == 214) || (i.intValue() == 196)
-					|| (i.intValue() == 220) || (i.intValue() == 223)) {
-				if (i.intValue() == 128) {
-					buffi.append('');
-				}
-				if (i.intValue() == 228) {
-					buffi.append('ä');
-				}
-				if (i.intValue() == 252) {
-					buffi.append('ü');
-				}
-				if (i.intValue() == 246) {
-					buffi.append('ö');
-				}
-				if (i.intValue() == 214) {
-					buffi.append('ü');
-				}
-				if (i.intValue() == 196) {
-					buffi.append('Ö');
-				}
-				if (i.intValue() == 220) {
-					buffi.append('Ü');
-				}
-				if (i.intValue() == 223) {
-					buffi.append('ß');
-				}
-			}
-			else {
-				buffi.append(((char) i.intValue()));
-			}
-		}
-		return buffi.toString();
-	}
-
-	public static String ReaderToString(Reader r) {
-		return readBytes(r).replace('@', '%');
-	}
 
 	public static String readTxtFile(String fileName) {
 		StringBuffer inContent = new StringBuffer();
