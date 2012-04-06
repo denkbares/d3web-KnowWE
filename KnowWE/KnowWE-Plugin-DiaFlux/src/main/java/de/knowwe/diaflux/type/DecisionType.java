@@ -23,6 +23,7 @@ package de.knowwe.diaflux.type;
 import de.d3web.we.object.NamedObjectReference;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.xml.AbstractXMLType;
+import de.knowwe.kdom.xml.XMLContent;
 
 /**
  * 
@@ -38,7 +39,7 @@ public class DecisionType extends AbstractXMLType {
 		super("decision");
 		NamedObjectReference ref = new NamedObjectReference();
 		ref.setSectionFinder(new AllTextFinderTrimmed());
-		addChildType(ref);
+		addChildType(new XMLContent(ref));
 	}
 
 	public static DecisionType getInstance() {

@@ -27,6 +27,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.kdom.xml.AbstractXMLType;
+import de.knowwe.kdom.xml.XMLContent;
 
 /**
  * 
@@ -40,7 +41,7 @@ public class StartType extends AbstractXMLType {
 
 	private StartType() {
 		super("start");
-		addChildType(new StartNodeDef());
+		addChildType(new XMLContent(new StartNodeDef()));
 	}
 
 	public static StartType getInstance() {

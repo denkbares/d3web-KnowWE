@@ -34,6 +34,7 @@ import de.d3web.we.kdom.condition.SolutionStateCond;
 import de.d3web.we.kdom.condition.UserRatingConditionType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.kdom.xml.AbstractXMLType;
+import de.knowwe.kdom.xml.XMLContent;
 
 /**
  * 
@@ -82,7 +83,7 @@ public class GuardType extends AbstractXMLType {
 
 		condition.setAllowedTerminalConditions(types);
 
-		addChildType(condition);
+		addChildType(new XMLContent(condition));
 	}
 
 	public static GuardType getInstance() {

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import de.d3web.we.kdom.rules.action.RuleAction;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.kdom.xml.AbstractXMLType;
+import de.knowwe.kdom.xml.XMLContent;
 
 /**
  * 
@@ -50,7 +51,7 @@ public class ActionType extends AbstractXMLType {
 			ruleAction.addChildType(Type);
 		}
 
-		addChildType(ruleAction);
+		addChildType(new XMLContent(ruleAction));
 	}
 
 	public static ActionType getInstance() {

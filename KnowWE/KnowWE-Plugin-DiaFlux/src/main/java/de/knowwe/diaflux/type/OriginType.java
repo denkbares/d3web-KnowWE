@@ -20,6 +20,7 @@
 package de.knowwe.diaflux.type;
 
 import de.knowwe.kdom.xml.AbstractXMLType;
+import de.knowwe.kdom.xml.XMLContent;
 
 /**
  * 
@@ -31,6 +32,7 @@ public class OriginType extends AbstractXMLType {
 
 	private OriginType() {
 		super("origin");
+		addChildType(new XMLContent());
 	}
 
 	public static OriginType getInstance() {

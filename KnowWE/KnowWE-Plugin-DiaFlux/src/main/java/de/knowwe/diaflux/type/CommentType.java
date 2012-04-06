@@ -21,6 +21,7 @@
 package de.knowwe.diaflux.type;
 
 import de.knowwe.kdom.xml.AbstractXMLType;
+import de.knowwe.kdom.xml.XMLContent;
 
 /**
  * 
@@ -33,6 +34,7 @@ public class CommentType extends AbstractXMLType {
 
 	private CommentType() {
 		super("comment");
+		addChildType(new XMLContent());
 	}
 
 	public static CommentType getInstance() {

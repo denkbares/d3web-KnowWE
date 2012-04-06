@@ -82,7 +82,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		if (!article.isFullParse()) destroy(article, s);
 
 		KnowledgeBase kb = getKB(article);
-		Section<XMLContent> flowcontent = ((AbstractXMLType) s.get()).getContentChild(s);
+		Section<XMLContent> flowcontent = AbstractXMLType.getContentChild(s);
 
 		if (kb == null || flowcontent == null) {
 			return null;
@@ -124,7 +124,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		List<Edge> result = new ArrayList<Edge>();
 
 		List<Section<EdgeType>> edgeSections = new ArrayList<Section<EdgeType>>();
-		Section<XMLContent> flowcontent = ((AbstractXMLType) flowSection.get()).getContentChild(flowSection);
+		Section<XMLContent> flowcontent = AbstractXMLType.getContentChild(flowSection);
 		Sections.findSuccessorsOfType(flowcontent, EdgeType.class, edgeSections);
 
 		for (Section<EdgeType> section : edgeSections) {
@@ -147,7 +147,8 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 			Node source = DiaFluxPersistenceHandler.getNodeByID(sourceID, nodes);
 
 			if (source == null) {
-				String messageText = "No origin node found with id " + sourceID + " in edge " + id
+				String messageText = "No origin node found with id '" + sourceID + "' in edge "
+						+ id
 						+ ".";
 
 				errors.add(Messages.noSuchObjectError(messageText));
@@ -168,7 +169,8 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 			Node target = DiaFluxPersistenceHandler.getNodeByID(targetID, nodes);
 
 			if (target == null) {
-				String messageText = "No target node found with id " + targetID + " in edge " + id
+				String messageText = "No target node found with id '" + targetID + "' in edge "
+						+ id
 						+ ".";
 				errors.add(Messages.noSuchObjectError(messageText));
 				continue;
@@ -178,8 +180,9 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 			Section<GuardType> guardSection = Sections.findChildOfType(content, GuardType.class);
 			if (guardSection != null) {
-				Section<CompositeCondition> compositionConditionSection = (Section<CompositeCondition>) guardSection.getChildren().get(
-						1);
+
+				Section<CompositeCondition> compositionConditionSection = Sections.findSuccessor(
+						guardSection, CompositeCondition.class);
 				condition = buildCondition(article, compositionConditionSection, errors);
 
 				if (condition == null) {
@@ -209,11 +212,10 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		return KDOMConditionFactory.createCondition(article, s);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static String getXMLContentText(Section<? extends AbstractXMLType> s) {
-		String originalText = ((Section<XMLContent>) s.getChildren().get(1)).getText();
-		// return StringEscapeUtils.unescapeXml(originalText);
-		return originalText;
+		Section<XMLContent> contentChild = AbstractXMLType.getContentChild(s);
+		if (contentChild == null) return "";
+		else return contentChild.getText();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -221,7 +223,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		List<Node> result = new ArrayList<Node>();
 		ArrayList<Section<NodeType>> nodeSections = new ArrayList<Section<NodeType>>();
-		Section<XMLContent> flowcontent = ((AbstractXMLType) flowSection.get()).getContentChild(flowSection);
+		Section<XMLContent> flowcontent = AbstractXMLType.getContentChild(flowSection);
 		Sections.findSuccessorsOfType(flowcontent, NodeType.class, nodeSections);
 
 		KnowledgeBase kb = getKB(article);

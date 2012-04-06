@@ -27,6 +27,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.kdom.xml.AbstractXMLType;
+import de.knowwe.kdom.xml.XMLContent;
 
 /**
  * 
@@ -40,7 +41,7 @@ public class ExitType extends AbstractXMLType {
 
 	private ExitType() {
 		super("exit");
-		addChildType(new ExitNodeDef());
+		addChildType(new XMLContent(new ExitNodeDef()));
 	}
 
 	public static ExitType getInstance() {

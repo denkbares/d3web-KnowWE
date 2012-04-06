@@ -20,6 +20,7 @@
 package de.knowwe.diaflux.type;
 
 import de.knowwe.kdom.xml.AbstractXMLType;
+import de.knowwe.kdom.xml.XMLContent;
 
 /**
  * 
@@ -31,6 +32,7 @@ public class TargetType extends AbstractXMLType {
 
 	private TargetType() {
 		super("target");
+		addChildType(new XMLContent());
 	}
 
 	public static TargetType getInstance() {
