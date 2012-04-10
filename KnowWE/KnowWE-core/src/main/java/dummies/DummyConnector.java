@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -39,14 +40,16 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.ConnectorAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
-/**
- * Used in the tests. A WikiConnector is needed to initialize the Environment.
- * The methods are empty.
- * 
- * @author Johannes Dienst
- * 
- */
 public class DummyConnector implements WikiConnector {
+
+	private String wikiContentPath = "";
+
+	public DummyConnector(String wikiContentPath) {
+		this.wikiContentPath = wikiContentPath;
+	}
+
+	public DummyConnector() {
+	}
 
 	@Override
 	public String appendContentToPage(String topic, String pageContent) {
@@ -182,7 +185,12 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public Collection<ConnectorAttachment> getAttachments() {
-		// TODO Auto-generated method stub
+		if (wikiContentPath == null) {
+			Logger.getLogger("Path to wikicontent not set");
+			return null;
+		}
+		ArrayList<ConnectorAttachment> attachments = new ArrayList<ConnectorAttachment>();
+
 		return null;
 	}
 
@@ -294,5 +302,9 @@ public class DummyConnector implements WikiConnector {
 		catch (IOException e) {
 			throw new Error(e);
 		}
+	}
+
+	public void setWikiContentPath(String wikiContentPath) {
+		this.wikiContentPath = wikiContentPath;
 	}
 }

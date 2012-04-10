@@ -67,7 +67,7 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 		for (Section<UnknownAnnotationType> annotationSection : unknownSections) {
 			String name = UnknownAnnotationType.getName(annotationSection);
 			Message message = Messages.error("The annotation @" + name
-					+ " is not known to KnowWE. It will be ignored.");
+					+ " is not known to system. It will be ignored.");
 			msgs.add(message);
 		}
 

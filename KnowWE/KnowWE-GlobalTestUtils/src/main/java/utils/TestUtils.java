@@ -22,7 +22,9 @@ package utils;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
@@ -107,10 +109,20 @@ public class TestUtils {
 	}
 
 	public static String readTxtFile(String fileName) {
+		try {
+			return readTxtFile(new FileInputStream(fileName));
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return "";
+		}
+	}
+
+	public static String readTxtFile(InputStream inputStream) {
 		StringBuffer inContent = new StringBuffer();
 		try {
 			BufferedReader bufferedReader = new BufferedReader(
-					new InputStreamReader(new FileInputStream(fileName), "UTF8"));
+					new InputStreamReader(inputStream));
 			int char1 = bufferedReader.read();
 			while (char1 != -1) {
 				inContent.append((char) char1);
