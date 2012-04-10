@@ -509,6 +509,25 @@
 			</dependencies>
 		</profile>
 
+		<!-- H plugin -->
+		<profile>
+			<id>example-plugin</id>
+			<activation>
+				<property>
+					<name>example-plugin</name>
+				</property>
+			</activation>
+
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Example</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
 		<!-- TestcaseTable plugin -->
 		<profile>
 			<id>testcasetable-plugin</id>
