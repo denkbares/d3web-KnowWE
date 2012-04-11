@@ -24,26 +24,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.d3web.core.inference.PSAction;
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.ValueObject;
 import de.d3web.core.session.Session;
-import de.d3web.core.session.Value;
-import de.d3web.diaFlux.flow.ActionNode;
 import de.d3web.diaFlux.flow.DiaFluxCaseObject;
 import de.d3web.diaFlux.flow.DiaFluxElement;
 import de.d3web.diaFlux.flow.Edge;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowRun;
 import de.d3web.diaFlux.flow.Node;
+import de.d3web.diaFlux.inference.DiaFluxTrace;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.we.basic.SessionProvider;
-import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -70,38 +64,36 @@ public class GetTraceHighlightAction extends AbstractAction {
 
 		String kdomid = context.getParameter("kdomid");
 
-		@SuppressWarnings("unchecked")
-		Section<DiaFluxType> diaFluxSec = (Section<DiaFluxType>) Sections.getSection(kdomid);
-
+		Section<DiaFluxType> diaFluxSec = Sections.getSection(kdomid, DiaFluxType.class);
 		Section<FlowchartType> flowchart = Sections.findSuccessor(diaFluxSec, FlowchartType.class);
-		String flowName = FlowchartType.getFlowchartName(flowchart);
 
-		Article article = KnowWEUtils.getCompilingArticles(diaFluxSec).iterator().next();
-
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(context.getWeb(), article.getTitle());
+		KnowledgeBase kb = FlowchartUtils.getKB(diaFluxSec);
 		Session session = SessionProvider.getSession(context, kb);
 
 		if (flowchart == null || session == null) {
 			context.getWriter().write(EMPTY_HIGHLIGHT);
 			return;
 		}
+		String flowName = FlowchartType.getFlowchartName(flowchart);
 
 		StringBuilder builder = new StringBuilder();
 		appendHeader(builder, FlowchartUtils.escapeHtmlId(flowName), PREFIX);
 
 		DiaFluxCaseObject diaFluxCaseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
+		DiaFluxTrace trace = FlowchartUtils.getTrace(session);
+		
 		Flow flow = DiaFluxUtils.getFlowSet(session).get(flowName);
 
 		Map<Edge, Map<String, String>> edges = new HashMap<Edge, Map<String, String>>();
 		Map<Node, Map<String, String>> nodes = new HashMap<Node, Map<String, String>>();
 
 		// first highlight traced nodes/edges to yellow
-		for (Node node : diaFluxCaseObject.getTracedNodes()) {
+		for (Node node : trace.getTracedNodes()) {
 			if (node.getFlow().getName().equals(flowName)) {
 				putValue(nodes, node, CSS_CLASS, TRACE_SNAP_CLASS);
 			}
 		}
-		for (Edge edge : diaFluxCaseObject.getTracedEdges()) {
+		for (Edge edge : trace.getTracedEdges()) {
 			if (edge.getStartNode().getFlow().getName().equals(flowName)) {
 				putValue(edges, edge, CSS_CLASS, TRACE_SNAP_CLASS);
 			}
@@ -152,18 +144,11 @@ public class GetTraceHighlightAction extends AbstractAction {
 
 
 	private void addValueTooltip(Session session, Map<Node, Map<String, String>> nodes, Node node) {
-		if (node instanceof ActionNode) {
-			PSAction action = ((ActionNode) node).getAction();
-			List<? extends TerminologyObject> objects = action.getBackwardObjects();
-			if (!objects.isEmpty()) {
-				// There should be only 1 backward object
-				TerminologyObject object = objects.get(0);
-				Value value = session.getBlackboard().getValue((ValueObject) object);
-				String tooltip = object.getName() + " = '" + value.toString() + "'";
-				putValue(nodes, node, TOOL_TIP, tooltip);
-
-			}
+		String tooltip = FlowchartUtils.getValueTrace(session).getValueString(node);
+		if (tooltip != null) {
+			putValue(nodes, node, TOOL_TIP, tooltip);
 		}
+
 	}
 
 	public static <T> void putValue(Map<T, Map<String, String>> map, T object, String key, String value) {

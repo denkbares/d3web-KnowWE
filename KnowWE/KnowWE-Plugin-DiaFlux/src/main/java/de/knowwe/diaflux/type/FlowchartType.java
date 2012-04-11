@@ -20,7 +20,6 @@
 
 package de.knowwe.diaflux.type;
 
-import de.d3web.diaFlux.flow.DiaFluxCaseObject;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.InvalidKDOMSchemaModificationOperation;
 import de.knowwe.core.kdom.parsing.Section;
@@ -41,8 +40,6 @@ public class FlowchartType extends AbstractXMLType {
 		super("flowchart");
 		this.childrenTypes.add(FlowchartContentType.getInstance());
 		addSubtreeHandler(Priority.DEFAULT, new FlowchartSubTreeHandler());
-		// in Wiki mode we always want to have the trace be enabled
-		DiaFluxCaseObject.setTraceMode(true);
 		replaceHead();
 		setRenderer(new FlowchartRenderer());
 	}

@@ -19,21 +19,14 @@
 package de.knowwe.diaflux;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Set;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.ComposedNode;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
-import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -50,18 +43,22 @@ public class GetSubflowLinksAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String kdomid = context.getParameter("kdomid");
-		Section<?> diaFluxSec = Sections.getSection(kdomid);
 
-		Section<FlowchartType> flowchart =
-				Sections.findSuccessor(diaFluxSec, FlowchartType.class);
+		Section<FlowchartType> flowchart = Sections.getSection(kdomid, FlowchartType.class);
 		if (flowchart == null) {
 			context.getWriter().write(GetTraceHighlightAction.EMPTY_HIGHLIGHT);
 			return;
 		}
 
-		Article article = KnowWEUtils.getCompilingArticles(flowchart).iterator().next();
+		KnowledgeBase kb = FlowchartUtils.getKB(Sections.findAncestorOfType(flowchart,
+				DiaFluxType.class));
 
-		String string = addSubFlowLinks(article, flowchart);
+		if (kb == null) {
+			context.getWriter().write(GetTraceHighlightAction.EMPTY_HIGHLIGHT);
+			return;
+		}
+
+		String string = addSubFlowLinks(kb, flowchart);
 
 		context.setContentType("text/xml");
 		context.getWriter().write(string);
@@ -69,23 +66,20 @@ public class GetSubflowLinksAction extends AbstractAction {
 	}
 
 	// copied from FlowchartRenderers
-	private String addSubFlowLinks(Article article, Section<FlowchartType> section) {
+	private static String addSubFlowLinks(KnowledgeBase kb, Section<FlowchartType> section) {
 		// make sub-flowcharts links to be able to go to their definition
-		String thisFlowchartName = FlowchartType.getFlowchartName(section);
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
+		String flowName = FlowchartType.getFlowchartName(section);
 		if (kb == null) return GetTraceHighlightAction.EMPTY_HIGHLIGHT;
 		FlowSet flowSet = DiaFluxUtils.getFlowSet(kb);
 		if (flowSet == null) return GetTraceHighlightAction.EMPTY_HIGHLIGHT;
-		Flow flow = flowSet.get(thisFlowchartName);
+		Flow flow = flowSet.get(flowName);
 		if (flow == null) return GetTraceHighlightAction.EMPTY_HIGHLIGHT;
-
-		String flowName = FlowchartType.getFlowchartName(section);
 
 		StringBuilder builder = new StringBuilder();
 		builder.append("<flow id='" + FlowchartUtils.escapeHtmlId(flowName) + "'>");
 		for (ComposedNode node : flow.getNodesOfClass(ComposedNode.class)) {
 			// link to flowchart definition
-			Section<FlowchartType> calledSection = findFlowchartSection(
+			Section<FlowchartType> calledSection = FlowchartUtils.findFlowchartSection(
 					section, node.getCalledFlowName());
 			if (calledSection == null) continue;
 
@@ -98,37 +92,5 @@ public class GetSubflowLinksAction extends AbstractAction {
 		return builder.toString();
 	}
 
-	public static Section<FlowchartType> findFlowchartSection(
-			Section<FlowchartType> section, String calledFlowName) {
-		// get all articles compiling this flowchart that will be containing the
-		// link
-		PackageManager pkgManager =
-				Environment.getInstance().getPackageManager(section.getWeb());
-		Set<String> compilingArticles = pkgManager.getCompilingArticles(section);
-		// get all packages that are compiled by these articles
-		Collection<String> allPossiblePackageNames = new ArrayList<String>();
-		for (String compilingArticle : compilingArticles) {
-			allPossiblePackageNames.addAll(pkgManager.getCompiledPackages(compilingArticle));
-		}
-		// get all sections compiled by these articles
-		Collection<Section<?>> allPossibleSections = new ArrayList<Section<?>>();
-		for (String packageName : allPossiblePackageNames) {
-			allPossibleSections.addAll(pkgManager.getSectionsOfPackage(packageName));
-		}
-		// look for flowcharts with the given name in these compiled sections
-		Collection<Section<FlowchartType>> matches = new ArrayList<Section<FlowchartType>>();
-		for (Section<?> possibleSection : allPossibleSections) {
-			if (!(possibleSection.get() instanceof DiaFluxType)) continue;
-			Section<FlowchartType> flowchart = Sections.findSuccessor(
-					possibleSection, FlowchartType.class);
-			if (flowchart == null) continue;
-			String flowName = FlowchartType.getFlowchartName(flowchart);
-			if (calledFlowName.equalsIgnoreCase(flowName)) {
-				matches.add(flowchart);
-			}
-		}
-		// only if there is exactly one match, we know it is the correct one
-		if (matches.size() == 1) return matches.iterator().next();
-		return null;
-	}
+
 }

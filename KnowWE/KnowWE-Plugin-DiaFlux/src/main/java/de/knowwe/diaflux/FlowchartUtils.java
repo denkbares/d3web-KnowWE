@@ -21,17 +21,26 @@ package de.knowwe.diaflux;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.WeakHashMap;
 
+import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.session.Session;
 import de.d3web.diaFlux.flow.Flow;
+import de.d3web.diaFlux.inference.DiaFluxTrace;
+import de.d3web.diaFlux.inference.DiaFluxValueTrace;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.JPFPluginManager;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -214,13 +223,24 @@ public class FlowchartUtils {
 		return source;
 	}
 
+	public static DiaFluxTrace getTrace(Session session) {
+		return session.getSessionObject(DiaFluxTrace.SOURCE);
+
+	}
+
+	public static DiaFluxValueTrace getValueTrace(Session session) {
+		return session.getSessionObject(DiaFluxValueTrace.SOURCE);
+
+	}
+
 	/**
+	 * Returns the first flowchart in the given web with the provided name
 	 * 
 	 * @created 02.03.2011
-	 * @param calledFlowName
+	 * @param flowName The name of the flowchart
 	 * @return
 	 */
-	public static Section<FlowchartType> findFlowchartSection(String web, String calledFlowName) {
+	public static Section<FlowchartType> findFlowchartSection(String web, String flowName) {
 		ArticleManager manager = Environment.getInstance().getArticleManager(web);
 
 		for (Iterator<Article> iterator = manager.getArticleIterator(); iterator.hasNext();) {
@@ -228,8 +248,7 @@ public class FlowchartUtils {
 			List<Section<FlowchartType>> matches = new LinkedList<Section<FlowchartType>>();
 			Sections.findSuccessorsOfType(article.getRootSection(), FlowchartType.class, matches);
 			for (Section<FlowchartType> match : matches) {
-				String flowName = FlowchartType.getFlowchartName(match);
-				if (calledFlowName.equalsIgnoreCase(flowName)) {
+				if (flowName.equalsIgnoreCase(FlowchartType.getFlowchartName(match))) {
 					// simply return the first matching flowchart in we found in
 					// any article
 					return match;
@@ -239,4 +258,68 @@ public class FlowchartUtils {
 		// not match in no article
 		return null;
 	}
+
+	/**
+	 * Returns the corresponding Flowchart section of the given name, that is
+	 * called by the provided section.
+	 * 
+	 * @created 11.04.2012
+	 * @param section
+	 * @param calledFlowName
+	 * @return
+	 */
+	public static Section<FlowchartType> findFlowchartSection(
+			Section<FlowchartType> section, String calledFlowName) {
+		// get all articles compiling this flowchart that will be containing the
+		// link
+		PackageManager pkgManager =
+				Environment.getInstance().getPackageManager(section.getWeb());
+		Set<String> compilingArticles = pkgManager.getCompilingArticles(section);
+		// get all packages that are compiled by these articles
+		Collection<String> allPossiblePackageNames = new ArrayList<String>();
+		for (String compilingArticle : compilingArticles) {
+			allPossiblePackageNames.addAll(pkgManager.getCompiledPackages(compilingArticle));
+		}
+
+		// get all sections compiled by these articles
+		Collection<Section<?>> allPossibleSections = new ArrayList<Section<?>>();
+		for (String packageName : allPossiblePackageNames) {
+			allPossibleSections.addAll(pkgManager.getSectionsOfPackage(packageName));
+		}
+		// look for flowcharts with the given name in these compiled sections
+		Collection<Section<FlowchartType>> matches = new ArrayList<Section<FlowchartType>>();
+		for (Section<?> possibleSection : allPossibleSections) {
+			if (!(possibleSection.get() instanceof DiaFluxType)) continue;
+			Section<FlowchartType> flowchart = Sections.findSuccessor(
+					possibleSection, FlowchartType.class);
+			if (flowchart == null) continue;
+			String flowName = FlowchartType.getFlowchartName(flowchart);
+			if (calledFlowName.equalsIgnoreCase(flowName)) {
+				matches.add(flowchart);
+			}
+		}
+		// only if there is exactly one match, we know it is the correct one
+		if (matches.size() == 1) return matches.iterator().next();
+		return null;
+	}
+
+	/**
+	 * Return the first KB, that is compiling the given flowchart, of none, if
+	 * it is not compiled by any article.
+	 * 
+	 * @created 11.04.2012
+	 * @param s
+	 * @return
+	 */
+	public static KnowledgeBase getKB(Section<DiaFluxType> s) {
+
+		Iterator<Article> iterator = KnowWEUtils.getCompilingArticles(s).iterator();
+		if (!iterator.hasNext()) return null;
+
+		// TODO how to select right kb, if more than 1?
+		Article article = iterator.next();
+
+		return D3webUtils.getKnowledgeBase(s.getWeb(), article.getTitle());
+	}
+
 }
