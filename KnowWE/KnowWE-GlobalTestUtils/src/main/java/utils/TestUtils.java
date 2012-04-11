@@ -122,7 +122,7 @@ public class TestUtils {
 		StringBuffer inContent = new StringBuffer();
 		try {
 			BufferedReader bufferedReader = new BufferedReader(
-					new InputStreamReader(inputStream));
+					new InputStreamReader(inputStream, "UTF-8"));
 			int char1 = bufferedReader.read();
 			while (char1 != -1) {
 				inContent.append((char) char1);
