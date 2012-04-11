@@ -24,15 +24,50 @@ import java.util.Date;
 
 public interface ConnectorAttachment {
 
+	/**
+	 * Returns the file name of the attachment. The file name is not the file
+	 * name or path to the attachment in the file system of the wiki, but the
+	 * file name with which the attachment was uploaded by a user to the wiki.
+	 * 
+	 * @created 11.04.2012
+	 */
 	public String getFileName();
 
+	/**
+	 * Returns the name/title of the article the attachment belongs to.
+	 * 
+	 * @created 11.04.2012
+	 */
 	public String getParentName();
 
+	/**
+	 * Returns the full name of the attachment. The full name is comprised of
+	 * the article name of the attachment, followed by a separator and the file
+	 * name of the attachment itself.
+	 * 
+	 * @created 11.04.2012
+	 */
 	public String getFullName();
 
+	/**
+	 * Returns the date of the last change of attachment.
+	 * 
+	 * @created 11.04.2012
+	 */
 	public Date getDate();
 
+	/**
+	 * Returns the size of the attachment in bytes.
+	 * 
+	 * @created 11.04.2012
+	 */
 	public long getSize();
 
+	/**
+	 * Returns an InputStream with the content of the attachment. Dont forget to
+	 * close the stream after usage.
+	 * 
+	 * @created 11.04.2012
+	 */
 	public InputStream getInputStream() throws IOException;
 }

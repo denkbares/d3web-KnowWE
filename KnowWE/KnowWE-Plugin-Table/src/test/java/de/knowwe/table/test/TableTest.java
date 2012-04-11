@@ -23,11 +23,11 @@ package de.knowwe.table.test;
 import java.io.IOException;
 
 import junit.framework.TestCase;
+import connector.DummyConnector;
 import de.d3web.plugin.test.InitPluginManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import dummies.DummyConnector;
 
 /**
  * Class for testing some functionality of class Section.

@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import de.d3web.plugin.test.InitPluginManager;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
@@ -18,7 +17,6 @@ import de.knowwe.core.kdom.basicType.QuotedType;
 import de.knowwe.core.kdom.basicType.RoundBracedType;
 import de.knowwe.core.kdom.basicType.SquareBracedType;
 import de.knowwe.core.kdom.parsing.Section;
-import dummies.DummyConnector;
 
 /**
  * A scope is an selector of a specific subset of KDOM nodes. It's selection is
@@ -219,7 +217,9 @@ public class Scope {
 
 	public static void main(String... args) throws IOException {
 		InitPluginManager.init();
-		Environment.initInstance(new DummyConnector());
+		// had to comment out this, because the DummyConnector was moved out of
+		// the core.
+		// Environment.initInstance(new DummyConnector());
 		String t4 = "hello world";
 		String t3 = "[" + t4 + "]";
 		String t2 = "\"" + t3 + "\"";

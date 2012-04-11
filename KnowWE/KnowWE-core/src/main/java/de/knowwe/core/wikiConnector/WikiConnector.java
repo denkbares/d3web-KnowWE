@@ -101,25 +101,12 @@ public interface WikiConnector {
 	/**
 	 * Saves the article (persistently) into the connected wiki
 	 * 
-	 * @param name
-	 * @param text
+	 * @param title
+	 * @param content
 	 * @param context
 	 * @return
 	 */
-	public boolean writeArticleToWikiEnginePersistence(String name, String text, UserContext context);
-
-	/**
-	 * Saves the article (persistently) into the connected wiki
-	 * 
-	 * @param name
-	 * @param text
-	 * @param map
-	 * @param fullParse possibility to force the full parsing of the page (only
-	 *        for TestWikiConnector working)
-	 * @return
-	 */
-	// public boolean writeArticleToWikiEnginePersistence(String name, String
-	// text, KnowWEParameterMap map, boolean fullParse);
+	public boolean writeArticleToWikiEnginePersistence(String title, String content, UserContext context);
 
 	/**
 	 * @return a List of all ConnectorAttachments

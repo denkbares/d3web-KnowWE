@@ -21,10 +21,11 @@ package utils;
 import java.util.HashMap;
 import java.util.Map;
 
+import connector.DummyConnector;
+
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
-import dummies.DummyConnector;
 
 /**
  * 

@@ -18,7 +18,6 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.EmbracedType;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.wikiConnector.WikiConnector;
-import dummies.DummyConnector;
 
 public class Sections {
 
@@ -659,13 +658,6 @@ public class Sections {
 		String newArticleText = getNewArticleText(title, sectionsMapForCurrentTitle, context);
 		wikiConnector.writeArticleToWikiEnginePersistence(title, newArticleText, context);
 
-		if (wikiConnector instanceof DummyConnector) {
-			// This is only needed for the test environment. In the running
-			// wiki, this is automatically called after the change to the
-			// persistence.
-			Environment.getInstance().buildAndRegisterArticle(newArticleText,
-					title, context.getWeb());
-		}
 	}
 
 	private static String getNewArticleText(

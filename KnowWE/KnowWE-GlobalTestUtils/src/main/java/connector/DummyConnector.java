@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package dummies;
+package connector;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +34,7 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.ActionDispatcher;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.user.UserContext;
@@ -42,10 +43,10 @@ import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class DummyConnector implements WikiConnector {
 
-	private String wikiContentPath = "";
+	private DummyPageProvider dummyPageProvider = null;
 
-	public DummyConnector(String wikiContentPath) {
-		this.wikiContentPath = wikiContentPath;
+	public DummyConnector(DummyPageProvider dummyPageProvider) {
+		this.dummyPageProvider = dummyPageProvider;
 	}
 
 	public DummyConnector() {
@@ -77,8 +78,13 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public Map<String, String> getAllArticles(String web) {
-		// TODO Auto-generated method stub
-		return null;
+		if (dummyPageProvider == null) {
+			Logger.getLogger(this.getClass().getName()).warning(
+					"PageProvider not given, so there are no articles available");
+
+			return null;
+		}
+		return dummyPageProvider.getAllArticles();
 	}
 
 	@Override
@@ -123,7 +129,15 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public boolean writeArticleToWikiEnginePersistence(String name, String text, UserContext context) {
+	public boolean writeArticleToWikiEnginePersistence(String title, String content, UserContext context) {
+
+		// This is only needed for the test environment. In the running
+		// wiki, this is automatically called after the change to the
+		// persistence.
+		Environment.getInstance().buildAndRegisterArticle(content, title, context.getWeb());
+		if (dummyPageProvider != null) {
+			dummyPageProvider.setArticleContent(title, content);
+		}
 		return true;
 	}
 
@@ -185,13 +199,12 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public Collection<ConnectorAttachment> getAttachments() {
-		if (wikiContentPath == null) {
-			Logger.getLogger("Path to wikicontent not set");
+		if (dummyPageProvider == null) {
+			Logger.getLogger(this.getClass().getName()).warning(
+					"PageProvider not given, so there are no attachments available");
 			return null;
 		}
-		ArrayList<ConnectorAttachment> attachments = new ArrayList<ConnectorAttachment>();
-
-		return null;
+		return new ArrayList<ConnectorAttachment>(dummyPageProvider.getAllAttachments().values());
 	}
 
 	@Override
@@ -304,7 +317,4 @@ public class DummyConnector implements WikiConnector {
 		}
 	}
 
-	public void setWikiContentPath(String wikiContentPath) {
-		this.wikiContentPath = wikiContentPath;
-	}
 }

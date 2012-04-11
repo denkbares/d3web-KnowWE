@@ -190,6 +190,7 @@ public class JSPWikiConnector implements WikiConnector {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public java.util.Map<String, String> getAllArticles(String web) {
 		Map<String, String> result = new HashMap<String, String>();
@@ -594,7 +595,7 @@ public class JSPWikiConnector implements WikiConnector {
 			List<String> attachmentList = new LinkedList<String>();
 
 			// this list is in fact a Collection<Attachment>,
-			// the conversion is typesafe!
+			// the conversion is type safe!
 			@SuppressWarnings("unchecked")
 			Collection<Attachment> attList = this.engine.getAttachmentManager().
 					listAttachments(this.engine.getPage(pageName));

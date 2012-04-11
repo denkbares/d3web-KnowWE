@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
-import de.d3web.we.basic.D3webKnowledgeHandler;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
@@ -35,17 +35,16 @@ public class DownloadKnowledgeBase extends AbstractAction {
 
 		KnowledgeRepresentationHandler handler = Environment.getInstance()
 				.getKnowledgeRepresentationManager(web).getHandler("d3web");
+
 		// before writing, check if the user defined a desired filename
-		if (handler instanceof D3webKnowledgeHandler) {
-			KnowledgeBase base = ((D3webKnowledgeHandler) handler).getKnowledgeBase(topic);
-			String desired_filename = base.getInfoStore().getValue(BasicProperties.FILENAME);
-			if (desired_filename != null) {
-				filename = desired_filename;
-			}
-			// write the timestamp of the creation (Now!) into the knowledge
-			// base
-			base.getInfoStore().addValue(BasicProperties.CREATED, new Date());
+		KnowledgeBase base = D3webUtils.getKnowledgeBase(web, topic);
+		String desired_filename = base.getInfoStore().getValue(BasicProperties.FILENAME);
+		if (desired_filename != null) {
+			filename = desired_filename;
 		}
+		// write the timestamp of the creation (Now!) into the knowledge
+		// base
+		base.getInfoStore().addValue(BasicProperties.CREATED, new Date());
 
 		URL home = handler.saveKnowledge(topic);
 
