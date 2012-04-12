@@ -76,13 +76,19 @@ public class DiaFluxValueTraceTest {
 
 		propagate(session, questionYN, yes);
 
+		// After the first snapshot, a value has been traced only for node1
 		Assert.assertEquals(yes, trace.getValue(questionNode1));
 		Assert.assertNull(trace.getValue(questionNode2));
 
 		propagate(session, questionYN, no);
-
+		// after the second one, the value for the first node must still be the
+		// same
 		Assert.assertEquals(yes, trace.getValue(questionNode1));
 		Assert.assertEquals(no, trace.getValue(questionNode2));
+
+		// The value string should contain the old and the current value
+		Assert.assertTrue(trace.getValueString(questionNode1).contains(yes.toString()));
+		Assert.assertTrue(trace.getValueString(questionNode1).contains(no.toString()));
 
 	}
 
