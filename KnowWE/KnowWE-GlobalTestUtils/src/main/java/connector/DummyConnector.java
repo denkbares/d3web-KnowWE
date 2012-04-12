@@ -45,11 +45,11 @@ public class DummyConnector implements WikiConnector {
 
 	private DummyPageProvider dummyPageProvider = null;
 
-	public DummyConnector(DummyPageProvider dummyPageProvider) {
-		this.dummyPageProvider = dummyPageProvider;
+	public DummyConnector() {
 	}
 
-	public DummyConnector() {
+	public DummyConnector(DummyPageProvider dummyPageProvider) {
+		this.dummyPageProvider = dummyPageProvider;
 	}
 
 	@Override
@@ -77,6 +77,12 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
+	public String[] getAllActiveUsers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public Map<String, String> getAllArticles(String web) {
 		if (dummyPageProvider == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
@@ -85,6 +91,17 @@ public class DummyConnector implements WikiConnector {
 			return null;
 		}
 		return dummyPageProvider.getAllArticles();
+	}
+
+	@Override
+	public String[] getAllUsers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getApplicationRootPath() {
+		return new File("").getAbsolutePath();
 	}
 
 	@Override
@@ -100,101 +117,14 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public int getVersion(String name) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public String getBaseUrl() {
-		return "http://valid_base_url/";
-	}
-
-	@Override
-	public ServletContext getServletContext() {
+	public ConnectorAttachment getAttachment(String path) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public boolean isPageLocked(String articlename) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isPageLockedCurrentUser(String articlename, String user) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean writeArticleToWikiEnginePersistence(String title, String content, UserContext context) {
-
-		// This is only needed for the test environment. In the running
-		// wiki, this is automatically called after the change to the
-		// persistence.
-		Environment.getInstance().buildAndRegisterArticle(content, title, context.getWeb());
-		if (dummyPageProvider != null) {
-			dummyPageProvider.setArticleContent(title, content);
-		}
-		return true;
-	}
-
-	@Override
-	public boolean setPageLocked(String articlename, String user) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void undoPageLocked(String articlename) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean userCanEditPage(String articlename) {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
-	@Override
-	public boolean userCanEditPage(String articlename, HttpServletRequest r) {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
-	@Override
-	public String getRealPath() {
-		return "some-path";
-	}
-
-	@Override
-	public Locale getLocale() {
-		return Locale.CANADA_FRENCH;
-	}
-
-	@Override
-	public Locale getLocale(HttpServletRequest request) {
-		return Locale.CANADA_FRENCH;
 	}
 
 	@Override
 	public List<String> getAttachmentFilenamesForPage(String pageName) {
 		return new ArrayList<String>();
-	}
-
-	@Override
-	public Map<String, Integer> getVersionCounts() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean storeAttachment(String wikiPage, String user, File attachmentFile) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override
@@ -208,86 +138,14 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public String getSavePath() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String renderWikiSyntax(String pagedata, UserActionContext userContext) {
-		return null;
-	}
-
-	@Override
-	public boolean userIsMemberOfGroup(String username, String groupname, HttpServletRequest r) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public String getAuthor(String name, int version) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Date getLastModifiedDate(String name, int version) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Map<Integer, Date> getModificationHistory(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean userCanViewPage(String articlename) {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
-	@Override
-	public boolean userCanViewPage(String articlename, HttpServletRequest r) {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
-	@Override
-	public String wikiSyntaxToHtml(String syntax) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String[] getAllUsers() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String[] getAllActiveUsers() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ConnectorAttachment getAttachment(String path) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean storeAttachment(String wikiPage, String filename, String user, InputStream stream) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public String normalizeStringTo(String string) {
-		// TODO Auto-generated method stub
-		return string;
+	public String getBaseUrl() {
+		return "http://valid_base_url/";
 	}
 
 	/**
@@ -315,6 +173,151 @@ public class DummyConnector implements WikiConnector {
 		catch (IOException e) {
 			throw new Error(e);
 		}
+	}
+
+	@Override
+	public Date getLastModifiedDate(String name, int version) {
+		return null;
+	}
+
+	@Override
+	public Locale getLocale() {
+		return Locale.CANADA_FRENCH;
+	}
+
+	@Override
+	public Locale getLocale(HttpServletRequest request) {
+		return Locale.CANADA_FRENCH;
+	}
+
+	@Override
+	public Map<Integer, Date> getModificationHistory(String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getRealPath() {
+		return "some-path";
+	}
+
+	@Override
+	public String getSavePath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ServletContext getServletContext() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getVersion(String name) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Map<String, Integer> getVersionCounts() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isPageLocked(String articlename) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isPageLockedCurrentUser(String articlename, String user) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String normalizeStringTo(String string) {
+		// TODO Auto-generated method stub
+		return string;
+	}
+
+	@Override
+	public String renderWikiSyntax(String pagedata, UserActionContext userContext) {
+		return null;
+	}
+
+	@Override
+	public boolean setPageLocked(String articlename, String user) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean storeAttachment(String wikiPage, String user, File attachmentFile) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean storeAttachment(String wikiPage, String filename, String user, InputStream stream) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void undoPageLocked(String articlename) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public boolean userCanEditPage(String articlename) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean userCanEditPage(String articlename, HttpServletRequest r) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean userCanViewPage(String articlename) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean userCanViewPage(String articlename, HttpServletRequest r) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean userIsMemberOfGroup(String username, String groupname, HttpServletRequest r) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String wikiSyntaxToHtml(String syntax) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean writeArticleToWikiEnginePersistence(String title, String content, UserContext context) {
+
+		// This is only needed for the test environment. In the running
+		// wiki, this is automatically called after the change to the
+		// persistence.
+		Environment.getInstance().buildAndRegisterArticle(content, title, context.getWeb());
+		if (dummyPageProvider != null) {
+			dummyPageProvider.setArticleContent(title, content);
+		}
+		return true;
 	}
 
 }

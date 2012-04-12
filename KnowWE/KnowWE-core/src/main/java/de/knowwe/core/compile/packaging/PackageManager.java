@@ -40,6 +40,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.event.FullParseEvent;
 import de.knowwe.event.PreCompileFinishedEvent;
 import de.knowwe.event.UpdatingDependenciesEvent;
@@ -93,7 +94,7 @@ public class PackageManager implements EventListener {
 
 	private final Set<String> changedPackages = new HashSet<String>();
 
-	private static boolean autocompileArticleEnabled = ResourceBundle.getBundle("KnowWE_config").getString(
+	private static boolean autocompileArticleEnabled = KnowWEUtils.getConfigBundle().getString(
 			"packaging.autocompileArticle").contains("true");
 
 	public PackageManager(String web) {

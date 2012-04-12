@@ -50,149 +50,13 @@ import de.knowwe.core.user.UserContext;
 public interface WikiConnector {
 
 	/**
-	 * Checks whether the user is member of a given group
+	 * Appends some content to the wiki page with the given name
 	 * 
-	 * @param username
-	 * @param groupname
-	 * @param r
+	 * @param topic
+	 * @param pageContent
 	 * @return
 	 */
-	public boolean userIsMemberOfGroup(String username, String groupname, HttpServletRequest r);
-
-	/**
-	 * Normalizes a string the same way as the wiki engine normalizes wiki text
-	 * before saving it to a file.
-	 * 
-	 * @created 12.12.2011
-	 * @param string
-	 * @return
-	 */
-	public String normalizeStringTo(String string);
-
-	/**
-	 * Return the absolute path of the web-application
-	 * 
-	 * @return path of the web-application
-	 */
-	public String getRealPath();
-
-	/**
-	 * Returns the current servlet-context object
-	 * 
-	 * @return
-	 */
-	public ServletContext getServletContext();
-
-	/**
-	 * Returns a path to savely store owl files to. The path must be outside the
-	 * webapps dir to prevent the files to be deleted during a wiki-redeploy
-	 * 
-	 */
-	public String getSavePath();
-
-	/**
-	 * Return the ActionDispatcher which is responsible to receive the
-	 * http-request for the KnowWE-actions
-	 * 
-	 * @return
-	 */
-	public ActionDispatcher getActionDispatcher();
-
-	/**
-	 * Saves the article (persistently) into the connected wiki
-	 * 
-	 * @param title
-	 * @param content
-	 * @param context
-	 * @return
-	 */
-	public boolean writeArticleToWikiEnginePersistence(String title, String content, UserContext context);
-
-	/**
-	 * @return a List of all ConnectorAttachments
-	 */
-	public Collection<ConnectorAttachment> getAttachments();
-
-	/**
-	 * Returns the filenames of the attachments of the given wiki page
-	 * 
-	 * @param pageName
-	 * @return
-	 */
-	public List<String> getAttachmentFilenamesForPage(String pageName);
-
-	/**
-	 * Returns the URL of the running wiki
-	 * 
-	 * @return
-	 */
-	public String getBaseUrl();
-
-	/**
-	 * Returns the most current version of the source text of the wiki page with
-	 * the given name as one string
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public String getArticleSource(String name);
-
-	/**
-	 * Gets the most current version number of the article with the given name
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public int getVersion(String name);
-
-	/**
-	 * Returns the given version of the source text of the wiki page
-	 * 
-	 * @param name the name of the article
-	 * @param version the version number of the article source to be retrieved
-	 * @return the source of the article, or null if the given version does not
-	 *         exist
-	 */
-	public String getArticleSource(String name, int version);
-
-	/**
-	 * Gets the author of the specified version of the given article ( by name )
-	 * 
-	 * @created 14.06.2010
-	 * @param name the name of the article which has to be selected
-	 * @param version the version number of which the author has to be returned
-	 * @return the author of the specified version or null
-	 */
-	public String getAuthor(String name, int version);
-
-	public Map<Integer, Date> getModificationHistory(String name);
-
-	/**
-	 * Gets the Date when the specified version of the article was last modified
-	 * 
-	 * @created 17.07.2010
-	 * @param name the name of the article
-	 * @param version the version of the article
-	 * @return the Date when the selected articleversion was modified
-	 */
-	public Date getLastModifiedDate(String name, int version);
-
-	/**
-	 * Returns a map of all wiki pages with page names as key and page sources
-	 * as values
-	 * 
-	 * @param web
-	 * @return
-	 */
-	public Map<String, String> getAllArticles(String web);
-
-	/**
-	 * tests if a page of the given name exists
-	 * 
-	 * @param Topic
-	 * @return
-	 */
-	public boolean doesPageExist(String Topic);
+	public String appendContentToPage(String topic, String pageContent);
 
 	/**
 	 * Creates a new Wiki page with given name and content and author in the
@@ -206,13 +70,253 @@ public interface WikiConnector {
 	public String createWikiPage(String topic, String newContent, String author);
 
 	/**
-	 * Appends some content to the wiki page with the given name
+	 * tests if a page of the given name exists
 	 * 
-	 * @param topic
-	 * @param pageContent
+	 * @param Topic
 	 * @return
 	 */
-	public String appendContentToPage(String topic, String pageContent);
+	public boolean doesPageExist(String Topic);
+
+	/**
+	 * Return the ActionDispatcher which is responsible to receive the
+	 * http-request for the KnowWE-actions
+	 * 
+	 * @return
+	 */
+	public ActionDispatcher getActionDispatcher();
+
+	/**
+	 * Get all active users.
+	 * 
+	 * @return The usernames of all active users.
+	 */
+	public String[] getAllActiveUsers();
+
+	/**
+	 * Returns a map of all wiki pages with page names as key and page sources
+	 * as values
+	 * 
+	 * @param web
+	 * @return
+	 */
+	public Map<String, String> getAllArticles(String web);
+
+	/**
+	 * Get all users.
+	 * 
+	 * @return The usernames.
+	 */
+	public String[] getAllUsers();
+
+	/**
+	 * Returns the path to the root of the application
+	 * 
+	 * @created 12.04.2012
+	 */
+	public String getApplicationRootPath();
+
+	/**
+	 * Returns the most current version of the source text of the wiki page with
+	 * the given name as one string
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public String getArticleSource(String name);
+
+	/**
+	 * Returns the given version of the source text of the wiki page
+	 * 
+	 * @param name the name of the article
+	 * @param version the version number of the article source to be retrieved
+	 * @return the source of the article, or null if the given version does not
+	 *         exist
+	 */
+	public String getArticleSource(String name, int version);
+
+	/**
+	 * Returns the Attachment given by the supplied path.
+	 * 
+	 * @created 30.08.2011
+	 * @param path
+	 * @return the attachment or null, if it does not exist.
+	 */
+	ConnectorAttachment getAttachment(String path);
+
+	/**
+	 * Returns the filenames of the attachments of the given wiki page
+	 * 
+	 * @param pageName
+	 * @return
+	 */
+	public List<String> getAttachmentFilenamesForPage(String pageName);
+
+	/**
+	 * @return a List of all ConnectorAttachments
+	 */
+	public Collection<ConnectorAttachment> getAttachments();
+
+	/**
+	 * Gets the author of the specified version of the given article ( by name )
+	 * 
+	 * @created 14.06.2010
+	 * @param name the name of the article which has to be selected
+	 * @param version the version number of which the author has to be returned
+	 * @return the author of the specified version or null
+	 */
+	public String getAuthor(String name, int version);
+
+	/**
+	 * Returns the URL of the running wiki
+	 * 
+	 * @return
+	 */
+	public String getBaseUrl();
+
+	public String getKnowWEExtensionPath();
+
+	/**
+	 * Gets the Date when the specified version of the article was last modified
+	 * 
+	 * @created 17.07.2010
+	 * @param name the name of the article
+	 * @param version the version of the article
+	 * @return the Date when the selected articleversion was modified
+	 */
+	public Date getLastModifiedDate(String name, int version);
+
+	/**
+	 * reads the default locale of the connected wiki
+	 * 
+	 * @return
+	 */
+	public Locale getLocale();
+
+	/**
+	 * reads the locale which was configured by the current user
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public Locale getLocale(HttpServletRequest request);
+
+	public Map<Integer, Date> getModificationHistory(String name);
+
+	/**
+	 * Return the absolute path of the web-application
+	 * 
+	 * @return path of the web-application
+	 */
+	public String getRealPath();
+
+	/**
+	 * Returns a path to savely store owl files to. The path must be outside the
+	 * webapps dir to prevent the files to be deleted during a wiki-redeploy
+	 * 
+	 */
+	public String getSavePath();
+
+	/**
+	 * Returns the current servlet-context object
+	 * 
+	 * @return
+	 */
+	public ServletContext getServletContext();
+
+	/**
+	 * Gets the most current version number of the article with the given name
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public int getVersion(String name);
+
+	/**
+	 * Return a Map from pageNames to the number of (edited) versions of this
+	 * page
+	 * 
+	 * @return
+	 */
+	public Map<String, Integer> getVersionCounts();
+
+	/**
+	 * Checks whether a page has a editing lock (due to another user who has
+	 * startet to edit it)
+	 * 
+	 * @param articlename
+	 * @return
+	 */
+	public boolean isPageLocked(String articlename);
+
+	/**
+	 * Checks whether a given page is locked by the given user
+	 * 
+	 * @param articlename
+	 * @param user
+	 * @return
+	 */
+	public boolean isPageLockedCurrentUser(String articlename, String user);
+
+	/**
+	 * Normalizes a string the same way as the wiki engine normalizes wiki text
+	 * before saving it to a file.
+	 * 
+	 * @created 12.12.2011
+	 * @param string
+	 * @return
+	 */
+	public String normalizeStringTo(String string);
+
+	/**
+	 * Renders given WIKI mark-up in the pagedata.
+	 * 
+	 * @param pagedata The current data of the page.
+	 * @param userContext The parameters of the request.
+	 * @return The masked pagedata.
+	 */
+	public String renderWikiSyntax(String pagedata, UserActionContext userContext);
+
+	/**
+	 * Sets an editing lock on the page, denoting that the page is currently
+	 * editing by the given user.
+	 * 
+	 * @param articlename
+	 * @param user
+	 * @return
+	 */
+	public boolean setPageLocked(String articlename, String user);
+
+	/**
+	 * Stores an File as an attachment to the given page. Returns whether the
+	 * operation was successful or not.
+	 * 
+	 * @param wikiPage the name of the page, to which this attachment should be
+	 *        stored
+	 * @param user is the user wanting to store the attachment (important for
+	 *        lock of the page)
+	 * @param attachmentFile the attachment to be stored
+	 * @return
+	 */
+	boolean storeAttachment(String wikiPage, String user, File attachmentFile);
+
+	/**
+	 * 
+	 * @created 30.08.2011
+	 * @param wikiPage
+	 * @param filename
+	 * @param user is the user wanting to store the attachment (important for
+	 *        lock of the page)
+	 * @param stream
+	 * @return
+	 */
+	boolean storeAttachment(String wikiPage, String filename, String user, InputStream stream);
+
+	/**
+	 * Removes a page editing lock
+	 * 
+	 * @param articlename
+	 */
+	public void undoPageLocked(String articlename);
 
 	/**
 	 * Checks whether a user can edit a given page
@@ -250,84 +354,14 @@ public interface WikiConnector {
 	public boolean userCanViewPage(String articlename, HttpServletRequest r);
 
 	/**
-	 * Checks whether a page has a editing lock (due to another user who has
-	 * startet to edit it)
+	 * Checks whether the user is member of a given group
 	 * 
-	 * @param articlename
+	 * @param username
+	 * @param groupname
+	 * @param r
 	 * @return
 	 */
-	public boolean isPageLocked(String articlename);
-
-	/**
-	 * Sets an editing lock on the page, denoting that the page is currently
-	 * editing by the given user.
-	 * 
-	 * @param articlename
-	 * @param user
-	 * @return
-	 */
-	public boolean setPageLocked(String articlename, String user);
-
-	/**
-	 * Removes a page editing lock
-	 * 
-	 * @param articlename
-	 */
-	public void undoPageLocked(String articlename);
-
-	/**
-	 * Checks whether a given page is locked by the given user
-	 * 
-	 * @param articlename
-	 * @param user
-	 * @return
-	 */
-	public boolean isPageLockedCurrentUser(String articlename, String user);
-
-	/**
-	 * reads the default locale of the connected wiki
-	 * 
-	 * @return
-	 */
-	public Locale getLocale();
-
-	/**
-	 * reads the locale which was configured by the current user
-	 * 
-	 * @param request
-	 * @return
-	 */
-	public Locale getLocale(HttpServletRequest request);
-
-	/**
-	 * Return a Map from pageNames to the number of (edited) versions of this
-	 * page
-	 * 
-	 * @return
-	 */
-	public Map<String, Integer> getVersionCounts();
-
-	/**
-	 * Stores an File as an attachment to the given page. Returns whether the
-	 * operation was successful or not.
-	 * 
-	 * @param wikiPage the name of the page, to which this attachment should be
-	 *        stored
-	 * @param user is the user wanting to store the attachment (important for
-	 *        lock of the page)
-	 * @param attachmentFile the attachment to be stored
-	 * @return
-	 */
-	boolean storeAttachment(String wikiPage, String user, File attachmentFile);
-
-	/**
-	 * Renders given WIKI mark-up in the pagedata.
-	 * 
-	 * @param pagedata The current data of the page.
-	 * @param userContext The parameters of the request.
-	 * @return The masked pagedata.
-	 */
-	public String renderWikiSyntax(String pagedata, UserActionContext userContext);
+	public boolean userIsMemberOfGroup(String username, String groupname, HttpServletRequest r);
 
 	/**
 	 * Converts a given String in Wiki-Markup to HTML.
@@ -339,39 +373,12 @@ public interface WikiConnector {
 	public String wikiSyntaxToHtml(String syntax);
 
 	/**
-	 * Get all users.
+	 * Saves the article (persistently) into the connected wiki
 	 * 
-	 * @return The usernames.
-	 */
-	public String[] getAllUsers();
-
-	/**
-	 * Get all active users.
-	 * 
-	 * @return The usernames of all active users.
-	 */
-	public String[] getAllActiveUsers();
-
-	/**
-	 * Returns the Attachment given by the supplied path.
-	 * 
-	 * @created 30.08.2011
-	 * @param path
-	 * @return the attachment or null, if it does not exist.
-	 */
-	ConnectorAttachment getAttachment(String path);
-
-	/**
-	 * 
-	 * @created 30.08.2011
-	 * @param wikiPage
-	 * @param filename
-	 * @param user is the user wanting to store the attachment (important for
-	 *        lock of the page)
-	 * @param stream
+	 * @param title
+	 * @param content
+	 * @param context
 	 * @return
 	 */
-	boolean storeAttachment(String wikiPage, String filename, String user, InputStream stream);
-
-	public String getKnowWEExtensionPath();
+	public boolean writeArticleToWikiEnginePersistence(String title, String content, UserContext context);
 }

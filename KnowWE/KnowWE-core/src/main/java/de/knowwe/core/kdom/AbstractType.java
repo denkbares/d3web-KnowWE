@@ -36,6 +36,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.DefaultMessageRenderer;
 import de.knowwe.core.report.MessageRenderer;
+import de.knowwe.core.utils.KnowWEUtils;
 
 public abstract class AbstractType implements Type, Sectionizable {
 
@@ -136,7 +137,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * 
 	 */
 	public AbstractType() {
-		ResourceBundle resourceBundle = ResourceBundle.getBundle("KnowWE_config");
+		ResourceBundle resourceBundle = KnowWEUtils.getConfigBundle();
 		String ignoreFlag = "packaging.ignorePackages";
 		if (resourceBundle.containsKey(ignoreFlag)) {
 			if (resourceBundle.getString(ignoreFlag).contains("true")) {

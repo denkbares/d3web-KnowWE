@@ -226,7 +226,7 @@ public class Environment {
 	}
 
 	private void initPlugins() throws InstantiationError {
-		File libDir = new File(getKnowWEExtensionPath() + "/../WEB-INF/lib");
+		File libDir = new File(KnowWEUtils.getApplicationRootPath() + "/WEB-INF/lib");
 		// when testing, libDir doesn't exist, but the plugin framework is
 		// initialized in junittest, so there is no problem
 		// if libDir is doesn't exist in runtime, nothing will work, so this
@@ -259,9 +259,7 @@ public class Environment {
 				if (!pathName.endsWith("/") && pathName.startsWith("webapp/")) {
 					pathName = pathName.substring("webapp/".length());
 					try {
-						File file = new File(
-								new File(getKnowWEExtensionPath()).getParentFile().getCanonicalPath()
-										+ "/" + pathName);
+						File file = new File(KnowWEUtils.getApplicationRootPath() + "/" + pathName);
 						File parent = file.getParentFile();
 						if (!parent.isDirectory()) {
 							parent.mkdirs();
@@ -454,10 +452,6 @@ public class Environment {
 
 	public CompilationMode getCompilationMode() {
 		return currentCompilationMode;
-	}
-
-	public String getKnowWEExtensionPath() {
-		return wikiConnector.getKnowWEExtensionPath();
 	}
 
 	/**

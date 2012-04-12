@@ -20,9 +20,14 @@
 
 package de.knowwe.core.utils;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -35,10 +40,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletContext;
-
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -46,7 +48,6 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.SectionStore;
-import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.ConnectorAttachment;
 
 public class KnowWEUtils {
@@ -108,6 +109,85 @@ public class KnowWEUtils {
 				+ Math.abs(section.getID().hashCode());
 	}
 
+	/**
+	 * Returns the ConnectorAttachment for a specified filename on a specified
+	 * wikipage
+	 * 
+	 * @created 27.01.2012
+	 * @param title Title of the wikipage
+	 * @param fileName filename of the attachment
+	 * @return {@link ConnectorAttachment} fulfilling the specified parameters
+	 *         or null, if no such attachment exists
+	 */
+	public static ConnectorAttachment getAttachment(String title, String fileName) {
+		Collection<ConnectorAttachment> attachments = Environment.getInstance().getWikiConnector().getAttachments();
+		ConnectorAttachment actualAttachment = null;
+		for (ConnectorAttachment attachment : attachments) {
+			if ((attachment.getFileName().equals(fileName)
+					&& attachment.getParentName().equals(title))
+					|| attachment.getFullName().equals(fileName)) {
+				actualAttachment = attachment;
+				break;
+			}
+		}
+		return actualAttachment;
+	}
+
+	/**
+	 * Returns all {@link ConnectorAttachment}s which full name fits to the
+	 * regex or which filename matches to the regexp and which parent has the
+	 * specified topic
+	 * 
+	 * @created 09.02.2012
+	 * @param regex regular expression the attachments should match to
+	 * @param topic Topic of the article
+	 * @return Collection of {@link ConnectorAttachment}s
+	 */
+	public static Collection<ConnectorAttachment> getAttachments(String regex, String topic) {
+		Collection<ConnectorAttachment> result = new LinkedList<ConnectorAttachment>();
+		Collection<ConnectorAttachment> attachments = Environment.getInstance().getWikiConnector().getAttachments();
+		Pattern pattern = Pattern.compile(regex);
+		for (ConnectorAttachment attachment : attachments) {
+			if (pattern.matcher(attachment.getFullName()).matches()
+						|| (pattern.matcher(attachment.getFileName()).matches() && attachment.getParentName().equals(
+								topic))) {
+				result.add(attachment);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Returns all master articles that compile the given Section. If no master
+	 * article compiles the Section, at least the article of the Section itself
+	 * is returned, so the Collection always at least contains one article.
+	 * 
+	 * @created 16.02.2012
+	 * @param section is the Section for which you want to know the compiling
+	 *        articles
+	 * @return a non empty Collection of articles that compile the given Section
+	 */
+	public static Collection<Article> getCompilingArticles(Section<?> section) {
+		Collection<Article> articles = new ArrayList<Article>();
+		Environment env = Environment.getInstance();
+		Set<String> referingArticleTitles = env.getPackageManager(section.getWeb()).getCompilingArticles(
+				section);
+		ArticleManager articleManager = env.getArticleManager(section.getWeb());
+		for (String title : referingArticleTitles) {
+			Article article =
+					Article.getCurrentlyBuildingArticle(section.getWeb(), title);
+			if (article == null) article = articleManager.getArticle(title);
+			if (article == null) continue;
+			articles.add(article);
+		}
+		if (articles.isEmpty()) articles.add(section.getArticle());
+		return articles;
+	}
+
+	public static ResourceBundle getConfigBundle() {
+		return ResourceBundle.getBundle("KnowWE_config");
+	}
+
 	public static String getErrorQ404(String question, String text) {
 		String rendering = "<span class=\"semLink\"><a href=\"#\" title=\""
 				+ "Question not found:"
@@ -119,49 +199,13 @@ public class KnowWEUtils {
 
 	}
 
-	public static String getPageChangeLogPath() {
-		return getVersionsSavePath() + "PageChangeLog.txt";
+	/**
+	 * @return the {@link TerminologyManager} that handles global terms for this
+	 *         web (similar to the former {@link TermRegistrationScope#GLOBAL}).
+	 */
+	public static TerminologyManager getGlobalTerminologyManager(String web) {
+		return Environment.getInstance().getTerminologyManager(web, null);
 	}
-
-	public static String getRealPath(ServletContext context, String varPath) {
-		if (varPath.indexOf("$webapp_path$") != -1) {
-			String realPath = context.getRealPath("");
-			realPath = realPath.replace('\\', '/');
-			while (realPath.endsWith("/")) {
-				realPath = realPath.substring(0, realPath.length() - 1);
-			}
-			varPath = varPath.replaceAll("\\$webapp_path\\$", realPath);
-		}
-		return varPath;
-	}
-
-	public static String getSessionPath(UserContext context) {
-		String user = context.getParameter(Attributes.USER);
-		String web = context.getParameter(Attributes.WEB);
-		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
-		String sessionDir = rb.getString("knowwe.config.path.sessions");
-		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
-		sessionDir = sessionDir.replaceAll("\\$user\\$", user);
-
-		sessionDir = getRealPath(context.getServletContext(), sessionDir);
-		return sessionDir;
-	}
-
-	public static Object getStoredObject(Article article, Section<?> s, String key) {
-		return s.getSectionStore().getObject(article, key);
-	}
-
-	public static Object getStoredObject(Section<?> s, String key) {
-		return getStoredObject(null, s, key);
-	}
-
-	// public static String getVariablePath(ServletContext context, String
-	// realPath) {
-	// String varPath = context.getRealPath("");
-	// varPath = varPath.replace('\\', '/');
-	// realPath = realPath.replaceAll(varPath, "\\$webapp_path\\$");
-	// return realPath;
-	// }
 
 	// public static String repairUmlauts(String s) {
 	// // then replace special characters
@@ -178,6 +222,63 @@ public class KnowWEUtils {
 	// return(s);
 	// }
 
+	public static String getKnowWEExtensionPath() {
+		return Environment.getInstance().getWikiConnector().getKnowWEExtensionPath();
+	}
+
+	public static String getApplicationRootPath() {
+		return Environment.getInstance().getWikiConnector().getApplicationRootPath();
+	}
+
+	public static String getPageChangeLogPath() {
+		return getVersionsSavePath() + "PageChangeLog.txt";
+	}
+
+	public static String getRealPath(String varPath) {
+		if (varPath.contains("$root_path$")) {
+			String rootPath = Environment.getInstance().getWikiConnector()
+					.getApplicationRootPath();
+			rootPath = rootPath.replace('\\', '/');
+			rootPath = rootPath.replaceAll("/+$", "");
+			varPath = varPath.replace("$root_path$", rootPath);
+		}
+		return varPath;
+	}
+
+	public static Object getStoredObject(Article article, Section<?> s, String key) {
+		return s.getSectionStore().getObject(article, key);
+	}
+
+	public static Object getStoredObject(Section<?> s, String key) {
+		return getStoredObject(null, s, key);
+	}
+
+	/**
+	 * @created 08.02.2012
+	 * @param termSection the Section which should implement the interface
+	 *        SimpleTerm
+	 * @returns the term identifier if the given Section has the type
+	 *          SimpleTerm, the text of the Section else
+	 */
+	public static String getTermIdentifier(Section<?> termSection) {
+		String termIdentifier = termSection.getText();
+		if (termSection.get() instanceof SimpleTerm) {
+			@SuppressWarnings("unchecked")
+			Section<? extends SimpleTerm> simpleSection = (Section<? extends SimpleTerm>) termSection;
+			termIdentifier = simpleSection.get().getTermIdentifier(simpleSection);
+		}
+		return termIdentifier;
+	}
+
+	/**
+	 * @return the {@link TerminologyManager} for the given (master) article.
+	 */
+	public static TerminologyManager getTerminologyManager(Article article) {
+		String web = article == null ? Environment.DEFAULT_WEB : article.getWeb();
+		String title = article == null ? null : article.getTitle();
+		return Environment.getInstance().getTerminologyManager(web, title);
+	}
+
 	public static TerminologyManager getTerminologyManager(Article article, TermRegistrationScope scope) {
 		TerminologyManager tHandler;
 		if (scope == TermRegistrationScope.GLOBAL) {
@@ -190,20 +291,15 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * @return the {@link TerminologyManager} for the given (master) article.
+	 * Creates a &lt;a href="..."&gt; styled link to the specified article.
+	 * 
+	 * @param article the article to create the link for
+	 * @return the created link
+	 * @see #getURLLink(Section)
+	 * @see #getWikiLink(Section)
 	 */
-	public static TerminologyManager getTerminologyManager(Article article) {
-		String web = article == null ? Environment.DEFAULT_WEB : article.getWeb();
-		String title = article == null ? null : article.getTitle();
-		return Environment.getInstance().getTerminologyManager(web, title);
-	}
-
-	/**
-	 * @return the {@link TerminologyManager} that handles global terms for this
-	 *         web (similar to the former {@link TermRegistrationScope#GLOBAL}).
-	 */
-	public static TerminologyManager getGlobalTerminologyManager(String web) {
-		return Environment.getInstance().getTerminologyManager(web, null);
+	public static String getURLLink(Article article) {
+		return "Wiki.jsp?page=" + article.getTitle();
 	}
 
 	/**
@@ -219,18 +315,6 @@ public class KnowWEUtils {
 	 */
 	public static String getURLLink(Section<?> section) {
 		return "Wiki.jsp?page=" + section.getTitle() + "#" + getAnchor(section);
-	}
-
-	/**
-	 * Creates a &lt;a href="..."&gt; styled link to the specified article.
-	 * 
-	 * @param article the article to create the link for
-	 * @return the created link
-	 * @see #getURLLink(Section)
-	 * @see #getWikiLink(Section)
-	 */
-	public static String getURLLink(Article article) {
-		return "Wiki.jsp?page=" + article.getTitle();
 	}
 
 	public static String getVersionsSavePath() {
@@ -471,6 +555,34 @@ public class KnowWEUtils {
 		}
 	}
 
+	public static String readFile(String fileName) {
+		try {
+			return readFile(new FileInputStream(fileName));
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return "";
+		}
+	}
+
+	public static String readFile(InputStream inputStream) {
+		StringBuffer inContent = new StringBuffer();
+		try {
+			BufferedReader bufferedReader = new BufferedReader(
+					new InputStreamReader(inputStream, "UTF-8"));
+			int char1 = bufferedReader.read();
+			while (char1 != -1) {
+				inContent.append((char) char1);
+				char1 = bufferedReader.read();
+			}
+			bufferedReader.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return inContent.toString();
+	}
+
 	public static void writeFile(String path, String content) {
 
 		try {
@@ -483,102 +595,6 @@ public class KnowWEUtils {
 			Logger.getLogger(KnowWEUtils.class.getName()).log(
 					Level.WARNING, "Unable to write File: " + e.getMessage());
 		}
-	}
-
-	/**
-	 * Returns the ConnectorAttachment for a specified filename on a specified
-	 * wikipage
-	 * 
-	 * @created 27.01.2012
-	 * @param title Title of the wikipage
-	 * @param fileName filename of the attachment
-	 * @return {@link ConnectorAttachment} fulfilling the specified parameters
-	 *         or null, if no such attachment exists
-	 */
-	public static ConnectorAttachment getAttachment(String title, String fileName) {
-		Collection<ConnectorAttachment> attachments = Environment.getInstance().getWikiConnector().getAttachments();
-		ConnectorAttachment actualAttachment = null;
-		for (ConnectorAttachment attachment : attachments) {
-			if ((attachment.getFileName().equals(fileName)
-					&& attachment.getParentName().equals(title))
-					|| attachment.getFullName().equals(fileName)) {
-				actualAttachment = attachment;
-				break;
-			}
-		}
-		return actualAttachment;
-	}
-
-	/**
-	 * @created 08.02.2012
-	 * @param termSection the Section which should implement the interface
-	 *        SimpleTerm
-	 * @returns the term identifier if the given Section has the type
-	 *          SimpleTerm, the text of the Section else
-	 */
-	public static String getTermIdentifier(Section<?> termSection) {
-		String termIdentifier = termSection.getText();
-		if (termSection.get() instanceof SimpleTerm) {
-			@SuppressWarnings("unchecked")
-			Section<? extends SimpleTerm> simpleSection = (Section<? extends SimpleTerm>) termSection;
-			termIdentifier = simpleSection.get().getTermIdentifier(simpleSection);
-		}
-		return termIdentifier;
-	}
-
-	/**
-	 * Returns all {@link ConnectorAttachment}s which full name fits to the
-	 * regex or which filename matches to the regexp and which parent has the
-	 * specified topic
-	 * 
-	 * @created 09.02.2012
-	 * @param regex regular expression the attachments should match to
-	 * @param topic Topic of the article
-	 * @return Collection of {@link ConnectorAttachment}s
-	 */
-	public static Collection<ConnectorAttachment> getAttachments(String regex, String topic) {
-		Collection<ConnectorAttachment> result = new LinkedList<ConnectorAttachment>();
-		Collection<ConnectorAttachment> attachments = Environment.getInstance().getWikiConnector().getAttachments();
-		Pattern pattern = Pattern.compile(regex);
-		for (ConnectorAttachment attachment : attachments) {
-			if (pattern.matcher(attachment.getFullName()).matches()
-						|| (pattern.matcher(attachment.getFileName()).matches() && attachment.getParentName().equals(
-								topic))) {
-				result.add(attachment);
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Returns all master articles that compile the given Section. If no master
-	 * article compiles the Section, at least the article of the Section itself
-	 * is returned, so the Collection always at least contains one article.
-	 * 
-	 * @created 16.02.2012
-	 * @param section is the Section for which you want to know the compiling
-	 *        articles
-	 * @return a non empty Collection of articles that compile the given Section
-	 */
-	public static Collection<Article> getCompilingArticles(Section<?> section) {
-		Collection<Article> articles = new ArrayList<Article>();
-		Environment env = Environment.getInstance();
-		Set<String> referingArticleTitles = env.getPackageManager(section.getWeb()).getCompilingArticles(
-				section);
-		ArticleManager articleManager = env.getArticleManager(section.getWeb());
-		for (String title : referingArticleTitles) {
-			Article article =
-					Article.getCurrentlyBuildingArticle(section.getWeb(), title);
-			if (article == null) article = articleManager.getArticle(title);
-			if (article == null) continue;
-			articles.add(article);
-		}
-		if (articles.isEmpty()) articles.add(section.getArticle());
-		return articles;
-	}
-
-	public static ResourceBundle getConfigBundle() {
-		return ResourceBundle.getBundle("KnowWE_config");
 	}
 
 }

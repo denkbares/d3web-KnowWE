@@ -40,7 +40,6 @@ public class FileSystemConnectorAttachment implements ConnectorAttachment {
 	private final String fileName;
 
 	public FileSystemConnectorAttachment(String fileName, String parentName, File attachmentFile) {
-
 		this.attachmentFile = attachmentFile;
 		this.fileName = fileName;
 		this.parentName = parentName;

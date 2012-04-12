@@ -33,10 +33,9 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import utils.TestUtils;
-
 import com.ecyrd.jspwiki.providers.BasicAttachmentProvider;
 
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.ConnectorAttachment;
 
 /**
@@ -86,7 +85,7 @@ public class DummyPageProvider {
 
 	private void cacheZipArticle(ZipFile wikiContentZip, ZipEntry entry, Matcher articleMatcher) throws IOException, UnsupportedEncodingException {
 		InputStream entryStream = wikiContentZip.getInputStream(entry);
-		String articleContent = TestUtils.readTxtFile(entryStream);
+		String articleContent = KnowWEUtils.readFile(entryStream);
 		String title = articleMatcher.group(1);
 		title = URLDecoder.decode(title, "UTF8");
 		setArticleContent(title, articleContent);
@@ -103,8 +102,7 @@ public class DummyPageProvider {
 
 		String versionFileName = attachmentMatcher.group(3);
 		if (isLatestVersion(versionFileName, zipConAttachment)) {
-			attachments.put(zipConAttachment.getFullName(),
-					zipConAttachment);
+			storeAttachment(zipConAttachment.getFullName(), zipConAttachment);
 		}
 	}
 
@@ -134,7 +132,7 @@ public class DummyPageProvider {
 	}
 
 	private void cacheFileSystemArticle(File wikiFile) throws IOException, UnsupportedEncodingException {
-		String articleContent = TestUtils.readTxtFile(wikiFile.getCanonicalPath());
+		String articleContent = KnowWEUtils.readFile(wikiFile.getCanonicalPath());
 		String title = wikiFile.getName();
 		title = title.replaceAll(".txt$", "");
 		title = URLDecoder.decode(title, "UTF8");
@@ -160,7 +158,7 @@ public class DummyPageProvider {
 								fileName, parentName, attachmentVersionFile);
 
 						if (isLatestVersion(attachmentVersionFile.getName(), fileConAttachment)) {
-							attachments.put(fileConAttachment.getFullName(), fileConAttachment);
+							storeAttachment(fileConAttachment.getFullName(), fileConAttachment);
 						}
 					}
 				}
@@ -203,7 +201,10 @@ public class DummyPageProvider {
 
 	public void setArticleContent(String title, String content) {
 		articles.put(title, content);
+	}
 
+	public void storeAttachment(String fullName, ConnectorAttachment attachment) {
+		attachments.put(fullName, attachment);
 	}
 
 	public Map<String, String> getAllArticles() {

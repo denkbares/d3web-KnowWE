@@ -22,10 +22,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import connector.DummyConnector;
-
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * 
@@ -58,7 +58,7 @@ public class TestArticleManager {
 
 		if (!getInstance().articles.containsKey(filename)) {
 			// Read File containing content
-			String content = TestUtils.readTxtFile(filename);
+			String content = KnowWEUtils.readFile(filename);
 			Article article = createArcticleFromSourceFile(content, filename);
 			getInstance().articles.put(filename, article);
 

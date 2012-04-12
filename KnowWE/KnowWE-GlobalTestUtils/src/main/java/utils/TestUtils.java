@@ -20,12 +20,7 @@
 
 package utils;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -106,34 +101,6 @@ public class TestUtils {
 
 	public static String ReaderToString(Reader r) {
 		return readBytes(r).replace('@', '%');
-	}
-
-	public static String readTxtFile(String fileName) {
-		try {
-			return readTxtFile(new FileInputStream(fileName));
-		}
-		catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return "";
-		}
-	}
-
-	public static String readTxtFile(InputStream inputStream) {
-		StringBuffer inContent = new StringBuffer();
-		try {
-			BufferedReader bufferedReader = new BufferedReader(
-					new InputStreamReader(inputStream, "UTF-8"));
-			int char1 = bufferedReader.read();
-			while (char1 != -1) {
-				inContent.append((char) char1);
-				char1 = bufferedReader.read();
-			}
-			bufferedReader.close();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		return inContent.toString();
 	}
 
 	/**

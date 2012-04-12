@@ -82,49 +82,38 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		m_engine = engine;
 		initEnvironmentIfNeeded(engine);
 
-		ResourceBundle knowweconfig = ResourceBundle.getBundle("KnowWE_config");
+		ResourceBundle knowweconfig = KnowWEUtils.getConfigBundle();
 		if (knowweconfig.getString(
 				"knowweplugin.jspwikiconnector.copycorepages").equals("false")) {
 			WikiEventUtils.addWikiEventListener(engine.getPageManager(),
 					WikiPageEvent.PAGE_DELETE_REQUEST, this);
 			return;
 		}
-		File f = new File(Environment.getInstance()
-				.getKnowWEExtensionPath());
-		f = f.getParentFile();
 
 		try {
-			for (File s : f.listFiles()) {
-				if (s.getName().equals("WEB-INF")) {
-					BufferedReader in = new BufferedReader(new FileReader(s
-							.getPath()
-							+ "/jspwiki.properties"));
-					String zeile = null;
-					File pagedir = null;
-					while ((zeile = in.readLine()) != null) {
-						if (!zeile.contains("#")
-								&& zeile
-										.contains("jspwiki.fileSystemProvider.pageDir")) {
-							zeile = zeile.trim();
-							zeile = zeile.substring(zeile.lastIndexOf(" ") + 1);
-							pagedir = new File(zeile);
-							in.close();
-							break;
-						}
-					}
+			BufferedReader in = new BufferedReader(new FileReader(
+					KnowWEUtils.getApplicationRootPath() + "/WEB-INF/jspwiki.properties"));
+			String line = null;
+			File pagedir = null;
+			while ((line = in.readLine()) != null) {
+				if (!line.contains("#")
+						&& line.contains("jspwiki.fileSystemProvider.pageDir")) {
+					line = line.trim();
+					line = line.substring(line.lastIndexOf(" ") + 1);
+					pagedir = new File(line);
+					in.close();
+					break;
+				}
+			}
 
-					if (pagedir.exists()) {
-						// File[] files = pagedir.listFiles();
-						File coreDir = new File(s.getPath()
-								+ "/resources/core-pages");
-						// File[] cores = coreDir.listFiles();
-						for (File cP : coreDir.listFiles()) {
-							if (!cP.getName().endsWith(".txt")) continue;
-							File newFile = new File(pagedir.getPath() + "/"
-									+ cP.getName());
-							if (!newFile.exists()) FileUtils.copyFile(cP, newFile);
-						}
-					}
+			if (pagedir.exists()) {
+				File coreDir = new File(KnowWEUtils.getApplicationRootPath()
+						+ "/WEB-INF/resources/core-pages");
+				for (File corePage : coreDir.listFiles()) {
+					if (!corePage.getName().endsWith(".txt")) continue;
+					File newFile = new File(pagedir.getPath() + "/"
+							+ corePage.getName());
+					if (!newFile.exists()) FileUtils.copyFile(corePage, newFile);
 				}
 			}
 		}
@@ -333,7 +322,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 
 		PageManager mgr = engine.getPageManager();
-		Collection wikipages = null;
+		Collection<?> wikipages = null;
 
 		try {
 			wikipages = mgr.getAllPages();

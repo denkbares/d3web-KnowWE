@@ -34,7 +34,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -81,27 +80,6 @@ public class D3webUtils {
 		}
 		return possibleScorePoints;
 	}
-
-	// /**
-	// * Gets the Session Object.
-	// */
-	// public static Session getSession(UserContext user) {
-	// return getSession(user.getTitle(), user.getUserName(), user.getWeb());
-	// }
-	//
-	// /**
-	// * Gets the Session Object.
-	// */
-	// public static Session getSession(String topic, UserContext user, String
-	// web) {
-	// return getSession(topic, user.getUserName(), web);
-	// }
-
-	//
-	// public static Collection<Session> getSessions(String user, String web) {
-	// SessionBroker broker = D3webUtils.getBroker(user, web);
-	// return broker.getSessions();
-	// }
 
 	public static boolean storeSessionRecordsAsAttachment(String user, Collection<Session> sessions, String attachmentArticle, String attachmentName) throws IOException {
 
@@ -265,35 +243,22 @@ public class D3webUtils {
 		return null;
 	}
 
-	public static String getRealPath(ServletContext context, String varPath) {
-		if (context != null && varPath.indexOf("$webapp_path$") != -1) {
-			String realPath = context.getRealPath("");
-			realPath = realPath.replace('\\', '/');
-			while (realPath.endsWith("/")) {
-				realPath = realPath.substring(0, realPath.length() - 1);
-			}
-			varPath = varPath.replaceAll("\\$webapp_path\\$", realPath);
-		}
-		return varPath;
-	}
-
 	public static String getSessionPath(UserContext context) {
 		String user = context.getParameter(Attributes.USER);
 		String web = context.getParameter(Attributes.WEB);
-		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
+		ResourceBundle rb = KnowWEUtils.getConfigBundle();
 		String sessionDir = rb.getString("knowwe.config.path.sessions");
 		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
 		sessionDir = sessionDir.replaceAll("\\$user\\$", user);
-		sessionDir = getRealPath(context.getServletContext(), sessionDir);
+		sessionDir = KnowWEUtils.getRealPath(sessionDir);
 		return sessionDir;
 	}
 
 	public static String getWebEnvironmentPath(String web) {
-		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
+		ResourceBundle rb = KnowWEUtils.getConfigBundle();
 		String sessionDir = rb.getString("knowwe.config.path.currentWeb");
 		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
-		sessionDir = getRealPath(Environment.getInstance()
-				.getWikiConnector().getServletContext(), sessionDir);
+		sessionDir = KnowWEUtils.getRealPath(sessionDir);
 		return sessionDir;
 	}
 
