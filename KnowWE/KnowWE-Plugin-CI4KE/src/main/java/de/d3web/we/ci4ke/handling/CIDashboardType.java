@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,36 +62,13 @@ public class CIDashboardType extends DefaultMarkupType {
 
 	public CIDashboardType() {
 		super(MARKUP);
-		this.addSubtreeHandler(new DashboardSubtreeHandler(readIgnoreFlag()));
+		this.addSubtreeHandler(new DashboardSubtreeHandler());
+		this.setIgnorePackageCompile(true);
 		// this.setCustomRenderer(new DashboardRenderer());
 		this.setRenderer(new CIDashboardRenderer());
 	}
 
-	private boolean readIgnoreFlag() {
-		ResourceBundle resourceBundle = ResourceBundle.getBundle("KnowWE_config");
-		String ignoreFlag = "packaging.ignorePackages";
-		boolean ignorePackageCompile = false;
-		if (resourceBundle.containsKey(ignoreFlag)) {
-			if (resourceBundle.getString(ignoreFlag).contains("true")) {
-				ignorePackageCompile = true;
-			}
-			if (resourceBundle.getString(ignoreFlag).contains("false")) {
-				ignorePackageCompile = false;
-			}
-		}
-		return ignorePackageCompile;
-	}
-
 	private class DashboardSubtreeHandler extends SubtreeHandler<CIDashboardType> {
-
-		public DashboardSubtreeHandler(boolean ignorePackageCompile) {
-			super(ignorePackageCompile);
-		}
-
-		@Override
-		public boolean isIgnoringPackageCompile() {
-			return true;
-		}
 
 		@Override
 		public Collection<Message> create(Article article, Section<CIDashboardType> s) {
@@ -215,7 +191,8 @@ public class CIDashboardType extends DefaultMarkupType {
 		List<Section<CIDashboardType>> sectionList = new ArrayList<Section<CIDashboardType>>();
 		for (Article article : Environment.getInstance().
 				getArticleManager(section.getWeb()).getArticles()) {
-			Sections.findSuccessorsOfType(article.getRootSection(), CIDashboardType.class, sectionList);
+			Sections.findSuccessorsOfType(article.getRootSection(), CIDashboardType.class,
+					sectionList);
 		}
 
 		for (Section<CIDashboardType> s : sectionList) {

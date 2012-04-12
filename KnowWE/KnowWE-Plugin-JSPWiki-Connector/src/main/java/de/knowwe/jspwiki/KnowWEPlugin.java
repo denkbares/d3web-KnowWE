@@ -202,9 +202,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			return htmlContent;
 		}
 		catch (Exception e) {
-			System.out.println("****Exception in POST TRANSLATE***");
-			System.out.println("****Exception in POST TRANSLATE***");
-			System.out.println("****Exception in POST TRANSLATE***");
 			e.printStackTrace();
 			return "";
 		}

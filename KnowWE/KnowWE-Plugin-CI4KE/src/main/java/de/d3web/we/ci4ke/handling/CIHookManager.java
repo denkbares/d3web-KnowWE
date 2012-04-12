@@ -73,6 +73,20 @@ public class CIHookManager {
 		}
 	}
 
+	public void cleanHooksForArticle(String article) {
+		Set<CIHook> hooksToRemove = new HashSet<CIHook>();
+		for (Set<CIHook> hooks : this.hooks.values()) {
+			for (CIHook hook : hooks) {
+				if (article.equals(hook.getDashboardArticleTitle())) {
+					hooksToRemove.add(hook);
+				}
+			}
+		}
+		for (CIHook hookToRemove : hooksToRemove) {
+			unregisterHook(hookToRemove);
+		}
+	}
+
 	/**
 	 * Triggers the registered hooks for a given Article
 	 * 
@@ -90,6 +104,5 @@ public class CIHookManager {
 			}
 		}
 	}
-
 
 }

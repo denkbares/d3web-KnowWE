@@ -27,6 +27,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
 import de.knowwe.event.ArticleRegisteredEvent;
+import de.knowwe.event.FullParseEvent;
 
 public class CIEventForwarder implements EventListener {
 
@@ -35,8 +36,9 @@ public class CIEventForwarder implements EventListener {
 
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
-		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(1);
+		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(2);
 		events.add(ArticleRegisteredEvent.class);
+		events.add(FullParseEvent.class);
 		return events;
 	}
 
@@ -50,6 +52,9 @@ public class CIEventForwarder implements EventListener {
 						((ArticleRegisteredEvent) event).getArticle().getTitle());
 			}
 		}
+		else if (event instanceof FullParseEvent) {
+			CIHookManager.getInstance().cleanHooksForArticle(
+					((FullParseEvent) event).getArticle().getTitle());
+		}
 	}
-
 }
