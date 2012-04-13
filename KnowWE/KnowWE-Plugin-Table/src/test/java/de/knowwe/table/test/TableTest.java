@@ -23,6 +23,7 @@ package de.knowwe.table.test;
 import java.io.IOException;
 
 import junit.framework.TestCase;
+import utils.TestUtils;
 import connector.DummyConnector;
 import de.d3web.plugin.test.InitPluginManager;
 import de.knowwe.core.Environment;
@@ -51,7 +52,9 @@ public class TableTest extends TestCase {
 		/**
 		 * Initialize Environment
 		 */
-		Environment.initInstance(new DummyConnector());
+		DummyConnector connector = new DummyConnector();
+		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+		Environment.initInstance(connector);
 		Environment env = Environment.getInstance();
 		final String web = Environment.DEFAULT_WEB;
 

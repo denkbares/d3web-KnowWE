@@ -76,7 +76,9 @@ public class TestArticleManager {
 	 */
 	private static Article createArcticleFromSourceFile(String content, String filename) {
 		// Initialize KnowWE
-		Environment.initInstance(new DummyConnector());
+		DummyConnector connector = new DummyConnector();
+		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+		Environment.initInstance(connector);
 
 		int start = filename.lastIndexOf("/") + 1;
 		int end = filename.lastIndexOf(".");

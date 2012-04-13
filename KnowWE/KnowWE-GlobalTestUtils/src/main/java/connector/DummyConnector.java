@@ -21,7 +21,6 @@
 package connector;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,6 +43,8 @@ import de.knowwe.core.wikiConnector.WikiConnector;
 public class DummyConnector implements WikiConnector {
 
 	private DummyPageProvider dummyPageProvider = null;
+
+	private String knowweExtensionPath = null;
 
 	public DummyConnector() {
 	}
@@ -196,35 +197,16 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public String getBaseUrl() {
-		// TODO
-		return "http://valid_base_url/";
+		return "http://valid_dummy_base_url/";
 	}
 
-	/**
-	 * This returns a path, that enables the use of this connector in tests of
-	 * projects.
-	 * 
-	 * @author Sebastian Furth
-	 * @return relative Path to KnowWEExtensions
-	 */
 	@Override
 	public String getKnowWEExtensionPath() {
-		// TODO
-		String hackedPath = System.getProperty("user.dir");
-		hackedPath = hackedPath.replaceAll("Research", "KnowWE");
-		if (hackedPath.contains("KnowWE-App")) {
-			hackedPath = hackedPath.replaceAll("KnowWE-App", "KnowWE");
+		if (knowweExtensionPath == null) {
+			return getApplicationRootPath() + "/KnowWEExtension";
 		}
 		else {
-			hackedPath += "/..";
-		}
-		hackedPath += "/KnowWE-Resources/src/main/webapp/KnowWEExtension/";
-		File file = new File(hackedPath);
-		try {
-			return file.getCanonicalPath();
-		}
-		catch (IOException e) {
-			throw new Error(e);
+			return knowweExtensionPath;
 		}
 	}
 
@@ -306,7 +288,13 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public String renderWikiSyntax(String pagedata, UserActionContext userContext) {
+		Logger.getLogger(this.getClass().getName()).warning(
+				"The used WikiConnector does not support a wiki syntax");
 		return null;
+	}
+
+	public void setKnowWEExtensionPath(String knowWEExtensionPath) {
+		this.knowweExtensionPath = knowWEExtensionPath;
 	}
 
 	@Override

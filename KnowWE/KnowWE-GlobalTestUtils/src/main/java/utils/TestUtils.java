@@ -20,6 +20,7 @@
 
 package utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
@@ -139,5 +140,24 @@ public class TestUtils {
 			String topic, String web) {
 		Environment.getInstance().getArticleManager(web).registerArticle(
 				Article.createArticle(content, topic, web));
+	}
+
+	public static String createKnowWEExtensionPath() {
+		String hackedPath = System.getProperty("user.dir");
+		hackedPath = hackedPath.replaceAll("Research", "KnowWE");
+		if (hackedPath.contains("KnowWE-App")) {
+			hackedPath = hackedPath.replaceAll("KnowWE-App", "KnowWE");
+		}
+		else {
+			hackedPath += "/..";
+		}
+		hackedPath += "/KnowWE-Resources/src/main/webapp/KnowWEExtension/";
+		File file = new File(hackedPath);
+		try {
+			return file.getCanonicalPath();
+		}
+		catch (IOException e) {
+			throw new Error(e);
+		}
 	}
 }
