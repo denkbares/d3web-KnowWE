@@ -47,13 +47,18 @@ public class Types {
 	 * @param renderer
 	 */
 	public static void injectRendererToSuccessorType(Type root, Class<? extends Type> clazz, Renderer renderer) {
-		TreeSet<Type> set = new TreeSet<Type>();
+		TreeSet<Type> set = new TreeSet<Type>(new TypeComparator());
 		getAllChildrenTypesRecursive(root, set);
 		for (Type t : set) {
 			if (t.isAssignableFromType(clazz)) {
 				((AbstractType) t).setRenderer(renderer);
 			}
 		}
+	}
+
+	public static TreeSet<Type> getAllChildrenTypesRecursive(Type type) {
+		TreeSet<Type> allTypes = new TreeSet<Type>(new TypeComparator());
+		return getAllChildrenTypesRecursive(type, allTypes);
 	}
 
 	/**
@@ -63,7 +68,7 @@ public class Types {
 	 * @param allTypes
 	 * @return
 	 */
-	public static TreeSet<Type> getAllChildrenTypesRecursive(Type type, TreeSet<Type> allTypes) {
+	private static TreeSet<Type> getAllChildrenTypesRecursive(Type type, TreeSet<Type> allTypes) {
 
 		// Recursionstop
 		if (allTypes.contains(type)) {
@@ -164,8 +169,7 @@ public class Types {
 	 * @return
 	 */
 	public static TreeSet<Type> getAllTypes() {
-		return Types.getAllChildrenTypesRecursive(RootType.getInstance(),
-						new TreeSet<Type>());
+		return Types.getAllChildrenTypesRecursive(RootType.getInstance());
 	}
 
 	/**
