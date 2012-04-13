@@ -80,17 +80,17 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public String appendContentToPage(String topic, String content) {
+	public String appendContentToPage(String title, String content) {
 
 		try {
-			content = this.engine.getPureText(this.engine.getPage(topic))
+			content = this.engine.getPureText(this.engine.getPage(title))
 					+ content;
 			WikiContext context = new WikiContext(this.engine, this.engine
-					.getPage(topic));
+					.getPage(title));
 			this.engine.saveText(context, content);
-			this.engine.updateReferences(this.engine.getPage(topic));
+			this.engine.updateReferences(this.engine.getPage(title));
 			this.engine.getSearchManager().reindexPage(
-					this.engine.getPage(topic));
+					this.engine.getPage(title));
 
 		}
 		catch (ProviderException e) {
@@ -100,17 +100,17 @@ public class JSPWikiConnector implements WikiConnector {
 			return null;
 		}
 
-		return this.engine.getPureText(this.engine.getPage(topic));
+		return this.engine.getPureText(this.engine.getPage(title));
 	}
 
 	@Override
-	public String createWikiPage(String topic, String content, String author) {
+	public String createWikiPage(String title, String content, String author) {
 
-		WikiPage wp = new WikiPage(this.engine, topic);
+		WikiPage wp = new WikiPage(this.engine, title);
 
 		try {
 			// References Updaten.
-			this.engine.getReferenceManager().updateReferences(topic,
+			this.engine.getReferenceManager().updateReferences(title,
 						this.engine.getReferenceManager().findCreated());
 			wp.setAuthor(author);
 			this.engine.getPageManager().putPageText(wp, content);
@@ -129,10 +129,10 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public boolean doesPageExist(String topic) {
+	public boolean doesPageExist(String title) {
 
-		// Check if a Page with the chosen Topic already exists.
-		if (this.engine.pageExists(topic)) return true;
+		// Check if a Page with the chosen title already exists.
+		if (this.engine.pageExists(title)) return true;
 		return false;
 	}
 

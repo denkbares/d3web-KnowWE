@@ -52,30 +52,30 @@ public interface WikiConnector {
 	/**
 	 * Appends some content to the wiki page with the given name
 	 * 
-	 * @param topic
-	 * @param pageContent
+	 * @param title
+	 * @param content
 	 * @return
 	 */
-	public String appendContentToPage(String topic, String pageContent);
+	public String appendContentToPage(String title, String content);
 
 	/**
 	 * Creates a new Wiki page with given name and content and author in the
 	 * connected wiki
 	 * 
-	 * @param topic
-	 * @param newContent
+	 * @param title
+	 * @param content
 	 * @param author
 	 * @return
 	 */
-	public String createWikiPage(String topic, String newContent, String author);
+	public String createWikiPage(String title, String content, String author);
 
 	/**
 	 * tests if a page of the given name exists
 	 * 
-	 * @param Topic
+	 * @param title
 	 * @return
 	 */
-	public boolean doesPageExist(String Topic);
+	public boolean doesPageExist(String title);
 
 	/**
 	 * Return the ActionDispatcher which is responsible to receive the
@@ -212,7 +212,6 @@ public interface WikiConnector {
 	/**
 	 * Returns a path to savely store owl files to. The path must be outside the
 	 * webapps dir to prevent the files to be deleted during a wiki-redeploy
-	 * 
 	 */
 	public String getSavePath();
 

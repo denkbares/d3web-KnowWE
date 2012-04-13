@@ -211,7 +211,15 @@ public class DummyPageProvider {
 		return Collections.unmodifiableMap(articles);
 	}
 
+	public String getArticle(String title) {
+		return articles.get(title);
+	}
+
 	public Map<String, ConnectorAttachment> getAllAttachments() {
 		return Collections.unmodifiableMap(attachments);
+	}
+
+	public ConnectorAttachment getAttachment(String fullName) {
+		return attachments.get(fullName);
 	}
 }
