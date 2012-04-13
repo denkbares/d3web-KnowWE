@@ -168,6 +168,12 @@ public class KnowWEUtils {
 	 * @return a non empty Collection of articles that compile the given Section
 	 */
 	public static Collection<Article> getCompilingArticles(Section<?> section) {
+		Collection<Article> articles = getCompilingArticleObjects(section);
+		if (articles.isEmpty()) articles.add(section.getArticle());
+		return articles;
+	}
+
+	public static Collection<Article> getCompilingArticleObjects(Section<?> section) {
 		Collection<Article> articles = new ArrayList<Article>();
 		Environment env = Environment.getInstance();
 		Set<String> referingArticleTitles = env.getPackageManager(section.getWeb()).getCompilingArticles(
@@ -180,7 +186,6 @@ public class KnowWEUtils {
 			if (article == null) continue;
 			articles.add(article);
 		}
-		if (articles.isEmpty()) articles.add(section.getArticle());
 		return articles;
 	}
 

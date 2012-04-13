@@ -22,14 +22,17 @@ package de.knowwe.kdom.defaultMarkup;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Message.Type;
@@ -111,10 +114,34 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	public void renderMessages(Section<?> section, StringBuilder string) {
+
 		renderCompileWarning(section, string);
-		Map<String, Collection<Message>> messagesFromSubtree = Messages.getMessagesFromSubtree(
-				section, Message.Type.ERROR, Message.Type.WARNING);
-		renderMessageBlock(messagesFromSubtree, string, Message.Type.ERROR, Message.Type.WARNING);
+		renderMessageBlock(section, string, Message.Type.ERROR, Message.Type.WARNING);
+	}
+
+	private static Map<Section<?>, Map<Message, Collection<Article>>> getMessageSectionsOfSubtree(Section<?> rootSection, Type messageType) {
+		Map<Section<?>, Map<Message, Collection<Article>>> collectedMessages = new HashMap<Section<?>, Map<Message, Collection<Article>>>();
+		for (Section<?> subTreeSection : Sections.getSubtreePreOrder(rootSection)) {
+			Collection<Article> compilers = KnowWEUtils.getCompilingArticleObjects(subTreeSection);
+			compilers.add(null);
+			Map<Message, Collection<Article>> compilersForMessage = new HashMap<Message, Collection<Article>>();
+			for (Article compiler : compilers) {
+				Collection<Message> messages = Messages.getMessages(compiler, subTreeSection,
+						messageType);
+				for (Message message : messages) {
+					Collection<Article> messageCompilers = compilersForMessage.get(message);
+					if (messageCompilers == null) {
+						messageCompilers = new LinkedList<Article>();
+						compilersForMessage.put(message, messageCompilers);
+					}
+					messageCompilers.add(compiler);
+				}
+			}
+			if (!compilersForMessage.isEmpty()) {
+				collectedMessages.put(subTreeSection, compilersForMessage);
+			}
+		}
+		return collectedMessages;
 	}
 
 	private void renderCompileWarning(Section<?> section, StringBuilder string) {
@@ -146,53 +173,51 @@ public class DefaultMarkupRenderer implements Renderer {
 		}
 	}
 
-	public static void renderMessageBlock(Map<String, Collection<Message>> messagesByTitle,
+	public static void renderMessageBlock(Section<?> rootSection,
 			StringBuilder string,
 			Message.Type... types) {
 
-		if (messagesByTitle == null) return;
-		if (messagesByTitle.size() == 0) return;
+		for (Type type : types) {
+			List<String> messages = getMessageStrings(rootSection, type);
 
-		int masterArticleCount = messagesByTitle.size();
-
-		Collection<Message> globalMessages = messagesByTitle.get(null);
-		if (globalMessages != null) {
-			masterArticleCount--;
-			if (masterArticleCount > 1) {
-				string.append(KnowWEUtils.maskHTML("<span>Global Messages:</span></br>"));
+			// only if there are such messages
+			if (messages.isEmpty()) continue;
+			string.append(KnowWEUtils.maskHTML("<span class='" + type.toString().toLowerCase()
+					+ "' style='white-space: pre-wrap;'>"));
+			for (String messageString : messages) {
+				string.append(messageString).append("\n");
 			}
-			renderMessagesOfTitle(globalMessages, string, types);
-		}
-		for (Entry<String, Collection<Message>> entry : messagesByTitle.entrySet()) {
-			if (masterArticleCount > 1) {
-				string.append(KnowWEUtils.maskHTML("<span>Messages from '" + entry.getKey()
-						+ "':</span></br>"));
-			}
-			renderMessagesOfTitle(entry.getValue(), string, types);
+			string.append(KnowWEUtils.maskHTML("</span>"));
 		}
 	}
 
-	private static void renderMessagesOfTitle(Collection<Message> allMsgs,
-			StringBuilder string,
-			Message.Type... types) {
+	public static List<String> getMessageStrings(Section<?> rootSection, Type type) {
+		Map<Section<?>, Map<Message, Collection<Article>>> collectedMessages =
+				getMessageSectionsOfSubtree(rootSection, type);
 
-		for (Message.Type type : types) {
-			Collection<Message> messages = null;
-			if (type == Message.Type.INFO) {
-				messages = Messages.getNotices(allMsgs);
+		List<String> messages = new LinkedList<String>();
+		for (Section<?> section : collectedMessages.keySet()) {
+			Map<Message, Collection<Article>> compilerForMessage = collectedMessages.get(section);
+			for (Message msg : compilerForMessage.keySet()) {
+				String message = KnowWEUtils.maskJSPWikiMarkup(msg.getVerbalization());
+				// if we have multiple other article compilers
+				boolean multiCompiled = KnowWEUtils.getCompilingArticleObjects(section).size() > 1;
+				Collection<Article> compilers = compilerForMessage.get(msg);
+				compilers.remove(null);
+				if (multiCompiled && !compilers.isEmpty()) {
+					message += " (compiled in ";
+					boolean first = true;
+					for (Article article : compilers) {
+						if (!first) message += ", ";
+						first = false;
+						message += "[" + article.getTitle() + "]";
+					}
+					message += ")";
+				}
+				messages.add(message);
 			}
-			else if (type == Message.Type.WARNING) {
-				messages = Messages.getWarnings(allMsgs);
-			}
-			else if (type == Message.Type.ERROR) {
-				messages = Messages.getErrors(allMsgs);
-			}
-
-			if (messages == null) continue;
-			if (messages.size() == 0) continue;
-
-			renderMessagesOfType(type, messages, string);
 		}
+		return messages;
 	}
 
 	public static void renderMessagesOfType(Message.Type type, Collection<Message> messages, StringBuilder string) {
