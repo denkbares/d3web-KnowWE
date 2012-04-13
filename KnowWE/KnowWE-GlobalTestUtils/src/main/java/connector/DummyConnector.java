@@ -57,24 +57,24 @@ public class DummyConnector implements WikiConnector {
 		if (dummyPageProvider == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"No PageProvider given, so wiki pages cannot be changed");
-			return "";
+			return content;
 		}
 		String article = dummyPageProvider.getArticle(title);
 		if (article == null) article = "";
 		article += content;
-		dummyPageProvider.setArticleContent(title, article);
 		Environment.getInstance().buildAndRegisterArticle(article, title, Environment.DEFAULT_WEB);
+		dummyPageProvider.setArticleContent(title, article);
 		return content;
 	}
 
 	@Override
 	public String createWikiPage(String title, String content, String author) {
+		Environment.getInstance().buildAndRegisterArticle(content, title, Environment.DEFAULT_WEB);
 		if (dummyPageProvider == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"No PageProvider given, so additional wiki pages cannot be added");
 			return "";
 		}
-		Environment.getInstance().buildAndRegisterArticle(content, title, Environment.DEFAULT_WEB);
 		dummyPageProvider.setArticleContent(title, content);
 		return content;
 	}
@@ -162,6 +162,11 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public List<String> getAttachmentFilenamesForPage(String pageName) {
+		if (dummyPageProvider == null) {
+			Logger.getLogger(this.getClass().getName()).warning(
+					"No PageProvider given, so there are no attachments available");
+			return null;
+		}
 		Collection<ConnectorAttachment> attachments = getAttachments();
 		List<String> fileNames = new ArrayList<String>();
 		for (ConnectorAttachment attachment : attachments) {
@@ -375,12 +380,13 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public boolean writeArticleToWikiEnginePersistence(String title, String content, UserContext context) {
+		Environment.getInstance().buildAndRegisterArticle(content, title, Environment.DEFAULT_WEB);
 		if (dummyPageProvider == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"No PageProvider given, so additional wiki pages cannot be added");
 			return true;
 		}
-		createWikiPage(title, content, "");
+		dummyPageProvider.setArticleContent(title, content);
 		return true;
 	}
 
