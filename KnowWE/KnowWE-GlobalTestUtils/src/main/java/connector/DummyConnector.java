@@ -182,7 +182,7 @@ public class DummyConnector implements WikiConnector {
 		if (dummyPageProvider == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"No PageProvider given, so there are no attachments available");
-			return null;
+			return new ArrayList<ConnectorAttachment>();
 		}
 		return new ArrayList<ConnectorAttachment>(dummyPageProvider.getAllAttachments().values());
 	}
