@@ -64,8 +64,9 @@ public class GetTraceHighlightAction extends AbstractAction {
 
 		String kdomid = context.getParameter("kdomid");
 
-		Section<DiaFluxType> diaFluxSec = Sections.getSection(kdomid, DiaFluxType.class);
-		Section<FlowchartType> flowchart = Sections.findSuccessor(diaFluxSec, FlowchartType.class);
+		Section<FlowchartType> flowchart = Sections.getSection(kdomid, FlowchartType.class);
+		Section<DiaFluxType> diaFluxSec = Sections.findAncestorOfExactType(flowchart,
+				DiaFluxType.class);
 
 		KnowledgeBase kb = FlowchartUtils.getKB(diaFluxSec);
 		Session session = SessionProvider.getSession(context, kb);
