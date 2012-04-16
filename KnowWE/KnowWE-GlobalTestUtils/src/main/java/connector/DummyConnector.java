@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -34,7 +35,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import de.knowwe.core.Environment;
-import de.knowwe.core.action.ActionDispatcher;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.ConnectorAttachment;
@@ -88,13 +88,6 @@ public class DummyConnector implements WikiConnector {
 			return false;
 		}
 		return dummyPageProvider.getArticle(title) != null;
-	}
-
-	@Override
-	public ActionDispatcher getActionDispatcher() {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support users");
-		return null;
 	}
 
 	@Override
@@ -166,7 +159,7 @@ public class DummyConnector implements WikiConnector {
 		if (dummyPageProvider == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"No PageProvider given, so there are no attachments available");
-			return null;
+			return Collections.emptyList();
 		}
 		Collection<ConnectorAttachment> attachments = getAttachments();
 		List<String> fileNames = new ArrayList<String>();
@@ -183,7 +176,7 @@ public class DummyConnector implements WikiConnector {
 		if (dummyPageProvider == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"No PageProvider given, so there are no attachments available");
-			return new ArrayList<ConnectorAttachment>();
+			return Collections.emptyList();
 		}
 		return new ArrayList<ConnectorAttachment>(dummyPageProvider.getAllAttachments().values());
 	}

@@ -37,7 +37,6 @@ import de.d3web.plugin.JPFPluginManager;
 import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginManager;
 import de.d3web.plugin.Resource;
-import de.knowwe.core.action.ActionDispatcher;
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -326,14 +325,6 @@ public class Environment {
 
 	public WikiConnector getWikiConnector() {
 		return this.wikiConnector;
-	}
-
-	/**
-	 * Returns the ActionDispatcher from the WikiConnector (JSPWiki: used by
-	 * KnowWE.jsp)
-	 */
-	public ActionDispatcher getDispatcher() {
-		return wikiConnector.getActionDispatcher();
 	}
 
 	/**

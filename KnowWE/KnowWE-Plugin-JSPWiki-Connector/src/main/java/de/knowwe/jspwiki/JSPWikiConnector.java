@@ -55,7 +55,6 @@ import com.ecyrd.jspwiki.auth.permissions.PermissionFactory;
 import com.ecyrd.jspwiki.preferences.Preferences;
 import com.ecyrd.jspwiki.providers.ProviderException;
 
-import de.knowwe.core.action.ActionDispatcher;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -134,11 +133,6 @@ public class JSPWikiConnector implements WikiConnector {
 		// Check if a Page with the chosen title already exists.
 		if (this.engine.pageExists(title)) return true;
 		return false;
-	}
-
-	@Override
-	public ActionDispatcher getActionDispatcher() {
-		return JSPActionDispatcher.getInstance();
 	}
 
 	@Override
@@ -615,6 +609,10 @@ public class JSPWikiConnector implements WikiConnector {
 		PagePermission pp = PermissionFactory.getPagePermission(page, "edit");
 
 		return authmgr.checkPermission(context.getWikiSession(), pp);
+	}
+
+	public static void main(String[] args) {
+		System.out.println("<!--10,5-->".matches("(?<!<!--)(\\d+,\\d+\\s*)(?!-->)"));
 	}
 
 	/**

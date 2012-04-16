@@ -31,7 +31,6 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import de.knowwe.core.action.ActionDispatcher;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.user.UserContext;
 
@@ -76,14 +75,6 @@ public interface WikiConnector {
 	 * @return
 	 */
 	public boolean doesPageExist(String title);
-
-	/**
-	 * Return the ActionDispatcher which is responsible to receive the
-	 * http-request for the KnowWE-actions
-	 * 
-	 * @return
-	 */
-	public ActionDispatcher getActionDispatcher();
 
 	/**
 	 * Get all active users.

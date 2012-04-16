@@ -47,4 +47,4 @@ String findParam( PageContext ctx, String key )
 	UserActionContext context = new ActionContext(parameters.get("action"), AbstractActionServlet.getActionFollowUpPath(request), parameters, request, response, wiki.getServletContext(), manager);
 	
 	// Perform action
-	Environment.getInstance().getDispatcher().performAction(context);%>
+	JSPActionDispatcher.getInstance().performAction(context);%>

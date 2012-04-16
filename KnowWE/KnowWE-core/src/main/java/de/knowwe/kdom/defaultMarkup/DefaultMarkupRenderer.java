@@ -22,11 +22,13 @@ package de.knowwe.kdom.defaultMarkup;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
@@ -122,7 +124,10 @@ public class DefaultMarkupRenderer implements Renderer {
 	private static Map<Section<?>, Map<Message, Collection<Article>>> getMessageSectionsOfSubtree(Section<?> rootSection, Type messageType) {
 		Map<Section<?>, Map<Message, Collection<Article>>> collectedMessages = new HashMap<Section<?>, Map<Message, Collection<Article>>>();
 		for (Section<?> subTreeSection : Sections.getSubtreePreOrder(rootSection)) {
-			Collection<Article> compilers = KnowWEUtils.getCompilingArticleObjects(subTreeSection);
+			Collection<Article> compilers = new TreeSet<Article>(new ArticleComparator());
+			compilers.addAll(
+					KnowWEUtils.getCompilingArticleObjects(subTreeSection));
+			compilers.add(rootSection.getArticle());
 			compilers.add(null);
 			Map<Message, Collection<Article>> compilersForMessage = new HashMap<Message, Collection<Article>>();
 			for (Article compiler : compilers) {
@@ -427,6 +432,18 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	public void setRenderMode(ToolsRenderMode renderMode) {
 		this.renderMode = renderMode;
+	}
+
+	private static class ArticleComparator implements Comparator<Article> {
+
+		@Override
+		public int compare(Article o1, Article o2) {
+			if (o1 == null && o2 != null) return -1;
+			if (o1 != null && o2 == null) return 1;
+			if (o1 == null && o2 == null) return 0;
+			return o1.getTitle().compareTo(o2.getTitle());
+		}
+
 	}
 
 }

@@ -271,8 +271,7 @@ public class D3webUtils {
 		}
 		catch (MalformedURLException e) {
 			Logger.getLogger(KnowWEUtils.class.getName())
-					.warning(
-							"Cannot identify url for knowledgebase : "
+					.warning("Cannot identify url for knowledgebase : "
 									+ e.getMessage());
 		}
 		return url;

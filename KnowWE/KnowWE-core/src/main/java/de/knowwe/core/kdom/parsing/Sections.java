@@ -552,8 +552,8 @@ public class Sections {
 	 * sectionsMap. Finally the article is saved with this new content.
 	 * 
 	 * @param context is the standard user context
-	 * @param sectionsMap containing pairs of the nodeID and the new text for
-	 *        this node
+	 * @param sectionsMap containing pairs of the section id and the new text
+	 *        for this section
 	 * @returns a Map that provides for each changed Section a mapping from the
 	 *          old to the new id.
 	 * @throws IOException
