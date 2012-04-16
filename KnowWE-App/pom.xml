@@ -509,7 +509,7 @@
 			</dependencies>
 		</profile>
 
-		<!-- H plugin -->
+		<!-- Example/HelloWorld plugin -->
 		<profile>
 			<id>example-plugin</id>
 			<activation>
