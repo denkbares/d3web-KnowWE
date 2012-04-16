@@ -143,16 +143,31 @@ public class D3webUtils {
 	}
 
 	/**
-	 * Utility method to get a {@link KnowledgeBase} from an article
+	 * Utility method to get a {@link KnowledgeBase} for a specified article.
 	 * 
 	 * @created 15.12.2010
-	 * @param web
-	 * @param topic
-	 * @return
+	 * @param article the article the knowledge base is compiled
+	 * @return the knowledge base if such one exists, null otherwise
+	 * @throws NullPointerException if the article is null
+	 */
+	public static KnowledgeBase getKnowledgeBase(Article article) {
+		return getKnowledgeBase(article.getWeb(), article.getTitle());
+	}
+
+	/**
+	 * Utility method to get a {@link KnowledgeBase} for an article specified by
+	 * its web and topic.
+	 * 
+	 * @created 15.12.2010
+	 * @param web the web of the article the knowledge base is compiled
+	 * @param topic the title of the article the knowledge base is compiled
+	 * @return the knowledge base if such one exists, null otherwise
+	 * @throws NullPointerException if web or topic is null
 	 */
 	public static KnowledgeBase getKnowledgeBase(String web, String topic) {
 		if (web == null || topic == null) {
-			throw new IllegalArgumentException("Argument 'web' and/or 'topic' was null!");
+			throw new NullPointerException(
+					"Cannot acces knowledge base with 'web' and/or 'topic' null");
 		}
 		D3webKnowledgeHandler knowledgeHandler =
 				D3webUtils.getKnowledgeRepresentationHandler(web);
