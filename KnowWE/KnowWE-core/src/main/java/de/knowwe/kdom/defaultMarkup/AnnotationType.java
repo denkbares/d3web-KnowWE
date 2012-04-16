@@ -29,7 +29,7 @@ public class AnnotationType extends AbstractType {
 
 	private final DefaultMarkup.Annotation annotation;
 
-	private static final String REGEX = "$LINESTART$\\s*(@$NAME$.*?)\\s*?(?=$LINESTART$\\s*@|/?%|\\z)";
+	private static final String REGEX = "$LINESTART$\\s*(@$NAME$.*?)\\s*?(?=$LINESTART$\\s*@|^/?%|\\z)";
 
 	private static final int FLAGS = Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
 			| Pattern.DOTALL;
