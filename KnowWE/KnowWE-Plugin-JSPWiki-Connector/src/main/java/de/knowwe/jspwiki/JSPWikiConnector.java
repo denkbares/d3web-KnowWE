@@ -54,6 +54,7 @@ import com.ecyrd.jspwiki.auth.permissions.PermissionFactory;
 import com.ecyrd.jspwiki.preferences.Preferences;
 import com.ecyrd.jspwiki.providers.ProviderException;
 
+import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.ConnectorAttachment;
@@ -97,7 +98,7 @@ public class JSPWikiConnector implements WikiConnector {
 			// should only happen on wiki initialization
 			return null;
 		}
-
+		Environment.getInstance().buildAndRegisterArticle(content, title, Environment.DEFAULT_WEB);
 		return this.engine.getPureText(wp);
 	}
 
