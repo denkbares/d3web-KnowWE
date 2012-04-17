@@ -159,7 +159,7 @@ public class ArticleManager implements EventListener {
 
 		for (String title : localQueue) {
 			if (!updatingArticles.contains(title)) {
-				if (Environment.getInstance().getWikiConnector().doesPageExist(title)) {
+				if (Environment.getInstance().getWikiConnector().doesArticleExist(title)) {
 					Article newArt = Article.createArticle(
 							articleMap.get(title).getRootSection().getText(), title, web, false);
 					registerArticle(newArt);

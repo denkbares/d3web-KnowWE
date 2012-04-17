@@ -43,13 +43,13 @@ public class InstantEditDisableAction extends AbstractAction {
 			return;
 		}
 
-		if (!Environment.getInstance().getWikiConnector().userCanEditPage(topic,
+		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(topic,
 				context.getRequest())) {
 			context.sendError(403, "You do not have the permission to edit this page.");
 			return;
 		}
 
-		Environment.getInstance().getWikiConnector().undoPageLocked(topic);
+		Environment.getInstance().getWikiConnector().unlockArticle(topic);
 	}
 
 }

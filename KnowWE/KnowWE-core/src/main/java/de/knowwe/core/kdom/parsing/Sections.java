@@ -596,7 +596,7 @@ public class Sections {
 				sectionInfo.title = section.getTitle();
 				sectionInfo.web = section.getWeb();
 				sectionInfo.newText =
-						Environment.getInstance().getWikiConnector().normalizeStringTo(
+						Environment.getInstance().getWikiConnector().normalizeString(
 								sectionsMap.get(id));
 			}
 			sectionInfo.oldId = id;
@@ -630,7 +630,7 @@ public class Sections {
 			missingIDs.addAll(ids);
 			return true;
 		}
-		if (!Environment.getInstance().getWikiConnector().userCanEditPage(title,
+		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(title,
 				context.getRequest())) {
 			forbiddenArticles.add(title);
 			return true;
@@ -656,7 +656,7 @@ public class Sections {
 		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
 
 		String newArticleText = getNewArticleText(title, sectionsMapForCurrentTitle, context);
-		wikiConnector.writeArticleToWikiEnginePersistence(title, newArticleText, context);
+		wikiConnector.writeArticleToWikiPersistence(title, newArticleText, context);
 
 	}
 

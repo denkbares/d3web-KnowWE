@@ -140,7 +140,7 @@ public class GlobalReplaceAction extends AbstractAction {
 			// Gesamttext zusammenbauen
 			String text = art.collectTextsFromLeaves();
 
-			Environment.getInstance().getWikiConnector().writeArticleToWikiEnginePersistence(
+			Environment.getInstance().getWikiConnector().writeArticleToWikiPersistence(
 					art.getTitle(), text, context);
 			mgr.registerArticle(Article.createArticle(text, art.getTitle(), web));
 		}

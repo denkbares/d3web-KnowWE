@@ -30,8 +30,8 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
-import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -49,326 +49,263 @@ import de.knowwe.core.user.UserContext;
 public interface WikiConnector {
 
 	/**
-	 * Appends some content to the wiki page with the given name
+	 * Creates a new wiki page with given title and content and author in the
+	 * connected wiki.
 	 * 
-	 * @param title
-	 * @param content
-	 * @return
+	 * @param title the title of the new article
+	 * @param content the content of the new article
+	 * @param author the author of the new article
 	 */
-	public String appendContentToPage(String title, String content);
+	public String createArticle(String title, String content, String author);
 
 	/**
-	 * Creates a new Wiki page with given name and content and author in the
-	 * connected wiki
+	 * Tests if a article with the given title exists.
 	 * 
-	 * @param title
-	 * @param content
-	 * @param author
-	 * @return
+	 * @param title the title of the article to check
 	 */
-	public String createWikiPage(String title, String content, String author);
+	public boolean doesArticleExist(String title);
 
 	/**
-	 * tests if a page of the given name exists
-	 * 
-	 * @param title
-	 * @return
-	 */
-	public boolean doesPageExist(String title);
-
-	/**
-	 * Get all active users.
-	 * 
-	 * @return The usernames of all active users.
+	 * Returns all active users. Active users are users currently having an
+	 * active {@link HttpSession} in the wiki.
 	 */
 	public String[] getAllActiveUsers();
 
 	/**
-	 * Returns a map of all wiki pages with page names as key and page sources
-	 * as values
+	 * Returns a map of all wiki articles with the titles as key and the article
+	 * contents as values.
 	 * 
-	 * @param web
-	 * @return
+	 * @param web the web to check for the articles.
 	 */
 	public Map<String, String> getAllArticles(String web);
 
 	/**
-	 * Get all users.
-	 * 
-	 * @return The usernames.
+	 * Returns all users registered to the wiki.
 	 */
 	public String[] getAllUsers();
 
 	/**
-	 * Returns the path to the root of the application
+	 * Returns the path to the root of the application.
 	 * 
 	 * @created 12.04.2012
 	 */
 	public String getApplicationRootPath();
 
 	/**
-	 * Returns the most current version of the source text of the wiki page with
-	 * the given name as one string
+	 * Returns the given version of the content of the article with the given
+	 * title. If the article does not exist, <tt>null</tt> is returned.
 	 * 
-	 * @param name
-	 * @return
-	 */
-	public String getArticleSource(String name);
-
-	/**
-	 * Returns the given version of the source text of the wiki page
-	 * 
-	 * @param name the name of the article
+	 * @param title the title of the article
 	 * @param version the version number of the article source to be retrieved
-	 * @return the source of the article, or null if the given version does not
-	 *         exist
 	 */
-	public String getArticleSource(String name, int version);
+	public String getVersion(String title, int version);
 
 	/**
-	 * Returns the Attachment given by the supplied path.
+	 * Returns the {@link ConnectorAttachment} given by the supplied path.
 	 * 
 	 * @created 30.08.2011
-	 * @param path
-	 * @return the attachment or null, if it does not exist.
+	 * @param path the path of the attachment
 	 */
-	ConnectorAttachment getAttachment(String path);
+	public ConnectorAttachment getAttachment(String path);
 
 	/**
-	 * Returns the filenames of the attachments of the given wiki page
+	 * Returns the filenames of the attachments of the article with the given
+	 * title
 	 * 
-	 * @param pageName
-	 * @return
+	 * @param title the title of the article to get the attachment filenames
+	 *        from
 	 */
-	public List<String> getAttachmentFilenamesForPage(String pageName);
+	public List<ConnectorAttachment> getAttachments(String title);
 
 	/**
-	 * @return a List of all ConnectorAttachments
+	 * Returns all attachments known to the wiki.
 	 */
 	public Collection<ConnectorAttachment> getAttachments();
 
 	/**
-	 * Gets the author of the specified version of the given article ( by name )
+	 * Returns the author of the specified version of the given article (by
+	 * name) or null, if the article does not exist.
 	 * 
 	 * @created 14.06.2010
-	 * @param name the name of the article which has to be selected
+	 * @param title the title of the article which has to be selected
 	 * @param version the version number of which the author has to be returned
-	 * @return the author of the specified version or null
 	 */
-	public String getAuthor(String name, int version);
+	public String getAuthor(String title, int version);
 
 	/**
-	 * Returns the URL of the running wiki
-	 * 
-	 * @return
+	 * Returns the URL of the running wiki.
 	 */
 	public String getBaseUrl();
 
+	/**
+	 * Returns the path to the KnowWEExtensionFolder of the wiki.
+	 * 
+	 * @created 17.04.2012
+	 */
 	public String getKnowWEExtensionPath();
 
 	/**
-	 * Gets the Date when the specified version of the article was last modified
+	 * Returns the Date when the specified version of the article was last
+	 * modified or <tt>null</tt>, if the article does not exist.
 	 * 
 	 * @created 17.07.2010
-	 * @param name the name of the article
+	 * @param title the name of the article
 	 * @param version the version of the article
-	 * @return the Date when the selected articleversion was modified
 	 */
-	public Date getLastModifiedDate(String name, int version);
+	public Date getLastModifiedDate(String title, int version);
 
 	/**
-	 * reads the default locale of the connected wiki
-	 * 
-	 * @return
+	 * Returns the default locale of the connected wiki
 	 */
 	public Locale getLocale();
 
 	/**
-	 * reads the locale which was configured by the current user
+	 * Returns the locale which was configured by the current user.
 	 * 
-	 * @param request
-	 * @return
+	 * @param request is the request from the user
 	 */
 	public Locale getLocale(HttpServletRequest request);
 
-	public Map<Integer, Date> getModificationHistory(String name);
-
 	/**
-	 * Return the absolute path of the web-application
-	 * 
-	 * @return path of the web-application
+	 * Returns the absolute path of the web-application
 	 */
 	public String getRealPath();
 
 	/**
-	 * Returns a path to savely store owl files to. The path must be outside the
+	 * Returns a path to safely store files to. The path must be outside the
 	 * webapps dir to prevent the files to be deleted during a wiki-redeploy
 	 */
 	public String getSavePath();
 
 	/**
-	 * Returns the current servlet-context object
-	 * 
-	 * @return
+	 * Returns the current servlet-context object.
 	 */
 	public ServletContext getServletContext();
 
 	/**
-	 * Gets the most current version number of the article with the given name
+	 * Returns the most current version number of the article with the given
+	 * title
 	 * 
-	 * @param name
-	 * @return
+	 * @param title the title of the article
 	 */
-	public int getVersion(String name);
+	public int getVersion(String title);
 
 	/**
-	 * Return a Map from pageNames to the number of (edited) versions of this
-	 * page
+	 * Returns the total amount of versions for the article with the given
+	 * title.
 	 * 
-	 * @return
+	 * @created 17.04.2012
+	 * @param title the title of the article you want to check the version count
+	 *        for
 	 */
-	public Map<String, Integer> getVersionCounts();
+	public int getVersionCount(String title);
 
 	/**
-	 * Checks whether a page has a editing lock (due to another user who has
-	 * startet to edit it)
+	 * Checks whether a article has a editing lock (due to another user who has
+	 * started to edit it)
 	 * 
-	 * @param articlename
-	 * @return
+	 * @param title the title of the article to check the lock for
 	 */
-	public boolean isPageLocked(String articlename);
+	public boolean isArticleLocked(String title);
 
 	/**
-	 * Checks whether a given page is locked by the given user
+	 * Checks whether a given article is locked by the given user
 	 * 
-	 * @param articlename
-	 * @param user
-	 * @return
+	 * @param title the title of the article to check the lock for
+	 * @param user the user to check the lock for
 	 */
-	public boolean isPageLockedCurrentUser(String articlename, String user);
+	public boolean isArticleLockedCurrentUser(String title, String user);
 
 	/**
 	 * Normalizes a string the same way as the wiki engine normalizes wiki text
 	 * before saving it to a file.
 	 * 
 	 * @created 12.12.2011
-	 * @param string
-	 * @return
+	 * @param string the string to be normalized
+	 * @return the normalized string
 	 */
-	public String normalizeStringTo(String string);
+	public String normalizeString(String string);
 
 	/**
-	 * Renders given WIKI mark-up in the pagedata.
+	 * Renders given wiki mark-up.
 	 * 
-	 * @param pagedata The current data of the page.
-	 * @param userContext The parameters of the request.
-	 * @return The masked pagedata.
+	 * @param articleText the current text of the article.
+	 * @param request the request of the user
+	 * @return the rendered article text
 	 */
-	public String renderWikiSyntax(String pagedata, UserActionContext userContext);
+	public String renderWikiSyntax(String pagedata, HttpServletRequest request);
 
 	/**
-	 * Sets an editing lock on the page, denoting that the page is currently
-	 * editing by the given user.
+	 * Sets an editing lock on the article, denoting that the article is
+	 * currently edited by the given user.
 	 * 
-	 * @param articlename
-	 * @param user
-	 * @return
+	 * @param title the title of the article to be locked
+	 * @param user the user locking the article
 	 */
-	public boolean setPageLocked(String articlename, String user);
+	public boolean lockArticle(String title, String user);
 
 	/**
-	 * Stores an File as an attachment to the given page. Returns whether the
-	 * operation was successful or not.
+	 * Stores a file as an attachment to the given article.
 	 * 
-	 * @param wikiPage the name of the page, to which this attachment should be
-	 *        stored
+	 * @param title the title of the article, for which this attachment should
+	 *        be stored
 	 * @param user is the user wanting to store the attachment (important for
 	 *        lock of the page)
 	 * @param attachmentFile the attachment to be stored
-	 * @return
+	 * @return whether the operation was successful
 	 */
-	boolean storeAttachment(String wikiPage, String user, File attachmentFile);
+	boolean storeAttachment(String title, String user, File attachmentFile);
 
 	/**
+	 * Stores a file as an attachment to the given article.
 	 * 
-	 * @created 30.08.2011
-	 * @param wikiPage
-	 * @param filename
+	 * @param title the title of the article, for which this attachment should
+	 *        be stored
+	 * @param filename the name for which the attachment should be stored
 	 * @param user is the user wanting to store the attachment (important for
 	 *        lock of the page)
-	 * @param stream
-	 * @return
+	 * @param stream the stream for the content of the file
+	 * @return whether the operation was successful
 	 */
-	boolean storeAttachment(String wikiPage, String filename, String user, InputStream stream);
+	boolean storeAttachment(String title, String filename, String user, InputStream stream);
 
 	/**
-	 * Removes a page editing lock
+	 * Removes the lock for the article.
 	 * 
-	 * @param articlename
+	 * @param title the title of the article to be unlocked
 	 */
-	public void undoPageLocked(String articlename);
+	public void unlockArticle(String title);
 
 	/**
-	 * Checks whether a user can edit a given page
+	 * Checks whether a user can edit a given article.
 	 * 
-	 * @param articlename
-	 * @return
+	 * @param title the title of the article to check
+	 * @param request the request of the user to check for
 	 */
-	@Deprecated
-	public boolean userCanEditPage(String articlename);
+	public boolean userCanEditArticle(String title, HttpServletRequest request);
 
 	/**
-	 * Checks whether a user can edit a given page
+	 * Checks whether a user can view a given article
 	 * 
-	 * @param articlename
-	 * @param r
-	 * @return
+	 * @param title the title of the article to check
+	 * @param request the request of the user
 	 */
-	public boolean userCanEditPage(String articlename, HttpServletRequest r);
+	public boolean userCanViewArticle(String title, HttpServletRequest request);
 
 	/**
-	 * Checks whether a user can view a given page
+	 * Checks whether the user is member of a given group.
 	 * 
-	 * @param articlename
-	 * @return
+	 * @param groupname the name of the group to check
+	 * @param request the request of the user to check
 	 */
-	public boolean userCanViewPage(String articlename);
-
-	/**
-	 * Checks whether a user can view a given page
-	 * 
-	 * @param articlename
-	 * @param r
-	 * @return
-	 */
-	public boolean userCanViewPage(String articlename, HttpServletRequest r);
-
-	/**
-	 * Checks whether the user is member of a given group
-	 * 
-	 * @param username
-	 * @param groupname
-	 * @param r
-	 * @return
-	 */
-	public boolean userIsMemberOfGroup(String username, String groupname, HttpServletRequest r);
-
-	/**
-	 * Converts a given String in Wiki-Markup to HTML.
-	 * 
-	 * @created 06.06.2011
-	 * @param syntax
-	 * @return
-	 */
-	public String wikiSyntaxToHtml(String syntax);
+	public boolean userIsMemberOfGroup(String groupname, HttpServletRequest request);
 
 	/**
 	 * Saves the article (persistently) into the connected wiki
 	 * 
-	 * @param title
-	 * @param content
-	 * @param context
-	 * @return
+	 * @param title the title of the article to save
+	 * @param content the content of the article to save
+	 * @param context the {@link UserContext} of the user changing the article
 	 */
-	public boolean writeArticleToWikiEnginePersistence(String title, String content, UserContext context);
+	public boolean writeArticleToWikiPersistence(String title, String content, UserContext context);
 }

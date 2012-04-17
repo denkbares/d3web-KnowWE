@@ -63,9 +63,9 @@ public class ReRenderContentPartAction extends AbstractAction {
 			String pagedata = b.toString();
 
 			if (inPre == null) pagedata = Environment.getInstance().getWikiConnector()
-						.renderWikiSyntax(pagedata, context);
+						.renderWikiSyntax(pagedata, context.getRequest());
 			if (inPre != null) if (inPre.equals("false")) pagedata = Environment.getInstance()
-							.getWikiConnector().renderWikiSyntax(pagedata, context);
+							.getWikiConnector().renderWikiSyntax(pagedata, context.getRequest());
 
 			return KnowWEUtils.unmaskHTML(pagedata);
 		}

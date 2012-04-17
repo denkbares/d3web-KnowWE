@@ -35,7 +35,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import de.knowwe.core.Environment;
-import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.ConnectorAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
@@ -54,22 +53,7 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public String appendContentToPage(String title, String content) {
-		if (dummyPageProvider == null) {
-			Logger.getLogger(this.getClass().getName()).warning(
-					"No PageProvider given, so wiki pages cannot be changed");
-			return content;
-		}
-		String article = dummyPageProvider.getArticle(title);
-		if (article == null) article = "";
-		article += content;
-		Environment.getInstance().buildAndRegisterArticle(article, title, Environment.DEFAULT_WEB);
-		dummyPageProvider.setArticleContent(title, article);
-		return content;
-	}
-
-	@Override
-	public String createWikiPage(String title, String content, String author) {
+	public String createArticle(String title, String content, String author) {
 		Environment.getInstance().buildAndRegisterArticle(content, title, Environment.DEFAULT_WEB);
 		if (dummyPageProvider == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
@@ -81,7 +65,7 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public boolean doesPageExist(String title) {
+	public boolean doesArticleExist(String title) {
 		if (dummyPageProvider == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"No PageProvider given, so there are no articles available");
@@ -121,18 +105,7 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public String getArticleSource(String name) {
-		if (dummyPageProvider == null) {
-			Logger.getLogger(this.getClass().getName()).warning(
-					"No PageProvider given, so there are no articles available");
-
-			return null;
-		}
-		return dummyPageProvider.getArticle(name);
-	}
-
-	@Override
-	public String getArticleSource(String name, int version) {
+	public String getVersion(String name, int version) {
 		if (dummyPageProvider == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"No PageProvider given, so there are no articles available");
@@ -155,20 +128,20 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public List<String> getAttachmentFilenamesForPage(String pageName) {
+	public List<ConnectorAttachment> getAttachments(String pageName) {
 		if (dummyPageProvider == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"No PageProvider given, so there are no attachments available");
 			return Collections.emptyList();
 		}
 		Collection<ConnectorAttachment> attachments = getAttachments();
-		List<String> fileNames = new ArrayList<String>();
+		List<ConnectorAttachment> attachmentsOfPage = new ArrayList<ConnectorAttachment>();
 		for (ConnectorAttachment attachment : attachments) {
 			if (attachment.getParentName().equals(pageName)) {
-				fileNames.add(attachment.getFileName());
+				attachmentsOfPage.add(attachment);
 			}
 		}
-		return fileNames;
+		return attachmentsOfPage;
 	}
 
 	@Override
@@ -196,7 +169,7 @@ public class DummyConnector implements WikiConnector {
 	@Override
 	public String getKnowWEExtensionPath() {
 		if (knowweExtensionPath == null) {
-			return getApplicationRootPath() + "/KnowWEExtension";
+			return getApplicationRootPath() + File.separator + "KnowWEExtension";
 		}
 		else {
 			return knowweExtensionPath;
@@ -218,13 +191,6 @@ public class DummyConnector implements WikiConnector {
 	@Override
 	public Locale getLocale(HttpServletRequest request) {
 		return Locale.getDefault();
-	}
-
-	@Override
-	public Map<Integer, Date> getModificationHistory(String name) {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support page versions");
-		return null;
 	}
 
 	@Override
@@ -252,35 +218,28 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public Map<String, Integer> getVersionCounts() {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support page versions");
-		return null;
-	}
-
-	@Override
-	public boolean isPageLocked(String articlename) {
+	public boolean isArticleLocked(String articlename) {
 		Logger.getLogger(this.getClass().getName()).warning(
 				"The used WikiConnector does not support page locks");
 		return false;
 	}
 
 	@Override
-	public boolean isPageLockedCurrentUser(String articlename, String user) {
+	public boolean isArticleLockedCurrentUser(String articlename, String user) {
 		Logger.getLogger(this.getClass().getName()).warning(
 				"The used WikiConnector does not support page locks");
 		return false;
 	}
 
 	@Override
-	public String normalizeStringTo(String string) {
+	public String normalizeString(String string) {
 		Logger.getLogger(this.getClass().getName()).warning(
 				"The used WikiConnector does not support normalizing of strings");
 		return string;
 	}
 
 	@Override
-	public String renderWikiSyntax(String pagedata, UserActionContext userContext) {
+	public String renderWikiSyntax(String pagedata, HttpServletRequest request) {
 		Logger.getLogger(this.getClass().getName()).warning(
 				"The used WikiConnector does not support a wiki syntax");
 		return null;
@@ -291,7 +250,7 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public boolean setPageLocked(String articlename, String user) {
+	public boolean lockArticle(String articlename, String user) {
 		Logger.getLogger(this.getClass().getName()).warning(
 				"The used WikiConnector does not support page locks");
 		return false;
@@ -312,55 +271,34 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public void undoPageLocked(String articlename) {
+	public void unlockArticle(String articlename) {
 		Logger.getLogger(this.getClass().getName()).warning(
 				"The used WikiConnector does not support page locks");
 	}
 
 	@Override
-	public boolean userCanEditPage(String articlename) {
+	public boolean userCanEditArticle(String articlename, HttpServletRequest r) {
 		Logger.getLogger(this.getClass().getName()).warning(
 				"The used WikiConnector does not support rights managment");
 		return true;
 	}
 
 	@Override
-	public boolean userCanEditPage(String articlename, HttpServletRequest r) {
+	public boolean userCanViewArticle(String articlename, HttpServletRequest r) {
 		Logger.getLogger(this.getClass().getName()).warning(
 				"The used WikiConnector does not support rights managment");
 		return true;
 	}
 
 	@Override
-	public boolean userCanViewPage(String articlename) {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support rights managment");
-		return true;
-	}
-
-	@Override
-	public boolean userCanViewPage(String articlename, HttpServletRequest r) {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support rights managment");
-		return true;
-	}
-
-	@Override
-	public boolean userIsMemberOfGroup(String username, String groupname, HttpServletRequest r) {
+	public boolean userIsMemberOfGroup(String groupname, HttpServletRequest r) {
 		Logger.getLogger(this.getClass().getName()).warning(
 				"The used WikiConnector does not support user groups");
 		return false;
 	}
 
 	@Override
-	public String wikiSyntaxToHtml(String syntax) {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support a wiki syntax");
-		return null;
-	}
-
-	@Override
-	public boolean writeArticleToWikiEnginePersistence(String title, String content, UserContext context) {
+	public boolean writeArticleToWikiPersistence(String title, String content, UserContext context) {
 		Environment.getInstance().buildAndRegisterArticle(content, title, Environment.DEFAULT_WEB);
 		if (dummyPageProvider == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
@@ -369,6 +307,16 @@ public class DummyConnector implements WikiConnector {
 		}
 		dummyPageProvider.setArticleContent(title, content);
 		return true;
+	}
+
+	@Override
+	public int getVersionCount(String title) {
+		if (dummyPageProvider == null) {
+			Logger.getLogger(this.getClass().getName()).warning(
+					"No PageProvider given, so additional wiki pages cannot be added");
+			return 0;
+		}
+		return dummyPageProvider.getArticle(title) == null ? 0 : 1;
 	}
 
 }

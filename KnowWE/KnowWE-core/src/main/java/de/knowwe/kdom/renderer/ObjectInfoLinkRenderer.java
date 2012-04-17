@@ -45,7 +45,7 @@ public class ObjectInfoLinkRenderer implements Renderer {
 		renderer.render(sec, user, b);
 
 		String objectName = sec.getText().trim();
-		boolean pageExists = Environment.getInstance().getWikiConnector().doesPageExist(
+		boolean pageExists = Environment.getInstance().getWikiConnector().doesArticleExist(
 				objectName);
 
 		if (pageExists) {

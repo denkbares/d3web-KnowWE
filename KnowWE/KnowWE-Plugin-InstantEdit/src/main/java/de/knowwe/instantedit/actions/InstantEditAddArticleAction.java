@@ -41,11 +41,11 @@ public class InstantEditAddArticleAction extends AbstractAction {
 			value = "";
 		}
 
-		Environment.getInstance().getWikiConnector().createWikiPage(title, "",
+		Environment.getInstance().getWikiConnector().createArticle(title, "",
 				context.getUserName());
 		// errors and security are handled inside replaceKDOMNodesSaveAndBuild
 		boolean written = Environment.getInstance().getWikiConnector()
-				.writeArticleToWikiEnginePersistence(title, value, context);
+				.writeArticleToWikiPersistence(title, value, context);
 
 		if (!written) {
 			context.sendError(500, "Unable to perform request.");

@@ -54,7 +54,7 @@ public class TagHandlingAction extends AbstractAction {
 		if (topic == null) {
 			return "error! null topic";
 		}
-		boolean b = Environment.getInstance().getWikiConnector().userCanEditPage(topic,
+		boolean b = Environment.getInstance().getWikiConnector().userCanEditArticle(topic,
 				context.getRequest());
 
 		if (b == false) {

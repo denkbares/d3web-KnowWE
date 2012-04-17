@@ -53,7 +53,7 @@ public abstract class PackageCompileType extends AbstractType implements Package
 			}
 
 			for (Section<?> sectionOfPackage : sectionsOfPackage) {
-				if (Environment.getInstance().getWikiConnector().doesPageExist(
+				if (Environment.getInstance().getWikiConnector().doesArticleExist(
 						sectionOfPackage.getTitle())) {
 					article.getReviseIterator().addRootSectionToRevise(sectionOfPackage);
 				}

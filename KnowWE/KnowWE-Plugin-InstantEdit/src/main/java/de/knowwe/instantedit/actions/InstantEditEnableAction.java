@@ -56,20 +56,20 @@ public class InstantEditEnableAction extends AbstractAction {
 			return;
 		}
 
-		if (!Environment.getInstance().getWikiConnector().userCanEditPage(topic,
+		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(topic,
 				context.getRequest())) {
 			context.sendError(403, "You do not have the permission to edit this page.");
 			return;
 		}
 
-		boolean isLocked = Environment.getInstance().getWikiConnector().isPageLocked(topic);
-		boolean isLockedCurrentUser = Environment.getInstance().getWikiConnector().isPageLockedCurrentUser(
+		boolean isLocked = Environment.getInstance().getWikiConnector().isArticleLocked(topic);
+		boolean isLockedCurrentUser = Environment.getInstance().getWikiConnector().isArticleLockedCurrentUser(
 				topic, context.getUserName());
 
 		String result = "{\"locked\":true}";
 
 		if (!isLocked || isLockedCurrentUser) {
-			Environment.getInstance().getWikiConnector().setPageLocked(topic,
+			Environment.getInstance().getWikiConnector().lockArticle(topic,
 					context.getUserName());
 			result = "{\"locked\":false}";
 		}

@@ -55,7 +55,7 @@ public class ReplaceKDOMNodeAction extends AbstractAction {
 		ArticleManager mgr = Environment.getInstance().getArticleManager(web);
 
 		// Check for user access
-		if (!Environment.getInstance().getWikiConnector().userCanEditPage(name,
+		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(name,
 				context.getRequest())) {
 			return "perm";
 		}

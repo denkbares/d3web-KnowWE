@@ -20,7 +20,7 @@ public class CheckCanEditPageAction extends AbstractAction {
 
 		String result = "{\"canedit\":false}";
 
-		if (Environment.getInstance().getWikiConnector().userCanEditPage(
+		if (Environment.getInstance().getWikiConnector().userCanEditArticle(
 				topic, context.getRequest())) {
 			result = "{\"canedit\":true}";
 		}

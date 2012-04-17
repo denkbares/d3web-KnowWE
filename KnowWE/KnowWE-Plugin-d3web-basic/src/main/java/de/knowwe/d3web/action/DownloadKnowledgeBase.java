@@ -27,7 +27,7 @@ public class DownloadKnowledgeBase extends AbstractAction {
 		String topic = context.getParameter(Attributes.TOPIC);
 		String web = context.getParameter(Attributes.WEB);
 
-		if (!Environment.getInstance().getWikiConnector().userCanViewPage(topic,
+		if (!Environment.getInstance().getWikiConnector().userCanViewArticle(topic,
 				context.getRequest())) {
 			context.sendError(HttpServletResponse.SC_FORBIDDEN,
 					"You are not allowed to download this knowledgebase");

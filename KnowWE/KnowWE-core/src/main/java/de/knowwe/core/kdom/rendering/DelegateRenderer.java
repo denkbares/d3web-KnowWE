@@ -84,11 +84,9 @@ public class DelegateRenderer implements Renderer {
 		}
 		catch (Exception e) {
 			// wow, that was evil!
-			// System.out.println(section.get());
-			// e.printStackTrace();
 			// now we log instead AND report the error to the user
 			Logger.getLogger(getClass().getName()).warning(
-					"internal error while rendering section" + e.getMessage());
+					"Internal error while rendering section");
 			builder.append(KnowWEUtils.maskHTML("<span class='warning'>"));
 			builder.append("internal error while rendering section: " + e);
 			builder.append(KnowWEUtils.maskHTML("</span>"));
@@ -221,7 +219,7 @@ public class DelegateRenderer implements Renderer {
 
 		Type objectType = section.get();
 		Renderer renderer = objectType.getRenderer();
-		
+
 		if (renderer == null) {
 			renderer = DefaultTextRenderer.getInstance();
 		}

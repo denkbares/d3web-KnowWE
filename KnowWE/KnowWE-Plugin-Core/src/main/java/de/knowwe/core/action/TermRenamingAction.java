@@ -146,7 +146,7 @@ public class TermRenamingAction extends AbstractAction {
 			Set<String> success) throws IOException {
 
 		for (String title : allTerms.keySet()) {
-			if (Environment.getInstance().getWikiConnector().userCanEditPage(
+			if (Environment.getInstance().getWikiConnector().userCanEditArticle(
 					title, context.getRequest())) {
 				Map<String, String> nodesMap = new HashMap<String, String>();
 				for (Section<?> term : allTerms.get(title)) {
