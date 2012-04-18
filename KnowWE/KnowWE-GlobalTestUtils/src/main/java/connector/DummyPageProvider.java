@@ -25,6 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -69,7 +70,10 @@ public class DummyPageProvider {
 
 	private final HashMap<String, Integer> attachmentVersionCache = new HashMap<String, Integer>();
 
+	private final Date startupDate;
+
 	public DummyPageProvider(ZipFile wikiContentZip) throws IOException {
+		startupDate = new Date();
 		for (ZipEntry entry : Collections.list(wikiContentZip.entries())) {
 			Matcher articleMatcher = articleRegex.matcher(entry.getName());
 			Matcher attachmentMatcher = attachmentRegex.matcher(entry.getName());
@@ -111,6 +115,7 @@ public class DummyPageProvider {
 	}
 
 	public DummyPageProvider(File wikiContent) throws IOException {
+		startupDate = new Date();
 		if (wikiContent.isDirectory()) {
 
 			File[] wikiFiles = wikiContent.listFiles();
@@ -221,5 +226,9 @@ public class DummyPageProvider {
 
 	public ConnectorAttachment getAttachment(String fullName) {
 		return attachments.get(fullName);
+	}
+
+	public Date getStartUpdate() {
+		return startupDate;
 	}
 }

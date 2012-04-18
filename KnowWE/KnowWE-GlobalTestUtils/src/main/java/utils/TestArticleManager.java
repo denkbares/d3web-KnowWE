@@ -18,10 +18,13 @@
  */
 package utils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import connector.DummyConnector;
+import connector.DummyPageProvider;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
@@ -76,7 +79,17 @@ public class TestArticleManager {
 	 */
 	private static Article createArcticleFromSourceFile(String content, String filename) {
 		// Initialize KnowWE
-		DummyConnector connector = new DummyConnector();
+		DummyConnector connector = null;
+		try {
+			// added a DummyPageProvider justs prevents NullPointers from beeing
+			// throws.
+			// TODO: rewrite/replace this TestArticleManager with one that
+			// properly uses the DummyConnector and DummyPageProvider
+			connector = new DummyConnector(new DummyPageProvider(new File("")));
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
 		Environment.initInstance(connector);
 

@@ -21,11 +21,12 @@
 package connector;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -41,9 +42,13 @@ import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class DummyConnector implements WikiConnector {
 
+	private static final String DUMMY_USER = "DummyUser";
+
 	private DummyPageProvider dummyPageProvider = null;
 
 	private String knowweExtensionPath = null;
+
+	private final Map<String, String> locks = new HashMap<String, String>();
 
 	public DummyConnector() {
 	}
@@ -56,9 +61,8 @@ public class DummyConnector implements WikiConnector {
 	public String createArticle(String title, String content, String author) {
 		Environment.getInstance().buildAndRegisterArticle(content, title, Environment.DEFAULT_WEB);
 		if (dummyPageProvider == null) {
-			Logger.getLogger(this.getClass().getName()).warning(
-					"No PageProvider given, so additional wiki pages cannot be added");
-			return "";
+			throw new NullPointerException(
+					"PageProvider is null, so additional wiki pages cannot be added");
 		}
 		dummyPageProvider.setArticleContent(title, content);
 		return content;
@@ -67,36 +71,29 @@ public class DummyConnector implements WikiConnector {
 	@Override
 	public boolean doesArticleExist(String title) {
 		if (dummyPageProvider == null) {
-			Logger.getLogger(this.getClass().getName()).warning(
-					"No PageProvider given, so there are no articles available");
-			return false;
+			throw new NullPointerException(
+					"PageProvider is null, so there are no articles available");
 		}
 		return dummyPageProvider.getArticle(title) != null;
 	}
 
 	@Override
 	public String[] getAllActiveUsers() {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support users");
-		return null;
+		return new String[] { DUMMY_USER };
 	}
 
 	@Override
 	public Map<String, String> getAllArticles(String web) {
 		if (dummyPageProvider == null) {
-			Logger.getLogger(this.getClass().getName()).warning(
-					"No PageProvider given, so there are no articles available");
-
-			return null;
+			throw new NullPointerException(
+					"PageProvider is null, so there are no articles available");
 		}
 		return dummyPageProvider.getAllArticles();
 	}
 
 	@Override
 	public String[] getAllUsers() {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support users");
-		return null;
+		return new String[] { DUMMY_USER };
 	}
 
 	@Override
@@ -105,39 +102,33 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public String getVersion(String name, int version) {
-		if (dummyPageProvider == null) {
-			Logger.getLogger(this.getClass().getName()).warning(
-					"No PageProvider given, so there are no articles available");
-
-			return null;
-		}
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support article versions");
-		return dummyPageProvider.getArticle(name);
-	}
-
-	@Override
 	public ConnectorAttachment getAttachment(String path) {
 		if (dummyPageProvider == null) {
-			Logger.getLogger(this.getClass().getName()).warning(
-					"No PageProvider given, so there are no attachments available");
-			return null;
+			throw new NullPointerException(
+					"PageProvider null, so there are no attachments available");
 		}
 		return dummyPageProvider.getAttachment(path);
 	}
 
 	@Override
-	public List<ConnectorAttachment> getAttachments(String pageName) {
+	public Collection<ConnectorAttachment> getAttachments() {
 		if (dummyPageProvider == null) {
-			Logger.getLogger(this.getClass().getName()).warning(
-					"No PageProvider given, so there are no attachments available");
-			return Collections.emptyList();
+			throw new NullPointerException(
+					"PageProvider null, so there are no attachments available");
+		}
+		return new ArrayList<ConnectorAttachment>(dummyPageProvider.getAllAttachments().values());
+	}
+
+	@Override
+	public List<ConnectorAttachment> getAttachments(String title) {
+		if (dummyPageProvider == null) {
+			throw new NullPointerException(
+					"PageProvider null, so there are no attachments available");
 		}
 		Collection<ConnectorAttachment> attachments = getAttachments();
 		List<ConnectorAttachment> attachmentsOfPage = new ArrayList<ConnectorAttachment>();
 		for (ConnectorAttachment attachment : attachments) {
-			if (attachment.getParentName().equals(pageName)) {
+			if (attachment.getParentName().equals(title)) {
 				attachmentsOfPage.add(attachment);
 			}
 		}
@@ -145,20 +136,8 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public Collection<ConnectorAttachment> getAttachments() {
-		if (dummyPageProvider == null) {
-			Logger.getLogger(this.getClass().getName()).warning(
-					"No PageProvider given, so there are no attachments available");
-			return Collections.emptyList();
-		}
-		return new ArrayList<ConnectorAttachment>(dummyPageProvider.getAllAttachments().values());
-	}
-
-	@Override
 	public String getAuthor(String name, int version) {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support authors");
-		return null;
+		return DUMMY_USER;
 	}
 
 	@Override
@@ -177,10 +156,14 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public Date getLastModifiedDate(String name, int version) {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support page versions");
-		return null;
+	public Date getLastModifiedDate(String title, int version) {
+		if (dummyPageProvider == null) {
+			throw new NullPointerException(
+					"PageProvider is null, so there are no articles available");
+		}
+		String article = dummyPageProvider.getArticle(title);
+		if (article == null) return null;
+		return dummyPageProvider.getStartUpdate();
 	}
 
 	@Override
@@ -205,30 +188,57 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public ServletContext getServletContext() {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support page versions");
-		return null;
+		throw new NullPointerException("Used WikiConnector can not provide a ServletContext");
 	}
 
 	@Override
-	public int getVersion(String name) {
+	public int getVersion(String title) {
+		if (dummyPageProvider == null) {
+			throw new NullPointerException(
+					"PageProvider is null, so there are no articles available");
+		}
 		Logger.getLogger(this.getClass().getName()).warning(
 				"The used WikiConnector does not support page versions");
-		return 0;
+		return dummyPageProvider.getArticle(title) == null ? 0 : 1;
 	}
 
 	@Override
-	public boolean isArticleLocked(String articlename) {
+	public String getVersion(String title, int version) {
+		if (dummyPageProvider == null) {
+			throw new NullPointerException(
+					"PageProvider is null, so there are no articles available");
+		}
 		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support page locks");
-		return false;
+				"The used WikiConnector only provides one version per article");
+		return dummyPageProvider.getArticle(title);
+	}
+
+	@Override
+	public int getVersionCount(String title) {
+		if (dummyPageProvider == null) {
+			throw new NullPointerException(
+					"PageProvider is null, so there are no articles available");
+		}
+		Logger.getLogger(this.getClass().getName()).warning(
+				"The used WikiConnector does not support page versions");
+		return dummyPageProvider.getArticle(title) == null ? 0 : 1;
+	}
+
+	@Override
+	public boolean isArticleLocked(String title) {
+		return locks.containsKey(title);
 	}
 
 	@Override
 	public boolean isArticleLockedCurrentUser(String articlename, String user) {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support page locks");
-		return false;
+		String lockingUser = locks.get(articlename);
+		return lockingUser != null && lockingUser.equals(user);
+	}
+
+	@Override
+	public boolean lockArticle(String title, String user) {
+		locks.put(title, user);
+		return true;
 	}
 
 	@Override
@@ -239,10 +249,10 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public String renderWikiSyntax(String pagedata, HttpServletRequest request) {
+	public String renderWikiSyntax(String string, HttpServletRequest request) {
 		Logger.getLogger(this.getClass().getName()).warning(
 				"The used WikiConnector does not support a wiki syntax");
-		return null;
+		return string;
 	}
 
 	public void setKnowWEExtensionPath(String knowWEExtensionPath) {
@@ -250,30 +260,39 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public boolean lockArticle(String articlename, String user) {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support page locks");
-		return false;
+	public boolean storeAttachment(String title, String user, File attachmentFile) {
+		if (dummyPageProvider == null) {
+			throw new NullPointerException(
+					"PageProvider is null, so attachments cannot be stored");
+		}
+		ConnectorAttachment attachment = new FileSystemConnectorAttachment(
+				attachmentFile.getName(), title, attachmentFile);
+		dummyPageProvider.storeAttachment(attachment.getFullName(), attachment);
+		return true;
 	}
 
 	@Override
-	public boolean storeAttachment(String wikiPage, String user, File attachmentFile) {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support to store new attachments");
-		return false;
+	public boolean storeAttachment(String title, String filename, String user, InputStream stream) {
+		if (dummyPageProvider == null) {
+			throw new NullPointerException(
+					"PageProvider is null, so attachments cannot be stored");
+		}
+		ConnectorAttachment attachment;
+		try {
+			attachment = new FileSystemConnectorAttachment(
+					filename, title, stream);
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		dummyPageProvider.storeAttachment(attachment.getFullName(), attachment);
+		return true;
 	}
 
 	@Override
-	public boolean storeAttachment(String wikiPage, String filename, String user, InputStream stream) {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support to store new attachments");
-		return false;
-	}
-
-	@Override
-	public void unlockArticle(String articlename) {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support page locks");
+	public void unlockArticle(String title) {
+		locks.remove(title);
 	}
 
 	@Override
@@ -307,16 +326,6 @@ public class DummyConnector implements WikiConnector {
 		}
 		dummyPageProvider.setArticleContent(title, content);
 		return true;
-	}
-
-	@Override
-	public int getVersionCount(String title) {
-		if (dummyPageProvider == null) {
-			Logger.getLogger(this.getClass().getName()).warning(
-					"No PageProvider given, so additional wiki pages cannot be added");
-			return 0;
-		}
-		return dummyPageProvider.getArticle(title) == null ? 0 : 1;
 	}
 
 }

@@ -42,7 +42,7 @@ import de.knowwe.core.user.UserContext;
  * 
  * To connect a wiki engine with KnowWE this interface needs to be implemented.
  * 
- * @author Jochen
+ * @author Jochen Reutelshöfer, Albrecht Striffler (denkbares GmbH)
  * 
  */
 
@@ -92,21 +92,17 @@ public interface WikiConnector {
 	public String getApplicationRootPath();
 
 	/**
-	 * Returns the given version of the content of the article with the given
-	 * title. If the article does not exist, <tt>null</tt> is returned.
-	 * 
-	 * @param title the title of the article
-	 * @param version the version number of the article source to be retrieved
-	 */
-	public String getVersion(String title, int version);
-
-	/**
 	 * Returns the {@link ConnectorAttachment} given by the supplied path.
 	 * 
 	 * @created 30.08.2011
 	 * @param path the path of the attachment
 	 */
 	public ConnectorAttachment getAttachment(String path);
+
+	/**
+	 * Returns all attachments known to the wiki.
+	 */
+	public Collection<ConnectorAttachment> getAttachments();
 
 	/**
 	 * Returns the filenames of the attachments of the article with the given
@@ -116,11 +112,6 @@ public interface WikiConnector {
 	 *        from
 	 */
 	public List<ConnectorAttachment> getAttachments(String title);
-
-	/**
-	 * Returns all attachments known to the wiki.
-	 */
-	public Collection<ConnectorAttachment> getAttachments();
 
 	/**
 	 * Returns the author of the specified version of the given article (by
@@ -191,6 +182,15 @@ public interface WikiConnector {
 	public int getVersion(String title);
 
 	/**
+	 * Returns the given version of the content of the article with the given
+	 * title. If the article does not exist, <tt>null</tt> is returned.
+	 * 
+	 * @param title the title of the article
+	 * @param version the version number of the article source to be retrieved
+	 */
+	public String getVersion(String title, int version);
+
+	/**
 	 * Returns the total amount of versions for the article with the given
 	 * title.
 	 * 
@@ -217,6 +217,15 @@ public interface WikiConnector {
 	public boolean isArticleLockedCurrentUser(String title, String user);
 
 	/**
+	 * Sets an editing lock on the article, denoting that the article is
+	 * currently edited by the given user.
+	 * 
+	 * @param title the title of the article to be locked
+	 * @param user the user locking the article
+	 */
+	public boolean lockArticle(String title, String user);
+
+	/**
 	 * Normalizes a string the same way as the wiki engine normalizes wiki text
 	 * before saving it to a file.
 	 * 
@@ -234,15 +243,6 @@ public interface WikiConnector {
 	 * @return the rendered article text
 	 */
 	public String renderWikiSyntax(String pagedata, HttpServletRequest request);
-
-	/**
-	 * Sets an editing lock on the article, denoting that the article is
-	 * currently edited by the given user.
-	 * 
-	 * @param title the title of the article to be locked
-	 * @param user the user locking the article
-	 */
-	public boolean lockArticle(String title, String user);
 
 	/**
 	 * Stores a file as an attachment to the given article.
@@ -277,7 +277,7 @@ public interface WikiConnector {
 	public void unlockArticle(String title);
 
 	/**
-	 * Checks whether a user can edit a given article.
+	 * Checks whether a user is allowed edit a given article.
 	 * 
 	 * @param title the title of the article to check
 	 * @param request the request of the user to check for
@@ -285,7 +285,7 @@ public interface WikiConnector {
 	public boolean userCanEditArticle(String title, HttpServletRequest request);
 
 	/**
-	 * Checks whether a user can view a given article
+	 * Checks whether a user is allowed view a given article
 	 * 
 	 * @param title the title of the article to check
 	 * @param request the request of the user

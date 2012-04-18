@@ -18,6 +18,8 @@
  */
 package connector;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -35,12 +37,30 @@ public class FileSystemConnectorAttachment implements ConnectorAttachment {
 
 	private final File attachmentFile;
 
+	private final byte[] attachmentFileBytes;
+
 	private final String parentName;
 
 	private final String fileName;
 
 	public FileSystemConnectorAttachment(String fileName, String parentName, File attachmentFile) {
 		this.attachmentFile = attachmentFile;
+		this.attachmentFileBytes = null;
+		this.fileName = fileName;
+		this.parentName = parentName;
+	}
+
+	public FileSystemConnectorAttachment(String fileName, String parentName, InputStream attachmentFileStream) throws IOException {
+		this.attachmentFile = null;
+
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		byte[] buffer = new byte[1024];
+		int len;
+		while ((len = attachmentFileStream.read(buffer)) != -1) {
+			outputStream.write(buffer, 0, len);
+		}
+
+		this.attachmentFileBytes = outputStream.toByteArray();
 		this.fileName = fileName;
 		this.parentName = parentName;
 	}
@@ -72,7 +92,12 @@ public class FileSystemConnectorAttachment implements ConnectorAttachment {
 
 	@Override
 	public InputStream getInputStream() throws IOException {
-		return new FileInputStream(attachmentFile);
+		if (attachmentFile == null) {
+			return new ByteArrayInputStream(attachmentFileBytes);
+		}
+		else {
+			return new FileInputStream(attachmentFile);
+		}
 	}
 
 	@Override

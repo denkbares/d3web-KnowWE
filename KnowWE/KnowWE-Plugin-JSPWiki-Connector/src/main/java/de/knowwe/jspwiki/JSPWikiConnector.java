@@ -180,35 +180,6 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public String getVersion(String name, int version) {
-
-		// Surrounded this because getPage()
-		// caused a Nullpointer on first KnowWE startup
-		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
-		}
-		catch (NullPointerException e) {
-			return null;
-		}
-
-		WikiContext context = new WikiContext(this.engine, this.engine
-				.getPage(name));
-
-		String pagedata = null;
-		try {
-			if (context.getEngine().pageExists(context.getPage().getName(), version)) {
-				pagedata = context.getEngine().getPureText(
-						context.getPage().getName(), version);
-			}
-		}
-		catch (ProviderException e) {
-			return null;
-		}
-
-		return pagedata;
-	}
-
-	@Override
 	public ConnectorAttachment getAttachment(String path) {
 		try {
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
@@ -223,29 +194,6 @@ public class JSPWikiConnector implements WikiConnector {
 			return null;
 		}
 
-	}
-
-	@Override
-	public List<ConnectorAttachment> getAttachments(String pageName) {
-		try {
-			List<ConnectorAttachment> attachmentList = new LinkedList<ConnectorAttachment>();
-			// this list is in fact a Collection<Attachment>,
-			// the conversion is type safe!
-			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
-			@SuppressWarnings("unchecked")
-			Collection<Attachment> attList = attachmentManager.
-					listAttachments(this.engine.getPage(pageName));
-
-			for (Attachment att : attList) {
-				attachmentList.add(new JSPWikiConnectorAttachment(att,
-						attachmentManager));
-			}
-
-			return attachmentList;
-		}
-		catch (ProviderException e) {
-			return null;
-		}
 	}
 
 	@Override
@@ -270,18 +218,41 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public String getAuthor(String name, int version) {
+	public List<ConnectorAttachment> getAttachments(String title) {
+		try {
+			List<ConnectorAttachment> attachmentList = new LinkedList<ConnectorAttachment>();
+			// this list is in fact a Collection<Attachment>,
+			// the conversion is type safe!
+			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
+			@SuppressWarnings("unchecked")
+			Collection<Attachment> attList = attachmentManager.
+					listAttachments(this.engine.getPage(title));
+
+			for (Attachment att : attList) {
+				attachmentList.add(new JSPWikiConnectorAttachment(att,
+						attachmentManager));
+			}
+
+			return attachmentList;
+		}
+		catch (ProviderException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public String getAuthor(String title, int version) {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
+			if ((this.engine == null) || (this.engine.getPage(title) == null)) return null;
 		}
 		catch (NullPointerException e) {
 			return null;
 		}
 
 		WikiContext context = new WikiContext(this.engine, this.engine
-				.getPage(name));
+				.getPage(title));
 
 		String author = null;
 		try {
@@ -308,18 +279,18 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public Date getLastModifiedDate(String name, int version) {
+	public Date getLastModifiedDate(String title, int version) {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
+			if ((this.engine == null) || (this.engine.getPage(title) == null)) return null;
 		}
 		catch (NullPointerException e) {
 			return null;
 		}
 
 		WikiContext context = new WikiContext(this.engine, this.engine
-				.getPage(name));
+				.getPage(title));
 
 		Date lastModified = null;
 		try {
@@ -370,10 +341,39 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public int getVersion(String name) {
+	public int getVersion(String title) {
 		WikiContext context = new WikiContext(this.engine, this.engine
-				.getPage(name));
+				.getPage(title));
 		return context.getPage().getVersion();
+	}
+
+	@Override
+	public String getVersion(String title, int version) {
+
+		// Surrounded this because getPage()
+		// caused a Nullpointer on first KnowWE startup
+		try {
+			if ((this.engine == null) || (this.engine.getPage(title) == null)) return null;
+		}
+		catch (NullPointerException e) {
+			return null;
+		}
+
+		WikiContext context = new WikiContext(this.engine, this.engine
+				.getPage(title));
+
+		String pagedata = null;
+		try {
+			if (context.getEngine().pageExists(context.getPage().getName(), version)) {
+				pagedata = context.getEngine().getPureText(
+						context.getPage().getName(), version);
+			}
+		}
+		catch (ProviderException e) {
+			return null;
+		}
+
+		return pagedata;
 	}
 
 	@Override
@@ -398,12 +398,12 @@ public class JSPWikiConnector implements WikiConnector {
 	 * the lock owner can edit the page. If FALSE the current page has no lock
 	 * and can be edited by anyone.
 	 * 
-	 * @param articlename
+	 * @param title the title of the article to check
 	 */
 	@Override
-	public boolean isArticleLocked(String articlename) {
+	public boolean isArticleLocked(String title) {
 		PageManager mgr = engine.getPageManager();
-		WikiPage page = new WikiPage(engine, articlename);
+		WikiPage page = new WikiPage(engine, title);
 		if (mgr.getCurrentLock(page) == null) return false;
 		else return true;
 	}
@@ -412,14 +412,13 @@ public class JSPWikiConnector implements WikiConnector {
 	 * Checks if the current page has been locked by the current user. Returns
 	 * TRUE if yes, FALSE otherwise.
 	 * 
-	 * @param articlename
-	 * @param user
-	 * @return
+	 * @param title the title of the article to check
+	 * @param user the user to check for
 	 */
 	@Override
-	public boolean isArticleLockedCurrentUser(String articlename, String user) {
+	public boolean isArticleLockedCurrentUser(String title, String user) {
 		PageManager mgr = engine.getPageManager();
-		WikiPage page = new WikiPage(engine, articlename);
+		WikiPage page = new WikiPage(engine, title);
 		PageLock lock = mgr.getCurrentLock(page);
 
 		if (lock == null) return false;
@@ -429,26 +428,9 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public String normalizeString(String string) {
-		return TextUtil.normalizePostData(string);
-	}
-
-	@Override
-	public String renderWikiSyntax(String pagedata, HttpServletRequest request) {
-		WikiContext context = engine.createContext(request, WikiContext.VIEW);
-		pagedata = engine.textToHTML(context, pagedata);
-		return pagedata;
-	}
-
-	/**
-	 * Locks a page in the WIKI so no other user can edit the page.
-	 * 
-	 * @param articlename
-	 */
-	@Override
-	public boolean lockArticle(String articlename, String user) {
+	public boolean lockArticle(String title, String user) {
 		PageManager mgr = engine.getPageManager();
-		WikiPage page = new WikiPage(engine, articlename);
+		WikiPage page = new WikiPage(engine, title);
 		PageLock lock = mgr.lockPage(page, user);
 
 		if (lock != null) return true;
@@ -456,9 +438,21 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public boolean storeAttachment(String wikiPage, String user, File attachmentFile) {
+	public String normalizeString(String string) {
+		return TextUtil.normalizePostData(string);
+	}
+
+	@Override
+	public String renderWikiSyntax(String content, HttpServletRequest request) {
+		WikiContext context = engine.createContext(request, WikiContext.VIEW);
+		content = engine.textToHTML(context, content);
+		return content;
+	}
+
+	@Override
+	public boolean storeAttachment(String title, String user, File attachmentFile) {
 		try {
-			return storeAttachment(wikiPage, attachmentFile.getName(), user, new FileInputStream(
+			return storeAttachment(title, attachmentFile.getName(), user, new FileInputStream(
 					attachmentFile));
 		}
 		catch (FileNotFoundException e) {
@@ -469,20 +463,20 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public boolean storeAttachment(String wikiPage, String filename, String user, InputStream stream) {
+	public boolean storeAttachment(String title, String filename, String user, InputStream stream) {
 		try {
-			boolean isNotLocked = !isArticleLocked(wikiPage);
-			if (isArticleLockedCurrentUser(wikiPage, user) || isNotLocked) {
-				if (isNotLocked) lockArticle(wikiPage, "WIKI-ENGINE");
+			boolean isNotLocked = !isArticleLocked(title);
+			if (isArticleLockedCurrentUser(title, user) || isNotLocked) {
+				if (isNotLocked) lockArticle(title, "WIKI-ENGINE");
 				AttachmentManager attachmentManager = this.engine
 						.getAttachmentManager();
 
-				Attachment att = new Attachment(engine, wikiPage,
+				Attachment att = new Attachment(engine, title,
 						filename);
 				att.setAuthor(user);
 				attachmentManager.storeAttachment(att, stream);
 
-				if (isNotLocked) unlockArticle(wikiPage);
+				if (isNotLocked) unlockArticle(title);
 				return true;
 			}
 			else return false;
@@ -496,36 +490,22 @@ public class JSPWikiConnector implements WikiConnector {
 
 	}
 
-	/**
-	 * Removes a page lock from a certain page in the WIKI so other users can
-	 * edit the page.
-	 * 
-	 * @param articlename
-	 */
 	@Override
-	public void unlockArticle(String articlename) {
+	public void unlockArticle(String title) {
 		PageManager mgr = engine.getPageManager();
-		WikiPage page = new WikiPage(engine, articlename);
+		WikiPage page = new WikiPage(engine, title);
 
-		if (isArticleLocked(articlename)) {
+		if (isArticleLocked(title)) {
 			PageLock lock = mgr.getCurrentLock(page);
 			mgr.unlockPage(lock);
 		}
 	}
 
-	/**
-	 * Checks if the current user has the rights to edit the given page. Returns
-	 * TRUE if the user has editing permission, otherwise FALSE and editing of
-	 * the page is denied.
-	 * 
-	 * @param articlename
-	 * @param r HttpRequest
-	 */
 	@Override
-	public boolean userCanEditArticle(String articlename, HttpServletRequest r) {
-		WikiPage page = new WikiPage(engine, articlename);
-		WikiContext context = new WikiContext(this.engine, r, this.engine
-				.getPage(articlename));
+	public boolean userCanEditArticle(String title, HttpServletRequest request) {
+		WikiPage page = new WikiPage(engine, title);
+		WikiContext context = new WikiContext(this.engine, request, this.engine
+				.getPage(title));
 
 		AuthorizationManager authmgr = engine.getAuthorizationManager();
 		PagePermission pp = PermissionFactory.getPagePermission(page, "edit");
@@ -533,19 +513,11 @@ public class JSPWikiConnector implements WikiConnector {
 		return authmgr.checkPermission(context.getWikiSession(), pp);
 	}
 
-	/**
-	 * Checks if the current user has the rights to show the given page. Returns
-	 * TRUE if the user has showing permission, otherwise FALSE and showing of
-	 * the page is denied.
-	 * 
-	 * @param articlename
-	 * @param r HttpRequest
-	 */
 	@Override
-	public boolean userCanViewArticle(String articlename, HttpServletRequest r) {
-		WikiPage page = new WikiPage(engine, articlename);
-		WikiContext context = new WikiContext(this.engine, r, this.engine
-				.getPage(articlename));
+	public boolean userCanViewArticle(String title, HttpServletRequest request) {
+		WikiPage page = new WikiPage(engine, title);
+		WikiContext context = new WikiContext(this.engine, request, this.engine
+				.getPage(title));
 
 		AuthorizationManager authmgr = engine.getAuthorizationManager();
 		PagePermission pp = PermissionFactory.getPagePermission(page, "view");
@@ -554,11 +526,11 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public boolean userIsMemberOfGroup(String groupname, HttpServletRequest r) {
+	public boolean userIsMemberOfGroup(String groupname, HttpServletRequest request) {
 
 		// which article is not relevant
 		String articleName = "Main";
-		WikiContext context = new WikiContext(this.engine, r, this.engine
+		WikiContext context = new WikiContext(this.engine, request, this.engine
 				.getPage(articleName));
 
 		Principal[] princ = context.getWikiSession().getRoles();
@@ -571,16 +543,16 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public boolean writeArticleToWikiPersistence(String name, String text, UserContext user) {
+	public boolean writeArticleToWikiPersistence(String title, String content, UserContext user) {
 		try {
 			HttpServletRequest req = user.getRequest();
 			WikiContext context = engine.createContext(req, WikiContext.EDIT);
-			context.setPage(engine.getPage(name));
+			context.setPage(engine.getPage(title));
 
 			WikiPage page = context.getPage();
 			page.setAuthor(context.getCurrentUser().getName());
 
-			engine.saveText(context, text);
+			engine.saveText(context, content);
 			// engine.saveText(map.getContext(), text);
 			return true;
 		}
