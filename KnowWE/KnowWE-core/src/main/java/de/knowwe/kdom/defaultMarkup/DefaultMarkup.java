@@ -38,6 +38,7 @@ public class DefaultMarkup {
 		private final String name;
 		private final boolean mandatory;
 		private final Pattern pattern; // optional
+		private boolean deprecated;
 
 		private final Collection<Type> nameTypes = new LinkedList<Type>();
 		private final Collection<Type> types = new LinkedList<Type>();
@@ -68,6 +69,16 @@ public class DefaultMarkup {
 		 */
 		public boolean isMandatory() {
 			return this.mandatory;
+		}
+
+		/**
+		 * Returns whether the annotation is deprecated
+		 * 
+		 * @created 18.04.2012
+		 * @return true if the annotation is deprecated, false otherwise
+		 */
+		public boolean isDeprecated() {
+			return deprecated;
 		}
 
 		/**
@@ -247,6 +258,16 @@ public class DefaultMarkup {
 	 */
 	public Type[] getTypes() {
 		return this.types.toArray(new Type[this.types.size()]);
+	}
+
+	public void setAnnotationDeprecated(String annotationName) {
+		Annotation annotation = getAnnotation(annotationName);
+		if (annotation != null) {
+			annotation.deprecated = true;
+		}
+		else {
+			throw new IllegalArgumentException("Annotation \"" + annotationName + "\" not defined.");
+		}
 	}
 
 }

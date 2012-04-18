@@ -59,6 +59,11 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 						+ " is mandatory, but missing. Please specify that annotation.");
 				msgs.add(message);
 			}
+			if (annotation.isDeprecated() && annotationSection != null) {
+				Message message = Messages.warning("The annotation @" + name
+						+ " is decrepated.");
+				msgs.add(message);
+			}
 		}
 
 		// check unrecognized annotations
