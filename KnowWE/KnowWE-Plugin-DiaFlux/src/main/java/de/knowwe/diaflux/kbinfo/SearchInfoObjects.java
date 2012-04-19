@@ -134,9 +134,11 @@ public class SearchInfoObjects extends AbstractAction {
 				// TODO: define better mechanism with university and
 				// implement well
 				for (Question question : base.getManager().getQuestions()) {
-					if (!Arrays.asList(question.getParents()).contains(base.getRootQASet())) {
+					// if
+					// (!Arrays.asList(question.getParents()).contains(base.getRootQASet()))
+					// {
 						allKBObjects.add(question);
-					}
+					// }
 				}
 			}
 			// search all objects
