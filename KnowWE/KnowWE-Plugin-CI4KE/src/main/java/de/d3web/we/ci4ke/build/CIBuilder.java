@@ -43,6 +43,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.Strings;
+import de.knowwe.jspwiki.JSPWikiConnector;
 
 public class CIBuilder {
 
@@ -176,11 +177,19 @@ public class CIBuilder {
 		}
 		resultset.setTimeSpentForBuild(System.currentTimeMillis() - buildStartTime);
 
-		// write the resultset to XML
-		CIBuildPersistenceHandler persi = CIBuildPersistenceHandler.getHandler(
-				this.config.getDashboardName(),
-				this.config.getDashboardArticleTitle());
+		// TODO: this is a hotfix because the current persistence only works
+		// with JSPWiki
+		if (Environment.getInstance().getWikiConnector() instanceof JSPWikiConnector) {
+			// write the resultset to XML
+			CIBuildPersistenceHandler persi = CIBuildPersistenceHandler.getHandler(
+					this.config.getDashboardName(),
+					this.config.getDashboardArticleTitle());
 
-		persi.write(resultset);
+			persi.write(resultset);
+		}
+		else {
+			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
+					"Unable to save builds to persistence, because no valid WikiConnector is used");
+		}
 	}
 }
