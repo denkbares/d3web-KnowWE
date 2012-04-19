@@ -317,7 +317,7 @@ public class ConditionVerbalizer implements Verbalizer {
 		List<Object> values = new ArrayList<Object>();
 
 		if (tCondition instanceof CondDState) {
-			values.add(((CondDState) tCondition).getStatus());
+			values.add(((CondDState) tCondition).getRatingState());
 		}
 		else if (tCondition instanceof CondQuestion) {
 			if (tCondition instanceof CondNumIn) {
