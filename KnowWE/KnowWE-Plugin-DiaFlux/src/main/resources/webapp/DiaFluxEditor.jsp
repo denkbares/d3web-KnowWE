@@ -37,7 +37,7 @@
 	}
 	
 	String kdomID = parameters.get("kdomID");
-	Section diafluxSection = Sections.getSection(kdomID);
+	Section<DiaFluxType> diafluxSection = Sections.getSection(kdomID, DiaFluxType.class);
 	
 	if (diafluxSection == null){
 		out.println("<h3>Flowchart not found. Please try opening the editor again.</h3>");
@@ -70,8 +70,7 @@
 	}
 	
 	WikiConnector connector = Environment.getInstance().getWikiConnector();
-	boolean canEditPage = connector.userCanEditPage(
-	topic, context.getRequest());
+	boolean canEditPage = connector.userCanEditArticle(topic, context.getRequest());
 	
 	if (!canEditPage){
 		out.println("<h3>Do not have the permission to edit article: '" + topic + "'.</h3>");
@@ -172,7 +171,7 @@
 <div id="toolbar"> 
 	<ul class="toolbar">
 		<li class="icon" id="saveClose" title="Save flowchart & Close editor" style="background-image:url(cc/image/toolbar/saveclose_flowchart_32.png);"></li><!--
-	  --><!--li class="icon" id="save" title="Save flowchart" style="background-image:url(cc/image/toolbar/save_flowchart_32.png);"--></li><!--  
+	  --><!--li class="icon" id="save" title="Save flowchart" style="background-image:url(cc/image/toolbar/save_flowchart_32.png);"></li--><!--  
 	  --><li class="icon" id="refresh" title="Revert changes" style="background-image:url(cc/image/toolbar/reload_32.png);"></li><!--  
 	  --><li class="icon" id="close" title="Close editor" style="background-image:url(cc/image/toolbar/cancel_32.png);"></li><!--  
 	  --><li class="icon" id="delete" title="Delete flowchart" style="background-image:url(cc/image/toolbar/delete_flowchart_32.png);"></li>
