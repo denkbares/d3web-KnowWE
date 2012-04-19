@@ -267,7 +267,7 @@ public class DummyConnector implements WikiConnector {
 		}
 		ConnectorAttachment attachment = new FileSystemConnectorAttachment(
 				attachmentFile.getName(), title, attachmentFile);
-		dummyPageProvider.storeAttachment(attachment.getFullName(), attachment);
+		dummyPageProvider.storeAttachment(attachment.getPath(), attachment);
 		return true;
 	}
 
@@ -286,7 +286,7 @@ public class DummyConnector implements WikiConnector {
 			e.printStackTrace();
 			return false;
 		}
-		dummyPageProvider.storeAttachment(attachment.getFullName(), attachment);
+		dummyPageProvider.storeAttachment(attachment.getPath(), attachment);
 		return true;
 	}
 

@@ -109,7 +109,7 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 				boolean exists = false;
 				List<AttachmentTestCaseProvider> list = regexMap.get(fileRegex);
 				for (AttachmentTestCaseProvider provider : list) {
-					if (provider.getName().equals(attachment.getFullName())) {
+					if (provider.getName().equals(attachment.getPath())) {
 						// trigger reparse if necessary
 						provider.getTestCase();
 						exists = true;

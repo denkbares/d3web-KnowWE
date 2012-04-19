@@ -151,7 +151,7 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 		for (ConnectorAttachment attachment : attachments) {
 			if (!attachment.getFileName().equalsIgnoreCase(attachmentName)) continue;
 			if (!attachment.getParentName().equalsIgnoreCase(articleName)) continue;
-			return new WikiAttachmentResource(path, attachment);
+			return new WikiAttachmentResource(path, attachment.getPath());
 		}
 		return null;
 	}

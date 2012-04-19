@@ -88,7 +88,7 @@ public class JSPWikiConnectorAttachment implements ConnectorAttachment {
 	}
 
 	@Override
-	public String getFullName() {
+	public String getPath() {
 		return getParentName() + "/" + getFileName();
 	}
 

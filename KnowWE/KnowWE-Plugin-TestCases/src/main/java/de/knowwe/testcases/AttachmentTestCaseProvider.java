@@ -112,14 +112,14 @@ public abstract class AttachmentTestCaseProvider implements TestCaseProvider {
 
 	@Override
 	public String getName() {
-		return attachment.getFullName();
+		return attachment.getPath();
 	}
 
 	protected void updateTestCaseMessages(KnowledgeBase kb) {
 		testCaseMessages = new LinkedList<Message>();
 		if (testCase != null) {
 			for (String s : testCase.check(kb)) {
-				testCaseMessages.add(Messages.error(attachment.getFullName() + ": " + s));
+				testCaseMessages.add(Messages.error(attachment.getPath() + ": " + s));
 			}
 		}
 	}

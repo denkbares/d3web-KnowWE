@@ -55,7 +55,7 @@ public class MatchingAttachmentsRenderer implements Renderer {
 		for (String s : annotations) {
 			for (ConnectorAttachment attachment : KnowWEUtils.getAttachments(s,
 					section.getArticle().getTitle())) {
-				attachments.add(attachment.getFullName());
+				attachments.add(attachment.getPath());
 			}
 		}
 		if (attachments.size() > 0) {

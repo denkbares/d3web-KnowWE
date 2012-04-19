@@ -106,7 +106,7 @@ public class DummyPageProvider {
 
 		String versionFileName = attachmentMatcher.group(3);
 		if (isLatestVersion(versionFileName, zipConAttachment)) {
-			storeAttachment(zipConAttachment.getFullName(), zipConAttachment);
+			storeAttachment(zipConAttachment.getPath(), zipConAttachment);
 		}
 	}
 
@@ -163,7 +163,7 @@ public class DummyPageProvider {
 								fileName, parentName, attachmentVersionFile);
 
 						if (isLatestVersion(attachmentVersionFile.getName(), fileConAttachment)) {
-							storeAttachment(fileConAttachment.getFullName(), fileConAttachment);
+							storeAttachment(fileConAttachment.getPath(), fileConAttachment);
 						}
 					}
 				}
@@ -173,10 +173,10 @@ public class DummyPageProvider {
 
 	private boolean isLatestVersion(String attachmentVersionFileName, ConnectorAttachment attachment) {
 		Integer newVersion = getVersion(attachmentVersionFileName);
-		Integer currentVersion = attachmentVersionCache.get(attachment.getFullName());
+		Integer currentVersion = attachmentVersionCache.get(attachment.getPath());
 		boolean latestVersion = currentVersion == null || newVersion > currentVersion;
 		if (latestVersion) {
-			attachmentVersionCache.put(attachment.getFullName(), newVersion);
+			attachmentVersionCache.put(attachment.getPath(), newVersion);
 		}
 		return latestVersion;
 	}

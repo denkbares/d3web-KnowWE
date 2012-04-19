@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import de.d3web.core.knowledge.Resource;
-import de.knowwe.core.wikiConnector.ConnectorAttachment;
+import de.knowwe.core.Environment;
 
 /**
  * Resource for storing an attachment of an Wikipage. See also:
@@ -34,27 +34,27 @@ import de.knowwe.core.wikiConnector.ConnectorAttachment;
  */
 public class WikiAttachmentResource implements Resource {
 
-	private final String path;
-	private final ConnectorAttachment attachment;
+	private final String knowledgebasePath;
+	private final String attachmentPath;
 
-	public WikiAttachmentResource(String path, ConnectorAttachment attachment) {
-		this.attachment = attachment;
-		this.path = path;
+	public WikiAttachmentResource(String knowledgebasePath, String attachmentPath) {
+		this.attachmentPath = attachmentPath;
+		this.knowledgebasePath = knowledgebasePath;
 	}
 
 	@Override
 	public InputStream getInputStream() throws IOException {
-		return this.attachment.getInputStream();
+		return Environment.getInstance().getWikiConnector().getAttachment(attachmentPath).getInputStream();
 	}
 
 	@Override
 	public String getPathName() {
-		return path;
+		return knowledgebasePath;
 	}
 
 	@Override
 	public long getSize() {
-		return this.attachment.getSize();
+		return Environment.getInstance().getWikiConnector().getAttachment(attachmentPath).getSize();
 	}
 
 }

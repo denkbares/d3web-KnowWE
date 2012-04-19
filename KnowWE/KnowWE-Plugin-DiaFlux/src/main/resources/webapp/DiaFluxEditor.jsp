@@ -78,7 +78,7 @@
 	}
 	
 	//TODO how to handle leftover pagelocks?
-// 	boolean locked = connector.isPageLocked(topic);
+// 	boolean locked = connector.isArticleLocked(topic);
 // 	if (locked) {
 // 		out.println("<h3>The article is currently being edited.</h3>");
 // 		return;

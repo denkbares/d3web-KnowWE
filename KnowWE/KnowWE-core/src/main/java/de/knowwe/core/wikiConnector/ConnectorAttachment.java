@@ -41,13 +41,13 @@ public interface ConnectorAttachment {
 	public String getParentName();
 
 	/**
-	 * Returns the full name of the attachment. The full name is comprised of
-	 * the article name of the attachment, followed by a separator and the file
-	 * name of the attachment itself.
+	 * Returns the path of the attachment in the connected wiki. The path is
+	 * comprised of the article name of the attachment, followed by a separator
+	 * and the file name of the attachment itself.
 	 * 
 	 * @created 11.04.2012
 	 */
-	public String getFullName();
+	public String getPath();
 
 	/**
 	 * Returns the date of the last change of attachment.

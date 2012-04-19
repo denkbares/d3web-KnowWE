@@ -125,7 +125,7 @@ public class KnowWEUtils {
 		for (ConnectorAttachment attachment : attachments) {
 			if ((attachment.getFileName().equals(fileName)
 					&& attachment.getParentName().equals(title))
-					|| attachment.getFullName().equals(fileName)) {
+					|| attachment.getPath().equals(fileName)) {
 				actualAttachment = attachment;
 				break;
 			}
@@ -148,7 +148,7 @@ public class KnowWEUtils {
 		Collection<ConnectorAttachment> attachments = Environment.getInstance().getWikiConnector().getAttachments();
 		Pattern pattern = Pattern.compile(regex);
 		for (ConnectorAttachment attachment : attachments) {
-			if (pattern.matcher(attachment.getFullName()).matches()
+			if (pattern.matcher(attachment.getPath()).matches()
 						|| (pattern.matcher(attachment.getFileName()).matches() && attachment.getParentName().equals(
 								topic))) {
 				result.add(attachment);

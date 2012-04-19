@@ -76,7 +76,7 @@ public class FileSystemConnectorAttachment implements ConnectorAttachment {
 	}
 
 	@Override
-	public String getFullName() {
+	public String getPath() {
 		return getParentName() + "/" + getFileName();
 	}
 
@@ -102,7 +102,7 @@ public class FileSystemConnectorAttachment implements ConnectorAttachment {
 
 	@Override
 	public String toString() {
-		return getFullName();
+		return getPath();
 	}
 
 }

@@ -59,7 +59,7 @@ public class ZipContentConnectorAttachment implements ConnectorAttachment {
 	}
 
 	@Override
-	public String getFullName() {
+	public String getPath() {
 		return getParentName() + "/" + getFileName();
 	}
 
@@ -80,7 +80,7 @@ public class ZipContentConnectorAttachment implements ConnectorAttachment {
 
 	@Override
 	public String toString() {
-		return getFullName();
+		return getPath();
 	}
 
 }
