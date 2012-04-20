@@ -25,6 +25,7 @@ import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.notification.NotificationManager;
 
 /**
  * This is a generic class for resetting d3web-Sessions using KnowWE's action
@@ -67,5 +68,8 @@ public class SessionResetAction extends AbstractAction {
 		SessionProvider provider = SessionProvider.getSessionProvider(context);
 		provider.removeSession(base);
 		provider.createSession(base);
+
+		// remove out dated session notification
+		NotificationManager.removeNotification(context, kbArticle);
 	}
 }

@@ -104,11 +104,11 @@ public class RessourceLoader {
 	 * @created 05.07.2010
 	 */
 	private void loadDefaultResources() {
-		addFirst("KnowWE.js", RessourceLoader.RESOURCE_SCRIPT);
-		addFirst("KnowWE-helper.js", RessourceLoader.RESOURCE_SCRIPT);
+		addFirst("KnowWE-notification.js", RessourceLoader.RESOURCE_SCRIPT);
 		addFirst("jQueryCompatibility.js", RessourceLoader.RESOURCE_SCRIPT);
 		addFirst("jQuery.js", RessourceLoader.RESOURCE_SCRIPT);
-		addFirst("KnowWE-notification.js", RessourceLoader.RESOURCE_SCRIPT);
+		addFirst("KnowWE.js", RessourceLoader.RESOURCE_SCRIPT);
+		addFirst("KnowWE-helper.js", RessourceLoader.RESOURCE_SCRIPT);
 		addFirst("general.css", RessourceLoader.RESOURCE_STYLESHEET);
 	}
 

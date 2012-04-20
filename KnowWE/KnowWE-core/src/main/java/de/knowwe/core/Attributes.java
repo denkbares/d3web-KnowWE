@@ -29,6 +29,7 @@ public class Attributes {
 	public static final String WEB = "KWikiWeb";
 	public static final String TERM = "KWikiTerm";
 	public static final String SESSIONPROVIDER = "KWikiSessionProvider";
+	public static final String NOTIFICATIONMANAGER = "KWikiNotificationManager";
 	public static final String NAMESPACE = "KWikiNamespace";
 	public static final String TARGET = "TargetNamespace";
 	public static final String TEXT = "KWikitext";

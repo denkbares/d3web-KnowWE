@@ -36,6 +36,7 @@ import javax.servlet.http.Cookie;
 
 import org.apache.log4j.Logger;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyManager;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Question;
@@ -49,7 +50,9 @@ import de.d3web.testcase.TestCaseUtils;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.Finding;
 import de.d3web.testcase.model.TestCase;
+import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.knowledgebase.KnowledgeBaseType;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -65,6 +68,8 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.notification.NotificationManager;
+import de.knowwe.notification.OutDatedSessionNotification;
 
 /**
  * Renderer for TestCasePlayerType
@@ -186,6 +191,16 @@ public class TestCasePlayerRenderer implements Renderer {
 		TerminologyManager manager = session.getKnowledgeBase().getManager();
 		TableModel tableModel = new TableModel();
 		String kbArticle = selectedTriple.getC().getTitle();
+		KnowledgeBase base = D3webUtils.getKnowledgeBase(user.getWeb(), kbArticle);
+
+		// check if the latest knowledge base is used
+		if (base != null) {
+			if (SessionProvider.hasOutDatedSession(user, base)) {
+				NotificationManager.addNotification(user,
+						new OutDatedSessionNotification(kbArticle));
+			}
+		}
+
 		TerminologyObject selectedObject = renderHeader(section, user, kbArticle, status,
 				additionalQuestions, questionStrings, usedQuestions, manager,
 				tableModel);
@@ -211,9 +226,12 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	private TerminologyObject renderHeader(Section<?> section, UserContext user, String kbArticle, SessionDebugStatus status, String additionalQuestions, String[] questionStrings, Collection<Question> usedQuestions, TerminologyManager manager, TableModel tableModel) {
-		tableModel.addCell(0, 0,
+		tableModel.addCell(
+				0,
+				0,
 				KnowWEUtils.maskHTML(renderToolbarButton("stop12.png",
-						"KNOWWE.plugin.d3webbasic.actions.resetSession('" + kbArticle + "')")), 1);
+						"KNOWWE.plugin.d3webbasic.actions.resetSession('" + kbArticle
+								+ "')")), 1);
 		tableModel.addCell(0, 1, "Time", "Time".length());
 		int column = 2;
 		for (Question q : usedQuestions) {

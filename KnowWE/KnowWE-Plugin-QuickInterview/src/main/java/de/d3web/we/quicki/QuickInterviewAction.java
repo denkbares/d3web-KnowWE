@@ -33,6 +33,8 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.notification.NotificationManager;
+import de.knowwe.notification.OutDatedSessionNotification;
 
 public class QuickInterviewAction extends AbstractAction {
 
@@ -69,6 +71,12 @@ public class QuickInterviewAction extends AbstractAction {
 
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
 		if (kb == null) return rb.getString("KnowWE.quicki.error");
+
+		// check if the latest knowledge base is used
+		if (SessionProvider.hasOutDatedSession(usercontext, kb)) {
+			NotificationManager.addNotification(usercontext,
+					new OutDatedSessionNotification(usercontext.getTitle()));
+		}
 
 		Session session = SessionProvider.getSession(usercontext, kb);
 

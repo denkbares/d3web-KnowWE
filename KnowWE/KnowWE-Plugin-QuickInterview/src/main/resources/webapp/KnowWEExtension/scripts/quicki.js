@@ -183,11 +183,6 @@ KNOWWE.plugin.quicki = function(){
 	            		KNOWWE.plugin.d3webbasic.actions.resetSession();
 	        		});
         	}
-        	
-        	// check if knowledge base is up to date
-        	if(_KS('#quickinterview')) {
-        		KNOWWE.plugin.d3webbasic.actions.checkForOutDatedSession();
-        	}
             
         	/*
 			 * restore visibility states of elements after reloading the page
