@@ -45,13 +45,19 @@ TestCasePlayer.send = function(sessionid, casedate, name, topic) {
         
 TestCasePlayer.change = function(key_sessionid, selectedvalue) {
  			var topic = KNOWWE.helper.gup('page');
-			document.cookie = key_sessionid +"=" + encodeURI(selectedvalue);
+			document.cookie = key_sessionid +"=" + TestCasePlayer.encodeCookieValue(selectedvalue);
            	KNOWWE.helper.observer.notify('update'); 
 
 }
 
 TestCasePlayer.addCookie = function(cookievalue) {
 			var topic = KNOWWE.helper.gup('page');
-			document.cookie = "additionalQuestions"+ encodeURI(topic) +"=" + encodeURI(cookievalue);
+			document.cookie = "additionalQuestions"+ TestCasePlayer.encodeCookieValue(topic) +"=" + TestCasePlayer.encodeCookieValue(cookievalue);
            	KNOWWE.helper.observer.notify('update');
+}
+
+TestCasePlayer.encodeCookieValue = function(cookievalue) {
+			var temp = escape(cookievalue);
+			temp = temp.replace('@', '%40');
+			return temp;
 }

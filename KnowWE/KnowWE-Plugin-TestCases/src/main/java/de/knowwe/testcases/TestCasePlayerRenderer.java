@@ -20,6 +20,7 @@ package de.knowwe.testcases;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
@@ -623,7 +624,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		}
 		String key;
 		try {
-			key = SELECTOR_KEY + "_" + URLDecoder.decode(section.getTitle(), "UTF-8") + i;
+			key = SELECTOR_KEY + "_" + URLEncoder.encode(section.getTitle(), "UTF-8") + i;
 		}
 		catch (UnsupportedEncodingException e) {
 			key = SELECTOR_KEY + "_" + section.getTitle() + i;
