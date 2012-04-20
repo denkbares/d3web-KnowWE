@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Set;
 
 import de.knowwe.core.ArticleManager;
@@ -36,7 +35,6 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -110,31 +108,17 @@ public class TermRenamingAction extends AbstractAction {
 	}
 
 	private void generateMessage(Set<String> failures, Set<String> success, UserActionContext context) throws IOException {
-		ResourceBundle rb = Messages.getMessageBundle();
 		Writer w = context.getWriter();
-		if (failures.size() == 0) {
-			w.write("<p style=\"color:green;\">");
-			w.write(rb.getString("KnowWE.ObjectInfoTagHandler.renamingSuccessful"));
-			w.write("</p>");
-			w.write("<ul>");
-			for (String article : success) {
-				w.write("<li>");
-				w.write(article);
-				w.write("</li>");
-			}
-			w.write("</ul>");
+		// successes
+		for (String article : success) {
+			w.write("##");
+			w.write(article);
 		}
-		else {
-			w.write("<p style=\"color:red;\">");
-			w.write(rb.getString("KnowWE.ObjectInfoTagHandler.renamingFailed"));
-			w.write("</p>");
-			w.write("<ul>");
-			for (String article : failures) {
-				w.write("<li>");
-				w.write(article);
-				w.write("</li>");
-			}
-			w.write("</ul>");
+		w.write("###");
+		// failures
+		for (String article : failures) {
+			w.write("##");
+			w.write(article);
 		}
 	}
 
@@ -153,7 +137,7 @@ public class TermRenamingAction extends AbstractAction {
 					nodesMap.put(term.getID(), replacement);
 				}
 				Sections.replaceSections(context,
-							nodesMap);
+						nodesMap);
 				success.add(title);
 			}
 			else {

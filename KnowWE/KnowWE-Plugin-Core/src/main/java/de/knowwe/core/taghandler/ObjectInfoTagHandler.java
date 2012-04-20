@@ -67,6 +67,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	private static final String HIDEREFS = "hideReferences";
 	private static final String HIDEPLAIN = "hidePlainTextOccurrences";
 	private static final String HIDERENAME = "hideRename";
+	private static final String RENAMEDARTICLES = "renamedArticles";
 
 	// internal counter used to create unique IDs
 	private int panelCounter = 0;
@@ -159,7 +160,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		// Render
 		StringBuilder html = new StringBuilder();
 		html.append(renderHeader(objectName, definitions));
-		html.append(renderRenamingForm(objectName, section.getWeb(), parameters));
+		html.append(renderRenamingForm(objectName, section.getWeb(), parameters, urlParameters));
 		html.append(renderObjectInfo(definitions, references, parameters));
 		html.append(renderPlainTextOccurrences(objectName, section.getWeb(), parameters));
 
@@ -207,13 +208,12 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				html.toString());
 	}
 
-	private String renderRenamingForm(String objectName, String web, Map<String, String> parameters) {
+	private String renderRenamingForm(String objectName, String web, Map<String, String> parameters, Map<String, String> urlParameters) {
 
 		// Check if rendering is suppressed
 		if (checkParameter(HIDERENAME, parameters)) return "";
 
 		StringBuilder html = new StringBuilder();
-
 		html.append("<form action=\"\" method=\"post\">");
 		html.append(rb.getString("KnowWE.ObjectInfoTagHandler.renameTo"));
 		html.append("<input type=\"hidden\" id=\"objectinfo-target\" value=\"" +
@@ -222,13 +222,58 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		html.append("<input type=\"hidden\" id=\"objectinfo-web\" value=\"" +
 				web
 				+ "\" />");
-		html.append("<input type=\"text\" id=\"objectinfo-replacement\" />&nbsp;");
+		html.append("<input type=\"text\" size=\"40\" value=\"" + objectName
+				+ "\" id=\"objectinfo-replacement\" />&nbsp;");
 		html.append("<input type=\"button\" id=\"objectinfo-replace-button\" value=\"&rarr;\" />");
-		html.append("&nbsp;<span id=\"objectinfo-rename-result\"></span>");
+		html.append("&nbsp;<span id=\"objectinfo-rename-result\">");
+		// render message of previous renaming if available...
+		String renamingMessage = urlParameters.get(RENAMEDARTICLES);
+		if (renamingMessage != null) {
+			renderRenamingMessage(html, renamingMessage);
+		}
+		html.append("</span>");
 		html.append("</form>");
 
 		return renderSection(rb.getString("KnowWE.ObjectInfoTagHandler.renameTo"),
 				html.toString());
+	}
+
+	private void renderRenamingMessage(StringBuilder html, String renamingMessage) {
+
+		String[] articles = renamingMessage.split("###");
+
+		if (articles.length > 0) {
+
+			// successfully renamed
+			String[] success = articles[0].split("##");
+			html.append("<p style=\"color:green;\">");
+			html.append(rb.getString("KnowWE.ObjectInfoTagHandler.renamingSuccessful"));
+			html.append("</p>");
+			renderList(html, success);
+
+			// failure during renaming
+			if (articles.length > 1) {
+				String[] failure = articles[1].split("##");
+				html.append("<p style=\"color:red;\">");
+				html.append(rb.getString("KnowWE.ObjectInfoTagHandler.renamingFailed"));
+				html.append("</p>");
+				renderList(html, failure);
+			}
+
+		}
+
+	}
+
+	private void renderList(StringBuilder html, String[] elements) {
+		html.append("<ul>");
+		for (String element : elements) {
+			if (!element.trim().isEmpty()) {
+				html.append("<li>");
+				html.append(KnowWEUtils.escapeHTML(element));
+				html.append("</li>");
+			}
+		}
+		html.append("</ul>");
 	}
 
 	private String renderObjectInfo(Set<Section<?>> definitions, Set<Section<?>> references, Map<String, String> parameters) {

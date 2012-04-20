@@ -30,12 +30,14 @@ if (typeof KNOWWE.core.plugin == "undefined" || !KNOWWE.core.plugin) {
  */
 KNOWWE.core.plugin.objectinfo = function() {
 	return {
-		init : function(){       
-            //init renaming form button
+		init : function() {
+			// init renaming form button
 			button = _KS('#objectinfo-replace-button');
-			if (button) _KE.add('click', button, KNOWWE.core.plugin.objectinfo.renameTerm);             
-        },
-		
+			if (button)
+				_KE.add('click', button,
+						KNOWWE.core.plugin.objectinfo.renameTerm);
+		},
+
 		/**
 		 * Function: createHomePage Used in the ObjectInfoToolProvider for
 		 * creating homepages for KnowWEObjects
@@ -53,7 +55,8 @@ KNOWWE.core.plugin.objectinfo = function() {
 					response : {
 						action : 'none',
 						fn : function() {
-							window.location = "Wiki.jsp?page=" + objectName.innerHTML
+							window.location = "Wiki.jsp?page="
+									+ objectName.innerHTML
 						}
 					}
 				}
@@ -61,7 +64,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 			}
 
 		},
-		
+
 		/**
 		 * Renames all occurrences of a specific term.
 		 */
@@ -80,10 +83,20 @@ KNOWWE.core.plugin.objectinfo = function() {
 				var options = {
 					url : KNOWWE.core.util.getURL(params),
 					response : {
-						action : 'insert',
-	                    ids : ['objectinfo-rename-result']
+						action : 'none',
+						fn : function() {
+							window.location.href = "Wiki.jsp?page=ObjectInfoPage&objectname="
+									+ encodeURIComponent(replacement.value)
+									+ "&renamedArticles="
+									+ encodeURIComponent(this.responseText);
+							KNOWWE.core.util.updateProcessingState(-1);
+						},
+						onError : function() {
+							KNOWWE.core.util.updateProcessingState(-1);
+						}
 					}
 				}
+				KNOWWE.core.util.updateProcessingState(1);
 				new _KA(options).send();
 			}
 		}
@@ -91,15 +104,16 @@ KNOWWE.core.plugin.objectinfo = function() {
 }();
 
 /* ############################################################### */
-/* ------------- Onload Events  ---------------------------------- */
+/* ------------- Onload Events ---------------------------------- */
 /* ############################################################### */
-(function init(){
-    
-    window.addEvent( 'domready', _KL.setup );
+(function init() {
 
-    if( KNOWWE.helper.loadCheck( ['Wiki.jsp'] )){
-        window.addEvent( 'domready', function(){
-        	KNOWWE.core.plugin.objectinfo.init();
-        });
-    };
+	window.addEvent('domready', _KL.setup);
+
+	if (KNOWWE.helper.loadCheck([ 'Wiki.jsp' ])) {
+		window.addEvent('domready', function() {
+			KNOWWE.core.plugin.objectinfo.init();
+		});
+	}
+	;
 }());
