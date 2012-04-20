@@ -109,11 +109,11 @@ public class TestcaseTableLine extends TableLine {
 						Sections.findSuccessor(headerCell, QuestionReference.class);
 				if (qRef == null) continue;
 
-				String qName = qRef.getText().trim();
+				String qName = KnowWEUtils.trimQuotes(qRef.getText().trim());
 				Question question = kb.getManager().searchQuestion(qName);
 				if (question == null) continue;
 
-				String valueString = valueSec.getText().trim();
+				String valueString = KnowWEUtils.trimQuotes(valueSec.getText().trim());
 				if (valueString.isEmpty()) continue;
 
 				// TODO unknown value

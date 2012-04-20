@@ -86,7 +86,7 @@ public class TableCell extends AbstractType {
 		public static final String CELLSTART = "\\|{1,2}\\s*";
 		public static final String JSPLINK = "(\\[.+\\|?.*\\])";
 		public static final String CHARCLASSES = "\\s\\d\\w";
-		public static final String SPECIALCHARS = "-_:;,!§€@%&#='´`°äöüÄÖÜß}\\$\\{\\(\\\\\\+\\)\\?\\<\\>\\^\\.\"";
+		public static final String SPECIALCHARS = "/-_:;,!§€@%&#='´`°äöüÄÖÜß}\\$\\{\\(\\\\\\+\\)\\?\\<\\>\\^\\.\"";
 		public static final String REGEX = CELLSTART + "(" + JSPLINK + "|[" + CHARCLASSES
 				+ SPECIALCHARS
 				+ "]*)";

@@ -75,7 +75,7 @@ public class HeaderCellContent extends TableCellContent {
 			public Collection<Message> create(Article article, Section<HeaderCellContent> s) {
 
 				int column = TableUtils.getColumn(s);
-				String questionName = s.getText();
+				String questionName = KnowWEUtils.trimQuotes(s.getText());
 				if ((column == 0 && questionName.equalsIgnoreCase("Name"))
 						|| ((column == 0 || column == 1) && questionName.equalsIgnoreCase("Time"))) {
 					return Messages.noMessage();
