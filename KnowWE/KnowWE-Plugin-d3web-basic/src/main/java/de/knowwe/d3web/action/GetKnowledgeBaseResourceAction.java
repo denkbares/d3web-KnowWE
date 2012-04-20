@@ -64,9 +64,17 @@ public class GetKnowledgeBaseResourceAction extends AbstractAction {
 			context.sendError(404, "The specified resource does not exist.");
 			return;
 		}
+
+		InputStream inputStream = null;
+		try {
+			inputStream = resource.getInputStream();
+		}
+		catch (IOException e) {
+			context.sendError(404, "The specified resource does not exist.");
+			return;
+		}
 		context.setContentLength((int) resource.getSize());
 		context.setContentType(MIMETYPE_MAP.getContentType(resource.getPathName()));
-		InputStream inputStream = resource.getInputStream();
 		try {
 			stream(inputStream, context.getOutputStream());
 		}

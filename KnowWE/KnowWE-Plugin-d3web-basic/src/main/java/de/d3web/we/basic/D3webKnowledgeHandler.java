@@ -59,7 +59,12 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	/**
 	 * Stores for each Article if the jar file already got built
 	 */
-	private static Map<String, Boolean> savedToJar = new HashMap<String, Boolean>();
+	// We no longer can cache knowledge bases, because attachments added as
+	// resources could change without anyone knowing. As long as we do not
+	// get any notification from JSPWiki that attachments have changed, we
+	// need to create a new knowledge base every time.
+	// private static Map<String, Boolean> savedToJar = new HashMap<String,
+	// Boolean>();
 
 	/**
 	 * <b>This constructor SHOULD NOT BE USED!</b>
@@ -122,7 +127,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 		if (art.isFullParse()) {
 			clearKnowledgeBase(art.getTitle());
 		}
-		savedToJar.put(art.getTitle(), false);
+		// savedToJar.put(art.getTitle(), false);
 	}
 
 	public static boolean isEmpty(KnowledgeBase kb) {
@@ -141,11 +146,15 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	public URL saveKnowledge(String title) throws IOException {
 		KnowledgeBase base = getKnowledgeBase(title);
 		URL home = D3webUtils.getKnowledgeBaseURL(web, base.getId());
-		if (!savedToJar.get(title)) {
-			PersistenceManager.getInstance().save(base,
+		// We no longer can cache knowledge bases, because attachments added as
+		// resources could change without anyone knowing. As long as we do not
+		// get any notification from JSPWiki that attachments have changed, we
+		// need to create a new knowledge base every time.
+		// if (!savedToJar.get(title)) {
+		PersistenceManager.getInstance().save(base,
 					new File(URLDecoder.decode(home.getFile(), "UTF-8")));
-			savedToJar.put(title, true);
-		}
+		// savedToJar.put(title, true);
+		// }
 		return home;
 	}
 

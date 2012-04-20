@@ -24,10 +24,10 @@ public class DownloadKnowledgeBase extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String filename = context.getParameter(PARAM_FILENAME);
-		String topic = context.getParameter(Attributes.TOPIC);
+		String title = context.getParameter(Attributes.TOPIC);
 		String web = context.getParameter(Attributes.WEB);
 
-		if (!Environment.getInstance().getWikiConnector().userCanViewArticle(topic,
+		if (!Environment.getInstance().getWikiConnector().userCanViewArticle(title,
 				context.getRequest())) {
 			context.sendError(HttpServletResponse.SC_FORBIDDEN,
 					"You are not allowed to download this knowledgebase");
@@ -37,7 +37,7 @@ public class DownloadKnowledgeBase extends AbstractAction {
 				.getKnowledgeRepresentationManager(web).getHandler("d3web");
 
 		// before writing, check if the user defined a desired filename
-		KnowledgeBase base = D3webUtils.getKnowledgeBase(web, topic);
+		KnowledgeBase base = D3webUtils.getKnowledgeBase(web, title);
 		String desired_filename = base.getInfoStore().getValue(BasicProperties.FILENAME);
 		if (desired_filename != null) {
 			filename = desired_filename;
@@ -46,7 +46,14 @@ public class DownloadKnowledgeBase extends AbstractAction {
 		// base
 		base.getInfoStore().addValue(BasicProperties.CREATED, new Date());
 
-		URL home = handler.saveKnowledge(topic);
+		URL home = null;
+		try {
+			home = handler.saveKnowledge(title);
+		}
+		catch (IOException e) {
+			context.sendError(410, e.getMessage());
+			return;
+		}
 
 		InputStream in = home.openStream();
 		context.setContentType("application/x-bin");
