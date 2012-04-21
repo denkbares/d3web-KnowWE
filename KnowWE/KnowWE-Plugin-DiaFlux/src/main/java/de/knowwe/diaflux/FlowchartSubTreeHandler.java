@@ -26,13 +26,13 @@ import java.util.List;
 import java.util.Map;
 
 import de.d3web.core.inference.condition.Condition;
+import de.d3web.core.inference.condition.ConditionTrue;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.CommentNode;
 import de.d3web.diaFlux.flow.Edge;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.Node;
-import de.d3web.diaFlux.inference.ConditionTrue;
 import de.d3web.diaFlux.io.DiaFluxPersistenceHandler;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
