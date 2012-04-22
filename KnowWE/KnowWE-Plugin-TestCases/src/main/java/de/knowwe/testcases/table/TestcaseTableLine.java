@@ -28,6 +28,7 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.QuestionValue;
+import de.d3web.core.session.values.Unknown;
 import de.d3web.empiricaltesting.Finding;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.we.object.QuestionReference;
@@ -94,7 +95,9 @@ public class TestcaseTableLine extends TableLine {
 			for (Section<ValueType> valueSec : values) {
 
 				// if value is unchanged, ignore it
-				if (Sections.findSuccessor(valueSec, UnchangedType.class) != null) continue;
+				String valueString = KnowWEUtils.trimQuotes(valueSec.getText().trim());
+				if (valueString.isEmpty()) continue;
+				if (valueString.equals("-")) continue;
 
 				Section<? extends HeaderCell> headerCell = TestcaseTable.findHeaderCell(valueSec);
 
@@ -113,43 +116,36 @@ public class TestcaseTableLine extends TableLine {
 				Question question = kb.getManager().searchQuestion(qName);
 				if (question == null) continue;
 
-				String valueString = KnowWEUtils.trimQuotes(valueSec.getText().trim());
-				if (valueString.isEmpty()) continue;
-
-				// TODO unknown value
-				QuestionValue value;
 				try {
-					value = KnowledgeBaseUtils.findValue(question, valueString);
-
-				}// sectionizing finds a choiceValue, if illegal number is
-					// entered
+					QuestionValue value;
+					if (valueString.equals("-?-") || valueString.equalsIgnoreCase("UNKNOWN")) {
+						value = Unknown.getInstance();
+					}
+					else {
+						value = KnowledgeBaseUtils.findValue(question, valueString);
+					}
+					if (value != null) {
+						Finding finding = new Finding(question, value);
+						testCase.add(finding);
+					}
+					else {
+						// sectionizing finds a choiceValue
+						Messages.storeMessage(article, valueSec, getClass(),
+								Messages.noSuchObjectError(valueString));
+					}
+				}
 				catch (NumberFormatException e) {
-					// on sectionizing an invalid AnswerRef was found.
+					// sectionizing find an illegal number
 					// replace message...
 					Messages.clearMessages(article,
 							Sections.findSuccessor(valueSec, CellAnswerRef.class));
-
 					Messages.storeMessage(article, valueSec, getClass(),
 							Messages.invalidNumberError(valueString));
-					continue;
 				}
-
-				if (value != null) {
-					Finding finding = new Finding(question, value);
-					testCase.add(finding);
-				}
-				else {
-					Messages.storeMessage(article, valueSec, getClass(),
-							Messages.noSuchObjectError(valueString));
-				}
-
 			}
 
 			KnowWEUtils.storeObject(article, s, TESTCASE_KEY, testCase);
-
 			return Collections.emptyList();
 		}
-
 	}
-
 }

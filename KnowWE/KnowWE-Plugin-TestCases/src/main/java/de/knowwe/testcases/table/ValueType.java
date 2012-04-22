@@ -23,6 +23,8 @@ import java.util.List;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.basicType.EmptyType;
+import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.basicType.Number;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -44,7 +46,9 @@ public class ValueType extends AbstractType {
 	public ValueType() {
 		setSectionFinder(new AllTextFinderTrimmed());
 		addChildType(new EmptyType());
-		addChildType(new UnchangedType());
+		addChildType(new KeywordType("UNKNOWN"));
+		addChildType(new KeywordType("-\\?-"));
+		addChildType(new KeywordType("-"));
 		Number number = new Number();
 		number.setRenderer(DefaultTextRenderer.getInstance());
 		number.setSectionFinder(new ConstraintSectionFinder(number.getSectionFinder(),
@@ -78,5 +82,4 @@ public class ValueType extends AbstractType {
 			}
 		});
 	}
-
 }

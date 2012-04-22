@@ -21,12 +21,15 @@ package de.knowwe.testcases.table;
 import java.util.Arrays;
 import java.util.List;
 
+import de.d3web.we.kdom.condition.CompositeCondition;
+import de.d3web.we.kdom.rules.RuleContentType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
+import de.knowwe.kdom.constraint.NonEmptyConstraint;
 import de.knowwe.kdom.constraint.SectionFinderConstraint;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableUtils;
@@ -50,13 +53,20 @@ public class CellContent extends TableCellContent {
 		nameType.setSectionFinder(new ConstraintSectionFinder(new AllTextSectionFinder(),
 				new TableNameConstraint("Name", Arrays.asList(0))));
 
+		CompositeCondition checkType = new CompositeCondition();
+		checkType.setAllowedTerminalConditions(RuleContentType.getTerminalConditions());
+		checkType.setSectionFinder(new ConstraintSectionFinder(new AllTextSectionFinder(),
+				new TableNameConstraint("Checks", null),
+				new NonEmptyConstraint()));
+
 		ValueType valueType = new ValueType();
-		valueType.setSectionFinder(new ConstraintSectionFinder(valueType.getSectionFinder()));
+		valueType.setSectionFinder(new ConstraintSectionFinder(valueType.getSectionFinder(),
+				new NonEmptyConstraint()));
 
 		childrenTypes.add(nameType);
 		childrenTypes.add(timeStampType);
+		childrenTypes.add(checkType);
 		childrenTypes.add(valueType);
-
 	}
 
 	private static final class TableNameConstraint implements SectionFinderConstraint {
@@ -80,7 +90,8 @@ public class CellContent extends TableCellContent {
 			if (headerText.startsWith("||")) {
 				headerText = headerText.substring(2);
 			}
-			if (headerText.trim().equalsIgnoreCase(name) && columns.contains(column)) {
+			boolean columnOk = columns == null || columns.contains(column);
+			if (headerText.trim().equalsIgnoreCase(name) && columnOk) {
 				return true;
 			}
 			else {

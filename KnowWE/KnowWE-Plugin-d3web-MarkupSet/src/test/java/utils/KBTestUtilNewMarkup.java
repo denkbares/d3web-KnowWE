@@ -566,8 +566,7 @@ public class KBTestUtilNewMarkup {
 	}
 
 	/**
-	 * Creats a XCLModel similar to the one which is created in the
-	 * Article
+	 * Creats a XCLModel similar to the one which is created in the Article
 	 */
 	private void createXCLModels() {
 

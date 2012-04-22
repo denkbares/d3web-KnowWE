@@ -101,6 +101,19 @@ public class RuleContentType extends AbstractType {
 
 		ruleContent.setRenderer(new ReRenderSectionMarkerRenderer(
 				new RuleHighlightingRenderer()));
+		List<Type> termConds = getTerminalConditions();
+		ruleContent.setTerminalConditions(termConds);
+
+		// register the configured rule-content-type as child
+		rule.addChildType(ruleContent);
+
+		// register the configured rule-type as child
+		this.childrenTypes.add(new CommentLineType());
+		this.addChildType(rule);
+		this.addChildType(new UnrecognizedSyntaxType());
+	}
+
+	public static List<Type> getTerminalConditions() {
 		List<Type> termConds = new ArrayList<Type>();
 
 		// add all the various allowed TerminalConditions here
@@ -132,15 +145,7 @@ public class RuleContentType extends AbstractType {
 		termConds.add(new CondKnown());
 		termConds.add(new NumericalFinding());
 		termConds.add(new NumericalIntervallFinding());
-		ruleContent.setTerminalConditions(termConds);
-
-		// register the configured rule-content-type as child
-		rule.addChildType(ruleContent);
-
-		// register the configured rule-type as child
-		this.childrenTypes.add(new CommentLineType());
-		this.addChildType(rule);
-		this.addChildType(new UnrecognizedSyntaxType());
+		return termConds;
 	}
 
 	/**

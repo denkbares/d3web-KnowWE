@@ -16,7 +16,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.testcases.table;
+package de.knowwe.core.kdom.basicType;
 
 import java.util.List;
 
@@ -27,8 +27,10 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 /**
+ * A type that matches the whole text if it only consists of white-spaces and
+ * nothing else. It does not match a text partially!
  * 
- * @author Markus Friedrich (denkbares GmbH)
+ * @author Markus Friedrich, Volker Belli (denkbares GmbH)
  * @created 19.03.2012
  */
 public class EmptyType extends AbstractType {
@@ -38,13 +40,22 @@ public class EmptyType extends AbstractType {
 
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-				if (text.trim().isEmpty()) {
-					return SectionFinderResult.createSingleItemResultList(0,
-							text.length());
+				if (isEmpty(text)) {
+					return SectionFinderResult.createSingleItemResultList(0, text.length());
 				}
 				return null;
 			}
 		});
+	}
+
+	private static boolean isEmpty(String text) {
+		// check if the result only consists of white-spaces
+		// or non-break-spaces
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			if (!Character.isWhitespace(c) && c != 160) return false;
+		}
+		return true;
 	}
 
 }

@@ -50,6 +50,7 @@ public class HeaderCellContent extends TableCellContent {
 	public HeaderCellContent() {
 		setRenderer(new TableCellContentRenderer(false));
 
+		// TODO: check to use AllTextTrimmedFinder instead
 		setSectionFinder(new SectionFinder() {
 
 			@Override
@@ -77,7 +78,8 @@ public class HeaderCellContent extends TableCellContent {
 				int column = TableUtils.getColumn(s);
 				String questionName = KnowWEUtils.trimQuotes(s.getText());
 				if ((column == 0 && questionName.equalsIgnoreCase("Name"))
-						|| ((column == 0 || column == 1) && questionName.equalsIgnoreCase("Time"))) {
+						|| ((column == 0 || column == 1) && questionName.equalsIgnoreCase("Time"))
+						|| questionName.equalsIgnoreCase("Checks")) {
 					return Messages.noMessage();
 				}
 				// otherwise it is a QuestionReference
