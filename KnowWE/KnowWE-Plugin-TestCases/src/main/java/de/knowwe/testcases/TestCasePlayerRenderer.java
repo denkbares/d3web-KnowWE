@@ -95,7 +95,7 @@ public class TestCasePlayerRenderer implements Renderer {
 			return;
 		}
 		List<Triple<TestCaseProvider, Section<?>, Article>> providers =
-				getTestCaseProviders(playerSection, user);
+				getTestCaseProviders(playerSection);
 
 		string.append(KnowWEUtils.maskHTML("<div id='" + section.getID() + "'>"));
 
@@ -310,13 +310,13 @@ public class TestCasePlayerRenderer implements Renderer {
 		return additionalQuestions;
 	}
 
-	private List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(Section<TestCasePlayerType> section, UserContext user) {
+	public static List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(Section<TestCasePlayerType> section) {
 		List<Triple<TestCaseProvider, Section<?>, Article>> providers = new LinkedList<Triple<TestCaseProvider, Section<?>, Article>>();
 		String[] kbpackages = DefaultMarkupType.getPackages(section,
 				KnowledgeBaseType.ANNOTATION_COMPILE);
 		Environment env = Environment.getInstance();
 		PackageManager packageManager = env.getPackageManager(section.getWeb());
-		ArticleManager articleManager = env.getArticleManager(user.getWeb());
+		ArticleManager articleManager = env.getArticleManager(section.getWeb());
 		for (String kbpackage : kbpackages) {
 			List<Section<?>> sectionsInPackage = packageManager.getSectionsOfPackage(kbpackage);
 			Set<String> articlesReferringTo = packageManager.getCompilingArticles(kbpackage);

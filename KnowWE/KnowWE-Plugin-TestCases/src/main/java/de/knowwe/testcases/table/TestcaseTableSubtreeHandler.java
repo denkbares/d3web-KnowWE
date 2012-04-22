@@ -104,6 +104,7 @@ public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
 		// create a test case provider and a STC wrapper
 		// for this test case. Also include the additional
 		// tests of this test case
+		stc.setName(name);
 		STCWrapper wrapper = new STCWrapper(stc);
 		for (RatedTestCase rtc : conditionsForRTC.keySet()) {
 			wrapper.addCheck(rtc, conditionsForRTC.get(rtc));
