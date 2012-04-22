@@ -19,14 +19,20 @@
 package de.knowwe.testcases.table;
 
 import java.util.Collection;
+import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.TestCase;
+import de.d3web.testcase.model.Check;
 import de.d3web.testcase.stc.STCWrapper;
+import de.d3web.we.kdom.condition.CompositeCondition;
+import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -55,17 +61,25 @@ public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
 
 		testcase.getRepository().add(stc);
 
-		List<Section<TestcaseTableLine>> lines = new LinkedList<Section<TestcaseTableLine>>();
-		Sections.findSuccessorsOfType(s, TestcaseTableLine.class, lines);
-
+		Map<RatedTestCase, Check> conditionsForRTC =
+				new IdentityHashMap<RatedTestCase, Check>();
+		List<Section<TestcaseTableLine>> lines =
+				Sections.findSuccessorsOfType(s, TestcaseTableLine.class);
 		for (Section<TestcaseTableLine> section : lines) {
+			// check for an rated test case of that line
 			RatedTestCase rtc = (RatedTestCase) KnowWEUtils.getStoredObject(article, section,
 					TestcaseTableLine.TESTCASE_KEY);
+			if (rtc == null) continue;
+			stc.add(rtc);
 
-			if (rtc != null) {
-				stc.add(rtc);
-			}
-
+			// also check for additional check conditions
+			Section<CompositeCondition> condSec =
+					Sections.findSuccessor(section, CompositeCondition.class);
+			if (condSec == null) continue;
+			Condition condition = KDOMConditionFactory.createCondition(article, condSec);
+			if (condition == null) continue;
+			Check check = new ConditionCheck(condition, condSec.getText());
+			conditionsForRTC.put(rtc, check);
 		}
 
 		KnowWEUtils.storeObject(s.getArticle(), s, TestcaseTable.TESTCASE_KEY, testcase);
@@ -86,10 +100,19 @@ public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
 		if (name == null) {
 			name = s.getArticle().getTitle() + "/TestCaseTable" + i;
 		}
-		SingleTestCaseProvider provider = new SingleTestCaseProvider(new STCWrapper(stc), article,
-				name);
-		// append Storage of the TestCaseProvider to the section of the default
-		// markup
+
+		// create a test case provider and a STC wrapper
+		// for this test case. Also include the additional
+		// tests of this test case
+		STCWrapper wrapper = new STCWrapper(stc);
+		for (RatedTestCase rtc : conditionsForRTC.keySet()) {
+			wrapper.addCheck(rtc, conditionsForRTC.get(rtc));
+		}
+		SingleTestCaseProvider provider = new SingleTestCaseProvider(
+				wrapper, article, name);
+
+		// append Storage of the TestCaseProvider
+		// to the section of the default markup
 		List<TestCaseProvider> list = new LinkedList<TestCaseProvider>();
 		list.add(provider);
 		defaultmarkupSection.getSectionStore().storeObject(article,
@@ -98,5 +121,4 @@ public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
 
 		return null;
 	}
-
 }
