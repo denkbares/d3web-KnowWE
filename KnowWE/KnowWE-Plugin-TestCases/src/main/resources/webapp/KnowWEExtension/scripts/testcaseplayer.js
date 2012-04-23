@@ -59,5 +59,6 @@ TestCasePlayer.addCookie = function(cookievalue) {
 TestCasePlayer.encodeCookieValue = function(cookievalue) {
 			var temp = escape(cookievalue);
 			temp = temp.replace('@', '%40');
+			temp = temp.replace('+', '%2B');
 			return temp;
 }
