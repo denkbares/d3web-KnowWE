@@ -48,7 +48,6 @@ public class ValueType extends AbstractType {
 		addChildType(new EmptyType());
 		addChildType(new KeywordType("UNKNOWN"));
 		addChildType(new KeywordType("-\\?-"));
-		addChildType(new KeywordType("-"));
 		Number number = new Number();
 		number.setRenderer(DefaultTextRenderer.getInstance());
 		number.setSectionFinder(new ConstraintSectionFinder(number.getSectionFinder(),
