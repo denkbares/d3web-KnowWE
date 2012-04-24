@@ -58,24 +58,25 @@ public class TaggingMangler implements SearchProvider {
 	 * Singleton instance
 	 */
 	private static TaggingMangler me;
-	
+
 	/**
 	 * Tag storage map
 	 */
-	private Map<String, Set<String>> tagMap = new HashMap<String, Set<String>>();
-	
+	private final Map<String, Set<String>> tagMap = new HashMap<String, Set<String>>();
+
 	/**
 	 * The separator regex used to split tag strings
 	 */
 	public final static String TAG_SEPARATOR = " |,";
-	
-	private TaggingMangler() {}
+
+	private TaggingMangler() {
+	}
 
 	public static synchronized TaggingMangler getInstance() {
 		if (me == null) {
 			me = new TaggingMangler();
 		}
-		
+
 		return me;
 	}
 
@@ -83,9 +84,10 @@ public class TaggingMangler implements SearchProvider {
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
 	}
-	
+
 	/**
 	 * Adds a tag to the tag map
+	 * 
 	 * @param page The article containing the tag
 	 * @param tag The tag
 	 */
@@ -93,18 +95,18 @@ public class TaggingMangler implements SearchProvider {
 		if (page == null || tag == null) {
 			return;
 		}
-		
+
 		if (!tagMap.containsKey(page)) {
 			tagMap.put(page, new HashSet<String>());
 		}
-		
+
 		tagMap.get(page).add(tag.trim());
 	}
 
 	/**
 	 * Adds a tag to a page. The new tag is added into the <tags></tags> part.
-	 * If there is none, it's created at the end of the page
-	 * Multiple <tags> sections are combined into a single one 
+	 * If there is none, it's created at the end of the page Multiple <tags>
+	 * sections are combined into a single one
 	 * 
 	 * @param pagename
 	 * @param tag
@@ -113,15 +115,15 @@ public class TaggingMangler implements SearchProvider {
 	public void addTag(String pagename, String tag, UserActionContext context) throws IOException {
 		Article article = Environment.getInstance().getArticle(
 				Environment.DEFAULT_WEB, pagename);
-		
+
 		// Look for <tags> sections
 		List<Section<TagsContent>> tagsSections = new ArrayList<Section<TagsContent>>();
 		Sections.findSuccessorsOfType(article.getRootSection(), TagsContent.class, tagsSections);
 		Set<String> tags = new HashSet<String>();
-		
+
 		if (tagsSections.size() > 0) {
 			boolean multiple = tagsSections.size() > 1;
-			
+
 			for (Section<?> cur : tagsSections) {
 				for (String temptag : cur.getText().split(TAG_SEPARATOR)) {
 					tags.add(temptag.trim());
@@ -132,21 +134,21 @@ public class TaggingMangler implements SearchProvider {
 			tags.add(tag.trim());
 
 			StringBuilder sb = new StringBuilder();
-			
+
 			for (String temptag : tags) {
 				sb.append(temptag).append(" ");
 			}
-			
+
 			String output = sb.toString().trim() + "\n";
 			Section<TagsContent> firstTagsSection = tagsSections.get(0);
-			
+
 			// remove all further <tags> sections
 			if (multiple) {
 				for (int i = 1; i < tagsSections.size(); i++) {
 					article.getRootSection().removeChild(tagsSections.get(i));
 				}
 			}
-			
+
 			Map<String, String> nodesMap = new HashMap<String, String>();
 			nodesMap.put(firstTagsSection.getID(), output);
 			Sections.replaceSections(context, nodesMap);
@@ -167,38 +169,38 @@ public class TaggingMangler implements SearchProvider {
 	public void removeTag(String pagename, String tag, UserActionContext context) throws IOException {
 		Article article = Environment.getInstance().getArticle(
 				Environment.DEFAULT_WEB, pagename);
-		
+
 		// Look for <tags> sections
 		List<Section<TagsContent>> tagsSections = new ArrayList<Section<TagsContent>>();
 		Sections.findSuccessorsOfType(article.getRootSection(), TagsContent.class, tagsSections);
 		Set<String> tags = new HashSet<String>();
-		
+
 		boolean multiple = tagsSections.size() > 1;
-		
+
 		for (Section<TagsContent> cur : tagsSections) {
 			for (String temptag : cur.getText().split(TAG_SEPARATOR)) {
 				tags.add(temptag.trim());
 			}
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
-		
+
 		for (String temptag : tags) {
 			if (!temptag.equals(tag)) {
 				sb.append(temptag.trim()).append(' ');
 			}
 		}
-		
+
 		String output = sb.toString().trim();
-		
+
 		Section<?> keep = tagsSections.get(0);
-		
+
 		if (multiple) {
 			for (int i = 1; i < tagsSections.size(); i++) {
 				article.getRootSection().removeChild(tagsSections.get(i));
 			}
 		}
-		
+
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(keep.getID(), output);
 		Sections.replaceSections(context, nodesMap);
@@ -212,7 +214,7 @@ public class TaggingMangler implements SearchProvider {
 	 */
 	public List<String> getPages(String tag) {
 		List<String> result = new LinkedList<String>();
-		
+
 		Iterator<String> it = tagMap.keySet().iterator();
 		while (it.hasNext()) {
 			String pageName = it.next();
@@ -220,14 +222,13 @@ public class TaggingMangler implements SearchProvider {
 				result.add(pageName);
 			}
 		}
-		
+
 		return result;
 	}
 
 	/**
-	 * Creates a list of tags the given page is tagged with.
-	 * Always returns a list unless the page parameter is null.
-	 * (No tags -> empty list)
+	 * Creates a list of tags the given page is tagged with. Always returns a
+	 * list unless the page parameter is null. (No tags -> empty list)
 	 * 
 	 * @param page The query page
 	 * @return List The list of tags, or null if page was null
@@ -236,14 +237,14 @@ public class TaggingMangler implements SearchProvider {
 		if (page == null) {
 			return null;
 		}
-		
+
 		List<String> result = new LinkedList<String>();
 		Set<String> tagsForPage = tagMap.get(page);
-		
+
 		if (tagsForPage != null) {
 			result.addAll(tagsForPage);
 		}
-		
+
 		return result;
 	}
 
@@ -271,16 +272,16 @@ public class TaggingMangler implements SearchProvider {
 			minSize = maxSize;
 			maxSize = t;
 		}
-		
+
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		Map<String, Float> weighted = getAllTagsWithWeight();
 		float factor = maxSize - minSize;
-		
+
 		for (Entry<String, Float> cur : weighted.entrySet()) {
 			result.put(cur.getKey(), Math.round(minSize
 					+ (cur.getValue() * factor)));
 		}
-		
+
 		return result;
 	}
 
@@ -293,18 +294,19 @@ public class TaggingMangler implements SearchProvider {
 		List<String> tags = getAllTagsWithDuplicates();
 		HashMap<String, Float> countlist = new HashMap<String, Float>();
 		float max = 0;
-		
+
 		for (String cur : tags) {
 			float c = 0;
-			
+
 			if (countlist.get(cur) == null) {
 				countlist.put(cur, new Float(1));
 				c = 1;
-			} else {
+			}
+			else {
 				c = countlist.get(cur) + 1;
 				countlist.put(cur, c);
 			}
-			
+
 			max = c > max ? c : max;
 		}
 
@@ -326,12 +328,12 @@ public class TaggingMangler implements SearchProvider {
 	 */
 	private List<String> getAllTagsWithDuplicates() {
 		List<String> result = new LinkedList<String>();
-		
+
 		Iterator<String> it = tagMap.keySet().iterator();
 		while (it.hasNext()) {
 			result.addAll(tagMap.get(it.next()));
 		}
-		
+
 		return result;
 	}
 
@@ -357,6 +359,14 @@ public class TaggingMangler implements SearchProvider {
 					article.getRootSection().removeChild(tagslist.get(i));
 				}
 			}
+
+			/*
+			 * The replaced section contains a linebreak at the end. The
+			 * linebreak is essential for the correct parsing of the
+			 * default-markup.
+			 */
+			output += System.getProperty("line.separator");
+
 			Map<String, String> nodesMap = new HashMap<String, String>();
 			nodesMap.put(keep.getID(), output);
 			Sections.replaceSections(context, nodesMap);
@@ -375,17 +385,17 @@ public class TaggingMangler implements SearchProvider {
 			UserActionContext context) throws IOException {
 		Article article = Environment.getInstance().getArticle(
 				Environment.DEFAULT_WEB, topic);
-		
+
 		Section<?> articleSection = article.getRootSection();
 		String text = articleSection.getText();
-		
+
 		text += "%%tags\n" + processTagString(content) + "\n%";
-		
+
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(articleSection.getID(), text);
 		Sections.replaceSections(context, nodesMap);
 	}
-	
+
 	/**
 	 * Processes a user-provided tag string into the the proper format
 	 * 
@@ -394,13 +404,13 @@ public class TaggingMangler implements SearchProvider {
 	 */
 	private String processTagString(String tagString) {
 		StringBuilder sb = new StringBuilder();
-		
+
 		for (String rawTag : tagString.split(TAG_SEPARATOR)) {
 			if (rawTag.trim().length() > 0) {
 				sb.append(rawTag.trim()).append(' ');
 			}
 		}
-		
+
 		return sb.toString().trim();
 	}
 
@@ -413,30 +423,29 @@ public class TaggingMangler implements SearchProvider {
 	public List<GenericSearchResult> searchPages(String querytags) {
 		String[] tags = querytags.split(" ");
 		List<GenericSearchResult> result = new LinkedList<GenericSearchResult>();
-		
+
 		Iterator<String> it = tagMap.keySet().iterator();
-		
-		article_loop:
-		while (it.hasNext()) {
+
+		article_loop: while (it.hasNext()) {
 			String article = it.next();
 			Set<String> articleTags = tagMap.get(article);
-			
+
 			for (String tag : tags) {
 				if (!articleTags.contains(tag)) {
 					continue article_loop;
 				}
 			}
-			
+
 			// The page is tagged with all query tags, add to result set
 			result.add(new GenericSearchResult(article, new String[] {}, 1));
 		}
-		
+
 		return result;
 	}
 
 	/**
-	 * Performs a search for articles tagged with all of the tags and
-	 * renders a result UI
+	 * Performs a search for articles tagged with all of the tags and renders a
+	 * result UI
 	 * 
 	 * @param queryString Space-separated list of tags to search for
 	 * @return Wiki markup displaying the results
@@ -452,7 +461,7 @@ public class TaggingMangler implements SearchProvider {
 							o1.getPagename(), o2.getPagename());
 				}
 			});
-			
+
 			return renderResults(pages, queryString);
 		}
 		else {
@@ -470,12 +479,12 @@ public class TaggingMangler implements SearchProvider {
 		StringBuffer html = new StringBuffer();
 		// html.append("<ul>\n");
 		html.append("\n|| Page || Tags \n");
-		
+
 		for (GenericSearchResult cur : pages) {
 			String pagename = cur.getPagename();
 			html.append("| [").append(pagename);
 			html.append("]\t| ");
-			
+
 			for (String tag : tm.getPageTags(pagename)) {
 				boolean matched = tag.equalsIgnoreCase(queryString);
 				if (matched) html.append("__");
@@ -483,7 +492,7 @@ public class TaggingMangler implements SearchProvider {
 				if (matched) html.append("__");
 				html.append(" ");
 			}
-			
+
 			html.append("\n");
 			// String link = "<a target='_blank' href=\"Wiki.jsp?page="
 			// + pagename + "\">" + pagename + "</a>";
@@ -496,7 +505,7 @@ public class TaggingMangler implements SearchProvider {
 			// html.append("</div><br>\n");
 
 		}
-		
+
 		// html.append("</ul>\n");
 		html.append("\n");
 		return html.toString();
@@ -517,11 +526,11 @@ public class TaggingMangler implements SearchProvider {
 	public Collection<GenericSearchResult> search(Collection<SearchTerm> words,
 			UserContext user) {
 		Collection<GenericSearchResult> collection = new ArrayList<GenericSearchResult>();
-		
+
 		for (SearchTerm searchTerm : words) {
 			collection.addAll(searchPages(searchTerm.getTerm()));
 		}
-		
+
 		return collection;
 	}
 
@@ -529,11 +538,11 @@ public class TaggingMangler implements SearchProvider {
 	public Collection<SearchTerm> getAllTerms() {
 		Collection<SearchTerm> result = new HashSet<SearchTerm>();
 		List<String> string = this.getAllTags();
-		
+
 		for (String string2 : string) {
 			result.add(new SearchTerm(string2));
 		}
-		
+
 		return result;
 	}
 
