@@ -281,7 +281,12 @@ public class CIBuildPersistenceHandler {
 			// out.output(xmlDocument, new FileWriter(xmlBuildFile));
 			Writer writer = new BufferedWriter(new OutputStreamWriter(
 						new FileOutputStream(xmlBuildFile), "UTF8"));
-			out.output(xmlJDomTree, writer);
+			try {
+				out.output(xmlJDomTree, writer);
+			}
+			finally {
+				writer.close();
+			}
 
 		}
 		catch (IOException e) {
