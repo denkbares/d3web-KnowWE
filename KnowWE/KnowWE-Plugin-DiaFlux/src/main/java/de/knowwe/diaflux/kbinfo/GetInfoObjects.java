@@ -179,10 +179,7 @@ public class GetInfoObjects extends AbstractAction {
 		// as well as the flowcharts
 		List<TerminologyObject> qsets = new LinkedList<TerminologyObject>();
 		for (TerminologyObject object : base.getRootQASet().getChildren()) {
-			// avoid top level questions ==> implicit imports
-			if (!(object instanceof Question)) {
-				qsets.add(object);
-			}
+			qsets.add(object);
 		}
 		appendChilds(web, base, qsets.toArray(new TerminologyObject[qsets.size()]), bob);
 		appendChilds(web, base, base.getRootSolution(), bob);

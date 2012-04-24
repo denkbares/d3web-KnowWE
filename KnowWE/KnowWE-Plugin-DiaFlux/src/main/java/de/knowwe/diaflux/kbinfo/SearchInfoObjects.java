@@ -129,16 +129,8 @@ public class SearchInfoObjects extends AbstractAction {
 			}
 			// add Questions
 			if (classes.contains("question")) {
-				// ignore all questions that are toplevel, because
-				// the are lazy created as implicit import
-				// TODO: define better mechanism with university and
-				// implement well
 				for (Question question : base.getManager().getQuestions()) {
-					// if
-					// (!Arrays.asList(question.getParents()).contains(base.getRootQASet()))
-					// {
-						allKBObjects.add(question);
-					// }
+					allKBObjects.add(question);
 				}
 			}
 			// search all objects
