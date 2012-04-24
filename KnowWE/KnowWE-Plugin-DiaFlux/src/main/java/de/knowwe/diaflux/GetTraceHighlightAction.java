@@ -32,7 +32,6 @@ import de.d3web.diaFlux.flow.Edge;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowRun;
 import de.d3web.diaFlux.flow.Node;
-import de.d3web.diaFlux.inference.DiaFluxTrace;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.we.basic.SessionProvider;

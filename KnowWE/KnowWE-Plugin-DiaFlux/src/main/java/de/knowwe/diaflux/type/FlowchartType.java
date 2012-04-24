@@ -20,10 +20,13 @@
 
 package de.knowwe.diaflux.type;
 
+import de.d3web.core.session.SessionFactory;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.InvalidKDOMSchemaModificationOperation;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.diaflux.DiaFluxTrace;
+import de.knowwe.diaflux.DiaFluxValueTrace;
 import de.knowwe.diaflux.FlowchartRenderer;
 import de.knowwe.diaflux.FlowchartSubTreeHandler;
 import de.knowwe.diaflux.type.FlowchartXMLHeadType.FlowchartTermDef;
@@ -42,6 +45,9 @@ public class FlowchartType extends AbstractXMLType {
 		addSubtreeHandler(Priority.DEFAULT, new FlowchartSubTreeHandler());
 		replaceHead();
 		setRenderer(new FlowchartRenderer());
+		// enable tracing
+		SessionFactory.addPropagationListener(DiaFluxTrace.LISTENER);
+		SessionFactory.addPropagationListener(DiaFluxValueTrace.LISTENER);
 	}
 
 	/**

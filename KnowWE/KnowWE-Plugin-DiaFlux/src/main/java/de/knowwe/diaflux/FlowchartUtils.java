@@ -33,8 +33,6 @@ import java.util.WeakHashMap;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
 import de.d3web.diaFlux.flow.Flow;
-import de.d3web.diaFlux.inference.DiaFluxTrace;
-import de.d3web.diaFlux.inference.DiaFluxValueTrace;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.JPFPluginManager;
 import de.d3web.we.utils.D3webUtils;

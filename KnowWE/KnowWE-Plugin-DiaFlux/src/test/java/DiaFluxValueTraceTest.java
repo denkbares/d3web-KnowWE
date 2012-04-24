@@ -45,9 +45,9 @@ import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.flow.SnapshotNode;
 import de.d3web.diaFlux.flow.StartNode;
-import de.d3web.diaFlux.inference.DiaFluxValueTrace;
 import de.d3web.indication.ActionInstantIndication;
 import de.d3web.plugin.test.InitPluginManager;
+import de.knowwe.diaflux.DiaFluxValueTrace;
 import de.knowwe.diaflux.FlowchartUtils;
 
 /**
@@ -119,6 +119,9 @@ public class DiaFluxValueTraceTest {
 	@Before
 	public void setUpFlux() throws IOException {
 		InitPluginManager.init();
+
+		// Adding this listener is usually done in FlowchartType
+		SessionFactory.addPropagationListener(DiaFluxValueTrace.LISTENER);
 
 		kb = KnowledgeBaseUtils.createKnowledgeBase();
 		questionYN = new QuestionYN(kb.getRootQASet(), "YesNoQuestion");
