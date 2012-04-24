@@ -42,7 +42,7 @@ public class TagHandlingAction extends AbstractAction {
 
 	private String perform(UserActionContext context) throws IOException {
 		// String web = parameterMap.getWeb();
-		String topic = context.getTopic();
+		String topic = context.getTitle();
 		String tagaction = context.getParameter(Attributes.TAGGING_ACTION);
 		String tag = context.getParameter(Attributes.TAGGING_TAG);
 

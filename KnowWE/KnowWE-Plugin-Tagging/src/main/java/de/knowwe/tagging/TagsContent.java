@@ -20,7 +20,10 @@
 
 package de.knowwe.tagging;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -35,9 +38,10 @@ public class TagsContent extends XMLContent {
 		this.setRenderer(NothingRenderer.getInstance());
 		this.addSubtreeHandler(new TagsContentSubtreeHandler());
 	}
-	
+
 	/**
-	 * A simple subtree handler registering tags for pages in the {@link TaggingMangler} tag map
+	 * A simple subtree handler registering tags for pages in the
+	 * {@link TaggingMangler} tag map
 	 * 
 	 * @author Alex Legler
 	 */
@@ -45,13 +49,16 @@ public class TagsContent extends XMLContent {
 
 		@Override
 		public Collection<Message> create(Article article, Section<TagsContent> section) {
+
+			Set<String> tags = new HashSet<String>();
 			for (String tag : section.getText().split(TaggingMangler.TAG_SEPARATOR)) {
-				TaggingMangler.getInstance().registerTag(article.getTitle(), tag);
+				tags.add(tag);
 			}
-					
-			return null;
+			TaggingMangler.getInstance().registerTags(article.getTitle(), tags);
+
+			return new ArrayList<Message>(0);
 		}
-		
+
 		@Override
 		public boolean isIgnoringPackageCompile() {
 			return true;

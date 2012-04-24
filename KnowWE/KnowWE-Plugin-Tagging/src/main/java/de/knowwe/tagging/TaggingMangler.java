@@ -90,7 +90,10 @@ public class TaggingMangler implements SearchProvider {
 	 * 
 	 * @param page The article containing the tag
 	 * @param tag The tag
+	 * 
+	 *        deprecated because its hard to process removement of tags
 	 */
+	@Deprecated
 	public void registerTag(String page, String tag) {
 		if (page == null || tag == null) {
 			return;
@@ -101,6 +104,24 @@ public class TaggingMangler implements SearchProvider {
 		}
 
 		tagMap.get(page).add(tag.trim());
+	}
+
+	/**
+	 * Sets a set of tags for an article. Overwrites all existing tags.
+	 * 
+	 * @param page The article containing the tag
+	 * @param tag The tag
+	 */
+	public void registerTags(String page, Collection<String> tags) {
+		if (page == null || tags == null) {
+			return;
+		}
+
+		Set<String> set = new HashSet<String>();
+		for (String string : tags) {
+			set.add(string.trim());
+		}
+		tagMap.put(page, set);
 	}
 
 	/**
