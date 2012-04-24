@@ -644,7 +644,7 @@ ActionPane.prototype.render = function() {
 	var name = this.action ? this.action.getInfoObjectName() : '---';
 	var infoObject = KBInfo.lookupInfoObject(name);
 	var iconURL = infoObject ? infoObject.getIconURL() : KBInfo.imagePath+'no-object.gif';
-	if (name.length == 0) name = '';
+	if (!name) name = '';
 
 	var valueText = null;
 	var valueError = null;
