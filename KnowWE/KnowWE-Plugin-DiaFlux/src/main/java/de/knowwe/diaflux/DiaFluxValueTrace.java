@@ -63,6 +63,9 @@ public class DiaFluxValueTrace implements SessionObject, SessionObjectSource<Dia
 
 		@Override
 		public void postPropagationStarted(Session session, Collection<PropagationEntry> entries) {
+			if (!DiaFluxUtils.isFlowCase(session)) {
+				return;
+			}
 			FlowchartUtils.getValueTrace(session).update();
 
 		}
