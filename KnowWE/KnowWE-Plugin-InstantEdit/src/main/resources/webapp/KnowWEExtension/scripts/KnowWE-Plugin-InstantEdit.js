@@ -133,7 +133,7 @@ KNOWWE.plugin.instantEdit = function() {
             new _KA(options).send(); 
             
             if(reload) {
-            	window.location.reload();
+            	window.location = window.location.href.split('&')[0];
             }
         },
         
