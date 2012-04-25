@@ -159,7 +159,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 		// Render
 		StringBuilder html = new StringBuilder();
-		html.append(renderHeader(objectName, definitions));
+		html.append(renderHeader(objectName, getTermObjectClass(definitions, references)));
 		html.append(renderRenamingForm(objectName, section.getWeb(), parameters, urlParameters));
 		html.append(renderObjectInfo(definitions, references, parameters));
 		html.append(renderPlainTextOccurrences(objectName, section.getWeb(), parameters));
@@ -167,28 +167,33 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return KnowWEUtils.maskHTML(html.toString());
 	}
 
-	private String renderHeader(String objectName, Set<Section<?>> definitions) {
+	private String getTermObjectClass(Set<Section<?>> definitions, Set<Section<?>> references) {
+		String termObjectClassString = "Object";
+		Section<?> termSection = null;
+		if (!definitions.isEmpty()) {
+			termSection = definitions.iterator().next();
+		}
+		else if (!references.isEmpty()) {
+			termSection = references.iterator().next();
+		}
+		if (termSection != null && termSection.get() instanceof SimpleTerm) {
+			Section<SimpleTerm> simpleTermSection = Sections.cast(termSection, SimpleTerm.class);
+			Class<?> termObjectClass = simpleTermSection.get().getTermObjectClass(
+					simpleTermSection);
+			termObjectClassString = termObjectClass.getSimpleName();
+		}
+		return termObjectClassString;
+	}
+
+	private String renderHeader(String objectName, String termClassString) {
 		StringBuilder html = new StringBuilder();
 		html.append("<h3><span id=\"objectinfo-src\">");
 		html.append(objectName);
 		html.append("</span>");
 		// Render type of (first) TermDefinition
-		if (definitions != null) {
-			for (Section<?> definition : definitions) {
-				html.append(" <em>(");
-				String termClassString = "Object";
-				if (definition.get() instanceof SimpleTerm) {
-					Class<?> termObjectClass = ((SimpleTerm) definition.get()).getTermObjectClass(Sections.cast(
-							definition, SimpleTerm.class));
-					termClassString = termObjectClass.getSimpleName();
-				}
-				html.append(termClassString);
-				html.append(")</em>");
-				break;
-			}
-
-		}
-
+		html.append(" <em>(");
+		html.append(termClassString);
+		html.append(")</em>");
 		html.append("</h3>\n");
 		return html.toString();
 	}

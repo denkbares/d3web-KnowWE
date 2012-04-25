@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.objects.SimpleTerm;
@@ -40,8 +39,8 @@ import de.knowwe.core.utils.KnowWEUtils;
  * Needed Parameters:
  * </p>
  * <ul>
- * <li><tt>{@link Attributes.TARGET}:</tt> The KDOM node of which the
- * content will be replaced</li>
+ * <li><tt>{@link Attributes.TARGET}:</tt> The KDOM node of which the content
+ * will be replaced</li>
  * <li><tt>{@link KnowWEAtrributes.TEXT}:</tt> The new term reference inside the
  * node</li>
  * </ul>
@@ -62,7 +61,6 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 		String nodeID = context.getParameter(Attributes.TARGET);
 		String name = context.getTitle();
 		String newText = context.getParameter(Attributes.TEXT);
-		ArticleManager mgr = Environment.getInstance().getArticleManager(web);
 
 		// Check for user access
 		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(name,

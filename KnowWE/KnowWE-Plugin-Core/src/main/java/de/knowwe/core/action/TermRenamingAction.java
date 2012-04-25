@@ -68,12 +68,12 @@ public class TermRenamingAction extends AbstractAction {
 		Iterator<Article> iter = Environment.getInstance().getArticleManager(web).getArticleIterator();
 		Article currentArticle;
 
-		TerminologyManager th;
+		TerminologyManager terminologyManager;
 		while (iter.hasNext()) {
 			currentArticle = iter.next();
-			th = KnowWEUtils.getTerminologyManager(currentArticle);
+			terminologyManager = KnowWEUtils.getTerminologyManager(currentArticle);
 			// Check if there is a TermDefinition
-			Collection<Section<?>> definingSections = th.getTermDefiningSections(term);
+			Collection<Section<?>> definingSections = terminologyManager.getTermDefiningSections(term);
 			for (Section<?> definition : definingSections) {
 				if (definition.get() instanceof SimpleTerm) {
 					getTermSet(definition.getTitle(), allTerms).add(
@@ -82,7 +82,7 @@ public class TermRenamingAction extends AbstractAction {
 			}
 
 			// Check if there are References
-			Collection<Section<?>> references = th.getTermReferenceSections(term);
+			Collection<Section<?>> references = terminologyManager.getTermReferenceSections(term);
 			for (Section<?> reference : references) {
 				if (reference.get() instanceof SimpleTerm) {
 					getTermSet(reference.getTitle(), allTerms).add(
@@ -133,8 +133,8 @@ public class TermRenamingAction extends AbstractAction {
 			if (Environment.getInstance().getWikiConnector().userCanEditArticle(
 					title, context.getRequest())) {
 				Map<String, String> nodesMap = new HashMap<String, String>();
-				for (Section<?> term : allTerms.get(title)) {
-					nodesMap.put(term.getID(), replacement);
+				for (Section<?> termSection : allTerms.get(title)) {
+					addReplacementEntry(nodesMap, termSection, replacement);
 				}
 				Sections.replaceSections(context,
 						nodesMap);
@@ -144,6 +144,24 @@ public class TermRenamingAction extends AbstractAction {
 				failures.add(title);
 			}
 		}
+	}
+
+	private void addReplacementEntry(Map<String, String> nodesMap, Section<?> termSection, String replacement) {
+		/*
+		 * TODO!!!
+		 * 
+		 * This is a hot fix for release "Sherlock" and should be removed after
+		 * TermIdentifier refactoring.
+		 */
+		String className = "Object";
+		if (termSection.get() instanceof SimpleTerm) {
+			Section<SimpleTerm> simpleTermSection = Sections.cast(termSection, SimpleTerm.class);
+			className = simpleTermSection.get().getTermObjectClass(simpleTermSection).getSimpleName();
+		}
+		if (className.equals("Choice")) {
+			replacement = replacement.substring(replacement.indexOf("#") + 1);
+		}
+		nodesMap.put(termSection.getID(), replacement);
 	}
 
 }
