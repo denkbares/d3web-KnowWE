@@ -87,7 +87,8 @@ public class CIBuildPersistenceHandler {
 
 	/**
 	 * Get the {@link CIBuildPersistenceHandler} instance responsible for a
-	 * specific dashboardName-dashboardArticle-combination
+	 * specific dashboardName-dashboardArticle-combination. If no handler exists
+	 * for this combination, a new handler is created.
 	 */
 	public static CIBuildPersistenceHandler getHandler(String dashboardName, String dashboardArticleTitle) {
 		CIBuildPersistenceHandler handler = handlers.get(dashboardName);
@@ -96,6 +97,15 @@ public class CIBuildPersistenceHandler {
 			handlers.put(dashboardName, handler);
 		}
 		return handler;
+	}
+
+	/**
+	 * Get the {@link CIBuildPersistenceHandler} instance responsible for a
+	 * specific dashboardName-dashboardArticle-combination. If no handler exists
+	 * for this combination, null is returned.
+	 */
+	public static CIBuildPersistenceHandler getExistingHandler(String dashboardName, String dashboardArticleTitle) {
+		return handlers.get(dashboardName);
 	}
 
 	/**

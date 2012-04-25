@@ -2,6 +2,8 @@ package de.d3web.we.ci4ke.daemon;
 
 import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
+import de.d3web.we.ci4ke.testing.CITestResult.Type;
+import de.d3web.we.ci4ke.util.CIUtilities;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -10,6 +12,8 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CIDaemonRenderer implements Renderer {
+
+	private static final int PIXEL_SIZE = 16;
 
 	@Override
 	public void render(Section<?> section, UserContext user, StringBuilder string) {
@@ -26,11 +30,6 @@ public class CIDaemonRenderer implements Renderer {
 	public static String renderDaemonContents(String web, String dashboardName, String dashboardArticleTitle) {
 
 		StringBuilder string = new StringBuilder();
-		CIBuildPersistenceHandler handler = CIBuildPersistenceHandler.
-				getHandler(dashboardName, dashboardArticleTitle);
-		if (handler == null) {
-			return "";
-		}
 
 		if (!Environment.getInstance().getArticleManager(web).getTitles().contains(
 				dashboardArticleTitle)) {
@@ -38,7 +37,15 @@ public class CIDaemonRenderer implements Renderer {
 			string.append("The annotation @" + CIDaemonType.DASHBOARD_ARTICLE
 					+ " has to specify an existing article name.");
 			string.append("</span>");
-			return string.toString();
+		}
+		CIBuildPersistenceHandler handler = CIBuildPersistenceHandler.
+				getExistingHandler(dashboardName, dashboardArticleTitle);
+
+		if (handler == null) {
+			string.append("<span class='error'>");
+			string.append("The annotation @" + CIDashboardType.NAME_KEY
+					+ " has to specify an existing CI dashboard name on the specified article.");
+			string.append("</span>");
 		}
 
 		String baseURL = Environment.getInstance().getWikiConnector().getBaseUrl();
@@ -48,7 +55,12 @@ public class CIDaemonRenderer implements Renderer {
 				+ "\">";
 		string.append(srclink);
 
-		string.append(handler.renderCurrentBuildStatus(16));
+		if (handler == null) {
+			string.append(CIUtilities.renderResultType(Type.ERROR, PIXEL_SIZE));
+		}
+		else {
+			string.append(handler.renderCurrentBuildStatus(PIXEL_SIZE));
+		}
 		string.append("</a>");
 
 		return string.toString();

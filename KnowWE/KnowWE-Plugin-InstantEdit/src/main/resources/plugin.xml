@@ -40,6 +40,7 @@
         <parameter id="scope" value="ShowSolutionsType" />
         <parameter id="scope" value="SolutionTreeMarkup" />
         <parameter id="scope" value="CoveringListMarkup" />
+        <parameter id="scope" value="CIDashboardType" />
         <parameter id="scope" value="CoveringListSettingsMarkup" />
     </extension>
  
