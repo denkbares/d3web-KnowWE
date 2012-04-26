@@ -124,7 +124,7 @@ public class DiaFluxValueTraceTest {
 		SessionFactory.addPropagationListener(DiaFluxValueTrace.LISTENER);
 
 		kb = KnowledgeBaseUtils.createKnowledgeBase();
-		questionYN = new QuestionYN(kb.getRootQASet(), "YesNoQuestion");
+		questionYN = new QuestionYN(kb.getRootQASet(), "QuestionYN");
 		yes = KnowledgeBaseUtils.findValue(questionYN, "Yes");
 		no = KnowledgeBaseUtils.findValue(questionYN, "No");
 

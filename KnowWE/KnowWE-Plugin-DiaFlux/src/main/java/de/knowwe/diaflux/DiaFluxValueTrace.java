@@ -28,8 +28,10 @@ import java.util.Map;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PropagationEntry;
 import de.d3web.core.inference.PropagationListener;
+import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.ValueObject;
+import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.SessionObjectSource;
 import de.d3web.core.session.Value;
@@ -177,23 +179,32 @@ public class DiaFluxValueTrace implements SessionObject, SessionObjectSource<Dia
 
 		Value tracedValue = tracedValues.get(node);
 		Value value = session.getBlackboard().getValue((ValueObject) termObject);
+		String tooltip;
 		if (tracedValue == null) {
 			// Node has reference TermObject, but was not active during
-			// snapshot
-			return termObject.getName() + " = '" + value.toString() + "'";
+			// snapshot: show current value
+			tooltip = getValueString(termObject, value);
 		}
 		else {
-			// Node was active...
-			String tooltip = termObject.getName() + " = '" + tracedValue.toString() + "'";
+			// Node was active: show that value
+			tooltip = getValueString(termObject, tracedValue);
 			// add current value, if not equal to value during snapshot
 			if (!tracedValue.equals(value)) {
 				tooltip += " (Current: '" + value.toString() + "')";
 			}
 
-			return tooltip;
-
 		}
+		return tooltip;
 
+	}
+
+	private static String getValueString(TerminologyObject object, Value value) {
+		String unit = "";
+		InfoStore infoStore = object.getInfoStore();
+		if (infoStore.contains(MMInfo.UNIT)) {
+			unit = " " + infoStore.getValue(MMInfo.UNIT);
+		}
+		return object.getName() + " = '" + value.toString() + unit + "'";
 	}
 
 }
