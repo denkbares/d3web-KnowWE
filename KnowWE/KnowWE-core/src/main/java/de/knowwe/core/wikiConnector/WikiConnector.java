@@ -183,7 +183,8 @@ public interface WikiConnector {
 
 	/**
 	 * Returns the given version of the content of the article with the given
-	 * title. If the article does not exist, <tt>null</tt> is returned.
+	 * title. If the article does not exist, <tt>null</tt> is returned. To get
+	 * the latest version, pass -1 as the version attribute.
 	 * 
 	 * @param title the title of the article
 	 * @param version the version number of the article source to be retrieved

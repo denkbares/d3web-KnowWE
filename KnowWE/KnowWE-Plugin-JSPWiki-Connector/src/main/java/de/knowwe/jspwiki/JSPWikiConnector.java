@@ -364,7 +364,11 @@ public class JSPWikiConnector implements WikiConnector {
 
 		String pagedata = null;
 		try {
-			if (context.getEngine().pageExists(context.getPage().getName(), version)) {
+			if (version == -1) {
+				pagedata = context.getEngine().getPureText(
+						context.getPage().getName(), context.getPage().getVersion());
+			}
+			else if (context.getEngine().pageExists(context.getPage().getName(), version)) {
 				pagedata = context.getEngine().getPureText(
 						context.getPage().getName(), version);
 			}
