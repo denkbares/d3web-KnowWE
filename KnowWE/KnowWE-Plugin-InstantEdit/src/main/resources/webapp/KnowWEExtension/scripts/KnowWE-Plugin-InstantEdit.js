@@ -69,6 +69,13 @@ KNOWWE.plugin.instantEdit = function() {
 		}
 	}
 	
+	function enabledWarning() {
+    	if (_IE.enabled) {
+    		alert("You can only edit the page once at a time.")
+    		return;
+    	}
+	}
+	
     return {
     	
     	toolNameSpace : new Object(),
@@ -78,10 +85,9 @@ KNOWWE.plugin.instantEdit = function() {
         enable : function(id, toolNameSpace) {
         	
         	if (_IE.enabled) {
-        		alert("You can only edit the page once at a time.")
+        		enabledWarning();
         		return;
         	}
-        	_IE.enabled = true;
         	
         	showAjaxLoader(id);
         	
@@ -97,6 +103,12 @@ KNOWWE.plugin.instantEdit = function() {
                 response : {
                     action : 'none',
                     fn : function() {
+                    	if (_IE.enabled) {
+                    		enabledWarning();
+                    		return;
+                    	}
+                    	_IE.enabled = true;
+                    	
                     	var locked = JSON.parse(this.responseText).locked;
                     	var html = toolNameSpace.generateHTML(id);
                         html = wrapHTML(id, locked, html);
