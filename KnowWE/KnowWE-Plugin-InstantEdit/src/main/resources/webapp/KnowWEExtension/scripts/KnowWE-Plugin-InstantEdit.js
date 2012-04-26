@@ -357,7 +357,6 @@ KNOWWE.plugin.instantEdit = function() {
     		
     		var params = {
     				action : 'CheckCanEditPageAction',
-    				KWiki_Topic : KNOWWE.helper.gup('page'),
     		}           
     		
     		var options = {
