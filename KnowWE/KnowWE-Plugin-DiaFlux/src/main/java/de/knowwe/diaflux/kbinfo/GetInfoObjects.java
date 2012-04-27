@@ -60,37 +60,6 @@ public class GetInfoObjects extends AbstractAction {
 	public GetInfoObjects() {
 	}
 
-	/**
-	 * Environment: Allgemeines Semantic Wiki auf OWL als Repraesentation
-	 * KDOM Engine. Verwaltet alle technischen Aspekte der Umgebung (z.B.
-	 * Plugins). Dieser hat noch nichts mit d3web zu tun.
-	 * 
-	 * ArticeManager: Verwaltung der Wiki-Artikel. Fuer jedes Web kann es einen
-	 * Article-Manager geben. Dieser kann vom Environment angefragt
-	 * werden. Dieser hat noch nichts mit d3web zu tun. Ein Article besteht im
-	 * wesentlichen aus dem KDOM-Baum
-	 * 
-	 * KDOM: Baumstruktur des Wiki-Textes ohne Semantik
-	 * 
-	 * WebEnvironmentManager: Verwaltet die DSPEnvironments, eines fuer jedes
-	 * Web des Wiki.
-	 * 
-	 * DSPEnvironment: Verwaltung fuer diagnostischen Problemlösungsservices,
-	 * für alle Wissensbasen dieses Webs (z.B. unter anderem d3web-Services
-	 * (KnowledgeBase)). Ein Service entspricht einer Wissensbasis der
-	 * jeweiligen Engine (z.B. unter anderem d3web).
-	 * 
-	 * KnowledgeService Service fuer eine Wissensbasis fuer eine Wiki-Seite. Der
-	 * Zugriff erfolgt ueber das DSPEnvironment über eine Wissensbasis-ID, die
-	 * aktuell aber eindeutig aus dem Wiki-Seiten-Namen erzeugt wird). Das
-	 * bedeutet, fuer jede Wiki-Seite gibt es aktuell genau (maximal) eine
-	 * Wissenbasis fuer genau (maximal) eine Engine.
-	 * 
-	 * KnowledgeBase: Implementierung des KnowledgeServices fuer d3web.
-	 * Hierueber erhaelt man Zugriff auf die d3web Wissensbasis der jeweiligen
-	 * Wiki-Seite.
-	 */
-
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String ids = context.getParameter("ids");
@@ -128,8 +97,8 @@ public class GetInfoObjects extends AbstractAction {
 					idArray[idArray.length - 1].length() - 1);
 		}
 		for (int i = 0; i < idArray.length; i++) {
-			String id = idArray[i];
-			appendInfoObject(web, id, bob);
+			String is = idArray[i];
+			appendInfoObject(web, is, bob);
 		}
 
 		// finish result
@@ -149,30 +118,26 @@ public class GetInfoObjects extends AbstractAction {
 		// allowed in article names, the first '/' must be separating the KB
 		// name from the object name.
 		int pos = id.indexOf("/");
-		String serviceID = (pos == -1) ? id : id.substring(0, pos);
+		String title = (pos == -1) ? id : id.substring(0, pos);
 		String objectID = (pos == -1) ? null : id.substring(pos + 1);
-
-		KnowledgeBase service = D3webUtils.getKnowledgeBase(web, serviceID);
 
 		if (objectID == null) {
 			// we want to have the article itself
-			appendInfoObject(web, service, bob);
+			appendArticleInfoObject(web, title, bob);
 		}
 		else { // look for an object inside the knowledgebase
-			appendInfoObject(web, service, objectID, bob);
+			appendInfoObject(web, title, objectID, bob);
 		}
 
 	}
 
-	private static void appendInfoObject(String web, KnowledgeBase base, StringBuilder bob) {
-		String id = base.getId();
-		// filters KnowWE-Doc from object tree
-		if (id.startsWith("Doc ")) return;
-		//
-		String name = id;
+	private static void appendArticleInfoObject(String web, String title, StringBuilder bob) {
+
+		KnowledgeBase base = D3webUtils.getKnowledgeBase(web, title);
+
 		bob.append("\t<article");
-		bob.append(" id='").append(encodeXML(id)).append("'");
-		bob.append(" name='").append(name).append("'");
+		bob.append(" id='").append(encodeXML(title)).append("'");
+		bob.append(" name='").append(title).append("'");
 		bob.append(">");
 		// children of an article are all Solutions of P000 and all QSets of
 		// Q000
@@ -181,34 +146,35 @@ public class GetInfoObjects extends AbstractAction {
 		for (TerminologyObject object : base.getRootQASet().getChildren()) {
 			qsets.add(object);
 		}
-		appendChilds(web, base, qsets.toArray(new TerminologyObject[qsets.size()]), bob);
-		appendChilds(web, base, base.getRootSolution(), bob);
+		appendChilds(web, title, qsets.toArray(new TerminologyObject[qsets.size()]), bob);
+		appendChilds(web, title, base.getRootSolution(), bob);
 		FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
 		if (flowSet != null) {
 			for (Flow flow : flowSet.getFlows()) {
 				bob.append("\t\t<child>");
-				bob.append(encodeXML(base.getId()) + "/" + flow.getName());
+				bob.append(encodeXML(title) + "/" + flow.getName());
 				bob.append("</child>\n");
 			}
 		}
 		bob.append("\t</article>\n");
 	}
 
-	private static void appendInfoObject(String web, KnowledgeBase base, String objectID, StringBuilder bob) {
-		if (base == null) return;
+	private static void appendInfoObject(String web, String title, String objectID, StringBuilder bob) {
+		if (title == null) return;
+		KnowledgeBase base = D3webUtils.getKnowledgeBase(web, title);
 		NamedObject object = base.getManager().search(objectID);
 
 		if (object instanceof Solution) {
-			appendInfoObject(web, base, (Solution) object, bob);
+			appendInfoObject(web, title, (Solution) object, bob);
 		}
 		else if (object instanceof Question) {
-			appendInfoObject(web, base, (Question) object, bob);
+			appendInfoObject(web, title, (Question) object, bob);
 		}
 		else if (object instanceof QContainer) {
-			appendInfoObject(web, base, (QContainer) object, bob);
+			appendInfoObject(web, title, (QContainer) object, bob);
 		}
 		else if (object instanceof Flow) {
-			appendInfoObject(web, base, (Flow) object, bob);
+			appendInfoObject(web, title, (Flow) object, bob);
 		}
 		else {
 
@@ -217,20 +183,20 @@ public class GetInfoObjects extends AbstractAction {
 		}
 	}
 
-	private static void appendInfoObject(String web, KnowledgeBase service, Solution object, StringBuilder bob) {
+	private static void appendInfoObject(String web, String title, Solution object, StringBuilder bob) {
 		bob.append("\t<solution");
-		bob.append(" id='").append(encodeXML(service.getId())).append("/").append(
+		bob.append(" id='").append(encodeXML(title)).append("/").append(
 				object.getName()).append(
 				"'");
 		bob.append(" name='").append(encodeXML(object.getName())).append("'");
 		bob.append(">\n");
-		appendChilds(web, service, object, bob);
+		appendChilds(web, title, object, bob);
 		bob.append("\t</solution>\n");
 	}
 
-	private static void appendInfoObject(String web, KnowledgeBase service, Question object, StringBuilder bob) {
+	private static void appendInfoObject(String web, String title, Question object, StringBuilder bob) {
 		bob.append("\t<question");
-		bob.append(" id='").append(encodeXML(service.getId())).append("/").append(
+		bob.append(" id='").append(encodeXML(title)).append("/").append(
 				object.getName()).append(
 				"'");
 		bob.append(" name='").append(encodeXML(object.getName())).append("'");
@@ -249,7 +215,7 @@ public class GetInfoObjects extends AbstractAction {
 				);
 		bob.append("'");
 		bob.append(">\n");
-		appendChilds(web, service, object, bob);
+		appendChilds(web, title, object, bob);
 
 		if (object instanceof QuestionChoice) {
 			for (Choice answer : ((QuestionChoice) object).getAllAlternatives()) {
@@ -276,25 +242,25 @@ public class GetInfoObjects extends AbstractAction {
 		bob.append("\t</question>\n");
 	}
 
-	private static void appendInfoObject(String web, KnowledgeBase service, QContainer object, StringBuilder bob) {
+	private static void appendInfoObject(String web, String title, QContainer object, StringBuilder bob) {
 		bob.append("\t<qset");
-		bob.append(" id='").append(encodeXML(service.getId())).append("/").append(
+		bob.append(" id='").append(encodeXML(title)).append("/").append(
 				object.getName()).append(
 				"'");
 		bob.append(" name='").append(encodeXML(object.getName())).append("'");
 		bob.append(">\n");
-		appendChilds(web, service, object, bob);
+		appendChilds(web, title, object, bob);
 		bob.append("\t</qset>\n");
 	}
 
-	private static void appendInfoObject(String web, KnowledgeBase service, Flow flow, StringBuilder bob) {
+	private static void appendInfoObject(String web, String title, Flow flow, StringBuilder bob) {
 		String name = flow.getName();
 		// String id = flow.getId();
 		List<StartNode> startNodes = flow.getStartNodes();
 		List<EndNode> exitNodes = flow.getExitNodes();
 
 		bob.append("\t<flowchart");
-		bob.append(" id='").append(encodeXML(service.getId())).append("/").append(name).append(
+		bob.append(" id='").append(encodeXML(title)).append("/").append(name).append(
 				"'");
 		bob.append(" name='").append(encodeXML(name)).append("'");
 
@@ -317,14 +283,14 @@ public class GetInfoObjects extends AbstractAction {
 		bob.append("\t</flowchart>\n");
 	}
 
-	private static void appendChilds(String web, KnowledgeBase service, TerminologyObject object, StringBuilder bob) {
-		appendChilds(web, service, object.getChildren(), bob);
+	private static void appendChilds(String web, String title, TerminologyObject object, StringBuilder bob) {
+		appendChilds(web, title, object.getChildren(), bob);
 	}
 
-	private static void appendChilds(String web, KnowledgeBase service, TerminologyObject[] childs, StringBuilder bob) {
+	private static void appendChilds(String web, String title, TerminologyObject[] childs, StringBuilder bob) {
 		for (TerminologyObject child : childs) {
 			bob.append("\t\t<child>");
-			bob.append(encodeXML(service.getId()) + "/" + child.getName());
+			bob.append(encodeXML(title) + "/" + child.getName());
 			bob.append("</child>\n");
 		}
 	}

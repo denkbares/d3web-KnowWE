@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
@@ -282,6 +283,10 @@ public class KnowWEUtils {
 		String web = article == null ? Environment.DEFAULT_WEB : article.getWeb();
 		String title = article == null ? null : article.getTitle();
 		return Environment.getInstance().getTerminologyManager(web, title);
+	}
+
+	public static PackageManager getPackageManager(String web) {
+		return Environment.getInstance().getPackageManager(web);
 	}
 
 	public static TerminologyManager getTerminologyManager(Article article, TermRegistrationScope scope) {

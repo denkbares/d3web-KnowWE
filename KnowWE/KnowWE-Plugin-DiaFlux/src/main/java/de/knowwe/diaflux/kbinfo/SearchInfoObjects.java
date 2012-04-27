@@ -33,11 +33,11 @@ import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
-import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.utils.KnowWEUtils;
 
 public class SearchInfoObjects extends AbstractAction {
 
@@ -89,23 +89,26 @@ public class SearchInfoObjects extends AbstractAction {
 		classes = new HashSet<String>();
 		classes.addAll(Arrays.asList(classesString.toLowerCase().split(",")));
 
-		D3webKnowledgeHandler handler = D3webUtils.getKnowledgeRepresentationHandler(web);
-		Set<String> foundNames = new HashSet<String>();
 		List<String> result = new LinkedList<String>();
 
 		// the examine objects inside the articles
-		for (KnowledgeBase base : handler.getKnowledgeBases()) {
+		for (String compilingArticle : KnowWEUtils.getPackageManager(web).getCompilingArticles()) {
+			KnowledgeBase base = D3webUtils.getKnowledgeBase(web, compilingArticle);
+			// filters KnowWE-Doc from object tree
+			// if (base.getId().startsWith("Doc ")) continue;
+
+			Set<String> foundNames = new HashSet<String>();
 			// for each found knowledgebase, iterate through their objects
 			// and search for the given names
 			// and ignore all names we have already found
 
 			// add article for a knowledge base
 			if (classes.contains("article")) {
-				if (matches(base.getId().toLowerCase(), phrases)) {
+				if (matches(compilingArticle.toLowerCase(), phrases)) {
 					// we do not have to avoid duplicates here (!)
 					// so do not use foundNames,
 					// therefore we can directly add to the result
-					result.add(base.getId());
+					result.add(compilingArticle);
 				}
 			}
 
@@ -138,7 +141,7 @@ public class SearchInfoObjects extends AbstractAction {
 				String name = object.getName().toLowerCase();
 				if (!foundNames.contains(name) && matches(name, phrases)) {
 					foundNames.add(name);
-					result.add(createResultEntry(base, object));
+					result.add(createResultEntry(compilingArticle, object));
 				}
 			}
 			// stop if we have enough matches
@@ -157,9 +160,9 @@ public class SearchInfoObjects extends AbstractAction {
 		return true;
 	}
 
-	private static String createResultEntry(KnowledgeBase base, NamedObject object) {
+	private static String createResultEntry(String compilingArticle, NamedObject object) {
 		// create a unique name for the object to be recovered easily
-		return base.getId() + "/" + object.getName();
+		return compilingArticle + "/" + object.getName();
 	}
 
 }

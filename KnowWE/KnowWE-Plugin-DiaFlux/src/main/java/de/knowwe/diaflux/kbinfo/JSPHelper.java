@@ -59,6 +59,9 @@ public class JSPHelper {
 		buffer.append("[");
 		boolean first = true;
 		for (String id : matches) {
+			// filters KnowWE-Doc from object tree
+			if (id.startsWith("Doc ")) continue;
+
 			if (first) {
 				first = false;
 			}

@@ -160,19 +160,19 @@ public class D3webUtils {
 	 * 
 	 * @created 15.12.2010
 	 * @param web the web of the article the knowledge base is compiled
-	 * @param topic the title of the article the knowledge base is compiled
+	 * @param title the title of the article the knowledge base is compiled
 	 * @return the knowledge base if such one exists, null otherwise
 	 * @throws NullPointerException if web or topic is null
 	 */
-	public static KnowledgeBase getKnowledgeBase(String web, String topic) {
-		if (web == null || topic == null) {
+	public static KnowledgeBase getKnowledgeBase(String web, String title) {
+		if (web == null || title == null) {
 			throw new NullPointerException(
 					"Cannot acces knowledge base with 'web' and/or 'topic' null");
 		}
 		D3webKnowledgeHandler knowledgeHandler =
 				D3webUtils.getKnowledgeRepresentationHandler(web);
 		if (knowledgeHandler != null) {
-			KnowledgeBase kb = knowledgeHandler.getKnowledgeBase(topic);
+			KnowledgeBase kb = knowledgeHandler.getKnowledgeBase(title);
 			return kb;
 		}
 		return null;
