@@ -108,7 +108,7 @@ KNOWWE.notification = function() {
 	
 			// css
 			dom.attr({
-				style : 'opacity:0.8;' + 'position:fixed;' + 'z-index:2000;' 
+				style : 'opacity:0.95;' + 'position:fixed;' + 'z-index:2000;' 
 						+ 'border-bottom:1px solid #7a7a7a;' + 'top:0px;' + 'left:0px;' 
 						+ 'right:0px;' + 'width:100%;' + 'padding:5px;' + 'background-color: #f9eba5;'
 						+ 'background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(' + startColor 

@@ -1828,9 +1828,7 @@ div.coverflow .knob {
 }
 
 .Flowchart {
-	border-top: 1px solid #D1CFF1;
-	border-left: 1px solid #D1CFF1;
-	border-right: 1px solid #D1CFF1;
+	border: 1px solid #D1CFF1;
 }
 
 .defaultMarkupFrame {
