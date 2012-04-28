@@ -145,7 +145,21 @@ KNOWWE.plugin.instantEdit = function() {
             new _KA(options).send(); 
             
             if(reload) {
-            	window.location = window.location.href.split('&')[0];
+            	// reload page. remove version attribute if there
+            	var hrefSplit = window.location.href.split('?');
+            	if (hrefSplit.length == 1) {
+            		window.location.reload();
+            		return;
+            	}
+            	var path = hrefSplit[0];
+            	var args = hrefSplit[1].split('&');
+            	var newLocation = path;
+            	for (var i = 0; i < args.length; i++) {
+            		if (args[i].indexOf('version=') == 0) continue;
+            		newLocation += i == 0 ? '?' : '&';
+            		newLocation += args[i];
+            	}
+            	window.location = newLocation;
             }
         },
         
