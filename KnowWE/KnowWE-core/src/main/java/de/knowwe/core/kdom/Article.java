@@ -123,7 +123,7 @@ public class Article extends AbstractType {
 			article = new Article(text, title, web, fullParse);
 			EventManager.getInstance().fireEvent(new ArticleCreatedEvent(article));
 		}
-		catch (Throwable e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		finally {

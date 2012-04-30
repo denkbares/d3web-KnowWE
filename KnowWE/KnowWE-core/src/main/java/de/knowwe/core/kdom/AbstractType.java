@@ -21,6 +21,7 @@
 package de.knowwe.core.kdom;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -347,7 +348,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 
 	@Override
 	public void setPathToRoot(Type[] path) {
-		this.pathToRoot = path;
+		this.pathToRoot = Arrays.copyOf(path, path.length);
 	}
 
 	@Override
