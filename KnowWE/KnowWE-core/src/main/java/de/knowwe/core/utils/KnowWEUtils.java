@@ -527,6 +527,17 @@ public class KnowWEUtils {
 		return htmlContent;
 	}
 
+	@Deprecated
+	public static String urldecode(String text) {
+		return Strings.decodeURL(text);
+	}
+	
+	@Deprecated
+	public static String urlencode(String text) {
+		return Strings.encodeURL(text);
+	}
+
+	
 	public static String readFile(String fileName) {
 		try {
 			return readFile(new FileInputStream(fileName));
