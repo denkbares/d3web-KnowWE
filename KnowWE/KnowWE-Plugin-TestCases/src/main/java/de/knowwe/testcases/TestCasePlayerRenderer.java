@@ -18,9 +18,6 @@
  */
 package de.knowwe.testcases;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,8 +30,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.servlet.http.Cookie;
-
-import org.apache.log4j.Logger;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyManager;
@@ -65,6 +60,7 @@ import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.StyleRenderer;
@@ -294,17 +290,9 @@ public class TestCasePlayerRenderer implements Renderer {
 		String cookiename = "additionalQuestions" + section.getTitle();
 		Cookie[] cookies = user.getRequest().getCookies();
 		if (cookies != null) for (Cookie cookie : cookies) {
-			try {
-				if (URLDecoder.decode(cookie.getName(), "UTF-8").equals(cookiename)) {
-					additionalQuestions = URLDecoder.decode(cookie.getValue(), "UTF-8");
-					break;
-				}
-			}
-			catch (UnsupportedEncodingException e) {
-				additionalQuestions = cookie.getValue();
-				Logger.getLogger(getClass()).error(
-						"Could not decode the value of the cookie " + cookiename
-								+ ":" + cookie.getValue());
+			if (Strings.decodeURL(cookie.getName()).equals(cookiename)) {
+				additionalQuestions = Strings.decodeURL(cookie.getValue());
+				break;
 			}
 		}
 		return additionalQuestions;
@@ -499,12 +487,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		String selectedQuestion = "";
 		for (Cookie cookie : user.getRequest().getCookies()) {
 			if (cookie.getName().equals(key)) {
-				try {
-					selectedQuestion = URLDecoder.decode(cookie.getValue(), "UTF-8");
-				}
-				catch (UnsupportedEncodingException e) {
-					selectedQuestion = cookie.getValue();
-				}
+				selectedQuestion = Strings.decodeURL(cookie.getValue());
 			}
 		}
 		TerminologyObject object = null;
@@ -575,12 +558,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		String selectedID = "";
 		for (Cookie cookie : user.getRequest().getCookies()) {
 			if (cookie.getName().equals(key)) {
-				try {
-					selectedID = URLDecoder.decode(cookie.getValue(), "UTF-8");
-				}
-				catch (UnsupportedEncodingException e) {
-					selectedID = cookie.getValue();
-				}
+				selectedID = Strings.decodeURL(cookie.getValue());
 			}
 		}
 		StringBuffer selectsb = new StringBuffer();
@@ -640,14 +618,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				i++;
 			}
 		}
-		String key;
-		try {
-			key = SELECTOR_KEY + "_" + URLEncoder.encode(section.getTitle(), "UTF-8") + i;
-		}
-		catch (UnsupportedEncodingException e) {
-			key = SELECTOR_KEY + "_" + section.getTitle() + i;
-		}
-		return key;
+		return SELECTOR_KEY + "_" + Strings.encodeURL(section.getTitle()) + i;
 	}
 
 	private String renderTableSizeSelector(Section<?> section, UserContext user, String key, int selectedSize, int maxSize) {

@@ -23,6 +23,8 @@ package de.knowwe.core;
 @Deprecated
 public class NoParseResultException extends Exception {
 
+	private static final long serialVersionUID = 7130469386071764902L;
+
 	public NoParseResultException(String message) {
 		super(message);
 	}

@@ -50,7 +50,7 @@ public class StringSectionFinderUnquoted extends AbstractSingleResultFinder {
 	}
 
 	@Override
-	public SectionFinderResult lookForSection(String text, Section father, Type type) {
+	public SectionFinderResult lookForSection(String text, Section<?> father, Type type) {
 
 		int index;
 

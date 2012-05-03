@@ -20,8 +20,6 @@
 
 package de.d3web.we.quicki;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -54,6 +52,7 @@ import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.Strings;
 
 /**
  * Render the quick interview -aka QuickI- in KnowWE --- HTML / JS / CSS based
@@ -371,19 +370,12 @@ public class QuickInterviewRenderer {
 		}
 
 		String id = getID();
-		String jscall = "";
-		// assemble the JS call
-		try {
-			jscall = " rel=\"{oid: '" + id + "', "
+		String jscall = " rel=\"{oid: '" + id + "', "
 					+ "web:'" + web + "',"
 					+ "ns:'" + namespace + "',"
 					+ "type:'text', "
-					+ "qtext:'" + URLEncoder.encode(q.getName(), "UTF-8") + "', "
+					+ "qtext:'" + Strings.encodeURL(q.getName()) + "', "
 					+ "}\" ";
-		}
-		catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
 
 		// assemble the input field
 		sb.append("\n<input class='inputtextvalue'  style='display: inline;' id='input_" + id
@@ -413,20 +405,13 @@ public class QuickInterviewRenderer {
 			String cssclass = "answer";
 
 			// assemble JS string
-			String jscall = null;
-			try {
-				jscall = " rel=\"{oid:'" + choice.getName() + "', "
+			String jscall = " rel=\"{oid:'" + choice.getName() + "', "
 						+ "web:'" + web + "', "
 						+ "ns:'" + namespace + "', "
-						+ "qid:'" + URLEncoder.encode(q.getName(), "UTF-8") + "', "
-						+ "choice:'" + URLEncoder.encode(choice.getName(), "UTF-8") + "', "
+						+ "qid:'" + Strings.encodeURL(q.getName()) + "', "
+						+ "choice:'" + Strings.encodeURL(choice.getName()) + "', "
 						+ "type:'oc'"
 						+ "}\" ";
-			}
-			catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-
 			String spanid = q.getName() + "_" + choice.getName();
 
 			// if a value was already set, get the value and set corresponding
@@ -498,30 +483,25 @@ public class QuickInterviewRenderer {
 
 		// assemble the JS call
 		String jscall = "";
-		try {
-			if (rangeMin != Double.MIN_VALUE && rangeMax != Double.MAX_VALUE) {
-				jscall = " rel=\"{oid: '" + id + "', "
+		if (rangeMin != Double.MIN_VALUE && rangeMax != Double.MAX_VALUE) {
+			jscall = " rel=\"{oid: '" + id + "', "
 						+ "web:'" + web + "',"
 						+ "ns:'" + namespace + "',"
 						+ "type:'num', "
 						+ "rangeMin:'" + rangeMin + "', "
 						+ "rangeMax:'" + rangeMax + "', "
-						+ "qtext:'" + URLEncoder.encode(q.getName(), "UTF-8") + "', "
+						+ "qtext:'" + Strings.encodeURL(q.getName()) + "', "
 						+ "}\" ";
-			}
-			else {
-				jscall = " rel=\"{oid: '" + id + "', "
+		}
+		else {
+			jscall = " rel=\"{oid: '" + id + "', "
 						+ "web:'" + web + "',"
 						+ "ns:'" + namespace + "',"
 						+ "type:'num', "
 						+ "rangeMin:'NaN', "
 						+ "rangeMax:'NaN', "
-						+ "qtext:'" + URLEncoder.encode(q.getName(), "UTF-8") + "', "
+						+ "qtext:'" + Strings.encodeURL(q.getName()) + "', "
 						+ "}\" ";
-			}
-		}
-		catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
 		}
 
 		// assemble the input field
@@ -580,18 +560,12 @@ public class QuickInterviewRenderer {
 		String id = getID();
 
 		// assemble the JS call
-		String jscall = "";
-		try {
-			jscall = " rel=\"{oid: '" + id + "', "
+		String jscall = " rel=\"{oid: '" + id + "', "
 					+ "web:'" + web + "',"
 					+ "ns:'" + namespace + "',"
 					+ "type:'num', "
-					+ "qtext:'" + URLEncoder.encode(q.getName(), "UTF-8") + "', "
+					+ "qtext:'" + Strings.encodeURL(q.getName()) + "', "
 					+ "}\" ";
-		}
-		catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
 
 		// assemble the input field
 		sb.append("<input class='inputdate'  style='display: inline;' id='input_" + id
@@ -629,19 +603,13 @@ public class QuickInterviewRenderer {
 		for (Choice choice : mcval.asChoiceList(q)) {
 
 			String cssclass = "answerMC";
-			String jscall = null;
-			try {
-				jscall = " rel=\"{oid:'" + choice.getName() + "', "
+			String jscall = " rel=\"{oid:'" + choice.getName() + "', "
 						+ "web:'" + web + "', "
 						+ "ns:'" + namespace + "', "
-						+ "qid:'" + URLEncoder.encode(q.getName(), "UTF-8") + "', "
+						+ "qid:'" + Strings.encodeURL(q.getName()) + "', "
 						+ "type:'mc', "
-						+ "choice:'" + URLEncoder.encode(choice.getName(), "UTF-8") + "', "
+						+ "choice:'" + Strings.encodeURL(choice.getName()) + "', "
 						+ "}\" ";
-			}
-			catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
 
 			Value value = session.getBlackboard().getValue(q);
 
@@ -657,15 +625,6 @@ public class QuickInterviewRenderer {
 
 		// also render the unknown alternative for choice questions
 		renderAnswerUnknown(q, "mc", sb);
-
-		// String jscall = " rel=\"{web:'" + web + "', "
-		// + "ns:'" + namespace + "', "
-		// + "qid:'" + q.getId() + "', "
-		// + "type:'mc', "
-		// + "}\" ";
-		// sb.append("<button class='mcbutton' type='button' " + jscall +
-		// " >OK</button>");
-
 		sb.append("</div>");
 	}
 
@@ -679,18 +638,12 @@ public class QuickInterviewRenderer {
 	 * @return the HTML representation
 	 */
 	private void renderAnswerUnknown(Question q, String type, StringBuffer sb) {
-		String jscall = null;
-		try {
-			jscall = " rel=\"{oid: '" + Unknown.getInstance().getId() + "', "
+		String jscall = " rel=\"{oid: '" + Unknown.getInstance().getId() + "', "
 					+ "web:'" + web + "', "
 					+ "ns:'" + namespace + "', "
 					+ "type:'" + type + "', "
-					+ "qid:'" + URLEncoder.encode(q.getName(), "UTF-8") + "'"
+					+ "qid:'" + Strings.encodeURL(q.getName()) + "'"
 					+ "}\" ";
-		}
-		catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
 		String cssclass = "answerunknown";
 
 		Value value = session.getBlackboard().getValue(q);

@@ -21,8 +21,6 @@ package connector;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -37,6 +35,7 @@ import java.util.zip.ZipFile;
 import com.ecyrd.jspwiki.providers.BasicAttachmentProvider;
 
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.core.wikiConnector.ConnectorAttachment;
 
 /**
@@ -87,19 +86,19 @@ public class DummyPageProvider {
 
 	}
 
-	private void cacheZipArticle(ZipFile wikiContentZip, ZipEntry entry, Matcher articleMatcher) throws IOException, UnsupportedEncodingException {
+	private void cacheZipArticle(ZipFile wikiContentZip, ZipEntry entry, Matcher articleMatcher) throws IOException {
 		InputStream entryStream = wikiContentZip.getInputStream(entry);
 		String articleContent = KnowWEUtils.readFile(entryStream);
 		String title = articleMatcher.group(1);
-		title = URLDecoder.decode(title, "UTF8");
+		title = Strings.decodeURL(title);
 		setArticleContent(title, articleContent);
 	}
 
-	private void cacheZipAttachment(ZipFile wikiContentZip, ZipEntry entry, Matcher attachmentMatcher) throws UnsupportedEncodingException {
+	private void cacheZipAttachment(ZipFile wikiContentZip, ZipEntry entry, Matcher attachmentMatcher) {
 		String parentName = attachmentMatcher.group(1);
 		String fileName = attachmentMatcher.group(2);
-		parentName = URLDecoder.decode(parentName, "UTF8");
-		fileName = URLDecoder.decode(fileName, "UTF8");
+		parentName = Strings.decodeURL(parentName);
+		fileName = Strings.decodeURL(fileName);
 
 		ZipContentConnectorAttachment zipConAttachment = new ZipContentConnectorAttachment(
 				fileName, parentName, entry, wikiContentZip);
@@ -136,15 +135,15 @@ public class DummyPageProvider {
 		return wikiFile.isFile() && wikiFile.getName().endsWith(".txt");
 	}
 
-	private void cacheFileSystemArticle(File wikiFile) throws IOException, UnsupportedEncodingException {
+	private void cacheFileSystemArticle(File wikiFile) throws IOException {
 		String articleContent = KnowWEUtils.readFile(wikiFile.getCanonicalPath());
 		String title = wikiFile.getName();
 		title = title.replaceAll(".txt$", "");
-		title = URLDecoder.decode(title, "UTF8");
+		title = Strings.decodeURL(title);
 		setArticleContent(title, articleContent);
 	}
 
-	private void cacheFileSystemAttachment(File wikiFile) throws UnsupportedEncodingException {
+	private void cacheFileSystemAttachment(File wikiFile) {
 		File[] attributeFiles = wikiFile.listFiles();
 		for (File attributeFile : attributeFiles) {
 			// filter for directories that contain attachments
@@ -157,8 +156,8 @@ public class DummyPageProvider {
 								BasicAttachmentProvider.DIR_EXTENSION + "$", "");
 						String fileName = attributeFile.getName().replaceAll(
 								BasicAttachmentProvider.ATTDIR_EXTENSION + "$", "");
-						parentName = URLDecoder.decode(parentName, "UTF8");
-						fileName = URLDecoder.decode(fileName, "UTF8");
+						parentName = Strings.decodeURL(parentName);
+						fileName = Strings.decodeURL(fileName);
 						FileSystemConnectorAttachment fileConAttachment = new FileSystemConnectorAttachment(
 								fileName, parentName, attachmentVersionFile);
 

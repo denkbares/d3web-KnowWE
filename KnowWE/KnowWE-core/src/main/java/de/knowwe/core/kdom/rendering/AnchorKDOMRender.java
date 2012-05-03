@@ -41,5 +41,5 @@ public abstract class AnchorKDOMRender implements Renderer {
 		renderContent(sec, user, string);
 	}
 
-	public abstract void renderContent(Section sec, UserContext user, StringBuilder string);
+	public abstract void renderContent(Section<?> sec, UserContext user, StringBuilder string);
 }

@@ -50,7 +50,7 @@ public class StringEnumChecker<T extends Type> extends SubtreeHandler<T> {
 	}
 
 	@Override
-	public Collection<Message> create(Article article, Section s) {
+	public Collection<Message> create(Article article, Section<T> s) {
 
 		// cut offsets and trim
 		String sectionContent = s.getText();

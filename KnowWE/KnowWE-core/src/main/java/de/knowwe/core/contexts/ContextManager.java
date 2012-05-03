@@ -46,10 +46,11 @@ public class ContextManager {
 
 	}
 
-	public void attachContextForClass(Section section, Context c) {
+	public void attachContextForClass(Section<?> section, Context c) {
 		Object o = KnowWEUtils.getStoredObject(section.getArticle(), section,
 				c.getClass().getName());
 		if (o != null && (o instanceof Set)) {
+			@SuppressWarnings("unchecked")
 			Set<Context> contextSet = ((Set<Context>) o);
 			contextSet.add(c);
 		}
@@ -164,6 +165,7 @@ public class ContextManager {
 			return null;
 		}
 		if (o instanceof Set) {
+			@SuppressWarnings("unchecked")
 			Set<Context> contextSet = ((Set<Context>) o);
 			for (Context context : contextSet) {
 				if (context.isValidForSection(originalSection)) return context;
@@ -191,9 +193,9 @@ public class ContextManager {
 
 	class ArticleContextMap {
 
-		private final HashMap<Section, Map<String, Context>> artContextMap;
+		private final HashMap<Section<?>, Map<String, Context>> artContextMap;
 
-		public Map<Section, Map<String, Context>> getContextmap() {
+		public Map<Section<?>, Map<String, Context>> getContextmap() {
 			return artContextMap;
 		}
 
@@ -210,7 +212,7 @@ public class ContextManager {
 		}
 
 		private ArticleContextMap() {
-			artContextMap = new HashMap<Section, Map<String, Context>>();
+			artContextMap = new HashMap<Section<?>, Map<String, Context>>();
 
 		}
 	}

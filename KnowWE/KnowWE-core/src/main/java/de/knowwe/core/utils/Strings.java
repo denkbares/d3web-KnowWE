@@ -22,7 +22,12 @@ package de.knowwe.core.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Strings {
 
@@ -225,5 +230,50 @@ public class Strings {
 		e.printStackTrace(printStream);
 		printStream.flush();
 		return out.toString();
+	}
+
+	/**
+	 * Safe way to url-encode strings without dealing with
+	 * {@link UnsupportedEncodingException} of
+	 * {@link URLEncoder#encode(String, String)}.
+	 * 
+	 * @created 03.05.2012
+	 * @param text the text to be encoded
+	 * @return the encoded string
+	 */
+	public static String encodeURL(String text) {
+		try {
+			return URLEncoder.encode(text, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e) {
+			Logger.getLogger(Strings.class.getName()).log(
+					Level.WARNING, "unsupported encoding UTF-8", e);
+			return text;
+		}
+	}
+
+	/**
+	 * Safe way to url-decode strings without dealing with
+	 * {@link UnsupportedEncodingException} of
+	 * {@link URLEncoder#encode(String, String)}.
+	 * 
+	 * @created 03.05.2012
+	 * @param text the text to be encoded
+	 * @return the encoded string
+	 */
+	public static String decodeURL(String text) {
+		try {
+			return URLDecoder.decode(text, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e) {
+			Logger.getLogger(Strings.class.getName()).log(
+					Level.WARNING, "unsupported encoding UTF-8", e);
+			return text;
+		}
+		catch (IllegalArgumentException e) {
+			Logger.getLogger(Strings.class.getName()).log(
+					Level.WARNING, "string to decode is not correctly encoded", e);
+			return text;
+		}
 	}
 }

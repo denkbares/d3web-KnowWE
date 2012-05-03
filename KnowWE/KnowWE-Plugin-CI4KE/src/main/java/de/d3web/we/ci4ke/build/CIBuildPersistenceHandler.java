@@ -27,7 +27,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -49,6 +48,7 @@ import de.d3web.we.ci4ke.testing.CITestResult;
 import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.d3web.we.ci4ke.util.Pair;
+import de.knowwe.core.utils.Strings;
 
 public class CIBuildPersistenceHandler {
 
@@ -141,7 +141,7 @@ public class CIBuildPersistenceHandler {
 					"Parameter 'dashboardArticleTitle' is null or empty!");
 		}
 
-		String buildFileName = URLEncoder.encode("results-" + dashboardName + ".xml", "UTF-8");
+		String buildFileName = Strings.encodeURL("results-" + dashboardName + ".xml");
 
 		File buildFile = new File(CIUtilities.getAttachmentsDirectory(
 				dashboardArticleTitle), buildFileName);

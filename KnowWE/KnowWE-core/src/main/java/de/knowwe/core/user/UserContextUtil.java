@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 /**
  * This class offers some methods often needed for UserContext related tasks.
@@ -55,7 +55,7 @@ public class UserContextUtil {
 			while (iter.hasMoreElements()) {
 				String key = (String) iter.nextElement();
 				String value = request.getParameter(key);
-				parameters.put(key, decode ? KnowWEUtils.urldecode(value) : value);
+				parameters.put(key, decode ? Strings.decodeURL(value) : value);
 			}
 			if (request.getMethod() != null &&
 					request.getMethod().equals("POST")) {

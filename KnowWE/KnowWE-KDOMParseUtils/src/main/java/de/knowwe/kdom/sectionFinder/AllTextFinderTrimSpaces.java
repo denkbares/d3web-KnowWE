@@ -39,7 +39,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 public class AllTextFinderTrimSpaces implements SectionFinder {
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 		int leadingSpaces = 0;
 		while (text.charAt(leadingSpaces) == ' ') {

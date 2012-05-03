@@ -1,4 +1,5 @@
 package de.knowwe.core.taghandler;
+
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
@@ -19,13 +20,10 @@ package de.knowwe.core.taghandler;
  * site: http://www.fsf.org.
  */
 
-
-
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.taghandler.TagHandlerAttributeSubTreeHandler;
 
 /**
  * A taghandler can have attributes specified in this schema: %%KnowWEPlugin

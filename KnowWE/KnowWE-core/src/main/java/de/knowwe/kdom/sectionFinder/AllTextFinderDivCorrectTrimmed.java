@@ -44,7 +44,7 @@ public class AllTextFinderDivCorrectTrimmed implements SectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 		String trimmed = text.trim();
 		if (trimmed.length() == 0) return result;

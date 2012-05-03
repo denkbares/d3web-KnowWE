@@ -20,8 +20,6 @@
 
 package de.knowwe.kdom.sectionFinder;
 
-import java.util.List;
-
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
@@ -50,7 +48,7 @@ public class StringSectionFinder extends AbstractSingleResultFinder {
 	}
 
 	@Override
-	public SectionFinderResult lookForSection(String text, Section father, Type type) {
+	public SectionFinderResult lookForSection(String text, Section<?> father, Type type) {
 
 		int index;
 

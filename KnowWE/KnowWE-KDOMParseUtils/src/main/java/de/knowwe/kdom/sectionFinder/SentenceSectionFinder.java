@@ -54,8 +54,8 @@ public class SentenceSectionFinder implements SectionFinder {
 		BreakIterator splitter = BreakIterator.getWordInstance();
 		splitter.setText(text);
 		int words = 0;
-		int start = splitter.first();
-		for (int end = splitter.next(); end != BreakIterator.DONE; start = end, end = splitter.next()) {
+		splitter.first();
+		for (int end = splitter.next(); end != BreakIterator.DONE; end = splitter.next()) {
 			words++;
 		}
 

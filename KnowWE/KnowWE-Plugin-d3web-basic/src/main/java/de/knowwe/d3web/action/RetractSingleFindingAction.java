@@ -21,8 +21,6 @@
 package de.knowwe.d3web.action;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
@@ -37,6 +35,7 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.event.EventManager;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.d3web.event.FindingSetEvent;
 
 /**
@@ -64,19 +63,11 @@ public class RetractSingleFindingAction extends AbstractAction {
 		String user = context.getUserName();
 		String web = context.getWeb();
 
-		String namespace = null;
-		String term = null;
-		try {
-			topic = java.net.URLDecoder.decode(topic, "UTF-8");
-			namespace = java.net.URLDecoder.decode(
-					context.getParameter(Attributes.SEMANO_NAMESPACE), "UTF-8");
-			term = URLDecoder.decode(context.getParameter(Attributes.SEMANO_TERM_NAME),
-					"UTF-8");
-			if (objectid != null) objectid = URLDecoder.decode(objectid, "UTF-8");
-		}
-		catch (UnsupportedEncodingException e1) {
-			// should not occur
-		}
+		topic = Strings.decodeURL(topic);
+		String namespace = Strings.decodeURL(context.getParameter(Attributes.SEMANO_NAMESPACE));
+		String term = Strings.decodeURL(context.getParameter(Attributes.SEMANO_TERM_NAME));
+		if (objectid != null) objectid = Strings.decodeURL(objectid);
+
 		if (term != null && !term.equalsIgnoreCase("undefined")) {
 			objectid = term;
 		}

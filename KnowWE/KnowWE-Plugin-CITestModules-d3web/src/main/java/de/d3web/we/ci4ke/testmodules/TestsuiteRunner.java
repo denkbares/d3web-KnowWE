@@ -51,25 +51,17 @@ public class TestsuiteRunner extends AbstractCITest {
 		TestCaseAnalysis analysis = new TestCaseAnalysis();
 		TestCaseAnalysisReport result = analysis.runAndAnalyze(suite);
 
-		if (suite != null) {
-			if (!suite.isConsistent()) {
-				return new CITestResult(Type.FAILED, "Testsuite is not consistent!", config);
-			}
-			else if (result.recall() == 1.0 && result.precision() == 1.0) {
-				return new CITestResult(Type.SUCCESSFUL, null, config);
-			}
-			else {
-				return new CITestResult(Type.FAILED,
-						"Testsuite failed! (Total Precision: " + result.precision() +
-								", Total Recall: " + result.recall() + ")", config);
-			}
+		if (!suite.isConsistent()) {
+			return new CITestResult(Type.FAILED, "Testsuite is not consistent!", config);
+		}
+		else if (result.recall() == 1.0 && result.precision() == 1.0) {
+			return new CITestResult(Type.SUCCESSFUL, null, config);
 		}
 		else {
-			return new CITestResult(Type.ERROR,
-					"Error while retrieving Testsuite from Article '" +
-							monitoredArticleTitle + "' !", config);
+			return new CITestResult(Type.FAILED,
+						"Testsuite failed! (Total Precision: " + result.precision() +
+								", Total Recall: " + result.recall() + ")", config);
 		}
-
 	}
 
 }

@@ -24,13 +24,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
-import de.knowwe.core.action.AbstractAction;
-import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 /**
  * This Action replaces a single KDOM node's content. Before performing the
@@ -40,19 +37,17 @@ import de.knowwe.core.utils.KnowWEUtils;
  * Needed Parameters:
  * </p>
  * <ul>
- * <li><tt>{@link Attributes.TARGET}:</tt> The KDOM node of which the
- * content will be replaced</li>
+ * <li><tt>{@link Attributes.TARGET}:</tt> The KDOM node of which the content
+ * will be replaced</li>
  * <li><tt>{@link KnowWEAtrributes.TEXT}:</tt> The new node content</li>
  * </ul>
  */
 public class ReplaceKDOMNodeAction extends AbstractAction {
 
 	private String perform(UserActionContext context) throws IOException {
-		String web = context.getWeb();
 		String nodeID = context.getParameter(Attributes.TARGET);
-		String name = context.getTopic();
+		String name = context.getTitle();
 		String newText = context.getParameter(Attributes.TEXT);
-		ArticleManager mgr = Environment.getInstance().getArticleManager(web);
 
 		// Check for user access
 		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(name,
@@ -60,7 +55,7 @@ public class ReplaceKDOMNodeAction extends AbstractAction {
 			return "perm";
 		}
 
-		newText = KnowWEUtils.urldecode(newText);
+		newText = Strings.decodeURL(newText);
 
 		// Remove any extra whitespace that might have gotten appended by
 		// JSPWiki

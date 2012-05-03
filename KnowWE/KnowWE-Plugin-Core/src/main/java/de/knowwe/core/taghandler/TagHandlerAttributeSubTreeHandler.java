@@ -34,7 +34,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * Reads out the attributes of TagHandlerTypeContent and stores them in
  * KnowWESectionStore.
  */
-public class TagHandlerAttributeSubTreeHandler extends SubtreeHandler {
+public class TagHandlerAttributeSubTreeHandler extends SubtreeHandler<TagHandlerTypeContent> {
 
 	public static final String ATTRIBUTE_MAP = "TagHandler.attributeMap";
 
@@ -43,7 +43,7 @@ public class TagHandlerAttributeSubTreeHandler extends SubtreeHandler {
 	}
 
 	@Override
-	public Collection<Message> create(Article art, Section sec) {
+	public Collection<Message> create(Article art, Section<TagHandlerTypeContent> sec) {
 
 		String text = sec.getText();
 

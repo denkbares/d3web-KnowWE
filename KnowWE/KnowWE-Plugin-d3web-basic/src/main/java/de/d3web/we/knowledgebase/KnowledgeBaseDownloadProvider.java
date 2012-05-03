@@ -19,17 +19,16 @@
 
 package de.d3web.we.knowledgebase;
 
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.net.UnknownHostException;
 
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.d3web.action.DownloadKnowledgeBase;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.tools.DefaultTool;
@@ -106,12 +105,7 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 				"%3F" + Attributes.TOPIC + "=" + section.getTitle() +
 				"%26" + Attributes.WEB + "=" + section.getWeb() +
 				"%26" + DownloadKnowledgeBase.PARAM_FILENAME + "=" + kbName + ".d3web";
-
-		try {
-			kbURL = URLEncoder.encode(kbURL, "UTF-8");
-		}
-		catch (UnsupportedEncodingException e) {
-		}
+		kbURL = Strings.encodeURL(kbURL);
 
 		String imageURL = "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=" + kbURL;
 		String id = section.getID();

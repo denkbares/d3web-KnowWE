@@ -19,8 +19,6 @@
  */
 package de.knowwe.diaflux;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -44,6 +42,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.diaflux.kbinfo.JSPHelper;
 import de.knowwe.diaflux.type.DiaFluxType;
 import de.knowwe.diaflux.type.FlowchartType;
@@ -106,7 +105,6 @@ public class FlowchartUtils {
 		return webMap;
 	}
 
-
 	public static String createFlowchartRenderer(Section<FlowchartType> flowSection, UserContext user) {
 		return KnowWEUtils.maskHTML(createFlowchartRenderer(flowSection, user, DIAFLUX_SCOPE));
 	}
@@ -140,12 +138,7 @@ public class FlowchartUtils {
 	}
 
 	public static String escapeHtmlId(String text) {
-		try {
-			text = URLEncoder.encode(text, "UTF-8");
-		}
-		catch (UnsupportedEncodingException e) {
-			// seems as like we use the not encoded version anyway
-		}
+		text = Strings.encodeURL(text);
 		text = text.replaceAll("%", "");
 		return text;
 	}
@@ -170,7 +163,8 @@ public class FlowchartUtils {
 		Section<DiaFluxType> diaFluxType = Sections.findAncestorOfType(section, DiaFluxType.class);
 
 		// load JS and CSS only for first DiaFluxSection in page
-		return Sections.findSuccessorsOfType(section.getArticle().getRootSection(), DiaFluxType.class).indexOf(
+		return Sections.findSuccessorsOfType(section.getArticle().getRootSection(),
+				DiaFluxType.class).indexOf(
 				diaFluxType) == 0;
 	}
 
@@ -210,7 +204,8 @@ public class FlowchartUtils {
 		}
 	}
 
-	//Just to load from old articles still containing preview. Should be removed in the future
+	// Just to load from old articles still containing preview. Should be
+	// removed in the future
 	public static String getFlowSourceWithoutPreview(Section<FlowchartType> section) {
 		String source = section.getText();
 		int previewIndex = source.lastIndexOf("<preview");

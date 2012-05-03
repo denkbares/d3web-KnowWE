@@ -38,6 +38,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.search.Result;
@@ -128,10 +129,10 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		// First try the URL-Parameter, if null try the TagHandler-Parameter.
 		String objectName = null;
 		if (urlParameters.get(OBJECTNAME) != null) {
-			objectName = KnowWEUtils.urldecode(urlParameters.get(OBJECTNAME));
+			objectName = Strings.decodeURL(urlParameters.get(OBJECTNAME));
 		}
 		else if (parameters.get(OBJECTNAME) != null) {
-			objectName = KnowWEUtils.urldecode(parameters.get(OBJECTNAME));
+			objectName = Strings.decodeURL(parameters.get(OBJECTNAME));
 		}
 
 		// If name is not defined -> render search form!
@@ -203,7 +204,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 		html.append("<form action=\"\" method=\"get\">");
 		html.append("<input type=\"hidden\" name=\"page\" value=\""
-				+ KnowWEUtils.urlencode(section.getTitle())
+				+ Strings.encodeURL(section.getTitle())
 				+ "\" />");
 		html.append("<input type=\"text\" name=\"" + OBJECTNAME + "\" /> ");
 		html.append("<input type=\"submit\" value=\"&rarr;\" />");

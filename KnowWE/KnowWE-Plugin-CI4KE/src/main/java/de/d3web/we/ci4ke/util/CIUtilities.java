@@ -22,7 +22,6 @@ package de.d3web.we.ci4ke.util;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,6 +42,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class CIUtilities {
@@ -90,9 +90,9 @@ public class CIUtilities {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	public static File getAttachmentsDirectory(String articleTitle) throws UnsupportedEncodingException {
+	public static File getAttachmentsDirectory(String articleTitle) {
 		String wikiDir = getWikiContentDirectory();
-		String folderName = URLEncoder.encode(articleTitle, "UTF-8") + "-att" + File.separator;
+		String folderName = Strings.encodeURL(articleTitle) + "-att" + File.separator;
 		File attachmentsDir = new File(wikiDir + folderName);
 		if (!attachmentsDir.exists()) {
 			attachmentsDir.mkdirs();
@@ -349,11 +349,6 @@ public class CIUtilities {
 	 * @return
 	 */
 	public static String utf8Escape(String toEscape) {
-		try {
-			return URLEncoder.encode(toEscape, "UTF-8");
-		}
-		catch (UnsupportedEncodingException e) {
-			return toEscape;
-		}
+		return Strings.encodeURL(toEscape);
 	}
 }

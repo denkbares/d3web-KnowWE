@@ -20,14 +20,13 @@
 
 package de.knowwe.kdom.renderer;
 
-import java.net.URLEncoder;
-
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 public class ObjectInfoLinkRenderer implements Renderer {
 
@@ -63,7 +62,7 @@ public class ObjectInfoLinkRenderer implements Renderer {
 			// TODO: Maybe make the page name non-hardcoded
 			string.append(KnowWEUtils.maskHTML(
 								"<a href=\"Wiki.jsp?page=ObjectInfoPage&objectname="
-										+ URLEncoder.encode(objectName)
+										+ Strings.encodeURL(objectName)
 										+ "\">"
 										+ b.toString()
 										+ "</a>"));

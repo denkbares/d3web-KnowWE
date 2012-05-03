@@ -28,9 +28,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -528,41 +525,6 @@ public class KnowWEUtils {
 	public static String unmaskNewline(String htmlContent) {
 		htmlContent = htmlContent.replace(Environment.NEWLINE, "\n");
 		return htmlContent;
-	}
-
-	/**
-	 * Performs URL decoding on the sting
-	 * 
-	 * @param text URLencoded string
-	 * @return URLdecoded string
-	 */
-	@SuppressWarnings("deprecation")
-	public static String urldecode(String text) {
-		try {
-			return URLDecoder.decode(text, "UTF-8");
-		}
-		catch (UnsupportedEncodingException e) {
-			return URLDecoder.decode(text);
-		}
-		catch (IllegalArgumentException e) {
-			return text;
-		}
-	}
-
-	/**
-	 * Performs URL encoding on the sting
-	 * 
-	 * @param text
-	 * @return URLencoded string
-	 */
-	@SuppressWarnings("deprecation")
-	public static String urlencode(String text) {
-		try {
-			return URLEncoder.encode(text, "UTF-8");
-		}
-		catch (UnsupportedEncodingException e) {
-			return URLEncoder.encode(text);
-		}
 	}
 
 	public static String readFile(String fileName) {

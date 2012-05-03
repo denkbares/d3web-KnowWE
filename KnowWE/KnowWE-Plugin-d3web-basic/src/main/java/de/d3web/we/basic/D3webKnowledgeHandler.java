@@ -23,7 +23,6 @@ package de.d3web.we.basic;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +34,7 @@ import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.knowRep.KnowledgeRepresentationHandler;
 
 /**
@@ -152,7 +152,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 		// need to create a new knowledge base every time.
 		// if (!savedToJar.get(title)) {
 		PersistenceManager.getInstance().save(base,
-					new File(URLDecoder.decode(home.getFile(), "UTF-8")));
+					new File(Strings.decodeURL(home.getFile())));
 		// savedToJar.put(title, true);
 		// }
 		return home;

@@ -481,22 +481,4 @@ public class WordBasedRenamingAction extends AbstractAction {
 	public void setCaseSensitive(boolean caseSensitive) {
 		this.caseSensitive = caseSensitive;
 	}
-
-	private String verbalizeModul(String type) {
-		int i = type.lastIndexOf(".");
-		String modName = type;
-		if (i >= 0) {
-			modName = type.substring(i + 1);
-		}
-		String name = null;
-		try {
-			name = rb.getString("KnowWE.sectionfinder." + modName);
-
-		}
-		catch (Exception e) {
-		}
-		if (name != null) return name;
-
-		return type;
-	}
 }

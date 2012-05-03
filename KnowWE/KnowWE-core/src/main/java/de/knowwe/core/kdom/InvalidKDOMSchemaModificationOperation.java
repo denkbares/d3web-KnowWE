@@ -22,6 +22,8 @@ package de.knowwe.core.kdom;
 
 public class InvalidKDOMSchemaModificationOperation extends Exception {
 
+	private static final long serialVersionUID = 1L;
+
 	public InvalidKDOMSchemaModificationOperation(String s) {
 		super(s);
 	}

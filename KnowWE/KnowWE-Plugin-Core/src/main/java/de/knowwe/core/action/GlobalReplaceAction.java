@@ -61,7 +61,7 @@ public class GlobalReplaceAction extends AbstractAction {
 
 		String[] replacementArray = replacements.split("__");
 
-		Map<Section, List<WordBasedRenameFinding>> findingsPerSection = new HashMap<Section, List<WordBasedRenameFinding>>();
+		Map<Section<?>, List<WordBasedRenameFinding>> findingsPerSection = new HashMap<Section<?>, List<WordBasedRenameFinding>>();
 		Collection<Article> modifiedArticles = new HashSet<Article>();
 
 		// replaceFindings decodieren
@@ -104,7 +104,7 @@ public class GlobalReplaceAction extends AbstractAction {
 
 		int count = 0;
 		// Ersetzungen vornehmen
-		for (Entry<Section, List<WordBasedRenameFinding>> entry : findingsPerSection.entrySet()) {
+		for (Entry<Section<?>, List<WordBasedRenameFinding>> entry : findingsPerSection.entrySet()) {
 			Section<?> sec = entry.getKey();
 			List<WordBasedRenameFinding> list = entry.getValue();
 			Collections.sort(list);
