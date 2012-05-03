@@ -57,7 +57,7 @@ public class ConditionTerminal extends AbstractType {
 		unrecognizedCond.addSubtreeHandler(new SubtreeHandler<ConditionTerminal>() {
 
 			@Override
-			public Collection<Message> create(Article article, Section s) {
+			public Collection<Message> create(Article article, Section<ConditionTerminal> s) {
 				return Messages.asList(Messages.syntaxError(
 						"no valid TerminalCondition: "
 								+ s.getText()));

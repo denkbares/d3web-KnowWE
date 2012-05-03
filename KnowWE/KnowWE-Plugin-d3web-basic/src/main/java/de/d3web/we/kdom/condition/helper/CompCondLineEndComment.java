@@ -37,7 +37,7 @@ public class CompCondLineEndComment extends AbstractType {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-					Section father, Type type) {
+					Section<?> father, Type type) {
 
 			// looks for an unquoted occurrence of '//'
 			int start = SplitUtility.lastIndexOfUnquoted(text, "//");

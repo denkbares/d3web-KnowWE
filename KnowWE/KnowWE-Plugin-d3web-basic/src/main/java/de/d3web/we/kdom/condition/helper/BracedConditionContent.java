@@ -26,7 +26,7 @@ public class BracedConditionContent extends NonTerminalCondition {
 	class BracedConditionContentFinder implements SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 			String trimmed = text.trim();
 			int leadingSpaces = text.indexOf(trimmed);
 			if (trimmed.startsWith(Character.toString(CompositeCondition.BRACE_OPEN))) {

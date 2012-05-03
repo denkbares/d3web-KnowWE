@@ -43,7 +43,7 @@ public class XCLRelationWeight extends AbstractType {
 		}
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>(1);
 			Matcher m = pattern.matcher(text);

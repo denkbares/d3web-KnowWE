@@ -45,7 +45,7 @@ public class NumericCondLine extends AbstractType {
 		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
 
 			@Override
-			protected boolean condition(String text, Section father) {
+			protected boolean condition(String text, Section<?> father) {
 				return (text.startsWith("[") && text.endsWith("]")) || text.startsWith("<")
 						|| text.startsWith(">") || text.startsWith("=");
 			}

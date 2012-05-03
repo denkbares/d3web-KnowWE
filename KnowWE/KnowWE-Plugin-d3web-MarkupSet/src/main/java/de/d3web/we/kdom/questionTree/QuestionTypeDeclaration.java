@@ -90,8 +90,7 @@ public class QuestionTypeDeclaration extends
 		this.setRenderer(new StyleRenderer(StyleRenderer.OPERATOR.getCssStyle()) {
 
 			@Override
-			public void render(@SuppressWarnings("rawtypes") Section<?> section, UserContext user,
-					StringBuilder string) {
+			public void render(Section<?> section, UserContext user, StringBuilder string) {
 				StringBuilder temp = new StringBuilder();
 				super.render(section, user, temp);
 				string.append(temp.toString());

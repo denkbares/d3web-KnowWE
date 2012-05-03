@@ -107,7 +107,7 @@ class FindingFinder implements SectionFinder {
 	private final AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		if (SplitUtility.containsUnquoted(text, "=")) {
 
 			// if the value is a number this is not taken as a Finding (but left

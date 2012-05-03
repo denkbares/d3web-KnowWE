@@ -110,8 +110,9 @@ public class KDOMConditionFactory {
 		if (c.get().isTerminal(c)) {
 			Section<? extends TerminalCondition> terminal = c.get().getTerminal(c);
 
-			Section<? extends D3webCondition> termChild = Sections.findChildOfType(terminal,
-					D3webCondition.class);
+			@SuppressWarnings("rawtypes")
+			Section<D3webCondition> termChild =
+					Sections.findChildOfType(terminal, D3webCondition.class);
 
 			if (termChild == null) {
 				Logger.getLogger(KDOMConditionFactory.class.getName()).warning(

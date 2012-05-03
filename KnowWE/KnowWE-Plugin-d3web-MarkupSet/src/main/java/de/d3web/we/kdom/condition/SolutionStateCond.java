@@ -58,7 +58,7 @@ public class SolutionStateCond extends D3webCondition<SolutionStateCond> {
 		private final AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 			if (SplitUtility.containsUnquoted(text, "=")) {
 				List<StringFragment> list = SplitUtility.splitUnquoted(text, "=");
 				// Hotfix for AOB when there is nothing behind the "="

@@ -57,7 +57,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 		this.setRenderer(new StyleRenderer(StyleRenderer.KEYWORDS.getCssStyle()) {
 
 			@Override
-			protected void renderContent(Section section, UserContext user, StringBuilder string) {
+			protected void renderContent(Section<?> section, UserContext user, StringBuilder string) {
 				StringBuilder buffer = new StringBuilder();
 				super.renderContent(section, user, buffer);
 				string.append(buffer.toString());
@@ -68,7 +68,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 		question.setSectionFinder(new SectionFinder() {
 
 			@Override
-			public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
+			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 				return SectionFinderResult.createSingleItemList(new SectionFinderResult(
 						text.indexOf('[') + 1, text.indexOf(']')));
 			}
@@ -103,7 +103,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 	private class CondKnownFinder implements SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, Type type) {
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			for (String key : KEYWORDS) {
 				if (text.trim().startsWith(key + "[") && text.trim().endsWith("]")) return new AllTextFinderTrimmed().lookForSections(
