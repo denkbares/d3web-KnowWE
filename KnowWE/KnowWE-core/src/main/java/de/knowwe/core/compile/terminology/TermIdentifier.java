@@ -26,7 +26,7 @@ import de.knowwe.core.utils.StringFragment;
 import de.knowwe.core.utils.Strings;
 
 /**
- * Wrapper class to identify and match the terms inside the TerminologyHandler.
+ * Data structure to identify and match terms in KnowWE.
  * 
  * @author Albrecht Striffler
  * @created 08.01.2011
@@ -63,6 +63,8 @@ public class TermIdentifier implements Comparable<TermIdentifier> {
 
 	/**
 	 * Returns the external form of this {@link TermIdentifier}.
+	 * 
+	 * @see TermIdentifier#toExternalForm()
 	 */
 	@Override
 	public String toString() {
@@ -75,7 +77,8 @@ public class TermIdentifier implements Comparable<TermIdentifier> {
 	}
 
 	/**
-	 * Returns whether this identifier starts with the given identifier path.
+	 * Returns whether this {@link TermIdentifier} starts with the given
+	 * {@link TermIdentifier}'s path.
 	 * 
 	 * @created 23.04.2012
 	 * @param identifier the identifier to check
@@ -89,8 +92,8 @@ public class TermIdentifier implements Comparable<TermIdentifier> {
 	}
 
 	/**
-	 * Returns the last element of the path given to create this term
-	 * identifier.
+	 * Returns the last element of the path given to create this
+	 * {@link TermIdentifier}.
 	 * 
 	 * @created 23.04.2012
 	 */
@@ -124,6 +127,17 @@ public class TermIdentifier implements Comparable<TermIdentifier> {
 		return new TermIdentifier(newIdentifierElements.toArray(new String[newLength]));
 	}
 
+	/**
+	 * Generates and returns the external representation or form of this
+	 * {@link TermIdentifier}. It is a String that can be transformed back into
+	 * an identical {@link TermIdentifier} as the originating one by using
+	 * {@link TermIdentifier#fromExternalForm(String)}.<br/>
+	 * Basically the external form is the path elements connected with a
+	 * separator and proper quoting if the separator icon is contained in one of
+	 * the path elements.
+	 * 
+	 * @created 07.05.2012
+	 */
 	public String toExternalForm() {
 		StringBuilder externalForm = new StringBuilder();
 
@@ -146,6 +160,21 @@ public class TermIdentifier implements Comparable<TermIdentifier> {
 		return element.contains("\"") || element.contains(SEPARATOR) || element.contains("\\");
 	}
 
+	/**
+	 * Generates a {@link TermIdentifier} from the external form of a
+	 * {@link TermIdentifier}. Do not confuse this with creating a
+	 * {@link TermIdentifier} with the constructor using the path of identifier
+	 * Strings.<br/>
+	 * Per definition, if you have a {@link TermIdentifier} and generate the
+	 * external form for that {@link TermIdentifier} and then generate another
+	 * {@link TermIdentifier} from that external form, both TermIdentifiers will
+	 * be equal.
+	 * 
+	 * @created 07.05.2012
+	 * @param externalForm the external form of a {@link TermIdentifier} created
+	 *        by using {@link TermIdentifier#toExternalForm()}
+	 * @return a {@link TermIdentifier} representing the given external form
+	 */
 	public static TermIdentifier fromExternalForm(String externalForm) {
 		List<StringFragment> pathElementFragments = Strings.splitUnquoted(externalForm, SEPARATOR,
 				true);
