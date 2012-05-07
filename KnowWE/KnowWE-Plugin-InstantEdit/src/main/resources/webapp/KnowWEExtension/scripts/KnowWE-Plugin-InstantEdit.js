@@ -160,6 +160,7 @@ KNOWWE.plugin.instantEdit = function() {
             		newLocation += args[i];
             	}
             	window.location = newLocation;
+        		window.location.reload();
             }
         },
         
