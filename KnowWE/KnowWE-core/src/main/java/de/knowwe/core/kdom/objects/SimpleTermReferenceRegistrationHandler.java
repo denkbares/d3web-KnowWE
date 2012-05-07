@@ -20,6 +20,7 @@ package de.knowwe.core.kdom.objects;
 
 import java.util.Collection;
 
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
@@ -46,7 +47,7 @@ public class SimpleTermReferenceRegistrationHandler extends SubtreeHandler<Simpl
 	public Collection<Message> create(Article article, Section<SimpleTerm> section) {
 
 		TerminologyManager tHandler = KnowWEUtils.getTerminologyManager(article, scope);
-		String termIdentifier = section.get().getTermIdentifier(section);
+		TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
 
 		tHandler.registerTermReference(section,
 					section.get().getTermObjectClass(section), termIdentifier);
@@ -66,9 +67,9 @@ public class SimpleTermReferenceRegistrationHandler extends SubtreeHandler<Simpl
 	 */
 	public Collection<Message> validateReference(Article article, Section<SimpleTerm> section) {
 		TerminologyManager tHandler = KnowWEUtils.getTerminologyManager(article, scope);
-		String termIdentifier = section.get().getTermIdentifier(section);
+		TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
 		if (!tHandler.isDefinedTerm(termIdentifier)) {
-			return Messages.asList(Messages.noSuchObjectError(termIdentifier));
+			return Messages.asList(Messages.noSuchObjectError(section.get().getTermName(section)));
 		}
 		return Messages.noMessage();
 	}

@@ -64,7 +64,7 @@ public class TerminologyManager {
 
 	public final static String HANDLER_KEY = TerminologyManager.class.getSimpleName();
 
-	private static final Set<String> occupiedTerms = new HashSet<String>();
+	private static final Set<TermIdentifier> occupiedTerms = new HashSet<TermIdentifier>();
 
 	private static boolean initializedOccupiedTerms = false;
 
@@ -95,8 +95,8 @@ public class TerminologyManager {
 	}
 
 	private void registerOccupiedTerm(TerminologyExtension terminologyExtension) {
-		for (String occupiedTerm : terminologyExtension.getTermNames()) {
-			occupiedTerms.add(occupiedTerm.toLowerCase());
+		for (String occupiedTermInExternalForm : terminologyExtension.getTermNames()) {
+			occupiedTerms.add(TermIdentifier.fromExternalForm(occupiedTermInExternalForm));
 		}
 	}
 
@@ -119,26 +119,24 @@ public class TerminologyManager {
 	public void registerTermDefinition(
 			Section<?> termDefinition,
 			Class<?> termClass,
-			String termIdentifier) {
+			TermIdentifier termIdentifier) {
 
 		Article article = global
 				? termDefinition.getArticle()
 				: Article.getCurrentlyBuildingArticle(web, title);
 
-		TermIdentifier termIdentifierObject = new TermIdentifier(termIdentifier);
-
-		if (occupiedTerms.contains(termIdentifierObject.getTermIdentifierLowerCase())) {
+		if (occupiedTerms.contains(termIdentifier)) {
 			Message msg = Messages.error("The term '"
-					+ termIdentifierObject.getTermIdentifier()
+					+ termIdentifier.toString()
 					+ "' is reserved by the system.");
 			Messages.storeMessage(article, termDefinition, this.getClass(), msg);
 			return;
 		}
 
-		TermLog termRefLog = termLogManager.getLog(termIdentifierObject);
+		TermLog termRefLog = termLogManager.getLog(termIdentifier);
 		if (termRefLog == null) {
 			termRefLog = new TermLog(web, title);
-			termLogManager.putLog(termIdentifierObject, termRefLog);
+			termLogManager.putLog(termIdentifier, termRefLog);
 		}
 		else {
 			// There already is a termRefLog, but no term defining section.
@@ -156,15 +154,15 @@ public class TerminologyManager {
 			}
 		}
 		Priority priority = article.getReviseIterator().getCurrentPriority();
-		termRefLog.addTermDefinition(priority, termDefinition, termClass, termIdentifierObject);
+		termRefLog.addTermDefinition(priority, termDefinition, termClass, termIdentifier);
 		Messages.clearMessages(article, termDefinition, this.getClass());
 	}
 
-	public Collection<String> getAllTermsEqualIgnoreCase(String termIdentifier) {
-		TermLog termLog = termLogManager.getLog(new TermIdentifier(termIdentifier));
-		Collection<String> termIdentifiers;
+	public Collection<TermIdentifier> getAllTermsEqualIgnoreCase(TermIdentifier termIdentifier) {
+		TermLog termLog = termLogManager.getLog(termIdentifier);
+		Collection<TermIdentifier> termIdentifiers;
 		if (termLog == null) {
-			termIdentifiers = new ArrayList<String>(0);
+			termIdentifiers = new ArrayList<TermIdentifier>(0);
 		}
 		else {
 			termIdentifiers = termLog.getTermIdentifiers();
@@ -175,23 +173,21 @@ public class TerminologyManager {
 	public <TermObject> void registerTermReference(
 			Section<?> termReference,
 			Class<?> termClass,
-			String termIdentifier) {
+			TermIdentifier termIdentifier) {
 
-		TermIdentifier termIdentifierObject = new TermIdentifier(termIdentifier);
-
-		TermLog termLog = termLogManager.getLog(termIdentifierObject);
+		TermLog termLog = termLogManager.getLog(termIdentifier);
 		if (termLog == null) {
 			termLog = new TermLog(web, title);
-			termLogManager.putLog(termIdentifierObject, termLog);
+			termLogManager.putLog(termIdentifier, termLog);
 		}
-		termLog.addTermReference(termReference, termClass, termIdentifierObject);
+		termLog.addTermReference(termReference, termClass, termIdentifier);
 	}
 
 	/**
 	 * Returns whether a term is defined through a TermDefinition.
 	 */
-	public boolean isDefinedTerm(String termIdentifier) {
-		TermLog termRef = termLogManager.getLog(new TermIdentifier(termIdentifier));
+	public boolean isDefinedTerm(TermIdentifier termIdentifier) {
+		TermLog termRef = termLogManager.getLog(termIdentifier);
 		if (termRef == null) return false;
 		if (termRef.getDefiningSection() == null) return false;
 		return true;
@@ -201,8 +197,8 @@ public class TerminologyManager {
 	 * Returns whether there are TermReferences for this Term, but no
 	 * TermDefinition
 	 */
-	public boolean isUndefinedTerm(String termIdentifier) {
-		TermLog termRef = termLogManager.getLog(new TermIdentifier(termIdentifier));
+	public boolean isUndefinedTerm(TermIdentifier termIdentifier) {
+		TermLog termRef = termLogManager.getLog(termIdentifier);
 		if (termRef != null) {
 			return termRef.getDefiningSection() == null;
 		}
@@ -216,8 +212,8 @@ public class TerminologyManager {
 	 * @param s
 	 * @return
 	 */
-	public Section<?> getTermDefiningSection(String termIdentifier) {
-		TermLog refLog = termLogManager.getLog(new TermIdentifier(termIdentifier));
+	public Section<?> getTermDefiningSection(TermIdentifier termIdentifier) {
+		TermLog refLog = termLogManager.getLog(termIdentifier);
 		if (refLog != null) {
 			return refLog.getDefiningSection();
 		}
@@ -231,9 +227,9 @@ public class TerminologyManager {
 	 * @param s
 	 * @return
 	 */
-	public Collection<Section<?>> getTermDefiningSections(String termIdentifier) {
+	public Collection<Section<?>> getTermDefiningSections(TermIdentifier termIdentifier) {
 		Collection<Section<?>> definitions = new ArrayList<Section<?>>();
-		TermLog refLog = termLogManager.getLog(new TermIdentifier(termIdentifier));
+		TermLog refLog = termLogManager.getLog(termIdentifier);
 		if (refLog != null) {
 			definitions = refLog.getDefinitions();
 		}
@@ -247,15 +243,15 @@ public class TerminologyManager {
 	 * @param s
 	 * @return
 	 */
-	public Collection<Section<?>> getRedundantTermDefiningSections(String termIdentifier) {
-		TermLog refLog = termLogManager.getLog(new TermIdentifier(termIdentifier));
+	public Collection<Section<?>> getRedundantTermDefiningSections(TermIdentifier termIdentifier) {
+		TermLog refLog = termLogManager.getLog(termIdentifier);
 		if (refLog != null) {
 			return Collections.unmodifiableSet(refLog.getRedundantDefinitions());
 		}
 		return Collections.unmodifiableSet(new HashSet<Section<?>>(0));
 	}
 
-	public Set<String> getOccupiedTerms() {
+	public Set<TermIdentifier> getOccupiedTerms() {
 		return Collections.unmodifiableSet(occupiedTerms);
 	}
 
@@ -263,9 +259,9 @@ public class TerminologyManager {
 	 * For a {@link KnowWETerm} (provided by the Section) the
 	 * {@link TermReference}s are returned.
 	 */
-	public <TermObject> Collection<Section<?>> getTermReferenceSections(String termIdentifier) {
+	public <TermObject> Collection<Section<?>> getTermReferenceSections(TermIdentifier termIdentifier) {
 
-		TermLog refLog = termLogManager.getLog(new TermIdentifier(termIdentifier));
+		TermLog refLog = termLogManager.getLog(termIdentifier);
 
 		if (refLog != null) {
 			return Collections.unmodifiableCollection(refLog.getReferences());
@@ -277,10 +273,9 @@ public class TerminologyManager {
 	public void unregisterTermDefinition(
 			Section<?> termDefinition,
 			Class<?> termClass,
-			String termIdentifier) {
+			TermIdentifier termIdentifier) {
 
-		TermIdentifier termIdentifierObject = new TermIdentifier(termIdentifier);
-		TermLog termRefLog = termLogManager.getLog(termIdentifierObject);
+		TermLog termRefLog = termLogManager.getLog(termIdentifier);
 		if (termRefLog != null) {
 			Article article = global
 					? termDefinition.getArticle()
@@ -288,16 +283,15 @@ public class TerminologyManager {
 
 			Priority priority = article.getReviseIterator().getCurrentPriority();
 			termRefLog.removeTermDefinition(priority, termDefinition, termClass,
-					termIdentifierObject);
+					termIdentifier);
 		}
 	}
 
-	public void unregisterTermReference(Section<?> termReference, String termIdentifier, Class<?> termClass) {
+	public void unregisterTermReference(Section<?> termReference, TermIdentifier termIdentifier, Class<?> termClass) {
 
-		TermIdentifier termIdentifierObject = new TermIdentifier(termIdentifier);
-		TermLog refLog = termLogManager.getLog(termIdentifierObject);
+		TermLog refLog = termLogManager.getLog(termIdentifier);
 		if (refLog != null) {
-			refLog.removeTermReference(termReference, termIdentifierObject, termClass);
+			refLog.removeTermReference(termReference, termIdentifier, termClass);
 		}
 	}
 
@@ -307,7 +301,7 @@ public class TerminologyManager {
 	 * 
 	 * @created 03.11.2010
 	 */
-	public Collection<String> getAllDefinedTermsOfType(Class<?> termClass) {
+	public Collection<TermIdentifier> getAllDefinedTermsOfType(Class<?> termClass) {
 		return getAllDefinedTerms(termClass);
 	}
 
@@ -317,13 +311,13 @@ public class TerminologyManager {
 	 * 
 	 * @created 03.11.2010
 	 */
-	public Collection<String> getAllDefinedTerms() {
+	public Collection<TermIdentifier> getAllDefinedTerms() {
 		return getAllDefinedTerms(null);
 	}
 
-	public Collection<String> getAllDefinedTerms(Class<?> termClass) {
+	public Collection<TermIdentifier> getAllDefinedTerms(Class<?> termClass) {
 		Collection<TermLog> termLogEntries = getAllDefinedTermLogEntries(termClass);
-		Collection<String> terms = new HashSet<String>();
+		Collection<TermIdentifier> terms = new HashSet<TermIdentifier>();
 		for (TermLog logEntry : termLogEntries) {
 			terms.addAll(logEntry.getTermIdentifiers());
 		}
@@ -332,7 +326,7 @@ public class TerminologyManager {
 
 	private Collection<TermLog> getAllDefinedTermLogEntries(Class<?> termClass) {
 		Collection<TermLog> filteredLogEntries = new HashSet<TermLog>();
-		for (Entry<String, TermLog> managerEntry : termLogManager.entrySet()) {
+		for (Entry<TermIdentifier, TermLog> managerEntry : termLogManager.entrySet()) {
 			Set<Class<?>> termClasses = managerEntry.getValue().getTermClasses();
 			if (termClasses.size() != 1) continue;
 			boolean hasTermDefOfType = managerEntry.getValue().getDefiningSection() != null
@@ -355,8 +349,8 @@ public class TerminologyManager {
 	 *        class)
 	 * @return if the term has been registered as required
 	 */
-	public boolean hasTermOfClass(String termIdentifier, Class<?> clazz) {
-		TermLog refLog = termLogManager.getLog(new TermIdentifier(termIdentifier));
+	public boolean hasTermOfClass(TermIdentifier termIdentifier, Class<?> clazz) {
+		TermLog refLog = termLogManager.getLog(termIdentifier);
 		if (refLog == null) return false;
 		for (Class<?> termClass : refLog.getTermClasses()) {
 			if (clazz.isAssignableFrom(termClass)) {
@@ -381,20 +375,19 @@ public class TerminologyManager {
 
 			TerminologyManager globalTerminologyHandler = KnowWEUtils.getGlobalTerminologyManager(article.getWeb());
 
-			Set<Entry<String, TermLog>> entrySet = globalTerminologyHandler.termLogManager.entrySet();
-			for (Entry<String, TermLog> entry : new ArrayList<Entry<String, TermLog>>(entrySet)) {
+			Set<Entry<TermIdentifier, TermLog>> entrySet = globalTerminologyHandler.termLogManager.entrySet();
+			for (Entry<TermIdentifier, TermLog> entry : new ArrayList<Entry<TermIdentifier, TermLog>>(
+					entrySet)) {
 				Set<Section<?>> definitions = entry.getValue().getDefinitions();
 				for (Section<?> termDefinition : definitions) {
 					if (!termDefinition.getTitle().equals(article.getTitle())) continue;
-					TermLog termLog = globalTerminologyHandler.termLogManager.getLog(new TermIdentifier(
-							entry.getKey()));
+					TermLog termLog = globalTerminologyHandler.termLogManager.getLog(entry.getKey());
 					termLog.removeTermDefinition(termDefinition);
 				}
 				Set<Section<?>> references = entry.getValue().getReferences();
 				for (Section<?> termReference : references) {
 					if (!termReference.getTitle().equals(article.getTitle())) continue;
-					TermLog termLog = globalTerminologyHandler.termLogManager.getLog(new TermIdentifier(
-							entry.getKey()));
+					TermLog termLog = globalTerminologyHandler.termLogManager.getLog(entry.getKey());
 					termLog.removeTermReference(termReference);
 				}
 			}

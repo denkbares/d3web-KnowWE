@@ -31,6 +31,7 @@ import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
@@ -40,6 +41,7 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.ObjectInfoLinkRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
@@ -90,10 +92,10 @@ public abstract class SolutionDefinition
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
 			Session session = SessionProvider.getSession(user, kb);
 
-			String spanStart = KnowWEUtils
+			String spanStart = Strings
 					.maskHTML("<span style=\"background-color:");
-			String spanStartEnd = KnowWEUtils.maskHTML(";\">");
-			String spanEnd = KnowWEUtils.maskHTML("</span>");
+			String spanStartEnd = Strings.maskHTML(";\">");
+			String spanEnd = Strings.maskHTML("</span>");
 
 			if (session != null) {
 				@SuppressWarnings("unchecked")
@@ -126,10 +128,11 @@ public abstract class SolutionDefinition
 		public Collection<Message> create(Article article,
 				Section<SolutionDefinition> section) {
 
-			String name = section.get().getTermIdentifier(section);
+			TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
+			String name = section.get().getTermName(section);
 			Class<?> termObjectClass = section.get().getTermObjectClass(section);
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
-			terminologyHandler.registerTermDefinition(section, termObjectClass, name);
+			terminologyHandler.registerTermDefinition(section, termObjectClass, termIdentifier);
 
 			Collection<Message> msgs = section.get().canAbortTermObjectCreation(article, section);
 			if (msgs != null) return msgs;

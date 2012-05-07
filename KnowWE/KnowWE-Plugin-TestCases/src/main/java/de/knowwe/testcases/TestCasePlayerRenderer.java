@@ -93,7 +93,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		List<Triple<TestCaseProvider, Section<?>, Article>> providers =
 				getTestCaseProviders(playerSection);
 
-		string.append(KnowWEUtils.maskHTML("<div id='" + section.getID() + "'>"));
+		string.append(Strings.maskHTML("<div id='" + section.getID() + "'>"));
 
 		if (providers.size() == 0) {
 			StringBuilder message = new StringBuilder();
@@ -116,9 +116,9 @@ public class TestCasePlayerRenderer implements Renderer {
 					user, string, providers);
 			if (selectedTriple != null) {
 				String link = "<a href='"
-						+ KnowWEUtils.maskHTML(KnowWEUtils.getURLLink(selectedTriple.getB()))
+						+ Strings.maskHTML(KnowWEUtils.getURLLink(selectedTriple.getB()))
 						+ "'><img src='KnowWEExtension/testcaseplayer/icon/testcaselink.png'></a>";
-				string.append(KnowWEUtils.maskHTML(link));
+				string.append(Strings.maskHTML(link));
 				TestCaseProvider provider = selectedTriple.getA();
 				Session session = provider.getActualSession(user);
 				List<Message> messages = provider.getMessages();
@@ -157,19 +157,19 @@ public class TestCasePlayerRenderer implements Renderer {
 				}
 			}
 		}
-		string.append(KnowWEUtils.maskHTML("</div>"));
+		string.append(Strings.maskHTML("</div>"));
 		result.append(string.toString());
 	}
 
 	private void renderTestCase(Section<?> section, UserContext user, StringBuilder string, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, Session session, TestCase testCase, SessionDebugStatus status) {
-		string.append(KnowWEUtils.maskHTML("<span class='fillText'> from </span>"));
+		string.append(Strings.maskHTML("<span class='fillText'> from </span>"));
 		if (testCase.getStartDate().getTime() != 0) {
 			string.append(dateFormat.format(testCase.getStartDate()));
 		}
 		else {
 			string.append("---");
 		}
-		string.append(KnowWEUtils.maskHTML("<div class='toolSeparator'></div>"));
+		string.append(Strings.maskHTML("<div class='toolSeparator'></div>"));
 
 		String additionalQuestions = getAdditionalQuestionsCookie(section, user);
 		String[] questionStrings = new String[0];
@@ -225,7 +225,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		tableModel.addCell(
 				0,
 				0,
-				KnowWEUtils.maskHTML(renderToolbarButton("stop12.png",
+				Strings.maskHTML(renderToolbarButton("stop12.png",
 						"KNOWWE.plugin.d3webbasic.actions.resetSession('" + kbArticle
 								+ "')")), 1);
 		tableModel.addCell(0, 1, "Time", "Time".length());
@@ -344,10 +344,10 @@ public class TestCasePlayerRenderer implements Renderer {
 				Collection<String> errors = new LinkedList<String>();
 				TestCaseUtils.checkValues(errors, q, finding.getValue());
 				if (!errors.isEmpty()) {
-					String errorstring = KnowWEUtils.maskHTML("<div style='background-color:"
+					String errorstring = Strings.maskHTML("<div style='background-color:"
 							+ StyleRenderer.CONDITION_FALSE + "'>");
 					errorstring += findingString;
-					errorstring += KnowWEUtils.maskHTML("</div>");
+					errorstring += Strings.maskHTML("</div>");
 					findingString = errorstring;
 				}
 				tableModel.addCell(row, column, findingString,
@@ -384,7 +384,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				sb.append(s);
 			}
 			else {
-				sb.append(KnowWEUtils.maskHTML("<span style='color:silver'>" + s + "</span>"));
+				sb.append(Strings.maskHTML("<span style='color:silver'>" + s + "</span>"));
 			}
 			String newQuestionsString = additionalQuestions;
 			newQuestionsString = newQuestionsString.replace(s, "");
@@ -399,7 +399,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				newQuestionsString = newQuestionsString.substring(0,
 						newQuestionsString.length() - QUESTIONS_SEPARATOR.length());
 			}
-			sb.append(KnowWEUtils.maskHTML(" <input type=\"button\" value=\"-\" onclick=\"TestCasePlayer.addCookie(&quot;"
+			sb.append(Strings.maskHTML(" <input type=\"button\" value=\"-\" onclick=\"TestCasePlayer.addCookie(&quot;"
 					+ newQuestionsString
 					+ "&quot;);\">"));
 			tableModel.addCell(0, column++, sb.toString(), s.length() + 2);
@@ -419,7 +419,7 @@ public class TestCasePlayerRenderer implements Renderer {
 			sb.append("<a href=\"javascript:" + js + ";undefined;\">");
 			sb.append("<img src='KnowWEExtension/testcaseplayer/icon/runto.png'>");
 			sb.append("</a>");
-			tableModel.addCell(row, 0, KnowWEUtils.maskHTML(sb.toString()), 2);
+			tableModel.addCell(row, 0, Strings.maskHTML(sb.toString()), 2);
 		}
 		else {
 			Collection<Pair<Check, Boolean>> checkResults = status.getCheckResults(date);
@@ -433,14 +433,14 @@ public class TestCasePlayerRenderer implements Renderer {
 				tableModel.addCell(
 						row,
 						0,
-						KnowWEUtils.maskHTML("<img src='KnowWEExtension/testcaseplayer/icon/done.png'>"),
+						Strings.maskHTML("<img src='KnowWEExtension/testcaseplayer/icon/done.png'>"),
 						2);
 			}
 			else {
 				tableModel.addCell(
 						row,
 						0,
-						KnowWEUtils.maskHTML("<img src='KnowWEExtension/testcaseplayer/icon/error.png'>"),
+						Strings.maskHTML("<img src='KnowWEExtension/testcaseplayer/icon/error.png'>"),
 						2);
 			}
 		}
@@ -453,7 +453,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		if (checkResults == null) {
 			boolean first = true;
 			for (Check c : testCase.getChecks(date, status.getSession().getKnowledgeBase())) {
-				if (!first) sb.append(KnowWEUtils.maskHTML("<br />"));
+				if (!first) sb.append(Strings.maskHTML("<br />"));
 				first = false;
 				sb.append(c.getCondition());
 				max = Math.max(max, c.getCondition().toString().length());
@@ -464,7 +464,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				boolean first = true;
 				for (Pair<Check, Boolean> p : checkResults) {
 					max = Math.max(max, p.getA().getCondition().toString().length());
-					if (!first) sb.append(KnowWEUtils.maskHTML("<br />"));
+					if (!first) sb.append(Strings.maskHTML("<br />"));
 					first = false;
 					String color;
 					if (p.getB()) {
@@ -473,9 +473,9 @@ public class TestCasePlayerRenderer implements Renderer {
 					else {
 						color = StyleRenderer.CONDITION_FALSE;
 					}
-					sb.append(KnowWEUtils.maskHTML("<span style='background-color:" + color + "'>"));
+					sb.append(Strings.maskHTML("<span style='background-color:" + color + "'>"));
 					sb.append(p.getA().getCondition());
-					sb.append(KnowWEUtils.maskHTML("</span>"));
+					sb.append(Strings.maskHTML("</span>"));
 				}
 			}
 		}
@@ -548,7 +548,7 @@ public class TestCasePlayerRenderer implements Renderer {
 					+ "','');\"></form>");
 		}
 		if (foundone) {
-			tableModel.addCell(0, column, KnowWEUtils.maskHTML(selectsb2.toString()), max + 3);
+			tableModel.addCell(0, column, Strings.maskHTML(selectsb2.toString()), max + 3);
 		}
 		return object;
 	}
@@ -593,7 +593,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		}
 		selectsb.append("</select>");
 		if (selectedTriple != null) {
-			string.append(KnowWEUtils.maskHTML(selectsb.toString()));
+			string.append(Strings.maskHTML(selectsb.toString()));
 		}
 		else {
 			DefaultMarkupRenderer.renderMessagesOfType(
@@ -646,7 +646,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		builder.append("</select><span class=fillText> lines of </span>" + maxSize);
 		builder.append("<div class='toolSeparator'></div>");
 		builder.append("</div>");
-		return KnowWEUtils.maskHTML(builder.toString());
+		return Strings.maskHTML(builder.toString());
 	}
 
 	private Object renderNavigation(Section<?> section, int from, int selectedSize, String key, int maxsize) {
@@ -673,7 +673,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				"end.png", "TestCasePlayer.change('" + key + "', " + maxsize + ")",
 				(from + selectedSize <= maxsize), builder);
 		builder.append("</div>");
-		return KnowWEUtils.maskHTML(builder.toString());
+		return Strings.maskHTML(builder.toString());
 	}
 
 	private String renderToolbarButton(String icon, String action) {

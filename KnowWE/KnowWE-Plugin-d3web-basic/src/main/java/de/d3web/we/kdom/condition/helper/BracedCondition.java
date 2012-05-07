@@ -9,7 +9,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 
 /**
@@ -49,7 +49,7 @@ class EmbracedExpressionFinder implements SectionFinder {
 		int leadingSpaces = text.indexOf(trimmed);
 		int followingSpaces = text.length() - trimmed.length() - leadingSpaces;
 		boolean startsWithOpen = trimmed.startsWith(Character.toString(CompositeCondition.BRACE_OPEN));
-		int closingBracket = SplitUtility.findIndexOfClosingBracket(trimmed, 0,
+		int closingBracket = Strings.findIndexOfClosingBracket(trimmed, 0,
 						CompositeCondition.BRACE_OPEN, CompositeCondition.BRACE_CLOSED);
 
 		// if it doesnt start with an opening bracket
@@ -81,7 +81,7 @@ class EmbracedExpressionFinder implements SectionFinder {
 		}
 
 		// OR an embracedExpression can be concluded with a lineEnd-comment
-		int lastEndLineCommentSymbol = SplitUtility.lastIndexOfUnquoted(text, "//");
+		int lastEndLineCommentSymbol = Strings.lastIndexOfUnquoted(text, "//");
 		// so has to start with '(' and have a lineend-comment-sign after
 		// the closing bracket but nothing in between!
 		if (trimmed.startsWith(Character.toString(CompositeCondition.BRACE_OPEN))) {

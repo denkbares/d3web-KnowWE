@@ -115,7 +115,7 @@ public class QClassLine extends AbstractType {
 					KnowledgeBase kb = getKB(article);
 					if (superQuestionnaire == null) {
 						superQuestionnaire = kb.getManager().searchQContainer(
-								superQuestionnaireDef.get().getTermIdentifier(superQuestionnaireDef));
+								superQuestionnaireDef.get().getTermIdentifier(superQuestionnaireDef).toString());
 					}
 
 					if (superQuestionnaire != null) {

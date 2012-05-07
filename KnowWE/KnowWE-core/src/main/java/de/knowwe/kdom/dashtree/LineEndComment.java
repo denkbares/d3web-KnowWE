@@ -27,7 +27,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 public class LineEndComment extends AbstractType {
@@ -52,7 +52,7 @@ public class LineEndComment extends AbstractType {
 
 			// looks for an unquoted occurrence of '//' and cuts off from this
 			// point
-			int start = SplitUtility.indexOfUnquoted(text, "//");
+			int start = Strings.indexOfUnquoted(text, "//");
 			if (start != -1) {
 				// if found return section from start to the end of the line
 				return SectionFinderResult

@@ -27,32 +27,34 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.SplitUtility;
 import de.knowwe.core.utils.StringFragment;
+import de.knowwe.core.utils.Strings;
 
 /**
- * Works similar to string.split(key), but does ignore key-signs which are in quotes
+ * Works similar to string.split(key), but does ignore key-signs which are in
+ * quotes
  * 
  * 
  * @author Jochen
- * @created 16.09.2011 
+ * @created 16.09.2011
  */
-public class SplitSectionFinderUnquoted implements SectionFinder{
+public class SplitSectionFinderUnquoted implements SectionFinder {
 
-	private String splitKey;
-	
+	private final String splitKey;
+
 	public SplitSectionFinderUnquoted(String key) {
 		this.splitKey = key;
 	}
-	
+
 	@Override
 	public List<SectionFinderResult> lookForSections(String text,
 			Section<?> father, Type type) {
-		
+
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-		List<StringFragment> list = SplitUtility.splitUnquoted(text, splitKey);
+		List<StringFragment> list = Strings.splitUnquoted(text, splitKey);
 		for (StringFragment stringFragment : list) {
-			result.add(new SectionFinderResult(stringFragment.getStartTrimmed(), stringFragment.getEndTrimmed()));
+			result.add(new SectionFinderResult(stringFragment.getStartTrimmed(),
+					stringFragment.getEndTrimmed()));
 		}
 		return result;
 	}

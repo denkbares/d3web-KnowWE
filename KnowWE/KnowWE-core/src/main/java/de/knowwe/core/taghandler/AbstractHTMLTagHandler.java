@@ -24,7 +24,7 @@ import java.util.Map;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 /**
  * @author Jochen
@@ -50,9 +50,9 @@ public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 
 		String renderedHTML = renderHTML(section.getTitle(), userContext, parameters,
 				section.getWeb());
-		String masked = KnowWEUtils.maskHTML(renderedHTML);
+		String masked = Strings.maskHTML(renderedHTML);
 		if (maskJSPWikiSyntax) {
-			masked = KnowWEUtils.maskJSPWikiMarkup(masked);
+			masked = Strings.maskJSPWikiMarkup(masked);
 		}
 		return masked;
 	}

@@ -3,7 +3,7 @@ package de.knowwe.diaflux;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.diaflux.type.FlowchartEditProvider;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -42,7 +42,7 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 					+ FlowchartEditProvider.createEditLink(section, user)
 					+ "\">"
 					+ "Click here to create one." + "</a>";
-			string.append(KnowWEUtils.maskHTML(link));
+			string.append(Strings.maskHTML(link));
 		}
 
 		super.renderContents(section, user, string);

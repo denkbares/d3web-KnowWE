@@ -18,6 +18,7 @@
  */
 package de.knowwe.core.kdom.objects;
 
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 
@@ -30,6 +31,8 @@ public interface SimpleTerm extends Type {
 
 	public Class<?> getTermObjectClass(Section<? extends SimpleTerm> section);
 
-	public String getTermIdentifier(Section<? extends SimpleTerm> section);
+	public TermIdentifier getTermIdentifier(Section<? extends SimpleTerm> section);
+
+	public String getTermName(Section<? extends SimpleTerm> section);
 
 }

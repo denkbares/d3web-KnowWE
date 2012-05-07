@@ -30,7 +30,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -59,11 +59,11 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			String dashboardName = DefaultMarkupType.getAnnotation(section,
 					CIDashboardType.NAME_KEY);
 			String dashboardNameEscaped = CIUtilities.utf8Escape(dashboardName);
-			string.append(KnowWEUtils.maskHTML("<div id='" + dashboardNameEscaped
+			string.append(Strings.maskHTML("<div id='" + dashboardNameEscaped
 					+ "' class='ci-title'>"));
-			string.append(KnowWEUtils.maskHTML(renderDashboardContents(dashboardName,
+			string.append(Strings.maskHTML(renderDashboardContents(dashboardName,
 					section.getTitle())));
-			string.append(KnowWEUtils.maskHTML("</div>"));
+			string.append(Strings.maskHTML("</div>"));
 		}
 	}
 

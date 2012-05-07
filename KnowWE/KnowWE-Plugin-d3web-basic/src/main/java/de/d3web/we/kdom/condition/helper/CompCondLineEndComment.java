@@ -10,7 +10,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -40,7 +40,7 @@ public class CompCondLineEndComment extends AbstractType {
 					Section<?> father, Type type) {
 
 			// looks for an unquoted occurrence of '//'
-			int start = SplitUtility.lastIndexOfUnquoted(text, "//");
+			int start = Strings.lastIndexOfUnquoted(text, "//");
 			if (start != -1) {
 				// needs to check, whether the comment is in the last line of
 				// the content

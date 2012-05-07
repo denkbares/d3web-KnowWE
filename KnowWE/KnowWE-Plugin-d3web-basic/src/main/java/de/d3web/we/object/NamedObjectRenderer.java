@@ -23,6 +23,7 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.PlainText;
@@ -42,7 +43,7 @@ public class NamedObjectRenderer implements Renderer {
 	@Override
 	public void render(Section<?> section, UserContext user, StringBuilder string) {
 		Article article = KnowWEUtils.getCompilingArticles(section).iterator().next();
-		String termIdentifier = KnowWEUtils.getTermIdentifier(section);
+		TermIdentifier termIdentifier = KnowWEUtils.getTermIdentifier(section);
 		TerminologyManager tManager = KnowWEUtils.getTerminologyManager(article);
 		Renderer renderer;
 		if (tManager.hasTermOfClass(termIdentifier, Question.class)) {

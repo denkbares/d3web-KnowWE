@@ -24,7 +24,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 /**
  * <p>
@@ -125,7 +125,7 @@ public class TableCellContentRenderer implements Renderer {
 		else {
 			html.append("</td>");
 		}
-		return KnowWEUtils.maskHTML(html.toString());
+		return Strings.maskHTML(html.toString());
 	}
 
 	protected void generateContent(String sectionText, Section<?> s,

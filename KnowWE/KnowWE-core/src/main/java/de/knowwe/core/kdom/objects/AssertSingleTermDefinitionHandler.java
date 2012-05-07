@@ -21,6 +21,7 @@ package de.knowwe.core.kdom.objects;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
@@ -47,11 +48,11 @@ public class AssertSingleTermDefinitionHandler extends SubtreeHandler<Type> {
 	@Override
 	public Collection<Message> create(Article article, Section<Type> section) {
 		TerminologyManager tHandler = KnowWEUtils.getTerminologyManager(article, scope);
-		String termIdentifier = KnowWEUtils.getTermIdentifier(section);
+		TermIdentifier termIdentifier = KnowWEUtils.getTermIdentifier(section);
 		Collection<Section<?>> termDefinitions = tHandler.getTermDefiningSections(termIdentifier);
 		Collection<Message> msgs = new ArrayList<Message>(1);
 		Message msg = Messages.error("There is more than one definition for the term '"
-				+ termIdentifier + "' which is restricted to only one definition.");
+				+ termIdentifier.toString() + "' which is restricted to only one definition.");
 		if (termDefinitions.size() > 1) {
 			msgs.add(msg);
 			for (Section<?> termDef : termDefinitions) {

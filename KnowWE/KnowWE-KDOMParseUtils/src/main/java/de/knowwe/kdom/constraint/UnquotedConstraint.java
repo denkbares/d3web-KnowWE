@@ -6,7 +6,7 @@ import java.util.List;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 
 public class UnquotedConstraint implements SectionFinderConstraint {
 
@@ -39,7 +39,7 @@ public class UnquotedConstraint implements SectionFinderConstraint {
 	}
 
 	private boolean isQuoted(String text, SectionFinderResult sectionFinderResult) {
-		return SplitUtility.isQuoted(text,
+		return Strings.isQuoted(text,
 				sectionFinderResult.getStart());
 	}
 

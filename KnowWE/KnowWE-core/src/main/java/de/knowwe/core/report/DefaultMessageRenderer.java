@@ -21,7 +21,7 @@
 package de.knowwe.core.report;
 
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 /**
  * Default renderer for error messages
@@ -53,15 +53,15 @@ public class DefaultMessageRenderer implements MessageRenderer {
 
 	@Override
 	public String postRenderMessage(Message m, UserContext user, String source) {
-		return KnowWEUtils.maskHTML("</span>");
+		return Strings.maskHTML("</span>");
 	}
 
 	@Override
 	public String preRenderMessage(Message m, UserContext user, String source) {
 		StringBuilder string = new StringBuilder();
 
-		string.append(KnowWEUtils.maskHTML("<span"));
-		String tooltip = KnowWEUtils.maskJSPWikiMarkup(m.getVerbalization());
+		string.append(Strings.maskHTML("<span"));
+		String tooltip = Strings.maskJSPWikiMarkup(m.getVerbalization());
 		if (tooltip != null) {
 			if (source != null && !source.isEmpty()) {
 				tooltip = source + ": " + tooltip;
@@ -76,7 +76,7 @@ public class DefaultMessageRenderer implements MessageRenderer {
 			string.append(" style='").append(cssStyle).append("'");
 		}
 
-		string.append(KnowWEUtils.maskHTML(">"));
+		string.append(Strings.maskHTML(">"));
 
 		return string.toString();
 	}

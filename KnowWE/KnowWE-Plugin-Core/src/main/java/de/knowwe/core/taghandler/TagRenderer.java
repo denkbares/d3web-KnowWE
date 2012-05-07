@@ -30,7 +30,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 public class TagRenderer implements Renderer {
 
@@ -40,14 +40,14 @@ public class TagRenderer implements Renderer {
 		Section<TagHandlerTypeContent> attrContent = Sections.findChildOfType(sec,
 				TagHandlerTypeContent.class);
 		if (attrContent == null) {
-			string.append(KnowWEUtils
+			string.append(Strings
 					.maskHTML("<div><p class='info box'>"));
 			string.append(Messages.getMessageBundle(user).getString(
 							"KnowWE.Taghandler.notFoundError"));
 			string.append(" '"
 					+ ((Section<?>) sec.getChildren().get(1)).getText()
 					+ "'");
-			string.append(KnowWEUtils.maskHTML("</p></div>"));
+			string.append(Strings.maskHTML("</p></div>"));
 			return;
 		}
 
@@ -89,17 +89,17 @@ public class TagRenderer implements Renderer {
 							}
 						}
 						if (key.equals("quickinterview")) {
-							buffi.append(KnowWEUtils.maskHTML("<" + wrappingTag + " id=\""
+							buffi.append(Strings.maskHTML("<" + wrappingTag + " id=\""
 									+ key + "\">"));
 						}
 						else {
-							buffi.append(KnowWEUtils.maskHTML("<" + wrappingTag + " id=\""
+							buffi.append(Strings.maskHTML("<" + wrappingTag + " id=\""
 									+ key + "_" + sec.getID() + "\">"));
 						}
 						String resultText =
 								handler.render(sec, user, attValues);
 						buffi.append(resultText).append(" \n");
-						buffi.append(KnowWEUtils.maskHTML("</" + wrappingTag + ">"));
+						buffi.append(Strings.maskHTML("</" + wrappingTag + ">"));
 						// if (autoUpdate) {
 						// buffi.append(KnowWEUtils.maskHTML("</span>"));
 						// }

@@ -106,7 +106,7 @@ public class FlowchartUtils {
 	}
 
 	public static String createFlowchartRenderer(Section<FlowchartType> flowSection, UserContext user) {
-		return KnowWEUtils.maskHTML(createFlowchartRenderer(flowSection, user, DIAFLUX_SCOPE));
+		return Strings.maskHTML(createFlowchartRenderer(flowSection, user, DIAFLUX_SCOPE));
 	}
 
 	private static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String scope) {

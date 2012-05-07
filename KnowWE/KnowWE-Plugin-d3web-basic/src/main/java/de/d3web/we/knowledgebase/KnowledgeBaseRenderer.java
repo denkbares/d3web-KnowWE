@@ -36,7 +36,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 
 /**
@@ -65,7 +65,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 				KnowledgeBaseType.ANNOTATION_FILENAME);
 
 		// render title line
-		string.append(KnowWEUtils.maskHTML("<b>" + title + "</b>"));
+		string.append(Strings.maskHTML("<b>" + title + "</b>"));
 		if (id != null) {
 			string.append(" (").append(id).append(")");
 		}
@@ -73,30 +73,30 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 
 		// render information block
 		if (version != null || author != null || comment != null || filename != null) {
-			string.append(KnowWEUtils.maskHTML("<div style='padding-top:1em;'>"));
+			string.append(Strings.maskHTML("<div style='padding-top:1em;'>"));
 
 			if (version != null) {
-				string.append(KnowWEUtils.maskHTML("<img src='KnowWEExtension/d3web/icon/date16.png'></img> "));
+				string.append(Strings.maskHTML("<img src='KnowWEExtension/d3web/icon/date16.png'></img> "));
 				string.append(version).append("\n");
 			}
 			if (author != null) {
-				string.append(KnowWEUtils.maskHTML("<img src='KnowWEExtension/d3web/icon/author16.png'></img> "));
+				string.append(Strings.maskHTML("<img src='KnowWEExtension/d3web/icon/author16.png'></img> "));
 				string.append(author).append("\n");
 			}
 			if (comment != null) {
-				string.append(KnowWEUtils.maskHTML("<img src='KnowWEExtension/d3web/icon/comment16.png'></img> "));
+				string.append(Strings.maskHTML("<img src='KnowWEExtension/d3web/icon/comment16.png'></img> "));
 				string.append(comment).append("\n");
 			}
 			if (filename != null) {
-				string.append(KnowWEUtils.maskHTML("<img src='KnowWEExtension/d3web/icon/download16.gif'></img> "));
+				string.append(Strings.maskHTML("<img src='KnowWEExtension/d3web/icon/download16.gif'></img> "));
 				string.append(filename).append("\n");
 			}
 
-			string.append(KnowWEUtils.maskHTML("</div>"));
+			string.append(Strings.maskHTML("</div>"));
 		}
 
 		// render used packages and their erroneous pages
-		string.append(KnowWEUtils.maskHTML("<div style='padding-top:1em;'>"));
+		string.append(Strings.maskHTML("<div style='padding-top:1em;'>"));
 		// string.append(KnowWEUtils.maskHTML("<hr>\n"));
 		Section<KnowledgeBaseCompileType> compileSection = Sections.findSuccessor(section,
 				KnowledgeBaseCompileType.class);
@@ -105,9 +105,9 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 		for (Iterator<String> packageIter = packagesToCompile.iterator(); packageIter.hasNext();) {
 			String packageName = packageIter.next();
 			renderCompile(section.getArticle(), packageName, string);
-			if (packageIter.hasNext()) string.append(KnowWEUtils.maskHTML("<br/>"));
+			if (packageIter.hasNext()) string.append(Strings.maskHTML("<br/>"));
 		}
-		string.append(KnowWEUtils.maskHTML("</div>"));
+		string.append(Strings.maskHTML("</div>"));
 	}
 
 	private void renderCompile(Article article, String packageName, StringBuilder string) {
@@ -145,7 +145,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 		String icon = "KnowWEExtension/d3web/icon/uses_" +
 				(hasErrors ? "error" : hasWarnings ? "warn" : "ok") +
 				"16.gif";
-		string.append(KnowWEUtils.maskHTML("<img src='" + icon + "'></img> "));
+		string.append(Strings.maskHTML("<img src='" + icon + "'></img> "));
 		string.append("uses package: ").append(packageName);
 		if (hasErrors) {
 			string.append(" (").append(errorsCount).append(" errors in ");
@@ -174,13 +174,13 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 		}
 		Collections.sort(names);
 
-		string.append(KnowWEUtils.maskHTML("<ul>"));
+		string.append(Strings.maskHTML("<ul>"));
 		for (String name : names) {
-			string.append(KnowWEUtils.maskHTML("<li>"));
+			string.append(Strings.maskHTML("<li>"));
 			string.append("[").append(name).append("]");
 			string.append("\n");
 		}
-		string.append(KnowWEUtils.maskHTML("</ul>"));
+		string.append(Strings.maskHTML("</ul>"));
 	}
 
 }

@@ -21,8 +21,6 @@ package de.knowwe.diaflux.type;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.CondKnown;
@@ -49,27 +47,6 @@ public class GuardType extends AbstractXMLType {
 		CompositeCondition condition = new CompositeCondition();
 
 		List<Type> types = new ArrayList<Type>();
-
-		boolean notAttached = false;
-		try {
-			// TODO remove this evil workaround
-			// when updating KnowWE architecture
-			types.add((Type) Class.forName(
-					"cc.knowwe.tdb.EvalConditionType").newInstance());
-		}
-		catch (InstantiationException e) {
-			notAttached = true;
-		}
-		catch (IllegalAccessException e) {
-			notAttached = true;
-		}
-		catch (ClassNotFoundException e) {
-			notAttached = true;
-		}
-		if (notAttached) {
-			Logger.getLogger("KnowWE").log(Level.INFO,
-					"cc.knowwe.tdb.EvalConditionType is not attached at GuardType");
-		}
 
 		types.add(new SolutionStateCond());
 		types.add(new NodeActiveConditionType());

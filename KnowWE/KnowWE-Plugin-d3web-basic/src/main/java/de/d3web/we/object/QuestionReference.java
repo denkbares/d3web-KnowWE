@@ -24,7 +24,7 @@ import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -48,8 +48,8 @@ public class QuestionReference extends D3webTermReference<Question> {
 	}
 
 	@Override
-	public String getTermIdentifier(Section<? extends SimpleTerm> section) {
-		return KnowWEUtils.trimQuotes(section.getText());
+	public String getTermName(Section<? extends SimpleTerm> section) {
+		return Strings.trimQuotes(section.getText());
 	}
 
 }

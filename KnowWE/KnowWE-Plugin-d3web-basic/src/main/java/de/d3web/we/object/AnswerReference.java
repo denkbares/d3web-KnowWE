@@ -31,6 +31,7 @@ import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.manage.KnowledgeBaseUtils;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
@@ -39,7 +40,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -61,33 +62,27 @@ public abstract class AnswerReference
 	}
 
 	@Override
-	@SuppressWarnings(value = { "unchecked" })
-	public String getTermIdentifier(Section<? extends SimpleTerm> s) {
-		// here we should return a unique identifier including the question name
-		// as namespace
-
+	public TermIdentifier getTermIdentifier(Section<? extends SimpleTerm> s) {
 		if (s.get() instanceof AnswerReference) {
-			Section<AnswerReference> sec = ((Section<AnswerReference>) s);
-			Section<QuestionReference> questionSection = sec.get().getQuestionSection(sec);
-			String question = questionSection != null
-					? questionSection.get().getTermIdentifier(questionSection)
-					: "";
+			Section<AnswerReference> answerSection = Sections.cast(s, AnswerReference.class);
+			Section<? extends QuestionReference> questionSection = answerSection.get().getQuestionSection(
+					answerSection);
+			TermIdentifier questionIdentifier = questionSection == null
+					? new TermIdentifier("")
+					: questionSection.get().getTermIdentifier(
+							questionSection);
 
-			return AnswerDefinition.createAnswerIdentifierForQuestion(getAnswerName(sec),
-					question);
+			return questionIdentifier.append(new TermIdentifier(answerSection.get().getTermName(
+					answerSection)));
 		}
 
 		// should not happen
-		return getAnswerName((Section<? extends AnswerReference>) s);
+		return new TermIdentifier(Strings.trimQuotes(s.getText()));
 	}
 
 	@Override
 	public Class<?> getTermObjectClass(Section<? extends SimpleTerm> section) {
 		return Choice.class;
-	}
-
-	public String getAnswerName(Section<? extends AnswerReference> answerReference) {
-		return KnowWEUtils.trimQuotes(answerReference.getText());
 	}
 
 	@Override
@@ -98,7 +93,7 @@ public abstract class AnswerReference
 			Section<QuestionReference> ref = sec.get().getQuestionSection(sec);
 
 			Question question = QuestionReference.getObject(article, ref);
-			String answerName = sec.get().getAnswerName(sec);
+			String answerName = sec.get().getTermName(sec);
 
 			if (question != null && question instanceof QuestionChoice) {
 				return KnowledgeBaseUtils.findChoice((QuestionChoice) question,
@@ -134,7 +129,7 @@ public abstract class AnswerReference
 			if (question != null) {
 				if (question instanceof QuestionYN) {
 					Choice choice = KnowledgeBaseUtils.findChoice((QuestionYN) question,
-							section.get().getAnswerName(section), false);
+							section.get().getTermName(section), false);
 					if (choice != null) return Messages.noMessage();
 
 				}
@@ -142,7 +137,7 @@ public abstract class AnswerReference
 					NumericalInterval range = question.getInfoStore().getValue(
 							BasicProperties.QUESTION_NUM_RANGE);
 					try {
-						Double value = Double.parseDouble(section.get().getAnswerName(section).trim());
+						Double value = Double.parseDouble(section.get().getTermName(section).trim());
 						if (range == null || range.contains(value)) {
 							return Messages.noMessage();
 						}
@@ -154,7 +149,7 @@ public abstract class AnswerReference
 					}
 					catch (NumberFormatException e) {
 						return Arrays.asList(Messages.error("The value "
-								+ section.get().getAnswerName(section) + " is not a numeric answer"));
+								+ section.get().getTermName(section) + " is not a numeric answer"));
 					}
 				}
 			}

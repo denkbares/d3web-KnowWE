@@ -26,6 +26,7 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -35,6 +36,7 @@ import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableCellContentRenderer;
 import de.knowwe.kdom.table.TableUtils;
@@ -76,7 +78,7 @@ public class HeaderCellContent extends TableCellContent {
 			public Collection<Message> create(Article article, Section<HeaderCellContent> s) {
 
 				int column = TableUtils.getColumn(s);
-				String questionName = KnowWEUtils.trimQuotes(s.getText());
+				String questionName = Strings.trimQuotes(s.getText());
 				if ((column == 0 && questionName.equalsIgnoreCase("Name"))
 						|| ((column == 0 || column == 1) && questionName.equalsIgnoreCase("Time"))
 						|| questionName.equalsIgnoreCase("Checks")) {
@@ -86,7 +88,7 @@ public class HeaderCellContent extends TableCellContent {
 				s.setType(new HeaderQuestionReference());
 				KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
 				KnowWEUtils.getTerminologyManager(article).registerTermReference(s, Question.class,
-						questionName);
+						new TermIdentifier(questionName));
 				Question question = kb.getManager().searchQuestion(questionName);
 
 				if (question == null) {

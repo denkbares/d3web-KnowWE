@@ -47,7 +47,7 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
@@ -64,10 +64,10 @@ public class QuestionSetValueNumLine extends AbstractType {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {
-				int open = SplitUtility.indexOfUnquoted(text, (OPEN));
+				int open = Strings.indexOfUnquoted(text, (OPEN));
 				if (open == -1) return false;
 
-				int close = SplitUtility.findIndexOfClosingBracket(text, open, OPEN.charAt(0),
+				int close = Strings.findIndexOfClosingBracket(text, open, OPEN.charAt(0),
 						CLOSE.charAt(0));
 
 				if (close == -1) return false;
@@ -103,8 +103,8 @@ public class QuestionSetValueNumLine extends AbstractType {
 
 				return SectionFinderResult
 						.createSingleItemList(new SectionFinderResult(
-								SplitUtility.indexOfUnquoted(text, OPEN),
-								SplitUtility.indexOfUnquoted(text, CLOSE) + 1));
+								Strings.indexOfUnquoted(text, OPEN),
+								Strings.indexOfUnquoted(text, CLOSE) + 1));
 			}
 		};
 		typeDef.setSectionFinder(typeFinder);
@@ -128,9 +128,9 @@ public class QuestionSetValueNumLine extends AbstractType {
 			String embracedContent = sec.getText().substring(1,
 					sec.getText().length() - 1);
 			string
-					.append(KnowWEUtils
+					.append(Strings
 							.maskHTML(" <img height='10' src='KnowWEExtension/images/arrow_right_s.png'>"));
-			string.append(KnowWEUtils
+			string.append(Strings
 					.maskHTML("<b>(" + embracedContent + ")</b>"));
 
 		}

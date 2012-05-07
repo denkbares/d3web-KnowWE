@@ -46,7 +46,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
@@ -62,8 +62,8 @@ public class QuestionSetValueLine extends AbstractType {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {
-				return SplitUtility.containsUnquoted(text, OPEN)
-						&& SplitUtility.containsUnquoted(text, CLOSE);
+				return Strings.containsUnquoted(text, OPEN)
+						&& Strings.containsUnquoted(text, CLOSE);
 
 			}
 		};
@@ -98,7 +98,7 @@ public class QuestionSetValueLine extends AbstractType {
 			Section<AnswerReference> answerSec = Sections.findSuccessor(
 					s.getFather(), AnswerReference.class);
 
-			String answerName = answerSec.get().getAnswerName(answerSec);
+			String answerName = answerSec.get().getTermName(answerSec);
 
 			if (q != null) {
 				Choice a = null;
@@ -168,8 +168,8 @@ public class QuestionSetValueLine extends AbstractType {
 
 					return SectionFinderResult
 							.createSingleItemList(new SectionFinderResult(
-									SplitUtility.indexOfUnquoted(text, OPEN),
-									SplitUtility.indexOfUnquoted(text, CLOSE) + 1));
+									Strings.indexOfUnquoted(text, OPEN),
+									Strings.indexOfUnquoted(text, CLOSE) + 1));
 				}
 			};
 

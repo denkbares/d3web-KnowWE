@@ -59,6 +59,7 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
@@ -121,9 +122,9 @@ public class CoveringList extends AbstractType {
 
 		@Override
 		public void render(Section<?> sec, UserContext user, StringBuilder string) {
-			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID() + "'>"));
+			string.append(Strings.maskHTML("<span id='" + sec.getID() + "'>"));
 			DelegateRenderer.getInstance().render(sec, user, string);
-			string.append(KnowWEUtils.maskHTML("</span>"));
+			string.append(Strings.maskHTML("</span>"));
 		}
 	}
 
@@ -355,7 +356,7 @@ public class CoveringList extends AbstractType {
 		public void render(Section<?> sec, UserContext user, StringBuilder string) {
 
 			// wrapper for highlighting
-			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID()
+			string.append(Strings.maskHTML("<span id='" + sec.getID()
 					+ "' class = 'XCLRelationInList'>"));
 
 			Article article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
@@ -377,7 +378,7 @@ public class CoveringList extends AbstractType {
 					// Highlight Relation
 					this.renderRelation(sec, user, fulfilled, string, true);
 					// close the wrapper
-					string.append(KnowWEUtils.maskHTML("</span>"));
+					string.append(Strings.maskHTML("</span>"));
 					return;
 				}
 				catch (Exception e) {
@@ -390,7 +391,7 @@ public class CoveringList extends AbstractType {
 			// Something went wrong: Delegate to children
 			this.renderRelation(sec, user, false, string, false);
 			// close the wrapper
-			string.append(KnowWEUtils.maskHTML("</span>"));
+			string.append(Strings.maskHTML("</span>"));
 		}
 
 		/***
@@ -417,7 +418,7 @@ public class CoveringList extends AbstractType {
 					buffi.append(this.renderRelationChild(s,
 							fulfilled, user, ""));
 				}
-				string.append(KnowWEUtils.maskHTML(buffi.toString()));
+				string.append(Strings.maskHTML(buffi.toString()));
 				return;
 			}
 
@@ -440,7 +441,7 @@ public class CoveringList extends AbstractType {
 				}
 
 			}
-			string.append(KnowWEUtils.maskHTML(buffi.toString()));
+			string.append(Strings.maskHTML(buffi.toString()));
 		}
 
 		/**

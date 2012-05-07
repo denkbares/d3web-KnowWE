@@ -23,7 +23,7 @@ package de.knowwe.kdom.sectionFinder;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 
 /**
  * Simple SectionFinder that identifies the first (or last if flagged)
@@ -55,10 +55,10 @@ public class StringSectionFinderUnquoted extends AbstractSingleResultFinder {
 		int index;
 
 		if (last) {
-			index = SplitUtility.lastIndexOfUnquoted(text, string);
+			index = Strings.lastIndexOfUnquoted(text, string);
 		}
 		else {
-			index = SplitUtility.indexOfUnquoted(text, string);
+			index = Strings.indexOfUnquoted(text, string);
 		}
 
 		if (index == -1) return null;

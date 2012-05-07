@@ -25,7 +25,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 /**
  * A renderer that encapsulates the content in arbitrary HTML content. Useful
@@ -61,18 +61,18 @@ public class GenericHTMLRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> sec, UserContext user, StringBuilder string) {
-		string.append(KnowWEUtils.maskHTML("<")).append(tagName);
+		string.append(Strings.maskHTML("<")).append(tagName);
 
 		if (attributes != null && attributes.length > 0) {
 			string.append(" ");
 			for (int i = 0; i < attributes.length; i += 2) {
-				string.append(attributes[i]).append(KnowWEUtils.maskHTML("=\""));
+				string.append(attributes[i]).append(Strings.maskHTML("=\""));
 
 				if (i < attributes.length && attributes[i + 1] != null) {
 					string.append(attributes[i + 1].replace("\"", "&quot;"));
 				}
 
-				string.append(KnowWEUtils.maskHTML("\""));
+				string.append(Strings.maskHTML("\""));
 
 				if ((i + 2) < attributes.length) {
 					string.append(" ");
@@ -80,15 +80,15 @@ public class GenericHTMLRenderer implements Renderer {
 			}
 		}
 
-		string.append(KnowWEUtils.maskHTML(">"));
+		string.append(Strings.maskHTML(">"));
 		renderContent(sec, user, string);
-		string.append(KnowWEUtils.maskHTML("</span>"));
+		string.append(Strings.maskHTML("</span>"));
 	}
 
 	protected void renderContent(Section<?> section, UserContext user, StringBuilder string) {
 		StringBuilder builder = new StringBuilder();
 		DelegateRenderer.getInstance().render(section, user, builder);
-		KnowWEUtils.maskJSPWikiMarkup(builder);
+		Strings.maskJSPWikiMarkup(builder);
 		string.append(builder.toString());
 	}
 }

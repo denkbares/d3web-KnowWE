@@ -36,6 +36,7 @@ import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
@@ -46,7 +47,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
 import de.knowwe.kdom.dashtree.DashTreeElementContent;
@@ -75,8 +76,8 @@ public class QuestionLine extends AbstractType {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {
-				return SplitUtility.containsUnquoted(text, "[")
-						&& SplitUtility.containsUnquoted(text, "]")
+				return Strings.containsUnquoted(text, "[")
+						&& Strings.containsUnquoted(text, "]")
 						&& !text.startsWith("[");
 			}
 		};
@@ -307,7 +308,7 @@ public class QuestionLine extends AbstractType {
 		public String getUnit(Section<NumUnit> s) {
 			String originalText = s.getText();
 			originalText = originalText.substring(1, originalText.length() - 1);
-			originalText = KnowWEUtils.trimQuotes(originalText);
+			originalText = Strings.trimQuotes(originalText);
 			return originalText;
 		}
 
@@ -465,7 +466,7 @@ public class QuestionLine extends AbstractType {
 				text = text.substring(1).trim();
 			}
 
-			return SplitUtility.unquote(text);
+			return Strings.unquote(text);
 		}
 	}
 
@@ -478,7 +479,7 @@ public class QuestionLine extends AbstractType {
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
 			Section<QuestionDefinition> thisQuestionDef = section.get().getQuestionDefinition(
 					section);
-			String termIdentifier = thisQuestionDef.get().getTermIdentifier(thisQuestionDef);
+			TermIdentifier termIdentifier = thisQuestionDef.get().getTermIdentifier(thisQuestionDef);
 			Section<?> termDefiningSection =
 					terminologyHandler.getTermDefiningSection(termIdentifier);
 			if (termDefiningSection != null

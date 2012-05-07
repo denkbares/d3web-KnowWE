@@ -29,6 +29,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.PlainText;
@@ -118,7 +119,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		defaultMarkupRenderer.renderDefaultMarkupStyled(
 				getTagName(), content, sectionID, cssClassName, tools, userContext,
 				buffer);
-		KnowWEUtils.maskJSPWikiMarkup(buffer);
+		Strings.maskJSPWikiMarkup(buffer);
 		return buffer.toString();
 	}
 
@@ -127,17 +128,18 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		Map<String, String> urlParameters = user.getParameters();
 
 		// First try the URL-Parameter, if null try the TagHandler-Parameter.
-		String objectName = null;
+		String externalTermIdentifierForm = null;
 		if (urlParameters.get(OBJECTNAME) != null) {
-			objectName = Strings.decodeURL(urlParameters.get(OBJECTNAME));
+			externalTermIdentifierForm = Strings.decodeURL(urlParameters.get(OBJECTNAME));
 		}
 		else if (parameters.get(OBJECTNAME) != null) {
-			objectName = Strings.decodeURL(parameters.get(OBJECTNAME));
+			externalTermIdentifierForm = Strings.decodeURL(parameters.get(OBJECTNAME));
 		}
+		TermIdentifier termIdentifier = TermIdentifier.fromExternalForm(externalTermIdentifierForm);
 
 		// If name is not defined -> render search form!
-		if (objectName == null || objectName.isEmpty()) {
-			return KnowWEUtils.maskHTML(renderLookUpForm(section));
+		if (externalTermIdentifierForm == null || externalTermIdentifierForm.isEmpty()) {
+			return Strings.maskHTML(renderLookUpForm(section));
 		}
 
 		// Get TermDefinitions and TermReferences
@@ -151,21 +153,24 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		while (iter.hasNext()) {
 			currentArticle = iter.next();
 			// Get global and local term definitions
-			getTermDefinitions(currentArticle, objectName, definitions);
-			getTermReferences(currentArticle, objectName, references);
+			getTermDefinitions(currentArticle, termIdentifier, definitions);
+			getTermReferences(currentArticle, termIdentifier, references);
 		}
 		// Get global and local term refereces
-		getTermDefinitions(null, objectName, definitions);
-		getTermReferences(null, objectName, references);
+		getTermDefinitions(null, termIdentifier, definitions);
+		getTermReferences(null, termIdentifier, references);
 
 		// Render
 		StringBuilder html = new StringBuilder();
-		html.append(renderHeader(objectName, getTermObjectClass(definitions, references)));
-		html.append(renderRenamingForm(objectName, section.getWeb(), parameters, urlParameters));
+		html.append(renderHeader(externalTermIdentifierForm,
+				getTermObjectClass(definitions, references)));
+		html.append(renderRenamingForm(externalTermIdentifierForm, section.getWeb(), parameters,
+				urlParameters));
 		html.append(renderObjectInfo(definitions, references, parameters));
-		html.append(renderPlainTextOccurrences(objectName, section.getWeb(), parameters));
+		html.append(renderPlainTextOccurrences(externalTermIdentifierForm, section.getWeb(),
+				parameters));
 
-		return KnowWEUtils.maskHTML(html.toString());
+		return Strings.maskHTML(html.toString());
 	}
 
 	private String getTermObjectClass(Set<Section<?>> definitions, Set<Section<?>> references) {
@@ -290,19 +295,19 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return html.toString();
 	}
 
-	protected void getTermDefinitions(Article currentArticle, String objectName, Set<Section<?>> definitions) {
+	protected void getTermDefinitions(Article currentArticle, TermIdentifier termIdentifier, Set<Section<?>> definitions) {
 		TerminologyManager th = KnowWEUtils.getTerminologyManager(currentArticle);
 
-		Section<?> definition = th.getTermDefiningSection(objectName);
+		Section<?> definition = th.getTermDefiningSection(termIdentifier);
 		if (definition != null) {
 			definitions.add(definition);
 		}
 
 	}
 
-	protected void getTermReferences(Article currentArticle, String objectName, Set<Section<?>> references) {
+	protected void getTermReferences(Article currentArticle, TermIdentifier termIdentifier, Set<Section<?>> references) {
 		TerminologyManager th = KnowWEUtils.getTerminologyManager(currentArticle);
-		references.addAll(th.getTermReferenceSections(objectName));
+		references.addAll(th.getTermReferenceSections(termIdentifier));
 	}
 
 	private String renderTermDefinitions(Set<Section<?>> definitions) {

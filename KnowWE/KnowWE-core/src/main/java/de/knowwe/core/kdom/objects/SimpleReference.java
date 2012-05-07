@@ -18,6 +18,7 @@
  */
 package de.knowwe.core.kdom.objects;
 
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -42,8 +43,13 @@ public abstract class SimpleReference extends AbstractType implements SimpleTerm
 	}
 
 	@Override
-	public String getTermIdentifier(Section<? extends SimpleTerm> s) {
+	public String getTermName(Section<? extends SimpleTerm> s) {
 		return s.getText();
+	}
+
+	@Override
+	public TermIdentifier getTermIdentifier(Section<? extends SimpleTerm> section) {
+		return new TermIdentifier(getTermName(section));
 	}
 
 }

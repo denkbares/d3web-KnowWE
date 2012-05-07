@@ -8,7 +8,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CIDaemonRenderer implements Renderer {
@@ -22,7 +22,7 @@ public class CIDaemonRenderer implements Renderer {
 				CIDashboardType.NAME_KEY);
 		String dashboardArticle = DefaultMarkupType.getAnnotation(section,
 				CIDaemonType.DASHBOARD_ARTICLE);
-		string.append(KnowWEUtils.maskHTML(renderDaemonContents(section.getWeb(), dashboardName,
+		string.append(Strings.maskHTML(renderDaemonContents(section.getWeb(), dashboardName,
 				dashboardArticle)));
 
 	}

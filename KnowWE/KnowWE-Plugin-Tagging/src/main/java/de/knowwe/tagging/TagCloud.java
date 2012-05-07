@@ -27,7 +27,7 @@ import java.util.Map;
 
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 public class TagCloud extends AbstractHTMLTagHandler {
 
@@ -51,6 +51,6 @@ public class TagCloud extends AbstractHTMLTagHandler {
 					+ "px\">" + cur + "</a>";
 		}
 		output += "</p>";
-		return KnowWEUtils.maskHTML(output);
+		return Strings.maskHTML(output);
 	}
 }

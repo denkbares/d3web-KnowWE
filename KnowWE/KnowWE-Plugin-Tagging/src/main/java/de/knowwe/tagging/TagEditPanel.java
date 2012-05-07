@@ -26,7 +26,7 @@ import java.util.Map;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 public class TagEditPanel extends AbstractHTMLTagHandler {
 
@@ -66,7 +66,7 @@ public class TagEditPanel extends AbstractHTMLTagHandler {
 				+ Attributes.TOPIC + ":\"" + user.getTitle() + "\"} });";
 		output += "</script>";
 		output += "</p>";
-		return KnowWEUtils.maskHTML(output);
+		return Strings.maskHTML(output);
 	}
 
 }

@@ -21,7 +21,7 @@ package de.knowwe.tools;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 
 /**
@@ -49,10 +49,10 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 		String headerID = "header_" + sec.getID();
 
 		if (hasTools) {
-			string.append(KnowWEUtils.maskHTML("<span " +
+			string.append(Strings.maskHTML("<span " +
 					"style='position:relative;'" +
 					">"));
-			string.append(KnowWEUtils.maskHTML("<div " +
+			string.append(Strings.maskHTML("<div " +
 					"style='position:absolute;' " +
 					"class='toolsMenuDecorator' " +
 					"id='" + headerID + "' " +
@@ -61,10 +61,10 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 		}
 		decoratedRenderer.render(sec, user, string);
 		if (hasTools) {
-			string.append(KnowWEUtils.maskHTML("</span>"));
+			string.append(Strings.maskHTML("</span>"));
 			String menuHTML = defaultMarkupRenderer.renderMenu(tools, sec.getID(), user);
 			menuHTML = menuHTML.replace("'", "\\'").replace("</div>", "</div>' + \n '");
-			string.append(KnowWEUtils.maskHTML(
+			string.append(Strings.maskHTML(
 					"<script>" +
 							"var makeMenuFx = function() {" +
 							"var a=$('" + headerID + "');" +

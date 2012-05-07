@@ -26,8 +26,8 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.SplitUtility;
 import de.knowwe.core.utils.StringFragment;
+import de.knowwe.core.utils.Strings;
 
 /**
  * 
@@ -47,7 +47,7 @@ public class RatedFindings extends AbstractType {
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			List<StringFragment> ratedsolutions = SplitUtility.splitUnquoted(text, ":");
+			List<StringFragment> ratedsolutions = Strings.splitUnquoted(text, ":");
 
 			if (ratedsolutions.size() > 1) {
 				int start = text.indexOf(ratedsolutions.get(1).getContentTrimmed());

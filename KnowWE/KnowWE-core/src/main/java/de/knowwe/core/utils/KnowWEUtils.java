@@ -40,12 +40,14 @@ import java.util.regex.Pattern;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.SectionStore;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.wikiConnector.ConnectorAttachment;
 
 public class KnowWEUtils {
@@ -257,20 +259,42 @@ public class KnowWEUtils {
 	}
 
 	/**
+	 * Returns the term identifier if the given Section has the type SimpleTerm,
+	 * the text of the Section else.
+	 * 
+	 * @created 06.05.2012
+	 * @param termSection the Section which should implement the interface
+	 *        SimpleTerm
+	 */
+	public static String getTermName(Section<?> termSection) {
+		if (termSection.get() instanceof SimpleTerm) {
+			Section<? extends SimpleTerm> simpleSection = Sections.cast(termSection,
+					SimpleTerm.class);
+			return simpleSection.get().getTermName(simpleSection);
+		}
+		else {
+			return Strings.trimQuotes(termSection.getText());
+		}
+	}
+
+	/**
+	 * Returns the term identifier if the given Section has the type SimpleTerm,
+	 * the text of the Section else.
+	 * 
 	 * @created 08.02.2012
 	 * @param termSection the Section which should implement the interface
 	 *        SimpleTerm
-	 * @returns the term identifier if the given Section has the type
-	 *          SimpleTerm, the text of the Section else
 	 */
-	public static String getTermIdentifier(Section<?> termSection) {
-		String termIdentifier = termSection.getText();
+	public static TermIdentifier getTermIdentifier(Section<?> termSection) {
 		if (termSection.get() instanceof SimpleTerm) {
-			@SuppressWarnings("unchecked")
-			Section<? extends SimpleTerm> simpleSection = (Section<? extends SimpleTerm>) termSection;
-			termIdentifier = simpleSection.get().getTermIdentifier(simpleSection);
+			Section<? extends SimpleTerm> simpleSection = Sections.cast(termSection,
+					SimpleTerm.class);
+			return simpleSection.get().getTermIdentifier(simpleSection);
 		}
-		return termIdentifier;
+		else {
+			return new TermIdentifier(
+					Strings.trimQuotes(termSection.getText()));
+		}
 	}
 
 	/**
@@ -350,113 +374,6 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * returns whether a text contains nothing except spaces and newlines
-	 * 
-	 * @param text
-	 * @return
-	 */
-	public static boolean isEmpty(String text) {
-		if (text == null) return true;
-		if (text.length() == 0) return true;
-		text = text.replaceAll("\r", "");
-		text = text.replaceAll("\n", "");
-		text = text.replaceAll(" ", "");
-
-		if (text.length() == 0) return true;
-
-		return false;
-
-	}
-
-	private static void mask(StringBuilder buffer, String toReplace) {
-		int index = buffer.indexOf(toReplace);
-		while (index >= 0) {
-			// string starts with substring which should be replaced
-			// or the char before the substring is not ~
-			if (index == 0 || !buffer.substring(index - 1, index).equals("~")) {
-				buffer.replace(index, index + toReplace.length(), "~" + toReplace);
-			}
-			index = buffer.indexOf(toReplace, index + 1);
-		}
-	}
-
-	/**
-	 * 
-	 * masks output strings
-	 * 
-	 * @param htmlContent
-	 * @return
-	 */
-	public static String maskHTML(String htmlContent) {
-		htmlContent = htmlContent.replaceAll("\\[\\{",
-				Environment.HTML_PLUGIN_BRACKETS_OPEN);
-		htmlContent = htmlContent.replaceAll("}]",
-				Environment.HTML_PLUGIN_BRACKETS_CLOSE);
-
-		htmlContent = htmlContent.replaceAll("\"",
-				Environment.HTML_DOUBLEQUOTE);
-		htmlContent = htmlContent.replaceAll("'", Environment.HTML_QUOTE);
-		htmlContent = htmlContent.replaceAll(">", Environment.HTML_GT);
-		htmlContent = htmlContent.replaceAll("<", Environment.HTML_ST);
-
-		htmlContent = htmlContent.replace("[",
-				Environment.HTML_BRACKET_OPEN);
-		htmlContent = htmlContent.replace("]",
-				Environment.HTML_BRACKET_CLOSE);
-		// htmlContent = htmlContent.replace("{",
-		// Environment.HTML_CURLY_BRACKET_OPEN);
-		// htmlContent = htmlContent.replace("}",
-		// Environment.HTML_CURLY_BRACKET_CLOSE);
-		return htmlContent;
-	}
-
-	/**
-	 * Masks [, ], ----, {{{, }}} and %% so that JSPWiki will render and not
-	 * interpret them, if the characters are already escaped, it will do nothing
-	 * 
-	 * @created 03.03.2011
-	 */
-	public static String maskJSPWikiMarkup(String string) {
-		StringBuilder temp = new StringBuilder(string);
-		maskJSPWikiMarkup(temp);
-		return temp.toString();
-	}
-
-	/**
-	 * Masks [, ], ----, {{{, }}} and %% so that JSPWiki will render and not
-	 * interpret them, if the characters are already escaped, it will do nothing
-	 * 
-	 * @created 03.03.2011
-	 * @param builder
-	 */
-	public static void maskJSPWikiMarkup(StringBuilder builder) {
-		mask(builder, "[");
-		mask(builder, "]");
-		mask(builder, "----");
-		mask(builder, "{{{");
-		mask(builder, "}}}");
-		mask(builder, "%%");
-		mask(builder, "\\");
-	}
-
-	public static String maskNewline(String htmlContent) {
-		htmlContent = htmlContent.replace("\n", Environment.NEWLINE);
-		return htmlContent;
-	}
-
-	public static String replaceUmlaut(String text) {
-		String result = text;
-		result = result.replaceAll("Ä", "AE");
-		result = result.replaceAll("Ö", "OE");
-		result = result.replaceAll("Ü", "UE");
-		result = result.replaceAll("ä", "ae");
-		result = result.replaceAll("ö", "oe");
-		result = result.replaceAll("ü", "ue");
-		result = result.replaceAll("ß", "ss");
-		return result;
-	}
-
-	/**
 	 * Do not use this method anymore, use
 	 * {@link SectionStore#storeObject(String, Object)} or
 	 * {@link SectionStore#storeObject(Article, String, Object)} instead. Use
@@ -474,70 +391,6 @@ public class KnowWEUtils {
 		s.getSectionStore().storeObject(article, key, o);
 	}
 
-	public static String trimQuotes(String text) {
-
-		if (text == null) return null;
-
-		String trimmed = text.trim();
-
-		if (trimmed.equals("\"")) return "";
-
-		if (trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
-			trimmed = trimmed.substring(1, trimmed.length() - 1).trim();
-			// unmask "
-			return trimmed.replace("\\\"", "\"");
-		}
-
-		return trimmed;
-	}
-
-	/**
-	 * 
-	 * Unmasks output strings
-	 * 
-	 * @param htmlContent
-	 * @return
-	 */
-	public static String unmaskHTML(String htmlContent) {
-		htmlContent = htmlContent.replaceAll(
-				Environment.HTML_PLUGIN_BRACKETS_OPEN, "\\[\\{");
-		htmlContent = htmlContent.replaceAll(
-				Environment.HTML_PLUGIN_BRACKETS_CLOSE, "}]");
-		htmlContent = htmlContent.replaceAll(
-				Environment.HTML_DOUBLEQUOTE, "\"");
-		htmlContent = htmlContent
-				.replaceAll(Environment.HTML_QUOTE, "\'");
-		htmlContent = htmlContent.replaceAll(Environment.HTML_GT, ">");
-		htmlContent = htmlContent.replaceAll(Environment.HTML_ST, "<");
-
-		htmlContent = htmlContent.replaceAll(
-				Environment.HTML_BRACKET_OPEN, "[");
-		htmlContent = htmlContent.replaceAll(
-				Environment.HTML_BRACKET_CLOSE, "]");
-		// htmlContent = htmlContent.replace(
-		// Environment.HTML_CURLY_BRACKET_OPEN, "{");
-		// htmlContent = htmlContent.replace(
-		// Environment.HTML_CURLY_BRACKET_CLOSE, "}");
-
-		return htmlContent;
-	}
-
-	public static String unmaskNewline(String htmlContent) {
-		htmlContent = htmlContent.replace(Environment.NEWLINE, "\n");
-		return htmlContent;
-	}
-
-	@Deprecated
-	public static String urldecode(String text) {
-		return Strings.decodeURL(text);
-	}
-	
-	@Deprecated
-	public static String urlencode(String text) {
-		return Strings.encodeURL(text);
-	}
-
-	
 	public static String readFile(String fileName) {
 		try {
 			return readFile(new FileInputStream(fileName));

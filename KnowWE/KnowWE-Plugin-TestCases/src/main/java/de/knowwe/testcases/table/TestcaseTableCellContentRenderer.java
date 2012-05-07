@@ -21,7 +21,7 @@ package de.knowwe.testcases.table;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.table.TableCellContentRenderer;
 
 /**
@@ -34,9 +34,9 @@ public class TestcaseTableCellContentRenderer extends TableCellContentRenderer {
 	@Override
 	public void render(Section<?> sec, UserContext user, StringBuilder string) {
 
-		string.append(KnowWEUtils.maskHTML("<td>"));
+		string.append(Strings.maskHTML("<td>"));
 		DelegateRenderer.getInstance().render(sec, user, string);
-		string.append(KnowWEUtils.maskHTML("</td>"));
+		string.append(Strings.maskHTML("</td>"));
 	}
 
 }

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
@@ -52,8 +53,13 @@ public abstract class SimpleDefinition extends AbstractType implements SimpleTer
 	}
 
 	@Override
-	public String getTermIdentifier(Section<? extends SimpleTerm> s) {
-		return s.getText();
+	public String getTermName(Section<? extends SimpleTerm> section) {
+		return section.getText();
+	}
+
+	@Override
+	public TermIdentifier getTermIdentifier(Section<? extends SimpleTerm> section) {
+		return new TermIdentifier(getTermName(section));
 	}
 
 	private class StringDefinitionRegistrationHandler extends SubtreeHandler<SimpleDefinition> {

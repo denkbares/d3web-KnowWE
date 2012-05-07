@@ -21,6 +21,7 @@ import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.testcases.TimeStampType;
 
 /**
@@ -49,7 +50,7 @@ final class TestcaseTableLineSubtreeHandler extends SubtreeHandler<TestcaseTable
 		List<Section<ValueType>> values = Sections.findSuccessorsOfType(s, ValueType.class);
 		for (Section<ValueType> valueSec : values) {
 			// if value is unchanged, ignore it
-			String valueString = KnowWEUtils.trimQuotes(valueSec.getText().trim());
+			String valueString = Strings.trimQuotes(valueSec.getText().trim());
 			if (valueString.isEmpty()) continue;
 			if (valueString.equals("-")) continue;
 
@@ -66,7 +67,7 @@ final class TestcaseTableLineSubtreeHandler extends SubtreeHandler<TestcaseTable
 					Sections.findSuccessor(headerCell, QuestionReference.class);
 			if (qRef == null) continue;
 
-			String qName = KnowWEUtils.trimQuotes(qRef.getText().trim());
+			String qName = Strings.trimQuotes(qRef.getText().trim());
 			Question question = kb.getManager().searchQuestion(qName);
 			if (question == null) continue;
 

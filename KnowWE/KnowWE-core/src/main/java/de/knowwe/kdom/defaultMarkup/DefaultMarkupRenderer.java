@@ -41,6 +41,7 @@ import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolUtils;
 
@@ -76,7 +77,7 @@ public class DefaultMarkupRenderer implements Renderer {
 
 		// add an anchor to enable direct link to the section
 		String anchorName = KnowWEUtils.getAnchor(section);
-		content.append(KnowWEUtils.maskHTML("<a name='" + anchorName + "'></a>"));
+		content.append(Strings.maskHTML("<a name='" + anchorName + "'></a>"));
 
 		// render messages and content
 		renderMessages(section, content);
@@ -187,12 +188,12 @@ public class DefaultMarkupRenderer implements Renderer {
 
 			// only if there are such messages
 			if (messages.isEmpty()) continue;
-			string.append(KnowWEUtils.maskHTML("<span class='" + type.toString().toLowerCase()
+			string.append(Strings.maskHTML("<span class='" + type.toString().toLowerCase()
 					+ "' style='white-space: pre-wrap;'>"));
 			for (String messageString : messages) {
 				string.append(messageString).append("\n");
 			}
-			string.append(KnowWEUtils.maskHTML("</span>"));
+			string.append(Strings.maskHTML("</span>"));
 		}
 	}
 
@@ -204,7 +205,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		for (Section<?> section : collectedMessages.keySet()) {
 			Map<Message, Collection<Article>> compilerForMessage = collectedMessages.get(section);
 			for (Message msg : compilerForMessage.keySet()) {
-				String message = KnowWEUtils.maskJSPWikiMarkup(msg.getVerbalization());
+				String message = Strings.maskJSPWikiMarkup(msg.getVerbalization());
 				// if we have multiple other article compilers
 				boolean multiCompiled = KnowWEUtils.getCompilingArticleObjects(section).size() > 1;
 				Collection<Article> compilers = compilerForMessage.get(msg);
@@ -226,13 +227,13 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	public static void renderMessagesOfType(Message.Type type, Collection<Message> messages, StringBuilder string) {
-		string.append(KnowWEUtils.maskHTML("<span class='" + type.toString().toLowerCase()
+		string.append(Strings.maskHTML("<span class='" + type.toString().toLowerCase()
 				+ "' style='white-space: pre-wrap;'>"));
 		for (Message msg : messages) {
-			string.append(KnowWEUtils.maskJSPWikiMarkup(msg.getVerbalization()));
+			string.append(Strings.maskJSPWikiMarkup(msg.getVerbalization()));
 			string.append("\n");
 		}
-		string.append(KnowWEUtils.maskHTML("</span>"));
+		string.append(Strings.maskHTML("</span>"));
 	}
 
 	protected void renderContents(Section<?> section, UserContext user, StringBuilder string) {
@@ -260,31 +261,31 @@ public class DefaultMarkupRenderer implements Renderer {
 
 		String cssClass = "defaultMarkupFrame";
 		if (cssClassName != null) cssClass += " " + cssClassName;
-		string.append(KnowWEUtils.maskHTML("<div id=\"" + sectionID + "\" class='" + cssClass
+		string.append(Strings.maskHTML("<div id=\"" + sectionID + "\" class='" + cssClass
 				+ "'>\n"));
 
 		renderHeader(title, sectionID, tools, user, string);
 
 		// render pre-formatted box
-		string.append(KnowWEUtils.maskHTML("<div id=\"box_" + sectionID
+		string.append(Strings.maskHTML("<div id=\"box_" + sectionID
 				+ "\" class='defaultMarkup'>"));
-		string.append(KnowWEUtils.maskHTML("<div id=\"content_" + sectionID
+		string.append(Strings.maskHTML("<div id=\"content_" + sectionID
 				+ "\" class='markupText'>"));
 
 		// render content
 		// Returns are replaced to avoid JSPWiki to render <p> </p>, do not edit
 		// the following line!
 		string.append(content.replaceAll("(\r?\n){2}",
-				KnowWEUtils.maskHTML("<span>\n</span><span>\n</span>")));
+				Strings.maskHTML("<span>\n</span><span>\n</span>")));
 
 		// and close the box(es)
-		string.append(KnowWEUtils.maskHTML("</div>")); // class=markupText
-		string.append(KnowWEUtils.maskHTML("</div>")); // class=defaultMarkup
-		string.append(KnowWEUtils.maskHTML("</div>"));
+		string.append(Strings.maskHTML("</div>")); // class=markupText
+		string.append(Strings.maskHTML("</div>")); // class=defaultMarkup
+		string.append(Strings.maskHTML("</div>"));
 
 		if (renderMode == ToolsRenderMode.MENU) {
-			string.append(KnowWEUtils.maskHTML(renderTitleAnimation(sectionID)));
-			string.append(KnowWEUtils.maskHTML(renderMenuAnimation(sectionID)));
+			string.append(Strings.maskHTML(renderTitleAnimation(sectionID)));
+			string.append(Strings.maskHTML(renderMenuAnimation(sectionID)));
 		}
 
 	}
@@ -323,7 +324,7 @@ public class DefaultMarkupRenderer implements Renderer {
 
 		temp.append("</div>"); // class=markupHeaderFrame
 
-		string.append(KnowWEUtils.maskHTML(temp.toString()));
+		string.append(Strings.maskHTML(temp.toString()));
 
 	}
 

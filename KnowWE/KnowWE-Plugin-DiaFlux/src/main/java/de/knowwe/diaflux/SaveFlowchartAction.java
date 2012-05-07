@@ -32,6 +32,7 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -153,7 +154,7 @@ public class SaveFlowchartAction extends AbstractAction {
 		Article article = Environment.getInstance().getArticle(web, title);
 
 		TerminologyManager handler = KnowWEUtils.getTerminologyManager(article);
-		Section<?> section = handler.getTermDefiningSection(flowname);
+		Section<?> section = handler.getTermDefiningSection(new TermIdentifier(flowname));
 
 		Section<DiaFluxType> diafluxSec = Sections.findAncestorOfExactType(section,
 				DiaFluxType.class);

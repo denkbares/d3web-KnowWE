@@ -32,7 +32,7 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.MessageRenderer;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 public class DelegateRenderer implements Renderer {
 
@@ -87,9 +87,9 @@ public class DelegateRenderer implements Renderer {
 			// now we log instead AND report the error to the user
 			Logger.getLogger(getClass().getName()).warning(
 					"Internal error while rendering section");
-			builder.append(KnowWEUtils.maskHTML("<span class='warning'>"));
+			builder.append(Strings.maskHTML("<span class='warning'>"));
 			builder.append("internal error while rendering section: " + e);
-			builder.append(KnowWEUtils.maskHTML("</span>"));
+			builder.append(Strings.maskHTML("</span>"));
 			e.printStackTrace();
 		}
 
@@ -155,7 +155,7 @@ public class DelegateRenderer implements Renderer {
 		}
 
 		if (warnings.size() > 0 || notices.size() > 0 || errors.size() > 0) {
-			builder.append(KnowWEUtils.maskHTML("<a name=\"" + subSection.getID()
+			builder.append(Strings.maskHTML("<a name=\"" + subSection.getID()
 					+ "\"></a>"));
 		}
 	}
@@ -209,10 +209,10 @@ public class DelegateRenderer implements Renderer {
 
 	private void renderType(Section<?> section, boolean openIt,
 			StringBuilder builder) {
-		builder.append(KnowWEUtils.maskHTML("<sub>&lt;"));
+		builder.append(Strings.maskHTML("<sub>&lt;"));
 		if (!openIt) builder.append('/');
 		builder.append(section.get().getName());
-		builder.append(KnowWEUtils.maskHTML("&gt;</sub>"));
+		builder.append(Strings.maskHTML("&gt;</sub>"));
 	}
 
 	public static Renderer getRenderer(Section<?> section, UserContext user) {

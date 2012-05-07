@@ -21,7 +21,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 
 /**
@@ -54,9 +54,9 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 			// check for comparator
-			if (SplitUtility.containsUnquoted(text, Equals.SIGN)) {
+			if (Strings.containsUnquoted(text, Equals.SIGN)) {
 				// get right hand side of comparator
-				int index = SplitUtility.indexOfUnquoted(text, Equals.SIGN);
+				int index = Strings.indexOfUnquoted(text, Equals.SIGN);
 				String rightHandSide = text.substring(index + 1).trim();
 				try {
 					Double.parseDouble(rightHandSide);
@@ -80,12 +80,12 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 
 		if (Sections.findSuccessor(s, UnknownValueType.class) != null) {
 			value = Unknown.getInstance();
-		} else {
+		}
+		else {
 			Section<de.knowwe.core.kdom.basicType.Number> numberSec = Sections
 					.findSuccessor(s, de.knowwe.core.kdom.basicType.Number.class);
 
-			if (numberSec == null)
-				return null;
+			if (numberSec == null) return null;
 
 			value = new FormulaNumber(
 					de.knowwe.core.kdom.basicType.Number.getNumber(numberSec));
@@ -93,16 +93,14 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 
 		Section<QuestionReference> qRef = Sections.findSuccessor(s, QuestionReference.class);
 
-		if (qRef == null)
-			return null;
+		if (qRef == null) return null;
 
 		Question q = qRef.get().getTermObject(article, qRef);
 
 		if (!(q instanceof QuestionNum)) return null;
 		QuestionNum qnum = (QuestionNum) q;
 
-		if (qnum == null || value == null)
-			return null;
+		if (qnum == null || value == null) return null;
 
 		ActionSetValue a = new ActionSetValue();
 		a.setQuestion(q);

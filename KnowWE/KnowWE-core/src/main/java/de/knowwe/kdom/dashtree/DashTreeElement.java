@@ -27,7 +27,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.sectionFinder.LineSectionFinder;
 
 /**
@@ -83,7 +83,7 @@ public class DashTreeElement extends AbstractType {
 					int start = sectionFinderResult.getStart();
 					int end = sectionFinderResult.getEnd();
 					String finding = text.substring(start, end);
-					if (!KnowWEUtils.isEmpty(finding)) {
+					if (!Strings.isBlank(finding)) {
 						result.add(sectionFinderResult);
 						break;
 					}

@@ -20,11 +20,7 @@
 
 package de.d3web.we.kdom.rules.action;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.EndLineComment;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
@@ -33,27 +29,6 @@ public class RuleAction extends AbstractType {
 
 	public RuleAction() {
 		sectionFinder = new AllTextSectionFinder();
-		boolean notAttached = false;
-		try {
-			// TODO remove this evil workaround
-			// when updating KnowWE architecture
-			this.childrenTypes.add((Type) Class.forName(
-						"cc.knowwe.tdb.EvalAssignActionType").newInstance());
-		}
-		catch (InstantiationException e) {
-			notAttached = true;
-		}
-		catch (IllegalAccessException e) {
-			notAttached = true;
-		}
-		catch (ClassNotFoundException e) {
-			notAttached = true;
-		}
-		if (notAttached) {
-			Logger.getLogger("KnowWE").log(Level.INFO,
-					"cc.knowwe.tdb.EvalAssignActionType is not attached");
-		}
-
 		EndLineComment comment = new EndLineComment();
 		comment.setRenderer(StyleRenderer.COMMENT);
 		this.childrenTypes.add(comment);

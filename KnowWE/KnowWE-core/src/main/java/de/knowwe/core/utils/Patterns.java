@@ -138,9 +138,9 @@ public final class Patterns {
 					"\\]"; // closing bracket
 
 	public static void main(String[] args) {
-		String test = "\"\\\"sasd\\\"\\\"df\\\"\"";
+		String test = "\"\\\"sa\\\\sd\\\"\\\"df\\\"\"";
 		System.out.println(test);
-		System.out.println(KnowWEUtils.trimQuotes(test));
+		System.out.println(Strings.trimQuotes(test));
 		System.out.println(test.matches(quoted));
 	}
 }

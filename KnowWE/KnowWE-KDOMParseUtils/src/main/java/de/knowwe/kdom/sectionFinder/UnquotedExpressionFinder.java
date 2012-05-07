@@ -27,7 +27,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 
 /**
  * This SectionFinder finds the _all_ unquoted occurrence of the 'symbol' in the
@@ -47,7 +47,7 @@ public class UnquotedExpressionFinder implements SectionFinder {
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
-		int index = SplitUtility.indexOfUnquoted(text, symbol);
+		int index = Strings.indexOfUnquoted(text, symbol);
 
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 		int counter = 0;
@@ -60,7 +60,7 @@ public class UnquotedExpressionFinder implements SectionFinder {
 
 			text = text.substring(index + 1);
 			counter += index + 1;
-			index = SplitUtility.indexOfUnquoted(text, symbol);
+			index = Strings.indexOfUnquoted(text, symbol);
 		}
 
 		return result;

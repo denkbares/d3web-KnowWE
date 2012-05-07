@@ -30,7 +30,7 @@ String findParam( PageContext ctx, String key )
 	if (!parameters.containsKey(Attributes.TOPIC)) {
 		String topic = parameters.get("page");
 		if (topic == null) {
-			topic = KnowWEUtils.urldecode(wikiContext.getPage().getName());
+			topic = Strings.decodeURL(wikiContext.getPage().getName());
 		}
 		parameters.put(Attributes.TOPIC, topic);
 	}

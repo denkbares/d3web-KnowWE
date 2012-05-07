@@ -58,7 +58,7 @@ public class StartType extends AbstractXMLType {
 		}
 
 		@Override
-		public String getTermIdentifier(Section<? extends SimpleTerm> s) {
+		public String getTermName(Section<? extends SimpleTerm> s) {
 			String nodeName = s.getText();
 			Section<FlowchartType> flowchart = Sections.findAncestorOfType(s, FlowchartType.class);
 			String flowchartName = FlowchartType.getFlowchartName(flowchart);

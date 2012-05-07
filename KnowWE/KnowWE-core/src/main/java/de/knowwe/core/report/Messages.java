@@ -33,6 +33,7 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -386,7 +387,7 @@ public final class Messages {
 		return Messages.error("Could not create Object: " + text);
 	}
 
-	public static Message ambiguousTermClassesError(String origTerm, Collection<Class<?>> termClasses) {
+	public static Message ambiguousTermClassesError(TermIdentifier origTerm, Collection<Class<?>> termClasses) {
 		List<String> termClassesString = new ArrayList<String>(termClasses.size());
 		for (Class<?> termClass : termClasses) {
 			termClassesString.add(termClass.getSimpleName());
@@ -396,12 +397,12 @@ public final class Messages {
 				+ termClassesString.toString());
 	}
 
-	public static Message ambiguousTermCaseWarning(Collection<String> termIdentifiers) {
+	public static Message ambiguousTermCaseWarning(Collection<TermIdentifier> termIdentifiers) {
 		return Messages.warning("There are different cases for the same term: "
 				+ termIdentifiers.toString());
 	}
 
-	public static Message multipleTermDefintionsError(String termIdentifier) {
+	public static Message multipleTermDefintionsError(TermIdentifier termIdentifier) {
 		return Messages.error("There is more than one definition for the term '"
 				+ termIdentifier + "' which is restricted to only one definition.");
 	}

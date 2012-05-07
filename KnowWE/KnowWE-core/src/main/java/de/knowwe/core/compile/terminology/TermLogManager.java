@@ -30,18 +30,18 @@ import java.util.Set;
  */
 class TermLogManager {
 
-	private final Map<String, TermLog> termLogs =
-			new HashMap<String, TermLog>();
+	private final Map<TermIdentifier, TermLog> termLogs =
+			new HashMap<TermIdentifier, TermLog>();
 
 	public TermLog getLog(TermIdentifier termIdentifier) {
-		return termLogs.get(termIdentifier.getTermIdentifierLowerCase());
+		return termLogs.get(termIdentifier);
 	}
 
 	public void putLog(TermIdentifier termIdentifier, TermLog termLog) {
-		termLogs.put(termIdentifier.getTermIdentifierLowerCase(), termLog);
+		termLogs.put(termIdentifier, termLog);
 	}
 
-	public Set<Entry<String, TermLog>> entrySet() {
+	public Set<Entry<TermIdentifier, TermLog>> entrySet() {
 		return termLogs.entrySet();
 	}
 }

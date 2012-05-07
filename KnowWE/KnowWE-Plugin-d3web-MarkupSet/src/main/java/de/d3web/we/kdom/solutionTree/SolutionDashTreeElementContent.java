@@ -36,7 +36,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
 import de.knowwe.kdom.dashtree.DashTreeElementContent;
@@ -81,9 +81,9 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent {
 
 		@Override
 		public void render(Section<?> sec, UserContext user, StringBuilder string) {
-			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID() + "'>"));
+			string.append(Strings.maskHTML("<span id='" + sec.getID() + "'>"));
 			DelegateRenderer.getInstance().render(sec, user, string);
-			string.append(KnowWEUtils.maskHTML("</span>"));
+			string.append(Strings.maskHTML("</span>"));
 		}
 	}
 

@@ -27,6 +27,7 @@ import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
@@ -65,10 +66,11 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 		public Collection<Message> create(Article article,
 				Section<QuestionnaireDefinition> section) {
 
-			String name = section.get().getTermIdentifier(section);
+			TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
+			String name = section.get().getTermName(section);
 			Class<?> termObjectClass = section.get().getTermObjectClass(section);
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
-			terminologyHandler.registerTermDefinition(section, termObjectClass, name);
+			terminologyHandler.registerTermDefinition(section, termObjectClass, termIdentifier);
 
 			Collection<Message> msgs = section.get().canAbortTermObjectCreation(article, section);
 			if (msgs != null) return msgs;

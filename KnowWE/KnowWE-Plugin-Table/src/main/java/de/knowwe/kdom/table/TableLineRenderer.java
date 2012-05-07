@@ -24,7 +24,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 /**
  * This is a renderer for the TableLine. It wraps the <code>TableLine</code>
@@ -56,7 +56,7 @@ public class TableLineRenderer implements Renderer {
 		buffi.append(b.toString());
 		buffi.append("</tr>\n");
 
-		string.append(KnowWEUtils.maskHTML(buffi.toString()));
+		string.append(Strings.maskHTML(buffi.toString()));
 	}
 
 	/**

@@ -52,7 +52,6 @@ import de.knowwe.core.utils.Strings;
  */
 public class KDOMReplaceTermNameAction extends AbstractAction {
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		if (context.getWriter() == null) {
@@ -83,9 +82,10 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 			context.sendError(500, "Invalid section type");
 			return;
 		}
-
+		Section<SimpleTerm> simpleTermSection = Sections.cast(section, SimpleTerm.class);
+		// replaces only the text inside quotes if there are quotes
 		String newNodeText = section.getText().replace(
-				((SimpleTerm) section.get()).getTermIdentifier((Section<? extends SimpleTerm>) section),
+				simpleTermSection.get().getTermIdentifier(simpleTermSection).getLastPathElement(),
 				newText);
 
 		nodesMap.put(nodeID, newNodeText);

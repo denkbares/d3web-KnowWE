@@ -23,8 +23,6 @@ package de.d3web.we.kdom.rules;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.Rule;
@@ -65,6 +63,7 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.AllTextFinderDivCorrectTrimmed;
@@ -117,26 +116,6 @@ public class RuleContentType extends AbstractType {
 		List<Type> termConds = new ArrayList<Type>();
 
 		// add all the various allowed TerminalConditions here
-		boolean notAttached = false;
-		try {
-			// TODO remove this evil workaround
-			// when updating KnowWE architecture
-			termConds.add((Type) Class.forName(
-					"cc.knowwe.tdb.EvalConditionType").newInstance());
-		}
-		catch (InstantiationException e) {
-			notAttached = true;
-		}
-		catch (IllegalAccessException e) {
-			notAttached = true;
-		}
-		catch (ClassNotFoundException e) {
-			notAttached = true;
-		}
-		if (notAttached) {
-			Logger.getLogger("KnowWE").log(Level.INFO,
-					"cc.knowwe.tdb.EvalConditionType is not attached");
-		}
 		termConds.add(new SolutionStateCond());
 		termConds.add(new UserRatingConditionType());
 		termConds.add(new CondKnownUnknown());
@@ -260,14 +239,14 @@ public class RuleContentType extends AbstractType {
 						RuleContentType.ruleStoreKey);
 			}
 
-			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID()
+			string.append(Strings.maskHTML("<span id='" + sec.getID()
 					+ "'>"));
 
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
 			Session session = SessionProvider.getSession(user, kb);
 
 			highlightRule(article, sec, rule, session, user, string);
-			string.append(KnowWEUtils.maskHTML("</span>"));
+			string.append(Strings.maskHTML("</span>"));
 		}
 
 		private static final String highlightMarker = "HIGHLIGHT_MARKER";

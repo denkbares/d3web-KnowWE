@@ -29,13 +29,16 @@ import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -80,7 +83,7 @@ public abstract class AnswerDefinition
 			Section<? extends QuestionDefinition> ref = sec.get().getQuestionSection(sec);
 			Question question = ref.get().getTermObject(article, ref);
 
-			String answerName = sec.get().getAnswerName(sec);
+			String answerName = sec.get().getTermName(sec);
 
 			if (question != null && question instanceof QuestionChoice) {
 				return KnowledgeBaseUtils.findChoice((QuestionChoice) question,
@@ -92,24 +95,20 @@ public abstract class AnswerDefinition
 	}
 
 	@Override
-	@SuppressWarnings(value = { "unchecked" })
-	public String getTermIdentifier(Section<? extends SimpleTerm> s) {
+	public TermIdentifier getTermIdentifier(Section<? extends SimpleTerm> s) {
 		if (s.get() instanceof AnswerDefinition) {
-			Section<AnswerDefinition> sec = ((Section<AnswerDefinition>) s);
-			Section<? extends QuestionDefinition> questionSection = sec.get().getQuestionSection(
-					sec);
-			String question = questionSection.get().getTermIdentifier(questionSection);
+			Section<AnswerDefinition> answerSection = Sections.cast(s, AnswerDefinition.class);
+			Section<? extends QuestionDefinition> questionSection = answerSection.get().getQuestionSection(
+					answerSection);
+			TermIdentifier questionIdentifier = questionSection.get().getTermIdentifier(
+					questionSection);
 
-			return createAnswerIdentifierForQuestion(getAnswerName(sec),
-					question);
+			return questionIdentifier.append(new TermIdentifier(answerSection.get().getTermName(
+					answerSection)));
 		}
 
 		// should not happen
-		return KnowWEUtils.trimQuotes(s.getText());
-	}
-
-	public String getAnswerName(Section<? extends AnswerDefinition> answerDefinition) {
-		return KnowWEUtils.trimQuotes(answerDefinition.getText());
+		return new TermIdentifier(Strings.trimQuotes(s.getText()));
 	}
 
 	@Override
@@ -131,7 +130,7 @@ public abstract class AnswerDefinition
 		public Collection<Message> create(Article article,
 				Section<AnswerDefinition> section) {
 
-			String name = section.get().getAnswerName(section);
+			String name = section.get().getTermName(section);
 
 			Section<? extends QuestionDefinition> qDef = section.get().getQuestionSection(section);
 			KnowWEUtils.storeObject(article, section, AnswerDefinition.QUESTION_FOR_ANSWER_KEY,
@@ -144,7 +143,7 @@ public abstract class AnswerDefinition
 
 			// storing the current question needs to happen first, so the method
 			// getUniqueTermIdentifier() can use the right question.
-			String termIdentifier = section.get().getTermIdentifier(section);
+			TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
 			Class<?> termObjectClass = section.get().getTermObjectClass(section);
 
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
@@ -179,7 +178,7 @@ public abstract class AnswerDefinition
 				}
 				else {
 					a = KnowledgeBaseUtils.addChoiceAnswer((QuestionChoice) q,
-							section.get().getAnswerName(section),
+							section.get().getTermName(section),
 							section.get().getPosition(section));
 
 				}
@@ -193,21 +192,6 @@ public abstract class AnswerDefinition
 					"'" + name + "' is not a choice question"));
 		}
 
-	}
-
-	/**
-	 * 
-	 * creates a global unique identifier for an answer by use of the question
-	 * name (which is globally unique)
-	 * 
-	 * 
-	 * @created 06.06.2011
-	 * @param answer
-	 * @param question
-	 * @return
-	 */
-	public static String createAnswerIdentifierForQuestion(String answer, String question) {
-		return question + "#" + answer;
 	}
 
 }

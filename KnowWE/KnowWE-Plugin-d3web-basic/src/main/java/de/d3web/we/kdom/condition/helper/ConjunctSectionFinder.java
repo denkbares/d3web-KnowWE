@@ -11,7 +11,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 
 public class ConjunctSectionFinder implements SectionFinder {
@@ -34,7 +34,7 @@ public class ConjunctSectionFinder implements SectionFinder {
 		Map<Integer, Integer> allFoundOps = new HashMap<Integer, Integer>();
 		List<SectionFinderResult> results = new ArrayList<SectionFinderResult>();
 		for (String symbol : signs) {
-			List<Integer> indicesOfUnbraced = SplitUtility.findIndicesOfUnbraced(text,
+			List<Integer> indicesOfUnbraced = Strings.findIndicesOfUnbraced(text,
 					symbol,
 					CompositeCondition.BRACE_OPEN, CompositeCondition.BRACE_CLOSED);
 			// store all found operator sign oc indices and its length

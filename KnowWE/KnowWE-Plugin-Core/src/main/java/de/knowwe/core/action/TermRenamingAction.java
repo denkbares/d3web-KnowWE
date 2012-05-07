@@ -30,6 +30,7 @@ import java.util.Set;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
@@ -62,6 +63,8 @@ public class TermRenamingAction extends AbstractAction {
 		String term = context.getParameter(TERMNAME);
 		String replacement = context.getParameter(REPLACEMENT);
 
+		TermIdentifier termIdentifier = TermIdentifier.fromExternalForm(term);
+
 		HashMap<String, Set<Section<? extends SimpleTerm>>> allTerms =
 				new HashMap<String, Set<Section<? extends SimpleTerm>>>();
 
@@ -73,7 +76,7 @@ public class TermRenamingAction extends AbstractAction {
 			currentArticle = iter.next();
 			terminologyManager = KnowWEUtils.getTerminologyManager(currentArticle);
 			// Check if there is a TermDefinition
-			Collection<Section<?>> definingSections = terminologyManager.getTermDefiningSections(term);
+			Collection<Section<?>> definingSections = terminologyManager.getTermDefiningSections(termIdentifier);
 			for (Section<?> definition : definingSections) {
 				if (definition.get() instanceof SimpleTerm) {
 					getTermSet(definition.getTitle(), allTerms).add(
@@ -82,7 +85,7 @@ public class TermRenamingAction extends AbstractAction {
 			}
 
 			// Check if there are References
-			Collection<Section<?>> references = terminologyManager.getTermReferenceSections(term);
+			Collection<Section<?>> references = terminologyManager.getTermReferenceSections(termIdentifier);
 			for (Section<?> reference : references) {
 				if (reference.get() instanceof SimpleTerm) {
 					getTermSet(reference.getTitle(), allTerms).add(

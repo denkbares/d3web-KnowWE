@@ -12,7 +12,7 @@ import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 public class SolutionPanelUtils {
 
@@ -80,7 +80,7 @@ public class SolutionPanelUtils {
 	}
 
 	private static String mask(String string) {
-		return KnowWEUtils.maskHTML(string);
+		return Strings.maskHTML(string);
 	}
 
 	public static void renderAbstraction(Question question, Session session, int digits, StringBuilder buffer) {

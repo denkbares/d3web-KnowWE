@@ -24,7 +24,7 @@ import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
 import de.knowwe.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
@@ -57,8 +57,8 @@ public abstract class BracketsAction<T extends Type> extends D3webRuleAction<T> 
 			protected boolean condition(String text, Section<?> father) {
 				for (String string : alternativeKeys) {
 					if (text.startsWith(string)) {
-						if (SplitUtility.containsUnquoted(text, OPEN)
-								&& SplitUtility.containsUnquoted(text, CLOSE)) {
+						if (Strings.containsUnquoted(text, OPEN)
+								&& Strings.containsUnquoted(text, CLOSE)) {
 							return true;
 						}
 					}

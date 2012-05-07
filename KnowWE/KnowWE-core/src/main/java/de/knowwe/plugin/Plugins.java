@@ -107,37 +107,6 @@ public class Plugins {
 		return ret;
 	}
 
-	// /**
-	// * Returns a List of all Types
-	// *
-	// * @return List of Types
-	// */
-	// public static List<Type> getRootTypes() {
-	// return getTypes(SCOPE_ROOT);
-	// }
-	//
-	// /**
-	// * Returns all plugged KnowWE Object Types for the specified scope. The
-	// * framework uses the scopes global and root, other scopes can be defined
-	// in
-	// * plugins.
-	// *
-	// * @param scope Scope of the Types
-	// * @return a List of Types
-	// */
-	// public static List<Type> getTypes(String scope) {
-	// Extension[] extensions =
-	// PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-	// EXTENDED_POINT_Type);
-	// List<Type> ret = new ArrayList<Type>();
-	// for (Extension e : extensions) {
-	// if (e.getParameter("scope").equals(scope)) {
-	// ret.add((Type) e.getSingleton());
-	// }
-	// }
-	// return ret;
-	// }
-
 	public static void addChildrenTypesToType(Type type) {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_Type);

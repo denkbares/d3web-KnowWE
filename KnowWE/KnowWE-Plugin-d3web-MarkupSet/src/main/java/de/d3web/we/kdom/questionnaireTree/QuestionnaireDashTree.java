@@ -31,14 +31,14 @@ public class QuestionnaireDashTree extends DashTree {
 	}
 
 	/**
-	 * @author Jochen
 	 * 
-	 *         A DashTreeElementContent for the Questionnaire-DashTree. It is
-	 *         injected into a dash-tree @see {@link QuestionnaireDashTree} It
-	 *         contains a QuestionnaireDef type (which itself internally creates
-	 *         a qcontainer object) and CreateSubQuestionnaireRelationHandler
-	 *         which established the hierarchical relations defined by the
-	 *         dashtree
+	 * * A DashTreeElementContent for the Questionnaire-DashTree. It is injected
+	 * into a dash-tree @see {@link QuestionnaireDashTree} It contains a
+	 * QuestionnaireDef type (which itself internally creates a qcontainer
+	 * object) and CreateSubQuestionnaireRelationHandler which established the
+	 * hierarchical relations defined by the dashtree
+	 * 
+	 * @author Jochen
 	 * 
 	 * 
 	 */

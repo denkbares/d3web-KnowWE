@@ -42,7 +42,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
 import de.knowwe.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
@@ -90,7 +90,7 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 			for (String comp : comparators) {
-				if (SplitUtility.containsUnquoted(text, comp)) {
+				if (Strings.containsUnquoted(text, comp)) {
 
 					return textFinder.lookForSections(text,
 							father, type);

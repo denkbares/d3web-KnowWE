@@ -15,7 +15,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.MatchUntilEndFinder;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
@@ -93,6 +93,6 @@ public class ObjectDescription extends AbstractType {
 			text = text.substring(1).trim();
 		}
 
-		return SplitUtility.unquote(text);
+		return Strings.unquote(text);
 	}
 }

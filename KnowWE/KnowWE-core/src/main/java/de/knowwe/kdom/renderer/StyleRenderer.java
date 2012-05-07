@@ -24,7 +24,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
 public class StyleRenderer implements Renderer {
@@ -95,16 +95,16 @@ public class StyleRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, StringBuilder string) {
-		string.append(KnowWEUtils.maskHTML("<span"));
+		string.append(Strings.maskHTML("<span"));
 		if (cssClass != null) {
 			string.append(" class='").append(cssClass).append("'");
 		}
 		if (cssStyle != null) {
 			string.append(" style='").append(cssStyle).append("'");
 		}
-		string.append(KnowWEUtils.maskHTML(">"));
+		string.append(Strings.maskHTML(">"));
 		renderContent(section, user, string);
-		string.append(KnowWEUtils.maskHTML("</span>"));
+		string.append(Strings.maskHTML("</span>"));
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class StyleRenderer implements Renderer {
 	protected void renderContent(Section<?> section, UserContext user, StringBuilder string) {
 		StringBuilder builder = new StringBuilder();
 		DelegateRenderer.getInstance().render(section, user, builder);
-		KnowWEUtils.maskJSPWikiMarkup(builder);
+		Strings.maskJSPWikiMarkup(builder);
 		string.append(builder.toString());
 	}
 

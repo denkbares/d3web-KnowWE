@@ -35,8 +35,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 
 /**
  * 
@@ -79,21 +78,21 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 
 					return SectionFinderResult
 							.createSingleItemList(new SectionFinderResult(
-									SplitUtility.indexOfUnquoted(text, OPEN),
-									SplitUtility.indexOfUnquoted(text, CLOSE) + 1));
+									Strings.indexOfUnquoted(text, OPEN),
+									Strings.indexOfUnquoted(text, CLOSE) + 1));
 				}
 			};
 		}
 
 		@Override
-		public String getTermIdentifier(Section<? extends SimpleTerm> s) {
+		public String getTermName(Section<? extends SimpleTerm> s) {
 			String text = s.getText().trim();
 			String questionName = "";
 			if (text.indexOf(OPEN) == 0 && text.lastIndexOf(CLOSE) == text.length() - 1) {
 				questionName = text.substring(1, text.length() - 1).trim();
 			}
 
-			return KnowWEUtils.trimQuotes(questionName);
+			return Strings.trimQuotes(questionName);
 		}
 	}
 

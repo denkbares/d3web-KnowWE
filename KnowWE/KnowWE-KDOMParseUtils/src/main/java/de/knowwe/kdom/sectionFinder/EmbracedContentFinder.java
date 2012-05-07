@@ -26,7 +26,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 
 /**
  * Finds stuff embraced (regarding quoted occurrences of the embracing signs)
@@ -66,9 +66,9 @@ public class EmbracedContentFinder implements SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-		int start = SplitUtility.indexOfUnquoted(text, "" + open);
+		int start = Strings.indexOfUnquoted(text, "" + open);
 		if (start > -1) {
-			int end = SplitUtility.findIndexOfClosingBracket(text, start,
+			int end = Strings.findIndexOfClosingBracket(text, start,
 					open, close);
 			if (end < 0) return null;
 
@@ -88,7 +88,7 @@ public class EmbracedContentFinder implements SectionFinder {
 				// else check chain restriction
 				String content = text.substring(startIndex,
 						endIndex);
-				if (SplitUtility.getCharacterChains(content).length == chains) {
+				if (Strings.getCharacterChains(content).length == chains) {
 					return SectionFinderResult.createSingleItemResultList(startIndex,
 							endIndex);
 				}

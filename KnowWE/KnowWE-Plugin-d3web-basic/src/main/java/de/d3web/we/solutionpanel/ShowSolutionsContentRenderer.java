@@ -37,7 +37,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 /**
  * Displays a configurable pane presenting derived solutions and abstractions.
@@ -62,7 +62,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, StringBuilder string) {
-		string.append(KnowWEUtils.maskHTML("<span id='" + section.getID() + "'>"));
+		string.append(Strings.maskHTML("<span id='" + section.getID() + "'>"));
 		String text = section.getText();
 		if (!text.isEmpty()) {
 			string.append(text + "\n");
@@ -77,7 +77,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 			string.append(renderSolutions(section, session));
 			string.append(renderAbstractions(section, session));
 		}
-		string.append(KnowWEUtils.maskHTML("</span>"));
+		string.append(Strings.maskHTML("</span>"));
 	}
 
 	private static Section<ShowSolutionsType> getShowSolutionsSection(Section<?> section) {

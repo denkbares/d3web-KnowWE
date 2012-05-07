@@ -83,7 +83,7 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 		}
 		Section<? extends SimpleTerm> simpleSection = (Section<? extends SimpleTerm>) section;
 		String originalText = simpleSection.getText();
-		String oldTermName = simpleSection.get().getTermIdentifier(simpleSection);
+		String oldTermName = simpleSection.get().getTermIdentifier(simpleSection).getLastPathElement();
 		String newNodeText = originalText.replace(oldTermName, newText);
 
 		nodesMap.put(nodeID, newNodeText);

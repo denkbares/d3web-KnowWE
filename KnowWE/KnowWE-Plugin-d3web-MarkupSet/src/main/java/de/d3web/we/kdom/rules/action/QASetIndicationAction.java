@@ -31,6 +31,7 @@ import de.d3web.indication.ActionIndication;
 import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.QuestionnaireReference;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
@@ -41,6 +42,7 @@ import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.AnonymousType;
 
 /**
@@ -90,23 +92,14 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 		return PSMethodStrategic.class;
 	}
 
-	/**
-	 * TODO: There are some issues here: The ObjectType of a Section is set for
-	 * all Articles compiling it, but the terminology can be different for each
-	 * of these articles. So the term could be undefined for the first master,
-	 * could be a Question for the second and a Questionnaire for the third.
-	 * Additionally, what happens if the term changes between these types? They
-	 * are no AnonymousType anymore, so it seems as a full reparse is needed for
-	 * these cases.
-	 */
 	static class SetTypeHandler extends SubtreeHandler<AnonymousType> {
 
 		@Override
 		public Collection<Message> create(Article article, Section<AnonymousType> s) {
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
-			String termName = KnowWEUtils.trimQuotes(s.getText());
-			if (terminologyHandler.isDefinedTerm(termName)) {
-				Section<?> termDefinitionSection = terminologyHandler.getTermDefiningSection(termName);
+			TermIdentifier termIdentifier = new TermIdentifier(Strings.trimQuotes(s.getText()));
+			if (terminologyHandler.isDefinedTerm(termIdentifier)) {
+				Section<?> termDefinitionSection = terminologyHandler.getTermDefiningSection(termIdentifier);
 				if (termDefinitionSection.get() instanceof SimpleTerm) {
 					@SuppressWarnings("unchecked")
 					Section<? extends SimpleTerm> simpleDef = (Section<? extends SimpleTerm>) termDefinitionSection;
@@ -122,15 +115,15 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 						return new ArrayList<Message>(0);
 					}
 
-					return Messages.asList(Messages.noSuchObjectError(
-							termName + "is defined as: "
+					return Messages.asList(Messages.error(
+							termIdentifier + "is defined as: "
 									+ objectClazz.getName()
 									+ " - expected was Question or Questionnaire"));
 				}
 			}
 
-			return Messages.asList(Messages.noSuchObjectError(
-					"Could not find '" + termName
+			return Messages.asList(Messages.error(
+					"Could not find '" + termIdentifier
 							+ "' - expected was Question or Questionnaire"));
 		}
 

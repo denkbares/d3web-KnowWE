@@ -25,7 +25,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.core.utils.Strings;
 
 public class ObjectInfoLinkRenderer implements Renderer {
@@ -48,7 +48,7 @@ public class ObjectInfoLinkRenderer implements Renderer {
 				objectName);
 
 		if (pageExists) {
-			string.append(KnowWEUtils.maskHTML("<a href=\"Wiki.jsp?page="
+			string.append(Strings.maskHTML("<a href=\"Wiki.jsp?page="
 								+ objectName + "\">"
 								+ b.toString()
 								+ "</a>" + " <a href=\"Wiki.jsp?page="
@@ -60,7 +60,7 @@ public class ObjectInfoLinkRenderer implements Renderer {
 		}
 		else {
 			// TODO: Maybe make the page name non-hardcoded
-			string.append(KnowWEUtils.maskHTML(
+			string.append(Strings.maskHTML(
 								"<a href=\"Wiki.jsp?page=ObjectInfoPage&objectname="
 										+ Strings.encodeURL(objectName)
 										+ "\">"

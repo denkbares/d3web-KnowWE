@@ -40,7 +40,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 
 /**
@@ -72,7 +72,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
-			if (SplitUtility.containsUnquoted(text, " =")) {
+			if (Strings.containsUnquoted(text, " =")) {
 
 				List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 				result.add(new SectionFinderResult(0, text.length()));

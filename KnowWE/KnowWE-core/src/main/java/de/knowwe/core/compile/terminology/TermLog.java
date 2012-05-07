@@ -51,8 +51,8 @@ class TermLog {
 	private final Map<Class<?>, Set<TermLogEntry>> termClasses =
 			new HashMap<Class<?>, Set<TermLogEntry>>();
 
-	private final Map<String, Set<TermLogEntry>> termIdentifiers =
-			new HashMap<String, Set<TermLogEntry>>();
+	private final Map<TermIdentifier, Set<TermLogEntry>> termIdentifiers =
+			new HashMap<TermIdentifier, Set<TermLogEntry>>();
 
 	private final String web;
 
@@ -85,7 +85,7 @@ class TermLog {
 			TermIdentifier termIdentifier) {
 
 		TermLogEntry logEntry = new TermLogEntry(priority, termSection, termClass,
-				termIdentifier.getTermIdentifier());
+				termIdentifier);
 		if (definition) {
 			termDefinitions.add(logEntry);
 		}
@@ -99,12 +99,9 @@ class TermLog {
 
 		Collection<Message> msgs = new ArrayList<Message>(2);
 
-		String termIdentifier = termIdentifiers.size() == 1
-				? termIdentifiers.keySet().iterator().next()
-				: termIdentifiers.keySet().toString();
 		if (termClasses.size() > 1) {
 			msgs.add(Messages.ambiguousTermClassesError(
-					termIdentifier, termClasses.keySet()));
+					termIdentifiers.keySet().iterator().next(), termClasses.keySet()));
 		}
 		if (termIdentifiers.size() > 1) {
 			msgs.add(Messages.ambiguousTermCaseWarning(termIdentifiers.keySet()));
@@ -165,8 +162,9 @@ class TermLog {
 
 		Article article = Article.getCurrentlyBuildingArticle(web, title);
 		Collection<Message> msgs = new ArrayList<Message>(2);
-		Set<String> termIdentifiersSet = new HashSet<String>(termIdentifiers.keySet());
-		termIdentifiersSet.add(termIdentifier.getTermIdentifier());
+		Set<TermIdentifier> termIdentifiersSet = new HashSet<TermIdentifier>(
+				termIdentifiers.keySet());
+		termIdentifiersSet.add(termIdentifier);
 		if (termIdentifiersSet.size() > 1) {
 			msgs.add(Messages.ambiguousTermCaseWarning(termIdentifiersSet));
 		}
@@ -174,7 +172,7 @@ class TermLog {
 			Class<?> termClassOfDefinition = termClasses.keySet().iterator().next();
 			boolean assignable = termClass.isAssignableFrom(termClassOfDefinition);
 			if (!assignable) {
-				msgs.add(Messages.error("The term '" + termIdentifier.getTermIdentifier()
+				msgs.add(Messages.error("The term '" + termIdentifier.toString()
 						+ "' is registered with the type '" + termClassOfDefinition.getSimpleName()
 						+ "' which is incompatible to the type '" + termClass.getSimpleName()
 						+ "' of this reference."));
@@ -198,7 +196,7 @@ class TermLog {
 			TermIdentifier termIdentifier) {
 
 		TermLogEntry logEntry = new TermLogEntry(priority, termSection, termClass,
-				termIdentifier.getTermIdentifier());
+				termIdentifier);
 		if (definition) {
 			termDefinitions.remove(logEntry);
 		}
@@ -271,7 +269,7 @@ class TermLog {
 		return termClasses.keySet();
 	}
 
-	public Set<String> getTermIdentifiers() {
+	public Set<TermIdentifier> getTermIdentifiers() {
 		return termIdentifiers.keySet();
 	}
 

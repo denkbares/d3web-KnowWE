@@ -37,7 +37,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
@@ -250,7 +250,7 @@ public class CompositeCondition extends AbstractType {
 	 * @return
 	 */
 	public static boolean hasLineBreakAfterComment(String text) {
-		int start = SplitUtility.lastIndexOfUnquoted(text, "//");
+		int start = Strings.lastIndexOfUnquoted(text, "//");
 		if (start != -1) {
 			Pattern pattern = Pattern.compile("\\r?\\n");
 			Matcher matcher = pattern.matcher(text);

@@ -21,11 +21,12 @@ package de.d3web.we.object;
 
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 /**
  * Abstract type for referencing d3web-objects, such as solutions, questions,
@@ -39,8 +40,13 @@ import de.knowwe.core.utils.KnowWEUtils;
 public abstract class D3webTermReference<TermObject extends NamedObject> extends AbstractType implements D3webTerm<TermObject> {
 
 	@Override
-	public String getTermIdentifier(Section<? extends SimpleTerm> section) {
-		return KnowWEUtils.trimQuotes(section.getText());
+	public TermIdentifier getTermIdentifier(Section<? extends SimpleTerm> section) {
+		return new TermIdentifier(getTermName(section));
+	}
+
+	@Override
+	public String getTermName(Section<? extends SimpleTerm> section) {
+		return Strings.trimQuotes(section.getText());
 	}
 
 	@Override

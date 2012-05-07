@@ -25,6 +25,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.diaflux.type.FlowchartType;
 
 /**
@@ -40,7 +41,7 @@ public class FlowchartRenderer implements Renderer {
 
 		// render anchor to be able to link to that flowchart
 		String anchorName = KnowWEUtils.getAnchor(sec);
-		string.append(KnowWEUtils.maskHTML("<a name='" + anchorName + "'></a>"));
+		string.append(Strings.maskHTML("<a name='" + anchorName + "'></a>"));
 
 		string.append(FlowchartUtils.createFlowchartRenderer(sec, user));
 

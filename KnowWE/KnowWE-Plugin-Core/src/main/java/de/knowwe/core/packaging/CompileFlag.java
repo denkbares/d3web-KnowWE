@@ -32,7 +32,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -66,8 +66,8 @@ public class CompileFlag extends DefaultMarkupType {
 				DelegateRenderer.getInstance().render(sec, user, string);
 				return;
 			}
-			string.append(KnowWEUtils.maskHTML("<div id=\"knowledge-panel\" class=\"panel\">"));
-			string.append(KnowWEUtils.maskHTML("<h3>" + "Compile: " + sec.getText() +
+			string.append(Strings.maskHTML("<div id=\"knowledge-panel\" class=\"panel\">"));
+			string.append(Strings.maskHTML("<h3>" + "Compile: " + sec.getText() +
 					"</h3><div>"));
 			for (Section<?> child : packageReferences) {
 				if (child.get() instanceof SinglePackageReference) {
@@ -75,7 +75,7 @@ public class CompileFlag extends DefaultMarkupType {
 							user, string);
 				}
 			}
-			string.append(KnowWEUtils.maskHTML("</div></div>"));
+			string.append(Strings.maskHTML("</div></div>"));
 		}
 
 	}

@@ -39,7 +39,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.knowwe.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
 
@@ -97,9 +97,9 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 			// check for comparator
-			if (SplitUtility.containsUnquoted(text, Equals.SIGN)) {
+			if (Strings.containsUnquoted(text, Equals.SIGN)) {
 				// get right hand side of comparator
-				int index = SplitUtility.indexOfUnquoted(text, Equals.SIGN);
+				int index = Strings.indexOfUnquoted(text, Equals.SIGN);
 				String rightHandSide = text.substring(index + 1).trim();
 				// scan right hand side for score symbol match
 				for (String score : possibleScorePoints) {

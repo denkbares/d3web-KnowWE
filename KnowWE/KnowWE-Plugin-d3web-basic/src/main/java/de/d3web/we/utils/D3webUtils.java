@@ -48,6 +48,7 @@ import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.object.D3webTerm;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -209,9 +210,9 @@ public class D3webUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <TermObject extends NamedObject> TermObject getTermObjectDefaultImplementation(Article article, Section<? extends D3webTerm<TermObject>> section) {
-		String termIdentifier = section.get().getTermIdentifier(section);
+		TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
-		TerminologyObject termObject = kb.getManager().search(termIdentifier);
+		TerminologyObject termObject = kb.getManager().search(termIdentifier.getLastPathElement());
 		if (termObject != null) {
 			if (section.get().getTermObjectClass(section).isAssignableFrom(termObject.getClass())) {
 				return (TermObject) termObject;
@@ -232,14 +233,14 @@ public class D3webUtils {
 	}
 
 	public static <TermObject extends NamedObject> Collection<TerminologyObject> getTermObjectsIgnoreTermObjectClass(Article article, Section<? extends D3webTerm<TermObject>> section) {
-		String termIdentifier = section.get().getTermIdentifier(section);
+		TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
 		TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
 		TerminologyObject termObject;
-		Collection<String> allTermsEqualIgnoreCase = terminologyHandler.getAllTermsEqualIgnoreCase(termIdentifier);
+		Collection<TermIdentifier> allTermsEqualIgnoreCase = terminologyHandler.getAllTermsEqualIgnoreCase(termIdentifier);
 		List<TerminologyObject> foundTermObjects = new ArrayList<TerminologyObject>();
-		for (String termEqualIgnoreCase : allTermsEqualIgnoreCase) {
-			termObject = kb.getManager().search(termEqualIgnoreCase);
+		for (TermIdentifier termEqualIgnoreCase : allTermsEqualIgnoreCase) {
+			termObject = kb.getManager().search(termEqualIgnoreCase.getLastPathElement());
 			if (termObject != null) foundTermObjects.add(termObject);
 		}
 		return foundTermObjects;

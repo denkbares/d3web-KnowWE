@@ -60,6 +60,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserContextUtil;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.event.InitializedAllArticlesEvent;
 
 public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
@@ -185,8 +186,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 		try {
 
-			htmlContent = KnowWEUtils.unmaskNewline(htmlContent);
-			htmlContent = KnowWEUtils.unmaskHTML(htmlContent);
+			htmlContent = Strings.unmaskNewline(htmlContent);
+			htmlContent = Strings.unmaskHTML(htmlContent);
 
 			return htmlContent;
 		}

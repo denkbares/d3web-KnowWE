@@ -16,7 +16,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.StringEnumChecker;
 
@@ -82,8 +82,8 @@ public class QuestionTypeDeclaration extends
 
 				return SectionFinderResult
 						.createSingleItemList(new SectionFinderResult(
-								SplitUtility.indexOfUnquoted(text, "["),
-								SplitUtility.indexOfUnquoted(text, "]") + 1));
+								Strings.indexOfUnquoted(text, "["),
+								Strings.indexOfUnquoted(text, "]") + 1));
 			}
 		};
 		this.setSectionFinder(typeFinder);

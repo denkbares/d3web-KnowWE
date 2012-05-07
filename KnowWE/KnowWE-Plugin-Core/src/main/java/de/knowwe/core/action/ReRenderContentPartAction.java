@@ -28,7 +28,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.Renderer;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 /**
  * ReRenderContentPartAction. Renders a given section again. Often used in
@@ -67,7 +67,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 			if (inPre != null) if (inPre.equals("false")) pagedata = Environment.getInstance()
 							.getWikiConnector().renderWikiSyntax(pagedata, context.getRequest());
 
-			return KnowWEUtils.unmaskHTML(pagedata);
+			return Strings.unmaskHTML(pagedata);
 		}
 		return null;
 	}

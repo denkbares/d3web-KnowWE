@@ -14,8 +14,8 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.SplitUtility;
 import de.knowwe.core.utils.StringFragment;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
@@ -59,8 +59,8 @@ public class SolutionStateCond extends D3webCondition<SolutionStateCond> {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-			if (SplitUtility.containsUnquoted(text, "=")) {
-				List<StringFragment> list = SplitUtility.splitUnquoted(text, "=");
+			if (Strings.containsUnquoted(text, "=")) {
+				List<StringFragment> list = Strings.splitUnquoted(text, "=");
 				// Hotfix for AOB when there is nothing behind the "="
 				if (list.size() < 2) return null;
 				String answer = list.get(1).getContent().trim();

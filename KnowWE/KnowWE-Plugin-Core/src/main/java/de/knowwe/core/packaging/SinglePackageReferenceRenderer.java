@@ -13,6 +13,7 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 public class SinglePackageReferenceRenderer implements Renderer {
 
@@ -64,23 +65,23 @@ public class SinglePackageReferenceRenderer implements Renderer {
 		string.append("! " + "Compiled package: " + packageName + headerSuffix + "\n");
 
 		if (errorsCount > 0) {
-			string.append(KnowWEUtils.maskHTML("<strong>Errors:</strong><p/>\n"));
+			string.append(Strings.maskHTML("<strong>Errors:</strong><p/>\n"));
 			for (Message error : kdomErrors) {
-				string.append(KnowWEUtils.maskHTML(error.getVerbalization() + "<br/>\n"));
+				string.append(Strings.maskHTML(error.getVerbalization() + "<br/>\n"));
 			}
-			string.append(KnowWEUtils.maskHTML("<p/>"));
+			string.append(Strings.maskHTML("<p/>"));
 		}
 		if (warningsCount > 0) {
-			string.append(KnowWEUtils.maskHTML("<strong>Warnings:</strong><p/>\n"));
+			string.append(Strings.maskHTML("<strong>Warnings:</strong><p/>\n"));
 			for (Message warning : kdomWarnings) {
-				string.append(KnowWEUtils.maskHTML(warning.getVerbalization() + "<br/>\n"));
+				string.append(Strings.maskHTML(warning.getVerbalization() + "<br/>\n"));
 			}
-			string.append(KnowWEUtils.maskHTML("<p/>"));
+			string.append(Strings.maskHTML("<p/>"));
 		}
 		if (packageDefinitions.size() > 0) {
-			string.append(KnowWEUtils.maskHTML("<strong>Compiled Sections:</strong><p/>\n"));
+			string.append(Strings.maskHTML("<strong>Compiled Sections:</strong><p/>\n"));
 			for (Section<?> packDef : packageDefinitions) {
-				string.append(KnowWEUtils.maskHTML(packDef.getTitle() + " - "
+				string.append(Strings.maskHTML(packDef.getTitle() + " - "
 						+ packDef.get().getName() + "<br/>\n"));
 				// TODO: Make links!
 			}

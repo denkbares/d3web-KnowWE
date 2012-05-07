@@ -23,7 +23,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 
 /**
@@ -65,8 +65,8 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			// take if right side starts with '('
-			if (SplitUtility.containsUnquoted(text, "=")) {
-				int indexOfEquals = SplitUtility.indexOfUnquoted(text, "=");
+			if (Strings.containsUnquoted(text, "=")) {
+				int indexOfEquals = Strings.indexOfUnquoted(text, "=");
 				String rightSide = text.substring(indexOfEquals + 1).trim();
 				if (rightSide.startsWith("(")) {
 					return new AllTextFinderTrimmed().lookForSections(

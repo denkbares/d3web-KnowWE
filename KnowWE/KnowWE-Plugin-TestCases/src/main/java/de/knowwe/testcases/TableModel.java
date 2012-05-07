@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 import de.d3web.core.utilities.Pair;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 /**
  * 
@@ -61,7 +61,7 @@ public class TableModel {
 		if (cell == null) {
 			return "";
 		}
-		return KnowWEUtils.maskJSPWikiMarkup(cell);
+		return Strings.maskJSPWikiMarkup(cell);
 	}
 
 	/**
@@ -109,32 +109,32 @@ public class TableModel {
 
 	public String toHtml(Section<?> section, UserContext user) {
 		StringBuilder string = new StringBuilder();
-		string.append(KnowWEUtils.maskHTML("<div style='overflow:auto'>"));
-		string.append(KnowWEUtils.maskHTML("<table class='wikitable' border='1'>"));
-		string.append(KnowWEUtils.maskHTML("<thead>"));
+		string.append(Strings.maskHTML("<div style='overflow:auto'>"));
+		string.append(Strings.maskHTML("<table class='wikitable' border='1'>"));
+		string.append(Strings.maskHTML("<thead>"));
 		// headline
-		string.append(KnowWEUtils.maskHTML("<tr>"));
+		string.append(Strings.maskHTML("<tr>"));
 		for (int i = 0; i <= columnCount; i++) {
 			String cell = getCell(0, i);
-			string.append(KnowWEUtils.maskHTML("<th>"));
+			string.append(Strings.maskHTML("<th>"));
 			string.append(cell);
-			string.append(KnowWEUtils.maskHTML("</th>"));
+			string.append(Strings.maskHTML("</th>"));
 		}
-		string.append(KnowWEUtils.maskHTML("</tr>\n"));
-		string.append(KnowWEUtils.maskHTML("</thead>\n"));
-		string.append(KnowWEUtils.maskHTML("<tbody>"));
+		string.append(Strings.maskHTML("</tr>\n"));
+		string.append(Strings.maskHTML("</thead>\n"));
+		string.append(Strings.maskHTML("<tbody>"));
 		for (int i = 1; i <= rowCount; i++) {
-			string.append(KnowWEUtils.maskHTML(i % 2 == 1 ? "<tr>" : "<tr class='odd'>"));
+			string.append(Strings.maskHTML(i % 2 == 1 ? "<tr>" : "<tr class='odd'>"));
 			for (int j = 0; j <= columnCount; j++) {
-				string.append(KnowWEUtils.maskHTML("<td>"));
+				string.append(Strings.maskHTML("<td>"));
 				string.append(getCell(i, j));
-				string.append(KnowWEUtils.maskHTML("</td>"));
+				string.append(Strings.maskHTML("</td>"));
 			}
-			string.append(KnowWEUtils.maskHTML("</tr>\n"));
+			string.append(Strings.maskHTML("</tr>\n"));
 		}
-		string.append(KnowWEUtils.maskHTML("</tbody>"));
-		string.append(KnowWEUtils.maskHTML("</table>"));
-		string.append(KnowWEUtils.maskHTML("</div>"));
+		string.append(Strings.maskHTML("</tbody>"));
+		string.append(Strings.maskHTML("</table>"));
+		string.append(Strings.maskHTML("</div>"));
 
 		return string.toString();
 	}

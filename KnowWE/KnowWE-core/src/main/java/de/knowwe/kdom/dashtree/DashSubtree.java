@@ -30,7 +30,7 @@ import de.knowwe.core.kdom.basicType.CommentLineType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 /**
  * @author Jochen
@@ -93,7 +93,7 @@ public class DashSubtree extends AbstractType {
 
 			Matcher m = null;
 			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			if (KnowWEUtils.isEmpty(text)) return result;
+			if (Strings.isBlank(text)) return result;
 			try {
 				// Searches for line-beginning with correct count of dashes
 				// (starting with 0)

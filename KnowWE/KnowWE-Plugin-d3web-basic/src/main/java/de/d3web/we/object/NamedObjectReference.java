@@ -47,7 +47,7 @@ public class NamedObjectReference extends D3webTermReference<NamedObject> {
 
 	@Override
 	public NamedObject getTermObject(Article article, Section<? extends D3webTerm<NamedObject>> section) {
-		String termIdentifier = section.get().getTermIdentifier(section);
+		String termIdentifier = section.get().getTermIdentifier(section).toString();
 		KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(article.getWeb(),
 				article.getTitle());
 		if (termIdentifier.equals("KNOWLEDGEBASE")

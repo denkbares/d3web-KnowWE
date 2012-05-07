@@ -26,6 +26,7 @@ import com.wcohen.ss.Levenstein;
 
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.correction.CorrectionProvider;
 import de.knowwe.core.kdom.Article;
@@ -56,32 +57,32 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 		SimpleTerm termReference = (SimpleTerm) section.get();
 		Section<AnswerReference> refSec = ((Section<AnswerReference>) section);
 
-		Collection<String> allDefinedLocalTermsOfType = terminologyHandler.getAllDefinedTermsOfType(
+		Collection<TermIdentifier> allDefinedLocalTermsOfType = terminologyHandler.getAllDefinedTermsOfType(
 				termReference.getTermObjectClass(refSec));
 
 		String originalText = section.getText();
 		List<CorrectionProvider.Suggestion> suggestions = new LinkedList<CorrectionProvider.Suggestion>();
 		Levenstein l = new Levenstein();
 
-		for (String match : allDefinedLocalTermsOfType) {
+		for (TermIdentifier matchedIdentifier : allDefinedLocalTermsOfType) {
 
 			AnswerReference answerReference = (AnswerReference) termReference;
 			Section<QuestionReference> questionSection = answerReference.getQuestionSection((Section<? extends AnswerReference>) section);
-			String question = questionSection.get().getTermIdentifier(questionSection);
+			TermIdentifier question = questionSection.get().getTermIdentifier(questionSection);
 			// Special case: AnswerReference: Also check that the defining
 			// Question matches
 			if (!(refSec.get().getTermIdentifier(refSec).startsWith(question))) {
 				continue;
 			}
 
-			double score = l.score(originalText, match);
+			double score = l.score(originalText, matchedIdentifier.getLastPathElement());
 			if (score >= -threshold) {
 
-				suggestions.add(new CorrectionProvider.Suggestion(match, (int) score));
+				suggestions.add(new CorrectionProvider.Suggestion(
+						matchedIdentifier.getLastPathElement(), (int) score));
 			}
 		}
 
 		return suggestions;
 	}
-
 }

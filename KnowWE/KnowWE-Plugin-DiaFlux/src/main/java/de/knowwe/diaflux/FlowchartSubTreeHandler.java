@@ -208,7 +208,6 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 	}
 
 	private Condition buildCondition(Article article, Section<CompositeCondition> s, List<Message> errors) {
-
 		return KDOMConditionFactory.createCondition(article, s);
 	}
 

@@ -43,7 +43,7 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 	}
 
 	protected Tool getObjectInfoPageTool(Section<? extends SimpleTerm> section, UserContext userContext) {
-		String objectName = section.get().getTermIdentifier(section).trim();
+		String objectName = section.get().getTermIdentifier(section).toExternalForm();
 		String jsAction = "window.location.href = " +
 				"'Wiki.jsp?page=ObjectInfoPage&objectname=' + encodeURIComponent('" +
 				objectName + "')";

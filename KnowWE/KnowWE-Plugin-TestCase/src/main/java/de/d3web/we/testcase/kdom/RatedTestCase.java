@@ -29,8 +29,8 @@ import de.knowwe.core.kdom.basicType.SquareBracedType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.SplitUtility;
 import de.knowwe.core.utils.StringFragment;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.testcases.TimeStampType;
 
@@ -55,7 +55,7 @@ public class RatedTestCase extends AbstractType {
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			List<StringFragment> cases = SplitUtility.splitUnquoted(text, ";");
+			List<StringFragment> cases = Strings.splitUnquoted(text, ";", false);
 			for (StringFragment string : cases) {
 				int indexOf = string.getStartTrimmed();
 				SectionFinderResult s =

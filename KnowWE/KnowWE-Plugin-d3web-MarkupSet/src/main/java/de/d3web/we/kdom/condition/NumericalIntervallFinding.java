@@ -35,7 +35,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> {
@@ -77,7 +77,7 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 
 			// has to end with ']'
 			if (text.trim().endsWith("]")) {
-				int bracketsStart = SplitUtility.lastIndexOfUnquoted(text, "[");
+				int bracketsStart = Strings.lastIndexOfUnquoted(text, "[");
 				if (bracketsStart == -1) return null;
 				// get the content in brackets
 				String brackets = text.substring(bracketsStart).trim();
@@ -85,7 +85,7 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 
 				// find out whether there are exactly 2 chains of characters
 				// separated by 1 one more spaces
-				String[] nonEmptyParts = SplitUtility.getCharacterChains(content);
+				String[] nonEmptyParts = Strings.getCharacterChains(content);
 
 				// ..if so, take it all
 				if (nonEmptyParts.length == 2) {
@@ -103,7 +103,7 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 		public Double getFirstNumber(Section<Intervall> s) {
 			String text = s.getText();
 			String content = text.substring(1, text.length() - 1);
-			String[] parts = SplitUtility.getCharacterChains(content);
+			String[] parts = Strings.getCharacterChains(content);
 			if (parts.length == 2) {
 				String firstNumber = parts[0];
 				Double d = null;
@@ -121,7 +121,7 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 		public Double getSecondNumber(Section<Intervall> s) {
 			String text = s.getText();
 			String content = text.substring(1, text.length() - 1);
-			String[] parts = SplitUtility.getCharacterChains(content);
+			String[] parts = Strings.getCharacterChains(content);
 			if (parts.length == 2) {
 				String secondNumber = parts[1];
 				Double d = null;
@@ -143,8 +143,8 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 				@Override
 				public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 					if (text.trim().endsWith("]")) {
-						int bracketsStart = SplitUtility.lastIndexOfUnquoted(text, "[");
-						int bracketsEnd = SplitUtility.lastIndexOfUnquoted(text, "]");
+						int bracketsStart = Strings.lastIndexOfUnquoted(text, "[");
+						int bracketsEnd = Strings.lastIndexOfUnquoted(text, "]");
 
 						return SectionFinderResult.createSingleItemList(new SectionFinderResult(
 								bracketsStart,

@@ -24,7 +24,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 /**
  * This is a renderer for the Table. It wraps the <code>Table</code> tag into an
@@ -61,7 +61,7 @@ public class TableRenderer implements Renderer {
 
 		buffi.append(getClosingTag());
 
-		string.append(KnowWEUtils.maskHTML(buffi.toString()));
+		string.append(Strings.maskHTML(buffi.toString()));
 	}
 
 	protected String getHeader() {

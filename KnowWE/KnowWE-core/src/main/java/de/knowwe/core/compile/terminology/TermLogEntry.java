@@ -31,9 +31,9 @@ class TermLogEntry implements Comparable<TermLogEntry> {
 	private final Priority priority;
 	private final Section<?> section;
 	private final Class<?> termClass;
-	private final String termIdentifier;
+	private final TermIdentifier termIdentifier;
 
-	public TermLogEntry(Priority priority, Section<?> section, Class<?> termClass, String termIdentifier) {
+	public TermLogEntry(Priority priority, Section<?> section, Class<?> termClass, TermIdentifier termIdentifier) {
 		this.section = section;
 		this.termClass = termClass;
 		this.termIdentifier = termIdentifier;
@@ -52,7 +52,7 @@ class TermLogEntry implements Comparable<TermLogEntry> {
 		return termClass;
 	}
 
-	public String getTermIdentifier() {
+	public TermIdentifier getTermIdentifier() {
 		return termIdentifier;
 	}
 

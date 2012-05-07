@@ -22,8 +22,6 @@ import java.util.regex.Pattern;
 
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
-import de.knowwe.core.kdom.objects.SimpleTerm;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.xml.XMLHead;
 
@@ -43,11 +41,6 @@ public class FlowchartXMLHeadType extends XMLHead {
 		public FlowchartTermDef() {
 			super(TermRegistrationScope.LOCAL, String.class);
 			setSectionFinder(new RegexSectionFinder(Pattern.compile("name=\"([^\"]*)\""), 1));
-		}
-
-		@Override
-		public String getTermIdentifier(Section<? extends SimpleTerm> s) {
-			return s.getText();
 		}
 
 	}

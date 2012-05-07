@@ -15,7 +15,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.utils.SplitUtility;
+import de.knowwe.core.utils.Strings;
 
 public class CompositeFormula extends AbstractType {
 
@@ -30,7 +30,7 @@ public class CompositeFormula extends AbstractType {
 
 		// a composite condition may either be a BracedCondition,...
 		BracedCondition braced = new BracedCondition(); // contains the
-															// brackets
+														// brackets
 		// and the
 		// endline-comments
 		this.childrenTypes.add(braced);
@@ -44,8 +44,6 @@ public class CompositeFormula extends AbstractType {
 		// endline-comments
 		bracedContent.addChildType(this);
 
-
-		
 		// ...a Additive expression,...
 		Addition conj = new Addition();
 		this.addChildType(conj);
@@ -57,7 +55,6 @@ public class CompositeFormula extends AbstractType {
 		this.addChildType(sub);
 		sub.addChildType(this); // Subtractions again allow for a
 		// CompositeExpression
-
 
 		// ... a multiplicative expression,...
 		Multiplication mult = new Multiplication();
@@ -107,7 +104,6 @@ public class CompositeFormula extends AbstractType {
 	public Section<? extends NonTerminalCondition> getBraced(Section<CompositeFormula> c) {
 		return Sections.findChildOfType(c, BracedCondition.class);
 	}
-
 
 	/**
 	 * returns the conjunts of a conjunction
@@ -180,7 +176,6 @@ public class CompositeFormula extends AbstractType {
 		return result;
 	}
 
-
 	/**
 	 * tells whether a CompositeCondition is a Conjunction
 	 * 
@@ -228,7 +223,6 @@ public class CompositeFormula extends AbstractType {
 		return terminal;
 	}
 
-
 	/**
 	 * 
 	 * @created 03.08.2010
@@ -236,7 +230,7 @@ public class CompositeFormula extends AbstractType {
 	 * @return
 	 */
 	static boolean hasLineBreakAfterComment(String text) {
-		int start = SplitUtility.lastIndexOfUnquoted(text, "//");
+		int start = Strings.lastIndexOfUnquoted(text, "//");
 		if (start != -1) {
 			Pattern pattern = Pattern.compile("\\r?\\n");
 			Matcher matcher = pattern.matcher(text);
@@ -297,10 +291,4 @@ public class CompositeFormula extends AbstractType {
 		}
 	}
 
-
-
 }
-
-
-
-

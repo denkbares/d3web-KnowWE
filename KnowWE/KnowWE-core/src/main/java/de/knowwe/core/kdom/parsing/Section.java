@@ -176,12 +176,16 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * verbalizes this node
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public String toString() {
 		String typeString = type != null ? this.get().getClass().getSimpleName() + ": " : "";
-		String content = type != null && type instanceof SimpleTerm
-				? ((SimpleTerm) type).getTermIdentifier((Section<? extends SimpleTerm>) this)
-				: this.getText();
+		String content;
+		if (type != null && type instanceof SimpleTerm) {
+			Section<SimpleTerm> simpleTerm = Sections.cast(this, SimpleTerm.class);
+			content = simpleTerm.get().getTermIdentifier(simpleTerm).toString();
+		}
+		else {
+			content = this.getText();
+		}
 		return typeString + "'" + content + "'";
 	}
 

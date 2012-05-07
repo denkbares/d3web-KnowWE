@@ -33,6 +33,7 @@ import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.QuestionZC;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
@@ -99,10 +100,10 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 		public Collection<Message> create(Article article,
 				Section<QuestionDefinition> section) {
 
-			String name = section.get().getTermIdentifier(section);
+			TermIdentifier identifier = section.get().getTermIdentifier(section);
 			Class<?> termObjectClass = section.get().getTermObjectClass(section);
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
-			terminologyHandler.registerTermDefinition(section, termObjectClass, name);
+			terminologyHandler.registerTermDefinition(section, termObjectClass, identifier);
 
 			Collection<Message> msgs = section.get().canAbortTermObjectCreation(article, section);
 			if (msgs != null) return msgs;
@@ -120,6 +121,8 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			if (parent == null) {
 				parent = kb.getRootQASet();
 			}
+
+			String name = section.get().getTermName(section);
 
 			QuestionType questionType = section.get().getQuestionType(section);
 			if (questionType == null) {
@@ -150,12 +153,12 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			}
 			else {
 				return Messages.asList(Messages.error(
-						"No valid question type found for question '" + name + "'"));
+						"No valid question type found for question '" + identifier + "'"));
 			}
 
 			// return success message
 			return Messages.asList(Messages.objectCreatedNotice(
-					termObjectClass.getSimpleName() + " " + name));
+					termObjectClass.getSimpleName() + " " + identifier));
 
 		}
 	}
