@@ -26,7 +26,6 @@ import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Strings;
-import de.knowwe.core.utils.Strings;
 
 public class ObjectInfoLinkRenderer implements Renderer {
 
