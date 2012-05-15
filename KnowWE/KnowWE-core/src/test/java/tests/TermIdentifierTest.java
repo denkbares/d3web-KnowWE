@@ -44,6 +44,9 @@ public class TermIdentifierTest extends TestCase {
 		checkPath("termIdentifier\\\"");
 		checkPath("\"\\termIdentifier");
 		checkPath("\"\\termIdentifier\\\"");
+		checkPath("term#Identifier");
+		checkPath("term\\#Identifier");
+		checkPath("term#Identifier", "#");
 		checkPath("termI\"dentifier");
 		checkPath("termI\\dentifier");
 		checkPath("termI\"den\\tifier");
