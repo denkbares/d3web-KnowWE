@@ -527,6 +527,25 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		
+		<!-- Wiki zip download plugin -->
+		<profile>
+			<id>wikizip-plugin</id>
+			<activation>
+				<property>
+					<name>wikizip-plugin</name>
+				</property>
+			</activation>
+
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Wikicontent-Download</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 
 		<!-- TestcaseTable plugin -->
 		<profile>
