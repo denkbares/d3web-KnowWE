@@ -223,17 +223,18 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 		// Check if rendering is suppressed
 		if (checkParameter(HIDERENAME, parameters)) return "";
+		String objectNameEscaped = objectName.replace("\"", "&quot;");
 
 		StringBuilder html = new StringBuilder();
 		html.append("<form action=\"\" method=\"post\">");
 		html.append(rb.getString("KnowWE.ObjectInfoTagHandler.renameTo"));
 		html.append("<input type=\"hidden\" id=\"objectinfo-target\" value=\"" +
-				objectName
+				objectNameEscaped
 				+ "\" />");
 		html.append("<input type=\"hidden\" id=\"objectinfo-web\" value=\"" +
 				web
 				+ "\" />");
-		html.append("<input type=\"text\" size=\"40\" value=\"" + objectName
+		html.append("<input type=\"text\" size=\"40\" value=\"" + objectNameEscaped
 				+ "\" id=\"objectinfo-replacement\" />&nbsp;");
 		html.append("<input type=\"button\" id=\"objectinfo-replace-button\" value=\"&rarr;\" />");
 		html.append("&nbsp;<span id=\"objectinfo-rename-result\">");

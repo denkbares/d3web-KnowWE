@@ -46,7 +46,7 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 		String objectName = section.get().getTermIdentifier(section).toExternalForm();
 		String jsAction = "window.location.href = " +
 				"'Wiki.jsp?page=ObjectInfoPage&objectname=' + encodeURIComponent('" +
-				objectName + "')";
+				objectName.replace("\"", "&quot;") + "')";
 		return new DefaultTool(
 				"KnowWEExtension/d3web/icon/infoPage16.png",
 				"Show Info Page",
