@@ -20,10 +20,7 @@ package de.d3web.we.kdom.rules.action;
 
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
-import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
@@ -41,16 +38,6 @@ public abstract class BracketsAction<T extends Type> extends D3webRuleAction<T> 
 	protected static final String CLOSE = "]";
 
 	public BracketsAction(final String[] alternativeKeys) {
-		this.setRenderer(new Renderer() {
-
-			@Override
-			public void render(Section<?> sec, UserContext user, StringBuilder string) {
-				StringBuilder b = new StringBuilder();
-				DelegateRenderer.getInstance().render(sec, user, b);
-				string.append(b.toString().replaceAll("\\[", "~["));
-
-			}
-		});
 		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
 
 			@Override
