@@ -297,6 +297,11 @@ Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, comma
 	else if (keyCode == 13 || keyCode == 113 || (keyCode == 85 && command)) {
 		this.editCell(row, col);
 	}
+	// Ctrl+Space for edit mode and auto-completion (if available)
+	else if (keyCode == 32 && command) {
+		this.editCell(row, col);
+		this.showAutoComplete();
+	}
 	// left
 	else if (keyCode == 37) {
 		var toCol = command ? 0 : col - 1;
@@ -370,7 +375,14 @@ Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, comma
 	return true;
 }
 
+Spreadsheet.prototype.stopEditCell = function() {
+	if (this.stopEditCellFunction) {
+		this.stopEditCellFunction();
+	}
+}
+
 Spreadsheet.prototype.editCell = function(row, col) {
+	this.stopEditCell();
 	this.uncopyCopiedCells();
 	this.selectCell(row,col);
 	var contentElement = this.getSelectedCell().find("div > a");
@@ -391,11 +403,14 @@ Spreadsheet.prototype.editCell = function(row, col) {
 	var editArea = editDiv.children("textarea");
 	editArea.focus();
 	editArea.select();
+	// then adding our key and event handling
 	var spreadsheet = this;
 	var closing = false; // flag to avoid multiple closing (detach forces focusout-event)
-	editArea.keydown(function(event) {
+	var keyDownFunction = function(event) {
 		if (closing) return;
 		var keyCode = event.which;
+		// ignore return key if auto-complete is on 
+		if ((keyCode == 13 || keyCode == 27) && spreadsheet.isAutoCompleteFocused()) return;
 		if ((keyCode == 13 && !event.altKey && !event.shiftKey) || (keyCode == 9 && !event.altKey)) {
 			spreadsheet.setCellText(row, col, editArea.val());
 		}
@@ -414,24 +429,55 @@ Spreadsheet.prototype.editCell = function(row, col) {
 		if (keyCode == 13) {
 			spreadsheet.handleKeyDown(spreadsheet.getSelectedCell(), 40, false, false);
 		}
-	});
-	editArea.focusout(function(event) {
+	};
+	editArea.keydown(keyDownFunction);
+	this.stopEditCellFunction = function() {
 		if (closing) return;
-		spreadsheet.setCellText(row, col, editArea.val());
 		closing = true;
+		spreadsheet.uninstallAutoComplete();
+		spreadsheet.setCellText(row, col, editArea.val());
 		editDiv.detach();
-		spreadsheet.selectCell(row,col);			
-	});
+		spreadsheet.selectCell(row,col);
+	};
+	//editArea.focusout(this.stopEditCellFunction);	
+
+	// install auto-complete finally
+	this.installAutoComplete(textAreaID, row, col);
+}
+
+Spreadsheet.prototype.isAutoCompleteFocused = function() {
+	return (typeof AutoComplete != "undefined") && AutoComplete.hasFocus();
+}
+
+Spreadsheet.prototype.showAutoComplete = function() {
+	if (typeof AutoComplete != "undefined") {
+		AutoComplete.requestFocus();
+		AutoComplete.requestCompletions();
+	}
+}
+
+Spreadsheet.prototype.uninstallAutoComplete = function() {
+	if (typeof AutoComplete != "undefined") {
+		AutoComplete.showCompletions(null);
+	}
+}
+
+Spreadsheet.prototype.installAutoComplete = function(textAreaID, row, col) {
 	// enable auto-completion if available
 	// but we require some special functionality because only editing part of table
-	/*
 	if (typeof AutoComplete != "undefined") {
+		var spreadsheet = this;
 		var textarea = $(textAreaID);
 		var completeFun = function(prefix) {
 			var trimPrefix = prefix.trim();
 			var json = "[";
+			var textCache = new Array();
 			for (var r = 0; r < spreadsheet.size.rows; r++) {
+				// use each text once
 				var text = spreadsheet.getCellText(r, col).trim();
+				if (textCache[text]) continue;
+				textCache[text] = "done";
+				// check if it can be used for completion
 				if (text.length == 0) continue;
 				if (text.length < trimPrefix.length) continue;
 				if (text.substring(0, trimPrefix.length) != trimPrefix) continue;
@@ -439,18 +485,19 @@ Spreadsheet.prototype.editCell = function(row, col) {
 					"title: '" + text + "', " +
 					"insertText: '" + text + "', " +
 					"replaceLength: '" + prefix.length + "', " +
-					"cursorPosition: 0 }, "
+					"cursorPosition: " + text.length + " }, "
 			}
 			json += "]";
-			alert(json);
+			//alert(json);
 			return json;
 		}
 		AutoComplete.initialize(textarea, completeFun);
+		TextArea.initialize(textarea, true);
 	}
-	*/
 }
 
 Spreadsheet.prototype.setCellText = function(row, col, text) {
+	this.stopEditCell();
 	var elem = this.getCell(row, col).find("div > a");
 	if (!text || text.match(/^\s+$/g)) {
 		elem.html("&nbsp;"); // avoid cell collapsing
@@ -470,6 +517,7 @@ Spreadsheet.prototype.getCellText = function(row, col) {
  * to deselect all cells.
  */
 Spreadsheet.prototype.selectCell = function(row, col, multiSelect) {
+	this.stopEditCell();
 	var cell = this.getSelectedCell();
 	if (cell) {
 		cell.removeClass("selected");
@@ -620,6 +668,7 @@ Spreadsheet.prototype.getCellID = function(row, col) {
 }
 
 Spreadsheet.prototype.addRow = function(row) {
+	this.stopEditCell();
 	var sr = this.selected ? this.selected.row : 0;
 	var sc = this.selected ? this.selected.col : 0;
 	if (sr >= row) sr++;
@@ -653,6 +702,7 @@ Spreadsheet.prototype.addRow = function(row) {
 }
 
 Spreadsheet.prototype.removeRow = function(row) {
+	this.stopEditCell();
 	if (this.size.rows <= 1) return;
 	var sr = this.selected ? Math.min(this.selected.row, this.size.rows-2) : 0;
 	var sc = this.selected ? this.selected.col : 0;
@@ -680,6 +730,7 @@ Spreadsheet.prototype.removeRow = function(row) {
 }
 
 Spreadsheet.prototype.addCol = function(col) {
+	this.stopEditCell();
 	var sr = this.selected ? this.selected.row : 0;
 	var sc = this.selected ? this.selected.col : 0;
 	if (sc >= col) sc++;
@@ -713,6 +764,7 @@ Spreadsheet.prototype.addCol = function(col) {
 }
 
 Spreadsheet.prototype.removeCol = function(col) {
+	this.stopEditCell();
 	if (this.size.cols <= 1) return;
 	var sr = this.selected ? this.selected.row : 0;
 	var sc = this.selected ? Math.min(this.selected.col, this.size.cols-2) : 0;
@@ -740,6 +792,7 @@ Spreadsheet.prototype.removeCol = function(col) {
 }
 
 Spreadsheet.prototype.setHeader = function(row, col, isHeader) {
+	this.stopEditCell();
 	var sr = this.selected ? this.selected.row : 0;
 	var sc = this.selected ? this.selected.col : 0;
 	var tr = this.selectedRange ? this.selectedRange.toRow : sr;

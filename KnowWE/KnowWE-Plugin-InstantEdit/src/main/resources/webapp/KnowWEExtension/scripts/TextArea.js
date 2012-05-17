@@ -1,9 +1,11 @@
 
 if (!TextArea) {
 	var TextArea = {
-		initialize : function(a) {
+		initialize : function(a, suppressHotkeys) {
 			this.textarea = $(a);
-			this.textarea.addEvent("keydown", this.handleKeyDown.bind(this));
+			if (!suppressHotkeys) {
+				this.textarea.addEvent("keydown", this.handleKeyDown.bind(this));
+			}
 			return this
 		},
 		handleKeyDown : function (event) {
