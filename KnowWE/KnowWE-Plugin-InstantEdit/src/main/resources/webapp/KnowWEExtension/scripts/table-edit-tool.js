@@ -29,7 +29,7 @@ KNOWWE.plugin.tableEditTool = function() {
 	    },
 	    
 	    postProcessHTML : function(id) {
-	    	spreadsheet = new Spreadsheet(createRootID(id));
+	    	spreadsheet = new Spreadsheet(createRootID(id), function() {_IE.save(id)}, function() {_IE.cancel(id)});
 	    	spreadsheet.setWikiMarkup(originalWikiText);
 	    	originalWikiText = spreadsheet.getWikiMarkup();
 
@@ -179,8 +179,10 @@ SpreadsheetModel.prototype.toWikiMarkup = function() {
 
 }
 
-function Spreadsheet(elementID) {
+function Spreadsheet(elementID, saveFun, cancelFun) {
 	this.elementID = elementID;
+	this.saveFunction = saveFun;
+	this.cancelFunction = cancelFun;
 	this.element = jq$("#"+elementID);
 	
 	this.createTable();
@@ -353,9 +355,15 @@ Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, comma
 	else if (keyCode == 86 && command) {
 		this.pasteCopiedCells();
 	}
-	// save
-	else if (keyCode == 83 && command) {
-		alert(this.getWikiMarkup());
+	// save: 's'
+	else if (keyCode == 83 && command && this.saveFunction) {
+		this.stopEditCell();
+		this.saveFunction();
+	}
+	// cancel: 'q'
+	else if (keyCode == 81 && command && this.cancelFunction) {
+		this.stopEditCell(true);
+		this.cancelFunction();
 	}
 	// ESC
 	else if (keyCode == 27) {
@@ -375,9 +383,9 @@ Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, comma
 	return true;
 }
 
-Spreadsheet.prototype.stopEditCell = function() {
+Spreadsheet.prototype.stopEditCell = function(cancel) {
 	if (this.stopEditCellFunction) {
-		this.stopEditCellFunction();
+		this.stopEditCellFunction(cancel);
 	}
 }
 
@@ -409,10 +417,23 @@ Spreadsheet.prototype.editCell = function(row, col) {
 	var keyDownFunction = function(event) {
 		if (closing) return;
 		var keyCode = event.which;
+		var command = event.ctrlKey || event.metaKey;
 		// ignore return key if auto-complete is on 
 		if ((keyCode == 13 || keyCode == 27) && spreadsheet.isAutoCompleteFocused()) return;
 		if ((keyCode == 13 && !event.altKey && !event.shiftKey) || (keyCode == 9 && !event.altKey)) {
 			spreadsheet.setCellText(row, col, editArea.val());
+		}
+		// save: 's'
+		else if (keyCode == 83 && command && spreadsheet.saveFunction) {
+			spreadsheet.stopEditCell();
+			spreadsheet.saveFunction();
+			return;
+		}
+		// cancel: 'q'
+		else if (keyCode == 81 && command && spreadsheet.cancelFunction) {
+			spreadsheet.stopEditCell(true);
+			spreadsheet.cancelFunction();
+			return;
 		}
 		// ESC
 		else if (keyCode == 27) {
@@ -431,11 +452,11 @@ Spreadsheet.prototype.editCell = function(row, col) {
 		}
 	};
 	editArea.keydown(keyDownFunction);
-	this.stopEditCellFunction = function() {
+	this.stopEditCellFunction = function(cancel) {
 		if (closing) return;
 		closing = true;
 		spreadsheet.uninstallAutoComplete();
-		spreadsheet.setCellText(row, col, editArea.val());
+		if (!cancel) spreadsheet.setCellText(row, col, editArea.val());
 		editDiv.detach();
 		spreadsheet.selectCell(row,col);
 	};
