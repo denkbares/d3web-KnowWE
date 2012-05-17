@@ -258,6 +258,14 @@ Spreadsheet.prototype.createTable = function(model) {
 		event.preventDefault();
 	});
 
+	// double click event to enter edit mode
+	this.element.find(" tr > td").dblclick(function(event) {
+		var cell = jq$(this);
+		var data = cell.data("cellInfo");
+		data.spreadsheet.editCell(data.row, data.col);
+		event.preventDefault();
+	});
+
 	// add keyboard event to select/edit data
 	this.element.find(" tr > td > div > a").keydown(function(event) {
 		var cell = jq$(this).parents(" tr > td");
@@ -285,8 +293,8 @@ Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, comma
 	if (keyCode == 8 || keyCode == 46) {
 		this.clearSelectedCells();
 	}
-	// return
-	else if (keyCode == 13) {
+	// return, or F2 (Excel Windows), or Ctrl+u (Excel Mac) 
+	else if (keyCode == 13 || keyCode == 113 || (keyCode == 85 && command)) {
 		this.editCell(row, col);
 	}
 	// left
@@ -388,7 +396,7 @@ Spreadsheet.prototype.editCell = function(row, col) {
 	editArea.keydown(function(event) {
 		if (closing) return;
 		var keyCode = event.which;
-		if ((keyCode == 13 || keyCode == 9) && !event.altKey && !event.shiftKey) {
+		if ((keyCode == 13 && !event.altKey && !event.shiftKey) || (keyCode == 9 && !event.altKey)) {
 			spreadsheet.setCellText(row, col, editArea.val());
 		}
 		// ESC
