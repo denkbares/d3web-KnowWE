@@ -75,6 +75,7 @@ KNOWWE.plugin.tableEditTool = function() {
 	    },
 	    
 	    generateWikiText : function(id) {
+	    	spreadsheet.stopEditCell();
 	    	return spreadsheet.getWikiMarkup();
 	    }
     }
@@ -102,6 +103,8 @@ function SpreadsheetModel(wikiText) {
 		
 		// normalize returns, remove multiples
 		wikiText = wikiText.replace(/[\n\r]+/g, "\n"); 
+		// replace in-link pipes by html entity
+		wikiText = wikiText.replace(/(\[[^\]]*)\|/g, "$1&#124;");
 		// unescape multiple "~", odd, but like jsp-wiki does
 		while (wikiText.search(/\~\~\~/) != -1) {
 			wikiText = wikiText.replace(/\~\~\~/, "&#126;~~");
@@ -165,7 +168,9 @@ SpreadsheetModel.prototype.toWikiMarkup = function() {
 		for (var col = 0; col < this.width; col++) {
 			var cellText = this.getCellText(row, col);
 			cellText = cellText.replace(/(\~+)/g, "~$1"); // escape escape character
+			cellText = cellText.replace(/(\[[^\]]*)\|/g, "$1&#124;"); // escape pipes in links
 			cellText = cellText.replace(/\|/g, "~|"); // escape pipes
+			cellText = cellText.replace(/\&\#124;/g, "|"); // unescape pipes in links
 			cellText = cellText.replace(/\r?\n\r?/g, "\\\\"); // escape line breaks
 			cellText = cellText.replace(/\\u00A0/g," "); // replace &nbsp; by normal space
 			wikiText += this.isHeader(row, col) ? "|| " : "|  ";
