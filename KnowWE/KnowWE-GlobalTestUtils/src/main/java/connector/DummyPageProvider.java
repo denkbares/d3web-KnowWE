@@ -36,7 +36,7 @@ import com.ecyrd.jspwiki.providers.BasicAttachmentProvider;
 
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.Strings;
-import de.knowwe.core.wikiConnector.ConnectorAttachment;
+import de.knowwe.core.wikiConnector.WikiAttachment;
 
 /**
  * This {@link DummyPageProvider} can be used together with the DummyConnector
@@ -65,7 +65,7 @@ public class DummyPageProvider {
 
 	private final TreeMap<String, String> articles = new TreeMap<String, String>();
 
-	private final HashMap<String, ConnectorAttachment> attachments = new HashMap<String, ConnectorAttachment>();
+	private final HashMap<String, WikiAttachment> attachments = new HashMap<String, WikiAttachment>();
 
 	private final HashMap<String, Integer> attachmentVersionCache = new HashMap<String, Integer>();
 
@@ -101,11 +101,11 @@ public class DummyPageProvider {
 		fileName = Strings.decodeURL(fileName);
 
 		ZipContentConnectorAttachment zipConAttachment = new ZipContentConnectorAttachment(
-				fileName, parentName, entry, wikiContentZip);
+				this, fileName, parentName, entry, wikiContentZip);
 
 		String versionFileName = attachmentMatcher.group(3);
 		if (isLatestVersion(versionFileName, zipConAttachment)) {
-			storeAttachment(zipConAttachment.getPath(), zipConAttachment);
+			storeAttachment(zipConAttachment);
 		}
 	}
 
@@ -159,10 +159,10 @@ public class DummyPageProvider {
 						parentName = Strings.decodeURL(parentName);
 						fileName = Strings.decodeURL(fileName);
 						FileSystemConnectorAttachment fileConAttachment = new FileSystemConnectorAttachment(
-								fileName, parentName, attachmentVersionFile);
+								this, fileName, parentName, attachmentVersionFile);
 
 						if (isLatestVersion(attachmentVersionFile.getName(), fileConAttachment)) {
-							storeAttachment(fileConAttachment.getPath(), fileConAttachment);
+							storeAttachment(fileConAttachment);
 						}
 					}
 				}
@@ -170,7 +170,7 @@ public class DummyPageProvider {
 		}
 	}
 
-	private boolean isLatestVersion(String attachmentVersionFileName, ConnectorAttachment attachment) {
+	private boolean isLatestVersion(String attachmentVersionFileName, WikiAttachment attachment) {
 		Integer newVersion = getVersion(attachmentVersionFileName);
 		Integer currentVersion = attachmentVersionCache.get(attachment.getPath());
 		boolean latestVersion = currentVersion == null || newVersion > currentVersion;
@@ -207,8 +207,12 @@ public class DummyPageProvider {
 		articles.put(title, content);
 	}
 
-	public void storeAttachment(String fullName, ConnectorAttachment attachment) {
-		attachments.put(fullName, attachment);
+	public void storeAttachment(WikiAttachment attachment) {
+		attachments.put(attachment.getPath(), attachment);
+	}
+
+	public void deleteAttachment(String path) {
+		attachments.remove(path);
 	}
 
 	public Map<String, String> getAllArticles() {
@@ -219,11 +223,11 @@ public class DummyPageProvider {
 		return articles.get(title);
 	}
 
-	public Map<String, ConnectorAttachment> getAllAttachments() {
+	public Map<String, WikiAttachment> getAllAttachments() {
 		return Collections.unmodifiableMap(attachments);
 	}
 
-	public ConnectorAttachment getAttachment(String fullName) {
+	public WikiAttachment getAttachment(String fullName) {
 		return attachments.get(fullName);
 	}
 

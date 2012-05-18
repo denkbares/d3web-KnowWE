@@ -24,7 +24,7 @@ import java.io.InputStream;
 
 import de.d3web.core.knowledge.Resource;
 import de.knowwe.core.Environment;
-import de.knowwe.core.wikiConnector.ConnectorAttachment;
+import de.knowwe.core.wikiConnector.WikiAttachment;
 
 /**
  * Resource for storing an attachment of an Wikipage. See also:
@@ -45,7 +45,7 @@ public class WikiAttachmentResource implements Resource {
 
 	@Override
 	public InputStream getInputStream() throws IOException {
-		ConnectorAttachment attachment = getAttachment();
+		WikiAttachment attachment = getAttachment();
 		if (attachment == null) throw new IOException("Attachment '" + attachmentPath
 				+ "' not found");
 		return attachment.getInputStream();
@@ -58,12 +58,12 @@ public class WikiAttachmentResource implements Resource {
 
 	@Override
 	public long getSize() {
-		ConnectorAttachment attachment = getAttachment();
+		WikiAttachment attachment = getAttachment();
 		return attachment == null ? 0 : attachment.getSize();
 	}
 
-	private ConnectorAttachment getAttachment() {
-		ConnectorAttachment attachment = Environment.getInstance().getWikiConnector().getAttachment(
+	private WikiAttachment getAttachment() {
+		WikiAttachment attachment = Environment.getInstance().getWikiConnector().getAttachment(
 				attachmentPath);
 		return attachment;
 	}

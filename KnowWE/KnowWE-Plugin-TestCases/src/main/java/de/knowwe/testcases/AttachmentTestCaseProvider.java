@@ -31,7 +31,7 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.wikiConnector.ConnectorAttachment;
+import de.knowwe.core.wikiConnector.WikiAttachment;
 
 /**
  * Abstract class providing all methods to create a {@link TestCaseProvider}
@@ -43,13 +43,13 @@ import de.knowwe.core.wikiConnector.ConnectorAttachment;
 public abstract class AttachmentTestCaseProvider implements TestCaseProvider {
 
 	protected TestCase testCase;
-	protected ConnectorAttachment attachment;
+	protected WikiAttachment attachment;
 	protected List<Message> messages = new LinkedList<Message>();
 	private List<Message> testCaseMessages = new LinkedList<Message>();
 
 	protected final Article article;
 
-	public AttachmentTestCaseProvider(Article article, ConnectorAttachment attachment) {
+	public AttachmentTestCaseProvider(Article article, WikiAttachment attachment) {
 		super();
 		this.article = article;
 		this.attachment = attachment;
@@ -58,7 +58,7 @@ public abstract class AttachmentTestCaseProvider implements TestCaseProvider {
 
 	@Override
 	public TestCase getTestCase() {
-		ConnectorAttachment actualAttachment = KnowWEUtils.getAttachment(
+		WikiAttachment actualAttachment = KnowWEUtils.getAttachment(
 				attachment.getParentName(),
 				attachment.getFileName());
 		if (actualAttachment == null) {

@@ -32,7 +32,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.wikiConnector.ConnectorAttachment;
+import de.knowwe.core.wikiConnector.WikiAttachment;
 
 /**
  * Abstract TestCaseProviderStorage that provides common methods for Storages
@@ -99,13 +99,13 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 	public void refresh() {
 		messages.clear();
 		for (String fileRegex : regexMap.keySet()) {
-			Collection<ConnectorAttachment> fittingAttachments = KnowWEUtils.getAttachments(
+			Collection<WikiAttachment> fittingAttachments = KnowWEUtils.getAttachments(
 					fileRegex, sectionArticle.getTitle());
 			if (fittingAttachments.size() == 0) {
 				messages.add(Messages.error("No Attachment found for: " + fileRegex));
 				continue;
 			}
-			for (ConnectorAttachment attachment : fittingAttachments) {
+			for (WikiAttachment attachment : fittingAttachments) {
 				boolean exists = false;
 				List<AttachmentTestCaseProvider> list = regexMap.get(fileRegex);
 				for (AttachmentTestCaseProvider provider : list) {
@@ -124,7 +124,7 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 
 	}
 
-	protected abstract AttachmentTestCaseProvider createTestCaseProvider(Article article, ConnectorAttachment attachment);
+	protected abstract AttachmentTestCaseProvider createTestCaseProvider(Article article, WikiAttachment attachment);
 
 	@Override
 	public Collection<Message> getMessages() {

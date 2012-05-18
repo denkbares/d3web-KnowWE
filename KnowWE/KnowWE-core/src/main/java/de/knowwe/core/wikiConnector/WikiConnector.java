@@ -21,6 +21,7 @@
 package de.knowwe.core.wikiConnector;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Date;
@@ -92,17 +93,17 @@ public interface WikiConnector {
 	public String getApplicationRootPath();
 
 	/**
-	 * Returns the {@link ConnectorAttachment} given by the supplied path.
+	 * Returns the {@link WikiAttachment} given by the supplied path.
 	 * 
 	 * @created 30.08.2011
 	 * @param path the path of the attachment
 	 */
-	public ConnectorAttachment getAttachment(String path);
+	public WikiAttachment getAttachment(String path);
 
 	/**
 	 * Returns all attachments known to the wiki.
 	 */
-	public Collection<ConnectorAttachment> getAttachments();
+	public Collection<WikiAttachment> getAttachments();
 
 	/**
 	 * Returns the filenames of the attachments of the article with the given
@@ -111,7 +112,7 @@ public interface WikiConnector {
 	 * @param title the title of the article to get the attachment filenames
 	 *        from
 	 */
-	public List<ConnectorAttachment> getAttachments(String title);
+	public List<WikiAttachment> getAttachments(String title);
 
 	/**
 	 * Returns the author of the specified version of the given article (by
@@ -246,29 +247,45 @@ public interface WikiConnector {
 	public String renderWikiSyntax(String pagedata, HttpServletRequest request);
 
 	/**
-	 * Stores a file as an attachment to the given article.
+	 * Creates a new wiki attachment of the specified path and the specified
+	 * file content.
+	 * <p>
+	 * If there is already an attachment with this path, a new version of the
+	 * attachment will be created. Otherwise a new attachment will be created.
+	 * In both cases you can use the returned {@link WikiAttachment} to access
+	 * the attachment.
 	 * 
 	 * @param title the title of the article, for which this attachment should
 	 *        be stored
-	 * @param user is the user wanting to store the attachment (important for
-	 *        lock of the page)
+	 * @param user is the user wanting to store the attachment
 	 * @param attachmentFile the attachment to be stored
-	 * @return whether the operation was successful
+	 * @return the newly created attachment
+	 * @throws IOException if the stream cannot be read of if the content cannot
+	 *         be stored as an attachment
 	 */
-	boolean storeAttachment(String title, String user, File attachmentFile);
+	WikiAttachment storeAttachment(String title, String user, File attachmentFile) throws IOException;
 
 	/**
-	 * Stores a file as an attachment to the given article.
+	 * Creates a new wiki attachment of the specified path and the specified
+	 * content. Please note that the stream will not be closed by this method.
+	 * When the method return the stream has been fully read. It's in the
+	 * callers responsibility to close the stream afterwards.
+	 * <p>
+	 * If there is already an attachment with this path, a new version of the
+	 * attachment will be created. Otherwise a new attachment will be created.
+	 * In both cases you can use the returned {@link WikiAttachment} to access
+	 * the attachment.
 	 * 
 	 * @param title the title of the article, for which this attachment should
 	 *        be stored
 	 * @param filename the name for which the attachment should be stored
-	 * @param user is the user wanting to store the attachment (important for
-	 *        lock of the page)
+	 * @param user is the user wanting to store the attachment
 	 * @param stream the stream for the content of the file
-	 * @return whether the operation was successful
+	 * @return the newly created attachment
+	 * @throws IOException if the stream cannot be read of if the content cannot
+	 *         be stored as an attachment
 	 */
-	boolean storeAttachment(String title, String filename, String user, InputStream stream);
+	WikiAttachment storeAttachment(String title, String filename, String user, InputStream stream) throws IOException;
 
 	/**
 	 * Removes the lock for the article.

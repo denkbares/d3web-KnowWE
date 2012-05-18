@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.wikiConnector.ConnectorAttachment;
+import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class DummyConnector implements WikiConnector {
@@ -102,7 +102,7 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public ConnectorAttachment getAttachment(String path) {
+	public WikiAttachment getAttachment(String path) {
 		if (dummyPageProvider == null) {
 			throw new NullPointerException(
 					"PageProvider null, so there are no attachments available");
@@ -111,23 +111,23 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public Collection<ConnectorAttachment> getAttachments() {
+	public Collection<WikiAttachment> getAttachments() {
 		if (dummyPageProvider == null) {
 			throw new NullPointerException(
 					"PageProvider null, so there are no attachments available");
 		}
-		return new ArrayList<ConnectorAttachment>(dummyPageProvider.getAllAttachments().values());
+		return new ArrayList<WikiAttachment>(dummyPageProvider.getAllAttachments().values());
 	}
 
 	@Override
-	public List<ConnectorAttachment> getAttachments(String title) {
+	public List<WikiAttachment> getAttachments(String title) {
 		if (dummyPageProvider == null) {
 			throw new NullPointerException(
 					"PageProvider null, so there are no attachments available");
 		}
-		Collection<ConnectorAttachment> attachments = getAttachments();
-		List<ConnectorAttachment> attachmentsOfPage = new ArrayList<ConnectorAttachment>();
-		for (ConnectorAttachment attachment : attachments) {
+		Collection<WikiAttachment> attachments = getAttachments();
+		List<WikiAttachment> attachmentsOfPage = new ArrayList<WikiAttachment>();
+		for (WikiAttachment attachment : attachments) {
 			if (attachment.getParentName().equals(title)) {
 				attachmentsOfPage.add(attachment);
 			}
@@ -260,34 +260,28 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public boolean storeAttachment(String title, String user, File attachmentFile) {
+	public WikiAttachment storeAttachment(String title, String user, File attachmentFile) {
 		if (dummyPageProvider == null) {
 			throw new NullPointerException(
 					"PageProvider is null, so attachments cannot be stored");
 		}
-		ConnectorAttachment attachment = new FileSystemConnectorAttachment(
-				attachmentFile.getName(), title, attachmentFile);
-		dummyPageProvider.storeAttachment(attachment.getPath(), attachment);
-		return true;
+		WikiAttachment attachment = new FileSystemConnectorAttachment(
+				dummyPageProvider, attachmentFile.getName(), title, attachmentFile);
+		dummyPageProvider.storeAttachment(attachment);
+		return attachment;
 	}
 
 	@Override
-	public boolean storeAttachment(String title, String filename, String user, InputStream stream) {
+	public WikiAttachment storeAttachment(String title, String filename, String user, InputStream stream) throws IOException {
 		if (dummyPageProvider == null) {
 			throw new NullPointerException(
 					"PageProvider is null, so attachments cannot be stored");
 		}
-		ConnectorAttachment attachment;
-		try {
-			attachment = new FileSystemConnectorAttachment(
-					filename, title, stream);
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-		dummyPageProvider.storeAttachment(attachment.getPath(), attachment);
-		return true;
+
+		WikiAttachment attachment = new FileSystemConnectorAttachment(
+				dummyPageProvider, filename, title, stream);
+		dummyPageProvider.storeAttachment(attachment);
+		return attachment;
 	}
 
 	@Override

@@ -48,7 +48,7 @@ import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.SectionStore;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.wikiConnector.ConnectorAttachment;
+import de.knowwe.core.wikiConnector.WikiAttachment;
 
 public class KnowWEUtils {
 
@@ -116,13 +116,13 @@ public class KnowWEUtils {
 	 * @created 27.01.2012
 	 * @param title Title of the wikipage
 	 * @param fileName filename of the attachment
-	 * @return {@link ConnectorAttachment} fulfilling the specified parameters
+	 * @return {@link WikiAttachment} fulfilling the specified parameters
 	 *         or null, if no such attachment exists
 	 */
-	public static ConnectorAttachment getAttachment(String title, String fileName) {
-		Collection<ConnectorAttachment> attachments = Environment.getInstance().getWikiConnector().getAttachments();
-		ConnectorAttachment actualAttachment = null;
-		for (ConnectorAttachment attachment : attachments) {
+	public static WikiAttachment getAttachment(String title, String fileName) {
+		Collection<WikiAttachment> attachments = Environment.getInstance().getWikiConnector().getAttachments();
+		WikiAttachment actualAttachment = null;
+		for (WikiAttachment attachment : attachments) {
 			if ((attachment.getFileName().equals(fileName)
 					&& attachment.getParentName().equals(title))
 					|| attachment.getPath().equals(fileName)) {
@@ -134,20 +134,20 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns all {@link ConnectorAttachment}s which full name fits to the
+	 * Returns all {@link WikiAttachment}s which full name fits to the
 	 * regex or which filename matches to the regexp and which parent has the
 	 * specified topic
 	 * 
 	 * @created 09.02.2012
 	 * @param regex regular expression the attachments should match to
 	 * @param topic Topic of the article
-	 * @return Collection of {@link ConnectorAttachment}s
+	 * @return Collection of {@link WikiAttachment}s
 	 */
-	public static Collection<ConnectorAttachment> getAttachments(String regex, String topic) {
-		Collection<ConnectorAttachment> result = new LinkedList<ConnectorAttachment>();
-		Collection<ConnectorAttachment> attachments = Environment.getInstance().getWikiConnector().getAttachments();
+	public static Collection<WikiAttachment> getAttachments(String regex, String topic) {
+		Collection<WikiAttachment> result = new LinkedList<WikiAttachment>();
+		Collection<WikiAttachment> attachments = Environment.getInstance().getWikiConnector().getAttachments();
 		Pattern pattern = Pattern.compile(regex);
-		for (ConnectorAttachment attachment : attachments) {
+		for (WikiAttachment attachment : attachments) {
 			if (pattern.matcher(attachment.getPath()).matches()
 						|| (pattern.matcher(attachment.getFileName()).matches() && attachment.getParentName().equals(
 								topic))) {

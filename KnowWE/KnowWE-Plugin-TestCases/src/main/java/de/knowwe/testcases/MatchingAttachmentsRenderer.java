@@ -26,7 +26,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.wikiConnector.ConnectorAttachment;
+import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
@@ -53,7 +53,7 @@ public class MatchingAttachmentsRenderer implements Renderer {
 				ANNOTATION_FILE);
 		Set<String> attachments = new TreeSet<String>();
 		for (String s : annotations) {
-			for (ConnectorAttachment attachment : KnowWEUtils.getAttachments(s,
+			for (WikiAttachment attachment : KnowWEUtils.getAttachments(s,
 					section.getArticle().getTitle())) {
 				attachments.add(attachment.getPath());
 			}

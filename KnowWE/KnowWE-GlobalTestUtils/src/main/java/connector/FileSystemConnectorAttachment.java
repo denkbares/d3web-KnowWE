@@ -26,14 +26,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
-import de.knowwe.core.wikiConnector.ConnectorAttachment;
-
 /**
  * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 11.04.2012
  */
-public class FileSystemConnectorAttachment implements ConnectorAttachment {
+public class FileSystemConnectorAttachment extends SingleVersionAttachment {
 
 	private final File attachmentFile;
 
@@ -43,14 +41,16 @@ public class FileSystemConnectorAttachment implements ConnectorAttachment {
 
 	private final String fileName;
 
-	public FileSystemConnectorAttachment(String fileName, String parentName, File attachmentFile) {
+	public FileSystemConnectorAttachment(DummyPageProvider pageProvider, String fileName, String parentName, File attachmentFile) {
+		super(pageProvider);
 		this.attachmentFile = attachmentFile;
 		this.attachmentFileBytes = null;
 		this.fileName = fileName;
 		this.parentName = parentName;
 	}
 
-	public FileSystemConnectorAttachment(String fileName, String parentName, InputStream attachmentFileStream) throws IOException {
+	public FileSystemConnectorAttachment(DummyPageProvider pageProvider, String fileName, String parentName, InputStream attachmentFileStream) throws IOException {
+		super(pageProvider);
 		this.attachmentFile = null;
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -73,11 +73,6 @@ public class FileSystemConnectorAttachment implements ConnectorAttachment {
 	@Override
 	public String getParentName() {
 		return this.parentName;
-	}
-
-	@Override
-	public String getPath() {
-		return getParentName() + "/" + getFileName();
 	}
 
 	@Override
@@ -104,5 +99,4 @@ public class FileSystemConnectorAttachment implements ConnectorAttachment {
 	public String toString() {
 		return getPath();
 	}
-
 }

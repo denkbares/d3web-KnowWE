@@ -22,7 +22,6 @@ package de.knowwe.jspwiki;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
@@ -57,7 +56,7 @@ import com.ecyrd.jspwiki.providers.ProviderException;
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.wikiConnector.ConnectorAttachment;
+import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 /**
@@ -180,31 +179,30 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public ConnectorAttachment getAttachment(String path) {
+	public WikiAttachment getAttachment(String path) {
 		try {
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
 			Attachment attachment = attachmentManager.getAttachmentInfo(path);
 
 			if (attachment == null) return null;
-			else return new JSPWikiConnectorAttachment(attachment, attachmentManager);
+			else return new JSPWikiAttachment(attachment, attachmentManager);
 
 		}
 		catch (ProviderException e) {
 			e.printStackTrace();
 			return null;
 		}
-
 	}
 
 	@Override
-	public Collection<ConnectorAttachment> getAttachments() {
+	public Collection<WikiAttachment> getAttachments() {
 		try {
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
 			Collection<?> attachments = attachmentManager.getAllAttachments();
-			Collection<ConnectorAttachment> ret = new LinkedList<ConnectorAttachment>();
+			Collection<WikiAttachment> ret = new LinkedList<WikiAttachment>();
 			for (Object o : attachments) {
 				if (o instanceof Attachment) {
-					ret.add(new JSPWikiConnectorAttachment((Attachment) o,
+					ret.add(new JSPWikiAttachment((Attachment) o,
 							attachmentManager));
 				}
 			}
@@ -218,9 +216,9 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public List<ConnectorAttachment> getAttachments(String title) {
+	public List<WikiAttachment> getAttachments(String title) {
 		try {
-			List<ConnectorAttachment> attachmentList = new LinkedList<ConnectorAttachment>();
+			List<WikiAttachment> attachmentList = new LinkedList<WikiAttachment>();
 			// this list is in fact a Collection<Attachment>,
 			// the conversion is type safe!
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
@@ -229,7 +227,7 @@ public class JSPWikiConnector implements WikiConnector {
 					listAttachments(this.engine.getPage(title));
 
 			for (Attachment att : attList) {
-				attachmentList.add(new JSPWikiConnectorAttachment(att,
+				attachmentList.add(new JSPWikiAttachment(att,
 						attachmentManager));
 			}
 
@@ -454,44 +452,33 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public boolean storeAttachment(String title, String user, File attachmentFile) {
+	public WikiAttachment storeAttachment(String title, String user, File attachmentFile) throws IOException {
+		FileInputStream in = new FileInputStream(attachmentFile);
 		try {
-			return storeAttachment(title, attachmentFile.getName(), user, new FileInputStream(
-					attachmentFile));
+			return storeAttachment(title, attachmentFile.getName(), user, in);
 		}
-		catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return false;
+		finally {
+			in.close();
 		}
-
 	}
 
 	@Override
-	public boolean storeAttachment(String title, String filename, String user, InputStream stream) {
+	public WikiAttachment storeAttachment(String title, String filename, String user, InputStream stream) throws IOException {
 		try {
-			boolean isNotLocked = !isArticleLocked(title);
-			if (isArticleLockedCurrentUser(title, user) || isNotLocked) {
-				if (isNotLocked) lockArticle(title, "WIKI-ENGINE");
-				AttachmentManager attachmentManager = this.engine
-						.getAttachmentManager();
+			boolean wasLocked = isArticleLocked(title);
+			if (!wasLocked) lockArticle(title, "WIKI-ENGINE");
+			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
 
-				Attachment att = new Attachment(engine, title,
-						filename);
-				att.setAuthor(user);
-				attachmentManager.storeAttachment(att, stream);
+			Attachment attachment = new Attachment(engine, title, filename);
+			attachment.setAuthor(user);
+			attachmentManager.storeAttachment(attachment, stream);
 
-				if (isNotLocked) unlockArticle(title);
-				return true;
-			}
-			else return false;
+			if (!wasLocked) unlockArticle(title);
+			return getAttachment(title + "/" + filename);
 		}
 		catch (ProviderException e) {
-			return false;
+			throw new IOException("could not store attachment");
 		}
-		catch (IOException e) {
-			return false;
-		}
-
 	}
 
 	@Override
@@ -565,5 +552,4 @@ public class JSPWikiConnector implements WikiConnector {
 			return false;
 		}
 	}
-
 }

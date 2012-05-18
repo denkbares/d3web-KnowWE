@@ -82,22 +82,18 @@ public class D3webUtils {
 		return possibleScorePoints;
 	}
 
-	public static boolean storeSessionRecordsAsAttachment(String user, Collection<Session> sessions, String attachmentArticle, String attachmentName) throws IOException {
+	public static void storeSessionRecordsAsAttachment(String user, Collection<Session> sessions, String attachmentArticle, String attachmentName) throws IOException {
 
 		Collection<SessionRecord> sessionRecords = new LinkedList<SessionRecord>();
-
 		for (Session session : sessions) {
-			sessionRecords.add(SessionConversionFactory.copyToSessionRecord(
-					session));
+			sessionRecords.add(SessionConversionFactory.copyToSessionRecord(session));
 		}
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
 		SessionPersistenceManager.getInstance().saveSessions(outputStream, sessionRecords);
-
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
 
-		return Environment.getInstance().getWikiConnector()
+		Environment.getInstance().getWikiConnector()
 				.storeAttachment(attachmentArticle, attachmentName, user, inputStream);
 	}
 

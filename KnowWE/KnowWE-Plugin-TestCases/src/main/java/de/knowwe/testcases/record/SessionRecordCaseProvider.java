@@ -28,7 +28,7 @@ import de.d3web.testcase.record.SessionRecordWrapper;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.wikiConnector.ConnectorAttachment;
+import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.testcases.AttachmentTestCaseProvider;
 
 /**
@@ -39,7 +39,7 @@ import de.knowwe.testcases.AttachmentTestCaseProvider;
  */
 public class SessionRecordCaseProvider extends AttachmentTestCaseProvider {
 
-	public SessionRecordCaseProvider(Article article, ConnectorAttachment attachment) {
+	public SessionRecordCaseProvider(Article article, WikiAttachment attachment) {
 		super(article, attachment);
 	}
 

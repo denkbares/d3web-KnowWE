@@ -23,19 +23,21 @@ package de.knowwe.jspwiki;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 
+import com.ecyrd.jspwiki.WikiPage;
 import com.ecyrd.jspwiki.attachment.Attachment;
 import com.ecyrd.jspwiki.attachment.AttachmentManager;
 import com.ecyrd.jspwiki.providers.ProviderException;
 
-import de.knowwe.core.wikiConnector.ConnectorAttachment;
+import de.knowwe.core.wikiConnector.WikiAttachment;
 
-public class JSPWikiConnectorAttachment implements ConnectorAttachment {
+public class JSPWikiAttachment implements WikiAttachment {
 
 	private final Attachment attachment;
 	private final AttachmentManager attachmentManager;
 
-	public JSPWikiConnectorAttachment(Attachment attachment, AttachmentManager attachmentManager) {
+	public JSPWikiAttachment(Attachment attachment, AttachmentManager attachmentManager) {
 		this.attachment = attachment;
 		this.attachmentManager = attachmentManager;
 	}
@@ -56,14 +58,24 @@ public class JSPWikiConnectorAttachment implements ConnectorAttachment {
 	}
 
 	@Override
+	public Date getDate(int version) throws IllegalArgumentException {
+		return fetchAttachment(version).getLastModified();
+	}
+
+	@Override
 	public long getSize() {
 		return attachment.getSize();
 	}
 
 	@Override
+	public long getSize(int version) throws IllegalArgumentException {
+		return fetchAttachment(version).getSize();
+	}
+
+	@Override
 	public boolean equals(Object o) {
-		if (o == null || !(o instanceof JSPWikiConnectorAttachment)) return false;
-		JSPWikiConnectorAttachment other = (JSPWikiConnectorAttachment) o;
+		if (o == null || !(o instanceof JSPWikiAttachment)) return false;
+		JSPWikiAttachment other = (JSPWikiAttachment) o;
 		if (other.attachment == attachment) {
 			return true;
 		}
@@ -88,8 +100,59 @@ public class JSPWikiConnectorAttachment implements ConnectorAttachment {
 	}
 
 	@Override
+	public InputStream getInputStream(int version) throws IOException, IllegalArgumentException {
+		try {
+			return attachmentManager.getAttachmentStream(fetchAttachment(version));
+		}
+		catch (ProviderException e) {
+			throw new IOException("cannot open attachment", e);
+		}
+	}
+
+	private Attachment fetchAttachment(int version) {
+		try {
+			Attachment info = attachmentManager.getAttachmentInfo(getPath(), version);
+			if (info != null) return info;
+		}
+		catch (ProviderException e) {
+		}
+		throw new IllegalArgumentException("cannot access requested attachment version " + version);
+	}
+
+	@Override
 	public String getPath() {
 		return getParentName() + "/" + getFileName();
 	}
 
+	@Override
+	public int[] getAvailableVersions() throws IOException {
+		try {
+			@SuppressWarnings("unchecked")
+			List<WikiPage> history = attachmentManager.getVersionHistory(getPath());
+			int[] result = new int[history.size()];
+			int index = 0;
+			for (WikiPage info : history) {
+				result[index++] = info.getVersion();
+			}
+			return result;
+		}
+		catch (ProviderException e) {
+			throw new IOException("cannot create version list", e);
+		}
+	}
+
+	@Override
+	public int getVersion() {
+		return attachment.getVersion();
+	}
+
+	@Override
+	public void delete(int version) throws IOException, IllegalArgumentException {
+		try {
+			attachmentManager.deleteVersion(fetchAttachment(version));
+		}
+		catch (ProviderException e) {
+			throw new IOException("cannot delete attachment version", e);
+		}
+	}
 }

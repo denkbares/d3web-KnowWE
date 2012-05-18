@@ -19,7 +19,7 @@
 package de.knowwe.testcases.stc;
 
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.wikiConnector.ConnectorAttachment;
+import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.testcases.AttachmentTestCaseProvider;
 import de.knowwe.testcases.FileTestCaseProviderStorage;
 
@@ -35,7 +35,7 @@ public class STCTestCaseProviderStorage extends FileTestCaseProviderStorage {
 	}
 
 	@Override
-	protected AttachmentTestCaseProvider createTestCaseProvider(Article article, ConnectorAttachment attachment) {
+	protected AttachmentTestCaseProvider createTestCaseProvider(Article article, WikiAttachment attachment) {
 		return new STCTestCaseProvider(article, attachment);
 	}
 

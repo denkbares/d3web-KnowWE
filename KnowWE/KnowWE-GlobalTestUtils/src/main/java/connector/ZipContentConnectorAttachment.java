@@ -24,14 +24,12 @@ import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import de.knowwe.core.wikiConnector.ConnectorAttachment;
-
 /**
  * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 11.04.2012
  */
-public class ZipContentConnectorAttachment implements ConnectorAttachment {
+public class ZipContentConnectorAttachment extends SingleVersionAttachment {
 
 	private final String parentName;
 
@@ -41,7 +39,8 @@ public class ZipContentConnectorAttachment implements ConnectorAttachment {
 
 	private final ZipEntry zipEntry;
 
-	public ZipContentConnectorAttachment(String fileName, String parentName, ZipEntry zipEntry, ZipFile zipFile) {
+	public ZipContentConnectorAttachment(DummyPageProvider pageProvider, String fileName, String parentName, ZipEntry zipEntry, ZipFile zipFile) {
+		super(pageProvider);
 		this.zipFile = zipFile;
 		this.zipEntry = zipEntry;
 		this.fileName = fileName;
