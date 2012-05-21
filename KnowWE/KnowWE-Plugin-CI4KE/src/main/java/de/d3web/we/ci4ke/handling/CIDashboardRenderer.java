@@ -18,11 +18,12 @@
  */
 package de.d3web.we.ci4ke.handling;
 
-import java.util.List;
+import java.text.DateFormat;
 
-import org.jdom.Element;
-
-import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
+import de.d3web.we.ci4ke.build.CIBuildRenderer;
+import de.d3web.we.ci4ke.build.CIBuildResultset;
+import de.d3web.we.ci4ke.build.Dashboard;
+import de.d3web.we.ci4ke.testing.CITestResult;
 import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.knowwe.core.RessourceLoader;
@@ -61,8 +62,8 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			String dashboardNameEscaped = CIUtilities.utf8Escape(dashboardName);
 			string.append(Strings.maskHTML("<div id='" + dashboardNameEscaped
 					+ "' class='ci-title'>"));
-			string.append(Strings.maskHTML(renderDashboardContents(dashboardName,
-					section.getTitle())));
+			string.append(Strings.maskHTML(renderDashboardContents(user.getWeb(),
+					section.getTitle(), dashboardName)));
 			string.append(Strings.maskHTML("</div>"));
 		}
 	}
@@ -72,41 +73,41 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	 * pane)
 	 * 
 	 * @created 02.12.2010
-	 * @param dashboardName
-	 * @param dashboardArticleTitle
-	 * @param string
+	 * @param web the web of the dashboard
+	 * @param dashboardArticleTitle the name of the article of the dashboard
+	 * @param dashboardName the name of the dashboard
 	 */
-	public static String renderDashboardContents(String dashboardName, String dashboardArticleTitle) {
+	public static String renderDashboardContents(String web, String dashboardArticleTitle, String dashboardName) {
 
 		StringBuilder string = new StringBuilder();
-		CIBuildPersistenceHandler handler = CIBuildPersistenceHandler.
-				getHandler(dashboardName, dashboardArticleTitle);
-		if (handler == null) {
-			return "";
-		}
+		Dashboard dashboard = Dashboard.getDashboard(web, dashboardArticleTitle, dashboardName);
+		CIBuildRenderer renderer = dashboard.getRenderer();
 		String dashboardNameEscaped = CIUtilities.utf8Escape(dashboardName);
 
 		string.append("<h3>");
 		// if at least one build has been executed: Render forecast icons:
-		if (handler.getCurrentBuildNumber() > 0) {
-			string.append(handler.renderCurrentBuildStatus(22) + "  ");
-			string.append(handler.renderBuildHealthReport(22) + "  ");
+		CIBuildResultset latestBuild = dashboard.getLatestBuild();
+		if (latestBuild != null) {
+			string.append(renderer.renderCurrentBuildStatus(22)).append("  ");
+			string.append(renderer.renderBuildHealthReport(22)).append("  ");
 		}
 		string.append(dashboardName + "</h3>");
 
 		// render the last five builds:
-		string.append("<div id='" + dashboardNameEscaped
-				+ "-column-left' class='ci-column-left'>");
-		string.append("<div id='" + dashboardNameEscaped
-				+ "-build-table'>");
-		string.append(handler.renderNewestBuilds(10));
+		string.append("<div id='")
+				.append(dashboardNameEscaped)
+				.append("-column-left' class='ci-column-left'>");
+		string.append("<div id='")
+				.append(dashboardNameEscaped)
+				.append("-build-table'>");
+		string.append(renderer.renderNewestBuilds(10));
 		string.append("</div></div>");
 
 		// render the build-details pane
-		string.append("<div id='" + dashboardNameEscaped
-				+ "-build-details-wrapper' class='ci-build-details-wrapper'>");
-		string.append(renderBuildDetails(dashboardName,
-				dashboardArticleTitle, handler.getCurrentBuildNumber()));
+		string.append("<div id='")
+				.append(dashboardNameEscaped)
+				.append("-build-details-wrapper' class='ci-build-details-wrapper'>");
+		string.append(renderBuildDetails(dashboard, latestBuild));
 		string.append("</div>");
 
 		return string.toString();
@@ -115,12 +116,11 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	/**
 	 * Renders out the test results of a selected Build
 	 */
-	public static String renderBuildDetails(String dashboardName, String dashboardArticleTitle, int selectedBuildNumber) {
+	public static String renderBuildDetails(Dashboard dashboard, CIBuildResultset build) {
 
-		String dashboardNameEscaped = CIUtilities.utf8Escape(dashboardName);
+		String dashboardNameEscaped = CIUtilities.utf8Escape(dashboard.getDashboardName());
+		DateFormat dateFormat = DateFormat.getDateTimeInstance();
 
-		CIBuildPersistenceHandler handler = CIBuildPersistenceHandler.getHandler(dashboardName,
-				dashboardArticleTitle);
 		StringBuffer buffy = new StringBuffer();
 
 		// ------------------------------------------------------------------------
@@ -131,72 +131,59 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		buffy.append("<div id='" + dashboardNameEscaped
 				+ "-column-middle' class='ci-column-middle'>");
 
-		String xPath = "builds/build[@nr=%s]/tests/test";
-		List<?> tests = handler.selectNodes(String.format(xPath, selectedBuildNumber));
-
-		Element buildNr = (Element) handler.selectSingleNode("builds/build[@nr="
-				+ selectedBuildNumber + "]"); // e.getAttributeValue("executed")
-		if (buildNr != null) {
-			String buildDate = buildNr.getAttributeValue("executed");
-			if (buildDate == null) buildDate = "";
-			buffy.append("<H4>Build #" + selectedBuildNumber +
-					" (" + buildDate + ") ");
+		if (build != null) {
+			String buildDate = dateFormat.format(build.getBuildDate());
+			buffy.append("<H4>Build #").append(build.getBuildNumber())
+					.append(" (").append(buildDate).append(") ");
 
 			// get the build duration time
-			String buildDuration = buildNr.getAttributeValue("duration");
-			if (buildDuration != null) {
-				buffy.append(" in ");
-				long buildD = Long.parseLong(buildDuration);
-				if (buildD < 1000) buffy.append(buildD + " msec.");
-				else if (buildD >= 1000 && buildD < 60000) buffy.append((buildD / 1000)
-						+ " sec.");
-				else buffy.append((buildD / 60000) + "min.");
+			buffy.append(" in ");
+			long duration = build.getBuildDuration();
+			if (duration < 1000) {
+				buffy.append(duration + " msec.");
+			}
+			else if (duration >= 1000 && duration < 60000) {
+				buffy.append((duration / 1000) + " sec.");
+			}
+			else {
+				long sec = duration / 1000;
+				buffy.append(String.format("%d:%02d min.", sec / 60, sec % 60));
 			}
 
 			buffy.append("</H4>");
 
-			for (Object o : tests) {
-				if (o instanceof Element) {
-					Element e = (Element) o;
+			for (CITestResult result : build.getResults()) {
+				buffy.append("<div class='ci-collapsible-box'>");
 
-					buffy.append("<div class='ci-collapsible-box'>");
-					// buffy.append("<b>";
+				// prepare some information
+				String name = result.getTestName();
+				Type buildResult = result.getType();
+				String message = result.getMessage();
+				String config = result.getConfiguration();
 
-					// prepare some information
-					String name = e.getAttributeValue("name");
-					String result = e.getAttributeValue("result");
-					String message = e.getAttributeValue("message");
-					String config = e.getAttributeValue("configuration");
+				// render bullet
+				buffy.append(CIUtilities.renderResultType(buildResult, 16));
 
-					// render bullet
-					if (result != null && !result.isEmpty()) {
-						Type buildResult = Type.valueOf(result);
-						buffy.append(CIUtilities.renderResultType(buildResult, 16));
-					}
+				// render test-name
+				buffy.append("<span class='ci-test-title'>");
+				buffy.append(name);
 
-					buffy.append("<span class='ci-test-title'>");
-					// render test-name
-					if (name != null && !name.isEmpty()) {
-						buffy.append(name);
-					}
-
-					// render test-configuration (if existent)
-					if (config != null && !config.isEmpty()) {
-						buffy.append("<span class='ci-configuration'>");
-						buffy.append(" (").append(config).append(")");
-						buffy.append("</span>");
-					}
+				// render test-configuration (if existent)
+				if (config != null && !config.isEmpty()) {
+					buffy.append("<span class='ci-configuration'>");
+					buffy.append(" (").append(config).append(")");
 					buffy.append("</span>");
-
-					// render test-message (if existent)
-					if (message != null && !message.isEmpty()) {
-						buffy.append("<div class='ci-message'>"); // style=\"display: none;\">");
-						buffy.append(message);
-						buffy.append("</div>");
-					}
-
-					buffy.append("</div>\n");
 				}
+				buffy.append("</span>");
+
+				// render test-message (if exists)
+				if (message != null && !message.isEmpty()) {
+					buffy.append("<div class='ci-message'>");
+					buffy.append(message);
+					buffy.append("</div>");
+				}
+
+				buffy.append("</div>\n");
 			}
 		}
 		else {

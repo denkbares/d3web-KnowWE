@@ -22,8 +22,10 @@ package de.d3web.we.ci4ke.action;
 
 import java.io.IOException;
 
-import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
+import de.d3web.we.ci4ke.build.CIBuildRenderer;
+import de.d3web.we.ci4ke.build.CIBuildResultset;
 import de.d3web.we.ci4ke.build.CIBuilder;
+import de.d3web.we.ci4ke.build.Dashboard;
 import de.d3web.we.ci4ke.handling.CIDashboardRenderer;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -40,41 +42,37 @@ public class CIAction extends AbstractAction {
 		dashboardName = Strings.decodeURL(dashboardName);
 
 		String topic = context.getTitle();
+		String web = context.getWeb();
 
 		if (task.equals("null") || dashboardName.equals("null")) {
 			throw new IOException(
 					"CIAction.execute(): Required parameters not set!");
 		}
 
-		StringBuffer buffy = new StringBuffer("");
+		Dashboard dashboard = Dashboard.getDashboard(web, topic, dashboardName);
+		CIBuildRenderer renderer = dashboard.getRenderer();
 
+		String html = null;
 		if (task.equals("executeNewBuild")) {
-
-			CIBuilder builder = new CIBuilder(topic, dashboardName);
+			CIBuilder builder = new CIBuilder(web, topic, dashboardName);
 			builder.executeBuild();
-			buffy.append(CIDashboardRenderer.renderDashboardContents(dashboardName, topic));
+			html = CIDashboardRenderer.renderDashboardContents(web, topic, dashboardName);
 
 		}// Get the details of one build (wiki changes + test results)
 		else if (task.equals("getBuildDetails")) {
-
 			int selectedBuildNumber = Integer.parseInt(context.getParameter("nr"));
-			buffy.append(CIDashboardRenderer.renderBuildDetails(dashboardName, topic,
-					selectedBuildNumber));
-
+			CIBuildResultset build = dashboard.getBuild(selectedBuildNumber);
+			html = CIDashboardRenderer.renderBuildDetails(dashboard, build);
 		}
 		else if (task.equals("refreshBuildList")) {
-
 			int indexFromBack =
 					Integer.parseInt(context.getParameter("indexFromBack"));
 			int numberOfBuilds =
 					Integer.parseInt(context.getParameter("numberOfBuilds"));
-
-			CIBuildPersistenceHandler handler = CIBuildPersistenceHandler.getHandler(dashboardName,
-					topic);
-			buffy.append(handler.renderBuildList(indexFromBack, numberOfBuilds));
+			html = renderer.renderBuildList(indexFromBack, numberOfBuilds);
 		}
 
 		context.setContentType("text/html; charset=UTF-8");
-		context.getWriter().write(buffy.toString());
+		context.getWriter().write(html);
 	}
 }

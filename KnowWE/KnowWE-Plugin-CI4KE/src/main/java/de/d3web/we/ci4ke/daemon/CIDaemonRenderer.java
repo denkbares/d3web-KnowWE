@@ -1,6 +1,6 @@
 package de.d3web.we.ci4ke.daemon;
 
-import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
+import de.d3web.we.ci4ke.build.Dashboard;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.ci4ke.util.CIUtilities;
@@ -38,10 +38,9 @@ public class CIDaemonRenderer implements Renderer {
 					+ " has to specify an existing article name.");
 			string.append("</span>");
 		}
-		CIBuildPersistenceHandler handler = CIBuildPersistenceHandler.
-				getExistingHandler(dashboardName, dashboardArticleTitle);
+		boolean hasDashboard = Dashboard.hasDashboard(web, dashboardArticleTitle, dashboardName);
 
-		if (handler == null) {
+		if (!hasDashboard) {
 			string.append("<span class='error'>");
 			string.append("The annotation @" + CIDashboardType.NAME_KEY
 					+ " has to specify an existing CI dashboard name on the specified article.");
@@ -55,11 +54,12 @@ public class CIDaemonRenderer implements Renderer {
 				+ "\">";
 		string.append(srclink);
 
-		if (handler == null) {
+		if (!hasDashboard) {
 			string.append(CIUtilities.renderResultType(Type.ERROR, PIXEL_SIZE));
 		}
 		else {
-			string.append(handler.renderCurrentBuildStatus(PIXEL_SIZE));
+			Dashboard dashboard = Dashboard.getDashboard(web, dashboardArticleTitle, dashboardName);
+			string.append(dashboard.getRenderer().renderCurrentBuildStatus(PIXEL_SIZE));
 		}
 		string.append("</a>");
 

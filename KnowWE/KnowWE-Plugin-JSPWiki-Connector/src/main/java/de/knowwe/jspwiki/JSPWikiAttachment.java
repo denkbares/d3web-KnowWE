@@ -130,9 +130,9 @@ public class JSPWikiAttachment implements WikiAttachment {
 			@SuppressWarnings("unchecked")
 			List<WikiPage> history = attachmentManager.getVersionHistory(getPath());
 			int[] result = new int[history.size()];
-			int index = 0;
+			int index = result.length;
 			for (WikiPage info : history) {
-				result[index++] = info.getVersion();
+				result[--index] = info.getVersion();
 			}
 			return result;
 		}

@@ -4,6 +4,7 @@ import java.util.Collection;
 
 public class CIHook {
 
+	private final String web;
 	private final String dashboardArticleTitle;
 	private final String dashboardID;
 	private final Collection<String> monitoredArticles;
@@ -14,6 +15,10 @@ public class CIHook {
 		return monitoredArticles;
 	}
 
+	public String getWeb() {
+		return web;
+	}
+
 	public String getDashboardArticleTitle() {
 		return dashboardArticleTitle;
 	}
@@ -22,9 +27,12 @@ public class CIHook {
 		return dashboardID;
 	}
 
-	public CIHook(String dashboardArticleTitle,
+	public CIHook(String web, String dashboardArticleTitle,
 			String dashboardName, Collection<String> monitoredArticles) {
 
+		if (web == null || web.isEmpty()) {
+			throw new IllegalArgumentException("web is null or empty!");
+		}
 		if (dashboardArticleTitle == null || dashboardArticleTitle.isEmpty()) {
 			throw new IllegalArgumentException("dashboardArticleTitle is null or empty!");
 		}
@@ -35,6 +43,7 @@ public class CIHook {
 			throw new IllegalArgumentException("monitoredArticles are null or empty!");
 		}
 
+		this.web = web;
 		this.dashboardArticleTitle = dashboardArticleTitle;
 		this.dashboardID = dashboardName;
 		this.monitoredArticles = monitoredArticles;

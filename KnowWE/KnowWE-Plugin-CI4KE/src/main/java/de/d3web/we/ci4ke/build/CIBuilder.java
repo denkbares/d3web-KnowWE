@@ -43,7 +43,6 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.Strings;
-import de.knowwe.jspwiki.JSPWikiConnector;
 
 public class CIBuilder {
 
@@ -51,6 +50,7 @@ public class CIBuilder {
 	public static final String BUILD_RESULT = "result";
 
 	private final CIConfig config;
+	private final Dashboard dashboard;
 
 	/**
 	 * This constructor searches only the given dashboardArticle for dashboard
@@ -59,7 +59,8 @@ public class CIBuilder {
 	 * @param dashboardArticleTitle
 	 * @param dashboardName
 	 */
-	public CIBuilder(String dashboardArticleTitle, String dashboardName) {
+	public CIBuilder(String web, String dashboardArticleTitle, String dashboardName) {
+		this.dashboard = Dashboard.getDashboard(web, dashboardArticleTitle, dashboardName);
 		Article dashboardArticle = Environment.getInstance().getArticleManager(
 				Environment.DEFAULT_WEB).getArticle(dashboardArticleTitle);
 		Section<CIDashboardType> sec = CIUtilities.
@@ -79,7 +80,7 @@ public class CIBuilder {
 	 * @param hook
 	 */
 	public CIBuilder(CIHook hook) {
-		this(hook.getDashboardArticleTitle(), hook.getDashboardName());
+		this(hook.getWeb(), hook.getDashboardArticleTitle(), hook.getDashboardName());
 	}
 
 	/**
@@ -149,7 +150,9 @@ public class CIBuilder {
 		}
 
 		// Now collect the results
-		CIBuildResultset resultset = new CIBuildResultset();
+		CIBuildResultset previousBuild = dashboard.getLatestBuild();
+		int buildNumber = (previousBuild == null) ? 1 : previousBuild.getBuildNumber() + 1;
+		CIBuildResultset build = new CIBuildResultset(buildNumber);
 		// resultset.setArticleVersion(monitoredArticleVersion);
 
 		for (Pair<String, Future<CITestResult>> runningTest : futureResults) {
@@ -171,25 +174,12 @@ public class CIBuilder {
 				Logger.getLogger(getClass().getName()).log(Level.WARNING,
 						"ci-test internal error", e.getCause());
 				testResult = new CITestResult(Type.ERROR,
-						"ci-test internal error: \n" + Strings.stackTrace(e));
+						"ci-test internal error: \n" + Strings.stackTrace(e.getCause()));
 			}
-			resultset.addTestResult(testname, testResult);
+			testResult.initTestName(testname);
+			build.addTestResult(testResult);
 		}
-		resultset.setTimeSpentForBuild(System.currentTimeMillis() - buildStartTime);
-
-		// TODO: this is a hotfix because the current persistence only works
-		// with JSPWiki
-		if (Environment.getInstance().getWikiConnector() instanceof JSPWikiConnector) {
-			// write the resultset to XML
-			CIBuildPersistenceHandler persi = CIBuildPersistenceHandler.getHandler(
-					this.config.getDashboardName(),
-					this.config.getDashboardArticleTitle());
-
-			persi.write(resultset);
-		}
-		else {
-			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
-					"Unable to save builds to persistence, because no valid WikiConnector is used");
-		}
+		build.setBuildDuration(System.currentTimeMillis() - buildStartTime);
+		dashboard.addBuild(build);
 	}
 }

@@ -18,6 +18,7 @@
  */
 package de.knowwe.testcases;
 
+import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -53,9 +54,13 @@ public class MatchingAttachmentsRenderer implements Renderer {
 				ANNOTATION_FILE);
 		Set<String> attachments = new TreeSet<String>();
 		for (String s : annotations) {
-			for (WikiAttachment attachment : KnowWEUtils.getAttachments(s,
-					section.getArticle().getTitle())) {
-				attachments.add(attachment.getPath());
+			try {
+				for (WikiAttachment attachment : KnowWEUtils.getAttachments(s,
+						section.getArticle().getTitle())) {
+					attachments.add(attachment.getPath());
+				}
+			}
+			catch (IOException e) {
 			}
 		}
 		if (attachments.size() > 0) {

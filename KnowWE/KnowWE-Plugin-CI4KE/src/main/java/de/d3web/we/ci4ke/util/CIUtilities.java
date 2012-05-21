@@ -248,8 +248,9 @@ public class CIUtilities {
 		return imgBulb;
 	}
 
-	public static String renderForecastIcon(int score, int lastBuilds, int lastFailedBuilds, int pixelSize) {
+	public static String renderForecastIcon(int buildCount, int failedCount, int pixelSize) {
 
+		int score = (buildCount > 0) ? score = (100 * failedCount) / buildCount : 0;
 		String imgForecast = "<img src='KnowWEExtension/ci4ke/images/" +
 				pixelSize + "x" + pixelSize + "/%s.png' align='absmiddle' alt='%<s' title='%s'>";
 
@@ -257,32 +258,28 @@ public class CIUtilities {
 			imgForecast = String.format(imgForecast, "health-00to19",
 					"All recent builds failed.");
 		}
-		else if (score <= 20) {
-			imgForecast = String.format(imgForecast, "health-00to19",
-					lastFailedBuilds + " out of the last " + lastBuilds + " builds failed.");
-		}
-		else if (score <= 40) {
-			imgForecast = String.format(imgForecast, "health-20to39", lastFailedBuilds
-					+ " out of the last " + lastBuilds + " builds failed.");
-		}
-		else if (score <= 60) {
-			imgForecast = String.format(imgForecast, "health-40to59", lastFailedBuilds
-					+ " out of the last " + lastBuilds + " builds failed.");
-		}
-		else if (score <= 80) {
-			imgForecast = String.format(imgForecast, "health-60to79", lastFailedBuilds
-					+ " out of the last " + lastBuilds + " builds failed.");
-		}
-		else if (score < 100) {
-			imgForecast = String.format(imgForecast, "health-80plus",
-					lastFailedBuilds + " out of the last " + lastBuilds + " builds failed.");
-		}
 		else if (score == 100) {
 			imgForecast = String.format(imgForecast, "health-80plus",
 					"No recent builds failed.");
 		}
 		else {
-			imgForecast = "";
+			String summary =
+					failedCount + " out of the last " + buildCount + " builds failed.";
+			if (score <= 20) {
+				imgForecast = String.format(imgForecast, "health-00to19", summary);
+			}
+			else if (score <= 40) {
+				imgForecast = String.format(imgForecast, "health-20to39", summary);
+			}
+			else if (score <= 60) {
+				imgForecast = String.format(imgForecast, "health-40to59", summary);
+			}
+			else if (score <= 80) {
+				imgForecast = String.format(imgForecast, "health-60to79", summary);
+			}
+			else {
+				imgForecast = String.format(imgForecast, "health-80plus", summary);
+			}
 		}
 
 		return imgForecast;

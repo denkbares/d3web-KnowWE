@@ -28,6 +28,7 @@ public final class CITestResult implements Comparable<CITestResult> {
 		ERROR
 	}
 
+	private String testName = null;
 	private final Type type;
 	private final String message;
 	private final String configuration;
@@ -44,6 +45,15 @@ public final class CITestResult implements Comparable<CITestResult> {
 		this.type = type;
 		this.message = message;
 		this.configuration = configuration;
+	}
+
+	// TODO: should have package visability
+	public void initTestName(String testName) {
+		this.testName = testName;
+	}
+
+	public String getTestName() {
+		return this.testName;
 	}
 
 	public boolean isSuccessful() {

@@ -19,7 +19,10 @@
 
 package de.knowwe.d3web.resource;
 
+import java.io.IOException;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
@@ -112,10 +115,18 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 				return Messages.asList(Messages.syntaxError("empty destination path"));
 			}
 			// do the search
-			resource = getAttachmentResource(destinationPath, sourceFile, sourceArticle);
-			if (resource == null) {
-				return Messages.asList(Messages.syntaxError("no attachment " + sourcePath
-						+ " found"));
+			try {
+				resource = getAttachmentResource(destinationPath, sourceFile, sourceArticle);
+				if (resource == null) {
+					return Messages.asList(Messages.syntaxError("no attachment " + sourcePath
+							+ " found"));
+				}
+			}
+			catch (IOException e) {
+				Logger.getLogger(ResourceHandler.class.getName()).log(Level.SEVERE,
+						"wiki error accessing attachments: ", e);
+				return Messages.asList(
+						Messages.error("wiki error accessing attachments: " + e));
 			}
 		}
 
@@ -145,7 +156,7 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 	 * @param articleName the article name of the attachment to be searched for
 	 * @return the constructed resource
 	 */
-	private static Resource getAttachmentResource(String path, String attachmentName, String articleName) {
+	private static Resource getAttachmentResource(String path, String attachmentName, String articleName) throws IOException {
 		Collection<WikiAttachment> attachments =
 				Environment.getInstance().getWikiConnector().getAttachments();
 		for (WikiAttachment attachment : attachments) {

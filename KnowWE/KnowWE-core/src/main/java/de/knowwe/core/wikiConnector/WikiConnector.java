@@ -93,26 +93,38 @@ public interface WikiConnector {
 	public String getApplicationRootPath();
 
 	/**
-	 * Returns the {@link WikiAttachment} given by the supplied path.
+	 * Returns the {@link WikiAttachment} given by the supplied path. This
+	 * method returns null if the attachment does not exists. The method throws
+	 * an {@link IOException} if there are any problems to access the attachment
+	 * from the underlying wiki architecture.
 	 * 
 	 * @created 30.08.2011
 	 * @param path the path of the attachment
+	 * @return the attachment of the specified path
+	 * @throws IOException if the attachment cannot be accessed
 	 */
-	public WikiAttachment getAttachment(String path);
+	public WikiAttachment getAttachment(String path) throws IOException;
 
 	/**
-	 * Returns all attachments known to the wiki.
-	 */
-	public Collection<WikiAttachment> getAttachments();
-
-	/**
-	 * Returns the filenames of the attachments of the article with the given
-	 * title
+	 * Returns the all attachments of the article with the given title. The
+	 * method throws an {@link IOException} if there are any problems to access
+	 * the attachments from the underlying wiki architecture.
 	 * 
-	 * @param title the title of the article to get the attachment filenames
-	 *        from
+	 * @param title the title of the article to get the attachment from
+	 * @return the attachments of the specified article
+	 * @throws IOException if the attachments cannot be accessed
 	 */
-	public List<WikiAttachment> getAttachments(String title);
+	public List<WikiAttachment> getAttachments(String title) throws IOException;
+
+	/**
+	 * Returns a collection of all attachments known to the wiki. The method
+	 * throws an {@link IOException} if there are any problems to access the
+	 * attachments from the underlying wiki architecture.
+	 * 
+	 * @return the attachments of the wiki
+	 * @throws IOException if the attachments cannot be accessed
+	 */
+	public Collection<WikiAttachment> getAttachments() throws IOException;
 
 	/**
 	 * Returns the author of the specified version of the given article (by

@@ -144,7 +144,8 @@ public interface WikiAttachment {
 	public void delete(int version) throws IOException, IllegalArgumentException;
 
 	/**
-	 * Returns an array of all available versions of this attachment.
+	 * Returns an array of all available versions of this attachment. The
+	 * version numbers are sorted naturally in ascending order.
 	 * 
 	 * @created 18.05.2012
 	 * @return the array of versions still available

@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -116,10 +117,10 @@ public class KnowWEUtils {
 	 * @created 27.01.2012
 	 * @param title Title of the wikipage
 	 * @param fileName filename of the attachment
-	 * @return {@link WikiAttachment} fulfilling the specified parameters
-	 *         or null, if no such attachment exists
+	 * @return {@link WikiAttachment} fulfilling the specified parameters or
+	 *         null, if no such attachment exists
 	 */
-	public static WikiAttachment getAttachment(String title, String fileName) {
+	public static WikiAttachment getAttachment(String title, String fileName) throws IOException {
 		Collection<WikiAttachment> attachments = Environment.getInstance().getWikiConnector().getAttachments();
 		WikiAttachment actualAttachment = null;
 		for (WikiAttachment attachment : attachments) {
@@ -134,16 +135,16 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns all {@link WikiAttachment}s which full name fits to the
-	 * regex or which filename matches to the regexp and which parent has the
-	 * specified topic
+	 * Returns all {@link WikiAttachment}s which full name fits to the regex or
+	 * which filename matches to the regexp and which parent has the specified
+	 * topic
 	 * 
 	 * @created 09.02.2012
 	 * @param regex regular expression the attachments should match to
 	 * @param topic Topic of the article
 	 * @return Collection of {@link WikiAttachment}s
 	 */
-	public static Collection<WikiAttachment> getAttachments(String regex, String topic) {
+	public static Collection<WikiAttachment> getAttachments(String regex, String topic) throws IOException {
 		Collection<WikiAttachment> result = new LinkedList<WikiAttachment>();
 		Collection<WikiAttachment> attachments = Environment.getInstance().getWikiConnector().getAttachments();
 		Pattern pattern = Pattern.compile(regex);

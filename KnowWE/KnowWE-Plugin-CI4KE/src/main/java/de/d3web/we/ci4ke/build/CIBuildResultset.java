@@ -20,14 +20,13 @@
 
 package de.d3web.we.ci4ke.build;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.d3web.we.ci4ke.testing.CITestResult;
 import de.d3web.we.ci4ke.testing.CITestResult.Type;
-import de.d3web.we.ci4ke.util.Pair;
 
 /**
  * An instance of this class holds the result of a ci build
@@ -37,51 +36,73 @@ import de.d3web.we.ci4ke.util.Pair;
 public final class CIBuildResultset {
 
 	/**
+	 * List of all test results of the executed tests
+	 */
+	private final List<CITestResult> results = new LinkedList<CITestResult>();
+
+	/**
+	 * The number of this build
+	 */
+	private final int buildNumber;
+
+	/**
 	 * time/date of build execution
 	 */
-	private final Date buildExecutionDate;
+	private final Date buildDate;
 
 	/**
-	 * A Map of the names and results of the executed Tests.
+	 * Duration how long this build has taken
 	 */
-	// private final Map<String, CITestResult> results;
+	private long buildDuration = 0;
 
-	private final List<Pair<String, CITestResult>> results;
+	public CIBuildResultset(int buildNumber) {
+		this(buildNumber, new Date());
+	}
 
-	private long timeSpentForBuild;
+	public CIBuildResultset(int buildNumber, Date buildDate) {
+		this.buildNumber = buildNumber;
+		this.buildDate = buildDate;
+	}
 
 	/**
-	 * The duration is given in milliseconds.
+	 * Returns the duration this build has required to be performed, given in
+	 * milliseconds.
 	 * 
 	 * @created 03.02.2012
 	 * @return in milliseconds
 	 */
-	public long getTimeSpentForBuild() {
-		return timeSpentForBuild;
+	public long getBuildDuration() {
+		return buildDuration;
 	}
 
 	/**
-	 * The duration is given in milliseconds.
+	 * Sets the duration this build has required to be performed, given in
+	 * milliseconds.
 	 * 
 	 * @created 03.02.2012
 	 * @param timeSpentForBuild in milliseconds
 	 */
-	public void setTimeSpentForBuild(long timeSpentForBuild) {
-		this.timeSpentForBuild = timeSpentForBuild;
+	public void setBuildDuration(long timeSpentForBuild) {
+		this.buildDuration = timeSpentForBuild;
 	}
 
-	public CIBuildResultset() {
-		super();
-		this.buildExecutionDate = new Date();
-		this.results = new ArrayList<Pair<String, CITestResult>>();
-		this.timeSpentForBuild = 0;
+	/**
+	 * Returns the date this build has been started.
+	 * 
+	 * @created 19.05.2012
+	 * @return the build start time
+	 */
+	public Date getBuildDate() {
+		return buildDate;
 	}
 
-	public Date getBuildExecutionDate() {
-		return buildExecutionDate;
-	}
-
-	public List<Pair<String, CITestResult>> getResults() {
+	/**
+	 * Returns the list of all test results of this build.
+	 * 
+	 * @created 19.05.2012
+	 * @return the results of this build
+	 */
+	public List<CITestResult> getResults() {
 		return Collections.unmodifiableList(results);
 	}
 
@@ -95,8 +116,7 @@ public final class CIBuildResultset {
 	public Type getOverallResult() {
 
 		Type overallResult = Type.SUCCESSFUL;
-		for (Pair<String, CITestResult> resultPair : results) {
-			CITestResult testResult = resultPair.getB();
+		for (CITestResult testResult : results) {
 			if (testResult != null && testResult.getType().
 					compareTo(overallResult) > 0) {
 				overallResult = testResult.getType();
@@ -105,32 +125,11 @@ public final class CIBuildResultset {
 		return overallResult;
 	}
 
-	public String getTestresultMessages() {
-		StringBuffer sb = new StringBuffer();
-		for (Pair<String, CITestResult> resultPair : results) {
-			String testName = resultPair.getA();
-			CITestResult testResult = resultPair.getB();
-
-			sb.append(testName + ": ");
-			if (testResult.hasMessage()) {
-				sb.append(testResult.getMessage());
-			}
-			else {
-				sb.append("(no resultmessage)");
-			}
-			sb.append("\n<br/><br/>\n");
-		}
-		return sb.toString();
+	public void addTestResult(CITestResult testResult) {
+		results.add(testResult);
 	}
 
-	// MODIFIERS
-
-	public void addTestResult(String testname, CITestResult testResult) {
-		if (testname != null && !testname.isEmpty() && testResult != null) {
-			results.add(new Pair<String, CITestResult>(testname, testResult));
-		}
-		else {
-			throw new IllegalArgumentException("addTestResult() received illegal arguments!");
-		}
+	public int getBuildNumber() {
+		return buildNumber;
 	}
 }

@@ -68,6 +68,10 @@ public class CIDashboardType extends DefaultMarkupType {
 		this.setRenderer(new CIDashboardRenderer());
 	}
 
+	public static String getDashboardName(Section<CIDashboardType> section) {
+		return DefaultMarkupType.getAnnotation(section, NAME_KEY);
+	}
+
 	private class DashboardSubtreeHandler extends SubtreeHandler<CIDashboardType> {
 
 		@Override
@@ -144,13 +148,15 @@ public class CIDashboardType extends DefaultMarkupType {
 				}
 			}
 
-			CIConfig config = new CIConfig(dashboardName, s.getArticle().getTitle(), tests, trigger);
+			CIConfig config = new CIConfig(article.getWeb(), s.getArticle().getTitle(),
+					dashboardName, tests, trigger);
 
 			// Parse the trigger-parameter and (eventually) register
 			// a CIHook
 			if (trigger.equals(CIBuildTriggers.onSave)) {
 				// Hook registrieren
-				CIHook ciHook = new CIHook(article.getTitle(), dashboardName, monitoredArticles);
+				CIHook ciHook = new CIHook(article.getWeb(), article.getTitle(), dashboardName,
+						monitoredArticles);
 				CIHookManager.getInstance().registerHook(ciHook);
 				// Store to be able to unregister in destroy method
 				KnowWEUtils.storeObject(article, s,

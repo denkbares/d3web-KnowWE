@@ -179,7 +179,7 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public WikiAttachment getAttachment(String path) {
+	public WikiAttachment getAttachment(String path) throws IOException {
 		try {
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
 			Attachment attachment = attachmentManager.getAttachmentInfo(path);
@@ -189,13 +189,13 @@ public class JSPWikiConnector implements WikiConnector {
 
 		}
 		catch (ProviderException e) {
-			e.printStackTrace();
-			return null;
+			String message = "cannot access attachments due to provider error";
+			throw new IOException(message, e);
 		}
 	}
 
 	@Override
-	public Collection<WikiAttachment> getAttachments() {
+	public Collection<WikiAttachment> getAttachments() throws IOException {
 		try {
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
 			Collection<?> attachments = attachmentManager.getAllAttachments();
@@ -209,14 +209,14 @@ public class JSPWikiConnector implements WikiConnector {
 			return ret;
 		}
 		catch (ProviderException e) {
-			e.printStackTrace();
-			return null;
+			String message = "cannot access attachments due to provider error";
+			throw new IOException(message, e);
 		}
 
 	}
 
 	@Override
-	public List<WikiAttachment> getAttachments(String title) {
+	public List<WikiAttachment> getAttachments(String title) throws IOException {
 		try {
 			List<WikiAttachment> attachmentList = new LinkedList<WikiAttachment>();
 			// this list is in fact a Collection<Attachment>,
@@ -234,7 +234,8 @@ public class JSPWikiConnector implements WikiConnector {
 			return attachmentList;
 		}
 		catch (ProviderException e) {
-			return null;
+			String message = "cannot access attachments due to provider error";
+			throw new IOException(message, e);
 		}
 	}
 
@@ -249,20 +250,15 @@ public class JSPWikiConnector implements WikiConnector {
 			return null;
 		}
 
-		WikiContext context = new WikiContext(this.engine, this.engine
-				.getPage(title));
-
-		String author = null;
 		try {
+			WikiContext context = new WikiContext(this.engine, this.engine.getPage(title));
 			if (context.getEngine().pageExists(context.getPage().getName(), version)) {
-				author = context.getEngine().getPage(context.getPage().getName(), version).getAuthor();
+				return context.getEngine().getPage(context.getPage().getName(), version).getAuthor();
 			}
 		}
 		catch (ProviderException e) {
-			return null;
 		}
-
-		return author;
+		return null;
 	}
 
 	@Override
@@ -287,38 +283,27 @@ public class JSPWikiConnector implements WikiConnector {
 			return null;
 		}
 
-		WikiContext context = new WikiContext(this.engine, this.engine
-				.getPage(title));
-
-		Date lastModified = null;
+		WikiContext context = new WikiContext(this.engine, this.engine.getPage(title));
 		try {
 			if (context.getEngine().pageExists(context.getPage().getName(), version)) {
-				lastModified = context.getEngine().getPage(context.getPage().getName(),
+				return context.getEngine().getPage(context.getPage().getName(),
 						version).getLastModified();
 			}
 		}
 		catch (ProviderException e) {
-			return null;
 		}
-
-		return lastModified;
+		return null;
 	}
 
 	@Override
 	public Locale getLocale() {
-
-		WikiContext wikiContext = new WikiContext(this.engine, this.engine
-				.getPage("Main"));
-
+		WikiContext wikiContext = new WikiContext(this.engine, this.engine.getPage("Main"));
 		return Preferences.getLocale(wikiContext);
 	}
 
 	@Override
 	public Locale getLocale(HttpServletRequest request) {
-
-		WikiContext wikiContext = new WikiContext(this.engine, request,
-				this.engine.getPage("Main"));
-
+		WikiContext wikiContext = new WikiContext(this.engine, request, this.engine.getPage("Main"));
 		return Preferences.getLocale(wikiContext);
 	}
 

@@ -31,6 +31,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TermIdentifier;
@@ -467,6 +469,20 @@ public final class Messages {
 	 */
 	public static Message syntaxError(String message) {
 		return Messages.error("Syntax Error: " + message);
+	}
+
+	/**
+	 * Returns a {@link Message} to be used when a SubtreeHandler recognizes an
+	 * unexpected internal error based on an exception. The error will also be
+	 * logged as a warning.
+	 * 
+	 * @created 18.08.2010
+	 * @param message the message of the error
+	 * @param e the exception occurred
+	 */
+	public static Message internalError(String message, Throwable e) {
+		Logger.getLogger(Messages.class.getName()).log(Level.WARNING, message, e);
+		return Messages.error(message + ": " + e);
 	}
 
 	/**

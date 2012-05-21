@@ -18,8 +18,11 @@
  */
 package de.knowwe.testcases;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
@@ -58,21 +61,33 @@ public abstract class AttachmentTestCaseProvider implements TestCaseProvider {
 
 	@Override
 	public TestCase getTestCase() {
-		WikiAttachment actualAttachment = KnowWEUtils.getAttachment(
-				attachment.getParentName(),
-				attachment.getFileName());
-		if (actualAttachment == null) {
+		try {
+			WikiAttachment actualAttachment;
+			actualAttachment = KnowWEUtils.getAttachment(
+					attachment.getParentName(),
+					attachment.getFileName());
+
+			if (actualAttachment == null) {
+				messages.clear();
+				messages.add(Messages.error("File " + attachment.getFileName()
+						+ " cannot be found attached to this article.\n"));
+				return null;
+			}
+			if (attachment == null || !attachment.getDate().equals(actualAttachment.getDate())) {
+				attachment = actualAttachment;
+				messages.clear();
+				parse();
+			}
+			return testCase;
+		}
+		catch (IOException e) {
 			messages.clear();
 			messages.add(Messages.error("File " + attachment.getFileName()
-					+ " cannot be found attached to this article.\n"));
+					+ " cannot be accessed: " + e.getMessage() + "\n"));
+			Logger.getLogger(getClass().getName()).log(Level.SEVERE,
+					"File " + attachment.getFileName() + " cannot be accessed", e);
 			return null;
 		}
-		if (attachment == null || !attachment.getDate().equals(actualAttachment.getDate())) {
-			attachment = actualAttachment;
-			messages.clear();
-			parse();
-		}
-		return testCase;
 	}
 
 	public abstract void parse();

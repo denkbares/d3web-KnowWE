@@ -18,6 +18,7 @@
  */
 package de.knowwe.testcases;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,6 +26,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.utils.D3webUtils;
@@ -33,6 +36,7 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.d3web.resource.ResourceHandler;
 
 /**
  * Abstract TestCaseProviderStorage that provides common methods for Storages
@@ -99,8 +103,17 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 	public void refresh() {
 		messages.clear();
 		for (String fileRegex : regexMap.keySet()) {
-			Collection<WikiAttachment> fittingAttachments = KnowWEUtils.getAttachments(
-					fileRegex, sectionArticle.getTitle());
+			Collection<WikiAttachment> fittingAttachments;
+			try {
+				fittingAttachments = KnowWEUtils.getAttachments(
+						fileRegex, sectionArticle.getTitle());
+			}
+			catch (IOException e) {
+				Logger.getLogger(ResourceHandler.class.getName()).log(Level.SEVERE,
+						"wiki error accessing attachments", e);
+				messages.add(Messages.error("Error accessing attachments '" + fileRegex + "': " + e));
+				continue;
+			}
 			if (fittingAttachments.size() == 0) {
 				messages.add(Messages.error("No Attachment found for: " + fileRegex));
 				continue;

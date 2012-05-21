@@ -31,24 +31,29 @@ public final class CIConfig implements Cloneable {
 
 	public static final String CICONFIG_STORE_KEY = "CIConfig_Section_Store";
 
-	public static final CIConfig DUMMY_CONFIG = new CIConfig("", "",
+	public static final CIConfig DUMMY_CONFIG = new CIConfig("", "", "",
 			new ArrayList<Pair<String, List<String>>>(), CIBuildTriggers.onDemand);
 
-	private final String dashboardName;
+	private final String web;
 	private final String dashboardArticleTitle;
+	private final String dashboardName;
 
 	// private final Map<String, List<String>> tests;
 	private final List<Pair<String, List<String>>> tests;
 
 	private final CIBuildTriggers trigger;
 
-	public CIConfig(String dashboardName, String dashboardArticle,
+	public CIConfig(String web, String dashboardArticle, String dashboardName,
 			List<Pair<String, List<String>>> tests, CIBuildTriggers trigger) {
-		super();
-		this.dashboardName = dashboardName;
+		this.web = web;
 		this.dashboardArticleTitle = dashboardArticle;
+		this.dashboardName = dashboardName;
 		this.tests = Collections.unmodifiableList(tests);
 		this.trigger = trigger;
+	}
+
+	public String getWeb() {
+		return web;
 	}
 
 	public String getDashboardName() {
@@ -77,8 +82,10 @@ public final class CIConfig implements Cloneable {
 
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		CIConfig c = new CIConfig(this.dashboardName,
+		CIConfig c = new CIConfig(
+				this.web,
 				this.dashboardArticleTitle,
+				this.dashboardName,
 				this.tests,
 				this.trigger);
 		return c;
