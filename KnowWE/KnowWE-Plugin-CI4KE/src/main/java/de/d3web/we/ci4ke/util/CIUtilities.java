@@ -250,7 +250,7 @@ public class CIUtilities {
 
 	public static String renderForecastIcon(int buildCount, int failedCount, int pixelSize) {
 
-		int score = (buildCount > 0) ? score = (100 * failedCount) / buildCount : 0;
+		int score = (buildCount > 0) ? score = (100 * (buildCount - failedCount)) / buildCount : 0;
 		String imgForecast = "<img src='KnowWEExtension/ci4ke/images/" +
 				pixelSize + "x" + pixelSize + "/%s.png' align='absmiddle' alt='%<s' title='%s'>";
 

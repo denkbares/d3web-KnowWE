@@ -101,8 +101,8 @@ public class Dashboard {
 	 */
 	public CIBuildResultset getLatestBuild() {
 		update();
-		if (availableBuilds.length == 0) return null;
-		int buildNumber = availableBuilds[availableBuilds.length - 1];
+		int buildNumber = getLatestAvailableBuildNumber();
+		if (buildNumber == 0) return null;
 		return accessBuild(buildNumber);
 	}
 
@@ -164,7 +164,7 @@ public class Dashboard {
 	 * 
 	 * @created 21.05.2012
 	 */
-	private CIBuildResultset[] getBuildsBeforeChecked(int buildNumber, int count) {
+	private synchronized CIBuildResultset[] getBuildsBeforeChecked(int buildNumber, int count) {
 		// find the position of the buildNumber
 		// or where it would be if exists
 		int index = Arrays.binarySearch(availableBuilds, buildNumber);
@@ -216,7 +216,7 @@ public class Dashboard {
 	 * 
 	 * @created 21.05.2012
 	 */
-	private CIBuildResultset[] getBuildsByIndexChecked(int fromIndex, int toIndex) {
+	private synchronized CIBuildResultset[] getBuildsByIndexChecked(int fromIndex, int toIndex) {
 
 		// correct indexes if required
 		if (toIndex > availableBuilds.length) {
@@ -245,27 +245,30 @@ public class Dashboard {
 
 	/**
 	 * Adds a new build to the dashboard and makes the underlying persistence to
-	 * store that build.
+	 * store that build. If the build is lower or equal than the latest build
+	 * number, an {@link IllegalArgumentException} is thrown.
 	 * 
 	 * @created 19.05.2012
 	 * @param build the build to be added
+	 * @throws IllegalArgumentException the build number is not higher than the
+	 *         existing ones
 	 */
-	public void addBuild(CIBuildResultset build) {
+	public synchronized void addBuild(CIBuildResultset build) throws IllegalArgumentException {
 		update();
+
+		int latestAvailable = getLatestAvailableBuildNumber();
+		if (latestAvailable >= build.getBuildNumber()) {
+			throw new IllegalArgumentException("cannot add old builds to dashboard");
+		}
 
 		// add to cache structure
 		int buildNumber = build.getBuildNumber();
 		buildCache.put(buildNumber, build);
-		// add to list of available builds if not already in
-		if (!hasAvailableBuild(buildNumber)) {
-			int length = availableBuilds.length;
-			availableBuilds = Arrays.copyOfRange(availableBuilds, 0, length + 1);
-			availableBuilds[length] = buildNumber;
-			// sort if required
-			if (length > 0 && availableBuilds[length - 1] > buildNumber) {
-				Arrays.sort(availableBuilds);
-			}
-		}
+
+		// add to list of available builds
+		int length = availableBuilds.length;
+		availableBuilds = Arrays.copyOfRange(availableBuilds, 0, length + 1);
+		availableBuilds[length] = buildNumber;
 
 		// and attach to wiki if possible
 		try {
@@ -280,18 +283,28 @@ public class Dashboard {
 	}
 
 	/**
+	 * Gets the latest build number that is available in the current cache
+	 * structure. If no build is available this method returns "0".
+	 * 
+	 * @created 21.05.2012
+	 * @return the latest known build number
+	 */
+	private synchronized int getLatestAvailableBuildNumber() {
+		if (availableBuilds.length == 0) return 0;
+		return availableBuilds[availableBuilds.length - 1];
+	}
+
+	/**
 	 * Checks the underlying wiki infrastructure for the latest build and
 	 * eventually update our caches if necessary. After this method returns, you
 	 * can be sure that this {@link Dashboard} is up-to-date.
 	 * 
 	 * @created 19.05.2012
 	 */
-	private void update() {
+	private synchronized void update() {
 		try {
 			int latest = persistence.getLatestBuildNumber();
-			int lastAvailable = (availableBuilds.length == 0)
-					? 0
-					: availableBuilds[availableBuilds.length - 1];
+			int lastAvailable = getLatestAvailableBuildNumber();
 			if (latest > 0 && latest > lastAvailable) {
 				availableBuilds = persistence.getBuildNumbers();
 				cleanWrongAvailables(0, availableBuilds.length);
@@ -320,7 +333,7 @@ public class Dashboard {
 	 * 
 	 * @created 21.05.2012
 	 */
-	private boolean cleanWrongAvailables(int fromIndex, int toIndex) {
+	private synchronized boolean cleanWrongAvailables(int fromIndex, int toIndex) {
 		int writeIndex = fromIndex;
 		for (int readIndex = fromIndex; readIndex < toIndex; readIndex++) {
 			int buildNumber = availableBuilds[readIndex];
@@ -365,19 +378,21 @@ public class Dashboard {
 	private CIBuildResultset accessBuild(int buildNumber) {
 		CIBuildResultset build = buildCache.get(buildNumber);
 		if (build == null) {
-			try {
-				build = persistence.read(buildNumber);
+			synchronized (this) {
+				try {
+					build = persistence.read(buildNumber);
+				}
+				catch (IOException e) {
+					// if we cannot read the requested build
+					// we create a new one signaling the error
+					CITestResult badResult = new CITestResult(Type.ERROR,
+							"error while loading build informtion: " + e.getMessage() +
+									"\n" + Strings.stackTrace(e));
+					build = new CIBuildResultset(buildNumber);
+					build.addTestResult(badResult);
+				}
+				buildCache.put(buildNumber, build);
 			}
-			catch (IOException e) {
-				// if we cannot read the requested build
-				// we create a new one signaling the error
-				CITestResult badResult = new CITestResult(Type.ERROR,
-						"error while loading build informtion: " + e.getMessage() +
-								"\n" + Strings.stackTrace(e));
-				build = new CIBuildResultset(buildNumber);
-				build.addTestResult(badResult);
-			}
-			buildCache.put(buildNumber, build);
 		}
 		return build;
 	}
@@ -393,7 +408,7 @@ public class Dashboard {
 	 * dashboardName-dashboardArticle-combination. If no handler exists for this
 	 * combination, a new handler is created.
 	 */
-	public static Dashboard getDashboard(String web, String dashboardArticleTitle, String dashboardName) {
+	public static synchronized Dashboard getDashboard(String web, String dashboardArticleTitle, String dashboardName) {
 		String key = web + "/" + dashboardArticleTitle + "/" + dashboardName;
 		Dashboard dashboard = dashboards.get(key);
 		if (dashboard == null) {

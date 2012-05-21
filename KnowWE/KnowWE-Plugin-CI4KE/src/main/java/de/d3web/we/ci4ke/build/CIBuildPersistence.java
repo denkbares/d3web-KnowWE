@@ -178,7 +178,9 @@ public class CIBuildPersistence {
 	}
 
 	private String getAttachmentName() {
-		return ATTACHMENT_PREFIX + dashboard.getDashboardName();
+		String name = dashboard.getDashboardName();
+		name = name.replaceAll("[^a-zA-Z_-äöüÄÖÜßáéíóúàèìòùâêîôû0-9]", "-");
+		return ATTACHMENT_PREFIX + name + ".xml";
 	}
 
 	private static Document toXML(CIBuildResultset build) throws IOException, ParserConfigurationException {
