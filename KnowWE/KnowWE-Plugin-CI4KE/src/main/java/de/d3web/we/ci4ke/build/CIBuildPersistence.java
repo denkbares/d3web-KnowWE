@@ -44,8 +44,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import de.d3web.we.ci4ke.testing.CITestResult;
-import de.d3web.we.ci4ke.testing.CITestResult.Type;
+import cc.denkbares.testing.BuildResultSet;
+import cc.denkbares.testing.Message;
+import cc.denkbares.testing.TestResult;
+import cc.denkbares.testing.TestResultImpl;
 import de.knowwe.core.Environment;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
@@ -92,7 +94,7 @@ public class CIBuildPersistence {
 		return 0;
 	}
 
-	public void write(CIBuildResultset build) throws IOException {
+	public void write(BuildResultSet build) throws IOException {
 		try {
 			Document document = toXML(build);
 			// we write the document as an attachment
@@ -139,9 +141,9 @@ public class CIBuildPersistence {
 				dashboard.getDashboardArticle(), getAttachmentName(), "ci-process", in);
 	}
 
-	public CIBuildResultset read(int buildNumber) throws IOException {
+	public BuildResultSet read(int buildNumber) throws IOException {
 		InputStream in = getAttachment().getInputStream(buildNumber);
-		CIBuildResultset build = null;
+		BuildResultSet build = null;
 		try {
 			build = read(in);
 		}
@@ -160,7 +162,7 @@ public class CIBuildPersistence {
 		return build;
 	}
 
-	private CIBuildResultset read(InputStream in) throws IOException, ParserConfigurationException, SAXException, ParseException {
+	private BuildResultSet read(InputStream in) throws IOException, ParserConfigurationException, SAXException, ParseException {
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 		Document document = docBuilder.parse(in);
@@ -183,7 +185,7 @@ public class CIBuildPersistence {
 		return ATTACHMENT_PREFIX + name + ".xml";
 	}
 
-	private static Document toXML(CIBuildResultset build) throws IOException, ParserConfigurationException {
+	private static Document toXML(BuildResultSet build) throws IOException, ParserConfigurationException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document document = builder.newDocument();
@@ -201,7 +203,7 @@ public class CIBuildPersistence {
 		root.setAttribute("result", build.getOverallResult().name());
 
 		// add child results for single tests
-		for (CITestResult result : build.getResults()) {
+		for (TestResult result : build.getResults()) {
 
 			// create test item
 			Element test = document.createElement("test");
@@ -212,18 +214,18 @@ public class CIBuildPersistence {
 			test.setAttribute("result", result.getType().name());
 
 			// add optional test attributes
-			if (result.hasConfiguration()) {
+			if (result.getConfiguration() != null) {
 				test.setAttribute("configuration", result.getConfiguration());
 			}
-			if (result.hasMessage()) {
-				test.setAttribute("message", result.getMessage());
+			if (result.getMessage().getText() != null) {
+				test.setAttribute("message", result.getMessage().getText());
 			}
 		}
 
 		return document;
 	}
 
-	private static CIBuildResultset fromXML(Document document) throws ParseException {
+	private static BuildResultSet fromXML(Document document) throws ParseException {
 		Element root = (Element) document.getElementsByTagName("build").item(0);
 
 		// parse attributes
@@ -232,7 +234,7 @@ public class CIBuildPersistence {
 		Date date = DATE_FORMAT.parse(root.getAttribute("date"));
 
 		// create test item
-		CIBuildResultset build = new CIBuildResultset(number, date);
+		BuildResultSet build = new BuildResultSet(number, date);
 		build.setBuildDuration(duration);
 
 		// parse single child tests
@@ -243,15 +245,16 @@ public class CIBuildPersistence {
 
 			// read required attributes
 			String testName = test.getAttribute("name");
-			Type type = Type.valueOf(test.getAttribute("result"));
+			Message.Type type = Message.Type.valueOf(test.getAttribute("result"));
 
 			// read optional attributes
 			String configuration = test.getAttribute("configuration");
 			String message = test.getAttribute("message");
 
 			// and add the test result
-			CITestResult result = new CITestResult(type, message, configuration);
-			result.initTestName(testName);
+			TestResult result = new TestResultImpl(new Message(type, message),
+					configuration,
+					testName);
 			build.addTestResult(result);
 		}
 

@@ -20,11 +20,11 @@ package de.d3web.we.ci4ke.handling;
 
 import java.text.DateFormat;
 
+import cc.denkbares.testing.BuildResultSet;
+import cc.denkbares.testing.Message.Type;
+import cc.denkbares.testing.TestResult;
 import de.d3web.we.ci4ke.build.CIBuildRenderer;
-import de.d3web.we.ci4ke.build.CIBuildResultset;
 import de.d3web.we.ci4ke.build.Dashboard;
-import de.d3web.we.ci4ke.testing.CITestResult;
-import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.kdom.parsing.Section;
@@ -86,7 +86,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		string.append("<h3>");
 		// if at least one build has been executed: Render forecast icons:
-		CIBuildResultset latestBuild = dashboard.getLatestBuild();
+		BuildResultSet latestBuild = dashboard.getLatestBuild();
 		if (latestBuild != null) {
 			string.append(renderer.renderCurrentBuildStatus(22)).append("  ");
 			string.append(renderer.renderBuildHealthReport(22)).append("  ");
@@ -116,7 +116,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	/**
 	 * Renders out the test results of a selected Build
 	 */
-	public static String renderBuildDetails(Dashboard dashboard, CIBuildResultset build) {
+	public static String renderBuildDetails(Dashboard dashboard, BuildResultSet build) {
 
 		String dashboardNameEscaped = CIUtilities.utf8Escape(dashboard.getDashboardName());
 		DateFormat dateFormat = DateFormat.getDateTimeInstance();
@@ -152,13 +152,13 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 			buffy.append("</H4>");
 
-			for (CITestResult result : build.getResults()) {
+			for (TestResult result : build.getResults()) {
 				buffy.append("<div class='ci-collapsible-box'>");
 
 				// prepare some information
 				String name = result.getTestName();
 				Type buildResult = result.getType();
-				String message = result.getMessage();
+				String message = result.getMessage().getText();
 				String config = result.getConfiguration();
 
 				// render bullet

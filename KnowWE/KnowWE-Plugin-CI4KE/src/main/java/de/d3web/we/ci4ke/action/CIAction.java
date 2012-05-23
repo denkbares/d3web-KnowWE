@@ -22,8 +22,8 @@ package de.d3web.we.ci4ke.action;
 
 import java.io.IOException;
 
+import cc.denkbares.testing.BuildResultSet;
 import de.d3web.we.ci4ke.build.CIBuildRenderer;
-import de.d3web.we.ci4ke.build.CIBuildResultset;
 import de.d3web.we.ci4ke.build.CIBuilder;
 import de.d3web.we.ci4ke.build.Dashboard;
 import de.d3web.we.ci4ke.handling.CIDashboardRenderer;
@@ -61,7 +61,7 @@ public class CIAction extends AbstractAction {
 		}// Get the details of one build (wiki changes + test results)
 		else if (task.equals("getBuildDetails")) {
 			int selectedBuildNumber = Integer.parseInt(context.getParameter("nr"));
-			CIBuildResultset build = dashboard.getBuild(selectedBuildNumber);
+			BuildResultSet build = dashboard.getBuild(selectedBuildNumber);
 			html = CIDashboardRenderer.renderBuildDetails(dashboard, build);
 		}
 		else if (task.equals("refreshBuildList")) {

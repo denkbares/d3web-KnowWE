@@ -18,7 +18,8 @@
  */
 package de.d3web.we.ci4ke.build;
 
-import de.d3web.we.ci4ke.testing.CITestResult.Type;
+import cc.denkbares.testing.BuildResultSet;
+import cc.denkbares.testing.Message.Type;
 import de.d3web.we.ci4ke.util.CIUtilities;
 
 /**
@@ -46,11 +47,11 @@ public class CIBuildRenderer {
 	 */
 	public String renderBuildHealthReport(int pixelSize) {
 
-		CIBuildResultset[] lastBuilds = dashboard.getBuildsBefore(Integer.MAX_VALUE, 5);
+		BuildResultSet[] lastBuilds = dashboard.getBuildsBefore(Integer.MAX_VALUE, 5);
 		int count = lastBuilds.length;
 		int failed = 0;
-		for (CIBuildResultset build : lastBuilds) {
-			if (!Type.SUCCESSFUL.equals(build.getOverallResult())) {
+		for (BuildResultSet build : lastBuilds) {
+			if (!Type.SUCCESS.equals(build.getOverallResult())) {
 				failed++;
 			}
 		}
@@ -67,7 +68,7 @@ public class CIBuildRenderer {
 		int maxIndex = buildCount - indexFromBack;
 		int minIndex = buildCount - indexFromBack - numberOfBuilds;
 		minIndex = Math.max(minIndex, 0);
-		CIBuildResultset[] builds = dashboard.getBuildsByIndex(minIndex, maxIndex);
+		BuildResultSet[] builds = dashboard.getBuildsByIndex(minIndex, maxIndex);
 
 		StringBuffer sb = new StringBuffer();
 		sb.append("<H4>Builds</H4>");
@@ -75,7 +76,7 @@ public class CIBuildRenderer {
 
 		// reverse order to have the most current builds on top
 		for (int i = builds.length - 1; i >= 0; i--) {
-			CIBuildResultset build = builds[i];
+			BuildResultSet build = builds[i];
 			int buildNr = build.getBuildNumber();
 
 			sb.append("<tr><td>");
@@ -124,7 +125,7 @@ public class CIBuildRenderer {
 	 * @return
 	 */
 	public String renderCurrentBuildStatus(int pixelSize) {
-		CIBuildResultset build = dashboard.getLatestBuild();
+		BuildResultSet build = dashboard.getLatestBuild();
 		if (build == null) return "";
 		return CIUtilities.renderResultType(build.getOverallResult(), pixelSize);
 	}

@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -32,12 +31,11 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import cc.denkbares.testing.Message.Type;
+import cc.denkbares.testing.Test;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
-import de.d3web.we.ci4ke.testing.CITest;
-import de.d3web.we.ci4ke.testing.CITestResult.Type;
-import de.d3web.we.ci4ke.testing.DynamicCITestManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -153,57 +151,9 @@ public class CIUtilities {
 		return null;
 	}
 
-	/**
-	 * TODO: Javadoc
-	 * 
-	 * @param testClassNames
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	@Deprecated
-	public static Map<String, Class<? extends CITest>> parseTestClasses(Collection<String> testClassNames) {
-
-		Map<String, Class<? extends CITest>> classesMap =
-				new TreeMap<String, Class<? extends CITest>>();
-
-		List<Extension> allTests = Arrays.asList(PluginManager.getInstance().
-				getExtensions("KnowWEExtensionPoints", "CITest"));
-
-		for (String testClassName : testClassNames) {
-			boolean javaClassFound = false;
-			for (Extension e : allTests) {
-				if (testClassName.equals(e.getName())) {
-					try {
-						Class<?> clazz = Class.forName(e.getParameter("class"));
-						if (CITest.class.isAssignableFrom(clazz)) {
-							classesMap.put(testClassName, (Class<? extends CITest>) clazz);
-							javaClassFound = true;
-						}
-					}
-					catch (ClassNotFoundException e1) {
-					}
-				}
-			}
-			// if no corresponding Java CITest Class was found, try to search
-			// for dynamically implemented CITests!
-			if (!javaClassFound) {
-				Class<? extends CITest> testClazz = DynamicCITestManager.
-						INSTANCE.getCITestClass(testClassName);
-				if (testClazz != null) {
-					classesMap.put(testClassName, testClazz);
-				}
-			}
-		}
-		return classesMap;
-		// the test class names are separated by colons... lets split() them!
-		// List<String> list = Arrays.asList(testClassNames.split(":"));
-
-		// return parseTestClasses(list);
-	}
-
-	public static Map<String, Class<? extends CITest>> getAllCITestClasses() {
-		Map<String, Class<? extends CITest>> classesMap =
-				new TreeMap<String, Class<? extends CITest>>();
+	public static Map<String, Class<? extends Test>> getAllCITestClasses() {
+		Map<String, Class<? extends Test>> classesMap =
+				new TreeMap<String, Class<? extends Test>>();
 
 		List<Extension> allPluggedTests = Arrays.asList(PluginManager.getInstance().
 				getExtensions("KnowWEExtensionPoints", "CITest"));
@@ -212,8 +162,8 @@ public class CIUtilities {
 			String testClassName = e.getName();
 			try {
 				Class<?> clazz = Class.forName(e.getParameter("class"));
-				if (CITest.class.isAssignableFrom(clazz)) {
-					classesMap.put(testClassName, clazz.asSubclass(CITest.class));
+				if (Test.class.isAssignableFrom(clazz)) {
+					classesMap.put(testClassName, clazz.asSubclass(Test.class));
 				}
 			}
 			catch (ClassNotFoundException e1) {
@@ -223,7 +173,7 @@ public class CIUtilities {
 		}
 
 		// add all dynamically registered CITests:
-		classesMap.putAll(DynamicCITestManager.INSTANCE.getAllDynamicCITestClasses());
+		// classesMap.putAll(DynamicCITestManager.INSTANCE.getAllDynamicCITestClasses());
 
 		return Collections.unmodifiableMap(classesMap);
 	}
@@ -237,9 +187,9 @@ public class CIUtilities {
 				+ "/%s.png' alt='%<s' align='absmiddle' title='%s'>";
 
 		switch (resultType) {
-		case SUCCESSFUL:
+		case SUCCESS:
 			imgBulb = String.format(imgBulb, "green", "Build successful!");
-		case FAILED:
+		case FAILURE:
 			imgBulb = String.format(imgBulb, "red", "Build failed!");
 		case ERROR:
 			imgBulb = String.format(imgBulb, "grey", "Build has errors!");

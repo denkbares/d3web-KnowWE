@@ -20,13 +20,18 @@
 
 package de.d3web.we.ci4ke.testmodules;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import de.d3web.we.ci4ke.testing.AbstractCITest;
-import de.d3web.we.ci4ke.testing.CITestResult;
-import de.d3web.we.ci4ke.testing.CITestResult.Type;
+import cc.denkbares.testing.ArgsCheckResult;
+import cc.denkbares.testing.Message;
+import cc.denkbares.testing.Test;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 
 /**
@@ -35,17 +40,14 @@ import de.knowwe.core.kdom.Article;
  * @author Marc-Oliver Ochlast (denkbares GmbH)
  * @created 26.11.2010
  */
-public class TestArticlesContain extends AbstractCITest {
+public class TestArticlesContain implements Test<ArticleManager> {
 
 	@Override
-	public CITestResult call() {
+	public Message execute(ArticleManager testObject, String[] args) {
 
-		if (!checkIfParametersAreSufficient(2)) {
-			return numberOfParametersNotSufficientError(2);
-		}
-
-		String articlesPattern = getParameter(0);
-		String searchForKeyword = getParameter(1);
+		String articlesPattern = args[0];
+		String searchForKeyword = args[1];
+		String dashBoardArticle = args[2];
 
 		String configuration = "article: " + articlesPattern +
 				"; forbidden text: " + searchForKeyword;
@@ -54,7 +56,7 @@ public class TestArticlesContain extends AbstractCITest {
 		List<String> namesOfArticlesWhichContainKeyword = new LinkedList<String>();
 
 		for (Article article : getArticlesMatchingPattern(pattern)) {
-			if (!article.getTitle().equals(config.getDashboardArticleTitle()) &&
+			if (!article.getTitle().equals(dashBoardArticle) &&
 					article.toString().contains(searchForKeyword)) {
 				namesOfArticlesWhichContainKeyword.add(article.getTitle());
 			}
@@ -66,12 +68,35 @@ public class TestArticlesContain extends AbstractCITest {
 			String message = "<b>Forbidden text found in " + count + " articles:</b>\n" +
 					"<ul><li>" + de.knowwe.core.utils.Strings.concat("</li><li>",
 							namesOfArticlesWhichContainKeyword) + "</li></ul>";
-			return new CITestResult(Type.FAILED, message, configuration);
+			return new Message(Message.Type.FAILURE, message);
 		}
 		else {
-			return new CITestResult(Type.SUCCESSFUL, null, configuration);
+			return new Message(Message.Type.SUCCESS, null);
 		}
 
+	}
+
+	@Override
+	public ArgsCheckResult checkArgs(String[] args) {
+		if (args.length == 3) return new ArgsCheckResult(ArgsCheckResult.Type.FINE);
+		return new ArgsCheckResult(ArgsCheckResult.Type.ERROR);
+	}
+
+	@Override
+	public Class<ArticleManager> getTestObjectClass() {
+		return ArticleManager.class;
+	}
+
+	private Collection<Article> getArticlesMatchingPattern(Pattern pattern) {
+		List<Article> matchingArticles = new ArrayList<Article>();
+		for (Article article : Environment.getInstance().
+				getArticleManager(Environment.DEFAULT_WEB).getArticles()) {
+			String articleName = article.getTitle();
+			if (pattern.matcher(articleName).matches()) {
+				matchingArticles.add(article);
+			}
+		}
+		return Collections.unmodifiableCollection(matchingArticles);
 	}
 
 }

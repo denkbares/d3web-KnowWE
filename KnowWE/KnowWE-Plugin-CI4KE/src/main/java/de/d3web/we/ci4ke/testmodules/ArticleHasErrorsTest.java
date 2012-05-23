@@ -21,9 +21,9 @@ package de.d3web.we.ci4ke.testmodules;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import de.d3web.we.ci4ke.testing.AbstractCITest;
-import de.d3web.we.ci4ke.testing.CITestResult;
-import de.d3web.we.ci4ke.testing.CITestResult.Type;
+import cc.denkbares.testing.ArgsCheckResult;
+import cc.denkbares.testing.Test;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -36,24 +36,28 @@ import de.knowwe.core.report.Messages;
  * @author Marc-Oliver Ochlast
  * @created 29.05.2010
  */
-public class ArticleHasErrorsTest extends AbstractCITest {
+public class ArticleHasErrorsTest implements Test<ArticleManager> {
 
 	@Override
-	public CITestResult call() throws Exception {
+	public cc.denkbares.testing.Message execute(ArticleManager testObject, String[] args) {
+
 		boolean hasError = false;
 		StringBuffer buffy = new StringBuffer();
 
-		String monitoredArticleTitle = getParameter(0);
+		String monitoredArticleTitle = args[0];
 		String config = "article: " + monitoredArticleTitle;
 
 		if (monitoredArticleTitle == null || monitoredArticleTitle.isEmpty()) {
-			return new CITestResult(Type.FAILED, "Parameter 0 was invalid!", config);
+			return new cc.denkbares.testing.Message(
+					cc.denkbares.testing.Message.Type.FAILURE, "Parameter 0 was invalid!");
 		}
 
 		Article moni = Environment.getInstance().getArticle(
 				Environment.DEFAULT_WEB, monitoredArticleTitle);
 		if (moni == null) {
-			return new CITestResult(Type.FAILED, "MonitoredArticle not found or invalid!", config);
+			return new cc.denkbares.testing.Message(
+					cc.denkbares.testing.Message.Type.FAILURE,
+					"MonitoredArticle not found or invalid!");
 		}
 
 		Collection<Message> messages = new LinkedList<Message>();
@@ -74,10 +78,24 @@ public class ArticleHasErrorsTest extends AbstractCITest {
 		}
 		buffy.append("</ul>");
 		if (hasError) {
-			return new CITestResult(Type.FAILED, buffy.toString(), config);
+			return new cc.denkbares.testing.Message(
+					cc.denkbares.testing.Message.Type.FAILURE, buffy.toString());
 		}
 		else {
-			return new CITestResult(Type.SUCCESSFUL, null, config);
+			return new cc.denkbares.testing.Message(
+					cc.denkbares.testing.Message.Type.SUCCESS, null);
 		}
+	}
+
+	@Override
+	public ArgsCheckResult checkArgs(String[] args) {
+		if (args.length == 1) return new ArgsCheckResult(ArgsCheckResult.Type.FINE);
+		return new ArgsCheckResult(ArgsCheckResult.Type.ERROR);
+	}
+
+	@Override
+	public Class<ArticleManager> getTestObjectClass() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

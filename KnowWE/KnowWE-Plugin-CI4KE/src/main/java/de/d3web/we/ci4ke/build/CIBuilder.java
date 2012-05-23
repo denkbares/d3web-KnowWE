@@ -20,29 +20,19 @@
 
 package de.d3web.we.ci4ke.build;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import cc.denkbares.testing.BuildResultSet;
+import cc.denkbares.testing.Test;
+import cc.denkbares.testing.TestExecutor;
 import de.d3web.we.ci4ke.handling.CIConfig;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.d3web.we.ci4ke.handling.CIHook;
-import de.d3web.we.ci4ke.testing.CITest;
-import de.d3web.we.ci4ke.testing.CITestResult;
-import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.ci4ke.util.CIUtilities;
-import de.d3web.we.ci4ke.util.Pair;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Strings;
 
 public class CIBuilder {
 
@@ -91,95 +81,21 @@ public class CIBuilder {
 	 * resultset - write the resultset to file (by PersistenceHandler)
 	 */
 	public void executeBuild() {
-		long buildStartTime = System.currentTimeMillis();
+
+		BuildResultSet previousBuild = dashboard.getLatestBuild();
+		int buildNumber = (previousBuild == null) ? 1 : previousBuild.getBuildNumber() + 1;
 
 		// Map<String, Class<? extends CITest>> testClasses =
 		// CIUtilities.parseTestClasses(this.config.getTests().keySet());
-		Map<String, Class<? extends CITest>> testClasses = CIUtilities.getAllCITestClasses();
+		Map<String, Class<? extends Test>> testClasses = CIUtilities.getAllCITestClasses();
 
 		// Map<String, Future<CITestResult>> futureResults =
 		// new HashMap<String, Future<CITestResult>>();
-		List<Pair<String, Future<CITestResult>>> futureResults =
-				new ArrayList<Pair<String, Future<CITestResult>>>();
+		TestExecutor executor = new TestExecutor(
+				DefaultWikiTestObjectProvider.getInstance(), this.config.getTests());
 
-		// Just for now, be build only in a single, parallel thread.
-		// Multithreaded building with more than one build thread has
-		// to be thought about.
-		ExecutorService executor = Executors.newSingleThreadExecutor();
+		BuildResultSet build = executor.runtTests(buildNumber);
 
-		for (Pair<String, List<String>> testAndItsParameters : this.config.getTests()) {
-
-			String testName = testAndItsParameters.getA();
-			List<String> parameters = testAndItsParameters.getB();
-
-			Class<? extends CITest> clazz = testClasses.get(testName);
-			if (clazz != null) {
-				CITest test = null;
-				try {
-					test = clazz.newInstance();
-				}
-				catch (InstantiationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				if (test != null) {
-					// init the test with the CIConfig
-					test.init(config);
-
-					// set the test paramterers
-					test.setParameters(parameters);
-
-					// Submit this test for threaded execution!
-					// The result will arrive in the future...
-					Future<CITestResult> res = executor.submit(test);
-
-					// store this
-					futureResults.add(new Pair<String, Future<CITestResult>>(testName, res));
-				}
-			}
-			else {
-				// TODO here is some feedback inside the wiki necessary
-				Logger.getLogger(CIBuilder.class.getName()).log(Level.WARNING,
-						"CITest class not found: '" + testName + "'");
-			}
-		}
-
-		// Now collect the results
-		CIBuildResultset previousBuild = dashboard.getLatestBuild();
-		int buildNumber = (previousBuild == null) ? 1 : previousBuild.getBuildNumber() + 1;
-		CIBuildResultset build = new CIBuildResultset(buildNumber);
-		// resultset.setArticleVersion(monitoredArticleVersion);
-
-		for (Pair<String, Future<CITestResult>> runningTest : futureResults) {
-
-			String testname = runningTest.getA();
-			Future<CITestResult> futureResult = runningTest.getB();
-
-			CITestResult testResult;
-			try {
-				testResult = futureResult.get();
-			}
-			catch (InterruptedException e) {
-				Logger.getLogger(getClass().getName()).log(Level.WARNING,
-						"ci-test execuption interupted", e);
-				testResult = new CITestResult(Type.ERROR,
-						"ci-test execuption interupted: \n" + Strings.stackTrace(e));
-			}
-			catch (ExecutionException e) {
-				Logger.getLogger(getClass().getName()).log(Level.WARNING,
-						"ci-test internal error", e.getCause());
-				testResult = new CITestResult(Type.ERROR,
-						"ci-test internal error: \n" + Strings.stackTrace(e.getCause()));
-			}
-			testResult.initTestName(testname);
-			build.addTestResult(testResult);
-		}
-		build.setBuildDuration(System.currentTimeMillis() - buildStartTime);
 		dashboard.addBuild(build);
 	}
 }

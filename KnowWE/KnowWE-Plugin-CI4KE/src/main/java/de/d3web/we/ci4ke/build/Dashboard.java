@@ -26,9 +26,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import cc.denkbares.testing.BuildResultSet;
+import cc.denkbares.testing.Message;
+import cc.denkbares.testing.Message.Type;
+import cc.denkbares.testing.TestResult;
+import cc.denkbares.testing.TestResultImpl;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
-import de.d3web.we.ci4ke.testing.CITestResult;
-import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
@@ -55,7 +58,7 @@ public class Dashboard {
 	 * Internal cache for already available build results. When build result is
 	 * loaded it is stored in this map by its build number.
 	 */
-	private final Map<Integer, CIBuildResultset> buildCache = new HashMap<Integer, CIBuildResultset>();
+	private final Map<Integer, BuildResultSet> buildCache = new HashMap<Integer, BuildResultSet>();
 
 	/**
 	 * Stores the list of build-numbers currently available in the persistence.
@@ -99,7 +102,7 @@ public class Dashboard {
 	 * @created 19.05.2012
 	 * @return the latest build
 	 */
-	public CIBuildResultset getLatestBuild() {
+	public BuildResultSet getLatestBuild() {
 		update();
 		int buildNumber = getLatestAvailableBuildNumber();
 		if (buildNumber == 0) return null;
@@ -127,7 +130,7 @@ public class Dashboard {
 	 * @param buildNumber the build to be returned
 	 * @return the specified build
 	 */
-	public CIBuildResultset getBuild(int buildNumber) {
+	public BuildResultSet getBuild(int buildNumber) {
 		update();
 		if (!hasAvailableBuild(buildNumber)) return null;
 		return accessBuild(buildNumber);
@@ -149,9 +152,9 @@ public class Dashboard {
 	 * @param buildNumber the build to be returned
 	 * @return the specified build
 	 */
-	public CIBuildResultset[] getBuildsBefore(int buildNumber, int count) {
+	public BuildResultSet[] getBuildsBefore(int buildNumber, int count) {
 		update();
-		CIBuildResultset[] result;
+		BuildResultSet[] result;
 		while ((result = getBuildsBeforeChecked(buildNumber, count)) == null) {
 		}
 		return result;
@@ -164,7 +167,7 @@ public class Dashboard {
 	 * 
 	 * @created 21.05.2012
 	 */
-	private synchronized CIBuildResultset[] getBuildsBeforeChecked(int buildNumber, int count) {
+	private synchronized BuildResultSet[] getBuildsBeforeChecked(int buildNumber, int count) {
 		// find the position of the buildNumber
 		// or where it would be if exists
 		int index = Arrays.binarySearch(availableBuilds, buildNumber);
@@ -175,7 +178,7 @@ public class Dashboard {
 		if (from < 0) from = 0;
 
 		// and access the builds
-		CIBuildResultset[] result = new CIBuildResultset[index - from];
+		BuildResultSet[] result = new BuildResultSet[index - from];
 		for (int i = 0; i < result.length; i++) {
 			result[i] = accessBuild(availableBuilds[from + i]);
 		}
@@ -201,9 +204,9 @@ public class Dashboard {
 	 * @param buildNumber the build to be returned
 	 * @return the specified build
 	 */
-	public CIBuildResultset[] getBuildsByIndex(int fromIndex, int toIndex) {
+	public BuildResultSet[] getBuildsByIndex(int fromIndex, int toIndex) {
 		update();
-		CIBuildResultset[] result;
+		BuildResultSet[] result;
 		while ((result = getBuildsByIndexChecked(fromIndex, toIndex)) == null) {
 		}
 		return result;
@@ -216,7 +219,7 @@ public class Dashboard {
 	 * 
 	 * @created 21.05.2012
 	 */
-	private synchronized CIBuildResultset[] getBuildsByIndexChecked(int fromIndex, int toIndex) {
+	private synchronized BuildResultSet[] getBuildsByIndexChecked(int fromIndex, int toIndex) {
 
 		// correct indexes if required
 		if (toIndex > availableBuilds.length) {
@@ -226,10 +229,10 @@ public class Dashboard {
 		if (fromIndex < 0) fromIndex = 0;
 
 		// determine sub-array
-		if (fromIndex >= toIndex) return new CIBuildResultset[0];
+		if (fromIndex >= toIndex) return new BuildResultSet[0];
 
 		// and access the builds
-		CIBuildResultset[] result = new CIBuildResultset[toIndex - fromIndex];
+		BuildResultSet[] result = new BuildResultSet[toIndex - fromIndex];
 		for (int i = 0; i < result.length; i++) {
 			result[i] = accessBuild(availableBuilds[fromIndex + i]);
 		}
@@ -253,7 +256,7 @@ public class Dashboard {
 	 * @throws IllegalArgumentException the build number is not higher than the
 	 *         existing ones
 	 */
-	public synchronized void addBuild(CIBuildResultset build) throws IllegalArgumentException {
+	public synchronized void addBuild(BuildResultSet build) throws IllegalArgumentException {
 		update();
 
 		int latestAvailable = getLatestAvailableBuildNumber();
@@ -338,7 +341,7 @@ public class Dashboard {
 		for (int readIndex = fromIndex; readIndex < toIndex; readIndex++) {
 			int buildNumber = availableBuilds[readIndex];
 			// if we have already loaded a build that has a wrong number
-			CIBuildResultset build = buildCache.get(buildNumber);
+			BuildResultSet build = buildCache.get(buildNumber);
 			if (build != null && build.getBuildNumber() != buildNumber) {
 				// remove the build from the cache
 				buildCache.remove(buildNumber);
@@ -375,8 +378,8 @@ public class Dashboard {
 	 * @param buildNumber the build number to be accessed
 	 * @return the build of the specified number
 	 */
-	private CIBuildResultset accessBuild(int buildNumber) {
-		CIBuildResultset build = buildCache.get(buildNumber);
+	private BuildResultSet accessBuild(int buildNumber) {
+		BuildResultSet build = buildCache.get(buildNumber);
 		if (build == null) {
 			synchronized (this) {
 				try {
@@ -385,10 +388,10 @@ public class Dashboard {
 				catch (IOException e) {
 					// if we cannot read the requested build
 					// we create a new one signaling the error
-					CITestResult badResult = new CITestResult(Type.ERROR,
+					TestResult badResult = new TestResultImpl(new Message(Type.ERROR,
 							"error while loading build informtion: " + e.getMessage() +
-									"\n" + Strings.stackTrace(e));
-					build = new CIBuildResultset(buildNumber);
+									"\n" + Strings.stackTrace(e)), null, null);
+					build = new BuildResultSet(buildNumber);
 					build.addTestResult(badResult);
 				}
 				buildCache.put(buildNumber, build);
