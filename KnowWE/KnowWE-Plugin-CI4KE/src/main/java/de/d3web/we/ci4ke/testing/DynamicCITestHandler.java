@@ -26,7 +26,7 @@ import cc.denkbares.testing.Test;
  * @author Marc-Oliver Ochlast (denkbares GmbH)
  * @created 22.11.2010
  */
-public interface DynamicCITestHandler<T> {
+public interface DynamicCITestHandler {
 
 	/**
 	 * Gets a dynamically implemented CITest Class via its name.
@@ -35,7 +35,7 @@ public interface DynamicCITestHandler<T> {
 	 * @param testName the name of the test, as it gets called in CIDashboards
 	 * @return
 	 */
-	public Class<? extends Test<T>> getCITestClass(String testName);
+	public Class<? extends Test<?>> getCITestClass(String testName);
 
 	/**
 	 * Gets a Map of all dynamically implemented CITest Classes
@@ -43,6 +43,6 @@ public interface DynamicCITestHandler<T> {
 	 * @created 26.11.2010
 	 * @return
 	 */
-	public Map<String, Class<? extends Test<T>>> getAllCITestClasses();
+	public Map<String, Class<? extends Test<?>>> getAllCITestClasses();
 
 }

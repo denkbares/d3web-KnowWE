@@ -20,10 +20,7 @@
 
 package de.d3web.we.ci4ke.build;
 
-import java.util.Map;
-
 import cc.denkbares.testing.BuildResultSet;
-import cc.denkbares.testing.Test;
 import cc.denkbares.testing.TestExecutor;
 import de.d3web.we.ci4ke.handling.CIConfig;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
@@ -75,27 +72,20 @@ public class CIBuilder {
 
 	/**
 	 * This is the main method of a ci builder, which executes a new Build. -
-	 * get the names of all tests - get the classes of all tests - instantiate()
-	 * and init() all test-classes - invoke all tests with the help of a
-	 * threaded executor service - collect all results and construct the build
-	 * resultset - write the resultset to file (by PersistenceHandler)
+	 * Therefore the TestExecutor is used. Adds the resultset to dashboard.
 	 */
 	public void executeBuild() {
 
+		// retrieve build number
 		BuildResultSet previousBuild = dashboard.getLatestBuild();
 		int buildNumber = (previousBuild == null) ? 1 : previousBuild.getBuildNumber() + 1;
 
-		// Map<String, Class<? extends CITest>> testClasses =
-		// CIUtilities.parseTestClasses(this.config.getTests().keySet());
-		Map<String, Class<? extends Test>> testClasses = CIUtilities.getAllCITestClasses();
-
-		// Map<String, Future<CITestResult>> futureResults =
-		// new HashMap<String, Future<CITestResult>>();
+		// create and run TestExecutor
 		TestExecutor executor = new TestExecutor(
 				DefaultWikiTestObjectProvider.getInstance(), this.config.getTests());
-
 		BuildResultSet build = executor.runtTests(buildNumber);
 
+		// add resulting build to dashboard
 		dashboard.addBuild(build);
 	}
 }

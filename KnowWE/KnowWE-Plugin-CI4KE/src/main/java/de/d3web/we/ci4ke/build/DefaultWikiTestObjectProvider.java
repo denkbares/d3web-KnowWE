@@ -69,8 +69,10 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider<Object>
 		}
 
 		// Look for plugged TestObjectProviders to obtain test-objects
+		@SuppressWarnings("rawtypes")
 		List<TestObjectProvider> testObjectProviders = findTestObjectProviders();
-		for (TestObjectProvider testObjectProvider : testObjectProviders) {
+		for (@SuppressWarnings("rawtypes")
+		TestObjectProvider testObjectProvider : testObjectProviders) {
 			List<Object> testObjects = testObjectProvider.getTestObject(c, id);
 			result.addAll(testObjects);
 		}
@@ -84,6 +86,7 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider<Object>
 	 * @param testName
 	 * @return
 	 */
+	@SuppressWarnings("rawtypes")
 	private List<TestObjectProvider> findTestObjectProviders() {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(Test.PLUGIN_ID,
 				TestObjectProvider.EXTENSION_POINT_ID);

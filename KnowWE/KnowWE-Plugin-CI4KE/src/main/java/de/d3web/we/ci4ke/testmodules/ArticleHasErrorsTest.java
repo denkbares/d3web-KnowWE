@@ -45,7 +45,6 @@ public class ArticleHasErrorsTest implements Test<ArticleManager> {
 		StringBuffer buffy = new StringBuffer();
 
 		String monitoredArticleTitle = args[0];
-		String config = "article: " + monitoredArticleTitle;
 
 		if (monitoredArticleTitle == null || monitoredArticleTitle.isEmpty()) {
 			return new cc.denkbares.testing.Message(

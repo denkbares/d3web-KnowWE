@@ -49,8 +49,6 @@ public class TestArticlesContain implements Test<ArticleManager> {
 		String searchForKeyword = args[1];
 		String dashBoardArticle = args[2];
 
-		String configuration = "article: " + articlesPattern +
-				"; forbidden text: " + searchForKeyword;
 		Pattern pattern = Pattern.compile(articlesPattern);
 
 		List<String> namesOfArticlesWhichContainKeyword = new LinkedList<String>();

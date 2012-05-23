@@ -53,9 +53,9 @@ public final class DynamicCITestManager {
 	 * @created 26.11.2010
 	 * @return
 	 */
-	public Map<String, Class<? extends Test>> getAllDynamicCITestClasses() {
-		Map<String, Class<? extends Test>> allDynamicCITests =
-				new HashMap<String, Class<? extends Test>>();
+	public Map<String, Class<? extends Test<?>>> getAllDynamicCITestClasses() {
+		Map<String, Class<? extends Test<?>>> allDynamicCITests =
+				new HashMap<String, Class<? extends Test<?>>>();
 		for (DynamicCITestHandler handler : handlers) {
 			allDynamicCITests.putAll(handler.getAllCITestClasses());
 		}
@@ -71,9 +71,9 @@ public final class DynamicCITestManager {
 	 * @param testName
 	 * @return
 	 */
-	public Class<? extends Test> getCITestClass(String testName) {
+	public Class<? extends Test<?>> getCITestClass(String testName) {
 		for (DynamicCITestHandler handler : handlers) {
-			Class<? extends Test> clazz = handler.getCITestClass(testName);
+			Class<? extends Test<?>> clazz = handler.getCITestClass(testName);
 			if (clazz != null) {
 				return clazz;
 			}
