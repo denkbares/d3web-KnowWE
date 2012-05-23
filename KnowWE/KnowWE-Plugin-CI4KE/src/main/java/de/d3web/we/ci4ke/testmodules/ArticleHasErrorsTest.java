@@ -23,8 +23,6 @@ import java.util.LinkedList;
 
 import cc.denkbares.testing.ArgsCheckResult;
 import cc.denkbares.testing.Test;
-import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -36,28 +34,15 @@ import de.knowwe.core.report.Messages;
  * @author Marc-Oliver Ochlast
  * @created 29.05.2010
  */
-public class ArticleHasErrorsTest implements Test<ArticleManager> {
+public class ArticleHasErrorsTest implements Test<Article> {
 
 	@Override
-	public cc.denkbares.testing.Message execute(ArticleManager testObject, String[] args) {
+	public cc.denkbares.testing.Message execute(Article moni, String[] args) {
 
 		boolean hasError = false;
 		StringBuffer buffy = new StringBuffer();
 
-		String monitoredArticleTitle = args[0];
-
-		if (monitoredArticleTitle == null || monitoredArticleTitle.isEmpty()) {
-			return new cc.denkbares.testing.Message(
-					cc.denkbares.testing.Message.Type.FAILURE, "Parameter 0 was invalid!");
-		}
-
-		Article moni = Environment.getInstance().getArticle(
-				Environment.DEFAULT_WEB, monitoredArticleTitle);
-		if (moni == null) {
-			return new cc.denkbares.testing.Message(
-					cc.denkbares.testing.Message.Type.FAILURE,
-					"MonitoredArticle not found or invalid!");
-		}
+		String monitoredArticleTitle = moni.getTitle();
 
 		Collection<Message> messages = new LinkedList<Message>();
 		for (Section<?> sec : moni.getReviseIterator().getAllSections()) {
@@ -88,13 +73,14 @@ public class ArticleHasErrorsTest implements Test<ArticleManager> {
 
 	@Override
 	public ArgsCheckResult checkArgs(String[] args) {
-		if (args.length == 1) return new ArgsCheckResult(ArgsCheckResult.Type.FINE);
-		return new ArgsCheckResult(ArgsCheckResult.Type.ERROR);
+		int expectedArgCount = 1;
+		if (args.length == expectedArgCount) return new ArgsCheckResult(ArgsCheckResult.Type.FINE);
+		return new ArgsCheckResult(ArgsCheckResult.Type.ERROR, "Expected number of arguments: "
+				+ expectedArgCount + " - found: " + args.length);
 	}
 
 	@Override
-	public Class<ArticleManager> getTestObjectClass() {
-		// TODO Auto-generated method stub
-		return null;
+	public Class<Article> getTestObjectClass() {
+		return Article.class;
 	}
 }

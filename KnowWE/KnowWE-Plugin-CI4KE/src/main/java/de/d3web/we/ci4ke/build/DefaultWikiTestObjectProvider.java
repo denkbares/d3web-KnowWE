@@ -21,6 +21,8 @@ package de.d3web.we.ci4ke.build;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import cc.denkbares.testing.Test;
 import cc.denkbares.testing.TestObjectProvider;
 import de.d3web.plugin.Extension;
@@ -54,6 +56,10 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider<Object>
 	@Override
 	public List<Object> getTestObject(Class<Object> c, String id) {
 		List<Object> result = new ArrayList<Object>();
+		if (c == null) {
+			Logger.getLogger(this.getClass()).warn("Class given to TestObjectProvider was 'null'");
+			return result;
+		}
 		if (c.equals(Article.class)) {
 			Object byName = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB).getArticle(
 					id);

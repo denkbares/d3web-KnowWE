@@ -3,6 +3,8 @@ package de.d3web.we.ci4ke;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import cc.denkbares.testing.TestObjectProvider;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.utils.D3webUtils;
@@ -37,6 +39,13 @@ public class KnowledgeBaseTestObjectProvider implements TestObjectProvider<Knowl
 	@Override
 	public List<KnowledgeBase> getTestObject(Class<KnowledgeBase> c, String id) {
 		List<KnowledgeBase> result = new ArrayList<KnowledgeBase>();
+		if (c == null) {
+			Logger.getLogger(this.getClass()).warn("Class given to TestObjectProvider was 'null'");
+			return result;
+		}
+		if (!c.equals(KnowledgeBase.class)) {
+			return result;
+		}
 
 		// get the KB for this article
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(

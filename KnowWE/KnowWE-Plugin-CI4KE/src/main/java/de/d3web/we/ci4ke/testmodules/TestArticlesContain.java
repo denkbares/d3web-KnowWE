@@ -76,8 +76,10 @@ public class TestArticlesContain implements Test<ArticleManager> {
 
 	@Override
 	public ArgsCheckResult checkArgs(String[] args) {
-		if (args.length == 3) return new ArgsCheckResult(ArgsCheckResult.Type.FINE);
-		return new ArgsCheckResult(ArgsCheckResult.Type.ERROR);
+		int expectedArgCount = 3;
+		if (args.length == expectedArgCount) return new ArgsCheckResult(ArgsCheckResult.Type.FINE);
+		return new ArgsCheckResult(ArgsCheckResult.Type.ERROR, "Expected number of arguments: "
+				+ expectedArgCount + " - found: " + args.length);
 	}
 
 	@Override
