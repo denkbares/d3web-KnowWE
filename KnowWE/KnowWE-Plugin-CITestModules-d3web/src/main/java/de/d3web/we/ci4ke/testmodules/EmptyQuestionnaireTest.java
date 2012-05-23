@@ -21,13 +21,12 @@ package de.d3web.we.ci4ke.testmodules;
 import java.util.ArrayList;
 import java.util.List;
 
+import cc.denkbares.testing.ArgsCheckResult;
+import cc.denkbares.testing.Message;
+import cc.denkbares.testing.Message.Type;
+import cc.denkbares.testing.Test;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.QASet;
-import de.d3web.we.ci4ke.testing.AbstractCITest;
-import de.d3web.we.ci4ke.testing.CITestResult;
-import de.d3web.we.ci4ke.testing.CITestResult.Type;
-import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.Environment;
 
 /**
  * This CITest searches for empty questionnaires on an article. It needs one
@@ -39,22 +38,10 @@ import de.knowwe.core.Environment;
  * @author Marc-Oliver Ochlast (denkbares GmbH)
  * @created 26.11.2010
  */
-public class EmptyQuestionnaireTest extends AbstractCITest {
+public class EmptyQuestionnaireTest implements Test<KnowledgeBase> {
 
 	@Override
-	public CITestResult call() throws Exception {
-		// check if one test-parameter was set
-		if (!checkIfParametersAreSufficient(1)) {
-			return numberOfParametersNotSufficientError(1);
-		}
-		// get the first parameter = article whose KB should be searched for
-		// empty questionnaires
-		String articleName = getParameter(0);
-		String config = "knowledge base article: " + articleName;
-
-		// get the KB of this article
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(
-				Environment.DEFAULT_WEB, articleName);
+	public Message execute(KnowledgeBase kb, String[] args) {
 		if (kb != null) {
 			List<String> emptyQASets = new ArrayList<String>();
 			// iterate over QAsets and check if they are empty
@@ -64,14 +51,14 @@ public class EmptyQuestionnaireTest extends AbstractCITest {
 				}
 			}
 			if (emptyQASets.size() > 0) {// empty QASets were found:
-				String failedMessage = "Article '" + articleName +
+				String failedMessage = "Article '" + args[0] +
 						"' has empty questionnaires: " +
 						createHTMLListFromStringList(emptyQASets);
-				return new CITestResult(Type.FAILED, failedMessage, config);
+				return new Message(Type.FAILURE, failedMessage);
 			}
 		}
 		// it seems everything was fine:
-		return new CITestResult(Type.SUCCESSFUL, null, config);
+		return new Message(Type.SUCCESS, null);
 	}
 
 	private String createHTMLListFromStringList(List<String> list) {
@@ -84,5 +71,17 @@ public class EmptyQuestionnaireTest extends AbstractCITest {
 		}
 		htmlList.append("</ul>");
 		return htmlList.toString();
+	}
+
+	@Override
+	public ArgsCheckResult checkArgs(String[] args) {
+		if (args.length == 1) return new ArgsCheckResult(ArgsCheckResult.Type.FINE);
+		return new ArgsCheckResult(ArgsCheckResult.Type.ERROR);
+	}
+
+	@Override
+	public Class<KnowledgeBase> getTestObjectClass() {
+		// TODO Auto-generated method stub
+		return KnowledgeBase.class;
 	}
 }

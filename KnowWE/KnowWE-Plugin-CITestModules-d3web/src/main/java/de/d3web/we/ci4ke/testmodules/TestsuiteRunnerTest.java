@@ -20,48 +20,56 @@
 
 package de.d3web.we.ci4ke.testmodules;
 
+import cc.denkbares.testing.ArgsCheckResult;
+import cc.denkbares.testing.Message;
+import cc.denkbares.testing.Message.Type;
+import cc.denkbares.testing.Test;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.empiricaltesting.TestCase;
 import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysis;
 import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
-import de.d3web.we.ci4ke.testing.AbstractCITest;
-import de.d3web.we.ci4ke.testing.CITestResult;
-import de.d3web.we.ci4ke.testing.CITestResult.Type;
 import de.d3web.we.testcase.TestCaseUtils;
 import de.knowwe.core.Environment;
 
-public class TestsuiteRunner extends AbstractCITest {
+public class TestsuiteRunnerTest implements Test<KnowledgeBase> {
 
 	@Override
-	public CITestResult call() {
-
-		if (!checkIfParametersAreSufficient(1)) {
-			return numberOfParametersNotSufficientError(1);
-		}
-		String monitoredArticleTitle = getParameter(0);
-		String config = "article: " + monitoredArticleTitle;
+	public cc.denkbares.testing.Message execute(KnowledgeBase testObject, String[] args) {
+		String monitoredArticleTitle = args[0];
 
 		TestCase suite = TestCaseUtils.loadTestSuite(
 				monitoredArticleTitle, Environment.DEFAULT_WEB);
 
 		if (suite == null) {
-			return new CITestResult(Type.ERROR, "No Testsuite found in article '"
-					+ monitoredArticleTitle + "'", config);
+			return new Message(Type.ERROR, "No Testsuite found in article '"
+					+ monitoredArticleTitle + "'");
 		}
 
 		TestCaseAnalysis analysis = new TestCaseAnalysis();
 		TestCaseAnalysisReport result = analysis.runAndAnalyze(suite);
 
 		if (!suite.isConsistent()) {
-			return new CITestResult(Type.FAILED, "Testsuite is not consistent!", config);
+			return new Message(Type.FAILURE, "Testsuite is not consistent!");
 		}
 		else if (result.recall() == 1.0 && result.precision() == 1.0) {
-			return new CITestResult(Type.SUCCESSFUL, null, config);
+			return new Message(Type.SUCCESS, null);
 		}
 		else {
-			return new CITestResult(Type.FAILED,
+			return new Message(Type.FAILURE,
 						"Testsuite failed! (Total Precision: " + result.precision() +
-								", Total Recall: " + result.recall() + ")", config);
+								", Total Recall: " + result.recall() + ")");
 		}
+	}
+
+	@Override
+	public ArgsCheckResult checkArgs(String[] args) {
+		if (args.length == 1) return new ArgsCheckResult(ArgsCheckResult.Type.FINE);
+		return new ArgsCheckResult(ArgsCheckResult.Type.ERROR);
+	}
+
+	@Override
+	public Class<KnowledgeBase> getTestObjectClass() {
+		return KnowledgeBase.class;
 	}
 
 }
