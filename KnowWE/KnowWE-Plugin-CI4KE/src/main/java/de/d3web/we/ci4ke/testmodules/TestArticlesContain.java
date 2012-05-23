@@ -31,7 +31,6 @@ import cc.denkbares.testing.ArgsCheckResult;
 import cc.denkbares.testing.Message;
 import cc.denkbares.testing.Test;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 
 /**
@@ -53,7 +52,7 @@ public class TestArticlesContain implements Test<ArticleManager> {
 
 		List<String> namesOfArticlesWhichContainKeyword = new LinkedList<String>();
 
-		for (Article article : getArticlesMatchingPattern(pattern)) {
+		for (Article article : getArticlesMatchingPattern(pattern, testObject)) {
 			if (!article.getTitle().equals(dashBoardArticle) &&
 					article.toString().contains(searchForKeyword)) {
 				namesOfArticlesWhichContainKeyword.add(article.getTitle());
@@ -87,10 +86,9 @@ public class TestArticlesContain implements Test<ArticleManager> {
 		return ArticleManager.class;
 	}
 
-	private Collection<Article> getArticlesMatchingPattern(Pattern pattern) {
+	private Collection<Article> getArticlesMatchingPattern(Pattern pattern, ArticleManager mgr) {
 		List<Article> matchingArticles = new ArrayList<Article>();
-		for (Article article : Environment.getInstance().
-				getArticleManager(Environment.DEFAULT_WEB).getArticles()) {
+		for (Article article : mgr.getArticles()) {
 			String articleName = article.getTitle();
 			if (pattern.matcher(articleName).matches()) {
 				matchingArticles.add(article);
