@@ -184,13 +184,13 @@ public class Environment {
 
 		initPlugins();
 
-		initInstantiations();
-
 		initTagHandler();
 
 		initSectionizerModules();
 
 		decorateTypeTree(RootType.getInstance());
+
+		initInstantiations();
 
 		initKnowledgeRepresentationHandler();
 
