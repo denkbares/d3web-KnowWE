@@ -42,6 +42,9 @@ public class TermIdentifier implements Comparable<TermIdentifier> {
 	private final String externalFormLowerCase;
 
 	public TermIdentifier(String... pathElements) {
+		if (pathElements.length >= 1 && pathElements[0] == null) {
+			throw new IllegalArgumentException("Cannot create TermIdentifier with for null");
+		}
 		this.pathElements = pathElements;
 		this.externalForm = toExternalForm();
 		this.externalFormLowerCase = externalForm.toLowerCase();
