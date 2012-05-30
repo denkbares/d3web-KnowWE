@@ -19,13 +19,15 @@
 package de.knowwe.core.action;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
@@ -37,6 +39,7 @@ import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 
 /**
  * Action which renames all Definitions and References of a given Term. The
@@ -62,6 +65,8 @@ public class TermRenamingAction extends AbstractAction {
 		String web = context.getParameter(Attributes.WEB);
 		String term = context.getParameter(TERMNAME);
 		String replacement = context.getParameter(REPLACEMENT);
+
+		replacement = makeExternalFormIfNeeded(replacement);
 
 		TermIdentifier termIdentifier = TermIdentifier.fromExternalForm(term);
 
@@ -98,7 +103,7 @@ public class TermRenamingAction extends AbstractAction {
 		Set<String> failures = new HashSet<String>();
 		Set<String> success = new HashSet<String>();
 		renameTerms(allTerms, replacement, mgr, context, failures, success);
-		generateMessage(failures, success, context);
+		writeResponse(failures, success, termIdentifier, replacement, context);
 	}
 
 	private Set<Section<? extends SimpleTerm>> getTermSet(String title, Map<String, Set<Section<? extends SimpleTerm>>> allTerms) {
@@ -110,18 +115,43 @@ public class TermRenamingAction extends AbstractAction {
 		return terms;
 	}
 
-	private void generateMessage(Set<String> failures, Set<String> success, UserActionContext context) throws IOException {
-		Writer w = context.getWriter();
-		// successes
-		for (String article : success) {
-			w.write("##");
-			w.write(article);
+	private void writeResponse(Set<String> failures,
+			Set<String> success,
+			TermIdentifier termIdentifier,
+			String replacement,
+			UserActionContext context) throws IOException {
+
+		JSONObject response = new JSONObject();
+		try {
+			// the new external form of the TermIdentifier
+			String[] pathElements = termIdentifier.getPathElements();
+			String newLastPathElement = TermIdentifier.fromExternalForm(replacement).getLastPathElement();
+			pathElements[pathElements.length - 1] = newLastPathElement;
+			response.append("newTermIdentifier", new TermIdentifier(pathElements).toExternalForm());
+
+			// the new object name
+			response.append("newObjectName",
+					new TermIdentifier(newLastPathElement).toExternalForm());
+
+			// renamed Articles
+			StringBuilder renamedArticles = new StringBuilder();
+			// successes
+			for (String article : success) {
+				renamedArticles.append("##");
+				renamedArticles.append(article);
+			}
+			renamedArticles.append("###");
+			// failures
+			for (String article : failures) {
+				renamedArticles.append("##");
+				renamedArticles.append(article);
+			}
+			response.accumulate("renamedArticles", renamedArticles);
+
+			response.write(context.getWriter());
 		}
-		w.write("###");
-		// failures
-		for (String article : failures) {
-			w.write("##");
-			w.write(article);
+		catch (JSONException e) {
+			throw new IOException(e.getMessage());
 		}
 	}
 
@@ -137,7 +167,7 @@ public class TermRenamingAction extends AbstractAction {
 					title, context.getRequest())) {
 				Map<String, String> nodesMap = new HashMap<String, String>();
 				for (Section<?> termSection : allTerms.get(title)) {
-					addReplacementEntry(nodesMap, termSection, replacement);
+					nodesMap.put(termSection.getID(), replacement);
 				}
 				Sections.replaceSections(context,
 						nodesMap);
@@ -149,22 +179,13 @@ public class TermRenamingAction extends AbstractAction {
 		}
 	}
 
-	private void addReplacementEntry(Map<String, String> nodesMap, Section<?> termSection, String replacement) {
-		/*
-		 * TODO!!!
-		 * 
-		 * This is a hot fix for release "Sherlock" and should be removed after
-		 * TermIdentifier refactoring.
-		 */
-		String className = "Object";
-		if (termSection.get() instanceof SimpleTerm) {
-			Section<SimpleTerm> simpleTermSection = Sections.cast(termSection, SimpleTerm.class);
-			className = simpleTermSection.get().getTermObjectClass(simpleTermSection).getSimpleName();
-		}
-		if (className.equals("Choice")) {
-			replacement = replacement.substring(replacement.indexOf("#") + 1);
-		}
-		nodesMap.put(termSection.getID(), replacement);
-	}
+	private String makeExternalFormIfNeeded(String text) {
+		boolean quoted = Strings.isQuoted(text);
+		boolean needsQuotes = TermIdentifier.needsQuotes(text)
+				|| text.replaceAll("\\s", "").length() < text.length();
 
+		if (needsQuotes && !quoted) text = Strings.quote(text);
+
+		return text;
+	}
 }

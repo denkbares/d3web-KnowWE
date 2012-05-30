@@ -159,8 +159,8 @@ public class TermIdentifier implements Comparable<TermIdentifier> {
 		return externalForm.toString();
 	}
 
-	private boolean needsQuotes(String element) {
-		return element.contains("\"") || element.contains(SEPARATOR) || element.contains("\\");
+	public static boolean needsQuotes(String text) {
+		return text.contains("\"") || text.contains(SEPARATOR) || text.contains("\\");
 	}
 
 	/**

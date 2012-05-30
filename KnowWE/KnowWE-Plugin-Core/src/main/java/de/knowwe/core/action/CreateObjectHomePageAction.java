@@ -41,7 +41,7 @@ public class CreateObjectHomePageAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String objectName = context.getParameter(ObjectInfoTagHandler.OBJECTNAME);
+		String objectName = context.getParameter(ObjectInfoTagHandler.OBJECT_NAME);
 		String currentArticle = context.getParameter("page");
 
 		// We assume that the user is privileged to create a new article if

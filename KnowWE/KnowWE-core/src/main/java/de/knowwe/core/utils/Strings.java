@@ -299,6 +299,37 @@ public class Strings {
 		return false;
 	}
 
+	/**
+	 * Checks whether the given text is correctly and completely quoted. This
+	 * means that it starts and ends with a quote that is not escaped and the
+	 * text does not have any other not escaped quotes in between.<br/>
+	 * An escaped quote is a quote that is preceded by a backslash -> \"<br/>
+	 * The escaping backslash cannot be escaped itself by another backslash.
+	 * 
+	 * 
+	 * @created 30.05.2012
+	 * @param text the text to be checked
+	 * @returns whether the given text is quoted
+	 */
+	public static boolean isQuoted(String text) {
+		if (text.length() < 2) return false;
+
+		boolean quoted = false;
+		for (int i = 0; i < text.length(); i++) {
+			if (isUnEscapedQuote(text, i)) {
+				if (i == 0) {
+					quoted = true;
+				}
+				else if (quoted) {
+					return i == text.length() - 1;
+				}
+			}
+			if (i >= 0 && !quoted) break;
+		}
+
+		return false;
+	}
+
 	public static boolean isUnEscapedQuote(String text, int i) {
 		return text.length() > i && text.charAt(i) == '"'
 				&& getNumberOfDirectlyPrecedingBackSlashes(text, i) % 2 == 0;

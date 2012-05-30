@@ -18,8 +18,10 @@
  */
 package de.knowwe.core.toolprovider;
 
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.taghandler.ObjectInfoTagHandler;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
@@ -43,15 +45,26 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 	}
 
 	protected Tool getObjectInfoPageTool(Section<? extends SimpleTerm> section, UserContext userContext) {
-		String objectName = section.get().getTermIdentifier(section).toExternalForm();
-		String jsAction = "window.location.href = " +
-				"'Wiki.jsp?page=ObjectInfoPage&objectname=' + encodeURIComponent('" +
-				objectName.replace("\"", "&quot;") + "')";
+		TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
+		String lastPathElementExternalForm = new TermIdentifier(termIdentifier.getLastPathElement()).toExternalForm();
+		String externalTermIdentifierForm = termIdentifier.toExternalForm();
+		String jsAction = "window.location.href = "
+				+ "'Wiki.jsp?page=ObjectInfoPage&" + ObjectInfoTagHandler.TERM_IDENTIFIER
+				+ "=' + encodeURIComponent('"
+				+ maskTermForHTML(externalTermIdentifierForm)
+				+ "') + '&" + ObjectInfoTagHandler.OBJECT_NAME + "=' + encodeURIComponent('"
+				+ maskTermForHTML(lastPathElementExternalForm) + "')";
 		return new DefaultTool(
 				"KnowWEExtension/d3web/icon/infoPage16.png",
 				"Show Info Page",
 				"Opens the information page for the specific object to show its usage inside this wiki.",
 				jsAction);
+	}
+
+	private String maskTermForHTML(String string) {
+		string = string.replace("\\", "\\\\");
+		string = ObjectInfoTagHandler.maskTermForHTML(string);
+		return string;
 	}
 
 }

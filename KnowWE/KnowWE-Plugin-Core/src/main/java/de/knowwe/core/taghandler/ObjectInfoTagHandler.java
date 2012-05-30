@@ -64,12 +64,13 @@ import de.knowwe.tools.ToolUtils;
 public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 	// Parameter used in the request
-	public static final String OBJECTNAME = "objectname";
-	private static final String HIDEDEF = "hideDefinition";
-	private static final String HIDEREFS = "hideReferences";
-	private static final String HIDEPLAIN = "hidePlainTextOccurrences";
-	private static final String HIDERENAME = "hideRename";
-	private static final String RENAMEDARTICLES = "renamedArticles";
+	public static final String OBJECT_NAME = "objectname";
+	public static final String TERM_IDENTIFIER = "termIdentifier";
+	private static final String HIDE_DEF = "hideDefinition";
+	private static final String HIDE_REFS = "hideReferences";
+	private static final String HIDE_PLAIN = "hidePlainTextOccurrences";
+	private static final String HIDE_RENAME = "hideRename";
+	private static final String RENAMED_ARTICLES = "renamedArticles";
 
 	// internal counter used to create unique IDs
 	private int panelCounter = 0;
@@ -94,6 +95,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		StringBuilder example = new StringBuilder();
 		example.append("[{KnowWEPlugin objectInfo [");
 		example.append(", objectname=<name of object> ");
+		example.append(", termIdentifier=<external term identifier form of object> ");
 		example.append(", hideDefinition=<true|false> ");
 		example.append(", hideReferences=<true|false> ");
 		example.append(", hidePlainTextOccurrences=<true|false> ");
@@ -128,19 +130,29 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		Map<String, String> urlParameters = user.getParameters();
 
 		// First try the URL-Parameter, if null try the TagHandler-Parameter.
+		String objectName = null;
+		if (urlParameters.get(OBJECT_NAME) != null) {
+			objectName = Strings.decodeURL(urlParameters.get(OBJECT_NAME));
+		}
+		else if (parameters.get(OBJECT_NAME) != null) {
+			objectName = Strings.decodeURL(parameters.get(OBJECT_NAME));
+		}
+
 		String externalTermIdentifierForm = null;
-		if (urlParameters.get(OBJECTNAME) != null) {
-			externalTermIdentifierForm = Strings.decodeURL(urlParameters.get(OBJECTNAME));
+		if (urlParameters.get(TERM_IDENTIFIER) != null) {
+			externalTermIdentifierForm = Strings.decodeURL(urlParameters.get(TERM_IDENTIFIER));
 		}
-		else if (parameters.get(OBJECTNAME) != null) {
-			externalTermIdentifierForm = Strings.decodeURL(parameters.get(OBJECTNAME));
+		else if (parameters.get(TERM_IDENTIFIER) != null) {
+			externalTermIdentifierForm = Strings.decodeURL(parameters.get(TERM_IDENTIFIER));
 		}
-		TermIdentifier termIdentifier = TermIdentifier.fromExternalForm(externalTermIdentifierForm);
+		if (externalTermIdentifierForm == null) externalTermIdentifierForm = objectName;
 
 		// If name is not defined -> render search form!
-		if (externalTermIdentifierForm == null || externalTermIdentifierForm.isEmpty()) {
+		if (objectName == null || objectName.isEmpty()) {
 			return Strings.maskHTML(renderLookUpForm(section));
 		}
+
+		TermIdentifier termIdentifier = TermIdentifier.fromExternalForm(externalTermIdentifierForm);
 
 		// Get TermDefinitions and TermReferences
 		Set<Section<?>> definitions = new HashSet<Section<?>>();
@@ -164,10 +176,11 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		StringBuilder html = new StringBuilder();
 		html.append(renderHeader(externalTermIdentifierForm,
 				getTermObjectClass(definitions, references)));
-		html.append(renderRenamingForm(externalTermIdentifierForm, section.getWeb(), parameters,
+		html.append(renderRenamingForm(externalTermIdentifierForm, objectName, section.getWeb(),
+				parameters,
 				urlParameters));
 		html.append(renderObjectInfo(definitions, references, parameters));
-		html.append(renderPlainTextOccurrences(externalTermIdentifierForm, section.getWeb(),
+		html.append(renderPlainTextOccurrences(objectName, section.getWeb(),
 				parameters));
 
 		return Strings.maskHTML(html.toString());
@@ -211,7 +224,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		html.append("<input type=\"hidden\" name=\"page\" value=\""
 				+ Strings.encodeURL(section.getTitle())
 				+ "\" />");
-		html.append("<input type=\"text\" name=\"" + OBJECTNAME + "\" /> ");
+		html.append("<input type=\"text\" name=\"" + OBJECT_NAME + "\" /> ");
 		html.append("<input type=\"submit\" value=\"&rarr;\" />");
 		html.append("</form>");
 
@@ -219,27 +232,31 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				html.toString());
 	}
 
-	private String renderRenamingForm(String objectName, String web, Map<String, String> parameters, Map<String, String> urlParameters) {
+	private String renderRenamingForm(String externalTermIdentifierForm,
+			String objectName,
+			String web,
+			Map<String, String> parameters,
+			Map<String, String> urlParameters) {
 
 		// Check if rendering is suppressed
-		if (checkParameter(HIDERENAME, parameters)) return "";
-		String objectNameEscaped = objectName.replace("\"", "&quot;");
+		if (checkParameter(HIDE_RENAME, parameters)) return "";
+
+		String escapedExternalTermIdentifierForm = maskTermForHTML(externalTermIdentifierForm);
+		String escapedObjectName = maskTermForHTML(objectName);
 
 		StringBuilder html = new StringBuilder();
 		html.append("<form action=\"\" method=\"post\">");
-		html.append(rb.getString("KnowWE.ObjectInfoTagHandler.renameTo"));
 		html.append("<input type=\"hidden\" id=\"objectinfo-target\" value=\"" +
-				objectNameEscaped
+				escapedExternalTermIdentifierForm + "\" />");
+		html.append("<input type=\"hidden\" id=\"objectinfo-web\" value=\"" + web
 				+ "\" />");
-		html.append("<input type=\"hidden\" id=\"objectinfo-web\" value=\"" +
-				web
-				+ "\" />");
-		html.append("<input type=\"text\" size=\"40\" value=\"" + objectNameEscaped
+		html.append("<input action=\"" + getRenamingAction()
+				+ "\" type=\"text\" size=\"60\" value=\"" + escapedObjectName
 				+ "\" id=\"objectinfo-replacement\" />&nbsp;");
 		html.append("<input type=\"button\" id=\"objectinfo-replace-button\" value=\"&rarr;\" />");
 		html.append("&nbsp;<span id=\"objectinfo-rename-result\">");
 		// render message of previous renaming if available...
-		String renamingMessage = urlParameters.get(RENAMEDARTICLES);
+		String renamingMessage = urlParameters.get(RENAMED_ARTICLES);
 		if (renamingMessage != null) {
 			renderRenamingMessage(html, renamingMessage);
 		}
@@ -290,8 +307,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 	private String renderObjectInfo(Set<Section<?>> definitions, Set<Section<?>> references, Map<String, String> parameters) {
 		StringBuilder html = new StringBuilder();
-		if (!checkParameter(HIDEDEF, parameters)) html.append(renderTermDefinitions(definitions));
-		if (!checkParameter(HIDEREFS, parameters)) html.append(renderTermReferences(references,
+		if (!checkParameter(HIDE_DEF, parameters)) html.append(renderTermDefinitions(definitions));
+		if (!checkParameter(HIDE_REFS, parameters)) html.append(renderTermReferences(references,
 				definitions));
 		return html.toString();
 	}
@@ -416,7 +433,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	private String renderPlainTextOccurrences(String objectName, String web, Map<String, String> parameters) {
 
 		// Check if rendering is suppressed
-		if (checkParameter(HIDEPLAIN, parameters)) return "";
+		if (checkParameter(HIDE_PLAIN, parameters)) return "";
 
 		StringBuilder html = new StringBuilder();
 
@@ -510,6 +527,18 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return parameters.get(parameter) != null
 				? Boolean.parseBoolean(parameters.get(parameter))
 				: false;
+	}
+
+	protected String getRenamingAction() {
+		return "TermRenamingAction";
+	}
+
+	public static String maskTermForHTML(String string) {
+		// string = StringEscapeUtils.escapeHtml(string);
+		string = string.replace("#", "&#35;");
+		string = string.replace("\"", "&quot;");
+		string = string.replace("\\", "&#92;");
+		return string;
 	}
 
 }

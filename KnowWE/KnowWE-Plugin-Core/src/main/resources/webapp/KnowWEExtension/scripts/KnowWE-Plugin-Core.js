@@ -69,15 +69,16 @@ KNOWWE.core.plugin.objectinfo = function() {
 		 * Renames all occurrences of a specific term.
 		 */
 		renameTerm : function() {
-			objectname = _KS('#objectinfo-target');
-			replacement = _KS('#objectinfo-replacement');
-			web = _KS('#objectinfo-web');
+			objectname = jq$('#objectinfo-target');
+			replacement = jq$('#objectinfo-replacement');
+			web = jq$('#objectinfo-web');
 			if (objectname && replacement && web) {
+				
 				var params = {
-					action : 'TermRenamingAction',
-					termname : objectname.value,
-					termreplacement : replacement.value,
-					KWikiWeb : web.value
+					action : jq$(replacement).attr('action'),
+					termname : objectname.val(),
+					termreplacement : replacement.val(),
+					KWikiWeb : web.val()
 				}
 
 				var options = {
@@ -85,10 +86,13 @@ KNOWWE.core.plugin.objectinfo = function() {
 					response : {
 						action : 'none',
 						fn : function() {
+							var jsonResponse = JSON.parse(this.responseText);
 							window.location.href = "Wiki.jsp?page=ObjectInfoPage&objectname="
-									+ encodeURIComponent(replacement.value)
+									+ encodeURIComponent(jsonResponse.newObjectName)
+									+ "&termIdentifier="
+									+ encodeURIComponent(jsonResponse.newTermIdentifier)
 									+ "&renamedArticles="
-									+ encodeURIComponent(this.responseText);
+									+ encodeURIComponent(jsonResponse.renamedArticles);
 							KNOWWE.core.util.updateProcessingState(-1);
 						},
 						onError : function() {

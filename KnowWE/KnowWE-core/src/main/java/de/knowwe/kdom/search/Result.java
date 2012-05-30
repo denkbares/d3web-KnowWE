@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -25,7 +25,7 @@ import de.knowwe.core.kdom.parsing.Section;
 
 /**
  * Search result
- *
+ * 
  * @author Alex Legler
  */
 public class Result implements Comparable<Result> {
@@ -42,7 +42,7 @@ public class Result implements Comparable<Result> {
 
 	/**
 	 * Creates a new Result object.
-	 *
+	 * 
 	 * @param query The query used to find this node
 	 * @param article The article containing the match
 	 * @param section The section containing the match
@@ -78,7 +78,7 @@ public class Result implements Comparable<Result> {
 
 	/**
 	 * Returns additional text around the Result
-	 *
+	 * 
 	 * @param length If length is >0 this will return characters after the
 	 *        Result, if it is <0 characters before the Result.
 	 * @return The context text
@@ -96,13 +96,14 @@ public class Result implements Comparable<Result> {
 			return originalText.substring(startAdditional, absPosition);
 		}
 		else {
-			int endAdditional = absPosition + (end - start) + length;
+			int startAdditional = absPosition + (end - start);
+			int endAdditional = startAdditional + length;
 
 			if (endAdditional >= originalText.length()) {
-				endAdditional = originalText.length() - 1;
+				endAdditional = originalText.length();
 			}
 
-			return originalText.substring(absPosition + (end - start), endAdditional);
+			return originalText.substring(startAdditional, endAdditional);
 		}
 	}
 
