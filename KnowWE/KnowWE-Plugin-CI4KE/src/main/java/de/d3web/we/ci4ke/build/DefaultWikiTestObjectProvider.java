@@ -19,14 +19,14 @@
 package de.d3web.we.ci4ke.build;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import cc.denkbares.testing.Test;
 import cc.denkbares.testing.TestObjectProvider;
-import de.d3web.plugin.Extension;
-import de.d3web.plugin.PluginManager;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -37,7 +37,7 @@ import de.knowwe.core.kdom.Article;
  * @author jochenreutelshofer
  * @created 16.05.2012
  */
-public class DefaultWikiTestObjectProvider implements TestObjectProvider<Object> {
+public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 
 	private static DefaultWikiTestObjectProvider instance = null;
 
@@ -52,58 +52,59 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider<Object>
 		return instance;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object> getTestObject(Class<Object> c, String id) {
-		List<Object> result = new ArrayList<Object>();
+	public <T> List<T> getTestObjects(Class<T> c, String testObjectName) {
 		if (c == null) {
 			Logger.getLogger(this.getClass()).warn("Class given to TestObjectProvider was 'null'");
-			return result;
+			return Collections.emptyList();
 		}
+		List<T> result = new ArrayList<T>();
 		if (c.equals(Article.class)) {
-			Object byName = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB).getArticle(
-					id);
-			result.add(byName);
+
+			Collection<Article> articlesMatchingPattern = getArticlesMatchingPattern(testObjectName);
+			for (Article article : articlesMatchingPattern) {
+				result.add(c.cast(article));
+			}
+
 		}
 		if (c.equals(ArticleManager.class)) {
 			Object byName = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
-			result.add(byName);
+			if (byName != null) {
+				result.add(c.cast(byName));
+			}
 		}
 		if (c.equals(PackageManager.class)) {
 			Object byName = Environment.getInstance().getPackageManager(Environment.DEFAULT_WEB);
-			result.add(byName);
-		}
-
-		// Look for plugged TestObjectProviders to obtain test-objects
-		@SuppressWarnings("rawtypes")
-		List<TestObjectProvider> testObjectProviders = findTestObjectProviders();
-		for (@SuppressWarnings("rawtypes")
-		TestObjectProvider testObjectProvider : testObjectProviders) {
-			List<Object> testObjects = testObjectProvider.getTestObject(c, id);
-			result.addAll(testObjects);
+			if (byName != null) {
+				result.add(c.cast(byName));
+			}
 		}
 
 		return result;
 	}
 
-	/**
-	 * 
-	 * @created 04.05.2012
-	 * @param testName
-	 * @return
-	 */
-	@SuppressWarnings("rawtypes")
-	private List<TestObjectProvider> findTestObjectProviders() {
-		Extension[] extensions = PluginManager.getInstance().getExtensions(Test.PLUGIN_ID,
-				TestObjectProvider.EXTENSION_POINT_ID);
-		List<TestObjectProvider> pluggedProviders = new ArrayList<TestObjectProvider>();
-		for (Extension extension : extensions) {
-			if (extension.getNewInstance() instanceof TestObjectProvider) {
-				TestObjectProvider t = (TestObjectProvider) extension.getSingleton();
-				pluggedProviders.add(t);
+	private Collection<Article> getArticlesMatchingPattern(String s) {
+		ArticleManager mgr = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		Pattern pattern = Pattern.compile(s);
+		List<Article> matchingArticles = new ArrayList<Article>();
+		for (Article article : mgr.getArticles()) {
+			String articleName = article.getTitle();
+			if (pattern.matcher(articleName).matches()) {
+				matchingArticles.add(article);
 			}
 		}
-		return pluggedProviders;
+		return Collections.unmodifiableCollection(matchingArticles);
+	}
+
+	@Override
+	public <T> String getTestObjectName(T testObject) {
+		if (testObject instanceof Article) {
+			return ((Article) testObject).getTitle();
+		}
+		if (testObject instanceof ArticleManager) {
+			return Environment.DEFAULT_WEB;
+		}
+		return testObject.toString();
 	}
 
 }

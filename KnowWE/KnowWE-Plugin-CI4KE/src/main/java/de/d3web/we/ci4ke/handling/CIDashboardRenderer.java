@@ -19,8 +19,9 @@
 package de.d3web.we.ci4ke.handling;
 
 import java.text.DateFormat;
+import java.util.Collection;
 
-import cc.denkbares.testing.BuildResultSet;
+import cc.denkbares.testing.BuildResult;
 import cc.denkbares.testing.Message.Type;
 import cc.denkbares.testing.TestResult;
 import de.d3web.we.ci4ke.build.CIBuildRenderer;
@@ -86,7 +87,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		string.append("<h3>");
 		// if at least one build has been executed: Render forecast icons:
-		BuildResultSet latestBuild = dashboard.getLatestBuild();
+		BuildResult latestBuild = dashboard.getLatestBuild();
 		if (latestBuild != null) {
 			string.append(renderer.renderCurrentBuildStatus(22)).append("  ");
 			string.append(renderer.renderBuildHealthReport(22)).append("  ");
@@ -116,7 +117,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	/**
 	 * Renders out the test results of a selected Build
 	 */
-	public static String renderBuildDetails(Dashboard dashboard, BuildResultSet build) {
+	public static String renderBuildDetails(Dashboard dashboard, BuildResult build) {
 
 		String dashboardNameEscaped = CIUtilities.utf8Escape(dashboard.getDashboardName());
 		DateFormat dateFormat = DateFormat.getDateTimeInstance();
@@ -158,8 +159,28 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 				// prepare some information
 				String name = result.getTestName();
 				Type buildResult = result.getType();
-				String message = result.getMessage().getText();
-				String config = result.getConfiguration();
+				String messageText = "";
+				Collection<String> testObjectNames = result.getTestObjectNames();
+				int successes = 0;
+				for (String testObject : testObjectNames) {
+					cc.denkbares.testing.Message m = result.getMessage(testObject);
+					Type messageType = m.getType();
+					if (messageType.equals(Type.SUCCESS)) {
+						successes++;
+					}
+					else {
+						String text = m.getText();
+						if (text == null) {
+							text = "";
+						}
+						messageText += messageType.toString() + ": " + text + " (test object: "
+								+ testObject + ")\n";
+					}
+				}
+
+				messageText = messageText + successes + " test objects tested successful\n";
+
+				String[] config = result.getArguments();
 
 				// render bullet
 				buffy.append(CIUtilities.renderResultType(buildResult, 16));
@@ -169,17 +190,25 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 				buffy.append(name);
 
 				// render test-configuration (if existent)
-				if (config != null && !config.isEmpty()) {
+				if (config != null && !(config.length == 0)) {
+					String configString = "";
+					for (String string : config) {
+						configString += "\"" + string + "\"; ";
+					}
+					// cut off last semicolon
+					if (configString.trim().endsWith(";")) {
+						configString = configString.substring(0, configString.lastIndexOf(";"));
+					}
 					buffy.append("<span class='ci-configuration'>");
-					buffy.append(" (").append(config).append(")");
+					buffy.append(" (").append(configString).append(")");
 					buffy.append("</span>");
 				}
 				buffy.append("</span>");
 
 				// render test-message (if exists)
-				if (message != null && !message.isEmpty()) {
+				if (messageText != null && !messageText.isEmpty()) {
 					buffy.append("<div class='ci-message'>");
-					buffy.append(message);
+					buffy.append(messageText);
 					buffy.append("</div>");
 				}
 

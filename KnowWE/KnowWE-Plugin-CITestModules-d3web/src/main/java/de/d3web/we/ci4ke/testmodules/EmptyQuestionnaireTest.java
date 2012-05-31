@@ -21,10 +21,8 @@ package de.d3web.we.ci4ke.testmodules;
 import java.util.ArrayList;
 import java.util.List;
 
-import cc.denkbares.testing.ArgsCheckResult;
 import cc.denkbares.testing.Message;
 import cc.denkbares.testing.Message.Type;
-import cc.denkbares.testing.Test;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.QASet;
 
@@ -38,10 +36,15 @@ import de.d3web.core.knowledge.terminology.QASet;
  * @author Marc-Oliver Ochlast (denkbares GmbH)
  * @created 26.11.2010
  */
-public class EmptyQuestionnaireTest implements Test<KnowledgeBase> {
+public class EmptyQuestionnaireTest extends AbstractTest<KnowledgeBase> {
 
 	@Override
-	public Message execute(KnowledgeBase kb, String[] args) {
+	public int numberOfArguments() {
+		return 0;
+	}
+
+	@Override
+	public Message execute(KnowledgeBase kb, String[] args2) {
 		if (kb != null) {
 			List<String> emptyQASets = new ArrayList<String>();
 			// iterate over QAsets and check if they are empty
@@ -51,8 +54,7 @@ public class EmptyQuestionnaireTest implements Test<KnowledgeBase> {
 				}
 			}
 			if (emptyQASets.size() > 0) {// empty QASets were found:
-				String failedMessage = "Article '" + args[0] +
-						"' has empty questionnaires: " +
+				String failedMessage = "Knowledge base has empty questionnaires: " +
 						createHTMLListFromStringList(emptyQASets);
 				return new Message(Type.FAILURE, failedMessage);
 			}
@@ -74,14 +76,7 @@ public class EmptyQuestionnaireTest implements Test<KnowledgeBase> {
 	}
 
 	@Override
-	public ArgsCheckResult checkArgs(String[] args) {
-		if (args.length == 1) return new ArgsCheckResult(ArgsCheckResult.Type.FINE);
-		return new ArgsCheckResult(ArgsCheckResult.Type.ERROR);
-	}
-
-	@Override
 	public Class<KnowledgeBase> getTestObjectClass() {
-		// TODO Auto-generated method stub
 		return KnowledgeBase.class;
 	}
 }

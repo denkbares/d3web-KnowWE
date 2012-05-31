@@ -20,10 +20,8 @@
 
 package de.d3web.we.ci4ke.testmodules;
 
-import cc.denkbares.testing.ArgsCheckResult;
 import cc.denkbares.testing.Message;
 import cc.denkbares.testing.Message.Type;
-import cc.denkbares.testing.Test;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.empiricaltesting.TestCase;
 import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysis;
@@ -31,7 +29,7 @@ import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
 import de.d3web.we.testcase.TestCaseUtils;
 import de.knowwe.core.Environment;
 
-public class TestsuiteRunnerTest implements Test<KnowledgeBase> {
+public class TestsuiteRunnerTest extends AbstractTest<KnowledgeBase> {
 
 	@Override
 	public cc.denkbares.testing.Message execute(KnowledgeBase testObject, String[] args) {
@@ -62,9 +60,8 @@ public class TestsuiteRunnerTest implements Test<KnowledgeBase> {
 	}
 
 	@Override
-	public ArgsCheckResult checkArgs(String[] args) {
-		if (args.length == 1) return new ArgsCheckResult(ArgsCheckResult.Type.FINE);
-		return new ArgsCheckResult(ArgsCheckResult.Type.ERROR);
+	public int numberOfArguments() {
+		return 1;
 	}
 
 	@Override

@@ -44,10 +44,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import cc.denkbares.testing.BuildResultSet;
+import cc.denkbares.testing.BuildResult;
 import cc.denkbares.testing.Message;
 import cc.denkbares.testing.TestResult;
-import cc.denkbares.testing.TestResultImpl;
 import de.knowwe.core.Environment;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
@@ -94,7 +93,7 @@ public class CIBuildPersistence {
 		return 0;
 	}
 
-	public void write(BuildResultSet build) throws IOException {
+	public void write(BuildResult build) throws IOException {
 		try {
 			Document document = toXML(build);
 			// we write the document as an attachment
@@ -141,9 +140,9 @@ public class CIBuildPersistence {
 				dashboard.getDashboardArticle(), getAttachmentName(), "ci-process", in);
 	}
 
-	public BuildResultSet read(int buildNumber) throws IOException {
+	public BuildResult read(int buildNumber) throws IOException {
 		InputStream in = getAttachment().getInputStream(buildNumber);
-		BuildResultSet build = null;
+		BuildResult build = null;
 		try {
 			build = read(in);
 		}
@@ -162,7 +161,7 @@ public class CIBuildPersistence {
 		return build;
 	}
 
-	private BuildResultSet read(InputStream in) throws IOException, ParserConfigurationException, SAXException, ParseException {
+	private BuildResult read(InputStream in) throws IOException, ParserConfigurationException, SAXException, ParseException {
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 		Document document = docBuilder.parse(in);
@@ -185,7 +184,7 @@ public class CIBuildPersistence {
 		return ATTACHMENT_PREFIX + name + ".xml";
 	}
 
-	private static Document toXML(BuildResultSet build) throws IOException, ParserConfigurationException {
+	private static Document toXML(BuildResult build) throws IOException, ParserConfigurationException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document document = builder.newDocument();
@@ -202,6 +201,8 @@ public class CIBuildPersistence {
 		// transient Attributes
 		root.setAttribute("result", build.getOverallResult().name());
 
+		// TODO: fix document structure for handling multiple messages
+
 		// add child results for single tests
 		for (TestResult result : build.getResults()) {
 
@@ -214,18 +215,26 @@ public class CIBuildPersistence {
 			test.setAttribute("result", result.getType().name());
 
 			// add optional test attributes
-			if (result.getConfiguration() != null) {
-				test.setAttribute("configuration", result.getConfiguration());
+			if (result.getArguments() != null) {
+				test.setAttribute("configuration", ArgumentUtils.concat(result.getArguments()));
 			}
-			if (result.getMessage().getText() != null) {
-				test.setAttribute("message", result.getMessage().getText());
+
+			String[] messages = new String[result.getTestObjectNames().size()];
+			int i = 0;
+			for (String testObjectName : result.getTestObjectNames()) {
+				Message message = result.getMessage(testObjectName);
+				messages[i] = message.getText();
+
+				i++;
 			}
+			test.setAttribute("message", ArgumentUtils.concat(messages));
+
 		}
 
 		return document;
 	}
 
-	private static BuildResultSet fromXML(Document document) throws ParseException {
+	private static BuildResult fromXML(Document document) throws ParseException {
 		Element root = (Element) document.getElementsByTagName("build").item(0);
 
 		// parse attributes
@@ -234,7 +243,7 @@ public class CIBuildPersistence {
 		Date date = DATE_FORMAT.parse(root.getAttribute("date"));
 
 		// create test item
-		BuildResultSet build = new BuildResultSet(number, date);
+		BuildResult build = new BuildResult(number, date);
 		build.setBuildDuration(duration);
 
 		// parse single child tests
@@ -252,13 +261,44 @@ public class CIBuildPersistence {
 			String message = test.getAttribute("message");
 
 			// and add the test result
-			TestResult result = new TestResultImpl(new Message(type, message),
-					configuration,
-					testName);
+			TestResult result = new TestResult(testName, ArgumentUtils.split(configuration));
+			String[] messages = ArgumentUtils.split(message);
+			for (String string : messages) {
+				Message m = new Message(type, string);
+				result.addMessage(testName, m);
+			}
 			build.addTestResult(result);
 		}
 
 		return build;
+	}
+
+	/**
+	 * Small hack to handle config parameters
+	 * 
+	 * @author Jochen Reutelshöfer (denkbares GmbH)
+	 * @created 30.05.2012
+	 */
+	static class ArgumentUtils {
+
+		private static final String separator = "|";
+
+		public static String[] split(String arguments) {
+			return arguments.split(separator);
+		}
+
+		public static String concat(String[] args) {
+			StringBuffer buffy = new StringBuffer();
+			for (String string : args) {
+				buffy.append(string + separator);
+			}
+
+			String result = buffy.toString();
+			if (result.endsWith(separator)) {
+				result = result.substring(0, result.length() - 1);
+			}
+			return result;
+		}
 	}
 
 }

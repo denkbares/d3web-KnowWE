@@ -21,6 +21,7 @@
 package de.d3web.we.ci4ke.handling;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +29,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cc.denkbares.testing.Pair;
+import cc.denkbares.testing.ArgsCheckResult;
+import cc.denkbares.testing.ExecutableTest;
+import cc.denkbares.testing.Test;
+import cc.denkbares.testing.TestManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -123,7 +127,7 @@ public class CIDashboardType extends DefaultMarkupType {
 			// This map is used for storing tests and their parameter-list
 			// Map<String, List<String>> tests = new HashMap<String,
 			// List<String>>();
-			List<Pair<String, List<String>>> tests = new ArrayList<Pair<String, List<String>>>();
+			List<ExecutableTest> tests = new ArrayList<ExecutableTest>();
 
 			List<Section<? extends AnnotationContentType>> annotationSections =
 					DefaultMarkupType.getAnnotationContentSections(s, TEST_KEY);
@@ -144,7 +148,19 @@ public class CIDashboardType extends DefaultMarkupType {
 						}
 						testParamters.add(parameter);
 					}
-					tests.add(new Pair<String, List<String>>(testName, testParamters));
+					Test<?> test = TestManager.findTest(testName);
+					if (test != null) {
+						String[] args = testParamters.toArray(new String[] {});
+						tests.add(new ExecutableTest(test, args));
+
+						// check arguments and create error messages if
+						// necessary
+						testArguments(msgs, testName, test, args);
+					}
+					else {
+						msgs.add(new Message(Message.Type.ERROR, "Class not found for test name: "
+								+ testName));
+					}
 				}
 			}
 
@@ -168,7 +184,48 @@ public class CIDashboardType extends DefaultMarkupType {
 
 			KnowWEUtils.storeObject(article, s, CIConfig.CICONFIG_STORE_KEY, config);
 
-			return new ArrayList<Message>(0);
+			return msgs;
+		}
+
+		private void testArguments(List<Message> msgs, String testName, Test<?> test, String[] args) {
+			args = Arrays.copyOfRange(args, 1, args.length);
+			ArgsCheckResult argsCheckResult = test.checkArgs(args);
+			if (argsCheckResult.hasError() || argsCheckResult.hasWarning()) {
+				String[] arguments = argsCheckResult.getArguments();
+				for (int i = 0; i < arguments.length; i++) {
+					if (argsCheckResult.hasError(i)) {
+						msgs.add(new Message(Message.Type.ERROR, testName + ": "
+								+ renderMessage(
+										args, argsCheckResult,
+										i)));
+					}
+					if (argsCheckResult.hasWarning(i)) {
+						msgs.add(new Message(Message.Type.WARNING, testName + ": "
+								+ renderMessage(
+										args, argsCheckResult,
+										i)));
+					}
+				}
+
+				// error on zero arguments
+				if (arguments.length == 0 && argsCheckResult.hasError(0)) {
+					msgs.add(new Message(Message.Type.ERROR, testName + ": "
+							+ renderMessage(
+									args, argsCheckResult, 0)));
+				}
+			}
+		}
+
+		private String renderMessage(final String[] args, ArgsCheckResult argsCheckResult, int i) {
+			if (argsCheckResult.getMessage(i) != null) {
+				String arg = "none";
+				if (i < args.length) {
+					arg = args[i];
+				}
+				String message = argsCheckResult.getMessage(i);
+				return "Invalid argument: " + arg + " (" + message + ")";
+			}
+			return null;
 		}
 
 		@Override

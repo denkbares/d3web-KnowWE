@@ -26,11 +26,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import cc.denkbares.testing.BuildResultSet;
+import cc.denkbares.testing.BuildResult;
 import cc.denkbares.testing.Message;
 import cc.denkbares.testing.Message.Type;
 import cc.denkbares.testing.TestResult;
-import cc.denkbares.testing.TestResultImpl;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
@@ -58,7 +57,7 @@ public class Dashboard {
 	 * Internal cache for already available build results. When build result is
 	 * loaded it is stored in this map by its build number.
 	 */
-	private final Map<Integer, BuildResultSet> buildCache = new HashMap<Integer, BuildResultSet>();
+	private final Map<Integer, BuildResult> buildCache = new HashMap<Integer, BuildResult>();
 
 	/**
 	 * Stores the list of build-numbers currently available in the persistence.
@@ -102,7 +101,7 @@ public class Dashboard {
 	 * @created 19.05.2012
 	 * @return the latest build
 	 */
-	public BuildResultSet getLatestBuild() {
+	public BuildResult getLatestBuild() {
 		update();
 		int buildNumber = getLatestAvailableBuildNumber();
 		if (buildNumber == 0) return null;
@@ -130,7 +129,7 @@ public class Dashboard {
 	 * @param buildNumber the build to be returned
 	 * @return the specified build
 	 */
-	public BuildResultSet getBuild(int buildNumber) {
+	public BuildResult getBuild(int buildNumber) {
 		update();
 		if (!hasAvailableBuild(buildNumber)) return null;
 		return accessBuild(buildNumber);
@@ -152,9 +151,9 @@ public class Dashboard {
 	 * @param buildNumber the build to be returned
 	 * @return the specified build
 	 */
-	public BuildResultSet[] getBuildsBefore(int buildNumber, int count) {
+	public BuildResult[] getBuildsBefore(int buildNumber, int count) {
 		update();
-		BuildResultSet[] result;
+		BuildResult[] result;
 		while ((result = getBuildsBeforeChecked(buildNumber, count)) == null) {
 		}
 		return result;
@@ -167,7 +166,7 @@ public class Dashboard {
 	 * 
 	 * @created 21.05.2012
 	 */
-	private synchronized BuildResultSet[] getBuildsBeforeChecked(int buildNumber, int count) {
+	private synchronized BuildResult[] getBuildsBeforeChecked(int buildNumber, int count) {
 		// find the position of the buildNumber
 		// or where it would be if exists
 		int index = Arrays.binarySearch(availableBuilds, buildNumber);
@@ -178,7 +177,7 @@ public class Dashboard {
 		if (from < 0) from = 0;
 
 		// and access the builds
-		BuildResultSet[] result = new BuildResultSet[index - from];
+		BuildResult[] result = new BuildResult[index - from];
 		for (int i = 0; i < result.length; i++) {
 			result[i] = accessBuild(availableBuilds[from + i]);
 		}
@@ -204,9 +203,9 @@ public class Dashboard {
 	 * @param buildNumber the build to be returned
 	 * @return the specified build
 	 */
-	public BuildResultSet[] getBuildsByIndex(int fromIndex, int toIndex) {
+	public BuildResult[] getBuildsByIndex(int fromIndex, int toIndex) {
 		update();
-		BuildResultSet[] result;
+		BuildResult[] result;
 		while ((result = getBuildsByIndexChecked(fromIndex, toIndex)) == null) {
 		}
 		return result;
@@ -219,7 +218,7 @@ public class Dashboard {
 	 * 
 	 * @created 21.05.2012
 	 */
-	private synchronized BuildResultSet[] getBuildsByIndexChecked(int fromIndex, int toIndex) {
+	private synchronized BuildResult[] getBuildsByIndexChecked(int fromIndex, int toIndex) {
 
 		// correct indexes if required
 		if (toIndex > availableBuilds.length) {
@@ -229,10 +228,10 @@ public class Dashboard {
 		if (fromIndex < 0) fromIndex = 0;
 
 		// determine sub-array
-		if (fromIndex >= toIndex) return new BuildResultSet[0];
+		if (fromIndex >= toIndex) return new BuildResult[0];
 
 		// and access the builds
-		BuildResultSet[] result = new BuildResultSet[toIndex - fromIndex];
+		BuildResult[] result = new BuildResult[toIndex - fromIndex];
 		for (int i = 0; i < result.length; i++) {
 			result[i] = accessBuild(availableBuilds[fromIndex + i]);
 		}
@@ -256,7 +255,7 @@ public class Dashboard {
 	 * @throws IllegalArgumentException the build number is not higher than the
 	 *         existing ones
 	 */
-	public synchronized void addBuild(BuildResultSet build) throws IllegalArgumentException {
+	public synchronized void addBuild(BuildResult build) throws IllegalArgumentException {
 		update();
 
 		int latestAvailable = getLatestAvailableBuildNumber();
@@ -341,7 +340,7 @@ public class Dashboard {
 		for (int readIndex = fromIndex; readIndex < toIndex; readIndex++) {
 			int buildNumber = availableBuilds[readIndex];
 			// if we have already loaded a build that has a wrong number
-			BuildResultSet build = buildCache.get(buildNumber);
+			BuildResult build = buildCache.get(buildNumber);
 			if (build != null && build.getBuildNumber() != buildNumber) {
 				// remove the build from the cache
 				buildCache.remove(buildNumber);
@@ -378,8 +377,8 @@ public class Dashboard {
 	 * @param buildNumber the build number to be accessed
 	 * @return the build of the specified number
 	 */
-	private BuildResultSet accessBuild(int buildNumber) {
-		BuildResultSet build = buildCache.get(buildNumber);
+	private BuildResult accessBuild(int buildNumber) {
+		BuildResult build = buildCache.get(buildNumber);
 		if (build == null) {
 			synchronized (this) {
 				try {
@@ -388,10 +387,12 @@ public class Dashboard {
 				catch (IOException e) {
 					// if we cannot read the requested build
 					// we create a new one signaling the error
-					TestResult badResult = new TestResultImpl(new Message(Type.ERROR,
+					TestResult badResult = new TestResult(null, null);
+					Message message = new Message(Type.ERROR,
 							"error while loading build informtion: " + e.getMessage() +
-									"\n" + Strings.stackTrace(e)), null, null);
-					build = new BuildResultSet(buildNumber);
+									"\n" + Strings.stackTrace(e));
+					badResult.addMessage(null, message);
+					build = new BuildResult(buildNumber);
 					build.addTestResult(badResult);
 				}
 				buildCache.put(buildNumber, build);

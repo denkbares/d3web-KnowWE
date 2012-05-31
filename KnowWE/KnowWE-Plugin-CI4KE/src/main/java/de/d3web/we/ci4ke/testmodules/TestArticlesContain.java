@@ -20,17 +20,10 @@
 
 package de.d3web.we.ci4ke.testmodules;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Pattern;
 
-import cc.denkbares.testing.ArgsCheckResult;
 import cc.denkbares.testing.Message;
-import cc.denkbares.testing.Test;
-import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.Article;
 
 /**
@@ -39,22 +32,18 @@ import de.knowwe.core.kdom.Article;
  * @author Marc-Oliver Ochlast (denkbares GmbH)
  * @created 26.11.2010
  */
-public class TestArticlesContain implements Test<ArticleManager> {
+public class TestArticlesContain extends AbstractTest<Article> {
 
 	@Override
-	public Message execute(ArticleManager testObject, String[] args) {
+	public Message execute(Article article, String[] args) {
 
-		String articlesPattern = args[0];
-		String searchForKeyword = args[1];
-		String dashBoardArticle = args[2];
-
-		Pattern pattern = Pattern.compile(articlesPattern);
+		String searchForKeyword = args[0];
+		String dashBoardArticle = args[1];
 
 		List<String> namesOfArticlesWhichContainKeyword = new LinkedList<String>();
 
-		for (Article article : getArticlesMatchingPattern(pattern, testObject)) {
-			if (!article.getTitle().equals(dashBoardArticle) &&
-					article.toString().contains(searchForKeyword)) {
+		if (!article.getTitle().equals(dashBoardArticle)) {
+			if (article.toString().contains(searchForKeyword)) {
 				namesOfArticlesWhichContainKeyword.add(article.getTitle());
 			}
 		}
@@ -74,27 +63,13 @@ public class TestArticlesContain implements Test<ArticleManager> {
 	}
 
 	@Override
-	public ArgsCheckResult checkArgs(String[] args) {
-		int expectedArgCount = 3;
-		if (args.length == expectedArgCount) return new ArgsCheckResult(ArgsCheckResult.Type.FINE);
-		return new ArgsCheckResult(ArgsCheckResult.Type.ERROR, "Expected number of arguments: "
-				+ expectedArgCount + " - found: " + args.length);
+	public Class<Article> getTestObjectClass() {
+		return Article.class;
 	}
 
 	@Override
-	public Class<ArticleManager> getTestObjectClass() {
-		return ArticleManager.class;
-	}
-
-	private Collection<Article> getArticlesMatchingPattern(Pattern pattern, ArticleManager mgr) {
-		List<Article> matchingArticles = new ArrayList<Article>();
-		for (Article article : mgr.getArticles()) {
-			String articleName = article.getTitle();
-			if (pattern.matcher(articleName).matches()) {
-				matchingArticles.add(article);
-			}
-		}
-		return Collections.unmodifiableCollection(matchingArticles);
+	public int numberOfArguments() {
+		return 2;
 	}
 
 }

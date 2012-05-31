@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import cc.denkbares.testing.Pair;
+import cc.denkbares.testing.ExecutableTest;
 import de.d3web.we.ci4ke.handling.CIDashboardType.CIBuildTriggers;
 
 public final class CIConfig implements Cloneable {
@@ -32,19 +32,19 @@ public final class CIConfig implements Cloneable {
 	public static final String CICONFIG_STORE_KEY = "CIConfig_Section_Store";
 
 	public static final CIConfig DUMMY_CONFIG = new CIConfig("", "", "",
-			new ArrayList<Pair<String, List<String>>>(), CIBuildTriggers.onDemand);
+			new ArrayList<ExecutableTest>(), CIBuildTriggers.onDemand);
 
 	private final String web;
 	private final String dashboardArticleTitle;
 	private final String dashboardName;
 
 	// private final Map<String, List<String>> tests;
-	private final List<Pair<String, List<String>>> tests;
+	private final List<ExecutableTest> tests;
 
 	private final CIBuildTriggers trigger;
 
 	public CIConfig(String web, String dashboardArticle, String dashboardName,
-			List<Pair<String, List<String>>> tests, CIBuildTriggers trigger) {
+			List<ExecutableTest> tests, CIBuildTriggers trigger) {
 		this.web = web;
 		this.dashboardArticleTitle = dashboardArticle;
 		this.dashboardName = dashboardName;
@@ -64,14 +64,14 @@ public final class CIConfig implements Cloneable {
 		return dashboardArticleTitle;
 	}
 
-	public List<Pair<String, List<String>>> getTests() {
+	public List<ExecutableTest> getTests() {
 		return tests;
 	}
 
 	public List<String> getTestNames() {
 		List<String> testNames = new ArrayList<String>(tests.size());
-		for (Pair<String, List<String>> testAndParameters : tests) {
-			testNames.add(testAndParameters.getA());
+		for (ExecutableTest testAndParameters : tests) {
+			testNames.add(testAndParameters.getTest().getClass().getSimpleName());
 		}
 		return testNames;
 	}

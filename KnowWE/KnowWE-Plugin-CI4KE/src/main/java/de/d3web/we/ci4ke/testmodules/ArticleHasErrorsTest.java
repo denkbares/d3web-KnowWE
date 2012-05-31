@@ -21,11 +21,9 @@ package de.d3web.we.ci4ke.testmodules;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import cc.denkbares.testing.ArgsCheckResult;
-import cc.denkbares.testing.Test;
+import cc.denkbares.testing.Message;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
 /**
@@ -34,17 +32,17 @@ import de.knowwe.core.report.Messages;
  * @author Marc-Oliver Ochlast
  * @created 29.05.2010
  */
-public class ArticleHasErrorsTest implements Test<Article> {
+public class ArticleHasErrorsTest extends AbstractTest<Article> {
 
 	@Override
-	public cc.denkbares.testing.Message execute(Article moni, String[] args) {
+	public Message execute(Article moni, String[] args2) {
 
 		boolean hasError = false;
 		StringBuffer buffy = new StringBuffer();
 
 		String monitoredArticleTitle = moni.getTitle();
 
-		Collection<Message> messages = new LinkedList<Message>();
+		Collection<de.knowwe.core.report.Message> messages = new LinkedList<de.knowwe.core.report.Message>();
 		for (Section<?> sec : moni.getReviseIterator().getAllSections()) {
 			messages.addAll(Messages.getErrors(Messages.getMessages(moni, sec)));
 		}
@@ -52,7 +50,7 @@ public class ArticleHasErrorsTest implements Test<Article> {
 		buffy.append("<a href=\"Wiki.jsp?page=" + monitoredArticleTitle + "\"> "
 				+ monitoredArticleTitle + "</a>:\n");
 		buffy.append("<ul>");
-		for (Message message : messages) {
+		for (de.knowwe.core.report.Message message : messages) {
 			// This finds only messages, that are explicitly stored
 			// as Message.ERROR, because the Type Message.UNKNOWN_ERROR
 			// is not public!
@@ -62,25 +60,22 @@ public class ArticleHasErrorsTest implements Test<Article> {
 		}
 		buffy.append("</ul>");
 		if (hasError) {
-			return new cc.denkbares.testing.Message(
-					cc.denkbares.testing.Message.Type.FAILURE, buffy.toString());
+			return new Message(
+					Message.Type.FAILURE, buffy.toString());
 		}
 		else {
-			return new cc.denkbares.testing.Message(
-					cc.denkbares.testing.Message.Type.SUCCESS, null);
+			return new Message(
+					Message.Type.SUCCESS, null);
 		}
-	}
-
-	@Override
-	public ArgsCheckResult checkArgs(String[] args) {
-		int expectedArgCount = 1;
-		if (args.length == expectedArgCount) return new ArgsCheckResult(ArgsCheckResult.Type.FINE);
-		return new ArgsCheckResult(ArgsCheckResult.Type.ERROR, "Expected number of arguments: "
-				+ expectedArgCount + " - found: " + args.length);
 	}
 
 	@Override
 	public Class<Article> getTestObjectClass() {
 		return Article.class;
+	}
+
+	@Override
+	public int numberOfArguments() {
+		return 0;
 	}
 }

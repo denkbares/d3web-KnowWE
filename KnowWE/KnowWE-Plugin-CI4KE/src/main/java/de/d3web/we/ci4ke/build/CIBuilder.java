@@ -20,8 +20,13 @@
 
 package de.d3web.we.ci4ke.build;
 
-import cc.denkbares.testing.BuildResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
+import cc.denkbares.testing.BuildResult;
 import cc.denkbares.testing.TestExecutor;
+import cc.denkbares.testing.TestObjectProvider;
+import cc.denkbares.testing.TestObjectProviderManager;
 import de.d3web.we.ci4ke.handling.CIConfig;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.d3web.we.ci4ke.handling.CIHook;
@@ -77,15 +82,20 @@ public class CIBuilder {
 	public void executeBuild() {
 
 		// retrieve build number
-		BuildResultSet previousBuild = dashboard.getLatestBuild();
+		BuildResult previousBuild = dashboard.getLatestBuild();
 		int buildNumber = (previousBuild == null) ? 1 : previousBuild.getBuildNumber() + 1;
 
+		List<TestObjectProvider> providers = new ArrayList<TestObjectProvider>();
+		providers.add(DefaultWikiTestObjectProvider.getInstance());
+		List<TestObjectProvider> pluggedProviders = TestObjectProviderManager.findTestObjectProviders();
+		providers.addAll(pluggedProviders);
 		// create and run TestExecutor
-		TestExecutor executor = new TestExecutor(
-				DefaultWikiTestObjectProvider.getInstance(), this.config.getTests());
-		BuildResultSet build = executor.runtTests(buildNumber);
+		TestExecutor executor = new TestExecutor(providers,
+				this.config.getTests());
+		BuildResult build = executor.runtTests(buildNumber);
 
 		// add resulting build to dashboard
 		dashboard.addBuild(build);
 	}
+
 }

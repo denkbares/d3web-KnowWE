@@ -1,6 +1,7 @@
 package de.d3web.we.ci4ke;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -34,24 +35,29 @@ import de.knowwe.core.Environment;
  * @author jochenreutelshofer
  * @created 22.05.2012
  */
-public class KnowledgeBaseTestObjectProvider implements TestObjectProvider<KnowledgeBase> {
+public class KnowledgeBaseTestObjectProvider implements TestObjectProvider {
 
 	@Override
-	public List<KnowledgeBase> getTestObject(Class<KnowledgeBase> c, String id) {
-		List<KnowledgeBase> result = new ArrayList<KnowledgeBase>();
+	public <T> List<T> getTestObjects(Class<T> c, String id) {
 		if (c == null) {
 			Logger.getLogger(this.getClass()).warn("Class given to TestObjectProvider was 'null'");
-			return result;
+			return Collections.emptyList();
 		}
 		if (!c.equals(KnowledgeBase.class)) {
-			return result;
+			return Collections.emptyList();
 		}
 
+		List<T> result = new ArrayList<T>();
 		// get the KB for this article
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(
 				Environment.DEFAULT_WEB, id);
-		result.add(kb);
+		result.add(c.cast(kb));
 		return result;
+	}
+
+	@Override
+	public <T> String getTestObjectName(T testObject) {
+		return ((KnowledgeBase) testObject).getId();
 	}
 
 }
