@@ -902,7 +902,7 @@
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-RDFS-d3web</artifactId>
+					<artifactId>KnowWE-Plugin-d3web-Rdf2Go</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
