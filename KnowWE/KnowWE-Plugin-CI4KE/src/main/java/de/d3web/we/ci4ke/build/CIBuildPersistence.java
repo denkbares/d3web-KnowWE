@@ -53,6 +53,28 @@ import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class CIBuildPersistence {
 
+	private static final String DATE = "date";
+
+	private static final String DURATION = "duration";
+
+	private static final String BUILD = "build";
+
+	private static final String TEST_OBJECT = "testObject";
+
+	private static final String MESSAGE = "message";
+
+	private static final String TEXT = "text";
+
+	private static final String NUMBER = "number";
+
+	private static final String TYPE = "type";
+
+	private static final String CONFIGURATION = "configuration";
+
+	private static final String NAME = "name";
+
+	private static final String TEST = "test";
+
 	private static final String ATTACHMENT_PREFIX = "ci-build-";
 
 	private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss");
@@ -190,44 +212,37 @@ public class CIBuildPersistence {
 		Document document = builder.newDocument();
 
 		// create build root item
-		Element root = document.createElement("build");
+		Element root = document.createElement(BUILD);
 		document.appendChild(root);
 
 		// required Attributes
-		root.setAttribute("number", String.valueOf(build.getBuildNumber()));
-		root.setAttribute("duration", String.valueOf(build.getBuildDuration()));
-		root.setAttribute("date", DATE_FORMAT.format(build.getBuildDate()));
-
-		// transient Attributes
-		root.setAttribute("result", build.getOverallResult().name());
-
-		// TODO: fix document structure for handling multiple messages
+		root.setAttribute(NUMBER, String.valueOf(build.getBuildNumber()));
+		root.setAttribute(DURATION, String.valueOf(build.getBuildDuration()));
+		root.setAttribute(DATE, DATE_FORMAT.format(build.getBuildDate()));
 
 		// add child results for single tests
 		for (TestResult result : build.getResults()) {
 
 			// create test item
-			Element test = document.createElement("test");
+			Element test = document.createElement(TEST);
 			root.appendChild(test);
 
 			// add required test attributes
-			test.setAttribute("name", result.getTestName());
-			test.setAttribute("result", result.getType().name());
+			test.setAttribute(NAME, result.getTestName());
 
 			// add optional test attributes
 			if (result.getArguments() != null) {
-				test.setAttribute("configuration", ArgumentUtils.concat(result.getArguments()));
+				test.setAttribute(CONFIGURATION, ArgumentUtils.concat(result.getArguments()));
 			}
 
-			String[] messages = new String[result.getTestObjectNames().size()];
-			int i = 0;
 			for (String testObjectName : result.getTestObjectNames()) {
 				Message message = result.getMessage(testObjectName);
-				messages[i] = message.getText();
-
-				i++;
+				Element messageElement = document.createElement(MESSAGE);
+				messageElement.setAttribute(TYPE, message.getType().toString());
+				messageElement.setAttribute(TEXT, message.getText());
+				messageElement.setAttribute(TEST_OBJECT, testObjectName);
+				test.appendChild(messageElement);
 			}
-			test.setAttribute("message", ArgumentUtils.concat(messages));
 
 		}
 
@@ -235,37 +250,46 @@ public class CIBuildPersistence {
 	}
 
 	private static BuildResult fromXML(Document document) throws ParseException {
-		Element root = (Element) document.getElementsByTagName("build").item(0);
+		Element root = (Element) document.getElementsByTagName(BUILD).item(0);
 
 		// parse attributes
-		int number = Integer.parseInt(root.getAttribute("number"));
-		long duration = Long.parseLong(root.getAttribute("duration"));
-		Date date = DATE_FORMAT.parse(root.getAttribute("date"));
+		int number = Integer.parseInt(root.getAttribute(NUMBER));
+		long duration = Long.parseLong(root.getAttribute(DURATION));
+		Date date = DATE_FORMAT.parse(root.getAttribute(DATE));
 
 		// create test item
 		BuildResult build = new BuildResult(number, date);
 		build.setBuildDuration(duration);
 
 		// parse single child tests
-		NodeList testElements = document.getElementsByTagName("test");
+		NodeList testElements = document.getElementsByTagName(TEST);
 		for (int i = 0; i < testElements.getLength(); i++) {
 			// parse every single test
 			Element test = (Element) testElements.item(i);
 
 			// read required attributes
-			String testName = test.getAttribute("name");
-			Message.Type type = Message.Type.valueOf(test.getAttribute("result"));
+			String testName = test.getAttribute(NAME);
 
 			// read optional attributes
-			String configuration = test.getAttribute("configuration");
-			String message = test.getAttribute("message");
+			String configuration = test.getAttribute(CONFIGURATION);
 
-			// and add the test result
+			// parse every single message
+			NodeList messageElements = test.getElementsByTagName(MESSAGE);
 			TestResult result = new TestResult(testName, ArgumentUtils.split(configuration));
-			String[] messages = ArgumentUtils.split(message);
-			for (String string : messages) {
-				Message m = new Message(type, string);
-				result.addMessage(testName, m);
+
+			for (int j = 0; j < messageElements.getLength(); j++) {
+				Element messageElement = (Element) messageElements.item(j);
+				if (messageElement != null) {
+					String typeString = messageElement.getAttribute(TYPE);
+					Message.Type type = null;
+					if (typeString != null && typeString.trim().length() > 0) {
+						type = Message.Type.valueOf(typeString);
+					}
+					String text = messageElement.getAttribute(TEXT);
+					String testObjectName = messageElement.getAttribute(TEST_OBJECT);
+					Message m = new Message(type, text);
+					result.addMessage(testObjectName, m);
+				}
 			}
 			build.addTestResult(result);
 		}
@@ -281,7 +305,7 @@ public class CIBuildPersistence {
 	 */
 	static class ArgumentUtils {
 
-		private static final String separator = "|";
+		private static final String separator = "\\|";
 
 		public static String[] split(String arguments) {
 			return arguments.split(separator);
