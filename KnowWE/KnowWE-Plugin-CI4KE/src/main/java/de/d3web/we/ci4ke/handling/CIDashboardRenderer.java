@@ -178,7 +178,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 					}
 				}
 
-				messageText = messageText + successes + " test objects tested successful\n";
+				messageText = messageText + successes + " test objects tested successfully\n";
 
 				String[] config = result.getArguments();
 
