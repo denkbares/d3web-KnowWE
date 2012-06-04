@@ -21,10 +21,10 @@ package de.d3web.we.ci4ke.testmodules;
 import java.util.ArrayList;
 import java.util.List;
 
-import cc.denkbares.testing.Message;
-import cc.denkbares.testing.Message.Type;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.QASet;
+import de.d3web.testing.Message;
+import de.d3web.testing.Message.Type;
 
 /**
  * This CITest searches for empty questionnaires on an article. It needs one

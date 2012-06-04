@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import cc.denkbares.testing.TestObjectProvider;
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.testing.TestObjectProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Environment;
 

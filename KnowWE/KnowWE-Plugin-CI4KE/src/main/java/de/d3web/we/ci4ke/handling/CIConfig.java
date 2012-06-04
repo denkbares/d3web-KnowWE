@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import cc.denkbares.testing.ExecutableTest;
+import de.d3web.testing.ExecutableTest;
 import de.d3web.we.ci4ke.handling.CIDashboardType.CIBuildTriggers;
 
 public final class CIConfig implements Cloneable {

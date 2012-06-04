@@ -20,19 +20,19 @@
 
 package de.d3web.we.ci4ke.testmodules;
 
-import cc.denkbares.testing.Message;
-import cc.denkbares.testing.Message.Type;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.empiricaltesting.TestCase;
 import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysis;
 import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
+import de.d3web.testing.Message;
+import de.d3web.testing.Message.Type;
 import de.d3web.we.testcase.TestCaseUtils;
 import de.knowwe.core.Environment;
 
 public class TestsuiteRunnerTest extends AbstractTest<KnowledgeBase> {
 
 	@Override
-	public cc.denkbares.testing.Message execute(KnowledgeBase testObject, String[] args) {
+	public de.d3web.testing.Message execute(KnowledgeBase testObject, String[] args) {
 		String monitoredArticleTitle = args[0];
 
 		TestCase suite = TestCaseUtils.loadTestSuite(

@@ -26,10 +26,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import cc.denkbares.testing.BuildResult;
-import cc.denkbares.testing.Message;
-import cc.denkbares.testing.Message.Type;
-import cc.denkbares.testing.TestResult;
+import de.d3web.testing.BuildResult;
+import de.d3web.testing.Message;
+import de.d3web.testing.TestResult;
+import de.d3web.testing.Message.Type;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;

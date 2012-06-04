@@ -44,9 +44,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import cc.denkbares.testing.BuildResult;
-import cc.denkbares.testing.Message;
-import cc.denkbares.testing.TestResult;
+import de.d3web.testing.BuildResult;
+import de.d3web.testing.Message;
+import de.d3web.testing.TestResult;
 import de.knowwe.core.Environment;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;

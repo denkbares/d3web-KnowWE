@@ -18,14 +18,14 @@
  */
 package de.d3web.we.ci4ke.testmodules;
 
-import cc.denkbares.testing.ArgsCheckResult;
+import de.d3web.testing.ArgsCheckResult;
 
 /**
  * 
  * @author Jochen Reutelshöfer (denkbares GmbH)
  * @created 30.05.2012
  */
-public abstract class AbstractTest<T> implements cc.denkbares.testing.Test<T> {
+public abstract class AbstractTest<T> implements de.d3web.testing.Test<T> {
 
 	public abstract int numberOfArguments();
 

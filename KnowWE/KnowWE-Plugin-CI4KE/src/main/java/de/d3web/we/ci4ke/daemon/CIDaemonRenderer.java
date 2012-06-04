@@ -1,6 +1,6 @@
 package de.d3web.we.ci4ke.daemon;
 
-import cc.denkbares.testing.Message.Type;
+import de.d3web.testing.Message.Type;
 import de.d3web.we.ci4ke.build.Dashboard;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.d3web.we.ci4ke.util.CIUtilities;

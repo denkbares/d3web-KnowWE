@@ -29,10 +29,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cc.denkbares.testing.ArgsCheckResult;
-import cc.denkbares.testing.ExecutableTest;
-import cc.denkbares.testing.Test;
-import cc.denkbares.testing.TestManager;
+import de.d3web.testing.ArgsCheckResult;
+import de.d3web.testing.ExecutableTest;
+import de.d3web.testing.Test;
+import de.d3web.testing.TestManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;

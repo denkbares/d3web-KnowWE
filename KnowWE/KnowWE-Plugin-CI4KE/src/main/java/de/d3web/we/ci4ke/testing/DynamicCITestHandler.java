@@ -20,7 +20,7 @@ package de.d3web.we.ci4ke.testing;
 
 import java.util.Map;
 
-import cc.denkbares.testing.Test;
+import de.d3web.testing.Test;
 
 /**
  * @author Marc-Oliver Ochlast (denkbares GmbH)

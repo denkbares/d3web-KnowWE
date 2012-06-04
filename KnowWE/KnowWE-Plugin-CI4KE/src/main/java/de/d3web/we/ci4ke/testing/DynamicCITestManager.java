@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import cc.denkbares.testing.Test;
+import de.d3web.testing.Test;
 
 /**
  * Manages all DynamicCITestHandlers in the system.

@@ -31,10 +31,10 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import cc.denkbares.testing.Message.Type;
-import cc.denkbares.testing.Test;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
+import de.d3web.testing.Test;
+import de.d3web.testing.Message.Type;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;

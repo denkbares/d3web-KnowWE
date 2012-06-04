@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import cc.denkbares.testing.TestObjectProvider;
+import de.d3web.testing.TestObjectProvider;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;

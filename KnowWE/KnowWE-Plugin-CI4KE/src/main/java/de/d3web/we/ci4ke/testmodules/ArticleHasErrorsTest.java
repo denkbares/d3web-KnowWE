@@ -21,7 +21,7 @@ package de.d3web.we.ci4ke.testmodules;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import cc.denkbares.testing.Message;
+import de.d3web.testing.Message;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;

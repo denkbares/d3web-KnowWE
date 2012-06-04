@@ -18,8 +18,8 @@
  */
 package de.d3web.we.ci4ke.build;
 
-import cc.denkbares.testing.BuildResult;
-import cc.denkbares.testing.Message.Type;
+import de.d3web.testing.BuildResult;
+import de.d3web.testing.Message.Type;
 import de.d3web.we.ci4ke.util.CIUtilities;
 
 /**

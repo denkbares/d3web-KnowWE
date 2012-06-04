@@ -21,9 +21,9 @@ package de.d3web.we.ci4ke.handling;
 import java.text.DateFormat;
 import java.util.Collection;
 
-import cc.denkbares.testing.BuildResult;
-import cc.denkbares.testing.Message.Type;
-import cc.denkbares.testing.TestResult;
+import de.d3web.testing.BuildResult;
+import de.d3web.testing.TestResult;
+import de.d3web.testing.Message.Type;
 import de.d3web.we.ci4ke.build.CIBuildRenderer;
 import de.d3web.we.ci4ke.build.Dashboard;
 import de.d3web.we.ci4ke.util.CIUtilities;
@@ -163,7 +163,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 				Collection<String> testObjectNames = result.getTestObjectNames();
 				int successes = 0;
 				for (String testObject : testObjectNames) {
-					cc.denkbares.testing.Message m = result.getMessage(testObject);
+					de.d3web.testing.Message m = result.getMessage(testObject);
 					Type messageType = m.getType();
 					if (messageType.equals(Type.SUCCESS)) {
 						successes++;

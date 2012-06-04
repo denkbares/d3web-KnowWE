@@ -23,10 +23,10 @@ package de.d3web.we.ci4ke.build;
 import java.util.ArrayList;
 import java.util.List;
 
-import cc.denkbares.testing.BuildResult;
-import cc.denkbares.testing.TestExecutor;
-import cc.denkbares.testing.TestObjectProvider;
-import cc.denkbares.testing.TestObjectProviderManager;
+import de.d3web.testing.BuildResult;
+import de.d3web.testing.TestExecutor;
+import de.d3web.testing.TestObjectProvider;
+import de.d3web.testing.TestObjectProviderManager;
 import de.d3web.we.ci4ke.handling.CIConfig;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.d3web.we.ci4ke.handling.CIHook;

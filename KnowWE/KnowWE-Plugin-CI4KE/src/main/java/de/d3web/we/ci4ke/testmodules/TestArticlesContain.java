@@ -23,7 +23,7 @@ package de.d3web.we.ci4ke.testmodules;
 import java.util.LinkedList;
 import java.util.List;
 
-import cc.denkbares.testing.Message;
+import de.d3web.testing.Message;
 import de.knowwe.core.kdom.Article;
 
 /**

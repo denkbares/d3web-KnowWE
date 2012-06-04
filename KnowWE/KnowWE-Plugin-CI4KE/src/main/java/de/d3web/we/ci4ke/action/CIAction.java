@@ -22,7 +22,7 @@ package de.d3web.we.ci4ke.action;
 
 import java.io.IOException;
 
-import cc.denkbares.testing.BuildResult;
+import de.d3web.testing.BuildResult;
 import de.d3web.we.ci4ke.build.CIBuildRenderer;
 import de.d3web.we.ci4ke.build.CIBuilder;
 import de.d3web.we.ci4ke.build.Dashboard;
