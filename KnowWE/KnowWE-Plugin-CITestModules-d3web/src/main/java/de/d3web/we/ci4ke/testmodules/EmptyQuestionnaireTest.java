@@ -54,8 +54,8 @@ public class EmptyQuestionnaireTest extends AbstractTest<KnowledgeBase> {
 				}
 			}
 			if (emptyQASets.size() > 0) {// empty QASets were found:
-				String failedMessage = "Knowledge base has empty questionnaires: " +
-						createHTMLListFromStringList(emptyQASets);
+				String failedMessage = "Knowledge base has empty questionnaires: " + "\n" +
+						createTextFromStringList(emptyQASets);
 				return new Message(Type.FAILURE, failedMessage);
 			}
 		}
@@ -63,15 +63,12 @@ public class EmptyQuestionnaireTest extends AbstractTest<KnowledgeBase> {
 		return new Message(Type.SUCCESS, null);
 	}
 
-	private String createHTMLListFromStringList(List<String> list) {
+	private String createTextFromStringList(List<String> list) {
 		StringBuilder htmlList = new StringBuilder();
-		htmlList.append("<ul>");
 		for (String listItem : list) {
-			htmlList.append("<li>");
 			htmlList.append(listItem);
-			htmlList.append("</li>");
+			htmlList.append("\n");
 		}
-		htmlList.append("</ul>");
 		return htmlList.toString();
 	}
 
