@@ -63,11 +63,11 @@ public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 	 * the deriving classes to produce their output html.
 	 * 
 	 * @param web the web where the tag handler is included.
-	 * @param topic the topic of the page where the tag handler is included.
+	 * @param title the title of the page where the tag handler is included.
 	 * @param user the user context for this request
 	 * @param parameters the parameters of the tag handler invocation
 	 * @return the resulting wiki markup text
 	 */
-	public abstract String renderHTML(String topic, UserContext user, Map<String, String> parameters, String web);
+	public abstract String renderHTML(String title, UserContext user, Map<String, String> parameters, String web);
 
 }

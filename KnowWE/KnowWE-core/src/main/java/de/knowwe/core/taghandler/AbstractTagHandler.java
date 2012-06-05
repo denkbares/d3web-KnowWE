@@ -24,11 +24,10 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 
 /**
- * @author Jochen
+ * An abstract implementation of the TagHandler Interface handling the tagName
+ * in lowercase.
  * 
- *         An abstract implementation of the TagHandler Interface handling the
- *         tagName in lowercase.
- * 
+ * @author Jochen Reutehshöfer
  */
 public abstract class AbstractTagHandler implements TagHandler {
 
