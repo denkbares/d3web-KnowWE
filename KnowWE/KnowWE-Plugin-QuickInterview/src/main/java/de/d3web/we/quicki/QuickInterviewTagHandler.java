@@ -59,7 +59,7 @@ public class QuickInterviewTagHandler extends AbstractHTMLTagHandler {
 		if (topic.equalsIgnoreCase("LeftMenu")) {
 			topic = user.getParameters().get("page");
 		}
-
+		user.getParameters().putAll(values);
 		String iv = QuickInterviewAction.callQuickInterviewRenderer(user);
 		if (iv == null) return null;
 

@@ -22,6 +22,7 @@ package de.d3web.we.quicki;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -72,6 +73,8 @@ public class QuickInterviewRenderer {
 
 	private final ResourceBundle rb;
 
+	private Map<String, String> config = null;
+
 	private int counter = 0;
 
 	/**
@@ -97,6 +100,10 @@ public class QuickInterviewRenderer {
 		this.web = webb;
 		this.namespace = kb.getId();
 		this.rb = D3webUtils.getD3webBundle(user);
+		this.config = user.getParameters();
+		// this.config = new HashMap<String, String>();
+		// config.put("use", "user");
+
 	}
 
 	public String render() {
@@ -127,7 +134,9 @@ public class QuickInterviewRenderer {
 	 */
 	private void getInterviewPluginHeader(StringBuffer html) {
 		// assemble JS string
-		String relAt = "rel=\"{" + "web:'" + web + "', " + "ns:'" + namespace + "'" + "}\" ";
+		String relAt = "rel=\"{" + "web:'" + web + "', " + "ns:'" + namespace + "', " +
+				renderConfigParams() +
+				"}\" ";
 		html.append("<div style='position:relative'>");
 		html.append("<div id='quickireset' style='position:absolute;right:0px;top:3px;' ").
 				append("class='reset pointer' title='").append(rb.getString("KnowWE.quicki.reset")).
@@ -306,6 +315,10 @@ public class QuickInterviewRenderer {
 		String qablockCSS = "qablock";
 		if (isAbstract(question) || !isVisible(question)) {
 			qablockCSS = "qablockHidden";
+			if (hideAbstractions()) {
+				// do not render anything in this case
+				return;
+			}
 		}
 
 		sb.append("\n<div class='" + qablockCSS
@@ -316,10 +329,10 @@ public class QuickInterviewRenderer {
 		// width of the question front section, i.e. total width - identation
 		int w = 320 - d;
 		String divText = getText(question);
-
+		String cssClass = "question";
 		sb.append("\n<div id='" + question.getName() + "' " +
 				"parent='" + parent.getName() + "' " +
-				"class='question' " +
+				"class='" + cssClass + "' " +
 				"style='width: " + w + "px; display: inline-block;' >"
 				+ divText + "</div>");
 		// }
@@ -349,9 +362,39 @@ public class QuickInterviewRenderer {
 		sb.append("</div>");
 	}
 
+	private boolean hideAbstractions() {
+		return this.config.containsKey("abstractions")
+				&& this.config.get("abstractions").equals("false");
+	}
+
 	private boolean isAbstract(Question question) {
 		return question.getInfoStore().getValue(BasicProperties.ABSTRACTION_QUESTION) != null
 				&& question.getInfoStore().getValue(BasicProperties.ABSTRACTION_QUESTION);
+	}
+
+	private final String[] defaultParams = {
+			"KWikiWeb", "page", "KWikiUser", "data", "action", "env", "tstamp", "KWiki_Topic",
+			"namespace", "_cmdline" };
+
+	private String renderConfigParams() {
+		if (this.config == null) return "";
+		String result = " ";
+		for (String key : this.config.keySet()) {
+			boolean isDefault = false;
+			for (String p : defaultParams) {
+				if (key.equals(p)) {
+					isDefault = true;
+					break;
+				}
+			}
+			if (!isDefault) {
+				result += key + ":'" + config.get(key) + "', ";
+			}
+		}
+		if (result.endsWith(", ")) {
+			result = result.substring(0, result.length() - 2);
+		}
+		return result;
 	}
 
 	private void renderTextAnswers(Question q, StringBuffer sb) {
@@ -400,7 +443,14 @@ public class QuickInterviewRenderer {
 	private void renderOCChoiceAnswers(Question q, List<Choice> list, StringBuffer sb) {
 
 		// go through all choices = answer alternatives
+		boolean first = true;
 		for (Choice choice : list) {
+			if (first) {
+				first = false;
+			}
+			else {
+				renderChoiceSeparator(sb);
+			}
 
 			String cssclass = "answer";
 
@@ -410,7 +460,7 @@ public class QuickInterviewRenderer {
 						+ "ns:'" + namespace + "', "
 						+ "qid:'" + Strings.encodeURL(q.getName()) + "', "
 						+ "choice:'" + Strings.encodeURL(choice.getName()) + "', "
-						+ "type:'oc'"
+						+ "type:'oc', "
 						+ "}\" ";
 			String spanid = q.getName() + "_" + choice.getName();
 
@@ -426,8 +476,6 @@ public class QuickInterviewRenderer {
 
 			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + "",
 					cssclass, jscall, null, spanid, ""));
-
-			sb.append("<div class='separator'> | </div>");
 
 			// System.out.println(getEnclosingTagOnClick("div", "" +
 			// choice.getName() + " ",
@@ -516,17 +564,23 @@ public class QuickInterviewRenderer {
 
 		// sb.append("<input type='button' value='OK' class='num-ok' />");
 
-		sb.append("<div class='separator'>");
-		// M.Ochlast: i added this (hidden) div to re-enable submitting of
-		// numValues by "clicking". This workaround is neccessary for KnowWE
-		// Systemtests (there is no Return-Key emulation possible).
-		sb.append("<div id='num-ok_" + id + "' class='num-ok'> | </div>");
-		sb.append("</div>");
+		if (!suppressUnknown()) {
+			sb.append("<div class='separator'>");
+			// M.Ochlast: i added this (hidden) div to re-enable submitting of
+			// numValues by "clicking". This workaround is neccessary for KnowWE
+			// Systemtests (there is no Return-Key emulation possible).
+			sb.append("<div id='num-ok_" + id + "' class='num-ok'> | </div>");
+			sb.append("</div>");
+		}
 
 		renderAnswerUnknown(q, "num", sb);
 
 		String errmsgid = id + "_errormsg";
 		sb.append("<div id='" + errmsgid + "' class='invisible' ></div>");
+	}
+
+	private boolean suppressUnknown() {
+		return (this.config.containsKey("unknown") && this.config.get("unknown").equals("false"));
 	}
 
 	// TODO: check Date input format
@@ -599,8 +653,14 @@ public class QuickInterviewRenderer {
 	private void renderMCChoiceAnswers(QuestionChoice q, MultipleChoiceValue mcval, StringBuffer sb) {
 
 		sb.append("\n<div class='answers' style='display: inline;'>");
-
+		boolean first = true;
 		for (Choice choice : mcval.asChoiceList(q)) {
+			if (first) {
+				first = false;
+			}
+			else {
+				renderChoiceSeparator(sb);
+			}
 
 			String cssclass = "answerMC";
 			String jscall = " rel=\"{oid:'" + choice.getName() + "', "
@@ -609,7 +669,7 @@ public class QuickInterviewRenderer {
 						+ "qid:'" + Strings.encodeURL(q.getName()) + "', "
 						+ "type:'mc', "
 						+ "choice:'" + Strings.encodeURL(choice.getName()) + "', "
-						+ "}\" ";
+					+ "}\" ";
 
 			Value value = session.getBlackboard().getValue(q);
 
@@ -620,12 +680,25 @@ public class QuickInterviewRenderer {
 			String spanid = q.getName() + "_" + choice.getName();
 			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + "", cssclass,
 					jscall, null, spanid, ""));
-			sb.append("<div class='separator'> | </div>");
+
 		}
 
 		// also render the unknown alternative for choice questions
 		renderAnswerUnknown(q, "mc", sb);
 		sb.append("</div>");
+	}
+
+	private void renderChoiceSeparator(StringBuffer sb) {
+		if (renderChoiceAnswerAsList()) {
+			sb.append("<br>");
+		}
+		else {
+			sb.append("<div class='separator'> | </div>");
+		}
+	}
+
+	private boolean renderChoiceAnswerAsList() {
+		return this.config.containsKey("answers") && this.config.get("answers").equals("list");
 	}
 
 	/**
@@ -638,11 +711,19 @@ public class QuickInterviewRenderer {
 	 * @return the HTML representation
 	 */
 	private void renderAnswerUnknown(Question q, String type, StringBuffer sb) {
+		if (suppressUnknown()) {
+			// render no answer unknown
+			return;
+		}
+		if (!(q instanceof QuestionNum)) {
+			// separator already rendered in renderNumAnswers
+			renderChoiceSeparator(sb);
+		}
 		String jscall = " rel=\"{oid: '" + Unknown.getInstance().getId() + "', "
 					+ "web:'" + web + "', "
 					+ "ns:'" + namespace + "', "
 					+ "type:'" + type + "', "
-					+ "qid:'" + Strings.encodeURL(q.getName()) + "'"
+					+ "qid:'" + Strings.encodeURL(q.getName()) + "', "
 					+ "}\" ";
 		String cssclass = "answerunknown";
 

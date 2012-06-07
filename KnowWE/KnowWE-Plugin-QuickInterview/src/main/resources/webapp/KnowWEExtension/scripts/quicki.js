@@ -786,6 +786,13 @@ KNOWWE.plugin.quicki = function(){
                      namespace : KNOWWE.helper.gup( 'page' ),
                      action : 'QuickInterviewAction'
              }
+             // also submit config parameters defined in the markup
+        	 var resetPointer = _KS('#quickireset');
+        	 if(resetPointer) {
+        		 var relations = eval("(" + resetPointer.getAttribute('rel') + ")");
+        		 params = KNOWWE.helper.enrich( relations, params );
+       		 
+        	 }
         	 
         	 var id = 'quickinterview';
         	 var rememberedToFocus = toSelect;
