@@ -200,7 +200,7 @@ public class Environment {
 
 	private void initInstantiations() {
 		for (Instantiation inst : Plugins.getInstantiations()) {
-			inst.init(getWikiConnector().getServletContext());
+			inst.init();
 		}
 	}
 
