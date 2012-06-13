@@ -49,13 +49,20 @@ public class TestsuiteRunnerTest extends AbstractTest<KnowledgeBase> {
 		if (!suite.isConsistent()) {
 			return new Message(Type.FAILURE, "Testsuite is not consistent!");
 		}
-		else if (result.recall() == 1.0 && result.precision() == 1.0) {
-			return new Message(Type.SUCCESS, null);
-		}
 		else {
-			return new Message(Type.FAILURE,
-						"Testsuite failed! (Total Precision: " + result.precision() +
-								", Total Recall: " + result.recall() + ")");
+			double precision = result.precision();
+			double recall = result.recall();
+
+			if (recall == 1.0 && precision == 1.0) {
+				return new Message(Type.SUCCESS, null);
+			}
+			else {
+				String precisionRounded = "" + ((double) Math.round(precision * 100)) / 100;
+				String recallRounded = "" + ((double) Math.round(recall * 100)) / 100;
+				return new Message(Type.FAILURE,
+							"Testsuite failed! (Total Precision: " + precisionRounded +
+									", Total Recall: " + recallRounded + ")");
+			}
 		}
 	}
 
