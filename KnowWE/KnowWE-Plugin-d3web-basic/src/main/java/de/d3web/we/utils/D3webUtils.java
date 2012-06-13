@@ -166,11 +166,14 @@ public class D3webUtils {
 			throw new NullPointerException(
 					"Cannot acces knowledge base with 'web' and/or 'topic' null");
 		}
-		D3webKnowledgeHandler knowledgeHandler =
-				D3webUtils.getKnowledgeRepresentationHandler(web);
-		if (knowledgeHandler != null) {
-			KnowledgeBase kb = knowledgeHandler.getKnowledgeBase(title);
-			return kb;
+		if (Environment.getInstance() != null) {
+			D3webKnowledgeHandler knowledgeHandler =
+					D3webUtils.getKnowledgeRepresentationHandler(web);
+
+			if (knowledgeHandler != null) {
+				KnowledgeBase kb = knowledgeHandler.getKnowledgeBase(title);
+				return kb;
+			}
 		}
 		return null;
 	}
