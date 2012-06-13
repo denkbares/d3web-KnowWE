@@ -21,7 +21,6 @@
 package de.d3web.we.ci4ke.handling;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -31,8 +30,7 @@ import java.util.regex.Pattern;
 
 import de.d3web.testing.ArgsCheckResult;
 import de.d3web.testing.ExecutableTest;
-import de.d3web.testing.Test;
-import de.d3web.testing.TestManager;
+import de.d3web.testing.Utils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -133,36 +131,15 @@ public class CIDashboardType extends DefaultMarkupType {
 					DefaultMarkupType.getAnnotationContentSections(s, TEST_KEY);
 
 			// iterate over all @test-Annotations
+			List<ArgsCheckResult> messages = new ArrayList<ArgsCheckResult>();
 			for (Section<?> annoSection : annotationSections) {
-				String annotationText = annoSection.getText();
-				matcher = pattern.matcher(annotationText);
-				if (matcher.find()) {
-					// get the name of the test
-					String testName = matcher.group();
-					// get the parameters of the test
-					List<String> testParamters = new ArrayList<String>();
-					while (matcher.find()) {
-						String parameter = matcher.group();
-						if (parameter.startsWith("\"") && parameter.endsWith("\"")) {
-							parameter = parameter.substring(1, parameter.length() - 1);
-						}
-						testParamters.add(parameter);
-					}
-					Test<?> test = TestManager.findTest(testName);
-					if (test != null) {
-						String[] args = testParamters.toArray(new String[] {});
-						tests.add(new ExecutableTest(test, args));
-
-						// check arguments and create error messages if
-						// necessary
-						testArguments(msgs, testName, test, args);
-					}
-					else {
-						msgs.add(new Message(Message.Type.ERROR, "Class not found for test name: "
-								+ testName));
-					}
+				ExecutableTest executableTest = Utils.createExecutableTest(annoSection.getText(),
+						messages);
+				if (executableTest != null) {
+					tests.add(executableTest);
 				}
 			}
+			convertMessages(messages, msgs);
 
 			CIConfig config = new CIConfig(article.getWeb(), s.getArticle().getTitle(),
 					dashboardName, tests, trigger);
@@ -187,45 +164,27 @@ public class CIDashboardType extends DefaultMarkupType {
 			return msgs;
 		}
 
-		private void testArguments(List<Message> msgs, String testName, Test<?> test, String[] args) {
-			args = Arrays.copyOfRange(args, 1, args.length);
-			ArgsCheckResult argsCheckResult = test.checkArgs(args);
-			if (argsCheckResult.hasError() || argsCheckResult.hasWarning()) {
-				String[] arguments = argsCheckResult.getArguments();
+		/**
+		 * 
+		 * @created 11.06.2012
+		 * @param messages
+		 * @param msgs
+		 */
+		private void convertMessages(List<ArgsCheckResult> messages, List<Message> msgs) {
+			for (ArgsCheckResult message : messages) {
+				String[] arguments = message.getArguments();
 				for (int i = 0; i < arguments.length; i++) {
-					if (argsCheckResult.hasError(i)) {
-						msgs.add(new Message(Message.Type.ERROR, testName + ": "
-								+ renderMessage(
-										args, argsCheckResult,
-										i)));
+					String messageText = message.getMessage(i);
+					if (message.hasError(i)) {
+						msgs.add(new Message(Message.Type.ERROR, messageText));
 					}
-					if (argsCheckResult.hasWarning(i)) {
-						msgs.add(new Message(Message.Type.WARNING, testName + ": "
-								+ renderMessage(
-										args, argsCheckResult,
-										i)));
+					else if (message.hasWarning(i)) {
+						msgs.add(new Message(Message.Type.WARNING, messageText));
 					}
-				}
 
-				// error on zero arguments
-				if (arguments.length == 0 && argsCheckResult.hasError(0)) {
-					msgs.add(new Message(Message.Type.ERROR, testName + ": "
-							+ renderMessage(
-									args, argsCheckResult, 0)));
 				}
 			}
-		}
 
-		private String renderMessage(final String[] args, ArgsCheckResult argsCheckResult, int i) {
-			if (argsCheckResult.getMessage(i) != null) {
-				String arg = "none";
-				if (i < args.length) {
-					arg = args[i];
-				}
-				String message = argsCheckResult.getMessage(i);
-				return "Invalid argument: " + arg + " (" + message + ")";
-			}
-			return null;
 		}
 
 		@Override
