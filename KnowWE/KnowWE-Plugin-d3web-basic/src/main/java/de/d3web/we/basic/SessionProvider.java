@@ -34,6 +34,7 @@ import de.d3web.core.session.Session;
 import de.d3web.core.session.SessionFactory;
 import de.d3web.core.session.blackboard.Fact;
 import de.knowwe.core.Attributes;
+import de.knowwe.core.event.EventManager;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -189,7 +190,9 @@ public class SessionProvider {
 	 * @return the created session
 	 */
 	public Session createSession(KnowledgeBase kb) {
+		removeSession(kb);
 		Session session = SessionFactory.createSession(kb);
+		EventManager.getInstance().fireEvent(new SessionCreatedEvent(session));
 		sessions.put(kb.getId(), session);
 		return session;
 	}
@@ -203,7 +206,10 @@ public class SessionProvider {
 	 * @param kb the underlying knowledge base
 	 */
 	public void removeSession(KnowledgeBase kb) {
-		sessions.remove(kb.getId());
+		Session removedSession = sessions.remove(kb.getId());
+		if (removedSession != null) {
+			EventManager.getInstance().fireEvent(new SessionRemovedEvent(removedSession));
+		}
 	}
 
 	/**
@@ -214,6 +220,7 @@ public class SessionProvider {
 	 * @param session the session to be set
 	 */
 	public void setSession(Session session) {
+		removeSession(session.getKnowledgeBase());
 		sessions.put(session.getKnowledgeBase().getId(), session);
 	}
 
