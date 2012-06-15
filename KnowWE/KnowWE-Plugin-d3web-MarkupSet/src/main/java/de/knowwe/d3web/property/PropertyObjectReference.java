@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.we.object.AnswerReference;
+import de.d3web.we.object.AnswerReferenceRegistrationHandler;
 import de.d3web.we.object.D3webTerm;
 import de.d3web.we.object.D3webTermReference;
 import de.d3web.we.object.NamedObjectReference;
@@ -121,7 +122,7 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 			Section<QuestionReference> questionSection = section.get().getQuestionSection(section);
 			if (questionSection != null && questionSection.getText().isEmpty()) {
 				Messages.clearMessages(article, section,
-						SimpleTermReferenceRegistrationHandler.class);
+						AnswerReferenceRegistrationHandler.class);
 			}
 			return null;
 		}
