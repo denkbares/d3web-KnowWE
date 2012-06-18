@@ -39,7 +39,7 @@
         <parameter id="priority" value="5" />
         <parameter id="script" value="TableEditTool.js" />
         <parameter id="css" value="TableEdit.css" />
-        <parameter id="scope" value="/TableType" />
+        <parameter id="scope" value="TableType" />
 	</extension>
 	
 	

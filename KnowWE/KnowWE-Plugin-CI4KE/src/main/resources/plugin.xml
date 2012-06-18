@@ -57,7 +57,7 @@
 			value="Offers the possibility to start a new build." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="scope" value="/CIDashboardType" />
+		<parameter id="scope" value="CIDashboardType" />
 	</extension>
 	
 	<!-- CITests -->

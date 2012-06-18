@@ -104,7 +104,7 @@
 			value="Switches to a player section and opens the testcase of the section." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="scope" value="/TestCaseTableType" />
+		<parameter id="scope" value="TestCaseTableType" />
 	</extension>
 	
 	<!--  Table Editor -->

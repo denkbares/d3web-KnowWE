@@ -24,7 +24,7 @@
 			value="Offers download buttons to download test suites as single files." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="scope" value="/TestCaseType" />
+		<parameter id="scope" value="TestCaseType" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
