@@ -64,7 +64,6 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.kbrenderer.verbalizer.VerbalizationManager;
 import de.knowwe.kbrenderer.verbalizer.Verbalizer;
 
@@ -125,7 +124,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 						text.append("<span style=\"color: rgb(150, 110, 120);\">"
 								+ t1.getName() + "</span><br/>\n");
 						// Get their childrens and build up the tree recursively
-						text.append(getAll(t1.getChildren(), 1, topic));
+						text.append(getAll(t1.getChildren(), 1, topic, user));
 						text.append("<br/>\n");
 					}
 				}
@@ -214,7 +213,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 						text.append("<span style=\"color: rgb(128, 128, 0);\">"
 								+ q1.getName() + "</span><br/>");
 						// Build up question tree recursively
-						text.append(getAll(q1.getChildren(), 1, topic));
+						text.append(getAll(q1.getChildren(), 1, topic, user));
 						text.append("<br/>\n");
 					}
 				}
@@ -317,7 +316,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	 * @return all children from the given objects, including their properties.
 	 */
 	private String getAll(TerminologyObject[] nodes,
-			ArrayList<TerminologyObject> save, int depth, String title) {
+			ArrayList<TerminologyObject> save, int depth, String title, UserContext user) {
 		StringBuffer result = new StringBuffer();
 		StringBuffer prompt = new StringBuffer();
 		StringBuffer property = new StringBuffer();
@@ -343,10 +342,10 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			}
 			if (t1 instanceof QuestionChoice) {
 				if (t1 instanceof QuestionMC) {
-					result.append(getTermHTML(prompt, property, t1, "[mc]", title));
+					result.append(getTermHTML(prompt, property, t1, "[mc]", title, user));
 				}
 				else {
-					result.append(getTermHTML(prompt, property, t1, "[oc]", title));
+					result.append(getTermHTML(prompt, property, t1, "[oc]", title, user));
 				}
 				for (Choice c1 : ((QuestionChoice) t1).getAllAlternatives()) {
 					for (int i = 0; i < depth + 1; i++) {
@@ -357,13 +356,13 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				}
 			}
 			else if (t1 instanceof QuestionText) {
-				result.append(getTermHTML(prompt, property, t1, "[text]", title));
+				result.append(getTermHTML(prompt, property, t1, "[text]", title, user));
 			}
 			else if (t1 instanceof QuestionNum) {
-				result.append(getTermHTML(prompt, property, t1, "[num]", title));
+				result.append(getTermHTML(prompt, property, t1, "[num]", title, user));
 			}
 			else if (t1 instanceof QuestionDate) {
-				result.append(getTermHTML(prompt, property, t1, "[date]", title));
+				result.append(getTermHTML(prompt, property, t1, "[date]", title, user));
 			}
 			else if (t1 instanceof Solution) {
 				result.append("<span style=\"color: rgb(150, 110, 120);\">"
@@ -376,31 +375,23 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			if (t1.getChildren().length > 0 && !save.contains(t1)) {
 				save.add(t1);
 				depth++;
-				result.append(getAll(t1.getChildren(), save, depth, title));
+				result.append(getAll(t1.getChildren(), save, depth, title, user));
 				depth--;
 			}
 		}
 		return result.toString();
 	}
 
-	private String getTermHTML(StringBuffer prompt, StringBuffer property, TerminologyObject t1, String typeDeclaration, String title) {
+	private String getTermHTML(StringBuffer prompt, StringBuffer property, TerminologyObject t1, String typeDeclaration, String title, UserContext user) {
 		TerminologyManager terminologyManager = Environment.getInstance().getTerminologyManager(
 				Environment.DEFAULT_WEB, title);
 		Section<?> termDefiningSection = terminologyManager.getTermDefiningSection(new TermIdentifier(
 				t1.getName()));
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
-		String contextPath = wikiConnector.getServletContext().getContextPath();
-		String url = contextPath + "/Wiki.jsp?page=" + termDefiningSection.getTitle() + "#"
-				+ termDefiningSection.getID();
-		return ""
-				+ "<a href='" + url + "'>"
-				+ "<span style=\"color: rgb(0, 128, 0);\">"
-				+ t1.toString()
+		StringBuilder builder = new StringBuilder();
+
+		termDefiningSection.get().getRenderer().render(termDefiningSection, user, builder);
+		return builder.toString() + "<span style=\"color: rgb(125, 80, 102);\"> " + typeDeclaration
 				+ " "
-				+ prompt
-				+ "</span>"
-				+ "</a>"
-				+ "<span style=\"color: rgb(125, 80, 102);\"> " + typeDeclaration + " "
 				+ property + " </span><br/>\n";
 	}
 
@@ -411,8 +402,8 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	 * @param depth
 	 * @return String
 	 */
-	private String getAll(TerminologyObject[] nodes, int depth, String title) {
-		return getAll(nodes, new ArrayList<TerminologyObject>(), depth, title);
+	private String getAll(TerminologyObject[] nodes, int depth, String title, UserContext user) {
+		return getAll(nodes, new ArrayList<TerminologyObject>(), depth, title, user);
 	}
 
 	private class RuleComparator implements Comparator<Rule> {
