@@ -33,7 +33,7 @@ import de.knowwe.core.utils.Patterns;
  */
 public class PropertyDeclarationType extends AbstractType {
 
-	public static final String QUOTED_NAME = Patterns.quoted;
+	public static final String QUOTED_NAME = Patterns.QUOTED;
 	public static final String UNQUOTED_NAME = "[^\".=#\\n\\r]*";
 	public static final String NAME = "(?:" + QUOTED_NAME + "|" + UNQUOTED_NAME + ")";
 

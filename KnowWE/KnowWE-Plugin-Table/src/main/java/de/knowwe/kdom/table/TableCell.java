@@ -87,7 +87,7 @@ public class TableCell extends AbstractType {
 		public static final String CELLSTART = "\\|{1,2}\\s*";
 		public static final String JSPLINK = "(\\[.+\\|?.*\\])";
 		public static final String REGEX = CELLSTART + "(" + JSPLINK + "|"
-				+ Patterns.QUOTEDSTRING + "|[^|\"]*)";
+				+ Patterns.QUOTED + "|[^|\"]*)";
 		private final Pattern pattern = Pattern.compile(REGEX);
 
 		@Override

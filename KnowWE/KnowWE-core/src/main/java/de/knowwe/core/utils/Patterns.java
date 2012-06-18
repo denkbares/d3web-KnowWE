@@ -19,6 +19,9 @@
  */
 package de.knowwe.core.utils;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * 
  * Class for storing often reused regular expression. Feel free to add your
@@ -56,15 +59,26 @@ public final class Patterns {
 	public static final String COMMENTLINE = "^" + SPACETABS + "//[^\r\n]*+" + LINEBREAK;
 
 	/**
-	 * RegEx for doublequoted (") strings.
+	 * A pattern for all quoted strings " can be masked by \
 	 */
-	public static final String QUOTEDSTRING = "(?:\"[^\"]*+\")";
+	// Old patterns:
+	// public static final String quoted =
+	// "(?:\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\")";
+	// public static final String QUOTED =
+	// "(?:\"[^\"\\\\]*(?:\\\\.(?:\\\"|[^\"\\\\])*)*\")";
+	//
+	// Starts and ends with a quote. Between either a char that is neither a
+	// quote nor a backslash OR two backslashes in a row zero or more times
+	// followed by an escaped quote. The pattern for between again zero or more
+	// times.
+	// The current pattern is designed to have very little (or no) backtracking.
+	public static final String QUOTED = "(?:\"(?:[^\"\\\\]|(?:(?:\\\\\\\\)*(?:\\\\\")*))*\")";
 
 	/**
 	 * RegEx for legal identifier in d3web.
 	 */
 	public static final String D3IDENTIFIER =
-			"(?:" + QUOTEDSTRING + "|" + // anything quoted
+			"(?:" + QUOTED + "|" + // anything quoted
 					WORDS + "|" + // or words separated by spaces
 					WORD + ")"; // or single word
 
@@ -86,7 +100,7 @@ public final class Patterns {
 	public static final String XCRelation =
 			"^" + SPACETABS + // at line start there are optional whitespaces
 					"((?:" + // content of relation:
-					QUOTEDSTRING + "|" + // either a quoted string or
+					QUOTED + "|" + // either a quoted string or
 					"[^,\"]++" + // anything but a comma or a quote (possesively
 									// quantified)
 					")+)" + //
@@ -105,7 +119,7 @@ public final class Patterns {
 											// whitespaces before are allowed
 					"(?>" + // the content of the XCL:
 					DCPROPERTY + "|" + // DCProperty or
-					QUOTEDSTRING + "|" + // anything quoted or
+					QUOTED + "|" + // anything quoted or
 					"[^@\\}\"]*" + // anything except unquoted '}', '@' or
 									// single '"'
 					")*" + // many of the above, ends content
@@ -119,13 +133,6 @@ public final class Patterns {
 					SPACETABS + // space after thresholds
 					// LINEBREAK + // XCL has to be terminated by newline
 					"";
-
-	/**
-	 * A pattern for all quoted strings " can be masked by \
-	 */
-	// public static final String quoted =
-	// "(?:\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\")";
-	public static final String quoted = "(?:\"[^\"\\\\]*(?:\\\\.(?:\\\"|[^\"\\\\])*)*\")";
 	/**
 	 * A Pattern for jspwiki links. The link text is captured in group 1, the
 	 * optional page reference in group 2. This pattern can handle masked '['
@@ -138,9 +145,15 @@ public final class Patterns {
 					"\\]"; // closing bracket
 
 	public static void main(String[] args) {
-		String test = "\"\\\"sa\\\\sd\\\"\\\"df\\\"\"";
+		String quotedNew = "\"(?:[^\"\\\\]|(?:(?:\\\\\\\\)*(?:\\\\\")*))*\"";
+		String test = "\"\\\"sa\\\\sd\\\"\\\\\\\"df\\\"\"";
 		System.out.println(test);
 		System.out.println(Strings.trimQuotes(test));
-		System.out.println(test.matches(quoted));
+		Pattern pattern = Pattern.compile(quotedNew);
+		Matcher matcher = pattern.matcher(test);
+		System.out.println();
+		while (matcher.find()) {
+			System.out.println(matcher.group());
+		}
 	}
 }
