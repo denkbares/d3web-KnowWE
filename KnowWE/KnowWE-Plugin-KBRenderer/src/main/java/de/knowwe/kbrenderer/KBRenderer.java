@@ -58,8 +58,13 @@ import de.d3web.we.utils.D3webUtils;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.terminology.TermIdentifier;
+import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.kbrenderer.verbalizer.VerbalizationManager;
 import de.knowwe.kbrenderer.verbalizer.Verbalizer;
 
@@ -120,7 +125,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 						text.append("<span style=\"color: rgb(150, 110, 120);\">"
 								+ t1.getName() + "</span><br/>\n");
 						// Get their childrens and build up the tree recursively
-						text.append(getAll(t1.getChildren(), 1));
+						text.append(getAll(t1.getChildren(), 1, topic));
 						text.append("<br/>\n");
 					}
 				}
@@ -195,6 +200,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			boolean appendedQuestionHeadline = false;
 			for (QContainer q1 : questions) {
 				if (q1.getName() != null && !q1.getName().equals("Q000")) {
+
 					if (!appendedQuestionHeadline) {
 						if (appendedSolutionsHeadline || appendedRulesHeadline) {
 							text.append("<br/>\n");
@@ -208,7 +214,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 						text.append("<span style=\"color: rgb(128, 128, 0);\">"
 								+ q1.getName() + "</span><br/>");
 						// Build up question tree recursively
-						text.append(getAll(q1.getChildren(), 1));
+						text.append(getAll(q1.getChildren(), 1, topic));
 						text.append("<br/>\n");
 					}
 				}
@@ -311,7 +317,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	 * @return all children from the given objects, including their properties.
 	 */
 	private String getAll(TerminologyObject[] nodes,
-			ArrayList<TerminologyObject> save, int depth) {
+			ArrayList<TerminologyObject> save, int depth, String title) {
 		StringBuffer result = new StringBuffer();
 		StringBuffer prompt = new StringBuffer();
 		StringBuffer property = new StringBuffer();
@@ -337,22 +343,10 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			}
 			if (t1 instanceof QuestionChoice) {
 				if (t1 instanceof QuestionMC) {
-					result.append("<span style=\"color: rgb(0, 128, 0);\">"
-							+ t1.toString()
-							+ " "
-							+ prompt
-							+ "</span>"
-							+ "<span style=\"color: rgb(125, 80, 102);\"> [mc] "
-							+ property + " </span><br/>\n");
+					result.append(getTermHTML(prompt, property, t1, "[mc]", title));
 				}
 				else {
-					result.append("<span style=\"color: rgb(0, 128, 0);\">"
-							+ t1.toString()
-							+ " "
-							+ prompt
-							+ "</span>"
-							+ "<span style=\"color: rgb(125, 80, 102);\"> [oc] "
-							+ property + " </span><br/>\n");
+					result.append(getTermHTML(prompt, property, t1, "[oc]", title));
 				}
 				for (Choice c1 : ((QuestionChoice) t1).getAllAlternatives()) {
 					for (int i = 0; i < depth + 1; i++) {
@@ -363,22 +357,13 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				}
 			}
 			else if (t1 instanceof QuestionText) {
-				result.append("<span style=\"color: rgb(0, 128, 0);\">"
-						+ t1.getName() + " " + prompt + "</span>"
-						+ "<span style=\"color: rgb(125, 80, 102);\"> [text] "
-						+ property + " </span><br/>\n");
+				result.append(getTermHTML(prompt, property, t1, "[text]", title));
 			}
 			else if (t1 instanceof QuestionNum) {
-				result.append("<span style=\"color: rgb(0, 128, 0);\">"
-						+ t1.getName() + " " + prompt + "</span>"
-						+ "<span style=\"color: rgb(125, 80, 102);\"> [num] "
-						+ property + " </span><br/>\n");
+				result.append(getTermHTML(prompt, property, t1, "[num]", title));
 			}
 			else if (t1 instanceof QuestionDate) {
-				result.append("<span style=\"color: rgb(0, 128, 0);\">"
-						+ t1.getName() + " " + prompt
-						+ "<span style=\"color: rgb(125, 80, 102);\"> [date] "
-						+ property + " </span><br/>\n");
+				result.append(getTermHTML(prompt, property, t1, "[date]", title));
 			}
 			else if (t1 instanceof Solution) {
 				result.append("<span style=\"color: rgb(150, 110, 120);\">"
@@ -391,11 +376,32 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			if (t1.getChildren().length > 0 && !save.contains(t1)) {
 				save.add(t1);
 				depth++;
-				result.append(getAll(t1.getChildren(), save, depth));
+				result.append(getAll(t1.getChildren(), save, depth, title));
 				depth--;
 			}
 		}
 		return result.toString();
+	}
+
+	private String getTermHTML(StringBuffer prompt, StringBuffer property, TerminologyObject t1, String typeDeclaration, String title) {
+		TerminologyManager terminologyManager = Environment.getInstance().getTerminologyManager(
+				Environment.DEFAULT_WEB, title);
+		Section<?> termDefiningSection = terminologyManager.getTermDefiningSection(new TermIdentifier(
+				t1.getName()));
+		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		String contextPath = wikiConnector.getServletContext().getContextPath();
+		String url = contextPath + "/Wiki.jsp?page=" + termDefiningSection.getTitle() + "#"
+				+ termDefiningSection.getID();
+		return ""
+				+ "<a href='" + url + "'>"
+				+ "<span style=\"color: rgb(0, 128, 0);\">"
+				+ t1.toString()
+				+ " "
+				+ prompt
+				+ "</span>"
+				+ "</a>"
+				+ "<span style=\"color: rgb(125, 80, 102);\"> " + typeDeclaration + " "
+				+ property + " </span><br/>\n";
 	}
 
 	/**
@@ -405,8 +411,8 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	 * @param depth
 	 * @return String
 	 */
-	private String getAll(TerminologyObject[] nodes, int depth) {
-		return getAll(nodes, new ArrayList<TerminologyObject>(), depth);
+	private String getAll(TerminologyObject[] nodes, int depth, String title) {
+		return getAll(nodes, new ArrayList<TerminologyObject>(), depth, title);
 	}
 
 	private class RuleComparator implements Comparator<Rule> {
