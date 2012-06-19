@@ -872,6 +872,24 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		
+		
+		<profile>
+			<id>jspwikimarkup-plugin</id>
+			<activation>
+				<property>
+					<name>jspwikimarkup-plugin</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
+					<version>0.2-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 
 		<profile>
 			<id>knowsec</id>
@@ -980,8 +998,8 @@
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
-					<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<artifactId>KnowWE-Plugin-KBB</artifactId>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
