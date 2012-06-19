@@ -30,7 +30,7 @@ public class ByteArrayResource implements Resource {
 	private final String path;
 	private final byte[] bytes;
 
-	ByteArrayResource(String path, byte[] bytes) {
+	public ByteArrayResource(String path, byte[] bytes) {
 		this.path = path;
 		this.bytes = Arrays.copyOf(bytes, bytes.length);
 	}
