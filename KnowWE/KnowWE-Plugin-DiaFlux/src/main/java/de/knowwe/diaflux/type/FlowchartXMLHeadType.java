@@ -20,6 +20,7 @@ package de.knowwe.diaflux.type;
 
 import java.util.regex.Pattern;
 
+import de.d3web.diaFlux.flow.Flow;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
@@ -39,7 +40,7 @@ public class FlowchartXMLHeadType extends XMLHead {
 	static class FlowchartTermDef extends SimpleDefinition {
 
 		public FlowchartTermDef() {
-			super(TermRegistrationScope.LOCAL, String.class);
+			super(TermRegistrationScope.LOCAL, Flow.class);
 			setSectionFinder(new RegexSectionFinder(Pattern.compile("name=\"([^\"]*)\""), 1));
 		}
 

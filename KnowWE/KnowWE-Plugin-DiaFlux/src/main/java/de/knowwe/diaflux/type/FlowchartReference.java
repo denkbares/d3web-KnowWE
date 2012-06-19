@@ -18,6 +18,7 @@
  */
 package de.knowwe.diaflux.type;
 
+import de.d3web.diaFlux.flow.Flow;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.objects.SimpleReference;
 
@@ -29,7 +30,7 @@ import de.knowwe.core.kdom.objects.SimpleReference;
 public class FlowchartReference extends SimpleReference {
 
 	public FlowchartReference() {
-		super(TermRegistrationScope.LOCAL, String.class);
+		super(TermRegistrationScope.LOCAL, Flow.class);
 	}
 
 }

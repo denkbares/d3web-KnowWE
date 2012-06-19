@@ -32,10 +32,10 @@ import de.knowwe.core.utils.Strings;
 
 /**
  * Works similar to string.split(key), but does ignore key-signs which are in
- * quotes
+ * quotes. The quoted Strings can contain escaped quotes.
  * 
  * 
- * @author Jochen
+ * @author Jochen Reutelshöfer (denkbares GmbH)
  * @created 16.09.2011
  */
 public class SplitSectionFinderUnquoted implements SectionFinder {

@@ -43,8 +43,8 @@ public abstract class SimpleReference extends AbstractType implements SimpleTerm
 	}
 
 	@Override
-	public String getTermName(Section<? extends SimpleTerm> s) {
-		return s.getText();
+	public String getTermName(Section<? extends SimpleTerm> section) {
+		return section.getText();
 	}
 
 	@Override

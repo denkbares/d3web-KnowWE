@@ -50,7 +50,7 @@ public class SimpleTermReferenceRegistrationHandler extends SubtreeHandler<Simpl
 		TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
 
 		tHandler.registerTermReference(section,
-					section.get().getTermObjectClass(section), termIdentifier);
+				section.get().getTermObjectClass(section), termIdentifier);
 
 		return validateReference(article, section);
 	}
@@ -69,7 +69,9 @@ public class SimpleTermReferenceRegistrationHandler extends SubtreeHandler<Simpl
 		TerminologyManager tHandler = KnowWEUtils.getTerminologyManager(article, scope);
 		TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
 		if (!tHandler.isDefinedTerm(termIdentifier)) {
-			return Messages.asList(Messages.noSuchObjectError(section.get().getTermName(section)));
+			return Messages.asList(Messages.noSuchObjectError(
+					section.get().getTermObjectClass(section).getSimpleName(),
+					section.get().getTermName(section)));
 		}
 		return Messages.noMessage();
 	}
