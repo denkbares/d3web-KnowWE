@@ -162,7 +162,7 @@ public class TerminologyManager {
 		TermLog termLog = termLogManager.getLog(termIdentifier);
 		Collection<TermIdentifier> termIdentifiers;
 		if (termLog == null) {
-			termIdentifiers = new ArrayList<TermIdentifier>(0);
+			termIdentifiers = Collections.emptyList();
 		}
 		else {
 			termIdentifiers = termLog.getTermIdentifiers();

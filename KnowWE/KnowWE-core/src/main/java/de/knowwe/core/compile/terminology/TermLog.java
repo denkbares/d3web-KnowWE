@@ -51,8 +51,8 @@ class TermLog {
 	private final Map<Class<?>, Set<TermLogEntry>> termClasses =
 			new HashMap<Class<?>, Set<TermLogEntry>>();
 
-	private final Map<TermIdentifier, Set<TermLogEntry>> termIdentifiers =
-			new HashMap<TermIdentifier, Set<TermLogEntry>>();
+	private final Map<String, Set<TermLogEntry>> termIdentifiers =
+			new HashMap<String, Set<TermLogEntry>>();
 
 	private final String web;
 
@@ -74,7 +74,8 @@ class TermLog {
 
 		TermLogEntry termLogEntry = createAndRegisterTermLogEntry(true, priority, termDefinition,
 				termClass, termIdentifier);
-		addTermLogEntryToMap(termLogEntry.getTermIdentifier(), termLogEntry, termIdentifiers);
+		addTermLogEntryToMap(termLogEntry.getTermIdentifier().toExternalForm(), termLogEntry,
+				termIdentifiers);
 		addTermLogEntryToMap(termLogEntry.getTermClass(), termLogEntry, termClasses);
 		handleMessagesForDefinition(termDefinition);
 	}
@@ -162,9 +163,9 @@ class TermLog {
 
 		Article article = Article.getCurrentlyBuildingArticle(web, title);
 		Collection<Message> msgs = new ArrayList<Message>(2);
-		Set<TermIdentifier> termIdentifiersSet = new HashSet<TermIdentifier>(
+		Set<String> termIdentifiersSet = new HashSet<String>(
 				termIdentifiers.keySet());
-		termIdentifiersSet.add(termIdentifier);
+		termIdentifiersSet.add(termIdentifier.toExternalForm());
 		if (termIdentifiersSet.size() > 1) {
 			msgs.add(Messages.ambiguousTermCaseWarning(termIdentifiersSet));
 		}
@@ -269,8 +270,15 @@ class TermLog {
 		return termClasses.keySet();
 	}
 
-	public Set<TermIdentifier> getTermIdentifiers() {
-		return termIdentifiers.keySet();
+	public Collection<TermIdentifier> getTermIdentifiers() {
+		ArrayList<TermIdentifier> termIdentifiers = new ArrayList<TermIdentifier>(
+				this.termIdentifiers.size());
+		for (Entry<String, Set<TermLogEntry>> entry : this.termIdentifiers.entrySet()) {
+			Set<TermLogEntry> entrySet = entry.getValue();
+			if (entrySet.isEmpty()) continue;
+			termIdentifiers.add(entrySet.iterator().next().getTermIdentifier());
+		}
+		return termIdentifiers;
 	}
 
 }

@@ -389,7 +389,7 @@ public final class Messages {
 		return Messages.error("Could not create Object: " + text);
 	}
 
-	public static Message ambiguousTermClassesError(TermIdentifier origTerm, Collection<Class<?>> termClasses) {
+	public static Message ambiguousTermClassesError(String origTerm, Collection<Class<?>> termClasses) {
 		List<String> termClassesString = new ArrayList<String>(termClasses.size());
 		for (Class<?> termClass : termClasses) {
 			termClassesString.add(termClass.getSimpleName());
@@ -399,7 +399,7 @@ public final class Messages {
 				+ termClassesString.toString());
 	}
 
-	public static Message ambiguousTermCaseWarning(Collection<TermIdentifier> termIdentifiers) {
+	public static Message ambiguousTermCaseWarning(Collection<String> termIdentifiers) {
 		return Messages.warning("There are different cases for the same term: "
 				+ termIdentifiers.toString());
 	}
