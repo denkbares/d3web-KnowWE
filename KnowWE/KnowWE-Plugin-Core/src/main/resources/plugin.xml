@@ -35,6 +35,7 @@
 		<parameter id="scope" value="NamedObjectReference" />
 		<parameter id="scope" value="AbstractIRITermDefinition" />
 		<parameter id="scope" value="IRITermReference" />
+		<parameter id="scope" value="FlowchartOrderReference" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
