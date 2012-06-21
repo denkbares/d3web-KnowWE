@@ -594,7 +594,7 @@ public class Strings {
 		if (text == null) return null;
 		int pos = 0;
 		int len = text.length();
-		while ((pos < len) && (text.charAt(pos) <= ' ')) {
+		while ((pos < len) && ((text.charAt(pos) <= ' ') || isNonBreakingSpace(text.charAt(pos)))) {
 			pos++;
 		}
 		return (pos == 0) ? text : text.substring(pos);
@@ -602,6 +602,9 @@ public class Strings {
 
 	public static String trimQuotes(String text) {
 		if (text == null) return null;
+		// replacing non-breaking-space characters as otherwise they will not be
+		// trimmed
+		text = text.replaceAll("\\xA0", " ");
 		text = text.trim();
 		return unquote(text);
 	}
@@ -634,10 +637,21 @@ public class Strings {
 	public static String trimRight(String text) {
 		if (text == null) return null;
 		int pos = text.length();
-		while ((pos > 0) && (text.charAt(pos - 1) <= ' ')) {
+		while ((pos > 0)
+				&& ((text.charAt(pos - 1) <= ' ') || isNonBreakingSpace(text.charAt(pos - 1)))) {
 			pos--;
 		}
 		return (pos == text.length()) ? text : text.substring(0, pos);
+	}
+
+	/**
+	 * 
+	 * @created 21.06.2012
+	 * @param charAt
+	 * @return
+	 */
+	private static boolean isNonBreakingSpace(char c) {
+		return c == (char) 160;
 	}
 
 	/**
