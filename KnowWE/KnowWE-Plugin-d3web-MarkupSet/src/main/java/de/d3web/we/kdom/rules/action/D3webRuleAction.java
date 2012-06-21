@@ -77,6 +77,9 @@ public abstract class D3webRuleAction<T extends Type>
 
 		@Override
 		public Collection<Message> create(Article article, Section<T> section) {
+			if (section.hasErrorInSubtree()) {
+				return null;
+			}
 			PSAction action = createAction(article, section);
 			storeAction(article, action, section);
 			// do not overwrite existing messages
