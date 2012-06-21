@@ -39,6 +39,7 @@ import com.google.gson.Gson;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
@@ -99,8 +100,8 @@ public class WordBasedRenamingAction extends AbstractAction {
 		}
 
 		Map<Article, Collection<WordBasedRenameFinding>> findings =
-							scanForFindings(web, queryContext, queryContextPrevious.length(),
-									sections);
+				scanForFindings(web, queryContext, queryContextPrevious.length(),
+						sections);
 
 		context.getWriter().write(renderFindingsSelectionMask(findings, queryString, replacement));
 	}
@@ -134,8 +135,8 @@ public class WordBasedRenamingAction extends AbstractAction {
 			if (article.getTitle().equals(articleTitle)) {
 				Section<?> section = Sections.getSection(sectionID);
 				String context = WordBasedRenameFinding.getAdditionalContext(
-									pos, direction, curWords, query.length(),
-									section.getText());
+						pos, direction, curWords, query.length(),
+						section.getText());
 
 				// No more Words to display
 				if (context == null) {
@@ -146,7 +147,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 				}
 
 				String span = createAdditionalMatchingTextSpan(article, pos,
-							sectionID, curWords + 1, direction.charAt(0), false);
+						sectionID, curWords + 1, direction.charAt(0), false);
 
 				if (direction.charAt(0) == 'a') {
 					additionalText = context + span;
@@ -252,10 +253,10 @@ public class WordBasedRenamingAction extends AbstractAction {
 								'p', true));
 				mask.append(" " + text + " ");
 				mask.append(createAdditionalMatchingTextSpan(article,
-								WordBasedRenameFinding.getStart(),
-								WordBasedRenameFinding.getSec().getID(),
-								0,
-								'a', true));
+						WordBasedRenameFinding.getStart(),
+						WordBasedRenameFinding.getSec().getID(),
+						0,
+						'a', true));
 				mask.append("</td>");
 				mask.append("<td><i>"
 						+ WordBasedRenameFinding.getSec().get().getName()
@@ -306,9 +307,9 @@ public class WordBasedRenamingAction extends AbstractAction {
 		}
 
 		Map<Article, Collection<WordBasedRenameFinding>> map =
-						new HashMap<Article, Collection<WordBasedRenameFinding>>();
+				new HashMap<Article, Collection<WordBasedRenameFinding>>();
 		Iterator<Article> iter =
-						Environment.getInstance().getArticleManager(web).getArticleIterator();
+				Environment.getInstance().getArticleManager(web).getArticleIterator();
 
 		Pattern p;
 		if (getCaseSensitive()) {
@@ -330,6 +331,9 @@ public class WordBasedRenamingAction extends AbstractAction {
 
 				Section<?> sec = Sections.findSmallestSectionContaining(article.getRootSection(),
 						start, end);
+				while (sec.get() instanceof PlainText && sec.getFather() != null) {
+					sec = sec.getFather();
+				}
 				int startInSec = start - sec.getAbsolutePositionStartInArticle();
 
 				WordBasedRenameFinding f =
@@ -384,10 +388,10 @@ public class WordBasedRenamingAction extends AbstractAction {
 
 		// create atmUrl
 		String atmUrl = "{article: '" + article.getTitle() + "',"
-						+ "section: '" + sectionId + "',"
-						+ "index: " + sectionIndex + ", "
-						+ "words: " + curWords + ", "
-						+ "direction: '" + direction + "'}";
+				+ "section: '" + sectionId + "',"
+				+ "index: " + sectionIndex + ", "
+				+ "words: " + curWords + ", "
+				+ "direction: '" + direction + "'}";
 
 		if (span) {
 			html.append("<span id='" + direction + sectionIndex
