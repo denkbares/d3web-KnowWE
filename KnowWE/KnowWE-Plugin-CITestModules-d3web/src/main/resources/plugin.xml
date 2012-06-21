@@ -4,7 +4,7 @@
 	
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
-		<import plugin-id="d3web-Plugin-TestingFramework-ExtensionPoints" />
+		<import plugin-id="d3web-Plugin-TestingFramework" />
 	</requires>
 	
 	<runtime>
@@ -17,7 +17,7 @@
 	</runtime>
 
 
-	<extension plugin-id="d3web-Plugin-TestingFramework-ExtensionPoints" point-id="Test"
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
 		id="EmptyQuestionnaireTest">
 		<parameter id="class"
 			value="de.d3web.we.ci4ke.testmodules.EmptyQuestionnaireTest" />
@@ -27,7 +27,7 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
-	<extension plugin-id="d3web-Plugin-TestingFramework-ExtensionPoints" point-id="Test"
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
 		id="TestsuiteRunnerTest">
 		<parameter id="class"
 			value="de.d3web.we.ci4ke.testmodules.TestsuiteRunnerTest" />
@@ -37,7 +37,7 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="d3web-Plugin-TestingFramework-ExtensionPoints" point-id="TestObjectProvider"
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
 		id="KnowledgeBaseTestObjectProvider">
 		<parameter id="class"
 			value="de.d3web.we.ci4ke.KnowledgeBaseTestObjectProvider" />

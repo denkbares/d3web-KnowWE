@@ -4,7 +4,7 @@
 	
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
-		<import plugin-id="d3web-Plugin-TestingFramework-ExtensionPoints" />
+		<import plugin-id="d3web-Plugin-TestingFramework" />
 	</requires>
 	
 	<runtime>
@@ -61,7 +61,7 @@
 	</extension>
 	
 	<!-- CITests -->
-	<extension plugin-id="d3web-Plugin-TestingFramework-ExtensionPoints" point-id="Test"
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
 		id="ArticleHasErrorsTest">
 		<parameter id="class"
 			value="de.d3web.we.ci4ke.testmodules.ArticleHasErrorsTest" />
@@ -71,7 +71,7 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="d3web-Plugin-TestingFramework-ExtensionPoints" point-id="Test"
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
 		id="TestArticlesContain">
 		<parameter id="class"
 			value="de.d3web.we.ci4ke.testmodules.TestArticlesContain" />

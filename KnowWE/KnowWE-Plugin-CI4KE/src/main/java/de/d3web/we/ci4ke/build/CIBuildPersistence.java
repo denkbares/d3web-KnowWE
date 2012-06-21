@@ -95,7 +95,7 @@ public class CIBuildPersistence {
 			// we attach the build again (version + 1)
 			// and delete the previous attached version
 			int latest;
-			while ((latest = getLatestBuildNumber()) < build.getBuildNumber()) {
+			while ((latest = getLatestBuildNumber()) < build.getBuildNumber() && latest > 0) {
 				write(document);
 				getAttachment().delete(latest);
 			}
