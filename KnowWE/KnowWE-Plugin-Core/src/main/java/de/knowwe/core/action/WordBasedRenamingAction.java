@@ -328,7 +328,7 @@ public class WordBasedRenamingAction extends AbstractAction {
 				int start = m.start() + previousMatchLength;
 				int end = start + query.length();
 
-				Section<?> sec = Sections.findSmallestNodeContaining(article.getRootSection(),
+				Section<?> sec = Sections.findSmallestSectionContaining(article.getRootSection(),
 						start, end);
 				int startInSec = start - sec.getAbsolutePositionStartInArticle();
 

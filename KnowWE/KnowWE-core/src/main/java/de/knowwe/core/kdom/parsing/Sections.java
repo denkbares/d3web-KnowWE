@@ -16,7 +16,6 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.EmbracedType;
-import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class Sections {
@@ -138,16 +137,15 @@ public class Sections {
 		return false;
 	}
 
-	public static Section<? extends Type> findSmallestNodeContaining(Section<?> section, int start, int end) {
+	public static Section<? extends Type> findSmallestSectionContaining(Section<?> section, int start, int end) {
 		Section<? extends Type> s = null;
 		int nodeStart = section.getAbsolutePositionStartInArticle();
-		if (nodeStart <= start && nodeStart + section.text.length() >= end
-				&& (!(section.get() instanceof PlainText))) {
+		if (nodeStart <= start && nodeStart + section.text.length() >= end) {
 			s = section;
 			for (Section<? extends Type> sec : section.getChildren()) {
-				Section<? extends Type> sub = Sections.findSmallestNodeContaining(
+				Section<? extends Type> sub = Sections.findSmallestSectionContaining(
 						sec, start, end);
-				if (sub != null && (!(s.get() instanceof PlainText))) {
+				if (sub != null) {
 					s = sub;
 				}
 			}
@@ -155,19 +153,37 @@ public class Sections {
 		return s;
 	}
 
-	public static Section<?> findSmallestNodeContaining(Section<?> section, String text) {
+	public static Section<?> findSmallestSectionContaining(Section<?> section, String text) {
 		Section<?> s = null;
-		if (section.getText().contains(text)
-				&& (!(section.get() instanceof PlainText))) {
+		if (section.getText().contains(text)) {
 			s = section;
 			for (Section<?> sec : section.getChildren()) {
-				Section<?> sub = Sections.findSmallestNodeContaining(sec, text);
-				if (sub != null && (!(s.get() instanceof PlainText))) {
+				Section<?> sub = Sections.findSmallestSectionContaining(sec, text);
+				if (sub != null) {
 					s = sub;
 				}
 			}
 		}
 		return s;
+	}
+
+	public static Collection<Section<?>> findSmallestSectionsContaining(Section<?> section, String text) {
+		Collection<Section<?>> foundSections = new LinkedList<Section<?>>();
+		findSmallestSectionsContaining(section, text, foundSections);
+		return foundSections;
+	}
+
+	private static void findSmallestSectionsContaining(Section<?> section, String text, Collection<Section<?>> foundSections) {
+		Collection<Section<?>> temp = new LinkedList<Section<?>>();
+		if (section.getText().contains(text)) {
+			for (Section<?> sec : section.getChildren()) {
+				Collection<Section<?>> smallesSectionsContaining = Sections.findSmallestSectionsContaining(
+						sec, text);
+				temp.addAll(smallesSectionsContaining);
+			}
+			if (temp.isEmpty()) temp.add(section);
+		}
+		foundSections.addAll(temp);
 	}
 
 	/**

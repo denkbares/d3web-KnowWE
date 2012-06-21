@@ -20,11 +20,15 @@
 
 package de.d3web.we.ci4ke.testmodules;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import de.d3web.testing.Message;
+import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 
 /**
  * This test can search articles (specified by a regexp pattern) for a keyword.
@@ -38,12 +42,22 @@ public class TestArticlesContain extends AbstractTest<Article> {
 	public Message execute(Article article, String[] args) {
 
 		String searchForKeyword = args[0];
-		String dashBoardArticle = args[1];
 
 		List<String> namesOfArticlesWhichContainKeyword = new LinkedList<String>();
 
-		if (!article.getTitle().equals(dashBoardArticle)) {
-			if (article.toString().contains(searchForKeyword)) {
+		if (article.getRootSection().getText().contains(searchForKeyword)) {
+			// exclude findings from the CIDashboard because it will always
+			// contain the seached string, because it is defined there.
+			Collection<Section<?>> smallestSectionsContaining = Sections.findSmallestSectionsContaining(
+					article.getRootSection(), searchForKeyword);
+			boolean contains = false;
+			for (Section<?> containingSection : smallestSectionsContaining) {
+				if (Sections.findAncestorOfType(containingSection, CIDashboardType.class) == null) {
+					contains = true;
+					break;
+				}
+			}
+			if (contains) {
 				namesOfArticlesWhichContainKeyword.add(article.getTitle());
 			}
 		}
@@ -69,7 +83,7 @@ public class TestArticlesContain extends AbstractTest<Article> {
 
 	@Override
 	public int numberOfArguments() {
-		return 2;
+		return 1;
 	}
 
 }

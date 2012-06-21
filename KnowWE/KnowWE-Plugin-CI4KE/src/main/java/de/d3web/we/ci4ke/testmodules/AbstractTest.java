@@ -36,14 +36,16 @@ public abstract class AbstractTest<T> implements de.d3web.testing.Test<T> {
 		if (args.length > numberOfArguments()) {
 			ArgsCheckResult result = new ArgsCheckResult(args);
 			result.setWarning(args.length - 1,
-					"Too many arguments passend: Expected number of arguments: "
+					"Too many arguments passend for test '" + this.getClass().getSimpleName()
+							+ "': Expected number of arguments: "
 							+ numberOfArguments() + " - found: " + args.length);
 			return result;
 		}
 
 		ArgsCheckResult result = new ArgsCheckResult(args);
 		result.setError(0,
-				"Not enough arguments for test execution. Expected number of arguments: "
+				"Not enough arguments for execution of test '" + this.getClass().getSimpleName()
+						+ "'. Expected number of arguments: "
 						+ numberOfArguments() + " - found: " + args.length);
 		return result;
 	}
