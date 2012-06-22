@@ -65,7 +65,7 @@ public class DashSubtree extends AbstractType {
 	 */
 	class SubtreeFinder implements SectionFinder {
 
-		Pattern p0 = Pattern.compile("^\\s*[\\w\"]+.*$",
+		Pattern p0 = Pattern.compile("^\\s*[\\w\"ÜÖÄüöäß]+.*$",
 				Pattern.MULTILINE);
 
 		Pattern p1 = Pattern.compile("^\\s*" + "-{1}" + "[^-]",
