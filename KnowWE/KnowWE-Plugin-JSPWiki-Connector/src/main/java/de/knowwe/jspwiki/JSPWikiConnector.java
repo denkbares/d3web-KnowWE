@@ -383,7 +383,7 @@ public class JSPWikiConnector implements WikiConnector {
 				}
 			}
 			catch (ProviderException e) {
-				String message = "cannot access attachments due to provider error";
+				String message = "cannot access wiki page info due to provider error";
 				throw new IOException(message, e);
 			}
 		}

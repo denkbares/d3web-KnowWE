@@ -49,6 +49,16 @@ import de.knowwe.core.user.UserContext;
 
 public interface WikiConnector {
 
+	/**
+	 * Calculates the version number of an article at a given point in time
+	 * defined by the passed Date object
+	 * 
+	 * @created 25.06.2012
+	 * @param title title of the article to look up
+	 * @param d represents the point in time for which the version is desired
+	 * @return
+	 * @throws IOException
+	 */
 	public int getVersionAtDate(String title, Date d) throws IOException;
 
 	/**
