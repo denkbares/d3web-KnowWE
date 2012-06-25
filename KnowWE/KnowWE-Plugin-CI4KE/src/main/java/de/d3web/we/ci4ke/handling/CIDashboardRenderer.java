@@ -18,15 +18,18 @@
  */
 package de.d3web.we.ci4ke.handling;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Collection;
+import java.util.Date;
 
 import de.d3web.testing.BuildResult;
-import de.d3web.testing.TestResult;
 import de.d3web.testing.Message.Type;
+import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.build.CIBuildRenderer;
 import de.d3web.we.ci4ke.build.Dashboard;
 import de.d3web.we.ci4ke.util.CIUtilities;
+import de.knowwe.core.Environment;
 import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -61,12 +64,48 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			String dashboardName = DefaultMarkupType.getAnnotation(section,
 					CIDashboardType.NAME_KEY);
 			String dashboardNameEscaped = CIUtilities.utf8Escape(dashboardName);
+
 			string.append(Strings.maskHTML("<div id='" + dashboardNameEscaped
 					+ "' class='ci-title'>"));
-			string.append(Strings.maskHTML(renderDashboardContents(user.getWeb(),
+			string.append(Strings.maskHTML(renderDashboardContents(user,
 					section.getTitle(), dashboardName)));
 			string.append(Strings.maskHTML("</div>"));
 		}
+	}
+
+	/**
+	 * 
+	 * @created 25.06.2012
+	 * @return
+	 */
+	private static boolean checkDashBoardEditedAfterLatestBuild(Section<?> section, UserContext user, String dashboardName) {
+		String title = section.getTitle();
+		String currentDashboardSourcetext = section.getText();
+		Dashboard dashboard = Dashboard.getDashboard(user.getWeb(), title,
+				dashboardName);
+		BuildResult latestBuild = dashboard.getLatestBuild();
+		Date buildDate = latestBuild.getBuildDate();
+		int versionAtBuildDate = -1;
+
+		try {
+			versionAtBuildDate = Environment.getInstance().getWikiConnector().getVersionAtDate(
+					title, buildDate);
+		}
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		String sourceTextAtBuildTime = Environment.getInstance().getWikiConnector().getVersion(
+				section.getTitle(),
+				versionAtBuildDate);
+
+		if (sourceTextAtBuildTime.contains(currentDashboardSourcetext)) {
+			return false; // this is only safe for one single dashboard per
+							// article
+		}
+
+		return true;
 	}
 
 	/**
@@ -78,10 +117,24 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	 * @param dashboardArticleTitle the name of the article of the dashboard
 	 * @param dashboardName the name of the dashboard
 	 */
-	public static String renderDashboardContents(String web, String dashboardArticleTitle, String dashboardName) {
+	public static String renderDashboardContents(UserContext user, String dashboardArticleTitle, String dashboardName) {
+
+		Section<CIDashboardType> dashboardSection = CIUtilities.findCIDashboardSection(
+				dashboardArticleTitle, dashboardName);
 
 		StringBuilder string = new StringBuilder();
-		Dashboard dashboard = Dashboard.getDashboard(web, dashboardArticleTitle, dashboardName);
+
+		boolean buildOutdated = checkDashBoardEditedAfterLatestBuild(dashboardSection, user,
+				dashboardName);
+		if (buildOutdated) {
+			String warningString = "Dashboard has been modified. Latest build is not up to date. (Consider to trigger new build)";
+			renderMessagesOfType(Message.Type.WARNING,
+					Messages.asList(Messages.warning(warningString)),
+					string);
+		}
+
+		Dashboard dashboard = Dashboard.getDashboard(user.getWeb(), dashboardArticleTitle,
+				dashboardName);
 		CIBuildRenderer renderer = dashboard.getRenderer();
 		String dashboardNameEscaped = CIUtilities.utf8Escape(dashboardName);
 

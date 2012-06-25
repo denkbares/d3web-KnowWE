@@ -56,7 +56,7 @@ public class CIAction extends AbstractAction {
 		if (task.equals("executeNewBuild")) {
 			CIBuilder builder = new CIBuilder(web, topic, dashboardName);
 			builder.executeBuild();
-			html = CIDashboardRenderer.renderDashboardContents(web, topic, dashboardName);
+			html = CIDashboardRenderer.renderDashboardContents(context, topic, dashboardName);
 
 		}// Get the details of one build (wiki changes + test results)
 		else if (task.equals("getBuildDetails")) {
