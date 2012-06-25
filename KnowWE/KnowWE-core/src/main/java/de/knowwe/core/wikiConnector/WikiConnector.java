@@ -49,6 +49,8 @@ import de.knowwe.core.user.UserContext;
 
 public interface WikiConnector {
 
+	public int getVersionAtDate(String title, Date d) throws IOException;
+
 	/**
 	 * Creates a new wiki page with given title and content and author in the
 	 * connected wiki.

@@ -69,6 +69,11 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
+	public int getVersionAtDate(String title, Date d) {
+		return getVersion(title);
+	}
+
+	@Override
 	public boolean doesArticleExist(String title) {
 		if (dummyPageProvider == null) {
 			throw new NullPointerException(

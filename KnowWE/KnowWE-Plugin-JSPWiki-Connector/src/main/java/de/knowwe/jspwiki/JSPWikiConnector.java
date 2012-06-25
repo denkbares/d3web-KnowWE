@@ -364,6 +364,35 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
+	public int getVersionAtDate(String title, Date d) throws IOException {
+		WikiContext context = new WikiContext(this.engine, this.engine
+				.getPage(title));
+
+		int versionMax = context.getPage().getVersion();
+
+		int versionForDate = -1; // -1 represents the current/newest version of
+									// article
+		for (int v = 1; v <= versionMax; v++) {
+			WikiPage wikiPage = null;
+			try {
+				wikiPage = engine.getPageManager().getPageInfo(title, v);
+				Date lastModified = wikiPage.getLastModified();
+				if (lastModified.after(d)) {
+					versionForDate = v - 1;
+					break;
+				}
+			}
+			catch (ProviderException e) {
+				String message = "cannot access attachments due to provider error";
+				throw new IOException(message, e);
+			}
+		}
+
+		return versionForDate;
+
+	}
+
+	@Override
 	public int getVersionCount(String title) {
 		PageManager pm = engine.getPageManager();
 		try {
