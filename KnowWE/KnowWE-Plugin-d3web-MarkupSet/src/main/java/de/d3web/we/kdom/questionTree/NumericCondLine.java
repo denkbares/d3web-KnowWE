@@ -131,8 +131,11 @@ public class NumericCondLine extends AbstractType {
 					sec.getText().length() - 1).split(" ");
 			if (doubles.length == 2) {
 				try {
-					return new NumericalInterval(Double.parseDouble(doubles[0]),
+					NumericalInterval interval = new NumericalInterval(
+							Double.parseDouble(doubles[0]),
 							Double.parseDouble(doubles[1]));
+					interval.checkValidity();
+					return interval;
 				}
 				catch (NumberFormatException e) {
 					return null;

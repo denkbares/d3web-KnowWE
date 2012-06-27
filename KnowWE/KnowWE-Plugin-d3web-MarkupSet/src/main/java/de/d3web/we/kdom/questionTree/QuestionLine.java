@@ -210,6 +210,7 @@ public class QuestionLine extends AbstractType {
 							// for example lower > upper
 							NumericalInterval interval = new NumericalInterval(lower,
 									upper);
+							interval.checkValidity();
 							question.getInfoStore().addValue(BasicProperties.QUESTION_NUM_RANGE,
 									interval);
 							return Messages.asList(Messages.objectCreatedNotice(
