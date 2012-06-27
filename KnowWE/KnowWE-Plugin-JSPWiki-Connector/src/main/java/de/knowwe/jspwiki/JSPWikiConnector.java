@@ -36,6 +36,7 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ecyrd.jspwiki.InternalWikiException;
 import com.ecyrd.jspwiki.PageLock;
 import com.ecyrd.jspwiki.PageManager;
 import com.ecyrd.jspwiki.TextUtil;
@@ -84,7 +85,7 @@ public class JSPWikiConnector implements WikiConnector {
 		try {
 			// References Updaten.
 			this.engine.getReferenceManager().updateReferences(title,
-						this.engine.getReferenceManager().findCreated());
+					this.engine.getReferenceManager().findCreated());
 			wp.setAuthor(author);
 			this.engine.getPageManager().putPageText(wp, content);
 			this.engine.getSearchManager().reindexPage(wp);
@@ -269,7 +270,7 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public String getKnowWEExtensionPath() {
 		return KnowWEUtils.getRealPath(KnowWEUtils.getConfigBundle()
-						.getString("path_to_knowweextension"));
+				.getString("path_to_knowweextension"));
 	}
 
 	@Override
@@ -460,8 +461,13 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public String renderWikiSyntax(String content, HttpServletRequest request) {
-		WikiContext context = engine.createContext(request, WikiContext.VIEW);
-		content = engine.textToHTML(context, content);
+		try {
+			WikiContext context = engine.createContext(request, WikiContext.VIEW);
+			content = engine.textToHTML(context, content);
+		}
+		catch (InternalWikiException e) {
+			// happens only during KnowWE's startup and can thus be ignored...
+		}
 		return content;
 	}
 
