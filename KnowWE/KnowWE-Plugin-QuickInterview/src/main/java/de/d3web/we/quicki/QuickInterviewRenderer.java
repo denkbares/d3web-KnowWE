@@ -331,9 +331,13 @@ public class QuickInterviewRenderer {
 		int w = 320 - d;
 		String divText = getLabel(question);
 		String cssClass = "question";
+		String title = question.getInfoStore().getValue(MMInfo.DESCRIPTION);
+		if (title == null) title = "";
+
 		sb.append("\n<div id='" + question.getName() + "' " +
 				"parent='" + parent.getName() + "' " +
 				"class='" + cssClass + "' " +
+				"title='" + title + "' " +
 				"style='width: " + w + "px; display: inline-block;' >"
 				+ divText + "</div>");
 		// }
@@ -477,7 +481,8 @@ public class QuickInterviewRenderer {
 
 			String label = getLabel(choice);
 			sb.append(getEnclosingTagOnClick("div", "" + label + "",
-					cssclass, jscall, null, spanid, ""));
+					cssclass, jscall, null, spanid,
+					choice.getInfoStore().getValue(MMInfo.DESCRIPTION)));
 
 			// System.out.println(getEnclosingTagOnClick("div", "" +
 			// choice.getName() + " ",
@@ -683,7 +688,7 @@ public class QuickInterviewRenderer {
 			String label = getLabel(choice);
 			String spanid = q.getName() + "_" + choice.getName();
 			sb.append(getEnclosingTagOnClick("div", "" + label + "", cssclass,
-					jscall, null, spanid, ""));
+					jscall, null, spanid, choice.getInfoStore().getValue(MMInfo.DESCRIPTION)));
 
 		}
 
@@ -776,7 +781,7 @@ public class QuickInterviewRenderer {
 			sub.append(" " + onmouseover + " ");
 		}
 		if (title != null && title.length() > 0) {
-			sub.append(" " + title + " ");
+			sub.append(" title='" + title + "' ");
 		}
 		sub.append(">");
 		sub.append(text);
