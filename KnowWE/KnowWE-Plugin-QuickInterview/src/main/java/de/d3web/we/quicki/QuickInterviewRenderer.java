@@ -30,6 +30,7 @@ import de.d3web.core.knowledge.InterviewObject;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Choice;
+import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
@@ -254,7 +255,7 @@ public class QuickInterviewRenderer {
 		int margin = 30 + depth * 20;
 		sb.append("<div id='" + element.getName() + "' " +
 				"class='alreadyDefined' style='margin-left: " + margin + "px; display: block'; >");
-		sb.append(getText(element) + " is already defined!");
+		sb.append(getLabel(element) + " is already defined!");
 		sb.append("</div>");
 	}
 
@@ -280,7 +281,7 @@ public class QuickInterviewRenderer {
 				+ (indicated ? " indicated" : "") + "' "
 				+ "style='margin-left: " + margin + "px;' >");
 
-		buffi.append(getText(container));
+		buffi.append(getLabel(container));
 		buffi.append("</div>\n");
 
 		if (container.getChildren().length == 0) {
@@ -328,7 +329,7 @@ public class QuickInterviewRenderer {
 		sb.append("<table><tr><td class='tdquestion'>");
 		// width of the question front section, i.e. total width - identation
 		int w = 320 - d;
-		String divText = getText(question);
+		String divText = getLabel(question);
 		String cssClass = "question";
 		sb.append("\n<div id='" + question.getName() + "' " +
 				"parent='" + parent.getName() + "' " +
@@ -474,7 +475,8 @@ public class QuickInterviewRenderer {
 				cssclass = "answerClicked";
 			}
 
-			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + "",
+			String label = getLabel(choice);
+			sb.append(getEnclosingTagOnClick("div", "" + label + "",
 					cssclass, jscall, null, spanid, ""));
 
 			// System.out.println(getEnclosingTagOnClick("div", "" +
@@ -677,8 +679,10 @@ public class QuickInterviewRenderer {
 					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
 				cssclass = "answerMCClicked";
 			}
+
+			String label = getLabel(choice);
 			String spanid = q.getName() + "_" + choice.getName();
-			sb.append(getEnclosingTagOnClick("div", "" + choice.getName() + "", cssclass,
+			sb.append(getEnclosingTagOnClick("div", "" + label + "", cssclass,
 					jscall, null, spanid, ""));
 
 		}
@@ -834,7 +838,7 @@ public class QuickInterviewRenderer {
 		return false;
 	}
 
-	private String getText(TerminologyObject to) {
+	private String getLabel(NamedObject to) {
 		String prompt = to.getInfoStore().getValue(MMInfo.PROMPT);
 		if (prompt != null) {
 			return prompt;
