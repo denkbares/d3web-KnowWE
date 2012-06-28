@@ -32,13 +32,10 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.knowwe.core.event.Event;
-import de.knowwe.core.event.EventListener;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.event.ArticleRegisteredEvent;
 import de.knowwe.event.ArticleUpdatesFinishedEvent;
-import de.knowwe.event.InitializedAllArticlesEvent;
 import de.knowwe.event.UpdatingDependenciesEvent;
 
 /**
@@ -46,7 +43,7 @@ import de.knowwe.event.UpdatingDependenciesEvent;
  * 
  * @author Jochen
  */
-public class ArticleManager implements EventListener {
+public class ArticleManager {
 
 	/**
 	 * Stores Articles for article-names
@@ -73,7 +70,6 @@ public class ArticleManager implements EventListener {
 
 	public ArticleManager(Environment env, String webname) {
 		this.web = webname;
-		EventManager.getInstance().registerListener(this);
 	}
 
 	public String getWebname() {
@@ -215,20 +211,6 @@ public class ArticleManager implements EventListener {
 
 	public void setArticlesInitialized(boolean b) {
 		initializedArticles = true;
-	}
-
-	@Override
-	public Collection<Class<? extends Event>> getEvents() {
-		List<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(1);
-		events.add(InitializedAllArticlesEvent.class);
-		return events;
-	}
-
-	@Override
-	public void notify(Event event) {
-		if (event instanceof InitializedAllArticlesEvent) {
-			updateQueuedArticles();
-		}
 	}
 
 }

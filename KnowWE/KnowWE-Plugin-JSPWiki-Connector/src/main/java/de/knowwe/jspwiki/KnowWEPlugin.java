@@ -317,8 +317,9 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	 */
 	private void initializeAllArticlesIfNeeded(WikiEngine engine) {
 
-		if (Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB)
-				.areArticlesInitialized()) {
+		ArticleManager articleManager = Environment.getInstance().getArticleManager(
+				Environment.DEFAULT_WEB);
+		if (articleManager.areArticlesInitialized()) {
 			return;
 		}
 
@@ -344,8 +345,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			}
 
 		}
-		Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB).setArticlesInitialized(
-				true);
+		articleManager.setArticlesInitialized(true);
+		articleManager.updateQueuedArticles();
 		EventManager.getInstance().fireEvent(InitializedAllArticlesEvent.getInstance());
 
 	}
