@@ -84,6 +84,8 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		Dashboard dashboard = Dashboard.getDashboard(user.getWeb(), title,
 				dashboardName);
 		BuildResult latestBuild = dashboard.getLatestBuild();
+		if (latestBuild == null) return false; // nothing to do
+
 		Date buildDate = latestBuild.getBuildDate();
 		int versionAtBuildDate = -1;
 
