@@ -1311,9 +1311,9 @@ table.calendar tr.weekdays {
 }
 .tabs {
 	clear:both;
-	padding:0.5em;
+	padding: 6px;
 	border:1px solid #9ACBFB;
-	margin-bottom:0.5em;
+	margin-bottom: 6px;
 }
 .tabmenu {
 	padding: 0 1em;
