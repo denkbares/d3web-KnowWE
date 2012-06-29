@@ -23,19 +23,12 @@ package de.d3web.we.ci4ke.util;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.d3web.plugin.Extension;
-import de.d3web.plugin.PluginManager;
 import de.d3web.testing.Message.Type;
-import de.d3web.testing.Test;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
@@ -151,33 +144,6 @@ public class CIUtilities {
 			}
 		}
 		return null;
-	}
-
-	public static Map<String, Class<? extends Test>> getAllCITestClasses() {
-		Map<String, Class<? extends Test>> classesMap =
-				new TreeMap<String, Class<? extends Test>>();
-
-		List<Extension> allPluggedTests = Arrays.asList(PluginManager.getInstance().
-				getExtensions("KnowWEExtensionPoints", "CITest"));
-
-		for (Extension e : allPluggedTests) {
-			String testClassName = e.getName();
-			try {
-				Class<?> clazz = Class.forName(e.getParameter("class"));
-				if (Test.class.isAssignableFrom(clazz)) {
-					classesMap.put(testClassName, clazz.asSubclass(Test.class));
-				}
-			}
-			catch (ClassNotFoundException e1) {
-				Logger.getLogger(CIUtilities.class.getName()).log(Level.WARNING,
-						"CITest class not found: '" + testClassName + "'");
-			}
-		}
-
-		// add all dynamically registered CITests:
-		// classesMap.putAll(DynamicCITestManager.INSTANCE.getAllDynamicCITestClasses());
-
-		return Collections.unmodifiableMap(classesMap);
 	}
 
 	// RENDER - HELPERS
