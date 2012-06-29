@@ -35,6 +35,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -79,6 +80,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	 * @return
 	 */
 	private static boolean checkDashBoardEditedAfterLatestBuild(Section<?> section, UserContext user, String dashboardName) {
+
 		String title = section.getTitle();
 		String currentDashboardSourcetext = section.getText();
 		Dashboard dashboard = Dashboard.getDashboard(user.getWeb(), title,
@@ -92,6 +94,8 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		try {
 			versionAtBuildDate = Environment.getInstance().getWikiConnector().getVersionAtDate(
 					title, buildDate);
+			// case for invalid buildDates (before corresponding page existed)
+			if (versionAtBuildDate < -1) return true;
 		}
 		catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -125,6 +129,25 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 				dashboardArticleTitle, dashboardName);
 
 		StringBuilder string = new StringBuilder();
+
+		// check unique dashboard names and create error in case of
+		// duplicates
+		Collection<Section<CIDashboardType>> ciDashboardSections = CIUtilities.findCIDashboardSection(dashboardName);
+		if (ciDashboardSections.size() > 1) {
+			String articles = "";
+			String separator = ", ";
+			for (Section<CIDashboardType> section : ciDashboardSections) {
+				articles += KnowWEUtils.getURLLinkHTMLToArticle(section.getTitle()) + separator;
+			}
+			if (articles.endsWith(separator)) {
+				articles = articles.substring(0, articles.lastIndexOf(separator));
+			}
+			String errorText = "Multiple Dashboards with same name on the follwing articles: "
+					+ articles + ". Make sure every Dashbaord has a wiki-wide unique name!";
+			renderMessagesOfType(Message.Type.ERROR,
+					Messages.asList(Messages.error((errorText))),
+					string);
+		}
 
 		boolean buildOutdated = checkDashBoardEditedAfterLatestBuild(dashboardSection, user,
 				dashboardName);

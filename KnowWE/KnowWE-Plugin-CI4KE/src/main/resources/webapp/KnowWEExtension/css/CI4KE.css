@@ -21,10 +21,11 @@
 .ci-column-left
 	{ 
 /*	border: thin solid #000000; */
+	position:absolute;
 	float: left; 
 	min-height: 100%;
 	border-right: 1px solid #DDD;
-	margin-top: 6px;
+	margin-top: 14px;
 	padding-right: 10px;
 	/* width: 24%; */
 	}
@@ -32,7 +33,7 @@
 	{ 
 	float: left; 
 	border-left: 1px solid #DDD;
-	margin-left: -1px;	
+	margin-left: 100px;	
 	margin-top: 6px;
 	padding-left: 10px;
 	/* width: 75%; */

@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +34,8 @@ import java.util.logging.Logger;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
-import de.d3web.testing.Test;
 import de.d3web.testing.Message.Type;
+import de.d3web.testing.Test;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
@@ -106,7 +107,8 @@ public class CIUtilities {
 	 * @return the section where the dashboard with the given ID is defined, or
 	 *         null if no section with this ID can be found
 	 */
-	public static Section<CIDashboardType> findCIDashboardSection(String dashboardName) {
+	public static Collection<Section<CIDashboardType>> findCIDashboardSection(String dashboardName) {
+		List<Section<CIDashboardType>> found = new ArrayList<Section<CIDashboardType>>();
 		for (Article article : Environment.getInstance().
 				getArticleManager(Environment.DEFAULT_WEB).getArticles()) {
 
@@ -117,11 +119,11 @@ public class CIUtilities {
 			for (Section<CIDashboardType> sec : list) {
 				if (CIDashboardType.getAnnotation(sec, CIDashboardType.NAME_KEY).equals(
 						dashboardName)) {
-					return sec;
+					found.add(sec);
 				}
 			}
 		}
-		return null;
+		return found;
 	}
 
 	/**
