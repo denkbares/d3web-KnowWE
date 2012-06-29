@@ -323,6 +323,31 @@ public class KnowWEUtils {
 	}
 
 	/**
+	 * Creates a &lt;a href="..."&gt; styled link to the specified article
+	 * including the HTML-anchor tag.
+	 * 
+	 * @param title the article title to create the link for
+	 * @return the created link
+	 * @see #getURLLink(Section)
+	 * @see #getWikiLink(Section)
+	 */
+	public static String getURLLinkHTMLToArticle(String title) {
+		return "<a href='" + getURLLink(title) + "' >" + title + "</a>";
+	}
+
+	/**
+	 * Creates a &lt;a href="..."&gt; styled link to the specified article.
+	 * 
+	 * @param title the article title to create the link for
+	 * @return the created link
+	 * @see #getURLLink(Section)
+	 * @see #getWikiLink(Section)
+	 */
+	public static String getURLLink(String title) {
+		return "Wiki.jsp?page=" + title;
+	}
+
+	/**
 	 * Creates a &lt;a href="..."&gt; styled link to the specified article.
 	 * 
 	 * @param article the article to create the link for
@@ -331,7 +356,7 @@ public class KnowWEUtils {
 	 * @see #getWikiLink(Section)
 	 */
 	public static String getURLLink(Article article) {
-		return "Wiki.jsp?page=" + article.getTitle();
+		return getURLLink(article.getTitle());
 	}
 
 	/**
