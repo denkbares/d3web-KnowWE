@@ -56,7 +56,8 @@ public interface WikiConnector {
 	 * @created 25.06.2012
 	 * @param title title of the article to look up
 	 * @param d represents the point in time for which the version is desired
-	 * @return
+	 * @return the version number of the page at the given date, -2 if the given
+	 *         date is before creation of the article
 	 * @throws IOException
 	 */
 	public int getVersionAtDate(String title, Date d) throws IOException;

@@ -378,6 +378,17 @@ public class JSPWikiConnector implements WikiConnector {
 			try {
 				wikiPage = engine.getPageManager().getPageInfo(title, v);
 				Date lastModified = wikiPage.getLastModified();
+
+				// fix for invalid dates d
+				if (v == 1 && lastModified.after(d)) {
+					// version 1 is the creation of the page
+					// in the ridiculous case (corrupted persistence file) that
+					// the build date is before the date of page creation, we
+					// return the current version
+					versionForDate = -2;
+					break;
+				}
+
 				if (lastModified.after(d)) {
 					versionForDate = v - 1;
 					break;
