@@ -37,12 +37,32 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
+		<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
+		id="TestCaseTest">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.testmodules.TestCaseTest" />
+		<parameter id="name" value="TestCaseTest" />
+		<parameter id="description" value="CITest TestCaseTest" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
 	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
 		id="KnowledgeBaseTestObjectProvider">
 		<parameter id="class"
 			value="de.d3web.we.ci4ke.KnowledgeBaseTestObjectProvider" />
 		<parameter id="name" value="KnowledgeBaseTestObjectProvider" />
 		<parameter id="description" value="KnowledgeBaseTestObjectProvider" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+		<extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
+		id="TestCaseTestObjectProvider">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.TestCaseTestObjectProvider" />
+		<parameter id="name" value="TestCaseTestObjectProvider" />
+		<parameter id="description" value="TestCaseTestObjectProvider" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
