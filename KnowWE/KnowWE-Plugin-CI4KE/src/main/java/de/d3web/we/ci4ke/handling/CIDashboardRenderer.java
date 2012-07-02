@@ -59,19 +59,15 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		RessourceLoader.getInstance().add("CIPlugin.js",
 				RessourceLoader.RESOURCE_SCRIPT);
 
-		boolean sectionHasError = Messages.getMessages(section, Message.Type.ERROR).size() > 0;
-
-		if (!sectionHasError) {
-			String dashboardName = DefaultMarkupType.getAnnotation(section,
+		String dashboardName = DefaultMarkupType.getAnnotation(section,
 					CIDashboardType.NAME_KEY);
-			String dashboardNameEscaped = CIUtilities.utf8Escape(dashboardName);
+		String dashboardNameEscaped = CIUtilities.utf8Escape(dashboardName);
 
-			string.append(Strings.maskHTML("<div id='" + dashboardNameEscaped
+		string.append(Strings.maskHTML("<div id='" + dashboardNameEscaped
 					+ "' class='ci-title'>"));
-			string.append(Strings.maskHTML(renderDashboardContents(user,
+		string.append(Strings.maskHTML(renderDashboardContents(user,
 					section.getTitle(), dashboardName)));
-			string.append(Strings.maskHTML("</div>"));
-		}
+		string.append(Strings.maskHTML("</div>"));
 	}
 
 	/**
