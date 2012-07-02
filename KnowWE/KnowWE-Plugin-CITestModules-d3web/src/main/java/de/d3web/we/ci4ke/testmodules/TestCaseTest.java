@@ -18,7 +18,17 @@
  */
 package de.d3web.we.ci4ke.testmodules;
 
+import java.util.Collection;
+import java.util.List;
+
+import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.session.Value;
+import de.d3web.empiricaltesting.RatedTestCase;
+import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.TestCase;
+import de.d3web.empiricaltesting.caseAnalysis.RTCDiff;
+import de.d3web.empiricaltesting.caseAnalysis.ValueDiff;
+import de.d3web.empiricaltesting.caseAnalysis.functions.Diff;
 import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysis;
 import de.d3web.empiricaltesting.caseAnalysis.functions.TestCaseAnalysisReport;
 import de.d3web.testing.Message;
@@ -41,7 +51,29 @@ public class TestCaseTest extends AbstractTest<TestCase> {
 		TestCaseAnalysis analysis = new TestCaseAnalysis();
 		TestCaseAnalysisReport result = analysis.runAndAnalyze(testObject);
 		if (result.hasDiff()) {
-			return new Message(Type.FAILURE, "Test failed");
+			String messageText = "Test '" + testObject.getName() + "' failed: \n";
+			List<SequentialTestCase> repository = testObject.getRepository();
+			for (SequentialTestCase sequentialTestCase : repository) {
+				if (result.hasDiff(sequentialTestCase)) {
+					Diff diff = result.getDiffFor(sequentialTestCase);
+					Collection<RatedTestCase> casesWithDifference = diff.getCasesWithDifference();
+					for (RatedTestCase ratedTestCase : casesWithDifference) {
+						if (diff.hasDiff(ratedTestCase)) {
+							RTCDiff rtcDiff = diff.getDiff(ratedTestCase);
+							Collection<TerminologyObject> diffObjects = rtcDiff.getDiffObjects();
+							for (TerminologyObject terminologyObject : diffObjects) {
+								ValueDiff valueDiff = rtcDiff.getDiffFor(terminologyObject);
+								Value expected = valueDiff.getExpected();
+								Value derived = valueDiff.getDerived();
+								messageText += "* Value of object '" + terminologyObject.toString()
+										+ "' was '" + derived + "' but expected was: '" + expected
+										+ "'; \n";
+							}
+						}
+					}
+				}
+			}
+			return new Message(Type.FAILURE, messageText);
 		}
 		return new Message(Type.SUCCESS);
 	}
