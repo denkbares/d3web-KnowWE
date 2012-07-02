@@ -18,8 +18,6 @@
  */
 package de.d3web.we.testcase;
 
-import java.util.logging.Logger;
-
 import de.d3web.empiricaltesting.TestCase;
 import de.d3web.we.testcase.kdom.TestCaseContent;
 import de.d3web.we.testcase.kdom.TestCaseType;
@@ -54,20 +52,10 @@ public class TestCaseUtils {
 		if (a != null) {
 			s = Sections.findSuccessor(a.getRootSection(), TestCaseContent.class);
 		}
-		else {
-			Logger.getLogger(TestCaseUtils.class.getName()).warning(
-					"Article: \"" + article + "\" wasn't found. Unable to load test suite!");
-		}
-
 		if (s != null) {
 			testSuite = (TestCase) KnowWEUtils.getStoredObject(a, s,
 					TestCaseType.TESTCASEKEY);
 		}
-		else {
-			Logger.getLogger(TestCaseUtils.class.getName()).warning(
-					"Article: \"" + article + "\" doesn't contain a TestSuiteType section.");
-		}
-
 		return testSuite;
 	}
 
