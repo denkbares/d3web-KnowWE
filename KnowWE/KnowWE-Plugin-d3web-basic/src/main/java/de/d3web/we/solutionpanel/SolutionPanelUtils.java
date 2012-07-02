@@ -47,10 +47,25 @@ public class SolutionPanelUtils {
 		// when no intlz is available
 		// content.append("* ");
 
+		String link = solution.getInfoStore().getValue(MMInfo.LINK);
+		String prompt = solution.getInfoStore().getValue(MMInfo.PROMPT);
+		String description = solution.getInfoStore().getValue(MMInfo.DESCRIPTION);
+
+		String label = solution.getName();
+		if (prompt != null) {
+			label = prompt;
+		}
+
 		String stateName = renderImage(solution, session, content);
 		// render span for better testability
-		content.append(mask("<span class=\"SOLUTION-" + stateName + "\">"));
-		content.append(solution.getName());
+		content.append(mask("<span title='" + description + "'class=\"SOLUTION-" + stateName
+				+ "\">"));
+		content.append(label);
+
+		if (link != null) {
+			content.append(mask("<a href='" + link + "' target='solutionLink'> (link)</a>"));
+		}
+
 		content.append(mask("</span>\n"));
 
 	}
