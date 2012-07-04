@@ -223,9 +223,15 @@ public class JSPWikiConnector implements WikiConnector {
 			// this list is in fact a Collection<Attachment>,
 			// the conversion is type safe!
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
+			WikiPage page = this.engine.getPage(title);
+			if (page == null) {
+				// might happen that a page of this title does not exist.
+				// return empty list to prevent NullPointer in AttachmentManager
+				return attachmentList;
+			}
 			@SuppressWarnings("unchecked")
 			Collection<Attachment> attList = attachmentManager.
-					listAttachments(this.engine.getPage(title));
+					listAttachments(page);
 
 			for (Attachment att : attList) {
 				attachmentList.add(new JSPWikiAttachment(att,
