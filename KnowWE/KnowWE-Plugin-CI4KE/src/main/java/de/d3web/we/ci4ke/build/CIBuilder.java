@@ -23,6 +23,8 @@ package de.d3web.we.ci4ke.build;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.d3web.core.io.progress.CombinedProgressListener;
+import de.d3web.core.io.progress.ProgressListener;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestExecutor;
 import de.d3web.testing.TestObjectProvider;
@@ -30,6 +32,7 @@ import de.d3web.testing.TestObjectProviderManager;
 import de.d3web.we.ci4ke.handling.CIConfig;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.d3web.we.ci4ke.handling.CIHook;
+import de.d3web.we.ci4ke.util.AjaxProgressListener;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
@@ -89,9 +92,13 @@ public class CIBuilder {
 		providers.add(DefaultWikiTestObjectProvider.getInstance());
 		List<TestObjectProvider> pluggedProviders = TestObjectProviderManager.findTestObjectProviders();
 		providers.addAll(pluggedProviders);
+
+		ProgressListener listener = new AjaxProgressListener();
+		CombinedProgressListener combined = new CombinedProgressListener(listener);
+
 		// create and run TestExecutor
 		TestExecutor executor = new TestExecutor(providers,
-				this.config.getTests());
+				this.config.getTests(), combined);
 		BuildResult build = executor.runtTests(buildNumber);
 
 		// add resulting build to dashboard
