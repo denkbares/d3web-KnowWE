@@ -19,8 +19,7 @@
 package de.knowwe.testcases.table;
 
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.inference.condition.NoAnswerException;
-import de.d3web.core.inference.condition.UnknownAnswerException;
+import de.d3web.core.inference.condition.Conditions;
 import de.d3web.core.session.Session;
 import de.d3web.testcase.model.Check;
 
@@ -49,15 +48,7 @@ public class ConditionCheck implements Check {
 
 	@Override
 	public boolean check(Session session) {
-		try {
-			return condition.eval(session);
-		}
-		catch (NoAnswerException e) {
-			return false;
-		}
-		catch (UnknownAnswerException e) {
-			return false;
-		}
+		return Conditions.isTrue(condition, session);
 	}
 
 	@Override
