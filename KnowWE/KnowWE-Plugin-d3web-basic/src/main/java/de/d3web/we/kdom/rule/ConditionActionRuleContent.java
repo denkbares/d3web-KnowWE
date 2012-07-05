@@ -47,11 +47,12 @@ public class ConditionActionRuleContent extends AbstractType {
 		this.sectionFinder = new AllTextFinderTrimmed();
 		this.addChildType(new If());
 		Then then = new Then();
+		condArea.setSectionFinder(new AllBeforeTypeSectionFinder(then));
 		this.addChildType(then);
+		this.addChildType(condArea);
+
 		Except except = new Except();
 		this.addChildType(except);
-		condArea.setSectionFinder(new AllBeforeTypeSectionFinder(then));
-		this.addChildType(condArea);
 
 		EndLineComment endLineComment = new EndLineComment();
 		endLineComment.setRenderer(StyleRenderer.COMMENT);

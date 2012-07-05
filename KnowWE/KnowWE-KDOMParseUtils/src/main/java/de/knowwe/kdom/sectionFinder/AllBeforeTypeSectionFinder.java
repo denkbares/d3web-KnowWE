@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -38,11 +38,14 @@ public class AllBeforeTypeSectionFinder implements SectionFinder {
 
 	/**
 	 * To use this SectionFinder, the argument type has to be added as an
-	 * allowed children to the parent type directly before the type with this
+	 * allowed children to the parent type DIRECTLY before the type with this
 	 * SectionFinder is added to the parent type.
 	 * <p/>
 	 * <b>Examples:</b>
+	 * 
 	 * <pre>
+	 * 
+	 * 
 	 * public ParentType() {
 	 * 
 	 * 	FirstType firstType = new FirstType();
@@ -52,7 +55,6 @@ public class AllBeforeTypeSectionFinder implements SectionFinder {
 	 * 
 	 * 	this.childrenTypes.add(firstType);
 	 * 	this.childrenTypes.add(secondType);
-	 * 
 	 * }
 	 * </pre>
 	 * 
@@ -69,13 +71,13 @@ public class AllBeforeTypeSectionFinder implements SectionFinder {
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		if (!findThese.isEmpty()) {
-			List<SectionFinderResult> results = new ArrayList<SectionFinderResult>(findThese.size());
+			List<SectionFinderResult> results = new ArrayList<SectionFinderResult>(1);
 			int start = text.indexOf(findThese.getFirst());
 			if (start >= 0) {
 				results.add(new SectionFinderResult(start, start
 						+ findThese.getFirst().length()));
-				findThese.removeFirst();
 			}
+			findThese.removeFirst();
 			return results;
 		}
 		return null;
