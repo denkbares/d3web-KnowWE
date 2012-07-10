@@ -513,7 +513,11 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * @return
 	 */
 	public String getTitle() {
-		return this.article.getTitle();
+		String title = "unknown article";
+		if (article != null) {
+			title = this.article.getTitle();
+		}
+		return title;
 	}
 
 	public boolean addPackageName(String packageName) {
@@ -605,6 +609,36 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 			id = Sections.generateAndRegisterSectionID(this);
 		}
 		return id;
+	}
+
+	// @Override
+	// public boolean equals(Object obj) {
+	// if (obj == null) return false;
+	// if (obj instanceof Section) {
+	// Section<?> other = (Section<?>) obj;
+	// if (other.getSignatureString().equals(this.getSignatureString())) {
+	// return true;
+	// }
+	// }
+	// return false;
+	// }
+	//
+	// @Override
+	// public int hashCode() {
+	// String signatureString = getSignatureString();
+	// return signatureString.hashCode();
+	// }
+
+	private String signatureString = null;
+
+	String getSignatureString() {
+		if (signatureString != null) return signatureString;
+		List<Integer> positionInKDOM = this.getPositionInKDOM();
+		String positionInKDOMString = positionInKDOM == null ? "" : positionInKDOM.toString();
+
+		String signatureString = getTitle() + positionInKDOMString + this.getText();
+		this.signatureString = signatureString;
+		return signatureString;
 	}
 
 	protected void clearID() {
@@ -959,6 +993,15 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	public List<Integer> calcPositionInKDOM() {
+
+		// this can only occur in the exceptional case
+		// when Sections are created independently of articles
+		if (getArticle() == null || getArticle().getRootSection() == null) {
+			LinkedList<Integer> positions = new LinkedList<Integer>();
+			positions.add(new Integer(0));
+			return positions;
+		}
+
 		return calcPositionTil(getArticle().getRootSection());
 	}
 
@@ -967,11 +1010,35 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		Section<?> temp = this;
 		Section<?> tempFather = temp.getFather();
 		while (temp != end && tempFather != null) {
-			positions.addFirst(tempFather.getChildren().indexOf(temp));
+			List<Section<? extends Type>> childrenList = tempFather.getChildren();
+			int indexOf = getIndex(temp, childrenList);
+			positions.addFirst(indexOf);
 			temp = tempFather;
 			tempFather = temp.getFather();
 		}
 		return positions;
+	}
+
+	/**
+	 * Calculates the index of a contained object without using the
+	 * equals-method.
+	 * 
+	 * @created 10.07.2012
+	 * @param temp
+	 * @param childrenList
+	 * @return
+	 */
+	private int getIndex(Section<?> temp, List<Section<? extends Type>> childrenList) {
+		int index = 0;
+		for (Section<? extends Type> section : childrenList) {
+			// this == comparator is on purpose on this place as this method is
+			// used in the equals method
+			if (section == temp) {
+				return index;
+			}
+			index++;
+		}
+		return -1;
 	}
 
 	private boolean isMatchingPackageName(Article article, SubtreeHandler<?> h) {

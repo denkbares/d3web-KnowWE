@@ -485,15 +485,18 @@ public class Sections {
 	public static String generateAndRegisterSectionID(Section<?> section) {
 		String title = section.getTitle();
 		if (title == null) title = "";
-		List<Integer> positionInKDOM = section.getPositionInKDOM();
-		String positionInKDOMString = positionInKDOM == null ? "" : positionInKDOM.toString();
-		String hashString = title + positionInKDOMString + section.getText();
 
-		int hashCode = hashString.hashCode();
+		int hashCode = section.getSignatureString().hashCode();
 		String id = Integer.toHexString(hashCode);
 		synchronized (sectionMap) {
-			while (sectionMap.containsKey(id)) {
+			Section<?> existingSection = sectionMap.get(id);
+			while (existingSection != null) {
+				if (section.getSignatureString().equals(existingSection.getSignatureString())) {
+					break; // we assume that it is really the one and the same
+							// Section and therefore give the same id
+				}
 				id = Integer.toHexString(++hashCode);
+				existingSection = sectionMap.get(id);
 			}
 			sectionMap.put(id, section);
 		}
