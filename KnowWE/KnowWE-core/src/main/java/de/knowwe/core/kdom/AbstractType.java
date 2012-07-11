@@ -320,6 +320,20 @@ public abstract class AbstractType implements Type, Sectionizable {
 		return Collections.unmodifiableList(childrenTypes);
 	}
 
+	/**
+	 * Returns the children types attached to this type. Use for plugin
+	 * framework initialization only!
+	 * 
+	 * final!
+	 * 
+	 * @return
+	 */
+	@Override
+	public final List<Type> getChildrenTypesInit() {
+		return Collections.unmodifiableList(childrenTypes);
+
+	}
+
 	public void clearChildrenTypes() {
 		this.childrenTypes = new ArrayList<Type>();
 	}

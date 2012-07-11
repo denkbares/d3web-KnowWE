@@ -295,9 +295,9 @@ public class Environment {
 		Plugins.addSubtreeHandlersToType(type);
 		Plugins.addRendererToType(type);
 
-		if (type.getChildrenTypes() == null) return;
+		if (type.getChildrenTypesInit() == null) return;
 
-		for (Type childType : type.getChildrenTypes()) {
+		for (Type childType : type.getChildrenTypesInit()) {
 			if (childType.getPathToRoot() != null) continue;
 			Type[] pathToRoot = type.getPathToRoot();
 			Type[] childPath = new Type[pathToRoot.length + 1];

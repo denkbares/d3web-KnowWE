@@ -94,6 +94,16 @@ public interface Type {
 	 */
 	public List<Type> getChildrenTypes();
 
+	/**
+	 * Returns the children types attached to this type. Use for plugin
+	 * framework initialization only!
+	 * 
+	 * final!
+	 * 
+	 * @return
+	 */
+	public List<Type> getChildrenTypesInit();
+
 	public void deactivateType();
 
 	public void activateType();
