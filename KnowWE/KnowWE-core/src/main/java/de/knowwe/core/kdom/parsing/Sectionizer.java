@@ -103,7 +103,12 @@ public class Sectionizer implements Parser {
 
 		posInTypes++;
 
-		if (type == null || !(type instanceof Sectionizable)) return;
+		if (type == null) throw new NullPointerException("children type list may not contain null");
+
+		if (!(type instanceof Sectionizable)) {
+			splitToSections(text, father, types, posInTypes);
+			return;
+		}
 
 		List<SectionFinderResult> results = null;
 
