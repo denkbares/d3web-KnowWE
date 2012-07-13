@@ -138,7 +138,17 @@ public class DefaultMarkup {
 	}
 
 	/**
-	 * Adds a new annotation to the markup with.
+	 * Adds a non mandatory new annotation to the markup.
+	 * 
+	 * @param name the name of the annotation to be added
+	 * @param mandatory if the annotation is required for the markup
+	 */
+	public void addAnnotation(String name) {
+		this.addAnnotation(name, false, (Pattern) null);
+	}
+
+	/**
+	 * Adds a new annotation to the markup.
 	 * 
 	 * @param name the name of the annotation to be added
 	 * @param mandatory if the annotation is required for the markup
