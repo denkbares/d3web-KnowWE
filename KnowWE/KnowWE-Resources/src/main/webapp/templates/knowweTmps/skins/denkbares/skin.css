@@ -1312,8 +1312,12 @@ table.calendar tr.weekdays {
 .tabs {
 	clear:both;
 	padding: 6px;
-	border:1px solid #9ACBFB;
 	margin-bottom: 6px;
+}
+@media screen, projection {
+	.tabs {
+		border:1px solid #9ACBFB;
+	}
 }
 .tabmenu {
 	padding: 0 1em;
@@ -1842,11 +1846,13 @@ div.coverflow .knob {
 	border-bottom: 1px solid white;
 }
 
-.defaultMarkupFrame:hover {
-	border-right: 1px solid #DDD;
-	border-left: 1px solid #DDD;
-	border-bottom: 1px solid #DDD;
-	background-color: #F9F9F9;
+@media screen, projection {
+	.defaultMarkupFrame:hover {
+		border-right: 1px solid #DDD;
+		border-left: 1px solid #DDD;
+		border-bottom: 1px solid #DDD;
+		background-color: #F9F9F9;
+	}
 }
 
 .defaultMarkupFrame > .defaultMarkup .markupText {
@@ -1858,3 +1864,4 @@ div.coverflow .knob {
 	border-left: 0px;
 	border-bottom: 0px;
 }
+

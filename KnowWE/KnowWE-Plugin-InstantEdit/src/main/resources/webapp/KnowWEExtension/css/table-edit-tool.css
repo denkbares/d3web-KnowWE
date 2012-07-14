@@ -92,3 +92,13 @@ div.cellEdit {
 	position: absolute;
 	z-index: 10;
 }
+
+/*
+ * make sure that edit-menu is not visible in printed mode
+ */
+@media print {
+	.tablePopupIcon * {
+		visibility: hidden !important;
+	}
+}
+

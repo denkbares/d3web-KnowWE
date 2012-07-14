@@ -137,3 +137,24 @@
 span.markupMenuItem {
 	padding: 0 !important;
 }
+
+/*
+ * make sure that in print-out all titles are visible, 
+ * but no menus
+ */
+@media print {
+	.defaultMarkupFrame .markupMenu {
+		opacity: 0 !important;
+	}
+	.defaultMarkupFrame .headerMenu {
+		max-width: 250px !important;
+		border-width: 0px !important;
+	}
+	.defaultMarkupFrame .headerMenu .markupHeader {
+		padding: 3px 0px 0px 0px !important;
+	}
+	.defaultMarkupFrame .markupMenuIndicator {
+		padding-right: 0px;
+		visibility: hidden;
+	}
+}
