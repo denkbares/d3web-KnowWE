@@ -247,7 +247,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		}
 
 		if (this.getChildren().size() == 1 && !this.getChildren().get(0).equalsAsKDOMSubtree(
-						injectSection)) {
+				injectSection)) {
 			Messages.storeMessage(null, this, this.getClass(),
 					Messages.error(
 							"Internal error: Multiple diverging section injections."));
@@ -282,8 +282,8 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 */
 	public boolean equalsAsKDOMSubtree(Section<?> sec) {
 		if (this.type.equals(sec.type)
-					&& this.text.equals(sec.text)
-					&& this.getChildren().size() == sec.getChildren().size()) {
+				&& this.text.equals(sec.text)
+				&& this.getChildren().size() == sec.getChildren().size()) {
 			Iterator<Section<?>> thisIter = this.getChildren().iterator();
 			Iterator<Section<?>> secIter = sec.getChildren().iterator();
 			while (thisIter.hasNext()) {
@@ -508,16 +508,10 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
-	 * return the article-name, if its not defined it asks the father
-	 * 
-	 * @return
+	 * @return the title of the article this section belongs to.
 	 */
 	public String getTitle() {
-		String title = "unknown article";
-		if (article != null) {
-			title = this.article.getTitle();
-		}
-		return title;
+		return article == null ? null : article.getTitle();
 	}
 
 	public boolean addPackageName(String packageName) {
