@@ -19,8 +19,11 @@
 package de.d3web.we.ci4ke;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import org.apache.log4j.Logger;
 
 import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.TestCase;
@@ -42,6 +45,14 @@ public class TestCaseTestObjectProvider implements TestObjectProvider {
 
 	@Override
 	public <T> List<T> getTestObjects(Class<T> c, String name) {
+
+		if (c == null) {
+			Logger.getLogger(this.getClass()).warn("Class given to TestObjectProvider was 'null'");
+			return Collections.emptyList();
+		}
+		if (!c.equals(TestCase.class)) {
+			return Collections.emptyList();
+		}
 
 		Pattern pattern = Pattern.compile(name);
 
