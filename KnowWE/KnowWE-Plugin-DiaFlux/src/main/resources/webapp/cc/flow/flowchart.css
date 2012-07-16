@@ -5,4 +5,5 @@
 	overflow:	auto;
 	/* DefaultMarkup sets white-space to pre -> No wrap in nodes */
 	white-space: normal;
+	-webkit-print-color-adjust:exact;
 }
