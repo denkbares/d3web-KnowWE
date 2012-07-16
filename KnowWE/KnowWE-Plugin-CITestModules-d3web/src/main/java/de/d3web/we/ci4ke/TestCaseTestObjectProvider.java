@@ -48,27 +48,30 @@ public class TestCaseTestObjectProvider implements TestObjectProvider {
 		List<T> result = new ArrayList<T>();
 
 		// looks in all articles
-		for (Article master : Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB).getArticles()) {
-			TestCase testcase = TestCaseUtils.loadTestSuite(
-					master.getTitle(), Environment.DEFAULT_WEB);
-			if (testcase != null) {
-				// a repo is found, it is separated in distinct named test cases
-				List<SequentialTestCase> repository = testcase.getRepository();
-				for (SequentialTestCase sequentialTestCase : repository) {
-					String testcaseName = sequentialTestCase.getName();
-					if (testcaseName != null && pattern.matcher(testcaseName).find()) {
-						TestCase newCase = new TestCase();
-						newCase.setKb(testcase.getKb());
-						newCase.setName(testcaseName);
-						List<SequentialTestCase> singleList = new ArrayList<SequentialTestCase>();
-						singleList.add(sequentialTestCase);
-						newCase.setRepository(singleList);
-						result.add(c.cast(newCase));
+		Environment env = Environment.getInstance();
+		if (env != null) {
+			for (Article master : env.getArticleManager(Environment.DEFAULT_WEB).getArticles()) {
+				TestCase testcase = TestCaseUtils.loadTestSuite(
+						master.getTitle(), Environment.DEFAULT_WEB);
+				if (testcase != null) {
+					// a repo is found, it is separated in distinct named test
+					// cases
+					List<SequentialTestCase> repository = testcase.getRepository();
+					for (SequentialTestCase sequentialTestCase : repository) {
+						String testcaseName = sequentialTestCase.getName();
+						if (testcaseName != null && pattern.matcher(testcaseName).find()) {
+							TestCase newCase = new TestCase();
+							newCase.setKb(testcase.getKb());
+							newCase.setName(testcaseName);
+							List<SequentialTestCase> singleList = new ArrayList<SequentialTestCase>();
+							singleList.add(sequentialTestCase);
+							newCase.setRepository(singleList);
+							result.add(c.cast(newCase));
+						}
 					}
 				}
 			}
 		}
-
 		return result;
 	}
 

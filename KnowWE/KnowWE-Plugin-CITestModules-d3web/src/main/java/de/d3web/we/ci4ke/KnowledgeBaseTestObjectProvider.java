@@ -51,12 +51,15 @@ public class KnowledgeBaseTestObjectProvider implements TestObjectProvider {
 		// get the KB for this article
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(
 				Environment.DEFAULT_WEB, id);
-		result.add(c.cast(kb));
+		if (kb != null) {
+			result.add(c.cast(kb));
+		}
 		return result;
 	}
 
 	@Override
 	public <T> String getTestObjectName(T testObject) {
+		if (testObject == null) return null;
 		return ((KnowledgeBase) testObject).getId();
 	}
 
