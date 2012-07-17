@@ -31,9 +31,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 
 import com.ecyrd.jspwiki.PageManager;
 import com.ecyrd.jspwiki.WikiContext;
@@ -281,8 +282,12 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				}
 
 				// RENDER PAGE
+				long start = System.currentTimeMillis();
 				article.getRenderer().render(article.getRootSection(), userContext,
 						articleHTML);
+				Logger.getLogger(this.getClass().getName()).log(
+						Level.INFO, "Rendered article '" + article.getTitle() + "' in "
+								+ (System.currentTimeMillis() - start) + "ms");
 
 				// Render Post-PageAppendHandlers
 				for (PageAppendHandler pageAppendHandler : appendhandlers) {
@@ -330,7 +335,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			wikipages = mgr.getAllPages();
 		}
 		catch (ProviderException e1) {
-			Logger.getLogger(this.getClass()).warn(
+			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
 					"Unable to load all articles, maybe some articles won't be initialized!");
 		}
 

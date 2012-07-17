@@ -103,26 +103,26 @@ public class DefaultMarkupType extends AbstractType {
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL;
 
 	private final static String SECTION_REGEXP =
-				// Declaration
-				"^\\p{Blank}*%%$NAME$\\p{Blank}*" +
-						"(?:" +
-						// multi-line content with termination starts with an
-						// empty rest of the line (only comment is allowed)
-						// and followed by any text terminated by "/%" or a
-						// single "%" in a line with no other content
-						"(?:[:=]?\\p{Blank}*(?://[^$]*?)?$" +
-						// only comment allowed before end-of-line
-						"(.*?)" + // CONTENT --> anything in multiple lines
-						// (reluctant match)
-						"^\\p{Blank}*/?%\\s*?(^|\\z)" + // "/%" or "%" in a line
-						")" +
-						// or single-line content with termination
-						"|(?:" +
-						// at least one non-whitespace character followed by any
-						// non-line-break item
-						"[:=\\p{Blank}]\\p{Blank}*([^/][^$]*?)$" + // CONTENT
-						// --> anything in a single line (reluctant match)
-						"))";
+			// Declaration
+			"^\\p{Blank}*%%$NAME$\\p{Blank}*" +
+					"(?:" +
+					// multi-line content with termination starts with an
+					// empty rest of the line (only comment is allowed)
+					// and followed by any text terminated by "/%" or a
+					// single "%" in a line with no other content
+					"(?:[:=]?\\p{Blank}*(?://[^$]*?)?$" +
+					// only comment allowed before end-of-line
+					"(.*?)" + // CONTENT --> anything in multiple lines
+					// (reluctant match)
+					"^\\p{Blank}*/?%\\s*?(^|\\z)" + // "/%" or "%" in a line
+					")" +
+					// or single-line content with termination
+					"|(?:" +
+					// at least one non-whitespace character followed by any
+					// non-line-break item
+					"[:=\\p{Blank}]\\p{Blank}*([^/][^$]*?)$" + // CONTENT
+					// --> anything in a single line (reluctant match)
+					"))";
 
 	private final DefaultMarkup markup;
 
@@ -337,8 +337,7 @@ public class DefaultMarkupType extends AbstractType {
 	/**
 	 * Returns the content section of all annotations sections in this section.
 	 * If the section is not of type "DefaultMarkup" an IllegalArgumentException
-	 * is thrown. If there is no annotation with the specified name, an empty
-	 * list is returned.
+	 * is thrown.
 	 * 
 	 * @param section the section to be searched
 	 * @return the list of annotation sections
