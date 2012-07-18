@@ -268,7 +268,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 			StringBuilder articleHTML = new StringBuilder();
 
-			if (article != null) {
+			if (article != null && wikiContext.getHttpRequest() != null) {
 
 				// Render Pre-PageAppendHandlers
 				List<PageAppendHandler> appendhandlers = Environment.getInstance()
