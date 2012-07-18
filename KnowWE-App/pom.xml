@@ -771,7 +771,7 @@
 			</activation>
 			<dependencies>
 				<dependency>
-					<groupId>com.denkbares</groupId>
+					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
 					<version>0.2-SNAPSHOT</version>
 					<scope>compile</scope>
@@ -889,7 +889,7 @@
 			</activation>
 			<dependencies>
 				<dependency>
-					<groupId>com.denkbares</groupId>
+					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
 					<version>0.2-SNAPSHOT</version>
 					<scope>compile</scope>
