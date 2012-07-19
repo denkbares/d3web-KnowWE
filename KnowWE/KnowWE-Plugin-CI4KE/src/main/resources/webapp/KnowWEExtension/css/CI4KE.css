@@ -120,3 +120,39 @@
 	}
 */
 /* end easy clearing */
+
+
+.prog-meter-wrap {
+    /* The width and height of your image */
+    width: 155px; height: 30px;
+    display:inline;
+    /*border-style: solid;
+    border-width: 2px; */
+    margin: 10px;
+    white-space:normal;
+    position:relative;
+    /*background-color:#339900;
+	layer-background-color:#339900; */
+}
+
+.top {
+	position: relative;
+}
+
+ .prog-meter-value {
+ display:inline;
+ }
+
+
+.prog-meter-text {
+	display:inline;
+    /*position: absolute;*/
+    top:0; left:0;
+	font-size: 90%;
+	font-weight: normal;
+    padding-top: 5px;
+    white-space:normal;
+    color: #555;
+    /*text-align: center;*/
+    width: 100%;
+}

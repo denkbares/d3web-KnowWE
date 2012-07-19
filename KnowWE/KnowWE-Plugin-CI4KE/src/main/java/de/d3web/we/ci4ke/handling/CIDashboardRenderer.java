@@ -158,7 +158,8 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 				dashboardName);
 		CIBuildRenderer renderer = dashboard.getRenderer();
 		String dashboardNameEscaped = CIUtilities.utf8Escape(dashboardName);
-
+		
+		string.append("<div id='top'>");
 		string.append("<h3>");
 		// if at least one build has been executed: Render forecast icons:
 		BuildResult latestBuild = dashboard.getLatestBuild();
@@ -166,8 +167,14 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			string.append(renderer.renderCurrentBuildStatus(22)).append("  ");
 			string.append(renderer.renderBuildHealthReport(22)).append("  ");
 		}
-		string.append(dashboardName + "</h3>");
-
+		string.append(dashboardName); 
+		
+		// insert tag for progress bar
+		string.append("<div id='progress_container' style='display:inline'></div>");
+		string.append("</h3>");
+		string.append("</div>");
+		
+		
 		// render the last five builds:
 		string.append("<div id='")
 				.append(dashboardNameEscaped)

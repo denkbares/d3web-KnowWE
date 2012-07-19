@@ -42,7 +42,14 @@ function fctGetBuildDetails( dashboardID , buildNr ) {
     new _KA( options ).send();
 }
 
-function fctExecuteNewBuild( dashboardID ) {
+function helper(options){
+	new _KA(options).send();
+}
+
+
+
+
+function fctExecuteNewBuild( dashboardID,title ) {
 
 	var params = {
             action : 'CIAction',
@@ -58,13 +65,72 @@ function fctExecuteNewBuild( dashboardID ) {
                 action : 'insert',
                 fn : function() {
                 	// KNOWWE.core.util.addCollabsiblePluginHeader( dashboardID );
+                	window.location='Wiki.jsp?page=' + title;
 					makeCIBoxesCollapsible( dashboardID );
+					try {
+						KNOWWE.helper.observer.notify('update');
+					} catch (e) { /* ignore */
+					}
+					KNOWWE.core.util.updateProcessingState(-1);
+				},
+				onError : function() {
+					KNOWWE.core.util.updateProcessingState(-1);
 				}
             }
      }
+	
+	
+	 var params2 = {
+				action : 'CIGetProgressAction',
+				id     : dashboardID,
+        }; 
+	var options2 = {
+			url : KNOWWE.core.util.getURL(params2),
+			response : {
+				action : 'none',
+				fn : function() {
+
+				var percent = JSON.parse(this.responseText).progress;
+				var message = JSON.parse(this.responseText).message;
+
+				//document.getElementById("progress_value").style.width = percent+"%";
+				document.getElementById("progress_value").innerHTML = percent+" %";
+				document.getElementById("progress_text").innerHTML = " "+""+message+"";
+				if(location == window.location){jq$.delay(helper(options2),1000);}
+
+					}
+				},
+				onError : function() {
+				}
+			}
+	var location = window.location;
+	var progressBar = document.getElementById('progress_container');
+	progressBar.innerHTML = '<div style="display:inline" class="prog-meter-wrap" ><div class="prog-meter-value" id="progress_value">&nbsp;0 %</div></div><div class="prog-meter-text" style="display:inline" id="progress_text">starting build...</div>';
+	KNOWWE.core.util.updateProcessingState(1);
+     new _KA(options).send();
+     new _KA(options2).send();
      
-     new _KA( options ).send();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function fctRefreshBuildList( dashboardID, indexFromBack, numberOfBuilds ) {
 

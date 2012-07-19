@@ -42,13 +42,13 @@ public class CIDashboardToolProvider implements ToolProvider {
 			return new Tool[0];
 		}
 		else {
-			return new Tool[] { getStartNewBuildTool(dashboardName) };
+			return new Tool[] { getStartNewBuildTool(dashboardName, section.getTitle()) };
 		}
 	}
 
-	protected Tool getStartNewBuildTool(String dashboardName) {
+	protected Tool getStartNewBuildTool(String dashboardName, String title) {
 		// Tool which starts a new build
-		String jsAction = "fctExecuteNewBuild('" + CIUtilities.utf8Escape(dashboardName) + "')";
+		String jsAction = "fctExecuteNewBuild('" + CIUtilities.utf8Escape(dashboardName) + "','"+title+"')";
 		return new DefaultTool(
 				"KnowWEExtension/ci4ke/images/16x16/clock.png",
 				"Start a new build",
