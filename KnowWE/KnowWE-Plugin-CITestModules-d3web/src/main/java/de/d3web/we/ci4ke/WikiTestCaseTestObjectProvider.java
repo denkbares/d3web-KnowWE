@@ -41,7 +41,7 @@ import de.knowwe.core.kdom.Article;
  * @author Jochen Reutelshöfer (denkbares GmbH)
  * @created 29.06.2012
  */
-public class TestCaseTestObjectProvider implements TestObjectProvider {
+public class WikiTestCaseTestObjectProvider implements TestObjectProvider {
 
 	@Override
 	public <T> List<T> getTestObjects(Class<T> c, String name) {

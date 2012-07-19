@@ -58,11 +58,11 @@
 	</extension>
 	
 		<extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
-		id="TestCaseTestObjectProvider">
+		id="WikiTestCaseTestObjectProvider">
 		<parameter id="class"
-			value="de.d3web.we.ci4ke.TestCaseTestObjectProvider" />
-		<parameter id="name" value="TestCaseTestObjectProvider" />
-		<parameter id="description" value="TestCaseTestObjectProvider" />
+			value="de.d3web.we.ci4ke.WikiTestCaseTestObjectProvider" />
+		<parameter id="name" value="WikiTestCaseTestObjectProvider" />
+		<parameter id="description" value="WikiTestCaseTestObjectProvider" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
