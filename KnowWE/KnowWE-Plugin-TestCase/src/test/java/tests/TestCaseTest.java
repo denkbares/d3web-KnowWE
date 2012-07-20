@@ -23,8 +23,8 @@ package tests;
 import java.io.IOException;
 
 import junit.framework.TestCase;
-import utils.TestArticleManager;
 import utils.TSUtil;
+import utils.TestArticleManager;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.plugin.test.InitPluginManager;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -46,7 +46,7 @@ public class TestCaseTest extends TestCase {
 	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
-		// Enfore Autocompile
+		// Enforce Autocompile
 		PackageManager.overrideAutocompileArticle(true);
 	}
 
