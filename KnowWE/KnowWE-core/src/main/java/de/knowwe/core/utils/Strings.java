@@ -33,9 +33,28 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
+
 import de.knowwe.core.Environment;
 
 public class Strings {
+
+	private static final String[] HTML = new String[] {
+			"[{", "}]", "\"", "'", ">", "<", "[", "]" };
+	private static final String[] MASKED_HTML = new String[] {
+			Environment.HTML_PLUGIN_BRACKETS_OPEN, Environment.HTML_PLUGIN_BRACKETS_CLOSE,
+			Environment.HTML_DOUBLEQUOTE, Environment.HTML_QUOTE, Environment.HTML_GT,
+			Environment.HTML_ST, Environment.HTML_BRACKET_OPEN, Environment.HTML_BRACKET_CLOSE };
+
+	private static final String[] QUOTE_UNESCAPED = new String[] {
+			"\\", "\"" };
+	private static final String[] QUOTE_ESCAPED = new String[] {
+			"\\\\", "\\\"" };
+
+	private static final String[] UNQOUTE_ESCAPED = new String[] {
+			"\\\"", "\\\\" };
+	private static final String[] UNQOUTE_UNESCAPED = new String[] {
+			"\"", "\\" };
 
 	/**
 	 * This method appends the strings or objects and separates them with the
@@ -402,26 +421,7 @@ public class Strings {
 	 * @return
 	 */
 	public static String maskHTML(String htmlContent) {
-		htmlContent = htmlContent.replaceAll("\\[\\{",
-				Environment.HTML_PLUGIN_BRACKETS_OPEN);
-		htmlContent = htmlContent.replaceAll("}]",
-				Environment.HTML_PLUGIN_BRACKETS_CLOSE);
-
-		htmlContent = htmlContent.replaceAll("\"",
-				Environment.HTML_DOUBLEQUOTE);
-		htmlContent = htmlContent.replaceAll("'", Environment.HTML_QUOTE);
-		htmlContent = htmlContent.replaceAll(">", Environment.HTML_GT);
-		htmlContent = htmlContent.replaceAll("<", Environment.HTML_ST);
-
-		htmlContent = htmlContent.replace("[",
-				Environment.HTML_BRACKET_OPEN);
-		htmlContent = htmlContent.replace("]",
-				Environment.HTML_BRACKET_CLOSE);
-		// htmlContent = htmlContent.replace("{",
-		// Environment.HTML_CURLY_BRACKET_OPEN);
-		// htmlContent = htmlContent.replace("}",
-		// Environment.HTML_CURLY_BRACKET_CLOSE);
-		return htmlContent;
+		return StringUtils.replaceEach(htmlContent, HTML, MASKED_HTML);
 	}
 
 	/**
@@ -604,7 +604,7 @@ public class Strings {
 		if (text == null) return null;
 		// replacing non-breaking-space characters as otherwise they will not be
 		// trimmed
-		text = text.replaceAll("\\xA0", " ");
+		text = StringUtils.replace(text, "\\xA0", " ");
 		text = text.trim();
 		return unquote(text);
 	}
@@ -662,27 +662,8 @@ public class Strings {
 	 * @return
 	 */
 	public static String unmaskHTML(String htmlContent) {
-		htmlContent = htmlContent.replaceAll(
-				Environment.HTML_PLUGIN_BRACKETS_OPEN, "\\[\\{");
-		htmlContent = htmlContent.replaceAll(
-				Environment.HTML_PLUGIN_BRACKETS_CLOSE, "}]");
-		htmlContent = htmlContent.replaceAll(
-				Environment.HTML_DOUBLEQUOTE, "\"");
-		htmlContent = htmlContent
-				.replaceAll(Environment.HTML_QUOTE, "\'");
-		htmlContent = htmlContent.replaceAll(Environment.HTML_GT, ">");
-		htmlContent = htmlContent.replaceAll(Environment.HTML_ST, "<");
+		return StringUtils.replaceEach(htmlContent, MASKED_HTML, HTML);
 
-		htmlContent = htmlContent.replaceAll(
-				Environment.HTML_BRACKET_OPEN, "[");
-		htmlContent = htmlContent.replaceAll(
-				Environment.HTML_BRACKET_CLOSE, "]");
-		// htmlContent = htmlContent.replace(
-		// Environment.HTML_CURLY_BRACKET_OPEN, "{");
-		// htmlContent = htmlContent.replace(
-		// Environment.HTML_CURLY_BRACKET_CLOSE, "}");
-
-		return htmlContent;
 	}
 
 	public static String unmaskNewline(String htmlContent) {
@@ -691,7 +672,7 @@ public class Strings {
 	}
 
 	public static String quote(String element) {
-		return "\"" + element.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+		return "\"" + StringUtils.replaceEach(element, QUOTE_UNESCAPED, QUOTE_ESCAPED) + "\"";
 	}
 
 	public static String unquote(String text) {
@@ -703,7 +684,8 @@ public class Strings {
 		if (isUnEscapedQuote(text, 0) && isUnEscapedQuote(text, text.length() - 1)) {
 			text = text.substring(1, text.length() - 1);
 			// unmask " and \
-			return text.replace("\\\"", "\"").replace("\\\\", "\\");
+
+			return StringUtils.replaceEach(text, UNQOUTE_ESCAPED, UNQOUTE_UNESCAPED);
 		}
 
 		return text;

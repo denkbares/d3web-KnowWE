@@ -37,22 +37,20 @@ public class TermIdentifier implements Comparable<TermIdentifier> {
 
 	private final String[] pathElements;
 
-	private final String externalForm;
+	private String externalForm = null;
 
-	private final String externalFormLowerCase;
+	private String externalFormLowerCase = null;
 
 	public TermIdentifier(String... pathElements) {
 		if (pathElements.length >= 1 && pathElements[0] == null) {
 			throw new IllegalArgumentException("Cannot create TermIdentifier with for null");
 		}
 		this.pathElements = pathElements;
-		this.externalForm = toExternalForm();
-		this.externalFormLowerCase = externalForm.toLowerCase();
 	}
 
 	@Override
 	public int hashCode() {
-		return externalFormLowerCase.hashCode();
+		return toExternalFormLowerCase().hashCode();
 	}
 
 	@Override
@@ -61,7 +59,7 @@ public class TermIdentifier implements Comparable<TermIdentifier> {
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		TermIdentifier other = (TermIdentifier) obj;
-		return externalFormLowerCase.equals(other.externalFormLowerCase);
+		return this.toExternalFormLowerCase().equals(other.toExternalFormLowerCase());
 	}
 
 	/**
@@ -71,7 +69,7 @@ public class TermIdentifier implements Comparable<TermIdentifier> {
 	 */
 	@Override
 	public String toString() {
-		return this.externalForm;
+		return toExternalForm();
 	}
 
 	@Override
@@ -124,10 +122,11 @@ public class TermIdentifier implements Comparable<TermIdentifier> {
 	 */
 	public TermIdentifier append(TermIdentifier termIdentifier) {
 		int newLength = this.pathElements.length + termIdentifier.pathElements.length;
-		ArrayList<String> newIdentifierElements = new ArrayList<String>(newLength);
-		newIdentifierElements.addAll(Arrays.asList(this.pathElements));
-		newIdentifierElements.addAll(Arrays.asList(termIdentifier.pathElements));
-		return new TermIdentifier(newIdentifierElements.toArray(new String[newLength]));
+		String[] newIdentifierElements = new String[newLength];
+		System.arraycopy(this.pathElements, 0, newIdentifierElements, 0, this.pathElements.length);
+		System.arraycopy(termIdentifier.pathElements, 0, newIdentifierElements,
+				this.pathElements.length, termIdentifier.pathElements.length);
+		return new TermIdentifier(newIdentifierElements);
 	}
 
 	/**
@@ -142,21 +141,29 @@ public class TermIdentifier implements Comparable<TermIdentifier> {
 	 * @created 07.05.2012
 	 */
 	public String toExternalForm() {
-		StringBuilder externalForm = new StringBuilder();
-
-		boolean first = true;
-		for (String element : pathElements) {
-			if (first) first = false;
-			else externalForm.append(SEPARATOR);
-			if (needsQuotes(element)) {
-				externalForm.append(Strings.quote(element));
+		if (this.externalForm == null) {
+			StringBuilder externalForm = new StringBuilder();
+			boolean first = true;
+			for (String element : pathElements) {
+				if (first) first = false;
+				else externalForm.append(SEPARATOR);
+				if (needsQuotes(element)) {
+					externalForm.append(Strings.quote(element));
+				}
+				else {
+					externalForm.append(element);
+				}
 			}
-			else {
-				externalForm.append(element);
-			}
+			this.externalForm = externalForm.toString();
 		}
+		return this.externalForm;
+	}
 
-		return externalForm.toString();
+	private String toExternalFormLowerCase() {
+		if (this.externalFormLowerCase == null) {
+			this.externalFormLowerCase = toExternalForm().toLowerCase();
+		}
+		return this.externalFormLowerCase;
 	}
 
 	public static boolean needsQuotes(String text) {

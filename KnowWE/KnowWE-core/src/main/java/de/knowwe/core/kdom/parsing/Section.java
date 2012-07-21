@@ -534,21 +534,25 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	public Set<String> getPackageNames() {
-		if (packageNames == null) {
-			Set<String> fatherSet;
-			if (father == null) {
-				fatherSet = new HashSet<String>(0);
-			}
-			else {
-				fatherSet = father.getPackageNames();
-			}
-			return Collections.unmodifiableSet(fatherSet);
+		if (father == null) {
+			if (packageNames == null) return Collections.emptySet();
+			else return Collections.unmodifiableSet(packageNames);
 		}
 		else {
-			Set<String> tempNamespaces = new HashSet<String>(4);
-			if (father != null) tempNamespaces.addAll(father.getPackageNames());
-			tempNamespaces.addAll(packageNames);
-			return Collections.unmodifiableSet(tempNamespaces);
+			Set<String> fatherPackageNames = father.getPackageNames();
+			if (packageNames == null) return fatherPackageNames;
+			else {
+				if (fatherPackageNames.isEmpty()) {
+					return Collections.unmodifiableSet(packageNames);
+				}
+				else {
+					Set<String> tempNamespaces = new HashSet<String>(fatherPackageNames.size()
+							+ packageNames.size());
+					tempNamespaces.addAll(packageNames);
+					tempNamespaces.addAll(fatherPackageNames);
+					return Collections.unmodifiableSet(tempNamespaces);
+				}
+			}
 		}
 	}
 
