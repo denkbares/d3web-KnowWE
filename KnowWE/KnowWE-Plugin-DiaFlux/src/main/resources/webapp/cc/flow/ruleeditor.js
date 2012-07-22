@@ -4,6 +4,10 @@ CCEvents.addClassListener('click', 'ArrowTool', function(event) {/*NOP, but avoi
 CCEvents.addClassListener('click', 'RoutingTool', function(event) {/*NOP, but avoid bubbling*/});
 CCEvents.addClassListener('click', 'RoutingToolGray', function(event) {/*NOP, but avoid bubbling*/});
 
+CCEvents.addClassListener('dblclick', 'RoutingTool', function(event) {
+	this.__routingTool.routingPoint.destroy();
+});
+
 
 //register select click events for rule
 CCEvents.addClassListener('click', 'Rule', 
