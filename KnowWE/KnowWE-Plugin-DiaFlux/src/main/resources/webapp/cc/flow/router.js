@@ -238,6 +238,7 @@ Router.prototype.setRuleCoordinates = function(rule) {
 	for (var i=0; i<coordinates.length-1; i++) {
 		if (coordinates[i][0] == coordinates[i+1][0] && coordinates[i][1] == coordinates[i+1][1]) {
 			coordinates.splice(i, 1);
+			i--;
 		}
 	}
 	rule.setCoordinates(coordinates);

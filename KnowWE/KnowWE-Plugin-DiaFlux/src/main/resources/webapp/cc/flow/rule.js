@@ -228,9 +228,13 @@ Rule.prototype.setSelectionVisible = function(isSelected) {
 		if (Rule.enableRouting) for (var i=0; i<coordIndexes.length-1; i++) {
 			var ci1 = coordIndexes[i];
 			var ci2 = coordIndexes[i+1];
-			// if we have three parts, use the middle one
 			var c1 = this.coordinates[ci1], c2 = this.coordinates[ci1+1];
-			if (ci2 - ci1 > 2) {
+			// if we have three points, use the middle point
+			if (ci2 - ci1 == 2) {
+				var c1 = this.coordinates[ci1+1], c2 = this.coordinates[ci1+1];
+			}
+			// if we have ≥ three lines, use the second line
+			else if (ci2 - ci1 > 2) {
 				var c1 = this.coordinates[ci1+1], c2 = this.coordinates[ci1+2];
 			}
 			// if we have only one short path, add no tool at all

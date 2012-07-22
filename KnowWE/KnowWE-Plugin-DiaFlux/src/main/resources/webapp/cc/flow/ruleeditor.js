@@ -285,11 +285,38 @@ RoutingTool.prototype.showLine = function(x, y) {
 	if (x && y && this.dom) {
 		var rule = this.routingPoint.rule;
 		var x1, y1, x2, y2;
-		// TODO: handle multiple routing points
 		var x1 = rule.getSourceNode().getCenterX();
 		var y1 = rule.getSourceNode().getCenterY();
 		var x2 = rule.getTargetNode().getCenterX();
 		var y2 = rule.getTargetNode().getCenterY();
+		
+		// handle multiple routing points for dotted lines
+		var routingPoints = this.routingPoint.rule.routingPoints;
+		var prevIndex, nextIndex;
+		if (this.isInsert()) {
+			prevIndex = this.insertIndex-1;
+			nextIndex = this.insertIndex;
+		}
+		else {
+			for (var i = 0; i<routingPoints.length; i++) {
+				if (routingPoints[i] == this.routingPoint) {
+					prevIndex = i-1;
+					nextIndex = i+1;
+					break;
+				}
+			}
+		}
+		// we have a routing point before this one
+		if (prevIndex >= 0) {
+			x1 = routingPoints[prevIndex].getX();
+			y1 = routingPoints[prevIndex].getY();
+		}
+		// we have a routing point after this one
+		if (nextIndex < routingPoints.length) {
+			x2 = routingPoints[nextIndex].getX();
+			y2 = routingPoints[nextIndex].getY();
+		}
+		
 		this.lineDOM1 = DiaFluxUtils.createDottedLine(x1, y1, x+7, y+7, 2, 'red', 5, 100);
 		this.lineDOM2 = DiaFluxUtils.createDottedLine(x2, y2, x+7, y+7, 2, 'red', 5, 100);
 		this.flowchart.getContentPane().appendChild(this.lineDOM1);
