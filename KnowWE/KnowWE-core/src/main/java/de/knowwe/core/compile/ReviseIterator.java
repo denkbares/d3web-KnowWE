@@ -7,7 +7,6 @@ import java.util.NoSuchElementException;
 import java.util.TreeMap;
 
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 
 public class ReviseIterator {
 
@@ -35,27 +34,30 @@ public class ReviseIterator {
 		stop = Priority.getRegisteredPriorities().first();
 	}
 
-	private void addToPriorityMap(List<Section<?>> sections) {
-		for (Section<?> sec : sections) {
-			for (Priority p : sec.get().getSubtreeHandlers().keySet()) {
-				if (p.compareTo(currentPriority) > 0) currentPriority = p;
-				priorityMap.get(p).add(sec);
-			}
-			allSectionsList.add(sec);
+	private void addToPriorityMap(Section<?> sec) {
+		for (Priority p : sec.get().getSubtreeHandlers().keySet()) {
+			if (p.compareTo(currentPriority) > 0) currentPriority = p;
+			priorityMap.get(p).add(sec);
 		}
+		allSectionsList.add(sec);
 	}
 
 	public void addRootSectionToRevise(Section<?> rootSection) {
 		rootSectionsList.add(rootSection);
-		List<Section<?>> sections = Sections.getSubtreePostOrder(rootSection);
-		addToPriorityMap(sections);
+		addToPriorityMapRecursively(rootSection);
+	}
+
+	private void addToPriorityMapRecursively(Section<?> section) {
+		for (Section<?> child : section.getChildren()) {
+			addToPriorityMapRecursively(child);
+		}
+		addToPriorityMap(section);
 	}
 
 	public void reset() {
 		init();
 		for (Section<?> rootSection : rootSectionsList) {
-			List<Section<?>> sections = Sections.getSubtreePostOrder(rootSection);
-			addToPriorityMap(sections);
+			addToPriorityMapRecursively(rootSection);
 		}
 	}
 

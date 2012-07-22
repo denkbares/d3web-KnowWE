@@ -110,6 +110,7 @@ public class RulesTest extends TestCase {
 	}
 
 	public void testNextQASetRules() {
+		System.out.println();
 		// load KnowledgeBases
 		Article art = TestArticleManager
 				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);

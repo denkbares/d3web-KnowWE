@@ -21,14 +21,13 @@
 package de.d3web.we.object;
 
 import de.d3web.core.knowledge.terminology.Choice;
-import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.knowledge.terminology.QuestionChoice;
-import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.knowwe.core.compile.terminology.TermIdentifier;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
@@ -78,16 +77,12 @@ public abstract class AnswerReference
 	public Choice getTermObject(Article article, Section<? extends D3webTerm<Choice>> s) {
 
 		if (s.get() instanceof AnswerReference) {
-			Section<AnswerReference> sec = Sections.cast(s, AnswerReference.class);
-			Section<QuestionReference> ref = sec.get().getQuestionSection(sec);
-
-			Question question = QuestionReference.getObject(article, ref);
-			String answerName = sec.get().getTermName(sec);
-
-			if (question != null && question instanceof QuestionChoice) {
-				return KnowledgeBaseUtils.findChoice((QuestionChoice) question,
-						answerName, false);
-
+			TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
+			Section<?> answerDef = terminologyManager.getTermDefiningSection(getTermIdentifier(s));
+			if (answerDef != null) {
+				Choice choice = (Choice) KnowWEUtils.getStoredObject(article, answerDef,
+						AnswerDefinition.ANSWER_STORE_KEY);
+				return choice;
 			}
 		}
 		return null;

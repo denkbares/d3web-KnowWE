@@ -107,12 +107,12 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 					if (Question.class.isAssignableFrom(objectClazz)) {
 						s.clearReusedBySet();
 						s.setType(new QuestionReference());
-						return new ArrayList<Message>(0);
+						return Messages.noMessage();
 					}
 					if (QContainer.class.isAssignableFrom(objectClazz)) {
 						s.clearReusedBySet();
 						s.setType(new QuestionnaireReference());
-						return new ArrayList<Message>(0);
+						return Messages.noMessage();
 					}
 
 					return Messages.asList(Messages.error(

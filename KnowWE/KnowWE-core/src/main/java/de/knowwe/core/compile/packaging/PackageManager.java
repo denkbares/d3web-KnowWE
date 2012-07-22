@@ -506,9 +506,9 @@ public class PackageManager implements EventListener {
 	public Set<String> getCompiledPackages(String title) {
 		Set<String> referencedPackages = articleToCompiledPackages.get(title);
 		return referencedPackages == null
-				? Collections.unmodifiableSet(new HashSet<String>(0))
-				: Collections.unmodifiableSet(new HashSet<String>(
-						referencedPackages));
+				? Collections.<String> emptySet()
+				: Collections.unmodifiableSet(
+						referencedPackages);
 	}
 
 	/**

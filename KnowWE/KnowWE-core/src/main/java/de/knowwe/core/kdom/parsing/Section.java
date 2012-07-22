@@ -695,7 +695,6 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 				return true;
 			}
 		}
-
 		return false;
 	}
 

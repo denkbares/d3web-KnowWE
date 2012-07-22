@@ -82,6 +82,7 @@ public final class Messages {
 	 * @param section is the Section the {@link Message}s are stored for
 	 */
 	public static void clearMessages(Article article, Section<?> section) {
+		if (section.getSectionStore().isEmpty()) return;
 		Map<String, Collection<Message>> msgsMap = getMessagesMapModifiable(article, section);
 		if (msgsMap != null) msgsMap.clear();
 	}
@@ -144,6 +145,7 @@ public final class Messages {
 	 *        {@link Message} you want (set to <tt>null</tt> if you want all)
 	 */
 	public static Map<String, Collection<Message>> getMessages(Section<? extends Type> section, Message.Type... types) {
+		if (section.getSectionStore().isEmpty()) return Collections.emptyMap();
 		Map<String, Collection<Message>> allMsgsOfTitle = new HashMap<String, Collection<Message>>();
 		Map<String, Object> msgsOfAllTypesBySourceByTitle = section.getSectionStore().getObjects(
 				MESSAGE_KEY);
@@ -176,7 +178,7 @@ public final class Messages {
 	public static Collection<Message> getMessages(Article article,
 			Section<? extends Type> section,
 			Message.Type... types) {
-
+		if (section.getSectionStore().isEmpty()) return Collections.emptyList();
 		Collection<Message> allMsgs = new ArrayList<Message>();
 		Map<String, Collection<Message>> msgMapModifiable = getMessagesMapModifiable(article,
 				section);
@@ -202,6 +204,7 @@ public final class Messages {
 	 */
 	public static Collection<Message> getMessages(Article article, Section<?> section,
 			Class<?> source, Message.Type... types) {
+		if (section.getSectionStore().isEmpty()) return Collections.emptyList();
 		Map<String, Collection<Message>> msgsMap = getMessagesMapModifiable(article, section);
 		List<Message> allMsgs = new ArrayList<Message>();
 		if (msgsMap != null) {
@@ -275,6 +278,7 @@ public final class Messages {
 	 */
 	public static Map<String, Collection<Message>> getMessagesMap(Article article,
 			Section<?> section) {
+		if (section.getSectionStore().isEmpty()) return Collections.emptyMap();
 		return Collections.unmodifiableMap(getMessagesMapModifiable(article, section));
 	}
 

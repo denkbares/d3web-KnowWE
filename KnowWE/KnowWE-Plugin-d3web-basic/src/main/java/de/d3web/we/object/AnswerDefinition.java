@@ -52,7 +52,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public abstract class AnswerDefinition
 		extends D3webTermDefinition<Choice> {
 
-	private static final String QUESTION_FOR_ANSWER_KEY = "QUESTION_FOR_ANSWER_KEY";
+	public static final String ANSWER_STORE_KEY = "answerStoreKey";
 
 	public AnswerDefinition() {
 		this.addSubtreeHandler(Priority.HIGH, new CreateAnswerHandler());
@@ -77,20 +77,27 @@ public abstract class AnswerDefinition
 	public Choice getTermObject(Article article, Section<? extends D3webTerm<Choice>> s) {
 
 		if (s.get() instanceof AnswerDefinition) {
-			@SuppressWarnings("unchecked")
-			Section<AnswerDefinition> sec = (Section<AnswerDefinition>) s;
+			TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
+			Section<?> def = terminologyManager.getTermDefiningSection(getTermIdentifier(s));
+			if (def != null) {
+				Choice choice = (Choice) KnowWEUtils.getStoredObject(article, def,
+						ANSWER_STORE_KEY);
+				return choice;
+			}
 
-			Section<? extends QuestionDefinition> ref = sec.get().getQuestionSection(sec);
+			Section<AnswerDefinition> answerDef = Sections.cast(s, AnswerDefinition.class);
+			Section<? extends QuestionDefinition> ref = answerDef.get().getQuestionSection(
+					answerDef);
 			Question question = ref.get().getTermObject(article, ref);
-
-			String answerName = sec.get().getTermName(sec);
-
+			String answerName = answerDef.get().getTermName(answerDef);
 			if (question != null && question instanceof QuestionChoice) {
-				return KnowledgeBaseUtils.findChoice((QuestionChoice) question,
+				Choice choice = KnowledgeBaseUtils.findChoice((QuestionChoice) question,
 						answerName, false);
-
+				KnowWEUtils.storeObject(article, answerDef, ANSWER_STORE_KEY, choice);
+				return choice;
 			}
 		}
+
 		return null;
 	}
 
@@ -133,8 +140,7 @@ public abstract class AnswerDefinition
 			String name = section.get().getTermName(section);
 
 			Section<? extends QuestionDefinition> qDef = section.get().getQuestionSection(section);
-			KnowWEUtils.storeObject(article, section, AnswerDefinition.QUESTION_FOR_ANSWER_KEY,
-					qDef);
+
 			// if having error somewhere, do nothing and report error
 			if (qDef == null || qDef.hasErrorInSubtree(article)) {
 				return Arrays.asList(Messages.objectCreationError(
@@ -156,7 +162,7 @@ public abstract class AnswerDefinition
 
 			if (q instanceof QuestionChoice) {
 
-				Choice a;
+				Choice choice;
 
 				// special treatment for QuestionYN
 				// Answers are not created, but mapped to the already existing
@@ -164,10 +170,10 @@ public abstract class AnswerDefinition
 				if (q instanceof QuestionYN) {
 					QuestionYN qyn = (QuestionYN) q;
 					if (name.equals(qyn.getAnswerChoiceYes().getName())) {
-						a = qyn.getAnswerChoiceYes();
+						choice = qyn.getAnswerChoiceYes();
 					}
 					else if (name.equals(qyn.getAnswerChoiceNo().getName())) {
-						a = qyn.getAnswerChoiceNo();
+						choice = qyn.getAnswerChoiceNo();
 					}
 					else {
 						return Messages.asList(Messages.syntaxError(
@@ -177,15 +183,16 @@ public abstract class AnswerDefinition
 					}
 				}
 				else {
-					a = KnowledgeBaseUtils.addChoiceAnswer((QuestionChoice) q,
+					choice = KnowledgeBaseUtils.addChoiceAnswer((QuestionChoice) q,
 							section.get().getTermName(section),
 							section.get().getPosition(section));
-
 				}
 
+				KnowWEUtils.storeObject(article, section, ANSWER_STORE_KEY, choice);
+
 				return Messages.asList(Messages.objectCreatedNotice(
-						a.getClass().getSimpleName() + "  "
-								+ a.getName()));
+						choice.getClass().getSimpleName() + "  "
+								+ choice.getName()));
 
 			}
 			return Messages.asList(Messages.objectCreationError(

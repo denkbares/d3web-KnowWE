@@ -105,9 +105,8 @@ public class Priority implements Comparable<Priority> {
 
 	@Override
 	public int compareTo(Priority p) {
-		if (this == p) return 0;
 		if (p == null) return -1;
-		return Integer.valueOf(value).compareTo(Integer.valueOf(p.value));
+		return this.value < p.value ? -1 : (this.value == p.value ? 0 : 1);
 	}
 
 	@Override
