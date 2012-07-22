@@ -8,44 +8,76 @@ Router.prototype.rerouteNodes = function(nodes) {
 }
 
 Router.prototype.rerouteAll = function() {
-	// update arragements
-	var arrangements = [];
+	// create all boxes and all lines in between
+	this.boxes = [];
+	this.lines = [];
 	for (var i=0; i<this.flowchart.nodes.length; i++) {
 		var node = this.flowchart.nodes[i];
+		var box = RoutingBox.createFromNode(node);
+		node._boxForNode = box;
+		this.boxes.push(box);
+	}	
+	for (var i=0; i<this.flowchart.rules.length; i++) {
+		var rule = this.flowchart.rules[i];
+		rule._linesForRule = [];
+		var previousBox = rule.getSourceNode()._boxForNode;
+		// we have intermediate routing points, so create boxes and lines
+		for (var k=0; k<rule.routingPoints.length; k++) {
+			var routingPoint = rule.routingPoints[k];
+			// create box
+			var nextBox = RoutingBox.createFromRoutingPoint(routingPoint);
+			this.boxes.push(nextBox);
+			// create line
+			var line = new RoutingLine(previousBox, nextBox);
+			this.lines.push(line);
+			rule._linesForRule.push(line);
+			previousBox = nextBox;
+		}
+		// and finally create line to target node
+		var nextBox = rule.getTargetNode()._boxForNode;
+		var line = new RoutingLine(previousBox, nextBox);
+		this.lines.push(line);
+		rule._linesForRule.push(line);
+	}
+	
+	// update arragements
+	var arrangements = [];
+	for (var i=0; i<this.boxes.length; i++) {
+		var box = this.boxes[i];
 		// for each node we have up to four arrangements 
 		// (for each side) of the box
-		var rulesTop = [], rulesBottom = [], rulesLeft = [], rulesRight = []; 
-		var rules = this.flowchart.findRulesForNode(node);
-		for (var k=0; k<rules.length; k++) {
-			var rule = rules[k];
-			var otherNode = rule.getOtherNode(node); 
+		var linesTop = [], linesBottom = [], linesLeft = [], linesRight = [];
+		var lines = box.lines;
+		for (var k=0; k<lines.length; k++) {
+			var line = lines[k];
+			var otherBox = line.getOtherBox(box); 
 			// calculate horizontal and vertical space between the boxes
 			// the element is anchored in a way, 
 			// that most available space is used
-			var dx = otherNode.getCenterX() - node.getCenterX();
-			var dy = otherNode.getCenterY() - node.getCenterY();
-			if (Math.abs(dx)-(node.width+otherNode.width)/2 > Math.abs(dy)-(node.height+otherNode.height)/2) {
+			var dx = otherBox.centerX - box.centerX;
+			var dy = otherBox.centerY - box.centerY;
+			if (Math.abs(dx)-(box.width+otherBox.width)/2 > Math.abs(dy)-(box.height+otherBox.height)/2) {
 				if (dx < 0) {
-					rulesLeft.push(rule);
+					linesLeft.push(line);
 				}
 				else {
-					rulesRight.push(rule);
+					linesRight.push(line);
 				}
 			}
 			else {
 				if (dy < 0) {
-					rulesTop.push(rule);
+					linesTop.push(line);
 				}
 				else {
-					rulesBottom.push(rule);
+					linesBottom.push(line);
 				}
 			}
 		}
 		// now create the arrangements
-		arrangements.push(new RuleArrangement(node, rulesTop, 'top'));
-		arrangements.push(new RuleArrangement(node, rulesBottom, 'bottom'));
-		arrangements.push(new RuleArrangement(node, rulesLeft, 'left'));
-		arrangements.push(new RuleArrangement(node, rulesRight, 'right'));
+		arrangements.push(new RuleArrangement(box, linesTop, 'top'));
+		arrangements.push(new RuleArrangement(box, linesBottom, 'bottom'));
+		arrangements.push(new RuleArrangement(box, linesLeft, 'left'));
+		arrangements.push(new RuleArrangement(box, linesRight, 'right'));
 	}
 	
 	// rearrange the arrangements
@@ -61,57 +93,119 @@ Router.prototype.rerouteAll = function() {
 	for (var i=0; i<this.flowchart.rules.length; i++) {
 		var rule = this.flowchart.rules[i];
 		this.setRuleCoordinates(rule);
+		rule.setSourceAnchor(rule._linesForRule[0].sourceAnchor);
+		rule.setTargetAnchor(rule._linesForRule[rule._linesForRule.length-1].targetAnchor);
 	} 
 }
 
 Router.prototype.setRuleCoordinates = function(rule) {
-	var sourceAnchor = rule.getSourceAnchor();
-	var targetAnchor = rule.getTargetAnchor();
-	var x1 = sourceAnchor.x;
-	var y1 = sourceAnchor.y;
-	var s1 = sourceAnchor.slide;
-	var x2 = targetAnchor.x;
-	var y2 = targetAnchor.y;
-	var s2 = targetAnchor.slide;
-	var isHorizontal = (sourceAnchor.type == 'left' || sourceAnchor.type == 'right'); 
-	if (isHorizontal) {
-		var overlap = Math.min(y1+s1, y2+s2) - Math.max(y1-s1, y2-s2);
-		if (overlap >= 0) {
-			// draw straight line, using optimal source position if possible
-			// otherwise use overlap
-			var yMiddle = (y1 > y2-s2 && y1 < y2+s2) ? y1 : Math.max(y1-s1, y2-s2) + Math.floor(overlap / 2);
-			rule.setCoordinates([[x1, yMiddle], [x2, yMiddle]]);
+	var lines = rule._linesForRule;
+	var coordinates = [];
+	
+	for (var i=0; i<lines.length; i++) {
+		var line = lines[i];
+		var sourceAnchor = line.sourceAnchor;
+		var targetAnchor = line.targetAnchor;
+		var x1 = sourceAnchor.x;
+		var y1 = sourceAnchor.y;
+		var s1 = sourceAnchor.slide;
+		var x2 = targetAnchor.x;
+		var y2 = targetAnchor.y;
+		var s2 = targetAnchor.slide;
+		var isHorizontal = (sourceAnchor.type == 'left' || sourceAnchor.type == 'right'); 
+		if (isHorizontal) {
+			var overlap = Math.min(y1+s1, y2+s2) - Math.max(y1-s1, y2-s2);
+			if (overlap >= 0) {
+				// draw straight line, using optimal source position if possible
+				// otherwise use overlap
+				var yMiddle = (y1 > y2-s2 && y1 < y2+s2) ? y1 : Math.max(y1-s1, y2-s2) + Math.floor(overlap / 2);
+				coordinates.push([x1, yMiddle]);
+				coordinates.push([x2, yMiddle]);
+			}
+			else {
+				// draw double bended line
+				var xMiddle = (sourceAnchor.__bendHint || targetAnchor.__bendHint || Math.floor((x1+x2)/2)); 
+				coordinates.push([x1, y1]);
+				coordinates.push([xMiddle, y1]);
+				coordinates.push([xMiddle, y2]);
+				coordinates.push([x2, y2]);
+			}
 		}
 		else {
-			// draw double bended line
-			var xMiddle = (sourceAnchor.__bendHint || targetAnchor.__bendHint || Math.floor((x1+x2)/2)); 
-			rule.setCoordinates([
-				[x1, y1], 
-				[xMiddle, y1],
-				[xMiddle, y2],
-				[x2, y2]
-			]);
+			var overlap = Math.min(x1+s1, x2+s2) - Math.max(x1-s1, x2-s2);
+			if (overlap >= 0) {
+				// draw straight line, using optimal source position if possible
+				// otherwise use overlap
+				var xMiddle = (x1 > x2-s2 && x1 < x2+s2) ? x1 : Math.max(x1-s1, x2-s2) + Math.floor(overlap / 2);
+				coordinates.push([xMiddle, y1]);
+				coordinates.push([xMiddle, y2]);
+			}
+			else {
+				// draw double bended line
+				var yMiddle = (sourceAnchor.__bendHint || targetAnchor.__bendHint || Math.floor((y1+y2)/2)); 
+				coordinates.push([x1, y1]);
+				coordinates.push([x1, yMiddle]);
+				coordinates.push([x2, yMiddle]); 
+				coordinates.push([x2, y2]);
+			}
 		}
 	}
-	else {
-		var overlap = Math.min(x1+s1, x2+s2) - Math.max(x1-s1, x2-s2);
-		if (overlap >= 0) {
-			// draw straight line, using optimal source position if possible
-			// otherwise use overlap
-			var xMiddle = (x1 > x2-s2 && x1 < x2+s2) ? x1 : Math.max(x1-s1, x2-s2) + Math.floor(overlap / 2);
-			rule.setCoordinates([[xMiddle, y1], [xMiddle, y2]]);
-		}
-		else {
-			// draw double bended line
-			var yMiddle = (sourceAnchor.__bendHint || targetAnchor.__bendHint || Math.floor((y1+y2)/2)); 
-			rule.setCoordinates([
-				[x1, y1], 
-				[x1, yMiddle],
-				[x2, yMiddle], 
-				[x2, y2]
-			]);
+	// remove duplicate points
+	for (var i=0; i<coordinates.length-1; i++) {
+		if (coordinates[i][0] == coordinates[i+1][0] && coordinates[i][1] == coordinates[i+1][1]) {
+			coordinates.splice(i, 1);
 		}
 	}
+	rule.setCoordinates(coordinates);
+}
+
+
+//-----
+// classes for abstracting from nodes and rules 
+// to boxes and and connections. These objects can be
+// used for nodes and rules as well as for RoutingPoints 
+// and their interconnections
+// 
+// Based on this, the coordinates are created for the rules.
+//-----
+
+function RoutingBox(nodeOrRoutingPoint, centerX, centerY, width, height) {
+	this.nodeOrRoutingPoint = nodeOrRoutingPoint;
+	this.centerX = centerX;
+	this.centerY = centerY;
+	this.width = width;
+	this.height = height;
+	this.lines = [];
+}
+
+RoutingBox.createFromNode = function(node) {
+	return new RoutingBox(
+			node,
+			node.getCenterX(),
+			node.getCenterY(),
+			node.getWidth(),
+			node.getHeight()
+			);
+}
+
+RoutingBox.createFromRoutingPoint = function (routingPoint) {
+	return new RoutingBox(
+			routingPoint,
+			routingPoint.getX(),
+			routingPoint.getY(),
+			1 , 1
+			);
+}
+
+function RoutingLine (sourceBox, targetBox) {
+	this.sourceBox = sourceBox;
+	this.targetBox = targetBox;
+	sourceBox.lines.push(this);
+	targetBox.lines.push(this);
+}
+
+RoutingLine.prototype.getOtherBox = function (box) {
+	return (box == this.sourceBox) ? this.targetBox : this.sourceBox;
 }
 
 
@@ -126,33 +220,30 @@ Router.prototype.setRuleCoordinates = function(rule) {
 // describing where the rules are aligned at the node 
 // -----
 
-function RuleArrangement(node, rules, anchorType) {
-	this.node = node;
-	this.rules = rules;
+function RuleArrangement(box, lines, anchorType) {
+	this.box = box
+	this.lines = lines;
 	this.anchorType = anchorType;
 }
 
-RuleArrangement.prototype.isIncoming = function(rule) {
-	return rule.targetNode == this.node;
+RuleArrangement.prototype.isIncoming = function (line) {
+	return line.targetBox == this.box;
 }
 
-RuleArrangement.prototype.isOutgoing = function(rule) {
-	return rule.sourceNode == this.node;
+RuleArrangement.prototype.isOutgoing = function (line) {
+	return line.sourceBox == this.box;
 }
 
 RuleArrangement.prototype.arrange = function() {
 	// first sort the nodes according to the positions of the other objects
 	var isHorizontal = this.isHorizontal();
-	var node = this.node;
+	var box = this.box;
 	var anchorType = this.anchorType;
-	this.rules.sort(function(r1, r2) {
-		var n1 = r1.getOtherNode(node);
-		var n2 = r2.getOtherNode(node);
-//		return isHorizontal
-//			? (n1.getCenterY() - n2.getCenterY())
-//			: (n1.getCenterX() - n2.getCenterX());
-		var angle1 = Math.atan2(n1.getCenterY() - node.getCenterY(), n1.getCenterX() - node.getCenterX());
-		var angle2 = Math.atan2(n2.getCenterY() - node.getCenterY(), n2.getCenterX() - node.getCenterX());
+	this.lines.sort(function(l1, l2) {
+		var b1 = l1.getOtherBox(box);
+		var b2 = l2.getOtherBox(box);
+		var angle1 = Math.atan2(b1.centerY - box.centerY, b1.centerX - box.centerX);
+		var angle2 = Math.atan2(b2.centerY - box.centerY, b2.centerX - box.centerX);
 		// da auf der linken Seite ein Koordinatensprung von PI ==> -PI statt findet 
 		// (beim uebertritt  ueber 180°), muss dieser ausgeglichen werden, in dem die Koordinaten
 		// in den Bereich [0 .. 2*PI] gebracht werden 
@@ -164,25 +255,26 @@ RuleArrangement.prototype.arrange = function() {
 			? angle1 - angle2
 			: angle2 - angle1;
 	});
-	var center = isHorizontal ? this.node.getCenterY() : this.node.getCenterX();  
-	var pixels = isHorizontal ? this.node.getHeight() : this.node.getWidth();
-	var count = this.rules.length;
+	var center = isHorizontal ? box.centerY : box.centerX;  
+	var pixels = isHorizontal ? box.height : box.width;
+	var count = this.lines.length;
 	var delta = pixels / count;
 
 	var fixedPos = isHorizontal 
-		? (this.anchorType=='left' ? this.node.getLeft()-1 : this.node.getLeft()+this.node.getWidth()) 
-		: (this.anchorType=='top' ? this.node.getTop()-1 : this.node.getTop()+this.node.getHeight());
+		? (this.anchorType=='left' ? Math.ceil(box.centerX - box.width/2) : Math.floor(box.centerX + box.width/2)) 
+		: (this.anchorType=='top' ? Math.ceil(box.centerY - box.height/2) : Math.floor(box.centerY + box.height/2));
 
 	for (var i=0; i<count; i++) {
-		var rule = this.rules[i];
+		var line = this.lines[i];
 		var variablePos = Math.floor(center + (i - (count-1)/2.0) * delta);
 		var coords = isHorizontal ? [fixedPos, variablePos] : [variablePos, fixedPos];
-		var anchor = new Anchor(this.node, coords[0], coords[1], this.anchorType, Math.floor(delta/2));
-		if (this.isIncoming(rule)) {
-			rule.setTargetAnchor(anchor);
+		var node = box.nodeOrRoutingPoint;
+		var anchor = new Anchor(node, coords[0], coords[1], this.anchorType, Math.floor(delta/2));
+		if (this.isIncoming(line)) {
+			line.targetAnchor = anchor;
 		}
 		else {
-			rule.setSourceAnchor(anchor);
+			line.sourceAnchor = anchor;
 		}
 	}
 } 
@@ -192,16 +284,16 @@ RuleArrangement.prototype.isHorizontal = function() {
 }
 
 RuleArrangement.prototype.addBendHints = function() {
-	if (this.rules.length < 2) return;
+	if (this.lines.length < 2) return;
 	var isHorizontal = this.isHorizontal();
 	var isTopLeft = isHorizontal ? this.anchorType == 'left' : this.anchorType == 'top';
 
 	var minBend = null, maxBend = null;
-	var lowRules = [], highRules = [];
-	for (var i=0; i<this.rules.length; i++) {
-		var rule = this.rules[i];
-		var anchor1 = rule.getSourceAnchor();
-		var anchor2 = rule.getTargetAnchor();
+	var lowLines = [], highLines = [];
+	for (var i=0; i<this.lines.length; i++) {
+		var line = this.lines[i];
+		var anchor1 = line.sourceAnchor;
+		var anchor2 = line.targetAnchor;
 		var minPos, maxPos;
 		if (!isHorizontal) {
 			maxPos = Math.max(anchor1.y-15, anchor2.y-5);
@@ -213,22 +305,22 @@ RuleArrangement.prototype.addBendHints = function() {
 		}
 		maxBend = maxBend ? Math.min(maxBend, maxPos) : maxPos;
 		minBend = minBend ? Math.max(minBend, minPos) : minPos;
-		var other = rule.getOtherNode(this.node);
+		var other = line.getOtherBox(this.box);
 		if (!isHorizontal 
 				? (isTopLeft
-						? this.node.getCenterX() < other.getCenterX()
-						: this.node.getCenterX() > other.getCenterX()) 
+						? this.box.centerX < other.centerX
+						: this.box.centerX > other.centerX) 
 				: (isTopLeft
-						? this.node.getCenterY() < other.getCenterY()
-						: this.node.getCenterY() > other.getCenterY())) {
-			lowRules.push(rule);
+						? this.box.centerY < other.centerY
+						: this.box.centerY > other.centerY)) {
+			lowLines.push(line);
 		}
 		else {
-			highRules.push(rule);
+			highLines.push(line);
 		}
 	}
 	
-	var count = Math.max(lowRules.length, highRules.length);
+	var count = Math.max(lowLines.length, highLines.length);
 	//comment out to enable low priority hints
 	//if (count < 2) return;
 	
@@ -237,14 +329,14 @@ RuleArrangement.prototype.addBendHints = function() {
 	var bendPos = (maxBend + minBend) / 2 - bendDelta*count*0.5; 
 	// and finally apply bends
 	var pos = bendPos;
-	var highPrio = (highRules.length >= 2) ? 1.0 : 0.5;
-	var lowPrio = (lowRules.length >= 2) ? 1.0 : 0.5;
+	var highPrio = (highLines.length >= 2) ? 1.0 : 0.5;
+	var lowPrio = (lowLines.length >= 2) ? 1.0 : 0.5;
 	for (var i=0; i<count; i++) {
-		if (highRules.length-1-i>=0) {
-			this.setBendHint(highRules[highRules.length-1-i].getSourceAnchor(), pos, highPrio);
+		if (highLines.length-1-i>=0) {
+			this.setBendHint(highLines[highLines.length-1-i].sourceAnchor, pos, highPrio);
 		} 
-		if (i<lowRules.length) {
-			this.setBendHint(lowRules[i].getSourceAnchor(), pos, lowPrio);
+		if (i<lowLines.length) {
+			this.setBendHint(lowLines[i].sourceAnchor, pos, lowPrio);
 		}
 		pos += bendDelta;
 	}

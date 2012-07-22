@@ -75,10 +75,26 @@ Node.prototype.destroyDraggable = function() {
 Node.prototype.createDraggable = function() {
 	
 	if (!this.snapManager){
-		this.snapManager = new SnapManager(this);
+		this.snapManager = new SnapManager(this.flowchart);
 	}
 	
-	this.draggable = this.snapManager.createDraggable();
+	this.draggable = new Draggable(this.getDOM(), {
+		ghosting: true, starteffect: null, endeffect: null,
+		onStart: function(draggable, event) {
+			draggable.__snapManager.initializeSnapsForNode(draggable.__node);
+		},
+		onEnd: function(draggable, event) {
+			draggable.__snapManager.showSnapLines(null, null);
+			draggable.__node.updateFromView();
+		},
+		snap: function (x, y, draggable) {
+			return draggable.__snapManager.snapIt(x, y);
+		},
+		scroll: this.flowchart.fcid
+	});
+	this.draggable.__snapManager = this.snapManager;
+	this.draggable.__node = this;
+	
 	// make this node a possible target for the arrow tool
 	Droppables.add(this.getDOM(), {
 		accept: 'ArrowTool', 
@@ -514,48 +530,81 @@ ArrowTool.prototype.showLine = function(x, y) {
 // handle dragging
 // -----
 
-function SnapManager(node) {
-	this.node = node;
-	this.flowchart = node.flowchart;
+function SnapManager(flowchart) {
+	this.flowchart = flowchart;
 	this.hSnaps = [];
 	this.vSnaps = [];
 	this.snapDistance = 5;
 }
 
-SnapManager.prototype.initializeSnaps = function() {
+SnapManager.prototype.initializeSnapsForRoutingPoint = function(routingPoint) {
 	// empty existing ones
 	this.hSnaps = [];
 	this.vSnaps = [];
+	var x = routingPoint.getX();
+	var y = routingPoint.getY();
+	var offsetX = 7;
+	var offsetY = 7;
+	
+	// add snaps for itself (to have the highest priority)
+	this.hSnaps.push(new Snap(offsetX, x));
+	this.vSnaps.push(new Snap(offsetY, y));
+
+	// add snaps for other routing points
+	for (var i=0; i<routingPoint.rule.routingPoints.length; i++) {
+		var other = routingPoint.rule.routingPoints[i];
+		if (routingPoint == other) continue;
+		this.hSnaps.push(new Snap(offsetX, other.getX()));
+		this.vSnaps.push(new Snap(offsetY, other.getY()));
+	}
+	
+	// add snaps for connected node centers to this node's center
+	var n1 = routingPoint.rule.getSourceNode();
+	var n2 = routingPoint.rule.getTargetNode();
+	this.hSnaps.push(new Snap(offsetX, n1.getCenterX()));
+	this.vSnaps.push(new Snap(offsetY, n1.getCenterY()));
+	this.hSnaps.push(new Snap(offsetX, n2.getCenterX()));
+	this.vSnaps.push(new Snap(offsetY, n2.getCenterY()));
+}
+
+SnapManager.prototype.initializeSnapsForNode = function (node) {
+	// empty existing ones
+	this.hSnaps = [];
+	this.vSnaps = [];
+	var x = node.getCenterX();
+	var y = node.getCenterY();
+	var offsetX = node.getWidth() / 2;
+	var offsetY = node.getHeight() / 2;
 	
 	// add snaps for itself (to have the highest priority
-	this.hSnaps.push(new Snap(this.node.getWidth()/2, this.node.getCenterX()));
-	this.vSnaps.push(new Snap(this.node.getHeight()/2, this.node.getCenterY()));
+	this.hSnaps.push(new Snap(offsetX, x));
+	this.vSnaps.push(new Snap(offsetY, y));
 	
 	// add snaps for all rules to have a single straight line
-	var rules = this.flowchart.findRulesForNode(this.node);
+	var rules = this.flowchart.findRulesForNode(node);
 	for (var i=0; i<rules.length; i++) {
 		var rule = rules[i];
 		var myAnchor = rule.getSourceAnchor();
 		var otherAnchor = rule.getTargetAnchor();
-		if (this.node == otherAnchor.node) {
+		if (node == otherAnchor.node) {
 			otherAnchor = rule.getSourceAnchor();
 			myAnchor = rule.getTargetAnchor();
 		}
 		if (otherAnchor.type == 'top' || otherAnchor.type == 'bottom') {
 			// horizontal snap
-			this.hSnaps.push(new Snap(myAnchor.x - this.node.getLeft(), otherAnchor.x));
+			this.hSnaps.push(new Snap(myAnchor.x - node.getLeft(), otherAnchor.x));
 		}
 		else {
 			// vertical snap
-			this.vSnaps.push(new Snap(myAnchor.y - this.node.getTop(), otherAnchor.y));
+			this.vSnaps.push(new Snap(myAnchor.y - node.getTop(), otherAnchor.y));
 		}
 	}
 	
 	// add snaps for all node centers to this node's center
 	for (var i=0; i<this.flowchart.nodes.length; i++) {
 		var node = this.flowchart.nodes[i];
-		this.hSnaps.push(new Snap(this.node.getWidth()/2, node.getCenterX()));
-		this.vSnaps.push(new Snap(this.node.getHeight()/2, node.getCenterY()));
+		this.hSnaps.push(new Snap(offsetX, node.getCenterX()));
+		this.vSnaps.push(new Snap(offsetY, node.getCenterY()));
 	}
 }
 
@@ -583,25 +632,6 @@ SnapManager.prototype.findSnap = function(snaps, position) {
 		}
 	}
 	return bestSnap;
-}
-
-SnapManager.prototype.createDraggable = function() {
-	var newDrag = new Draggable(this.node.getDOM(), {
-		ghosting: true, starteffect: null, endeffect: null,
-		onStart: function(draggable, event) {
-			draggable.__snapManager.initializeSnaps();
-		},
-		onEnd: function(draggable, event) {
-			draggable.__snapManager.showSnapLines(null, null);
-			draggable.__snapManager.node.updateFromView();
-		},
-		snap: function (x, y, draggable) {
-			return draggable.__snapManager.snapIt(x, y);
-		},
-		scroll: this.node.flowchart.fcid
-	});
-	newDrag.__snapManager = this;
-	return newDrag;	
 }
 
 SnapManager.prototype.showSnapLines = function(hSnap, vSnap) {

@@ -9,6 +9,7 @@ function Rule(id, sourceNode, guard, targetNode) {
 	this.targetNode = targetNode;
 	this.dom = null;
 	this.coordinates = [];
+	this.routingPoints = [];
 	
 	// add to parent flowchart
 	this.flowchart.addRule(this);
@@ -16,6 +17,8 @@ function Rule(id, sourceNode, guard, targetNode) {
 	// and inherit the visibility
 	this.setVisible(this.flowchart.isVisible());
 }
+
+//Rule.enableRouting = true;
 
 
 Rule.prototype.getDOM = function() {
@@ -199,11 +202,48 @@ Rule.prototype.setSelectionVisible = function(isSelected) {
 	var hightlight = this.dom.select('.rule_highlight')[0];
 	if (isSelected) {
 		// show highlight
-		// TODO: avoid using id as dom id(s)
 		hightlight.style.visibility = 'visible';
 		this.setGuardVisible(false, true);
 		this.arrowTool = new RuleArrowTool(this);
 		this.arrowTool.setVisible(true);
+		this.routingTools = [];
+		var coordIndexes = [];
+		coordIndexes.push(0);
+		for (var i=0; i<this.routingPoints.length; i++) {
+			var routingPoint = this.routingPoints[i];
+			var tool = new RoutingTool(routingPoint);
+			tool.setVisible(true);
+			this.routingTools.push(tool);
+			// look for index of coordinates for this routing point
+			for (var ci = coordIndexes[0]; ci<this.coordinates.length; ci++) {
+				var coord = this.coordinates[ci];
+				if (coord[0] == routingPoint.getX() && coord[1] == routingPoint.getY()) {
+					coordIndexes.push(ci);
+					break;
+				}
+			}
+		}
+		// add intermediate routing tool for each part of routing lines
+		coordIndexes.push(this.coordinates.length-1);
+		if (Rule.enableRouting) for (var i=0; i<coordIndexes.length-1; i++) {
+			var ci1 = coordIndexes[i];
+			var ci2 = coordIndexes[i+1];
+			// if we have three parts, use the middle one
+			var c1 = this.coordinates[ci1], c2 = this.coordinates[ci1+1];
+			if (ci2 - ci1 > 2) {
+				var c1 = this.coordinates[ci1+1], c2 = this.coordinates[ci1+2];
+			}
+			// if we have only one short path, add no tool at all
+			else if (Math.abs(c1[0]-c2[0]) < 32 && Math.abs(c1[1]-c2[1]) < 32) {
+				continue;
+			}
+			var routingPoint = new RoutingPoint(this);
+			routingPoint.setCoordinates(
+					Math.floor((c1[0]+c2[0])/2), Math.floor((c1[1]+c2[1])/2));
+			var tool = new RoutingTool(routingPoint, i);
+			tool.setVisible(true);
+			this.routingTools.push(tool);			
+		}
 	}
 	else {
 		hightlight.style.visibility = 'hidden';
@@ -211,6 +251,12 @@ Rule.prototype.setSelectionVisible = function(isSelected) {
 		if (this.arrowTool) {
 			this.arrowTool.destroy();
 			this.arrowTool = null;
+		}
+		if (this.routingTools) {
+			for (var i=0; i<this.routingTools.length; i++) {
+				this.routingTools[i].destroy();
+			}
+			this.routingTools = null;
 		}
 	}
 }
@@ -309,10 +355,101 @@ Rule.createFromXML = function(flowchart, xmlDom, pasteOptions) {
 	
 	var guard = null;
 	var guardDoms = xmlDom.getElementsByTagName('guard');
-	
 	var guard = Guard.createFromXML(flowchart, guardDoms, pasteOptions, sourceNode);
+
+	var rule = new Rule(id, sourceNode, guard, targetNode);
+
+	var routingDoms = xmlDom.getElementsByTagName('routingPoint');
+	var routingPoints = RoutingPoint.createArrayFromXML(rule, routingDoms);
+	rule.routingPoints = routingPoints;
 	
-	return new Rule(id, sourceNode, guard, targetNode);
+	return rule;
+}
+
+//----
+//RoutingPoint
+//----
+
+function RoutingPoint(rule, percentX, percentY) {
+	this.rule = rule;
+	this.percentX = percentX;
+	this.percentY = percentY;
+}
+
+RoutingPoint.createArrayFromXML = function (rule, xmlDoms) {
+	var result = [];
+	for (var i=0; i<xmlDoms.length; i++) {
+		var x = Number(xmlDoms[i].getAttribute('x'));
+		var y = Number(xmlDoms[i].getAttribute('y'));
+		if (!isNaN(x) && !isNaN(y)) {
+			result.push(new RoutingPoint(rule, x, y));
+		}
+	}
+	return result;
+}
+
+RoutingPoint.prototype.setCoordinates = function (x, y) {
+	var x1 = Math.floor(this.rule.getSourceNode().getCenterX());
+	var y1 = Math.floor(this.rule.getSourceNode().getCenterY());
+	var x2 = Math.floor(this.rule.getTargetNode().getCenterX());
+	var y2 = Math.floor(this.rule.getTargetNode().getCenterY());
+	x = Math.floor(x);
+	y = Math.floor(y);
+	// if percentage if outside [0..1], use absolute pixel difference as percentage
+	var px, py;
+	if (x < x1 && x1 <= x2) px = x - x1;
+	if (x > x1 && x1 >= x2) px = x1 - x; 
+	if (x < x2 && x2 <= x1) px = x2 - x;
+	if (x > x2 && x2 >= x1) px = x - x2;
+	if (y < y1 && y1 <= y2) py = y - y1;
+	if (y > y1 && y1 >= y2) py = y1 - y;
+	if (y < y2 && y2 <= y1) py = y2 - y;
+	if (y > y2 && y2 >= y1) py = y - y2;
+	// otherwise calculate percentage
+	var dx = x2 == x1 ? 1 : (x2 - x1);
+	var dy = y2 == y1 ? 1 : (y2 - y1);
+	this.percentX = px ? px : (x - x1) / dx;
+	this.percentY = py ? py : (y - y1) / dy;
+}
+
+RoutingPoint.prototype.destroy = function() {
+	// delete this routing point from rule
+	for (var i=0; i<this.rule.routingPoints.length; i++) {
+		if (this.rule.routingPoints[i] == this) {
+			this.rule.routingPoints.splice(i, 1);
+			break;
+		}
+	}
+	// update flowchart and reselect rule
+	var flowchart = this.rule.flowchart;
+	flowchart.router.rerouteNodes([this.rule.getSourceNode(), this.rule.getTargetNode()]);
+	this.rule.select();
+}
+
+RoutingPoint.prototype.getX = function () {
+	var n1 = this.rule.getSourceNode();
+	var n2 = this.rule.getTargetNode();
+	// handle outside values as relative position
+	var sgn = n1.getCenterX() < n2.getCenterX() ? 1 : -1; 
+	if (this.percentX < 0) return Math.floor(n1.getCenterX() + this.percentX * sgn);
+	if (this.percentX > 1) return Math.floor(n2.getCenterX() + this.percentX * sgn);
+	// otherwise handle as precentage between nodes
+	var dx = n2.getCenterX() - n1.getCenterX();
+	if (dx == 0) dx = 1;
+	return Math.floor(n1.getCenterX() + dx * this.percentX);
+}
+
+RoutingPoint.prototype.getY = function () {
+	var n1 = this.rule.getSourceNode();
+	var n2 = this.rule.getTargetNode();
+	// handle outside values as relative position
+	var sgn = n1.getCenterY() < n2.getCenterY() ? 1 : -1; 
+	if (this.percentY < 0) return Math.floor(n1.getCenterY() + this.percentY * sgn);
+	if (this.percentY > 1) return Math.floor(n2.getCenterY() + this.percentY * sgn);
+	// otherwise handle as precentage between nodes
+	var dy = n2.getCenterY() - n1.getCenterY();
+	if (dy == 0) dy = 1;
+	return Math.floor(n1.getCenterY() + dy * this.percentY);
 }
 
 

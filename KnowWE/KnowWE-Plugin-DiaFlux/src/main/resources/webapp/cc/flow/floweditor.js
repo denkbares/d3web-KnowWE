@@ -250,11 +250,12 @@ FlowEditor.prototype.saveFlowchart = function(closeOnSuccess) {
 Flowchart.prototype.createDroppables = function(dom, contentPane, trashPane) {
 	// initialize trash to delete nodes and rules
 	Droppables.add(trashPane, { 
-		accept: ['Node', 'Rule'],
+		accept: ['Node', 'Rule', 'RoutingTool'],
 		hoverclass: 'trash_hover',
 		onDrop: function(draggable, droppable, event) {
 			if (draggable.__node) draggable.__node.destroy();
 			if (draggable.__rule) draggable.__rule.destroy();
+			if (draggable.__routingTool) draggable.__routingTool.routingPoint.destroy();
 		}
 	});
 

@@ -124,3 +124,22 @@
 	background-image: url(../image/tool_arrow_down.gif);
 }
 
+.RoutingTool {
+	position: absolute; 
+	overflow:visible; 
+	width:14px;
+	height:14px;
+	z-index: 200; 
+	cursor: crosshair;
+	background-image: url(../image/tool_routing.gif);
+}
+
+.RoutingToolGray {
+	position: absolute; 
+	overflow:visible; 
+	width:14px;
+	height:14px;
+	z-index: 200; 
+	cursor: crosshair;
+	background-image: url(../image/tool_routing_gray.gif);
+}
