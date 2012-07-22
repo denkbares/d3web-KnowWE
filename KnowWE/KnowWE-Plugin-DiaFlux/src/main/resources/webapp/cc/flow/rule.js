@@ -18,7 +18,7 @@ function Rule(id, sourceNode, guard, targetNode) {
 	this.setVisible(this.flowchart.isVisible());
 }
 
-//Rule.enableRouting = true;
+Rule.enableRouting = true;
 
 
 Rule.prototype.getDOM = function() {
@@ -397,14 +397,16 @@ RoutingPoint.prototype.setCoordinates = function (x, y) {
 	y = Math.floor(y);
 	// if percentage if outside [0..1], use absolute pixel difference as percentage
 	var px, py;
-	if (x < x1 && x1 <= x2) px = x - x1;
-	if (x > x1 && x1 >= x2) px = x1 - x; 
-	if (x < x2 && x2 <= x1) px = x2 - x;
-	if (x > x2 && x2 >= x1) px = x - x2;
-	if (y < y1 && y1 <= y2) py = y - y1;
-	if (y > y1 && y1 >= y2) py = y1 - y;
-	if (y < y2 && y2 <= y1) py = y2 - y;
-	if (y > y2 && y2 >= y1) py = y - y2;
+	if (x1 == x2) px = x1 - x;
+	if (y1 == y2) py = y1 - y;
+	if (x < x1 && x1 < x2) px = x - x1;
+	if (x > x1 && x1 > x2) px = x1 - x; 
+	if (x < x2 && x2 < x1) px = x2 - x;
+	if (x > x2 && x2 > x1) px = x - x2;
+	if (y < y1 && y1 < y2) py = y - y1;
+	if (y > y1 && y1 > y2) py = y1 - y;
+	if (y < y2 && y2 < y1) py = y2 - y;
+	if (y > y2 && y2 > y1) py = y - y2;
 	// otherwise calculate percentage
 	var dx = x2 == x1 ? 1 : (x2 - x1);
 	var dy = y2 == y1 ? 1 : (y2 - y1);
@@ -465,6 +467,9 @@ function Anchor(node, x, y, type, slide) {
 	this.slide = slide;
 }
 
+Anchor.prototype.isHorizontal = function() {
+	return this.type == 'left' || this.type == 'right';
+}
 
 Anchor.prototype.getGuardPosition = function() {
 	if (this.type == 'top') {

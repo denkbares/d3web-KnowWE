@@ -51,6 +51,83 @@ Router.prototype.rerouteAll = function() {
 		for (var k=0; k<lines.length; k++) {
 			var line = lines[k];
 			var otherBox = line.getOtherBox(box); 
+			// if we are using a routing box
+			// test some special cases for routing
+			if (otherBox.isRoutingPoint()) {
+				// special case #1:
+				// which is horizontal beside the incoming source, 
+				// but vertically in between its previous and next box
+				// force horizontal layout with only one bend
+				var left = box.centerX - box.width / 2; 
+				var right = box.centerX + box.width / 2; 
+				var top = box.centerY - box.height / 2; 
+				var bottom = box.centerY + box.height / 2; 
+				// get range of surrounding boxes
+				var xmin = otherBox.lines[0].getOtherBox(otherBox).centerX;
+				var xmax = otherBox.lines[0].getOtherBox(otherBox).centerX;
+				var ymin = otherBox.lines[0].getOtherBox(otherBox).centerY;
+				var ymax = otherBox.lines[0].getOtherBox(otherBox).centerY;
+				for (var l=1; l<otherBox.lines.length; l++) {
+					var boxx = otherBox.lines[l].getOtherBox(otherBox).centerX;
+					var boxy = otherBox.lines[l].getOtherBox(otherBox).centerY;
+					var boxw = otherBox.lines[l].getOtherBox(otherBox).width;
+					var boxh = otherBox.lines[l].getOtherBox(otherBox).height;
+					xmin = Math.min(xmin, boxx - boxw/2);
+					xmax = Math.max(xmax, boxx + boxw/2);
+					ymin = Math.min(ymin, boxy - boxh/2);
+					ymax = Math.max(ymax, boxy + boxh/2);
+				}
+				if (otherBox.centerX < left || otherBox.centerX > right) {
+					if (ymin <= otherBox.centerY && otherBox.centerY <= ymax) {
+						// here we reached the special case!
+						if (otherBox.centerX < left) {
+							linesLeft.push(line);
+						}
+						else {
+							linesRight.push(line);
+						}
+						continue;
+					}
+				}
+				if (otherBox.centerY < top || otherBox.centerY > bottom) {
+					if (xmin <= otherBox.centerX && otherBox.centerX <= xmax) {
+						// here we reached the special case!
+						if (otherBox.centerY < top) {
+							linesTop.push(line);
+						}
+						else {
+							linesBottom.push(line);
+						}
+						continue;
+					}
+				}
+				// special case #2:
+				// if the routing point is in one direction 
+				// further away than the next target point
+				// go to that direction first
+				var nextBox;
+				for (var l=0; l<otherBox.lines.length; l++) {
+					nextBox = otherBox.lines[l].getOtherBox(otherBox);
+					if (nextBox != box) break; // we found it 
+				}
+				if (otherBox.centerY > bottom && nextBox.centerY <= box.centerY) {
+					linesBottom.push(line);
+					continue;
+				}
+				if (otherBox.centerY < top && nextBox.centerY >= box.centerY) {
+					linesTop.push(line);
+					continue;
+				}
+				if (otherBox.centerX > right && nextBox.centerX <= box.centerX) {
+					linesRight.push(line);
+					continue;
+				}
+				if (otherBox.centerX < left && nextBox.centerX >= box.centerX) {
+					linesLeft.push(line);
+					continue;
+				}
+			}
+			
 			// calculate horizontal and vertical space between the boxes
 			// the element is anchored in a way, 
 			// that most available space is used
@@ -112,8 +189,11 @@ Router.prototype.setRuleCoordinates = function(rule) {
 		var x2 = targetAnchor.x;
 		var y2 = targetAnchor.y;
 		var s2 = targetAnchor.slide;
-		var isHorizontal = (sourceAnchor.type == 'left' || sourceAnchor.type == 'right'); 
-		if (isHorizontal) {
+		var leadingAnchor = line.sourceBox.isRoutingPoint() ? targetAnchor : sourceAnchor;
+		var trailingAnchor = line.sourceBox.isRoutingPoint() ? sourceAnchor : targetAnchor;
+		var bendOnce = line.sourceBox.isRoutingPoint() || line.targetBox.isRoutingPoint();
+		
+		if (leadingAnchor.isHorizontal()) {
 			var overlap = Math.min(y1+s1, y2+s2) - Math.max(y1-s1, y2-s2);
 			if (overlap >= 0) {
 				// draw straight line, using optimal source position if possible
@@ -124,7 +204,9 @@ Router.prototype.setRuleCoordinates = function(rule) {
 			}
 			else {
 				// draw double bended line
-				var xMiddle = (sourceAnchor.__bendHint || targetAnchor.__bendHint || Math.floor((x1+x2)/2)); 
+				var xMiddle = Math.floor((x1+x2)/2);
+				if (bendOnce) xMiddle = trailingAnchor.x;
+				else xMiddle = (sourceAnchor.__bendHint || targetAnchor.__bendHint || xMiddle); 
 				coordinates.push([x1, y1]);
 				coordinates.push([xMiddle, y1]);
 				coordinates.push([xMiddle, y2]);
@@ -142,7 +224,9 @@ Router.prototype.setRuleCoordinates = function(rule) {
 			}
 			else {
 				// draw double bended line
-				var yMiddle = (sourceAnchor.__bendHint || targetAnchor.__bendHint || Math.floor((y1+y2)/2)); 
+				var yMiddle = Math.floor((y1+y2)/2); 
+				if (bendOnce) yMiddle = trailingAnchor.y;
+				else yMiddle = (sourceAnchor.__bendHint || targetAnchor.__bendHint || yMiddle); 
 				coordinates.push([x1, y1]);
 				coordinates.push([x1, yMiddle]);
 				coordinates.push([x2, yMiddle]); 
@@ -195,6 +279,10 @@ RoutingBox.createFromRoutingPoint = function (routingPoint) {
 			routingPoint.getY(),
 			1 , 1
 			);
+}
+
+RoutingBox.prototype.isRoutingPoint = function () {
+	return this.width <= 1 && this.height <= 1;
 }
 
 function RoutingLine (sourceBox, targetBox) {
@@ -285,6 +373,7 @@ RuleArrangement.prototype.isHorizontal = function() {
 
 RuleArrangement.prototype.addBendHints = function() {
 	if (this.lines.length < 2) return;
+	if (this.box.isRoutingPoint()) return;
 	var isHorizontal = this.isHorizontal();
 	var isTopLeft = isHorizontal ? this.anchorType == 'left' : this.anchorType == 'top';
 
