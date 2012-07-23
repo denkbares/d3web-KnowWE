@@ -39,12 +39,15 @@ import javax.servlet.http.HttpServletRequest;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.records.SessionConversionFactory;
 import de.d3web.core.records.SessionRecord;
 import de.d3web.core.records.io.SessionPersistenceManager;
 import de.d3web.core.session.Session;
 import de.d3web.scoring.Score;
 import de.d3web.we.basic.D3webKnowledgeHandler;
+import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.D3webTerm;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
@@ -211,7 +214,7 @@ public class D3webUtils {
 	public static <TermObject extends NamedObject> TermObject getTermObjectDefaultImplementation(Article article, Section<? extends D3webTerm<TermObject>> section) {
 		TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
-		TerminologyObject termObject = kb.getManager().search(termIdentifier.getLastPathElement());
+		NamedObject termObject = kb.getManager().search(termIdentifier.getLastPathElement());
 		if (termObject != null) {
 			if (section.get().getTermObjectClass(section).isAssignableFrom(termObject.getClass())) {
 				return (TermObject) termObject;
@@ -220,7 +223,7 @@ public class D3webUtils {
 				return null;
 			}
 		}
-		Collection<TerminologyObject> foundTermObjects = getTermObjectsIgnoreTermObjectClass(
+		Collection<NamedObject> foundTermObjects = getTermObjectsIgnoreTermObjectClass(
 				article, section);
 		if (foundTermObjects.size() == 1) {
 			termObject = foundTermObjects.iterator().next();
@@ -231,15 +234,25 @@ public class D3webUtils {
 		return null;
 	}
 
-	public static <TermObject extends NamedObject> Collection<TerminologyObject> getTermObjectsIgnoreTermObjectClass(Article article, Section<? extends D3webTerm<TermObject>> section) {
+	public static <TermObject extends NamedObject> Collection<NamedObject> getTermObjectsIgnoreTermObjectClass(Article article, Section<? extends D3webTerm<TermObject>> section) {
 		TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
 		TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
-		TerminologyObject termObject;
 		Collection<TermIdentifier> allTermsEqualIgnoreCase = terminologyHandler.getAllTermsEqualIgnoreCase(termIdentifier);
-		List<TerminologyObject> foundTermObjects = new ArrayList<TerminologyObject>();
+		List<NamedObject> foundTermObjects = new ArrayList<NamedObject>();
 		for (TermIdentifier termEqualIgnoreCase : allTermsEqualIgnoreCase) {
-			termObject = kb.getManager().search(termEqualIgnoreCase.getLastPathElement());
+			NamedObject termObject = null;
+			if (section.get() instanceof AnswerDefinition) {
+				String[] pathElements = termEqualIgnoreCase.getPathElements();
+				if (pathElements.length != 2) continue;
+				TerminologyObject question = kb.getManager().search(pathElements[0]);
+				if (question == null || !(question instanceof QuestionChoice)) continue;
+				QuestionChoice questionChoice = (QuestionChoice) question;
+				termObject = KnowledgeBaseUtils.findChoice(questionChoice, pathElements[1], false);
+			}
+			else {
+				termObject = kb.getManager().search(termEqualIgnoreCase.getLastPathElement());
+			}
 			if (termObject != null) foundTermObjects.add(termObject);
 		}
 		return foundTermObjects;
@@ -287,7 +300,7 @@ public class D3webUtils {
 		catch (MalformedURLException e) {
 			Logger.getLogger(KnowWEUtils.class.getName())
 					.warning("Cannot identify url for knowledgebase : "
-									+ e.getMessage());
+							+ e.getMessage());
 		}
 		return url;
 	}

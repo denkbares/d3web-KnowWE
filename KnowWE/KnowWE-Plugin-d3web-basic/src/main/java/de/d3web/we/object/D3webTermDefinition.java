@@ -22,7 +22,6 @@ package de.d3web.we.object;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.terminology.TermIdentifier;
@@ -60,7 +59,7 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 			// obviously there are already errors present, simply abort
 			return msgs;
 		}
-		Collection<TerminologyObject> termObjectsIgnoreTermObjectClass =
+		Collection<NamedObject> termObjectsIgnoreTermObjectClass =
 				D3webUtils.getTermObjectsIgnoreTermObjectClass(article, section);
 		if (termObjectsIgnoreTermObjectClass.isEmpty()) {
 			// object does not yet exist, so just return null to continue
@@ -68,7 +67,7 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 			return null;
 		}
 		else {
-			for (TerminologyObject termObject : termObjectsIgnoreTermObjectClass) {
+			for (NamedObject termObject : termObjectsIgnoreTermObjectClass) {
 				if (!section.get().getTermObjectClass(section).isAssignableFrom(
 						termObject.getClass())) {
 					// other object already exist... return addition error if
