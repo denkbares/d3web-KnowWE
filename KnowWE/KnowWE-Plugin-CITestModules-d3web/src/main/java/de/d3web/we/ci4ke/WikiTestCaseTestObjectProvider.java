@@ -53,10 +53,14 @@ public class WikiTestCaseTestObjectProvider implements TestObjectProvider {
 		if (!c.equals(TestCase.class)) {
 			return Collections.emptyList();
 		}
-
-		Pattern pattern = Pattern.compile(name);
-
 		List<T> result = new ArrayList<T>();
+		Pattern pattern = null;
+		try {
+			pattern = Pattern.compile(name);
+		} catch (java.util.regex.PatternSyntaxException e) {
+			return result;
+		}
+
 
 		// looks in all articles
 		Environment env = Environment.getInstance();
