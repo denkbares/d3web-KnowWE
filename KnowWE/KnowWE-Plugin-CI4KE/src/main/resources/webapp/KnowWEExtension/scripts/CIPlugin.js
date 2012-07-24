@@ -46,8 +46,29 @@ function helper(options){
 	new _KA(options).send();
 }
 
-
-
+// Maybe return given messages instead
+function CI_onErrorBehavior() {
+	//hideAjaxLoader();
+	if (this.status == null) return;
+	switch (this.status) {
+	  case 0:
+		// server not running, do nothing.
+		break;
+	  case 666:
+  	    alert("There is currently already a build running for that dashbaord. Please wait.");
+	    break;
+	  case 404:
+    	alert("This page no longer exists. Please reload.");
+	    break;
+	  case 409:
+  	    alert("This section has changed since you " 
+  	    		+ "loaded this page. Please reload the page.");
+	    break;
+	  default:
+	    alert("Error " + this.status + ". Please reload the page.");
+	    break;
+	}
+}
 
 function fctExecuteNewBuild( dashboardID,title ) {
 
@@ -64,18 +85,14 @@ function fctExecuteNewBuild( dashboardID,title ) {
                 ids : [ dashboardID ],
                 action : 'insert',
                 fn : function() {
-                	// KNOWWE.core.util.addCollabsiblePluginHeader( dashboardID );
                 	window.location='Wiki.jsp?page=' + title;
 					makeCIBoxesCollapsible( dashboardID );
 					try {
 						KNOWWE.helper.observer.notify('update');
 					} catch (e) { /* ignore */
 					}
-					KNOWWE.core.util.updateProcessingState(-1);
 				},
-				onError : function() {
-					KNOWWE.core.util.updateProcessingState(-1);
-				}
+				onError : CI_onErrorBehavior,
             }
      }
 	
@@ -96,7 +113,7 @@ function fctExecuteNewBuild( dashboardID,title ) {
 				//document.getElementById("progress_value").style.width = percent+"%";
 				document.getElementById("progress_value").innerHTML = percent+" %";
 				document.getElementById("progress_text").innerHTML = " "+""+message+"";
-				if(location == window.location){jq$.delay(helper(options2),1000);}
+				if(location == window.location){jq$.delay(helper(options2),2000);}
 
 					}
 				},
@@ -106,30 +123,11 @@ function fctExecuteNewBuild( dashboardID,title ) {
 	var location = window.location;
 	var progressBar = document.getElementById('progress_container');
 	progressBar.innerHTML = '<div style="display:inline" class="prog-meter-wrap" ><div class="prog-meter-value" id="progress_value">&nbsp;0 %</div></div><div class="prog-meter-text" style="display:inline" id="progress_text">starting build...</div>';
-	KNOWWE.core.util.updateProcessingState(1);
+	//KNOWWE.core.util.updateProcessingState(1);
      new _KA(options).send();
      new _KA(options2).send();
      
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 function fctRefreshBuildList( dashboardID, indexFromBack, numberOfBuilds ) {

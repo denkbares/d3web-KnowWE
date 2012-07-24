@@ -22,6 +22,8 @@ package de.d3web.we.ci4ke.action;
 
 import java.io.IOException;
 
+import de.d3web.core.io.progress.ProgressListener;
+import de.d3web.core.io.progress.ProgressListenerManager;
 import de.d3web.testing.BuildResult;
 import de.d3web.we.ci4ke.build.CIBuildRenderer;
 import de.d3web.we.ci4ke.build.CIBuilder;
@@ -40,6 +42,15 @@ public class CIAction extends AbstractAction {
 
 		String dashboardName = String.valueOf(context.getParameter("id"));
 		dashboardName = Strings.decodeURL(dashboardName);
+		
+		ProgressListener listener = ProgressListenerManager.getInstance().getProgressListener(dashboardName);
+		if(listener != null) {
+			context.sendError(666, "<message will be inserted in JS>"); 
+			// NOTE: on current ajax handling this message text will will not be shown.
+			// but a list mapping error codes to message texts is managed in JS
+			return;
+		}
+
 
 		String topic = context.getTitle();
 		String web = context.getWeb();
