@@ -17,15 +17,7 @@
 	</runtime>
 
 
-	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
-		id="EmptyQuestionnaireTest">
-		<parameter id="class"
-			value="de.d3web.we.ci4ke.testmodules.EmptyQuestionnaireTest" />
-		<parameter id="name" value="EmptyQuestionnaireTest" />
-		<parameter id="description" value="CITest EmptyQuestionnaireTest" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
+
 
 	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
 		id="TestsuiteRunnerTest">
@@ -37,15 +29,6 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
-		<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
-		id="TestCaseTest">
-		<parameter id="class"
-			value="de.d3web.we.ci4ke.testmodules.TestCaseTest" />
-		<parameter id="name" value="TestCaseTest" />
-		<parameter id="description" value="CITest TestCaseTest" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
 	
 	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
 		id="KnowledgeBaseTestObjectProvider">
