@@ -421,7 +421,12 @@ public class Strings {
 	 * @return
 	 */
 	public static String maskHTML(String htmlContent) {
-		return StringUtils.replaceEach(htmlContent, HTML, MASKED_HTML);
+		for (int i = 0; i < HTML.length; i++) {
+			// somehow this is way faster for large strings than
+			// StringUtils.replaceEach(String, String[], String[]).
+			htmlContent = StringUtils.replace(htmlContent, HTML[i], MASKED_HTML[i]);
+		}
+		return htmlContent;
 	}
 
 	/**
@@ -662,12 +667,17 @@ public class Strings {
 	 * @return
 	 */
 	public static String unmaskHTML(String htmlContent) {
-		return StringUtils.replaceEach(htmlContent, MASKED_HTML, HTML);
+		for (int i = 0; i < MASKED_HTML.length; i++) {
+			// somehow this is way faster for large strings than
+			// StringUtils.replaceEach(String, String[], String[]).
+			htmlContent = StringUtils.replace(htmlContent, MASKED_HTML[i], HTML[i]);
+		}
+		return htmlContent;
 
 	}
 
 	public static String unmaskNewline(String htmlContent) {
-		htmlContent = htmlContent.replace(Environment.NEWLINE, "\n");
+		htmlContent = StringUtils.replace(htmlContent, Environment.NEWLINE, "\n");
 		return htmlContent;
 	}
 
