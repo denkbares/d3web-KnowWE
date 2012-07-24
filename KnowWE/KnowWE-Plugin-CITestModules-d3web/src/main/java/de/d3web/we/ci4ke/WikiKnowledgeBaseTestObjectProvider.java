@@ -35,7 +35,7 @@ import de.knowwe.core.Environment;
  * @author jochenreutelshofer
  * @created 22.05.2012
  */
-public class KnowledgeBaseTestObjectProvider implements TestObjectProvider {
+public class WikiKnowledgeBaseTestObjectProvider implements TestObjectProvider {
 
 	@Override
 	public <T> List<T> getTestObjects(Class<T> c, String id) {
