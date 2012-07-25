@@ -46,9 +46,8 @@ function helper(options){
 	new _KA(options).send();
 }
 
-// Maybe return given messages instead
+
 function CI_onErrorBehavior() {
-	//hideAjaxLoader();
 	if (this.status == null) return;
 	switch (this.status) {
 	  case 0:
@@ -60,12 +59,8 @@ function CI_onErrorBehavior() {
 	  case 404:
     	alert("This page no longer exists. Please reload.");
 	    break;
-	  case 409:
-  	    alert("This section has changed since you " 
-  	    		+ "loaded this page. Please reload the page.");
-	    break;
 	  default:
-	    alert("Error " + this.status + ". Please reload the page.");
+	    //alert("Error " + this.status + ". Please reload the page.");
 	    break;
 	}
 }
@@ -97,7 +92,7 @@ function fctExecuteNewBuild( dashboardID,title ) {
      }
 	
 	
-	 var params2 = {
+	var params2 = {
 				action : 'CIGetProgressAction',
 				id     : dashboardID,
         }; 
@@ -107,25 +102,25 @@ function fctExecuteNewBuild( dashboardID,title ) {
 				action : 'none',
 				fn : function() {
 
-				var percent = JSON.parse(this.responseText).progress;
-				var message = JSON.parse(this.responseText).message;
+					var percent = JSON.parse(this.responseText).progress;
+					var message = JSON.parse(this.responseText).message;
 
-				//document.getElementById("progress_value").style.width = percent+"%";
-				document.getElementById("progress_value").innerHTML = percent+" %";
-				document.getElementById("progress_text").innerHTML = " "+""+message+"";
-				if(location == window.location){jq$.delay(helper(options2),2000);}
-
+					document.getElementById("progress_value").innerHTML = percent+" %";
+					document.getElementById("progress_text").innerHTML = " "+""+message+"";
+					if(location == window.location){
+						jq$.delay(helper(options2),2000);
 					}
-				},
-				onError : function() {
+
 				}
+			},
+			onError : function() {
 			}
+	}
 	var location = window.location;
 	var progressBar = document.getElementById('progress_container');
 	progressBar.innerHTML = '<div style="display:inline" class="prog-meter-wrap" ><div class="prog-meter-value" id="progress_value">&nbsp;0 %</div></div><div class="prog-meter-text" style="display:inline" id="progress_text">starting build...</div>';
-	//KNOWWE.core.util.updateProcessingState(1);
-     new _KA(options).send();
-     new _KA(options2).send();
+    new _KA(options).send();
+    new _KA(options2).send();
      
 }
 
