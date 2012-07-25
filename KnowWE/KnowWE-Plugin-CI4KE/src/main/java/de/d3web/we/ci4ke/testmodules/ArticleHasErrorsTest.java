@@ -20,10 +20,11 @@ package de.d3web.we.ci4ke.testmodules;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 import de.d3web.testing.Message;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.report.Messages;
 
 /**
@@ -43,10 +44,14 @@ public class ArticleHasErrorsTest extends AbstractTest<Article> {
 		String monitoredArticleTitle = moni.getTitle();
 
 		Collection<de.knowwe.core.report.Message> messages = new LinkedList<de.knowwe.core.report.Message>();
-		for (Section<?> sec : moni.getReviseIterator().getAllSections()) {
-			messages.addAll(Messages.getErrors(Messages.getMessages(moni, sec)));
+		Type[] typeArray = new de.knowwe.core.report.Message.Type[]{de.knowwe.core.report.Message.Type.ERROR};
+		Map<String, Collection<de.knowwe.core.report.Message>> allMessagesMap = 
+			Messages.getMessagesFromSubtree(moni.getRootSection(), typeArray);
+		
+		for(String s : allMessagesMap.keySet()) {
+			messages.addAll(allMessagesMap.get(s));
 		}
-
+		
 		buffy.append("<a href=\"Wiki.jsp?page=" + monitoredArticleTitle + "\"> "
 				+ monitoredArticleTitle + "</a>:\n");
 		buffy.append("<ul>");
