@@ -29,6 +29,7 @@ import de.d3web.we.ci4ke.build.CIBuildRenderer;
 import de.d3web.we.ci4ke.build.CIBuilder;
 import de.d3web.we.ci4ke.build.Dashboard;
 import de.d3web.we.ci4ke.handling.CIDashboardRenderer;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.Strings;
@@ -83,6 +84,10 @@ public class CIAction extends AbstractAction {
 			html = renderer.renderBuildList(indexFromBack, numberOfBuilds);
 		}
 
+		// ensure jspwiki markup is rendered in similar way as on full page reload
+		html = Environment.getInstance().getWikiConnector().renderWikiSyntax(Strings.maskHTML(html), context.getRequest());
+		html = Strings.unmaskHTML(html);
+		
 		context.setContentType("text/html; charset=UTF-8");
 		context.getWriter().write(html);
 	}

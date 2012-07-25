@@ -237,10 +237,12 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 			buffy.append("</H4>");
 
+			// sorting results for stable rendering
 			List<TestResult> results = build.getResults();
 			List<TestResult> resultsSorted = new ArrayList<TestResult>();
 			resultsSorted.addAll(results);
 			Collections.sort(resultsSorted);
+			
 			for (TestResult result : resultsSorted) {
 				buffy.append("<div class='ci-collapsible-box'>");
 
