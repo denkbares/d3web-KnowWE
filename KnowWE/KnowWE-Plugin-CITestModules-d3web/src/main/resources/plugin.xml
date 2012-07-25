@@ -15,20 +15,6 @@
 			<export prefix="*" />
 		</library>
 	</runtime>
-
-
-
-
-	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
-		id="TestsuiteRunnerTest">
-		<parameter id="class"
-			value="de.d3web.we.ci4ke.testmodules.TestsuiteRunnerTest" />
-		<parameter id="name" value="TestsuiteRunner" />
-		<parameter id="description" value="CITest TestsuiteRunner" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-	
 	
 	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
 		id="KnowledgeBaseTestObjectProvider">
