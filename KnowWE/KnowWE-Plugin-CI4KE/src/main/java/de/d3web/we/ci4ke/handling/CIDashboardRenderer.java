@@ -20,8 +20,11 @@ package de.d3web.we.ci4ke.handling;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message.Type;
@@ -234,7 +237,11 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 			buffy.append("</H4>");
 
-			for (TestResult result : build.getResults()) {
+			List<TestResult> results = build.getResults();
+			List<TestResult> resultsSorted = new ArrayList<TestResult>();
+			resultsSorted.addAll(results);
+			Collections.sort(resultsSorted);
+			for (TestResult result : resultsSorted) {
 				buffy.append("<div class='ci-collapsible-box'>");
 
 				// prepare some information
