@@ -23,6 +23,7 @@ import java.io.IOException;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.kdom.Article;
 
 /**
  * 
@@ -35,15 +36,20 @@ public class InstantEditAddArticleAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 
 		String title = context.getTitle();
+		String web = context.getWeb();
 		String value = context.getParameter("data");
 
 		if (value.equals("POST\n")) {
 			value = "";
 		}
 
-		Environment.getInstance().getWikiConnector().createArticle(title, "",
-				context.getUserName());
-		// errors and security are handled inside replaceKDOMNodesSaveAndBuild
+		Article article = Environment.getInstance().getArticle(web, title);
+		if (article == null) {
+
+			Environment.getInstance().getWikiConnector().createArticle(title, "",
+					context.getUserName());
+		}
+
 		boolean written = Environment.getInstance().getWikiConnector()
 				.writeArticleToWikiPersistence(title, value, context);
 
