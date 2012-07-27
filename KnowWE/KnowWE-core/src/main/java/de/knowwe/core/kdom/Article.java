@@ -242,7 +242,7 @@ public class Article extends AbstractType {
 
 		// create
 		reviseIterator = new ReviseIterator();
-		reviseIterator.addRootSectionToRevise(rootSection);
+		reviseIterator.addRootSection(rootSection);
 		create(Priority.PRECOMPILE_LOW);
 		EventManager.getInstance().fireEvent(new PreCompileFinishedEvent(this));
 	}
@@ -259,14 +259,14 @@ public class Article extends AbstractType {
 		// create
 		if (this.postPreDestroyFullParse && !this.secondBuild) {
 			reviseIterator = new ReviseIterator();
-			reviseIterator.addRootSectionToRevise(rootSection);
+			reviseIterator.addRootSection(rootSection);
 		}
 		create(Priority.LOWEST);
 	}
 
 	private void postCompile() {
-		for (Section<?> node : reviseIterator.getAllSections()) {
-			node.setReusedBy(title, true);
+		for (Section<?> section : reviseIterator.getRootSections()) {
+			section.setReusedByRecursively(title, true);
 		}
 	}
 

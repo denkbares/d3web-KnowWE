@@ -54,7 +54,7 @@ public abstract class PackageCompileType extends AbstractType implements Package
 			}
 
 			for (Section<?> sectionOfPackage : sectionsOfPackage) {
-				article.getReviseIterator().addRootSectionToRevise(sectionOfPackage);
+				article.getReviseIterator().addRootSection(sectionOfPackage);
 			}
 
 			KnowWEUtils.getGlobalTerminologyManager(article.getWeb()).registerTermDefinition(s,

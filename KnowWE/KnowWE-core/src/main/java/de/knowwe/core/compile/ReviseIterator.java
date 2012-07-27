@@ -1,5 +1,6 @@
 package de.knowwe.core.compile;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,8 +15,6 @@ public class ReviseIterator {
 
 	private TreeMap<Priority, LinkedList<Section<?>>> priorityMap;
 
-	private List<Section<?>> allSectionsList;
-
 	private Priority currentPriority;
 
 	private Priority stop;
@@ -29,35 +28,51 @@ public class ReviseIterator {
 		for (Priority p : Priority.getRegisteredPriorities()) {
 			priorityMap.put(p, new LinkedList<Section<?>>());
 		}
-		allSectionsList = new LinkedList<Section<?>>();
 		currentPriority = Priority.getRegisteredPriorities().first();
 		stop = Priority.getRegisteredPriorities().first();
 	}
 
-	private void addToPriorityMap(Section<?> sec) {
-		for (Priority p : sec.get().getSubtreeHandlers().keySet()) {
+	/**
+	 * Adds a single section to the iterator. Successors of the section are not
+	 * added.<br/>
+	 * You can use this method while the article of this iterator is compiled.
+	 * The iterator will continue iterating over its sections in the correct
+	 * order also considering the newly added.
+	 * 
+	 * @created 27.07.2012
+	 * @param section the section you want to add
+	 */
+	public void addSection(Section<?> section) {
+		for (Priority p : section.get().getSubtreeHandlers().keySet()) {
 			if (p.compareTo(currentPriority) > 0) currentPriority = p;
-			priorityMap.get(p).add(sec);
+			priorityMap.get(p).add(section);
 		}
-		allSectionsList.add(sec);
 	}
 
-	public void addRootSectionToRevise(Section<?> rootSection) {
+	/**
+	 * Adds the given root section and all its successors to the iterator.<br/>
+	 * You can use this method while the article of this iterator is compiled.
+	 * The iterator will continue iterating over its sections in the correct
+	 * order also considering the newly added.
+	 * 
+	 * @param rootSection the section and its successors you want to add
+	 */
+	public void addRootSection(Section<?> rootSection) {
 		rootSectionsList.add(rootSection);
-		addToPriorityMapRecursively(rootSection);
+		addSectionRecursively(rootSection);
 	}
 
-	private void addToPriorityMapRecursively(Section<?> section) {
+	private void addSectionRecursively(Section<?> section) {
 		for (Section<?> child : section.getChildren()) {
-			addToPriorityMapRecursively(child);
+			addSectionRecursively(child);
 		}
-		addToPriorityMap(section);
+		addSection(section);
 	}
 
 	public void reset() {
 		init();
 		for (Section<?> rootSection : rootSectionsList) {
-			addToPriorityMapRecursively(rootSection);
+			addSectionRecursively(rootSection);
 		}
 	}
 
@@ -91,8 +106,8 @@ public class ReviseIterator {
 		return Priority.getPriority(currentPriority.intValue());
 	}
 
-	public List<Section<?>> getAllSections() {
-		return Collections.unmodifiableList(allSectionsList);
+	public Collection<Section<?>> getRootSections() {
+		return Collections.unmodifiableCollection(rootSectionsList);
 	}
 
 	public class SectionPriorityTuple {

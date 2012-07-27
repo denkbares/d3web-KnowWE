@@ -40,9 +40,8 @@ public class TableUtils {
 	 */
 	public static int getColumn(Section<?> s) {
 		Section<TableLine> tableLine = Sections.findAncestorOfType(s, TableLine.class);
-		List<Section<TableCellContent>> cells = new ArrayList<Section<TableCellContent>>();
-		Sections.findSuccessorsOfType(tableLine, TableCellContent.class, cells);
-
+		List<Section<TableCellContent>> cells = Sections.findSuccessorsOfType(tableLine,
+				TableCellContent.class);
 		return cells.indexOf(s);
 	}
 
@@ -60,8 +59,8 @@ public class TableUtils {
 
 		int col = getColumn(s);
 		for (Section<TableLine> row : rows) {
-			List<Section<TableCellContent>> cells = new ArrayList<Section<TableCellContent>>();
-			Sections.findSuccessorsOfType(row, TableCellContent.class, cells);
+			List<Section<TableCellContent>> cells = Sections.findSuccessorsOfType(row,
+					TableCellContent.class);
 			if (cells.size() > col && cells.get(col).equals(s)) {
 				return rows.indexOf(row);
 			}

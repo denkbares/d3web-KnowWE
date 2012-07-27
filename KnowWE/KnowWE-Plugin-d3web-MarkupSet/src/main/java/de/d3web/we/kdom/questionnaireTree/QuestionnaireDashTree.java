@@ -26,7 +26,6 @@ import de.knowwe.kdom.dashtree.DashTreeElementContent;
 public class QuestionnaireDashTree extends DashTree {
 
 	public QuestionnaireDashTree() {
-		this.setRenderer(null);
 		replaceDashTreeElementContentType(new QuestionnaireDashTreeElementContent());
 	}
 

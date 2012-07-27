@@ -18,15 +18,10 @@
  */
 package de.knowwe.testcases.table;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.object.QuestionReference;
-import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -35,7 +30,6 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableCellContentRenderer;
@@ -62,8 +56,8 @@ public class HeaderCellContent extends TableCellContent {
 				int start = text.indexOf(trim);
 				if (trim.length() > 0) {
 					return SectionFinderResult.createSingleItemList(new SectionFinderResult(
-								start,
-								start + trim.length()));
+							start,
+							start + trim.length()));
 				}
 				else {
 					return null;
@@ -85,19 +79,7 @@ public class HeaderCellContent extends TableCellContent {
 					return Messages.noMessage();
 				}
 				// otherwise it is a QuestionReference
-				s.setType(new HeaderQuestionReference());
-				KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
-				KnowWEUtils.getTerminologyManager(article).registerTermReference(s, Question.class,
-						new TermIdentifier(questionName));
-				Question question = kb.getManager().searchQuestion(questionName);
-
-				if (question == null) {
-					List<Message> messages = new ArrayList<Message>();
-					// TODO message is not shown
-					messages.add(Messages.noSuchObjectError(questionName));
-					return messages;
-				}
-				else
+				s.setType(new HeaderQuestionReference(), article);
 
 				return Messages.noMessage();
 			}

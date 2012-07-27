@@ -105,13 +105,11 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 					Section<? extends SimpleTerm> simpleDef = (Section<? extends SimpleTerm>) termDefinitionSection;
 					Class<?> objectClazz = simpleDef.get().getTermObjectClass(simpleDef);
 					if (Question.class.isAssignableFrom(objectClazz)) {
-						s.clearReusedBySet();
-						s.setType(new QuestionReference());
+						s.setType(new QuestionReference(), article);
 						return Messages.noMessage();
 					}
 					if (QContainer.class.isAssignableFrom(objectClazz)) {
-						s.clearReusedBySet();
-						s.setType(new QuestionnaireReference());
+						s.setType(new QuestionnaireReference(), article);
 						return Messages.noMessage();
 					}
 

@@ -1148,44 +1148,8 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
-	 * @see setType(Type newType, boolean create, Article article)
-	 * 
-	 *      create is true as default
-	 * 
-	 *      article is article of this section
-	 * 
-	 * @param newType
-	 */
-	public void setType(Type newType) {
-		setType(newType, true, this.getArticle());
-	}
-
-	/**
-	 * @see setType(Type newType, boolean create, Article article)
-	 * 
-	 * 
-	 *      article is article of this section
-	 * 
-	 * @param newType
-	 */
-	public void setType(Type newType, boolean create) {
-		setType(newType, create, this.getArticle());
-	}
-
-	/**
-	 * @see setType(Type newType, boolean create, Article article)
-	 * 
-	 *      create is true as default
-	 * 
-	 * @param newType
-	 */
-
-	public void setType(Type newType, Article a) {
-		setType(newType, true, a);
-	}
-
-	/**
-	 * overrides type
+	 * Overrides type and executes the SubtreeHandlers of the new type for the
+	 * given article, if <tt>create</tt> is true.
 	 * 
 	 * 
 	 * @created 03.03.2011
@@ -1193,10 +1157,10 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * @param create whether the handlers of the new type should be executed
 	 *        right afterwards
 	 * @param article the compilation context for removing old information
-	 *        (error messages)
+	 *        (error messages) and executing the new SubtreeHandlers
 	 */
 	@SuppressWarnings("unchecked")
-	public void setType(Type newType, boolean create, Article article) {
+	public void setType(Type newType, Article article) {
 
 		// remove error messages from old type
 		TreeMap<Priority, List<SubtreeHandler<? extends Type>>> subtreeHandlers = this.get().getSubtreeHandlers();
@@ -1207,14 +1171,9 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 						subtreeHandler.getClass());
 			}
 		}
-
 		this.type = (T) newType;
-
-		if (create) {
-			for (Priority p : type.getSubtreeHandlers().descendingKeySet()) {
-				letSubtreeHandlersCreate(getArticle(), p);
-			}
-		}
+		clearReusedBySet();
+		article.getReviseIterator().addSection(this);
 
 	}
 }
