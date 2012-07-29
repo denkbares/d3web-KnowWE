@@ -83,6 +83,7 @@ public class StyleRenderer implements Renderer {
 
 	private final String cssClass;
 	private final String cssStyle;
+	private boolean maskJSP = true;
 
 	public StyleRenderer(String cssStyle) {
 		this(null, cssStyle);
@@ -120,7 +121,7 @@ public class StyleRenderer implements Renderer {
 	protected void renderContent(Section<?> section, UserContext user, StringBuilder string) {
 		StringBuilder builder = new StringBuilder();
 		DelegateRenderer.getInstance().render(section, user, builder);
-		Strings.maskJSPWikiMarkup(builder);
+		if (maskJSP) Strings.maskJSPWikiMarkup(builder);
 		string.append(builder.toString());
 	}
 
@@ -130,6 +131,14 @@ public class StyleRenderer implements Renderer {
 
 	public String getCssClass() {
 		return this.cssClass;
+	}
+
+	public void setMaskJSPWikiMarkup(boolean mask) {
+		this.maskJSP = mask;
+	}
+
+	public boolean isMaskingJSPWikiMarkup() {
+		return this.maskJSP;
 	}
 
 }

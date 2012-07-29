@@ -20,11 +20,7 @@
 
 package de.knowwe.kdom.table;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -33,102 +29,71 @@ import de.knowwe.core.kdom.parsing.Sections;
 public class TableUtils {
 
 	/**
+	 * Checks whether the given Section is from the header of the table
+	 * 
+	 * @created 29.07.2012
+	 * @param tableSection a Section of the table
+	 * @return if the given section is from the header of the table
+	 */
+	public static boolean isHeaderRow(Section<?> tableSection) {
+		Section<?> tableLine = getTableLine(tableSection);
+		Section<Table> table = Sections.findAncestorOfType(tableLine, Table.class);
+		Section<TableLine> headerLine = Sections.findSuccessor(table, TableLine.class);
+		return headerLine == tableLine;
+	}
+
+	public static Section<?> getTableLine(Section<?> tableSection) {
+		Section<?> tableLine = tableSection.get() instanceof TableLine
+				? tableSection
+				: Sections.findAncestorOfType(tableSection, TableLine.class);
+		return tableLine;
+	}
+
+	/**
 	 * Returns the column of the table in which the current cell occurs.
 	 * 
-	 * @param s current section
+	 * @param columnSection current section
 	 * @return
 	 */
-	public static int getColumn(Section<?> s) {
-		Section<TableLine> tableLine = Sections.findAncestorOfType(s, TableLine.class);
-		List<Section<TableCellContent>> cells = Sections.findSuccessorsOfType(tableLine,
-				TableCellContent.class);
-		return cells.indexOf(s);
+	public static int getColumn(Section<?> columnSection) {
+		Section<?> tableCell = getTableCell(columnSection);
+		Section<?> tableLine = getTableLine(tableCell);
+		List<Section<TableCell>> tableCells = Sections.findSuccessorsOfType(tableLine,
+				TableCell.class);
+		return tableCells.indexOf(tableCell);
+	}
+
+	public static Section<?> getTableCell(Section<?> columnSection) {
+		Section<?> tableCell = columnSection.get() instanceof TableCell
+				? columnSection
+				: Sections.findAncestorOfType(columnSection, TableCell.class);
+		return tableCell;
+	}
+
+	public static int getColumns(Section<?> tableSection) {
+		Section<?> tableLine = getTableLine(tableSection);
+		List<Section<TableCell>> tableCells = Sections.findSuccessorsOfType(tableLine,
+				TableCell.class);
+		return tableCells.size();
+	}
+
+	public static int getRows(Section<?> tableSection) {
+		Section<Table> table = Sections.findAncestorOfType(tableSection, Table.class);
+		List<Section<TableLine>> rows = Sections.findSuccessorsOfType(table, TableLine.class);
+		return rows.size();
 	}
 
 	/**
-	 * Returns the row of the table in which the current cell occurs.
+	 * Returns the row of the given section inside the table
 	 * 
-	 * @param s current section
-	 * @return
+	 * @param rowSection the section inside the table you want the row of
+	 * @return the row of the section you are checking
 	 */
-	public static int getRow(Section<? extends TableCellContent> s) {
-		Section<Table> table = Sections.findAncestorOfType(s, Table.class);
-
-		List<Section<TableLine>> rows = new ArrayList<Section<TableLine>>();
-		Sections.findSuccessorsOfType(table, TableLine.class, rows);
-
-		int col = getColumn(s);
-		for (Section<TableLine> row : rows) {
-			List<Section<TableCellContent>> cells = Sections.findSuccessorsOfType(row,
-					TableCellContent.class);
-			if (cells.size() > col && cells.get(col).equals(s)) {
-				return rows.indexOf(row);
-			}
-		}
-		return -1;
-	}
-
-	/**
-	 * The row number of the given table line.
-	 * 
-	 * @created 16.03.2011
-	 * @param tableLine
-	 * @return
-	 */
-	public static int getRowOfLine(Section<?> tableLine) {
-		return Sections.findAncestorOfType(tableLine, Table.class).getChildren().indexOf(
-				tableLine);
-	}
-
-	/**
-	 * Checks if the current cell is editable. Returns<code>TRUE</code> if so,
-	 * otherwise <code>FALSE</code>.
-	 * 
-	 * @param section current section
-	 * @param rows value of the row table attribute
-	 * @param cols value of the column table attribute
-	 * @return
-	 */
-	public static boolean isEditable(Section<? extends TableCellContent> section, String rows, String cols) {
-		if (rows == null && cols == null) return true;
-
-		boolean isRowEditable = true, isColEditable = true;
-		if (rows != null) {
-			List<String> rowsIndex = Arrays.asList(splitAttribute(rows));
-			String cellRow = String.valueOf(getRow(section));
-			isRowEditable = !rowsIndex.contains(cellRow);
-		}
-
-		if (cols != null) {
-			List<String> colsIndex = Arrays.asList(splitAttribute(cols));
-			String cellCol = String.valueOf(getColumn(section));
-			isColEditable = !colsIndex.contains(cellCol);
-		}
-		return (isColEditable && isRowEditable);
-	}
-
-	/**
-	 * Quotes some special chars.
-	 * 
-	 * @param content
-	 * @return
-	 */
-	public static String quote(String content) {
-		if (!(content.contains("\""))) return content.trim();
-
-		content = content.replace("\"", "&quot;");
-		return content.trim();
-	}
-
-	/**
-	 * Split an given attribute into tokens.
-	 * 
-	 * @param attribute
-	 * @return
-	 */
-	public static String[] splitAttribute(String attribute) {
-		Pattern p = Pattern.compile("[,|;|:]");
-		return p.split(attribute);
+	public static int getRow(Section<?> rowSection) {
+		Section<?> tableLine = getTableLine(rowSection);
+		Section<Table> table = Sections.findAncestorOfType(tableLine, Table.class);
+		List<Section<TableLine>> lines = Sections.findSuccessorsOfType(table, TableLine.class);
+		return lines.indexOf(tableLine);
 	}
 
 	/**
@@ -207,36 +172,17 @@ public class TableUtils {
 	 * 
 	 * @author Sebastian Furth
 	 * @created 20/10/2010
-	 * @param cell
+	 * @param columnSection
 	 * @return column heading is String
 	 */
-	public static String getColumnHeadingForCellContent(Section<? extends TableCellContent> cell) {
-		Section<Table> table = Sections.findAncestorOfType(cell, Table.class);
+	public static Section<TableCellContent> getColumnHeader(Section<?> columnSection) {
+		int column = getColumn(columnSection);
+		if (column == -1) return null;
+		Section<Table> table = Sections.findAncestorOfType(columnSection, Table.class);
 		Section<TableLine> line = Sections.findSuccessor(table, TableLine.class);
-		List<Section<TableCellContent>> cells = new LinkedList<Section<TableCellContent>>();
-		Sections.findSuccessorsOfType(line, TableCellContent.class, cells);
-
-		int i = getColumn(cell);
-		Section<TableCellContent> headerCell = cells.get(i);
-		return headerCell != null ? headerCell.getText() : null;
-	}
-
-	/**
-	 * Returns the text of the column heading as String. The column heading is
-	 * the text in the cell in the first row and the same column as the
-	 * specified cell.
-	 * 
-	 * <b> Convenience method which delegates to
-	 * getColumnHeadingForCellContent(..) </b>
-	 * 
-	 * @author Sebastian Furth
-	 * @created 20/10/2010
-	 * @param cell
-	 * @return column heading as String
-	 */
-	public static String getColumnHeading(Section<? extends TableCell> cell) {
-		return getColumnHeadingForCellContent(Sections.findAncestorOfType(cell,
-				TableCellContent.class));
+		List<Section<TableCellContent>> cells = Sections.findSuccessorsOfType(line,
+				TableCellContent.class);
+		return cells.get(column);
 	}
 
 	/**
@@ -249,28 +195,10 @@ public class TableUtils {
 	 * @param cell
 	 * @return row description as String
 	 */
-	public static String getRowDescriptionForCellContent(Section<? extends TableCellContent> cell) {
+	public static String getRowDescription(Section<?> cell) {
 		Section<TableLine> line = Sections.findAncestorOfType(cell, TableLine.class);
 		Section<TableCellContent> descriptionCell = Sections.findSuccessor(line,
 				TableCellContent.class);
 		return descriptionCell != null ? descriptionCell.getText() : null;
-	}
-
-	/**
-	 * Returns the text of the row description as String. The row description is
-	 * the text in the cell in the first column and the same row as the
-	 * specified cell.
-	 * 
-	 * <b> Convenience method which delegates to
-	 * getRowDescritionForCellContent(..) </b>
-	 * 
-	 * @author Sebastian Furth
-	 * @created 20/10/2010
-	 * @param cell
-	 * @return row description as String
-	 */
-	public static String getRowDescription(Section<? extends TableCell> cell) {
-		return getRowDescriptionForCellContent(Sections.findAncestorOfType(cell,
-				TableCellContent.class));
 	}
 }

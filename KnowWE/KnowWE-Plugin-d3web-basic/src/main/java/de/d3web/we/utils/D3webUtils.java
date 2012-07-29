@@ -101,31 +101,28 @@ public class D3webUtils {
 	}
 
 	public static Score getScoreForString(String argument) {
-		Score score = null;
-		List<Score> allScores = Score.getAllScores();
-		for (Score sc : allScores) {
+		for (Score sc : Score.getAllScores()) {
 			if (sc.getSymbol().equals(argument)) {
-				score = sc;
-				break;
+				return sc;
 			}
 		}
 		if (argument.equals("!")) {
-			score = Score.P7;
+			return Score.P7;
 		}
 		if (argument.equals("?")) {
-			score = Score.P5;
+			return Score.P5;
 		}
 		if (argument.equalsIgnoreCase("excluded")) {
-			score = Score.N7;
+			return Score.N7;
 		}
 		if (argument.equalsIgnoreCase("established")) {
-			score = Score.P7;
+			return Score.P7;
 		}
 		if (argument.equalsIgnoreCase("suggested")) {
-			score = Score.P5;
+			return Score.P5;
 		}
 
-		return score;
+		return null;
 	}
 
 	/**

@@ -119,11 +119,12 @@ public class TestcaseUtils {
 		}
 
 		List<String> temp = new ArrayList<String>();
-		String text = TableUtils.getColumnHeadingForCellContent(s).trim();
-
-		if (text == null) {
+		Section<TableCellContent> columnHeader = TableUtils.getColumnHeader(s);
+		if (columnHeader == null) {
 			return null;
 		}
+
+		String text = columnHeader.getText().trim();
 
 		// find the matching question for the LineHeader
 		// and add its answers

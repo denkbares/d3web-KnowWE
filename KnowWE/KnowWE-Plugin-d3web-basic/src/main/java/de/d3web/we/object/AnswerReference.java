@@ -33,12 +33,14 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
  * 
- * @author Jochen/Albrecht
- * @created 26.07.2010
+ * This is the type to be used in markup for referencing (d3web-)
+ * Choice-Answers. It checks whether the referenced object is existing. In case
+ * it creates the Answer object in the knowledge base.
  * 
- *          This is the type to be used in markup for referencing (d3web-)
- *          Choice-Answers. It checks whether the referenced object is existing.
- *          In case it creates the Answer object in the knowledge base.
+ * @author Jochen Reutelshöfer (denkbares GmbH)
+ * @author Albrecht Striffler (denkbares GmbH)
+ * 
+ * @created 26.07.2010
  * 
  */
 public abstract class AnswerReference
@@ -74,11 +76,11 @@ public abstract class AnswerReference
 	}
 
 	@Override
-	public Choice getTermObject(Article article, Section<? extends D3webTerm<Choice>> s) {
+	public Choice getTermObject(Article article, Section<? extends D3webTerm<Choice>> section) {
 
-		if (s.get() instanceof AnswerReference) {
+		if (section.get() instanceof AnswerReference) {
 			TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
-			Section<?> answerDef = terminologyManager.getTermDefiningSection(getTermIdentifier(s));
+			Section<?> answerDef = terminologyManager.getTermDefiningSection(getTermIdentifier(section));
 			if (answerDef != null) {
 				Choice choice = (Choice) KnowWEUtils.getStoredObject(article, answerDef,
 						AnswerDefinition.ANSWER_STORE_KEY);
@@ -93,9 +95,9 @@ public abstract class AnswerReference
 	 * answer.
 	 * 
 	 * @created 26.07.2010
-	 * @param s the section of this choice
+	 * @param section the section of this choice
 	 * @return the section of the question
 	 */
-	public abstract Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s);
+	public abstract Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> section);
 
 }

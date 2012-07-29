@@ -158,6 +158,19 @@ public class TerminologyManager {
 		Messages.clearMessages(article, termDefinition, this.getClass());
 	}
 
+	/**
+	 * Terms in KnowWE are case insensitive.<br/>
+	 * If the same term is defined with different cases, all different versions
+	 * are returned. If the term is undefined, an empty Collection is returned.
+	 * 
+	 * 
+	 * @created 28.07.2012
+	 * @param termIdentifier an {@link TermIdentifier} with arbitrarily case for
+	 *        a term for which you want potential other versions with different
+	 *        cases
+	 * @return the different versions of {@link TermIdentifier}s or an empty
+	 *         Collection, if the term is undefined
+	 */
 	public Collection<TermIdentifier> getAllTermsEqualIgnoreCase(TermIdentifier termIdentifier) {
 		TermLog termLog = termLogManager.getLog(termIdentifier);
 		Collection<TermIdentifier> termIdentifiers;
@@ -206,11 +219,13 @@ public class TerminologyManager {
 	}
 
 	/**
-	 * For a TermName the TermDefinition is returned.
+	 * For a {@link TermIdentifier} the first defining Section is returned. If
+	 * the term is not defined, <tt>null</tt> is returned.
 	 * 
-	 * @param <TermObject>
-	 * @param s
-	 * @return
+	 * @param termIdentifier the {@link TermIdentifier} for the defining Section
+	 *        you are looking for
+	 * @return the first defining Section for this term or <tt>null</tt> if the
+	 *         term is not defined
 	 */
 	public Section<?> getTermDefiningSection(TermIdentifier termIdentifier) {
 		TermLog refLog = termLogManager.getLog(termIdentifier);
@@ -221,11 +236,13 @@ public class TerminologyManager {
 	}
 
 	/**
-	 * For a TermName all TermDefinitions are returned.
+	 * For a {@link TermIdentifier} all defining Sections are returned. If the
+	 * term is not defined, an empty Collection is returned.
 	 * 
-	 * @param <TermObject>
-	 * @param s
-	 * @return
+	 * @param termIdentifier the {@link TermIdentifier} for the defining
+	 *        Sections you are looking for
+	 * @return the defining Sections for this term or an empty Collection if the
+	 *         term is not defined
 	 */
 	public Collection<Section<?>> getTermDefiningSections(TermIdentifier termIdentifier) {
 		Collection<Section<?>> definitions = new ArrayList<Section<?>>();
@@ -350,14 +367,29 @@ public class TerminologyManager {
 	 * @return if the term has been registered as required
 	 */
 	public boolean hasTermOfClass(TermIdentifier termIdentifier, Class<?> clazz) {
-		TermLog refLog = termLogManager.getLog(termIdentifier);
-		if (refLog == null) return false;
-		for (Class<?> termClass : refLog.getTermClasses()) {
+		for (Class<?> termClass : getTermClasses(termIdentifier)) {
 			if (clazz.isAssignableFrom(termClass)) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Returns all term classes for a term or an empty Collection, if the term
+	 * is undefined.<br/>
+	 * A term only has multiple term classes, if the term is defined multiple
+	 * times with a matching {@link TermIdentifier} but different term classes.
+	 * 
+	 * @created 28.07.2012
+	 * @param termIdentifier the {@link TermIdentifier} for the term you want
+	 *        the term classes from
+	 * @return all term classes or an empty Collection, if undefined
+	 */
+	public Collection<Class<?>> getTermClasses(TermIdentifier termIdentifier) {
+		TermLog refLog = termLogManager.getLog(termIdentifier);
+		if (refLog == null) return Collections.emptyList();
+		else return Collections.unmodifiableCollection(refLog.getTermClasses());
 	}
 
 	private static class TerminologyManagerCleaner implements EventListener {

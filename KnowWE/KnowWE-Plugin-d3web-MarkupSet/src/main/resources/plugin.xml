@@ -13,6 +13,75 @@
 	</runtime>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="AbstractionTableMarkup">
+		<parameter id="class"
+			value="de.d3web.we.kdom.abstractiontable.AbstractionTableMarkup" />
+		<parameter id="name" value="AbstractionTableMarkup" />
+		<parameter id="description" value="Type AbstractionTableMarkup" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="CellContent">
+		<parameter id="class"
+			value="de.d3web.we.kdom.abstractiontable.CellContent" />
+		<parameter id="name" value="QuestionTreeRootType" />
+		<parameter id="description" value="Type CellContent" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="AbstractionTableMarkup/**/TableCellContent" />
+	</extension>
+	
+    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+        id="AbstractionTableInstantEditToolProvider">
+        <parameter id="class"
+            value="de.knowwe.instantedit.tools.InstantEditToolProvider" />
+        <parameter id="name" value="AbstractionTableInstantEditToolProvider" />
+        <parameter id="description"
+            value="Offers a button for quick editing a certain section." />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="4" />
+        <parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
+        <parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
+        <parameter id="script" value="DefaultEditTool.js" />
+        <parameter id="script" value="TextArea.js" />
+        <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
+        <parameter id="css" value="DefaultEditTool.css" />       
+        <parameter id="scope" value="AbstractionTableMarkup" />
+    </extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+        id="AbstractionTableEditToolProvider">
+        <parameter id="class"
+            value="de.knowwe.instantedit.table.TableEditToolProvider" />
+        <parameter id="name" value="TableEditToolProvider" />
+        <parameter id="description"
+            value="Offers a tool for a spreadsheet-like table editor." />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="3" />
+        <parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
+        <parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
+        <parameter id="script" value="table-edit-tool.js" />
+        <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
+        <parameter id="css" value="table-edit-tool.css" />       
+        <parameter id="scope" value="AbstractionTableMarkup" />
+	</extension>
+		
+	<extension plugin-id="KnowWEExtensionPoints" point-id="SubtreeHandler"
+		id="LineHandler">
+		<parameter id="class"
+			value="de.d3web.we.kdom.abstractiontable.LineHandler" />
+		<parameter id="name" value="LineHandler" />
+		<parameter id="description" value="Type LineHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4.55" />
+		<parameter id="handlerpriority" value="0" />
+        <parameter id="scope" value="AbstractionTableMarkup/**/TableLine" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="QuestionTreeRootType">
 		<parameter id="class"
 			value="de.d3web.we.kdom.questionTree.QuestionTreeRootType" />
@@ -23,7 +92,6 @@
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 	</extension>
-	
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="SolutionsDashTree">
