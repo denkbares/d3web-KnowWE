@@ -16,5 +16,4 @@ public class CellContent extends AbstractType {
 		this.addChildType(anonymousType);
 
 	}
-
 }

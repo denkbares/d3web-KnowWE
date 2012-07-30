@@ -104,28 +104,43 @@ public class TableCellContentRenderer implements Renderer {
 		String sectionID = sec.getID();
 		StringBuilder html = new StringBuilder();
 
-		boolean sort = TableUtils.sortTest(sec);
 		boolean tablehead = TableCellContent.isTableHeadContent(sec);
 
-		if (sort) {
-			html.append("<th class=\"sort\">");
-		}
-		else if (tablehead) {
-			html.append("<th>");
+		if (tablehead) {
+			html.append("<th");
 		}
 		else {
-			html.append("<td>");
+			html.append("<td");
 		}
+
+		String classes = getClasses(sec, user);
+		if (!classes.isEmpty()) {
+			html.append(" class='").append(classes).append("'");
+		}
+		String style = getStyle(sec, user);
+		if (!style.isEmpty()) {
+			html.append(" style='").append(style).append("'");
+		}
+		html.append(">");
 
 		generateContent(sectionText, sec, user, sectionID, html);
 
-		if (sort || tablehead) {
+		if (tablehead) {
 			html.append("</th>");
 		}
 		else {
 			html.append("</td>");
 		}
 		return Strings.maskHTML(html.toString());
+	}
+
+	public String getStyle(Section<?> tableCell, UserContext user) {
+		return "";
+	}
+
+	protected String getClasses(Section<?> tableCell, UserContext user) {
+		if (TableUtils.sortTest(tableCell)) return "sort";
+		return "";
 	}
 
 	protected void generateContent(String sectionText, Section<?> s,

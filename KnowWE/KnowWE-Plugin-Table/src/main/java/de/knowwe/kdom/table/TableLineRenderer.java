@@ -49,8 +49,8 @@ public class TableLineRenderer implements Renderer {
 
 		if (!classes.isEmpty()) {
 			buffi.append(" class='").append(classes).append("'");
-
 		}
+
 		buffi.append(">");
 
 		buffi.append(b.toString());

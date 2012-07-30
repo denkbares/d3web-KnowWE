@@ -73,6 +73,9 @@ public class CellTypeHandler extends D3webSubtreeHandler<CellContent> {
 					content.setType(new SolutionStateCell(), article);
 				}
 			}
+			else {
+				return Messages.asList(Messages.error("Invalid header"));
+			}
 		}
 		return Messages.noMessage();
 	}
