@@ -39,6 +39,9 @@ public class CellTypeHandler extends D3webSubtreeHandler<CellContent> {
 
 	private Collection<Message> handleNormalCell(Article article, Section<?> content) {
 		Section<TableCellContent> columnHeader = TableUtils.getColumnHeader(content);
+		if (columnHeader == null) {
+			return Messages.asList(Messages.error("Header is missing"));
+		}
 		Section<? extends Type> d3webReference = columnHeader.getChildren().get(0)
 				.getChildren().get(0);
 		if (Strings.isBlank(content.getText())) {

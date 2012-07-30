@@ -128,7 +128,7 @@ public class QuestionNumCell extends AbstractType {
 		boolean leftOpen = leftBracket.equals("]") || leftBracket.equals("(");
 		double left = Double.parseDouble(leftDigits);
 		double right = Double.parseDouble(rightDigits);
-		boolean rightOpen = rightBracket.equals("[") || leftBracket.equals(")");
+		boolean rightOpen = rightBracket.equals("[") || rightBracket.equals(")");
 		NumericalInterval numericalInterval = new NumericalInterval(left, right, leftOpen,
 				rightOpen);
 		try {
