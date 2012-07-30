@@ -6,7 +6,6 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.we.kdom.condition.SolutionStateType;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.SolutionReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
@@ -42,6 +41,9 @@ public class CellTypeHandler extends D3webSubtreeHandler<CellContent> {
 		Section<TableCellContent> columnHeader = TableUtils.getColumnHeader(content);
 		Section<? extends Type> d3webReference = columnHeader.getChildren().get(0)
 				.getChildren().get(0);
+		if (Strings.isBlank(content.getText())) {
+			return Messages.noMessage();
+		}
 		if (d3webReference != null) {
 			Type type = d3webReference.get();
 			if (type instanceof QuestionReference) {
@@ -68,7 +70,7 @@ public class CellTypeHandler extends D3webSubtreeHandler<CellContent> {
 					content.setType(new SolutionScoreCell(), article);
 				}
 				else {
-					content.setType(new SolutionStateType(), article);
+					content.setType(new SolutionStateCell(), article);
 				}
 			}
 		}

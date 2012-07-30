@@ -68,7 +68,10 @@ public class LineHandler extends D3webSubtreeHandler<TableLine> {
 
 		if (action == null || conditions.isEmpty()) {
 			int row = TableUtils.getRow(section);
-			return Messages.asList(Messages.error("Rule for row " + (row + 1) + " was not created"));
+			String message = "Rule for row " + row + " was not created (no "
+					+ (action == null ? "action" : "conditions")
+					+ " found)";
+			return Messages.asList(Messages.error(message));
 		}
 
 		Rule rule = createRule(conditions, action);
