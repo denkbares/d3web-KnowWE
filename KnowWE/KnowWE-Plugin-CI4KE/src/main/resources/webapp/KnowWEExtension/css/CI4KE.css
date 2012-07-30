@@ -18,13 +18,17 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+.selectedBuildNR 
+	{
+	border: 1px solid #AAA;
+	}
+
 .ci-column-left
 	{ 
 /*	border: thin solid #000000; */
 	position:absolute;
 	float: left; 
 	min-height: 100%;
-	border-right: 1px solid #DDD;
 	margin-top: 10px;
 	padding-right: 10px;
 	/* width: 24%; */

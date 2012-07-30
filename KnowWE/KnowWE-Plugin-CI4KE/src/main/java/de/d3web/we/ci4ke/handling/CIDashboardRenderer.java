@@ -159,25 +159,52 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		Dashboard dashboard = Dashboard.getDashboard(user.getWeb(), dashboardArticleTitle,
 				dashboardName);
-		CIBuildRenderer renderer = dashboard.getRenderer();
 		String dashboardNameEscaped = CIUtilities.utf8Escape(dashboardName);
-		
+
 		string.append("<div id='top'>");
 		string.append("<h3>");
 		// if at least one build has been executed: Render forecast icons:
 		BuildResult latestBuild = dashboard.getLatestBuild();
+		
+		// find build number for detail view
+		BuildResult shownBuild = dashboard.getLatestBuild(); // latest as default
+		if (user.getParameter("build_number") != null) {
+			String buildNumString = user.getParameter("build_number");
+			int buildNumber = -1;
+			try {
+				buildNumber = Integer.parseInt(buildNumString);
+			}
+			catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+			if(buildNumber != -1) {
+				BuildResult build = dashboard.getBuild(buildNumber);
+				if(build != null) {
+					shownBuild = build;
+				}
+			}
+		}
+		int indexFromTo = 0;
+		if(user.getParameter("indexFromBack") != null) {
+			try {
+				indexFromTo = Integer.parseInt(user.getParameter("indexFromBack"));
+			}
+			catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+		}
+		CIBuildRenderer renderer = dashboard.getRenderer();
 		if (latestBuild != null) {
 			string.append(renderer.renderCurrentBuildStatus(22)).append("  ");
 			string.append(renderer.renderBuildHealthReport(22)).append("  ");
 		}
-		string.append(dashboardName); 
-		
+		string.append(dashboardName);
+
 		// insert tag for progress bar
 		string.append("<div id='progress_container' style='display:inline'></div>");
 		string.append("</h3>");
 		string.append("</div>");
-		
-		
+
 		// render the last five builds:
 		string.append("<div id='")
 				.append(dashboardNameEscaped)
@@ -185,14 +212,14 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		string.append("<div id='")
 				.append(dashboardNameEscaped)
 				.append("-build-table'>");
-		string.append(renderer.renderNewestBuilds(10));
+		string.append(renderer.renderNewestBuilds(10, shownBuild.getBuildNumber(),indexFromTo));
 		string.append("</div></div>");
 
 		// render the build-details pane
 		string.append("<div id='")
 				.append(dashboardNameEscaped)
 				.append("-build-details-wrapper' class='ci-build-details-wrapper'>");
-		string.append(renderBuildDetails(dashboard, latestBuild));
+		string.append(renderBuildDetails(dashboard, shownBuild));
 		string.append("</div>");
 
 		return string.toString();
@@ -242,7 +269,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			List<TestResult> resultsSorted = new ArrayList<TestResult>();
 			resultsSorted.addAll(results);
 			Collections.sort(resultsSorted);
-			
+
 			for (TestResult result : resultsSorted) {
 				buffy.append("<div class='ci-collapsible-box'>");
 

@@ -58,10 +58,20 @@ public class CIBuildRenderer {
 		return CIUtilities.renderForecastIcon(count, failed, pixelSize);
 	}
 
-	public String renderBuildList(int indexFromBack, int numberOfBuilds) {
+	public String renderBuildList(int indexFromBack, int numberOfBuilds, int shownBuild) {
 
 		int buildCount = dashboard.getBuildCount();
 		if (indexFromBack < 0 || indexFromBack >= buildCount) indexFromBack = 0;
+		if (shownBuild != -1) {
+			if (buildCount - indexFromBack >= shownBuild && buildCount - indexFromBack - numberOfBuilds <= shownBuild) {
+				//indexFromBack retains value => same set of builds shown
+			}
+			else {
+
+				int half = numberOfBuilds / 2;
+				indexFromBack = buildCount - (shownBuild + half);
+			}
+		}
 		String dashboardNameEncoded = CIUtilities.utf8Escape(dashboard.getDashboardName());
 
 		// get array borders from min (inclusively) to max (exclusively)
@@ -79,17 +89,30 @@ public class CIBuildRenderer {
 			BuildResult build = builds[i];
 			int buildNr = build.getBuildNumber();
 
-			sb.append("<tr><td>");
+			// mark currently shown build number
+			String cssClass = "";
+			if (buildNr == shownBuild) {
+				cssClass = "selectedBuildNR";
+			}
+			sb.append("<tr class='" + cssClass + "'><td>");
 			// starting with a nice image...
 			Type buildResult = build.getOverallResult();
 			sb.append(CIUtilities.renderResultType(buildResult, 16));
 
 			sb.append("</td><td>");
 			// followed by the Build Number...
-			sb.append("<td><a onclick=\"")
-					.append("fctGetBuildDetails('").append(dashboardNameEncoded)
-					.append("','").append(buildNr).append("');\"> #").append(buildNr)
-					.append("</a>  </td>");
+			sb.append("<td>");
+
+			sb.append("<a href='Wiki.jsp?page="+dashboard.getDashboardArticle()+"&build_number="
+					+ buildNr + "&indexFromBack="
+					+ indexFromBack + "'>");
+			sb.append("#" + buildNr);
+			sb.append("</a>");
+			// sb.append("<a onclick=\"")
+			// .append("fctGetBuildDetails('").append(dashboardNameEncoded)
+			// .append("','").append(buildNr).append("');\"> #").append(buildNr)
+			// .append("</a>");
+			// sb.append("</td>");
 
 			sb.append("</tr>");
 		}
@@ -135,7 +158,7 @@ public class CIBuildRenderer {
 	/**
 	 * Renders out a list of the newest builds in descending order
 	 */
-	public String renderNewestBuilds(int numberOfBuilds) {
-		return renderBuildList(0, numberOfBuilds);
+	public String renderNewestBuilds(int numberOfBuilds, int shownBuild, int indexFromTo) {
+		return renderBuildList(indexFromTo, numberOfBuilds, shownBuild);
 	}
 }

@@ -43,18 +43,28 @@ public class CIAction extends AbstractAction {
 
 		String dashboardName = String.valueOf(context.getParameter("id"));
 		dashboardName = Strings.decodeURL(dashboardName);
-		
-		ProgressListener listener = ProgressListenerManager.getInstance().getProgressListener(dashboardName);
-		if(listener != null) {
-			context.sendError(666, "<message will be inserted in JS>"); 
-			// NOTE: on current ajax handling this message text will will not be shown.
+
+		ProgressListener listener = ProgressListenerManager.getInstance().getProgressListener(
+				dashboardName);
+		if (listener != null) {
+			context.sendError(666, "<message will be inserted in JS>");
+			// NOTE: on current ajax handling this message text will will not be
+			// shown.
 			// but a list mapping error codes to message texts is managed in JS
 			return;
 		}
 
-
 		String topic = context.getTitle();
 		String web = context.getWeb();
+		int selectedBuildNumber = -1;
+		if (context.getParameter("nr") != null) {
+			try {
+				selectedBuildNumber = Integer.parseInt(context.getParameter("nr"));
+			}
+			catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+		}
 
 		if (task.equals("null") || dashboardName.equals("null")) {
 			throw new IOException(
@@ -72,7 +82,6 @@ public class CIAction extends AbstractAction {
 
 		}// Get the details of one build (wiki changes + test results)
 		else if (task.equals("getBuildDetails")) {
-			int selectedBuildNumber = Integer.parseInt(context.getParameter("nr"));
 			BuildResult build = dashboard.getBuild(selectedBuildNumber);
 			html = CIDashboardRenderer.renderBuildDetails(dashboard, build);
 		}
@@ -81,13 +90,15 @@ public class CIAction extends AbstractAction {
 					Integer.parseInt(context.getParameter("indexFromBack"));
 			int numberOfBuilds =
 					Integer.parseInt(context.getParameter("numberOfBuilds"));
-			html = renderer.renderBuildList(indexFromBack, numberOfBuilds);
+			html = renderer.renderBuildList(indexFromBack, numberOfBuilds, selectedBuildNumber);
 		}
 
-		// ensure jspwiki markup is rendered in similar way as on full page reload
-		html = Environment.getInstance().getWikiConnector().renderWikiSyntax(Strings.maskHTML(html), context.getRequest());
+		// ensure jspwiki markup is rendered in similar way as on full page
+		// reload
+		html = Environment.getInstance().getWikiConnector().renderWikiSyntax(
+				Strings.maskHTML(html), context.getRequest());
 		html = Strings.unmaskHTML(html);
-		
+
 		context.setContentType("text/html; charset=UTF-8");
 		context.getWriter().write(html);
 	}
