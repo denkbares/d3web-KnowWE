@@ -291,7 +291,7 @@ public class Strings {
 	 */
 	public static boolean isBlank(String text) {
 		if (text == null) return true;
-		return text.matches("\\s*");
+		return text.matches("[\\s\\xA0]*");
 	}
 
 	/**

@@ -21,10 +21,14 @@ public class CellContentRenderer extends TableCellContentRenderer {
 		int columns = TableUtils.getColumns(tableCell);
 		int column = TableUtils.getColumn(tableCell);
 
-		String style = "";
+		boolean headerRow = TableUtils.isHeaderRow(tableCell);
 
+		String style = "";
 		if (columns == column + 1) {
-			style += "border-left-width: 3px";
+			style += "border-left-width: 3px;";
+		}
+		if (headerRow) {
+			style += " border-bottom-width: 3px;";
 		}
 		return style;
 	}
