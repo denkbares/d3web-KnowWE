@@ -100,20 +100,18 @@ public class CIBuildRenderer {
 			sb.append(CIUtilities.renderResultType(buildResult, 16));
 
 			sb.append("</td><td>");
-			// followed by the Build Number...
 			sb.append("<td>");
 
+			// render link
 			sb.append("<a href='Wiki.jsp?page="+dashboard.getDashboardArticle()+"&build_number="
 					+ buildNr + "&indexFromBack="
 					+ indexFromBack + "#"+dashboard.getDashboardName()+"'>");
-			sb.append("#" + buildNr);
+			
+			// actual shown content:
+			sb.append("#" + buildNr)
+			;
 			sb.append("</a>");
-			// sb.append("<a onclick=\"")
-			// .append("fctGetBuildDetails('").append(dashboardNameEncoded)
-			// .append("','").append(buildNr).append("');\"> #").append(buildNr)
-			// .append("</a>");
-			// sb.append("</td>");
-
+			
 			sb.append("</tr>");
 		}
 		sb.append("</table>");
