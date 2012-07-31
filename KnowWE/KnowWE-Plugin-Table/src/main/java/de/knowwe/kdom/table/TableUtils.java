@@ -182,6 +182,7 @@ public class TableUtils {
 		Section<TableLine> line = Sections.findSuccessor(table, TableLine.class);
 		List<Section<TableCellContent>> cells = Sections.findSuccessorsOfType(line,
 				TableCellContent.class);
+		if (cells.size() <= column) return null;
 		return cells.get(column);
 	}
 
