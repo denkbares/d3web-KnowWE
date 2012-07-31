@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
+import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.report.Message.Type;
@@ -79,13 +80,9 @@ public class ArticleHasErrorsTest extends AbstractTest<Article> {
 		return Article.class;
 	}
 
-	@Override
-	public int numberOfArguments() {
-		return 0;
-	}
 	
 	@Override
 	public String getDescription() {
-		return "Checks, that the specified <article> reports no compile errors for knowledge definitions.";
+		return "Checks, that the specified article reports no compile errors for knowledge definitions.";
 	}
 }

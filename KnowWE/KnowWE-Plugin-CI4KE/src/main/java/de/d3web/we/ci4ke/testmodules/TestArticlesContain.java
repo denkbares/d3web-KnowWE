@@ -24,7 +24,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
+import de.d3web.testing.TestParameter;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -33,10 +35,17 @@ import de.knowwe.core.kdom.parsing.Sections;
 /**
  * This test can search articles (specified by a regexp pattern) for a keyword.
  * 
- * @author Marc-Oliver Ochlast (denkbares GmbH)
+ * @author Marc-Oliver Ochlast/ Jochen Reutelshoefer (denkbares GmbH)
  * @created 26.11.2010
  */
 public class TestArticlesContain extends AbstractTest<Article> {
+	
+	private static final String SEARCH_STRING_DESCRIPTION = "Specifies the string or pattern (regex) that will be searched. Any found occurrence within the test object will be considered as test failure.";
+	
+
+	public TestArticlesContain() {
+		this.addParameter("SearchString", TestParameter.Type.Regex, TestParameter.Mode.Mandatory, SEARCH_STRING_DESCRIPTION);
+	}
 
 	@Override
 	public Message execute(Article article, String[] args) {
@@ -79,11 +88,6 @@ public class TestArticlesContain extends AbstractTest<Article> {
 	@Override
 	public Class<Article> getTestObjectClass() {
 		return Article.class;
-	}
-
-	@Override
-	public int numberOfArguments() {
-		return 1;
 	}
 	
 	@Override
