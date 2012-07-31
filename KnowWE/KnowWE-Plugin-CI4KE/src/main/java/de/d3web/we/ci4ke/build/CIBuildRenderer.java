@@ -105,7 +105,7 @@ public class CIBuildRenderer {
 
 			sb.append("<a href='Wiki.jsp?page="+dashboard.getDashboardArticle()+"&build_number="
 					+ buildNr + "&indexFromBack="
-					+ indexFromBack + "'>");
+					+ indexFromBack + "#"+dashboard.getDashboardName()+"'>");
 			sb.append("#" + buildNr);
 			sb.append("</a>");
 			// sb.append("<a onclick=\"")

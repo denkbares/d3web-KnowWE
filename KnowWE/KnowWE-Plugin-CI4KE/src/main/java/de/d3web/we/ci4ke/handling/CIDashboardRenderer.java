@@ -166,6 +166,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		Dashboard dashboard = Dashboard.getDashboard(user.getWeb(), dashboardArticleTitle,
 				dashboardName);
 
+		string.append("<a name='"+dashboard.getDashboardName()+"'>");
 		string.append("<div id='top'>");
 		string.append("<h3>");
 		// if at least one build has been executed: Render forecast icons:
