@@ -68,8 +68,8 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
         id="AbstractionTableEditToolProvider">
         <parameter id="class"
-            value="de.knowwe.instantedit.table.TableEditToolProvider" />
-        <parameter id="name" value="TableEditToolProvider" />
+            value="de.d3web.we.kdom.abstractiontable.EditToolProvider" />
+        <parameter id="name" value="AbstractionTableEditToolProvider" />
         <parameter id="description"
             value="Offers a tool for a spreadsheet-like table editor." />
         <parameter id="version" value="1.0" />

@@ -1,7 +1,8 @@
 KNOWWE.plugin.tableEditTool = function() {
 	
-	var originalWikiText = null;
-	var spreadsheet = null;
+	var originalWikiText = new Object();
+	var spreadsheet = new Object();
+	var supportLinks = new Object();
 	
 	function createRootID(id) {
 		return "tableEdit" + id;
@@ -14,8 +15,12 @@ KNOWWE.plugin.tableEditTool = function() {
 	
     return {
     	
+    	supportLinks : function(id, support) {
+    		supportLinks[id] = support;
+    	},
+    	
 	    generateHTML : function(id) {
-	    	originalWikiText = _IE.getWikiText(id);
+	    	originalWikiText[id] = _IE.getWikiText(id);
 	    	return "<div id='"+createRootID(id)+"' style='position: relative;'></div>" +
 	    			_IE.getSaveCancelDeleteButtons(id, new Array(
 	    	    			createButton("table_insert_col_before", "gif"),
@@ -29,60 +34,61 @@ KNOWWE.plugin.tableEditTool = function() {
 	    },
 	    
 	    postProcessHTML : function(id) {
-	    	spreadsheet = new Spreadsheet(createRootID(id), function() {_IE.save(id)}, function() {_IE.cancel(id)});
-	    	spreadsheet.setWikiMarkup(originalWikiText);
-	    	originalWikiText = spreadsheet.getWikiMarkup();
+	    	spreadsheet[id] = new Spreadsheet(createRootID(id), function() {_IE.save(id)}, function() {_IE.cancel(id)});
+	    	spreadsheet[id].setSupportLinks(supportLinks[id] == null ? true : supportLinks[id]);
+	    	spreadsheet[id].setWikiMarkup(originalWikiText[id]);
+	    	originalWikiText[id] = spreadsheet[id].getWikiMarkup();
 
-	    	var root = spreadsheet.element.parent();
+	    	var root = spreadsheet[id].element.parent();
 	    	root.find("#table_insert_row_before").click(function(event) {
-	    		if (spreadsheet.selected) spreadsheet.addRow(spreadsheet.selected.row);
+	    		if (spreadsheet[id].selected) spreadsheet[id].addRow(spreadsheet[id].selected.row);
 	    		event.preventDefault();
 	    	}); 
 	    	root.find("#table_insert_row_after").click(function(event) {
-	    		if (spreadsheet.selected) spreadsheet.addRow(spreadsheet.selected.row+1);
+	    		if (spreadsheet[id].selected) spreadsheet[id].addRow(spreadsheet[id].selected.row+1);
 	    		event.preventDefault();
 	    	});
 	    	root.find("#table_delete_row").click(function(event) {
-	    		if (spreadsheet.selected) spreadsheet.removeRow(spreadsheet.selected.row);
+	    		if (spreadsheet[id].selected) spreadsheet[id].removeRow(spreadsheet[id].selected.row);
 	    		event.preventDefault();
 	    	});
 	    	
 	    	root.find("#table_insert_col_before").click(function(event) {
-	    		if (spreadsheet.selected) spreadsheet.addCol(spreadsheet.selected.col);
+	    		if (spreadsheet[id].selected) spreadsheet[id].addCol(spreadsheet[id].selected.col);
 	    		event.preventDefault();
 	    	});
 	    	root.find("#table_insert_col_after").click(function(event) {
-	    		if (spreadsheet.selected) spreadsheet.addCol(spreadsheet.selected.col+1);
+	    		if (spreadsheet[id].selected) spreadsheet[id].addCol(spreadsheet[id].selected.col+1);
 	    		event.preventDefault();
 	    	});
 	    	root.find("#table_delete_col").click(function(event) {
-	    		if (spreadsheet.selected) spreadsheet.removeCol(spreadsheet.selected.col);
+	    		if (spreadsheet[id].selected) spreadsheet[id].removeCol(spreadsheet[id].selected.col);
 	    		event.preventDefault();
 	    	});
 
 	    	root.find("#toggle_header").click(function(event) {
-	    		if (!spreadsheet.selected) return;
-	    		var header = spreadsheet.getCell(spreadsheet.selected.row, spreadsheet.selected.col).hasClass("header");
-	    		spreadsheet.forEachSelected(function(cell, row, col) {
-	    			spreadsheet.setHeader(row, col, !header);
+	    		if (!spreadsheet[id].selected) return;
+	    		var header = spreadsheet[id].getCell(spreadsheet[id].selected.row, spreadsheet[id].selected.col).hasClass("header");
+	    		spreadsheet[id].forEachSelected(function(cell, row, col) {
+	    			spreadsheet[id].setHeader(row, col, !header);
 	    		});
 	    		event.preventDefault();
 	    	});
 	    },
 	    
 	    unloadCondition : function(id) {
-			return originalWikiText == spreadsheet.getWikiMarkup();
+			return originalWikiText[id] == spreadsheet[id].getWikiMarkup();
 	    },
 	    
 	    generateWikiText : function(id) {
-	    	spreadsheet.stopEditCell();
-	    	return spreadsheet.getWikiMarkup();
+	    	spreadsheet[id].stopEditCell();
+	    	return spreadsheet[id].getWikiMarkup();
 	    }
     }
 }();
 
 
-function SpreadsheetModel(wikiText) {
+function SpreadsheetModel(wikiText, supportLinks) {
 	this.width = 1;
 	this.height = 1;
 	this.cells = new Array();
@@ -104,13 +110,13 @@ function SpreadsheetModel(wikiText) {
 		// normalize returns, remove multiples
 		wikiText = wikiText.replace(/[\n\r]+/g, "\n"); 
 		// replace in-link pipes by html entity
-		wikiText = wikiText.replace(/(\[[^\]]*)\|/g, "$1&#124;");
+		if (supportLinks) wikiText = wikiText.replace(/(\[[^\]]*)\|/g, "$1&#124;");
 		// unescape multiple "~", odd, but like jsp-wiki does
 		while (wikiText.search(/\~\~\~/) != -1) {
 			wikiText = wikiText.replace(/\~\~\~/, "&#126;~~");
 		}
 		wikiText = wikiText.replace(/\~\~/g, "&#126;"); // unescape ~
-		wikiText = wikiText.replace(/\~\|/g, "&#124;"); // unescape |
+		if (supportLinks) wikiText = wikiText.replace(/\~\|/g, "&#124;"); // unescape |
 		var lines = wikiText.match(/\n\|[^\n]*/g);
 		var row = 0;
 		for (var i = 0; i<lines.length; i++) {
@@ -188,6 +194,7 @@ function Spreadsheet(elementID, saveFun, cancelFun) {
 	this.elementID = elementID;
 	this.saveFunction = saveFun;
 	this.cancelFunction = cancelFun;
+	this.supportLinks = true;
 	this.element = jq$("#"+elementID);
 	
 	this.createTable();
@@ -195,7 +202,11 @@ function Spreadsheet(elementID, saveFun, cancelFun) {
 }
 
 Spreadsheet.prototype.setWikiMarkup = function(wikiText) {
-	this.setModel(new SpreadsheetModel(wikiText));
+	this.setModel(new SpreadsheetModel(wikiText, this.supportLinks));
+}
+
+Spreadsheet.prototype.setSupportLinks = function(support) {
+	this.supportLinks = support;
 }
 
 Spreadsheet.prototype.setModel = function(model) {
