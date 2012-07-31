@@ -28,6 +28,8 @@ import java.util.List;
 
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message.Type;
+import de.d3web.testing.Test;
+import de.d3web.testing.TestManager;
 import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.build.CIBuildRenderer;
 import de.d3web.we.ci4ke.build.Dashboard;
@@ -314,8 +316,14 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 				// render bullet
 				buffy.append(CIUtilities.renderResultType(buildResult, 16));
 
+				Test<?> test = TestManager.findTest(name);
+				String title = "";
+				if(test !=null) {
+					title = test.getDescription();
+				}
+				
 				// render test-name
-				buffy.append("<span class='ci-test-title'>");
+				buffy.append("<span class='ci-test-title' title='"+title+"'>");
 				buffy.append(name);
 
 				// render test-configuration (if existent)
