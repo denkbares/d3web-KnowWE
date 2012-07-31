@@ -86,6 +86,6 @@ public class ArticleHasErrorsTest extends AbstractTest<Article> {
 	
 	@Override
 	public String getDescription() {
-		return "Tests whether the specified article(s) contains errors.";
+		return "Checks, that the specified <article> reports no compile errors for knowledge definitions.";
 	}
 }

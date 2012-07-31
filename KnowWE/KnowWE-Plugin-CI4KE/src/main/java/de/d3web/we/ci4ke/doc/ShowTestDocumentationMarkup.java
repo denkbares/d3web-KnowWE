@@ -53,7 +53,6 @@ public class ShowTestDocumentationMarkup extends DefaultMarkupType {
 		
 		@Override
 		public void render(Section<?> section, UserContext user, StringBuilder buff) {
-			super.render(section, user, buff);
 			List<Test<?>> allTests = TestManager.findAllTests();
 			
 			StringBuffer buffer = new StringBuffer();

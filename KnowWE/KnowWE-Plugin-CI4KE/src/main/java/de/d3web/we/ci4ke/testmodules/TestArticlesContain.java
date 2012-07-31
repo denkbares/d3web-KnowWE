@@ -88,7 +88,7 @@ public class TestArticlesContain extends AbstractTest<Article> {
 	
 	@Override
 	public String getDescription() {
-		return "Tests whether the specified article content contains the string expression passed as parameter.";
+		return "Checks, whether the articles contain the text defined by <searchString>.";
 	}
 
 }
