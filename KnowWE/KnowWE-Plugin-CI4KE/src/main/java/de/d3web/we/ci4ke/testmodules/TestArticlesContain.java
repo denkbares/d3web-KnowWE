@@ -85,5 +85,10 @@ public class TestArticlesContain extends AbstractTest<Article> {
 	public int numberOfArguments() {
 		return 1;
 	}
+	
+	@Override
+	public String getDescription() {
+		return "Tests whether the specified article content contains the string expression passed as parameter.";
+	}
 
 }

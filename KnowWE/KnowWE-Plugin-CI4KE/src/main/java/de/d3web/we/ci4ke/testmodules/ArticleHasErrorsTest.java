@@ -83,4 +83,9 @@ public class ArticleHasErrorsTest extends AbstractTest<Article> {
 	public int numberOfArguments() {
 		return 0;
 	}
+	
+	@Override
+	public String getDescription() {
+		return "Tests whether the specified article(s) contains errors.";
+	}
 }
