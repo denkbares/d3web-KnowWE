@@ -49,5 +49,10 @@ public abstract class AbstractTest<T> implements de.d3web.testing.Test<T> {
 						+ numberOfArguments() + " - found: " + args.length);
 		return result;
 	}
+	
+	@Override
+	public String getDescription() {
+		return "No description available";
+	}
 
 }
