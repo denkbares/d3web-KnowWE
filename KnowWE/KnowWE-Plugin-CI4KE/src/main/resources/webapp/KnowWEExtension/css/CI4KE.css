@@ -25,20 +25,22 @@
 
 .ci-column-left
 	{ 
-/*	border: thin solid #000000; */
-	position:absolute;
+/*	border: thin solid #000000;  */
+/*	border-right: 1px solid #DDD; */
+/*	position:relative;
 	float: left; 
 	min-height: 100%;
-	margin-top: 10px;
-	padding-right: 10px;
+	margin-top: 10px;*/
+	padding-right: 10px; 
 	/* width: 24%; */
 	}
 .ci-build-details-wrapper
 	{ 
-	float: left; 
-	border-left: 1px solid #DDD;
-	margin-left: 100px;	
-	margin-top: 10px;
+/*	float: right; */ 
+/*	position:fixed;*/
+/*	border-left: 1px solid #DDD; */
+/*	margin-left: 100px; */	
+/*	margin-top: 10px;   */
 	padding-left: 10px;
 	/* width: 75%; */
 	}
@@ -59,7 +61,7 @@
 
 .ci-title {
 	border-bottom: 1px solid #DDD;
-	padding: 0px 0px 6px 0px;
+	padding: 0px 0px 6px 6px;
 	}
 
 .ci-message {

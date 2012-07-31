@@ -64,13 +64,12 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		String dashboardName = DefaultMarkupType.getAnnotation(section,
 					CIDashboardType.NAME_KEY);
-		String dashboardNameEscaped = CIUtilities.utf8Escape(dashboardName);
+		
 
-		string.append(Strings.maskHTML("<div id='" + dashboardNameEscaped
-					+ "' class='ci-title'>"));
+		
 		string.append(Strings.maskHTML(renderDashboardContents(user,
 					section.getTitle(), dashboardName)));
-		string.append(Strings.maskHTML("</div>"));
+		
 	}
 
 	/**
@@ -123,11 +122,16 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	 * @param dashboardName the name of the dashboard
 	 */
 	public static String renderDashboardContents(UserContext user, String dashboardArticleTitle, String dashboardName) {
-
+		
+		
 		Section<CIDashboardType> dashboardSection = CIUtilities.findCIDashboardSection(
 				dashboardArticleTitle, dashboardName);
 
 		StringBuilder string = new StringBuilder();
+		String dashboardNameEscaped = CIUtilities.utf8Escape(dashboardName);
+		string.append(Strings.maskHTML("<div id='" + dashboardNameEscaped
+				+ "' class='ci-title'>"));
+
 
 		// check unique dashboard names and create error in case of
 		// duplicates
@@ -159,7 +163,6 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		Dashboard dashboard = Dashboard.getDashboard(user.getWeb(), dashboardArticleTitle,
 				dashboardName);
-		String dashboardNameEscaped = CIUtilities.utf8Escape(dashboardName);
 
 		string.append("<div id='top'>");
 		string.append("<h3>");
@@ -204,8 +207,12 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		string.append("<div id='progress_container' style='display:inline'></div>");
 		string.append("</h3>");
 		string.append("</div>");
-
-		// render the last five builds:
+		string.append(Strings.maskHTML("</div>"));
+		
+		string.append("<table><tr>");
+		
+		// render the last x builds:
+		string.append("<td valign='top' style='border-right: 1px solid #DDDDDD;'>");
 		string.append("<div id='")
 				.append(dashboardNameEscaped)
 				.append("-column-left' class='ci-column-left'>");
@@ -214,14 +221,19 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 				.append("-build-table'>");
 		string.append(renderer.renderNewestBuilds(10, shownBuild.getBuildNumber(),indexFromTo));
 		string.append("</div></div>");
-
+		string.append("</td>");
+		
 		// render the build-details pane
+		
+		string.append("<td valign='top'>");
 		string.append("<div id='")
 				.append(dashboardNameEscaped)
 				.append("-build-details-wrapper' class='ci-build-details-wrapper'>");
 		string.append(renderBuildDetails(dashboard, shownBuild));
 		string.append("</div>");
-
+		string.append("</td>");
+		string.append("</tr></table>");
+		
 		return string.toString();
 	}
 
