@@ -22,6 +22,7 @@ import java.util.List;
 
 import de.d3web.testing.Test;
 import de.d3web.testing.TestManager;
+import de.d3web.testing.TestParameter;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Strings;
@@ -68,8 +69,13 @@ public class ShowTestDocumentationMarkup extends DefaultMarkupType {
 			buffer.append("Test object class");
 			buffer.append("</th>");
 			
+				
 			buffer.append("<th>");
 			buffer.append("Description");
+			buffer.append("</th>");
+			
+			buffer.append("<th>");
+			buffer.append("Parameters");
 			buffer.append("</th>");
 			
 			for (Test<?> test : allTests) {
@@ -85,9 +91,25 @@ public class ShowTestDocumentationMarkup extends DefaultMarkupType {
 				buffer.append(test.getTestObjectClass().getSimpleName());
 				buffer.append("</td>");
 				
+				
+				
 				// description
 				buffer.append("<td>");
 				buffer.append(test.getDescription());
+				buffer.append("</td>");
+				
+				
+				// test parameters
+				buffer.append("<td>");
+				List<TestParameter> parameters = test.getParameterSpecification();
+				if(parameters.size() == 0) {
+					buffer.append("none");
+				}
+				int i = 1;
+				for (TestParameter testParameter : parameters) {
+					buffer.append(i+".: "+testParameter.toString()+"\n");
+					i++;
+				}
 				buffer.append("</td>");
 				
 				buffer.append("</tr>");
