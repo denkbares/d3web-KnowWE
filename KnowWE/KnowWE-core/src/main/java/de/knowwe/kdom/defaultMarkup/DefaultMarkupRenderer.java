@@ -195,6 +195,7 @@ public class DefaultMarkupRenderer implements Renderer {
 			}
 			string.append(Strings.maskHTML("</span>"));
 		}
+		string.append(Strings.maskHTML("<br/>"));
 	}
 
 	public static List<String> getMessageStrings(Section<?> rootSection, Type type) {
