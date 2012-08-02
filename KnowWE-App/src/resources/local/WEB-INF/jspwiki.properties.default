@@ -281,7 +281,7 @@ jspwiki.breakTitleWithSpaces = false
 #
 #  For any other language, you'll probably want to turn this off.
 #
-jspwiki.translatorReader.matchEnglishPlurals = true
+jspwiki.translatorReader.matchEnglishPlurals = false
 
 #
 #  If you set this to true, the Wiki translator will then also consider
