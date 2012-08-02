@@ -20,8 +20,7 @@
 package de.d3web.we.knowledgebase;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.Environment;
@@ -46,7 +45,7 @@ public class KnowledgeBaseCompileType extends PackageCompileType {
 	}
 
 	@Override
-	public Set<String> getPackagesToCompile(Section<? extends PackageCompiler> section) {
+	public Collection<String> getPackagesToCompile(Section<? extends PackageCompiler> section) {
 		Section<KnowledgeBaseType> kbSection = Sections.findAncestorOfType(section,
 				KnowledgeBaseType.class);
 		String[] uses = DefaultMarkupType.getAnnotations(kbSection,
@@ -55,6 +54,6 @@ public class KnowledgeBaseCompileType extends PackageCompileType {
 			return Environment.getInstance().getPackageManager(section.getWeb()).getDefaultPackages(
 					section.getArticle());
 		}
-		return new HashSet<String>(Arrays.asList(uses));
+		return Arrays.asList(uses);
 	}
 }

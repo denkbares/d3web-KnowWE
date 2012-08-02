@@ -76,29 +76,32 @@ public abstract class AnswerDefinition
 	@Override
 	public Choice getTermObject(Article article, Section<? extends D3webTerm<Choice>> s) {
 
+		Choice choice = null;
 		if (s.get() instanceof AnswerDefinition) {
 			TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
 			Section<?> def = terminologyManager.getTermDefiningSection(getTermIdentifier(s));
 			if (def != null) {
-				Choice choice = (Choice) KnowWEUtils.getStoredObject(article, def,
+				choice = (Choice) KnowWEUtils.getStoredObject(article, def,
 						ANSWER_STORE_KEY);
-				return choice;
 			}
 
-			Section<AnswerDefinition> answerDef = Sections.cast(s, AnswerDefinition.class);
-			Section<? extends QuestionDefinition> ref = answerDef.get().getQuestionSection(
-					answerDef);
-			Question question = ref.get().getTermObject(article, ref);
-			String answerName = answerDef.get().getTermName(answerDef);
-			if (question != null && question instanceof QuestionChoice) {
-				Choice choice = KnowledgeBaseUtils.findChoice((QuestionChoice) question,
-						answerName, false);
-				KnowWEUtils.storeObject(article, answerDef, ANSWER_STORE_KEY, choice);
-				return choice;
+			if (choice == null) {
+				Section<AnswerDefinition> answerDef = Sections.cast(s, AnswerDefinition.class);
+				Section<? extends QuestionDefinition> ref = answerDef.get().getQuestionSection(
+						answerDef);
+				if (ref != null) {
+					Question question = ref.get().getTermObject(article, ref);
+					if (question != null && question instanceof QuestionChoice) {
+						String answerName = answerDef.get().getTermName(answerDef);
+						choice = KnowledgeBaseUtils.findChoice((QuestionChoice) question,
+								answerName, false);
+						KnowWEUtils.storeObject(article, answerDef, ANSWER_STORE_KEY, choice);
+					}
+				}
 			}
 		}
 
-		return null;
+		return choice;
 	}
 
 	@Override

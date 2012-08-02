@@ -337,7 +337,7 @@ public class PackageManager implements EventListener {
 
 	public void registerPackageCompileSection(Article article, Section<? extends PackageCompiler> s) {
 
-		Set<String> packagesToCompile = s.get().getPackagesToCompile(s);
+		Collection<String> packagesToCompile = s.get().getPackagesToCompile(s);
 
 		HashSet<Section<? extends PackageCompiler>> packageCompileSections =
 				articleToPackageCompileSections.get(article.getTitle());
@@ -465,7 +465,7 @@ public class PackageManager implements EventListener {
 		// get articles compiling "this"
 		for (HashSet<Section<? extends PackageCompiler>> compileSections : articleToPackageCompileSections.values()) {
 			for (Section<? extends PackageCompiler> compileSection : compileSections) {
-				Set<String> packagesToCompile = compileSection.get().getPackagesToCompile(
+				Collection<String> packagesToCompile = compileSection.get().getPackagesToCompile(
 						compileSection);
 				if (packagesToCompile.contains(THIS)) {
 					compilingArticles.add(compileSection.getTitle());
@@ -554,7 +554,7 @@ public class PackageManager implements EventListener {
 
 		for (HashSet<Section<? extends PackageCompiler>> packageCompileSections : articleToPackageCompileSections.values()) {
 			for (Section<? extends PackageCompiler> packageCompileSection : packageCompileSections) {
-				Set<String> packagesToCompile = packageCompileSection.get().getPackagesToCompile(
+				Collection<String> packagesToCompile = packageCompileSection.get().getPackagesToCompile(
 						packageCompileSection);
 				for (String packageName : packagesToCompile) {
 					if (changedPackages.contains(packageName)) {

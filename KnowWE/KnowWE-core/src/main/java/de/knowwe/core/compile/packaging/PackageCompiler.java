@@ -20,20 +20,20 @@
 
 package de.knowwe.core.compile.packaging;
 
-import java.util.Set;
+import java.util.Collection;
 
 import de.knowwe.core.kdom.parsing.Section;
 
 public interface PackageCompiler {
 
 	/**
-	 * Needs to return a List of package names. These are the packages to be
-	 * compiled compiled later...
+	 * Needs to return a Collection of package names. These are the packages to
+	 * be compiled compiled later...
 	 * 
 	 * @created 02.10.2010
 	 * @param s should always be the Section calling this method.
-	 * @return a List of package names.
+	 * @return a Collection of package names.
 	 */
-	public Set<String> getPackagesToCompile(Section<? extends PackageCompiler> s);
+	public Collection<String> getPackagesToCompile(Section<? extends PackageCompiler> s);
 
 }
