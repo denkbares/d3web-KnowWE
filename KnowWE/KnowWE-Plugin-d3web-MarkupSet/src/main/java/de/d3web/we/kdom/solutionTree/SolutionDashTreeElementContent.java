@@ -112,18 +112,21 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent {
 						fatherSolutionContent, SolutionDefinition.class);
 				if (solutionDef != null) {
 					Solution superSolution = solutionDef.get().getTermObject(article, solutionDef);
-					// here the actual taxonomic relation is established
+					if (superSolution != null) {
+						// here the actual taxonomic relation is established
 
-					// remove this solution if already registered as child of
-					// root
-					KnowledgeBase kb = getKB(article);
-					kb.getRootSolution().removeChild(localSolution);
-					superSolution.addChild(localSolution);
+						// remove this solution if already registered as child
+						// of
+						// root
+						KnowledgeBase kb = getKB(article);
+						kb.getRootSolution().removeChild(localSolution);
+						superSolution.addChild(localSolution);
 
-					return Messages.asList(Messages.relationCreatedNotice(
-							s.getClass().getSimpleName()
-									+ " " + localSolution.getName() + "sub-solution of "
-									+ superSolution.getName()));
+						return Messages.asList(Messages.relationCreatedNotice(
+								s.getClass().getSimpleName()
+										+ " " + localSolution.getName() + "sub-solution of "
+										+ superSolution.getName()));
+					}
 				}
 			}
 
