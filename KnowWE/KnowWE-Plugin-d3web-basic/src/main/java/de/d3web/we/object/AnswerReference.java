@@ -95,7 +95,7 @@ public abstract class AnswerReference
 				TermIdentifier questionIdentifier = new TermIdentifier(
 						termIdentifier.getPathElements()[0]);
 				Section<?> termDef = terminologyManager.getTermDefiningSection(questionIdentifier);
-				if (termDef.get() instanceof QuestionDefinition) {
+				if (termDef != null && termDef.get() instanceof QuestionDefinition) {
 					Section<QuestionDefinition> questionDef = Sections.cast(termDef,
 							QuestionDefinition.class);
 					Question question = questionDef.get().getTermObject(article, questionDef);
