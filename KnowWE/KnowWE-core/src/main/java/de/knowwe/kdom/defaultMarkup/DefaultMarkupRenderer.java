@@ -193,9 +193,8 @@ public class DefaultMarkupRenderer implements Renderer {
 			for (String messageString : messages) {
 				string.append(messageString).append("\n");
 			}
-			string.append(Strings.maskHTML("</span>"));
+			string.append(Strings.maskHTML("</span><br/>"));
 		}
-		string.append(Strings.maskHTML("<br/>"));
 	}
 
 	public static List<String> getMessageStrings(Section<?> rootSection, Type type) {
