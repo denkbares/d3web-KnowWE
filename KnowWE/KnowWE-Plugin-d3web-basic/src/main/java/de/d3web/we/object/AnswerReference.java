@@ -21,6 +21,9 @@
 package de.d3web.we.object;
 
 import de.d3web.core.knowledge.terminology.Choice;
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
@@ -78,16 +81,32 @@ public abstract class AnswerReference
 	@Override
 	public Choice getTermObject(Article article, Section<? extends D3webTerm<Choice>> section) {
 
+		Choice choice = null;
 		if (section.get() instanceof AnswerReference) {
 			TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
-			Section<?> answerDef = terminologyManager.getTermDefiningSection(getTermIdentifier(section));
+			TermIdentifier termIdentifier = getTermIdentifier(section);
+			Section<?> answerDef = terminologyManager.getTermDefiningSection(termIdentifier);
 			if (answerDef != null) {
-				Choice choice = (Choice) KnowWEUtils.getStoredObject(article, answerDef,
+				choice = (Choice) KnowWEUtils.getStoredObject(article, answerDef,
 						AnswerDefinition.ANSWER_STORE_KEY);
-				return choice;
+				if (choice != null) return choice;
+			}
+			if (answerDef == null || choice == null) {
+				TermIdentifier questionIdentifier = new TermIdentifier(
+						termIdentifier.getPathElements()[0]);
+				Section<?> termDef = terminologyManager.getTermDefiningSection(questionIdentifier);
+				if (termDef.get() instanceof QuestionDefinition) {
+					Section<QuestionDefinition> questionDef = Sections.cast(termDef,
+							QuestionDefinition.class);
+					Question question = questionDef.get().getTermObject(article, questionDef);
+					if (question instanceof QuestionChoice) {
+						choice = KnowledgeBaseUtils.findChoice((QuestionChoice) question,
+								termIdentifier.getLastPathElement(), false);
+					}
+				}
 			}
 		}
-		return null;
+		return choice;
 	}
 
 	/**
