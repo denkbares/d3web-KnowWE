@@ -166,7 +166,8 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		Dashboard dashboard = Dashboard.getDashboard(user.getWeb(), dashboardArticleTitle,
 				dashboardName);
 
-		string.append("<a name='"+dashboard.getDashboardName()+"'>");
+		string.append("<a name='"+dashboard.getDashboardName()+"'></a>");
+		// open div top
 		string.append("<div id='top'>");
 		string.append("<h3>");
 		// if at least one build has been executed: Render forecast icons:
@@ -207,6 +208,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		string.append(dashboardName);
 
 		// insert tag for progress bar
+		// open/close div progress_container
 		string.append("<div id='progress_container' style='display:inline'></div>");
 		string.append("</h3>");
 		string.append("</div>");
