@@ -80,7 +80,7 @@ function fctExecuteNewBuild( dashboardID,title ) {
                 ids : [ dashboardID ],
                 action : 'insert',
                 fn : function() {
-                	window.location='Wiki.jsp?page=' + title;
+                	window.location='Wiki.jsp?page=' + title+'#'+dashboardID;
 					makeCIBoxesCollapsible( dashboardID );
 					try {
 						KNOWWE.helper.observer.notify('update');

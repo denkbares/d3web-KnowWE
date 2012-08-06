@@ -168,7 +168,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		string.append("<a name='"+dashboard.getDashboardName()+"'></a>");
 		// open div top
-		string.append("<div id='top'>");
+		string.append("<div id='top' style='border-bottom:1px solid #DDDDDD;'>");
 		string.append("<h3>");
 		// if at least one build has been executed: Render forecast icons:
 		BuildResult latestBuild = dashboard.getLatestBuild();
@@ -209,10 +209,9 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		// insert tag for progress bar
 		// open/close div progress_container
-		string.append("<div id='progress_container' style='display:inline'></div>");
+		string.append("<div id='progress_container' style='display:inline;'></div>");
 		string.append("</h3>");
 		string.append("</div>");
-		string.append(Strings.maskHTML("</div>"));
 		
 		string.append("<table><tr>");
 		
@@ -239,6 +238,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		string.append("</td>");
 		string.append("</tr></table>");
 		
+		string.append(Strings.maskHTML("</div>"));
 		return string.toString();
 	}
 
