@@ -26,8 +26,8 @@ import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.SuccessorNotReusedConstraint;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -38,7 +38,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @created 26.07.2010
  * @param <T>
  */
-public abstract class D3webCondition<T extends Type>
+public abstract class D3webCondition<T extends D3webCondition<T>>
 		extends AbstractType {
 
 	private static final String COND_STORE_KEY = "cond-store-key";
@@ -47,11 +47,19 @@ public abstract class D3webCondition<T extends Type>
 		this.addSubtreeHandler(new CondCreateHandler());
 	}
 
-	public final Condition getCondition(Article article, Section<T> s) {
+	public final Condition getCondition(Article article, Section<? extends D3webCondition<?>> s) {
 		return (Condition) KnowWEUtils.getStoredObject(article, s, COND_STORE_KEY);
 	}
 
-	private void storeCondition(Article article, Condition condition, Section<T> section) {
+	public static Condition findCondition(Article article, Section<?> parent) {
+		@SuppressWarnings("rawtypes")
+		Section<D3webCondition> section = Sections.findSuccessor(parent, D3webCondition.class);
+		@SuppressWarnings("unchecked")
+		Condition condition = section.get().getCondition(article, section);
+		return condition;
+	}
+
+	private void storeCondition(Article article, Condition condition, Section<? extends D3webCondition<?>> section) {
 		KnowWEUtils.storeObject(article, section, COND_STORE_KEY, condition);
 	}
 
