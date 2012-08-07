@@ -263,13 +263,22 @@ public interface WikiConnector {
 	public String normalizeString(String string);
 
 	/**
-	 * Renders given wiki mark-up.
+	 * Renders given wiki mark-up to html.
 	 * 
 	 * @param articleText the current text of the article.
-	 * @param request the request of the user
+	 * @param request the request of the user. May be null is not available.
 	 * @return the rendered article text
 	 */
 	public String renderWikiSyntax(String pagedata, HttpServletRequest request);
+
+	/**
+	 * Renders given wiki mark-up to html. Use only if no http request is
+	 * available.
+	 * 
+	 * @param articleText the current text of the article.
+	 * @return the rendered article text
+	 */
+	public String renderWikiSyntax(String pagedata);
 
 	/**
 	 * Creates a new wiki attachment of the specified path and the specified

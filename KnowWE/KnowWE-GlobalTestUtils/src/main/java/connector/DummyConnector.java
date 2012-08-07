@@ -260,6 +260,11 @@ public class DummyConnector implements WikiConnector {
 		return string;
 	}
 
+	@Override
+	public String renderWikiSyntax(String string) {
+		return renderWikiSyntax(string, null);
+	}
+
 	public void setKnowWEExtensionPath(String knowWEExtensionPath) {
 		this.knowweExtensionPath = knowWEExtensionPath;
 	}

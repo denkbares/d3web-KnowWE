@@ -489,6 +489,11 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
+	public String renderWikiSyntax(String string) {
+		return renderWikiSyntax(string, null);
+	}
+
+	@Override
 	public WikiAttachment storeAttachment(String title, String user, File attachmentFile) throws IOException {
 		FileInputStream in = new FileInputStream(attachmentFile);
 		try {
