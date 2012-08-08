@@ -72,21 +72,21 @@
 	
 	<!-- CITests -->
 	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
-		id="ArticleHasErrorsTest">
+		id="ArticleHasErrors">
 		<parameter id="class"
-			value="de.d3web.we.ci4ke.testmodules.ArticleHasErrorsTest" />
-		<parameter id="name" value="ArticleHasErrorsTest" />
-		<parameter id="description" value="CITest ArticleHasErrorsTest" />
+			value="de.d3web.we.ci4ke.testmodules.ArticleHasErrors" />
+		<parameter id="name" value="ArticleHasErrors" />
+		<parameter id="description" value="CITest ArticleHasErrors" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
 	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
-		id="TestArticlesContain">
+		id="ArticleContains">
 		<parameter id="class"
-			value="de.d3web.we.ci4ke.testmodules.TestArticlesContain" />
-		<parameter id="name" value="TestArticlesContain" />
-		<parameter id="description" value="CITest TestArticlesContain" />
+			value="de.d3web.we.ci4ke.testmodules.ArticleContains" />
+		<parameter id="name" value="ArticleContains" />
+		<parameter id="description" value="CITest ArticleContains" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

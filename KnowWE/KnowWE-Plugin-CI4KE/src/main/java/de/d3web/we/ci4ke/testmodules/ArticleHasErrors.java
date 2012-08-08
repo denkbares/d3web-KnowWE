@@ -34,7 +34,7 @@ import de.knowwe.core.report.Messages;
  * @author Marc-Oliver Ochlast
  * @created 29.05.2010
  */
-public class ArticleHasErrorsTest extends AbstractTest<Article> {
+public class ArticleHasErrors extends AbstractTest<Article> {
 
 	@Override
 	public Message execute(Article moni, String[] args2) {

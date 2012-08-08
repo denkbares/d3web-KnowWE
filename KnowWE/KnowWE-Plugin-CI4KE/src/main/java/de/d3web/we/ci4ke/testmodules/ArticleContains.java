@@ -38,12 +38,12 @@ import de.knowwe.core.kdom.parsing.Sections;
  * @author Marc-Oliver Ochlast/ Jochen Reutelshoefer (denkbares GmbH)
  * @created 26.11.2010
  */
-public class TestArticlesContain extends AbstractTest<Article> {
+public class ArticleContains extends AbstractTest<Article> {
 	
 	private static final String SEARCH_STRING_DESCRIPTION = "Specifies the string or pattern (regex) that will be searched. Any found occurrence within the test object will be considered as test failure.";
 	
 
-	public TestArticlesContain() {
+	public ArticleContains() {
 		this.addParameter("SearchString", TestParameter.Type.Regex, TestParameter.Mode.Mandatory, SEARCH_STRING_DESCRIPTION);
 	}
 
