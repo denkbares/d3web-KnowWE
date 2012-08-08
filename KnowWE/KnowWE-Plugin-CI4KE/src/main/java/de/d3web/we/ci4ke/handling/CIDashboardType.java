@@ -183,6 +183,9 @@ public class CIDashboardType extends DefaultMarkupType {
 					}
 
 				}
+				if(arguments.length == 0 && message.getMessage(0) != null) {
+					msgs.add(new Message(Message.Type.ERROR, message.getMessage(0)));
+				}
 			}
 
 		}
