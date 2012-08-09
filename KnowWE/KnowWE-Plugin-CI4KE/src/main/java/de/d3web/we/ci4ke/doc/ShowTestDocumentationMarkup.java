@@ -54,7 +54,7 @@ public class ShowTestDocumentationMarkup extends DefaultMarkupType {
 		
 		@Override
 		public void render(Section<?> section, UserContext user, StringBuilder buff) {
-			List<Test<?>> allTests = TestManager.findAllTests();
+			List<String> allTests = TestManager.findAllTestNames();
 			
 			StringBuffer buffer = new StringBuffer();
 			
@@ -78,30 +78,32 @@ public class ShowTestDocumentationMarkup extends DefaultMarkupType {
 			buffer.append("Parameters");
 			buffer.append("</th>");
 			
-			for (Test<?> test : allTests) {
+			for (String testName : allTests) {
 				buffer.append("<tr>");
+				
+				Test<?> t = TestManager.findTest(testName);
 				
 				// name
 				buffer.append("<td>");
-				buffer.append(test.getClass().getSimpleName());
+				buffer.append(testName);
 				buffer.append("</td>");
 				
 				// test object class
 				buffer.append("<td>");
-				buffer.append(test.getTestObjectClass().getSimpleName());
+				buffer.append(t.getTestObjectClass().getSimpleName());
 				buffer.append("</td>");
 				
 				
 				
 				// description
 				buffer.append("<td>");
-				buffer.append(test.getDescription());
+				buffer.append(t.getDescription());
 				buffer.append("</td>");
 				
 				
 				// test parameters
 				buffer.append("<td>");
-				List<TestParameter> parameters = test.getParameterSpecification();
+				List<TestParameter> parameters = t.getParameterSpecification();
 				if(parameters.size() == 0) {
 					buffer.append("none");
 				}
