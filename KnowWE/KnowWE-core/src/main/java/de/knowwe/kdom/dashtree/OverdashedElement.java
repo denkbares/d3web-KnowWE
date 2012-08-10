@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
@@ -48,34 +49,60 @@ import de.knowwe.core.report.Messages;
  */
 public class OverdashedElement extends AbstractType {
 
-	public OverdashedElement() {
-
+	public OverdashedElement(char keyCharacter) {
+		
 		this.addSubtreeHandler(new OverDashedErrorHandler());
 
-		this.sectionFinder = new SectionFinder() {
-
-			@Override
-			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-				// when there is no father, one dash is too much
-				int level = 1;
-
-				// IMPORTANT: +2
-				if (father.get() instanceof DashSubtree) {
-					level = DashTreeUtils.getDashLevel(father) + 2;
-				}
-
-				Matcher m = Pattern.compile("^\\s*" + "(-{" + level + "})",
-						Pattern.MULTILINE).matcher(text);
-				if (m.find()) {
-
-					return SectionFinderResult.createSingleItemList(new SectionFinderResult(
-							m.start(1), m.start(1) + level));
-				}
-				return null;
-			}
-		};
+		this.sectionFinder = new OverDashedSectionFinder(keyCharacter);
 	}
+	
+	class OverDashedSectionFinder implements SectionFinder  {
 
+		private final char keyChar;
+		
+		public OverDashedSectionFinder (char c) {
+			keyChar = c;
+		}
+		
+		
+		@Override
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
+			// when there is no father, one dash is too much
+			int level = 1;
+
+			// IMPORTANT: +2
+			if (father.get() instanceof DashSubtree) {
+				level = DashTreeUtils.getDashLevel(father) + 2;
+			}
+			Pattern pattern = null;
+			
+			try {
+				// check if its a meta-character for regex
+				pattern = Pattern.compile(getRegexString(""+keyChar, level),
+						Pattern.MULTILINE);
+			} catch(PatternSyntaxException e) {
+				// is a meta-character obviously
+				pattern = Pattern.compile(getRegexString("\\"+keyChar, level),
+						Pattern.MULTILINE);
+			}
+			
+			Matcher m = pattern.matcher(text);
+			if (m.find()) {
+
+				return SectionFinderResult.createSingleItemList(new SectionFinderResult(
+						m.start(1), m.start(1) + level));
+			}
+			return null;
+		}
+		
+		private String getRegexString(String key, int level) {
+			return "^\\s*" + "("+key+"{" + level + "})";
+		}
+		
+
+	
+}
+	
 	class OverDashedErrorHandler extends SubtreeHandler<OverdashedElement> {
 
 		@Override
@@ -83,5 +110,5 @@ public class OverdashedElement extends AbstractType {
 			return Messages.asList(Messages.syntaxError("to many dashes; remove \"-\""));
 		}
 	}
-
 }
+

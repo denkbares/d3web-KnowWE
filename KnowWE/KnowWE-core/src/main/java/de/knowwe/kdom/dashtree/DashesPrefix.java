@@ -33,13 +33,14 @@ import de.knowwe.core.user.UserContext;
 
 public class DashesPrefix extends AbstractType {
 
-	public DashesPrefix() {
-		this.sectionFinder = new DashesPrefixFinder();
+	
+	public DashesPrefix(final char key) {
+		this.sectionFinder = new DashesPrefixFinder(key);
 		this.setRenderer(new Renderer() {
 
 			@Override
 			public void render(Section<?> sec, UserContext user, StringBuilder string) {
-				if (sec.getText().trim().startsWith("-")) {
+				if (sec.getText().trim().startsWith(""+key)) {
 					string.append('~');
 				}
 				DefaultTextRenderer.getInstance().render(sec, user, string);
@@ -49,6 +50,12 @@ public class DashesPrefix extends AbstractType {
 
 	class DashesPrefixFinder implements SectionFinder {
 
+		private final char key;
+		
+		public DashesPrefixFinder(char key) {
+			this.key = key;
+		}
+		
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
 				Section<?> father, Type type) {
@@ -56,7 +63,7 @@ public class DashesPrefix extends AbstractType {
 			int leadingSpaces = text.indexOf(text.trim());
 
 			int index = leadingSpaces;
-			while (text.charAt(index) == '-') {
+			while (text.charAt(index) == key) {
 				index++;
 			}
 			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();

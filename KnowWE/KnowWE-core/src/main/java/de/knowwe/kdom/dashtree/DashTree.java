@@ -37,11 +37,24 @@ import de.knowwe.kdom.sectionFinder.AllTextFinderDivCorrectTrimmed;
 
 public class DashTree extends AbstractType {
 
+	/**
+	 * By default a dashTree with dashes is created
+	 */
 	public DashTree() {
+		this('-');
+	}
+	
+	/**
+	 * The key character differing from a dash ('-') for the tree can be defined for instantiation.
+	 * Of course, then it's not a dash-tree any more in its literally sense.
+	 * 
+	 * @param keyCharacter
+	 */
+	public DashTree(char keyCharacter) {
 		this.sectionFinder = new AllTextFinderDivCorrectTrimmed();
-		this.childrenTypes.add(new DashSubtree());
+		this.childrenTypes.add(new DashSubtree(keyCharacter));
 		this.childrenTypes.add(new CommentLineType());
-		this.childrenTypes.add(new OverdashedElement());
+		this.childrenTypes.add(new OverdashedElement(keyCharacter));
 	}
 
 	/**

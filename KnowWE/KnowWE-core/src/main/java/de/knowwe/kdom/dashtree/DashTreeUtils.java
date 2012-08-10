@@ -137,11 +137,22 @@ public class DashTreeUtils {
 	public static int getDashLevel(Section<?> s) {
 
 		if (s == null) return -1;
+		
+		char key ='-';
+		
+		if(s.get() instanceof DashSubtree) {
+			key = ((DashSubtree)s.get()).getKey();
+		} else if(s.get() instanceof DashTreeElement) {
+			Section<DashSubtree> subtree = Sections.findAncestorOfType(s, DashSubtree.class);
+			key = subtree.get().getKey();
+		} else {
+			throw new IllegalArgumentException("Only DashSubtree and DashTreeElement are allowed");
+		}
 
 		String text = s.getText().trim();
 
 		int index = 0;
-		while (index < text.length() && text.charAt(index) == '-') {
+		while (index < text.length() && text.charAt(index) == key){
 			index++;
 		}
 		return index;

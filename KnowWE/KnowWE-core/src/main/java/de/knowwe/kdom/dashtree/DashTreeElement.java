@@ -41,9 +41,9 @@ public class DashTreeElement extends AbstractType {
 
 	private Type elementContent;
 
-	public DashTreeElement() {
+	public DashTreeElement(char key) {
 		this.sectionFinder = new RootFinder();
-		this.childrenTypes.add(new DashesPrefix());
+		this.childrenTypes.add(new DashesPrefix(key));
 		this.childrenTypes.add(new LineEndComment());
 		elementContent = new DashTreeElementContent();
 		this.childrenTypes.add(elementContent);

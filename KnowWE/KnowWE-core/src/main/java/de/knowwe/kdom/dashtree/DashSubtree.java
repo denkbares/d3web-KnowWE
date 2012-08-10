@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
@@ -45,14 +46,22 @@ import de.knowwe.core.utils.Strings;
  * 
  */
 public class DashSubtree extends AbstractType {
+	
+	public char getKey() {
+		return key;
+	}
 
-	public DashSubtree() {
-		this.sectionFinder = new SubtreeFinder();
+	private final char key;
 
-		this.childrenTypes.add(new DashTreeElement());
+	
+	public DashSubtree(char keyCharacter) {
+		this.key = keyCharacter;
+		this.sectionFinder = new SubtreeFinder(keyCharacter);
+
+		this.childrenTypes.add(new DashTreeElement(key));
 		// rescursive type definition
 		this.childrenTypes.add(this);
-		this.childrenTypes.add(new OverdashedElement());
+		this.childrenTypes.add(new OverdashedElement(keyCharacter));
 		this.childrenTypes.add(new CommentLineType());
 	}
 
@@ -64,21 +73,59 @@ public class DashSubtree extends AbstractType {
 	 * 
 	 */
 	class SubtreeFinder implements SectionFinder {
+		
+		
+		public char getKey() {
+			return key;
+		}
 
-		Pattern p0 = Pattern.compile("^\\s*[\\w\"ÜÖÄüöäß]+.*$",
-				Pattern.MULTILINE);
 
-		Pattern p1 = Pattern.compile("^\\s*" + "-{1}" + "[^-]",
-				Pattern.MULTILINE);
 
-		Pattern p2 = Pattern.compile("^\\s*" + "-{2}" + "[^-]",
-				Pattern.MULTILINE);
 
-		Pattern p3 = Pattern.compile("^\\s*" + "-{3}" + "[^-]",
-				Pattern.MULTILINE);
 
-		Pattern p4 = Pattern.compile("^\\s*" + "-{4}" + "[^-]",
-				Pattern.MULTILINE);
+		private final char key;
+		private String keyString;
+		
+		private final Pattern p0;
+		private Pattern p1;
+		private final Pattern p2;
+		private final Pattern p3;
+		private final Pattern p4;
+		
+		public SubtreeFinder(char c) {
+			key = c;
+			p0 = Pattern.compile("^\\s*[\\w\"ÜÖÄüöäß]+.*$",
+					Pattern.MULTILINE);
+
+			keyString = ""+c;
+			
+			// just to increase speed by reuse of precompiled patterns
+			
+			try {
+				// check if its a meta-character for regex
+			p1 = Pattern.compile(getRegex(keyString, 1),
+					Pattern.MULTILINE);
+			} catch(PatternSyntaxException e) {
+				// escape meta-character
+				keyString = "\\"+c;
+				p1 = Pattern.compile(getRegex(keyString, 1),
+						Pattern.MULTILINE);
+			}
+			p2 = Pattern.compile(getRegex(keyString, 2),
+					Pattern.MULTILINE);
+
+			p3 = Pattern.compile(getRegex(keyString, 3),
+					Pattern.MULTILINE);
+
+			p4 = Pattern.compile(getRegex(keyString, 4),
+					Pattern.MULTILINE);
+		}
+
+		private String getRegex(String keyString, int level) {
+			return "^\\s*" +keyString+"{"+level+"}" + "[^"+keyString+"]";
+		}
+		
+
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
@@ -114,7 +161,7 @@ public class DashSubtree extends AbstractType {
 						m = p4.matcher(text);
 					}
 					else {
-						m = Pattern.compile("^\\s*" + "-{" + level + "}" + "[^-]",
+						m = Pattern.compile("^\\s*" + keyString+"{" + level + "}" + "[^"+keyString+"]",
 								Pattern.MULTILINE).matcher(text);
 					}
 
