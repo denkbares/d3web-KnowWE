@@ -28,6 +28,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import de.d3web.plugin.Extension;
+import de.d3web.plugin.PluginManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
@@ -36,8 +38,12 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.ScopeUtils;
 import de.knowwe.core.utils.Strings;
+import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
+import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
+import de.knowwe.plugin.Plugins;
 
 /**
  * Renders a knowledge base markup into the wiki page.
@@ -63,6 +69,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 				KnowledgeBaseType.ANNOTATION_VERSION);
 		String filename = KnowledgeBaseType.getAnnotation(section,
 				KnowledgeBaseType.ANNOTATION_FILENAME);
+
 
 		// render title line
 		string.append(Strings.maskHTML("<b>" + title + "</b>"));
@@ -108,7 +115,22 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 			renderCompile(section.getArticle(), packageName, string);
 			if (packageIter.hasNext()) string.append(Strings.maskHTML("<br/>"));
 		}
+
+		// render plugged annotations
+		Extension[] pluggedAnnotations = getPluggedAnnotation(section);
+		for (Extension pluggedAnnotation : pluggedAnnotations) {
+
+			Section<? extends AnnotationContentType> annotationContentSection = KnowledgeBaseType.getAnnotationContentSection(
+					section, pluggedAnnotation.getName());
+
+			Section<AnnotationType> ancestorOfType = Sections.findAncestorOfType(
+					annotationContentSection, AnnotationType.class);
+			ancestorOfType.get().getRenderer().render(ancestorOfType, user, string);
+
+		}
+
 		string.append(Strings.maskHTML("</div>"));
+
 	}
 
 	private void renderCompile(Article article, String packageName, StringBuilder string) {
@@ -182,6 +204,20 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 			string.append("\n");
 		}
 		string.append(Strings.maskHTML("</ul>"));
+	}
+
+	private Extension[] getPluggedAnnotation(Section<?> sec) {
+		Extension[] extensions = PluginManager.getInstance().getExtensions(
+				Plugins.EXTENDED_PLUGIN_ID,
+				Plugins.EXTENDED_POINT_Annotation);
+		extensions = ScopeUtils.getMatchingExtensions(extensions, sec.get().getPathToRoot());
+
+		if (extensions.length >= 1) {
+			return extensions;
+		}
+		else {
+			return new Extension[0];
+		}
 	}
 
 }

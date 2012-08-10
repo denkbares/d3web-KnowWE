@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import de.d3web.plugin.Extension;
+import de.d3web.plugin.JPFExtension;
 import de.d3web.plugin.PluginManager;
 import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.action.Action;
@@ -36,6 +37,10 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.taghandler.TagHandler;
 import de.knowwe.core.utils.ScopeUtils;
+import de.knowwe.kdom.defaultMarkup.AnnotationType;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkup.Annotation;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.defaultMarkup.UnknownAnnotationType;
 import de.knowwe.knowRep.KnowledgeRepresentationHandler;
 
 /**
@@ -62,6 +67,7 @@ public class Plugins {
 	public static final String EXTENDED_POINT_TERMINOLOGY = "Terminology";
 	public static final String EXTENDED_POINT_COMPILESCRIPT = "CompileScript";
 	private static final String EXTENDED_POINT_Renderer = "Renderer";
+	public static final String EXTENDED_POINT_Annotation = "Annotation";
 
 	/**
 	 * Returns all plugged Instantiations These are used to initialize plugins.
@@ -138,6 +144,42 @@ public class Plugins {
 		}
 	}
 
+	public static void addPluginsAnnotation(Type type) {
+		if (type instanceof DefaultMarkupType) {
+
+			DefaultMarkupType markupType = (DefaultMarkupType) type;
+			Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+					EXTENDED_POINT_Annotation);
+			extensions = ScopeUtils.getMatchingExtensions(extensions, type.getPathToRoot());
+
+			if (extensions.length >= 1) {
+				List<Type> childrenTypes = markupType.getChildrenTypes();
+				markupType.getMarkup().addAnnotation(extensions[0].getName());
+
+				JPFExtension jpfEx = (JPFExtension) extensions[0];
+				Renderer pluggedRenderer = (Renderer) jpfEx.getNewInstance(jpfEx.getParameter("renderer"));
+
+				markupType.getMarkup().addAnnotationRenderer(extensions[0].getName(),
+						pluggedRenderer);
+
+				int i = 0;
+				for (Type childTyp : childrenTypes) {
+
+					if (childTyp.getClass().equals(UnknownAnnotationType.class)) {
+						Annotation annotation = markupType.getMarkup().getAnnotation(
+								extensions[0].getName());
+						type.addChildType(i, new AnnotationType(annotation));
+
+						break;
+					}
+					i++;
+				}
+
+			}
+		}
+
+	}
+
 	public static List<SectionizerModule> getSectionizerModules() {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_SectionizerModule);
@@ -183,6 +225,22 @@ public class Plugins {
 		List<PageAppendHandler> ret = new ArrayList<PageAppendHandler>();
 		for (Extension e : extensions) {
 			ret.add((PageAppendHandler) e.getSingleton());
+		}
+		return ret;
+	}
+
+	/**
+	 * Returns a list of all plugged Annotations
+	 * 
+	 * @created 31/07/2012
+	 * @return List of Annotations
+	 */
+	public static List<Annotation> getAnnotations() {
+		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_Annotation);
+		List<Annotation> ret = new ArrayList<Annotation>();
+		for (Extension e : extensions) {
+			ret.add((Annotation) e.getSingleton());
 		}
 		return ret;
 	}

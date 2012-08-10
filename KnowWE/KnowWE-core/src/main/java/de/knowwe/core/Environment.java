@@ -294,6 +294,7 @@ public class Environment {
 		Plugins.addChildrenTypesToType(type);
 		Plugins.addSubtreeHandlersToType(type);
 		Plugins.addRendererToType(type);
+		Plugins.addPluginsAnnotation(type);
 
 		if (type.getChildrenTypesInit() == null) return;
 

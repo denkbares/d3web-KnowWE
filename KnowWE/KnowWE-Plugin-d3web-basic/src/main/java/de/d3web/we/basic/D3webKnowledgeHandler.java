@@ -158,6 +158,17 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 		return home;
 	}
 
+	/**
+	 * Sets a knowledgebase at the specified article
+	 * 
+	 * @created 6/08/2012
+	 * @param title title of the article
+	 */
+	public void setKnowledgeBase(String title, KnowledgeBase kb) {
+		kbs.put(title, kb);
+
+	}
+
 	@Override
 	public String getKey() {
 		return "d3web";

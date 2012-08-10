@@ -44,6 +44,8 @@ public class Priority implements Comparable<Priority> {
 	 */
 	public static final Priority PRECOMPILE_LOW = new Priority(100000);
 
+	public static final Priority INIT_KB = new Priority(1000);
+
 	public static final Priority HIGHEST = new Priority(300);
 
 	public static final Priority HIGHER = new Priority(200);
