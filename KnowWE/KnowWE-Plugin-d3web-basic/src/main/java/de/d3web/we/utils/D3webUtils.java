@@ -45,6 +45,10 @@ import de.d3web.core.records.SessionConversionFactory;
 import de.d3web.core.records.SessionRecord;
 import de.d3web.core.records.io.SessionPersistenceManager;
 import de.d3web.core.session.Session;
+import de.d3web.core.session.Value;
+import de.d3web.core.session.blackboard.Blackboard;
+import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.core.session.values.Unknown;
 import de.d3web.scoring.Score;
 import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.object.AnswerDefinition;
@@ -318,6 +322,32 @@ public class D3webUtils {
 		Locale.setDefault(Environment.getInstance().getWikiConnector()
 				.getLocale(user.getRequest()));
 		return getD3webBundle();
+	}
+
+	/**
+	 * This is a utility method for dialogs. This method returns the
+	 * {@link Value} you should set to the {@link Blackboard} if the Value
+	 * already exists:<br/>
+	 * If it is the same value, {@link Unknown} is returned.<br/>
+	 * If it is equal but Unknown, <tt>null</tt> is returned since there is
+	 * nothing to change.<br/>
+	 * If it is a different Value, the Value is returned unaltered.
+	 * 
+	 * @created 11.08.2012
+	 * @param newValue the newly created Value for the dialog
+	 * @param existingValue the existing Value in the dialog
+	 * @return the Value you should set to the dialog
+	 */
+	public static Value handleEqualChoiceValues(Value newValue, Value existingValue) {
+		if (newValue instanceof ChoiceValue && newValue.equals(existingValue)) {
+			if (newValue.equals(Unknown.getInstance())) {
+				newValue = null;
+			}
+			else {
+				newValue = Unknown.getInstance();
+			}
+		}
+		return newValue;
 	}
 
 }
