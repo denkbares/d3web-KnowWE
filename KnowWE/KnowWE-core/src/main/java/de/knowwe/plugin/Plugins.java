@@ -152,14 +152,15 @@ public class Plugins {
 					EXTENDED_POINT_Annotation);
 			extensions = ScopeUtils.getMatchingExtensions(extensions, type.getPathToRoot());
 
-			if (extensions.length >= 1) {
-				List<Type> childrenTypes = markupType.getChildrenTypes();
-				markupType.getMarkup().addAnnotation(extensions[0].getName());
+			for (Extension extension : extensions) {
 
-				JPFExtension jpfEx = (JPFExtension) extensions[0];
+				List<Type> childrenTypes = markupType.getChildrenTypes();
+				markupType.getMarkup().addAnnotation(extension.getName());
+
+				JPFExtension jpfEx = (JPFExtension) extension;
 				Renderer pluggedRenderer = (Renderer) jpfEx.getNewInstance(jpfEx.getParameter("renderer"));
 
-				markupType.getMarkup().addAnnotationRenderer(extensions[0].getName(),
+				markupType.getMarkup().addAnnotationRenderer(extension.getName(),
 						pluggedRenderer);
 
 				int i = 0;
@@ -167,7 +168,7 @@ public class Plugins {
 
 					if (childTyp.getClass().equals(UnknownAnnotationType.class)) {
 						Annotation annotation = markupType.getMarkup().getAnnotation(
-								extensions[0].getName());
+								extension.getName());
 						type.addChildType(i, new AnnotationType(annotation));
 
 						break;

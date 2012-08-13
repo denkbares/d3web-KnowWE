@@ -118,15 +118,17 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 
 		// render plugged annotations
 		Extension[] pluggedAnnotations = getPluggedAnnotation(section);
-		for (Extension pluggedAnnotation : pluggedAnnotations) {
 
+		for (Extension pluggedAnnotation : pluggedAnnotations) {
 			Section<? extends AnnotationContentType> annotationContentSection = KnowledgeBaseType.getAnnotationContentSection(
 					section, pluggedAnnotation.getName());
-
-			Section<AnnotationType> ancestorOfType = Sections.findAncestorOfType(
-					annotationContentSection, AnnotationType.class);
-			ancestorOfType.get().getRenderer().render(ancestorOfType, user, string);
-
+			if (annotationContentSection != null) {
+				Section<AnnotationType> ancestorOfType = Sections.findAncestorOfType(
+						annotationContentSection, AnnotationType.class);
+				if (ancestorOfType != null) {
+					ancestorOfType.get().getRenderer().render(ancestorOfType, user, string);
+				}
+			}
 		}
 
 		string.append(Strings.maskHTML("</div>"));
