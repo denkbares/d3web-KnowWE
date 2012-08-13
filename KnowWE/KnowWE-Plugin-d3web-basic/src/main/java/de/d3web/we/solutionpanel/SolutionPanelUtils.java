@@ -12,6 +12,7 @@ import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
+import de.knowwe.core.taghandler.ObjectInfoTagHandler;
 import de.knowwe.core.utils.Strings;
 
 public class SolutionPanelUtils {
@@ -51,16 +52,24 @@ public class SolutionPanelUtils {
 		String prompt = solution.getInfoStore().getValue(MMInfo.PROMPT);
 		String description = solution.getInfoStore().getValue(MMInfo.DESCRIPTION);
 
+		String tooltip = "";
+		if (description != null) tooltip = description;
+
 		String label = solution.getName();
 		if (prompt != null) {
+			tooltip = label + "\n" + tooltip;
 			label = prompt;
 		}
 
 		String stateName = renderImage(solution, session, content);
 		// render span for better testability
-		content.append(mask("<span title='" + description + "'class=\"SOLUTION-" + stateName
-				+ "\">"));
-		content.append(label);
+		tooltip = tooltip.trim();
+		if (!tooltip.isEmpty()) tooltip = "title='" + tooltip.replace('\'', '"') + "' ";
+		content.append(mask("<span " + tooltip + "class=\"SOLUTION-" + stateName + "\">"));
+		String infoLink = "Wiki.jsp?page=ObjectInfoPage" +
+				"&" + ObjectInfoTagHandler.TERM_IDENTIFIER + "=" + solution.getName() +
+				"&" + ObjectInfoTagHandler.OBJECT_NAME + "=" + solution.getName();
+		content.append(mask("<a href='" + infoLink + "'>" + label + "</a>"));
 
 		if (link != null) {
 			content.append(mask("<a href='" + link + "' target='solutionLink'> (link)</a>"));
