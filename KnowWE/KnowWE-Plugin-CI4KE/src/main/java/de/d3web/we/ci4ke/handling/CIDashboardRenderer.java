@@ -44,6 +44,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.tools.Tool;
 
 /**
  * 
@@ -157,7 +158,20 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		boolean buildOutdated = checkDashBoardEditedAfterLatestBuild(dashboardSection, user,
 				dashboardName);
 		if (buildOutdated) {
-			String warningString = "Dashboard has been modified. Latest build is not up to date. (Consider to trigger new build)";
+			String warningString = "Dashboard has been modified. Latest build is not up to date. (Consider to trigger new build: ";
+			Tool buildTool = CIDashboardToolProvider.getStartNewBuildTool(dashboardName, dashboardSection.getTitle());
+			
+			// insert build button/link into warning message
+			warningString += ("<div style='display:inline;' class=\""
+					+ buildTool.getClass().getSimpleName() + "\" >" +
+					"<a href=\"javascript:" + buildTool.getJSAction() + ";undefined;\">" +
+					"<img " +
+					"title=\"" + buildTool.getDescription() + "\" " +
+					"src=\"" + buildTool.getIconPath() + "\"></img>" +
+					"</a></div>");
+			
+			warningString += ")";
+			
 			renderMessagesOfType(Message.Type.WARNING,
 					Messages.asList(Messages.warning(warningString)),
 					string);

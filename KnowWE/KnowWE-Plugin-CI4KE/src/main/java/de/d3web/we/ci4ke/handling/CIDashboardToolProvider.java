@@ -38,6 +38,7 @@ public class CIDashboardToolProvider implements ToolProvider {
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		String dashboardName = DefaultMarkupType.getAnnotation(section,
 				CIDashboardType.NAME_KEY);
+		
 		if (dashboardName == null) {
 			return new Tool[0];
 		}
@@ -46,7 +47,7 @@ public class CIDashboardToolProvider implements ToolProvider {
 		}
 	}
 
-	protected Tool getStartNewBuildTool(String dashboardName, String title) {
+	public static Tool getStartNewBuildTool(String dashboardName, String title) {
 		// Tool which starts a new build
 		String jsAction = "fctExecuteNewBuild('" + CIUtilities.utf8Escape(dashboardName) + "','"+title+"')";
 		return new DefaultTool(
