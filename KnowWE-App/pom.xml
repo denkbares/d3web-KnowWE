@@ -896,6 +896,23 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		
+		<profile>
+			<id>loadkb-plugin</id>
+			<activation>
+				<property>
+					<name>loadkb-plugin</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-LoadKnowledgeBase</artifactId>
+					<version>0.2-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 
 		<profile>
 			<id>knowsec</id>
