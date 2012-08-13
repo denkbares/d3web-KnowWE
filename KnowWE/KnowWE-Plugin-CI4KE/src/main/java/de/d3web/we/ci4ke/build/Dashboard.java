@@ -28,8 +28,8 @@ import java.util.logging.Logger;
 
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message;
-import de.d3web.testing.TestResult;
 import de.d3web.testing.Message.Type;
+import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
@@ -256,6 +256,7 @@ public class Dashboard {
 	 *         existing ones
 	 */
 	public synchronized void addBuild(BuildResult build) throws IllegalArgumentException {
+		if(build == null) throw new IllegalArgumentException("build is null!");
 		update();
 
 		int latestAvailable = getLatestAvailableBuildNumber();

@@ -98,8 +98,20 @@ public class CIBuilder {
 			
 		// create and run TestExecutor
 		TestExecutor executor = new TestExecutor(providers,
-				this.config.getTests(), listener);
-		BuildResult build = executor.runtTests(buildNumber);
+				this.config.getTests(), listener, buildNumber);
+		
+		Thread th = new Thread(executor);
+		th.start();
+		while(th.isAlive()) {
+			try {
+				Thread.sleep(50);
+			}
+			catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		BuildResult build = executor.getBuildResult();
 
 		// add resulting build to dashboard
 		dashboard.addBuild(build);
