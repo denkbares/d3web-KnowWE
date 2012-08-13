@@ -42,6 +42,27 @@ function fctGetBuildDetails( dashboardID , buildNr ) {
     new _KA( options ).send();
 }
 
+function stopRunningBuild( dashboardID , title , location ) {
+	
+    var params = {
+           action : 'CIStopBuildAction',
+           id     : dashboardID,
+           topic     : title
+       }
+   
+    var options = {
+           url : KNOWWE.core.util.getURL( params ),
+           loader: true,
+           response : {
+               fn : function(){
+    				window.location = location;
+    		   }
+           }
+    }
+    
+    new _KA( options ).send();
+}
+
 function helper(options){
 	new _KA(options).send();
 }
@@ -118,7 +139,7 @@ function fctExecuteNewBuild( dashboardID,title ) {
 	}
 	var location = window.location;
 	var progressBar = document.getElementById('progress_container');
-	progressBar.innerHTML = '<div style="display:inline" class="prog-meter-wrap" ><div class="prog-meter-value" id="progress_value">&nbsp;0 %</div></div><div class="prog-meter-text" style="display:inline" id="progress_text">starting build...</div>';
+	progressBar.innerHTML = '<div style="display:inline;"> <a href="javascript:stopRunningBuild(\''+dashboardID+'\',\''+title+'\',\''+window.location+'\');undefined;"><img height="14" title="Stops the current build" src="KnowWEExtension/images/cross.png"></img></a></div>     <div style="display:inline" class="prog-meter-wrap" ><div class="prog-meter-value" id="progress_value">&nbsp;0 %</div>  </div><div class="prog-meter-text" style="display:inline" id="progress_text">starting build...</div>';
     new _KA(options).send();
     new _KA(options2).send();
      

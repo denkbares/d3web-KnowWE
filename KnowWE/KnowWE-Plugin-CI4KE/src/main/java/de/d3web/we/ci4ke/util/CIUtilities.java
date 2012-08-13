@@ -24,7 +24,9 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,6 +40,63 @@ import de.knowwe.core.utils.Strings;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class CIUtilities {
+
+	private static Map<String, Thread> runningBuilds = new HashMap<String, Thread>();
+
+	/**
+	 * Registers a running build for a specific dashboard.
+	 * 
+	 * @created 13.08.2012
+	 * @param dashBoardID
+	 * @param th
+	 */
+	public static void registerBuildThread(String dashBoardID, Thread th) {
+		runningBuilds.put(dashBoardID, th);
+	}
+
+	/**
+	 * Removes a running build process for a specific dashboard.
+	 * If it is still alive it will stop (interrupted and after time-out by force).
+	 * 
+	 * @created 13.08.2012
+	 * @param dashBoardID
+	 * @param user
+	 */
+	@SuppressWarnings("deprecation")
+	public static void removeBuildThread(String dashBoardID) {
+		Thread thread = runningBuilds.get(dashBoardID);
+		if (thread != null) {
+
+			if (thread.isAlive()) { // still running, so we need to kill it
+				System.out.println("canceling build");
+
+				// try to stop by smooth interrupt
+				thread.interrupt();
+
+				// wait some time for the interrupt to be handled
+				int wait = 0;
+				while (wait < 10 && thread.isAlive()) {
+					wait++;
+					try {
+						Thread.sleep(200);
+					}
+					catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+
+				// if still has not stopped use violent method
+				if (thread.isAlive()) {
+					thread.stop();
+				}
+			}
+
+			// finally remove thread from register
+			runningBuilds.remove(dashBoardID);
+			System.out.println("build thread removed");
+		}
+	}
 
 	/**
 	 * Returns the savepath for ci-builds. If the path does not exist, it will

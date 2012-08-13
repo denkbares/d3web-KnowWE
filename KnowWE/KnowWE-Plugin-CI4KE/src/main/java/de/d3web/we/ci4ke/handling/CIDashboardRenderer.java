@@ -237,7 +237,9 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		string.append("<div id='")
 				.append(dashboardNameEscaped)
 				.append("-build-table'>");
+		if(shownBuild != null) {
 		string.append(renderer.renderNewestBuilds(10, shownBuild.getBuildNumber(),indexFromTo));
+		}
 		string.append("</div></div>");
 		string.append("</td>");
 		

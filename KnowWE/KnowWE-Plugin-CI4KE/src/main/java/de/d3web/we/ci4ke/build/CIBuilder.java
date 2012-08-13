@@ -101,6 +101,7 @@ public class CIBuilder {
 				this.config.getTests(), listener, buildNumber);
 		
 		Thread th = new Thread(executor);
+		CIUtilities.registerBuildThread(dashboard.getDashboardName(), th);
 		th.start();
 		while(th.isAlive()) {
 			try {
@@ -116,7 +117,7 @@ public class CIBuilder {
 		// add resulting build to dashboard
 		dashboard.addBuild(build);
 		ProgressListenerManager.getInstance().removeProgressListener(dashboard.getDashboardName());
-		
+		CIUtilities.removeBuildThread(dashboard.getDashboardName());
 	}
 
 }
