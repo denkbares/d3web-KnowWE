@@ -165,7 +165,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			warningString += ("<div style='display:inline;' class=\""
 					+ buildTool.getClass().getSimpleName() + "\" >" +
 					"<a href=\"javascript:" + buildTool.getJSAction() + ";undefined;\">" +
-					"<img " +
+					"<img height='14'" +
 					"title=\"" + buildTool.getDescription() + "\" " +
 					"src=\"" + buildTool.getIconPath() + "\"></img>" +
 					"</a></div>");
