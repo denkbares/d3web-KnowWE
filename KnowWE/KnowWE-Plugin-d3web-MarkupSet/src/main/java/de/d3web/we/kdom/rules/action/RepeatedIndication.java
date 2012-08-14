@@ -24,11 +24,10 @@ import java.util.List;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.QASet;
-import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.indication.ActionRepeatedIndication;
 import de.d3web.indication.inference.PSMethodStrategic;
-import de.d3web.we.kdom.rules.action.ContraIndicationAction.QuestionReferenceInBrackets;
-import de.d3web.we.object.QuestionReference;
+import de.d3web.we.kdom.rules.action.ContraIndicationAction.QASetReferenceInBrackets;
+import de.d3web.we.object.QASetReference;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -50,13 +49,13 @@ public class RepeatedIndication extends BracketsAction<RepeatedIndication> {
 
 	@Override
 	protected Type getObjectReference() {
-		return new QuestionReferenceInBrackets();
+		return new QASetReferenceInBrackets();
 	}
 
 	@Override
 	public PSAction createAction(Article article, Section<RepeatedIndication> s) {
-		Section<QuestionReference> qSec = Sections.findSuccessor(s, QuestionReference.class);
-		Question termObject = qSec.get().getTermObject(article, qSec);
+		Section<QASetReference> qSec = Sections.findSuccessor(s, QASetReference.class);
+		QASet termObject = qSec.get().getTermObject(article, qSec);
 
 		ActionRepeatedIndication repInd = new ActionRepeatedIndication();
 		List<QASet> obs = new ArrayList<QASet>();

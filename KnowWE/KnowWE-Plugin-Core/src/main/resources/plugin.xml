@@ -29,6 +29,8 @@
 		<parameter id="scope" value="SolutionDefinition" />
 		<parameter id="scope" value="QuestionReference" />
 		<parameter id="scope" value="QuestionnaireReference" />
+		<parameter id="scope" value="QASetReference" />
+		<parameter id="scope" value="QASetDefinition" />
 		<parameter id="scope" value="AnswerReference" />
 		<parameter id="scope" value="AnswerDefinition" />
 		<parameter id="scope" value="SolutionReference" />

@@ -24,10 +24,9 @@ import java.util.List;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.QASet;
-import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.indication.ActionContraIndication;
 import de.d3web.indication.inference.PSMethodStrategic;
-import de.d3web.we.object.QuestionReference;
+import de.d3web.we.object.QASetReference;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.objects.SimpleTerm;
@@ -52,13 +51,13 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 
 	@Override
 	protected Type getObjectReference() {
-		return new QuestionReferenceInBrackets();
+		return new QASetReferenceInBrackets();
 	}
 
 	@Override
 	public PSAction createAction(Article article, Section<ContraIndicationAction> s) {
-		Section<QuestionReference> qSec = Sections.findSuccessor(s, QuestionReference.class);
-		Question termObject = qSec.get().getTermObject(article, qSec);
+		Section<QASetReference> qSec = Sections.findSuccessor(s, QASetReference.class);
+		QASet termObject = qSec.get().getTermObject(article, qSec);
 
 		ActionContraIndication actionContraIndication = new ActionContraIndication();
 		List<QASet> obs = new ArrayList<QASet>();
@@ -67,9 +66,9 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 		return actionContraIndication;
 	}
 
-	static class QuestionReferenceInBrackets extends QuestionReference {
+	static class QASetReferenceInBrackets extends QASetReference {
 
-		public QuestionReferenceInBrackets() {
+		public QASetReferenceInBrackets() {
 			this.sectionFinder = new SectionFinder() {
 
 				@Override
