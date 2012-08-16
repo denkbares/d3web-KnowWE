@@ -55,7 +55,7 @@ public class CIDaemonRenderer implements Renderer {
 		string.append(srclink);
 
 		if (!hasDashboard) {
-			string.append(CIUtilities.renderResultType(Type.ERROR, PIXEL_SIZE));
+			string.append(CIUtilities.renderResultType(Type.ERROR, PIXEL_SIZE, dashboardName));
 		}
 		else {
 			Dashboard dashboard = Dashboard.getDashboard(web, dashboardArticleTitle, dashboardName);

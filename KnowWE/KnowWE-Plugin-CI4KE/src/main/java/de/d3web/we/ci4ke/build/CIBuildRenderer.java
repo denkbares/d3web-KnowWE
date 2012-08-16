@@ -97,7 +97,7 @@ public class CIBuildRenderer {
 			sb.append("<tr class='" + cssClass + "'><td>");
 			// starting with a nice image...
 			Type buildResult = build.getOverallResult();
-			sb.append(CIUtilities.renderResultType(buildResult, 16));
+			sb.append(CIUtilities.renderResultType(buildResult, 16, dashboard.getDashboardName()));
 
 			sb.append("</td><td>");
 			sb.append("<td>");
@@ -148,7 +148,8 @@ public class CIBuildRenderer {
 	public String renderCurrentBuildStatus(int pixelSize) {
 		BuildResult build = dashboard.getLatestBuild();
 		if (build == null) return "";
-		return CIUtilities.renderResultType(build.getOverallResult(), pixelSize);
+		return CIUtilities.renderResultType(build.getOverallResult(), pixelSize,
+				dashboard.getDashboardName());
 	}
 
 	// ------------ RENDERING ----------------

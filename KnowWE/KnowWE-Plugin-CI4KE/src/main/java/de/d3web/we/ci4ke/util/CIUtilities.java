@@ -31,6 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.d3web.testing.Message.Type;
+import de.d3web.testing.TestExecutor;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
@@ -41,7 +42,9 @@ import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class CIUtilities {
 
-	private static Map<String, Thread> runningBuilds = new HashMap<String, Thread>();
+	private static Map<String, TestExecutor> runningBuilds = new HashMap<String, TestExecutor>();
+
+
 
 	/**
 	 * Registers a running build for a specific dashboard.
@@ -50,7 +53,7 @@ public class CIUtilities {
 	 * @param dashBoardID
 	 * @param th
 	 */
-	public static void registerBuildThread(String dashBoardID, Thread th) {
+	public static void registerBuildExecutor(String dashBoardID, TestExecutor th) {
 		runningBuilds.put(dashBoardID, th);
 	}
 
@@ -62,37 +65,11 @@ public class CIUtilities {
 	 * @param dashBoardID
 	 * @param user
 	 */
-	@SuppressWarnings("deprecation")
 	public static void removeBuildThread(String dashBoardID) {
-		Thread thread = runningBuilds.get(dashBoardID);
-		if (thread != null) {
-
-			if (thread.isAlive()) { // still running, so we need to kill it
-				System.out.println("canceling build");
-
-				// try to stop by smooth interrupt
-				thread.interrupt();
-
-				// wait some time for the interrupt to be handled
-				int wait = 0;
-				while (wait < 10 && thread.isAlive()) {
-					wait++;
-					try {
-						Thread.sleep(200);
-					}
-					catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-
-				// if still has not stopped use violent method
-				if (thread.isAlive()) {
-					thread.stop();
-				}
-			}
-
-			// finally remove thread from register
+		TestExecutor executor = runningBuilds.get(dashBoardID);
+		if (executor != null) {
+			executor.terminate();
+			// finally remove executor from register
 			runningBuilds.remove(dashBoardID);
 			System.out.println("build thread removed");
 		}
@@ -207,9 +184,11 @@ public class CIUtilities {
 
 	// RENDER - HELPERS
 
-	public static String renderResultType(Type resultType, int pixelSize) {
+	public static String renderResultType(Type resultType, int pixelSize, String dashboardName) {
 
-		String imgBulb = "<img src='KnowWEExtension/ci4ke/images/" +
+		String imgBulb = "<img width='" + pixelSize + "'id='state_" + dashboardName
+				+ "' src='KnowWEExtension/ci4ke/images/"
+				+
 				pixelSize + "x" + pixelSize
 				+ "/%s.png' alt='%<s' align='absmiddle' title='%s'>";
 

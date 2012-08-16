@@ -24,6 +24,7 @@ import java.util.Map;
 
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
+import de.d3web.testing.Utils;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.report.Messages;
@@ -37,7 +38,7 @@ import de.knowwe.core.report.Messages;
 public class ArticleHasErrors extends AbstractTest<Article> {
 
 	@Override
-	public Message execute(Article moni, String[] args2) {
+	public Message execute(Article moni, String[] args2) throws InterruptedException {
 
 		boolean hasError = false;
 		StringBuffer buffy = new StringBuffer();
@@ -53,6 +54,8 @@ public class ArticleHasErrors extends AbstractTest<Article> {
 			messages.addAll(allMessagesMap.get(s));
 		}
 		
+		Utils.checkInterrupt();
+
 		buffy.append("<a href=\"Wiki.jsp?page=" + monitoredArticleTitle + "\"> "
 				+ monitoredArticleTitle + "</a>:\n");
 		buffy.append("<ul>");

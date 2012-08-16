@@ -333,7 +333,8 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 				String[] config = result.getArguments();
 
 				// render bullet
-				buffy.append(CIUtilities.renderResultType(buildResult, 16));
+				buffy.append(CIUtilities.renderResultType(buildResult, 16,
+						dashboard.getDashboardName()));
 
 				Test<?> test = TestManager.findTest(name);
 				String title = "";

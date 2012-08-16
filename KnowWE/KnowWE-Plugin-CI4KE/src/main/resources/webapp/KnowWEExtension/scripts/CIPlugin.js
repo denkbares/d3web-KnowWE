@@ -88,6 +88,8 @@ function CI_onErrorBehavior() {
 
 function fctExecuteNewBuild( dashboardID,title ) {
 
+	var buildFinished = 'false';
+	
 	var params = {
             action : 'CIAction',
             task   : 'executeNewBuild',
@@ -101,6 +103,7 @@ function fctExecuteNewBuild( dashboardID,title ) {
                 ids : [ dashboardID ],
                 action : 'insert',
                 fn : function() {
+                	buildFinished = 'true';
                 	window.location='Wiki.jsp?page=' + title+'#'+dashboardID;
 					makeCIBoxesCollapsible( dashboardID );
 					try {
@@ -125,10 +128,12 @@ function fctExecuteNewBuild( dashboardID,title ) {
 
 					var percent = JSON.parse(this.responseText).progress;
 					var message = JSON.parse(this.responseText).message;
-
-					document.getElementById("progress_value").innerHTML = percent+" %";
-					document.getElementById("progress_text").innerHTML = " "+""+message+"";
-					if(location == window.location){
+					
+					var progressValue = document.getElementById("progress_value");
+					if(progressValue) progressValue.innerHTML = percent+" %";
+					var progressText = document.getElementById("progress_text"); 
+					if(progressText) progressText.innerHTML = " "+""+message+"";
+					if(buildFinished == 'false'){
 						jq$.delay(helper(options2),2000);
 					}
 
@@ -139,6 +144,10 @@ function fctExecuteNewBuild( dashboardID,title ) {
 	}
 	var location = window.location;
 	var progressBar = document.getElementById('progress_container');
+	var stateImage = document.getElementById('state_'+dashboardID);
+	stateImage.src = "KnowWEExtension/ci4ke/images/16x16/yellow_anime.gif";
+	//stateImage.attr("src", "KnowWEExtension/ci4ke/images/16x16/yellow_anime.gif");
+
 	progressBar.innerHTML = '<div style="display:inline;"> <a href="javascript:stopRunningBuild(\''+dashboardID+'\',\''+title+'\',\''+window.location+'\');undefined;"><img height="14" title="Stops the current build" src="KnowWEExtension/images/cross.png"></img></a></div>     <div style="display:inline" class="prog-meter-wrap" ><div class="prog-meter-value" id="progress_value">&nbsp;0 %</div>  </div><div class="prog-meter-text" style="display:inline" id="progress_text">starting build...</div>';
     new _KA(options).send();
     new _KA(options2).send();

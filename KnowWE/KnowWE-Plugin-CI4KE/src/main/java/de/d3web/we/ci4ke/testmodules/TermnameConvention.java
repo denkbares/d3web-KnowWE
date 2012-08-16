@@ -27,6 +27,7 @@ import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.TestParameter.Mode;
 import de.d3web.testing.TestParameter.Type;
+import de.d3web.testing.Utils;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
@@ -51,7 +52,7 @@ public class TermnameConvention extends AbstractTest<Article> {
 	}
 
 	@Override
-	public Message execute(Article testObject, String[] args) {
+	public Message execute(Article testObject, String[] args) throws InterruptedException {
 		Pattern pattern = Pattern.compile(args[0]);
 		Section<Article> rootSection = testObject.getRootSection();
 		List<Section<SimpleTerm>> terms = Sections.findSuccessorsOfType(rootSection,
@@ -62,6 +63,7 @@ public class TermnameConvention extends AbstractTest<Article> {
 			if (!pattern.matcher(termName).matches()) {
 				invalidTerms.add(termName);
 			}
+			Utils.checkInterrupt();
 		}
 
 		if (invalidTerms.size() > 0) {

@@ -27,6 +27,7 @@ import java.util.List;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.TestParameter;
+import de.d3web.testing.Utils;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -48,7 +49,9 @@ public class ArticleContains extends AbstractTest<Article> {
 	}
 
 	@Override
-	public Message execute(Article article, String[] args) {
+	public Message execute(Article article, String[] args) throws InterruptedException {
+
+		Utils.checkInterrupt();
 
 		String searchForKeyword = args[0];
 

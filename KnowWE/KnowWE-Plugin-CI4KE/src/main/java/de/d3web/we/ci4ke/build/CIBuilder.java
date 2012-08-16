@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.core.io.progress.AjaxProgressListenerImpl;
-import de.d3web.core.io.progress.CombinedAjaxProgressListener;
+import de.d3web.core.io.progress.ProgressListener;
 import de.d3web.core.io.progress.ProgressListenerManager;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestExecutor;
@@ -93,29 +93,22 @@ public class CIBuilder {
 		List<TestObjectProvider> pluggedProviders = TestObjectProviderManager.findTestObjectProviders();
 		providers.addAll(pluggedProviders);
 
-		CombinedAjaxProgressListener listener = new CombinedAjaxProgressListener(new AjaxProgressListenerImpl());
+		ProgressListener listener = new AjaxProgressListenerImpl();
 		ProgressListenerManager.getInstance().setProgressListener(dashboard.getDashboardName(),listener);
 			
 		// create and run TestExecutor
 		TestExecutor executor = new TestExecutor(providers,
 				this.config.getTests(), listener, buildNumber);
 		
-		Thread th = new Thread(executor);
-		CIUtilities.registerBuildThread(dashboard.getDashboardName(), th);
-		th.start();
-		while(th.isAlive()) {
-			try {
-				Thread.sleep(50);
-			}
-			catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		CIUtilities.registerBuildExecutor(dashboard.getDashboardName(), executor);
+		executor.run();
+
 		BuildResult build = executor.getBuildResult();
 
 		// add resulting build to dashboard
-		dashboard.addBuild(build);
+		if (build != null && !Thread.interrupted()) {
+			dashboard.addBuild(build);
+		}
 		ProgressListenerManager.getInstance().removeProgressListener(dashboard.getDashboardName());
 		CIUtilities.removeBuildThread(dashboard.getDashboardName());
 	}
