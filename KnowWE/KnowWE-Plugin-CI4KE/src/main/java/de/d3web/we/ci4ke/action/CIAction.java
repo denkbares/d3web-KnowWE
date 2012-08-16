@@ -29,6 +29,7 @@ import de.d3web.we.ci4ke.build.CIBuildRenderer;
 import de.d3web.we.ci4ke.build.CIBuilder;
 import de.d3web.we.ci4ke.build.Dashboard;
 import de.d3web.we.ci4ke.handling.CIDashboardRenderer;
+import de.d3web.we.ci4ke.util.CIUtilities;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -76,9 +77,26 @@ public class CIAction extends AbstractAction {
 
 		String html = null;
 		if (task.equals("executeNewBuild")) {
-			CIBuilder builder = new CIBuilder(web, topic, dashboardName);
-			builder.executeBuild();
-			html = CIDashboardRenderer.renderDashboardContents(context, topic, dashboardName);
+			System.out.println("startin new build: " + System.currentTimeMillis());
+			final CIBuilder builder = new CIBuilder(web, topic, dashboardName);
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					builder.executeBuild();
+				}
+			}).start();
+			try {
+				// give some time to initialize build process before rendering
+				// it
+				Thread.sleep(10);
+			}
+			catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			BuildResult build = dashboard.getBuild(selectedBuildNumber);
+			html = CIUtilities.renderDashboardHeader(dashboard, build);
 			
 		}// Get the details of one build (wiki changes + test results)
 		else if (task.equals("getBuildDetails")) {

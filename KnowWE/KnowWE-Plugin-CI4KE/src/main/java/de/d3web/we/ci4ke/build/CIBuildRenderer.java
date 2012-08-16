@@ -148,7 +148,7 @@ public class CIBuildRenderer {
 	public String renderCurrentBuildStatus(int pixelSize) {
 		BuildResult build = dashboard.getLatestBuild();
 		if (build == null) return "";
-		return CIUtilities.renderResultType(build.getOverallResult(), pixelSize,
+		return CIUtilities.renderHeaderResultType(build.getOverallResult(), pixelSize,
 				dashboard.getDashboardName());
 	}
 

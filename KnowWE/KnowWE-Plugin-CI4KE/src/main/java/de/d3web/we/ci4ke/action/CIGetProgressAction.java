@@ -45,7 +45,9 @@ public class CIGetProgressAction extends AbstractAction {
 		ProgressListener listener = ProgressListenerManager.getInstance().getProgressListener(id);
 
 		float progress = 0;
-		String message = "";
+		// finished will be returned in case build is finished and
+		// ProgressListener already deregistered
+		String message = "finished";
 		if (listener != null) {
 			if (listener instanceof AjaxProgressListener) {
 				progress = ((AjaxProgressListener) listener).getCurrentProgress();

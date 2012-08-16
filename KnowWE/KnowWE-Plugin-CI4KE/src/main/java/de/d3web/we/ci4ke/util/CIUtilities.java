@@ -30,13 +30,17 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message.Type;
 import de.d3web.testing.TestExecutor;
+import de.d3web.we.ci4ke.build.CIBuildRenderer;
+import de.d3web.we.ci4ke.build.Dashboard;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.Strings;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
@@ -186,11 +190,13 @@ public class CIUtilities {
 
 	public static String renderResultType(Type resultType, int pixelSize, String dashboardName) {
 
-		String imgBulb = "<img width='" + pixelSize + "'id='state_" + dashboardName
-				+ "' src='KnowWEExtension/ci4ke/images/"
+		String imageURL = "KnowWEExtension/ci4ke/images/"
 				+
 				pixelSize + "x" + pixelSize
-				+ "/%s.png' alt='%<s' align='absmiddle' title='%s'>";
+				+ "/%s.png";
+
+		String imgBulb = "<img width='" + pixelSize + "'id='state_" + dashboardName
+				+ "' src='" + imageURL + "' alt='%<s' align='absmiddle' title='%s'>";
 
 		switch (resultType) {
 		case SUCCESS:
@@ -202,6 +208,55 @@ public class CIUtilities {
 		}
 
 		return imgBulb;
+	}
+
+	public static String renderHeaderResultType(Type resultType, int pixelSize, String dashboardName) {
+
+		if (CIUtilities.buildRunning(dashboardName)) {
+			// if currently a build is running show animated icon
+			String imageURL = "KnowWEExtension/ci4ke/images/16x16/yellow_anime.gif";
+			String imgBulb = "<img width='" + pixelSize + "'id='state_" + dashboardName
+					+ "' src='" + imageURL + "' alt='%<s' align='absmiddle' title='%s'>";
+			return imgBulb;
+		}
+
+		return renderResultType(resultType, pixelSize, dashboardName);
+	}
+
+	public static String renderDashboardHeader(Dashboard dashboard, BuildResult latestBuild) {
+		StringBuilder string = new StringBuilder();
+		String dashboardName = dashboard.getDashboardName();
+
+		string.append("<h3>");
+
+		if (latestBuild != null || CIUtilities.buildRunning(dashboardName)) {
+			CIBuildRenderer renderer = dashboard.getRenderer();
+			string.append(renderer.renderCurrentBuildStatus(22)).append("  ");
+			string.append(renderer.renderBuildHealthReport(22)).append("  ");
+		}
+		string.append(dashboardName);
+
+		// insert tag for progress bar
+		// open/close div progress_container
+		if (CIUtilities.buildRunning(dashboardName)) {
+			string.append("<div class='progressInfo' dashboardname='" + dashboardName
+					+ "' dashboardarticle='" + dashboard.getDashboardArticle()
+					+ "' onload=\"refreshBuildProgress('"
+					+ dashboardName
+					+ "', '" + dashboard.getDashboardArticle()
+					+ "');\" id='progress_container' style='display:inline;'>");
+
+			string.append("<div style='display:inline;'> <a href=\"javascript:stopRunningBuild('"
+					+ dashboardName
+					+ "', '"
+					+ dashboard.getDashboardArticle()
+					+ "', '"
+					+ KnowWEUtils.getURLLink(dashboard.getDashboardArticle() + "#" + dashboardName)
+					+ "');undefined;\"><img height=\"14\" title=\"Stops the current build\" src=\"KnowWEExtension/images/cross.png\"></img></a></div>     <div style='display:inline' class='prog-meter-wrap' ><div class='prog-meter-value' id='progress_value'>&nbsp;0 %</div>  </div><div class='prog-meter-text' style='display:inline' id='progress_text'>build running...</div>");
+			string.append("</div>");
+		}
+		string.append("</h3>");
+		return string.toString();
 	}
 
 	public static String renderForecastIcon(int buildCount, int failedCount, int pixelSize) {
@@ -303,5 +358,17 @@ public class CIUtilities {
 	 */
 	public static String utf8Escape(String toEscape) {
 		return Strings.encodeURL(toEscape);
+	}
+
+	/**
+	 * Looks up whether there is currently a build process running for this
+	 * dashboard
+	 * 
+	 * @created 16.08.2012
+	 * @param dashboardName
+	 * @return
+	 */
+	public static boolean buildRunning(String dashboardName) {
+		return runningBuilds.get(dashboardName) != null;
 	}
 }

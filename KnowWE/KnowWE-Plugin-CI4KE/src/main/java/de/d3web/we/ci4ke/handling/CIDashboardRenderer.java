@@ -31,7 +31,6 @@ import de.d3web.testing.Message.Type;
 import de.d3web.testing.Test;
 import de.d3web.testing.TestManager;
 import de.d3web.testing.TestResult;
-import de.d3web.we.ci4ke.build.CIBuildRenderer;
 import de.d3web.we.ci4ke.build.Dashboard;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.knowwe.core.Environment;
@@ -67,12 +66,10 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		String dashboardName = DefaultMarkupType.getAnnotation(section,
 					CIDashboardType.NAME_KEY);
-		
 
-		
 		string.append(Strings.maskHTML(renderDashboardContents(user,
 					section.getTitle(), dashboardName)));
-		
+
 	}
 
 	/**
@@ -125,8 +122,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	 * @param dashboardName the name of the dashboard
 	 */
 	public static String renderDashboardContents(UserContext user, String dashboardArticleTitle, String dashboardName) {
-		
-		
+
 		Section<CIDashboardType> dashboardSection = CIUtilities.findCIDashboardSection(
 				dashboardArticleTitle, dashboardName);
 
@@ -134,7 +130,6 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		String dashboardNameEscaped = CIUtilities.utf8Escape(dashboardName);
 		string.append(Strings.maskHTML("<div id='" + dashboardNameEscaped
 				+ "' class='ci-title'>"));
-
 
 		// check unique dashboard names and create error in case of
 		// duplicates
@@ -155,12 +150,15 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 					string);
 		}
 
+		// check whether dashboard definition has been changed
+		// if so render outdated-warning
 		boolean buildOutdated = checkDashBoardEditedAfterLatestBuild(dashboardSection, user,
 				dashboardName);
 		if (buildOutdated) {
 			String warningString = "Dashboard has been modified. Latest build is not up to date. (Consider to trigger new build: ";
-			Tool buildTool = CIDashboardToolProvider.getStartNewBuildTool(dashboardName, dashboardSection.getTitle());
-			
+			Tool buildTool = CIDashboardToolProvider.getStartNewBuildTool(dashboardName,
+					dashboardSection.getTitle());
+
 			// insert build button/link into warning message
 			warningString += ("<div style='display:inline;' class=\""
 					+ buildTool.getClass().getSimpleName() + "\" >" +
@@ -169,9 +167,9 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 					"title=\"" + buildTool.getDescription() + "\" " +
 					"src=\"" + buildTool.getIconPath() + "\"></img>" +
 					"</a></div>");
-			
+
 			warningString += ")";
-			
+
 			renderMessagesOfType(Message.Type.WARNING,
 					Messages.asList(Messages.warning(warningString)),
 					string);
@@ -179,16 +177,71 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		Dashboard dashboard = Dashboard.getDashboard(user.getWeb(), dashboardArticleTitle,
 				dashboardName);
-
-		string.append("<a name='"+dashboard.getDashboardName()+"'></a>");
-		// open div top
-		string.append("<div id='top' style='border-bottom:1px solid #DDDDDD;'>");
-		string.append("<h3>");
 		// if at least one build has been executed: Render forecast icons:
 		BuildResult latestBuild = dashboard.getLatestBuild();
-		
+
+		// which build has to be shown in detail
+		BuildResult shownBuild = getBuildToShow(user, dashboard);
+
+		// render top part of the dashboard
+		string.append("<a name='" + dashboard.getDashboardName() + "'></a>");
+		string.append("<div id='top_" + dashboardName
+				+ "' style='border-bottom:1px solid #DDDDDD;'>");
+		string.append(CIUtilities.renderDashboardHeader(dashboard, latestBuild));
+		string.append("</div>");
+
+		// start table (only a single row)
+		string.append("<table><tr>");
+
+		// render the last x builds:
+		string.append("<td valign='top' style='border-right: 1px solid #DDDDDD;'>");
+		string.append("<div id='")
+				.append(dashboardNameEscaped)
+				.append("-column-left' class='ci-column-left'>");
+		string.append("<div id='")
+				.append(dashboardNameEscaped)
+				.append("-build-table'>");
+		if (shownBuild != null) {
+			// check whether a specific range of history is demanded by the
+			// request
+			int indexFromBack = 0;
+			if (user.getParameter("indexFromBack") != null) {
+				try {
+					indexFromBack = Integer.parseInt(user.getParameter("indexFromBack"));
+				}
+				catch (NumberFormatException e) {
+					e.printStackTrace();
+				}
+			}
+			// render build history
+			string.append(dashboard.getRenderer().renderNewestBuilds(10,
+					shownBuild.getBuildNumber(), indexFromBack));
+		}
+		string.append("</div></div>");
+		string.append("</td>");
+
+		// render the build-details pane
+		string.append("<td valign='top'>");
+		string.append("<div id='")
+				.append(dashboardNameEscaped)
+				.append("-build-details-wrapper' class='ci-build-details-wrapper'>");
+		string.append(renderBuildDetails(dashboard, shownBuild));
+		string.append("</div>");
+		string.append("</td>");
+
+		// close table
+		string.append("</tr></table>");
+
+		string.append(Strings.maskHTML("</div>"));
+		return string.toString();
+	}
+
+
+
+	private static BuildResult getBuildToShow(UserContext user, Dashboard dashboard) {
 		// find build number for detail view
-		BuildResult shownBuild = dashboard.getLatestBuild(); // latest as default
+		BuildResult shownBuild = dashboard.getLatestBuild(); // latest as
+																// default
 		if (user.getParameter("build_number") != null) {
 			String buildNumString = user.getParameter("build_number");
 			int buildNumber = -1;
@@ -198,64 +251,14 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			catch (NumberFormatException e) {
 				e.printStackTrace();
 			}
-			if(buildNumber != -1) {
+			if (buildNumber != -1) {
 				BuildResult build = dashboard.getBuild(buildNumber);
-				if(build != null) {
+				if (build != null) {
 					shownBuild = build;
 				}
 			}
 		}
-		int indexFromTo = 0;
-		if(user.getParameter("indexFromBack") != null) {
-			try {
-				indexFromTo = Integer.parseInt(user.getParameter("indexFromBack"));
-			}
-			catch (NumberFormatException e) {
-				e.printStackTrace();
-			}
-		}
-		CIBuildRenderer renderer = dashboard.getRenderer();
-		if (latestBuild != null) {
-			string.append(renderer.renderCurrentBuildStatus(22)).append("  ");
-			string.append(renderer.renderBuildHealthReport(22)).append("  ");
-		}
-		string.append(dashboardName);
-
-		// insert tag for progress bar
-		// open/close div progress_container
-		string.append("<div id='progress_container' style='display:inline;'></div>");
-		string.append("</h3>");
-		string.append("</div>");
-		
-		string.append("<table><tr>");
-		
-		// render the last x builds:
-		string.append("<td valign='top' style='border-right: 1px solid #DDDDDD;'>");
-		string.append("<div id='")
-				.append(dashboardNameEscaped)
-				.append("-column-left' class='ci-column-left'>");
-		string.append("<div id='")
-				.append(dashboardNameEscaped)
-				.append("-build-table'>");
-		if(shownBuild != null) {
-		string.append(renderer.renderNewestBuilds(10, shownBuild.getBuildNumber(),indexFromTo));
-		}
-		string.append("</div></div>");
-		string.append("</td>");
-		
-		// render the build-details pane
-		
-		string.append("<td valign='top'>");
-		string.append("<div id='")
-				.append(dashboardNameEscaped)
-				.append("-build-details-wrapper' class='ci-build-details-wrapper'>");
-		string.append(renderBuildDetails(dashboard, shownBuild));
-		string.append("</div>");
-		string.append("</td>");
-		string.append("</tr></table>");
-		
-		string.append(Strings.maskHTML("</div>"));
-		return string.toString();
+		return shownBuild;
 	}
 
 	/**
@@ -338,12 +341,12 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 				Test<?> test = TestManager.findTest(name);
 				String title = "";
-				if(test !=null) {
+				if (test != null) {
 					title = test.getDescription();
 				}
-				
+
 				// render test-name
-				buffy.append("<span class='ci-test-title' title='"+title+"'>");
+				buffy.append("<span class='ci-test-title' title='" + title + "'>");
 				buffy.append(name);
 
 				// render test-configuration (if existent)
