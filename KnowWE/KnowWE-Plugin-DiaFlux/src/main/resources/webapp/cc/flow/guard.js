@@ -12,11 +12,12 @@ function Guard(markup, conditionString, displayHTML, unit) {
 	this.unit = unit || '';
 }
 
-Guard.prototype.isPatternFor = function(other) {
+Guard.prototype.isPatternFor = function(other, skipQuotes) {
 	// matches is having same markup
 	if (this.markup != other.markup) return false;
 	// and the conditionString patterns matches
 	var regexp = this.getConditionString();
+	if (skipQuotes) regexp = regexp.replace(/"/g, "");
 	regexp = regexp.replace(/\$\{[:\w]*\}/gi, '__ANY__');
 	regexp = DiaFluxUtils.escapeRegex(regexp); 
 	
@@ -28,7 +29,9 @@ Guard.prototype.isPatternFor = function(other) {
 	
 	var string = '^\\s*'+regexp+'\\s*$';
 	regexp = new RegExp(string);
-	var test = regexp.test(other.getConditionString());
+	var otherCondition = other.getConditionString();
+	if (skipQuotes) otherCondition = otherCondition.replace(/"/g, "");
+	var test = regexp.test(otherCondition);
 	return test;
 }
 
@@ -50,16 +53,19 @@ Guard.prototype.getDisplayHTML = function(values) {
 
 Guard.prototype.lookupDisplayHTML = function(guardPatterns) {
 	if (!guardPatterns) return;
-	for (var i=0; i < guardPatterns.length; i++) {
-		var guard = guardPatterns[i];
-		if (DiaFluxUtils.isString(guard)) continue;
-		if (guard.isPatternFor(this)) {
-			// extrahiere Wert
-			var values = this.getValues(guard);
-			// und erzeuge auf Werte passendes displayHTML
-			this.displayHTML = guard.getDisplayHTML(values);
-			this.unit = guard.unit;
-			return;
+	var skipQuotes = [false, true];
+	for (var k=0; k < skipQuotes.length; k++) {	
+		for (var i=0; i < guardPatterns.length; i++) {
+			var guard = guardPatterns[i];
+			if (DiaFluxUtils.isString(guard)) continue;
+			if (guard.isPatternFor(this, skipQuotes[k])) {
+				// extrahiere Wert
+				var values = this.getValues(guard);
+				// und erzeuge auf Werte passendes displayHTML
+				this.displayHTML = guard.getDisplayHTML(values);
+				this.unit = guard.unit;
+				return;
+			}
 		}
 	}
 	// not found, than we want to have the original expression a display name

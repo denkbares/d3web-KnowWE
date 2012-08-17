@@ -169,9 +169,9 @@ Router.prototype.rerouteAll = function() {
 	
 	for (var i=0; i<this.flowchart.rules.length; i++) {
 		var rule = this.flowchart.rules[i];
-		this.setRuleCoordinates(rule);
 		rule.setSourceAnchor(rule._linesForRule[0].sourceAnchor);
 		rule.setTargetAnchor(rule._linesForRule[rule._linesForRule.length-1].targetAnchor);
+		this.setRuleCoordinates(rule);
 	} 
 }
 
