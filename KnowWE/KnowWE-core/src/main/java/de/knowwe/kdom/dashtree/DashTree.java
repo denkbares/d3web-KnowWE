@@ -31,24 +31,28 @@ import de.knowwe.kdom.sectionFinder.AllTextFinderDivCorrectTrimmed;
  * @author Jochen
  * 
  *         A simple DashTree. It takes all and tries to build a (dash-) SubTree
- *         (which is defined recursivly).
+ *         (which is defined recursively).
  * 
  */
 
 public class DashTree extends AbstractType {
 
 	/**
-	 * By default a dashTree with dashes is created
+	 * By default a dashTree with dashes is created with startLevel 0.
 	 */
 	public DashTree() {
 		this('-', 0);
 	}
-	
+
 	/**
-	 * The key character differing from a dash ('-') for the tree can be defined for instantiation.
-	 * Of course, then it's not a dash-tree any more in its literally sense.
+	 * The key character differing from a dash ('-') for the tree can be defined
+	 * for instantiation. Of course, then it's not a dash-tree any more in its
+	 * literally sense. The parameter startLevel indicates with how many dashes
+	 * the hierarchy is expected to start (0 or 1 in most cases).
+	 * 
 	 * 
 	 * @param keyCharacter
+	 * @param startLevel
 	 */
 	public DashTree(char keyCharacter, int startLevel) {
 		this.sectionFinder = new AllTextFinderDivCorrectTrimmed();
