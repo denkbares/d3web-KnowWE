@@ -23,6 +23,7 @@ package de.d3web.we.basic;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
@@ -33,8 +34,12 @@ import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.SessionFactory;
 import de.d3web.core.session.blackboard.Fact;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.event.EventManager;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -118,6 +123,32 @@ public class SessionProvider {
 			return null;
 		}
 		return provider.getSession(base);
+	}
+
+	/**
+	 * Returns a set of session of all knowledge bases that have been created,
+	 * using the specified section. Thus this method will provide the current
+	 * users d3web-session for every knowledge base that has been compiled using
+	 * the packe the specified section belongs to.
+	 * 
+	 * @created 17.08.2012
+	 * @param context the user context to get the sessions for
+	 * @param section the section to determine the package for
+	 * @return the session of the knowledge bases created out of the section
+	 */
+	public static Collection<Session> getSessions(UserContext context, Section<?> section) {
+		SessionProvider provider = getSessionProvider(context);
+		if (provider == null) {
+			return Collections.emptyList();
+		}
+		String web = context.getWeb();
+		PackageManager packageManager = Environment.getInstance().getPackageManager(web);
+		Collection<Session> result = new LinkedList<Session>();
+		for (String article : packageManager.getCompilingArticles(section)) {
+			KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(web, article);
+			result.add(provider.getSession(knowledgeBase));
+		}
+		return result;
 	}
 
 	/**

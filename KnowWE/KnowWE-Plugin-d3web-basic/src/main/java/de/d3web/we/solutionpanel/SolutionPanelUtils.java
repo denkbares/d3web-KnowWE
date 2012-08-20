@@ -136,7 +136,7 @@ public class SolutionPanelUtils {
 	 * @param value the specified value
 	 * @return A string representation of the specified value.
 	 */
-	private static String formatValue(Value value, int digits) {
+	public static String formatValue(Value value, int digits) {
 
 		if (value instanceof NumValue) {
 			Double numValue = (Double) value.getValue();
@@ -151,7 +151,7 @@ public class SolutionPanelUtils {
 				return numValue.toString();
 			}
 			else {
-				return "" + Math.round(numValue);
+				return String.valueOf(Math.round(numValue));
 			}
 		}
 		else if (value instanceof MultipleChoiceValue) {

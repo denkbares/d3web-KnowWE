@@ -64,7 +64,7 @@ public class QASetReference extends D3webTermReference<QASet> {
 				Section<SimpleTerm> cast = Sections.cast(section, SimpleTerm.class);
 				TermIdentifier termIdentifier = cast.get().getTermIdentifier(cast);
 				if (tm.hasTermOfClass(termIdentifier, Question.class)) {
-					delegate = StyleRenderer.Question;
+					delegate = new ValueTooltipRenderer(StyleRenderer.Question);
 					break;
 				}
 				if (tm.hasTermOfClass(termIdentifier, QContainer.class)) {

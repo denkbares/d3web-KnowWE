@@ -69,9 +69,12 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		}
 
 		String masterArticleName = ShowSolutionsType.getMaster(getShowSolutionsSection(section));
+		if (masterArticleName == null) {
+			masterArticleName = section.getTitle();
+		}
 		Session session = getSessionFor(masterArticleName, user);
 		if (session == null) {
-			string.append("No knowledge base for: " + masterArticleName + "\n");
+			string.append("No knowledge base for article '" + masterArticleName + "'\n");
 		}
 		else {
 			string.append(renderSolutions(section, session));
