@@ -54,15 +54,19 @@ public class DashSubtree extends AbstractType {
 	private final char key;
 
 	
-	public DashSubtree(char keyCharacter) {
+	public DashSubtree(char keyCharacter, int startLevel) {
 		this.key = keyCharacter;
-		this.sectionFinder = new SubtreeFinder(keyCharacter);
+		this.sectionFinder = new SubtreeFinder(keyCharacter, startLevel);
 
 		this.childrenTypes.add(new DashTreeElement(key));
 		// rescursive type definition
 		this.childrenTypes.add(this);
 		this.childrenTypes.add(new OverdashedElement(keyCharacter));
 		this.childrenTypes.add(new CommentLineType());
+	}
+
+	public DashSubtree(char keyCharacter) {
+		this(keyCharacter, 0);
 	}
 
 	/**
@@ -73,26 +77,45 @@ public class DashSubtree extends AbstractType {
 	 * 
 	 */
 	class SubtreeFinder implements SectionFinder {
-		
-		
-		public char getKey() {
-			return key;
-		}
 
+		/**
+		 * Determines with how many dashes the top level of the dash tree should
+		 * have (usually either zero or one).
+		 */
+		private final int startLevel;
 
-
-
-
+		/**
+		 * Which key-character will be expected (might differ from dash ('-')).
+		 */
 		private final char key;
+
+		/**
+		 * Contains the key char as String to be used in regex, escaped if
+		 * regex-meta-character
+		 */
 		private String keyString;
 		
+		/**
+		 * Pattern for dash tree level 0
+		 */
 		private final Pattern p0;
+
+		/**
+		 * Pattern for dash tree level 1
+		 */
 		private Pattern p1;
+
+		/**
+		 * The pattern can easily also be generated on demand. However, for
+		 * performance reasons the first couple of patterns are precompiled and
+		 * reused.
+		 */
 		private final Pattern p2;
 		private final Pattern p3;
 		private final Pattern p4;
 		
-		public SubtreeFinder(char c) {
+		public SubtreeFinder(char c, int startLevel) {
+			this.startLevel = startLevel;
 			key = c;
 			p0 = Pattern.compile("^\\s*[\\w\"ÜÖÄüöäß]+.*$",
 					Pattern.MULTILINE);
@@ -125,13 +148,18 @@ public class DashSubtree extends AbstractType {
 			return "^\\s*" +keyString+"{"+level+"}" + "[^"+keyString+"]";
 		}
 		
+		public char getKey() {
+			return key;
+		}
 
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
 				Section<?> father, Type type) {
 
-			int level = 0;
+			// if there is no dashTree-father the first level of dashes to be
+			// looked for is startLevel
+			int level = startLevel;
 
 			Type fatherType = father.get();
 			if (fatherType instanceof DashSubtree) {

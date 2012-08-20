@@ -41,7 +41,7 @@ public class DashTree extends AbstractType {
 	 * By default a dashTree with dashes is created
 	 */
 	public DashTree() {
-		this('-');
+		this('-', 0);
 	}
 	
 	/**
@@ -50,11 +50,15 @@ public class DashTree extends AbstractType {
 	 * 
 	 * @param keyCharacter
 	 */
-	public DashTree(char keyCharacter) {
+	public DashTree(char keyCharacter, int startLevel) {
 		this.sectionFinder = new AllTextFinderDivCorrectTrimmed();
-		this.childrenTypes.add(new DashSubtree(keyCharacter));
+		this.childrenTypes.add(new DashSubtree(keyCharacter, startLevel));
 		this.childrenTypes.add(new CommentLineType());
 		this.childrenTypes.add(new OverdashedElement(keyCharacter));
+	}
+
+	public DashTree(char keyCharacter) {
+		this(keyCharacter, 0);
 	}
 
 	/**
