@@ -131,6 +131,14 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 							"' cannot be localized."));
 			}
 		}
+
+		// check for warning if using deprecated name
+		String propName = propertySection.getText().trim();
+		if (!property.getName().equalsIgnoreCase(propName)) {
+			return Messages.asList(Messages.warning(
+					"Property '" + propName + "' is deprecated. " +
+							"Use '" + property.getName() + "' instead."));
+		}
 		return Messages.asList(Messages.notice("Property declaration successful."));
 	}
 

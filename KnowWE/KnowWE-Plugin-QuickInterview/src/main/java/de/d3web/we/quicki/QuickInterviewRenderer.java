@@ -507,9 +507,8 @@ public class QuickInterviewRenderer {
 		String value = "";
 
 		// if answer has already been answered write value into the field
-		if (UndefinedValue.isNotUndefinedValue(session.getBlackboard().getValue(q))) {
-			Value answer = session.getBlackboard().getValue(q);
-
+		Value answer = session.getBlackboard().getValue(q);
+		if (UndefinedValue.isNotUndefinedValue(answer)) {
 			if (answer != null && answer instanceof Unknown) {
 				value = "";
 			}
@@ -571,7 +570,7 @@ public class QuickInterviewRenderer {
 
 		// sb.append("<input type='button' value='OK' class='num-ok' />");
 
-		if (!suppressUnknown()) {
+		if (Unknown.assignedTo(answer) || !suppressUnknown(q)) {
 			sb.append("<div class='separator'>");
 			// M.Ochlast: i added this (hidden) div to re-enable submitting of
 			// numValues by "clicking". This workaround is neccessary for KnowWE
@@ -586,7 +585,8 @@ public class QuickInterviewRenderer {
 		sb.append("<div id='" + errmsgid + "' class='invisible' ></div>");
 	}
 
-	private boolean suppressUnknown() {
+	private boolean suppressUnknown(Question question) {
+		if (!BasicProperties.isUnknownVisible(question)) return true;
 		return (this.config.containsKey("unknown") && this.config.get("unknown").equals("false"));
 	}
 
@@ -720,14 +720,14 @@ public class QuickInterviewRenderer {
 	 * @return the HTML representation
 	 */
 	private void renderAnswerUnknown(Question q, String type, StringBuffer sb) {
-		if (suppressUnknown()) {
-			// render no answer unknown
+
+		// if unknown should neither be displayed, not is selected
+		// render no answer unknown
+		Value value = session.getBlackboard().getValue(q);
+		if (!Unknown.assignedTo(value) && suppressUnknown(q)) {
 			return;
 		}
-		if (!(q instanceof QuestionNum)) {
-			// separator already rendered in renderNumAnswers
-			renderChoiceSeparator(sb);
-		}
+
 		String jscall = " rel=\"{oid: '" + Unknown.getInstance().getId() + "', "
 					+ "web:'" + web + "', "
 					+ "ns:'" + namespace + "', "
@@ -736,7 +736,6 @@ public class QuickInterviewRenderer {
 					+ "}\" ";
 		String cssclass = "answerunknown";
 
-		Value value = session.getBlackboard().getValue(q);
 		if (value != null && value.equals(Unknown.getInstance())) {
 			cssclass = "answerunknownClicked";
 		}
@@ -744,8 +743,13 @@ public class QuickInterviewRenderer {
 			cssclass = "answerunknown";
 		}
 		String spanid = q.getName() + "_" + Unknown.getInstance().getId();
-		String title = "title=' " + rb.getString("KnowWE.quicki.unknown") + " '";
-		sb.append(getEnclosingTagOnClick("div", "unknown", cssclass, jscall, null, spanid, title));
+		String prompt = MMInfo.getUnknownPrompt(q, null);
+
+		if (!(q instanceof QuestionNum)) {
+			// separator already rendered in renderNumAnswers
+			renderChoiceSeparator(sb);
+		}
+		sb.append(getEnclosingTagOnClick("div", prompt, cssclass, jscall, null, spanid, null));
 	}
 
 	/**
