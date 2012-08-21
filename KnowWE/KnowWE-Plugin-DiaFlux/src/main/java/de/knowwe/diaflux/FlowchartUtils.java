@@ -146,7 +146,8 @@ public class FlowchartUtils {
 	public static void insertDiafluxRessources(StringBuilder result, UserContext user) {
 
 		for (String cssfile : CSS) {
-			result.append("<link rel='stylesheet' type='text/css' href='" + cssfile + "'></link>");
+			result.append("<link rel='stylesheet' type='text/css' href='" + cssfile
+					+ "'></link>");
 		}
 
 		for (String jsfile : JS) {

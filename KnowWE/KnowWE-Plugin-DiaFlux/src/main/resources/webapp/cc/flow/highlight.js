@@ -95,5 +95,11 @@ DiaFlux.Highlight.setHighlightClass = function(elem, clazz, prefix) {
 }
 
 DiaFlux.Highlight.setAttribute = function(elem, attribute) {
-	elem[attribute.name] = attribute.value;
+	//style contains coordinates, so concatenate
+	if (attribute.name == 'style'){
+		elem.setAttribute(attribute.name, elem.getAttribute('style') + attribute.value);
+	} else {
+		elem.setAttribute(attribute.name, attribute.value);
+	}
+	
 }
