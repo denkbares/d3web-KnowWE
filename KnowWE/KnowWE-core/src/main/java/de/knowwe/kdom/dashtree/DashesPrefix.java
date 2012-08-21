@@ -33,14 +33,15 @@ import de.knowwe.core.user.UserContext;
 
 public class DashesPrefix extends AbstractType {
 
-	
 	public DashesPrefix(final char key) {
 		this.sectionFinder = new DashesPrefixFinder(key);
 		this.setRenderer(new Renderer() {
 
 			@Override
-			public void render(Section<?> sec, UserContext user, StringBuilder string) {
-				if (sec.getText().trim().startsWith(""+key)) {
+			public void render(Section<?> sec, UserContext user,
+					StringBuilder string) {
+				// to suppress horizontal line in case of more than three dashes
+				if (sec.getText().trim().startsWith("" + key) && key == '-') {
 					string.append('~');
 				}
 				DefaultTextRenderer.getInstance().render(sec, user, string);
@@ -51,11 +52,11 @@ public class DashesPrefix extends AbstractType {
 	class DashesPrefixFinder implements SectionFinder {
 
 		private final char key;
-		
+
 		public DashesPrefixFinder(char key) {
 			this.key = key;
 		}
-		
+
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
 				Section<?> father, Type type) {
