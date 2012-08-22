@@ -42,6 +42,10 @@ function fctGetBuildDetails( dashboardID , buildNr ) {
     new _KA( options ).send();
 }
 
+/*
+ * Starts the progress-refresh function if the progressInfo html is rendered in the page 
+ * (happens if someone opens a page with a dashboard where currently a build is running).
+ */
 jq$(window).ready(function(){
 	 
 	jq$('.progressInfo').each(
@@ -51,9 +55,12 @@ jq$(window).ready(function(){
 				refreshBuildProgress(dashboardID , title);
 			}
 	);
+	
+});
 
-
-	});
+/*
+ * Cancels a running build, followed by a page reload.
+ */
 
 function stopRunningBuild( dashboardID , title , location ) {
 	
@@ -99,10 +106,13 @@ function CI_onErrorBehavior() {
 	}
 }
 
+/*
+ * Triggers the start of a new build. Further rerenders and inserts the dashboard header including the html for the progress update.
+ * After response the progress-refresh function is called. 
+ */
+
 function fctExecuteNewBuild( dashboardID,title ) {
 
-	//var buildFinished = 'false';
-	
 	var params = {
             action : 'CIAction',
             task   : 'executeNewBuild',
@@ -116,31 +126,21 @@ function fctExecuteNewBuild( dashboardID,title ) {
                 ids : [ 'top_'+dashboardID ],
                 action : 'insert',
                 fn : function() {
-                	//window.location='Wiki.jsp?page=' + title+'#'+dashboardID;
                 	refreshBuildProgress( dashboardID,title );
-					//makeCIBoxesCollapsible( dashboardID );
-					try {
-						KNOWWE.helper.observer.notify('update');
-					} catch (e) { /* ignore */
-					}
 				},
 				onError : CI_onErrorBehavior,
             }
      }
 	
     new _KA(options).send();
-	   	
-	
-	//var location = window.location;
-	//var progressBar = document.getElementById('progress_container');
-	//var stateImage = document.getElementById('state_'+dashboardID);
-	//stateImage.src = "KnowWEExtension/ci4ke/images/16x16/yellow_anime.gif";
-	//stateImage.attr("src", "KnowWEExtension/ci4ke/images/16x16/yellow_anime.gif");
-
-	//progressBar.innerHTML = '<div style="display:inline;"> <a href="javascript:stopRunningBuild(\''+dashboardID+'\',\''+title+'\',\''+window.location+'\');undefined;"><img height="14" title="Stops the current build" src="KnowWEExtension/images/cross.png"></img></a></div>     <div style="display:inline" class="prog-meter-wrap" ><div class="prog-meter-value" id="progress_value">&nbsp;0 %</div>  </div><div class="prog-meter-text" style="display:inline" id="progress_text">starting build...</div>';
-
      
 }
+
+
+/*
+ * Repeatedly asks the state of the current build process and displays it.
+ * When 'finished' is responed as progress message, the loop terminates and a page reload is triggered.
+ */
 
 function refreshBuildProgress(dashboardID , title) {
 	
@@ -164,7 +164,6 @@ function refreshBuildProgress(dashboardID , title) {
 				if(message != 'finished'){
 					jq$.delay(helper(options2),2000);
 				} else {
-					//window.location='Wiki.jsp?page=' + title+'#'+dashboardID;
 					window.location.reload();
 				}
 
@@ -200,7 +199,7 @@ function fctRefreshBuildList( dashboardID, indexFromBack, numberOfBuilds ) {
 
 
 /*
- * 
+ * function not working?!
  */
 function makeCIBoxesCollapsible( dashboardID ){
     var selector = "div .ci-collapsible-box";

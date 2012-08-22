@@ -77,7 +77,6 @@ public class CIAction extends AbstractAction {
 
 		String html = null;
 		if (task.equals("executeNewBuild")) {
-			System.out.println("startin new build: " + System.currentTimeMillis());
 			final CIBuilder builder = new CIBuilder(web, topic, dashboardName);
 			new Thread(new Runnable() {
 

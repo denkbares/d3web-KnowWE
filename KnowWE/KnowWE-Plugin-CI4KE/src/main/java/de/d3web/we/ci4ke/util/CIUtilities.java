@@ -229,7 +229,7 @@ public class CIUtilities {
 
 		string.append("<h3>");
 
-		if (latestBuild != null || CIUtilities.buildRunning(dashboardName)) {
+		if (latestBuild != null || buildRunning(dashboardName)) {
 			CIBuildRenderer renderer = dashboard.getRenderer();
 			string.append(renderer.renderCurrentBuildStatus(22)).append("  ");
 			string.append(renderer.renderBuildHealthReport(22)).append("  ");
@@ -238,25 +238,29 @@ public class CIUtilities {
 
 		// insert tag for progress bar
 		// open/close div progress_container
-		if (CIUtilities.buildRunning(dashboardName)) {
-			string.append("<div class='progressInfo' dashboardname='" + dashboardName
-					+ "' dashboardarticle='" + dashboard.getDashboardArticle()
-					+ "' onload=\"refreshBuildProgress('"
-					+ dashboardName
-					+ "', '" + dashboard.getDashboardArticle()
-					+ "');\" id='progress_container' style='display:inline;'>");
-
-			string.append("<div style='display:inline;'> <a href=\"javascript:stopRunningBuild('"
-					+ dashboardName
-					+ "', '"
-					+ dashboard.getDashboardArticle()
-					+ "', '"
-					+ KnowWEUtils.getURLLink(dashboard.getDashboardArticle() + "#" + dashboardName)
-					+ "');undefined;\"><img height=\"14\" title=\"Stops the current build\" src=\"KnowWEExtension/images/cross.png\"></img></a></div>     <div style='display:inline' class='prog-meter-wrap' ><div class='prog-meter-value' id='progress_value'>&nbsp;0 %</div>  </div><div class='prog-meter-text' style='display:inline' id='progress_text'>build running...</div>");
-			string.append("</div>");
+		if (buildRunning(dashboardName)) {
+			renderProgressInfoHTML(dashboard, string, dashboardName);
 		}
 		string.append("</h3>");
 		return string.toString();
+	}
+
+	public static void renderProgressInfoHTML(Dashboard dashboard, StringBuilder string, String dashboardName) {
+		string.append("<div class='progressInfo' dashboardname='" + dashboardName
+				+ "' dashboardarticle='" + dashboard.getDashboardArticle()
+				+ "' onload=\"refreshBuildProgress('"
+				+ dashboardName
+				+ "', '" + dashboard.getDashboardArticle()
+				+ "');\" id='progress_container' style='display:inline;'>");
+
+		string.append("<div style='display:inline;'> <a href=\"javascript:stopRunningBuild('"
+				+ dashboardName
+				+ "', '"
+				+ dashboard.getDashboardArticle()
+				+ "', '"
+				+ KnowWEUtils.getURLLink(dashboard.getDashboardArticle() + "#" + dashboardName)
+				+ "');undefined;\"><img height=\"14\" title=\"Stops the current build\" src=\"KnowWEExtension/images/cross.png\"></img></a></div>     <div style='display:inline' class='prog-meter-wrap' ><div class='prog-meter-value' id='progress_value'>&nbsp;0 %</div>  </div><div class='prog-meter-text' style='display:inline' id='progress_text'>build running...</div>");
+		string.append("</div>");
 	}
 
 	public static String renderForecastIcon(int buildCount, int failedCount, int pixelSize) {

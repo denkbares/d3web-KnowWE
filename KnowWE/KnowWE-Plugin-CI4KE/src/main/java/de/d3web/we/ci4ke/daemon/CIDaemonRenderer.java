@@ -66,4 +66,5 @@ public class CIDaemonRenderer implements Renderer {
 		return string.toString();
 	}
 
+
 }
