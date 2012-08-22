@@ -80,7 +80,7 @@
 		<parameter id="name" value="VerbatimType" />
 		<parameter id="description" value="Type VerbatimType" />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="2.0" />
+		<parameter id="priority" value="2.5" />
 		<parameter id="scope" value="root" />
 	</extension>
 	
