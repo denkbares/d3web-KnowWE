@@ -114,13 +114,16 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 				messages.add(Messages.error("Error accessing attachments '" + fileRegex + "': " + e));
 				continue;
 			}
+			List<AttachmentTestCaseProvider> list = regexMap.get(fileRegex);
 			if (fittingAttachments.size() == 0) {
 				messages.add(Messages.error("No Attachment found for: " + fileRegex));
+				// reset all providers, if files reappear, they have to be
+				// parsed again
+				list.clear();
 				continue;
 			}
 			for (WikiAttachment attachment : fittingAttachments) {
 				boolean exists = false;
-				List<AttachmentTestCaseProvider> list = regexMap.get(fileRegex);
 				for (AttachmentTestCaseProvider provider : list) {
 					if (provider.getName().equals(attachment.getPath())) {
 						// trigger reparse if necessary
