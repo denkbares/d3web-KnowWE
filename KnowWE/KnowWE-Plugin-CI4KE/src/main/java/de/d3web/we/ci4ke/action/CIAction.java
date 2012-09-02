@@ -21,18 +21,22 @@
 package de.d3web.we.ci4ke.action;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import de.d3web.core.io.progress.ProgressListener;
 import de.d3web.core.io.progress.ProgressListenerManager;
 import de.d3web.testing.BuildResult;
+import de.d3web.testing.Message.Type;
 import de.d3web.we.ci4ke.build.CIBuildRenderer;
 import de.d3web.we.ci4ke.build.CIBuilder;
 import de.d3web.we.ci4ke.build.Dashboard;
 import de.d3web.we.ci4ke.handling.CIDashboardRenderer;
+import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.Strings;
 
 public class CIAction extends AbstractAction {
@@ -72,7 +76,13 @@ public class CIAction extends AbstractAction {
 					"CIAction.execute(): Required parameters not set!");
 		}
 
-		Dashboard dashboard = Dashboard.getDashboard(web, topic, dashboardName);
+		String dashBoardArticle = null;
+		Collection<Section<CIDashboardType>> dashboardSections = CIUtilities.findCIDashboardSection(dashboardName);
+		if (dashboardSections != null && dashboardSections.size() > 0) {
+			// there can only be one dashboard with this name
+			dashBoardArticle = dashboardSections.iterator().next().getTitle();
+		}
+		Dashboard dashboard = Dashboard.getDashboard(web, dashBoardArticle, dashboardName);
 		CIBuildRenderer renderer = dashboard.getRenderer();
 
 		String html = null;
@@ -101,6 +111,11 @@ public class CIAction extends AbstractAction {
 		else if (task.equals("getBuildDetails")) {
 			BuildResult build = dashboard.getBuild(selectedBuildNumber);
 			html = CIDashboardRenderer.renderBuildDetails(dashboard, build);
+		}
+		else if (task.equals("refreshBubble")) {
+			BuildResult build = dashboard.getLatestBuild();
+			Type overallResult = build.getOverallResult();
+			html = CIUtilities.renderResultType(overallResult, 16, dashboardName);
 		}
 		else if (task.equals("refreshBuildList")) {
 			int indexFromBack =

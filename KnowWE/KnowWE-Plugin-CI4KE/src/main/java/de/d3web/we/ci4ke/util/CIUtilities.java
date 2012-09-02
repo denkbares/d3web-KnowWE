@@ -195,8 +195,11 @@ public class CIUtilities {
 				pixelSize + "x" + pixelSize
 				+ "/%s.png";
 
-		String imgBulb = "<img width='" + pixelSize + "'id='state_" + dashboardName
-				+ "' src='" + imageURL + "' alt='%<s' align='absmiddle' title='%s'>";
+		String imgBulb = "<img class='cideamon_state' width='" + pixelSize
+				+ "'id='state_" + dashboardName
+				+ "' " +
+				"dashboardName='" + dashboardName + "' src='" + imageURL
+				+ "' alt='%<s' align='absmiddle' title='%s'>";
 
 		switch (resultType) {
 		case SUCCESS:
@@ -214,9 +217,13 @@ public class CIUtilities {
 
 		if (CIUtilities.buildRunning(dashboardName)) {
 			// if currently a build is running show animated icon
-			String imageURL = "KnowWEExtension/ci4ke/images/16x16/yellow_anime.gif";
-			String imgBulb = "<img width='" + pixelSize + "'id='state_" + dashboardName
-					+ "' src='" + imageURL + "' alt='%<s' align='absmiddle' title='%s'>";
+			String imageURL = "KnowWEExtension/images/ajax-loader16.gif";
+			String imgBulb = "<img class='cideamon_state' running='true' width='"
+					+ pixelSize + "'id='state_"
+					+ dashboardName
+					+ "' " +
+					"dashboardName='" + dashboardName + "' src='" + imageURL
+					+ "' alt='%<s' align='absmiddle' title='%s'>";
 			return imgBulb;
 		}
 

@@ -55,6 +55,18 @@ jq$(window).ready(function(){
 				refreshBuildProgress(dashboardID , title);
 			}
 	);
+	jq$('.cideamon_state').each(
+			function() {
+				var dashboardID = jq$(this).attr('dashboardname');
+				var runs = jq$(this).attr('running');
+				if(runs) {
+					refreshBuildProgressDeamon(dashboardID);
+				}
+			}
+	);
+	
+	
+	
 	
 });
 
@@ -123,10 +135,11 @@ function fctExecuteNewBuild( dashboardID,title ) {
             url : KNOWWE.core.util.getURL( params ),
             loader: true,
             response : {
-                ids : [ 'top_'+dashboardID ],
-                action : 'insert',
+                //ids : [ 'top_'+dashboardID ],
+                //action : 'insert',
                 fn : function() {
-                	refreshBuildProgress( dashboardID,title );
+                	window.location.reload();
+                	//refreshBuildProgress( dashboardID,title );
 				},
 				onError : CI_onErrorBehavior,
             }
@@ -174,6 +187,67 @@ function refreshBuildProgress(dashboardID , title) {
 	}
 	
 	 new _KA(options2).send();
+}
+
+
+/*
+ * Repeatedly asks the state of the current build process and displays it.
+ * When 'finished' is responed as progress message, the loop terminates and a page reload is triggered.
+ */
+
+function refreshBuildProgressDeamon(dashboardID) {
+	
+	var params2 = {
+			action : 'CIGetProgressAction',
+			id     : dashboardID,
+    }; 
+	var options2 = {
+		url : KNOWWE.core.util.getURL(params2),
+		response : {
+			action : 'none',
+			fn : function() {
+
+				var message = JSON.parse(this.responseText).message;
+				
+				if(message != 'finished'){
+					jq$.delay(helper(options2),2000);
+				} else {
+					refreshCIDeamonBubble(dashboardID);
+				}
+
+			}
+		},
+		onError : function() {
+		}
+	}
+	
+	 new _KA(options2).send();
+}
+
+function refreshCIDeamonBubble( dashboardID) {
+
+	var params = {
+            action : 'CIAction',
+            task   : 'refreshBubble',
+            id     : dashboardID
+        }
+    
+     var options = {
+            url : KNOWWE.core.util.getURL( params ),
+            loader: true,
+            response : {
+                ids : [ 'state_'+dashboardID ],
+                action : 'replace',
+                fn : function() {
+                	//window.location.reload();
+                	//refreshBuildProgress( dashboardID,title );
+				},
+				onError : CI_onErrorBehavior,
+            }
+     }
+	
+    new _KA(options).send();
+     
 }
 
 function fctRefreshBuildList( dashboardID, indexFromBack, numberOfBuilds ) {

@@ -37,6 +37,8 @@ import de.knowwe.core.action.UserActionContext;
  */
 public class CIGetProgressAction extends AbstractAction {
 
+	String FINISHED = "finished";
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
@@ -47,7 +49,7 @@ public class CIGetProgressAction extends AbstractAction {
 		float progress = 0;
 		// finished will be returned in case build is finished and
 		// ProgressListener already deregistered
-		String message = "finished";
+		String message = FINISHED;
 		if (listener != null) {
 			if (listener instanceof AjaxProgressListener) {
 				progress = ((AjaxProgressListener) listener).getCurrentProgress();
@@ -56,6 +58,9 @@ public class CIGetProgressAction extends AbstractAction {
 					message = "starting build...";
 				}
 			}
+		}
+		if (message.equals(FINISHED)) {
+			progress = 1;
 		}
 
 		int progressTwoDigits = (int) (progress * 100);
