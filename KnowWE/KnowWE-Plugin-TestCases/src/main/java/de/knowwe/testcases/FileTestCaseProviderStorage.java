@@ -114,28 +114,33 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 				messages.add(Messages.error("Error accessing attachments '" + fileRegex + "': " + e));
 				continue;
 			}
-			List<AttachmentTestCaseProvider> list = regexMap.get(fileRegex);
+			List<AttachmentTestCaseProvider> oldList = regexMap.get(fileRegex);
 			if (fittingAttachments.size() == 0) {
 				messages.add(Messages.error("No Attachment found for: " + fileRegex));
 				// reset all providers, if files reappear, they have to be
 				// parsed again
-				list.clear();
+				oldList.clear();
 				continue;
 			}
+			List<AttachmentTestCaseProvider> actualList = new LinkedList<AttachmentTestCaseProvider>();
 			for (WikiAttachment attachment : fittingAttachments) {
 				boolean exists = false;
-				for (AttachmentTestCaseProvider provider : list) {
+				for (AttachmentTestCaseProvider provider : oldList) {
 					if (provider.getName().equals(attachment.getPath())) {
 						// trigger reparse if necessary
 						provider.getTestCase();
 						exists = true;
+						// provider is still present
+						actualList.add(provider);
 						break;
 					}
 				}
 				if (!exists) {
-					list.add(createTestCaseProvider(article, attachment));
+					// provider has to be newly created
+					actualList.add(createTestCaseProvider(article, attachment));
 				}
 			}
+			regexMap.put(fileRegex, actualList);
 		}
 
 	}
