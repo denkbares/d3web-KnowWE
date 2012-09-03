@@ -75,7 +75,7 @@ public class CIUtilities {
 			executor.terminate();
 			// finally remove executor from register
 			runningBuilds.remove(dashBoardID);
-			System.out.println("build thread removed");
+			//System.out.println("build thread removed");
 		}
 	}
 
