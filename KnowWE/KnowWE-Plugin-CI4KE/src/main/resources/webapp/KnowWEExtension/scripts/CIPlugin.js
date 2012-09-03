@@ -43,11 +43,12 @@ function fctGetBuildDetails( dashboardID , buildNr ) {
 }
 
 /*
- * Starts the progress-refresh function if the progressInfo html is rendered in the page 
+ * Starts the progress-refresh function if the progressInfo html or some ci-deamon is rendered in the page 
  * (happens if someone opens a page with a dashboard where currently a build is running).
  */
 jq$(window).ready(function(){
 	 
+	// trigger dashboard progress update
 	jq$('.progressInfo').each(
 			function() {
 				var dashboardID = jq$(this).attr('dashboardname');
@@ -55,6 +56,8 @@ jq$(window).ready(function(){
 				refreshBuildProgress(dashboardID , title);
 			}
 	);
+	
+	// trigger request loop asking whether build is finished
 	jq$('.cideamon_state').each(
 			function() {
 				var dashboardID = jq$(this).attr('dashboardname');
@@ -64,16 +67,12 @@ jq$(window).ready(function(){
 				}
 			}
 	);
-	
-	
-	
-	
 });
+
 
 /*
  * Cancels a running build, followed by a page reload.
  */
-
 function stopRunningBuild( dashboardID , title , location ) {
 	
     var params = {
@@ -94,6 +93,7 @@ function stopRunningBuild( dashboardID , title , location ) {
     
     new _KA( options ).send();
 }
+
 
 function helper(options){
 	new _KA(options).send();
@@ -119,10 +119,9 @@ function CI_onErrorBehavior() {
 }
 
 /*
- * Triggers the start of a new build. Further rerenders and inserts the dashboard header including the html for the progress update.
- * After response the progress-refresh function is called. 
+ * Triggers the start of a new build. 
+ * Afterward just a page reload is called, which then renders progress info html stuff. 
  */
-
 function fctExecuteNewBuild( dashboardID,title ) {
 
 	var params = {
@@ -135,11 +134,8 @@ function fctExecuteNewBuild( dashboardID,title ) {
             url : KNOWWE.core.util.getURL( params ),
             loader: true,
             response : {
-                //ids : [ 'top_'+dashboardID ],
-                //action : 'insert',
                 fn : function() {
                 	window.location.reload();
-                	//refreshBuildProgress( dashboardID,title );
 				},
 				onError : CI_onErrorBehavior,
             }
@@ -154,15 +150,14 @@ function fctExecuteNewBuild( dashboardID,title ) {
  * Repeatedly asks the state of the current build process and displays it.
  * When 'finished' is responed as progress message, the loop terminates and a page reload is triggered.
  */
-
 function refreshBuildProgress(dashboardID , title) {
 	
-	var params2 = {
+	var params = {
 			action : 'CIGetProgressAction',
 			id     : dashboardID,
     }; 
-	var options2 = {
-		url : KNOWWE.core.util.getURL(params2),
+	var options = {
+		url : KNOWWE.core.util.getURL(params),
 		response : {
 			action : 'none',
 			fn : function() {
@@ -179,30 +174,29 @@ function refreshBuildProgress(dashboardID , title) {
 				} else {
 					window.location.reload();
 				}
-
 			}
 		},
 		onError : function() {
 		}
 	}
 	
-	 new _KA(options2).send();
+	 new _KA(options).send();
 }
 
 
 /*
- * Repeatedly asks the state of the current build process and displays it.
- * When 'finished' is responed as progress message, the loop terminates and a page reload is triggered.
+ * Repeatedly whether the current build process is still running.
+ * When 'finished' is responded as progress message, 
+ * the loop terminates and a refresh call of the state bubble is called.
  */
-
 function refreshBuildProgressDeamon(dashboardID) {
 	
-	var params2 = {
+	var params = {
 			action : 'CIGetProgressAction',
 			id     : dashboardID,
     }; 
-	var options2 = {
-		url : KNOWWE.core.util.getURL(params2),
+	var options = {
+		url : KNOWWE.core.util.getURL(params),
 		response : {
 			action : 'none',
 			fn : function() {
@@ -221,9 +215,14 @@ function refreshBuildProgressDeamon(dashboardID) {
 		}
 	}
 	
-	 new _KA(options2).send();
+	 new _KA(options).send();
 }
 
+/*
+ * Fetches the ci state bubble html code for a deamon/dashboard and insertes it.
+ * This is called after some build process 
+ * has been finished on the server to update the view correspondingly.
+ */
 function refreshCIDeamonBubble( dashboardID) {
 
 	var params = {
@@ -238,10 +237,6 @@ function refreshCIDeamonBubble( dashboardID) {
             response : {
                 ids : [ 'state_'+dashboardID ],
                 action : 'replace',
-                fn : function() {
-                	//window.location.reload();
-                	//refreshBuildProgress( dashboardID,title );
-				},
 				onError : CI_onErrorBehavior,
             }
      }
@@ -250,6 +245,12 @@ function refreshCIDeamonBubble( dashboardID) {
      
 }
 
+/*
+ * Fetches the list of build numbers/states when the left/right navigation buttons 
+ * for showing earlier/later builds are pressed.
+ * It also updates the build details panel on the right correspondingly.
+ * 
+ */
 function fctRefreshBuildList( dashboardID, indexFromBack, numberOfBuilds ) {
 
 	var params = {

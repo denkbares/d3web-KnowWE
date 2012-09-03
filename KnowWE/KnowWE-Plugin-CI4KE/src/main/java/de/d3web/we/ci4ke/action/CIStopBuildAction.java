@@ -32,7 +32,7 @@ public class CIStopBuildAction extends AbstractAction{
 	public void execute(UserActionContext context) throws IOException {
 		System.out.println("stop event");
 		String dashboardID = context.getParameter("id");
-		CIUtilities.removeBuildThread(dashboardID);
+		CIUtilities.deregisterAndTerminateBuildExecutor(dashboardID);
 		ProgressListenerManager.getInstance().removeProgressListener(dashboardID);
 	}
 

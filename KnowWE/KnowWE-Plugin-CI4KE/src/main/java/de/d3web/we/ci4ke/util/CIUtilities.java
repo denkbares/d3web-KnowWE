@@ -69,7 +69,7 @@ public class CIUtilities {
 	 * @param dashBoardID
 	 * @param user
 	 */
-	public static void removeBuildThread(String dashBoardID) {
+	public static void deregisterAndTerminateBuildExecutor(String dashBoardID) {
 		TestExecutor executor = runningBuilds.get(dashBoardID);
 		if (executor != null) {
 			executor.terminate();

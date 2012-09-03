@@ -110,7 +110,7 @@ public class CIBuilder {
 			dashboard.addBuild(build);
 		}
 		ProgressListenerManager.getInstance().removeProgressListener(dashboard.getDashboardName());
-		CIUtilities.removeBuildThread(dashboard.getDashboardName());
+		CIUtilities.deregisterAndTerminateBuildExecutor(dashboard.getDashboardName());
 	}
 
 }

@@ -96,11 +96,22 @@ public class CIHookManager {
 
 		Set<CIHook> hookSet = hooks.get(monitoredArticleTitle);
 		if (hookSet != null) {
-			for (CIHook hook : hookSet) {
+			for (final CIHook hook : hookSet) {
 				Logger.getLogger(CIEventForwarder.class.getName()).log(
 						Level.INFO, " >> CI >> Constructing and executing " +
 								"new CIBuilder for " + hook);
-				new CIBuilder(hook).executeBuild();
+				// runs as an own thread, so the wiki page
+				// shows up fast after editing
+				// (ci-deamon shows build as running)
+				Runnable task = new Runnable() {
+
+					@Override
+					public void run() {
+						new CIBuilder(hook).executeBuild();
+					}
+				};
+				Thread ciThread = new Thread(task);
+				ciThread.start();
 			}
 		}
 	}
