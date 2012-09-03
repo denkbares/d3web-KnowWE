@@ -299,12 +299,17 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	public static List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(Section<TestCasePlayerType> section) {
-		List<Triple<TestCaseProvider, Section<?>, Article>> providers = new LinkedList<Triple<TestCaseProvider, Section<?>, Article>>();
 		String[] kbpackages = DefaultMarkupType.getPackages(section,
 				KnowledgeBaseType.ANNOTATION_COMPILE);
+		String web = section.getWeb();
+		return getTestCaseProviders(kbpackages, web);
+	}
+
+	public static List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(String[] kbpackages, String web) {
 		Environment env = Environment.getInstance();
-		PackageManager packageManager = env.getPackageManager(section.getWeb());
-		ArticleManager articleManager = env.getArticleManager(section.getWeb());
+		PackageManager packageManager = env.getPackageManager(web);
+		ArticleManager articleManager = env.getArticleManager(web);
+		List<Triple<TestCaseProvider, Section<?>, Article>> providers = new LinkedList<Triple<TestCaseProvider, Section<?>, Article>>();
 		for (String kbpackage : kbpackages) {
 			List<Section<?>> sectionsInPackage = packageManager.getSectionsOfPackage(kbpackage);
 			Set<String> articlesReferringTo = packageManager.getCompilingArticles(kbpackage);

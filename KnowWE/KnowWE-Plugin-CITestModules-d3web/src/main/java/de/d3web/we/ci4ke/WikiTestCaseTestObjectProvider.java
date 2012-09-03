@@ -30,7 +30,6 @@ import de.d3web.empiricaltesting.TestCase;
 import de.d3web.testing.TestObjectProvider;
 import de.d3web.we.testcase.TestCaseUtils;
 import de.knowwe.core.Environment;
-import de.knowwe.core.kdom.Article;
 
 /**
  * Searches the wiki for test cases. All found test case repositories are
@@ -57,17 +56,17 @@ public class WikiTestCaseTestObjectProvider implements TestObjectProvider {
 		Pattern pattern = null;
 		try {
 			pattern = Pattern.compile(name);
-		} catch (java.util.regex.PatternSyntaxException e) {
+		}
+		catch (java.util.regex.PatternSyntaxException e) {
 			return result;
 		}
-
 
 		// looks in all articles
 		Environment env = Environment.getInstance();
 		if (env != null) {
-			for (Article master : env.getArticleManager(Environment.DEFAULT_WEB).getArticles()) {
+			for (String title : env.getArticleManager(Environment.DEFAULT_WEB).getTitles()) {
 				TestCase testcase = TestCaseUtils.loadTestSuite(
-						master.getTitle(), Environment.DEFAULT_WEB);
+						title, Environment.DEFAULT_WEB);
 				if (testcase != null) {
 					// a repo is found, it is separated in distinct named test
 					// cases
