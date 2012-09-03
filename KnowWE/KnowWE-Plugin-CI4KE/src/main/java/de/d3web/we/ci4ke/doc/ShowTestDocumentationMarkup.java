@@ -18,6 +18,7 @@
  */
 package de.d3web.we.ci4ke.doc;
 
+import java.util.Collections;
 import java.util.List;
 
 import de.d3web.testing.Test;
@@ -31,10 +32,11 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
- * Shows documentation for all tests that are available on the current KnowWE installation
+ * Shows documentation for all tests that are available on the current KnowWE
+ * installation
  * 
  * @author jochenreutelshofer
- * @created 31.07.2012 
+ * @created 31.07.2012
  */
 public class ShowTestDocumentationMarkup extends DefaultMarkupType {
 
@@ -49,79 +51,76 @@ public class ShowTestDocumentationMarkup extends DefaultMarkupType {
 		this.setIgnorePackageCompile(true);
 		this.setRenderer(new TestDocumentationRenderer());
 	}
-	
+
 	class TestDocumentationRenderer extends DefaultMarkupRenderer {
-		
+
 		@Override
 		public void render(Section<?> section, UserContext user, StringBuilder buff) {
 			List<String> allTests = TestManager.findAllTestNames();
-			
+			Collections.sort(allTests);
+
 			StringBuffer buffer = new StringBuffer();
-			
+
 			buffer.append("<table class='wikitable'>");
-			
+
 			// table header line
 			buffer.append("<th>");
 			buffer.append("Name of test");
 			buffer.append("</th>");
-		
+
 			buffer.append("<th>");
 			buffer.append("Test object class");
 			buffer.append("</th>");
-			
-				
+
 			buffer.append("<th>");
 			buffer.append("Description");
 			buffer.append("</th>");
-			
+
 			buffer.append("<th>");
 			buffer.append("Parameters");
 			buffer.append("</th>");
-			
+
 			for (String testName : allTests) {
 				buffer.append("<tr>");
-				
+
 				Test<?> t = TestManager.findTest(testName);
-				
+
 				// name
 				buffer.append("<td>");
 				buffer.append(testName);
 				buffer.append("</td>");
-				
+
 				// test object class
 				buffer.append("<td>");
 				buffer.append(t.getTestObjectClass().getSimpleName());
 				buffer.append("</td>");
-				
-				
-				
+
 				// description
 				buffer.append("<td>");
 				buffer.append(t.getDescription());
 				buffer.append("</td>");
-				
-				
+
 				// test parameters
 				buffer.append("<td>");
 				List<TestParameter> parameters = t.getParameterSpecification();
-				if(parameters.size() == 0) {
+				if (parameters.size() == 0) {
 					buffer.append("none");
 				}
 				int i = 1;
 				for (TestParameter testParameter : parameters) {
-					buffer.append(i+".: "+testParameter.toString()+"\n");
+					buffer.append(i + ".: " + testParameter.toString() + "\n");
 					i++;
 				}
 				buffer.append("</td>");
-				
+
 				buffer.append("</tr>");
 			}
-			
+
 			buffer.append("</table>");
-			
+
 			buff.append(Strings.maskHTML(buffer.toString()));
 		}
-		
+
 	}
-	
+
 }
