@@ -170,7 +170,7 @@ function refreshBuildProgress(dashboardID , title) {
 				var progressText = document.getElementById("progress_text"); 
 				if(progressText) progressText.innerHTML = " "+""+message+"";
 				if(message != 'finished'){
-					jq$.delay(helper(options2),2000);
+					jq$.delay(helper(options),2000);
 				} else {
 					window.location.reload();
 				}
