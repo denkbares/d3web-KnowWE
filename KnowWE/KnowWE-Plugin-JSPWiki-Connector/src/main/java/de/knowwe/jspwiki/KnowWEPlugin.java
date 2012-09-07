@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,6 +39,7 @@ import com.ecyrd.jspwiki.PageManager;
 import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.WikiPage;
+import com.ecyrd.jspwiki.event.WikiEngineEvent;
 import com.ecyrd.jspwiki.event.WikiEvent;
 import com.ecyrd.jspwiki.event.WikiEventListener;
 import com.ecyrd.jspwiki.event.WikiEventUtils;
@@ -82,50 +82,50 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 		super.initialize(engine, properties);
 		m_engine = engine;
-		initEnvironmentIfNeeded(engine);
 
-		ResourceBundle knowweconfig = KnowWEUtils.getConfigBundle();
-		if (knowweconfig.getString(
-				"knowweplugin.jspwikiconnector.copycorepages").equals("false")) {
-			WikiEventUtils.addWikiEventListener(engine.getPageManager(),
-					WikiPageEvent.PAGE_DELETE_REQUEST, this);
-			return;
-		}
+		String copyCorePages = KnowWEUtils.getConfigBundle().getString(
+				"knowweplugin.jspwikiconnector.copycorepages");
+		if (copyCorePages.equals("true")) {
+			try {
+				BufferedReader in = new BufferedReader(new FileReader(
+						KnowWEUtils.getApplicationRootPath() + "/WEB-INF/jspwiki.properties"));
+				String line = null;
+				File pagedir = null;
+				while ((line = in.readLine()) != null) {
+					if (!line.contains("#")
+							&& line.contains("jspwiki.fileSystemProvider.pageDir")) {
+						line = line.trim();
+						line = line.substring(line.lastIndexOf(" ") + 1);
+						pagedir = new File(line);
+						in.close();
+						break;
+					}
+				}
 
-		try {
-			BufferedReader in = new BufferedReader(new FileReader(
-					KnowWEUtils.getApplicationRootPath() + "/WEB-INF/jspwiki.properties"));
-			String line = null;
-			File pagedir = null;
-			while ((line = in.readLine()) != null) {
-				if (!line.contains("#")
-						&& line.contains("jspwiki.fileSystemProvider.pageDir")) {
-					line = line.trim();
-					line = line.substring(line.lastIndexOf(" ") + 1);
-					pagedir = new File(line);
-					in.close();
-					break;
+				if (pagedir.exists()) {
+					File coreDir = new File(KnowWEUtils.getApplicationRootPath()
+							+ "/WEB-INF/resources/core-pages");
+					for (File corePage : coreDir.listFiles()) {
+						if (!corePage.getName().endsWith(".txt")) continue;
+						File newFile = new File(pagedir.getPath() + "/"
+								+ corePage.getName());
+						if (!newFile.exists()) FileUtils.copyFile(corePage, newFile);
+					}
 				}
 			}
-
-			if (pagedir.exists()) {
-				File coreDir = new File(KnowWEUtils.getApplicationRootPath()
-						+ "/WEB-INF/resources/core-pages");
-				for (File corePage : coreDir.listFiles()) {
-					if (!corePage.getName().endsWith(".txt")) continue;
-					File newFile = new File(pagedir.getPath() + "/"
-							+ corePage.getName());
-					if (!newFile.exists()) FileUtils.copyFile(corePage, newFile);
-				}
+			catch (Exception e) {
+				Logger.getLogger(this.getClass().getName()).severe(
+						"Exception while trying to copy core pages: " + e.getMessage());
+				// Start wiki without pages...
 			}
 		}
 
-		catch (Exception e) {
-			// Nothing to do. Start wiki without pages.
-		}
+		WikiEventUtils.addWikiEventListener(engine,
+				WikiEngineEvent.INITIALIZED, this);
 
 		WikiEventUtils.addWikiEventListener(engine.getPageManager(),
 				WikiPageEvent.PAGE_DELETE_REQUEST, this);
+
 		WikiEventUtils.addWikiEventListener(engine.getPageManager(),
 				WikiPageRenameEvent.PAGE_RENAMED, this);
 	}
@@ -139,21 +139,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	}
 
 	@Override
-	public String execute(WikiContext context, @SuppressWarnings("rawtypes") Map params) throws PluginException {
-		try {
-			if (context.getCommand().getRequestContext().equals(
-					WikiContext.VIEW)) {
-				initEnvironmentIfNeeded(context.getEngine());
-			}
-		}
-		catch (Exception t) {
-			System.out.println("****Exception EXECUTE***");
-			t.printStackTrace();
-		}
-		return "";
-	}
-
-	@Override
 	public void postSave(WikiContext wikiContext, String content)
 			throws FilterException {
 		// setWikiContextAndEngine(wikiContext);
@@ -161,8 +146,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		// get the Page-name
 		String topic = wikiContext.getPage().getName();
 		String user = wikiContext.getWikiSession().getUserPrincipal().getName();
-
-		initEnvironmentIfNeeded(wikiContext.getEngine());
 
 		// process this article in KnowWE
 		Article article = Environment.getInstance().buildAndRegisterArticle(content,
@@ -201,10 +184,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	@Override
 	public String preTranslate(WikiContext wikiContext, String content)
 			throws FilterException {
-
-		initEnvironmentIfNeeded(wikiContext.getEngine());
-
-		initializeAllArticlesIfNeeded(wikiContext.getEngine());
 
 		/* creating KnowWEUserContext with username and requestParamteters */
 		if (!wikiContext.getCommand().getRequestContext().equals(
@@ -391,6 +370,13 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 			amgr.deleteArticle(amgr.getArticle(e.getOldPageName()));
 		}
+		else if (event instanceof WikiEngineEvent) {
+			if (event.getType() == WikiEngineEvent.INITIALIZED) {
+				WikiEngine engine = ((WikiEngineEvent) event).getEngine();
+				initEnvironmentIfNeeded(engine);
+				initializeAllArticlesIfNeeded(engine);
+			}
+		}
 	}
 
 	/**
@@ -443,6 +429,12 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 						RessourceLoader.defaultStylesheet + resource);
 			}
 		}
+	}
+
+	@Override
+	public String execute(WikiContext context, Map params) throws PluginException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
