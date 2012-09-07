@@ -185,6 +185,9 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	public String preTranslate(WikiContext wikiContext, String content)
 			throws FilterException {
 
+		initEnvironmentIfNeeded(wikiContext.getEngine());
+		initializeAllArticlesIfNeeded(wikiContext.getEngine());
+
 		/* creating KnowWEUserContext with username and requestParamteters */
 		if (!wikiContext.getCommand().getRequestContext().equals(
 				WikiContext.VIEW)) {
