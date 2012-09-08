@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -180,64 +181,6 @@ public class Environment {
 		this.wikiConnector = wiki;
 	}
 
-	private void initProperties() {
-		ResourceBundle config = KnowWEUtils.getConfigBundle();
-		if (config != null && config.getString("compilation.mode").contains("incremental")) {
-			this.setCompilationMode(CompilationMode.INCREMENTAL);
-		}
-		// create properties
-		Properties loggingProperties = new Properties();
-
-		// root logger loglevel
-		loggingProperties.put(".level", "INFO");
-
-		// specify root logger handler
-		loggingProperties.put("handlers",
-				"java.util.logging.ConsoleHandler");
-
-		// configure ConsoleHandler
-		loggingProperties.put("java.util.logging.ConsoleHandler.formatter",
-				"java.util.logging.SimpleFormatter");
-
-		// set ConsoleHandler's log level
-		loggingProperties.put("java.util.logging.ConsoleHandler.level",
-				"ALL");
-
-		// loop config file
-		for (String logLevel : config.keySet()) {
-			// logLevel properties start with 'loglvl'
-			if (logLevel.startsWith("loglvl")) {
-				// if nothing follows 'loglvl', root logger's log level will be
-				// changed
-				if (logLevel.equals("loglvl")) {
-					loggingProperties.put(".level", config.getString(logLevel));
-				}
-				// change specific logger's log level
-				else {
-					loggingProperties.put(logLevel.substring(logLevel.indexOf('.') + 1) + ".level",
-							config.getString(logLevel));
-				}
-			}
-		}
-
-		// forward properties to LogManager
-
-		PipedOutputStream pos = new PipedOutputStream();
-		try {
-			PipedInputStream pis = new PipedInputStream(pos);
-
-			loggingProperties.store(pos, "");
-			pos.close();
-
-			LogManager.getLogManager().readConfiguration(pis);
-			pis.close();
-		}
-		catch (IOException ioe) {
-			Logger.getLogger(this.getClass().getName()).severe(
-					"Failed to set LogLevel: " + ioe.getMessage());
-		}
-	}
-
 	private void init() throws InstantiationError {
 
 		initProperties();
@@ -256,6 +199,88 @@ public class Environment {
 
 		Plugins.initJS();
 		Plugins.initCSS();
+	}
+
+	private void initProperties() {
+
+		setCompilationMode();
+
+		setLogLevels();
+	}
+
+	private void setLogLevels() {
+
+		ResourceBundle config = KnowWEUtils.getConfigBundle();
+		Collection<String> logLevelConfigs = getLogLevelConfigs(config);
+		if (!logLevelConfigs.isEmpty()) {
+
+			Properties loggingProperties = new Properties();
+
+			// root logger loglevel
+			loggingProperties.put(".level", "INFO");
+
+			// specify root logger handler
+			loggingProperties.put("handlers",
+					"java.util.logging.ConsoleHandler");
+
+			// configure ConsoleHandler
+			loggingProperties.put("java.util.logging.ConsoleHandler.formatter",
+					"java.util.logging.SimpleFormatter");
+
+			// set ConsoleHandler's log level
+			loggingProperties.put("java.util.logging.ConsoleHandler.level",
+					"ALL");
+
+			for (String logLevel : logLevelConfigs) {
+				// if nothing follows 'loglvl', root logger's log level will
+				// be changed
+				if (logLevel.equals("loglvl")) {
+					loggingProperties.put(".level", config.getString(logLevel));
+				}
+				// change specific logger's log level
+				else {
+					String logger = logLevel.substring(logLevel.indexOf('.') + 1);
+					loggingProperties.put(logger + ".level",
+							config.getString(logLevel));
+				}
+			}
+
+			// forward properties to LogManager
+			PipedOutputStream pos = new PipedOutputStream();
+			try {
+				PipedInputStream pis = new PipedInputStream(pos);
+
+				loggingProperties.store(pos, "");
+				pos.close();
+
+				LogManager.getLogManager().readConfiguration(pis);
+				pis.close();
+			}
+			catch (IOException ioe) {
+				Logger.getLogger(this.getClass().getName()).severe(
+						"Failed to set LogLevel: " + ioe.getMessage());
+			}
+		}
+	}
+
+	private ResourceBundle setCompilationMode() {
+		ResourceBundle config = KnowWEUtils.getConfigBundle();
+		if (config != null && config.getString("compilation.mode").contains("incremental")) {
+			this.setCompilationMode(CompilationMode.INCREMENTAL);
+		}
+		return config;
+	}
+
+	private Collection<String> getLogLevelConfigs(ResourceBundle config) {
+		Collection<String> logLevelConfigs = new ArrayList<String>();
+		// loop config file
+		for (String logLevel : config.keySet()) {
+			// logLevel properties start with 'loglvl'
+			if (logLevel.startsWith("loglvl")) {
+				logLevelConfigs.add(logLevel);
+			}
+		}
+		return logLevelConfigs;
 	}
 
 	private void initInstantiations() {
