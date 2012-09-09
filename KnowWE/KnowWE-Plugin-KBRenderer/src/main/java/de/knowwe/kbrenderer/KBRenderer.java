@@ -259,11 +259,6 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 												cond,
 												VerbalizationManager.RenderingFormat.PLAIN_TEXT,
 												parameterMap));
-
-						boolean id = false;
-						if (id) {
-							text.append(" (ID: " + rel.getId() + ")");
-						}
 						text.append(" <br/>\n");
 					}
 				}
