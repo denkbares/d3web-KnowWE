@@ -609,7 +609,7 @@ public class Strings {
 		if (text == null) return null;
 		// replacing non-breaking-space characters as otherwise they will not be
 		// trimmed
-		text = StringUtils.replace(text, "\\xA0", " ");
+		text = text.replaceAll("\\xA0", " ");
 		text = text.trim();
 		return unquote(text);
 	}
