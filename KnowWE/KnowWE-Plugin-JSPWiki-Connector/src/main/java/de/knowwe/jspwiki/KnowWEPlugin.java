@@ -71,6 +71,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	private static final String LEFT_MENU = "LeftMenu";
 	private static final String MORE_MENU = "MoreMenu";
 
+	private boolean wikiEngineInitialized = false;
+
 	/**
 	 * To initialize KnowWE.
 	 * 
@@ -185,8 +187,9 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	public String preTranslate(WikiContext wikiContext, String content)
 			throws FilterException {
 
-		initEnvironmentIfNeeded(wikiContext.getEngine());
-		initializeAllArticlesIfNeeded(wikiContext.getEngine());
+		if (!wikiEngineInitialized) {
+			return content;
+		}
 
 		/* creating KnowWEUserContext with username and requestParamteters */
 		if (!wikiContext.getCommand().getRequestContext().equals(
@@ -378,6 +381,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				WikiEngine engine = ((WikiEngineEvent) event).getEngine();
 				initEnvironmentIfNeeded(engine);
 				initializeAllArticlesIfNeeded(engine);
+				wikiEngineInitialized = true;
 			}
 		}
 	}
@@ -435,9 +439,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	}
 
 	@Override
-	public String execute(WikiContext context, Map params) throws PluginException {
-		// TODO Auto-generated method stub
-		return null;
+	public String execute(WikiContext context, @SuppressWarnings("rawtypes") Map params) throws PluginException {
+		return "";
 	}
 
 }
