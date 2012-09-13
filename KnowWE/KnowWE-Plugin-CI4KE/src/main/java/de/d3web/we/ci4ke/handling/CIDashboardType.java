@@ -106,7 +106,15 @@ public class CIDashboardType extends DefaultMarkupType {
 							if (parameter.startsWith("\"") && parameter.endsWith("\"")) {
 								parameter = parameter.substring(1, parameter.length() - 1);
 							}
-							monitoredArticles.add(parameter);
+							if (Environment.getInstance().getWikiConnector().doesArticleExist(
+									parameter)) {
+								monitoredArticles.add(parameter);
+							}
+							else {
+								msgs.add(Messages.error("Article name for trigger not existing: "
+										+ parameter));
+								return msgs;
+							}
 						}
 					}
 				}
