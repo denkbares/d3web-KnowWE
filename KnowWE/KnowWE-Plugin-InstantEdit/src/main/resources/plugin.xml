@@ -46,36 +46,6 @@
     </extension>
  
     <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-        id="GetToolNameSpacesAction">
-        <parameter id="class"
-            value="de.knowwe.instantedit.actions.GetToolNameSpacesAction" />
-        <parameter id="name" value="GetToolNameSpacesAction" />
-        <parameter id="description" value="Action GetToolNameSpacesAction" />
-        <parameter id="version" value="1.0" />
-        <parameter id="priority" value="5" />
-    </extension>
-    
-    <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-        id="PageEditDeleteArticleAction">
-        <parameter id="class"
-            value="de.knowwe.instantedit.actions.PageEditDeleteArticleAction" />
-        <parameter id="name" value="PageEditDeleteArticleAction" />
-        <parameter id="description" value="Action PageEditDeleteArticleAction" />
-        <parameter id="version" value="1.0" />
-        <parameter id="priority" value="5" />
-    </extension>
-    
-    <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-        id="PageEditSaveAction">
-        <parameter id="class"
-            value="de.knowwe.instantedit.actions.PageEditSaveAction" />
-        <parameter id="name" value="PageEditSaveAction" />
-        <parameter id="description" value="Action PageEditSaveAction" />
-        <parameter id="version" value="1.0" />
-        <parameter id="priority" value="5" />
-    </extension>
- 
-    <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
         id="InstantEditSaveAction">
         <parameter id="class"
             value="de.knowwe.instantedit.actions.InstantEditSaveAction" />
