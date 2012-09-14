@@ -20,7 +20,7 @@ package de.knowwe.instantedit.table;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.instantedit.tools.DefaultEditTool;
+import de.knowwe.instantedit.tools.InstantEditTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
 
@@ -38,15 +38,11 @@ public class TableEditToolProvider implements ToolProvider {
 	}
 
 	private Tool getEditTool(Section<?> section, UserContext userContext) {
-
-		String jsAction = "KNOWWE.plugin.instantEdit.enable("
-				+ "'"
-				+ section.getID()
-				+ "', KNOWWE.plugin.tableEditTool);";
-		return new DefaultEditTool(
+		return new InstantEditTool(
 				"KnowWEExtension/images/pencil.png",
 				"Edit Table",
 				"Edit this table in a spreadsheet-like editor",
-				jsAction);
+				section,
+				"KNOWWE.plugin.tableEditTool");
 	}
 }

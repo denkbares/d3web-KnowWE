@@ -20,9 +20,13 @@ KNOWWE.plugin.tableEditTool = function() {
     	},
     	
 	    generateHTML : function(id) {
-	    	originalWikiText[id] = _IE.getWikiText(id);
-	    	return "<div id='"+createRootID(id)+"' style='position: relative;'></div>" +
-	    			_IE.getSaveCancelDeleteButtons(id, new Array(
+	    	originalWikiText[id] = _EC.getWikiText(id);
+	    	return "<div id='"+createRootID(id)+"' style='position: relative;'></div>";
+	    			
+	    },
+	    
+	    generateButtons : function(id) {
+	    	return _EC.getSaveCancelDeleteButtons(id, new Array(
 	    	    			createButton("table_insert_col_before", "gif"),
 	    	    			createButton("table_insert_col_after", "gif"),
 	    	    			createButton("table_delete_col", "gif"),

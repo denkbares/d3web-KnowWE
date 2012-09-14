@@ -37,3 +37,11 @@
 	-ms-box-sizing: content-box;
 	-webkit-box-sizing: content-box;
 }
+.editbuttons {
+	width: 100%;
+}
+
+.editbuttons p {
+	width: 40px;
+	display: inline-table;
+}

@@ -8,9 +8,12 @@ KNOWWE.plugin.defaultEditTool = function() {
     	
 	    generateHTML : function(id) {
 	    	return "<textarea id = " + createTextAreaID(id) + " class='defaultEditTool' style='height: " + $(id).clientHeight + "px;'>"
-		    	+ _IE.getWikiText(id)
-		    	+ "</textarea>"
-		    	+ _IE.getSaveCancelDeleteButtons(id);
+		    	+ _EC.getWikiText(id)
+		    	+ "</textarea>";
+	    },
+	    
+	    generateButtons : function(id) {
+	    	return _EC.elements.getSaveCancelDeleteButtons(id);
 	    },
 	    
 	    postProcessHTML : function(id) {
@@ -34,7 +37,11 @@ KNOWWE.plugin.defaultEditTool = function() {
 	    },
 	    
 	    generateWikiText : function(id) {
-	    	return $(createTextAreaID(id)).value;
+	    	if ($(createTextAreaID(id))) {
+	    		return $(createTextAreaID(id)).value;
+	    	} else {
+	    		return _EC.getWikiText(id);
+	    	}
 	    }
     }
 }();

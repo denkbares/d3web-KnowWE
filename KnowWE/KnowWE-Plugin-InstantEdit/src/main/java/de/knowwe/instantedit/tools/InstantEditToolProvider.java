@@ -38,15 +38,10 @@ public class InstantEditToolProvider implements ToolProvider {
 	}
 
 	protected Tool getQuickEditPageTool(Section<?> section, UserContext userContext) {
-
-		String jsAction = "KNOWWE.plugin.instantEdit.enable("
-				+ "'"
-				+ section.getID()
-				+ "', KNOWWE.plugin.defaultEditTool);";
-		return new DefaultEditTool(
+		return new InstantEditTool(
 				"KnowWEExtension/images/pencil.png",
 				"Edit Markup",
 				"Edit this markup in text mode",
-				jsAction);
+				section);
 	}
 }
